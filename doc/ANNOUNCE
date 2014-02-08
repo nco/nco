@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.687 2014-02-05 21:17:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.688 2014-02-08 00:04:20 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
@@ -31,18 +31,7 @@ Charlie
 
 NEW FEATURES:
 
-A. The -X option for auxiliary coordinates now works fully when
-   latitude and longitude coordinates are nested in group hierarchies.
-   The most in-scope lat/long are found and used for each variable. 
-   http://nco.sf.net/nco.html#aux
-
-B. Chunking options now support full group pathnames for dimensions.
-   These override chunking arguments with short names when a given
-   dimension matches both the long and short name arguments, e.g.,
-   ncks --cnk_dmn lat,2 --cnk_dmn /g1/lat,4 in.nc out.nc
-   causes all dimensions named "lat" to be chunked with size=2
-   except for the /g1/lat dimension which has chunksize=4.
-   http://nco.sf.net/nco.html#cnk
+A. cell_methods: fxm
 
 BUG FIXES:
 
@@ -52,12 +41,14 @@ A. ncra/ncea/ncrcat in NCO 4.3.9-4.4.0 did not close or remove input
    files were specified. Fixed.
    http://nco.sf.net#bug_ncra_no_fl_close
 
-B. NCO 4.4.0 could sometimes fail when asked to simultaneously
-   uncompress (-L 0) and to chunk (--cnk_dmn) a file. This seems to
-   have occurred only if the compressed variable was shuffled.
-   Problem reported by Ben. Fixed.
+A. Fix build problem exposed by LLVM on Mac OS X 10.9 Mavericks
 
-C. Fix build problem exposed by LLVM on Mac OS X 10.9 Mavericks
+A. ncwa always outputs averages of coordinates fxm
+
+A. The -X option for auxiliary coordinates now works fully when
+   latitude and longitude coordinates are nested in group hierarchies.
+   The most in-scope lat/long are found and used for each variable. 
+   http://nco.sf.net/nco.html#aux
 
 KNOWN ISSUES NOT YET FIXED:
 

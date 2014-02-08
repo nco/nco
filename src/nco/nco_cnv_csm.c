@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.77 2014-02-07 20:16:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.78 2014-02-08 00:04:20 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -236,14 +236,14 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* Purpose: Add/modify cell_methods attribute according to CF convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods */
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods */
 
   const char fnc_nm[]="nco_cnv_cf_cll_mth_add()"; /* [sng] Function name */
 
   aed_sct aed;       /* [sct] Structure containing information necessary to edit */
 
-  char *att_val;         /* [sng] The final value of the attribute (e.g. "time: mean" )*/
-  char att_op[NC_MAX_NAME];   /* [sng] Operation type (e.g. nco_op_avg translates to "mean" )*/
+  char *att_val;     /* [sng] Final value of attribute (e.g., "time: mean") */
+  char att_op_sng[NC_MAX_NAME];   /* [sng] Operation type (e.g. nco_op_avg translates to "mean") */
 
   int grp_out_id;    /* [ID] Group ID (output) */
   int var_out_id;    /* [ID] Variable ID (output) */
@@ -326,7 +326,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
           /* Initialize values */
           aed.val.cp=NULL;
-          att_op[0]='\0';
+          att_op_sng[0]='\0';
           att_val=NULL;
           aed.sz=-1L;
           aed.id=-1;
@@ -336,32 +336,32 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 	  switch(nco_op_typ_lcl){
 	    /* Next four operations are defined in CF Conventions */
           case nco_op_avg:               /* nco_op_avg,  Average */
-            strcpy(att_op,"mean");  
+            strcpy(att_op_sng,"mean");  
             break;
           case nco_op_min:               /* nco_op_min,  Minimum value */
-            strcpy(att_op,"minimum"); 
+            strcpy(att_op_sng,"minimum"); 
             break;
           case nco_op_max:               /* nco_op_max, Maximum value */
-            strcpy(att_op,"maximum"); 
+            strcpy(att_op_sng,"maximum"); 
             break;
           case nco_op_ttl:               /* nco_op_ttl,  Linear sum */
-            strcpy(att_op,"sum"); 
+            strcpy(att_op_sng,"sum"); 
             break;
 	    /* Remaining operations are supported by NCO but are not in CF Conventions */
           case nco_op_sqravg:            /* nco_op_sqravg,  Square of mean */          
-            strcpy(att_op,"sqravg"); 
+            strcpy(att_op_sng,"sqravg"); 
             break;
           case nco_op_avgsqr:            /* nco_op_avgsqr, Mean of sum of squares */      
-            strcpy(att_op,"avgsqr"); 
+            strcpy(att_op_sng,"avgsqr"); 
             break;
           case nco_op_sqrt:              /* nco_op_sqrt,  Square root of mean  */      
-            strcpy(att_op,"sqrt"); 
+            strcpy(att_op_sng,"sqrt"); 
             break;
           case nco_op_rms:               /* nco_op_rms,  Root-mean-square (normalized by N) */     
-            strcpy(att_op,"rms"); 
+            strcpy(att_op_sng,"rms"); 
             break;
           case nco_op_rmssdn:            /* nco_op_rmssdn, Root-mean square normalized by N-1 */
-            strcpy(att_op,"rmssdn"); 
+            strcpy(att_op_sng,"rmssdn"); 
             break;
           case nco_op_nil:               /* nco_op_nil  Nil or undefined operation type */    
             if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Cell method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,nco_op_typ);
@@ -372,15 +372,14 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           
           /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */
 
-          /* Concatenate attribute parts (e.g "time: mean" */
-          aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen(att_op)+1L;
+          /* Concatenate attribute parts (e.g., "time: mean") */
+          aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen(att_op_sng)+1L;
 
-          /* Append mode : add a space */
-          if(aed.mode == aed_append) aed.sz+=1;
+          /* Append mode: add a space */
+          if(aed.mode == aed_append) aed.sz+=1L;
+          att_val=(char *)nco_malloc(sizeof(char)*aed.sz);
 
-          att_val=(char *)nco_malloc(aed.sz);
-
-          /* Append mode : add a space */
+          /* Append mode: add a space */
           if(aed.mode == aed_append){
             strcpy(att_val," ");
             strcat(att_val,dim[idx_dmn]->nm);
@@ -389,7 +388,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           } /* Create mode */
 
           strcat(att_val,": ");
-          strcat(att_val,att_op);
+          strcat(att_val,att_op_sng);
 
           /* Type is NC_CHAR */
           aed.val.cp=(char *)strdup(att_val);
