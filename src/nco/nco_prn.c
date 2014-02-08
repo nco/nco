@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.215 2014-02-08 02:11:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.216 2014-02-08 02:15:42 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -2074,6 +2074,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   const nco_bool CDL_OR_XML=prn_flg->cdl || prn_flg->xml; /* [flg] CDL or XML output */
   const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
   const nco_bool CDL_OR_JSN_OR_TRD=prn_flg->cdl || prn_flg->jsn || prn_flg->trd; /* [flg] CDL or JSON or Traditional output */
+  const nco_bool CDL_OR_TRD_OR_XML=prn_flg->cdl || prn_flg->trd || prn_flg->xml; /* [flg] CDL or Traditional or XML output */
 
   nm_id_sct *dmn_lst; /* [sct] Dimension list */
   nm_id_sct *var_lst; /* [sct] Variable list */
@@ -2228,7 +2229,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
     /* Print variable attributes */
     if(JSN && prn_flg->PRN_VAR_METADATA) (void)fprintf(stdout,"\"attributes\": [");
-    (void)nco_prn_att(grp_id,prn_flg,var_id);
+    if(CDL_OR_TRD_OR_XML || (JSN && prn_flg->PRN_VAR_METADATA)) (void)nco_prn_att(grp_id,prn_flg,var_id);
     if(JSN && prn_flg->PRN_VAR_METADATA) (void)fprintf(stdout,"], \n");
 
     if(XML && prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
