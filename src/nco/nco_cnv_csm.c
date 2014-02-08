@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.78 2014-02-08 00:04:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.79 2014-02-08 04:47:05 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -240,21 +240,24 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   const char fnc_nm[]="nco_cnv_cf_cll_mth_add()"; /* [sng] Function name */
 
-  aed_sct aed;       /* [sct] Structure containing information necessary to edit */
+  aed_sct aed;        /* [sct] Structure containing information necessary to edit */
 
-  char *att_val;     /* [sng] Final value of attribute (e.g., "time: mean") */
+  char *att_val;      /* [sng] Final value of attribute (e.g., "time: mean") */
   char att_op_sng[NC_MAX_NAME];   /* [sng] Operation type (e.g. nco_op_avg translates to "mean") */
 
-  int grp_out_id;    /* [ID] Group ID (output) */
-  int var_out_id;    /* [ID] Variable ID (output) */
-  int rcd=NC_NOERR;  /* [rcd] Return code */
+  int grp_out_id;     /* [ID] Group ID (output) */
+  int var_out_id;     /* [ID] Variable ID (output) */
+  int rcd=NC_NOERR;   /* [rcd] Return code */
   int nco_op_typ_lcl; /* [enm] Operation type, default is average */
+  int nbr_cmn_lst;    /* [nbr] Size of list of common names (variable names in attribute list) */ 
 
-  long att_sz;       /* [nbr] Attribute size */
+  long att_sz;        /* [nbr] Attribute size */
 
-  nc_type att_typ;   /* [nbr] Attribute type */
+  nc_type att_typ;    /* [nbr] Attribute type */
 
-  nco_bool att_xst;  /* [nbr] Attribute "exists" */
+  nco_bool att_xst;   /* [nbr] Attribute "exists" */
+
+  nm_tbl_sct *nm_lst=NULL; /* [sct] A list of common names (variable names in attribute list) */ 
 
   /* cell_methods attribute values and description
      
@@ -280,6 +283,11 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
      rmssdn Root-mean square (normalized by N-1)
      sqrt Square root of the mean
      ttl Sum of values */
+
+  nbr_cmn_lst=0;
+  nm_lst=(nm_tbl_sct *)nco_malloc(sizeof(nm_tbl_sct));
+  nm_lst->nbr=0;
+  nm_lst->lst=NULL;
   
   /* Initialize common members */
   aed.att_nm=strdup("cell_methods");
@@ -331,10 +339,10 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           aed.sz=-1L;
           aed.id=-1;
 
-	  /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
-	  if(var[idx_var]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
-	  switch(nco_op_typ_lcl){
-	    /* Next four operations are defined in CF Conventions */
+          /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
+          if(var[idx_var]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
+          switch(nco_op_typ_lcl){
+            /* Next four operations are defined in CF Conventions */
           case nco_op_avg:               /* nco_op_avg,  Average */
             strcpy(att_op_sng,"mean");  
             break;
@@ -347,7 +355,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           case nco_op_ttl:               /* nco_op_ttl,  Linear sum */
             strcpy(att_op_sng,"sum"); 
             break;
-	    /* Remaining operations are supported by NCO but are not in CF Conventions */
+            /* Remaining operations are supported by NCO but are not in CF Conventions */
           case nco_op_sqravg:            /* nco_op_sqravg,  Square of mean */          
             strcpy(att_op_sng,"sqravg"); 
             break;
@@ -369,7 +377,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           } /* End switch */
 
           /* Build attribute and write */
-          
+
           /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */
 
           /* Concatenate attribute parts (e.g., "time: mean") */
@@ -401,6 +409,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
           aed.sz=-1L;
 
+          (void)nco_nm_lst_ins(dim[idx_dmn]->nm,&nm_lst,&nbr_cmn_lst);
+
         } /*  Match name */
       } /* Loop dimensions */
     } /* Loop variable dimensions */
@@ -408,6 +418,67 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   aed.att_nm=(char *)nco_free(aed.att_nm);
 
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    for(int idx=0;idx<nm_lst->nbr;idx++){
+      (void)fprintf(stdout,"%s: DEBUG %s %s\n",nco_prg_nm_get(),fnc_nm,
+        nm_lst->lst[idx].nm);
+    }   
+  }
+
   return 0;
 
 } /* end nco_cnv_cf_cll_mth_add() */
+
+
+nco_bool                              
+nco_nm_lst_flg                         /* [fnc] Utility function to detect inserted names in a name list */
+(const char * const nm,                /* I [sng] A name to detect */
+ const nm_tbl_sct *cmn_lst,            /* I [sct] List of names   */
+ const int nbr_nm)                     /* I [nbr] Number of names (size of above array) */
+{
+  /* Loop constructed array to see if already inserted */
+  for(int idx_nm=0;idx_nm<nbr_nm;idx_nm++){
+    /* Match */
+    if(strcmp(cmn_lst[idx_nm].lst->nm,nm) == 0){
+      /* Mark as inserted in array */
+      return True;
+    }  /* Match */
+  } /* Loop constructed array to see if already inserted  */
+
+  return False;
+
+} /* nco_lst_ins() */
+
+
+
+void                          
+nco_nm_lst_ins                         /* [fnc] Check if name is on a list of names  */
+(const char * const nm,                /* I [sng] Name to find */
+ nm_tbl_sct **nm_lst,                  /* I/O [sct] List of names   */
+ int *nbr_nm)                          /* I/O [nbr] Number of names (size of above array) */
+{
+  nco_bool flg_ins;      /* [flg] Detect duplicate names in array */
+
+  int nm_nbr=*nbr_nm;
+
+  /* Loop input names */
+  for(int idx=0;idx<nm_nbr;idx++){
+
+    flg_ins=nco_nm_lst_flg(nm,*nm_lst,idx);
+    /* Insert in list */
+    if (flg_ins == False){
+
+      *nbr_nm++;
+      (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nm_nbr+1)*sizeof(nm_sct));
+      (*nm_lst)->lst[nm_nbr].nm=strdup(nm);
+      return;
+    } /* Insert in list */
+
+  } /* Loop input names */
+
+  
+  (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nm_nbr+1)*sizeof(nm_sct));
+  (*nm_lst)->lst[nm_nbr].nm=strdup(nm);
+  *nbr_nm++;
+
+} /* nco_nm_skp_lst() */
