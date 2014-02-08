@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1237 2014-02-07 23:48:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1238 2014-02-08 03:47:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3861,8 +3861,8 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 
     nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
 
-    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
-    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
+    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_1);
+    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_2);
 
     /* Object exists and is flagged for extraction in both files */
     if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
@@ -7913,7 +7913,7 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
   for(int idx_var=0;idx_var<nbr_cmn_nm;idx_var++){
 
     /* Define variable full name (NB: cmn_lst->var_nm_fll is relative here) */
-    var_nm_fll=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var].var_nm_fll);
+    var_nm_fll=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var].nm);
 
     /* Obtain variable GTT object using full variable name */
     var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
@@ -7924,7 +7924,7 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
       lst_ins=nco_lst_ins(var_nm_fll,*skp_lst,idx_skp);
       /* Insert in list */
       if (lst_ins == False){
-        (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll);
+        (*skp_lst)[idx_skp].nm=strdup(var_nm_fll);
         idx_skp++;
       } /* Insert in list */
     } /* Avoid coordinate variables */ 
@@ -7936,7 +7936,7 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
       lst_ins=nco_lst_ins(var_nm_fll,*skp_lst,idx_skp);
       /* Insert in list */
       if (lst_ins == False){
-        (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll);
+        (*skp_lst)[idx_skp].nm=strdup(var_nm_fll);
         idx_skp++;
       } /* Insert in list */
     } /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
@@ -7946,14 +7946,14 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
       /* Second Loop input (relative) names */
       for(int idx_var_2=0;idx_var_2<nbr_cmn_nm;idx_var_2++){
         /* Match (NB: cmn_lst->var_nm_fll is relative here) */
-        if(strcmp(var_cf,cmn_lst[idx_var_2].var_nm_fll) == 0){
+        if(strcmp(var_cf,cmn_lst[idx_var_2].nm) == 0){
           char *var_nm_fll_2;  /* [sng] Variable full name */
-          var_nm_fll_2=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var_2].var_nm_fll);
+          var_nm_fll_2=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var_2].nm);
           /* Utility function to detect inserted names in a name list */
           lst_ins=nco_lst_ins(var_nm_fll_2,*skp_lst,idx_skp);
           /* Insert in list */
           if (lst_ins == False){
-            (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll_2);
+            (*skp_lst)[idx_skp].nm=strdup(var_nm_fll_2);
             idx_skp++;
           } /* Insert in list */
         } /* Match */
@@ -7975,7 +7975,7 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
 
   if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s list of variables to skip for template definition\n",nco_prg_nm_get(),fnc_nm); 
-    for(int idx_var=0;idx_var<idx_skp;idx_var++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,(*skp_lst)[idx_var].var_nm_fll); 
+    for(int idx_var=0;idx_var<idx_skp;idx_var++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,(*skp_lst)[idx_var].nm); 
   }
 
 } /* nco_nm_skp() */
@@ -8159,14 +8159,14 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                 for(int idx_var=0;idx_var<nbr_cmn_nm;idx_var++){
 
                   /* Define variable full name (NB: cmn_lst->var_nm_fll is relative here) */
-                  char *var_nm_fll=nco_bld_nm_fll(trv_2.grp_nm_fll,cmn_lst[idx_var].var_nm_fll);
+                  char *var_nm_fll=nco_bld_nm_fll(trv_2.grp_nm_fll,cmn_lst[idx_var].nm);
               
                   /* Template criteria: check the names to skip built above in nco_nm_skp() */
                   flg_nsm_tpl=True;
                   /* Loop skip names */
                   for(int idx_skp=0;idx_skp<nbr_skp_nm;idx_skp++){
                     /* Match */
-                    if(strcmp(var_nm_fll,skp_lst[idx_skp].var_nm_fll) == 0){
+                    if(strcmp(var_nm_fll,skp_lst[idx_skp].nm) == 0){
                       flg_nsm_tpl=False;
                     }  /* Match */
                   } /* Loop skip  names */

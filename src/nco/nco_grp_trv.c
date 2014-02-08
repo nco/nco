@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.271 2014-02-03 07:20:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.272 2014-02-08 03:47:22 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -450,7 +450,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     if(!nco_cmp){
       (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
+      (*cmn_lst)[idx_lst].nm=strdup(trv_1.nm_fll);
       idx_lst++;
 
       idx_tbl_1++;
@@ -460,7 +460,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
       (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=False;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
+      (*cmn_lst)[idx_lst].nm=strdup(trv_1.nm_fll);
       idx_lst++;
 
       if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",nco_prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
@@ -469,7 +469,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       /* Name(1) is greater than Name(2), read next name from List 2 */
       (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
+      (*cmn_lst)[idx_lst].nm=strdup(trv_2.nm_fll);
       idx_lst++;
 
       if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",nco_prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
@@ -486,7 +486,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     while(idx_tbl_1 < nbr_tbl_1){
       (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=False;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_tbl_1->lst[idx_tbl_1].nm_fll);
+      (*cmn_lst)[idx_lst].nm=strdup(trv_tbl_1->lst[idx_tbl_1].nm_fll);
       idx_lst++;
 
       if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",nco_prg_nm_get(),fnc_nm,idx_tbl_1,trv_tbl_1->lst[idx_tbl_1].nm_fll);
@@ -499,7 +499,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     while(idx_tbl_2 < nbr_tbl_2){
       (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_tbl_2->lst[idx_tbl_2].nm_fll);
+      (*cmn_lst)[idx_lst].nm=strdup(trv_tbl_2->lst[idx_tbl_2].nm_fll);
       idx_lst++;
 
       if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",nco_prg_nm_get(),fnc_nm,idx_tbl_2,trv_tbl_2->lst[idx_tbl_2].nm_fll);
@@ -526,7 +526,7 @@ trv_tbl_cmn_nm_prt                         /* [fnc] Print list of common objects
     char c1, c2;
     c1 = (cmn_lst[idx].flg_in_fl[0]) ? 'x' : ' ';
     c2 = (cmn_lst[idx].flg_in_fl[1]) ? 'x' : ' ';
-    (void)fprintf(stdout,"%5c %6c    %-15s\n", c1, c2, cmn_lst[idx].var_nm_fll);
+    (void)fprintf(stdout,"%5c %6c    %-15s\n", c1, c2, cmn_lst[idx].nm);
   } /* end loop over idx */
   (void)fprintf(stdout,"\n");
 
@@ -738,7 +738,7 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
     if(!nco_cmp){
       (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_1);
+      (*cmn_lst)[idx_lst].nm=strdup(nm_1);
       idx_lst++;
       idx_tbl_1++;
       idx_tbl_2++;
@@ -748,14 +748,14 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
       /* Name(1) is less than Name(2), read next name from List 1  */
       (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=False;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_1);
+      (*cmn_lst)[idx_lst].nm=strdup(nm_1);
       idx_lst++; 
       idx_tbl_1++;
     }else{
       /* Name(1) is greater than Name(2), read next name from List 2 */
       (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_2);
+      (*cmn_lst)[idx_lst].nm=strdup(nm_2);
       idx_lst++;   
       idx_tbl_2++;
     } /* end nco_cmp */
@@ -770,7 +770,7 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
     while(idx_tbl_1 < nbr_tbl_1){
       (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=False;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_lst_1[idx_tbl_1]);
+      (*cmn_lst)[idx_lst].nm=strdup(nm_lst_1[idx_tbl_1]);
       idx_lst++;
       idx_tbl_1++;
     } /* end while */
@@ -781,7 +781,7 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
     while(idx_tbl_2 < nbr_tbl_2){
       (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_lst_2[idx_tbl_2]);
+      (*cmn_lst)[idx_lst].nm=strdup(nm_lst_2[idx_tbl_2]);
       idx_lst++;
       idx_tbl_2++;
     } /* end while */
@@ -838,7 +838,7 @@ nco_lst_ins                            /* [fnc] Utility function to detect inser
   /* Loop constructed array to see if already inserted */
   for(int idx_nm=0;idx_nm<nbr_nm;idx_nm++){
       /* Match */
-      if(strcmp(cmn_lst[idx_nm].var_nm_fll,nm) == 0){
+      if(strcmp(cmn_lst[idx_nm].nm,nm) == 0){
         /* Mark as inserted in array */
         return True;
       }  /* Match */

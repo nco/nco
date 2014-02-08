@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.284 2014-02-06 23:48:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.285 2014-02-08 03:47:22 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.284 2014-02-06 23:48:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.284 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.285 2014-02-08 03:47:22 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.285 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -648,7 +648,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
     if(nbr_gpe_nm) gpe_nm=(gpe_nm_sct *)nco_free(gpe_nm);
     /* Memory management for common names list */
-    for(idx=0;idx<nbr_cmn_nm;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
+    for(idx=0;idx<nbr_cmn_nm;idx++) cmn_lst[idx].nm=(char *)nco_free(cmn_lst[idx].nm);
     if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne1[idx].dim_nm=(char *)nco_free(flg_dne1[idx].dim_nm);
     flg_dne1=(nco_dmn_dne_t *)nco_free(flg_dne1);
