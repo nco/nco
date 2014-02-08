@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.80 2014-02-08 05:01:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.81 2014-02-08 05:24:49 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -455,27 +455,34 @@ nco_nm_lst_ins                         /* [fnc] Check if name is on a list of na
 (const char * const nm,                /* I [sng] Name to find */
  nm_tbl_sct **nm_lst)                  /* I/O [sct] List of names   */
 {
-  nco_bool flg_ins;      /* [flg] Detect duplicate names in array */
+
+  nco_bool flg_ins_lst=True;      /* [flg] Insert new name in array */  
 
   int nbr_nm=(*nm_lst)->nbr;
 
   /* Loop input names */
   for(int idx=0;idx<nbr_nm;idx++){
 
+    nco_bool flg_ins;      /* [flg] Detect duplicate names in array */
+
     flg_ins=nco_nm_lst_flg(nm,*nm_lst);
     /* Insert in list */
     if (flg_ins == False){
 
       (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nbr_nm+1)*sizeof(nm_sct));
+      (*nm_lst)->nbr++;
       (*nm_lst)->lst[nbr_nm].nm=strdup(nm);
       return;
     } /* Insert in list */
 
+    /* Do not insert new name */
+    flg_ins_lst=False;
   } /* Loop input names */
 
-  
-  (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nbr_nm+1)*sizeof(nm_sct));
-  (*nm_lst)->nbr++;
-  (*nm_lst)->lst[nbr_nm].nm=strdup(nm);
+  if (flg_ins_lst){
+    (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nbr_nm+1)*sizeof(nm_sct));
+    (*nm_lst)->nbr++;
+    (*nm_lst)->lst[nbr_nm].nm=strdup(nm);
+  }
 
 } /* nco_nm_skp_lst() */
