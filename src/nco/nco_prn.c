@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.216 2014-02-08 02:15:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.217 2014-02-08 02:18:18 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -2294,8 +2294,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"], \n"); /* End node-list */
   if(JSN) (void)fprintf(stdout,"\"w10n\": [{\"name\": \"spec\", \"value\": \"draft-20091228\"}, {\"name\": \"application\", \"value\": \"%s\"}, {\"name\": \"type\", \"value\": \"%s\"}, {\"name\": \"path\", \"value\": \"%s\"}, {\"name\": \"identifier\", \"value\": \"/\"}]}, \n",nco_prg_nm_get(),jsn_fmt_xtn_nm(nco_fmt_xtn_get()),prn_flg->fl_in);
-  /* Short name of local group ends group metadata printing */
-  if(JSN) (void)fprintf(stdout,"\"name\": \"%s\"\n",(grp_dpt == 0) ? "" : trv_tbl->lst[obj_idx_crr].nm);
+  if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\"name\": \"%s\"\n",(grp_dpt == 0) ? "" : trv_tbl->lst[obj_idx_crr].nm);
 
   /* Mark end of output */
   if(CDL_OR_TRD) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nm2sng_cdl(nco_gpe_evl(prn_flg->gpe,grp_nm_fll)));
