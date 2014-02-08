@@ -4,6 +4,8 @@
 
 2014-02-07  Charlie Zender  <zender@uci.edu>
 
+	* Make JSON look decent
+
 	* Change cell_methods to agree with actual method used for coordinates
 
 	* Change ncwa behavior to comply with longstanding intent & documentation that coordinate

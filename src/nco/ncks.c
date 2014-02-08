@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.706 2014-02-07 19:23:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.707 2014-02-08 02:11:19 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -165,8 +165,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.706 2014-02-07 19:23:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.706 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.707 2014-02-08 02:11:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.707 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -849,7 +849,7 @@ main(int argc,char **argv)
       if(sfx_ptr) *sfx_ptr='\0';
       prn_flg.fl_stb=fl_nm_stub;
     } /* endif CDL */
-    /* XML and JSON need filename (unless location will be omitted) */
+    /* JSON and XML need filename (unless location will be omitted) */
     if(prn_flg.xml || prn_flg.jsn) prn_flg.fl_in=fl_in;
     prn_flg.spr_nmr=spr_nmr;
     prn_flg.spr_chr=spr_chr;
@@ -883,6 +883,14 @@ main(int argc,char **argv)
       prn_flg.PRN_DMN_VAR_NM=True;
       prn_flg.PRN_MSS_VAL_BLANK=True;
     } /* endif */
+    if(prn_flg.jsn){
+      /* JSON either prints metadata or data, not both */
+      if(prn_flg.PRN_VAR_DATA){
+	prn_flg.PRN_VAR_METADATA=False;
+	prn_flg.PRN_GLB_METADATA=False;
+      } /* !PRN_VAR_DATA */
+      if(prn_flg.PRN_GLB_METADATA) prn_flg.PRN_VAR_METADATA=False;
+    } /* endif JSON */
     if(prn_flg.xml) prn_flg.PRN_MSS_VAL_BLANK=False;
 
     /* File summary */
