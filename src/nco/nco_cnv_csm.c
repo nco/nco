@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.79 2014-02-08 04:47:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.80 2014-02-08 05:01:29 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -249,7 +249,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   int var_out_id;     /* [ID] Variable ID (output) */
   int rcd=NC_NOERR;   /* [rcd] Return code */
   int nco_op_typ_lcl; /* [enm] Operation type, default is average */
-  int nbr_cmn_lst;    /* [nbr] Size of list of common names (variable names in attribute list) */ 
 
   long att_sz;        /* [nbr] Attribute size */
 
@@ -284,7 +283,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
      sqrt Square root of the mean
      ttl Sum of values */
 
-  nbr_cmn_lst=0;
   nm_lst=(nm_tbl_sct *)nco_malloc(sizeof(nm_tbl_sct));
   nm_lst->nbr=0;
   nm_lst->lst=NULL;
@@ -409,7 +407,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
           aed.sz=-1L;
 
-          (void)nco_nm_lst_ins(dim[idx_dmn]->nm,&nm_lst,&nbr_cmn_lst);
+          (void)nco_nm_lst_ins(dim[idx_dmn]->nm,&nm_lst);
 
         } /*  Match name */
       } /* Loop dimensions */
@@ -425,6 +423,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     }   
   }
 
+  for(int idx=0;idx<nm_lst->nbr;idx++) nm_lst->lst[idx].nm=(char *)nco_free(nm_lst->lst[idx].nm);
+  nm_lst=(nm_tbl_sct *)nco_free(nm_lst);
   return 0;
 
 } /* end nco_cnv_cf_cll_mth_add() */
@@ -433,13 +433,12 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 nco_bool                              
 nco_nm_lst_flg                         /* [fnc] Utility function to detect inserted names in a name list */
 (const char * const nm,                /* I [sng] A name to detect */
- const nm_tbl_sct *cmn_lst,            /* I [sct] List of names   */
- const int nbr_nm)                     /* I [nbr] Number of names (size of above array) */
+ const nm_tbl_sct *nm_lst)             /* I [sct] List of names   */
 {
   /* Loop constructed array to see if already inserted */
-  for(int idx_nm=0;idx_nm<nbr_nm;idx_nm++){
+  for(int idx=0;idx<nm_lst->nbr;idx++){
     /* Match */
-    if(strcmp(cmn_lst[idx_nm].lst->nm,nm) == 0){
+    if(strcmp(nm_lst->lst[idx].nm,nm) == 0){
       /* Mark as inserted in array */
       return True;
     }  /* Match */
@@ -454,31 +453,29 @@ nco_nm_lst_flg                         /* [fnc] Utility function to detect inser
 void                          
 nco_nm_lst_ins                         /* [fnc] Check if name is on a list of names  */
 (const char * const nm,                /* I [sng] Name to find */
- nm_tbl_sct **nm_lst,                  /* I/O [sct] List of names   */
- int *nbr_nm)                          /* I/O [nbr] Number of names (size of above array) */
+ nm_tbl_sct **nm_lst)                  /* I/O [sct] List of names   */
 {
   nco_bool flg_ins;      /* [flg] Detect duplicate names in array */
 
-  int nm_nbr=*nbr_nm;
+  int nbr_nm=(*nm_lst)->nbr;
 
   /* Loop input names */
-  for(int idx=0;idx<nm_nbr;idx++){
+  for(int idx=0;idx<nbr_nm;idx++){
 
-    flg_ins=nco_nm_lst_flg(nm,*nm_lst,idx);
+    flg_ins=nco_nm_lst_flg(nm,*nm_lst);
     /* Insert in list */
     if (flg_ins == False){
 
-      *nbr_nm++;
-      (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nm_nbr+1)*sizeof(nm_sct));
-      (*nm_lst)->lst[nm_nbr].nm=strdup(nm);
+      (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nbr_nm+1)*sizeof(nm_sct));
+      (*nm_lst)->lst[nbr_nm].nm=strdup(nm);
       return;
     } /* Insert in list */
 
   } /* Loop input names */
 
   
-  (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nm_nbr+1)*sizeof(nm_sct));
-  (*nm_lst)->lst[nm_nbr].nm=strdup(nm);
-  *nbr_nm++;
+  (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nbr_nm+1)*sizeof(nm_sct));
+  (*nm_lst)->nbr++;
+  (*nm_lst)->lst[nbr_nm].nm=strdup(nm);
 
 } /* nco_nm_skp_lst() */

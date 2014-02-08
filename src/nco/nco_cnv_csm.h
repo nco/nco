@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.37 2014-02-08 04:47:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.38 2014-02-08 05:01:29 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -59,16 +59,14 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 nco_bool                              
-nco_nm_lst_flg                         /* [fnc] Utility function to detect inserted names in a name list */
-(const char * const nm,                /* I [sng] A name to detect */
- const nm_tbl_sct *cmn_lst,            /* I [sct] List of names   */
- const int nbr_nm);                    /* I [nbr] Number of names (size of above array) */
+nco_nm_lst_flg                        /* [fnc] Utility function to detect inserted names in a name list */
+(const char * const nm,               /* I [sng] A name to detect */
+ const nm_tbl_sct *nm_lst);           /* I [sct] List of names   */
 
 void                          
-nco_nm_lst_ins                         /* [fnc] Check if name is on a list of names  */
-(const char * const nm,                /* I [sng] Name to find */
- nm_tbl_sct **nm_lst,                  /* I/O [sct] List of names   */
- int *nbr_nm);                         /* I/O [nbr] Number of names (size of above array) */
+nco_nm_lst_ins                        /* [fnc] Check if name is on a list of names  */
+(const char * const nm,               /* I [sng] Name to find */
+ nm_tbl_sct **nm_lst);                /* I/O [sct] List of names   */
 
 
 #ifdef __cplusplus
