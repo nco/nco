@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.404 2014-02-07 20:27:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.405 2014-02-09 19:21:14 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.404 2014-02-07 20:27:43 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.404 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.405 2014-02-09 19:21:14 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.405 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -742,7 +742,9 @@ main(int argc,char **argv)
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Add cell_methods attributes (before exiting define mode) */
-  rcd+=nco_cnv_cf_cll_mth_add(out_id,var_prc_out,nbr_var_prc,dmn_avg,dmn_avg_nbr,nco_op_typ,gpe,trv_tbl); 
+#ifdef ENABLE_CELL_METHODS
+  rcd+=nco_cnv_cf_cll_mth_add(out_id,var_prc_out,nbr_var_prc,dmn_avg,dmn_avg_nbr,nco_op_typ,gpe,trv_tbl);
+#endif
 
   /* Take output file out of define mode */
   if(hdr_pad == 0UL){

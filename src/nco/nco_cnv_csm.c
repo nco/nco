@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.81 2014-02-08 05:24:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.82 2014-02-09 19:21:13 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -320,6 +320,10 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
         /* Match name */
         if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
+
+          nco_bool flg_ins; /* [flg] Is the name already (dimensions) inserted in array */
+
+          flg_ins=nco_nm_lst_flg(dim[idx_dmn]->nm,nm_lst);
 
           /* Inquire if "cell_methods" attribute exists */
           rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
