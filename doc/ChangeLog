@@ -1,3 +1,7 @@
+2014-02-10  Charlie Zender  <zender@uci.edu>
+
+	* ncks expand smr_sng to accomodate longer filenames, summaries	(fixes SMAP breakage)
+
 2014-02-07  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncra regression #32 cell_methods CF attribute convention (create)
