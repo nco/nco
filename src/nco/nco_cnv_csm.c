@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.85 2014-02-10 22:57:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.86 2014-02-10 23:48:45 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -403,6 +403,10 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
             int len=0;
             for(int idx=0;idx<nm_lst->nbr;idx++){
+
+              /* Insert only when dimension existing in variable */
+
+
               /* Add space for ", ", 2 characters */
               len+=strlen(nm_lst->lst[idx].nm)+2;
             }
