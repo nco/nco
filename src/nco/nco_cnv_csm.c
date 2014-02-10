@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.84 2014-02-10 22:12:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.85 2014-02-10 22:57:53 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -325,6 +325,15 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
           nco_bool flg_ins; /* [flg] Is the name already (dimensions) inserted in array */
 
+          /* Initialize values */
+          aed.val.cp=NULL;
+          att_op_sng[0]='\0';
+          val1[0]='\0';
+          val2[0]='\0';
+          att_val[0]='\0';
+          aed.sz=-1L;
+          aed.id=-1;
+
           flg_ins=nco_nm_lst_flg(dim[idx_dmn]->nm,nm_lst);
 
           /* Inquire if "cell_methods" attribute exists */
@@ -337,16 +346,14 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           if(att_xst == True) aed.mode=aed_append; else aed.mode=aed_create;
 
           /* Get attribute if it exists */
-          if(att_xst == True) (void)nco_get_att(grp_out_id,var_out_id,"cell_methods",(void *)val1,NC_CHAR);
+          if(att_xst == True){
+            
+            (void)nco_get_att(grp_out_id,var_out_id,"cell_methods",(void *)val1,NC_CHAR);  
 
-          /* Initialize values */
-          aed.val.cp=NULL;
-          att_op_sng[0]='\0';
-          val1[0]='\0';
-          val2[0]='\0';
-          att_val[0]='\0';
-          aed.sz=-1L;
-          aed.id=-1;
+            /* netCDF requires to manually terminate string */ 
+            val1[att_sz]='\0';
+
+          }
 
           /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
           if(var[idx_var]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
@@ -422,8 +429,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
               } /* Add names from list */
             }else {
 
-              strcpy(att_val," ");
-              strcat(att_val,dim[idx_dmn]->nm);
+              strcpy(att_val,dim[idx_dmn]->nm);
 
             } /* ! If name is inserted in the list */
 
@@ -450,8 +456,14 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           /* Type is NC_CHAR */
           aed.val.cp=(char *)strdup(att_val);
 
-          /* Edit attribute */
-          (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+          /* Compare current attribute with new value */
+          int cmp;
+          cmp=strcmp(val1,att_val);
+
+          /* Edit attribute (do not edit when current value (val1) is the same as new value and when in append mode */
+          if (cmp!=0 && aed.mode!=aed_append) {
+            (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+          }
 
           /* Delete current value */
           if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
