@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.440 2014-02-09 19:21:13 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.441 2014-02-10 22:12:03 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4145,15 +4145,14 @@ print "\n";
 #NEW 4.4.2	
 #ncra #32
 #ncra -O -v time301 -C in_grp_3.nc out.nc
-if(0) {
+
     $dsc_sng="(Groups) Cell methods (Create) -v time301";
     $tst_cmd[0]="ncra $omp_flg $nco_D_flg -O -v time301 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";
     $tst_cmd[2]="time301 attribute 1: cell_methods, size = 14 NC_CHAR, value = time301: mean";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array
-}	
+    $#tst_cmd=0; # Reset array	
 
 	} #### Group tests		
 
@@ -4826,7 +4825,7 @@ if(0) {
     $dsc_sng="Chunking -a /time --cnk_dmn /time,1 -v time";
     $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a /time --cnk_dmn /time,1 -v time $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'time: type'";
-    $tst_cmd[2]="time: type NC_DOUBLE, 0 dimensions, 4 attributes, chunked? no, compressed? no, packed? no";
+    $tst_cmd[2]="time: type NC_DOUBLE, 0 dimensions, 5 attributes, chunked? no, compressed? no, packed? no";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
@@ -4848,7 +4847,7 @@ if(0) {
 #ncwa #58
 #ncwa -O -y avg -a time301 -v time301 -C in_grp_3.nc out.nc
 #ncks -m out.nc
-if(0) {
+
     $dsc_sng="Cell methods (Create, average) -y avg -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y avg -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";
@@ -4872,18 +4871,19 @@ if(0) {
 
 	
 #NEW 4.4.2	
-#ncwa #60
-#ncks -O -y max -a time302 -v time302 -C in_grp_3.nc out.nc
+#ncwa #60 Append cell_methods
+#ncwa -O -y max -a time302 -v time302 -C in_grp_3.nc out.nc
 #ncks -m out.nc	
-
+if (0) {
     $dsc_sng="Cell methods (Append) -y max -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y max -a time302 -v time302 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";
     $tst_cmd[2]="time302 attribute 1: cell_methods, size = 28 NC_CHAR, value = time302: mean time302: mean";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array			
-} 	
+    $#tst_cmd=0; # Reset array	
+	} # end if (0)		
+	
 	} #### Group tests	
     
 ####################

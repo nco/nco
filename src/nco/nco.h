@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.483 2014-02-10 05:31:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.484 2014-02-10 22:12:04 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -12,7 +12,7 @@
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
 
-#if 0
+#if 1
 #define ENABLE_CELL_METHODS
 #endif
 

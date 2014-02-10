@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.83 2014-02-10 05:31:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.84 2014-02-10 22:12:04 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -242,7 +242,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   aed_sct aed;        /* [sct] Structure containing information necessary to edit */
 
-  char *att_val;      /* [sng] Final value of attribute (e.g., "time: mean") */
+  char att_val[NC_MAX_NAME];      /* [sng] Final value of attribute (e.g., "time: mean") */
   char att_op_sng[NC_MAX_NAME];   /* [sng] Operation type (e.g. nco_op_avg translates to "mean") */
   char val1[NC_MAX_NAME];   /* [sng] Value of attribute */
   char val2[NC_MAX_NAME];   /* [sng] Value of attribute */
@@ -344,7 +344,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           att_op_sng[0]='\0';
           val1[0]='\0';
           val2[0]='\0';
-          att_val=NULL;
+          att_val[0]='\0';
           aed.sz=-1L;
           aed.id=-1;
 
@@ -389,27 +389,59 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
           /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */
 
-
           /* If name is inserted in the list */
           if (flg_ins){
 
+            /* Names on dimension list, insert them  */
 
+            int len=0;
+            for(int idx=0;idx<nm_lst->nbr;idx++){
+              /* Add space for ", ", 2 characters */
+              len+=strlen(nm_lst->lst[idx].nm)+2;
+            }
+            aed.sz=len+strlen(": ")+strlen(att_op_sng)+1L;
 
-          }
+          }else { /* No names on dimension list, insert the name from dim */        
 
-          /* Concatenate attribute parts (e.g., "time: mean") */
-          aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen(att_op_sng)+1L;
+            /* Concatenate attribute parts (e.g., "time: mean") */
+            aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen(att_op_sng)+1L;
+
+          } /* No names on dimension list, insert the name from dim */
 
           /* Append mode: add a space */
           if(aed.mode == aed_append) aed.sz+=1L;
-          att_val=(char *)nco_malloc(sizeof(char)*aed.sz);
 
           /* Append mode: add a space */
           if(aed.mode == aed_append){
-            strcpy(att_val," ");
-            strcat(att_val,dim[idx_dmn]->nm);
-          }else{ 
-            strcpy(att_val,dim[idx_dmn]->nm);
+
+            /* If name is inserted in the list */
+            if (flg_ins){
+              /* Add names from list */
+              for(int idx=0;idx<nm_lst->nbr;idx++){
+
+              } /* Add names from list */
+            }else {
+
+              strcpy(att_val," ");
+              strcat(att_val,dim[idx_dmn]->nm);
+
+            } /* ! If name is inserted in the list */
+
+          }else{ /* Create mode */
+
+            /* If name is inserted in the list */
+            if (flg_ins){
+              /* Add names from list */
+              for(int idx=0;idx<nm_lst->nbr;idx++){
+
+                strcat(att_val,nm_lst->lst[idx].nm);
+                strcat(att_val,", ");
+               
+              } /* Add names from list */
+            }else {
+
+              strcpy(att_val,dim[idx_dmn]->nm);
+            }
           } /* Create mode */
 
           strcat(att_val,": ");
@@ -417,7 +449,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
           /* Type is NC_CHAR */
           aed.val.cp=(char *)strdup(att_val);
-          att_val=(char *)nco_free(att_val);
 
           /* Edit attribute */
           (void)nco_aed_prc(grp_out_id,var_out_id,aed);
