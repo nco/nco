@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1238 2014-02-08 03:47:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1239 2014-02-11 16:17:24 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4762,7 +4762,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Chunking routine called only when user explicitly sets a chunking option */
     if(cnk && cnk->flg_usr_rqs){
 
-      /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
+      /* Define extra dimension on output (e.g., ncecat adds "record" dimension) */
       if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
         /* Temporary store for old dimensions */
         dmn_cmn_sct dmn_cmn_tmp[NC_MAX_DIMS];

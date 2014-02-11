@@ -1,3 +1,7 @@
+2014-02-11  Charlie Zender  <zender@uci.edu>
+
+	* Call nco_cnk_ini() iff fl_out_fmt == netCDF4*
+
 2014-02-10 Pedro Vicente  <pvicente@uci.edu>
 
 	* ncwa regressions #61, #62, #63 cell_methods CF attribute convention (create, variable with several dimensions)

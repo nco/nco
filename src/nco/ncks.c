@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.708 2014-02-10 19:52:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.709 2014-02-11 16:17:24 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -165,8 +165,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.708 2014-02-10 19:52:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.708 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.709 2014-02-11 16:17:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.709 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -773,7 +773,7 @@ main(int argc,char **argv)
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
     
     /* Create structure with all chunking information */
-    rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
+    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
 
     if(nco_dbg_lvl >= nco_dbg_dev) (void)nco_prn_var(in_id,trv_tbl);       
     if(nco_dbg_lvl >= nco_dbg_dev) (void)nco_prn_var(out_id,trv_tbl); 

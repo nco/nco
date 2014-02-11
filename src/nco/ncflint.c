@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.286 2014-02-07 19:23:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.287 2014-02-11 16:17:23 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.286 2014-02-07 19:23:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.286 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.287 2014-02-11 16:17:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.287 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -594,7 +594,7 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
   /* Create structure with all chunking information */
-  rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Transfer variable type to table. NOTE: Using var/xtr_nbr containing all variables (processed, fixed) */
   (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);         

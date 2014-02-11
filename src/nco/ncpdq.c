@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.390 2014-02-07 19:23:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.391 2014-02-11 16:17:24 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.390 2014-02-07 19:23:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.390 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.391 2014-02-11 16:17:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.391 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -660,7 +660,7 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
   /* Create structure with all chunking information */
-  rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
