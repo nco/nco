@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.687 2014-02-07 20:21:20 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.688 2014-02-11 18:54:17 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -982,7 +982,7 @@ ifeq (clang,$(firstword ${CC}))
 endif
 ifeq (${GCC_OR_CLANG},Y)
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
- CFLAGS := -Wall -Wuninitialized -Wmaybe-uninitialized
+ CFLAGS := -Wall -Wuninitialized
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
  CFLAGS += -Werror=format-security -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g
 # Compilation flags recommended by GSL and others that I like and use:
