@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.86 2014-02-10 23:48:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.87 2014-02-11 00:48:41 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -352,7 +352,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
             /* netCDF requires to manually terminate string */ 
             val1[att_sz]='\0';
-
           }
 
           /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
@@ -404,11 +403,11 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
             int len=0;
             for(int idx=0;idx<nm_lst->nbr;idx++){
 
-              /* Insert only when dimension existing in variable */
+              /* Add space for name */
+              len+=strlen(nm_lst->lst[idx].nm);
 
-
-              /* Add space for ", ", 2 characters */
-              len+=strlen(nm_lst->lst[idx].nm)+2;
+              /* Add space for ", ", 2 characters ( only up to last name ) */
+              if (idx<nm_lst->nbr-1) len+=2;
             }
             aed.sz=len+strlen(": ")+strlen(att_op_sng)+1L;
 
@@ -445,8 +444,10 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
               for(int idx=0;idx<nm_lst->nbr;idx++){
 
                 strcat(att_val,nm_lst->lst[idx].nm);
-                strcat(att_val,", ");
-               
+
+                /* Concatenate ',', only up to last name */
+                if (idx<nm_lst->nbr-1)strcat(att_val,", ");
+
               } /* Add names from list */
             }else {
 

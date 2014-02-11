@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.443 2014-02-10 23:48:44 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.444 2014-02-11 00:48:41 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4893,7 +4893,7 @@ print "\n";
     $dsc_sng="Cell methods (Append) -y max -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  -m -C -v three_dmn_rec_var %tmp_fl_00%";
-    $tst_cmd[2]="three_dmn_rec_var attribute 2: cell_methods, size = 18 NC_CHAR, value = lon, time, : mean";
+    $tst_cmd[2]="three_dmn_rec_var attribute 2: cell_methods, size = 16 NC_CHAR, value = lon, time: mean";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
