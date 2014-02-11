@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.87 2014-02-11 00:48:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.88 2014-02-11 03:40:30 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -401,14 +401,23 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
             /* Names on dimension list, insert them  */
 
             int len=0;
+            /* Loop name list */
             for(int idx=0;idx<nm_lst->nbr;idx++){
 
-              /* Add space for name */
-              len+=strlen(nm_lst->lst[idx].nm);
+              /* Add only if dimension belongs to variable's dimensions (NB: idx_var_dmn ) */
+              for(int idx_var_dmn=0;idx_var_dmn<var_trv->nbr_dmn;idx_var_dmn++){
+                /* Match */
+                if(!strcmp(var_trv->var_dmn[idx_var_dmn].dmn_nm,nm_lst->lst[idx].nm)){
 
-              /* Add space for ", ", 2 characters ( only up to last name ) */
-              if (idx<nm_lst->nbr-1) len+=2;
-            }
+                  /* Add space for name */
+                  len+=strlen(nm_lst->lst[idx].nm);
+
+                  /* Add space for ", ", 2 characters ( only up to last name ) */
+                  if (idx<nm_lst->nbr-1) len+=2;      
+
+                }  /* Match */
+              } /* Add only for current dimension (in variable ) */ 
+            } /* Loop name list */
             aed.sz=len+strlen(": ")+strlen(att_op_sng)+1L;
 
           }else { /* No names on dimension list, insert the name from dim */        
@@ -443,11 +452,17 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
               /* Add names from list */
               for(int idx=0;idx<nm_lst->nbr;idx++){
 
-                strcat(att_val,nm_lst->lst[idx].nm);
+                /* Add only if dimension belongs to variable's dimensions (NB: idx_var_dmn ) */
+                for(int idx_var_dmn=0;idx_var_dmn<var_trv->nbr_dmn;idx_var_dmn++){
+                  /* Match */
+                  if(!strcmp(var_trv->var_dmn[idx_var_dmn].dmn_nm,nm_lst->lst[idx].nm)){
 
-                /* Concatenate ',', only up to last name */
-                if (idx<nm_lst->nbr-1)strcat(att_val,", ");
+                    strcat(att_val,nm_lst->lst[idx].nm);
 
+                    /* Concatenate ',', only up to last name */
+                    if (idx<nm_lst->nbr-1)strcat(att_val,", ");
+                  }  /* Match */
+                } /* Add only for current dimension (in variable ) */
               } /* Add names from list */
             }else {
 

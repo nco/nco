@@ -1,6 +1,6 @@
 2014-02-10 Pedro Vicente  <pvicente@uci.edu>
 
-	* ncwa regression #61 cell_methods CF attribute convention (create, variable with several dimensions)
+	* ncwa regressions #61, #62 cell_methods CF attribute convention (create, variable with several dimensions)
 
 2014-02-10  Charlie Zender  <zender@uci.edu>
 
