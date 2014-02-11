@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.445 2014-02-11 03:40:30 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.446 2014-02-11 03:56:32 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4890,7 +4890,7 @@ print "\n";
 #ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc out.nc	
 #ncks -m -C -v three_dmn_rec_var out.nc
 	
-    $dsc_sng="Cell methods (Create) -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon";
+    $dsc_sng="Cell methods (Create, average) -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  -m -C -v three_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="three_dmn_rec_var attribute 2: cell_methods, size = 16 NC_CHAR, value = lon, time: mean";
@@ -4903,10 +4903,23 @@ print "\n";
 #ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc out.nc	
 #ncks -m -C -v one_dmn_rec_var out.nc
 	
-    $dsc_sng="Cell methods (Create) -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon";
+    $dsc_sng="Cell methods (Create, average) -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  -m -C -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="one_dmn_rec_var attribute 2: cell_methods, size = 11 NC_CHAR, value = time: mean";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
+
+#NEW 4.4.2	
+#ncwa #62 max
+#ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc out.nc	
+#ncks -m -C -v one_dmn_rec_var out.nc
+	
+    $dsc_sng="Cell methods (Create, maximum) -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg --op_typ=max -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks  -m -C -v three_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[2]="three_dmn_rec_var attribute 2: cell_methods, size = 19 NC_CHAR, value = lon, time: maximum";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
