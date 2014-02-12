@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.88 2014-02-11 03:40:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.89 2014-02-12 00:07:30 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -438,6 +438,15 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
               /* Add names from list */
               for(int idx=0;idx<nm_lst->nbr;idx++){
 
+                /* Add only if dimension belongs to variable's dimensions (NB: idx_var_dmn ) */
+                for(int idx_var_dmn=0;idx_var_dmn<var_trv->nbr_dmn;idx_var_dmn++){
+                  /* Match */
+                  if(!strcmp(var_trv->var_dmn[idx_var_dmn].dmn_nm,nm_lst->lst[idx].nm)){
+
+
+                  } /* Match */
+                } /* Add only if dimension belongs to variable's dimensions (NB: idx_var_dmn ) */
+
               } /* Add names from list */
             }else {
 
@@ -480,6 +489,13 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           int cmp;
           cmp=strcmp(val1,att_val);
 
+          if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            for(int idx=0;idx<nm_lst->nbr;idx++){
+              (void)fprintf(stdout,"%s: DEBUG %s <%s> attr = %s\n",nco_prg_nm_get(),fnc_nm,
+                var_trv->nm_fll,att_val);
+            }   
+          }
+
           /* Edit attribute (do not edit when current value (val1) is the same as new value and when in append mode */
           if (cmp!=0 && aed.mode!=aed_append) {
             (void)nco_aed_prc(grp_out_id,var_out_id,aed);
@@ -504,7 +520,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
     for(int idx=0;idx<nm_lst->nbr;idx++){
-      (void)fprintf(stdout,"%s: DEBUG %s %s\n",nco_prg_nm_get(),fnc_nm,
+      (void)fprintf(stdout,"%s: DEBUG %s name list = %s\n",nco_prg_nm_get(),fnc_nm,
         nm_lst->lst[idx].nm);
     }   
   }
