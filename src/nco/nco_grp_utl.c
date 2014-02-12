@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1239 2014-02-11 16:17:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1240 2014-02-12 05:39:08 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -466,7 +466,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Set flags indicating whether each list member matches given regular expression
-     NB: This function only writes True to the match flag, it never writes False.
+     NB: This function only writes True to match flag, it never writes False
      Input flags are assumed to be stateful, and may contain Trues from previous calls */
 
   int mch_nbr=0;
@@ -759,7 +759,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                 } /* end flags */
               }  /* !nco_obj_typ_var */
               /* Set flags for groups and variables associated with this object */
-              if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
+	      //              if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
 
               /* Set function return condition */
               if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
@@ -798,6 +798,14 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   /* Compute intersection of groups and variables if necessary
      Intersection criteria flag, flg_nsx, is satisfied by default. Unset later when necessary. */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++) trv_tbl->lst[obj_idx].flg_nsx=True;
+
+  /* Each object with flg_mch set needs to have its associated objects set
+     An object (group or variable) may have had its flg_mch set multiple times, e.g., once via rx and once via explicit listing
+     And since rx's often match multiple objects, no sense in flagging associated objects inside rx loop
+     Now all -g and -v constraints have been evaluated (after itr loop)
+     Now speed through table once and set associated objects for all groups and variable flagged with flg_mch */
+  for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
+    if(trv_tbl->lst[obj_idx].flg_mch) nco_flg_set_grp_var_ass(trv_tbl->lst[obj_idx].grp_nm_fll,trv_tbl->lst[obj_idx].nco_typ,trv_tbl);
 
   /* Union is same as intersection if either variable or group list is empty, otherwise check intersection criteria */
   if(flg_unn || !grp_xtr_nbr || !var_xtr_nbr) flg_unn_ffc=True; else flg_unn_ffc=False;
@@ -6695,7 +6703,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_trv_hsh_bld(trv_tbl);
 
   /* Build auxiliary coordinates information into table */
-  if (aux_nbr) (void)nco_bld_crd_aux(nc_id,trv_tbl);        
+  if(aux_nbr) (void)nco_bld_crd_aux(nc_id,trv_tbl);        
 
   /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
@@ -6730,7 +6738,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(lmt_nbr){
     lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
     (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
-  }
+  } /* !lmt_nbr */
 
   /* Build ensembles */
   if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,trv_tbl);

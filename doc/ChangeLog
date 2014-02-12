@@ -1,6 +1,9 @@
 2014-02-11  Charlie Zender  <zender@uci.edu>
 
-	* Call nco_cnk_ini() iff fl_out_fmt == netCDF4*
+	* Call nco_flg_set_grp_var_ass() outside of itr loop to flag objects associated with both explicit and rx-matched objects
+	Fixes bug where rx-matched groups did not have their associated variables flagged in intersection mode
+
+	* Call nco_cnk_ini() iff fl_out_fmt is netCDF4
 
 2014-02-10 Pedro Vicente  <pvicente@uci.edu>
 
