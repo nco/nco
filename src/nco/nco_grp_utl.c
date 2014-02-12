@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1240 2014-02-12 05:39:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1241 2014-02-12 05:42:33 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -758,13 +758,14 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                   trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
                 } /* end flags */
               }  /* !nco_obj_typ_var */
-              /* Set flags for groups and variables associated with this object */
-	      //              if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
 
               /* Set function return condition */
               if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
 
               if(nco_dbg_lvl_get() == nco_dbg_old){
+		/* Redundant call to nco_flg_set_grp_var_ass() here in debugging mode only to set flags for following print statements 
+		   Essential call to nco_flg_set_grp_var_ass() occurs after itr loop */
+		if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
                 (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
