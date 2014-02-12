@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.38 2014-02-08 05:01:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.39 2014-02-12 20:29:35 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -67,6 +67,15 @@ void
 nco_nm_lst_ins                        /* [fnc] Check if name is on a list of names  */
 (const char * const nm,               /* I [sng] Name to find */
  nm_tbl_sct **nm_lst);                /* I/O [sct] List of names   */
+
+int
+nco_get_sng_chr_cnt                   /* [fnc] Get number of "," in a string  */
+(char * const sng);                   /* I [sct] String  */
+
+int
+nco_get_sng_sct                       /* [fnc] Get token structure  */
+(char * const sng,                    /* I [sng] String  */ 
+ sng_pth_sct ***str_pth_lst);         /* I/O [sct] List of components  */   
 
 
 #ifdef __cplusplus

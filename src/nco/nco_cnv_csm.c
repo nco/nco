@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.94 2014-02-12 19:27:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.95 2014-02-12 20:29:35 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -440,6 +440,36 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       /* Append mode */
     }else if(aed.mode == aed_append){
 
+      char *sng;          /* [sng] String */
+      char *ptr_chr;      /* [sng] Pointer to character ':' in string */
+      int nbr_chr;        /* [nbr] Number of characterrs in string */
+
+      sng_pth_sct** sng_lst;
+
+      ptr_chr=strchr(val1,':');
+
+      /* Separator ':' found */
+      if (ptr_chr){
+
+        size_t len=ptr_chr-val1;
+        sng=(char *)nco_malloc(len+1);
+        memcpy(sng,val1,len);
+        sng[len]='\0';
+
+        /* Get number of tokens in string */
+        nbr_chr=nco_get_sng_chr_cnt(sng); 
+
+        /* More that 1 dimension found (separated by ',') */
+        if(nbr_chr){
+
+          /* Alloc */
+          sng_lst=(sng_pth_sct **)nco_malloc(nbr_chr*sizeof(sng_pth_sct *)); 
+
+          /* Get tokens */
+          (void)nco_get_sng_pth_sct(sng,&sng_lst); 
+
+        } /* More that 1 dimension found (separated by ',') */
+      } /* Separator ':' found */
 
     } /* Append mode */
 
@@ -476,6 +506,100 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   return 0;
 
 } /* end nco_cnv_cf_cll_mth_add() */
+
+
+int
+nco_get_sng_chr_cnt                /* [fnc] Get number of "," in a string  */
+(char * const sng)                 /* I [sct] String  */
+{
+  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
+  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
+  int psn_chr;        /* [nbr] Position of character '/' in in full name */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Looking ',' in \"%s\"...",sng);
+
+  ptr_chr=strchr(sng,',');
+  while(ptr_chr){
+    psn_chr=ptr_chr-sng;
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout," ::found at %d",psn_chr);
+
+    ptr_chr=strchr(ptr_chr+1,',');
+
+    nbr_sls_chr++;
+  } /* end while */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"\n");
+  return nbr_sls_chr;
+
+} /* nco_get_sng_chr_cnt() */
+
+
+int
+nco_get_sng_sct                       /* [fnc] Get token structure  */
+(char * const sng,                    /* I [sng] String  */ 
+ sng_pth_sct ***str_pth_lst)          /* I/O [sct] List of components  */    
+{
+  /* Purpose: Break string into components separated by ',' character 
+
+  strtok()
+  A sequence of calls to this function split str into tokens, which are sequences of contiguous characters 
+  separated by any of the characters that are part of delimiters.
+
+  strchr() is used to get position of separator that corresponsds to each token
+
+  Usage:
+
+  Get number of tokens in string
+  nbr_chr=nco_get_sng_chr_cnt(sng); 
+
+  Alloc
+  sng_lst=(sng_pth_sct **)nco_malloc(nbr_chr*sizeof(sng_pth_sct *)); 
+
+  Get tokens 
+  (void)nco_get_sng_pth_sct(sng,&sng_lst); */
+
+  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
+  char *ptr_chr_tok;  /* [sng] Pointer to character */
+  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
+  int psn_chr;        /* [nbr] Position of character '/' in in full name */
+
+  /* Duplicate original, since strtok() changes it */
+  char *str=strdup(sng);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
+
+  /* Get first token */
+  ptr_chr_tok=strtok (str,",");
+
+  ptr_chr=strchr(sng,',');
+
+  while(ptr_chr){
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
+
+    psn_chr=ptr_chr-sng;
+
+    /* Store token and position */
+    (*str_pth_lst)[nbr_sls_chr]=(sng_pth_sct *)nco_malloc(1*sizeof(sng_pth_sct));
+
+    (*str_pth_lst)[nbr_sls_chr]->nm=strdup(ptr_chr_tok);
+    (*str_pth_lst)[nbr_sls_chr]->psn=psn_chr;
+
+    /* Point where last token was found is kept internally by function */
+    ptr_chr_tok=strtok(NULL,",");
+
+    ptr_chr=strchr(ptr_chr+1,',');
+
+    nbr_sls_chr++;   
+  } /* end while */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"\n");
+
+  str=(char *)nco_free(str);
+
+  return nbr_sls_chr;
+
+} /* nco_get_sng_sct() */
 
 
 nco_bool                              
