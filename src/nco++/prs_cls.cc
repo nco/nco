@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.32 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.33 2014-02-12 17:39:51 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -468,7 +468,7 @@ prs_cls::ncap_var_write_omp(
       (void)nco_inq_format(out_id,&fl_fmt);
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 	if(var->nbr_dim > 0){
-	  if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,dfl_lvl); else if(var->dfl_lvl) (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,var->dfl_lvl);    
+	  if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,dfl_lvl); else if(var->dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,var->dfl_lvl);    
 	  
 	  /* Set chunk sizes, if requested */
 	  // fxm: must first allow cnk_sz specification in ncap2.cc main()
@@ -572,7 +572,7 @@ void prs_cls::ncap_def_ntl_scn(void)
 	(void)nco_inq_format(out_id,&fl_fmt);
 	if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 	  if(var1->nbr_dim > 0){ 
-	    if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,dfl_lvl); else if(var1->dfl_lvl) (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,var1->dfl_lvl);    
+	    if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,dfl_lvl); else if(var1->dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,var1->dfl_lvl);    
 	    
 	    /* Set chunk sizes, if requested */
 	    // fxm: must first allow cnk_sz specification in ncap2.cc main()

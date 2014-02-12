@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1241 2014-02-12 05:42:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1242 2014-02-12 17:39:51 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -764,7 +764,9 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
               if(nco_dbg_lvl_get() == nco_dbg_old){
 		/* Redundant call to nco_flg_set_grp_var_ass() here in debugging mode only to set flags for following print statements 
-		   Essential call to nco_flg_set_grp_var_ass() occurs after itr loop */
+		   Essential call to nco_flg_set_grp_var_ass() occurs after itr loop
+		   Most debugging info is available in debugging section at routine end
+		   However, group boundary/anchoring/recursion info is only available here */
 		if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
                 (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
@@ -774,7 +776,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                 if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vfp? %s.",(trv_tbl->lst[tbl_idx].flg_vfp) ? "Yes" : "No");
                 if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vsg? %s.",(trv_tbl->lst[tbl_idx].flg_vsg) ? "Yes" : "No");
                 (void)fprintf(stderr,"\n");
-              } /* end if */
+              } /* end if dbg */
 
             } /* endif strstr() */
           } /* endif nco_obj_typ */
@@ -848,7 +850,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       trv_tbl->lst[obj_idx].flg_xtr=True;
   } /* end loop over obj_idx */
 
-  if(nco_dbg_lvl_get() == nco_dbg_old){
+  if(nco_dbg_lvl_get() == nco_dbg_crr){
     for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
       /* Create shallow copy to avoid indirection */
       trv_obj=trv_tbl->lst[obj_idx];
@@ -861,6 +863,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       if(trv_obj.nco_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vsg? %s.",(trv_obj.flg_vsg) ? "Yes" : "No");
       if(trv_obj.nco_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_gcv? %s.",(trv_obj.flg_gcv) ? "Yes" : "No");
       if(trv_obj.nco_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_ncs? %s.",(trv_obj.flg_ncs) ? "Yes" : "No");
+      if(trv_obj.nco_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_nsx? %s.",(trv_obj.flg_nsx) ? "Yes" : "No");
       (void)fprintf(stderr,"\n");
     } /* end loop over obj_idx */
   } /* endif dbg */

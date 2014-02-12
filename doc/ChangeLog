@@ -1,5 +1,7 @@
 2014-02-12  Charlie Zender  <zender@uci.edu>
 
+	* Always call nco_def_var_deflate() with valid dfl_lvl in ncap2
+
 	* Tidy configure.ac
 
 2014-02-11  Charlie Zender  <zender@uci.edu>

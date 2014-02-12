@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.960 2014-02-12 00:02:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.961 2014-02-12 17:39:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8962,8 +8962,8 @@ Generating a regularly spaced one-dimensional array with @command{ncap2}
 is simple with the @code{array()} function. 
 The syntax is 
 @example
-output=array(val_srt,val_ncr,$dmn_nm); // One-dimensional output
-output=array(val_srt,val_ncr,var_tpl); // Multi-dimensional output
+var_out=array(val_srt,val_ncr,$dmn_nm); // One-dimensional output
+var_out=array(val_srt,val_ncr,var_tpl); // Multi-dimensional output
 @end example
 @noindent
 where the arguments are the starting value @var{val_srt}, 
@@ -8971,6 +8971,18 @@ incremental value @var{val_ncr}, and, for one-dimensional output, the
 single dimension @code{$dmn_nm}, or, for multi-dimensional output, a
 template variable @code{var_tpl}, i.e., a variable with the same shape
 as the desired output. 
+The type of @code{var_out} will be the same as @code{val_srt}.
+Be sure to encode this type with the appropriate decimal point
+and floating point suffix when @code{val_srt} is a ``naked constant''
+rather than a variable.
+For example, to produce an array of integers, floats, or doubles use
+@example
+var_out=array(1s,val_ncr,$dmn_nm); // Short array
+var_out=array(1,val_ncr,$dmn_nm); // Integer array
+var_out=array(1ull,val_ncr,$dmn_nm); // Unsigned Int64 array
+var_out=array(1f,val_ncr,$dmn_nm); // Float array
+var_out=array(1.,val_ncr,$dmn_nm); // Double array
+@end example
 
 Once the associated dimensions have been defined, the start and
 increment arguments may be supplied as values, mathmatical expressions,
