@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1244 2014-02-12 19:18:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1245 2014-02-12 19:21:04 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3028,7 +3028,6 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
     } /* Filter variables  */
   } /* Loop table */
 
-
   /* Check if bool array is all filled  */
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -3042,7 +3041,6 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
   } /* Loop table */
-
 
 } /* nco_bld_var_dmn() */
 
@@ -6686,12 +6684,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Build auxiliary coordinates information into table */
   if(aux_nbr) (void)nco_bld_crd_aux(nc_id,trv_tbl);        
 
-  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"before nco_xtr_mk():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
-
   /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
-
-  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"after nco_xtr_mk():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
@@ -6701,8 +6695,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Extract coordinates associated with extracted variables */
   if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(nc_id,trv_tbl);
-
-  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"after nco_xtr_crd_ass_add():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
 
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(nc_id);
@@ -6717,8 +6709,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Mark extracted groups */
   (void)nco_xtr_grp_mrk(trv_tbl);
-
-  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"after nco_xtr_grp_mrk():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
 
   /* Parse auxiliary coordinates and build found limits directly into table (auxiliary limits are not merged into regular limits ) */
   if(aux_nbr) (void)nco_prs_aux_crd(nc_id,aux_nbr,aux_arg,FORTRAN_IDX_CNV,MSA_USR_RDR,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
@@ -6742,8 +6732,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   } /* !lmt_nbr */
 
   if(nco_dbg_lvl_get() == nco_dbg_old) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
-
-  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"end of nco_bld_trv_tbl():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
 
   return;
 
