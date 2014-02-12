@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.95 2014-02-12 20:29:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.96 2014-02-12 21:26:32 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -469,7 +469,12 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           (void)nco_get_sng_pth_sct(sng,&sng_lst); 
 
         } /* More that 1 dimension found (separated by ',') */
+
+        sng=(char *)nco_free(sng);
       } /* Separator ':' found */
+
+
+
 
     } /* Append mode */
 
@@ -481,10 +486,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     int cmp;
     cmp=strcmp(val1,att_val);
 
-    /* Edit attribute (do not edit when current value (val1) is the same as new value and when in append mode */
-    if (cmp!=0 && aed.mode!=aed_append) {
-      (void)nco_aed_prc(grp_out_id,var_out_id,aed);
-    }
+    /* Edit attribute  */
+    (void)nco_aed_prc(grp_out_id,var_out_id,aed);
 
     /* Get attribute */
     (void)nco_get_att(grp_out_id,var_out_id,"cell_methods",(void *)val2,NC_CHAR);
