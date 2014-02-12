@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.38 2014-02-07 20:21:20 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.39 2014-02-12 15:59:11 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -101,9 +101,6 @@ fi
 AC_DEFINE_UNQUOTED(HOST,${nco_hostname},Hostname)
 AC_DEFINE_UNQUOTED(HOSTNAME,${nco_hostname},Hostname alias)
 AC_DEFINE_UNQUOTED(GNU_TRP,${build},Autoconf-generated architecture \"triplet\")
-
-# 20090421 Added for autoreconf to complete after Ubuntu Jaunty upgrade to autoconf 2.6.3
-#AC_DEFINE([AS_TR_CPP], [csz_fxm], [Description])
 
 # Begin pvmgetarch Compatibility
 # Compatibility map between pvmgetarch and GNU triplets
@@ -650,53 +647,50 @@ fi # End test for UDUnits duplication
 if test "${enable_udunits2}" != 'no'; then
     AC_CHECK_LIB([expat],[XML_ParserCreate],,)
     if test "${UDUNITS2_PATH}"; then
-		# Add ${UDUNITS2_PATH}/lib to search path if present
-		nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
-		LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
-		CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
+	# Add ${UDUNITS2_PATH}/lib to search path if present
+	nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
+	LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
+	CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
     elif test "${NETCDF_INC}"; then
-		nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
+	nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
     else
-
-		# NO UDUNITS2_PATH section
-
-		#Fedora 1.7 has /usr/include/udunits2/udunits2.h
-		#add this path to CPPFLAGS if it exists, otherwise do nothing
-		AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"], [])
-		#Ubuntu
-		#/usr/lib/x86_64-linux-gnu/libudunits2.a
-		#/usr/lib/i386-linux-gnu/libudunits2.a
-		#/usr/include/udunits2.h
-		AC_CHECK_FILE([/usr/include/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include"], [])
-		AC_CHECK_FILE([/usr/lib/x86_64-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/x86_64-linux-gnu"], [])
-		AC_CHECK_FILE([/usr/lib/i386-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/i386-linux-gnu"], [])
-		#Mac OSX MacPorts packages
-		#sudo port install libdap
-		#sudo port install gsl
-		#sudo port install antlr
-		#sudo port install udunits2
-		#sudo port install netcdf
-		#installs to /opt/local/include/udunits2/udunits2.h
-		#/opt/local/share/udunits/udunits2.xml
-		#add this path to CPPFLAGS if it exists, otherwise do nothing
-		AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
-		#/opt/local/lib/libudunits2.a
-		AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib/"], [])
-
-		# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
-		# NB: 20100729 udunits2.xml location seems to have changed from 
-		# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
-		# Not sure of location in more recent Fedora systems...
-		# Updating patch from Fedora Core 6 nco.spec:
-		for udunits2_data_file in /usr/share/xml/udunits/udunits2/udunits2.xml /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml /usr/share/udunits/udunits2.xml; do
+	# NO UDUNITS2_PATH section
+	#Fedora 1.7 has /usr/include/udunits2/udunits2.h
+	#add this path to CPPFLAGS if it exists, otherwise do nothing
+	AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"], [])
+	#Ubuntu
+	#/usr/lib/x86_64-linux-gnu/libudunits2.a
+	#/usr/lib/i386-linux-gnu/libudunits2.a
+	#/usr/include/udunits2.h
+	AC_CHECK_FILE([/usr/include/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include"], [])
+	AC_CHECK_FILE([/usr/lib/x86_64-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/x86_64-linux-gnu"], [])
+	AC_CHECK_FILE([/usr/lib/i386-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/i386-linux-gnu"], [])
+	#Mac OSX MacPorts packages
+	#sudo port install libdap
+	#sudo port install gsl
+	#sudo port install antlr
+	#sudo port install udunits2
+	#sudo port install netcdf
+	#installs to /opt/local/include/udunits2/udunits2.h
+	#/opt/local/share/udunits/udunits2.xml
+	#add this path to CPPFLAGS if it exists, otherwise do nothing
+	AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
+	#/opt/local/lib/libudunits2.a
+	AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib/"], [])
+	# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
+	# NB: 20100729 udunits2.xml location seems to have changed from 
+	# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
+	# Not sure of location in more recent Fedora systems...
+	# Updating patch from Fedora Core 6 nco.spec:
+	for udunits2_data_file in /usr/share/xml/udunits/udunits2/udunits2.xml /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml /usr/share/udunits/udunits2.xml; do
 	    if test -e "$udunits2_data_file" ; then
 		nco_udunits2_xml="$udunits2_data_file"
 	    fi
-		done
+	done
 
-	fi # end NO UDUNITS2_PATH section
+    fi # end NO UDUNITS2_PATH section
 
-	# Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
+# Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
     AC_CHECK_FILE([$nco_udunits2_xml],,AC_WARN([file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support.]))
 	# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
     AC_DEFINE_UNQUOTED([UDUNITS2_PATH],["$nco_udunits2_xml"],[Location of UDUnits2 data file])

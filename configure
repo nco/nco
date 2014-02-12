@@ -3161,9 +3161,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-# 20090421 Added for autoreconf to complete after Ubuntu Jaunty upgrade to autoconf 2.6.3
-#AC_DEFINE([AS_TR_CPP], [csz_fxm], [Description])
-
 # Begin pvmgetarch Compatibility
 # Compatibility map between pvmgetarch and GNU triplets
 # Maintained as master list of architectures on which NCO is known to work
@@ -19524,19 +19521,17 @@ _ACEOF
 fi
 
     if test "${UDUNITS2_PATH}"; then
-		# Add ${UDUNITS2_PATH}/lib to search path if present
-		nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
-		LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
-		CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
+	# Add ${UDUNITS2_PATH}/lib to search path if present
+	nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
+	LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
+	CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
     elif test "${NETCDF_INC}"; then
-		nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
+	nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
     else
-
-		# NO UDUNITS2_PATH section
-
-		#Fedora 1.7 has /usr/include/udunits2/udunits2.h
-		#add this path to CPPFLAGS if it exists, otherwise do nothing
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2/udunits2.h" >&5
+	# NO UDUNITS2_PATH section
+	#Fedora 1.7 has /usr/include/udunits2/udunits2.h
+	#add this path to CPPFLAGS if it exists, otherwise do nothing
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2/udunits2.h" >&5
 $as_echo_n "checking for /usr/include/udunits2/udunits2.h... " >&6; }
 if ${ac_cv_file__usr_include_udunits2_udunits2_h+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -19555,11 +19550,11 @@ if test "x$ac_cv_file__usr_include_udunits2_udunits2_h" = xyes; then :
   CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"
 fi
 
-		#Ubuntu
-		#/usr/lib/x86_64-linux-gnu/libudunits2.a
-		#/usr/lib/i386-linux-gnu/libudunits2.a
-		#/usr/include/udunits2.h
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2.h" >&5
+	#Ubuntu
+	#/usr/lib/x86_64-linux-gnu/libudunits2.a
+	#/usr/lib/i386-linux-gnu/libudunits2.a
+	#/usr/include/udunits2.h
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2.h" >&5
 $as_echo_n "checking for /usr/include/udunits2.h... " >&6; }
 if ${ac_cv_file__usr_include_udunits2_h+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -19578,7 +19573,7 @@ if test "x$ac_cv_file__usr_include_udunits2_h" = xyes; then :
   CPPFLAGS="$CPPFLAGS -I/usr/include"
 fi
 
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/lib/x86_64-linux-gnu/libudunits2.a" >&5
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/lib/x86_64-linux-gnu/libudunits2.a" >&5
 $as_echo_n "checking for /usr/lib/x86_64-linux-gnu/libudunits2.a... " >&6; }
 if ${ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -19597,7 +19592,7 @@ if test "x$ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a" = xyes; then :
   LDFLAGS="$LDFLAGS -L/usr/lib/x86_64-linux-gnu"
 fi
 
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/lib/i386-linux-gnu/libudunits2.a" >&5
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/lib/i386-linux-gnu/libudunits2.a" >&5
 $as_echo_n "checking for /usr/lib/i386-linux-gnu/libudunits2.a... " >&6; }
 if ${ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -19616,16 +19611,16 @@ if test "x$ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a" = xyes; then :
   LDFLAGS="$LDFLAGS -L/usr/lib/i386-linux-gnu"
 fi
 
-		#Mac OSX MacPorts packages
-		#sudo port install libdap
-		#sudo port install gsl
-		#sudo port install antlr
-		#sudo port install udunits2
-		#sudo port install netcdf
-		#installs to /opt/local/include/udunits2/udunits2.h
-		#/opt/local/share/udunits/udunits2.xml
-		#add this path to CPPFLAGS if it exists, otherwise do nothing
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/udunits2/udunits2.h" >&5
+	#Mac OSX MacPorts packages
+	#sudo port install libdap
+	#sudo port install gsl
+	#sudo port install antlr
+	#sudo port install udunits2
+	#sudo port install netcdf
+	#installs to /opt/local/include/udunits2/udunits2.h
+	#/opt/local/share/udunits/udunits2.xml
+	#add this path to CPPFLAGS if it exists, otherwise do nothing
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/udunits2/udunits2.h" >&5
 $as_echo_n "checking for /opt/local/include/udunits2/udunits2.h... " >&6; }
 if ${ac_cv_file__opt_local_include_udunits2_udunits2_h+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -19644,8 +19639,8 @@ if test "x$ac_cv_file__opt_local_include_udunits2_udunits2_h" = xyes; then :
   CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"
 fi
 
-		#/opt/local/lib/libudunits2.a
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/lib/libudunits2.a" >&5
+	#/opt/local/lib/libudunits2.a
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/lib/libudunits2.a" >&5
 $as_echo_n "checking for /opt/local/lib/libudunits2.a... " >&6; }
 if ${ac_cv_file__opt_local_lib_libudunits2_a+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -19664,21 +19659,20 @@ if test "x$ac_cv_file__opt_local_lib_libudunits2_a" = xyes; then :
   LDFLAGS="$LDFLAGS -L/opt/local/lib/"
 fi
 
-
-		# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
-		# NB: 20100729 udunits2.xml location seems to have changed from
-		# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
-		# Not sure of location in more recent Fedora systems...
-		# Updating patch from Fedora Core 6 nco.spec:
-		for udunits2_data_file in /usr/share/xml/udunits/udunits2/udunits2.xml /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml /usr/share/udunits/udunits2.xml; do
+	# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
+	# NB: 20100729 udunits2.xml location seems to have changed from
+	# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
+	# Not sure of location in more recent Fedora systems...
+	# Updating patch from Fedora Core 6 nco.spec:
+	for udunits2_data_file in /usr/share/xml/udunits/udunits2/udunits2.xml /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml /usr/share/udunits/udunits2.xml; do
 	    if test -e "$udunits2_data_file" ; then
 		nco_udunits2_xml="$udunits2_data_file"
 	    fi
-		done
+	done
 
-	fi # end NO UDUNITS2_PATH section
+    fi # end NO UDUNITS2_PATH section
 
-	# Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
+# Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
     as_ac_File=`$as_echo "ac_cv_file_$nco_udunits2_xml" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $nco_udunits2_xml" >&5
 $as_echo_n "checking for $nco_udunits2_xml... " >&6; }

@@ -1,3 +1,7 @@
+2014-02-12  Charlie Zender  <zender@uci.edu>
+
+	* Tidy configure.ac
+
 2014-02-11  Charlie Zender  <zender@uci.edu>
 
 	* Call nco_flg_set_grp_var_ass() outside of itr loop to flag objects associated with both explicit and rx-matched objects
