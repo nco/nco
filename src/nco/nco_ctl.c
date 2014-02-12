@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.458 2014-02-01 02:52:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.459 2014-02-12 00:02:29 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -1003,7 +1003,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--fl_fmt")) (void)fprintf(stdout,"    --fl_fmt, --file_format fmt\tFile format [classic,64bit]\n");
 #endif /* !ENABLE_NETCDF4 */
 #ifdef ENABLE_NETCDF4
-  if(strstr(opt_sng,"--gag")) (void)fprintf(stdout,"  --gag, --aggregate_group\tGroup Aggregation (not Record Aggregation)\n");
+  if(strstr(opt_sng,"--gag")) (void)fprintf(stdout,"    --gag, --aggregate_group\tGroup Aggregation (not Record Aggregation)\n");
   if(strstr(opt_sng,"[-G")) (void)fprintf(stdout,"-G, --gpe [grp_nm][:[lvl]]\tGroup Path Editing path, levels to replace\n");
   if(strstr(opt_sng,"[-g")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-g, --grp --group\told_grp,new_grp Group's old and new names\n");
