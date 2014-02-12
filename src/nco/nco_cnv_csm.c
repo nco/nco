@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.93 2014-02-12 05:14:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.94 2014-02-12 19:27:13 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -352,8 +352,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       continue;
     } /* End switch */
 
-
-
     /* Inquire if "cell_methods" attribute exists */
     rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
 
@@ -383,44 +381,41 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     aed.sz=-1L;
     aed.id=-1;
 
-    /* STEP 1: build list of dimensions string, by looping and matching dimensions  */
+    /* Build attribute and write */
 
-    /* Loop variable dimensions */
-    for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
-      /* Loop input dimensions (ncwa -a or ncra records) */
-      for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
-        /* Match name (variable dimension with input dimension) */
-        if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
+    /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */
 
-          /* Add space for name */
-          len_dmn+=strlen(var_trv->var_dmn[idx_dmn_var].dmn_nm);
-          nbr_dmn_add++;
+    /* Create mode */
+    if(aed.mode == aed_create){
 
-        }  /* Match name (variable dimension with input dimension) */
-      } /* Loop input dimensions (ncwa -a or ncra records) */
-    }/* Loop variable dimensions */
+      /* STEP 1: build list of dimensions string, by looping and matching dimensions  */
 
-    /* Add space for ", ", 2 characters times number of names found less 1 name */ 
-    if(nbr_dmn_add>1){
-      len_dmn+=2*(nbr_dmn_add-1);
-    }
+      /* Loop variable dimensions */
+      for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
+        /* Loop input dimensions (ncwa -a or ncra records) */
+        for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
+          /* Match name (variable dimension with input dimension) */
+          if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
 
-    /* Loop variable dimensions */
-    for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
-      /* Loop input dimensions (ncwa -a or ncra records) */
-      for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
-        /* Match name (variable dimension with input dimension) */
-        if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
+            /* Add space for name */
+            len_dmn+=strlen(var_trv->var_dmn[idx_dmn_var].dmn_nm);
+            nbr_dmn_add++;
 
-          /* Build attribute and write */
+          }  /* Match name (variable dimension with input dimension) */
+        } /* Loop input dimensions (ncwa -a or ncra records) */
+      }/* Loop variable dimensions */
 
-          /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */
+      /* Add space for ", ", 2 characters times number of names found less 1 name */ 
+      if(nbr_dmn_add>1){
+        len_dmn+=2*(nbr_dmn_add-1);
+      }
 
-          /* Append mode */
-          if(aed.mode == aed_append){
-
-
-          }else{ /* Create mode */
+      /* Loop variable dimensions */
+      for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
+        /* Loop input dimensions (ncwa -a or ncra records) */
+        for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
+          /* Match name (variable dimension with input dimension) */
+          if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
 
             /* Concatenate name */ 
             strcat(att_val,var_trv->var_dmn[idx_dmn_var].dmn_nm);
@@ -431,17 +426,22 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
                 strcat(att_val,", ");
               }
             }
-          } /* Create mode */
 
-        } /*  Match name */
-      } /* Loop dimensions */
-    } /* Loop variable dimensions */
+          } /*  Match name */
+        } /* Loop dimensions */
+      } /* Loop variable dimensions */
 
-    /* STEP 2: Add operation type to string  */
+      /* STEP 2: Add operation type to string  */
 
-    /* Add operation type to string */
-    strcat(att_val,": ");
-    strcat(att_val,att_op_sng);
+      /* Add operation type to string */
+      strcat(att_val,": ");
+      strcat(att_val,att_op_sng);
+
+      /* Append mode */
+    }else if(aed.mode == aed_append){
+
+
+    } /* Append mode */
 
     /* Type is NC_CHAR */
     aed.val.cp=(char *)strdup(att_val);
