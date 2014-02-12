@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
 
+	* Set only flg_mch (not flg_xtr) in nco_trv_rx_search()
+
 	* Always call nco_def_var_deflate() with valid dfl_lvl in ncap2
 
 	* Tidy configure.ac

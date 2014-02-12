@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1243 2014-02-12 18:06:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1244 2014-02-12 19:18:00 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -533,7 +533,6 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
       if(strchr(rx_sng,sls_chr)) sng2mch=trv_tbl->lst[obj_idx].nm_fll; else sng2mch=trv_tbl->lst[obj_idx].nm; 
       if(!regexec(rx,sng2mch,rx_prn_sub_xpr_nbr,result,flg_exe)){
         trv_tbl->lst[obj_idx].flg_mch=True;
-        trv_tbl->lst[obj_idx].flg_xtr=True;
         mch_nbr++;
       } /* end if match */
     } /* end if obj_typ */
@@ -573,7 +572,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
      ncks -O -D 5 -g g1.+ -v v1,sc. ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -g g3g.+,g9/ -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc */
-  
+
   const char fnc_nm[]="nco_xtr_mk()"; /* [sng] Function name */
   const char sls_chr='/'; /* [chr] Slash character */
   
@@ -816,7 +815,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
     for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
       var_obj=trv_tbl->lst[obj_idx];
       if(var_obj.nco_typ == nco_obj_typ_var){
-        /* Cancel (non-full-path) variable match unless variable is also in user-specified group */
+        /* Cancel (non-full-path) variable intersection match unless variable is also in user-specified group */
         if(var_obj.flg_mch && !var_obj.flg_vfp){
           for(unsigned int obj2_idx=0;obj2_idx<trv_tbl->nbr;obj2_idx++){
             grp_obj=trv_tbl->lst[obj2_idx];
@@ -6687,8 +6686,12 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Build auxiliary coordinates information into table */
   if(aux_nbr) (void)nco_bld_crd_aux(nc_id,trv_tbl);        
 
+  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"before nco_xtr_mk():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
+
   /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
+
+  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"after nco_xtr_mk():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
@@ -6698,6 +6701,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Extract coordinates associated with extracted variables */
   if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(nc_id,trv_tbl);
+
+  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"after nco_xtr_crd_ass_add():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
 
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(nc_id);
@@ -6712,6 +6717,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Mark extracted groups */
   (void)nco_xtr_grp_mrk(trv_tbl);
+
+  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"after nco_xtr_grp_mrk():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
 
   /* Parse auxiliary coordinates and build found limits directly into table (auxiliary limits are not merged into regular limits ) */
   if(aux_nbr) (void)nco_prs_aux_crd(nc_id,aux_nbr,aux_arg,FORTRAN_IDX_CNV,MSA_USR_RDR,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
@@ -6735,6 +6742,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   } /* !lmt_nbr */
 
   if(nco_dbg_lvl_get() == nco_dbg_old) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
+
+  if(nco_dbg_lvl_get() == nco_dbg_crr){(void)fprintf(stdout,"end of nco_bld_trv_tbl():\n");trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);}
 
   return;
 
