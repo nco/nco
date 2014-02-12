@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1242 2014-02-12 17:39:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1243 2014-02-12 18:06:55 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -916,20 +916,10 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 
   const char fnc_nm[]="nco_xtr_crd_add()"; /* [sng] Function name */
 
-  /* Loop table */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-
-    /* Filter variables  */
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var){
-      trv_sct var_trv=trv_tbl->lst[idx_var]; 
-
-      /* If variable is coordinate variable then mark it for extraction ...simple */
-      if(var_trv.is_crd_var){
-        trv_tbl->lst[idx_var].flg_xtr=True;
-      }
-
-    } /* Filter variables  */
-  } /* Loop table */
+  /* If variable is coordinate variable then mark it for extraction */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++)
+    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var)
+      if(trv_tbl->lst[idx_var].is_crd_var) trv_tbl->lst[idx_var].flg_xtr=True;
 
   /* Print extraction list in debug mode */
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
@@ -952,10 +942,10 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
 
   /* Search for and add CF-compliant bounds and coordinates to extraction list */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
+    trv_sct trv_obj=trv_tbl->lst[uidx];
     /* Filter extracted variables */
-    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
-      (void)nco_xtr_cf_prv_add(nc_id,&trv,cf_nm,trv_tbl);
+    if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
+      (void)nco_xtr_cf_prv_add(nc_id,&trv_obj,cf_nm,trv_tbl);
     } /* Filter extracted variables */
   } /* end loop over table */
 
@@ -6069,23 +6059,21 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
 {
   /* Purpose: Create list of dimensions from list of dimension name strings (function based in nco_xtr_mk() ) */
 
-  /* 
-  Dimensions to average/not average are built using these 3 functions:
-
-  nco_dmn_avg_mk() Build dimensions to average array from input dimension names 
-  nco_dmn_out_mk() Build dimensions array to keep on output
-  nco_dmn_id_mk()  Mark flag average for all dimensions that have the input ID 
-
-  nco_dmn_avg_mk() parses -a names and exports an array of dmn_sct; it marks the flag "flg_dmn_avg" of "var_dmn_sct"
-  as True, if the dimension is to be averaged.
-
-  Since variables share dimensions, this flag has to be marked to all variable's dimensions that have it;
-  This broadcast is made in nco_dmn_id_mk(), using the unique dimension ID as key.
-
-  nco_dmn_out_mk() checks this flag, and if the dimension is not to be averaged, it is added to an array of dmn_sct,
-  dimensions on output.
-  */
-
+  /* Dimensions to average/not average are built using these 3 functions:
+     
+     nco_dmn_avg_mk() Build dimensions to average array from input dimension names 
+     nco_dmn_out_mk() Build dimensions array to keep on output
+     nco_dmn_id_mk()  Mark flag average for all dimensions that have the input ID 
+     
+     nco_dmn_avg_mk() parses -a names and exports an array of dmn_sct; it marks the flag "flg_dmn_avg" of "var_dmn_sct"
+     as True, if the dimension is to be averaged.
+     
+     Since variables share dimensions, this flag has to be marked to all variable's dimensions that have it;
+     This broadcast is made in nco_dmn_id_mk(), using the unique dimension ID as key.
+     
+     nco_dmn_out_mk() checks this flag, and if the dimension is not to be averaged, it is added to an array of dmn_sct,
+     dimensions on output. */
+  
   const char fnc_nm[]="nco_dmn_avg_mk()"; /* [sng] Function name  */
   const char sls_chr='/';   /* [chr] Slash character */
 
@@ -6197,11 +6185,8 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
             /* Additional condition is user-supplied string must end with short form of dimension name */
             if(dmn_nm_lng <= usr_sng_lng){
               var_mch_srt=usr_sng+usr_sng_lng-dmn_nm_lng;
-              if(!strcmp(var_mch_srt,dmn_nm)){
-                flg_var_cnd=True;
-              }
+              if(!strcmp(var_mch_srt,dmn_nm)) flg_var_cnd=True;
             } /* Additional condition  */
-
 
             /* Must meet necessary flags */
             if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
@@ -6284,8 +6269,6 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
 
 } /* nco_dmn_avg_mk() */
 
-
-
 void
 nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep on output */
 (dmn_sct **dmn_xtr,                    /* I [sct] Array of dimensions associated with variables to be extracted  */
@@ -6347,12 +6330,10 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
 
               /* If this dimension is not in output array */
               if(!flg_dmn_ins){
-
                 /* Output list comprises non-averaged and, if specified, degenerate dimensions */
                 (*dmn_out)[nbr_out_dmn]=nco_dmn_dpl(dmn_xtr[idx_xtr_dmn]);
                 (void)nco_dmn_xrf(dmn_xtr[idx_xtr_dmn],(*dmn_out)[nbr_out_dmn]);
                 nbr_out_dmn++;
-
               }  /* If this dimension is not in output array */
             } /* Match by ID */
           } /* Search dimensions to be extracted  */
@@ -6366,11 +6347,9 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
     (void)fprintf(stdout,"%s: DEBUG %s dimensions to keep on output: ",nco_prg_nm_get(),fnc_nm);        
-    for(int idx_dmn=0;idx_dmn<nbr_out_dmn;idx_dmn++){
-      (void)fprintf(stdout,"#%d<%s> : ",(*dmn_out)[idx_dmn]->id,(*dmn_out)[idx_dmn]->nm);        
-    }
+    for(int idx_dmn=0;idx_dmn<nbr_out_dmn;idx_dmn++) (void)fprintf(stdout,"#%d<%s> : ",(*dmn_out)[idx_dmn]->id,(*dmn_out)[idx_dmn]->nm);
     (void)fprintf(stdout,"\n");       
-  } 
+  } /* endif dbg */
 
   return;
 
@@ -6647,35 +6626,34 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Construct GTT, Group Traversal Table (groups, variables, dimensions, limits) 
-
-  Return value: Check for valid input; NC_NOERR (0) or > 0 for a user input error, used to go to close_and_free on main
-
-  Notes:
-  * Dimension limit structures are handled internaly in this function and not exported
-  * Call sequence is important: 
-  1) nco_trv_hsh_bld() must be called after nco_grp_itr() because other functions use hash table 
-  2) nco_grp_itr() must be first, main iterator function. Then
-  nco_bld_dmn_ids_trv()
-  nco_bld_crd_rec_var_trv()
-  nco_bld_crd_var_trv()
-  nco_has_crd_dmn_scp()
-  nco_bld_var_dmn()
-  complete structures for the traversal table to be completed.
-  Then, user options functions are called:
-  nco_xtr_mk()
-  nco_xtr_xcl()
-  nco_xtr_crd_add()
-  nco_xtr_crd_ass_add()
-  nco_xtr_cf_add()
-  Limits related function must be called in order:
-  nco_lmt_prs()
-  nco_prs_aux_crd()
-  nco_chk_dmn_in()
-  Two functions called for specific operators are:
-  ncbo: trv_tbl_srt()
-  nces nco_bld_nsm() 
-  */
-
+     
+     Return value: Check for valid input; NC_NOERR (0) or > 0 for a user input error, used to go to close_and_free on main
+     
+     Notes:
+     * Dimension limit structures are handled internally in this function and not exported
+     * Call sequence is important: 
+     1) nco_trv_hsh_bld() must be called after nco_grp_itr() because other functions use hash table 
+     2) nco_grp_itr() must be first, main iterator function. Then
+     nco_bld_dmn_ids_trv()
+     nco_bld_crd_rec_var_trv()
+     nco_bld_crd_var_trv()
+     nco_has_crd_dmn_scp()
+     nco_bld_var_dmn()
+     complete structures for the traversal table to be completed.
+     Then, user options functions are called:
+     nco_xtr_mk()
+     nco_xtr_xcl()
+     nco_xtr_crd_add()
+     nco_xtr_crd_ass_add()
+     nco_xtr_cf_add()
+     Limits related function must be called in order:
+     nco_lmt_prs()
+     nco_prs_aux_crd()
+     nco_chk_dmn_in()
+     Two functions called for specific operators are:
+     ncbo: trv_tbl_srt()
+     nces nco_bld_nsm() */
+  
   const char fnc_nm[]="nco_bld_trv_tbl()"; /* [sng] Function name  */
 
   nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.688 2014-02-08 00:04:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.689 2014-02-12 18:06:54 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
@@ -35,20 +35,25 @@ A. cell_methods: fxm
 
 BUG FIXES:
 
-A. ncra/ncea/ncrcat in NCO 4.3.9-4.4.0 did not close or remove input
-   files after use. This could cause NCO to exceed system limits on
-   maximum number of open files when hundreds--thousands of input
-   files were specified. Fixed.
-   http://nco.sf.net#bug_ncra_no_fl_close
-
 A. Fix build problem exposed by LLVM on Mac OS X 10.9 Mavericks
 
-A. ncwa always outputs averages of coordinates fxm
+A. ncwa now always outputs averages of coordinates, even when
+   operation on (non-coordinate) variables is other like max, min.
+   This complies with longstanding intent & documentation that
+   coordinate variables always return averages, never extrema or other
+   statistics. ncra and nces have long-implemented this convention.
 
 A. The -X option for auxiliary coordinates now works fully when
    latitude and longitude coordinates are nested in group hierarchies.
    The most in-scope lat/long are found and used for each variable. 
    http://nco.sf.net/nco.html#aux
+
+A. ncap2 sometimes failed when converting netCDF3->netCDF4 files
+   when it had uninitialized deflation levels. Fixed.
+
+A. Groups matched via regular expressions in group-subsetting now
+   have their associated variables flagged in intersection mode. 
+   This mumbo-jumbo means that regular expressions work better now.
 
 KNOWN ISSUES NOT YET FIXED:
 

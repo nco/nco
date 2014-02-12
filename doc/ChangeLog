@@ -1,19 +1,25 @@
 2014-02-12  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.2 release procedure:
+ 	Changes since nco-4_4_1: bugfixes for ncra.c memory, LLVM/clang builds, -X
+	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
+	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
+
 	* Always call nco_def_var_deflate() with valid dfl_lvl in ncap2
 
 	* Tidy configure.ac
 
 2014-02-11  Charlie Zender  <zender@uci.edu>
 
-	* Call nco_flg_set_grp_var_ass() outside of itr loop to flag objects associated with both explicit and rx-matched objects
-	Fixes bug where rx-matched groups did not have their associated variables flagged in intersection mode
+	* Flag objects associated with both explicit _and_ rx-matched objects
+	Now rx-matched groups have associated variables flagged in intersection mode
 
 	* Call nco_cnk_ini() iff fl_out_fmt is netCDF4
 
 2014-02-10 Pedro Vicente  <pvicente@uci.edu>
 
-	* ncwa regressions #61, #62, #63 cell_methods CF attribute convention (create, variable with several dimensions)
+	* ncwa regressions #61, #62, #63 cell_methods CF attribute convention
 
 2014-02-10  Charlie Zender  <zender@uci.edu>
 
@@ -37,15 +43,9 @@
 
 	* Add test data for cell_methods CF attribute convention
 
-	* ncwa regression #58, #59, #60 cell_methods CF attribute convention (create average and maximum, append)
+	* ncwa regression #58, #59, #60 cell_methods CF attribute convention
 
 2014-02-06  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.2 release procedure:
- 	Changes since nco-4_4_1: bugfixes for ncra.c memory, LLVM/clang builds, -X
-	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
-	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
 
 	* Start node printing for JSON
 
