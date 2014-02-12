@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.91 2014-02-12 01:09:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.92 2014-02-12 01:23:55 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -490,10 +490,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           cmp=strcmp(val1,att_val);
 
           if(nco_dbg_lvl_get() >= nco_dbg_dev){
-            for(int idx=0;idx<nm_lst->nbr;idx++){
-              (void)fprintf(stdout,"%s: DEBUG %s <%s> attr = '%s'\n",nco_prg_nm_get(),fnc_nm,
-                var_trv->nm_fll,att_val);
-            }   
+            (void)fprintf(stdout,"%s: DEBUG %s <%s> att_val = '%s'\n",nco_prg_nm_get(),fnc_nm,
+              var_trv->nm_fll,att_val);
           }
 
           /* Edit attribute (do not edit when current value (val1) is the same as new value and when in append mode */
