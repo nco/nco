@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.507 2014-02-12 00:25:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.508 2014-02-12 01:09:05 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.507 2014-02-12 00:25:48 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.507 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.508 2014-02-12 01:09:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.508 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -730,6 +730,9 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"%s: DEBUG dimension list to nco_cnv_cf_cll_mth_add()\n",nco_prg_nm_get());
       for(int idx=0;idx<nbr_dmn;idx++){
         (void)fprintf(stdout,"%s: DEBUG %s\n",nco_prg_nm_get(),dmn[idx]->nm);
+      } 
+      for(int idx=0;idx<nbr_var_prc;idx++){
+        (void)fprintf(stdout,"%s: DEBUG %s\n",nco_prg_nm_get(),var_prc_out[idx]->nm_fll);
       }   
     }
     rcd+=nco_cnv_cf_cll_mth_add(out_id,var_prc_out,nbr_var_prc,dmn,nbr_dmn,nco_op_typ,gpe,trv_tbl); 
