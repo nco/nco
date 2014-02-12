@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.92 2014-02-12 01:23:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.93 2014-02-12 05:14:15 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -258,8 +258,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   nco_bool att_xst;   /* [nbr] Attribute "exists" */
 
-  nm_tbl_sct *nm_lst=NULL; /* [sct] A list of common names (variable names in attribute list) */ 
-
   /* cell_methods attribute values and description
      
      point	: The data values are representative of points in space or time (instantaneous). 
@@ -285,15 +283,12 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
      sqrt Square root of the mean
      ttl Sum of values */
 
-  nm_lst=(nm_tbl_sct *)nco_malloc(sizeof(nm_tbl_sct));
-  nm_lst->nbr=0;
-  nm_lst->lst=NULL;
-  
+
   /* Initialize common members */
   aed.att_nm=strdup("cell_methods");
   aed.var_nm=NULL;
   aed.type=NC_CHAR;
-  
+
   /* Process all variables */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){ 
     char *grp_out_fll=NULL; /* [sng] Group name */
@@ -314,218 +309,170 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Get variable ID */
     (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
+    /* Build operation type string (e.g. nco_op_avg translates to "mean") */
+
+    /* Initialize values */
+    att_op_sng[0]='\0';
+    val1[0]='\0';
+
+    /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
+    if(var[idx_var]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
+    switch(nco_op_typ_lcl){
+      /* Next four operations are defined in CF Conventions */
+    case nco_op_avg:               /* nco_op_avg,  Average */
+      strcpy(att_op_sng,"mean");  
+      break;
+    case nco_op_min:               /* nco_op_min,  Minimum value */
+      strcpy(att_op_sng,"minimum"); 
+      break;
+    case nco_op_max:               /* nco_op_max, Maximum value */
+      strcpy(att_op_sng,"maximum"); 
+      break;
+    case nco_op_ttl:               /* nco_op_ttl,  Linear sum */
+      strcpy(att_op_sng,"sum"); 
+      break;
+      /* Remaining operations are supported by NCO but are not in CF Conventions */
+    case nco_op_sqravg:            /* nco_op_sqravg,  Square of mean */          
+      strcpy(att_op_sng,"sqravg"); 
+      break;
+    case nco_op_avgsqr:            /* nco_op_avgsqr, Mean of sum of squares */      
+      strcpy(att_op_sng,"avgsqr"); 
+      break;
+    case nco_op_sqrt:              /* nco_op_sqrt,  Square root of mean  */      
+      strcpy(att_op_sng,"sqrt"); 
+      break;
+    case nco_op_rms:               /* nco_op_rms,  Root-mean-square (normalized by N) */     
+      strcpy(att_op_sng,"rms"); 
+      break;
+    case nco_op_rmssdn:            /* nco_op_rmssdn, Root-mean square normalized by N-1 */
+      strcpy(att_op_sng,"rmssdn"); 
+      break;
+    case nco_op_nil:               /* nco_op_nil  Nil or undefined operation type */    
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Cell method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,nco_op_typ);
+      continue;
+    } /* End switch */
+
+
+
+    /* Inquire if "cell_methods" attribute exists */
+    rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
+
+    /* Set "exists" flag */
+    if(rcd == NC_NOERR) att_xst=True; else att_xst=False;
+
+    /* Set attribute mode (create or append). If it exists, append, else create */
+    if(att_xst == True) aed.mode=aed_append; else aed.mode=aed_create;
+
+    /* Get attribute if it exists */
+    if(att_xst == True){
+
+      (void)nco_get_att(grp_out_id,var_out_id,"cell_methods",(void *)val1,NC_CHAR);  
+
+      /* netCDF requires to manually terminate string */ 
+      val1[att_sz]='\0';
+    }
+
+
+    int len_dmn=0;     /* [nbr] Lenght of possible dimension names string (e.g 'time, lon' ) */
+    int nbr_dmn_add=0; /* [nbr] Number of possible dimension names (e.g 'time, lon' ) that were added  */
+
+    /* Initialize values */
+    aed.val.cp=NULL;
+    val2[0]='\0';
+    att_val[0]='\0';
+    aed.sz=-1L;
+    aed.id=-1;
+
+    /* STEP 1: build list of dimensions string, by looping and matching dimensions  */
+
     /* Loop variable dimensions */
     for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
-
-      /* Loop dimensions */
+      /* Loop input dimensions (ncwa -a or ncra records) */
       for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
-
-        /* Match name */
+        /* Match name (variable dimension with input dimension) */
         if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
 
-          nco_bool flg_ins; /* [flg] Is the name already (dimensions) inserted in array */
+          /* Add space for name */
+          len_dmn+=strlen(var_trv->var_dmn[idx_dmn_var].dmn_nm);
+          nbr_dmn_add++;
 
-          /* Initialize values */
-          aed.val.cp=NULL;
-          att_op_sng[0]='\0';
-          val1[0]='\0';
-          val2[0]='\0';
-          att_val[0]='\0';
-          aed.sz=-1L;
-          aed.id=-1;
+        }  /* Match name (variable dimension with input dimension) */
+      } /* Loop input dimensions (ncwa -a or ncra records) */
+    }/* Loop variable dimensions */
 
-          flg_ins=nco_nm_lst_flg(dim[idx_dmn]->nm,nm_lst);
+    /* Add space for ", ", 2 characters times number of names found less 1 name */ 
+    if(nbr_dmn_add>1){
+      len_dmn+=2*(nbr_dmn_add-1);
+    }
 
-          /* Inquire if "cell_methods" attribute exists */
-          rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
-
-          /* Set "exists" flag */
-          if(rcd == NC_NOERR) att_xst=True; else att_xst=False;
-
-          /* Set attribute mode (create or append). If it exists, append, else create */
-          if(att_xst == True) aed.mode=aed_append; else aed.mode=aed_create;
-
-          /* Get attribute if it exists */
-          if(att_xst == True){
-            
-            (void)nco_get_att(grp_out_id,var_out_id,"cell_methods",(void *)val1,NC_CHAR);  
-
-            /* netCDF requires to manually terminate string */ 
-            val1[att_sz]='\0';
-          }
-
-          /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
-          if(var[idx_var]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
-          switch(nco_op_typ_lcl){
-            /* Next four operations are defined in CF Conventions */
-          case nco_op_avg:               /* nco_op_avg,  Average */
-            strcpy(att_op_sng,"mean");  
-            break;
-          case nco_op_min:               /* nco_op_min,  Minimum value */
-            strcpy(att_op_sng,"minimum"); 
-            break;
-          case nco_op_max:               /* nco_op_max, Maximum value */
-            strcpy(att_op_sng,"maximum"); 
-            break;
-          case nco_op_ttl:               /* nco_op_ttl,  Linear sum */
-            strcpy(att_op_sng,"sum"); 
-            break;
-            /* Remaining operations are supported by NCO but are not in CF Conventions */
-          case nco_op_sqravg:            /* nco_op_sqravg,  Square of mean */          
-            strcpy(att_op_sng,"sqravg"); 
-            break;
-          case nco_op_avgsqr:            /* nco_op_avgsqr, Mean of sum of squares */      
-            strcpy(att_op_sng,"avgsqr"); 
-            break;
-          case nco_op_sqrt:              /* nco_op_sqrt,  Square root of mean  */      
-            strcpy(att_op_sng,"sqrt"); 
-            break;
-          case nco_op_rms:               /* nco_op_rms,  Root-mean-square (normalized by N) */     
-            strcpy(att_op_sng,"rms"); 
-            break;
-          case nco_op_rmssdn:            /* nco_op_rmssdn, Root-mean square normalized by N-1 */
-            strcpy(att_op_sng,"rmssdn"); 
-            break;
-          case nco_op_nil:               /* nco_op_nil  Nil or undefined operation type */    
-            if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Cell method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,nco_op_typ);
-            continue;
-          } /* End switch */
+    /* Loop variable dimensions */
+    for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
+      /* Loop input dimensions (ncwa -a or ncra records) */
+      for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
+        /* Match name (variable dimension with input dimension) */
+        if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
 
           /* Build attribute and write */
 
           /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */
 
-          /* If name is inserted in the list */
-          if (flg_ins){
-
-            /* Names on dimension list, insert them  */
-
-            int len=0;
-            /* Loop name list */
-            for(int idx=0;idx<nm_lst->nbr;idx++){
-
-              /* Add only if dimension belongs to variable's dimensions (NB: idx_var_dmn ) */
-              for(int idx_var_dmn=0;idx_var_dmn<var_trv->nbr_dmn;idx_var_dmn++){
-                /* Match */
-                if(!strcmp(var_trv->var_dmn[idx_var_dmn].dmn_nm,nm_lst->lst[idx].nm)){
-
-                  /* Add space for name */
-                  len+=strlen(nm_lst->lst[idx].nm);
-
-                  /* Add space for ", ", 2 characters ( only up to last name ) */
-                  if (idx<nm_lst->nbr-1) len+=2;      
-
-                }  /* Match */
-              } /* Add only for current dimension (in variable ) */ 
-            } /* Loop name list */
-            aed.sz=len+strlen(": ")+strlen(att_op_sng)+1L;
-
-          }else { /* No names on dimension list, insert the name from dim */        
-
-            /* Concatenate attribute parts (e.g., "time: mean") */
-            aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen(att_op_sng)+1L;
-
-          } /* No names on dimension list, insert the name from dim */
-
-          /* Append mode: add a space */
-          if(aed.mode == aed_append) aed.sz+=1L;
-
-          /* Append mode: add a space */
+          /* Append mode */
           if(aed.mode == aed_append){
 
-            /* If name is inserted in the list */
-            if (flg_ins){
-              /* Add names from list */
-              for(int idx=0;idx<nm_lst->nbr;idx++){
-
-                /* Add only if dimension belongs to variable's dimensions (NB: idx_var_dmn ) */
-                for(int idx_var_dmn=0;idx_var_dmn<var_trv->nbr_dmn;idx_var_dmn++){
-                  /* Match */
-                  if(!strcmp(var_trv->var_dmn[idx_var_dmn].dmn_nm,nm_lst->lst[idx].nm)){
-
-
-                  } /* Match */
-                } /* Add only if dimension belongs to variable's dimensions (NB: idx_var_dmn ) */
-
-              } /* Add names from list */
-            }else {
-
-              strcpy(att_val,dim[idx_dmn]->nm);
-
-            } /* ! If name is inserted in the list */
 
           }else{ /* Create mode */
 
-            /* If name is inserted in the list */
-            if (flg_ins){
-              /* Add names from list */
-              for(int idx=0;idx<nm_lst->nbr;idx++){
+            /* Concatenate name */ 
+            strcat(att_val,var_trv->var_dmn[idx_dmn_var].dmn_nm);
 
-                /* Add only if dimension belongs to variable's dimensions (NB: idx_var_dmn ) */
-                for(int idx_var_dmn=0;idx_var_dmn<var_trv->nbr_dmn;idx_var_dmn++){
-                  /* Match */
-                  if(!strcmp(var_trv->var_dmn[idx_var_dmn].dmn_nm,nm_lst->lst[idx].nm)){
-
-                    strcat(att_val,nm_lst->lst[idx].nm);
-
-                    /* Concatenate ',', only up to last name */
-                    if (idx<nm_lst->nbr-1)strcat(att_val,", ");
-                  }  /* Match */
-                } /* Add only for current dimension (in variable ) */
-              } /* Add names from list */
-            }else {
-
-              strcpy(att_val,dim[idx_dmn]->nm);
+            /* Concatenate ', ' only ( only up to last name ) */ 
+            if(nbr_dmn_add>1){
+              if (idx_dmn_var<nbr_dmn_add){
+                strcat(att_val,", ");
+              }
             }
           } /* Create mode */
-
-          strcat(att_val,": ");
-          strcat(att_val,att_op_sng);
-
-          /* Type is NC_CHAR */
-          aed.val.cp=(char *)strdup(att_val);
-
-          /* Compare current attribute with new value */
-          int cmp;
-          cmp=strcmp(val1,att_val);
-
-          if(nco_dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s <%s> att_val = '%s'\n",nco_prg_nm_get(),fnc_nm,
-              var_trv->nm_fll,att_val);
-          }
-
-          /* Edit attribute (do not edit when current value (val1) is the same as new value and when in append mode */
-          if (cmp!=0 && aed.mode!=aed_append) {
-            (void)nco_aed_prc(grp_out_id,var_out_id,aed);
-          }
-
-          /* Delete current value */
-          if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
-          aed.sz=-1L;
-
-          /* Get attribute if it exists */
-          (void)nco_get_att(grp_out_id,var_out_id,"cell_methods",(void *)val2,NC_CHAR);
-
-          /* Add dimension name to list */
-          (void)nco_nm_lst_ins(dim[idx_dmn]->nm,&nm_lst);
 
         } /*  Match name */
       } /* Loop dimensions */
     } /* Loop variable dimensions */
+
+    /* STEP 2: Add operation type to string  */
+
+    /* Add operation type to string */
+    strcat(att_val,": ");
+    strcat(att_val,att_op_sng);
+
+    /* Type is NC_CHAR */
+    aed.val.cp=(char *)strdup(att_val);
+    aed.sz=strlen(att_val);
+
+    /* Compare current attribute with new value */
+    int cmp;
+    cmp=strcmp(val1,att_val);
+
+    /* Edit attribute (do not edit when current value (val1) is the same as new value and when in append mode */
+    if (cmp!=0 && aed.mode!=aed_append) {
+      (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+    }
+
+    /* Get attribute */
+    (void)nco_get_att(grp_out_id,var_out_id,"cell_methods",(void *)val2,NC_CHAR);
+    val2[aed.sz]='\0';
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s <%s> att_val = '%s'\n",nco_prg_nm_get(),fnc_nm,
+        var_trv->nm_fll,att_val);
+    }
+
+    /* Delete current value */
+    if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
+    aed.sz=-1L;
+
   } /* Process all variables */
 
   aed.att_nm=(char *)nco_free(aed.att_nm);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s dimension name list\n",nco_prg_nm_get(),fnc_nm);
-    for(int idx=0;idx<nm_lst->nbr;idx++){
-      (void)fprintf(stdout,"%s: DEBUG %s %s\n",nco_prg_nm_get(),fnc_nm,
-        nm_lst->lst[idx].nm);
-    }   
-  }
-
-  for(int idx=0;idx<nm_lst->nbr;idx++) nm_lst->lst[idx].nm=(char *)nco_free(nm_lst->lst[idx].nm);
-  nm_lst=(nm_tbl_sct *)nco_free(nm_lst);
   return 0;
 
 } /* end nco_cnv_cf_cll_mth_add() */
