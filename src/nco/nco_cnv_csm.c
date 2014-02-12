@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.89 2014-02-12 00:07:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.90 2014-02-12 00:25:48 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -519,8 +519,9 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   aed.att_nm=(char *)nco_free(aed.att_nm);
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s dimension name list\n",nco_prg_nm_get(),fnc_nm);
     for(int idx=0;idx<nm_lst->nbr;idx++){
-      (void)fprintf(stdout,"%s: DEBUG %s name list = %s\n",nco_prg_nm_get(),fnc_nm,
+      (void)fprintf(stdout,"%s: DEBUG %s %s\n",nco_prg_nm_get(),fnc_nm,
         nm_lst->lst[idx].nm);
     }   
   }
