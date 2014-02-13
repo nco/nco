@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.98 2014-02-13 17:15:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.99 2014-02-13 17:36:19 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -371,29 +371,33 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       /* Parse attribute */
 
       char *sng;          /* [sng] String */
-      char *ptr_chr;      /* [sng] Pointer to character ':' in string */
-      int nbr_chr;        /* [nbr] Number of characterrs in string */
+      char *ptr_chr;      /* [sng] Pointer to character in string */
+      int nbr_dmn_chr;    /* [nbr] Number of dimension separator ',' characters in string */
+      int nbr_op_chr;     /* [nbr] Number of operation separator ':' characters in string */
 
       sng_pth_sct** sng_lst;
 
-      ptr_chr=strchr(val1,':');
+      /* Get number of operation separators ':' in string */
+      nbr_op_chr=nco_get_sng_chr_cnt(val1,':'); 
 
       /* Separator ':' found */
-      if (ptr_chr){
+      if (nbr_op_chr == 1){
+
+        ptr_chr=strchr(val1,':');
 
         size_t len=ptr_chr-val1;
         sng=(char *)nco_malloc(len+1);
         memcpy(sng,val1,len);
         sng[len]='\0';
 
-        /* Get number of tokens in string */
-        nbr_chr=nco_get_sng_chr_cnt(sng); 
+        /* Get number of dimension separators ',' in string */
+        nbr_dmn_chr=nco_get_sng_chr_cnt(sng,','); 
 
-        /* More that 1 dimension found (separated by ',') */
-        if(nbr_chr){
+        /* More than 1 dimension found (separated by ',') */
+        if(nbr_dmn_chr){
 
           /* Alloc */
-          sng_lst=(sng_pth_sct **)nco_malloc(nbr_chr*sizeof(sng_pth_sct *)); 
+          sng_lst=(sng_pth_sct **)nco_malloc(nbr_dmn_chr*sizeof(sng_pth_sct *)); 
 
           /* Get tokens */
           (void)nco_get_sng_pth_sct(sng,&sng_lst); 
@@ -523,28 +527,27 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
 
 int
-nco_get_sng_chr_cnt                /* [fnc] Get number of "," in a string  */
-(char * const sng)                 /* I [sct] String  */
+nco_get_sng_chr_cnt                   /* [fnc] Get number of specified characters in a string  */
+(char * const sng,                    /* I [sng] String  */
+ const char chr)                      /* I [sng] Character */
 {
-  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
-  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
-  int psn_chr;        /* [nbr] Position of character '/' in in full name */
+  char *ptr_chr;   /* [sng] Pointer to character in string */
+  int nbr_chr=0;   /* [nbr] Number of characterrs in string  */
+  int psn_chr;     /* [nbr] Position of character in string */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Looking ',' in \"%s\"...",sng);
-
-  ptr_chr=strchr(sng,',');
+  ptr_chr=strchr(sng,chr);
   while(ptr_chr){
     psn_chr=ptr_chr-sng;
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout," ::found at %d",psn_chr);
 
-    ptr_chr=strchr(ptr_chr+1,',');
+    ptr_chr=strchr(ptr_chr+1,chr);
 
-    nbr_sls_chr++;
+    nbr_chr++;
   } /* end while */
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"\n");
-  return nbr_sls_chr;
+  return nbr_chr;
 
 } /* nco_get_sng_chr_cnt() */
 
