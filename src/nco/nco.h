@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.484 2014-02-10 22:12:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.485 2014-02-13 17:03:23 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -1018,6 +1018,12 @@ extern "C" {
     char *nm;                    /* [sng] A name */
     nco_bool flg_in_fl[2];       /* [flg] Is this name in each file?; files are [0] and [1] */
   } nco_cmn_t;
+
+  /* cell_methods structure */
+  typedef struct{ 
+    char *dmn_nm;   /* [sng] Dimension name */
+    int op_type;    /* [enm] Operation type */
+  } cell_methods_sct; 
 
   /* Limit "lmt_sct" monotonic direction */
   typedef enum {
