@@ -1,5 +1,5 @@
-#!/bin/bash     ## shell type
-shopt -s extglob  ## enable extended globbing
+#!/bin/bash      # shell type
+shopt -s extglob # enable extended globbing
 
 #===========================================================================
 # Some of the models cut one ensemble member into several files, 
@@ -24,13 +24,13 @@ shopt -s extglob  ## enable extended globbing
 # Execute this script: bash cmb_fl.sh
 #===========================================================================
 
-drc_in='/home/wenshanw/data/cmip5/'		# Directory of input files
+drc_in='/home/wenshanw/data/cmip5/' # Directory of input files
 
-var=( 'snc' 'snd' ) 	# Variables
-rlm='LImon'           # Realm
-xpt=( 'historical' )  # Experiment ( could be more )
+var=( 'snc' 'snd' )                 # Variables
+rlm='LImon'                         # Realm
+xpt=( 'historical' )                # Experiment ( could be more )
 
-for var_id in {0..1}; do	# Loop over two variables
+for var_id in {0..1}; do            # Loop over two variables
   # Names of all the models (ls [get file names]; 
   #  cut [get model names]; 
   #  sort; uniq [remove duplicates]; awk [print])
@@ -41,7 +41,7 @@ for var_id in {0..1}; do	# Loop over two variables
   echo "=============================="
   echo "There are" ${mdl_nbr} "models for" ${var[var_id]}.
   
-  for mdl in ${mdl_set}; do	# Loop over models
+  for mdl in ${mdl_set}; do	        # Loop over models
     # Names of all the ensemble members
     nsm_set=$( ls ${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*.nc | \
       cut -d '_' -f 5 | sort | uniq -c | awk '{print $2}' )
@@ -51,7 +51,7 @@ for var_id in {0..1}; do	# Loop over two variables
     echo "Model" ${mdl} "includes" ${nsm_nbr} "ensemble member(s):"
     echo ${nsm_set}"."
     
-    for nsm in ${nsm_set}; do	# Loop over ensemble members
+    for nsm in ${nsm_set}; do	      # Loop over ensemble members
       # Number of files in this ensemble member
       fl_nbr=$( ls ${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_${nsm}_*.nc \
         | wc -w ) 

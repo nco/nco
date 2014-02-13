@@ -20,24 +20,24 @@
 
 #---------------------------------------------------------------------------
 # Parameters
-drc_in='/home/wenshanw/data/cmip5/'		# Directory of input files
-drc_out='/home/wenshanw/data/cmip5/output/'	# Directory of output files
+drc_in='/home/wenshanw/data/cmip5/'         # Directory of input files
+drc_out='/home/wenshanw/data/cmip5/output/' # Directory of output files
 
-var=( 'snc' 'snd' )		# Variables
-rlm='LImon'			# Realm
-xpt=( 'historical' )		# Experiment ( could be more )
+var=( 'snc' 'snd' )                         # Variables
+rlm='LImon'                                 # Realm
+xpt=( 'historical' )                        # Experiment ( could be more )
 
-fld_out=( 'snc/' 'snd/' )		# Folders of output files
-#------------------------------------------------------------
+fld_out=( 'snc/' 'snd/' )                   # Folders of output files
+# ------------------------------------------------------------
 
-for var_id in {0..1}; do		# Loop over two variables
+for var_id in {0..1}; do                    # Loop over two variables
   # Names of all models 
   #   (ls [get file names]; cut [get the part for model names]; 
   #   sort; uniq [remove duplicates]; awk [print])
   mdl_set=$( ls ${drc_in}${var[var_id]}_${rlm}_*_${xpt[0]}_*.nc | \
     cut -d '_' -f 3 | sort | uniq -c | awk '{print $2}' )
   
-  for mdl in ${mdl_set}; do		# Loop over models
+  for mdl in ${mdl_set}; do		              # Loop over models
   	# Loop over ensemble members
     for fn in $( ls ${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*.nc ); do
       pfx=$( echo ${fn} | cut -d'/' -f6 | cut -d'_' -f1-5 )

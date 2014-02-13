@@ -17,23 +17,24 @@
 # Online: http://nco.sourceforge.net/nco.html#Combine-Files
 #
 # Execute this script: bash cmb_fl_grp.sh
-##============================================================
+#============================================================
 
-# Input Directory
-drc_in='/media/grele_data/wenshan/cesm/historical-exp/nco_grp/'
-drc_out='/media/grele_data/wenshan/cesm/historical-exp/nco_grp/grp/'
+# Directories
+drc_in='../data/'
+drc_out='../data/grp/'
 
 # Constants
-rlm='LImon'    # Realm: LandIce; Time frequency: monthly
-tms='199001-200512'     # Timeseris
-flt='nc'     # File Type
+rlm='LImon'         # Realm: LandIce; Time frequency: monthly
+tms='200001-200512' # Timeseris
+flt='nc'            # File Type
 
 # Geographical weights
 # Can be skipped when ncap2 works on group data
-for fn in $( ls ${drc_in}snc_${rlm}_*_${tms}.${flt} ); do     # Loop over all snc files
+# Loop over all snc files
+for fn in $( ls ${drc_in}snc_${rlm}_*_${tms}.${flt} ); do
   ncap2 -O -s \
-    'gw = float(cos(lat*3.1415926/180.)); gw@long_name="geographical weight";\
-    gw@units="ratio"; gw@standard_name="Geographical Weight"' ${fn} ${fn}
+    'gw = float(cos(lat*3.1416/180.)); gw@long_name="geographical weight";'\
+    ${fn} ${fn}
 done
 
 var=( 'snc' 'snd' )
@@ -41,23 +42,23 @@ xpt=( 'esmHistorical' 'historical' )
 mdl=( 'CCSM4' 'CESM1-BGC' 'CESM1-CAM5' )
 
 for i in {0..1}; do     # Loop over variables
-  for j in {0..1}; do     # Loop over experiments
-    for k in {0..2}; do     # Loop over models
-      ncecat -O --glb_mtd_spr -G ${xpt[j]}/${mdl[k]}/ \
+  for j in {0..1}; do   # Loop over experiments
+    for k in {0..2}; do # Loop over models
+      ncecat -O --glb_mtd_spp -G ${xpt[j]}/${mdl[k]}/${mdl[k]}_ \
         ${drc_in}${var[i]}_${rlm}_${mdl[k]}_${xpt[j]}_*_${tms}.${flt} \
         ${drc_out}${var[i]}_${rlm}_${mdl[k]}_${xpt[j]}_all-nsm_${tms}.${flt}
       ncks -A \
         ${drc_out}${var[i]}_${rlm}_${mdl[k]}_${xpt[j]}_all-nsm_${tms}.${flt} \
         ${drc_out}${var[i]}_${rlm}_${mdl[0]}_${xpt[j]}_all-nsm_${tms}.${flt}
-    done
+    done                # Loop done: models
     ncks -A \
       ${drc_out}${var[i]}_${rlm}_${mdl[0]}_${xpt[j]}_all-nsm_${tms}.${flt} \
       ${drc_out}${var[i]}_${rlm}_${mdl[0]}_${xpt[0]}_all-nsm_${tms}.${flt}
-  done
+  done                  # Loop done: experiments
   ncks -A \
     ${drc_out}${var[i]}_${rlm}_${mdl[0]}_${xpt[0]}_all-nsm_${tms}.${flt} \
     ${drc_out}${var[0]}_${rlm}_${mdl[0]}_${xpt[0]}_all-nsm_${tms}.${flt}
-done
+done                    # Loop done: variables
 
 # Rename output file
 mv ${drc_out}${var[0]}_${rlm}_${mdl[0]}_${xpt[0]}_all-nsm_${tms}.${flt} \
@@ -82,7 +83,7 @@ rm ${drc_out}sn?_${rlm}*.nc
 # {
 #   CESM1-BGC 
 #   {
-#     00 
+#     CESM1-BGC_00 
 #     {
 #       snc(time, lat, lon)
 #       snd(time, lat, lon)
@@ -93,29 +94,28 @@ rm ${drc_out}sn?_${rlm}*.nc
 # {
 #    CCSM4
 #    {
-#      00
+#      CCSM4_00
 #      {
 #       snc(time, lat, lon)
 #       snd(time, lat, lon)
 #      }
-#      01
+#      CCSM4_01
 #      {
 #       snc(time, lat, lon)
 #       snd(time, lat, lon)
 #      }
-#      02 { ... }
-#      03 { ... }
-#      04 { ... }
-#      05 { ... }
+#      CCSM4_02 { ... }
+#      CCSM4_03 { ... }
+#      CCSM4_04 { ... }
 #    }
 #    CESM1-BGC
 #    {
-#      00 { ... }
+#      CESM1-BGC_00 { ... }
 #    }
 #    CESM1-CAM5
 #    {
-#      00 { ... }
-#      01 { ... }
-#      02 { ... }
+#      CESM1-CAM5_00 { ... }
+#      CESM1-CAM5_01 { ... }
+#      CESM1-CAM5_02 { ... }
 #    }
 # }

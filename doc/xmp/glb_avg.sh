@@ -18,17 +18,17 @@
 
 #---------------------------------------------------------------------------
 # Parameters
-drc_in='/home/wenshanw/data/cmip5/'		# Directory of input files
-drc_out='/home/wenshanw/data/cmip5/output/'	# Directory of output files
+drc_in='/home/wenshanw/data/cmip5/'         # Directory of input files
+drc_out='/home/wenshanw/data/cmip5/output/' # Directory of output files
 
-var=( 'snc' 'snd' )		# Variables
-rlm='LImon'			# Realm
-xpt=( 'historical' )		# Experiment ( could be more )
+var=( 'snc' 'snd' )                         # Variables
+rlm='LImon'                                 # Realm
+xpt=( 'historical' )                        # Experiment ( could be more )
 
-fld_out=( 'snc/' 'snd/' )		# Folders of output files
+fld_out=( 'snc/' 'snd/' )                   # Folders of output files
 #---------------------------------------------------------------------------
 
-for var_id in {0..1}; do	# Loop over two variables
+for var_id in {0..1}; do	                  # Loop over two variables
   # Names of all models 
   #   (ls [get file names]; cut [get the part for model names]; 
   #   sort; uniq [remove duplicates]; awk [print])
@@ -37,9 +37,10 @@ for var_id in {0..1}; do	# Loop over two variables
   # Number of models (echo [print contents]; wc [count])
   mdl_num=$( echo ${mdl_set} | wc -w )		
   
-  for mdl in ${mdl_set}; do				# Loop over models
+  for mdl in ${mdl_set}; do				          # Loop over models
   	# Average all the ensemble members of each model
-  	ncea -O -4 -d time,"1956-01-01 00:00:0.0","2005-12-31 23:59:9.9" \
+    # Use nces file ensembles mode: --nsm_fl
+  	nces --nsm_fl -O -4 -d time,"1956-01-01 00:00:0.0","2005-12-31 23:59:9.9" \
       ${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*.nc \
       ${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}\
       _all-nsm_195601-200512.nc
