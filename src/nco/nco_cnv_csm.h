@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.40 2014-02-13 17:36:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.41 2014-02-13 21:56:44 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -76,7 +76,11 @@ nco_get_sng_chr_cnt                   /* [fnc] Get number of specified character
 int
 nco_get_sng_sct                       /* [fnc] Get token structure  */
 (char * const sng,                    /* I [sng] String  */ 
- sng_pth_sct ***str_pth_lst);         /* I/O [sct] List of components  */   
+ sng_pth_sct ***str_pth_lst);         /* I/O [sct] List of components  */  
+
+int
+nco_sng_dmn_to_op                     /* [fnc] Convert operation string to integer  */
+(const char * const att_op_sng);      /* [fnc] Operation string  */
 
 
 #ifdef __cplusplus
