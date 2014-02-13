@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.104 2014-02-13 23:13:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.105 2014-02-13 23:58:31 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -361,15 +361,16 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     int nbr_dmn_add=0;     /* [nbr] Number of possible dimension names (e.g 'time, lon' ) that were added  */
     int nbr_cm1=0;         /* [nbr] Size of cell methods array  */
     int nbr_cm2=0;         /* [nbr] Size of cell methods array  */
+    int nbr_cm3=0;         /* [nbr] Size of cell methods array  */
 
     sng_pth_sct** sng_lst; /* [sct] Parse dimensions */
    
     cell_methods_sct *cm1; /* [sct] Cell methods (existing attribute)  */
     cell_methods_sct *cm2; /* [sct] Cell methods (current run) */
+    cell_methods_sct *cm3; /* [sct] Cell methods (combined) */
 
     /* Arrays (nco_realloc) must be initialized to NULL */
-    cm1=NULL;
-    cm2=NULL;
+    cm1=cm2=cm3=NULL;
 
     /* Inquire if "cell_methods" attribute exists */
     rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
@@ -521,10 +522,19 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     aed.id=-1;
 
     /* Combine cell methods arrays from existing and current runs */
-    for(int idx_add_2=0;idx_add_2<nbr_cm2;idx_add_2++){
+
+    /* Loop cm2 */
+    for(int idx_2=0;idx_2<nbr_cm2;idx_2++){
+      /* Loop cm1 */
+      for(int idx_1=0;idx_1<nbr_cm1;idx_1++){
+
+        if(strcmp(cm2[idx_2].dmn_nm,cm1[idx_1].dmn_nm) == 0 ){
+
+        }
 
 
-    } /* Combine cell methods arrays from existing and current runs */
+      } /* Loop cm1 */
+    } /* Loop cm2 */
 
 
 
@@ -556,6 +566,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
     for(int idx=0;idx<nbr_cm1;idx++) cm1[idx].dmn_nm=(char *)nco_free(cm1[idx].dmn_nm);
     for(int idx=0;idx<nbr_cm2;idx++) cm2[idx].dmn_nm=(char *)nco_free(cm2[idx].dmn_nm);
+    for(int idx=0;idx<nbr_cm3;idx++) cm3[idx].dmn_nm=(char *)nco_free(cm3[idx].dmn_nm);
 
   } /* Process all variables */
 
