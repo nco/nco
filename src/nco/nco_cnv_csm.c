@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.97 2014-02-13 17:03:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.98 2014-02-13 17:15:53 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -367,7 +367,47 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
       /* netCDF requires to manually terminate string */ 
       val1[att_sz]='\0';
-    }
+
+      /* Parse attribute */
+
+      char *sng;          /* [sng] String */
+      char *ptr_chr;      /* [sng] Pointer to character ':' in string */
+      int nbr_chr;        /* [nbr] Number of characterrs in string */
+
+      sng_pth_sct** sng_lst;
+
+      ptr_chr=strchr(val1,':');
+
+      /* Separator ':' found */
+      if (ptr_chr){
+
+        size_t len=ptr_chr-val1;
+        sng=(char *)nco_malloc(len+1);
+        memcpy(sng,val1,len);
+        sng[len]='\0';
+
+        /* Get number of tokens in string */
+        nbr_chr=nco_get_sng_chr_cnt(sng); 
+
+        /* More that 1 dimension found (separated by ',') */
+        if(nbr_chr){
+
+          /* Alloc */
+          sng_lst=(sng_pth_sct **)nco_malloc(nbr_chr*sizeof(sng_pth_sct *)); 
+
+          /* Get tokens */
+          (void)nco_get_sng_pth_sct(sng,&sng_lst); 
+
+        } /* More that 1 dimension found (separated by ',') */
+
+
+
+
+
+        sng=(char *)nco_free(sng);
+      } /* Separator ':' found */
+
+    } /* Get attribute if it exists */
 
 
     int len_dmn=0;     /* [nbr] Lenght of possible dimension names string (e.g 'time, lon' ) */
