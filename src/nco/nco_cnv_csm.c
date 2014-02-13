@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.102 2014-02-13 22:14:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.103 2014-02-13 22:56:09 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -376,6 +376,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Attribute mode is always create. If existing attribute, it has to be parsed for dimensions and op types and re-created */
     aed.mode=aed_create;
 
+    /* STEP 1: build array of cell_methods_sct, by reading existing attributes and parsing current attributes  */
+
     /* Get attribute if it exists */
     if(att_xst == True){
 
@@ -391,7 +393,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
       /* Format is <dimensions>: <operation>, e.g "time302: mean" */
 
-      /* Separator ':' found */
+      /* Separator ':' found. Case of just one operation  */
       if (nbr_op_chr == 1){
 
         ptr_chr=strchr(val1,':');
@@ -420,22 +422,18 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           /* Transfer to cell_methods array */
           for(int idx_dmn=0;idx_dmn<nbr_dmn_chr;idx_dmn++){
 
+
+
           } /* Transfer to cell_methods arrays */
 
         } else { /* Just 1 dimension found  */
 
           cm=(cell_methods_sct *)nco_realloc(cm,(nbr_dmn_add+1)*sizeof(cell_methods_sct));
           cm[nbr_dmn_add].dmn_nm=strdup(sng_dmn);
-          cm[nbr_dmn_add].op_type=nco_sng_dmn_to_op(sng_op);
-          
+          cm[nbr_dmn_add].op_type=nco_sng_dmn_to_op(sng_op);          
           nbr_dmn_add++;
 
-
-
-
         } /* Just 1 dimension found  */
-
-
 
         sng_dmn=(char *)nco_free(sng_dmn);
       } /* Separator ':' found */
@@ -452,11 +450,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     aed.sz=-1L;
     aed.id=-1;
 
-    /* Build attribute and write */
-
-    /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */
-
-    /* STEP 1: build list of dimensions string, by looping and matching dimensions  */
+    /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */ 
 
     /* Loop variable dimensions */
     for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
@@ -480,9 +474,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
     /* Resize cm with the number of dimensions found */
 
-    cm=(cell_methods_sct *)nco_realloc(cm,(nbr_dmn_add)*sizeof(cell_methods_sct));
-  
-    
+    cm=(cell_methods_sct *)nco_realloc(cm,(nbr_dmn_add)*sizeof(cell_methods_sct));    
 
     /* Loop variable dimensions */
     for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
@@ -509,11 +501,29 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       } /* Loop dimensions */
     } /* Loop variable dimensions */
 
-    /* STEP 2: Add operation type to string  */
-
     /* Add operation type to string */
     strcat(att_val,": ");
     strcat(att_val,att_op_sng);
+
+    /* STEP 2: Parse array of cell_methods_sct and write attribute  */
+
+    /* Initialize values */
+    aed.val.cp=NULL;
+    val2[0]='\0';
+    att_val[0]='\0';
+    aed.sz=-1L;
+    aed.id=-1;
+
+    /* Add dimensions from cell methods array */
+    for(int idx_add=0;idx_add<nbr_dmn_add;idx_add++){
+
+      strcat(att_val,cm[idx_add].dmn_nm);
+      if (idx_add<nbr_dmn_add){
+        strcat(att_val,", ");
+      }
+      strcat(att_val,": ");
+
+    } /* Add dimensions from cell methods array */
 
 
 
