@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.78 2014-02-07 20:16:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.79 2014-02-13 03:21:49 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -83,11 +83,11 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   for(idx=0;idx<dmn_var_nbr;idx++){
     for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
       /* Comparing dimension IDs is faster than comparing dimension names 
-      but requires assumption that all dimensions are from same file */
+	 but requires assumption that all dimensions are from same file */
       if(var->dmn_id[idx] == dim[idx_dmn]->id){
         /* Although structures in dim are never altered, linking them into
-        dmn_avg list makes them vulnerable to manipulation and forces 
-        dim to lose const protection in prototype */
+	   dmn_avg list makes them vulnerable to manipulation and forces 
+	   dim to lose const protection in prototype */
         dmn_avg[dmn_avg_nbr]=dim[idx_dmn];
         /* idx_avg_var[i]=j means that ith averaging dimension is jth dimension of var */
         idx_avg_var[dmn_avg_nbr]=idx;
@@ -110,12 +110,12 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
   if(dmn_avg_nbr == 0){
     /* 20050517: ncwa only calls nco_var_avg() with variables containing averaging dimensions
-    Variables without averaging dimensions are in the var_fix list 
-    We preserve nco_var_avg() capability to work on var_fix variables for future flexibility */
+       Variables without averaging dimensions are in the var_fix list 
+       Preserve nco_var_avg() capability to work on var_fix variables for future flexibility */
     (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",nco_prg_nm_get(),fix->nm);
     /* Variable does not contain any averaging dimensions so we are done
-    For consistency, return copy of variable held in fix and free() original
-    Hence, nco_var_avg() always destroys original input and returns valid output */
+       For consistency, return copy of variable held in fix and free() original
+       Hence, nco_var_avg() always destroys original input and returns valid output */
     goto cln_and_xit;
   } /* end if */
 
@@ -330,7 +330,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     case nco_op_min:
       (void)nco_var_avg_rdc_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;
-    case nco_op_avg: /* Operations: Previous=none, Current=sum, Next=normalize and root */
+    case nco_op_avg: /* Operations: Previous=none, Current=sum, Next=normalize */
     case nco_op_sqravg: /* Operations: Previous=none, Current=sum, Next=normalize and square */
     case nco_op_avgsqr: /* Operations: Previous=square, Current=sum, Next=normalize */
     case nco_op_rms: /* Operations: Previous=square, Current=sum, Next=normalize and root */
@@ -372,8 +372,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   } /* !flg_rdd */
 
   /* Jump here when variable is not to be reduced. This occurs when
-  1. Variable contains no averaging dimensions
-  2. Averaging block size is 1 */
+     1. Variable contains no averaging dimensions
+     2. Averaging block size is 1 */
 cln_and_xit:
 
   /* Free input variable */
@@ -440,7 +440,9 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   nco_uint mss_val_uint=nco_uint_CEWI;
   nco_uint64 mss_val_uint64=nco_uint64_CEWI;
   nco_ushort mss_val_ushort=nco_ushort_CEWI;
-  
+  nco_char mss_val_char=nco_char_CEWI;
+  nco_string mss_val_string=nco_string_CEWI;
+
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
@@ -458,8 +460,8 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     case NC_UINT: mss_val_uint=*mss_val.uip; break;
     case NC_INT64: mss_val_int64=*mss_val.i64p; break;
     case NC_UINT64: mss_val_uint64=*mss_val.ui64p; break;
-    case NC_CHAR: break;
-    case NC_STRING: break;
+    case NC_CHAR: mss_val_char=*mss_val.cp; break;
+    case NC_STRING: mss_val_string=*mss_val.sngp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
@@ -969,8 +971,46 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_CHAR: break;
-  case NC_STRING: break;
+  case NC_CHAR:
+    /* Only allow ANSI-compliant branch. "total" is assigned value of first element of block */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.cp[idx_op2]=op1.cp[blk_off];
+        tally[idx_op2]=1L;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+	idx_op1=blk_off;
+	if(op1.cp[idx_op1] != mss_val_char){
+	  op2.cp[idx_op2]=op1.cp[idx_op1];
+	  tally[idx_op2]=1L;
+	} /* end if */
+        if(tally[idx_op2] == 0L) op2.cp[idx_op2]=mss_val_char;
+      } /* end loop over idx_op2 */
+    } /* end else */
+    break;
+  case NC_STRING: 
+    /* Only allow ANSI-compliant branch. "total" is assigned value of first element of block */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.sngp[idx_op2]=op1.sngp[blk_off];
+        tally[idx_op2]=1L;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+	idx_op1=blk_off;
+	if(op1.sngp[idx_op1] != mss_val_string){
+	  op2.sngp[idx_op2]=op1.sngp[idx_op1];
+	  tally[idx_op2]=1L;
+	} /* end if */
+        if(tally[idx_op2] == 0L) op2.sngp[idx_op2]=mss_val_string;
+      } /* end loop over idx_op2 */
+    } /* end else */
+    break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -1016,6 +1056,8 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
   nco_uint mss_val_uint=nco_uint_CEWI;
   nco_uint64 mss_val_uint64=nco_uint64_CEWI;
   nco_ushort mss_val_ushort=nco_ushort_CEWI;
+  nco_char mss_val_char=nco_char_CEWI;
+  nco_string mss_val_string=nco_string_CEWI;
   
   nco_bool flg_mss=False; /* [flg] Block has valid (non-missing) values */
   
@@ -1036,8 +1078,8 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     case NC_UINT: mss_val_uint=*mss_val.uip; break;
     case NC_INT64: mss_val_int64=*mss_val.i64p; break;
     case NC_UINT64: mss_val_uint64=*mss_val.ui64p; break;
-    case NC_CHAR: break;
-    case NC_STRING: break;
+    case NC_CHAR: mss_val_char=*mss_val.cp; break;
+    case NC_STRING: mss_val_string=*mss_val.sngp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
@@ -1553,8 +1595,46 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_CHAR: break;
-  case NC_STRING: break;
+  case NC_CHAR:
+    /* Only allow ANSI-compliant branch. "min" is assigned value of first element of block */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.cp[idx_op2]=op1.cp[blk_off];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+	idx_op1=blk_off;
+	if(op1.cp[idx_op1] != mss_val_char){
+	  if(!flg_mss) op2.cp[idx_op2]=op1.cp[idx_op1];
+	  flg_mss=True;
+	} /* end if */
+        if(!flg_mss) op2.cp[idx_op2]=mss_val_char;
+      } /* end loop over idx_op2 */
+    } /* end else */
+    break;
+  case NC_STRING: 
+    /* Only allow ANSI-compliant branch. "min" is assigned value of first element of block */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.sngp[idx_op2]=op1.sngp[blk_off];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+	idx_op1=blk_off;
+	if(op1.sngp[idx_op1] != mss_val_string){
+	  if(!flg_mss) op2.sngp[idx_op2]=op1.sngp[idx_op1];
+	  flg_mss=True;
+	} /* end if */
+        if(!flg_mss) op2.sngp[idx_op2]=mss_val_string;
+      } /* end loop over idx_op2 */
+    } /* end else */
+    break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
 
@@ -1600,6 +1680,8 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
   nco_uint mss_val_uint=nco_uint_CEWI;
   nco_uint64 mss_val_uint64=nco_uint64_CEWI;
   nco_ushort mss_val_ushort=nco_ushort_CEWI;
+  nco_char mss_val_char=nco_char_CEWI;
+  nco_string mss_val_string=nco_string_CEWI;
   
   nco_bool flg_mss=False;
 
@@ -1620,8 +1702,8 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     case NC_UINT: mss_val_uint=*mss_val.uip; break;
     case NC_INT64: mss_val_int64=*mss_val.i64p; break;
     case NC_UINT64: mss_val_uint64=*mss_val.ui64p; break;
-    case NC_CHAR: break;
-    case NC_STRING: break;
+    case NC_CHAR: mss_val_char=*mss_val.cp; break;
+    case NC_STRING: mss_val_string=*mss_val.sngp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
@@ -2137,8 +2219,46 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_CHAR: break;
-  case NC_STRING: break;
+  case NC_CHAR:
+    /* Only allow ANSI-compliant branch. "max" is assigned value of first element of block */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.cp[idx_op2]=op1.cp[blk_off];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+	idx_op1=blk_off;
+	if(op1.cp[idx_op1] != mss_val_char){
+	  if(!flg_mss) op2.cp[idx_op2]=op1.cp[idx_op1];
+	  flg_mss=True;
+	} /* end if */
+        if(!flg_mss) op2.cp[idx_op2]=mss_val_char;
+      } /* end loop over idx_op2 */
+    } /* end else */
+    break;
+  case NC_STRING: 
+    /* Only allow ANSI-compliant branch. "max" is assigned value of first element of block */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.sngp[idx_op2]=op1.sngp[blk_off];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+	idx_op1=blk_off;
+	if(op1.sngp[idx_op1] != mss_val_string){
+	  if(!flg_mss) op2.sngp[idx_op2]=op1.sngp[idx_op1];
+	  flg_mss=True;
+	} /* end if */
+        if(!flg_mss) op2.sngp[idx_op2]=mss_val_string;
+      } /* end loop over idx_op2 */
+    } /* end else */
+    break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
 

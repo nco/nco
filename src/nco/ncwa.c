@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.406 2014-02-11 16:17:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.407 2014-02-13 03:21:49 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.406 2014-02-11 16:17:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.406 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.407 2014-02-13 03:21:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.407 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -926,7 +926,7 @@ main(int argc,char **argv)
           case NC_INT64: mss_val_dbl=wgt_avg->mss_val.i64p[0]; break;
           case NC_UINT64: mss_val_dbl=wgt_avg->mss_val.ui64p[0]; break;
           case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
-          case NC_UBYTE: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
+          case NC_UBYTE: mss_val_dbl=wgt_avg->mss_val.ubp[0]; break;
           case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
           case NC_STRING: break; /* Do nothing */
           default: nco_dfl_case_nc_type_err(); break;
