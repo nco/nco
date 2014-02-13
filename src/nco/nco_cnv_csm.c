@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.99 2014-02-13 17:36:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.100 2014-02-13 21:19:01 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -350,6 +350,23 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Cell method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,nco_op_typ);
       continue;
     } /* End switch */
+    
+    char *sng;             /* [sng] String */
+    char *ptr_chr;         /* [sng] Pointer to character in string */
+
+    int nbr_dmn_chr;       /* [nbr] Number of dimension separator ',' characters in string */
+    int nbr_op_chr;        /* [nbr] Number of operation separator ':' characters in string */
+    int len_dmn=0;         /* [nbr] Lenght of possible dimension names string (e.g 'time, lon' ) */
+    int nbr_dmn_add=0;     /* [nbr] Number of possible dimension names (e.g 'time, lon' ) that were added  */
+
+    sng_pth_sct** sng_lst; /* [sct] Parse dimensions */
+   
+    cell_methods_sct *cm;  /* [sct] Cell methods  */
+    
+    int idx_add=0;         /* [nbr] Index to cell methods array */
+
+    /* Arrays (nco_realloc) must be initialized to NULL */
+    cm=NULL;
 
     /* Inquire if "cell_methods" attribute exists */
     rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
@@ -357,8 +374,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Set "exists" flag */
     if(rcd == NC_NOERR) att_xst=True; else att_xst=False;
 
-    /* Set attribute mode (create or append). If it exists, append, else create */
-    if(att_xst == True) aed.mode=aed_append; else aed.mode=aed_create;
+    /* Attribute mode is always create. If existing attribute, it has to be parsed for dimensions and op types and re-created */
+    aed.mode=aed_create;
 
     /* Get attribute if it exists */
     if(att_xst == True){
@@ -369,13 +386,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       val1[att_sz]='\0';
 
       /* Parse attribute */
-
-      char *sng;          /* [sng] String */
-      char *ptr_chr;      /* [sng] Pointer to character in string */
-      int nbr_dmn_chr;    /* [nbr] Number of dimension separator ',' characters in string */
-      int nbr_op_chr;     /* [nbr] Number of operation separator ':' characters in string */
-
-      sng_pth_sct** sng_lst;
 
       /* Get number of operation separators ':' in string */
       nbr_op_chr=nco_get_sng_chr_cnt(val1,':'); 
@@ -402,9 +412,17 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           /* Get tokens */
           (void)nco_get_sng_pth_sct(sng,&sng_lst); 
 
-        } /* More that 1 dimension found (separated by ',') */
+          /* Transfer to cell_methods array */
+          for(int idx_dmn=0;idx_dmn<nbr_dmn_chr;idx_dmn++){
+
+          } /* Transfer to cell_methods arrays */
+
+        } else { /* Just 1 dimension found  */
 
 
+
+
+        } /* Just 1 dimension found  */
 
 
 
@@ -414,8 +432,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     } /* Get attribute if it exists */
 
 
-    int len_dmn=0;     /* [nbr] Lenght of possible dimension names string (e.g 'time, lon' ) */
-    int nbr_dmn_add=0; /* [nbr] Number of possible dimension names (e.g 'time, lon' ) that were added  */
+    
 
     /* Initialize values */
     aed.val.cp=NULL;
@@ -450,11 +467,10 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       len_dmn+=2*(nbr_dmn_add-1);
     }
 
-    /* Allocate a cell_methods_sct with the number of dimensions found */
+    /* Resize cm with the number of dimensions found */
 
-    cell_methods_sct *cm=(cell_methods_sct *)nco_malloc(nbr_dmn_add*sizeof(cell_methods_sct));
-
-    int idx_add=0;
+    cm=(cell_methods_sct *)nco_realloc(cm,nbr_dmn_add*sizeof(cell_methods_sct));
+  
 
     /* Loop variable dimensions */
     for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
