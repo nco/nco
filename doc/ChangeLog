@@ -1,7 +1,7 @@
 2014-02-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.2 release procedure:
- 	Changes since nco-4_4_1: ncra.c mmr fix, LLVM/clang bld, -X, rx	nsx, cell_methods
+ 	Changes since nco-4_4_1: ncra.c mmr 4 LLVM/clang, -X, rx nsx, cll_mth, ncwa sng
 	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
