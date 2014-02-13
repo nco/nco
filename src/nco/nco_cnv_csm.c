@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.103 2014-02-13 22:56:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.104 2014-02-13 23:13:14 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -359,13 +359,17 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     int nbr_op_chr;        /* [nbr] Number of operation separator ':' characters in string */
     int len_dmn=0;         /* [nbr] Lenght of possible dimension names string (e.g 'time, lon' ) */
     int nbr_dmn_add=0;     /* [nbr] Number of possible dimension names (e.g 'time, lon' ) that were added  */
+    int nbr_cm1=0;         /* [nbr] Size of cell methods array  */
+    int nbr_cm2=0;         /* [nbr] Size of cell methods array  */
 
     sng_pth_sct** sng_lst; /* [sct] Parse dimensions */
    
-    cell_methods_sct *cm;  /* [sct] Cell methods  */
+    cell_methods_sct *cm1; /* [sct] Cell methods (existing attribute)  */
+    cell_methods_sct *cm2; /* [sct] Cell methods (current run) */
 
     /* Arrays (nco_realloc) must be initialized to NULL */
-    cm=NULL;
+    cm1=NULL;
+    cm2=NULL;
 
     /* Inquire if "cell_methods" attribute exists */
     rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
@@ -428,10 +432,11 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
         } else { /* Just 1 dimension found  */
 
-          cm=(cell_methods_sct *)nco_realloc(cm,(nbr_dmn_add+1)*sizeof(cell_methods_sct));
-          cm[nbr_dmn_add].dmn_nm=strdup(sng_dmn);
-          cm[nbr_dmn_add].op_type=nco_sng_dmn_to_op(sng_op);          
+          cm1=(cell_methods_sct *)nco_realloc(cm1,(nbr_dmn_add+1)*sizeof(cell_methods_sct));
+          cm1[nbr_dmn_add].dmn_nm=strdup(sng_dmn);
+          cm1[nbr_dmn_add].op_type=nco_sng_dmn_to_op(sng_op);          
           nbr_dmn_add++;
+          nbr_cm1++;
 
         } /* Just 1 dimension found  */
 
@@ -441,7 +446,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     } /* Get attribute if it exists */
 
 
-    int idx_add=nbr_dmn_add;
+    int idx_add=0;
 
     /* Initialize values */
     aed.val.cp=NULL;
@@ -472,9 +477,9 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       len_dmn+=2*(nbr_dmn_add-1);
     }
 
-    /* Resize cm with the number of dimensions found */
+    /* Array to parse current run */
 
-    cm=(cell_methods_sct *)nco_realloc(cm,(nbr_dmn_add)*sizeof(cell_methods_sct));    
+    cm2=(cell_methods_sct *)nco_realloc(cm2,(nbr_dmn_add)*sizeof(cell_methods_sct));    
 
     /* Loop variable dimensions */
     for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
@@ -493,9 +498,10 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
             }
           }
 
-          cm[idx_add].dmn_nm=strdup(var_trv->var_dmn[idx_dmn_var].dmn_nm);
-          cm[idx_add].op_type=nco_op_typ_lcl;
+          cm2[idx_add].dmn_nm=strdup(var_trv->var_dmn[idx_dmn_var].dmn_nm);
+          cm2[idx_add].op_type=nco_op_typ_lcl;
           idx_add++;
+          nbr_cm2++;
 
         } /*  Match name */
       } /* Loop dimensions */
@@ -514,16 +520,11 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     aed.sz=-1L;
     aed.id=-1;
 
-    /* Add dimensions from cell methods array */
-    for(int idx_add=0;idx_add<nbr_dmn_add;idx_add++){
+    /* Combine cell methods arrays from existing and current runs */
+    for(int idx_add_2=0;idx_add_2<nbr_cm2;idx_add_2++){
 
-      strcat(att_val,cm[idx_add].dmn_nm);
-      if (idx_add<nbr_dmn_add){
-        strcat(att_val,", ");
-      }
-      strcat(att_val,": ");
 
-    } /* Add dimensions from cell methods array */
+    } /* Combine cell methods arrays from existing and current runs */
 
 
 
@@ -553,7 +554,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     aed.sz=-1L;
 
 
-    for(int idx=0;idx<nbr_dmn_add;idx++) cm[idx].dmn_nm=(char *)nco_free(cm[idx].dmn_nm);
+    for(int idx=0;idx<nbr_cm1;idx++) cm1[idx].dmn_nm=(char *)nco_free(cm1[idx].dmn_nm);
+    for(int idx=0;idx<nbr_cm2;idx++) cm2[idx].dmn_nm=(char *)nco_free(cm2[idx].dmn_nm);
 
   } /* Process all variables */
 
