@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.355 2014-01-17 23:15:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.356 2014-02-13 04:38:12 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -911,7 +911,15 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
   /* Purpose: Free all memory associated with a dynamically allocated variable structure */
 
   /* String values must be deep-free'd, everything else is a flat buffer */
-  if(var->type == (nc_type)NC_STRING && var->val.vp != (void *)NULL) var->val.vp=(void *)nco_sng_lst_free((char **)var->val.vp,var->sz); else var->val.vp=nco_free(var->val.vp);
+  if(var->type == (nc_type)NC_STRING){
+    /* 20140212: ncwa may free this memory twice because reduced variable not created correctly in nco_var_avg()
+       Temporarily only free string variables during debugging */
+    if(nco_dbg_lvl_get() == nco_dbg_crr)
+      if(var->val.vp) var->val.vp=(void *)nco_sng_lst_free((char **)var->val.vp,var->sz);
+  }else{
+    if(var->val.vp) var->val.vp=nco_free(var->val.vp);
+  } /* endif */
+
   var->nm=(char *)nco_free(var->nm);
   var->nm_fll=(char *)nco_free(var->nm_fll);
   var->mss_val.vp=nco_free(var->mss_val.vp);

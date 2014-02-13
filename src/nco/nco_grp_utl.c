@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1245 2014-02-12 19:21:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1246 2014-02-13 04:38:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -849,7 +849,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       trv_tbl->lst[obj_idx].flg_xtr=True;
   } /* end loop over obj_idx */
 
-  if(nco_dbg_lvl_get() == nco_dbg_crr){
+  if(nco_dbg_lvl_get() == nco_dbg_old){
     for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
       /* Create shallow copy to avoid indirection */
       trv_obj=trv_tbl->lst[obj_idx];

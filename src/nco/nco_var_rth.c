@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.68 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.69 2014-02-13 04:38:12 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -2639,7 +2639,7 @@ nco_var_zero /* [fnc] Zero value of first operand */
   } /* end switch */
   
 #if 0
-  /* Presumably this old method used until 20050321 is slower because of pointer de-referencing */
+  /* Presumably this old method (used until 20050321) is slower because of pointer de-referencing */
   long idx;
   
   /* Typecast pointer to values before access */

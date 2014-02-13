@@ -6,6 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
 
+	* Workaround double-free() bug with ncwa min/max and string arrays
+	Temporarily do not free string memory in nco_var_free() unless dbg_lvl=6
+
 	* nco_var_rdc_[min|max|ttl]() copies first element of NC_CHAR and NC_STRING
 	Previously, these routines did nothing with those variable types
 
