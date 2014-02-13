@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.101 2014-02-13 21:56:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.102 2014-02-13 22:14:49 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -389,6 +389,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       /* Get number of operation separators ':' in string */
       nbr_op_chr=nco_get_sng_chr_cnt(val1,':'); 
 
+      /* Format is <dimensions>: <operation>, e.g "time302: mean" */
+
       /* Separator ':' found */
       if (nbr_op_chr == 1){
 
@@ -398,6 +400,10 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
         sng_dmn=(char *)nco_malloc(len+1);
         memcpy(sng_dmn,val1,len);
         sng_dmn[len]='\0';
+
+        /* Get operation (2 characters after dimensions) */
+        ptr_chr+=2;
+        sng_op=ptr_chr;
 
         /* Get number of dimension separators ',' in string */
         nbr_dmn_chr=nco_get_sng_chr_cnt(sng_dmn,','); 
@@ -420,7 +426,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
           cm=(cell_methods_sct *)nco_realloc(cm,(nbr_dmn_add+1)*sizeof(cell_methods_sct));
           cm[nbr_dmn_add].dmn_nm=strdup(sng_dmn);
-          cm[nbr_dmn_add].op_type=nco_sng_dmn_to_op("mean");
+          cm[nbr_dmn_add].op_type=nco_sng_dmn_to_op(sng_op);
           
           nbr_dmn_add++;
 
