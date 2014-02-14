@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.868 2014-02-14 05:22:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.869 2014-02-14 23:31:54 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -68,7 +68,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.4.2 last updated on <!--#flastmod file="VERSION"-->
+Current NCO version is 4.4.1 last updated on <!--#flastmod file="VERSION"-->
 </h2>
 
 <table border=0 width=100%>
@@ -148,7 +148,7 @@ and
 <ul>
 <li>2014 Mar&nbsp;25: (TBD) NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2014 Feb&nbsp;??: NCO 4.4.3 (<i>In progress</i>)
-<li>2014 Feb&nbsp;07: NCO 4.4.2 (Stability)
+<li>2014 Feb&nbsp;??: NCO 4.4.2 (Stability)
 <li>2014 Jan&nbsp;29: NCO 4.4.1 (Stability)
 <li>2014 Jan&nbsp;09: NCO 4.4.0 (Stability)
 <li>2013 Dec&nbsp;13: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201312.pdf">Talk</a> at Fall AGU, San Francisco, California</li>
@@ -1274,6 +1274,7 @@ ANTLR&nbsp;3.x and 4.x C++ interfaces are incomplete.
 
 <dt><a name="apt"></a></dt> <!-- http://nco.sf.net#apt -->
 <dt><a name="aptitude"></a></dt> <!-- http://nco.sf.net#aptitude -->
+<dt><a name="bld_apt"></a></dt> <!-- http://nco.sf.net#bld_apt -->
 For the reasons explained above (compiler compatibility) install as
 much pre-requisite and optional software as possible from pre-compiled
 packages. 
@@ -1290,6 +1291,7 @@ For Debian-based systems:
 </tt>
 
 <dt><a name="yum"></a></dt> <!-- http://nco.sf.net#yum -->
+<dt><a name="bld_yum"></a></dt> <!-- http://nco.sf.net#bld_yum -->
 For RPM-based systems:
 <tt>
 <dt>sudo yum install antlr antlr-C++ -y # ANTLR</dt>
@@ -1303,7 +1305,8 @@ For RPM-based systems:
 <dt>sudo yum install udunits2 udunits2-devel -y # UDUnits</dt>
 </tt>
 
-<dt><a name="yum"></a></dt> <!-- http://nco.sf.net#port -->
+<dt><a name="port"></a></dt> <!-- http://nco.sf.net#port -->
+<dt><a name="bld_macports"></a></dt> <!-- http://nco.sf.net#bld_macports -->
 For Mac OS X with MacPorts:
 <tt>
 <dt>sudo port install libdap # DAP</dt>
@@ -1356,7 +1359,7 @@ builds with it are less common than we would like.
 The file <tt>nco/configure.eg</tt> contains a table which describes the 
 success you can expect building NCO with the <tt>configure</tt>
 mechanism. 
-If the simple <tt>configure</tt> recipe above does not work, savvier
+If the simple <tt>configure</tt> recipe above does not work, savvy
 users may find it straightforward to modify and use the following, more
 advanced <tt>configure</tt> recipe:
 <tt>
@@ -1373,7 +1376,7 @@ sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
 </pre>
 </tt>
 This is the recipe that the developers use to test <tt>configure</tt>
-on the development machines.
+on their machines.
 Please contribute patches required to get the <tt>configure</tt> 
 mechanism working properly for NCO on your platform.
 The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>

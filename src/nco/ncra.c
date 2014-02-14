@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.510 2014-02-14 05:22:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.511 2014-02-14 23:31:56 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.510 2014-02-14 05:22:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.510 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.511 2014-02-14 23:31:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.511 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -239,6 +239,7 @@ main(int argc,char **argv)
   nco_bool REC_SRD_LST=False; /* [flg] Record belongs to last stride of current file */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
+  nco_bool flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_skp1; /* [flg] Current record is not dimension of this variable */
   nco_bool flg_skp2; /* [flg] Current record is not dimension of this variable */
@@ -425,7 +426,8 @@ main(int argc,char **argv)
         cnk_plc_sng=(char *)strdup(optarg);
         cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
       } /* endif cnk */
-
+      if(!strcmp(opt_crr,"cll_mth") || !strcmp(opt_crr,"cell_methods")) flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
+      if(!strcmp(opt_crr,"no_cll_mth") || !strcmp(opt_crr,"no_cell_methods")) flg_cll_mth=False; /* [flg] Add/modify cell_methods attributes */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
@@ -725,14 +727,14 @@ main(int argc,char **argv)
     /* Make dimension array from limit records array */
     (void)nco_dmn_lmt(lmt_rec,nbr_dmn,&dmn);
     /* Add cell_methods attributes (pass as dimension argument a records-only array) */
-#ifdef ENABLE_CELL_METHODS
-    if(nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG dimension list to nco_cnv_cf_cll_mth_add()\n",nco_prg_nm_get());
-      for(idx=0;idx<nbr_dmn;idx++) (void)fprintf(stdout,"%s: DEBUG %s\n",nco_prg_nm_get(),dmn[idx]->nm);
-      for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stdout,"%s: DEBUG %s\n",nco_prg_nm_get(),var_prc_out[idx]->nm_fll);
-    } /* endif dbg */
-    rcd+=nco_cnv_cf_cll_mth_add(out_id,var_prc_out,nbr_var_prc,dmn,nbr_dmn,nco_op_typ,gpe,trv_tbl); 
-#endif
+    if(flg_cll_mth){
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+	(void)fprintf(stdout,"%s: DEBUG dimension list to nco_cnv_cf_cll_mth_add()\n",nco_prg_nm_get());
+	for(idx=0;idx<nbr_dmn;idx++) (void)fprintf(stdout,"%s: DEBUG %s\n",nco_prg_nm_get(),dmn[idx]->nm);
+	for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stdout,"%s: DEBUG %s\n",nco_prg_nm_get(),var_prc_out[idx]->nm_fll);
+      } /* endif dbg */
+      rcd+=nco_cnv_cf_cll_mth_add(out_id,var_prc_out,nbr_var_prc,dmn,nbr_dmn,nco_op_typ,gpe,trv_tbl); 
+    } /* !flg_cll_mth */
     if(nbr_dmn > 0) dmn=nco_dmn_lst_free(dmn,nbr_dmn);
   } /* !ncra */
 

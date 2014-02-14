@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.486 2014-02-14 05:22:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.487 2014-02-14 23:31:55 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -11,10 +11,6 @@
 
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
-
-#if 1
-#define ENABLE_CELL_METHODS
-#endif
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
