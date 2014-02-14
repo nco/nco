@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1246 2014-02-13 04:38:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1247 2014-02-14 23:40:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -892,15 +892,11 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
      Instead it is used to help determine whether group should be excluded for metadata-only containing groups 
      Group extraction is reset and done from scratch (except for flg_xcl/flg_mtd) in nco_xtr_grp_mrk() */
 
-  const char fnc_nm[]="nco_xtr_xcl()"; /* [sng] Function name */
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr; /* Toggle extraction flag */
     trv_tbl->lst[uidx].flg_xcl=!trv_tbl->lst[uidx].flg_xcl; /* Mark that this object was explicitly excluded */
   } /* end for */
-
-  /* Print extraction list in debug mode */
-  if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* end nco_xtr_xcl() */
@@ -6719,8 +6715,14 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
   } /* !lmt_nbr */
 
-  /* Build ensembles */
-  if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,trv_tbl);
+  if(nco_prg_id_get() == ncge){
+    
+    /* Build ensembles */
+    (void)nco_bld_nsm(nc_id,trv_tbl);
+
+    /* Mark all non-ensemble related variables not to be extracted */
+    (void)nco_xtr_nsm(trv_tbl);
+  }
 
    /* Check valid input (limits) */
   if(lmt_nbr) (void)nco_chk_dmn_in(lmt_nbr,lmt,flg_dne,trv_tbl);
@@ -9021,3 +9023,40 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
 
 } /* end nco_dmn_lmt() */
 
+
+void
+nco_xtr_nsm                           /* [fnc] Mark all non-ensemble related variables not to be extracted */
+(trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+{
+  const char fnc_nm[]="nco_xtr_nsm()"; /* [sng] Function name  */
+
+  trv_sct var_trv;
+
+  /* Loop table */
+  for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    var_trv=trv_tbl->lst[idx_tbl];
+
+    /* Filter */
+    if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
+
+      /* Variable is ensemble member */
+      if (var_trv.flg_nsm_mbr){
+
+        ;
+
+      }else {
+
+        /* Not ensemble, remove variable from extraction list */
+
+        trv_tbl->lst[idx_tbl].flg_xtr=False;
+
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s removing variable <%s>\n",nco_prg_nm_get(),fnc_nm,
+            trv_tbl->lst[idx_tbl].nm_fll);
+        }
+
+      } /* Variable is ensemble member */
+    }  /* Filter */
+  } /* Loop table */
+
+} /* end nco_xtr_nsm() */
