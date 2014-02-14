@@ -1,10 +1,14 @@
-2014-02-12  Charlie Zender  <zender@uci.edu>
+2014-02-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.2 release procedure:
  	Changes since nco-4_4_1: ncra.c mmr 4 LLVM/clang, -X, rx nsx, cll_mth, ncwa sng
 	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
+
+	* Change duration (drn) to subcycle (ssc), a more descriptive keyword
+
+2014-02-12  Charlie Zender  <zender@uci.edu>
 
 	* Workaround double-free() bug with ncwa min/max and string arrays
 	Temporarily do not free string memory in nco_var_free() unless dbg_lvl=6

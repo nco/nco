@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.187 2014-01-07 22:18:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.188 2014-02-14 05:22:17 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -145,17 +145,18 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.187 2014-01-07 22:18:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.187 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.188 2014-02-14 05:22:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.188 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
-  cnk_dmn_sct **cnk_dmn=NULL_CEWI;
+  cnk_sct cnk; /* [sct] Chunking structure */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct *dmn_new;
   dmn_sct *dmn_item;
-    // Template lists
+
+  // Template lists
   NcapVector<dmn_sct*> dmn_in_vtr;  
   NcapVector<dmn_sct*> dmn_out_vtr;  
   
@@ -248,6 +249,7 @@ main(int argc,char **argv)
       /* Long options with argument, no short option counterpart */
       {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
       {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+      {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
       {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
       {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
       {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
@@ -338,7 +340,7 @@ main(int argc,char **argv)
 	/* Copy limit argument for later processing */
 	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
 	cnk_nbr++;
-      } /* endif cnk */
+      } /* endif cnk_dmn */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
 	cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -595,10 +597,6 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   if(fl_out) FL_OUT_NEW=True; else fl_out=(char *)strdup(fl_lst_in[0]);
   
-  /* Make uniform list of user-specified chunksizes */
-  cnk_sz_byt+=0; /* CEWI */
-  if(cnk_nbr > 0) cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);
-
   /* Make uniform list of user-specified dimension limits */
   if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
@@ -643,6 +641,9 @@ main(int argc,char **argv)
     (void)nco_redef(out_id);
   } /* Existing file */
   
+  /* Create structure with all chunking information */
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
+
   /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
 
@@ -778,7 +779,6 @@ main(int argc,char **argv)
   
   /* Make list of all new variables in output_file */  
   xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,False,&nbr_lst_a);
-
   
   if(PROCESS_ALL_VARS){
     /* Get number of variables in input file */
@@ -881,7 +881,6 @@ main(int argc,char **argv)
   
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
-
    
     if(var_vtr[idx]->xpr_typ == ncap_var){
       int rcd_inq_att;
@@ -967,7 +966,7 @@ main(int argc,char **argv)
   } /* end for */
   
   /* Set chunksize parameters */
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,(lmt_msa_sct **)NULL_CEWI,(int)0,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr);
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,(lmt_msa_sct **)NULL_CEWI,(int)0,&cnk_map,&cnk_plc,cnk_sz_scl,cnk.cnk_dmn,cnk_nbr);
 
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -1027,7 +1026,7 @@ main(int argc,char **argv)
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk_dmn=nco_cnk_lst_free(cnk_dmn,cnk_nbr);
+    if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     /* Free dimension vectors */
     if(dmn_in_vtr.size() > 0) { 
       for(idx=0;idx<dmn_in_vtr.size();idx++)

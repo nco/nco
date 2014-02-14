@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.867 2014-02-05 21:17:07 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.868 2014-02-14 05:22:13 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -721,7 +721,7 @@ fixes to <tt>--[mk/fix]_rec_dmn</tt>;
 <tt>--no_tmp_fl</tt> to <a href="http://nco.sf.net/nco.html#no_tmp_fl">bypass</a> temporary files;
 Negative indices for <a href="http://nco.sf.net/nco.html#hyp">hyperslabs</a>;
 <tt>ncpdq</tt> unpacks coordinate variables;
-<tt>ncra/ncrcat</tt> DRN/MRO <a href="http://nco.sf.net/nco.html#drn">options</a>;
+<tt>ncra/ncrcat</tt> SSC/MRO <a href="http://nco.sf.net/nco.html#ssc">options</a>;
 <tt>ncra/ncrcat</tt> rebase <a href="http://nco.sf.net/nco.html#rbs">bounds</a>;</li>
 <li><b>NCO 4.2.0</b>: 
 <tt>ncecat</tt> "fixes" auxiliary coordinates and bounds;

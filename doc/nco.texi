@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.963 2014-02-13 17:41:28 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.964 2014-02-14 05:22:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2425,7 +2425,7 @@ feature is automatic and cannot be controlled by the user.
 * Hyperslabs::
 * Stride::
 * Record Appending::
-* Duration::
+* Subcycle::
 * Multislabs::
 * Wrapped Coordinates::
 * Auxiliary Coordinates::
@@ -5014,7 +5014,7 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 <a name="rec_apn"></a> <!-- http://nco.sf.net/nco.html#rec_apn -->
 <a name="record_append"></a> <!-- http://nco.sf.net/nco.html#record_append -->
 @end html
-@node Record Appending, Duration, Stride, Common features
+@node Record Appending, Subcycle, Stride, Common features
 @section Record Appending
 @cindex record append
 @cindex @code{--rec_apn}
@@ -5086,27 +5086,29 @@ We recommend users try to understand the safety trade-offs involved.
 
 @html
 <a name="subcycle"></a> <!-- http://nco.sf.net/nco.html#subcycle -->
+<a name="ssc"></a> <!-- http://nco.sf.net/nco.html#ssc -->
 <a name="duration"></a> <!-- http://nco.sf.net/nco.html#duration -->
 <a name="drn"></a> <!-- http://nco.sf.net/nco.html#drn -->
 <a name="mro"></a> <!-- http://nco.sf.net/nco.html#mro -->
 @end html
-@node Duration, Multislabs, Record Appending, Common features
-@section Duration
+@node Subcycle, Multislabs, Record Appending, Common features
+@section Subcycle
 @cindex duration
 @cindex sub-cycle
+@cindex subcycle
 @cindex MRO
 @cindex Multi-Record Operator
 @cindex @code{--mro}
-@cindex @code{-d @var{dim},[@var{min}],[@var{max}],[@var{stride}],[@var{duration}]}
-@cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],[@var{stride}],[@var{duration}]}
-@cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],[@var{stride}],@var{duration}]}
+@cindex @code{-d @var{dim},[@var{min}],[@var{max}],[@var{stride}],[@var{subcycle}]}
+@cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],[@var{stride}],[@var{subcycle}]}
+@cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],[@var{stride}],@var{subcycle}]}
 @cartouche
 Availability: @command{ncra}, @command{ncrcat}@* 
-Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]]}@*
+Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]]}@*
 Long options: 
 @samp{--mro}
-@samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]]}@*
-@samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]]}@*
+@samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]]}@*
+@samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]]}@*
 @end cartouche
 As of version 4.2.1 (August, 2012), @acronym{NCO} allows both Multi-File,
 Multi-Record operators, @command{ncra} and @command{ncrcat}, to extract
@@ -5115,12 +5117,15 @@ These groups may be connected to physical @emph{sub-cycles} of a
 periodic nature, e.g., months of a year, or hours of a day. 
 Or they may be thought of as groups of a specifed duration.
 The feature and the terminology to describe it are new.
-For now, we call this the @dfn{duration feature}, sometimes abbreviated @acronym{DRN}.
+For now, we call this the @dfn{subcycle feature}, sometimes abbreviated
+@acronym{SSC}
+@footnote{When originally released in 2012 this was called the
+@dfn{duration feature}, and was abbreviated @acronym{DRN}.}.
 
-The duration feature allows processing of groups of records
+The subcycle feature allows processing of groups of records
 separated by regular intervals of records.
 It is perhaps best illustrated by an extended example which describes
-how to solve the same problem both with and without the @acronym{DRN} feature.
+how to solve the same problem both with and without the @acronym{SSC} feature.
 
 The first task in climate data processing is often creating seasonal
 cycles. 
@@ -5144,10 +5149,10 @@ ncra -O clm06 clm07.nc clm08.nc clm_JJA.nc
 @noindent
 So far, nothing is unusual and this task can be performed by any
 @acronym{NCO} version. 
-The @acronym{DRN} feature makes obsolete the need for the shell loop
+The @acronym{SSC} feature makes obsolete the need for the shell loop
 used in @w{Step 1} above. 
 
-The new @acronym{DRN} option aggregates more than one input record at a time
+The new @acronym{SSC} option aggregates more than one input record at a time
 before performing arithmetic operations, and, with an additional
 switch, allows us to archive those results in multiple record output
 (MRO) files.  
@@ -5158,7 +5163,7 @@ mean to one step:
 ncra -O -F -d time,6,,12,3 -n 150,4,1 1850.nc clm_JJA.nc
 @end example
 @noindent
-The @acronym{DRN} option instructs @command{ncra} (or @command{ncrcat})
+The @acronym{SSC} option instructs @command{ncra} (or @command{ncrcat})
 to process  files in groups of three records. 
 To better understand the meaning of each argument to the @samp{-d}
 hyperslab option, read it this way: ``for the time dimension start with
@@ -5191,7 +5196,7 @@ records.
 <a name="msa"></a> <!-- http://nco.sf.net/nco.html#msa -->
 <a name="mlt"></a> <!-- http://nco.sf.net/nco.html#mlt -->
 @end html
-@node Multislabs, Wrapped Coordinates, Duration, Common features
+@node Multislabs, Wrapped Coordinates, Subcycle, Common features
 @section Multislabs 
 @cindex multislab
 @cindex multi-hyperslab
@@ -7714,7 +7719,7 @@ ncra --flt -O -F -d time,3,,10 ~/foo.nc ~/foo_avg3.nc
 # Method 1: Obtain ensemble January average by averaging the averages
 ncra --flt -O ~/foo_avg1.nc ~/foo_avg2.nc ~/foo_avg3.nc ~/foo_avg_mth1.nc
 # Method 2: Obtain ensemble January average by averaging the raw data
-# Employ ncra's "duration" feature (http://nco.sf.net/nco.html#drn)
+# Employ ncra's "subcycle" feature (http://nco.sf.net/nco.html#ssc)
 ncra --flt -O -F -d time,1,,10,3 ~/foo.nc ~/foo_avg_mth2.nc
 # Difference the two methods
 ncbo -O ~/foo_avg_mth1.nc ~/foo_avg_mth2.nc ~/foo_avg_dff.nc
@@ -7756,7 +7761,7 @@ ncra --dbl -O -F -d time,3,,10 ~/foo.nc ~/foo_avg3.nc
 # Method 1: Obtain ensemble January average by averaging the averages
 ncra --dbl -O ~/foo_avg1.nc ~/foo_avg2.nc ~/foo_avg3.nc ~/foo_avg_mth1.nc
 # Method 2: Obtain ensemble January average by averaging the raw data
-# Employ ncra's "duration" feature (http://nco.sf.net/nco.html#drn)
+# Employ ncra's "subcycle" feature (http://nco.sf.net/nco.html#ssc)
 ncra --dbl -O -F -d time,1,,10,3 ~/foo.nc ~/foo_avg_mth2.nc
 # Difference the two methods
 ncbo -O ~/foo_avg_mth1.nc ~/foo_avg_mth2.nc ~/foo_avg_dff.nc
@@ -15278,7 +15283,7 @@ SYNTAX
 @example
 ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [-F]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
@@ -15392,7 +15397,7 @@ SYNTAX
 @example
 ncrcat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [-F]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rec_apn]
@@ -16618,8 +16623,8 @@ ncra -O --mro -d time,"1990-12-01",,12,3 in.nc out.nc
 @example
 ncra -O --mro -d time,,,12,12 in.nc out.nc
 @end example
-Here we use the duration feature (i.e., the number after the fourth comma: @samp{3} in the seasonal example and the second @samp{12} in the annual example) 
-to retrieve groups of records separated by regular intervals (@pxref{Duration}).
+Here we use the subcycle feature (i.e., the number after the fourth comma: @samp{3} in the seasonal example and the second @samp{12} in the annual example) 
+to retrieve groups of records separated by regular intervals (@pxref{Subcycle}).
 The option @option{--mro} switches @command{ncra} to produce a Multi-Record Output instead of a single-record output.
 For example, assume @var{snd} is a 3D array with dimensions @code{time} * @code{latitude} * @code{longitude} 
 and @code{time} includes every month from Jan. 1990 to Dec. 2005, 192 months as total, which are 16 years.

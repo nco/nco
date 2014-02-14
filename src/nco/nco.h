@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.485 2014-02-13 17:03:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.486 2014-02-14 05:22:16 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -580,7 +580,7 @@ extern "C" {
     char *grp_nm_fll; /* [sng] Full group where dimension is defined. Added for group support from original netCDF3 */
 
     /* Following four flags are used only by multi-file operators ncra and ncrcat: */
-    char *drn_sng; /* User-specified string for dimension duration */
+    char *ssc_sng; /* User-specified string for dimension subcycle */
     char *max_sng; /* User-specified string for dimension maximum */
     char *min_sng; /* User-specified string for dimension minimum */
     char *mro_sng; /* User-specified string for multi-record output */
@@ -594,7 +594,7 @@ extern "C" {
     int id; /* Dimension ID */
     int lmt_typ; /* crd_val or dmn_idx */
     long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
-    long drn; /* Duration of hyperslab */
+    long ssc; /* Subcycle of hyperslab */
     long end; /* Index to end of hyperslab */
     long max_idx; /* Index of maximum requested value in dimension */
     long min_idx; /* Index of minimum requested value in dimension */
@@ -603,7 +603,7 @@ extern "C" {
     long idx_end_max_abs; /* [idx] Maximum allowed index in record dimension (multi-file record dimension only) */
     long rec_skp_ntl_spf; /* [nbr] Records skipped in initial superfluous files (multi-file record dimension only) */
     long rec_skp_vld_prv; /* [nbr] Records skipped since previous good one (multi-file record dimension only) */
-    long rec_rmn_prv_drn; /* [nbr] Records remaining-to-be-read to complete duration group from previous file (multi-file record dimension only) */
+    long rec_rmn_prv_ssc; /* [nbr] Records remaining-to-be-read to complete subcycle group from previous file (multi-file record dimension only) */
     long srd; /* Stride of hyperslab */
     long srt; /* Index to start of hyperslab */
     nco_bool flg_mro; /* True for multi-record output (used by ncra only) */

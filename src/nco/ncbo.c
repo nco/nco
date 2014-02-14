@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.286 2014-02-11 16:17:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.287 2014-02-14 05:22:16 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.286 2014-02-11 16:17:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.286 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.287 2014-02-14 05:22:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.287 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -342,7 +342,7 @@ main(int argc,char **argv)
         /* Copy limit argument for later processing */
         cnk_arg[cnk_nbr]=(char *)strdup(optarg);
         cnk_nbr++;
-      } /* endif cnk */
+      } /* endif cnk_dmn */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
         cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

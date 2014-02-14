@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.207 2014-01-28 07:15:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.208 2014-02-14 05:22:17 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -15,7 +15,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->nm=NULL;              /* [sng] Dimension name */
   lmt->nm_fll=NULL;          /* [sng] Full dimension name */
   lmt->grp_nm_fll=NULL;      /* [sng] Full group where dimension is defined */
-  lmt->drn_sng=NULL;         /* [sng] User-specified string for dimension duration */
+  lmt->ssc_sng=NULL;         /* [sng] User-specified string for dimension subcycle */
   lmt->max_sng=NULL;         /* [sng] User-specified string for dimension maximum */
   lmt->min_sng=NULL;         /* [sng] User-specified string for dimension minimum */
   lmt->mro_sng=NULL;         /* [sng] User-specified string for multi-record output */
@@ -31,7 +31,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->lmt_typ=-1;           /* [enm] Limit type (0, Coordinate value limit, 1, Dimension index limit, 2, UDUnits string )  */
 
   lmt->cnt=-1;               /* [nbr] Valid elements in this dimension (including effects of stride and wrapping) */
-  lmt->drn=-1;               /* [nbr] Duration of hyperslab */
+  lmt->ssc=-1;               /* [nbr] Subcycle of hyperslab */
   lmt->end=-1;               /* [nbr] Index to end of hyperslab */
   lmt->max_idx=-1;           /* [nbr] Index of maximum requested value in dimension */
   lmt->min_idx=-1;           /* [nbr] Index of minimum requested value in dimension */
@@ -40,7 +40,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->idx_end_max_abs=-1;   /* [nbr] Maximum allowed index in record dimension (multi-file record dimension only) */
   lmt->rec_skp_ntl_spf=-1;   /* [nbr] Records skipped in initial superfluous files (multi-file record dimension only) */
   lmt->rec_skp_vld_prv=-1;   /* [nbr] Records skipped since previous good one (multi-file record dimension only) */
-  lmt->rec_rmn_prv_drn=-1;   /* [nbr] Records remaining-to-be-read to complete duration group from previous file (multi-file record dimension only) */
+  lmt->rec_rmn_prv_ssc=-1;   /* [nbr] Records remaining-to-be-read to complete subcycle group from previous file (multi-file record dimension only) */
   lmt->srd=-1;               /* [nbr] Stride of hyperslab */
   lmt->srt=-1;               /* [nbr] Index to start of hyperslab */
 
@@ -59,7 +59,7 @@ nco_lmt_prt /* [fnc] Print a Limit structure */
 (lmt_sct *lmt) /* I/O [sct] Limit structure to print */
 {
   (void)fprintf(stdout,"Name: %s\n",lmt->nm);
-  (void)fprintf(stdout,"User-specified string for dimension duration: %s\n",lmt->drn_sng);
+  (void)fprintf(stdout,"User-specified string for dimension subcycle: %s\n",lmt->ssc_sng);
   (void)fprintf(stdout,"User-specified string for dimension maximum : %s\n",lmt->max_sng);
   (void)fprintf(stdout,"User-specified string for dimension minimum: %s\n",lmt->min_sng);
   (void)fprintf(stdout,"User-specified string for multi-record output: %s\n",lmt->mro_sng);
@@ -75,7 +75,7 @@ nco_lmt_prt /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Limit type: %d\n",lmt->lmt_typ);
 
   (void)fprintf(stdout,"Valid elements: %li\n",lmt->cnt);
-  (void)fprintf(stdout,"Duration of hyperslab: %li\n",lmt->drn);
+  (void)fprintf(stdout,"Subcycle of hyperslab: %li\n",lmt->ssc);
   (void)fprintf(stdout,"Index to end of hyperslab: %li\n",lmt->end);
   (void)fprintf(stdout,"Index of maximum requested value: %li\n",lmt->max_idx);
   (void)fprintf(stdout,"Index of minimum requested value: %li\n",lmt->min_idx);
@@ -84,7 +84,7 @@ nco_lmt_prt /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Maximum allowed index in record dimension: %li\n",lmt->idx_end_max_abs);
   (void)fprintf(stdout,"Records skipped in initial superfluous files: %li\n",lmt->rec_skp_ntl_spf);
   (void)fprintf(stdout,"Records skipped since previous good one: %li\n",lmt->rec_skp_vld_prv);
-  (void)fprintf(stdout,"Records remaining-to-be-read: %li\n",lmt->rec_rmn_prv_drn);
+  (void)fprintf(stdout,"Records remaining-to-be-read: %li\n",lmt->rec_rmn_prv_ssc);
   (void)fprintf(stdout,"Stride of hyperslab: %li\n",lmt->srd);
   (void)fprintf(stdout,"Index to start of hyperslab: %li\n",lmt->srt);
 
@@ -115,7 +115,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   if(lmt1->max_sng) lmt2->max_sng=(char *)strdup(lmt1->max_sng);
   if(lmt1->min_sng) lmt2->min_sng=(char *)strdup(lmt1->min_sng);
 
-  if(lmt1->drn_sng) lmt2->drn_sng=(char *)strdup(lmt1->drn_sng);      
+  if(lmt1->ssc_sng) lmt2->ssc_sng=(char *)strdup(lmt1->ssc_sng);      
   if(lmt1->mro_sng) lmt2->mro_sng=(char *)strdup(lmt1->mro_sng);
   if(lmt1->rbs_sng) lmt2->rbs_sng=(char *)strdup(lmt1->rbs_sng);
   if(lmt1->srd_sng) lmt2->srd_sng=(char *)strdup(lmt1->srd_sng);
@@ -129,7 +129,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   lmt2->lmt_typ=lmt1->lmt_typ;
 
   lmt2->cnt=lmt1->cnt;
-  lmt2->drn=lmt1->drn;
+  lmt2->ssc=lmt1->ssc;
   lmt2->end=lmt1->end;
   lmt2->max_idx=lmt1->max_idx;
   lmt2->min_idx=lmt1->min_idx;
@@ -138,7 +138,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   lmt2->idx_end_max_abs=lmt1->idx_end_max_abs;
   lmt2->rec_skp_ntl_spf=lmt1->rec_skp_ntl_spf;
   lmt2->rec_skp_vld_prv=lmt1->rec_skp_vld_prv;
-  lmt2->rec_rmn_prv_drn=lmt1->rec_rmn_prv_drn;
+  lmt2->rec_rmn_prv_ssc=lmt1->rec_rmn_prv_ssc;
   lmt2->srd=lmt1->srd;
   lmt2->srt=lmt1->srt;
 
@@ -162,7 +162,7 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   lmt->nm_fll=(char *)nco_free(lmt->nm_fll);
   lmt->grp_nm_fll=(char *)nco_free(lmt->grp_nm_fll);
 
-  lmt->drn_sng=(char *)nco_free(lmt->drn_sng);
+  lmt->ssc_sng=(char *)nco_free(lmt->ssc_sng);
   lmt->max_sng=(char *)nco_free(lmt->max_sng);
   lmt->min_sng=(char *)nco_free(lmt->min_sng);
   lmt->mro_sng=(char *)nco_free(lmt->mro_sng);
@@ -250,11 +250,11 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
   lmt_dim->is_usr_spc_lmt=False; /* True if any part of limit is user-specified, else False */
   lmt_dim->is_usr_spc_max=False; /* True if user-specified, else False */
   lmt_dim->is_usr_spc_min=False; /* True if user-specified, else False */
-  /* rec_skp_ntl_spf, rec_skp_vld_prv, rec_in_cml, and rec_rmn_prv_drn only used for MFO record dimension */
+  /* rec_skp_ntl_spf, rec_skp_vld_prv, rec_in_cml, and rec_rmn_prv_ssc only used for MFO record dimension */
   lmt_dim->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
   lmt_dim->rec_skp_vld_prv=0L; /* Number of records skipped since previous good one */
   lmt_dim->rec_in_cml=0L; /* Number of records, read or not, in previously processed files */
-  lmt_dim->rec_rmn_prv_drn=0L; /* Records remaining-to-be-read to complete duration group from previous file */
+  lmt_dim->rec_rmn_prv_ssc=0L; /* Records remaining-to-be-read to complete subcycle group from previous file */
 
   for(idx=0;idx<lmt_nbr;idx++){
     /* Copy user-specified limits, if any */
@@ -273,7 +273,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
         lmt_dim->is_usr_spc_min=True; /* True if user-specified, else False */
       } /* end if */
       if(lmt[idx]->srd_sng) lmt_dim->srd_sng=(char *)strdup(lmt[idx]->srd_sng); else lmt_dim->srd_sng=NULL;
-      if(lmt[idx]->drn_sng) lmt_dim->drn_sng=(char *)strdup(lmt[idx]->drn_sng); else lmt_dim->drn_sng=NULL;
+      if(lmt[idx]->ssc_sng) lmt_dim->ssc_sng=(char *)strdup(lmt[idx]->ssc_sng); else lmt_dim->ssc_sng=NULL;
       if(lmt[idx]->mro_sng) lmt_dim->mro_sng=(char *)strdup(lmt[idx]->mro_sng); else lmt_dim->mro_sng=NULL;
       lmt_dim->nm=(char *)strdup(lmt[idx]->nm);
       break;
@@ -297,7 +297,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
 
     lmt_dim->nm=(char *)strdup(dmn_nm);
     lmt_dim->srd_sng=NULL;
-    lmt_dim->drn_sng=NULL;
+    lmt_dim->ssc_sng=NULL;
     lmt_dim->mro_sng=NULL;
     /* Generate min and max strings to look as if user had specified them
        Adjust accordingly if FORTRAN_IDX_CNV was requested for other dimensions
@@ -348,7 +348,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
      Routine merely evaluates syntax of input expressions and does validate dimensions or
      ranges against those present in input netCDF file. */
 
-  /* Valid syntax adheres to nm,[min_sng][,[max_sng][,[srd_sng][,[drn_sng]]]] */
+  /* Valid syntax adheres to nm,[min_sng][,[max_sng][,[srd_sng][,[ssc_sng]]]] */
 
   char **arg_lst;
 
@@ -387,8 +387,8 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     }else if(arg_nbr == 4 && arg_lst[3] == NULL){ /* Stride should be specified */
       msg_sng=strdup("Stride must be specified (and be a positive integer)");
       NCO_SYNTAX_ERROR=True;
-    }else if(arg_nbr == 5 && arg_lst[4] == NULL){ /* Duration should be specified */
-      msg_sng=strdup("Duration must be specified (and be a positive integer)");
+    }else if(arg_nbr == 5 && arg_lst[4] == NULL){ /* Subcycle should be specified */
+      msg_sng=strdup("Subcycle must be specified (and be a positive integer)");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr == 6 && arg_lst[5] == NULL){ /* Group-mode should be specified */
       msg_sng=strdup("Group-mode must be specified (as 'm' or 'M')");
@@ -417,7 +417,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     lmt[idx]->min_sng=NULL;
     lmt[idx]->max_sng=NULL;
     lmt[idx]->srd_sng=NULL;
-    lmt[idx]->drn_sng=NULL;
+    lmt[idx]->ssc_sng=NULL;
     lmt[idx]->mro_sng=NULL;
     /* rec_skp_ntl_spf is used for record dimension in multi-file operators */
     lmt[idx]->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
@@ -429,7 +429,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     if(arg_nbr <= 2) lmt[idx]->max_sng=(char *)strdup(arg_lst[1]);
     if(arg_nbr > 2) lmt[idx]->max_sng=arg_lst[2]; 
     if(arg_nbr > 3) lmt[idx]->srd_sng=arg_lst[3];
-    if(arg_nbr > 4) lmt[idx]->drn_sng=arg_lst[4];
+    if(arg_nbr > 4) lmt[idx]->ssc_sng=arg_lst[4];
     if(arg_nbr > 5) lmt[idx]->mro_sng=arg_lst[5];
 
     if(lmt[idx]->max_sng == NULL) lmt[idx]->is_usr_spc_max=False; else lmt[idx]->is_usr_spc_max=True;
@@ -539,8 +539,8 @@ nco_prn_lmt                    /* [fnc] Print limit information */
   (void)fprintf(stderr,"min_sng = %s\n",lmt.min_sng == NULL ? "NULL" : lmt.min_sng);
   (void)fprintf(stderr,"max_sng = %s\n",lmt.max_sng == NULL ? "NULL" : lmt.max_sng);
   (void)fprintf(stderr,"srd_sng = %s\n",lmt.srd_sng == NULL ? "NULL" : lmt.srd_sng);
-  (void)fprintf(stderr,"drn_sng = %s\n",lmt.drn_sng == NULL ? "NULL" : lmt.drn_sng);
-  (void)fprintf(stderr,"mro_sng = %s\n",lmt.drn_sng == NULL ? "NULL" : lmt.mro_sng);
+  (void)fprintf(stderr,"ssc_sng = %s\n",lmt.ssc_sng == NULL ? "NULL" : lmt.ssc_sng);
+  (void)fprintf(stderr,"mro_sng = %s\n",lmt.ssc_sng == NULL ? "NULL" : lmt.mro_sng);
   (void)fprintf(stderr,"monotonic_direction = %s\n",(monotonic_direction == not_checked) ? "not checked" : (monotonic_direction == increasing) ? "increasing" : "decreasing");
   (void)fprintf(stderr,"min_val = %g\n",lmt.min_val);
   (void)fprintf(stderr,"max_val = %g\n",lmt.max_val);
@@ -550,10 +550,10 @@ nco_prn_lmt                    /* [fnc] Print limit information */
   (void)fprintf(stderr,"end = %li\n",lmt.end);
   (void)fprintf(stderr,"cnt = %li\n",lmt.cnt);
   (void)fprintf(stderr,"srd = %li\n",lmt.srd);
-  (void)fprintf(stderr,"drn = %li\n",lmt.drn);
+  (void)fprintf(stderr,"ssc = %li\n",lmt.ssc);
   (void)fprintf(stderr,"WRP = %s\n",lmt.srt > lmt.end ? "YES" : "NO");
   (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
-  (void)fprintf(stderr,"DRN = %s\n",lmt.drn != 1L ? "YES" : "NO");
+  (void)fprintf(stderr,"SSC = %s\n",lmt.ssc != 1L ? "YES" : "NO");
   (void)fprintf(stderr,"MRO = %s\n\n",lmt.flg_mro ? "YES" : "NO");
 }
 
@@ -606,7 +606,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   lmt.flg_mro=False;
   lmt.max_val=0.0;
   lmt.min_val=0.0;
-  lmt.drn=1L;
+  lmt.ssc=1L;
   lmt.srd=1L;
   lmt.flg_input_complete=False;
 
@@ -670,22 +670,22 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* end if */
   } /* !lmt.srd_sng */
 
-  if(lmt.drn_sng){
-    if(strchr(lmt.drn_sng,'.') || strchr(lmt.drn_sng,'e') || strchr(lmt.drn_sng,'E') || strchr(lmt.drn_sng,'d') || strchr(lmt.drn_sng,'D')){
-      (void)fprintf(stdout,"%s: ERROR Requested duration for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.drn_sng);
+  if(lmt.ssc_sng){
+    if(strchr(lmt.ssc_sng,'.') || strchr(lmt.ssc_sng,'e') || strchr(lmt.ssc_sng,'E') || strchr(lmt.ssc_sng,'d') || strchr(lmt.ssc_sng,'D')){
+      (void)fprintf(stdout,"%s: ERROR Requested subcycle for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.ssc_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    lmt.drn=strtol(lmt.drn_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.drn_sng,"strtol",sng_cnv_rcd);
-    if(lmt.drn < 1L){
-      (void)fprintf(stdout,"%s: ERROR Duration for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.drn);
+    lmt.ssc=strtol(lmt.ssc_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.ssc_sng,"strtol",sng_cnv_rcd);
+    if(lmt.ssc < 1L){
+      (void)fprintf(stdout,"%s: ERROR Subcycle for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.ssc);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     if(nco_prg_id != ncra && nco_prg_id != ncrcat){
-      (void)fprintf(stdout,"%s: ERROR Duration only implemented for ncra and ncrcat\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Subcycle only implemented for ncra and ncrcat\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end ncra */
-  } /* !lmt.drn_sng */
+  } /* !lmt.ssc_sng */
 
   if(lmt.mro_sng){
     if(strcasecmp(lmt.mro_sng,"m")){
@@ -775,7 +775,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Warn when coordinate type is weird */
     if(dim.type == NC_BYTE || dim.type == NC_UBYTE || dim.type == NC_CHAR || dim.type == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",nco_prg_nm_get(),lmt.nm,nco_typ_sng(dim.type));
 
-    /* if(lmt.drn != 1L) (void)fprintf(stderr,"\n%s: WARNING Hyperslabs for %s are based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ill-defined, unpredictable, and unsupported for coordinate-based hyperslabs. Only min, max, and stride are supported for coordinate-value based hyperslabbing. Duration may or may not work as you intend. Use at your own risk.\n",nco_prg_nm_get(),lmt.nm); */
+    /* if(lmt.ssc != 1L) (void)fprintf(stderr,"\n%s: WARNING Hyperslabs for %s are based on coordinate values rather than dimension indices. The behavior of the subcycle hyperslab argument is ill-defined, unpredictable, and unsupported for coordinate-based hyperslabs. Only min, max, and stride are supported for coordinate-value based hyperslabbing. Subcycle may or may not work as you intend. Use at your own risk.\n",nco_prg_nm_get(),lmt.nm); */
 
     /* Allocate enough space to hold coordinate */
     dmn_val_dp=(double *)nco_malloc(dmn_sz*nco_typ_lng(NC_DOUBLE));
@@ -1074,9 +1074,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     }else if(lmt.max_idx < 0L){
       msg_sng=strdup("Maximum index is too negative");
       NCO_SYNTAX_ERROR=True;
-    }else if(lmt.drn > lmt.srd){
-      (void)fprintf(stdout,"%s: ERROR User-specified duration exceeds stride for %s: %li > %li\n",nco_prg_nm_get(),lmt.nm,lmt.drn,lmt.srd);
-      msg_sng=strdup("Duration exceeds stride");
+    }else if(lmt.ssc > lmt.srd){
+      (void)fprintf(stdout,"%s: ERROR User-specified subcycle exceeds stride for %s: %li > %li\n",nco_prg_nm_get(),lmt.nm,lmt.ssc,lmt.srd);
+      msg_sng=strdup("Subcycle exceeds stride");
       NCO_SYNTAX_ERROR=True;
     }else if(!rec_dmn_and_mfo && lmt.min_idx >= dmn_sz){
       msg_sng=strdup("Minimum index greater than size in non-MFO");
@@ -1090,8 +1090,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       nco_exit(EXIT_FAILURE);
     } /* !NCO_SYNTAX_ERROR */
 
-    /* NB: Duration is officially supported only for ncra and ncrcat (record dimension only) */
-    if(lmt.drn != 1L && !rec_dmn_and_mfo) (void)fprintf(stderr,"%s: WARNING Duration argument is only supported for the record dimension on ncra and ncrcat operations\n",nco_prg_nm_get());
+    /* NB: Subcycle is officially supported only for ncra and ncrcat (record dimension only) */
+    if(lmt.ssc != 1L && !rec_dmn_and_mfo) (void)fprintf(stderr,"%s: WARNING Subcycle argument is only supported for the record dimension on ncra and ncrcat operations\n",nco_prg_nm_get());
 
     /* Logic depends on whether this is record dimension in multi-file operator */
     if(!rec_dmn_and_mfo || !lmt.is_usr_spc_lmt){
@@ -1364,7 +1364,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   lmt.flg_mro=False;
   lmt.max_val=0.0;
   lmt.min_val=0.0;
-  lmt.drn=1L;
+  lmt.ssc=1L;
   lmt.srd=1L;
   lmt.flg_input_complete=False;
 
@@ -1423,22 +1423,22 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     } /* end if */
   } /* !lmt.srd_sng */
 
-  if(lmt.drn_sng){
-    if(strchr(lmt.drn_sng,'.') || strchr(lmt.drn_sng,'e') || strchr(lmt.drn_sng,'E') || strchr(lmt.drn_sng,'d') || strchr(lmt.drn_sng,'D')){
-      (void)fprintf(stdout,"%s: ERROR Requested duration for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.drn_sng);
+  if(lmt.ssc_sng){
+    if(strchr(lmt.ssc_sng,'.') || strchr(lmt.ssc_sng,'e') || strchr(lmt.ssc_sng,'E') || strchr(lmt.ssc_sng,'d') || strchr(lmt.ssc_sng,'D')){
+      (void)fprintf(stdout,"%s: ERROR Requested subcycle for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.ssc_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    lmt.drn=strtol(lmt.drn_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.drn_sng,"strtol",sng_cnv_rcd);
-    if(lmt.drn < 1L){
-      (void)fprintf(stdout,"%s: ERROR Duration for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.drn);
+    lmt.ssc=strtol(lmt.ssc_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.ssc_sng,"strtol",sng_cnv_rcd);
+    if(lmt.ssc < 1L){
+      (void)fprintf(stdout,"%s: ERROR Subcycle for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.ssc);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     if(nco_prg_id != ncra && nco_prg_id != ncrcat){
-      (void)fprintf(stdout,"%s: ERROR Duration only implemented for ncra and ncrcat\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Subcycle only implemented for ncra and ncrcat\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end ncra */
-  } /* !lmt.drn_sng */
+  } /* !lmt.ssc_sng */
 
   if(lmt.mro_sng){
     if(strcasecmp(lmt.mro_sng,"m")){
@@ -1831,9 +1831,9 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     }else if(lmt.max_idx < 0L){
       msg_sng=strdup("Maximum index is too negative");
       NCO_SYNTAX_ERROR=True;
-    }else if(lmt.drn > lmt.srd){
-      (void)fprintf(stdout,"%s: ERROR User-specified duration exceeds stride for %s: %li > %li\n",nco_prg_nm_get(),lmt.nm,lmt.drn,lmt.srd);
-      msg_sng=strdup("Duration exceeds stride");
+    }else if(lmt.ssc > lmt.srd){
+      (void)fprintf(stdout,"%s: ERROR User-specified subcycle exceeds stride for %s: %li > %li\n",nco_prg_nm_get(),lmt.nm,lmt.ssc,lmt.srd);
+      msg_sng=strdup("Subcycle exceeds stride");
       NCO_SYNTAX_ERROR=True;
     }else if(!rec_dmn_and_mfo && lmt.min_idx >= dmn_sz){
       msg_sng=strdup("Minimum index greater than size in non-MFO");
@@ -1851,8 +1851,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       nco_exit(EXIT_FAILURE);
     } /* !NCO_SYNTAX_ERROR */
 
-    /* NB: Duration is officially supported only for ncra and ncrcat (record dimension only) */
-    if(lmt.drn != 1L && !rec_dmn_and_mfo) (void)fprintf(stderr,"%s: WARNING Duration argument is only supported for the record dimension on ncra and ncrcat operations\n",nco_prg_nm_get());
+    /* NB: Subcycle is officially supported only for ncra and ncrcat (record dimension only) */
+    if(lmt.ssc != 1L && !rec_dmn_and_mfo) (void)fprintf(stderr,"%s: WARNING Subcycle argument is only supported for the record dimension on ncra and ncrcat operations\n",nco_prg_nm_get());
 
     /* Logic depends on whether this is record dimension in multi-file operator */
     if(!rec_dmn_and_mfo || !lmt.is_usr_spc_lmt){

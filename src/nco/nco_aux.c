@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.79 2014-02-01 23:54:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.80 2014-02-14 05:22:16 zender Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -228,8 +228,8 @@ nco_aux_evl
   lmt_tpl.is_usr_spc_max=True;
   lmt_tpl.flg_mro=False;
   lmt_tpl.srd_sng=(char *)strdup("1");
-  lmt_tpl.drn_sng=NULL;
-  lmt_tpl.drn_sng=NULL;
+  lmt_tpl.ssc_sng=NULL;
+  lmt_tpl.ssc_sng=NULL;
   lmt_tpl.mro_sng=NULL;
   lmt_tpl.mro_sng=NULL;
   lmt_tpl.is_rec_dmn=0;
@@ -240,7 +240,7 @@ nco_aux_evl
   lmt_tpl.end=0L;
   lmt_tpl.cnt=0L;
   lmt_tpl.srd=1L;
-  lmt_tpl.drn=1L;
+  lmt_tpl.ssc=1L;
 
   /* malloc() lmt structure to return
   No way to know exact size in advance though maximum is about dim_sz/2 */
@@ -456,8 +456,8 @@ nco_aux_evl_trv
   lmt_tpl.is_usr_spc_max=True;
   lmt_tpl.flg_mro=False;
   lmt_tpl.srd_sng=(char *)strdup("1");
-  lmt_tpl.drn_sng=NULL;
-  lmt_tpl.drn_sng=NULL;
+  lmt_tpl.ssc_sng=NULL;
+  lmt_tpl.ssc_sng=NULL;
   lmt_tpl.mro_sng=NULL;
   lmt_tpl.mro_sng=NULL;
   lmt_tpl.is_rec_dmn=0;
@@ -468,7 +468,7 @@ nco_aux_evl_trv
   lmt_tpl.end=0L;
   lmt_tpl.cnt=0L;
   lmt_tpl.srd=1L;
-  lmt_tpl.drn=1L;
+  lmt_tpl.ssc=1L;
 
   /* malloc() lmt structure to return
   No way to know exact size in advance though maximum is about dim_sz/2 */

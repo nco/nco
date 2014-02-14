@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.509 2014-02-13 03:21:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.510 2014-02-14 05:22:17 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.509 2014-02-13 03:21:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.509 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.510 2014-02-14 05:22:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.510 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -208,7 +208,7 @@ main(int argc,char **argv)
   long *rec_in_cml=NULL;  /* [nbr] Number of records, read or not, in all processed files */
   long *rec_usd_cml=NULL; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
   long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
-  long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
+  long rec_rmn_prv_ssc=0L; /* [idx] Records remaining to be read in current subcycle group */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
@@ -838,12 +838,12 @@ main(int argc,char **argv)
 
         /* This file may be superfluous though valid data will be found in upcoming files */
         if(nco_dbg_lvl >= nco_dbg_std)
-          if((lmt_rec[idx_rec]->srt > lmt_rec[idx_rec]->end) && (lmt_rec[idx_rec]->rec_rmn_prv_drn == 0L))
+          if((lmt_rec[idx_rec]->srt > lmt_rec[idx_rec]->end) && (lmt_rec[idx_rec]->rec_rmn_prv_ssc == 0L))
             (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),nco_prg_nm_get(),fl_in,fl_idx);
 
         rec_dmn_sz=lmt_rec[idx_rec]->rec_dmn_sz;
-        rec_rmn_prv_drn=lmt_rec[idx_rec]->rec_rmn_prv_drn; /* Local copy may be decremented later */
-        idx_rec_crr_in= (rec_rmn_prv_drn > 0L) ? 0L : lmt_rec[idx_rec]->srt;
+        rec_rmn_prv_ssc=lmt_rec[idx_rec]->rec_rmn_prv_ssc; /* Local copy may be decremented later */
+        idx_rec_crr_in= (rec_rmn_prv_ssc > 0L) ? 0L : lmt_rec[idx_rec]->srt;
 
         /* Master while loop over records in current file */
         while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
@@ -853,11 +853,11 @@ main(int argc,char **argv)
 	     Much conditional logic needed to prescribe group position and next record
 
 	     Index juggling:
-	     idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
+	     idx_rec_crr_in: Index of current record in current input file (increments by 1 for ssc then srd-ssc ...)
 	     idx_rec_out: Index of record in output file
-	     lmt_rec->rec_rmn_prv_drn: Structure member, at start of this while loop, contains records remaining-to-be-read to complete duration group from previous file. Structure member remains constant until next file is read.
+	     lmt_rec->rec_rmn_prv_ssc: Structure member, at start of this while loop, contains records remaining-to-be-read to complete subcycle group from previous file. Structure member remains constant until next file is read.
 	     rec_in_cml: Cumulative number of records, read or not, in all files opened so far. Similar to lmt_rec->rec_in_cml but augmented at end of record loop, rather than prior to record loop.
-	     rec_rmn_prv_drn: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records remaining remaining in current group. This means it is decremented from drn_nbr->0 for each group contained in current file.
+	     rec_rmn_prv_ssc: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records remaining remaining in current group. This means it is decremented from ssc_nbr->0 for each group contained in current file.
 	     rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
 
 	     Flag juggling:
@@ -866,13 +866,13 @@ main(int argc,char **argv)
           /* Last stride in file has distinct index-augmenting behavior */
           if(idx_rec_crr_in >= lmt_rec[idx_rec]->end) REC_SRD_LST=True; else REC_SRD_LST=False;
           /* Even strides commence group beginnings */
-          if(rec_rmn_prv_drn == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;
-          /* Each group comprises DRN records */
-          if(REC_FRS_GRP) rec_rmn_prv_drn=lmt_rec[idx_rec]->drn;
+          if(rec_rmn_prv_ssc == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;
+          /* Each group comprises SSC records */
+          if(REC_FRS_GRP) rec_rmn_prv_ssc=lmt_rec[idx_rec]->ssc;
           /* Final record triggers normalization regardless of its location within group */
-          if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->drn-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
+          if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
           /* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
-          if(rec_rmn_prv_drn == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
+          if(rec_rmn_prv_ssc == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
 
           /* Process all variables in current record */
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,gettext("%s: INFO Record %ld of %s contributes to output record %ld\n"),nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
@@ -978,7 +978,7 @@ main(int argc,char **argv)
 
           if(nco_prg_id == ncra && ((FLG_MRO && REC_LST_GRP) || REC_LST_DSR[idx_rec])){
             /* Normalize, multiply, etc where necessary: ncra and nces normalization blocks are identical, 
-	       except ncra normalizes after every drn records, while nces normalizes once, after files loop. 
+	       except ncra normalizes after every ssc records, while nces normalizes once, after files loop. 
 	       20131210: nco_cnv_mss_val_typ() can cause type of var_prc to be out-of-sync with var_prc_out
 	       nco_cnv_mss_val_typ() above works correctly for case of packing/unpacking, not for rth_dbl
 	       Options:
@@ -1022,34 +1022,34 @@ main(int argc,char **argv)
           if(REC_SRD_LST){
             /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
             long end_max_crr;
-            end_max_crr=min_lng(lmt_rec[idx_rec]->idx_end_max_abs-rec_in_cml[idx_rec],min_lng(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->drn-1L,rec_dmn_sz-1L));
-            if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
+            end_max_crr=min_lng(lmt_rec[idx_rec]->idx_end_max_abs-rec_in_cml[idx_rec],min_lng(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L));
+            if(--rec_rmn_prv_ssc > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
           }else{ /* !REC_SRD_LST */
-            if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->drn+1L;
+            if(--rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
           } /* !REC_SRD_LST */
 
         } /* end idx_rec_crr_in master while loop over records in current file */
 
         rec_in_cml[idx_rec]+=rec_dmn_sz; /* [nbr] Cumulative number of records in all files opened so far */
-        lmt_rec[idx_rec]->rec_rmn_prv_drn=rec_rmn_prv_drn;
+        lmt_rec[idx_rec]->rec_rmn_prv_ssc=rec_rmn_prv_ssc;
 
         if(fl_idx == fl_nbr-1){
           /* Warn if other than number of requested records were read */
           if(lmt_rec[idx_rec]->lmt_typ == lmt_dmn_idx && lmt_rec[idx_rec]->is_usr_spc_min && lmt_rec[idx_rec]->is_usr_spc_max){
-            long drn_grp_nbr_max; /* [nbr] Duration groups that start within range */
+            long ssc_grp_nbr_max; /* [nbr] Subcycle groups that start within range */
             long rec_nbr_rqs; /* Number of records user requested */
-            long rec_nbr_rqs_max; /* [nbr] Records that would be used by drn_grp_nbr_max groups */
+            long rec_nbr_rqs_max; /* [nbr] Records that would be used by ssc_grp_nbr_max groups */
             long rec_nbr_spn_act; /* [nbr] Records available within user-specified range */
-            long rec_nbr_spn_max; /* [nbr] Minimum record number spanned by drn_grp_nbr_max groups */
+            long rec_nbr_spn_max; /* [nbr] Minimum record number spanned by ssc_grp_nbr_max groups */
             long rec_nbr_trn; /* [nbr] Records truncated in last group */
             long srd_nbr_flr; /* [nbr] Whole strides that fit within specified range */
             /* Number of whole strides that fit within specified range */
             srd_nbr_flr=(lmt_rec[idx_rec]->max_idx-lmt_rec[idx_rec]->min_idx)/lmt_rec[idx_rec]->srd;
-            drn_grp_nbr_max=1L+srd_nbr_flr;
+            ssc_grp_nbr_max=1L+srd_nbr_flr;
             /* Number of records that would be used by N groups */
-            rec_nbr_rqs_max=drn_grp_nbr_max*lmt_rec[idx_rec]->drn;
+            rec_nbr_rqs_max=ssc_grp_nbr_max*lmt_rec[idx_rec]->ssc;
             /* Minimum record number spanned by N groups of size D is N-1 strides, plus D-1 trailing members of last group */
-            rec_nbr_spn_max=lmt_rec[idx_rec]->srd*(drn_grp_nbr_max-1L)+lmt_rec[idx_rec]->drn;
+            rec_nbr_spn_max=lmt_rec[idx_rec]->srd*(ssc_grp_nbr_max-1L)+lmt_rec[idx_rec]->ssc;
             /* Actual number of records available within range */
             rec_nbr_spn_act=1L+lmt_rec[idx_rec]->max_idx-lmt_rec[idx_rec]->min_idx;
             /* Number truncated in last group */
@@ -1213,19 +1213,19 @@ main(int argc,char **argv)
 
   } /* end loop over fl_idx */
 
-  /* Duration argument warning */
-  if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* fxm: Remove this or make DBG when crd_val DRN/MRO is predictable? */
+  /* Subcycle argument warning */
+  if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* fxm: Remove this or make DBG when crd_val SSC/MRO is predictable? */
     /* Loop records */
     for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
-      /* Check duration for each record */
-      if(lmt_rec[idx_rec]->drn != 1L && (lmt_rec[idx_rec]->lmt_typ == lmt_crd_val || lmt_rec[idx_rec]->lmt_typ == lmt_udu_sng)){
-        (void)fprintf(stderr,"\n%s: WARNING Duration argument DRN used in hyperslab specification for %s which will be determined based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first DRN elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ DRN elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of DRN records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",nco_prg_nm_get(),lmt_rec[idx_rec]->nm);
-      } /* Check duration for each record */
+      /* Check subcycle for each record */
+      if(lmt_rec[idx_rec]->ssc != 1L && (lmt_rec[idx_rec]->lmt_typ == lmt_crd_val || lmt_rec[idx_rec]->lmt_typ == lmt_udu_sng)){
+        (void)fprintf(stderr,"\n%s: WARNING Subcycle argument SSC used in hyperslab specification for %s which will be determined based on coordinate values rather than dimension indices. The behavior of the subcycle hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first SSC elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ SSC elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of SSC records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",nco_prg_nm_get(),lmt_rec[idx_rec]->nm);
+      } /* Check subcycle for each record */
     } /* Loop records */
-  } /* Duration argument warning */
+  } /* Subcycle argument warning */
 
   /* Normalize, multiply, etc where necessary: ncra and nces normalization blocks are identical, 
-     except ncra normalizes after every DRN records, while nces normalizes once, after all files.
+     except ncra normalizes after every SSC records, while nces normalizes once, after all files.
      Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
      In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
      FLG_BFR_NRM is always true here for ncfe and ncge */
