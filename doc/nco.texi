@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.964 2014-02-14 05:22:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.965 2014-02-14 06:42:56 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13064,19 +13064,17 @@ As a multi-file operator, @command{nces} will read the list of
 as positional arguments on the command line 
 (@pxref{Large Numbers of Files}).
 
-@command{nces} only allows coordinate variables to be processed by
-the linear average, minimum, and maximum operations, regardless of 
-the arithmetic operation type performed on the non-coordinate variables.   
-(@pxref{Operation Types}). 
-@command{nces} will return the linear average of coordinates unless
-extrema are explicitly requested.
-Other requested operations (e.g., square-root, RMS) are applied only
-to non-coordinate variables.
+Like @command{ncra} and @command{ncwa}, @command{nces} only allows
+coordinate variables to be processed by the linear average operation,
+regardless of the arithmetic operation type performed on the
+non-coordinate variables (@pxref{Operation Types}).
+Other requested operations (e.g., maximization, square-root, RMS) are
+applied only to non-coordinate variables.
 In these cases the linear average of the coordinate variable will be
 returned.
 @cindex record dimension
 All dimensions, including the record dimension, are treated identically
-and preserved in the @var{output-file}.
+and are preserved in the @var{output-file}.
 
 @noindent
 @html
