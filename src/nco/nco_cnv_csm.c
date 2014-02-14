@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.105 2014-02-13 23:58:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.106 2014-02-14 01:27:01 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -523,9 +523,17 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
     /* Combine cell methods arrays from existing and current runs */
 
-    /* Loop cm2 */
+    idx_add=0;
+
+    /* Loop cm2 (guaranteed to exist, current run) */
     for(int idx_2=0;idx_2<nbr_cm2;idx_2++){
-      /* Loop cm1 */
+
+      cm3=(cell_methods_sct *)nco_realloc(cm3,(nbr_cm3+1)*sizeof(cell_methods_sct)); 
+      cm3[idx_add].dmn_nm=strdup(cm2[idx_2].dmn_nm);
+      cm3[idx_add].op_type=cm2[idx_2].op_type;
+
+
+      /* Loop cm1 (may exist from previous run) */
       for(int idx_1=0;idx_1<nbr_cm1;idx_1++){
 
         if(strcmp(cm2[idx_2].dmn_nm,cm1[idx_1].dmn_nm) == 0 ){
