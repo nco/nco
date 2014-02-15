@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.272 2014-02-08 03:47:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.273 2014-02-15 20:21:07 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -310,16 +310,17 @@ trv_tbl_grp_nm_fll                    /* [fnc] Return group object from full nam
 void
 trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const nco_bool flg_xtr,              /* I [flg] Flag (True or False) */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
 
 #ifdef NCO_HSH_TRV_OBJ
   trv_sct *trv_obj; /* [sct] GTT object structure */
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
-  if(trv_obj) trv_obj->flg_xtr=True;
+  if(trv_obj) trv_obj->flg_xtr=flg_xtr;
 #else /* !NCO_HSH_TRV_OBJ */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(!strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) trv_tbl->lst[uidx].flg_xtr=True;
+    if(!strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) trv_tbl->lst[uidx].flg_xtr=flg_xtr;
 #endif /* !NCO_HSH_TRV_OBJ */
 
   return;

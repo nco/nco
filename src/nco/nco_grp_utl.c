@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1247 2014-02-14 23:40:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1248 2014-02-15 20:21:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1038,7 +1038,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
           if(trv_tbl_fnd_var_nm_fll(cf_lst_var_nm_fll,trv_tbl)){
 
             /* Mark it for extraction */
-            (void)trv_tbl_mrk_xtr(cf_lst_var_nm_fll,trv_tbl);
+            (void)trv_tbl_mrk_xtr(cf_lst_var_nm_fll,True,trv_tbl);
 
             /* Exclude ancestor with lower scope (closer to root) variables, add only the most in scope (usually in same group) */
             break;
@@ -1213,7 +1213,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
               if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
 
                 /* Mark it for extraction */
-                (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
+                (void)trv_tbl_mrk_xtr(dmn_nm_fll,True,trv_tbl);
 
                 /* Subsetting should exclude ancestor with lower scope (closer to root) coordinates, add only the most in scope (usually in same group) */
                 break;
@@ -6715,14 +6715,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
   } /* !lmt_nbr */
 
-  if(nco_prg_id_get() == ncge){
-    
-    /* Build ensembles */
-    (void)nco_bld_nsm(nc_id,trv_tbl);
-
-    /* Mark all non-ensemble related variables not to be extracted */
-    (void)nco_xtr_nsm(trv_tbl);
-  }
+  /* Build ensembles */
+  if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,trv_tbl);
 
    /* Check valid input (limits) */
   if(lmt_nbr) (void)nco_chk_dmn_in(lmt_nbr,lmt,flg_dne,trv_tbl);
@@ -8111,7 +8105,13 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm){
 
               /* Define a list of variables to avoid for template definition */
-              (void)nco_nm_skp(nc_id,trv_2.grp_nm_fll,cmn_lst,nbr_cmn_nm,&skp_lst,&nbr_skp_nm,trv_tbl);    
+              (void)nco_nm_skp(nc_id,trv_2.grp_nm_fll,cmn_lst,nbr_cmn_nm,&skp_lst,&nbr_skp_nm,trv_tbl);  
+
+              /* Mark the skip names as non extracted variables */
+              for(int idx_skp=0;idx_skp<nbr_skp_nm;idx_skp++){
+
+              }
+
 
               /* Assume not yet inserted in array */
               nco_bool flg_ins=False;
@@ -8472,8 +8472,8 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
           /* Mark both 'latitude' and 'longitude' for extraction */
           if(EXTRACT_ASSOCIATED_COORDINATES){
-            (void)trv_tbl_mrk_xtr(lat_trv->nm_fll,trv_tbl);
-            (void)trv_tbl_mrk_xtr(lon_trv->nm_fll,trv_tbl);
+            (void)trv_tbl_mrk_xtr(lat_trv->nm_fll,True,trv_tbl);
+            (void)trv_tbl_mrk_xtr(lon_trv->nm_fll,True,trv_tbl);
           }
 
           /* Found limits */
@@ -9023,40 +9023,3 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
 
 } /* end nco_dmn_lmt() */
 
-
-void
-nco_xtr_nsm                           /* [fnc] Mark all non-ensemble related variables not to be extracted */
-(trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
-{
-  const char fnc_nm[]="nco_xtr_nsm()"; /* [sng] Function name  */
-
-  trv_sct var_trv;
-
-  /* Loop table */
-  for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    var_trv=trv_tbl->lst[idx_tbl];
-
-    /* Filter */
-    if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
-
-      /* Variable is ensemble member */
-      if (var_trv.flg_nsm_mbr){
-
-        ;
-
-      }else {
-
-        /* Not ensemble, remove variable from extraction list */
-
-        trv_tbl->lst[idx_tbl].flg_xtr=False;
-
-        if(nco_dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s removing variable <%s>\n",nco_prg_nm_get(),fnc_nm,
-            trv_tbl->lst[idx_tbl].nm_fll);
-        }
-
-      } /* Variable is ensemble member */
-    }  /* Filter */
-  } /* Loop table */
-
-} /* end nco_xtr_nsm() */
