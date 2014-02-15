@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1248 2014-02-15 20:21:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1249 2014-02-15 20:27:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8109,7 +8109,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
               /* Mark the skip names as non extracted variables */
               for(int idx_skp=0;idx_skp<nbr_skp_nm;idx_skp++){
-
+                (void)trv_tbl_mrk_xtr(skp_lst[idx_skp].nm,False,trv_tbl);
               }
 
 
