@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1249 2014-02-15 20:27:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1250 2014-02-17 18:32:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8106,12 +8106,6 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
               /* Define a list of variables to avoid for template definition */
               (void)nco_nm_skp(nc_id,trv_2.grp_nm_fll,cmn_lst,nbr_cmn_nm,&skp_lst,&nbr_skp_nm,trv_tbl);  
-
-              /* Mark the skip names as non extracted variables */
-              for(int idx_skp=0;idx_skp<nbr_skp_nm;idx_skp++){
-                (void)trv_tbl_mrk_xtr(skp_lst[idx_skp].nm,False,trv_tbl);
-              }
-
 
               /* Assume not yet inserted in array */
               nco_bool flg_ins=False;
