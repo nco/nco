@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.64 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.65 2014-02-17 23:12:39 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -2028,7 +2028,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     // is the first value in var2. When necessary the var2 type is converted
     // to the var one type. The size of array is equal to the dimension size
     // arguments 
-    // e.g  var_out=array(1,-3, $time);  
+    // e.g.,  var_out=array(1,-3, $time);  
     //      var_out={1,-2,-5,-8,-11,-14,-17,-20,-23,-26 };        
     
      case PARRAY: {
@@ -3091,13 +3091,13 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
    When I say function(lowercase) I mean a C/C++ function
 
    When I refer to an ncap2  FUNC. I also mean a METHOD 
-   most of the FUNCS can be called as  METHODS  e.g  
+   most of the FUNCS can be called as  METHODS  e.g.,  
  
   sum=three_dmn_var_dbl.total($time) or sum=total(three_dmn_var_dbl,$time)
  
   So for a method the "first argument" is the evaluation of everything prefixing the DOT.
   The nice thing about METHODS is that you can daisy chain them together.  
-  e.g promote to type double - find avg - then convert back to short()
+  e.g., promote to type double - find avg - then convert back to short()
 
   three_avg=three_dmn_var_sht.double().avg($time).short();
   

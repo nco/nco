@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.689 2014-02-12 18:06:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.690 2014-02-17 23:12:35 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
@@ -31,7 +31,14 @@ Charlie
 
 NEW FEATURES:
 
-A. cell_methods: fxm
+A. cell_methods: ncwa and ncra now support key parts of the CF
+   cell_methods convention. Averaging foo(time,lat,lon) now
+   results in ncwa creating or appending the cell_methods attribute
+   "time, lat, lon: mean" to foo in the output file. This feature
+   is turned-on by default. Turn it off with --no_cll_mth.
+   ncwa --op_typ=max --cll_mth in.nc out.nc   
+   ncwa --no_cll_mth in.nc out.nc   
+   http://nco.sf.net/nco.html#cll_mth
 
 BUG FIXES:
 

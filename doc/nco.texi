@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.965 2014-02-14 06:42:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.966 2014-02-17 23:12:35 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.2
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 05 February 2014
+@set update-date 17 February 2014
 @set update-month February 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -8184,14 +8184,17 @@ Availability: @command{ncbo}, @command{nces}, @command{ncecat},
 @command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@*
 Short options: None@*
 @end cartouche
-@acronym{NCO} recognizes the Climate and Forecast (@acronym{CF})
+@acronym{NCO} recognizes some Climate and Forecast (@acronym{CF})
 metadata conventions, and applies special rules to such data.
-@acronym{NCO} also handles older @acronym{NCAR} model datasets, such as 
-@acronym{CCM} and early @acronym{CCSM} datasets, with its @acronym{CF}    
-rules even though the earlier data may not contain an explicit
-@code{Conventions} attribute (e.g., @samp{CF-1.0}).
-We refer to all such data collectively as @acronym{CF} data.
-Skip this section if you never work with @acronym{CF} data.
+@acronym{NCO} was contemporaneous with @acronym{COARDS} and still
+contains some rules to handle older @acronym{NCAR} model datasets, such as 
+@acronym{CCM} and early @acronym{CCSM} datasets, that pre-date 
+@acronym{CF}.
+Such datasets may not contain an explicit @code{Conventions} attribute
+(e.g., @samp{CF-1.0}). 
+Nevertheless, we refer to all such metadata collectively as @acronym{CF} 
+metadata. 
+Skip this section if you never work with @acronym{CF} metadata.
 
 The @acronym{CF} netCDF conventions are described 
 @uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-system, here}. 
@@ -8325,6 +8328,42 @@ NCO attaches any such coordinates to the extraction list along with
 variable and its usual (one-dimensional) coordinates, if any.
 These auxiliary coordinates are subject to the user-specified overrides
 described in @ref{Subsetting Coordinate Variables}.
+
+@html
+<a name="cnv_CF_cll_mth"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_cll_mth -->
+<a name="cll_mth"></a> <!-- http://nco.sf.net/nco.html#cll_mth -->
+<a name="cell_methods"></a> <!-- http://nco.sf.net/nco.html#cell_methods -->
+@end html
+@cindex @code{bounds}
+@cindex bounds convention
+As of @acronym{NCO} version 4.4.2 (February, 2014), @acronym{NCO} 
+supports some of the @acronym{CF} @code{cell_methods} 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods, convention}
+to describe the analysis procedures that have been applied to data.
+The convention creates (or appends to an existing) @code{cell_methods}
+attribute a space-separated list of couplets of the form @var{dmn: op}
+where @var{dmn} is a comma-separated list of dimensions previously
+contained in the variable that have been reduced by the arithmetic
+operation @var{op}.
+For example, the @code{cell_methods} value @code{time: mean} says that
+the variable in question was averaged over the @code{time} dimension.
+In such cases @code{time} will either be a scalar variable or a
+degenerate dimension or coordinate. 
+This simply means that it has been averaged-over.
+The value @code{time, lon: mean lat: max} says that the variable in
+question is the maximum zonal mean of the time averaged original
+variable.
+Which is to say that the variable was first averaged over time and
+longitude, and then the residual latitudinal array was reduced by
+choosing the maximum value.
+Since the @code{cell methods} convention may alter metadata in an
+undesirable (or possibly incorrect) fashion, we provide switches
+to ensure it is always or never used.
+Use long-options @samp{--cll_mth} or @samp{--cell_methods} to invoke the
+algorithm (true by default), and options @samp{--no_cll_mth} or 
+@samp{--no_cell_methods} to turn it off.
+These options are only available in the operators @command{ncwa} and
+@command{ncra}.
 
 @html
 <a name="cnv_ARM"></a> <!-- http://nco.sf.net/nco.html#cnv_ARM -->
@@ -10996,7 +11035,7 @@ print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
 @node GSL statistics, GSL random number generation, GSL least-squares fitting, ncap2 netCDF Arithmetic Processor
 @subsection GSL statistics
 
-@noindent Wrappers for most of the @acronym{GSL} Statistical functions have been implemented. The @acronym{GSL} function names include a type specifier (except for type double functions). To obtain the equivalent @acronym{NCO} name simply remove the type specifier; then depending on the data type the appropriate @acronym{GSL} function  is called. The weighed statistical functions e.g @code{ gsl_stats_wvariance()} are only defined in @acronym{GSL} for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
+@noindent Wrappers for most of the @acronym{GSL} Statistical functions have been implemented. The @acronym{GSL} function names include a type specifier (except for type double functions). To obtain the equivalent @acronym{NCO} name simply remove the type specifier; then depending on the data type the appropriate @acronym{GSL} function  is called. The weighed statistical functions e.g., @code{ gsl_stats_wvariance()} are only defined in @acronym{GSL} for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
 
 @noindent @acronym{GSL} Functions
 @example
@@ -11965,7 +12004,7 @@ LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 name:    (LPH)(LPH|DGT)+
 @end example
 
-@noindent The first character of a valid name must be alphabetic or the underscore. Any subsequent characters must be alphanumeric or underscore. ( e.g a1,_23, hell_is_666 )
+@noindent The first character of a valid name must be alphabetic or the underscore. Any subsequent characters must be alphanumeric or underscore. ( e.g., a1,_23, hell_is_666 )
 
 @noindent The valid characters in a quoted name are specified by the regular expressions:
 @example

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.408 2014-02-14 23:31:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.409 2014-02-17 23:12:39 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.408 2014-02-14 23:31:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.408 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.409 2014-02-17 23:12:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.409 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -224,6 +224,9 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
+    {"cll_mth",no_argument,0,0}, /* [flg] Add/modify cell_methods attributes */
+    {"cell_methods",no_argument,0,0}, /* [flg] Add/modify cell_methods attributes */
+    {"no_cll_mth",no_argument,0,0}, /* [flg] Do not add/modify cell_methods attributes */
     {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
@@ -632,13 +635,11 @@ main(int argc,char **argv)
   /* Find dimensions associated with variables to be extracted */
   (void)nco_dmn_lst_ass_var_trv(in_id,trv_tbl,&nbr_dmn_xtr,&dim);
 
-  /* Not specifying any dimensions is interpreted as specifying all dimensions. GTT: using dmn_sct* (dim) */
+  /* Not specifying any dimensions is interpreted as specifying all dimensions */
   if(dmn_avg_nbr == 0){
     dmn_avg_nbr=nbr_dmn_xtr;
     dmn_avg_lst_in=(char **)nco_malloc(dmn_avg_nbr*sizeof(char *));
-    for(idx=0;idx<dmn_avg_nbr;idx++){
-      dmn_avg_lst_in[idx]=(char *)strdup(dim[idx]->nm);
-    } /* end loop over idx */
+    for(idx=0;idx<dmn_avg_nbr;idx++) dmn_avg_lst_in[idx]=(char *)strdup(dim[idx]->nm);
     if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",nco_prg_nm);
   } /* end if dmn_avg_nbr == 0 */
 
@@ -1038,6 +1039,7 @@ main(int argc,char **argv)
           break;
         } /* end switch */
       } /* var_prc[idx]->is_crd_var */
+
       /* Free tally buffer */
       var_prc_out[idx]->tally=(long *)nco_free(var_prc_out[idx]->tally);
 

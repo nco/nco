@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.709 2014-02-11 16:17:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.710 2014-02-17 23:12:37 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,7 +104,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool GET_FILE_INFO=False; /* [flg] Get file information (#groups, #dimensions, #attributes, #variables) */
-  nco_bool GET_PRG_INFO=False; /* [flg] Get compiled program information (e.g libraries) */
+  nco_bool GET_PRG_INFO=False; /* [flg] Get compiled program information (e.g., libraries) */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
@@ -165,8 +165,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.709 2014-02-11 16:17:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.709 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.710 2014-02-17 23:12:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.710 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

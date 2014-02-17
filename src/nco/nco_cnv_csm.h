@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.41 2014-02-13 21:56:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.42 2014-02-17 23:12:38 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -51,37 +51,20 @@ int                                  /* [rcd] Return code */
 nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 (const int out_id,                   /* I [id] netCDF file ID */
  var_sct * const * const var,        /* I [sct] Variable to reduce (e.g., average) (destroyed) */
- const int nbr_var,                  /* I [nbr] Number of variables to be defined */
- dmn_sct * const * const dim,        /* I [sct] Dimensions over which to reduce variable */
- const int nbr_dim,                  /* I [sct] Number of dimensions to reduce variable over */
+ const int var_nbr,                  /* I [nbr] Number of variables to be defined */
+ dmn_sct * const * const dmn,        /* I [sct] Dimensions over which to reduce variable */
+ const int dmn_nbr,                  /* I [sct] Number of dimensions to reduce variable over */
  const int nco_op_typ,               /* I [enm] Operation type, default is average */
  gpe_sct *gpe,                       /* [sng] Group Path Editing (GPE) structure */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
-nco_bool                              
-nco_nm_lst_flg                        /* [fnc] Utility function to detect inserted names in a name list */
-(const char * const nm,               /* I [sng] A name to detect */
- const nm_tbl_sct *nm_lst);           /* I [sct] List of names   */
+int /* I [enm] Operation type */
+nco_rdc_sng_to_op_typ /* [fnc] Convert operation string to integer */
+(const char * const att_op_sng); /* I [sng] Operation string */
 
-void                          
-nco_nm_lst_ins                        /* [fnc] Check if name is on a list of names  */
-(const char * const nm,               /* I [sng] Name to find */
- nm_tbl_sct **nm_lst);                /* I/O [sct] List of names   */
-
-int
-nco_get_sng_chr_cnt                   /* [fnc] Get number of specified characters in a string  */
-(char * const sng,                    /* I [sng] String  */
- const char chr);                     /* I [sng] Character */
-
-int
-nco_get_sng_sct                       /* [fnc] Get token structure  */
-(char * const sng,                    /* I [sng] String  */ 
- sng_pth_sct ***str_pth_lst);         /* I/O [sct] List of components  */  
-
-int
-nco_sng_dmn_to_op                     /* [fnc] Convert operation string to integer  */
-(const char * const att_op_sng);      /* [fnc] Operation string  */
-
+const char * /* O [sng] String describing operation type */
+nco_op_typ_to_rdc_sng /* [fnc] Convert operation type to string */
+(const int nco_op_typ); /* I [enm] Operation type */
 
 #ifdef __cplusplus
 } /* end extern "C" */

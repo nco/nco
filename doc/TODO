@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1259 2014-02-14 05:22:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1260 2014-02-17 23:12:35 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -941,7 +941,7 @@ ncap79. make abs() synonym for fabs() and pow() and ** synonyms for ^
 ncap80. ncap2+openmp+netCDF4 - script only works with threads>1 if there are no atts in input file
 ncap81. script 'defdim("a",3);defdim("b",4);a[$a,$b]=10;' works on netCDF3 not netCDF4. Known bug with netCDF4. (Why? what causes it?) 
 ncap82. Unable to average single/multi dimensional var of total size 1 var in ncap2 
-e.g defdim("X",10);defdim("Y",1); m[X,Y]=10; m.avg();- fails with seg fault  
+e.g., defdim("X",10);defdim("Y",1); m[X,Y]=10; m.avg();- fails with seg fault  
 ************************************************************************
 End ncapXXX TODOs
 ************************************************************************

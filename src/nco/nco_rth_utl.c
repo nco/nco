@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.68 2014-02-10 23:48:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.69 2014-02-17 23:12:38 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -235,24 +235,24 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
-  if(!strcmp(nco_op_sng,"avg")) return nco_op_avg;
+  if(!strcmp(nco_op_sng,"avg") || !strcmp(nco_op_sng,"average") || !strcmp(nco_op_sng,"mean")) return nco_op_avg;
   if(!strcmp(nco_op_sng,"avgsqr")) return nco_op_avgsqr;
-  if(!strcmp(nco_op_sng,"max")) return nco_op_max;
-  if(!strcmp(nco_op_sng,"min")) return nco_op_min;
-  if(!strcmp(nco_op_sng,"rms")) return nco_op_rms;
+  if(!strcmp(nco_op_sng,"max") || !strcmp(nco_op_sng,"maximum")) return nco_op_max;
+  if(!strcmp(nco_op_sng,"min") || !strcmp(nco_op_sng,"minimum")) return nco_op_min;
+  if(!strcmp(nco_op_sng,"rms") || !strcmp(nco_op_sng,"root-mean-square")) return nco_op_rms;
   if(!strcmp(nco_op_sng,"rmssdn")) return nco_op_rmssdn;
   if(!strcmp(nco_op_sng,"sqravg")) return nco_op_sqravg;
-  if(!strcmp(nco_op_sng,"sqrt")) return nco_op_sqrt;
-  if(!strcmp(nco_op_sng,"total") || !strcmp(nco_op_sng,"ttl")) return nco_op_ttl;
+  if(!strcmp(nco_op_sng,"sqrt") || !strcmp(nco_op_sng,"square-root")) return nco_op_sqrt;
+  if(!strcmp(nco_op_sng,"total") || !strcmp(nco_op_sng,"ttl") || !strcmp(nco_op_sng,"sum")) return nco_op_ttl;
 
   if(!strcmp(nco_op_sng,"add") || !strcmp(nco_op_sng,"+") || !strcmp(nco_op_sng,"addition")) return nco_op_add;
   if(!strcmp(nco_op_sng,"sbt") || !strcmp(nco_op_sng,"-") || !strcmp(nco_op_sng,"dff") || !strcmp(nco_op_sng,"diff") || !strcmp(nco_op_sng,"sub") || !strcmp(nco_op_sng,"subtract") || !strcmp(nco_op_sng,"subtraction")) return nco_op_sbt;
   if(!strcmp(nco_op_sng,"dvd") || !strcmp(nco_op_sng,"/") || !strcmp(nco_op_sng,"divide") || !strcmp(nco_op_sng,"division")) return nco_op_dvd;
   if(!strcmp(nco_op_sng,"mlt") || !strcmp(nco_op_sng,"*") || !strcmp(nco_op_sng,"mult") || !strcmp(nco_op_sng,"multiply") || !strcmp(nco_op_sng,"multiplication")) return nco_op_mlt;
 
-  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified operation type %s\n",nco_prg_nm,fnc_nm,nco_op_sng);
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified operation type \"%s\"\n",nco_prg_nm,fnc_nm,nco_op_sng);
   (void)fprintf(stderr,"%s: HINT Valid operation type (op_typ) choices:\n",nco_prg_nm);
-  if(nco_prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtration: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min,max,ttl,avg,sqrt,sqravg,avgsqr,rms,rmssdn");
+  if(nco_prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtraction: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min or minimum, max or maximum, ttl or total or sum, avg or average or mean, sqrt or square-root, sqravg, avgsqr, rms or root-mean-square, rmssdn\n");
   nco_exit(EXIT_FAILURE);
   return False; /* Statement should not be reached */
 } /* end nco_op_typ_get() */

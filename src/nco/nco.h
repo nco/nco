@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.487 2014-02-14 23:31:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.488 2014-02-17 23:12:38 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -570,16 +570,14 @@ extern "C" {
   
   /* Limit structure */
   typedef struct { /* lmt_sct */
-
     char *nm; /* [sng] Dimension name */
     char *nm_fll; /* [sng] Full dimension name */
     char *grp_nm_fll; /* [sng] Full group where dimension is defined. Added for group support from original netCDF3 */
 
-    /* Following four flags are used only by multi-file operators ncra and ncrcat: */
-    char *ssc_sng; /* User-specified string for dimension subcycle */
     char *max_sng; /* User-specified string for dimension maximum */
     char *min_sng; /* User-specified string for dimension minimum */
     char *mro_sng; /* User-specified string for multi-record output */
+    char *ssc_sng; /* User-specified string for dimension subcycle */
     
     char *rbs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
     char *srd_sng; /* User-specified string for dimension stride */
@@ -587,28 +585,37 @@ extern "C" {
     double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
     double min_val; /* Double precision representation of minimum value of coordinate requested or implied */
     double origin;   /* Used by ncra, ncrcat to re-base record coordinate */
+
     int id; /* Dimension ID */
     int lmt_typ; /* crd_val or dmn_idx */
+
     long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
     long ssc; /* Subcycle of hyperslab */
     long end; /* Index to end of hyperslab */
     long max_idx; /* Index of maximum requested value in dimension */
     long min_idx; /* Index of minimum requested value in dimension */
+
+    /* Following four flags are used only by multi-file operators ncra and ncrcat: */
+    long idx_end_max_abs; /* [idx] Maximum allowed index in record dimension (multi-file record dimension only) */
     long rec_dmn_sz; /* [nbr] Number of records in this file (multi-file record dimension only) */
     long rec_in_cml; /* [nbr] Cumulative number of records in all files opened so far (multi-file record dimension only) */
-    long idx_end_max_abs; /* [idx] Maximum allowed index in record dimension (multi-file record dimension only) */
+    long rec_rmn_prv_ssc; /* [nbr] Records remaining-to-be-read to complete subcycle group from previous file (multi-file record dimension only) */
     long rec_skp_ntl_spf; /* [nbr] Records skipped in initial superfluous files (multi-file record dimension only) */
     long rec_skp_vld_prv; /* [nbr] Records skipped since previous good one (multi-file record dimension only) */
-    long rec_rmn_prv_ssc; /* [nbr] Records remaining-to-be-read to complete subcycle group from previous file (multi-file record dimension only) */
+
     long srd; /* Stride of hyperslab */
     long srt; /* Index to start of hyperslab */
+
     nco_bool flg_mro; /* True for multi-record output (used by ncra only) */
     nco_bool flg_input_complete; /* True for multi-file operators when no more files need be opened */
+
     nco_bool is_rec_dmn; /* True if record dimension, else False */
     nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
     nco_bool is_usr_spc_max; /* True if user-specified, else False */
     nco_bool is_usr_spc_min; /* True if user-specified, else False */
+
     nco_cln_typ lmt_cln; /* Used by ncra, ncrcat to store enum of calendar-type attribute */
+
   } lmt_sct;
   
   /* Name ID structure */
@@ -700,7 +707,7 @@ extern "C" {
   typedef struct{ /* aed_sct */
     char *att_nm; /* Name of attribute */
     char *var_nm; /* Name of variable, or NULL for global attribute */
-    int id; /* Variable ID or NC_GLOBAL ( = -1) for global attribute */
+    int id; /* Variable ID or NC_GLOBAL (= -1) for global attribute */
     long sz; /* Number of elements in attribute */
     nc_type type; /* Type of attribute */
     ptr_unn val; /* Pointer to attribute value */
@@ -837,7 +844,7 @@ extern "C" {
   /* Build a list of 'standard_name' 'latitude' and 'longitude' coordinates (Auxiliary Coordinates) */
   typedef struct{
     char *nm_fll;              /* [sng] Coordinate full name ('latitude' or 'longitude') */ 
-    int dmn_id;                /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
+    int dmn_id;                /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g., lat_gds(gds_crd) */
     char units[NC_MAX_NAME+1]; /* [sng] Units of 'latitude' and 'longitude' */ 
     nc_type crd_typ;           /* [enm] netCDF type of both "latitude" and "longitude" */
     int grp_dpt;               /* [nbr] Depth of group (root = 0) */
@@ -957,19 +964,19 @@ extern "C" {
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
 
-  /* Ensemble group structure (ncge). It contains a name for the group (e.g /cesm/cesm_01) and a list of variables for the group */
+  /* Ensemble group structure (ncge). It contains a name for the group (e.g., /cesm/cesm_01) and a list of variables for the group */
   typedef struct{
     char *mbr_nm_fll;       /* [sng] Goup full name */ 
-    char **var_nm_fll;      /* [sng] List of full variable names for this group (e.g /cesm/cesm_01/tas) */
+    char **var_nm_fll;      /* [sng] List of full variable names for this group (e.g., /cesm/cesm_01/tas) */
     int var_nbr;            /* [nbr] Number of variable for this group (size of above array) */ 
   } nsm_grp_sct; 
 
   /* Ensemble (ncge) */
   typedef struct{
-    char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) (e.g /cesm) */
+    char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) (e.g., /cesm) */
     nsm_grp_sct *mbr;       /* [sng] List of ensemble group member structs (size is mbr_nbr) */
-    char **var_mbr_fll;     /* [sng] List of variable ensemble members (e.g /cesm/cesm_01/tas) */
-    char **grp_mbr_fll;     /* [sng] List of group ensemble members (e.g /cesm/cesm_01) */
+    char **var_mbr_fll;     /* [sng] List of variable ensemble members (e.g., /cesm/cesm_01/tas) */
+    char **grp_mbr_fll;     /* [sng] List of group ensemble members (e.g., /cesm/cesm_01) */
     int mbr_nbr;            /* [nbr] Number of members (groups) of ensemble (i.e., number in this ensemble in this file) */ 
     int mbr_var_nbr;        /* [nbr] Number of variable members of ensemble */           
     int mbr_srt;            /* [nbr] Member offsets (multi files, keep track of new added members) */ 
@@ -990,7 +997,7 @@ extern "C" {
     int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate dimensions (size of above array) */
     int nsm_nbr;            /* [nbr] (ncge) Number of ensembles (i.e., number in first file) */ 
     nsm_sct *nsm;           /* [lst] (ncge) List of ensembles (size is nsm_nbr) */ 
-    char *nsm_sfx;          /* [sng] (ncge) Ensemble suffix (e.g /cesm + _avg). Store here instead of passing as function parameters (ncge only) */
+    char *nsm_sfx;          /* [sng] (ncge) Ensemble suffix (e.g., /cesm + _avg). Store here instead of passing as function parameters (ncge only) */
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */

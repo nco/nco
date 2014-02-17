@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.108 2014-02-14 06:42:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.109 2014-02-17 23:12:38 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -228,39 +228,19 @@ int                                  /* [rcd] Return code */
 nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 (const int out_id,                   /* I [id] netCDF file ID */
  var_sct * const * const var,        /* I [sct] Variable to reduce (e.g., average) (destroyed) */
- const int nbr_var,                  /* I [nbr] Number of variables to be defined */
- dmn_sct * const * const dim,        /* I [sct] Dimensions over which to reduce variable */
- const int nbr_dim,                  /* I [sct] Number of dimensions to reduce variable over */
+ const int var_nbr,                  /* I [nbr] Number of variables to be defined */
+ dmn_sct * const * const dmn_rdc,        /* I [sct] Dimensions over which to reduce variable */
+ const int dmn_nbr_rdc,                  /* I [sct] Number of dimensions to reduce variable over */
  const int nco_op_typ,               /* I [enm] Operation type, default is average */
  gpe_sct *gpe,                       /* [sng] Group Path Editing (GPE) structure */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* Purpose: Add/modify cell_methods attribute according to CF convention
-     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods */
-
-  const char fnc_nm[]="nco_cnv_cf_cll_mth_add()"; /* [sng] Function name */
-
-  aed_sct aed;                  /* [sct] Structure containing information necessary to edit */
-
-  char att_val[NC_MAX_NAME];    /* [sng] Final value of attribute (e.g., "time: mean") */
-  char att_op_sng[NC_MAX_NAME]; /* [sng] Operation type (e.g. nco_op_avg translates to "mean") */
-  char val1[NC_MAX_NAME];       /* [sng] Value of attribute */
-  char val2[NC_MAX_NAME];       /* [sng] Value of attribute */
-
-  int grp_out_id;               /* [ID] Group ID (output) */
-  int var_out_id;               /* [ID] Variable ID (output) */
-  int rcd=NC_NOERR;             /* [rcd] Return code */
-  int nco_op_typ_lcl;           /* [enm] Operation type, default is average */
-
-  long att_sz;                  /* [nbr] Attribute size */
-
-  nc_type att_typ;              /* [nbr] Attribute type */
-
-  nco_bool att_xst;             /* [nbr] Attribute "exists" */
-
-  /* cell_methods attribute values and description
-     point	: The data values are representative of points in space or time (instantaneous). 
-     sum	  : The data values are representative of a sum or accumulation over the cell. 
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods
+     
+     cell_methods values and description:
+     point	: Data values are representative of points in space or time (instantaneous)
+     sum	: Data values are representative of a sum or accumulation over the cell
      maximum	: Maximum
      median	: Median
      mid_range	: Average of maximum and minimum
@@ -281,19 +261,43 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
      rmssdn Root-mean square (normalized by N-1)
      sqrt Square root of the mean
      ttl Sum of values */
-  
-  /* Initialize common members */
+
+  const char fnc_nm[]="nco_cnv_cf_cll_mth_add()"; /* [sng] Function name */
+
+  aed_sct aed; /* [sct] Structure containing information necessary to edit */
+
+  char att_op_sng[8]; /* [sng] Operation type (longest is nco_op_max which translates to "maximum") */
+
+  char *att_val_cpy; /* [sng] Copy of attribute */
+  char *grp_out_fll=NULL; /* [sng] Group name */
+
+  int *dmn_mch; /* [idx] Indices of dimensions reduced in this variable */
+
+  int dmn_idx_rdc;
+  int dmn_idx_var;
+  int dmn_nbr_mch; /* [nbr] Number of dimension names to add to cell_methods */
+  int grp_out_id; /* [ID] Group ID (output) */
+  int nco_op_typ_lcl; /* [enm] Operation type, default is average */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int var_idx;
+  int var_out_id; /* [ID] Variable ID (output) */
+
+  nc_type att_typ; /* [nbr] Attribute type */
+
+  trv_sct *var_trv=NULL;  /* [sct] Variable GTT object */
+
+  /* Initialize unchanging structure members */
   aed.att_nm=strdup("cell_methods");
-  aed.var_nm=NULL;
   aed.type=NC_CHAR;
+
+  /* Allocate space for maximum number of matching dimensions */
+  dmn_mch=(int *)nco_calloc(dmn_nbr_rdc,sizeof(int));
   
   /* Process all variables */
-  for(int idx_var=0;idx_var<nbr_var;idx_var++){ 
-    char *grp_out_fll=NULL; /* [sng] Group name */
-    trv_sct *var_trv=NULL;  /* [sct] Variable GTT object */
+  for(var_idx=0;var_idx<var_nbr;var_idx++){ 
 
     /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var[idx_var]->nm_fll,trv_tbl);
+    var_trv=trv_tbl_var_nm_fll(var[var_idx]->nm_fll,trv_tbl);
 
     /* Edit group name for output */
     if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
@@ -307,427 +311,128 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Get variable ID */
     (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
-    /* Build operation type string (e.g. nco_op_avg translates to "mean") */
+    /* Initialize attribute edit structure for this variable */
+    aed.var_nm=var_trv->nm;
+    aed.id=var_out_id;
+    aed.sz=0L;
+    dmn_nbr_mch=0;
 
-    /* Initialize values */
-    att_op_sng[0]='\0';
-    val1[0]='\0';
+    /* Format: blank-separated phrases of form "dmn1[, dmn2[...]]: op_typ" */ 
+    for(dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
+      for(dmn_idx_rdc=0;dmn_idx_rdc<dmn_nbr_rdc;dmn_idx_rdc++){
+	/* 20140216 fxm: broken should compare full names not short names */
+        if(!strcmp(var_trv->var_dmn[dmn_idx_var].dmn_nm,dmn_rdc[dmn_idx_rdc]->nm)){
+	  /* Add length of each matching dimension to accumulating attribute size */
+          aed.sz+=strlen(dmn_rdc[dmn_idx_rdc]->nm);
+          dmn_mch[dmn_nbr_mch++]=dmn_idx_rdc;
+        } /* !match */
+      } /* dmn_idx_rdc */
+    } /* dmn_idx_var */
+    
+    assert(dmn_nbr_mch != 0);
 
     /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
-    if(var[idx_var]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
+    if(var[var_idx]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
+    /* NUL-terminate before concatenation */
+    att_op_sng[0]='\0';
     switch(nco_op_typ_lcl){
       /* Next four operations are defined in CF Conventions */
-    case nco_op_avg:               /* nco_op_avg,  Average */
-      strcpy(att_op_sng,"mean");  
-      break;
-    case nco_op_min:               /* nco_op_min,  Minimum value */
-      strcpy(att_op_sng,"minimum"); 
-      break;
-    case nco_op_max:               /* nco_op_max, Maximum value */
-      strcpy(att_op_sng,"maximum"); 
-      break;
-    case nco_op_ttl:               /* nco_op_ttl,  Linear sum */
-      strcpy(att_op_sng,"sum"); 
-      break;
-      /* Remaining operations are supported by NCO but are not in CF Conventions */
-    case nco_op_sqravg:            /* nco_op_sqravg,  Square of mean */          
-      strcpy(att_op_sng,"sqravg"); 
-      break;
-    case nco_op_avgsqr:            /* nco_op_avgsqr, Mean of sum of squares */      
-      strcpy(att_op_sng,"avgsqr"); 
-      break;
-    case nco_op_sqrt:              /* nco_op_sqrt,  Square root of mean  */      
-      strcpy(att_op_sng,"sqrt"); 
-      break;
-    case nco_op_rms:               /* nco_op_rms,  Root-mean-square (normalized by N) */     
-      strcpy(att_op_sng,"rms"); 
-      break;
-    case nco_op_rmssdn:            /* nco_op_rmssdn, Root-mean square normalized by N-1 */
-      strcpy(att_op_sng,"rmssdn"); 
-      break;
-    case nco_op_nil:               /* nco_op_nil  Nil or undefined operation type */    
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Cell method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,nco_op_typ);
+    case nco_op_avg: strcpy(att_op_sng,"mean"); break;
+    case nco_op_min: strcpy(att_op_sng,"minimum"); break;
+    case nco_op_max: strcpy(att_op_sng,"maximum"); break;
+    case nco_op_ttl: strcpy(att_op_sng,"sum"); break;
+      /* Remaining operations are supported by NCO yet are not in CF Conventions */
+    case nco_op_sqravg: strcpy(att_op_sng,"sqravg"); break; /* Square of mean */
+    case nco_op_avgsqr: strcpy(att_op_sng,"avgsqr"); break; /* Mean of sum of squares */
+    case nco_op_sqrt: strcpy(att_op_sng,"sqrt"); break; /* Square root of mean */ 
+    case nco_op_rms: strcpy(att_op_sng,"rms"); break; /* Root-mean-square (normalized by N) */
+    case nco_op_rmssdn: strcpy(att_op_sng,"rmssdn"); break; /* Root-mean square normalized by N-1 */
+    case nco_op_nil: /* nco_op_nil, Undefined operation type */
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s cell_method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,nco_op_typ);
       continue;
     } /* End switch */
     
-    char *sng_dmn;         /* [sng] String to parse dimension */
-    char *sng_op;          /* [sng] String to parse operation */
-    char *ptr_chr;         /* [sng] Pointer to character in string */
+    /* Initialize to size of ": " plus length of operation string */
+    aed.sz+=2L+strlen(att_op_sng);
+    /* Add room for commas and spaces i.e., dmn1, dmn2, dmn3 */
+    if(dmn_nbr_mch > 1) aed.sz+=2*(dmn_nbr_mch-1);
+    /* Add room for NUL-terminator */
+    aed.val.cp=(char *)nco_malloc((aed.sz+1L)*sizeof(char));
+    aed.val.cp[0]='\0';
 
-    int nbr_dmn_chr;       /* [nbr] Number of dimension separator ',' characters in string */
-    int nbr_op_chr;        /* [nbr] Number of operation separator ':' characters in string */
-    int len_dmn=0;         /* [nbr] Lenght of possible dimension names string (e.g 'time, lon' ) */
-    int nbr_dmn_add=0;     /* [nbr] Number of possible dimension names (e.g 'time, lon' ) that were added  */
-    int nbr_cm1=0;         /* [nbr] Size of cell methods array  */
-    int nbr_cm2=0;         /* [nbr] Size of cell methods array  */
-    int nbr_cm3=0;         /* [nbr] Size of cell methods array  */
+    /* Build single string by concatenating known matches */
+    for(int dmn_idx_mch=0;dmn_idx_mch<dmn_nbr_mch;dmn_idx_mch++){
+      (void)strcat(aed.val.cp,dmn_rdc[dmn_mch[dmn_idx_mch]]->nm);
+      if(dmn_idx_mch<dmn_nbr_mch-1) (void)strcat(aed.val.cp,", ");
+    } /* dmn_idx_mch>=dmn_nbr_mch */
+    (void)strcat(aed.val.cp,": ");
+    (void)strcat(aed.val.cp,att_op_sng);
 
-    sng_pth_sct **sng_lst; /* [sct] Parse dimensions */
-   
-    cell_methods_sct *cm1; /* [sct] Cell methods (existing attribute)  */
-    cell_methods_sct *cm2; /* [sct] Cell methods (current run) */
-    cell_methods_sct *cm3; /* [sct] Cell methods (combined) */
+    /* Does variable already have "cell_methods" attribute? */
+    rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,(long *)NULL);
+    if(rcd == NC_NOERR){
+      aed.mode=aed_append;
+      if(att_typ == NC_STRING) (void)fprintf(stderr,"%s: WARNING %s reports existing cell_methods attribute for variable %s is type NC_STRING. Unpredictable results...\n",nco_prg_nm_get(),fnc_nm,aed.var_nm);
+      if(att_typ != NC_STRING && att_typ != NC_CHAR) (void)fprintf(stderr,"%s: WARNING %s reports existing cell_methods attribute for variable %s is type %s. Unpredictable results...\n",nco_prg_nm_get(),fnc_nm,aed.var_nm,nco_typ_sng(att_typ));
+      /* Insert space between existing attribute and appended attribute */
+      att_val_cpy=(char *)strdup(aed.val.cp);
+      aed.val.cp=nco_realloc(aed.val.cp,(++aed.sz)*sizeof(char));
+      aed.val.cp[0]=' ';
+      aed.val.cp[1]='\0';
+      (void)strcat(aed.val.cp,att_val_cpy);
+      if(att_val_cpy) att_val_cpy=(char *)nco_free(att_val_cpy);
+    }else{
+      aed.mode=aed_create;
+    } /* endif attribute exists */
 
-    /* Arrays (nco_realloc) must be initialized to NULL */
-    cm1=cm2=cm3=NULL;
-
-    /* Inquire if "cell_methods" attribute exists */
-    rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
-
-    /* Set "exists" flag */
-    if(rcd == NC_NOERR) att_xst=True; else att_xst=False;
-
-    /* Attribute mode is always create. If existing attribute, it has to be parsed for dimensions and op types and re-created */
-    aed.mode=aed_create;
-
-    /* STEP 1: build array of cell_methods_sct, by reading existing attributes and parsing current attributes  */
-
-    /* Get attribute if it exists */
-    if(att_xst){
-
-      (void)nco_get_att(grp_out_id,var_out_id,"cell_methods",(void *)val1,NC_CHAR);  
-
-      /* netCDF requires to manually terminate string */ 
-      val1[att_sz]='\0';
-
-      /* Parse attribute */
-
-      /* Get number of operation separators ':' in string */
-      nbr_op_chr=nco_get_sng_chr_cnt(val1,':'); 
-
-      /* Format is dmn1 [dmn2 ...]: opr, e.g., "time: mean" */
-
-      /* Separator ':' found. Case of just one operation  */
-      if(nbr_op_chr == 1){
-	
-        ptr_chr=strchr(val1,':');
-	
-        size_t len=ptr_chr-val1;
-        sng_dmn=(char *)nco_malloc(len+1);
-        memcpy(sng_dmn,val1,len);
-        sng_dmn[len]='\0';
-	
-        /* Get operation (2 characters after dimensions) */
-        ptr_chr+=2;
-        sng_op=ptr_chr;
-	
-        /* Get number of dimension separators ',' in string */
-        nbr_dmn_chr=nco_get_sng_chr_cnt(sng_dmn,','); 
-	
-        /* More than 1 dimension found (separated by ',') */
-        if(nbr_dmn_chr){
-	  
-          /* Alloc */
-          sng_lst=(sng_pth_sct **)nco_malloc(nbr_dmn_chr*sizeof(sng_pth_sct *)); 
-	  
-          /* Get tokens */
-          (void)nco_get_sng_pth_sct(sng_dmn,&sng_lst); 
-	  
-          /* Transfer to cell_methods array */
-          for(int idx_dmn=0;idx_dmn<nbr_dmn_chr;idx_dmn++){;}
-	  
-        }else{ /* Just 1 dimension found  */
-	  
-          cm1=(cell_methods_sct *)nco_realloc(cm1,(nbr_dmn_add+1)*sizeof(cell_methods_sct));
-          cm1[nbr_dmn_add].dmn_nm=strdup(sng_dmn);
-          cm1[nbr_dmn_add].op_type=nco_sng_dmn_to_op(sng_op);          
-          nbr_dmn_add++;
-          nbr_cm1++;
-	  
-        } /* Just 1 dimension found  */
-	
-        sng_dmn=(char *)nco_free(sng_dmn);
-      } /* !nbr_dmn_chr */
-	   
-    } /* !att_xst */
-      
-      int idx_add=0;
-      
-      /* Initialize values */
-      aed.val.cp=NULL;
-      val2[0]='\0';
-    att_val[0]='\0';
-    aed.sz=-1L;
-    aed.id=-1;
-
-    /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */ 
-
-    for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
-      /* Loop input dimensions (ncwa -a or ncra records) */
-      for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
-        /* Match name (variable dimension with input dimension) */
-        if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
-
-          /* Add space for name */
-          len_dmn+=strlen(var_trv->var_dmn[idx_dmn_var].dmn_nm);
-          nbr_dmn_add++;
-        } /* !match */
-      } /* idx_dmn */
-    } /* idx_dmn_var */
-
-    /* Add space for ", ", 2 characters times number of names found less one name */ 
-    if(nbr_dmn_add>1) len_dmn+=2*(nbr_dmn_add-1);
-
-    /* Array to parse current run */
-    cm2=(cell_methods_sct *)nco_realloc(cm2,(nbr_dmn_add)*sizeof(cell_methods_sct));    
-
-    for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
-      /* Loop input dimensions (ncwa -a or ncra records) */
-      for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
-        if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
-          strcat(att_val,var_trv->var_dmn[idx_dmn_var].dmn_nm);
-          /* Concatenate ', ' only ( only up to last name ) */ 
-          if(nbr_dmn_add>1)
-            if(idx_dmn_var<nbr_dmn_add) strcat(att_val,", ");
-
-          cm2[idx_add].dmn_nm=strdup(var_trv->var_dmn[idx_dmn_var].dmn_nm);
-          cm2[idx_add].op_type=nco_op_typ_lcl;
-          idx_add++;
-          nbr_cm2++;
-        } /* !match */
-      } /* idx_dmn */
-    } /* idx_dmn_var */
-
-    /* Add operation type to string */
-    strcat(att_val,": ");
-    strcat(att_val,att_op_sng);
-
-    /* STEP 2: Parse array of cell_methods_sct and write attribute  */
-
-    /* Initialize values */
-    aed.val.cp=NULL;
-    val2[0]='\0';
-    att_val[0]='\0';
-    aed.sz=-1L;
-    aed.id=-1;
-
-    /* Combine cell methods arrays from existing and current runs */
-
-    idx_add=0;
-
-    /* Loop cm2 (guaranteed to exist, current run) */
-    for(int idx_2=0;idx_2<nbr_cm2;idx_2++){
-
-      cm3=(cell_methods_sct *)nco_realloc(cm3,(idx_add+1)*sizeof(cell_methods_sct)); 
-      cm3[idx_add].dmn_nm=strdup(cm2[idx_2].dmn_nm);
-      cm3[idx_add].op_type=cm2[idx_2].op_type;
-      idx_add++;
-
-
-      /* Loop cm1 (may exist from previous run) */
-      for(int idx_1=0;idx_1<nbr_cm1;idx_1++){
-
-        if(strcmp(cm2[idx_2].dmn_nm,cm1[idx_1].dmn_nm) == 0 ){
-
-        }
-
-
-      } /* Loop cm1 */
-    } /* Loop cm2 */
-
-
-
-
-    /* Type is NC_CHAR */
-    aed.val.cp=(char *)strdup(att_val);
-    aed.sz=strlen(att_val);
-
-    /* Edit attribute  */
+    /* Edit attribute */
     (void)nco_aed_prc(grp_out_id,var_out_id,aed);
 
-    /* Get attribute */
-    (void)nco_get_att(grp_out_id,var_out_id,"cell_methods",(void *)val2,NC_CHAR);
-    val2[aed.sz]='\0';
-
-    if(nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s> att_val = '%s'\n",nco_prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,att_val);
-    }
-
-    /* Delete current value */
     if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
-    aed.sz=-1L;
 
-    for(int idx=0;idx<nbr_cm1;idx++) cm1[idx].dmn_nm=(char *)nco_free(cm1[idx].dmn_nm);
-    for(int idx=0;idx<nbr_cm2;idx++) cm2[idx].dmn_nm=(char *)nco_free(cm2[idx].dmn_nm);
-    for(int idx=0;idx<nbr_cm3;idx++) cm3[idx].dmn_nm=(char *)nco_free(cm3[idx].dmn_nm);
+  } /* var_idx>=var_nbr */
 
-  } /* Process all variables */
+  if(aed.att_nm) aed.att_nm=(char *)nco_free(aed.att_nm);
+  if(dmn_mch) dmn_mch=(int *)nco_free(dmn_mch);
 
-  aed.att_nm=(char *)nco_free(aed.att_nm);
-
-  return 0;
+  return NC_NOERR;
 
 } /* end nco_cnv_cf_cll_mth_add() */
 
 int
-nco_sng_dmn_to_op                               /* [fnc] Convert operation string to integer  */
-(const char * const att_op_sng)                 /* [fnc] Operation string  */
+nco_rdc_sng_to_op_typ /* [fnc] Convert operation string to integer */
+(const char * const att_op_sng) /* [fnc] Operation string */
 {           
-  if(!strcmp(att_op_sng,"mean"))          /* nco_op_avg,  Average */
-    return nco_op_avg;
-  else if(!strcmp(att_op_sng,"minimum"))  /* nco_op_min,  Minimum value */
-    return nco_op_min;
-  else if(!strcmp(att_op_sng,"maximum"))  /* nco_op_max, Maximum value */
-    return nco_op_max;
-  else if(!strcmp(att_op_sng,"sum"))      /* nco_op_ttl,  Linear sum */
-    return nco_op_ttl;
-  else if(!strcmp(att_op_sng,"sqravg"))   /* nco_op_sqravg,  Square of mean */          
-    return nco_op_sqravg;
-  else if(!strcmp(att_op_sng,"avgsqr"))   /* nco_op_avgsqr, Mean of sum of squares */      
-    return nco_op_avgsqr;
-  else if(!strcmp(att_op_sng,"sqrt"))     /* nco_op_sqrt,  Square root of mean  */      
-    return nco_op_sqrt;
-  else if(!strcmp(att_op_sng,"rms"))      /* nco_op_rms,  Root-mean-square (normalized by N) */     
-    return nco_op_rms;
-  else if(!strcmp(att_op_sng,"rmssdn"))   /* nco_op_rmssdn, Root-mean square normalized by N-1 */
-    return nco_op_rmssdn;
-  else return -1;
-} /* nco_sng_dmn_to_op() */
+  if(!strcmp(att_op_sng,"mean")) return nco_op_avg;
+  if(!strcmp(att_op_sng,"minimum")) return nco_op_min;
+  if(!strcmp(att_op_sng,"maximum")) return nco_op_max;
+  if(!strcmp(att_op_sng,"sum")) return nco_op_ttl;
+  if(!strcmp(att_op_sng,"sqravg")) return nco_op_sqravg;
+  if(!strcmp(att_op_sng,"avgsqr")) return nco_op_avgsqr;
+  if(!strcmp(att_op_sng,"sqrt")) return nco_op_sqrt;
+  if(!strcmp(att_op_sng,"rms")) return nco_op_rms;
+  if(!strcmp(att_op_sng,"rmssdn")) return nco_op_rmssdn;
 
-int
-nco_get_sng_chr_cnt                   /* [fnc] Get number of specified characters in a string  */
-(char * const sng,                    /* I [sng] String  */
- const char chr)                      /* I [sng] Character */
-{
-  char *ptr_chr;   /* [sng] Pointer to character in string */
-  int nbr_chr=0;   /* [nbr] Number of characterrs in string  */
-  int psn_chr;     /* [nbr] Position of character in string */
+  return False; /* Statement should not be reached */
+} /* nco_rdc_sng_to_op_typ() */
 
-  ptr_chr=strchr(sng,chr);
-  while(ptr_chr){
-    psn_chr=ptr_chr-sng;
+const char * /* O [sng] String describing operation type */
+nco_op_typ_to_rdc_sng /* [fnc] Convert operation type to string */
+(const int nco_op_typ) /* I [enm] Operation type */
+{           
+  switch(nco_op_typ){
+  case nco_op_avg: return "mean";
+  case nco_op_min: return "minimum";
+  case nco_op_max: return "maximum";
+  case nco_op_ttl: return "sum";
+  case nco_op_sqravg: return "sqravg";
+  case nco_op_avgsqr: return "avgsqr";
+  case nco_op_sqrt: return "sqrt";
+  case nco_op_rms: return "rms";
+  case nco_op_rmssdn: return "rmssdn";
+  default: 
+    nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout," ::found at %d",psn_chr);
-
-    ptr_chr=strchr(ptr_chr+1,chr);
-
-    nbr_chr++;
-  } /* end while */
-
-  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"\n");
-  return nbr_chr;
-
-} /* nco_get_sng_chr_cnt() */
-
-int
-nco_get_sng_sct                       /* [fnc] Get token structure  */
-(char * const sng,                    /* I [sng] String  */ 
- sng_pth_sct ***str_pth_lst)          /* I/O [sct] List of components  */    
-{
-  /* Purpose: Break string into components separated by ',' character 
-
-  strtok()
-  A sequence of calls to this function split str into tokens, which are sequences of contiguous characters 
-  separated by any of the characters that are part of delimiters.
-
-  strchr() is used to get position of separator that corresponsds to each token
-
-  Usage:
-
-  Get number of tokens in string
-  nbr_chr=nco_get_sng_chr_cnt(sng); 
-
-  Alloc
-  sng_lst=(sng_pth_sct **)nco_malloc(nbr_chr*sizeof(sng_pth_sct *)); 
-
-  Get tokens 
-  (void)nco_get_sng_pth_sct(sng,&sng_lst); */
-
-  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
-  char *ptr_chr_tok;  /* [sng] Pointer to character */
-  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
-  int psn_chr;        /* [nbr] Position of character '/' in in full name */
-
-  /* Duplicate original, since strtok() changes it */
-  char *str=strdup(sng);
-
-  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
-
-  /* Get first token */
-  ptr_chr_tok=strtok (str,",");
-
-  ptr_chr=strchr(sng,',');
-
-  while(ptr_chr){
-    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
-
-    psn_chr=ptr_chr-sng;
-
-    /* Store token and position */
-    (*str_pth_lst)[nbr_sls_chr]=(sng_pth_sct *)nco_malloc(1*sizeof(sng_pth_sct));
-
-    (*str_pth_lst)[nbr_sls_chr]->nm=strdup(ptr_chr_tok);
-    (*str_pth_lst)[nbr_sls_chr]->psn=psn_chr;
-
-    /* Point where last token was found is kept internally by function */
-    ptr_chr_tok=strtok(NULL,",");
-
-    ptr_chr=strchr(ptr_chr+1,',');
-
-    nbr_sls_chr++;   
-  } /* end while */
-
-  if(nco_dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"\n");
-
-  str=(char *)nco_free(str);
-
-  return nbr_sls_chr;
-
-} /* nco_get_sng_sct() */
-
-nco_bool                              
-nco_nm_lst_flg                         /* [fnc] Utility function to detect inserted names in a name list */
-(const char * const nm,                /* I [sng] A name to detect */
- const nm_tbl_sct *nm_lst)             /* I [sct] List of names   */
-{
-  /* Loop constructed array to see if already inserted */
-  for(int idx=0;idx<nm_lst->nbr;idx++){
-    /* Match */
-    if(strcmp(nm_lst->lst[idx].nm,nm) == 0){
-      /* Mark as inserted in array */
-      return True;
-    }  /* Match */
-  } /* Loop constructed array to see if already inserted  */
-
-  return False;
-
-} /* nco_nm_lst_flg() */
-
-void                          
-nco_nm_lst_ins                         /* [fnc] Check if name is on a list of names  */
-(const char * const nm,                /* I [sng] Name to find */
- nm_tbl_sct **nm_lst)                  /* I/O [sct] List of names   */
-{
-
-  nco_bool flg_ins_lst=True;      /* [flg] Insert new name in array */  
-
-  int nbr_nm=(*nm_lst)->nbr;
-
-  /* Loop input names */
-  for(int idx=0;idx<nbr_nm;idx++){
-
-    nco_bool flg_ins;      /* [flg] Is name already inserted? */
-
-    flg_ins=nco_nm_lst_flg(nm,*nm_lst);
-    /* Insert in list */
-    if (flg_ins == False){
-
-      (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nbr_nm+1)*sizeof(nm_sct));
-      (*nm_lst)->nbr++;
-      (*nm_lst)->lst[nbr_nm].nm=strdup(nm);
-      return;
-    } /* Insert in list */
-
-    /* Do not insert new name */
-    flg_ins_lst=False;
-  } /* Loop input names */
-
-  if (flg_ins_lst){
-    (*nm_lst)->lst=(nm_sct *)nco_realloc((*nm_lst)->lst,(nbr_nm+1)*sizeof(nm_sct));
-    (*nm_lst)->nbr++;
-    (*nm_lst)->lst[nbr_nm].nm=strdup(nm);
-  }
-
-} /* nco_nm_lst_ins() */
-
+  return False; /* Statement should not be reached */
+} /* nco_op_typ_to_rdc_sng() */

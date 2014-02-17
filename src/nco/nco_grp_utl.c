@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1250 2014-02-17 18:32:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1251 2014-02-17 23:12:38 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6031,11 +6031,9 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
     (void)fprintf(stdout,"%s: DEBUG %s dimensions to export: ",nco_prg_nm_get(),fnc_nm);        
-    for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
-      (void)fprintf(stdout,"#%d<%s> : ",(*dmn)[idx_dmn]->id,(*dmn)[idx_dmn]->nm);        
-    }
+    for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++) (void)fprintf(stdout,"#%d<%s> : ",(*dmn)[idx_dmn]->id,(*dmn)[idx_dmn]->nm);        
     (void)fprintf(stdout,"\n");    
-  } 
+  } /* endif */
 
   return;
 } /* end nco_dmn_lst_ass_var_trv() */
@@ -6145,13 +6143,13 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
           /* Dimension name full */
           char *dmn_nm_fll=trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll;
 
-          /* Dimension name full lenght */
+          /* Dimension name full length */
           size_t dmn_nm_fll_lng=strlen(dmn_nm_fll);
 
           /* Dimension name relative */
           char *dmn_nm=trv_obj.var_dmn[idx_var_dmn].dmn_nm;
 
-          /* Dimension name relative lenght */
+          /* Dimension name relative length */
           size_t dmn_nm_lng=strlen(dmn_nm);
 
           /* Look for partial match, not necessarily on path boundaries */
@@ -6211,7 +6209,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
                   dmn_cnt=trv_obj.var_dmn[idx_var_dmn].crd->lmt_msa.dmn_cnt;
                   dmn_sz=trv_obj.var_dmn[idx_var_dmn].crd->sz;
                   (*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=True;
-                }else {
+                }else{
                   dmn_cnt=trv_obj.var_dmn[idx_var_dmn].ncd->lmt_msa.dmn_cnt;
                   dmn_sz=trv_obj.var_dmn[idx_var_dmn].ncd->sz;
                   (*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=False;
@@ -6252,11 +6250,9 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
     (void)fprintf(stdout,"%s: DEBUG %s dimensions to average: ",nco_prg_nm_get(),fnc_nm);        
-    for(int idx_dmn=0;idx_dmn<nbr_avg_dmn;idx_dmn++){
-      (void)fprintf(stdout,"#%d<%s> : ",(*dmn_avg)[idx_dmn]->id,(*dmn_avg)[idx_dmn]->nm);        
-    }
+    for(int idx_dmn=0;idx_dmn<nbr_avg_dmn;idx_dmn++) (void)fprintf(stdout,"#%d<%s> : ",(*dmn_avg)[idx_dmn]->id,(*dmn_avg)[idx_dmn]->nm);
     (void)fprintf(stdout,"\n");    
-  } 
+  } /* endif dbg */
 
   return;
 
@@ -7849,7 +7845,7 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
         if(!cf_lst_var) continue;
       } /* end loop over idx_cf */
 
-      /* Return cf_lst_var, associated name (e.g "lat_bounds"). NB: Assumption only 1 associated name */
+      /* Return cf_lst_var, associated name (e.g., "lat_bounds"). NB: Assumption only 1 associated name */
       char *cf_lst_var=strdup(cf_lst[0]);
 
       /* Free allocated memory */
@@ -8252,7 +8248,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
   int *grp_ids;       /* [id] Sub-group IDs array */
   int mbr_srt;        /* [nbr] Offset */
 
-  size_t grp_nm_lng;  /* [nbr] Group name lenght */
+  size_t grp_nm_lng;  /* [nbr] Group name length */
 
   trv_sct *var_trv;   /* [sct] Variable GTT object */
 
@@ -8278,7 +8274,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
     /* Loop sub-groups */
     for(int idx_grp=0;idx_grp<nbr_grp;idx_grp++){ 
 
-      /* Get group name lenght */
+      /* Get group name length */
       (void)nco_inq_grpname_len(grp_ids[idx_grp],&grp_nm_lng);
       grp_nm=(char *)nco_malloc(grp_nm_lng+1L);
 
@@ -8481,7 +8477,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             lmt_sct **lmt=aux;
             int lmt_dmn_nbr=aux_lmt_nbr;
 
-            /* The dimension IDs of both 'latitude' and 'longitude' must refer to the same dimemsion (e.g 'gds_crd) ) */
+            /* The dimension IDs of both 'latitude' and 'longitude' must refer to the same dimemsion (e.g., 'gds_crd) ) */
             assert(dmn_id_fnd_lon == dmn_id_fnd_lat);
 
             /* Apply limits to variable in table */
@@ -8490,13 +8486,13 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             /*  Apply limits to *all* 'latitude', 'longitude' variables that share the same ID */
             (void)nco_lmt_std_att_lat_lon(nc_id,lmt,lmt_dmn_nbr,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);   
 
-            /* Get unique dimension object from unique dimension ID (e.g 'gds_crd) */
+            /* Get unique dimension object from unique dimension ID (e.g., 'gds_crd) */
             dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id_fnd_lat,trv_tbl);
 
-            /* The dimension IDs of both 'latitude' and 'longitude' must refer to the same dimemsion (e.g 'gds_crd) ) */
+            /* The dimension IDs of both 'latitude' and 'longitude' must refer to the same dimemsion (e.g., 'gds_crd) ) */
             assert(dmn_id_fnd_lon == dmn_trv->dmn_id);
 
-            /*  Apply limits to the coordinate (e.g 'gds_crd)  */
+            /*  Apply limits to the coordinate (e.g., 'gds_crd)  */
             (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,dmn_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
 
           } /* Found limits */
@@ -8721,7 +8717,7 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
 
   char *var_nm_fll=NULL;
 
-  int dmn_id; /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
+  int dmn_id; /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g., lat_gds(gds_crd) */
 
   nc_type crd_typ;
 

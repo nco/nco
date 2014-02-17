@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.68 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.69 2014-02-17 23:12:39 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -2828,7 +2828,7 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       /* bomb out if max value of number generator can't be held in regular int */
       if( NCO_TYP_GSL_UINT==NC_INT &&  rng_max_lng > INT_MAX ){
         ostringstream os; 
-        os<<"Possible integer overflow. You are using the random number generator \"" <<rng_nm_sng<<"\". This can return a value up to "<<rng_max_lng<<". This is greater than "<<INT_MAX<<" - the maximium value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
+        os<<"Possible integer overflow. You are using the random number generator \"" <<rng_nm_sng<<"\". This can return a value up to "<<rng_max_lng<<". This is greater than "<<INT_MAX<<" - the maximium value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g., ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
 
         err_prn(sfnm,os.str());
       } 
@@ -2875,7 +2875,7 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
           if( ui64p[idx]>INT_MAX ) {
 	    // bomb out if necessary  
             ostringstream os; 
-            os<<"Possible integer overflow. You have rquested the generation of integers up to the value of " <<ui64p[idx]<<" .This is greater than "<<INT_MAX<<" - the maximium value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
+            os<<"Possible integer overflow. You have rquested the generation of integers up to the value of " <<ui64p[idx]<<" .This is greater than "<<INT_MAX<<" - the maximium value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g., ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
             err_prn(sfnm,os.str());
           }
           

@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.204 2013-12-05 04:31:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.205 2014-02-17 23:12:39 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -570,7 +570,7 @@ DIM_VAL options { paraphrase="dimension identifier"; }
          )? 
    ;  
 
-// Shorthand for naming dims in method e.g $0,$1, $2 etc
+// Shorthand for naming dims in method e.g., $0,$1, $2 etc
 DIM_MTD_ID 
   options{paraphrase="dimension identifier";} 
   : '$'! (DGT)+
@@ -1694,7 +1694,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               // If the RHS has size one or is an attribute or an irregular hyperslab
               // then we neet to use the var_cst as the shape of the written variable.
               // It is possible for the cast on the LHS to have a size of one and the RHS 
-              // to have a size of one e.g if the dim(s) in the list have a size of one   
+              // to have a size of one e.g., if the dim(s) in the list have a size of one   
               bool br1=(var_cst->sz >=1 && var1->sz==1);
               bool br2=(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 ));
 

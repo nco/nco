@@ -38,7 +38,7 @@ public:
                   // 2 -- var is defined & data written
 
   bool flg_spl;   // true then var->val.vp is spline data 
-                  // e.g var->val.vp is gsl_spline*
+                  // e.g., var->val.vp is gsl_spline*
                   // this needs to be freed up using
                   // the gsl spline library call   
 
