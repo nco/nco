@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.966 2014-02-17 23:12:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.967 2014-02-17 23:17:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8332,10 +8332,15 @@ described in @ref{Subsetting Coordinate Variables}.
 @html
 <a name="cnv_CF_cll_mth"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_cll_mth -->
 <a name="cll_mth"></a> <!-- http://nco.sf.net/nco.html#cll_mth -->
+<a name="no_cll_mth"></a> <!-- http://nco.sf.net/nco.html#no_cll_mth -->
 <a name="cell_methods"></a> <!-- http://nco.sf.net/nco.html#cell_methods -->
 @end html
-@cindex @code{bounds}
-@cindex bounds convention
+@cindex @code{cell_methods}
+@cindex @code{--cll_mth}
+@cindex @code{--no_cll_mth}
+@cindex @code{--cell_methods}
+@cindex @code{--no_cell_methods}
+@cindex cell methods convention
 As of @acronym{NCO} version 4.4.2 (February, 2014), @acronym{NCO} 
 supports some of the @acronym{CF} @code{cell_methods} 
 @uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods, convention}
