@@ -1,11 +1,13 @@
 ************************************************************************
-Begin Debian/Ubuntu and AIX beta- or pre-release explanation:
-Posted to NCO groups in Spring 2010; updated March 2011.
+Begin NCO numbering and pre-release explanation:
+Posted to NCO groups in Spring 2010; 
+Updated March 2011, 
+Updated February 2014
 ************************************************************************
-Debian/Ubuntu users who want the latest NCO features before official
-releases, without building from source, take heed: Bleeding-edge NCO
-features are available in Debian package format before official
-releases. New features are built into pre-release .deb packages as the
+Users who want the latest NCO features before official releases,
+without building from source, take heed: Bleeding-edge NCO features 
+are available before official releases. 
+New features are built into pre-release .deb packages as the 
 features are introduced.  Once an (arbritrary) number of new features
 seems stable, we simply announce that the current pre-release code is
 the official (stable) release code. For example, .deb packages with

@@ -1,26 +1,19 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.690 2014-02-17 23:12:35 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.691 2014-02-18 17:44:07 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release is mainly a bugfix release for power users. If you use
-NCO's ncea, ncra, or ncrcat version 4.3.9-4.4.0 on
-hundreds-to-thousands of input files per invocation, then you may
-wish to upgrade. This release fixes a bug that could cause
-ncea/ncra/ncrcat to fail on large numbers (> 256) of input files. 
-This is embarassing because NCO has always been designed to work with
-arbitrary numbers of input files and we want power users to be
-comfortable running it on hundreds of thousands of input files.
-So we're releasing 4.4.2 to fix this bug for power users.
-http://nco.sf.net#bug_ncra_no_fl_close
+This release is mainly a bugfix release. Memory issues that caused
+problems on LLVM/clang (usually Mac OS) and RHEL/CentOS (but not
+trusty old Fedora!) have been fixed. Thank you to everyone who
+reported issues.
 
-There are also a few new features: NCO now supports full path names
-for dimension arguments to chunking (--cnk_dmn), and supports using
-most-in-scope latitude/longitude for auxiliary coordinates (-X).
+There is one new feature: Support for key parts of the CF cell_methods 
+convention. 
 
-Work on NCO 4.4.2 is underway, focused on stability and speed.   
+Work on NCO 4.4.3 is underway, focused on stability and speed.   
 There will be more netCDF4 mop-up and, possibly, improved HDF4
 support, and cache manipulation for chunking.   
 
@@ -35,32 +28,41 @@ A. cell_methods: ncwa and ncra now support key parts of the CF
    cell_methods convention. Averaging foo(time,lat,lon) now
    results in ncwa creating or appending the cell_methods attribute
    "time, lat, lon: mean" to foo in the output file. This feature
-   is turned-on by default. Turn it off with --no_cll_mth.
-   ncwa --op_typ=max --cll_mth in.nc out.nc   
-   ncwa --no_cll_mth in.nc out.nc   
+   is turned-on by default. Turn-off with --no_cll_mth.
+   ncwa --op_typ=max in.nc out.nc # Output gets cell_methods
+   ncwa --no_cll_mth in.nc out.nc # Turn-off cell_methods
    http://nco.sf.net/nco.html#cll_mth
 
 BUG FIXES:
 
-A. Fix build problem exposed by LLVM on Mac OS X 10.9 Mavericks
+A. nces now outputs only the group statisitics. In 4.4.0 and 4.4.1
+   nces would, inadvertently, also sometimes copy the coordinate
+   variables of member groups to member groups in the output
+   file. This did not take much space (because only coordinates were
+   copied), so it took some time to notice it. Now fixed.
 
-A. ncwa now always outputs averages of coordinates, even when
+B. Groups matched via regular expressions in group-subsetting now
+   have their associated variables flagged in intersection mode. 
+   This mumbo-jumbo means that regular expressions work better now.
+
+C. Fix build problem exposed by LLVM on Mac OS X 10.9 Mavericks.
+   The underlying memory problems could cause segfaults on for other
+   OSs including RHEL and CentOS. Issues reported by George.
+
+D. ncwa now always outputs averages of coordinates, even when
    operation on (non-coordinate) variables is other like max, min.
    This complies with longstanding intent & documentation that
    coordinate variables always return averages, never extrema or other
    statistics. ncra and nces have long-implemented this convention.
 
-A. The -X option for auxiliary coordinates now works fully when
+E. The -X option for auxiliary coordinates now works fully when
    latitude and longitude coordinates are nested in group hierarchies.
    The most in-scope lat/long are found and used for each variable. 
+   We thought this was working in 4.4.1. Now it really is :)
    http://nco.sf.net/nco.html#aux
 
-A. ncap2 sometimes failed when converting netCDF3->netCDF4 files
-   when it had uninitialized deflation levels. Fixed.
-
-A. Groups matched via regular expressions in group-subsetting now
-   have their associated variables flagged in intersection mode. 
-   This mumbo-jumbo means that regular expressions work better now.
+F. ncap2 sometimes failed when converting netCDF3->netCDF4 files
+   because it had uninitialized deflation levels. Fixed.
 
 KNOWN ISSUES NOT YET FIXED:
 
