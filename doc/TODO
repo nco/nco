@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1260 2014-02-17 23:12:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1261 2014-02-18 04:46:07 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -84,7 +84,7 @@ nco92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h f
 nco99. Allow ncatted to dump file in ncatted format
 nco103. Implement trapezoidal rule option in ncra, nces
 nco105. Add easy-to-read tabular display option for file contents for ncks, i.e, allow ncks -s to print multiple variables in column format
-nco106. Add switch to keep degenerate dimensions with ncwa, remove them from ncra
+nco106. Add switch to remove degenerate dimensions from ncra
 nco111. Investigate whether using ncwa to average files where variables of type 
         NC_CHAR have a record dimension causes core dumps or other problems.
         i.e., LSM variable timecom caused subtle ncra problems for awhile.
@@ -279,7 +279,6 @@ nco568. bm: test NC_SHARE in ncatted/ncrename?
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
 nco577. ncbo: remove dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
-nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow xtr_nbr_out=max(xtr_nbr_1,xtr_nbr_2) when xtr_nbr_2>xtr_nbr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for xtr_nbr_1>xtr_nbr_2)
 nco599. mpi: Allow targets to determine Makefile variables so, e.g., 'make mpi' automagically defines MPI=Y
 nco607. mpi: mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. mpi: Tune (or remove?) sleep interval in MPI operators
@@ -592,11 +591,6 @@ nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without a
 	 ncks -v one_dmn_rec_var -C -m -H ~/foo.nc
 nco222.  nco: Warn when nces/ncra operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 nco1025. nco: ncrcat/ncecat warn/die when concatenating files with different scale factors
-nco1026. ncwa weighted average bug reported by Lori Sentman, then by Mark Flanner
-	 ncwa -O -C -w area -a lat -v area ~/nco/data/in.nc ~/foo.nc # 10
-	 ncwa -O -C -w area_asm -a lat -v area ~/nco/data/in.nc ~/foo.nc # 10
-	 ncwa -O -C -w area_asm -a lat -v area2 ~/nco/data/in.nc ~/foo.nc # 10
-	 ncks -H -C -v area -m ~/foo.nc
 nco1028. ncap2: create maintainable list of reserved words and put in manual
 nco1033. ncrcat: warn when first file has more variables than subsequent files
 nco1035. rewrite nco_var_cnf_typ() to use default rather than truncated missing values
