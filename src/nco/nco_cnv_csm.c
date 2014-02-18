@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.109 2014-02-17 23:12:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.110 2014-02-18 05:57:06 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -376,7 +376,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       if(att_typ != NC_STRING && att_typ != NC_CHAR) (void)fprintf(stderr,"%s: WARNING %s reports existing cell_methods attribute for variable %s is type %s. Unpredictable results...\n",nco_prg_nm_get(),fnc_nm,aed.var_nm,nco_typ_sng(att_typ));
       /* Insert space between existing attribute and appended attribute */
       att_val_cpy=(char *)strdup(aed.val.cp);
-      aed.val.cp=nco_realloc(aed.val.cp,(++aed.sz)*sizeof(char));
+      aed.val.cp=(char *)nco_realloc(aed.val.cp,(++aed.sz)*sizeof(char));
       aed.val.cp[0]=' ';
       aed.val.cp[1]='\0';
       (void)strcat(aed.val.cp,att_val_cpy);
