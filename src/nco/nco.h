@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.488 2014-02-17 23:12:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.489 2014-02-18 06:38:36 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -983,6 +983,18 @@ extern "C" {
     int mbr_end;            /* [nbr] Member offsets (multi files, keep track of new added members) */ 
   } nsm_sct; 
 
+  
+  /* Name structure */
+  typedef struct{ /* nm_sct */
+    char *nm;     /* [sng] Name */
+  } nm_sct;
+
+  /* Name list structure */
+  typedef struct{ /* nm_tbl_sct */
+    nm_sct *lst;  /* [sct] List of nm_sct (char * currently) */
+    int nbr;      /* [nbr] Number of items in "lst" array */
+  } nm_tbl_sct;
+
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
      2) lst_dmn: All unique dimensions (in groups) in file tree (netCDF addition to HDF5) */
@@ -998,6 +1010,7 @@ extern "C" {
     int nsm_nbr;            /* [nbr] (ncge) Number of ensembles (i.e., number in first file) */ 
     nsm_sct *nsm;           /* [lst] (ncge) List of ensembles (size is nsm_nbr) */ 
     char *nsm_sfx;          /* [sng] (ncge) Ensemble suffix (e.g., /cesm + _avg). Store here instead of passing as function parameters (ncge only) */
+    nm_tbl_sct *nsm_skp;    /* [lst] (ncge) Skip list (fixed variables to define at ensemble parent group) */ 
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */
@@ -1005,16 +1018,6 @@ extern "C" {
     char *var_nm_fll; /* [sng] Fully qualified variable name */
   } gpe_nm_sct;
 
-  /* Name structure */
-  typedef struct{ /* nm_sct */
-    char *nm;     /* [sng] Name */
-  } nm_sct;
-
-  /* Name list structure */
-  typedef struct{ /* nm_tbl_sct */
-    nm_sct *lst;  /* [sct] List of nm_sct (char * currently) */
-    int nbr;      /* [nbr] Number of items in "lst" array */
-  } nm_tbl_sct;
 
   /* Common variable names; common defined as same absolute path in 2 files */
   typedef struct{		

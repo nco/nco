@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1251 2014-02-17 23:12:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1252 2014-02-18 06:38:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7978,7 +7978,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   int nbr_skp_nm;                      /* [nbr] Number of names to avoid for template definition (array skp_lst) */
   int nsm_nbr=0;                       /* [nbr] Ensemble counter */
 
-  nco_bool flg_nsm_tpl;                /* [flg] Variable is template */           
+  nco_bool flg_nsm_tpl;                /* [flg] Variable is template */       
+  nco_bool flg_ini_skp=False;
 
   nco_cmn_t *cmn_lst=NULL;             /* [sct] A list of common names */ 
   nco_cmn_t *skp_lst=NULL;             /* [sct] A list of skip ('skp') names (NB: using same sct as common names, with different meaning) */ 
@@ -8102,6 +8103,25 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
               /* Define a list of variables to avoid for template definition */
               (void)nco_nm_skp(nc_id,trv_2.grp_nm_fll,cmn_lst,nbr_cmn_nm,&skp_lst,&nbr_skp_nm,trv_tbl);  
+
+              /* Mark the skip names as non extracted variables */ 
+              for(int idx_skp=0;idx_skp<nbr_skp_nm;idx_skp++){ 
+                (void)trv_tbl_mrk_xtr(skp_lst[idx_skp].nm,False,trv_tbl); 
+              } 
+
+              if (flg_ini_skp == False){
+
+                trv_tbl->nsm_skp=(nm_tbl_sct *)nco_malloc(sizeof(nm_tbl_sct));
+                trv_tbl->nsm_skp->nbr=nbr_skp_nm;
+                trv_tbl->nsm_skp->lst=NULL; 
+                trv_tbl->nsm_skp->lst=(nm_sct *)nco_realloc(trv_tbl->nsm_skp->lst,(nbr_skp_nm)*sizeof(nm_sct));
+                for(int idx_skp=0;idx_skp<nbr_skp_nm;idx_skp++){ 
+                  /* Duplicate string into list */
+                  trv_tbl->nsm_skp->lst[idx_skp].nm=strdup(skp_lst[idx_skp].nm);
+                } 
+                flg_ini_skp=True;
+              }
+
 
               /* Assume not yet inserted in array */
               nco_bool flg_ins=False;
