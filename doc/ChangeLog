@@ -1,12 +1,12 @@
 2014-02-19  Charlie Zender  <zender@uci.edu>
 
-	* Clean-up compiler warnings for GCC 4.4.3- and for netCDF3-only builds (i.e., tephra)
-
 	* NCO 4.4.2 release procedure:
  	Changes since nco-4_4_1: ncra.c mmr 4 LLVM/clang, -X, rx nsx, cll_mth, ncwa sng
 	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
+
+	* Clean-up compiler warnings for GCC 4.4.3- and for netCDF3-only builds (i.e., tephra)
 
 	* Clarify nces behavior with coordinates
 
