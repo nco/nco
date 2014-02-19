@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.217 2014-02-08 02:18:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.218 2014-02-19 17:44:13 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -69,7 +69,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
   const nco_bool CDL_OR_JSN=prn_flg->cdl || prn_flg->jsn; /* [flg] CDL or JSON output */
   const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
-  const nco_bool CDL_OR_XML=prn_flg->cdl || prn_flg->xml; /* [flg] CDL or XML output */
   const nco_bool CDL_OR_JSN_OR_XML=prn_flg->cdl || prn_flg->jsn || prn_flg->xml; /* [flg] CDL or JSON or XML output */
 
   //nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
@@ -1384,7 +1383,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
   const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
   const nco_bool CDL_OR_JSN=prn_flg->cdl || prn_flg->jsn; /* [flg] CDL or JSON output */
-  const nco_bool CDL_OR_XML=prn_flg->cdl || prn_flg->xml; /* [flg] CDL or XML output */
   const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
   const nco_bool CDL_OR_JSN_OR_XML=prn_flg->cdl || prn_flg->jsn || prn_flg->xml; /* [flg] CDL or JSON or XML output */
 

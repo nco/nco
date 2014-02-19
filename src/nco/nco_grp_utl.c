@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1258 2014-02-19 17:28:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1259 2014-02-19 17:44:13 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -264,13 +264,12 @@ nco_prn_grp_nm_fll                    /* [fnc] Debug function to print group ful
 #if defined(HAVE_NETCDF4_H)
   size_t grp_nm_lng;
   char *grp_nm_fll;
-  (void)nco_inq_grpname_full(grp_id, &grp_nm_lng, NULL);
+  (void)nco_inq_grpname_full(grp_id,&grp_nm_lng,NULL);
   grp_nm_fll=(char*)nco_malloc(grp_nm_lng+1L);
-  (void)nco_inq_grpname_full(grp_id, &grp_nm_lng, grp_nm_fll);
+  (void)nco_inq_grpname_full(grp_id,&grp_nm_lng,grp_nm_fll);
   (void)fprintf(stdout,"<%s>",grp_nm_fll);
   grp_nm_fll=(char*)nco_free(grp_nm_fll);
 #endif
-
 } /* nco_prn_grp_nm_fll() */
 
 int                                  /* [rcd] Return code */
@@ -4692,7 +4691,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(nco_prg_id == ncflint || nco_prg_id == ncpdq){
 
     /* If initialization value was changed, then set output type to new type */
-    if(var_trv->var_typ_out != err_typ) var_typ_out=var_trv->var_typ_out; else var_typ_out=var_typ;
+    if(var_trv->var_typ_out != (nc_type)err_typ) var_typ_out=var_trv->var_typ_out; else var_typ_out=var_typ;
 
   }else if(nco_prg_id != ncbo){
     int var_id;        /* [id] Variable ID */
