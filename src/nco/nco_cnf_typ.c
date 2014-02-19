@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.75 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.76 2014-02-19 21:36:44 pvicente Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -197,8 +197,8 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to mss_val_out_typ 
   if(!var->has_mss_val || var_in_typ == mss_val_out_typ) return var; 
 
   /* Simple error-checking and diagnostics */
-  if(nco_dbg_lvl_get() >= nco_dbg_scl){
-    (void)fprintf(stdout,"%s: DEBUG %s NCO_MSS_VAL_SNG attribute of variable %s from type %s to type %s\n",nco_prg_nm_get(),mss_val_out_typ > var_in_typ ? "Promoting" : "Demoting",var->nm,nco_typ_sng(var_in_typ),nco_typ_sng(mss_val_out_typ));
+  if(nco_dbg_lvl_get() >= nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev){
+    (void)fprintf(stdout,"%s: %s NCO_MSS_VAL_SNG attribute of variable %s from type %s to type %s\n",nco_prg_nm_get(),mss_val_out_typ > var_in_typ ? "Promoting" : "Demoting",var->nm,nco_typ_sng(var_in_typ),nco_typ_sng(mss_val_out_typ));
   } /* end if */
   
   /* Sequence of following commands is important (copy before overwriting!) */
@@ -262,7 +262,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   
   /* Simple error-checking and diagnostics */
   if(nco_dbg_lvl_get() >= nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s variable %s from type %s to type %s\n",nco_prg_nm_get(),var_out_typ > var_in_typ ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_typ),nco_typ_sng(var_out_typ));
+    (void)fprintf(stdout,"%s: %s variable %s from type %s to type %s\n",nco_prg_nm_get(),var_out_typ > var_in_typ ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_typ),nco_typ_sng(var_out_typ));
   } /* end if */
   
   /* Move current variable values to swap location */
@@ -570,8 +570,8 @@ nco_var_cnf_typ_tst /* [fnc] Return copy of input variable typecast to desired t
   var_in_typ=var_in->type;
   
   /* Simple error-checking and diagnostics */
-  if(nco_dbg_lvl_get() >= nco_dbg_scl){
-    (void)fprintf(stdout,"%s: DEBUG %s variable %s from type %s to type %s\n",nco_prg_nm_get(),var_out_typ > var_in_typ ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_typ),nco_typ_sng(var_out_typ));
+  if(nco_dbg_lvl_get() >= nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev){
+    (void)fprintf(stdout,"%s: %s variable %s from type %s to type %s\n",nco_prg_nm_get(),var_out_typ > var_in_typ ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_typ),nco_typ_sng(var_out_typ));
   } /* end if */
   
   /* Move current variable values to swap location */

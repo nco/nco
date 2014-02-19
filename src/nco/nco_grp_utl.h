@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.460 2014-02-19 15:04:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.461 2014-02-19 21:36:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -683,11 +683,6 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
  nco_bool *flg_cf_fnd);               /* I/O [flg] CF variable was found */
 
 void
-nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
-(const int nc_id,                     /* I [id] netCDF file ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-void
 nco_chk_dmn                           /* [fnc] Check valid dimension names */
 (const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
  nco_dmn_dne_t * flg_dne);            /* I [lst] Flag to check if input dimension -d "does not exist" */
@@ -788,6 +783,16 @@ nco_nsm_dfn_wrt                       /* [fnc] Define OR write ensemble fixed va
  const gpe_sct * const gpe,           /* I [sct] GPE structure */
  const nco_bool flg_def,              /* [fnc] Define OR write */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+
+void
+nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_prn_nsm                           /* [fnc] Print ensembles  */                                
+(const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
