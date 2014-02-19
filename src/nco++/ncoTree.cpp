@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoTree.cpp"$ */
+/* $ANTLR 2.7.7 (20100319): "ncoGrammer.g" -> "ncoTree.cpp"$ */
 #include "ncoTree.hpp"
 #include <antlr/Token.hpp>
 #include <antlr/AST.hpp>
@@ -2816,7 +2816,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					// If the RHS has size one or is an attribute or an irregular hyperslab
 					// then we neet to use the var_cst as the shape of the written variable.
 					// It is possible for the cast on the LHS to have a size of one and the RHS 
-					// to have a size of one e.g if the dim(s) in the list have a size of one   
+					// to have a size of one e.g., if the dim(s) in the list have a size of one   
 					bool br1=(var_cst->sz >=1 && var1->sz==1);
 					bool br2=(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 ));
 					
