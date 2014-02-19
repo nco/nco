@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1261 2014-02-19 21:36:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1262 2014-02-19 21:58:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4315,7 +4315,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* Initialize output dimensions to input sizes */
   for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
     /* Dimensions exist */
-    if (var_trv->var_dmn){
+    if(var_trv->var_dmn){
       dmn_trv=NULL; /* [sct] Unique dimension */
       crd_sct *crd=NULL; /* [sct] Coordinate dimension */
       dmn_cmn[idx_dmn].nm_fll=var_trv->var_dmn[idx_dmn].dmn_nm_fll;

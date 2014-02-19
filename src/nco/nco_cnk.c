@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.118 2014-02-19 17:28:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.119 2014-02-19 21:58:56 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -152,7 +152,7 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   if(cnk_nbr > 0 || cnk_sz_byt > 0UL || cnk_sz_scl > 0UL || cnk_map != nco_cnk_map_nil || cnk_plc != nco_cnk_plc_nil) cnk->flg_usr_rqs=True;
 
   /* Chunks are atomic unit of HDF5 read/write
-     Variables are compressed and checksummed one chunk at-a-time
+     Variables are compressed and check-summed one chunk at-a-time
      Set NCO_CNK_SZ_BYT_DFL to system blocksize, if known
      Setting chunksize equal to system blocksize thought to minimize disk head movement, be most efficient 
      Blocksize is related to default buffer; check this with
@@ -495,7 +495,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 
   nco_bool flg_cnk=False; /* [flg] Chunking requested */
   nco_bool is_rec_var; /* [flg] Record variable */
-  nco_bool is_chk_var; /* [flg] Checksummed variable */
+  nco_bool is_chk_var; /* [flg] Check-summed variable */
   nco_bool is_cmp_var; /* [flg] Compressed variable */
   nco_bool is_chunked; /* [flg] Chunked variable */
   nco_bool must_be_chunked; /* [flg] Variable must be chunked */
@@ -570,7 +570,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
     cnk_sz=(size_t *)NULL; /* [nbr] Chunksize list */
     is_rec_var=False; /* [flg] Record variable */
-    is_chk_var=False; /* [flg] Checksummed variable */
+    is_chk_var=False; /* [flg] Check-summed variable */
     is_cmp_var=False; /* [flg] Compressed variable */
     is_chunked=False; /* [flg] Chunked variable */
 
@@ -597,7 +597,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     (void)nco_inq_var_deflate(nc_id,var_idx,NULL,&deflate,NULL);
     if(deflate) is_cmp_var=True; 
 
-    /* Is variable checksummed? */
+    /* Is variable check-summed? */
     (void)nco_inq_var_fletcher32(nc_id,var_idx,&chk_typ);
     if(chk_typ != NC_NOCHECKSUM) is_chk_var=True;
 
@@ -615,7 +615,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
       /* If variable is chunked */
       if(is_chunked){
 	if(must_be_chunked){
-	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s %s must be chunked (record, compressed, or checksummed variable)\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s %s must be chunked (record, compressed, or check-summed variable)\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	}else{
 	  /* Turn-off chunking for this variable */
 	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s unchunking %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
@@ -784,7 +784,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   nco_bool flg_usr_rqs; /* [flg] User requested checking */
   nco_bool is_rec_var; /* [flg] Record variable */
-  nco_bool is_chk_var; /* [flg] Checksummed variable */
+  nco_bool is_chk_var; /* [flg] Check-summed variable */
   nco_bool is_cmp_var; /* [flg] Compressed variable */
   nco_bool is_chunked; /* [flg] Chunked variable */
   nco_bool is_xpl_cnk; /* [flg] Explicitly chunked variable */
@@ -799,8 +799,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   static short FIRST_CALL=True;
 
   unsigned long long cnk_sz_byt; /* [B] Desired bytes per chunk (e.g., system blocksize) */
-
-  for(dmn_idx=0;dmn_idx<(int)dmn_cmn->dmn_cnt;dmn_idx++) flg_mch[dmn_idx]=False;
 
   /* Initialize local convenience variables */
   flg_usr_rqs=cnk->flg_usr_rqs;
@@ -850,7 +848,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   /* Initialize storage type for this variable */
   srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
   is_rec_var=False; /* [flg] Record variable */
-  is_chk_var=False; /* [flg] Checksummed variable */
+  is_chk_var=False; /* [flg] Check-summed variable */
   is_cmp_var=False; /* [flg] Compressed variable */
   is_chunked=False; /* [flg] Chunked variable */
   is_xpl_cnk=False; /* [flg] Explicitly chunked variable */
@@ -876,7 +874,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   (void)nco_inq_var_deflate(grp_id_out,var_id_out,&shuffle,&deflate,(int *)NULL);
   if(deflate) is_cmp_var=True; 
 
-  /* Is variable checksummed? */
+  /* Is variable check-summed? */
   (void)nco_inq_var_fletcher32(grp_id_out,var_id_out,&chk_typ);
   if(chk_typ != NC_NOCHECKSUM) is_chk_var=True;
 
@@ -901,7 +899,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   if(must_be_chunked){
     /* Some variables simply must be chunked */
-    if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s %s must be chunked (record, compressed, or checksummed variable)\n",nco_prg_nm_get(),fnc_nm,var_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s %s must be chunked (record, compressed, or check-summed variable)\n",nco_prg_nm_get(),fnc_nm,var_nm);
   }else{
     /* Explicitly turn-off chunking for arrays that are... */
     if((cnk_plc == nco_cnk_plc_xpl && !is_xpl_cnk) || /* ...not explicitly chunked... */
@@ -1087,6 +1085,9 @@ cnk_xpl_override: /* end goto */
 
   /* Override "reasonable" defaults with explicitly set per-dimension sizes, if any */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+
+    /* Initialize to false then override */
+    flg_mch[dmn_idx]=False;
 
     for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
 
