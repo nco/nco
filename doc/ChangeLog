@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
 
-	* Fix crazy/busted ncrename regress tests. No idea why they worked anywhere.
+	* Fix crazy/busted ncrename regression tests. No idea why they worked anywhere.
 
 2014-02-17  Charlie Zender  <zender@uci.edu>
 
