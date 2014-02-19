@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.691 2014-02-18 17:44:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.692 2014-02-19 17:28:06 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
@@ -8,14 +8,16 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 This release is mainly a bugfix release. Memory issues that caused
 problems on LLVM/clang (usually Mac OS) and RHEL/CentOS (but not
 trusty old Fedora!) have been fixed. Thank you to everyone who
-reported issues.
+reported issues. nces --nsm_grp now works as advertised with
+coordinates. 
 
-There is one new feature: Support for key parts of the CF cell_methods 
+The one new feature is support for key parts of the CF cell_methods  
 convention. 
 
 Work on NCO 4.4.3 is underway, focused on stability and speed.   
-There will be more netCDF4 mop-up and, possibly, improved HDF4
-support, and cache manipulation for chunking.   
+There will be more netCDF4 mop-up, improved group broadcasting
+algorithms, and, possibly, improved HDF4 support, and cache
+manipulation for chunking.
 
 Enjoy,
 Charlie
@@ -27,27 +29,31 @@ NEW FEATURES:
 A. cell_methods: ncwa and ncra now support key parts of the CF
    cell_methods convention. Averaging foo(time,lat,lon) now
    results in ncwa creating or appending the cell_methods attribute
-   "time, lat, lon: mean" to foo in the output file. This feature
-   is turned-on by default. Turn-off with --no_cll_mth.
+   "time, lat, lon: mean" to foo in the output file. 
+   Pre-existing cell_methods are preserved and appended to.
+   cell_methods are turned-on by default. Turn-off with --no_cll_mth.
    ncwa --op_typ=max in.nc out.nc # Output gets cell_methods
    ncwa --no_cll_mth in.nc out.nc # Turn-off cell_methods
    http://nco.sf.net/nco.html#cll_mth
 
 BUG FIXES:
 
-A. nces now outputs only the group statisitics. In 4.4.0 and 4.4.1
-   nces would, inadvertently, also sometimes copy the coordinate
-   variables of member groups to member groups in the output
-   file. This did not take much space (because only coordinates were
-   copied), so it took some time to notice it. Now fixed.
+A. nces --nsm_grp now outputs only the group statisitics. In 4.4.0 and
+   4.4.1 nces --nsm_grp would, inadvertently, also sometimes copy
+   coordinate variables of member groups to member groups in the
+   output file. This did not take much space (because only coordinates
+   were copied), nor did it affect nces --nsm_fl, so we did not notice
+   it for some time. Now fixed.  
 
 B. Groups matched via regular expressions in group-subsetting now
    have their associated variables flagged in intersection mode. 
    This mumbo-jumbo means that regular expressions work better now.
+   Any variable(s), group(s), or intersection of the two can be
+   obtained with surgical precision with regular expressions.
 
-C. Fix build problem exposed by LLVM on Mac OS X 10.9 Mavericks.
-   The underlying memory problems could cause segfaults on for other
-   OSs including RHEL and CentOS. Issues reported by George.
+C. Fix build problems exposed by LLVM on Mac OS X 10.9 Mavericks.
+   The underlying memory problems could cause segfaults for other
+   OSs including RHEL and CentOS. Issues reported by George White.
 
 D. ncwa now always outputs averages of coordinates, even when
    operation on (non-coordinate) variables is other like max, min.
@@ -57,8 +63,8 @@ D. ncwa now always outputs averages of coordinates, even when
 
 E. The -X option for auxiliary coordinates now works fully when
    latitude and longitude coordinates are nested in group hierarchies.
-   The most in-scope lat/long are found and used for each variable. 
-   We thought this was working in 4.4.1. Now it really is :)
+   The most in-scope latitude/longitude are used for each variable.  
+   We said this worked in 4.4.1. This time we mean it :)
    http://nco.sf.net/nco.html#aux
 
 F. ncap2 sometimes failed when converting netCDF3->netCDF4 files

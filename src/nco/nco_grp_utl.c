@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1257 2014-02-19 17:22:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1258 2014-02-19 17:28:07 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8985,7 +8985,7 @@ nco_prn_var                           /* [fnc] Print variable (debug only) */
 
   int grp_id;
   int var_id;
-  int var_typ;
+  nc_type var_typ;
   int nbr_dmn;
 
   /* Loop table */
@@ -9000,15 +9000,11 @@ nco_prn_var                           /* [fnc] Print variable (debug only) */
       (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);   
       (void)nco_inq_var(grp_id,var_id,(char *)NULL,&var_typ,&nbr_dmn,(int *)NULL,(int *)NULL);
 
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Type: %d\n",nco_prg_nm_get(),fnc_nm,
-          var_trv.nm_fll,var_typ); 
-      }
+      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Type: %d\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,var_typ); 
 
     } /* Is variable */
   } /* Loop table */
 } /* nco_prn_var() */
-
 
 void
 nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_sct (name only) */

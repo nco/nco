@@ -1,6 +1,18 @@
+2014-02-19  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up compiler warnings for GCC 4.4.3- and for netCDF3-only builds (i.e., tephra)
+
+	* NCO 4.4.2 release procedure:
+ 	Changes since nco-4_4_1: ncra.c mmr 4 LLVM/clang, -X, rx nsx, cll_mth, ncwa sng
+	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
+	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
+
+	* Clarify nces behavior with coordinates
+
 2014-02-19 Pedro Vicente  <pvicente@uci.edu>
 
-	* Print error message for ncge, when second file does not contain ensembles from first file
+	* Print error message for ncge, when second file contains ensembles not in first file
 
 2014-02-18 Pedro Vicente  <pvicente@uci.edu>
 
@@ -10,14 +22,8 @@
 
 2014-02-18  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.4.2 release procedure:
- 	Changes since nco-4_4_1: ncra.c mmr 4 LLVM/clang, -X, rx nsx, cll_mth, ncwa sng
-	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
-	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
-
 	* Fix four crazy/busted ncrename regression tests.
-	They only worked with netCDF < 4.3.1 because of library bug that
+	They only passed with netCDF < 4.3.1 because of library bug that
 	renamed whole coordinates (variables + dimensions) instead of only dimensions.
 
 2014-02-17  Charlie Zender  <zender@uci.edu>

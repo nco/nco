@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.967 2014-02-17 23:17:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.968 2014-02-19 17:28:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.2
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 17 February 2014
+@set update-date 19 February 2014
 @set update-month February 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13035,13 +13035,22 @@ properties are equally influenced by all the inputs, then @command{nces}
 is the operator to use. 
 
 Variables in the @var{output-file} are the same size as the variable
-in each input file or group, and each input file or group must be the
-same size. 
+hyperslab in each input file or group, and each input file or group
+must be the same size after hyperslabbing
+@footnote{As of @acronym{NCO} version 4.4.2 (released February, 2014)
+@command{nces} allows hyperslabs in all dimensions so long as the
+hyperslabs resolve to the same size. 
+The fixed (i.e., non-record) dimensions should be the same size in
+all ensemble members both before and after hyperslabbing, although
+the hypserslabs may (and usually do) change the size of the dimensions
+from the input to the output files.
+Prior to this, @command{nces} was only guaranteed to work on hyperslabs
+in the record dimension that resolved to the same size.}
 @cindex record dimension
 @cindex hyperslab
-The only exception is that @command{nces} allows files to differ in
-the record dimension size if the requested record hyperslab
-(@pxref{Hyperslabs}) resolves to the same size for all files. 
+@command{nces} does allow files to differ in the record dimension size
+if the requested record hyperslab (@pxref{Hyperslabs}) resolves to the
+same size for all files.  
 @command{nces} recomputes the record dimension hyperslab limits for
 each input file so that coordinate limits may be used to select equal
 length timeseries from unequal length files.
@@ -13108,17 +13117,25 @@ As a multi-file operator, @command{nces} will read the list of
 as positional arguments on the command line 
 (@pxref{Large Numbers of Files}).
 
-Like @command{ncra} and @command{ncwa}, @command{nces} only allows
-coordinate variables to be processed by the linear average operation,
-regardless of the arithmetic operation type performed on the
-non-coordinate variables (@pxref{Operation Types}).
-Other requested operations (e.g., maximization, square-root, RMS) are
-applied only to non-coordinate variables.
+Like @command{ncra} and @command{ncwa}, @command{nces} treats coordinate
+variables as a special case.
+Coordinate variables are assumed to be the same in all ensemble members,
+so @command{nces} simply copies the coordinate variables that appear in 
+ensemble members directly to the output file.
+This has the same effect as averaging the coordinate variable across the
+ensemble, yet does not incur the time- or precision- penalties of
+actually averaging them.
+@command{ncra} and @command{ncwa} allow coordinate variables to be
+processed only by the linear average operation, regardless of the
+arithmetic operation type performed on the non-coordinate variables
+(@pxref{Operation Types}). 
+Thus it can be said that the three operators (@command{ncra},
+@command{ncwa}, and @command{nces}) all average coordinate variables
+(even though @command{nces} simply copies them).
+All other requested arithmetic operations (e.g., maximization,
+square-root, RMS) are applied only to non-coordinate variables.
 In these cases the linear average of the coordinate variable will be
 returned.
-@cindex record dimension
-All dimensions, including the record dimension, are treated identically
-and are preserved in the @var{output-file}.
 
 @noindent
 @html
@@ -13230,8 +13247,8 @@ subsetting simultaneously (@pxref{Subsetting Files}).
 @end html
 @cindex record aggregation
 @cindex @acronym{RAG}
-@acronym{RAG} makes each variable (except coordinate variables) in each input file 
-into a single record of the same variable in the output file. 
+@acronym{RAG} makes each variable (except coordinate variables) in each
+input file into a single record of the same variable in the output file.  
 Coordinate variables are not concatenated, they are instead simply
 copied from the first input file to the @var{output-file}.
 All @var{input-files} must contain all extracted variables (or else
@@ -16479,8 +16496,9 @@ Large work-load testing
 @cindex Michael Schulz
 @cindex Gary Strand
 @cindex Andrew Wittenberg
+@cindex George White
 @cindex Remik Ziemlinski
-@item Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Gary Strand, Andrew Wittenberg, Remik Ziemlinski
+@item Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Gary Strand, George White Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Daniel Baumann
 @cindex Nick Bower
