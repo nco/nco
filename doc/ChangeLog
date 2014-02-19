@@ -1,3 +1,10 @@
+2014-02-18 Pedro Vicente  <pvicente@uci.edu>
+
+	* nces regressions #18 Ensemble fixed variables
+	
+	* nco_nsm_def_wri() Define OR write ensemble fixed variables 
+
+
 2014-02-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.2 release procedure:
