@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.453 2014-02-19 06:13:50 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.454 2014-02-19 15:00:52 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -5049,7 +5049,7 @@ if (0){
 # ncrename -O -d lat,new_lat in_grp.nc out.nc
 # ncks -m -v new_lat out.nc
 
-    $dsc_sng="Dimensions: Relative rename 'lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Relative rename 'lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v new_lat %tmp_fl_00%";
     $tst_cmd[2]="new_lat attribute 0: units, size = 13 NC_CHAR, value = degrees_north";
@@ -5062,7 +5062,7 @@ if (0){
 # Absolute rename /lat to new_lat
 # ncrename -O -d /lat,new_lat in_grp.nc out.nc
 
-    $dsc_sng="Dimensions: Absolute rename '/lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Absolute rename '/lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d /lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v new_lat %tmp_fl_00%";
     $tst_cmd[2]="new_lat attribute 0: units, size = 13 NC_CHAR, value = degrees_north";
@@ -5075,7 +5075,7 @@ if (0){
 # optional relative rename lat to new_lat
 # ncrename -O -d .lat,new_lat  in_grp.nc out.nc
 
-    $dsc_sng="Dimensions: Optional existing relative rename '.lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Optional existing relative rename '.lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d .lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v /g6/area %tmp_fl_00%";
     $tst_cmd[2]="new_lat attribute 0: units, size = 13 NC_CHAR, value = degrees_north";
@@ -5100,7 +5100,7 @@ if (0){
 #ncrename -O -d ./lat_non_existing,new_lat in_grp.nc out.nc
 # Absolute non existing absolute rename
 
-    $dsc_sng="Dimensions: Optional non-existing absolute rename './lat_non_existing,new_lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Optional non-existing absolute rename './lat_non_existing,new_lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat_non_existing,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename: WARNING Dimension '/lat_non_existing' not present in ../data/in_grp.nc, skipping it.";
     $tst_cmd[2]="SS_OK";
