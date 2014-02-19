@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1255 2014-02-19 15:04:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1256 2014-02-19 16:53:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8267,6 +8267,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
   int nbr_grp;        /* [nbr] Number of sub-groups */
   int *grp_ids;       /* [id] Sub-group IDs array */
   int mbr_srt;        /* [nbr] Offset */
+  int rcd=NC_NOERR;   /* [rcd] Return code */
 
   size_t grp_nm_lng;  /* [nbr] Group name length */
 
@@ -8284,7 +8285,17 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
     }
 
     /* Obtain group ID of current ensemble using full group name */
-    (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
+    rcd+=nco_inq_grp_full_ncid_flg(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
+
+    /* Group must exist (file # call > 1 ), if not print error */
+    if(rcd != NC_NOERR){
+      (void)fprintf(stdout,"%s: ERROR ensemble <%s> does not exist\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn); 
+      (void)fprintf(stdout,"%s: List of ensembles is\n",nco_prg_nm_get()); 
+      for(int idx=0;idx<trv_tbl->nsm_nbr;idx++){
+        (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx].grp_nm_fll_prn);
+        nco_exit(EXIT_FAILURE);
+      } 
+    }
 
     /* Get number of sub-groups */
     (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);

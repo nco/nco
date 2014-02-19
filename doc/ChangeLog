@@ -1,3 +1,7 @@
+2014-02-19 Pedro Vicente  <pvicente@uci.edu>
+
+	* Print error message for ncge, when second file does not contain ensembles from first file
+
 2014-02-18 Pedro Vicente  <pvicente@uci.edu>
 
 	* nces regressions #18 Ensemble fixed variables
