@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.450 2014-02-19 04:23:05 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.451 2014-02-19 05:19:12 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -5031,11 +5031,13 @@ if (0){
 #ncrename #8	
 #ncrename -O -d lat,new_lat in_grp.nc out.nc
 # relative rename lat to new_lat
+# ncrename -O -d lat,new_lat in_grp.nc out.nc
+# ncks -m -v new_lat out.nc
 
     $dsc_sng="Dimensions: Relative rename 'lat' to 'new_lat'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'new_lat'";
-    $tst_cmd[2]="lat dimension 0: new_lat, size = 2 (Non-coordinate dimension)";
+    $tst_cmd[1]="ncks -m -v new_lat %tmp_fl_00%";
+    $tst_cmd[2]="new_lat attribute 0: units, size = 13 NC_CHAR, value = degrees_north";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5043,11 +5045,12 @@ if (0){
 #ncrename #9	
 #ncrename -O -d /lat,new_lat in_grp.nc out.nc
 # Absolute rename /lat to new_lat
+# ncrename -O -d /lat,new_lat in_grp.nc out.nc
 
     $dsc_sng="Dimensions: Absolute rename '/lat' to 'new_lat'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d /lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'new_lat'";
-    $tst_cmd[2]="lat dimension 0: new_lat, size = 2 (Non-coordinate dimension)";
+    $tst_cmd[1]="ncks -m -v new_lat %tmp_fl_00%";
+    $tst_cmd[2]="new_lat attribute 0: units, size = 13 NC_CHAR, value = degrees_north";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5055,11 +5058,12 @@ if (0){
 #ncrename #10	
 #ncrename -O -d .lat,new_lat in_grp.nc out.nc
 # optional relative rename lat to new_lat
+# ncrename -O -d .lat,new_lat  in_grp.nc out.nc
 
     $dsc_sng="Dimensions: Optional existing relative rename '.lat' to 'new_lat'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d .lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -v /g6/area %tmp_fl_00% | grep 'new_lat'";
-    $tst_cmd[2]="area dimension 0: /new_lat, size = 2 (Non-coordinate dimension)";
+    $tst_cmd[1]="ncks -m -v /g6/area %tmp_fl_00%";
+    $tst_cmd[2]="new_lat attribute 0: units, size = 13 NC_CHAR, value = degrees_north";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5067,11 +5071,12 @@ if (0){
 #ncrename #11	
 #ncrename -O -d /lat,new_lat in_grp.nc out.nc
 # Absolute rename /lat to new_lat
+# ncrename -O  -d ./lat,new_lat in_grp.nc out.nc
 
     $dsc_sng="Dimensions: Optional existing absolute rename './lat' to 'new_lat'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'new_lat'";
-    $tst_cmd[2]="lat dimension 0: new_lat, size = 2 (Non-coordinate dimension)";
+    $tst_cmd[1]="ncks -m -v new_lat %tmp_fl_00%";
+    $tst_cmd[2]="new_lat attribute 0: units, size = 13 NC_CHAR, value = degrees_north";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
