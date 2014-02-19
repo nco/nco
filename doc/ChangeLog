@@ -2,7 +2,7 @@
 
 	* nces regressions #18 Ensemble fixed variables
 
-	* nco_nsm_def_wri() Define OR write ensemble fixed variables 
+	* nco_nsm_def_wri() Define OR write ensemble fixed variables
 
 2014-02-18  Charlie Zender  <zender@uci.edu>
 
@@ -12,7 +12,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
 
-	* Fix crazy/busted ncrename regression tests. No idea why they worked anywhere.
+	* Fix four crazy/busted ncrename regression tests.
+	They only worked with netCDF < 4.3.1 because of library bug that
+	renamed whole coordinates (variables + dimensions) instead of only dimensions.
 
 2014-02-17  Charlie Zender  <zender@uci.edu>
 
