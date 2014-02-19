@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1262 2014-02-19 21:58:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1263 2014-02-19 23:12:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2065,6 +2065,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
     /* Get dimension IDs for variable */
     (void)nco_inq_vardimid(grp_id,idx_var,dmn_id_var);
+
 
     /* Allocate path buffer and include space for trailing NUL */ 
     var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2L);
@@ -8266,6 +8267,8 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
   int *grp_ids;       /* [id] Sub-group IDs array */
   int mbr_srt;        /* [nbr] Offset */
   int rcd=NC_NOERR;   /* [rcd] Return code */
+  int dmn_id_var_2[NC_MAX_DIMS];     /* [ID] Dimensions IDs array for variable */
+  int nbr_dmn_var_2;                 /* [nbr] Number of dimensions for variable */
 
   size_t grp_nm_lng;  /* [nbr] Group name length */
 
@@ -8342,6 +8345,34 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 
             /* Build new variable name */
             char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,nm_lst_1[idx_var]);
+
+            /* Check variables from 2nd file (no table, using API) */
+
+            /* Get number of dimensions */
+            (void)nco_inq_var(grp_ids[idx_grp],idx_var,var_trv->nm,NULL,&nbr_dmn_var_2,(int *)NULL,(int *)NULL);
+
+            /* Get dimension IDs for variable */
+            (void)nco_inq_vardimid(grp_ids[idx_grp],idx_var,dmn_id_var_2);
+
+            /* Check dimensions between ensembles from 1st and 2nd files */
+            for(int idx_dmn_1=0;idx_dmn_1<var_trv->nbr_dmn;idx_dmn_1++){
+              dmn_trv_sct *dmn_trv_1=nco_dmn_trv_sct(var_trv->var_dmn[idx_dmn_1].dmn_id,trv_tbl);
+              for(int idx_dmn_2=0;idx_dmn_2<nbr_dmn_var_2;idx_dmn_2++){
+
+                char dmn_nm_var[NC_MAX_NAME+1]; /* [sng] Dimension name */
+                long dmn_sz_var;                /* [nbr] Dimension size */ 
+
+                /* Get dimension size */
+                (void)nco_inq_dim(grp_ids[idx_grp],dmn_id_var_2[idx_dmn_2],dmn_nm_var,&dmn_sz_var);
+
+                if(dmn_trv_1->sz != (size_t)dmn_sz_var){
+                  (void)fprintf(stdout,"%s: ERROR variable <%s> has non conforming dimension %ld, expecting %ld\n",nco_prg_nm_get(),
+                    var_nm_fll,dmn_sz_var,dmn_trv_1->sz); 
+                  nco_exit(EXIT_FAILURE);
+                }
+              }
+            } /* Check dimensions between ensembles from 1st and 2nd files */
+
 
             /* Variable ensemble members */
             int mbr_var_nbr=trv_tbl->nsm[idx_nsm].mbr_var_nbr;          
