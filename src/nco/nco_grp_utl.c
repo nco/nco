@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1256 2014-02-19 16:53:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1257 2014-02-19 17:22:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -261,10 +261,9 @@ void
 nco_prn_grp_nm_fll                    /* [fnc] Debug function to print group full name from ID */
 (const int grp_id)                    /* I [ID] Group ID */
 {
+#if defined(HAVE_NETCDF4_H)
   size_t grp_nm_lng;
   char *grp_nm_fll;
-
-#if defined(HAVE_NETCDF4_H) 
   (void)nco_inq_grpname_full(grp_id, &grp_nm_lng, NULL);
   grp_nm_fll=(char*)nco_malloc(grp_nm_lng+1L);
   (void)nco_inq_grpname_full(grp_id, &grp_nm_lng, grp_nm_fll);
@@ -4807,11 +4806,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           } /* endif */
         } /* idx_dmn */
       } /* !ncpdq */
-
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s setting chunksizes for <%s> with dimensions:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
-        for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++) (void)fprintf(stdout,"[%d]<%s> (size=%ld)(count=%ld)(record=%d)\n",idx_dmn,dmn_cmn[idx_dmn].nm_fll,dmn_cmn[idx_dmn].sz,dmn_cmn[idx_dmn].dmn_cnt,dmn_cmn[idx_dmn].is_rec_dmn);
-      } /* endif */
 
       /* Set chunksize parameters */
       (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn);
