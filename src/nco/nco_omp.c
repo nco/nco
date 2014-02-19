@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.68 2014-02-03 21:48:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.69 2014-02-19 22:22:28 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -129,7 +129,9 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     case ncrcat: 
       /* ncecat and ncrcat are extremely I/O intensive 
 	 Maximum efficiency when one thread reads from input file while other writes to output file */
-      thr_nbr_max_fsh=2;
+      // 20140219: Turn-off OpenMP until thoroughly tested
+      // thr_nbr_max_fsh=2;
+      thr_nbr_max_fsh=1;
       break;
       /* Operators with higher maximum pre-set thread limit (NB: not all of these are threaded!) */
     case ncbo: 
@@ -142,7 +144,9 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     case ncrename: 
     case ncwa: 
     case ncge:
-      thr_nbr_max_fsh=4;
+      // 20140219: Turn-off OpenMP until thoroughly tested
+      // thr_nbr_max_fsh=4;
+      thr_nbr_max_fsh=1;
       break;
     default: nco_dfl_case_prg_id_err(); break;
     } /* end case */
