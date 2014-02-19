@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.449 2014-02-13 17:03:23 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.450 2014-02-19 04:23:05 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -296,7 +296,7 @@ print "\n";
 # Fragile: This test fails when length of command changes
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep hdr_pad | wc > %tmp_fl_01%";
-	$tst_cmd[2]="cut -c 14-15  %tmp_fl_01%"; ## Daniel:fxm cut/ncks, but how to do grep and wc???
+	$tst_cmd[2]="cut -c 14-15 %tmp_fl_01%"; ## Daniel:fxm cut/ncks, but how to do grep and wc???
 	$dsc_sng="Pad header with 1000B extra for future metadata (failure OK/expected since test depends on command-line length)";
 	$tst_cmd[3]="27";
 	$tst_cmd[4]="SS_OK";
@@ -512,7 +512,7 @@ print "\n";
     
     $tst_cmd[0]="ncks -C -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -C -O $fl_fmt $nco_D_flg -v -s 'three_dmn_var_dbl[lon]={0.0,1,2,3};' $in_pth_arg in.nc %tmp_fl_01%";
-    $tst_cmd[2]="ncbo $omp_flg -C -h -O $fl_fmt $nco_D_flg  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[2]="ncbo $omp_flg -C -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[3]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -y ttl -v three_dmn_var_dbl %tmp_fl_02% %tmp_fl_03%";
     $tst_cmd[4]="ncks -C -H -s '%f' -v three_dmn_var_dbl %tmp_fl_03%";
     $dsc_sng="Difference which tests 3D broadcasting";
@@ -812,7 +812,7 @@ print "\n";
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
     $tst_cmd[2]="ncra -Y ncfe -t 1 -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_01%";
-    $tst_cmd[3]="ncbo -C -h -O  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncbo -C -h -O %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[4]="ncwa -t 1 -O -C %tmp_fl_02% %tmp_fl_03% 2>%tmp_fl_05%";
     $dsc_sng="Check op with OpenMP";
 #    $tst_cmd[5]="ncks -C -H -s '%d' -v R %tmp_fl_03%";
@@ -935,7 +935,7 @@ print "\n";
     #for i in $(seq -w 0 999) ; do iii=$( printf "%03d" ${i} ) ; ln in.nc foo${iii}.nc ; done
 	# TO DO run bash script above by perl
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v dgn_var $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks  %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00%";
     $dsc_sng="Test file loop";
     $tst_cmd[2]="dgn[0]=73 dgn_var[0]=73";
     $tst_cmd[3]="SS_OK";
@@ -968,7 +968,7 @@ print "\n";
     $tst_cmd[1]="ncap2 -C -v -O $fl_fmt $nco_D_flg -s 'three_dmn_var_int+=100;' $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -d time,0,3 -d time,8,9 -d lon,0,1 -d lon,3,3 -v three_dmn_var_int %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[3]="ncwa -C -h -O $omp_flg $fl_fmt $nco_D_flg -y avg -v three_dmn_var_int %tmp_fl_02% %tmp_fl_03%";
-    $tst_cmd[4]="ncks -C -O -H -s '%d' -v three_dmn_var_int  %tmp_fl_03%";
+    $tst_cmd[4]="ncks -C -O -H -s '%d' -v three_dmn_var_int %tmp_fl_03%";
     $dsc_sng="concatenate two 3D vars with multihyperslabbing";
     $tst_cmd[5]="84"; 
     $tst_cmd[6]="SS_OK";
@@ -1045,7 +1045,7 @@ print "\n";
     $dsc_sng="(Groups) Concatenate variables/groups 1: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area  %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area %tmp_fl_00%";
     $tst_cmd[2]="record[1] lat[1]=90 area[3]=50";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
@@ -1195,7 +1195,7 @@ print "\n";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,1 -v mss_val $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,0 -v mss_val $in_pth_arg in.nc %tmp_fl_02%";
     $tst_cmd[2]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5 %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
-    $tst_cmd[3]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5  %tmp_fl_02% %tmp_fl_01%  %tmp_fl_04%  $foo_y_fl $foo_x_fl $foo_yx_fl";
+    $tst_cmd[3]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5 %tmp_fl_02% %tmp_fl_01% %tmp_fl_04%  $foo_y_fl $foo_x_fl $foo_yx_fl";
     $tst_cmd[4]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_03% %tmp_fl_04% %tmp_fl_05%";
     $tst_cmd[5]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_05% ";
     $tst_cmd[6]="1e+36";
@@ -1725,7 +1725,7 @@ print "\n";
     $dsc_sng="(Groups) Variable/Group extraction test 1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
-    $tst_cmd[1]="ncks -v area1  %tmp_fl_00%";
+    $tst_cmd[1]="ncks -v area1 %tmp_fl_00%";
     $tst_cmd[2]="lat[1] area1[1]=31";
     $tst_cmd[3]="SS_OK";
 	 }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
@@ -2763,7 +2763,7 @@ print "\n";
 #ncpdq #9
     
      $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lon,lat -v three_dmn_var_dbl -d time,0,2 -d time,4 -d lat,1 -d lat,1 --msa_usr_rdr $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%2.f,' -v three_dmn_var_dbl -d time,1 -d lon,0  %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%2.f,' -v three_dmn_var_dbl -d time,1 -d lon,0 %tmp_fl_00%";
     $dsc_sng="Re-order 3D variable with MSA and --msa_usr_rdr flag -C -a lon,lat -v three_dmn_var_dbl -d time,0,2 -d time,4 -d lat,1 -d lat,1 --msa_usr_rdr";
     $tst_cmd[2]="13,13";
     $tst_cmd[3]="SS_OK";
@@ -2961,7 +2961,7 @@ print "\n";
 #ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 in.nc out.nc
     
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks  -C -H -v three_dmn_rec_var -d lat,0,0 -d time,1,1 -d lon,1,1  %tmp_fl_00%";
+    $tst_cmd[1]="ncks  -C -H -v three_dmn_rec_var -d lat,0,0 -d time,1,1 -d lon,1,1 %tmp_fl_00%";
     $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var (MSA) Test2 read three_dmn_rec_var";
     $tst_cmd[2]="lat[0]=90 time[1]=4 lon[1]=90 three_dmn_rec_var[5]=30";
     $tst_cmd[3]="SS_OK";
@@ -3220,7 +3220,7 @@ print "\n";
 # same #16 as previous but with group
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -a lev,time -v two_dmn_rec_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-   $tst_cmd[1]="ncks -C -g g19g2 -d time,1,1 -d lev,1,1  %tmp_fl_00%";
+   $tst_cmd[1]="ncks -C -g g19g2 -d time,1,1 -d lev,1,1 %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable with record (no -C , no MSA) -v two_dmn_rec_var -C -a lev,time";
    $tst_cmd[2]="lev[1]=500 time[1]=2 two_dmn_rec_var[11]=2.1 watt meter-2";
    $tst_cmd[3]="SS_OK";
@@ -3236,7 +3236,7 @@ print "\n";
 # same as #17 but with group
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g2 -a lev,time -v two_dmn_rec_var -d time,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-   $tst_cmd[1]="ncks -g g19g2 -v two_dmn_rec_var  %tmp_fl_00%";
+   $tst_cmd[1]="ncks -g g19g2 -v two_dmn_rec_var %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable with record (-C , MSA) -v two_dmn_rec_var -C -a lev,time";
    $tst_cmd[2]="lev[0] time[0] two_dmn_rec_var[0]=2.1 watt meter-2";
    $tst_cmd[3]="SS_OK";
@@ -3253,7 +3253,7 @@ print "\n";
 # same as #18 but with group
   
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -a lev,time -v two_dmn_rec_var -d time,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-   $tst_cmd[1]="ncks -C -g g19g2 -v two_dmn_rec_var  %tmp_fl_00%";
+   $tst_cmd[1]="ncks -C -g g19g2 -v two_dmn_rec_var %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable with record (no -C , MSA) -v two_dmn_rec_var";
    $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
    $tst_cmd[3]="SS_OK";
@@ -3410,7 +3410,7 @@ print "\n";
 #ncrcat #03	
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
-    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max  %tmp_fl_00% %tmp_fl_01%"; 
+    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max %tmp_fl_00% %tmp_fl_01%"; 
     $tst_cmd[2]="ncks -C -H -s '%f' -v three_dmn_var_dbl %tmp_fl_01%";
     $dsc_sng="Concatenate float variable with multislabs across two files";
     $tst_cmd[3]="20";
@@ -3433,7 +3433,7 @@ print "\n";
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v four_dmn_rec_var $in_pth_arg -d time,0,,4 -d lat,0,0 -d lon,0,1 -d lon,3,3  in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -y max -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01%"; 
-    $tst_cmd[2]="ncks -C -H -s '%f' -v four_dmn_rec_var  %tmp_fl_01%";
+    $tst_cmd[2]="ncks -C -H -s '%f' -v four_dmn_rec_var %tmp_fl_01%";
     $dsc_sng="Concatenate float 4D variable with multislabs across two files";
     $tst_cmd[3]="204";
     $tst_cmd[4]="SS_OK";
@@ -3443,8 +3443,8 @@ print "\n";
 #ncrcat #06	
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tmp_fl_00%";    
-    $tst_cmd[1]="ncra -Y ncrcat -O $omp_flg $fl_fmt $nco_D_flg -C -v time -d time,0,,4 $in_pth/in.nc %tmp_fl_00%  %tmp_fl_01% 2> %tmp_fl_02%";
-    $tst_cmd[2]="ncks -C -H -s '%2.f,' -v time  %tmp_fl_01%";
+    $tst_cmd[1]="ncra -Y ncrcat -O $omp_flg $fl_fmt $nco_D_flg -C -v time -d time,0,,4 $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% 2> %tmp_fl_02%";
+    $tst_cmd[2]="ncks -C -H -s '%2.f,' -v time %tmp_fl_01%";
     $dsc_sng="Concatenate 1D variable with stride across two files";
     $tst_cmd[3]=" 1, 5, 9,13,17";
     $tst_cmd[4]="SS_OK";
@@ -3455,8 +3455,8 @@ print "\n";
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tmp_fl_00%"; 
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=20;' $in_pth_arg in.nc %tmp_fl_01%";
-    $tst_cmd[2]="ncra -Y ncrcat -O $omp_flg $fl_fmt $nco_D_flg -C -v time -d time,0,,8 $in_pth/in.nc %tmp_fl_00%  %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_03%";
-    $tst_cmd[3]="ncks -C -H -s '%2.f,' -v time  %tmp_fl_02%";
+    $tst_cmd[2]="ncra -Y ncrcat -O $omp_flg $fl_fmt $nco_D_flg -C -v time -d time,0,,8 $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_03%";
+    $tst_cmd[3]="ncks -C -H -s '%2.f,' -v time %tmp_fl_02%";
     $dsc_sng="Concatenate 1D variable with stride across three files";
     $tst_cmd[4]=" 1, 9,17,25";
     $tst_cmd[5]="SS_OK";
@@ -3469,8 +3469,8 @@ print "\n";
     $tst_cmd[1]="ncks $fl_fmt $nco_D_flg -O -C -v time -d time,0,4 %tmp_fl_00% %tmp_fl_01%";  
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=20;' $in_pth_arg in.nc %tmp_fl_02%";
     $tst_cmd[3]="ncks $fl_fmt $nco_D_flg -O -C -v time -d time,5,7 %tmp_fl_02% %tmp_fl_03%";
-    $tst_cmd[4]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,10,,2 $in_pth/in.nc %tmp_fl_01%  %tmp_fl_03% %tmp_fl_04% 2> %tmp_fl_05%";
-    $tst_cmd[5]="ncks -C -H -s '%2.f,' -v time  %tmp_fl_04%";
+    $tst_cmd[4]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,10,,2 $in_pth/in.nc %tmp_fl_01% %tmp_fl_03% %tmp_fl_04% 2> %tmp_fl_05%";
+    $tst_cmd[5]="ncks -C -H -s '%2.f,' -v time %tmp_fl_04%";
     $dsc_sng="Concatenate 1D variable with stride across files with different record dimensions";
     $tst_cmd[6]="11,13,15,27";
     $tst_cmd[7]="SS_OK";
@@ -3529,7 +3529,7 @@ print "\n";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tmp_fl_02%";
-    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,0.0,,11  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,0.0,,11 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
     $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[5]="time_ttl = 33";
     $dsc_sng="Cat. 1D var over 3 files with large stride. Requires UDUnits.";
@@ -3542,7 +3542,7 @@ print "\n";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tmp_fl_02%";
-    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,22.0,,7  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,22.0,,7 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
     $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[5]="time_ttl = 51";
     $dsc_sng="Cat. 1D var over 3 files coord limits+stride. Requires UDUnits.";
@@ -3555,7 +3555,7 @@ print "\n";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tmp_fl_02%";
-    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1990-1-1 22:0:0',,7  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1990-1-1 22:0:0',,7 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
     $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[5]="time_ttl = 51";
     $dsc_sng="Cat. 1D var over three files date-stamp limits+stride. Requires UDUnits.";
@@ -3568,7 +3568,7 @@ print "\n";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tmp_fl_02%";
-    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1990-1-1 ',,9  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1990-1-1 ',,9 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
     $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[5]="time_ttl = 54";
     $dsc_sng="Cat. 1D var over 3 files date-stamp limits+stride. Requires UDUnits.";
@@ -3581,7 +3581,7 @@ print "\n";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tmp_fl_02%";
-    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,,,20  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,,,20 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% 2> %tmp_fl_05%";
     $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[5]="time_ttl = 20";
     $dsc_sng="Cat. 1D variable over 3 files dmn limits+stride. Requires UDUnits.";
@@ -3599,7 +3599,7 @@ print "\n";
     $tst_cmd[5]="ncatted -h -O $nco_D_flg -a units,time,o,c,'days since 1981-2-4' %tmp_fl_02%";   
     $tst_cmd[6]="ncks -h -O $fl_fmt $nco_D_flg -C -v time -d time,0,7 $in_pth_arg in.nc %tmp_fl_03%";
     $tst_cmd[7]="ncatted -h -O $nco_D_flg -a units,time,o,c,'days since 1981-2-8' %tmp_fl_03%";   
-    $tst_cmd[8]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,7,   %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% %tmp_fl_04% 2> %tmp_fl_06%";
+    $tst_cmd[8]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,7, %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% %tmp_fl_04% 2> %tmp_fl_06%";
     $tst_cmd[9]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_04% %tmp_fl_05%";
     $tst_cmd[10]="time_ttl = 92";
     $dsc_sng="Cat. 1D var over 4 files different record sizes. Requires UDUnits.";
@@ -3617,7 +3617,7 @@ print "\n";
     $tst_cmd[5]="ncatted -h -O $nco_D_flg -a units,time,o,c,'days since 1981-2-4' %tmp_fl_02%";   
     $tst_cmd[6]="ncks -h -O $fl_fmt $nco_D_flg -C -v time -d time,0,7 $in_pth_arg in.nc %tmp_fl_03%";
     $tst_cmd[7]="ncatted -h -O $nco_D_flg -a units,time,o,c,'days since 1981-2-8' %tmp_fl_03%";   
-    $tst_cmd[8]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,,,4   %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% %tmp_fl_04% 2> %tmp_fl_06%";
+    $tst_cmd[8]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,,,4 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% %tmp_fl_04% 2> %tmp_fl_06%";
     $tst_cmd[9]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_04% %tmp_fl_05%";
     $tst_cmd[10]="time_ttl = 28";
     $dsc_sng="Cat. 1D var over 4 files with srd=4 different rec sizes. Requires UDUnits.";
@@ -3635,7 +3635,7 @@ print "\n";
     $tst_cmd[5]="ncatted -h -O $nco_D_flg -a units,time,o,c,'days since 1981-2-4' %tmp_fl_02%";   
     $tst_cmd[6]="ncks -h -O $fl_fmt $nco_D_flg -C -v time -d time,0,7 $in_pth_arg in.nc %tmp_fl_03%";
     $tst_cmd[7]="ncatted -h -O $nco_D_flg -a units,time,o,c,'days since 1981-2-8' %tmp_fl_03%";   
-    $tst_cmd[8]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1981-2-4 ','1981-2-20 ',3   %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% %tmp_fl_04% 2> %tmp_fl_06%";
+    $tst_cmd[8]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1981-2-4 ','1981-2-20 ',3 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03% %tmp_fl_04% 2> %tmp_fl_06%";
     $tst_cmd[9]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_04% %tmp_fl_05%";
     $tst_cmd[10]="time_ttl = 45";
     $dsc_sng="Cat. 1D var over 4 files with srd=3 str/end timestamps. Requires UDUnits.";
@@ -3696,7 +3696,7 @@ print "\n";
 #same as #03 
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
-    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max  %tmp_fl_00% %tmp_fl_01%"; 
+    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max %tmp_fl_00% %tmp_fl_01%"; 
     $tst_cmd[2]="ncks -C -H -s '%f' -g g19g3 -v three_dmn_var_dbl %tmp_fl_01%";
     $dsc_sng="(Groups) Concatenate float variable with multislabs across two files";
     $tst_cmd[3]="20";
@@ -3743,7 +3743,7 @@ print "\n";
 
     $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrcat $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[2]="ncks  -C -g g4 -v one_dmn_rec_var  %tmp_fl_00%";
+    $tst_cmd[2]="ncks  -C -g g4 -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="(Groups) Append records to existing file without copying original (Group with 1 record case)";
     $tst_cmd[3]="time[19]=10 one_dmn_rec_var[19]=10 kelvin";
     $tst_cmd[4]="SS_OK";
@@ -3756,7 +3756,7 @@ print "\n";
 
     $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrcat $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[2]="ncks -C -g g5 -v one_dmn_rec_var  %tmp_fl_00%";
+    $tst_cmd[2]="ncks -C -g g5 -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="(Groups) Append records to existing file without copying original (Group with 2 records case)";
     $tst_cmd[3]="time52[19]=10 one_dmn_rec_var[19]=10 kelvin";
     $tst_cmd[4]="SS_OK";
@@ -3772,7 +3772,7 @@ print "\n";
 	$tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_01%";
     $tst_cmd[2]="ncrcat -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
-	$tst_cmd[3]="ncks -C -g g5 -v one_dmn_rec_var  %tmp_fl_02%";
+	$tst_cmd[3]="ncks -C -g g5 -v one_dmn_rec_var %tmp_fl_02%";
     $dsc_sng="(Groups) Group with 2 records case";
     $tst_cmd[4]="time52[19]=10 one_dmn_rec_var[19]=10 kelvin";
     $tst_cmd[5]="SS_OK";
@@ -3999,7 +3999,7 @@ print "\n";
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
     $tst_cmd[2]="ncra -t 1 -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_01%";
-    $tst_cmd[3]="ncbo -C -h -O  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncbo -C -h -O %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[4]="ncwa -t 1 -O -C %tmp_fl_02% %tmp_fl_03% 2>%tmp_fl_05%";
     $dsc_sng="Check op with OpenMP";
     $tst_cmd[5]="ncap2 -t 1 -h -v -O -s 'n2= ((fabs(R)<0.01) && (fabs(S)<0.01) && (fabs(T)<0.01) && (fabs(U)<0.01) && (fabs(V)<0.01) && (fabs(W)<0.01) && (fabs(X)<0.01));print(n2)' %tmp_fl_03% %tmp_fl_04%";
@@ -4099,7 +4099,7 @@ print "\n";
 # ncra -O  in2.nc out.nc
     
     $tst_cmd[0]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a time,record %tmp_fl_00%  %tmp_fl_01%";
+	$tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a time,record %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[2]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[3]="ncks -C -g g25g1 -v one_dmn_rec_var %tmp_fl_02%";
     $dsc_sng="(Groups) 2 records in 1 group ('time' same as record, 1st record)";
@@ -4944,8 +4944,8 @@ if (0){
 #ncrename -O -a .nothing,new_nothing in_grp.nc out.nc 
 #optional relative rename nothing to new_nothing (print warning)
     
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a .nothing,new_nothing $in_pth_arg in_grp.nc %tmp_fl_00%";
     $dsc_sng="Attributes: Optional relative rename '.nothing' to 'new_nothing'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a .nothing,new_nothing $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename: WARNING Attribute 'nothing' not renamed because not found in searched variable(s)";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4955,9 +4955,9 @@ if (0){
 #ncrename -O -a history,new_history in_grp.nc out.nc  
 #relative rename history to new_history
     
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a history,new_history $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
     $dsc_sng="Attributes: Relative rename 'history' to 'new_history'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a history,new_history $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
     $tst_cmd[2]="Global attribute 3: new_history, size = 26 NC_CHAR, value = History global attribute.";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4969,9 +4969,9 @@ if (0){
 # absolute rename /g1/history group/global att to /g1/new_history
 # NB: use escape in '/g1\@history,new_history'
     
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1\@history,new_history' $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -g g1 %tmp_fl_00% | grep 'History group attribute'";
     $dsc_sng="Attributes: Absolute rename '/g1\@history' to 'new_history'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1\@history,new_history' $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -g g1 %tmp_fl_00% | grep 'History group attribute'";
     $tst_cmd[2]="Group attribute 0: new_history, size = 25 NC_CHAR, value = History group attribute.";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4982,9 +4982,9 @@ if (0){
 #ncrename -O -a global@history,new_history in_grp.nc out.nc 
 # relative rename history group/global att to new_history
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a 'global\@history,new_history' $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
     $dsc_sng="Attributes: Relative rename 'global\@history' to 'new_history'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a 'global\@history,new_history' $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
     $tst_cmd[2]="Global attribute 3: new_history, size = 26 NC_CHAR, value = History global attribute.";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4994,9 +4994,9 @@ if (0){
 #ncrename -O -a /g1/lon@units,new_units in_grp.nc out.nc 
 # absolute rename /g1/lon@units att to /g1/lon@new_units
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -g g1  %tmp_fl_00% | grep 'new_units'";
     $dsc_sng="Attributes: Absolute rename '/g1/lon\@units' to 'new_units'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -g g1 %tmp_fl_00% | grep 'new_units'";
     $tst_cmd[2]="lon attribute 0: new_units, size = 12 NC_CHAR, value = degrees_east";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5006,9 +5006,9 @@ if (0){
 #ncrename -D 1 -O -a /g1/lon@units,/g1/lon@new_units in_grp.nc out.nc 
 #absolute rename /g1/lon@units att to /g1/lon@new_units
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@units,/g1/lon\@new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -g g1  %tmp_fl_00% | grep 'new_units'";
     $dsc_sng="Attributes: Absolute rename '/g1/lon\@units' to '/g1/lon\@new_units'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@units,/g1/lon\@new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -g g1 %tmp_fl_00% | grep 'new_units'";
     $tst_cmd[2]="lon attribute 0: new_units, size = 12 NC_CHAR, value = degrees_east";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5018,27 +5018,24 @@ if (0){
 #ncrename -O -a /g1/lon@.units,new_units in_grp.nc out.nc 
 # optional absolute rename /g1/lon@.units att to new_units
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@.units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -g g1  %tmp_fl_00% | grep 'new_units'";
     $dsc_sng="Attributes: Optional absolute rename '/g1/lon\@.units' to '/g1/lon\@new_units'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@.units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -g g1 %tmp_fl_00% | grep 'new_units'";
     $tst_cmd[2]="lon attribute 0: new_units, size = 12 NC_CHAR, value = degrees_east";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
-
-
 	
 #################### Dimensions	
-
 
 #ncrename #8	
 #ncrename -O -d lat,new_lat in_grp.nc out.nc
 # relative rename lat to new_lat
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m -v new_lat  %tmp_fl_00% | grep 'new_lat dimension'";
     $dsc_sng="Dimensions: Relative rename 'lat' to 'new_lat'";
-    $tst_cmd[2]="new_lat dimension 0: new_lat, size = 2 NC_FLOAT (Coordinate is new_lat)";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'new_lat'";
+    $tst_cmd[2]="lat dimension 0: new_lat, size = 2 (Non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5047,10 +5044,10 @@ if (0){
 #ncrename -O -d /lat,new_lat in_grp.nc out.nc
 # Absolute rename /lat to new_lat
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d /lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m -v new_lat  %tmp_fl_00% | grep 'new_lat dimension'";
     $dsc_sng="Dimensions: Absolute rename '/lat' to 'new_lat'";
-    $tst_cmd[2]="new_lat dimension 0: new_lat, size = 2 NC_FLOAT (Coordinate is new_lat)";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d /lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'new_lat'";
+    $tst_cmd[2]="lat dimension 0: new_lat, size = 2 (Non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5059,10 +5056,10 @@ if (0){
 #ncrename -O -d .lat,new_lat in_grp.nc out.nc
 # optional relative rename lat to new_lat
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d .lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m -v new_lat  %tmp_fl_00% | grep 'new_lat dimension'";
     $dsc_sng="Dimensions: Optional existing relative rename '.lat' to 'new_lat'";
-    $tst_cmd[2]="new_lat dimension 0: new_lat, size = 2 NC_FLOAT (Coordinate is new_lat)";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d .lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -v /g6/area %tmp_fl_00% | grep 'new_lat'";
+    $tst_cmd[2]="area dimension 0: /new_lat, size = 2 (Non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5071,10 +5068,10 @@ if (0){
 #ncrename -O -d /lat,new_lat in_grp.nc out.nc
 # Absolute rename /lat to new_lat
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m -v new_lat  %tmp_fl_00% | grep 'new_lat dimension'";
     $dsc_sng="Dimensions: Optional existing absolute rename './lat' to 'new_lat'";
-    $tst_cmd[2]="new_lat dimension 0: new_lat, size = 2 NC_FLOAT (Coordinate is new_lat)";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'new_lat'";
+    $tst_cmd[2]="lat dimension 0: new_lat, size = 2 (Non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5083,8 +5080,8 @@ if (0){
 #ncrename -O -d ./lat_non_existing,new_lat in_grp.nc out.nc
 # Absolute non existing absolute rename
 
+    $dsc_sng="Dimensions: Optional non-existing absolute rename './lat_non_existing,new_lat' to 'new_lat'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat_non_existing,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $dsc_sng="Dimensions: Optional non existing absolute rename './lat_non_existing,new_lat' to 'new_lat'";
     $tst_cmd[1]="ncrename: WARNING Dimension '/lat_non_existing' not present in ../data/in_grp.nc, skipping it.";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5096,9 +5093,9 @@ if (0){
 #ncrename  -D 1 -O -v /g1/v1,new_v1 in_grp.nc out.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v /g1/v1,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m -g g1 -v new_v1  %tmp_fl_00% | grep /g1/new_v1";
     $dsc_sng="Variables: Absolute rename '/g1/v1' to '/g1/new_v1'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v /g1/v1,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -g g1 -v new_v1 %tmp_fl_00% | grep /g1/new_v1";
     $tst_cmd[2]="/g1/new_v1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5109,9 +5106,9 @@ if (0){
 #ncrename  -D 1 -O -v v1,new_v1 in_grp.nc out.nc
 #Relative rename v1 to new_v1 
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v v1,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m -g g1 -v new_v1  %tmp_fl_00% | grep /g1/new_v1";
     $dsc_sng="Variables: Relative rename 'v1' to 'new_v1'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v v1,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -g g1 -v new_v1 %tmp_fl_00% | grep /g1/new_v1";
     $tst_cmd[2]="/g1/new_v1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5121,9 +5118,9 @@ if (0){
 #ncrename  -D 1 -O -v ./g1/v1,new_v1 in_grp.nc out.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v ./g1/v1,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m -g g1 -v new_v1  %tmp_fl_00% | grep /g1/new_v1";
     $dsc_sng="Variables: Optional absolute rename '/g1/v1' to '/g1/new_v1'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v ./g1/v1,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -g g1 -v new_v1 %tmp_fl_00% | grep /g1/new_v1";
     $tst_cmd[2]="/g1/new_v1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5133,9 +5130,9 @@ if (0){
 #ncrename  -D 1 -O -v .v1,new_v1 in_grp.nc out.nc
 #Optional Relative rename v1 to new_v1 
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v .v1,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m -g g1 -v new_v1  %tmp_fl_00% | grep /g1/new_v1";
     $dsc_sng="Variables: Optional relative rename 'v1' to 'new_v1'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v .v1,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -g g1 -v new_v1 %tmp_fl_00% | grep /g1/new_v1";
     $tst_cmd[2]="/g1/new_v1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5145,13 +5142,12 @@ if (0){
 #ncrename  -D 1 -O -v ./g1/v1_not,new_v1 in_grp.nc out.nc
 #Optional non-existing absolute rename '/g1/v1_not'
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v ./g1/v1_not,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncrename: WARNING Variable '/g1/v1_not' not present in ../data/in_grp.nc, skipping it.";
     $dsc_sng="Variables: Optional non-existing absolute rename './g1/v1_not' to '/g1/new_v1'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v ./g1/v1_not,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrename: WARNING Variable '/g1/v1_not' not present in ../data/in_grp.nc, skipping it.";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
-
 
 #################### Groups
 
@@ -5159,9 +5155,9 @@ if (0){
 #ncrename -O -g g1,new_g1 in_grp.nc out.nc 
 # relative rename g1 to new_g1
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g g1,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m  -g new_g1  %tmp_fl_00% | grep new_g1";
     $dsc_sng="Groups: Relative rename 'g1' to 'new_g1'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g g1,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m  -g new_g1 %tmp_fl_00% | grep new_g1";
     $tst_cmd[2]="/new_g1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5171,9 +5167,9 @@ if (0){
 #ncrename -O -g g1g1,new_g1g1 in_grp.nc out.nc  
 #relative rename g1g1 to new_g1g1
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g g1g1,new_g1g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m  -g new_g1g1  %tmp_fl_00% | grep new_g1g1";
     $dsc_sng="Groups: Relative rename 'g1g1' to 'new_g1g1'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g g1g1,new_g1g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m  -g new_g1g1 %tmp_fl_00% | grep new_g1g1";
     $tst_cmd[2]="/g1/new_g1g1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5183,9 +5179,9 @@ if (0){
 #ncrename  -D 1 -O -g /g1/g1g1,new_g1g1 in_grp.nc out.nc
 #Absolute rename -g /g1/g1g1,new_g1g1 
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g /g1/g1g1,new_g1g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m  -g /g1/new_g1g1  %tmp_fl_00% | grep /g1/new_g1g1";
     $dsc_sng="Groups: Absolute rename '/g1/g1g1' to '/g1/new_g1g1'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g /g1/g1g1,new_g1g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m  -g /g1/new_g1g1 %tmp_fl_00% | grep /g1/new_g1g1";
     $tst_cmd[2]="/g1/new_g1g1/v1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5195,9 +5191,9 @@ if (0){
 #ncrename -O -g .gfoo,new_g1 in_grp.nc out.nc 
 # optional relative rename gfoo to new_g1 (print warning)
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g .gfoo,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncrename: WARNING Group 'gfoo' not present in ../data/in_grp.nc, skipping it.";
     $dsc_sng="Groups: Optional relative rename '.gfoo' to 'new_g1'";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g .gfoo,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrename: WARNING Group 'gfoo' not present in ../data/in_grp.nc, skipping it.";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5208,18 +5204,15 @@ if (0){
 #ncrename  -D 1 -O -v /g1/v1,/g1/new_v1 in_grp.nc out.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v /g1/v1,/g1/new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -m -g g1 -v new_v1  %tmp_fl_00% | grep /g1/new_v1";
     $dsc_sng="Variables: Absolute rename '/g1/v1' to '/g1/new_v1' (input absolute name)";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v /g1/v1,/g1/new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -g g1 -v new_v1 %tmp_fl_00% | grep /g1/new_v1";
     $tst_cmd[2]="/g1/new_v1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.			
-
 	
 } #### Group tests	
-	
-    
     
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
