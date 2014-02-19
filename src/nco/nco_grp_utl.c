@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1259 2014-02-19 17:44:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1260 2014-02-19 19:39:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8213,30 +8213,30 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
     }  /* Group (not root) */
   } /* Loop table */ 
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    (void)fprintf(stdout,"%s: INFO list of ensembles\n",nco_prg_nm_get()); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      (void)fprintf(stdout,"%s: INFO <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     } 
   }
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s list of templates\n",nco_prg_nm_get(),fnc_nm); 
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    (void)fprintf(stdout,"%s: INFO list of templates\n",nco_prg_nm_get()); 
     int idx_tpl=0;
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       if(trv_tbl->lst[uidx].flg_nsm_tpl){
-        (void)fprintf(stdout,"%s: DEBUG %s <template> %d <%s>\n",nco_prg_nm_get(),fnc_nm,idx_tpl,trv_tbl->lst[uidx].nm_fll); 
+        (void)fprintf(stdout,"%s: INFO <template> %d <%s>\n",nco_prg_nm_get(),idx_tpl,trv_tbl->lst[uidx].nm_fll); 
         idx_tpl++;
       }
     }
   }
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s list of ensemble members\n",nco_prg_nm_get(),fnc_nm); 
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    (void)fprintf(stdout,"%s: INFO list of ensemble members\n",nco_prg_nm_get()); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
-      (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      (void)fprintf(stdout,"%s: INFO <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
       for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
-        (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_mbr,trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]); 
+        (void)fprintf(stdout,"%s: INFO \t <member %d> <%s>\n",nco_prg_nm_get(),idx_mbr,trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]); 
       }
     }
   }
@@ -8273,8 +8273,9 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
     mbr_srt=trv_tbl->nsm[idx_nsm].mbr_end;
     trv_tbl->nsm[idx_nsm].mbr_srt=mbr_srt;
 
-    if(nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+
+    if(nco_dbg_lvl_get() >= nco_dbg_fl){
+      (void)fprintf(stdout,"%s: INFO <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     }
 
     /* Obtain group ID of current ensemble using full group name */
@@ -8323,8 +8324,16 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
           /* Obtain variable GTT object for the member variable in ensemble */
           var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_mbr],trv_tbl);
 
+          if(nco_dbg_lvl_get() >= nco_dbg_fl){
+            if (var_trv) (void)fprintf(stdout,"%s: INFO retrieving variable <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_mbr]);
+          }
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            if (!var_trv) (void)fprintf(stdout,"%s: INFO variable <%s> does not exist\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_mbr]);
+          }
+
           /* Match relative name  */
-          if(strcmp(nm_lst_1[idx_var],var_trv->nm) == 0){
+          if(var_trv && strcmp(nm_lst_1[idx_var],var_trv->nm) == 0){
 
             /* Build new variable name */
             char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,nm_lst_1[idx_var]);
