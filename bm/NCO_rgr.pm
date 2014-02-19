@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.451 2014-02-19 05:19:12 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.452 2014-02-19 06:01:58 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -889,11 +889,13 @@ print "\n";
     if($HAVE_NETCDF4_H == 1){
 	
 #nces #14
+# ncra -Y ncge -h -O  mdl.nc out.nc
+# ncks -g cesm -v tas1 out.nc
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -g cesm -v tas1 %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -g cesm -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) 1 file mdl.cdl ensemble";
-    $tst_cmd[2]="time[3] tas1[3]=272.15";
+    $tst_cmd[2]="time[3]=4 tas1[3]=272.15";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -901,9 +903,9 @@ print "\n";
 #nces #15
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O --nsm_sfx=_avg $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -g cesm_avg -v tas1 %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -g cesm_avg -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) 1 file mdl.cdl --nsm_sfx suffix ensemble";
-    $tst_cmd[2]="time[3] tas1[3]=272.15";
+    $tst_cmd[2]="time[3]=4 tas1[3]=272.15";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
@@ -928,6 +930,10 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+
+
+
 
      } # #### Group Ensemble tests	
 	 	

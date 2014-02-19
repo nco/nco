@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.458 2014-02-15 20:21:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.459 2014-02-19 06:01:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -778,6 +778,16 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
 (lmt_sct **lmt,                        /* I [lst] lmt_sct array  */
  const int nbr_lmt,                    /* I [nbr] Size of lmt_sct array  */
  dmn_sct ***dmn);                      /* O [sct] dmn_sct array  */
+
+void
+nco_nsm_def_wri                       /* [fnc] Define OR write ensemble fixed variables */
+(const int nc_id,                     /* I [ID] netCDF input file ID */
+ const int nc_out_id,                 /* I [ID] netCDF output file ID */
+ const cnk_sct * const cnk,           /* I [sct] Chunking structure */
+ const int dfl_lvl,                   /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,           /* I [sct] GPE structure */
+ const nco_bool flg_def,              /* [fnc] Define OR write */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 
 #ifdef __cplusplus

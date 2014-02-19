@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1253 2014-02-18 21:27:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1254 2014-02-19 06:01:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1680,58 +1680,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
     } /* end if variable and flg_xtr */
   } /* end loop over uidx */
-
-  /* ncge */
-  if(nco_prg_id_get() == ncge){
-
-    int grp_id_in;  /* [ID] Group ID */
-    int grp_id_out; /* [ID] Group ID */
-
-    trv_sct trv_obj;
-
-    /* Loop table */
-    for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-      trv_obj=trv_tbl->lst[tbl_idx];
-
-      /* Find ensemble parent group */ 
-      if (trv_obj.flg_nsm_prn){
-
-        if(nco_dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s creating variables in ensemble parent group <%s>",nco_prg_nm_get(),fnc_nm,
-            trv_obj.grp_nm_fll_prn);
-        }  
-
-        /* Get output group */
-
-        if(trv_tbl->nsm_sfx){
-          /* Define new name by appending suffix (e.g., /cesm + _avg) */
-          char *nm_fll_sfx=nco_bld_nsm_sfx(trv_obj.grp_nm_fll_prn,trv_tbl);
-          /* Use then delete new name */
-          if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
-          nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
-        }else{ /* Non suffix case */
-          if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_obj.grp_nm_fll_prn); else grp_out_fll=(char *)strdup(trv_obj.grp_nm_fll_prn);
-        } /* !trv_tbl->nsm_sfx */
-
-        /* Define variables (fixed coordinate variables) in output file */
-
-        if(trv_tbl->nsm_skp){
-          for(int idx=0;idx<trv_tbl->nsm_skp->nbr;idx++){
-            trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm_skp->lst[idx].nm,trv_tbl);
-            var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
-            /* Obtain group IDs using full group name */
-            (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id_in);
-            (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_id_out);
-            /* Copy variable data (NB: var_trv contains variable) */
-            (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,md5,var_trv);
-          }
-        }
-
-        break;
-      } /* Find ensemble parent group */ 
-    } /* Loop table */
-  } /* ncge */
-
 
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
@@ -9085,3 +9033,73 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
 
 } /* end nco_dmn_lmt() */
 
+void
+nco_nsm_def_wri                       /* [fnc] Define OR write ensemble fixed variables */
+(const int nc_id,                    /* I [ID] netCDF input file ID */
+ const int nc_out_id,                /* I [ID] netCDF output file ID */
+ const cnk_sct * const cnk,          /* I [sct] Chunking structure */
+ const int dfl_lvl,                  /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,          /* I [sct] GPE structure */
+ const nco_bool flg_def,              /* [fnc] Define OR write */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+{
+  const char fnc_nm[]="nco_nsm_def_wri()"; /* [sng] Function name */
+
+  char *grp_out_fll;
+
+  /* ncge */
+  if(nco_prg_id_get() == ncge){
+
+    int grp_id_in;  /* [ID] Group ID */
+    int grp_id_out; /* [ID] Group ID */
+
+    trv_sct trv_obj;
+
+    /* Loop table */
+    for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+      trv_obj=trv_tbl->lst[tbl_idx];
+
+      /* Find ensemble parent group */ 
+      if (trv_obj.flg_nsm_prn){
+
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s creating variables in ensemble parent group <%s>",nco_prg_nm_get(),fnc_nm,
+            trv_obj.grp_nm_fll_prn);
+        }  
+
+        /* Get output group */
+
+        if(trv_tbl->nsm_sfx){
+          /* Define new name by appending suffix (e.g., /cesm + _avg) */
+          char *nm_fll_sfx=nco_bld_nsm_sfx(trv_obj.grp_nm_fll_prn,trv_tbl);
+          /* Use then delete new name */
+          if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
+          nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+        }else{ /* Non suffix case */
+          if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_obj.grp_nm_fll_prn); else grp_out_fll=(char *)strdup(trv_obj.grp_nm_fll_prn);
+        } /* !trv_tbl->nsm_sfx */
+
+        /* Define variables (fixed coordinate variables) in output file */
+
+        if(trv_tbl->nsm_skp){
+          for(int idx=0;idx<trv_tbl->nsm_skp->nbr;idx++){
+            trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm_skp->lst[idx].nm,trv_tbl);
+
+            if (flg_def == True)
+            (void)nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
+            /* Obtain group IDs using full group name */
+            (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id_in);
+            (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_id_out);
+
+            /* Copy variable data (NB: var_trv contains variable) */
+            if (flg_def == False)
+            (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,NULL,var_trv);
+          }
+        }
+
+        break;
+      } /* Find ensemble parent group */ 
+    } /* Loop table */
+  } /* ncge */
+
+} /* nco_nsm_def_wri() */
