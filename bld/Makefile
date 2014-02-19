@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.689 2014-02-13 06:36:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.690 2014-02-19 16:03:48 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1074,10 +1074,11 @@ ifeq (icc,$(firstword ${CC}))
 # -w1: display warnings and errors (DEFAULT)
 # -w2: display remarks, warnings, and errors
 # -wd<L1>[,<L2>,...] disable diagnostics L1 through LN
+# warning #274: declaration is not visible outside of function
 # remark #981: operands are evaluated in unspecified order
 # remark #810: conversion from "double" to "float" may lose significant bits
 # remark #1572: floating-point equality and inequality comparisons are unreliable
- CFLAGS := -w1
+ CFLAGS := -w1 -wd274
  CPPFLAGS += -no-gcc
  LDFLAGS += -lsvml
  OMP_FLG_C := -openmp -openmp_report0
