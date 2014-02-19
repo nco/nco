@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.110 2014-02-18 05:57:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.111 2014-02-19 04:27:43 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -311,7 +311,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Get variable ID */
     (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
-    /* Initialize attribute edit structure for this variable */
+    /* Initialize attribute-edit structure for this variable */
     aed.var_nm=var_trv->nm;
     aed.id=var_out_id;
     aed.sz=0L;
@@ -320,7 +320,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Format: blank-separated phrases of form "dmn1[, dmn2[...]]: op_typ" */ 
     for(dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
       for(dmn_idx_rdc=0;dmn_idx_rdc<dmn_nbr_rdc;dmn_idx_rdc++){
-	/* 20140216 fxm: broken should compare full names not short names */
+	/* 20140216 fxm: broken? should compare full names not short names? */
         if(!strcmp(var_trv->var_dmn[dmn_idx_var].dmn_nm,dmn_rdc[dmn_idx_rdc]->nm)){
 	  /* Add length of each matching dimension to accumulating attribute size */
           aed.sz+=strlen(dmn_rdc[dmn_idx_rdc]->nm);
@@ -354,7 +354,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     
     /* Initialize to size of ": " plus length of operation string */
     aed.sz+=2L+strlen(att_op_sng);
-    /* Add room for commas and spaces i.e., dmn1, dmn2, dmn3 */
+    /* Add room for commas and spaces, i.e., "dmn1, dmn2, dmn3" */
     if(dmn_nbr_mch > 1) aed.sz+=2*(dmn_nbr_mch-1);
     /* Add room for NUL-terminator */
     aed.val.cp=(char *)nco_malloc((aed.sz+1L)*sizeof(char));
