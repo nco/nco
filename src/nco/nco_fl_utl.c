@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.238 2014-02-20 18:16:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.239 2014-02-20 18:25:45 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1377,7 +1377,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
     /* Complain if set value of extended type does not match current type */
     if(fl_fmt_xtn_prv != fl_fmt_xtn_crr) (void)fprintf(stderr,"%s: INFO %s reports current extended filetype = %s does not equal previous extended filetype = %s. This is expected when NCO is instructed to convert filetypes, i.e., to read from one type and write to another. However, it could also indicate an unexpected change in input dataset type that the user should be cognizant of.\n",nco_prg_nm_get(),fnc_nm,nco_fmt_xtn_sng(fl_fmt_xtn_crr),nco_fmt_xtn_sng(fl_fmt_xtn_prv));
   }else{
-    /* Set undefined external file type to actual filetype */
+    /* Set undefined extended file type to actual extended filetype */
     nco_fmt_xtn_set(fl_fmt_xtn_crr);
   } /* endif */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Extended filetype of %s is %s, mode = %d\n",nco_prg_nm_get(),fl_nm,nco_fmt_xtn_sng(fl_fmt_xtn_crr),mode);

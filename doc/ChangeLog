@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
 
+	* Slightly simplify logic in calling/utilizing nco_inq_format_extended()
+
 	* Restore explanatory messages for new ncrename regression failures
 
 	* Remove test group with hidden attributes from in_grp.cdl to prevent build failures with netCDF 4.1.1-

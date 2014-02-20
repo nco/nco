@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.458 2014-02-20 17:08:58 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.459 2014-02-20 18:25:45 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -5172,7 +5172,7 @@ if (0){
 
     $dsc_sng="Groups: Relative rename 'g1' to 'new_g1' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g g1,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m  -g new_g1 %tmp_fl_00% | grep new_g1";
+    $tst_cmd[1]="ncks -m -g new_g1 %tmp_fl_00% | grep new_g1";
     $tst_cmd[2]="/new_g1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5184,7 +5184,7 @@ if (0){
 
     $dsc_sng="Groups: Relative rename 'g1g1' to 'new_g1g1' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g g1g1,new_g1g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m  -g new_g1g1 %tmp_fl_00% | grep new_g1g1";
+    $tst_cmd[1]="ncks -m -g new_g1g1 %tmp_fl_00% | grep new_g1g1";
     $tst_cmd[2]="/g1/new_g1g1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5196,7 +5196,7 @@ if (0){
 
     $dsc_sng="Groups: Absolute rename '/g1/g1g1' to '/g1/new_g1g1' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g /g1/g1g1,new_g1g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m  -g /g1/new_g1g1 %tmp_fl_00% | grep /g1/new_g1g1";
+    $tst_cmd[1]="ncks -m -g /g1/new_g1g1 %tmp_fl_00% | grep /g1/new_g1g1";
     $tst_cmd[2]="/g1/new_g1g1/v1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
