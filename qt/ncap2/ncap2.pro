@@ -21,9 +21,11 @@ CONFIG( debug, debug|release ) {
 
 # library dependencies
 unix {
- INCLUDEPATH += /usr/local/include 
- INCLUDEPATH += /usr/local 	 	  
- LIBS += -L/usr/lib/ -lnetcdf -lhdf5_hl -lhdf5
+ #INCLUDEPATH += /usr/local/include
+ #INCLUDEPATH += /usr/local
+ INCLUDEPATH += /home/pvicente/install/netcdf-c-4.3.1.1/include
+ LIBS += -L/home/pvicente/install/netcdf-c-4.3.1.1/lib -lnetcdf
+ LIBS += -lhdf5_hl -lhdf5 -lgsl -lgslcblas -lm
  LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/i386-linux-gnu/ -lz -ludunits2 -lexpat 
  LIBS += -lantlr
 
