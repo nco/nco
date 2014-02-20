@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.457 2014-02-20 16:43:22 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.458 2014-02-20 17:08:58 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -5047,7 +5047,7 @@ if (0){
 #ncrename -O -d lat,new_lat in_grp.nc out.nc
 # relative rename lat to new_lat
 
-    $dsc_sng="Dimensions: Relative rename 'lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Relative rename 'lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'new_lat'";
     $tst_cmd[2]="lat dimension 0: new_lat, size = 2 (Non-coordinate dimension)";
@@ -5059,7 +5059,7 @@ if (0){
 #ncrename -O -d /lat,new_lat in_grp.nc out.nc
 # Absolute rename /lat to new_lat
 
-    $dsc_sng="Dimensions: Absolute rename '/lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Absolute rename '/lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d /lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'new_lat'";
     $tst_cmd[2]="lat dimension 0: new_lat, size = 2 (Non-coordinate dimension)";
@@ -5071,7 +5071,7 @@ if (0){
 #ncrename -O -d .lat,new_lat in_grp.nc out.nc
 # optional relative rename lat to new_lat
 
-    $dsc_sng="Dimensions: Optional existing relative rename '.lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Optional existing relative rename '.lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d .lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v /g6/area %tmp_fl_00% | grep 'new_lat'";
     $tst_cmd[2]="area dimension 0: /new_lat, size = 2 (Non-coordinate dimension)";
@@ -5083,7 +5083,7 @@ if (0){
 #ncrename -O -d /lat,new_lat in_grp.nc out.nc
 # Absolute rename /lat to new_lat
 
-    $dsc_sng="Dimensions: Optional existing absolute rename './lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Optional existing absolute rename './lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'new_lat'";
     $tst_cmd[2]="lat dimension 0: new_lat, size = 2 (Non-coordinate dimension)";
