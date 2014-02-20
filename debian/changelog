@@ -1,8 +1,8 @@
 nco (4.4.2-1) unstable; urgency=low
 
-  * new upstream version (bugfixes for ncra.c loop, LLVM/clang builds, -X)
+  * new upstream version (ncra.c mmr 4 LLVM/clang, -X, rx nsx, cll_mth, ncwa sng)
 
- -- Charlie Zender <zender@uci.edu>  Fri, 07 Feb 2014 12:24:59 -0700
+ -- Charlie Zender <zender@uci.edu>  Thu, 20 Feb 2014 12:24:59 -0700
 
 nco (4.4.1-1) unstable; urgency=low
 

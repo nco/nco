@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.869 2014-02-14 23:31:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.870 2014-02-20 22:03:55 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -68,7 +68,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.4.1 last updated on <!--#flastmod file="VERSION"-->
+Current NCO version is 4.4.2 last updated on <!--#flastmod file="VERSION"-->
 </h2>
 
 <table border=0 width=100%>
@@ -148,7 +148,7 @@ and
 <ul>
 <li>2014 Mar&nbsp;25: (TBD) NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2014 Feb&nbsp;??: NCO 4.4.3 (<i>In progress</i>)
-<li>2014 Feb&nbsp;??: NCO 4.4.2 (Stability)
+<li>2014 Feb&nbsp;20: NCO 4.4.2 (Stability)
 <li>2014 Jan&nbsp;29: NCO 4.4.1 (Stability)
 <li>2014 Jan&nbsp;09: NCO 4.4.0 (Stability)
 <li>2013 Dec&nbsp;13: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201312.pdf">Talk</a> at Fall AGU, San Francisco, California</li>
@@ -952,7 +952,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.4.1</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.4.2</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/natty/nco">Ubuntu NCO</a> homepages.
