@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
 
-	* Turn-off OpenMP (by setting thr_nbr_max_fsh == 1) until thoroughly tested
+	* Turn-off OpenMP by setting thr_nbr_max_fsh == 1. Revisit when thoroughly tested.
 
 	* Fix bad initialization of dmn_cmn in nco_cnk_sz_set_trv()
 
