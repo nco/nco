@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.692 2014-02-19 17:28:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.693 2014-02-20 21:46:29 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
@@ -69,6 +69,10 @@ E. The -X option for auxiliary coordinates now works fully when
 
 F. ncap2 sometimes failed when converting netCDF3->netCDF4 files
    because it had uninitialized deflation levels. Fixed.
+
+G. Chunking: Matt Thompson reported a problem that manifested when
+   multiple --cnk_dmn options were employed. Strange chunk-sizes or
+   segfaults could result. Fixed.
 
 KNOWN ISSUES NOT YET FIXED:
 
