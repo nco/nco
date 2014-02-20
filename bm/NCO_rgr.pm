@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.456 2014-02-19 23:19:19 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.457 2014-02-20 16:43:22 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2595,7 +2595,7 @@ print "\n";
     
     $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var --hdn --hdn %tmp_fl_00% | grep _ChunkSizes";
+    $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var --hdn %tmp_fl_00% | grep _ChunkSizes";
     $tst_cmd[2]="two_dmn_var attribute 3: _ChunkSizes, size = 2 NC_INT, value = 2, 3";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
@@ -2603,11 +2603,11 @@ print "\n";
 
 #ncks #85
 #ncks -O -L 0 --cnk_dmn lat,2 -v one in_grp.nc out.nc
-#ncks -C -m  --hdn -v one -g g13  out.nc | grep  _Storage
+#ncks -C -m --hdn -v one -g g13  out.nc | grep  _Storage
     
-    $dsc_sng="(Groups) Chunking and shuffle filter -L 0 --cnk_dmn lat,2 -v one";
-    $tst_cmd[0]="ncks -O -4 -L 0 --cnk_dmn lat,2 -v one $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -m  --hdn -v one -g g13 %tmp_fl_00% | grep _Storage";
+    $dsc_sng="(Groups) Chunking and shuffle filter -L 0 --cnk_dmn lat,2 -v one (expect failuse with netCDF 4.1.1-)";
+    $tst_cmd[0]="ncks -O -4 -L 0 --cnk_dmn lat,2 -v one $nco_D_flg $in_pth_arg hdn.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -m --hdn -v one -g g13 %tmp_fl_00% | grep _Storage";
     $tst_cmd[2]="one attribute 1: _Storage, size = 10 NC_CHAR, value = contiguous";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
@@ -4953,7 +4953,7 @@ if (0){
 #### Group tests	
 	if($HAVE_NETCDF4_H == 1){	
 
-#################### Attributes 
+#################### Attributes
 
 #ncrename #1
 #ncrename -O -a .nothing,new_nothing in_grp.nc out.nc 

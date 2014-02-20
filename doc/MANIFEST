@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.60 2013-12-19 19:07:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.61 2014-02-20 16:43:22 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -70,9 +70,11 @@ nco/data/Makefile(v)	Autotools-generated Makefile
 nco/data/Makefile.am	Automake instructions
 nco/data/Makefile.in(v)	Autotools-generated Makefile
 nco/data/big.cdl 	CDL file to huge netCDF test files
+nco/data/big.cdl 	CDL file to huge netCDF test files
 nco/data/bin_cnt.nco 	ncap2 sample script that bins wind speeds
 nco/data/ddra.nco	Sample ncap2 script that computes DDRA statistics
 nco/data/hdr_pad.sh	Utility to check size of metadata header
+nco/data/hdn.cdl 	CDL file to test hidden attributes
 nco/data/in.cdl 	CDL file to generate netCDF test file in.nc
 nco/data/in_4.cdl 	CDL file to generate netCDF4 test file in_4.nc
 nco/data/in_grp.cdl 	CDL file to test netCDF4 group functionality

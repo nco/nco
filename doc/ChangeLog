@@ -1,3 +1,8 @@
+2014-02-20  Charlie Zender  <zender@uci.edu>
+
+	* Remove test group with hidden attributes from in_grp.cdl to prevent build failures with netCDF 4.1.1-
+	Isolate this group in new file hdn.cdl so that in_grp.nc builds	and regressions pass
+
 2014-02-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.2 release procedure:

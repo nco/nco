@@ -163,7 +163,8 @@ netcdf buggy {
  group: g5 { // Level 1
     // Purpose: Test hidden attributes
     // NB: Hidden attributes not supported by ncgen at least through netCDF 4.1.1 (201111)
-    // Having this group in in_grp.cdl will break NCO builds with netCDF 4.1.1 (201111) and earlier
+    // Having this group in in_grp.cdl breaks building of in_grp.nc with netCDF 4.1.1- (201111)
+    // This breaks many NCO regression tests
     // ncks -C -v var_cmp.? -m ~/nco/data/in_grp.nc
   variables:
 
