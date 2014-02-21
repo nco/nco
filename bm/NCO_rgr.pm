@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.459 2014-02-20 18:25:45 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.460 2014-02-21 22:32:28 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -694,12 +694,14 @@ print "\n";
     $#tst_cmd=0; # Reset array 			      
     
 # ncbo #23
+# ncbo -O cmip5.nc obs.nc out.nc
+# ncks -H -g giss -v tas -d time,3,3,1 out.nc
 
     $dsc_sng="(Groups) Process relative match from model to observations cmip5.nc -> obs.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks -H -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[3] tas[3]=1";
+    $tst_cmd[1]="ncks -C -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
+    $tst_cmd[2]="time[3]=4 tas[3]=1";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
@@ -713,8 +715,8 @@ print "\n";
     $dsc_sng="(Groups) Process relative match from observations to model obs.nc -> cmip5.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks -H -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[3] tas[3]=-1";
+    $tst_cmd[1]="ncks -C -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
+    $tst_cmd[2]="time[3]=4 tas[3]=-1";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 

@@ -10,9 +10,11 @@ netcdf cmip5 {
   time=unlimited;
   variables:
   float tas(time);
+  double time(time);
   :Model = "CESM";
   data:
   tas=272,272,272,272;
+  time=1.,2.,3.,4.;
   } // end cesm
   
   group: ecmwf { 
@@ -20,9 +22,11 @@ netcdf cmip5 {
   time=unlimited;
   variables:
   float tas(time);
+  double time(time);
   :Model = "ECMWF";
   data:
   tas=273,273,273,273;
+  time=1.,2.,3.,4.;
   } // end ecmwf
   
   group: giss { 
@@ -30,9 +34,11 @@ netcdf cmip5 {
   time=unlimited;
   variables:
   float tas(time);
+  double time(time);
   :Model = "GISS";
   data:
   tas=274,274,274,274;
+  time=1.,2.,3.,4.;
   } // end gfdl
 
 } // end root group
