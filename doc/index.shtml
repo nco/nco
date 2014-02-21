@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.871 2014-02-21 01:58:56 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.872 2014-02-21 02:06:56 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1010,10 +1010,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <ul>
 <!-- 
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.1.macosx.10.9.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.2.macosx.10.9.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.4.1.macosx.10.9.tar.gz">nco-4.4.1.macosx.10.9.tar.gz</a> (<!--#fsize file="src/nco-4.4.1.macosx.10.9.tar.gz"-->): Executables MacOSX 10.9-compatible (last updated <!--#flastmod file="src/nco-4.4.1.macosx.10.9.tar.gz"-->). 
+<li><a href="src/nco-4.4.2.macosx.10.9.tar.gz">nco-4.4.2.macosx.10.9.tar.gz</a> (<!--#fsize file="src/nco-4.4.2.macosx.10.9.tar.gz"-->): Executables MacOSX 10.9-compatible (last updated <!--#flastmod file="src/nco-4.4.2.macosx.10.9.tar.gz"-->). 
 (NB: These executables require the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> dependencies for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
 <li><a href="src/nco-4.0.3_x86_10.6.dmg">nco-4.0.3_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.3_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.3_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
 <li><a href="src/nco-4.0.7_x86_10.6.dmg">nco-4.0.7_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.7_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.7_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
