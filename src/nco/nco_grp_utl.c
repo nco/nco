@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1264 2014-02-22 23:35:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1265 2014-02-22 23:47:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9183,6 +9183,8 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   only in its top-level (i.e., root) group. Then ncbo will replicate the group structure of file 1
   in the output file, file 3. Each group in file 3 contains the output of the corresponding
   group in file 1 operating on the data in the single group in file 2. */
+
+  const char fnc_nm[]="nco_grp_brd()"; /* [sng] Function name */
   
 
   /* Loop table 1  */
@@ -9193,6 +9195,11 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
       trv_sct *var_trv_2=trv_tbl_var_nm(var_trv_1.nm,trv_tbl_2);
 
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s found variable <%s> in table 2\n",nco_prg_nm_get(),fnc_nm,var_trv_2->nm_fll);
+      }
+
+
 
 
      
@@ -9202,4 +9209,5 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   } /* Loop table 1 */
 
 
-}
+} /* nco_grp_brd() */
+
