@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.274 2014-02-18 06:38:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.275 2014-02-22 23:35:51 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -915,3 +915,20 @@ nco_strrstr                            /* [fnc] Searches a substring starting fr
   }
   return lst;
 } /* nco_strrstr() */
+
+
+trv_sct *                             /* O [sct] Table object */
+trv_tbl_var_nm                        /* [fnc] Return variable object (relative name) */
+(const char * const var_nm,           /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  /* Purpose: Return variable object with given relative name (returns 1st name found ) */
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && (strcmp(var_nm,trv_tbl->lst[idx_tbl].nm) == 0)){
+      return &trv_tbl->lst[idx_tbl];
+    }
+
+    return NULL;
+
+} /* trv_tbl_var_nm() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1263 2014-02-19 23:12:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1264 2014-02-22 23:35:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3534,7 +3534,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
+    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : 
+      nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Copy variable's attributes */
     if(RNK_1_GTR) (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); else (void)nco_att_cpy(grp_id_2,grp_out_id,var_id_2,var_out_id,PCK_ATT_CPY);
@@ -3771,166 +3772,6 @@ nco_pck_cpy_att                        /* [fnc] Inquire about copying packing at
 
 } /* nco_pck_cpy_att() */
 
-nco_bool                               /* O [flg] True for match found */
-nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
- const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,            /* I [sct] Chunking structure */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
- nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
- nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
-{
-  nco_bool rel_mch; /* [flg] A match was found */
-
-  rel_mch=False;
-
-  if(flg_tbl_1){
-
-    for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
-      if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)){
-        trv_sct *trv_2=&trv_tbl_2->lst[uidx];
-        rel_mch=True;
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
-      } /* A relative match was found */
-    } /* Loop table 2 */
-
-  }else if(!flg_tbl_1){
-
-    for(unsigned uidx=0;uidx<trv_tbl_1->nbr;uidx++){
-      if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)){
-        trv_sct *trv_1=&trv_tbl_1->lst[uidx];
-        rel_mch=True;
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
-      } /* A relative match was found */
-    } /* Loop table 2 */
-  } /* !flg_tbl_1 */
-
-  return rel_mch;
-
-} /* nco_rel_mch() */
-
-void                          
-nco_prc_cmn_nm                         /* [fnc] Process common objects from a common mames list (ncbo only) */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_id_2,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,            /* I [sct] Chunking structure */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
- const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
- const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
-{
-  /* Purpose: Process common objects from a common mames list (ncbo only) */
- 
-  const char fnc_nm[]="nco_prc_cmn_nm()"; /* [sng] Function name */
-
-  int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0)  */
-  int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0)  */
-
-  nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
-  nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
-
-  /* Process objects in list */
-  for(int idx=0;idx<nbr_cmn_nm;idx++){
-
-    trv_sct *trv_1;    /* [sct] Table object */
-    trv_sct *trv_2;    /* [sct] Table object */
-
-    nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
-
-    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_1);
-    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_2);
-
-    /* Object exists and is flagged for extraction in both files */
-    if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
-
-      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll); 
-
-      /* Process common object */
-      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
-
-    }else{
-      /* Object exists and is flagged for extraction only in one file */
-
-      /* Number of depth 1 groups in file 1 greater (typically model file) */
-      if(nbr_grp_dpt_1 > nbr_grp_dpt_2){
-
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
-	  /* Object exists and is flagged for extraction only in file 1 */
-
-          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
-
-          /* Try relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
-
-          /* Match not found in file 2, copy instead object from file 1 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
-
-        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
-	  /* Object exists and is flagged for extraction only in file 2 */
-
-          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
-
-          /* Try relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
-
-          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
-
-        } /* fl_2 */
-
-      }else{ /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
-
-	/* Number of depth 1 groups in file 2 greater */
-
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
-	  /* Object exists and is flagged for extraction only in file 1 */
-
-          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
-
-          /* Try relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
-
-          /* Match was not found in file 2, copy instead object from file 1 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
-
-        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
-	  /* Object exists and is flagged for extraction only in file 2 */
-
-          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
-
-          /* Try relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
-
-          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
-
-        } /* fl_2 */
-
-      } /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
-
-    } /* Object exists only in one file and is to extract */
-
-  } /* Process objects in list */
-
-} /* nco_prc_cmn_nm() */
 
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
@@ -9143,3 +8984,222 @@ nco_nsm_dfn_wrt                       /* [fnc] Define OR write ensemble fixed va
   } /* ncge */
 
 } /* nco_nsm_dfn_wrt() */
+
+nco_bool                               /* O [flg] True for match found */
+nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
+ nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+ nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
+{
+  nco_bool rel_mch; /* [flg] A match was found */
+
+  rel_mch=False;
+
+  if(flg_tbl_1){
+
+    for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
+      if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)){
+        trv_sct *trv_2=&trv_tbl_2->lst[uidx];
+        rel_mch=True;
+     
+        if(nco_dbg_lvl_get() >= nco_dbg_var){
+          (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
+            var_trv->nm_fll,trv_2->nm_fll);
+        }
+
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+      } /* A relative match was found */
+    } /* Loop table  */
+
+  }else if(!flg_tbl_1){
+
+    for(unsigned uidx=0;uidx<trv_tbl_1->nbr;uidx++){
+      if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)){
+        trv_sct *trv_1=&trv_tbl_1->lst[uidx];
+        rel_mch=True;
+
+        if(nco_dbg_lvl_get() >= nco_dbg_var){
+          (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
+            trv_1->nm_fll,var_trv->nm_fll);
+        }
+
+
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+      } /* A relative match was found */
+    } /* Loop table  */
+  } /* !flg_tbl_1 */
+
+  return rel_mch;
+
+} /* nco_rel_mch() */
+
+void                          
+nco_prc_cmn_nm                         /* [fnc] Process common objects from a common mames list (ncbo only) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
+{
+  /* Purpose: Process common objects from a common mames list (ncbo only) */
+
+  const char fnc_nm[]="nco_prc_cmn_nm()"; /* [sng] Function name */
+
+  int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0)  */
+  int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0)  */
+
+  nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
+  nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
+
+  /* Process objects in list */
+  for(int idx=0;idx<nbr_cmn_nm;idx++){
+
+    trv_sct *trv_1;    /* [sct] Table object */
+    trv_sct *trv_2;    /* [sct] Table object */
+
+    nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
+
+    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_1);
+    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_2);
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s inquiring object <%s>\n",nco_prg_nm_get(),fnc_nm,cmn_lst[idx].nm); 
+
+    /* Both objects exist in same location, both flagged for extraction */
+    if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll); 
+
+      /* Process common object */
+      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
+
+    }else{
+      /* Object exists and is flagged for extraction only in one file */
+
+      /* Number of depth 1 groups in file 1 greater (typically model file) (e.g cmip5.nc obs.nc ) */
+      if(nbr_grp_dpt_1 > nbr_grp_dpt_2){
+
+        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
+          /* Object exists and is flagged for extraction only in file 1 */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
+
+          /* Try relative match in file 2 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
+
+          /* Match not found in file 2, copy instead object from file 1 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
+
+        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+          /* Object exists and is flagged for extraction only in file 2 */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
+
+          /* Try relative match in file 1 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
+
+          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
+
+        } /* fl_2 */
+
+      }else{ /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
+
+        /* Number of depth 1 groups in file 2 greater (e.g obs.nc cmip5.nc) */
+
+        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
+          /* Object exists and is flagged for extraction only in file 1 */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
+
+          /* Try relative match in file 2 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
+
+          /* Match was not found in file 2, copy instead object from file 1 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
+
+        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+          /* Object exists and is flagged for extraction only in file 2 */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
+
+          /* Try relative match in file 1 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
+
+          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
+
+        } /* fl_2 */
+
+      } /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
+
+    } /* Object exists only in one file and is to extract */
+
+  } /* Process objects in list */
+
+} /* nco_prc_cmn_nm() */
+
+void                          
+nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
+{
+  /* Purpose: Group broadcasting (ncbo only) */
+
+  /* file 1 contains multiple groups each with the variable v1, while file 2 contains v1
+  only in its top-level (i.e., root) group. Then ncbo will replicate the group structure of file 1
+  in the output file, file 3. Each group in file 3 contains the output of the corresponding
+  group in file 1 operating on the data in the single group in file 2. */
+  
+
+  /* Loop table 1  */
+  for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl_1->nbr;idx_tbl_1++){
+    /* Filter variables to extract */
+    if(trv_tbl_1->lst[idx_tbl_1].nco_typ == nco_obj_typ_var && trv_tbl_1->lst[idx_tbl_1].flg_xtr){
+      trv_sct var_trv_1=trv_tbl_1->lst[idx_tbl_1];
+
+      trv_sct *var_trv_2=trv_tbl_var_nm(var_trv_1.nm,trv_tbl_2);
+
+
+
+     
+
+      
+    } /* Filter variables to extract */
+  } /* Loop table 1 */
+
+
+}

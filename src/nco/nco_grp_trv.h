@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.113 2014-02-15 20:21:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.114 2014-02-22 23:35:52 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -181,6 +181,12 @@ char *
 nco_strrstr                            /* [fnc] Searches a substring starting from the end */
 (const char *str,                      /* [fnc] String */
  const char *str_fnd);                 /* [fnc] String to find */
+
+trv_sct *                              /* O [sct] Table object */
+trv_tbl_var_nm                         /* [fnc] Return variable object (relative name) */
+(const char * const var_nm,            /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
 
 
 #endif /* NCO_GRP_TRV_H */

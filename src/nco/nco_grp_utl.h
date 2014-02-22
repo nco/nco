@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.461 2014-02-19 21:36:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.462 2014-02-22 23:35:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -381,43 +381,6 @@ nco_pck_cpy_att                        /* [fnc] Inquire about copying packing at
  const int nco_pck_plc,                /* I [enm] Packing policy */
  const var_sct * const var_prc);       /* I [sct] Variable */
 
-nco_bool                               /* O [flg] True for match found */
-nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
- const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,            /* I [sct] Chunking structure */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
- nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
- nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
-
-void                          
-nco_prc_cmn_nm                         /* [fnc] Process common objects from a common mames list  */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_id_2,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,            /* I [sct] Chunking structure */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
- const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
- const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
-
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
 (const int nbr_var_prc,                /* I [nbr] Number of processed variables */
@@ -793,6 +756,60 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 void
 nco_prn_nsm                           /* [fnc] Print ensembles  */                                
 (const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+
+nco_bool                               /* O [flg] True for match found */
+nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
+ nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+ nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
+
+void                          
+nco_prc_cmn_nm                         /* [fnc] Process common objects from a common mames list  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
+ const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
+
+void                          
+nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
