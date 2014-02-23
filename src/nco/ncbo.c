@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.289 2014-02-23 00:16:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.290 2014-02-23 00:26:14 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.289 2014-02-23 00:16:38 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.289 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.290 2014-02-23 00:26:14 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.290 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -617,7 +617,7 @@ main(int argc,char **argv)
 #ifdef GRP_BRD 
 
   /* Group broadcating (WRITE mode, False as flg_dfn parameter) */
-  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
+  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
 
 #else
 
