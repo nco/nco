@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1265 2014-02-22 23:47:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1266 2014-02-23 00:16:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9186,6 +9186,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
   const char fnc_nm[]="nco_grp_brd()"; /* [sng] Function name */
   
+  trv_sct *var_trv_2=NULL; /* [sct] Table variable to find in file 2 */
 
   /* Loop table 1  */
   for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl_1->nbr;idx_tbl_1++){
@@ -9193,18 +9194,40 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
     if(trv_tbl_1->lst[idx_tbl_1].nco_typ == nco_obj_typ_var && trv_tbl_1->lst[idx_tbl_1].flg_xtr){
       trv_sct var_trv_1=trv_tbl_1->lst[idx_tbl_1];
 
-      trv_sct *var_trv_2=trv_tbl_var_nm(var_trv_1.nm,trv_tbl_2);
+      var_trv_2=trv_tbl_var_nm(var_trv_1.nm,trv_tbl_2);
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s found variable <%s> in table 2\n",nco_prg_nm_get(),fnc_nm,var_trv_2->nm_fll);
       }
 
+      break;
+
+    } /* Filter variables to extract */
+  } /* Loop table 1 */
+
+  if (!var_trv_2){
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO no matching variables found in file 2\n",nco_prg_nm_get());
+    return;
+  }
+
+  nco_bool flg_grp_1=True; /* I [flg] Use table 1 as template for group creation */
+
+  /* Loop table 1  */
+  for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl_1->nbr;idx_tbl_1++){
+    /* Filter variables to extract */
+    if(trv_tbl_1->lst[idx_tbl_1].nco_typ == nco_obj_typ_var && trv_tbl_1->lst[idx_tbl_1].flg_xtr){
+      trv_sct var_trv_1=trv_tbl_1->lst[idx_tbl_1];
 
 
+      if(nco_dbg_lvl_get() >= nco_dbg_var){
+        (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
+          var_trv_1.nm_fll,var_trv_2->nm_fll);
+      }
 
-     
+      /* Process objects (all objects from table 1 and the object found from table 2) */
+      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,&var_trv_1,var_trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
-      
+
     } /* Filter variables to extract */
   } /* Loop table 1 */
 

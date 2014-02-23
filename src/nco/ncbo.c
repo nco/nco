@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.288 2014-02-22 23:47:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.289 2014-02-23 00:16:38 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.288 2014-02-22 23:47:08 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.288 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.289 2014-02-23 00:16:38 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.289 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -195,7 +195,7 @@ main(int argc,char **argv)
   int nbr_var_fl_1;   /* [nbr] Number of atomic-type variables in file */
   int nbr_var_fl_2;   /* [nbr] Number of atomic-type variables in file */
   int nbr_gpe_nm;     /* [nbr] Number of GPE entries */ 
-  int nbr_cmn_nm;     /* [nbr] Number of common entries */
+  int nbr_cmn_nm=0;     /* [nbr] Number of common entries */
   int nco_op_typ=nco_op_nil; /* [enm] Operation type */
   int opt;
   int out_id;  
