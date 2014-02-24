@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.968 2014-02-19 17:28:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.969 2014-02-24 17:21:22 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -14031,7 +14031,7 @@ into an @acronym{HDF} file:
 /usr/hdf4/bin/ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen (local builds)
 /usr/bin/hncgen     -b -o ~/in.hdf ~/in.cdl # Same as HDF ncgen (RPM packages?)
 /usr/bin/ncgen-hdf  -b -o ~/in.hdf ~/in.cdl # Same as HDF ncgen (Debian packages?)
-hdp dumpsds ~/in.hdf                        # ncdump-equivalent for HDF4 files
+hdp dumpsds ~/in.hdf                        # ncdump/h5dump-equivalent for HDF4
 @end example
 Note that @acronym{HDF4} does not support netCDF-style groups, so the
 above commands fail when the input file contains groups.

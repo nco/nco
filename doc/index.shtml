@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.873 2014-02-21 22:07:56 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.874 2014-02-24 17:21:22 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -147,7 +147,7 @@ and
 
 <ul>
 <li>2014 Mar&nbsp;25: (TBD) NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
-<li>2014 Feb&nbsp;??: NCO 4.4.3 (<i>In progress</i>)
+<li>2014 Mar&nbsp;??: NCO 4.4.3 (<i>In progress</i>)
 <li>2014 Feb&nbsp;20: NCO 4.4.2 (Stability)
 <li>2014 Jan&nbsp;29: NCO 4.4.1 (Stability)
 <li>2014 Jan&nbsp;09: NCO 4.4.0 (Stability)
@@ -628,7 +628,8 @@ Optimize diskless files?;</li>
 <tt>cnk_map=rew</tt>;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
 <li><b>NCO 4.4.2</b>: (<i>Current Stable Release</i>)
-Bugfixes for <tt>nces</tt>, LLVM/clang builds, <tt>-X</tt>;</li>
+CF <tt>cell_methods</tt> support;
+Bugfixes for <tt>nces</tt> memory, LLVM/clang builds, <tt>-X</tt>, RX's with groups, <tt>--cnk_dmn</tt>;</li>
 <li><b>NCO 4.4.1</b>: 
 Group support for <tt>-X</tt> and <tt>--cnk_dmn</tt>;
 Chunk and uncompress simultaneously;
