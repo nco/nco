@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1266 2014-02-23 00:16:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1267 2014-02-25 03:46:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9234,3 +9234,89 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
 } /* nco_grp_brd() */
 
+
+void                          
+nco_grp_brd2                           /* [fnc] Group broadcasting (ncbo only) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False for write variables ) */
+{
+
+  /* Purpose: Group broadcasting OR variable matching (ncbo only) */
+
+  /* Broadcasting: file 1 contains multiple groups each with the variable v1, while file 2 contains v1
+  only in its top-level (i.e., root) group. Then ncbo will replicate the group structure of file 1
+  in the output file, file 3. Each group in file 3 contains the output of the corresponding
+  group in file 1 operating on the data in the single group in file 2. */
+
+  const char fnc_nm[]="nco_grp_brd()"; /* [sng] Function name */
+
+  int nbr_cmn_nm=0;           /* [nbr] Number of common entries */
+
+  nco_bool flg_cmn_var_nm_fl; /* [flg] Is there a variable with same absolute path in both files? */
+
+  nco_cmn_t *cmn_lst=NULL;    /* [sct] A list of common names */ 
+
+  /* Match 2 tables (find common objects) and export common objects */
+  (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
+
+  /* Inquire if there is a variable with same absolute path in both files */
+  flg_cmn_var_nm_fl=nco_cmn_var_nm_fll(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm);     
+
+  /* There is a variable with same absolute path in both files */
+  if (flg_cmn_var_nm_fl){
+
+
+  }
+
+
+
+  /* Memory management for common names list */
+  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
+  if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
+
+
+} /* nco_grp_brd2() */
+
+
+
+nco_bool                               /* [fnc] True if absolute variables match */                          
+nco_cmn_var_nm_fll                     /* [fnc] Does the list of common names contain absolute variables match? */
+(const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
+ const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
+ const int nbr_cmn_nm)                 /* I [nbr] Number of common names entries */
+{
+  /* Purpose: Does the list of *any* common names contain absolute variables match? (ncbo only) */
+
+  const char fnc_nm[]="nco_cmn_var_nm_fll()"; /* [sng] Function name */
+
+  /* Process objects in list */
+  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++){
+
+    trv_sct *trv_1;    /* [sct] Table object */
+    trv_sct *trv_2;    /* [sct] Table object */
+
+    /* Inquire existence of these (full names, the common list contains group and variables) */
+    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_1);
+    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_2);
+
+    /* Both variables exist in same location, both flagged for extraction */
+    if(trv_1 && trv_2 && cmn_lst[idx_cmn].flg_in_fl[0] && cmn_lst[idx_cmn].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
+      return True;
+    }
+  } /* Process objects in list */
+
+  return False;
+
+} /* nco_cmn_var_nm_fll() */
