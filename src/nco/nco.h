@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.489 2014-02-18 06:38:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.490 2014-02-25 06:54:39 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -979,8 +979,8 @@ extern "C" {
     char **grp_mbr_fll;     /* [sng] List of group ensemble members (e.g., /cesm/cesm_01) */
     int mbr_nbr;            /* [nbr] Number of members (groups) of ensemble (i.e., number in this ensemble in this file) */ 
     int mbr_var_nbr;        /* [nbr] Number of variable members of ensemble */           
-    int mbr_srt;            /* [nbr] Member offsets (multi files, keep track of new added members) */ 
-    int mbr_end;            /* [nbr] Member offsets (multi files, keep track of new added members) */ 
+    int mbr_srt;            /* [nbr] Member offsets, start (multi files, keep track of new added members) */ 
+    int mbr_end;            /* [nbr] Member offsets, end (multi files, keep track of new added members) */ 
   } nsm_sct; 
 
   
@@ -999,7 +999,6 @@ extern "C" {
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
      2) lst_dmn: All unique dimensions (in groups) in file tree (netCDF addition to HDF5) */
   typedef struct{
-    /* Members used by all operators */
     trv_sct *lst;           /* [sct] Array of trv_sct */
     unsigned int nbr;       /* [nbr] Number of trv_sct elements */   
     dmn_trv_sct *lst_dmn;   /* [sct] Array of dmn_trv_sct */
