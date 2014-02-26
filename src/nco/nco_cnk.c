@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.119 2014-02-19 21:58:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.120 2014-02-26 20:01:13 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1105,8 +1105,9 @@ cnk_xpl_override: /* end goto */
           /* dmn_sz of record dimension can/will be zero in output file
 	     Allow (though warn) when cnk_sz > dmn_sz in such cases */
           if(dmn_cmn[dmn_idx].BASIC_DMN){
-            if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
-              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds current record dimension size in output file = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
+            if(dmn_cmn[dmn_idx].sz > 0 && /* Warn only after records have been written */
+	       cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
+              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds current output file record dimension size = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
             } /* endif too big */
           }else{ /* !BASIC_DMN */
             if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].dmn_cnt){

@@ -1,4 +1,11 @@
-2014-02-21  Charlie Zender  <zender@uci.edu>
+2014-02-26  Charlie Zender  <zender@uci.edu>
+
+	* Warn about record chunk sizes only after records have been written
+
+2014-02-25  Charlie Zender  <zender@uci.edu>
+
+	* Diagnose/fix ncwa/ncpdq dimension-matching algorithm
+	Old algorithm matched any dimension that contained specified string
 
 	* NCO 4.4.3 release procedure:
  	Changes since nco-4_4_2: fxm
