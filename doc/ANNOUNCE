@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.694 2014-02-26 20:01:12 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.695 2014-02-26 20:04:06 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
@@ -32,9 +32,11 @@ A. cell_methods: ncwa and ncra now support key parts of the CF
 
 BUG FIXES:
 
-A. ncwa in 4.x.x--4.4.2 would sometimes average over dimensions
-   besides those specified by the user. This appears to have occured
-   when the names....Reported by Marie-Alice Foujols. fxm
+A. ncwa and ncpdq could sometimes process (i.e., average, permute
+   or pack) over dimensions besides those specified by the user. 
+   This only occurred if the specified dimension name was a proper
+   subset of the name of another dimension. In that case, both would
+   be processed. Reported by Marie-Alice Foujols.
 
 KNOWN ISSUES NOT YET FIXED:
 
