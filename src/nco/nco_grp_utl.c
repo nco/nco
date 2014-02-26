@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1269 2014-02-25 06:54:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1270 2014-02-26 00:29:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -686,27 +686,27 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
             flg_ncr_mch_crr=True;
 
             /* Look for partial match, not necessarily on path boundaries */
-	    /* 20130829: Variables and group names may be proper subsets of ancestor group names
-	       e.g., variable named g9 in group named g90 is /g90/g9
-	       e.g., group named g1 in group named g10 is g10/g1
-	       Search algorithm must test same full name multiple times in such cases
-	       For variables, only final match (closest to end full name) need be fully tested */
-	    sbs_srt=NULL;
-	    sbs_srt_nxt=trv_obj.nm_fll;
+            /* 20130829: Variables and group names may be proper subsets of ancestor group names
+            e.g., variable named g9 in group named g90 is /g90/g9
+            e.g., group named g1 in group named g10 is g10/g1
+            Search algorithm must test same full name multiple times in such cases
+            For variables, only final match (closest to end full name) need be fully tested */
+            sbs_srt=NULL;
+            sbs_srt_nxt=trv_obj.nm_fll;
             while((sbs_srt_nxt=strstr(sbs_srt_nxt,usr_sng))){
-	      /* Object name contains usr_sng at least once */
-	      /* Complete path-check below will begin at this substring ... */
-	      sbs_srt=sbs_srt_nxt; 
-	      /* ...for groups always at first occurence of substring... */
-	      if(obj_typ == nco_obj_typ_grp) break;
-	      /* ...and also here for variables unless match is found in next iteration after advancing substring... */
-	      if(sbs_srt_nxt+usr_sng_lng <= trv_obj.nm_fll+trv_obj.nm_fll_lng) sbs_srt_nxt+=usr_sng_lng; else break;
-	    } /* end while */
+              /* Object name contains usr_sng at least once */
+              /* Complete path-check below will begin at this substring ... */
+              sbs_srt=sbs_srt_nxt; 
+              /* ...for groups always at first occurence of substring... */
+              if(obj_typ == nco_obj_typ_grp) break;
+              /* ...and also here for variables unless match is found in next iteration after advancing substring... */
+              if(sbs_srt_nxt+usr_sng_lng <= trv_obj.nm_fll+trv_obj.nm_fll_lng) sbs_srt_nxt+=usr_sng_lng; else break;
+            } /* end while */
 
-	    /* Does object name contain usr_sng? */
+            /* Does object name contain usr_sng? */
             if(sbs_srt){
-	      /* Ensure match spans (begins and ends on) whole path-component boundaries
-		 Full path-check starts at current substring */
+              /* Ensure match spans (begins and ends on) whole path-component boundaries
+              Full path-check starts at current substring */
 
               /* Does match begin at path component boundary ... directly on a slash? */
               if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
@@ -748,7 +748,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                   /* Was matched variable specified as full path (i.e., beginning with slash?) */
                   if(*usr_sng == sls_chr) trv_tbl->lst[tbl_idx].flg_vfp=True;
                 } /* end flags */
-              }else{ /* !nco_obj_typ_var */
+              }else if (obj_typ == nco_obj_typ_grp){ /* !nco_obj_typ_var */
                 /* Groups must meet necessary flags for groups */
                 if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
                   trv_tbl->lst[tbl_idx].flg_mch=True;
@@ -760,11 +760,11 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
               if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
 
               if(nco_dbg_lvl_get() == nco_dbg_old){
-		/* Redundant call to nco_flg_set_grp_var_ass() here in debugging mode only to set flags for following print statements 
-		   Essential call to nco_flg_set_grp_var_ass() occurs after itr loop
-		   Most debugging info is available in debugging section at routine end
-		   However, group boundary/anchoring/recursion info is only available here */
-		if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
+                /* Redundant call to nco_flg_set_grp_var_ass() here in debugging mode only to set flags for following print statements 
+                Essential call to nco_flg_set_grp_var_ass() occurs after itr loop
+                Most debugging info is available in debugging section at routine end
+                However, group boundary/anchoring/recursion info is only available here */
+                if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
                 (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
@@ -826,12 +826,12 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   } /* flg_unn */
 
   /* Does matched or default group contain only metadata? 
-     Flag used in nco_xtr_grp_mrk() to preserve metadata-only groups on extraction list */
+  Flag used in nco_xtr_grp_mrk() to preserve metadata-only groups on extraction list */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
     if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
       if(trv_tbl->lst[obj_idx].flg_mch || trv_tbl->lst[obj_idx].flg_dfl)
-	if(!trv_tbl->lst[obj_idx].nbr_var) 
-	  trv_tbl->lst[obj_idx].flg_mtd=True;
+        if(!trv_tbl->lst[obj_idx].nbr_var) 
+          trv_tbl->lst[obj_idx].flg_mtd=True;
 
   /* Combine previous flags into initial extraction flag */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
@@ -5899,7 +5899,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
      
      nco_dmn_out_mk() checks this flag, and if the dimension is not to be averaged, it is added to an array of dmn_sct,
      dimensions on output. */
-  
+
   const char fnc_nm[]="nco_dmn_avg_mk()"; /* [sng] Function name  */
   const char sls_chr='/';   /* [chr] Slash character */
 
@@ -5987,94 +5987,67 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
           /* Dimension name relative length */
           size_t dmn_nm_lng=strlen(dmn_nm);
 
-          /* Look for partial match, not necessarily on path boundaries */
-          if((sbs_srt=strstr(dmn_nm_fll,usr_sng))){
+          /* Must meet necessary flags */
+          nco_bool pth_mth=nco_pth_mth(dmn_nm_fll,dmn_nm,usr_sng); 
+          if(pth_mth){
 
-            /* Ensure match spans (begins and ends on) whole path-component boundaries */
+            flg_dmn_ins=False;
 
-            /* Does match begin at path component boundary ... directly on a slash? */
-            if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
+            /* Loop constructed array of averaged output dimensions to see if already inserted  */
+            for(int idx_dmn_out=0;idx_dmn_out<nbr_avg_dmn;idx_dmn_out++){
 
-            /* ...or one after a component boundary? */
-            if((sbs_srt > dmn_nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
+              /* Match by ID */
+              if(dmn_id == (*dmn_avg)[idx_dmn_out]->id){
+                flg_dmn_ins=True;
+                break;
+              }  /* Match by ID */
+            } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
-            /* Does match end at path component boundary ... directly on a slash? */
-            sbs_end=sbs_srt+usr_sng_lng-1L;
+            /* If this dimension is not in output array */
+            if(!flg_dmn_ins){
 
-            if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
+              /* Change flag to mark that dimension is to be averaged instead of to keep on output */
+              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg=True;
 
-            /* ...or one before a component boundary? */
-            if(sbs_end <= dmn_nm_fll+dmn_nm_fll_lng-1L)
-              if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
-                flg_pth_end_bnd=True;
+              /* Add one more element to array  */
+              (*dmn_avg)=(dmn_sct **)nco_realloc((*dmn_avg),(nbr_avg_dmn+1)*sizeof(dmn_sct *));
+              (*dmn_avg)[nbr_avg_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
 
-            /* Additional condition is user-supplied string must end with short form of dimension name */
-            if(dmn_nm_lng <= usr_sng_lng){
-              var_mch_srt=usr_sng+usr_sng_lng-dmn_nm_lng;
-              if(!strcmp(var_mch_srt,dmn_nm)) flg_var_cnd=True;
-            } /* Additional condition  */
+              /* Get size from GTT. NOTE use index idx_var_dmn */
+              if(trv_obj.var_dmn[idx_var_dmn].is_crd_var){
+                dmn_cnt=trv_obj.var_dmn[idx_var_dmn].crd->lmt_msa.dmn_cnt;
+                dmn_sz=trv_obj.var_dmn[idx_var_dmn].crd->sz;
+                (*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=True;
+              }else{
+                dmn_cnt=trv_obj.var_dmn[idx_var_dmn].ncd->lmt_msa.dmn_cnt;
+                dmn_sz=trv_obj.var_dmn[idx_var_dmn].ncd->sz;
+                (*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=False;
+              }
 
-            /* Must meet necessary flags */
-            if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
+              (*dmn_avg)[nbr_avg_dmn]->nm=(char *)strdup(trv_obj.var_dmn[idx_var_dmn].dmn_nm);
+              (*dmn_avg)[nbr_avg_dmn]->id=trv_obj.var_dmn[idx_var_dmn].dmn_id;
+              (*dmn_avg)[nbr_avg_dmn]->nc_id=nc_id;
+              (*dmn_avg)[nbr_avg_dmn]->xrf=NULL;
+              (*dmn_avg)[nbr_avg_dmn]->val.vp=NULL;
+              (*dmn_avg)[nbr_avg_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
+              (*dmn_avg)[nbr_avg_dmn]->cnt=dmn_cnt;
+              (*dmn_avg)[nbr_avg_dmn]->sz=dmn_sz;
+              (*dmn_avg)[nbr_avg_dmn]->srt=0L;
+              (*dmn_avg)[nbr_avg_dmn]->end=dmn_cnt-1L;
+              (*dmn_avg)[nbr_avg_dmn]->srd=1L;
 
-              flg_dmn_ins=False;
+              (*dmn_avg)[nbr_avg_dmn]->cid=-1;
+              (*dmn_avg)[nbr_avg_dmn]->cnk_sz=0L;
+              (*dmn_avg)[nbr_avg_dmn]->type=(nc_type)-1;
 
-              /* Loop constructed array of averaged output dimensions to see if already inserted  */
-              for(int idx_dmn_out=0;idx_dmn_out<nbr_avg_dmn;idx_dmn_out++){
+              /* Broadcast flag average/keep using dimension ID; variables share dimensions */
+              (void)nco_dmn_id_mk(dmn_id,flg_rdd,trv_tbl);
 
-                /* Match by ID */
-                if(dmn_id == (*dmn_avg)[idx_dmn_out]->id){
-                  flg_dmn_ins=True;
-                  break;
-                }  /* Match by ID */
-              } /* Loop constructed array of output dimensions to see if already inserted  */ 
+              /* Increment number of dimensions found */
+              nbr_avg_dmn++;
 
-              /* If this dimension is not in output array */
-              if(!flg_dmn_ins){
-
-                /* Change flag to mark that dimension is to be averaged instead of to keep on output */
-                trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg=True;
-
-                /* Add one more element to array  */
-                (*dmn_avg)=(dmn_sct **)nco_realloc((*dmn_avg),(nbr_avg_dmn+1)*sizeof(dmn_sct *));
-                (*dmn_avg)[nbr_avg_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
-
-                /* Get size from GTT. NOTE use index idx_var_dmn */
-                if(trv_obj.var_dmn[idx_var_dmn].is_crd_var){
-                  dmn_cnt=trv_obj.var_dmn[idx_var_dmn].crd->lmt_msa.dmn_cnt;
-                  dmn_sz=trv_obj.var_dmn[idx_var_dmn].crd->sz;
-                  (*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=True;
-                }else{
-                  dmn_cnt=trv_obj.var_dmn[idx_var_dmn].ncd->lmt_msa.dmn_cnt;
-                  dmn_sz=trv_obj.var_dmn[idx_var_dmn].ncd->sz;
-                  (*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=False;
-                }
-
-                (*dmn_avg)[nbr_avg_dmn]->nm=(char *)strdup(trv_obj.var_dmn[idx_var_dmn].dmn_nm);
-                (*dmn_avg)[nbr_avg_dmn]->id=trv_obj.var_dmn[idx_var_dmn].dmn_id;
-                (*dmn_avg)[nbr_avg_dmn]->nc_id=nc_id;
-                (*dmn_avg)[nbr_avg_dmn]->xrf=NULL;
-                (*dmn_avg)[nbr_avg_dmn]->val.vp=NULL;
-                (*dmn_avg)[nbr_avg_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
-                (*dmn_avg)[nbr_avg_dmn]->cnt=dmn_cnt;
-                (*dmn_avg)[nbr_avg_dmn]->sz=dmn_sz;
-                (*dmn_avg)[nbr_avg_dmn]->srt=0L;
-                (*dmn_avg)[nbr_avg_dmn]->end=dmn_cnt-1L;
-                (*dmn_avg)[nbr_avg_dmn]->srd=1L;
-
-                (*dmn_avg)[nbr_avg_dmn]->cid=-1;
-                (*dmn_avg)[nbr_avg_dmn]->cnk_sz=0L;
-                (*dmn_avg)[nbr_avg_dmn]->type=(nc_type)-1;
-
-                /* Broadcast flag average/keep using dimension ID; variables share dimensions */
-                (void)nco_dmn_id_mk(dmn_id,flg_rdd,trv_tbl);
-
-                /* Increment number of dimensions found */
-                nbr_avg_dmn++;
-
-              }  /* If this dimension is not in output array */
-            } /* Must meet necessary flags */
-          } /* Look for partial match, not necessarily on path boundaries */
+            }  /* If this dimension is not in output array */
+          } /* Must meet necessary flags */
         } /* Loop variable dimensions */ 
       } /* Variable to extract */
     } /* Loop table */
@@ -6083,9 +6056,11 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   /* Export */
   *nbr_dmn_avg=nbr_avg_dmn;
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
-    (void)fprintf(stdout,"%s: DEBUG %s dimensions to average: ",nco_prg_nm_get(),fnc_nm);        
-    for(int idx_dmn=0;idx_dmn<nbr_avg_dmn;idx_dmn++) (void)fprintf(stdout,"#%d<%s> : ",(*dmn_avg)[idx_dmn]->id,(*dmn_avg)[idx_dmn]->nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_var){ 
+    (void)fprintf(stdout,"%s: INFO dimensions to average: ",nco_prg_nm_get());        
+    for(int idx_dmn=0;idx_dmn<nbr_avg_dmn;idx_dmn++){
+      (void)fprintf(stdout,"<%s>",(*dmn_avg)[idx_dmn]->nm);
+    }
     (void)fprintf(stdout,"\n");    
   } /* endif dbg */
 
@@ -6101,7 +6076,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
  dmn_sct ***dmn_out,                   /* O [sct] Array of dimensions on ouput */
  int *nbr_dmn_out)                     /* O [nbr] Number of dimensions on output (size of above array) */
 {
-  /* Purpose: Create list of dimensions from list of dimension name strings (function based in nco_xtr_mk() ) */
+  /* Purpose: Create list of dimensions from list of dimension name strings */
 
   const char fnc_nm[]="nco_dmn_out_mk()"; /* [sng] Function name  */
 
@@ -9334,8 +9309,6 @@ nco_grp_brd2                           /* [fnc] Group broadcasting (ncbo only) *
   in the output file, file 3. Each group in file 3 contains the output of the corresponding
   group in file 1 operating on the data in the single group in file 2. */
 
-  const char fnc_nm[]="nco_grp_brd()"; /* [sng] Function name */
-
   int nbr_cmn_nm=0;           /* [nbr] Number of common entries */
 
   nco_bool flg_cmn_var_nm_fl; /* [flg] Is there a variable with same absolute path in both files? */
@@ -9376,3 +9349,93 @@ nco_grp_brd2                           /* [fnc] Group broadcasting (ncbo only) *
   if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
 } /* nco_grp_brd2() */
+
+
+nco_bool                                                         
+nco_pth_mth                            /* [fnc] Name component in full path matches user string  */
+(char * const nm_fll,                  /* I [sng] Full name (path) */
+ char * const nm,                      /* I [sng] Name (relative) */
+ char * const usr_sng)                 /* [sng] User-supplied object name */
+{
+  const char sls_chr='/';              /* [chr] Slash character */
+
+  char *sbs_end;                       /* [sng] Location of user-string match end   in object path */
+  char *sbs_srt;                       /* [sng] Location of user-string match start in object path */
+  char *sbs_srt_nxt;                   /* [sng] String to search next for match */                     
+  char *var_mch_srt;                   /* [sng] Location of variable short name in user-string */
+
+  nco_bool flg_pth_end_bnd;            /* [flg] String ends   at path component boundary */
+  nco_bool flg_pth_srt_bnd;            /* [flg] String begins at path component boundary */
+  nco_bool flg_var_cnd;                /* [flg] Match meets addition condition(s) for variable */
+
+  size_t usr_sng_lng;                  /* [nbr] Length of user-supplied string */
+  size_t nm_fll_lng;                   /* [sng] Length of full name */
+  size_t nm_lng;                       /* [sng] Length of relative name */
+
+  /* Initialize (combined return) flags */
+  flg_pth_srt_bnd=flg_pth_end_bnd=flg_var_cnd=False;
+
+  /* Get lenghts */
+  nm_fll_lng=strlen(nm_fll);
+  nm_lng=strlen(nm);
+  usr_sng_lng=strlen(usr_sng);
+
+  /* Look for partial match, not necessarily on path boundaries */
+  /* 20130829: Variables and group names may be proper subsets of ancestor group names
+  e.g., variable named g9 in group named g90 is /g90/g9
+  e.g., group named g1 in group named g10 is g10/g1
+  Search algorithm must test same full name multiple times in such cases
+  For variables, only final match (closest to end full name) need be fully tested */
+  sbs_srt=NULL;
+  sbs_srt_nxt=nm_fll;
+  while((sbs_srt_nxt=strstr(sbs_srt_nxt,usr_sng))){
+    /* Object name contains usr_sng at least once */
+    /* Complete path-check below will begin at this substring ... */
+    sbs_srt=sbs_srt_nxt; 
+
+    /* ...and also here for variables unless match is found in next iteration after advancing substring... */
+    if(sbs_srt_nxt+usr_sng_lng <= nm_fll+nm_fll_lng) sbs_srt_nxt+=usr_sng_lng; else break;
+  } /* end while */
+
+  /* Does object name contain usr_sng? */
+  if(sbs_srt){
+    /* Ensure match spans (begins and ends on) whole path-component boundaries
+    Full path-check starts at current substring */
+
+    /* Does match begin at path component boundary ... directly on a slash? */
+    if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
+
+    /* ...or one after a component boundary? */
+    if((sbs_srt > nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
+
+    /* Does match end at path component boundary ... directly on a slash? */
+    sbs_end=sbs_srt+usr_sng_lng-1L;
+
+    if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
+
+    /* ...or one before a component boundary? */
+    if(sbs_end <= nm_fll+nm_fll_lng-1L)
+      if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
+        flg_pth_end_bnd=True;
+
+    /* Additional condition is user-supplied string must end with short form of name */
+
+    if(nm_lng <= usr_sng_lng){
+      var_mch_srt=usr_sng+usr_sng_lng-nm_lng;
+      if(!strcmp(var_mch_srt,nm)) flg_var_cnd=True;
+    } /* endif */     
+
+  }
+
+  /* Set return value */
+
+  /* Must meet necessary flags  */
+  if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
+    return True;
+  } 
+
+
+  return False;
+
+} /* nco_pth_mth() */
+

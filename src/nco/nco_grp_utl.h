@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.465 2014-02-25 06:54:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.466 2014-02-26 00:29:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -852,6 +852,11 @@ nco_grp_brd2                           /* [fnc] Group broadcasting (ncbo only) *
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
 
+nco_bool                                                         
+nco_pth_mth                            /* [fnc] Name component in full path matches user string  */
+(char * const nm_fll,                  /* I [sng] Full name (path) */
+ char * const nm,                      /* I [sng] Name (relative) */
+ char * const usr_sng);                /* [sng] User-supplied object name */
 
 #ifdef __cplusplus
 } /* end extern "C" */
