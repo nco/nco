@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1270 2014-02-26 00:29:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1271 2014-02-26 22:45:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7804,14 +7804,13 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       /* Export list of variable names for group */
       (void)nco_grp_var_lst(nc_id,trv_1.grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
-      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s looking for ensembles for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1.nm_fll);
-
       /* Loop table  */
       for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl->nbr;idx_tbl_2++){
         trv_sct trv_2=trv_tbl->lst[idx_tbl_2];
 
         /* Same depth, same number of variables, same parent group */
         if(trv_1.nco_typ == nco_obj_typ_grp && 
+          trv_2.nco_typ == nco_obj_typ_grp && 
           trv_1.grp_dpt == trv_2.grp_dpt && 
           trv_1.nbr_var == trv_2.nbr_var &&
           strcmp(trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll_prn) == 0){
@@ -7851,7 +7850,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
               /* Group (NB: outer loop) is ensemble parent group */
               trv_tbl->lst[idx_tbl_1].flg_nsm_prn=True;
 
-              if(nco_dbg_lvl_get() == nco_dbg_old){
+              if(nco_dbg_lvl_get() >= nco_dbg_dev){
                 (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll_prn);             
               }
 
@@ -7871,12 +7870,14 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
     }  /* Group (not root) */
   } /* Loop table */
 
-  if(nco_dbg_lvl_get() == nco_dbg_old){
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
       (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     } 
   }
+
+  if(trv_tbl->nsm_nbr == 0) return;
 
   /* Insert names in ensembles */
 
@@ -7888,7 +7889,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       /* Export list of variable names for group */
       (void)nco_grp_var_lst(nc_id,trv_1.grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
-      if(nco_dbg_lvl_get() == nco_dbg_old){
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s looking for ensembles for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1.nm_fll);             
       }
 
@@ -7898,6 +7899,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
         /* Same depth, same number of variables, same parent group */
         if(trv_1.nco_typ == nco_obj_typ_grp && 
+          trv_2.nco_typ == nco_obj_typ_grp && 
           trv_1.grp_dpt == trv_2.grp_dpt && 
           trv_1.nbr_var == trv_2.nbr_var &&
           strcmp(trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll_prn) == 0){
@@ -7919,7 +7921,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                 (void)trv_tbl_mrk_xtr(skp_lst[idx_skp].nm,False,trv_tbl); 
               } 
 
-              if (flg_ini_skp == False){
+              if (nbr_skp_nm && flg_ini_skp == False){
 
                 trv_tbl->nsm_skp=(nm_tbl_sct *)nco_malloc(sizeof(nm_tbl_sct));
                 trv_tbl->nsm_skp->nbr=nbr_skp_nm;
@@ -8003,7 +8005,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nm_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nm_fll,trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nbr*sizeof(char *));
                   trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nm_fll[idx_var]=(char *)strdup(var_nm_fll);
                   
-                  if(nco_dbg_lvl_get() == nco_dbg_old){
+                  if(nco_dbg_lvl_get() >= nco_dbg_dev){
                     (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s> as template %d\n",nco_prg_nm_get(),fnc_nm,var_nm_fll,flg_nsm_tpl);             
                   }
                   /* Free */
