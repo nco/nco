@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.492 2014-02-27 04:37:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.493 2014-02-27 18:56:58 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -984,7 +984,7 @@ extern "C" {
     char **grp_mbr_fll;     /* [sng] List of group ensemble members (e.g., /cesm/cesm_01) (size is mbr_nbr) */
     int mbr_nbr;            /* [nbr] Number of members (groups) of ensemble (i.e., number in this ensemble in this file) */ 
 #ifdef NSM_V2
-    char **tpl_mbr_fll;     /* [sng] List of variable that act as templates (first) (e.g., /cesm/cesm_01/tas) */
+    char **tpl_mbr_nm;      /* [sng] List of variable that act as templates (first, store relative name) (e.g., /cesm/cesm_01/tas) */
     int tpl_nbr;            /* [nbr] Number of variables that are templates in group */  
     char **skp_nm_fll;      /* [sng] Skip list (fixed variables to define at ensemble parent group) (e.g., /cesm/cesm_01/time)  */
     int skp_nbr;            /* [nbr] Number of skip list variables */ 
