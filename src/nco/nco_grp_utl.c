@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1276 2014-02-27 22:36:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1277 2014-02-27 23:16:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9597,7 +9597,7 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct trv=trv_tbl->lst[idx_tbl];
 
-      /* Match */
+      /* Match group parent name with ensemble name */
       if(trv.nco_typ == nco_obj_typ_grp && 
         trv.grp_dpt > 1 && 
         trv.nbr_var > 0 && 
