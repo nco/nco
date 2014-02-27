@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1273 2014-02-27 04:06:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1274 2014-02-27 04:37:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5986,15 +5986,9 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
      
      nco_dmn_out_mk() checks this flag, and if the dimension is not to be averaged, it is added to an array of dmn_sct,
      dimensions on output. */
-
-  const char fnc_nm[]="nco_dmn_avg_mk()"; /* [sng] Function name  */
-  const char sls_chr='/';   /* [chr] Slash character */
-
-  char *sbs_srt;            /* [sng] Location of user-string match start in object path */
-  char *sbs_end;            /* [sng] Location of user-string match end   in object path */
+  
   char *usr_sng;            /* [sng] User-supplied object name */
-  char *var_mch_srt;        /* [sng] Location of variable short name in user-string */
-
+ 
   nco_bool flg_pth_end_bnd; /* [flg] String ends   at path component boundary */
   nco_bool flg_pth_srt_bnd; /* [flg] String begins at path component boundary */
   nco_bool flg_var_cnd;     /* [flg] Match meets addition condition(s) for dimension */
@@ -6065,14 +6059,8 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
           /* Dimension name full */
           char *dmn_nm_fll=trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll;
 
-          /* Dimension name full length */
-          size_t dmn_nm_fll_lng=strlen(dmn_nm_fll);
-
           /* Dimension name relative */
           char *dmn_nm=trv_obj.var_dmn[idx_var_dmn].dmn_nm;
-
-          /* Dimension name relative length */
-          size_t dmn_nm_lng=strlen(dmn_nm);
 
           /* Must meet necessary flags */
           nco_bool pth_mth=nco_pth_mth(dmn_nm_fll,dmn_nm,usr_sng); 
@@ -9461,6 +9449,8 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
 
   const char fnc_nm[]="nco_bld_nsm2()"; /* [sng] Function name */
 
+#ifdef NSM_V2
+
   char **nm_lst_1;                     /* [sng] List of names */
   char **nm_lst_2;                     /* [sng] List of names */
 
@@ -9468,14 +9458,8 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
   int nm_lst_2_nbr;                    /* [nbr] Number of items in list */
   int nbr_cmn_nm;                      /* [nbr] Number of common entries */
   int nbr_nm;                          /* [nbr] Number of total entries */
-  int nbr_skp_nm;                      /* [nbr] Number of names to avoid for template definition (array skp_lst) */
-  int nsm_nbr=0;                       /* [nbr] Ensemble counter */
-
-  nco_bool flg_nsm_tpl;                /* [flg] Variable is template */       
-  nco_bool flg_ini_skp=False;
 
   nco_cmn_t *cmn_lst=NULL;             /* [sct] A list of common names */ 
-  nco_cmn_t *skp_lst=NULL;             /* [sct] A list of skip ('skp') names (NB: using same sct as common names, with different meaning) */ 
 
   /* Insert ensembles (parent group name is key), template variables aand fixed template variables */
 
@@ -9530,12 +9514,12 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
 
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_mbr_fll=NULL;
 
-#ifdef NSM_V2
+
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_fll=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr=0;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr=0;
-#endif
+
 
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_srt=0;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_end=0;
@@ -9554,18 +9538,35 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
                 /* Define variable full name  */
                 char *var_nm_fll=nco_bld_nm_fll(trv_2.grp_nm_fll,cmn_lst[idx_nm].nm);
 
+                /* Get GTT object  */
                 trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
 
-                if(nco_dbg_lvl_get() >= nco_dbg_dev)
-                  (void)fprintf(stdout,"%s: DEBUG %s <%s:%s> common variable <%s>\n",nco_prg_nm_get(),
-                  fnc_nm,trv_1.grp_nm_fll,trv_2.grp_nm_fll,cmn_lst[idx_nm].nm);
+                /* Define as either fixed template or template  */
+                if (var_trv->is_crd_var || var_trv->is_rec_var){
+
+                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr++;
+                  int skp_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr;
+
+                  if(nco_dbg_lvl_get() >= nco_dbg_dev) 
+                    (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),
+                    fnc_nm,var_nm_fll);
+
+                } else {
+
+                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr++;
+                  int skp_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr;
+
+                  if(nco_dbg_lvl_get() >= nco_dbg_dev) 
+                    (void)fprintf(stdout,"%s: DEBUG %s <%s:%s> inserted template <%s>\n",nco_prg_nm_get(),
+                    fnc_nm,var_nm_fll);
+
+                } /* Define as either fixed template or template  */
+
 
               } /* Loop common names, insert template and fixed template variables */
 
 
-
-
-             
+        
 
             } /* Found common names */
 
@@ -9597,7 +9598,7 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
 
 
   /* Loop ensembles */
-  for(unsigned idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+  for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
 
     /* Loop table  */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -9620,4 +9621,7 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
     } /* Loop table */
   } /* Loop ensembles */
 
+#endif
+
 } /* nco_bld_nsm2() */
+
