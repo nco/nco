@@ -1,3 +1,7 @@
+2014-02-27  Charlie Zender  <zender@uci.edu>
+
+	* Document HDF Group H4CF tool h4tonccf
+
 2014-02-26  Charlie Zender  <zender@uci.edu>
 
 	* Warn about record chunk sizes only after records have been written
