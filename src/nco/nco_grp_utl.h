@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.466 2014-02-26 00:29:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.467 2014-02-27 00:06:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -209,6 +209,12 @@ nco_trv_rx_search                     /* [fnc] Search for pattern matches in tra
 void
 nco_xtr_dmn_mrk                      /* [fnc] Mark extracted dimensions */
 (trv_tbl_sct * const trv_tbl);       /* I/O [sct] GTT (Group Traversal Table) */
+
+nco_bool                                                         
+nco_pth_mth                            /* [fnc] Name component in full path matches user string  */
+(char * const nm_fll,                  /* I [sng] Full name (path) */
+ char * const nm,                      /* I [sng] Name (relative) */
+ char * const usr_sng);                /* [sng] User-supplied object name */
 
 void
 nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
@@ -623,21 +629,6 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
  char ***nm_lst,                       /* I/O [sng] List of names */
  int *nm_lst_nbr);                     /* I/O [nbr] Number of items in list */
 
-void
-nco_bld_nsm                           /* [fnc] Build ensembles */
-(const int nc_id,                     /* I [id] netCDF file ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-void                          
-nco_nm_skp                             /* [fnc] Extract list of variable names to skip for template definition  */
-(const int nc_id,                      /* I [ID] netCDF file ID */
- const char * const grp_nm_fll,        /* I [sng] Group full name where all names reside */
- const nco_cmn_t *cmn_lst,             /* I [sct] List of names (relative)  */
- const int nbr_cmn_nm,                 /* I [nbr] Number of names (size of above array) */
- nco_cmn_t **skp_lst,                  /* I/O [sct] List of skip names (full) */
- int * nbr_skp_nm,                     /* I/O [nbr] Number of skip names (size of above array) */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
-
 char *                                /* O [sng] Name of variable   */
 nco_var_has_cf                        /* [fnc] Variable has CF-compliant information ("coordinates" or "bounds") */
 (const int nc_id,                     /* I [ID] netCDF file ID */
@@ -747,17 +738,6 @@ nco_nsm_dfn_wrt                       /* [fnc] Define OR write ensemble fixed va
  const nco_bool flg_def,              /* [fnc] Define OR write */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-
-void
-nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
-(const int nc_id,                     /* I [id] netCDF file ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-void
-nco_prn_nsm                           /* [fnc] Print ensembles  */                                
-(const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
-
-
 nco_bool                               /* O [flg] True for match found */
 nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
@@ -852,11 +832,34 @@ nco_grp_brd2                           /* [fnc] Group broadcasting (ncbo only) *
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
 
-nco_bool                                                         
-nco_pth_mth                            /* [fnc] Name component in full path matches user string  */
-(char * const nm_fll,                  /* I [sng] Full name (path) */
- char * const nm,                      /* I [sng] Name (relative) */
- char * const usr_sng);                /* [sng] User-supplied object name */
+void                          
+nco_nm_skp                             /* [fnc] Extract list of variable names to skip for template definition  */
+(const int nc_id,                      /* I [ID] netCDF file ID */
+ const char * const grp_nm_fll,        /* I [sng] Group full name where all names reside */
+ const nco_cmn_t *cmn_lst,             /* I [sct] List of names (relative)  */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of names (size of above array) */
+ nco_cmn_t **skp_lst,                  /* I/O [sct] List of skip names (full) */
+ int * nbr_skp_nm,                     /* I/O [nbr] Number of skip names (size of above array) */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+
+void
+nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_prn_nsm                           /* [fnc] Print ensembles  */                                
+(const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void
+nco_bld_nsm                           /* [fnc] Build ensembles */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_bld_nsm2                          /* [fnc] Build ensembles */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
