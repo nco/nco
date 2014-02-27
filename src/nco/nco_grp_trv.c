@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.275 2014-02-22 23:35:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.276 2014-02-27 04:06:07 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -147,6 +147,16 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     for(int idx_var_mbr=0;idx_var_mbr<tbl->nsm[idx_nsm].mbr_var_nbr;idx_var_mbr++){
       tbl->nsm[idx_nsm].var_mbr_fll[idx_var_mbr]=(char *)nco_free(tbl->nsm[idx_nsm].var_mbr_fll[idx_var_mbr]);
     }
+
+#ifdef NSM_V2
+    for(int idx=0;idx<tbl->nsm[idx].tpl_nbr;idx++){
+      tbl->nsm[idx_nsm].tpl_mbr_fll[idx]=(char *)nco_free(tbl->nsm[idx_nsm].tpl_mbr_fll[idx]);
+    }
+
+    for(int idx=0;idx<tbl->nsm[idx].skp_nbr;idx++){
+      tbl->nsm[idx_nsm].skp_nm_fll[idx]=(char *)nco_free(tbl->nsm[idx_nsm].skp_nm_fll[idx]);
+    }
+#endif
 
     for(int idx_var_mbr=0;idx_var_mbr<tbl->nsm[idx_nsm].mbr_nbr;idx_var_mbr++){
       tbl->nsm[idx_nsm].grp_mbr_fll[idx_var_mbr]=(char *)nco_free(tbl->nsm[idx_nsm].grp_mbr_fll[idx_var_mbr]);
