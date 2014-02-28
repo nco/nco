@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.516 2014-02-27 23:16:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.517 2014-02-28 02:43:20 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.516 2014-02-27 23:16:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.516 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.517 2014-02-28 02:43:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.517 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -714,6 +714,8 @@ main(int argc,char **argv)
   /* Define ensemble fixed variables (True parameter) */
 #ifndef NSM_V2
   if(nco_prg_id_get() == ncge) (void)nco_nsm_dfn_wrt(in_id,out_id,&cnk,dfl_lvl,gpe,True,trv_tbl); 
+#else
+  if(nco_prg_id_get() == ncge) (void)nco_nsm_dfn_wrt2(in_id,out_id,&cnk,dfl_lvl,gpe,True,trv_tbl); 
 #endif
 
   /* Catenate time-stamped command line to "history" global attribute */

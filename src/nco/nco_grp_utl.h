@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.467 2014-02-27 00:06:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.468 2014-02-28 02:43:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -728,16 +728,6 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
  const int nbr_lmt,                    /* I [nbr] Size of lmt_sct array  */
  dmn_sct ***dmn);                      /* O [sct] dmn_sct array  */
 
-void
-nco_nsm_dfn_wrt                       /* [fnc] Define OR write ensemble fixed variables */
-(const int nc_id,                     /* I [ID] netCDF input file ID */
- const int nc_out_id,                 /* I [ID] netCDF output file ID */
- const cnk_sct * const cnk,           /* I [sct] Chunking structure */
- const int dfl_lvl,                   /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,           /* I [sct] GPE structure */
- const nco_bool flg_def,              /* [fnc] Define OR write */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
 nco_bool                               /* O [flg] True for match found */
 nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
@@ -859,6 +849,26 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 void
 nco_bld_nsm2                          /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_nsm_dfn_wrt                       /* [fnc] Define OR write ensemble fixed variables */
+(const int nc_id,                     /* I [ID] netCDF input file ID */
+ const int nc_out_id,                 /* I [ID] netCDF output file ID */
+ const cnk_sct * const cnk,           /* I [sct] Chunking structure */
+ const int dfl_lvl,                   /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,           /* I [sct] GPE structure */
+ const nco_bool flg_def,              /* I [flg] Define OR write */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_nsm_dfn_wrt2                       /* [fnc] Define OR write ensemble fixed variables */
+(const int nc_id,                     /* I [ID] netCDF input file ID */
+ const int nc_out_id,                 /* I [ID] netCDF output file ID */
+ const cnk_sct * const cnk,           /* I [sct] Chunking structure */
+ const int dfl_lvl,                   /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,           /* I [sct] GPE structure */
+ const nco_bool flg_def,              /* I [flg] Define OR write */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus
