@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.460 2014-02-21 22:32:28 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.461 2014-02-28 20:40:03 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -578,14 +578,9 @@ print "\n";
 
     $dsc_sng="(Groups) Addition -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -y add -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="2";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
     
@@ -596,14 +591,9 @@ print "\n";
 
     $dsc_sng="(Groups) Addition with limits -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="4";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
     
@@ -614,14 +604,9 @@ print "\n";
 
     $dsc_sng="(Groups) Subtraction -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,1,1,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="0";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
 
@@ -632,14 +617,9 @@ print "\n";
 
     $dsc_sng="(Groups) Multiplication with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,2,2,1 -y mlt -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="9";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
 
@@ -651,14 +631,9 @@ print "\n";
 
     $dsc_sng="(Groups) Division with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,2,2,1 -y dvd -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
@@ -667,14 +642,9 @@ print "\n";
 
     $dsc_sng="(Groups) Process different types -g g1 -v var1 in_grp_1.nc  in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg  -g g1 -v var1 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'var1: type NC_FLOAT, 1 dimension, 0 attributes, chunked? no, compressed? no, packed? no'";
     $tst_cmd[2]="var1: type NC_FLOAT, 1 dimension, 0 attributes, chunked? no, compressed? no, packed? no";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -682,14 +652,9 @@ print "\n";
 
     $dsc_sng="(Groups) Process relative match -v var2 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -d lon1,2,2,1 %tmp_fl_00%";
     $tst_cmd[2]="lon1[2] var2[2]=-1";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			      
     
@@ -699,14 +664,9 @@ print "\n";
 
     $dsc_sng="(Groups) Process relative match from model to observations cmip5.nc -> obs.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4 tas[3]=1";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			       
 
@@ -714,14 +674,9 @@ print "\n";
 
     $dsc_sng="(Groups) Process relative match from observations to model obs.nc -> cmip5.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4 tas[3]=-1";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
@@ -907,7 +862,7 @@ print "\n";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O --nsm_sfx=_avg $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g cesm_avg -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) 1 file mdl.cdl --nsm_sfx suffix ensemble";
-    $tst_cmd[2]="time[3]=4 tas1[3]=272.15";
+    $tst_cmd[2]="time[3]=4 tas1[3]=272.15 ";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
@@ -916,22 +871,24 @@ print "\n";
 # ncra -Y ncge -h -O -G /gpe_grp mdl.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -g /gpe_grp/ecmwf -v tas1 %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -g /gpe_grp/ecmwf -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) GPE 1 file mdl.cdl ensemble";
-    $tst_cmd[2]="time[3] tas1[3]=273.15";
+    $tst_cmd[2]="time[3]=4 tas1[3]=273.15 ";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
+if (0) {
 #nces #17
 #ncra -Y ncge -O mdl.nc mdl2.nc out.nc
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -g ecmwf -v tas1 %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -g ecmwf -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) 2 files ensembles";
-    $tst_cmd[2]="time[3] tas1[3]=273.25";
+    $tst_cmd[2]="time[3]=4 tas1[3]=273.25";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	}
 
 # NEW NCO 4.4.2
 #nces #18 (check fixed variables)
@@ -4482,6 +4439,7 @@ if (0){
     @tst_cmd=(); # Reset array
 
 #ncwa #28
+# ncwa -h -O -y max -v three_dmn_var_dbl -a lat,lon in.nc out.nc
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");

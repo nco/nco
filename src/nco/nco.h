@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.495 2014-02-28 04:39:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.496 2014-02-28 20:40:04 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -971,7 +971,7 @@ extern "C" {
     int var_nbr;            /* [nbr] Number of variable for this group (size of above array) */ 
   } nsm_grp_sct; 
 
-#if 0
+#if 1
 #define NSM_V2
 #endif
 
