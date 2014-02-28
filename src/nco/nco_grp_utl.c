@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1277 2014-02-27 23:16:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1278 2014-02-28 00:19:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9459,6 +9459,8 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
   int nbr_cmn_nm;                      /* [nbr] Number of common entries */
   int nbr_nm;                          /* [nbr] Number of total entries */
 
+  nco_bool flg_nsm_tpl;                /* [flg] Variable is template */       
+
   nco_cmn_t *cmn_lst=NULL;             /* [sct] A list of common names */ 
 
   /* Insert ensembles (parent group name is key), template variables aand fixed template variables */
@@ -9634,6 +9636,12 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
             }
 
             /* Mark variables as ensemble members */
+
+            /* If not the first group member, then it's not a template */
+            if(mbr_nbr == 0) flg_nsm_tpl=True; else flg_nsm_tpl=False;
+
+            /* Mark ensemble member flag in table for "var_nm_fll" */
+            (void)trv_tbl_mrk_nsm_mbr(var_nm_fll,flg_nsm_tpl,trv.grp_nm_fll_prn,trv_tbl); 
 
             /* Insert variable in table ensemble struct */
             trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr++;
