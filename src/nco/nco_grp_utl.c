@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1287 2014-02-28 22:02:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1288 2014-02-28 22:34:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8904,7 +8904,8 @@ nco_prn_nsm                                 /* [fnc] Print ensembles  */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
     (void)fprintf(stdout,"%s: <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
-      (void)fprintf(stdout,"%s: \t <member %d> <%s>\n",nco_prg_nm_get(),idx_mbr,trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]); 
+      (void)fprintf(stdout,"%s: \t <member %d> <%s>\n",nco_prg_nm_get(),
+        idx_mbr,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
     }
   }
 
@@ -9511,13 +9512,6 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_nbr=0;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr=NULL;
 
-#ifndef NSM_V2
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=0;
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=NULL;
-#endif
-
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_mbr_fll=NULL;
-
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr=0;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=NULL;
@@ -9613,9 +9607,6 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
           trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].mbr_nm_fll=(char *)strdup(trv.grp_nm_fll);
           trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr=0;
           trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=NULL;
-
-          trv_tbl->nsm[idx_nsm].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].grp_mbr_fll,(mbr_nbr+1)*sizeof(char *));
-          trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_nbr]=(char *)strdup(trv.grp_nm_fll);
 
           /* Define offsets */
           trv_tbl->nsm[idx_nsm].mbr_srt=0;
@@ -9806,12 +9797,8 @@ nco_nsm_ncr2                          /* [fnc] Increase ensembles (more than 1 f
       trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr=0;
       trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=NULL;
 
-      trv_tbl->nsm[idx_nsm].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].grp_mbr_fll,(mbr_nbr+1)*sizeof(char *));
-      trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_nbr]=(char *)strdup(grp_nm_fll);
-
       /* Update offsets */
       trv_tbl->nsm[idx_nsm].mbr_end=trv_tbl->nsm[idx_nsm].mbr_nbr;
-
 
       /* Insert members by builing name from group and template */
       for(int idx_tpl=0;idx_tpl<tpl_nbr;idx_tpl++){ 

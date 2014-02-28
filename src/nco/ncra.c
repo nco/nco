@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.519 2014-02-28 19:17:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.520 2014-02-28 22:34:04 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.519 2014-02-28 19:17:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.519 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.520 2014-02-28 22:34:04 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.520 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1168,7 +1168,7 @@ main(int argc,char **argv)
             if(strcmp(var_trv->nsm_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)) continue;
 
             /* Build new variable name */
-            char *grp_nm_fll=trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]; 
+            char *grp_nm_fll=trv_tbl->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll; 
             char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);;
             char *nm_fll=strdup(var_prc[idx_prc]->nm_fll);
 
