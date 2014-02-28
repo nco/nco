@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1284 2014-02-28 19:36:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1285 2014-02-28 20:36:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9744,6 +9744,8 @@ nco_nsm_ncr2                          /* [fnc] Increase ensembles (more than 1 f
 {
   const char fnc_nm[]="nco_nsm_ncr2()"; /* [sng] Function name */
 
+#ifdef NSM_V2
+
   char **nm_lst_1;                     /* [sng] List of names */
   char *grp_nm_fll;                    /* I [sng] Full group name */
   char *grp_nm;                        /* I [sng] Group name */
@@ -9759,15 +9761,12 @@ nco_nsm_ncr2                          /* [fnc] Increase ensembles (more than 1 f
 
   size_t grp_nm_lng;                   /* [nbr] Group name length */
 
-  trv_sct *var_trv;                    /* [sct] Variable GTT object */
-
   /* Loop over ensembles in table */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
 
     /* Update offsets */
     mbr_srt=trv_tbl->nsm[idx_nsm].mbr_end;
     trv_tbl->nsm[idx_nsm].mbr_srt=mbr_srt;
-
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
@@ -9810,15 +9809,62 @@ nco_nsm_ncr2                          /* [fnc] Increase ensembles (more than 1 f
       /* Export list of variable names for group */
       (void)nco_grp_var_lst(nc_id,grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
-      /* Loop variables in group */
-      for(int idx_var=0;idx_var<nm_lst_1_nbr;idx_var++){ 
+      int tpl_nbr=trv_tbl->nsm[idx_nsm].tpl_nbr;
 
 
+      int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
+      trv_tbl->nsm[idx_nsm].mbr_nbr++;
+      trv_tbl->nsm[idx_nsm].mbr=(nsm_grp_sct *)nco_realloc(trv_tbl->nsm[idx_nsm].mbr,(mbr_nbr+1)*sizeof(nsm_grp_sct));
+      trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].mbr_nm_fll=(char *)strdup(grp_nm_fll);
+      trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr=0;
+      trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=NULL;
+
+      trv_tbl->nsm[idx_nsm].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].grp_mbr_fll,(mbr_nbr+1)*sizeof(char *));
+      trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_nbr]=(char *)strdup(grp_nm_fll);
+
+      /* Update offsets */
+      trv_tbl->nsm[idx_nsm].mbr_end=trv_tbl->nsm[idx_nsm].mbr_nbr;
 
 
+      /* Insert members by builing name from group and template */
+      for(int idx_tpl=0;idx_tpl<tpl_nbr;idx_tpl++){ 
+
+        /* Loop variables in group */
+        for(int idx_var=0;idx_var<nm_lst_1_nbr;idx_var++){ 
+
+          /* Match relative name of template variable and variable found in new file  */
+          if(strcmp(nm_lst_1[idx_var],trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl]) == 0){
+
+            /* Build new variable name */
+            char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,nm_lst_1[idx_var]);
+
+            /* Check variables from 2nd file (no table, using API) */
+
+            /* Get number of dimensions */
+            (void)nco_inq_var(grp_ids[idx_grp],idx_var,trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl],NULL,&nbr_dmn_var_2,(int *)NULL,(int *)NULL);
+
+            /* Get dimension IDs for variable */
+            (void)nco_inq_vardimid(grp_ids[idx_grp],idx_var,dmn_id_var_2);
+
+            /* Insert variable in table ensemble struct */
+            trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr++;
+            trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr*sizeof(char *));
+            trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]=(char *)strdup(var_nm_fll);
+
+            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,
+                trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]);             
+            }
 
 
-      } /* Loop variables in group */
+            var_nm_fll=(char *)nco_free(var_nm_fll);
+
+            break;
+
+          } /* Match relative name  */
+
+        } /* Loop variables in group */
+      } /* Insert members by builing name from group and template */
 
       /* Free list */
       for(int idx_nm=0;idx_nm<nm_lst_1_nbr;idx_nm++) nm_lst_1[idx_nm]=(char *)nco_free(nm_lst_1[idx_nm]);
@@ -9837,5 +9883,6 @@ nco_nsm_ncr2                          /* [fnc] Increase ensembles (more than 1 f
     nco_prn_nsm(trv_tbl);
   }
 
+#endif
 
 } /* nco_nsm_ncr2() */
