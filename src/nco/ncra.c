@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.518 2014-02-28 04:39:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.519 2014-02-28 19:17:27 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.518 2014-02-28 04:39:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.518 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.519 2014-02-28 19:17:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.519 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -810,7 +810,11 @@ main(int argc,char **argv)
     /* Do ncge ensemble refresh */
     if(nco_prg_id == ncge){
       /* Refresh ensembles */
-      if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl);         
+#ifndef NSM_V2
+      if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl);    
+#else
+      if(fl_idx > 0) (void)nco_nsm_ncr2(in_id,trv_tbl); 
+#endif
     }else{ /* ! ncge */
       /* Variables may have different ID, missing_value, type, in each file */
       for(idx=0;idx<nbr_var_prc;idx++){
