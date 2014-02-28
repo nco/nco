@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1281 2014-02-28 04:39:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1282 2014-02-28 19:05:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9705,25 +9705,29 @@ nco_nsm_dfn_wrt2                     /* [fnc] Define OR write ensemble fixed var
     /* List of fixed templates  */
     for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
 
+      /* Get variable  */
       trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
 
+      /* Define variable  */
       if (flg_def == True) (void)nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
 
       /* Obtain group IDs using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id_in);
       (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_id_out);
 
-      /* Copy variable data (NB: var_trv contains variable) */
+      /* Copy variable data  */
       if (flg_def == False) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,NULL,var_trv);
-
 
       if(nco_dbg_lvl_get() >= nco_dbg_vrb){
         (void)fprintf(stdout,"%s: INFO creating fixed variables <%s> in ensemble parent group <%s>\n",nco_prg_nm_get(),
-          trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp]);
+          trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],grp_out_fll);
       }  
 
-
     } /* List of fixed templates  */
+
+    /* Memory management after current extracted group */
+    if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+
   } /* Ensembles */
 
 #endif
