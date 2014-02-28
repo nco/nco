@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1280 2014-02-28 03:48:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1281 2014-02-28 04:39:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9449,7 +9449,7 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
 
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr=0;
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm=NULL;
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr=0;
 
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_srt=0;
@@ -9476,12 +9476,12 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
 
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr++;
                   int skp_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr;
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm,skp_nbr*sizeof(char *));
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm[skp_nbr-1]=(char *)strdup(var_trv->nm);
+                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll,skp_nbr*sizeof(char *));
+                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]=(char *)strdup(var_trv->nm_fll);
 
                   if(nco_dbg_lvl_get() >= nco_dbg_dev) 
                     (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),
-                    fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm[skp_nbr-1]);
+                    fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]);
 
                 } else {
 
@@ -9681,21 +9681,46 @@ nco_nsm_dfn_wrt2                     /* [fnc] Define OR write ensemble fixed var
 
 #ifdef NSM_V2
 
-  char *grp_out_fll;
+  char *grp_out_fll;  /* [sng] Group name */
+
+  int grp_id_in;      /* [ID] Group ID */
+  int grp_id_out;     /* [ID] Group ID */
 
   /* Ensembles */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
 
+    /* Get output group */
 
-    /* List of fixed templates (e.g., /cesm/cesm_01/time) */
+    if(trv_tbl->nsm_sfx){
+      /* Define new name by appending suffix (e.g., /cesm + _avg) */
+      char *nm_fll_sfx=nco_bld_nsm_sfx(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,trv_tbl);
+      /* Use then delete new name */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
+      nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+    }else{ /* Non suffix case */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn); else grp_out_fll=(char *)strdup(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+    } /* !trv_tbl->nsm_sfx */
+
+
+    /* List of fixed templates  */
     for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
+
+      trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
+
+      if (flg_def == True) (void)nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
+
+      /* Obtain group IDs using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id_in);
+      (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_id_out);
+
+      /* Copy variable data (NB: var_trv contains variable) */
+      if (flg_def == False) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,NULL,var_trv);
 
 
       if(nco_dbg_lvl_get() >= nco_dbg_vrb){
-        (void)fprintf(stdout,"%s: INFO creating fixed variables <%s> in ensemble parent group\n",nco_prg_nm_get(),
-          trv_tbl->nsm[idx_nsm].skp_nm[idx_skp]);
+        (void)fprintf(stdout,"%s: INFO creating fixed variables <%s> in ensemble parent group <%s>\n",nco_prg_nm_get(),
+          trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp]);
       }  
-
 
 
     } /* List of fixed templates  */
