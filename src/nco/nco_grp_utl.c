@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1288 2014-02-28 22:34:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1289 2014-02-28 23:38:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -472,6 +472,8 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
 #ifndef NCO_HAVE_REGEX_FUNCTIONALITY
   (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),rx_sng);
   nco_exit(EXIT_FAILURE);
+  /* Avoid compiler warning of unused variables by using obj_typ and trv_tbl */
+  if (trv_tbl->lst) trv_tbl->lst[0].nco_typ = obj_typ;
 #else /* NCO_HAVE_REGEX_FUNCTIONALITY */
   char *sng2mch; /* [sng] String to match to regular expression */
   const char sls_chr='/'; /* [chr] Slash character */
@@ -5989,9 +5991,9 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   
   char *usr_sng;            /* [sng] User-supplied object name */
  
-  nco_bool flg_pth_end_bnd; /* [flg] String ends   at path component boundary */
-  nco_bool flg_pth_srt_bnd; /* [flg] String begins at path component boundary */
-  nco_bool flg_var_cnd;     /* [flg] Match meets addition condition(s) for dimension */
+ 
+
+ 
   nco_bool flg_dmn_ins;     /* [flg] Is dimension already inserted in output array  */  
 
   int obj_nbr;              /* [nbr] Number of objects in list */
@@ -6000,7 +6002,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   long dmn_cnt;             /* [nbr] Hyperslabbed size of dimension */  
   long dmn_sz;              /* [nbr] Size of dimension  */  
 
-  size_t usr_sng_lng;       /* [nbr] Length of user-supplied string */
+
 
   /* Used only by ncpdq , ncwa */
   assert(nco_prg_id_get() == ncpdq || nco_prg_id_get() == ncwa);
@@ -6013,7 +6015,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   for(int idx_obj=0;idx_obj<obj_nbr;idx_obj++){
 
     usr_sng=strdup(obj_lst_in[idx_obj]); 
-    usr_sng_lng=strlen(usr_sng);
+
 
     /* Convert pound signs (back) to commas */
     nco_hash2comma(usr_sng);
@@ -6035,11 +6037,6 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
     for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
       trv_sct trv_obj=trv_tbl->lst[idx_tbl];
-
-      /* Initialize defaults for current candidate path to match */
-      flg_pth_srt_bnd=False;
-      flg_pth_end_bnd=False;
-      flg_var_cnd=False;
 
       /* Variable to extract */
       if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
@@ -9650,6 +9647,27 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
             var_nm_fll=(char *)nco_free(var_nm_fll);
 
           } /* Insert members by builing name from group and template */
+
+          /* Mark fixed templates as non extracted */
+
+          /* List of fixed templates  */
+          for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
+
+            /* Get variable  */
+            trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
+
+            /* Define variable full name (using group name and relative name of fixed template) */
+            char *skp_nm_fll=nco_bld_nm_fll(trv.nm_fll,var_trv->nm);
+
+            /* Mark the skip names as non extracted variables */ 
+            (void)trv_tbl_mrk_xtr(skp_nm_fll,False,trv_tbl); 
+
+            /* Free */
+            skp_nm_fll=(char *)nco_free(skp_nm_fll);
+
+          } /* List of fixed templates  */
+
+
       } /* Match */
     } /* Loop table */
   } /* Loop ensembles */
