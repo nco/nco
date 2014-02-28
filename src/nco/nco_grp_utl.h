@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.469 2014-02-28 19:17:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.470 2014-02-28 21:35:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -862,9 +862,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 (const int nc_id,                     /* I [id] netCDF file ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-#endif
-
-#ifdef NSM_V2
+#else /* NSM_V2 */
 
 void
 nco_bld_nsm2                          /* [fnc] Build ensembles */
