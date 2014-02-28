@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1283 2014-02-28 19:17:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1284 2014-02-28 19:36:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9738,11 +9738,104 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 
 
 void
-nco_nsm_ncr2                           /* [fnc] Increase ensembles (more than 1 file cases) */
+nco_nsm_ncr2                          /* [fnc] Increase ensembles (more than 1 file cases) */
 (const int nc_id,                     /* I [id] netCDF file ID ( new file ) */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   const char fnc_nm[]="nco_nsm_ncr2()"; /* [sng] Function name */
+
+  char **nm_lst_1;                     /* [sng] List of names */
+  char *grp_nm_fll;                    /* I [sng] Full group name */
+  char *grp_nm;                        /* I [sng] Group name */
+
+  int nm_lst_1_nbr;                    /* [nbr] Number of items in list */
+  int grp_id;                          /* [id] Group ID */
+  int nbr_grp;                         /* [nbr] Number of sub-groups */
+  int *grp_ids;                        /* [id] Sub-group IDs array */
+  int mbr_srt;                         /* [nbr] Offset */
+  int rcd=NC_NOERR;                    /* [rcd] Return code */
+  int dmn_id_var_2[NC_MAX_DIMS];       /* [ID] Dimensions IDs array for variable */
+  int nbr_dmn_var_2;                   /* [nbr] Number of dimensions for variable */
+
+  size_t grp_nm_lng;                   /* [nbr] Group name length */
+
+  trv_sct *var_trv;                    /* [sct] Variable GTT object */
+
+  /* Loop over ensembles in table */
+  for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
+
+    /* Update offsets */
+    mbr_srt=trv_tbl->nsm[idx_nsm].mbr_end;
+    trv_tbl->nsm[idx_nsm].mbr_srt=mbr_srt;
+
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+    }
+
+    /* Obtain group ID of current ensemble using full group name */
+    rcd+=nco_inq_grp_full_ncid_flg(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
+
+    /* Group must exist (file # call > 1 ), if not print error */
+    if(rcd != NC_NOERR){
+      (void)fprintf(stdout,"%s: ERROR ensemble <%s> does not exist\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn); 
+      (void)fprintf(stdout,"%s: List of ensembles is\n",nco_prg_nm_get()); 
+      for(int idx=0;idx<trv_tbl->nsm_nbr;idx++){
+        (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx].grp_nm_fll_prn);
+        nco_exit(EXIT_FAILURE);
+      } 
+    }
+
+    /* Get number of sub-groups */
+    (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
+    grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
+    (void)nco_inq_grps(grp_id,(int *)NULL,grp_ids);
+
+    /* Loop sub-groups */
+    for(int idx_grp=0;idx_grp<nbr_grp;idx_grp++){ 
+
+      /* Get group name length */
+      (void)nco_inq_grpname_len(grp_ids[idx_grp],&grp_nm_lng);
+      grp_nm=(char *)nco_malloc(grp_nm_lng+1L);
+
+      /* Get group name */
+      (void)nco_inq_grpname(grp_ids[idx_grp],grp_nm);
+
+      /* Construct full name  */
+      grp_nm_fll=(char *)nco_malloc(grp_nm_lng+strlen(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)+2L);
+      strcpy(grp_nm_fll,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      strcat(grp_nm_fll,"/");
+      strcat(grp_nm_fll,grp_nm);
+
+      /* Export list of variable names for group */
+      (void)nco_grp_var_lst(nc_id,grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
+
+      /* Loop variables in group */
+      for(int idx_var=0;idx_var<nm_lst_1_nbr;idx_var++){ 
+
+
+
+
+
+
+      } /* Loop variables in group */
+
+      /* Free list */
+      for(int idx_nm=0;idx_nm<nm_lst_1_nbr;idx_nm++) nm_lst_1[idx_nm]=(char *)nco_free(nm_lst_1[idx_nm]);
+      nm_lst_1=(char **)nco_free(nm_lst_1);
+      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+
+    } /* Loop sub-groups */
+
+    /* Clean up memory */
+    grp_ids=(int *)nco_free(grp_ids);
+
+  } /* Loop over ensembles in table */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    (void)fprintf(stdout,"%s: New list of ensembles\n",nco_prg_nm_get()); 
+    nco_prn_nsm(trv_tbl);
+  }
 
 
 } /* nco_nsm_ncr2() */
