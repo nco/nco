@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.496 2014-02-28 20:40:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.497 2014-02-28 22:02:55 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -979,10 +979,15 @@ extern "C" {
   typedef struct{
     char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) (e.g., /cesm) */
     nsm_grp_sct *mbr;       /* [sng] List of ensemble group member structs (size is mbr_nbr) */
+
+#ifndef NSM_V2
     char **var_mbr_fll;     /* [sng] List of variable ensemble members (e.g., /cesm/cesm_01/tas) */
-    int mbr_var_nbr;        /* [nbr] Number of variable members of ensemble */     
+    int mbr_var_nbr;        /* [nbr] Number of variable members of ensemble */    
+#endif
+
     char **grp_mbr_fll;     /* [sng] List of group ensemble members (e.g., /cesm/cesm_01) (size is mbr_nbr) */
-    int mbr_nbr;            /* [nbr] Number of members (groups) of ensemble (i.e., number in this ensemble in this file) */ 
+    int mbr_nbr;            /* [nbr] Number of members (groups) of ensemble (i.e., number in this ensemble in this file) */
+
 #ifdef NSM_V2
     char **tpl_mbr_nm;      /* [sng] List of variable that act as templates (first, store relative name) (e.g., /cesm/cesm_01/tas) */
     int tpl_nbr;            /* [nbr] Number of variables that are templates in group */  

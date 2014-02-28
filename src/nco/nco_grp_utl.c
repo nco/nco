@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1286 2014-02-28 21:35:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1287 2014-02-28 22:02:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9511,8 +9511,10 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_nbr=0;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr=NULL;
 
+#ifndef NSM_V2
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=0;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=NULL;
+#endif
 
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_mbr_fll=NULL;
 
@@ -9673,8 +9675,6 @@ nco_nsm_dfn_wrt2                     /* [fnc] Define OR write ensemble fixed var
  const nco_bool flg_def,             /* I [flg] Define OR write */
  trv_tbl_sct * const trv_tbl)        /* I/O [sct] Traversal table */
 {
-  const char fnc_nm[]="nco_nsm_dfn_wrt2()"; /* [sng] Function name */
-
   char *grp_out_fll;  /* [sng] Group name */
 
   int grp_id_in;      /* [ID] Group ID */
@@ -9874,6 +9874,5 @@ nco_nsm_ncr2                          /* [fnc] Increase ensembles (more than 1 f
 
 
 #endif /* NSM_V2 */
-
 
 
