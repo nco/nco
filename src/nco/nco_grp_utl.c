@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1279 2014-02-28 02:43:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1280 2014-02-28 03:48:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9449,7 +9449,7 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
 
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr=0;
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=NULL;
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr=0;
 
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_srt=0;
@@ -9476,12 +9476,12 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
 
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr++;
                   int skp_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr;
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll,skp_nbr*sizeof(char *));
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]=(char *)strdup(var_nm_fll);
+                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm,skp_nbr*sizeof(char *));
+                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm[skp_nbr-1]=(char *)strdup(var_trv->nm);
 
                   if(nco_dbg_lvl_get() >= nco_dbg_dev) 
                     (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),
-                    fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]);
+                    fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm[skp_nbr-1]);
 
                 } else {
 
@@ -9679,8 +9679,28 @@ nco_nsm_dfn_wrt2                     /* [fnc] Define OR write ensemble fixed var
 {
   const char fnc_nm[]="nco_nsm_dfn_wrt2()"; /* [sng] Function name */
 
+#ifdef NSM_V2
+
   char *grp_out_fll;
 
+  /* Ensembles */
+  for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
 
+
+    /* List of fixed templates (e.g., /cesm/cesm_01/time) */
+    for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
+
+
+      if(nco_dbg_lvl_get() >= nco_dbg_vrb){
+        (void)fprintf(stdout,"%s: INFO creating fixed variables <%s> in ensemble parent group\n",nco_prg_nm_get(),
+          trv_tbl->nsm[idx_nsm].skp_nm[idx_skp]);
+      }  
+
+
+
+    } /* List of fixed templates  */
+  } /* Ensembles */
+
+#endif
 
 } /* nco_nsm_dfn_wrt2() */
