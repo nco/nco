@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1291 2014-03-01 01:55:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1292 2014-03-01 02:52:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7747,106 +7747,6 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
 
 } /* nco_var_has_cf() */
 
-void                          
-nco_nm_skp                             /* [fnc] Extract list of variable names to skip for template definition  */
-(const int nc_id,                      /* I [ID] netCDF file ID */
- const char * const grp_nm_fll,        /* I [sng] Group full name where all names reside */
- const nco_cmn_t *cmn_lst,             /* I [sct] List of names (relative)  */
- const int nbr_cmn_nm,                 /* I [nbr] Number of names (size of above array) */
- nco_cmn_t **skp_lst,                  /* I/O [sct] List of skip names (full) */
- int * nbr_skp_nm,                     /* I/O [nbr] Number of skip names (size of above array) */
- const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
-{
-  const char fnc_nm[]="nco_nm_skp()"; /* [sng] Function name */
-
-  char *var_nm_fll;  /* [sng] Variable full name */
-  char *var_cf;      /* [sng] Variable name that has 'CF' info */
-
-  int idx_skp;       /* [nbr] Counter for skip list */
-
-  nco_bool flg_cf;   /* [flg] Variable has 'CF' info */
-  nco_bool lst_ins;  /* [flg] Detect duplicate names in array */
-
-  trv_sct *var_trv;  /* [sct] Table object */
-
-  idx_skp=0;
-
-  /* Malloc possible maximum size */
-  (*skp_lst)=(nco_cmn_t *)nco_malloc(nbr_cmn_nm*sizeof(nco_cmn_t));
-
-  /* Loop input (relative) names */
-  for(int idx_var=0;idx_var<nbr_cmn_nm;idx_var++){
-
-    /* Define variable full name (NB: cmn_lst->var_nm_fll is relative here) */
-    var_nm_fll=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var].nm);
-
-    /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
-
-    /* Avoid coordinate variables */ 
-    if (var_trv->is_crd_var == True){
-      /* Utility function to detect inserted names in a name list */
-      lst_ins=nco_lst_ins(var_nm_fll,*skp_lst,idx_skp);
-      /* Insert in list */
-      if (lst_ins == False){
-        (*skp_lst)[idx_skp].nm=strdup(var_nm_fll);
-        idx_skp++;
-      } /* Insert in list */
-    } /* Avoid coordinate variables */ 
-
-    /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
-    var_cf=nco_var_has_cf(nc_id,var_trv,"bounds",&flg_cf);
-    if (flg_cf == True){
-      /* Utility function to detect inserted names in a name list */
-      lst_ins=nco_lst_ins(var_nm_fll,*skp_lst,idx_skp);
-      /* Insert in list */
-      if (lst_ins == False){
-        (*skp_lst)[idx_skp].nm=strdup(var_nm_fll);
-        idx_skp++;
-      } /* Insert in list */
-    } /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
-
-    /* There is an associated 'CF" variable  */ 
-    if (var_cf){
-      /* Second Loop input (relative) names */
-      for(int idx_var_2=0;idx_var_2<nbr_cmn_nm;idx_var_2++){
-        /* Match (NB: cmn_lst->var_nm_fll is relative here) */
-        if(strcmp(var_cf,cmn_lst[idx_var_2].nm) == 0){
-          char *var_nm_fll_2;  /* [sng] Variable full name */
-          var_nm_fll_2=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var_2].nm);
-          /* Utility function to detect inserted names in a name list */
-          lst_ins=nco_lst_ins(var_nm_fll_2,*skp_lst,idx_skp);
-          /* Insert in list */
-          if (lst_ins == False){
-            (*skp_lst)[idx_skp].nm=strdup(var_nm_fll_2);
-            idx_skp++;
-          } /* Insert in list */
-        } /* Match */
-      } /* Second Loop input (relative) names */
-      /* Free */
-      var_cf=(char *)nco_free(var_cf);
-    } /* There is an associated 'CF" variable  */ 
-
-    /* Free */
-    var_nm_fll=(char *)nco_free(var_nm_fll);
-
-  } /* Loop input (relative) names */
-
-  /* Re-Alloc */
-  (*skp_lst)=(nco_cmn_t *)nco_realloc((*skp_lst),idx_skp*sizeof(nco_cmn_t));
-
-  /* Export */
-  *nbr_skp_nm=idx_skp;
-
-  if(nco_dbg_lvl_get() == nco_dbg_old){
-    (void)fprintf(stdout,"%s: DEBUG %s list of variables to skip for template definition\n",nco_prg_nm_get(),fnc_nm); 
-    for(int idx_var=0;idx_var<idx_skp;idx_var++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,(*skp_lst)[idx_var].nm); 
-  }
-
-} /* nco_nm_skp() */
-
-
-
 int                                    /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by group depth */
 (const void *val_1,                    /* I [sct] aux_crd_sct * to compare */
@@ -8523,6 +8423,105 @@ nco_prn_nsm                                 /* [fnc] Print ensembles  */
 
 
 #ifndef NSM_V2
+
+void                          
+nco_nm_skp                             /* [fnc] Extract list of variable names to skip for template definition  */
+(const int nc_id,                      /* I [ID] netCDF file ID */
+ const char * const grp_nm_fll,        /* I [sng] Group full name where all names reside */
+ const nco_cmn_t *cmn_lst,             /* I [sct] List of names (relative)  */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of names (size of above array) */
+ nco_cmn_t **skp_lst,                  /* I/O [sct] List of skip names (full) */
+ int * nbr_skp_nm,                     /* I/O [nbr] Number of skip names (size of above array) */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
+{
+  const char fnc_nm[]="nco_nm_skp()"; /* [sng] Function name */
+
+  char *var_nm_fll;  /* [sng] Variable full name */
+  char *var_cf;      /* [sng] Variable name that has 'CF' info */
+
+  int idx_skp;       /* [nbr] Counter for skip list */
+
+  nco_bool flg_cf;   /* [flg] Variable has 'CF' info */
+  nco_bool lst_ins;  /* [flg] Detect duplicate names in array */
+
+  trv_sct *var_trv;  /* [sct] Table object */
+
+  idx_skp=0;
+
+  /* Malloc possible maximum size */
+  (*skp_lst)=(nco_cmn_t *)nco_malloc(nbr_cmn_nm*sizeof(nco_cmn_t));
+
+  /* Loop input (relative) names */
+  for(int idx_var=0;idx_var<nbr_cmn_nm;idx_var++){
+
+    /* Define variable full name (NB: cmn_lst->var_nm_fll is relative here) */
+    var_nm_fll=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var].nm);
+
+    /* Obtain variable GTT object using full variable name */
+    var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
+
+    /* Avoid coordinate variables */ 
+    if (var_trv->is_crd_var == True){
+      /* Utility function to detect inserted names in a name list */
+      lst_ins=nco_lst_ins(var_nm_fll,*skp_lst,idx_skp);
+      /* Insert in list */
+      if (lst_ins == False){
+        (*skp_lst)[idx_skp].nm=strdup(var_nm_fll);
+        idx_skp++;
+      } /* Insert in list */
+    } /* Avoid coordinate variables */ 
+
+    /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
+    var_cf=nco_var_has_cf(nc_id,var_trv,"bounds",&flg_cf);
+    if (flg_cf == True){
+      /* Utility function to detect inserted names in a name list */
+      lst_ins=nco_lst_ins(var_nm_fll,*skp_lst,idx_skp);
+      /* Insert in list */
+      if (lst_ins == False){
+        (*skp_lst)[idx_skp].nm=strdup(var_nm_fll);
+        idx_skp++;
+      } /* Insert in list */
+    } /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
+
+    /* There is an associated 'CF" variable  */ 
+    if (var_cf){
+      /* Second Loop input (relative) names */
+      for(int idx_var_2=0;idx_var_2<nbr_cmn_nm;idx_var_2++){
+        /* Match (NB: cmn_lst->var_nm_fll is relative here) */
+        if(strcmp(var_cf,cmn_lst[idx_var_2].nm) == 0){
+          char *var_nm_fll_2;  /* [sng] Variable full name */
+          var_nm_fll_2=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var_2].nm);
+          /* Utility function to detect inserted names in a name list */
+          lst_ins=nco_lst_ins(var_nm_fll_2,*skp_lst,idx_skp);
+          /* Insert in list */
+          if (lst_ins == False){
+            (*skp_lst)[idx_skp].nm=strdup(var_nm_fll_2);
+            idx_skp++;
+          } /* Insert in list */
+        } /* Match */
+      } /* Second Loop input (relative) names */
+      /* Free */
+      var_cf=(char *)nco_free(var_cf);
+    } /* There is an associated 'CF" variable  */ 
+
+    /* Free */
+    var_nm_fll=(char *)nco_free(var_nm_fll);
+
+  } /* Loop input (relative) names */
+
+  /* Re-Alloc */
+  (*skp_lst)=(nco_cmn_t *)nco_realloc((*skp_lst),idx_skp*sizeof(nco_cmn_t));
+
+  /* Export */
+  *nbr_skp_nm=idx_skp;
+
+  if(nco_dbg_lvl_get() == nco_dbg_old){
+    (void)fprintf(stdout,"%s: DEBUG %s list of variables to skip for template definition\n",nco_prg_nm_get(),fnc_nm); 
+    for(int idx_var=0;idx_var<idx_skp;idx_var++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,(*skp_lst)[idx_var].nm); 
+  }
+
+} /* nco_nm_skp() */
+
 
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
@@ -9806,6 +9805,58 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   flg_nsm_fl_1=trv_tbl_1->nsm_nbr;
   flg_nsm_fl_2=trv_tbl_2->nsm_nbr;
 
+  /* File 1 has ensembles */
+  if(flg_nsm_fl_1 == True){
+
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 1\n",nco_prg_nm_get(),fnc_nm);
+      nco_prn_nsm(trv_tbl_1);             
+    }
+
+
+
+    /* File 2 has ensembles */
+    if(flg_nsm_fl_2 == True){
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
+        nco_prn_nsm(trv_tbl_2);             
+      }
+
+
+
+    }else if(flg_nsm_fl_2 == False){
+
+      /* File 2 does NOT have ensembles */
+
+
+
+    } /* File 2 does NOT have ensembles */
+
+  }else if(flg_nsm_fl_1 == False){
+
+    /* File 1 does NOT have ensembles */
+
+
+    /* File 2 has ensembles */
+    if(flg_nsm_fl_2 == True){
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
+        nco_prn_nsm(trv_tbl_2);             
+      }
+
+
+
+
+    }else if(flg_nsm_fl_2 == False){
+
+      /* File 2 does NOT have ensembles */
+
+
+    } /* File 2 does NOT have ensembles */
+  } /* File 1 does NOT have ensembles */
 
 
   /* Memory management for common names list */
