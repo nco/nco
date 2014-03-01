@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1292 2014-03-01 02:52:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1293 2014-03-01 03:14:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9086,11 +9086,12 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
       for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl->nbr;idx_tbl_2++){
         trv_sct trv_2=trv_tbl->lst[idx_tbl_2];
 
-        /* Same depth, same number of variables, same parent group */
+        /* Same depth, same number of variables, same parent group, lower group depth */
         if(trv_1.nco_typ == nco_obj_typ_grp && 
           trv_2.nco_typ == nco_obj_typ_grp && 
           trv_1.grp_dpt == trv_2.grp_dpt && 
           trv_1.nbr_var == trv_2.nbr_var &&
+          trv_1.grp_dpt > 1 &&
           strcmp(trv_1.grp_nm_fll,trv_2.grp_nm_fll) != 0 &&
           strcmp(trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll_prn) == 0){
 
@@ -9282,6 +9283,11 @@ nco_bld_nsm2                          /* [fnc] Build ensembles */
       } /* Match */
     } /* Loop table */
   } /* Loop ensembles */
+
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    nco_prn_nsm(trv_tbl);
+  }
 
 } /* nco_bld_nsm2() */
 
