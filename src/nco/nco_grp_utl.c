@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1290 2014-03-01 01:15:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1291 2014-03-01 01:55:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8489,395 +8489,7 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
 
 
 
-nco_bool                               /* O [flg] True for match found */
-nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
- const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,            /* I [sct] Chunking structure */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
- nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
- nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
-{
-  nco_bool rel_mch; /* [flg] A match was found */
 
-  rel_mch=False;
-
-  if(flg_tbl_1){
-
-    for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
-      if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)){
-        trv_sct *trv_2=&trv_tbl_2->lst[uidx];
-        rel_mch=True;
-     
-        if(nco_dbg_lvl_get() >= nco_dbg_var){
-          (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
-            var_trv->nm_fll,trv_2->nm_fll);
-        }
-
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
-      } /* A relative match was found */
-    } /* Loop table  */
-
-  }else if(!flg_tbl_1){
-
-    for(unsigned uidx=0;uidx<trv_tbl_1->nbr;uidx++){
-      if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)){
-        trv_sct *trv_1=&trv_tbl_1->lst[uidx];
-        rel_mch=True;
-
-        if(nco_dbg_lvl_get() >= nco_dbg_var){
-          (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
-            trv_1->nm_fll,var_trv->nm_fll);
-        }
-
-
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
-      } /* A relative match was found */
-    } /* Loop table  */
-  } /* !flg_tbl_1 */
-
-  return rel_mch;
-
-} /* nco_rel_mch() */
-
-void                          
-nco_prc_cmn_nm                         /* [fnc] Process common objects from a common mames list (ncbo only) */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_id_2,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,            /* I [sct] Chunking structure */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
- const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
- const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
-{
-  /* Purpose: Process common objects from a common mames list (ncbo only) */
-
-  const char fnc_nm[]="nco_prc_cmn_nm()"; /* [sng] Function name */
-
-  int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0)  */
-  int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0)  */
-
-  nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
-  nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
-
-  /* Process objects in list */
-  for(int idx=0;idx<nbr_cmn_nm;idx++){
-
-    trv_sct *trv_1;    /* [sct] Table object */
-    trv_sct *trv_2;    /* [sct] Table object */
-
-    nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
-
-    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_1);
-    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_2);
-
-    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s inquiring object <%s>\n",nco_prg_nm_get(),fnc_nm,cmn_lst[idx].nm); 
-
-    /* Both objects exist in same location, both flagged for extraction */
-    if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
-
-      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll); 
-
-      /* Process common object */
-      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
-
-    }else{
-      /* Object exists and is flagged for extraction only in one file */
-
-      /* Number of depth 1 groups in file 1 greater (typically model file) (e.g cmip5.nc obs.nc ) */
-      if(nbr_grp_dpt_1 > nbr_grp_dpt_2){
-
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
-          /* Object exists and is flagged for extraction only in file 1 */
-
-          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
-
-          /* Try relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
-
-          /* Match not found in file 2, copy instead object from file 1 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
-
-        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
-          /* Object exists and is flagged for extraction only in file 2 */
-
-          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
-
-          /* Try relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
-
-          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
-
-        } /* fl_2 */
-
-      }else{ /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
-
-        /* Number of depth 1 groups in file 2 greater (e.g obs.nc cmip5.nc) */
-
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
-          /* Object exists and is flagged for extraction only in file 1 */
-
-          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
-
-          /* Try relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
-
-          /* Match was not found in file 2, copy instead object from file 1 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
-
-        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
-          /* Object exists and is flagged for extraction only in file 2 */
-
-          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
-
-          /* Try relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
-
-          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
-
-        } /* fl_2 */
-
-      } /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
-
-    } /* Object exists only in one file and is to extract */
-
-  } /* Process objects in list */
-
-} /* nco_prc_cmn_nm() */
-
-void                          
-nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_id_2,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,            /* I [sct] Chunking structure */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
-{
-  /* Purpose: Group broadcasting (ncbo only) */
-
-  /* file 1 contains multiple groups each with the variable v1, while file 2 contains v1
-  only in its top-level (i.e., root) group. Then ncbo will replicate the group structure of file 1
-  in the output file, file 3. Each group in file 3 contains the output of the corresponding
-  group in file 1 operating on the data in the single group in file 2. */
-
-  const char fnc_nm[]="nco_grp_brd()"; /* [sng] Function name */
-  
-  trv_sct *var_trv_2=NULL; /* [sct] Table variable to find in file 2 */
-
-  /* Loop table 1  */
-  for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl_1->nbr;idx_tbl_1++){
-    /* Filter variables to extract */
-    if(trv_tbl_1->lst[idx_tbl_1].nco_typ == nco_obj_typ_var && trv_tbl_1->lst[idx_tbl_1].flg_xtr){
-      trv_sct var_trv_1=trv_tbl_1->lst[idx_tbl_1];
-
-      var_trv_2=trv_tbl_var_nm(var_trv_1.nm,trv_tbl_2);
-
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s found variable <%s> in table 2\n",nco_prg_nm_get(),fnc_nm,var_trv_2->nm_fll);
-      }
-
-      break;
-
-    } /* Filter variables to extract */
-  } /* Loop table 1 */
-
-  if (!var_trv_2){
-    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO no matching variables found in file 2\n",nco_prg_nm_get());
-    return;
-  }
-
-  nco_bool flg_grp_1=True; /* I [flg] Use table 1 as template for group creation */
-
-  /* Loop table 1  */
-  for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl_1->nbr;idx_tbl_1++){
-    /* Filter variables to extract */
-    if(trv_tbl_1->lst[idx_tbl_1].nco_typ == nco_obj_typ_var && trv_tbl_1->lst[idx_tbl_1].flg_xtr){
-      trv_sct var_trv_1=trv_tbl_1->lst[idx_tbl_1];
-
-
-      if(nco_dbg_lvl_get() >= nco_dbg_var){
-        (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
-          var_trv_1.nm_fll,var_trv_2->nm_fll);
-      }
-
-      /* Process objects (all objects from table 1 and the object found from table 2) */
-      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,&var_trv_1,var_trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
-
-
-    } /* Filter variables to extract */
-  } /* Loop table 1 */
-
-
-} /* nco_grp_brd() */
-
-nco_bool                               /* [fnc] True if absolute variables match */                          
-nco_cmn_var_nm_fll                     /* [fnc] Does the list of common names contain absolute variables match? */
-(const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
- const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
- const int nbr_cmn_nm)                 /* I [nbr] Number of common names entries */
-{
-  /* Purpose: Does the list of *any* common names contain absolute variables match? (ncbo only) */
-
-  /* Process objects in list */
-  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++){
-
-    trv_sct *trv_1;    /* [sct] Table object */
-    trv_sct *trv_2;    /* [sct] Table object */
-
-    /* Inquire existence of these (full names, the common list contains group and variables) */
-    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_1);
-    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_2);
-
-    /* Both variables exist in same location */
-    if(trv_1 && trv_2){
-      assert(cmn_lst[idx_cmn].flg_in_fl[0]);
-      assert(cmn_lst[idx_cmn].flg_in_fl[1]);
-      return True;
-    }
-  } /* Process objects in list */
-
-  return False;
-
-} /* nco_cmn_var_nm_fll() */
-
-void                                               
-nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute variables in both files (same path) (ncbo) */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_id_2,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,            /* I [sct] Chunking structure */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
- const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
- const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False for write variables ) */
-{
-  /* Purpose: Process (define, write) absolute variables in both files (same path) (ncbo). NB: using table 1 as template */
-
-  nco_bool flg_grp_1=True; /* [flg] Use table 1 as template for group creation */
-
-  /* Process objects in list */
-  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++){
-
-    trv_sct *trv_1;    /* [sct] Table object */
-    trv_sct *trv_2;    /* [sct] Table object */
-
-    /* Inquire existence of these (full names, the common list contains group and variables) */
-    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_1);
-    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_2);
-
-    /* Both variables exist in same location, both are to extract */
-    if(trv_1 && trv_2 && trv_1->flg_xtr && trv_2->flg_xtr){
-
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
-
-      /* Process common object */
-      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
-
-    } /* Both variables exist in same location, both are to extract */
-  } /* Process objects in list */
-
-} /* nco_prc_cmn_var_nm_fll() */
-
-
-void                          
-nco_grp_brd2                           /* [fnc] Group broadcasting (ncbo only) */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_id_2,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,            /* I [sct] Chunking structure */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False for write variables ) */
-{
-  /* Purpose: Group broadcasting OR variable matching (ncbo only) */
-
-  /* Broadcasting: file 1 contains multiple groups each with the variable v1, while file 2 contains v1
-  only in its top-level (i.e., root) group. Then ncbo will replicate the group structure of file 1
-  in the output file, file 3. Each group in file 3 contains the output of the corresponding
-  group in file 1 operating on the data in the single group in file 2. */
-
-  int nbr_cmn_nm=0;           /* [nbr] Number of common entries */
-
-  nco_bool flg_cmn_var_nm_fl; /* [flg] Is there a variable with same absolute path in both files? */
-  nco_bool flg_nsm_fl_1;      /* [flg] File 1 contains ensemble members */
-  nco_bool flg_nsm_fl_2;      /* [flg] File 2 contains ensemble members */
-
-  nco_cmn_t *cmn_lst=NULL;    /* [sct] A list of common names */ 
-
-  /* Match 2 tables (find common objects) and export common objects */
-  (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
-
-  /* Inquire if there is a variable with same absolute path in both files */
-  flg_cmn_var_nm_fl=nco_cmn_var_nm_fll(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm);     
-
-  /* There is a variable with same absolute path in both files. Do them and return */
-  if (flg_cmn_var_nm_fl){
-
-    /* Process common variables (same path in both files) */
-    (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
-
-    /* Memory management for common names list */
-    for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
-    if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
-
-    /* Nothing else to do */
-    return;
-
-  } /* There is a variable with same absolute path in both files */
-
-  /* Inquire about ensembles */
-  flg_nsm_fl_1=trv_tbl_1->nsm_nbr;
-  flg_nsm_fl_2=trv_tbl_2->nsm_nbr;
-
-
-
-  /* Memory management for common names list */
-  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
-  if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
-
-} /* nco_grp_brd2() */
 
 void
 nco_prn_nsm                                 /* [fnc] Print ensembles  */                                
@@ -9881,3 +9493,325 @@ nco_nsm_ncr2                          /* [fnc] Increase ensembles (more than 1 f
 #endif /* NSM_V2 */
 
 
+nco_bool                               /* O [flg] True for match found */
+nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
+ nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+ nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
+{
+  nco_bool rel_mch; /* [flg] A match was found */
+
+  rel_mch=False;
+
+  if(flg_tbl_1){
+
+    for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
+      if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)){
+        trv_sct *trv_2=&trv_tbl_2->lst[uidx];
+        rel_mch=True;
+     
+        if(nco_dbg_lvl_get() >= nco_dbg_var){
+          (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
+            var_trv->nm_fll,trv_2->nm_fll);
+        }
+
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+      } /* A relative match was found */
+    } /* Loop table  */
+
+  }else if(!flg_tbl_1){
+
+    for(unsigned uidx=0;uidx<trv_tbl_1->nbr;uidx++){
+      if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)){
+        trv_sct *trv_1=&trv_tbl_1->lst[uidx];
+        rel_mch=True;
+
+        if(nco_dbg_lvl_get() >= nco_dbg_var){
+          (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
+            trv_1->nm_fll,var_trv->nm_fll);
+        }
+
+
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+      } /* A relative match was found */
+    } /* Loop table  */
+  } /* !flg_tbl_1 */
+
+  return rel_mch;
+
+} /* nco_rel_mch() */
+
+void                          
+nco_prc_cmn_nm                         /* [fnc] Process common objects from a common mames list (ncbo only) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
+{
+  /* Purpose: Process common objects from a common mames list (ncbo only) */
+
+  const char fnc_nm[]="nco_prc_cmn_nm()"; /* [sng] Function name */
+
+  int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0)  */
+  int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0)  */
+
+  nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
+  nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
+
+  /* Process objects in list */
+  for(int idx=0;idx<nbr_cmn_nm;idx++){
+
+    trv_sct *trv_1;    /* [sct] Table object */
+    trv_sct *trv_2;    /* [sct] Table object */
+
+    nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
+
+    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_1);
+    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].nm,trv_tbl_2);
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s inquiring object <%s>\n",nco_prg_nm_get(),fnc_nm,cmn_lst[idx].nm); 
+
+    /* Both objects exist in same location, both flagged for extraction */
+    if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll); 
+
+      /* Process common object */
+      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
+
+    }else{
+      /* Object exists and is flagged for extraction only in one file */
+
+      /* Number of depth 1 groups in file 1 greater (typically model file) (e.g cmip5.nc obs.nc ) */
+      if(nbr_grp_dpt_1 > nbr_grp_dpt_2){
+
+        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
+          /* Object exists and is flagged for extraction only in file 1 */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
+
+          /* Try relative match in file 2 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
+
+          /* Match not found in file 2, copy instead object from file 1 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
+
+        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+          /* Object exists and is flagged for extraction only in file 2 */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
+
+          /* Try relative match in file 1 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
+
+          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
+
+        } /* fl_2 */
+
+      }else{ /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
+
+        /* Number of depth 1 groups in file 2 greater (e.g obs.nc cmip5.nc) */
+
+        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
+          /* Object exists and is flagged for extraction only in file 1 */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
+
+          /* Try relative match in file 2 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
+
+          /* Match was not found in file 2, copy instead object from file 1 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
+
+        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+          /* Object exists and is flagged for extraction only in file 2 */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
+
+          /* Try relative match in file 1 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
+
+          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
+
+        } /* fl_2 */
+
+      } /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
+
+    } /* Object exists only in one file and is to extract */
+
+  } /* Process objects in list */
+
+} /* nco_prc_cmn_nm() */
+
+
+nco_bool                               /* [fnc] True if absolute variables match */                          
+nco_cmn_var_nm_fll                     /* [fnc] Does the list of common names contain absolute variables match? */
+(const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
+ const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
+ const int nbr_cmn_nm)                 /* I [nbr] Number of common names entries */
+{
+  /* Purpose: Does the list of *any* common names contain absolute variables match? (ncbo only) */
+
+  /* Process objects in list */
+  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++){
+
+    trv_sct *trv_1;    /* [sct] Table object */
+    trv_sct *trv_2;    /* [sct] Table object */
+
+    /* Inquire existence of these (full names, the common list contains group and variables) */
+    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_1);
+    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_2);
+
+    /* Both variables exist in same location */
+    if(trv_1 && trv_2){
+      assert(cmn_lst[idx_cmn].flg_in_fl[0]);
+      assert(cmn_lst[idx_cmn].flg_in_fl[1]);
+      return True;
+    }
+  } /* Process objects in list */
+
+  return False;
+
+} /* nco_cmn_var_nm_fll() */
+
+void                                               
+nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute variables in both files (same path) (ncbo) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False for write variables ) */
+{
+  /* Purpose: Process (define, write) absolute variables in both files (same path) (ncbo). NB: using table 1 as template */
+
+  nco_bool flg_grp_1=True; /* [flg] Use table 1 as template for group creation */
+
+  /* Process objects in list */
+  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++){
+
+    trv_sct *trv_1;    /* [sct] Table object */
+    trv_sct *trv_2;    /* [sct] Table object */
+
+    /* Inquire existence of these (full names, the common list contains group and variables) */
+    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_1);
+    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_2);
+
+    /* Both variables exist in same location, both are to extract */
+    if(trv_1 && trv_2 && trv_1->flg_xtr && trv_2->flg_xtr){
+
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
+
+      /* Process common object */
+      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+
+    } /* Both variables exist in same location, both are to extract */
+  } /* Process objects in list */
+
+} /* nco_prc_cmn_var_nm_fll() */
+
+#ifdef GRP_BRD
+
+void                          
+nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False for write variables ) */
+{
+  /* Purpose: Group broadcasting OR variable matching (ncbo only) */
+
+  /* Broadcasting: file 1 contains multiple groups each with the variable v1, while file 2 contains v1
+  only in its top-level (i.e., root) group. Then ncbo will replicate the group structure of file 1
+  in the output file, file 3. Each group in file 3 contains the output of the corresponding
+  group in file 1 operating on the data in the single group in file 2. */
+
+  const char fnc_nm[]="nco_grp_brd()"; /* [sng] Function name */
+
+  int nbr_cmn_nm=0;           /* [nbr] Number of common entries */
+
+  nco_bool flg_cmn_var_nm_fl; /* [flg] Is there a variable with same absolute path in both files? */
+  nco_bool flg_nsm_fl_1;      /* [flg] File 1 contains ensemble members */
+  nco_bool flg_nsm_fl_2;      /* [flg] File 2 contains ensemble members */
+
+  nco_cmn_t *cmn_lst=NULL;    /* [sct] A list of common names */ 
+
+  /* Match 2 tables (find common objects) and export common objects */
+  (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
+
+  /* Inquire if there is a variable with same absolute path in both files */
+  flg_cmn_var_nm_fl=nco_cmn_var_nm_fll(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm);     
+
+  /* There is a variable with same absolute path in both files. Do them and return */
+  if (flg_cmn_var_nm_fl){
+
+    /* Process common variables (same path in both files) */
+    (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
+
+    /* Memory management for common names list */
+    for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
+    if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
+
+    /* Nothing else to do */
+    return;
+
+  } /* There is a variable with same absolute path in both files */
+
+  /* Inquire about ensembles */
+  flg_nsm_fl_1=trv_tbl_1->nsm_nbr;
+  flg_nsm_fl_2=trv_tbl_2->nsm_nbr;
+
+
+
+  /* Memory management for common names list */
+  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
+  if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
+
+} /* nco_grp_brd() */
+
+#endif /* RP_BRD */

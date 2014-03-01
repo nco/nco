@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.290 2014-02-23 00:26:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.291 2014-03-01 01:55:47 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -55,10 +55,6 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
-
-#if 0
-#define GRP_BRD /* Group broadcasting */
-#endif 
 
 /* Standard C headers */
 #include <math.h> /* sin cos cos sin 3.14159 */
@@ -136,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.290 2014-02-23 00:26:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.290 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.291 2014-03-01 01:55:47 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.291 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
