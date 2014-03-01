@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.461 2014-02-28 20:40:03 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.462 2014-03-01 01:15:57 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -878,7 +878,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-if (0) {
+
 #nces #17
 #ncra -Y ncge -O mdl.nc mdl2.nc out.nc
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
@@ -888,7 +888,7 @@ if (0) {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-	}
+
 
 # NEW NCO 4.4.2
 #nces #18 (check fixed variables)

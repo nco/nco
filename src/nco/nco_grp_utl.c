@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1289 2014-02-28 23:38:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1290 2014-03-01 01:15:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6595,7 +6595,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Build ensembles */
 #ifdef NSM_V2
-  if(nco_prg_id_get() == ncge) (void)nco_bld_nsm2(nc_id,trv_tbl);
+  if(nco_prg_id_get() == ncge || nco_prg_id_get() == ncbo) (void)nco_bld_nsm2(nc_id,trv_tbl);
 #else
   if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,trv_tbl);
 #endif
