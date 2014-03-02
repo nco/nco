@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.291 2014-03-01 01:55:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.292 2014-03-02 01:17:58 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -51,6 +51,10 @@
    
    Test nco_var_cnf_dmn():
    ncks -O -v scalar_var in.nc ~/foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncbo -O -v four_dmn_rec_var in.nc ~/foo.nc foo2.nc */
+
+#if 0
+#define GRP_BRD /* Group broadcasting */
+#endif 
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -132,8 +136,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.291 2014-03-01 01:55:47 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.291 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.292 2014-03-02 01:17:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.292 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

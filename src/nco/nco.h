@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.499 2014-03-01 01:55:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.500 2014-03-02 01:17:58 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -975,9 +975,6 @@ extern "C" {
 #define NSM_V2
 #endif
 
-#if 0
-#define GRP_BRD /* Group broadcasting */
-#endif 
 
   /* Ensemble (ncge) */
   typedef struct{

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1293 2014-03-01 03:14:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1294 2014-03-02 01:17:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9751,7 +9751,6 @@ nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute
 
 } /* nco_prc_cmn_var_nm_fll() */
 
-#ifdef GRP_BRD
 
 void                          
 nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) */
@@ -9870,5 +9869,3 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
 } /* nco_grp_brd() */
-
-#endif /* RP_BRD */

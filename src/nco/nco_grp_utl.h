@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.471 2014-03-01 01:55:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.472 2014-03-02 01:17:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -872,9 +872,6 @@ nco_grp_brd2                           /* [fnc] Group broadcasting (ncbo only) *
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
 
-
-#ifdef GRP_BRD
-
 void                          
 nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
@@ -891,7 +888,6 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
 
-#endif
 
 
 #ifdef __cplusplus
