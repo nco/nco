@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.462 2014-03-01 01:15:57 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.463 2014-03-02 03:53:04 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -660,12 +660,12 @@ print "\n";
     
 # ncbo #23
 # ncbo -O cmip5.nc obs.nc out.nc
-# ncks -H -g giss -v tas -d time,3,3,1 out.nc
+# ncks -H -g giss -v tas1 -d time,3,3,1 out.nc
 
     $dsc_sng="(Groups) Process relative match from model to observations cmip5.nc -> obs.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[3]=4 tas[3]=1";
+    $tst_cmd[1]="ncks -C -g giss -v tas1 -d time,3,3,1 %tmp_fl_00%";
+    $tst_cmd[2]="time[3]=4 tas1[3]=1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			       
@@ -674,8 +674,8 @@ print "\n";
 
     $dsc_sng="(Groups) Process relative match from observations to model obs.nc -> cmip5.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[3]=4 tas[3]=-1";
+    $tst_cmd[1]="ncks -C -g giss -v tas1 -d time,3,3,1 %tmp_fl_00%";
+    $tst_cmd[2]="time[3]=4 tas1[3]=-1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	

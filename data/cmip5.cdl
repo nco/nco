@@ -9,11 +9,11 @@ netcdf cmip5 {
   dimensions:
   time=unlimited;
   variables:
-  float tas(time);
+  float tas1(time);
   double time(time);
   :Model = "CESM";
   data:
-  tas=272,272,272,272;
+  tas1=272,272,272,272;
   time=1.,2.,3.,4.;
   } // end cesm
   
@@ -21,11 +21,11 @@ netcdf cmip5 {
   dimensions:
   time=unlimited;
   variables:
-  float tas(time);
+  float tas1(time);
   double time(time);
   :Model = "ECMWF";
   data:
-  tas=273,273,273,273;
+  tas1=273,273,273,273;
   time=1.,2.,3.,4.;
   } // end ecmwf
   
@@ -33,11 +33,11 @@ netcdf cmip5 {
   dimensions:
   time=unlimited;
   variables:
-  float tas(time);
+  float tas1(time);
   double time(time);
   :Model = "GISS";
   data:
-  tas=274,274,274,274;
+  tas1=274,274,274,274;
   time=1.,2.,3.,4.;
   } // end gfdl
 
