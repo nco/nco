@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1296 2014-03-02 19:05:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1297 2014-03-02 19:16:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9911,17 +9911,23 @@ nco_cmn_var                            /* [fnc] Common variable exists (ncbo onl
         /* Get GTT object */
         trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl_1);
 
-        if(nco_dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s ensemble member <%s> from file 1\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);        
-        }
-
-
         /* Loop over table 2 */
         for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl_2->nbr;idx_tbl_2++){
 
+          trv_sct var_trv_2=trv_tbl_2->lst[idx_tbl_2];
+
           /* Match template name from table 2 in table 1 */
+          if(var_trv_2.nco_typ == nco_obj_typ_var && strcmp(var_trv->nm,var_trv_2.nm) == 0){
 
+            *flg_var_cmn=True;
+            if(var_trv_2.grp_dpt == 0) *flg_var_cmn_rth=True;
 
+            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s ensemble member <%s> from file 1 in file 2 <%s>\n",nco_prg_nm_get(),fnc_nm,
+                var_trv->nm_fll,var_trv_2.nm_fll);        
+            }
+
+          }
 
         } /* Loop over table 2 */
       } /* Loop variables table 1 */
