@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.282 2014-02-28 22:34:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.283 2014-03-02 19:31:12 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -144,13 +144,6 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   for(int idx_nsm=0;idx_nsm<tbl->nsm_nbr;idx_nsm++){
     tbl->nsm[idx_nsm].grp_nm_fll_prn=(char *)nco_free(tbl->nsm[idx_nsm].grp_nm_fll_prn);
 
-#ifndef NSM_V2
-    for(int idx_var_mbr=0;idx_var_mbr<tbl->nsm[idx_nsm].mbr_var_nbr;idx_var_mbr++){
-      tbl->nsm[idx_nsm].var_mbr_fll[idx_var_mbr]=(char *)nco_free(tbl->nsm[idx_nsm].var_mbr_fll[idx_var_mbr]);
-    }
-#endif
-
-#ifdef NSM_V2
     for(int idx=0;idx<tbl->nsm[idx_nsm].tpl_nbr;idx++){
       tbl->nsm[idx_nsm].tpl_mbr_nm[idx]=(char *)nco_free(tbl->nsm[idx_nsm].tpl_mbr_nm[idx]);
     }
@@ -158,13 +151,6 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     for(int idx=0;idx<tbl->nsm[idx_nsm].skp_nbr;idx++){
       tbl->nsm[idx_nsm].skp_nm_fll[idx]=(char *)nco_free(tbl->nsm[idx_nsm].skp_nm_fll[idx]);
     }
-#endif
-
-#ifndef NSM_V2
-    for(int idx_var_mbr=0;idx_var_mbr<tbl->nsm[idx_nsm].mbr_nbr;idx_var_mbr++){
-      tbl->nsm[idx_nsm].grp_mbr_fll[idx_var_mbr]=(char *)nco_free(tbl->nsm[idx_nsm].grp_mbr_fll[idx_var_mbr]);
-    }
-#endif
 
     tbl->nsm[idx_nsm].mbr=(nsm_grp_sct*)nco_free(tbl->nsm[idx_nsm].mbr);
   } /* Ensembles */

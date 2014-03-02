@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.473 2014-03-02 05:38:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.474 2014-03-02 19:31:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -733,24 +733,11 @@ nco_prn_nsm                           /* [fnc] Print ensembles  */
 (const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 
-#ifndef NSM_V2
-
-void                          
-nco_nm_skp                             /* [fnc] Extract list of variable names to skip for template definition  */
-(const int nc_id,                      /* I [ID] netCDF file ID */
- const char * const grp_nm_fll,        /* I [sng] Group full name where all names reside */
- const nco_cmn_t *cmn_lst,             /* I [sct] List of names (relative)  */
- const int nbr_cmn_nm,                 /* I [nbr] Number of names (size of above array) */
- nco_cmn_t **skp_lst,                  /* I/O [sct] List of skip names (full) */
- int * nbr_skp_nm,                     /* I/O [nbr] Number of skip names (size of above array) */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
-
 
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
 
 void
 nco_nsm_dfn_wrt                       /* [fnc] Define OR write ensemble fixed variables */
@@ -762,35 +749,10 @@ nco_nsm_dfn_wrt                       /* [fnc] Define OR write ensemble fixed va
  const nco_bool flg_def,              /* I [flg] Define OR write */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-
 void
 nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
 (const int nc_id,                     /* I [id] netCDF file ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-#else /* NSM_V2 */
-
-void
-nco_bld_nsm2                          /* [fnc] Build ensembles */
-(const int nc_id,                     /* I [id] netCDF file ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-void
-nco_nsm_dfn_wrt2                      /* [fnc] Define OR write ensemble fixed variables */
-(const int nc_id,                     /* I [ID] netCDF input file ID */
- const int nc_out_id,                 /* I [ID] netCDF output file ID */
- const cnk_sct * const cnk,           /* I [sct] Chunking structure */
- const int dfl_lvl,                   /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,           /* I [sct] GPE structure */
- const nco_bool flg_def,              /* I [flg] Define OR write */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-void
-nco_nsm_ncr2                          /* [fnc] Increase ensembles (more than 1 file cases) */
-(const int nc_id,                     /* I [id] netCDF file ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-#endif /* NSM_V2 */
 
 
 nco_bool                               /* O [flg] True for match found */

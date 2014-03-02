@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.520 2014-02-28 22:34:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.521 2014-03-02 19:31:12 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.520 2014-02-28 22:34:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.520 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.521 2014-03-02 19:31:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.521 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -712,11 +712,7 @@ main(int argc,char **argv)
   (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Define ensemble fixed variables (True parameter) */
-#ifndef NSM_V2
   if(nco_prg_id_get() == ncge) (void)nco_nsm_dfn_wrt(in_id,out_id,&cnk,dfl_lvl,gpe,True,trv_tbl); 
-#else
-  if(nco_prg_id_get() == ncge) (void)nco_nsm_dfn_wrt2(in_id,out_id,&cnk,dfl_lvl,gpe,True,trv_tbl); 
-#endif
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -763,11 +759,7 @@ main(int argc,char **argv)
   (void)nco_cpy_fix_var_trv(in_id,out_id,gpe,trv_tbl); 
 
   /* Write ensemble fixed variables (False parameter) */
-#ifndef NSM_V2
   if(nco_prg_id_get() == ncge) (void)nco_nsm_dfn_wrt(in_id,out_id,&cnk,dfl_lvl,gpe,False,trv_tbl); 
-#else
-  if(nco_prg_id_get() == ncge) (void)nco_nsm_dfn_wrt2(in_id,out_id,&cnk,dfl_lvl,gpe,False,trv_tbl); 
-#endif
 
   /* Close first input netCDF file */
   nco_close(in_id);
@@ -810,11 +802,7 @@ main(int argc,char **argv)
     /* Do ncge ensemble refresh */
     if(nco_prg_id == ncge){
       /* Refresh ensembles */
-#ifndef NSM_V2
-      if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl);    
-#else
-      if(fl_idx > 0) (void)nco_nsm_ncr2(in_id,trv_tbl); 
-#endif
+      if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl); 
     }else{ /* ! ncge */
       /* Variables may have different ID, missing_value, type, in each file */
       for(idx=0;idx<nbr_var_prc;idx++){

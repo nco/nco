@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.501 2014-03-02 05:38:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.502 2014-03-02 19:31:12 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -971,30 +971,16 @@ extern "C" {
     int var_nbr;            /* [nbr] Number of variable for this group (size of above array) */ 
   } nsm_grp_sct; 
 
-#if 1
-#define NSM_V2
-#endif
-
 
   /* Ensemble (ncge) */
   typedef struct{
     char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) (e.g., /cesm) */
     nsm_grp_sct *mbr;       /* [sng] List of ensemble group member structs (size is mbr_nbr) */
     int mbr_nbr;            /* [nbr] Number of members (groups) of ensemble (i.e., number in this ensemble in this file) */
-
-#ifndef NSM_V2
-    char **var_mbr_fll;     /* [sng] List of variable ensemble members (e.g., /cesm/cesm_01/tas) */
-    int mbr_var_nbr;        /* [nbr] Number of variable members of ensemble */    
-    char **grp_mbr_fll;     /* [sng] List of group ensemble members (e.g., /cesm/cesm_01) (size is mbr_nbr) */
-#endif
-    
-
-#ifdef NSM_V2
     char **tpl_mbr_nm;      /* [sng] List of variable that act as templates (first, store relative name) (e.g., /cesm/cesm_01/tas) */
     int tpl_nbr;            /* [nbr] Number of variables that are templates in group */  
     char **skp_nm_fll;      /* [sng] Skip list (fixed variables to define at ensemble parent group, store full name) (e.g., /cesm/cesm_01/time)  */
     int skp_nbr;            /* [nbr] Number of skip list variables */ 
-#endif
     int mbr_srt;            /* [nbr] Member offsets, start (multi files, keep track of new added members) */ 
     int mbr_end;            /* [nbr] Member offsets, end (multi files, keep track of new added members) */ 
   } nsm_sct; 
