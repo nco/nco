@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1295 2014-03-02 05:38:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1296 2014-03-02 19:05:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8388,9 +8388,6 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
 } /* end nco_dmn_lmt() */
 
 
-
-
-
 void
 nco_prn_nsm                                 /* [fnc] Print ensembles  */                                
 (const trv_tbl_sct * const trv_tbl)         /* I [sct] Traversal table */
@@ -8413,8 +8410,10 @@ nco_prn_nsm                                 /* [fnc] Print ensembles  */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
     (void)fprintf(stdout,"%s: <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
-      (void)fprintf(stdout,"%s: \t <member %d> <%s>\n",nco_prg_nm_get(),
-        idx_mbr,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
+      (void)fprintf(stdout,"%s: \t <member %d> <%s>\n",nco_prg_nm_get(),idx_mbr,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
+      for(int idx_var=0;idx_var<trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nbr;idx_var++){
+        (void)fprintf(stdout,"%s: \t <variable %d> <%s>\n",nco_prg_nm_get(),idx_var,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
+      }
     }
   }
 
@@ -9893,24 +9892,42 @@ nco_cmn_var                            /* [fnc] Common variable exists (ncbo onl
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2)  /* I [sct] GTT (Group Traversal Table) */
 {
+  const char fnc_nm[]="nco_cmn_var()"; /* [sng] Function name */
 
   *flg_var_cmn=False;
   *flg_var_cmn_rth=False;
 
-  /* Loop over ensembles in table 2 */
-  for(int idx_nsm_2=0;idx_nsm_2<trv_tbl_2->nsm_nbr;idx_nsm_2++){ 
+  /* Loop over ensembles in table 1 */
+  for(int idx_nsm_1=0;idx_nsm_1<trv_tbl_1->nsm_nbr;idx_nsm_1++){ 
 
-    /* Loop over templates in table 2 */
-    for(int idx_tpl_2=0;idx_tpl_2<trv_tbl_2->nsm[idx_nsm_2].tpl_nbr;idx_tpl_2++){ 
+    /* Loop over ensemble members in table 1 */
+    for(int idx_mbr_1=0;idx_mbr_1<trv_tbl_1->nsm[idx_nsm_1].mbr_nbr;idx_mbr_1++){ 
 
-      /* Loop over table 1 */
-      for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl_1->nbr;idx_tbl_1++){
+      /* Loop over variables in table 1 */
+      for(int idx_var=0;idx_var<trv_tbl_1->nsm[idx_nsm_1].mbr[idx_mbr_1].var_nbr;idx_var++){
 
-        /* Match template name from table 2 in table 1 */
+        char *var_nm_fll=trv_tbl_1->nsm[idx_nsm_1].mbr[idx_mbr_1].var_nm_fll[idx_var];
+
+        /* Get GTT object */
+        trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl_1);
+
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s ensemble member <%s> from file 1\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);        
+        }
 
 
-      } /* Loop over table 1 */
-    } /* Loop templates table 2 */
-  }/* Loop ensembles table 2  */
+        /* Loop over table 2 */
+        for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl_2->nbr;idx_tbl_2++){
+
+          /* Match template name from table 2 in table 1 */
+
+
+
+        } /* Loop over table 2 */
+      } /* Loop variables table 1 */
+    } /* Loop ensemble members table 1 */
+
+  }/* Loop ensembles table 1  */
 
 }/* nco_cmn_var() */
+
