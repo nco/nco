@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.472 2014-03-02 01:17:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.473 2014-03-02 05:38:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -887,6 +887,14 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
+
+
+void                          
+nco_cmn_var                            /* [fnc] Common variable exists (ncbo only) */
+(nco_bool *flg_var_cmn,                /* I/O [flg] Common variable exists */
+ nco_bool *flg_var_cmn_rth,            /* I/O [flg] Common variable exists at root */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2); /* I [sct] GTT (Group Traversal Table) */
 
 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.500 2014-03-02 01:17:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.501 2014-03-02 05:38:54 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -985,9 +985,6 @@ extern "C" {
 #ifndef NSM_V2
     char **var_mbr_fll;     /* [sng] List of variable ensemble members (e.g., /cesm/cesm_01/tas) */
     int mbr_var_nbr;        /* [nbr] Number of variable members of ensemble */    
-#endif
-
-#ifndef NSM_V2
     char **grp_mbr_fll;     /* [sng] List of group ensemble members (e.g., /cesm/cesm_01) (size is mbr_nbr) */
 #endif
     

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1294 2014-03-02 01:17:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1295 2014-03-02 05:38:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9782,8 +9782,12 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   nco_bool flg_cmn_var_nm_fl; /* [flg] Is there a variable with same absolute path in both files? */
   nco_bool flg_nsm_fl_1;      /* [flg] File 1 contains ensemble members */
   nco_bool flg_nsm_fl_2;      /* [flg] File 2 contains ensemble members */
+  nco_bool flg_var_cmn;       /* [flg] Common variable exists */
+  nco_bool flg_var_cmn_rth;   /* [flg] Common variable exists at root */
 
   nco_cmn_t *cmn_lst=NULL;    /* [sct] A list of common names */ 
+
+  /* Inquire about absolute variable matching */
 
   /* Match 2 tables (find common objects) and export common objects */
   (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
@@ -9806,9 +9810,15 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
   } /* There is a variable with same absolute path in both files */
 
+  /* Memory management for common names list */
+  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
+  if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
+
+  /*Inquire about group broadcasting (ensembles and not ensembles) */
+
   /* Inquire about ensembles */
-  flg_nsm_fl_1=trv_tbl_1->nsm_nbr;
-  flg_nsm_fl_2=trv_tbl_2->nsm_nbr;
+  if(trv_tbl_1->nsm_nbr) flg_nsm_fl_1=True; else flg_nsm_fl_1=False;
+  if(trv_tbl_2->nsm_nbr) flg_nsm_fl_2=True; else flg_nsm_fl_2=False;
 
   /* File 1 has ensembles */
   if(flg_nsm_fl_1 == True){
@@ -9834,6 +9844,13 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
     }else if(flg_nsm_fl_2 == False){
 
       /* File 2 does NOT have ensembles */
+
+      /* ncbo -O mdl.nc obs.nc out.nc */
+
+      /* Inquire about file 2 having a common object from list of file 1 ensembles  */
+      (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,trv_tbl_1,trv_tbl_2);
+
+
 
 
 
@@ -9864,8 +9881,36 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   } /* File 1 does NOT have ensembles */
 
 
-  /* Memory management for common names list */
-  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
-  if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
+ 
 
 } /* nco_grp_brd() */
+
+
+void                          
+nco_cmn_var                            /* [fnc] Common variable exists (ncbo only) */
+(nco_bool *flg_var_cmn,                /* I/O [flg] Common variable exists */
+ nco_bool *flg_var_cmn_rth,            /* I/O [flg] Common variable exists at root */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2)  /* I [sct] GTT (Group Traversal Table) */
+{
+
+  *flg_var_cmn=False;
+  *flg_var_cmn_rth=False;
+
+  /* Loop over ensembles in table 2 */
+  for(int idx_nsm_2=0;idx_nsm_2<trv_tbl_2->nsm_nbr;idx_nsm_2++){ 
+
+    /* Loop over templates in table 2 */
+    for(int idx_tpl_2=0;idx_tpl_2<trv_tbl_2->nsm[idx_nsm_2].tpl_nbr;idx_tpl_2++){ 
+
+      /* Loop over table 1 */
+      for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl_1->nbr;idx_tbl_1++){
+
+        /* Match template name from table 2 in table 1 */
+
+
+      } /* Loop over table 1 */
+    } /* Loop templates table 2 */
+  }/* Loop ensembles table 2  */
+
+}/* nco_cmn_var() */
