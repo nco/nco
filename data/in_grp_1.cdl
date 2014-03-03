@@ -6,18 +6,20 @@
 netcdf in_grp_1 {
 
   dimensions:
-  lon1=4;
+  lon=4;
  
   //
   //g1
   //
   group: g1 { 
   variables:
-    short var1(lon1);
-    float var2(lon1);
+    float var1(lon);
+    float var2(lon);
+	float lon(lon);
   data:
-    var1=0,0,0,0;
-    var2=0,0,0,0;
+    var1=1,1,1,1;
+    var2=1,1,1,1;
+	lon=1,2,3,4;
   } // end g1
 
 } // end root group

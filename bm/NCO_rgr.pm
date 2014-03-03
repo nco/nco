@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.463 2014-03-02 03:53:04 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.464 2014-03-03 23:32:45 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -637,21 +637,30 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
-# ncbo #21
-# ncbo -O -g g1 -v var1  in_grp_1.nc  in_grp_2.nc out.nc
 
-    $dsc_sng="(Groups) Process different types -g g1 -v var1 in_grp_1.nc  in_grp_2.nc";
-    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg  -g g1 -v var1 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'var1: type NC_FLOAT, 1 dimension, 0 attributes, chunked? no, compressed? no, packed? no'";
-    $tst_cmd[2]="var1: type NC_FLOAT, 1 dimension, 0 attributes, chunked? no, compressed? no, packed? no";
+# Following tests: Different objects in both files with groups (ensembles, not ensembles)
+# Absolute match test
+# ncbo #21
+# ncbo -O -v var1  in_grp_1.nc  in_grp_2.nc out.nc
+
+    $dsc_sng="(Groups) Process absolute match variables -v var1 in_grp_1.nc in_grp_2.nc";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var1 $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C %tmp_fl_00%";
+    $tst_cmd[2]="lon[3]=4 var1[3]=-1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			  
+    $#tst_cmd=0; # Reset array 	
+
+my $GRP_BRD_UNDER_DEVELOPMENT = 1;
+	
+if ($GRP_BRD_UNDER_DEVELOPMENT == 0){ 
     
 # ncbo #22
+#ncbo -O -v var2 in_grp_1.nc in_grp_2.nc out.nc
+#ncks -d lon1,2,2,1 out.nc
 
     $dsc_sng="(Groups) Process relative match -v var2 in_grp_1.nc in_grp_2.nc";
-    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -d lon1,2,2,1 %tmp_fl_00%";
     $tst_cmd[2]="lon1[2] var2[2]=-1";
     $tst_cmd[3]="SS_OK";   
@@ -679,6 +688,21 @@ print "\n";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
+
+# ncbo #25
+# ncbo -O mdl.nc obs.nc out.nc
+# ncks -C -v tas1 out.nc
+
+    $dsc_sng="(Groups) Ensemble in file 1, root comparable object in file 2";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc obs.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -v tas1 %tmp_fl_00%";
+    $tst_cmd[2]="";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
+	} # end GRP_BRD_UNDER_DEVELOPMENT
+    
 
    } # end HAVE_NETCDF4_H
    
