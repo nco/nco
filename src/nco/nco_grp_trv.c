@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.283 2014-03-02 19:31:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.284 2014-03-03 05:10:10 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -200,8 +200,8 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   var_ntm_lcl=0;
   var_tmc_lcl=0;
 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx]; 
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct trv=trv_tbl->lst[idx_tbl]; 
     if(trv.nco_typ == nco_obj_typ_var) att_var_lcl+=trv.nbr_att;
     if(trv.nco_typ == nco_obj_typ_nonatomic_var) var_ntm_lcl++;
     if(trv.nco_typ == nco_obj_typ_grp){ 
@@ -210,10 +210,10 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
       if(grp_dpt_lcl < trv.grp_dpt) grp_dpt_lcl=trv.grp_dpt;
       if(!strcmp(trv.nm_fll,"/")) att_glb_lcl=trv.nbr_att; else att_grp_lcl+=trv.nbr_att; 
     } /* end nco_obj_typ_grp */
-  } /* end uidx */
+  } /* end idx_tbl */
 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr_dmn;uidx++)
-    if(trv_tbl->lst_dmn[uidx].is_rec_dmn) dmn_rec_lcl++;
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr_dmn;idx_tbl++)
+    if(trv_tbl->lst_dmn[idx_tbl].is_rec_dmn) dmn_rec_lcl++;
 
   if(att_glb_all) *att_glb_all=att_glb_lcl;
   if(att_grp_all) *att_grp_all=att_grp_lcl;
@@ -259,11 +259,11 @@ void
 trv_tbl_prn                          /* [fnc] Print table with -z */
 (const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */  
 {
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_grp) (void)fprintf(stdout,"grp: "); else (void)fprintf(stdout,"var: ");
-    (void)fprintf(stdout,"%s\n",trv_tbl->lst[uidx].nm_fll); 
-  } /* end uidx */
+    (void)fprintf(stdout,"%s\n",trv_tbl->lst[idx_tbl].nm_fll); 
+  } /* end idx_tbl */
 } /* end trv_tbl_prn() */
 
 nco_bool                              /* O [flg] Item found or not */
@@ -271,8 +271,8 @@ trv_tbl_fnd_var_nm_fll                /* [fnc] Check if "var_nm_fll" is in table
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll))
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll))
       return True;
 
   return False;
@@ -290,8 +290,8 @@ trv_tbl_var_nm_fll                    /* [fnc] Return variable object from full 
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
   if(trv_obj && trv_obj->nco_typ == nco_obj_typ_var) return trv_obj; else return NULL;
 #else /* !NCO_HSH_TRV_OBJ */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) return &trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll)) return &trv_tbl->lst[idx_tbl];
 
   return NULL;
 #endif /* !NCO_HSH_TRV_OBJ */
@@ -305,10 +305,10 @@ trv_tbl_grp_nm_fll                    /* [fnc] Return group object from full nam
 {
   /* Purpose: Return group object with given full name */
 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_grp && 
-      strcmp(grp_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
-      return &trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp && 
+      strcmp(grp_nm_fll,trv_tbl->lst[idx_tbl].nm_fll) == 0){
+      return &trv_tbl->lst[idx_tbl];
     }
   }
 
@@ -327,12 +327,27 @@ trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
   if(trv_obj) trv_obj->flg_xtr=flg_xtr;
 #else /* !NCO_HSH_TRV_OBJ */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(!strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) trv_tbl->lst[uidx].flg_xtr=flg_xtr;
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(!strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll)) trv_tbl->lst[idx_tbl].flg_xtr=flg_xtr;
 #endif /* !NCO_HSH_TRV_OBJ */
 
   return;
 } /* end trv_tbl_mrk_xtr() */
+
+void
+trv_tbl_mrk_grp_xtr                   /* [fnc] Mark extraction flag in table for "grp_nm_fll" */
+(const char * const grp_nm_fll,       /* I [sng] Group name to find */
+ const nco_bool flg_xtr,              /* I [flg] Flag (True or False) */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+{
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(strcmp(grp_nm_fll,trv_tbl->lst[idx_tbl].nm_fll) == 0){
+      trv_tbl->lst[idx_tbl].flg_xtr=flg_xtr;
+    }
+  }
+
+  return;
+} /* end trv_tbl_mrk_grp_xtr() */
 
 void
 trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in table for "var_nm_fll" */
@@ -340,9 +355,9 @@ trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in tab
  prc_typ_enm typ_prc,                  /* I [enm] Processing type */
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(!strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)){
-      trv_tbl->lst[uidx].enm_prc_typ=typ_prc;
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(!strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
+      trv_tbl->lst[idx_tbl].enm_prc_typ=typ_prc;
       return;
     }
   }
@@ -359,14 +374,14 @@ trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of travers
   int nbr_flg=0;
 
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->lst[uidx].flg_xtr) nbr_flg++;
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].flg_xtr) nbr_flg++;
 
   (void)fprintf(stdout,"%s: INFO %s reports <%d> objects with extraction flag (flg_xtr) set:\n",nco_prg_nm_get(),fnc_nm,nbr_flg); 
   
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].flg_xtr) (void)fprintf(stdout,"[%d] %s\n",idx++,trv_tbl->lst[uidx].nm_fll); 
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(trv_tbl->lst[idx_tbl].flg_xtr) (void)fprintf(stdout,"[%d] %s\n",idx++,trv_tbl->lst[idx_tbl].nm_fll); 
   }
 
 } /* end trv_tbl_prn_xtr() */
@@ -548,8 +563,8 @@ trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups 
   int nbr_grp_dpt=0; /* [nbr] Number of depth 1 groups (root = 0) */       
 
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_grp && trv_tbl->lst[uidx].grp_dpt == 1)
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp && trv_tbl->lst[idx_tbl].grp_dpt == 1)
       nbr_grp_dpt++;
 
   return nbr_grp_dpt;
@@ -808,11 +823,11 @@ trv_tbl_mrk_nsm_mbr                    /* [fnc] Mark ensemble member flag in tab
  const char * const grp_nm_fll_prn,    /* I [sng] Parent group full name (key for ensemble) */
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
-      trv_tbl->lst[uidx].flg_nsm_mbr=True;
-      trv_tbl->lst[uidx].nsm_nm=strdup(grp_nm_fll_prn);
-      if (flg_nsm_tpl) trv_tbl->lst[uidx].flg_nsm_tpl=True;
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll) == 0){
+      trv_tbl->lst[idx_tbl].flg_nsm_mbr=True;
+      trv_tbl->lst[idx_tbl].nsm_nm=strdup(grp_nm_fll_prn);
+      if (flg_nsm_tpl) trv_tbl->lst[idx_tbl].flg_nsm_tpl=True;
     }
   }
 

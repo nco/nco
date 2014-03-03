@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1298 2014-03-02 19:31:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1299 2014-03-03 05:10:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -439,8 +439,8 @@ nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes 
   int nbr_dmn;                /* [nbr] Number of dimensions */
   int nbr_var;                /* [nbr] Number of variables */
 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_grp && trv.flg_xtr){
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
@@ -454,7 +454,7 @@ nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes 
         (void)nco_prn_att(grp_id,prn_flg,NC_GLOBAL); 
       } /* nbr_att */
     } /* end nco_obj_typ_grp */
-  } /* end uidx */
+  } /* end idx_tbl */
 } /* end nco_prn_att_trv() */
 
 int /* O [nbr] Number of matches to current rx */
@@ -980,9 +980,9 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
      Group extraction is reset and done from scratch (except for flg_xcl/flg_mtd) in nco_xtr_grp_mrk() */
 
 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr; /* Toggle extraction flag */
-    trv_tbl->lst[uidx].flg_xcl=!trv_tbl->lst[uidx].flg_xcl; /* Mark that this object was explicitly excluded */
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_tbl->lst[idx_tbl].flg_xtr=!trv_tbl->lst[idx_tbl].flg_xtr; /* Toggle extraction flag */
+    trv_tbl->lst[idx_tbl].flg_xcl=!trv_tbl->lst[idx_tbl].flg_xcl; /* Mark that this object was explicitly excluded */
   } /* end for */
 
   return;
@@ -1023,8 +1023,8 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
   const char fnc_nm[]="nco_xtr_cf_add()"; /* [sng] Function name */
 
   /* Search for and add CF-compliant bounds and coordinates to extraction list */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv_obj=trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct trv_obj=trv_tbl->lst[idx_tbl];
     /* Filter extracted variables */
     if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
       (void)nco_xtr_cf_prv_add(nc_id,&trv_obj,cf_nm,trv_tbl);
@@ -1173,26 +1173,26 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
   nm_id_sct *xtr_lst; /* [sct] Extraction list */
 
   int nbr_tbl=0; 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr) nbr_tbl++;
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].flg_xtr) nbr_tbl++;
 
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_tbl*sizeof(nm_id_sct));
 
   nbr_tbl=0;
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr){
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].flg_xtr){
       int var_id;
       int grp_id_in;
       int grp_id_out;
       char *grp_out_fll;
       /* Get input group ID */
-      (void)nco_inq_grp_full_ncid(nc_id_in,trv_tbl->lst[uidx].grp_nm_fll,&grp_id_in);
+      (void)nco_inq_grp_full_ncid(nc_id_in,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id_in);
       /* Edit group name for output */
-      if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_tbl->lst[uidx].grp_nm_fll); else grp_out_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_tbl->lst[idx_tbl].grp_nm_fll); else grp_out_fll=(char *)strdup(trv_tbl->lst[idx_tbl].grp_nm_fll);
       /* Get output group ID */
       (void)nco_inq_grp_full_ncid(nc_id_out,grp_out_fll,&grp_id_out);
       /* Get variable ID */
-      (void)nco_inq_varid(grp_id_in,trv_tbl->lst[uidx].nm,&var_id);
+      (void)nco_inq_varid(grp_id_in,trv_tbl->lst[idx_tbl].nm,&var_id);
 
       /* 20130213: Necessary to allow MM3->MM4 and MM4->MM3 workarounds
 	 Store in/out group IDs as determined in nco_xtr_dfn() 
@@ -1201,11 +1201,11 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
       xtr_lst[nbr_tbl].grp_id_in=grp_id_in;
       xtr_lst[nbr_tbl].grp_id_out=grp_id_out;
       xtr_lst[nbr_tbl].id=var_id;
-      xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
+      xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[idx_tbl].nm);
 
       nbr_tbl++;
     } /* end flg == True */
-  } /* end loop over uidx */
+  } /* end loop over idx_tbl */
 
   *xtr_nbr=nbr_tbl;
   return xtr_lst;
@@ -1228,8 +1228,8 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
   long dmn_sz;                 /* [nbr] Dimension size */  
 
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct var_trv=trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* Filter variables to extract */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
@@ -1364,8 +1364,8 @@ nco_prn_xtr_mtd /* [fnc] Print variable metadata */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 { 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct var_trv=trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];
     if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
 
       /* Print full name of variable */
@@ -1386,7 +1386,7 @@ nco_prn_xtr_mtd /* [fnc] Print variable metadata */
       /* Print variable attributes */
       (void)nco_prn_att(grp_id,prn_flg,var_id);
     } /* end flg_xtr */
-  } /* end uidx */
+  } /* end idx_tbl */
 
   return;
 } /* end nco_prn_xtr_mtd() */
@@ -1621,8 +1621,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   if(CPY_GRP_METADATA){
     /* Extraction flag for groups was set in nco_xtr_grp_mrk() 
        This loop defines those groups in output file and copies their metadata */
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      trv_sct grp_trv=trv_tbl->lst[uidx];
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      trv_sct grp_trv=trv_tbl->lst[idx_tbl];
 
       /* If object is group ancestor of extracted variable */
       if(grp_trv.nco_typ == nco_obj_typ_grp && grp_trv.flg_xtr){
@@ -1675,8 +1675,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   } /* !CPY_GRP_METADATA */
 
   /* Define variables */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct var_trv=trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* If object is an extracted variable... */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
@@ -1766,7 +1766,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Memory management after current extracted variable */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
     } /* end if variable and flg_xtr */
-  } /* end loop over uidx */
+  } /* end loop over idx_tbl */
 
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
@@ -1836,8 +1836,8 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
   }else{ /* !USE_MM3_WORKAROUND */
 
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      trv_sct trv=trv_tbl->lst[uidx];
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      trv_sct trv=trv_tbl->lst[idx_tbl];
 
       /* If object is an extracted variable... */ 
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
@@ -1845,9 +1845,9 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
         int grp_id_out;
         char *grp_out_fll;
         /* Get input group ID */
-        (void)nco_inq_grp_full_ncid(nc_id_in,trv_tbl->lst[uidx].grp_nm_fll,&grp_id_in);
+        (void)nco_inq_grp_full_ncid(nc_id_in,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id_in);
         /* Edit group name for output */
-        if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_tbl->lst[uidx].grp_nm_fll); else grp_out_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_tbl->lst[idx_tbl].grp_nm_fll); else grp_out_fll=(char *)strdup(trv_tbl->lst[idx_tbl].grp_nm_fll);
         /* Get output group ID */
         (void)nco_inq_grp_full_ncid(nc_id_out,grp_out_fll,&grp_id_out);
 
@@ -1864,7 +1864,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
       } /* endif */
 
-    } /* end loop over uidx */
+    } /* end loop over idx_tbl */
   } /* !USE_MM3_WORKAROUND */
 
   /* Print extraction list in developer mode */
@@ -3194,7 +3194,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
 
     } /* endif */
 
-  } /* end loop over uidx */
+  } /* end loop over idx_tbl */
 
 } /* nco_wrt_trv_tbl() */
 
@@ -3420,8 +3420,8 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy fixed variables from input t
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct var_trv=trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* If object is a fixed variable... */ 
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.enm_prc_typ == fix_typ){
@@ -3922,10 +3922,10 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
     typ_out=nco_get_typ(var[idx_var]);
 
     /* Mark output type in table for "nm_fll" */
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       /* Match */
-      if(strcmp(var[idx_var]->nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
-        trv_tbl->lst[uidx].var_typ_out=typ_out;
+      if(strcmp(var[idx_var]->nm_fll,trv_tbl->lst[idx_tbl].nm_fll) == 0){
+        trv_tbl->lst[idx_tbl].var_typ_out=typ_out;
         break;
       } /* Match */
     } /* Mark output type in table for "nm_fll" */
@@ -4145,11 +4145,11 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   } /* endif */
 
   /* Get enm_prc_typ from GTT */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(!strcmp(var->nm_fll,trv_tbl->lst[uidx].nm_fll)){
-      if(trv_tbl->lst[uidx].enm_prc_typ == prc_typ){
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(!strcmp(var->nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
+      if(trv_tbl->lst[idx_tbl].enm_prc_typ == prc_typ){
         var->is_fix_var=0;
-      }else if(trv_tbl->lst[uidx].enm_prc_typ == fix_typ){
+      }else if(trv_tbl->lst[idx_tbl].enm_prc_typ == fix_typ){
         var->is_fix_var=1;
       } 
       break;
@@ -5508,8 +5508,8 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
     if(aed_lst[idx_aed].var_nm == NULL){
 
       /* Loop table */
-      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-        trv_sct var_trv=trv_tbl->lst[uidx];
+      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+        trv_sct var_trv=trv_tbl->lst[idx_tbl];
         /* Filter variables */
         if(var_trv.nco_typ == nco_obj_typ_var){
           /* Obtain group ID using full group name */
@@ -5528,8 +5528,8 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
     else if(strpbrk(aed_lst[idx_aed].var_nm,".*^$\\[]()<>+?|{}")){
 
       /* Loop table */
-      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-        trv_sct var_trv=trv_tbl->lst[uidx];
+      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+        trv_sct var_trv=trv_tbl->lst[idx_tbl];
         /* Filter variables */
         if(var_trv.nco_typ == nco_obj_typ_var ){
           /* Obtain group ID using full group name */
@@ -5548,8 +5548,8 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
     }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
 
        /* Loop table */
-      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-        trv_sct var_trv=trv_tbl->lst[uidx];
+      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+        trv_sct var_trv=trv_tbl->lst[idx_tbl];
         /* Filter variables */
         if(var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
           /* Obtain group ID using full group name */
@@ -5567,8 +5567,8 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
       /* Variable is a normal variable ... */
 
       /* Loop table */
-      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-        trv_sct var_trv=trv_tbl->lst[uidx];
+      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+        trv_sct var_trv=trv_tbl->lst[idx_tbl];
         /* Filter variables */
         if(var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
           /* Obtain group ID using full group name */
@@ -5597,8 +5597,8 @@ nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hy
   int grp_id; 
 
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct var_trv=trv_tbl->lst[uidx];
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* If object is an extracted variable... */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
@@ -8395,9 +8395,9 @@ nco_prn_nsm                                 /* [fnc] Print ensembles  */
 
   (void)fprintf(stdout,"%s: list of templates\n",nco_prg_nm_get()); 
   int idx_tpl=0;
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].flg_nsm_tpl){
-      (void)fprintf(stdout,"%s: <template> %d <%s>\n",nco_prg_nm_get(),idx_tpl,trv_tbl->lst[uidx].nm_fll); 
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(trv_tbl->lst[idx_tbl].flg_nsm_tpl){
+      (void)fprintf(stdout,"%s: <template> %d <%s>\n",nco_prg_nm_get(),idx_tpl,trv_tbl->lst[idx_tbl].nm_fll); 
       idx_tpl++;
     }
   }
@@ -8639,6 +8639,9 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
             /* Mark the skip names as non extracted variables */ 
             (void)trv_tbl_mrk_xtr(skp_nm_fll,False,trv_tbl); 
+
+            /*And its group too... */ 
+            (void)trv_tbl_mrk_grp_xtr(trv.nm_fll,False,trv_tbl); 
 
             /* Free */
             skp_nm_fll=(char *)nco_free(skp_nm_fll);
@@ -8887,9 +8890,9 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
 
   if(flg_tbl_1){
 
-    for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
-      if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)){
-        trv_sct *trv_2=&trv_tbl_2->lst[uidx];
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl_2->nbr;idx_tbl++){
+      if(trv_tbl_2->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[idx_tbl].nm)){
+        trv_sct *trv_2=&trv_tbl_2->lst[idx_tbl];
         rel_mch=True;
      
         if(nco_dbg_lvl_get() >= nco_dbg_var){
@@ -8903,9 +8906,9 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
 
   }else if(!flg_tbl_1){
 
-    for(unsigned uidx=0;uidx<trv_tbl_1->nbr;uidx++){
-      if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)){
-        trv_sct *trv_1=&trv_tbl_1->lst[uidx];
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl_1->nbr;idx_tbl++){
+      if(trv_tbl_1->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[idx_tbl].nm)){
+        trv_sct *trv_1=&trv_tbl_1->lst[idx_tbl];
         rel_mch=True;
 
         if(nco_dbg_lvl_get() >= nco_dbg_var){
@@ -9209,13 +9212,26 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
       /* File 2 does NOT have ensembles */
 
-      /* ncbo -O mdl.nc obs.nc out.nc */
-
       /* Inquire about file 2 having a common object from list of file 1 ensembles  */
       (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,trv_tbl_1,trv_tbl_2);
 
+      if (flg_var_cmn_rth){
+
+        /* file 2 having has a common object at root  */
+        /* ncbo -O mdl.nc obs.nc out.nc */
 
 
+      }else if (flg_var_cmn) {
+
+        /* file 2 having has a common object NOT at root  */
+
+
+      } else {
+
+        /* file 2 having has no common objects  */
+        (void)fprintf(stdout,"%s: ERROR no common variables found\n",nco_prg_nm_get());
+        nco_exit(EXIT_FAILURE);
+      }
 
 
     } /* File 2 does NOT have ensembles */

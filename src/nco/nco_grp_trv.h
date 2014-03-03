@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.114 2014-02-22 23:35:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.115 2014-03-03 05:10:10 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -79,6 +79,12 @@ trv_tbl_mrk_xtr                        /* [fnc] Mark extraction flag in table fo
 (const char * const var_nm_fll,        /* I [sng] Variable name to find */
  const nco_bool flg_xtr,               /* I [flg] Flag (True or False) */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+
+void
+trv_tbl_mrk_grp_xtr                   /* [fnc] Mark extraction flag in table for "grp_nm_fll" */
+(const char * const grp_nm_fll,       /* I [sng] Group name to find */
+ const nco_bool flg_xtr,              /* I [flg] Flag (True or False) */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
 trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in table for "var_nm_fll" */
