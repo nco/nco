@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.970 2014-02-27 17:07:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.971 2014-03-03 15:55:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.2
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 27 February 2014
+@set update-date 28 February 2014
 @set update-month February 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3407,6 +3407,7 @@ when your other preferred methods are not available locally.
 @cindex @code{-6}
 @cindex @code{-7}
 @cindex @code{--4}
+@cindex @code{--6}
 @cindex @code{--7}
 @cindex @code{--netcdf4}
 @cindex @code{--fl_fmt}
@@ -3417,7 +3418,7 @@ Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-3}, @samp{-4}, @samp{-6}, @samp{-7}@*
-Long options: @samp{--3}, @samp{--4}, @samp{--64bit}, @samp{--7}, @samp{--fl_fmt},
+Long options: @samp{--3}, @samp{--4}, @samp{--6}, @samp{--64bit}, @samp{--7}, @samp{--fl_fmt},
 @samp{--netcdf4}@*  
 @end cartouche
 All @acronym{NCO} operators support (read and write) all three (or four, 
@@ -3474,9 +3475,10 @@ workflows will utilize this format.
 
 As mentioned above, all operators write use the input file format for
 output files unless told otherwise.
-Toggling the short option @samp{-6} or the long option @samp{--64bit}
-switch (or its @var{key}-@var{value} equivalent @samp{--fl_fmt=64bit})
-produces the netCDF3 64-bit offset format named @code{64BIT}. 
+Toggling the short option @samp{-6} or the long option @samp{--6} or
+@samp{--64bit} (or their @var{key}-@var{value} equivalent
+@samp{--fl_fmt=64bit}) produces the netCDF3 64-bit offset format named
+@code{64BIT}.
 @acronym{NCO} must be built with @w{netCDF 3.6} or higher to produce
 a @code{64BIT} file.
 Using the @samp{-4} switch (or its long option equivalents
@@ -16429,7 +16431,7 @@ The primary contributors to @acronym{NCO} development have been:
 @table @asis
 @cindex Charlie Zender
 @item Charlie Zender
-All concept, design and implementation from 1995-2000.
+All concept, design and implementation from 1995--2000.
 Since then autotools, bug-squashing, @acronym{CDL}, chunking,
 documentation, anchoring, recursion, @acronym{GPE}, packing,
 @acronym{NCO} library redesign, @command{ncap2} features,
@@ -16454,10 +16456,13 @@ Long command-line options.
 Original UDUnits support.
 Debianization.
 Numerous bug-fixes.
+@cindex Joe Hamman
+@item Joe Hamman
+Python bindings (NCOpy).
 @cindex Daniel Wang
 @item Daniel Wang
-Script Workflow Analysis for MultiProcessing (SWAMP).
-RPM support.
+Script Workflow Analysis for MultiProcessing (@acronym{SWAMP}).
+@acronym{RPM} support.
 @cindex Harry Mangalam
 @item Harry Mangalam
 Benchmarking.

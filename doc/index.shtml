@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.875 2014-02-26 20:01:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.876 2014-03-03 15:55:08 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -398,10 +398,7 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 /usr/bin/scp /home/pvicente/nco/doc/cesm-eg.fig1.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
 /usr/bin/scp /home/pvicente/nco/doc/cesm-eg.fig2.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
 /usr/bin/scp /home/pvicente/nco/doc/cesm-eg.fig3.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-
 --> 
- 
- 
 
 <hr></p>
 
@@ -1023,10 +1020,15 @@ The most up-to-date binaries are probably those in the tarball below. Those unfa
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>: <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a> for NCO 3.9.9. Maintained by Takeshi Enomoto.</li>
 </ul>
 
+<a name="python"></a> <!-- http://nco.sf.net#python -->
+<a name="NCOpy"></a> <!-- http://nco.sf.net#NCOpy -->
+<a name="pyt"></a> <!-- http://nco.sf.net#pyt -->
+<h3>Python Bindings <a href="https://github.com/jhamman/nco-bindings">Source</a> and <a href="http://www.hydro.washington.edu/~jhamman/hydro-logic/blog/2014/01/29/NCOpy">Documentation</a>
+
 <a name="visual"></a> <!-- http://nco.sf.net#visual -->
 <a name="mvs"></a> <!-- http://nco.sf.net#mvs -->
 <a name="windows"></a> <!-- http://nco.sf.net#windows -->
-<h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a>
+<h3><a href="http://www.microsoft.com">Microsoft Windows</a>
 (native build, compiled with <a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express">Visual Studio 2010</a>, use this if unsure)</h3>
 These native Windows executables should be stand-alone, i.e., not
 require users to have any additional software. 
