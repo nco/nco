@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1299 2014-03-03 05:10:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1300 2014-03-03 23:56:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9061,8 +9061,8 @@ nco_cmn_var_nm_fll                     /* [fnc] Does the list of common names co
     trv_1=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_1);
     trv_2=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_2);
 
-    /* Both variables exist in same location */
-    if(trv_1 && trv_2){
+    /* Both variables exist in same location, both are to extract */
+    if(trv_1 && trv_2 && trv_1->flg_xtr && trv_2->flg_xtr){
       assert(cmn_lst[idx_cmn].flg_in_fl[0]);
       assert(cmn_lst[idx_cmn].flg_in_fl[1]);
       return True;
@@ -9255,6 +9255,10 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
     }else if(flg_nsm_fl_2 == False){
 
       /* File 2 does NOT have ensembles */
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s relative match \n",nco_prg_nm_get(),fnc_nm);         
+      }
 
 
     } /* File 2 does NOT have ensembles */
