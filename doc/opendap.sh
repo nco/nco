@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.16 2013-09-23 21:43:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.17 2014-03-04 22:44:15 zender Exp $
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 
@@ -33,6 +33,7 @@
 # ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP (borken server)
 # ncks -M -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc # DAP
 # ncks -M -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in_4.nc # DAP
+# ncks -M -p http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_2p5deg/files/GFS_Global_2p5deg_20140304_0000 # DAP
 # ncra -O -C -D 3 -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc in.nc ~/foo.nc
 # ncwa -O -C -D 3 -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface pres.sfc.1969.nc ~/foo.nc
 # ncks -D 3 http://eclipse.ncdc.noaa.gov:9090/thredds/dodsC/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC -d lat,1,2 -d lon,1,2 ~/test.nc 

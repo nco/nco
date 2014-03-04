@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.238 2014-02-14 05:22:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.239 2014-03-04 22:44:15 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -77,7 +77,7 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     cp_fst=0L;
 
     /* Deal first with wrapped dimensions
-    True if wrapped dims or slabs DO NOT overlap or user-specified order */
+       True if wrapped dims or slabs DO NOT overlap or user-specified order */
     if(lmt_lst[dpt_crr]->WRP || lmt_lst[dpt_crr]->MSA_USR_RDR){
 
       for(slb_idx=0;slb_idx<nbr_slb;slb_idx++){
@@ -146,7 +146,10 @@ read_lbl:
         if(srd_prd == 1L)
           (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type);
         else
-          (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type);
+	  /* 20140304: User reported extreme slowdown accessing 3-D data with strides 
+	     Info from R. Signell and J. Whitaker suggests using nco_get_vars() instead of nco_get_varm() may be crucial */
+	  /*          (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type); */
+          (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
       } /* end if var_sz */
     } /* end potential OpenMP critical */
 
@@ -739,7 +742,7 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
         if(srd_prd == 1L)
           nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->val.vp,var[idx]->type);
         else
-          nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
+          nco_put_vars(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,var[idx]->val.vp,var[idx]->type);
 
       } /* end if var_sz */
     } /* end if variable is an array */

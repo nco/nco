@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.695 2014-02-26 20:04:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.696 2014-03-04 22:44:15 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
@@ -19,6 +19,13 @@ Charlie
 "New stuff" in 4.4.2 summary (full details always in ChangeLog):
 
 NEW FEATURES:
+
+A. Rew chunking map: cnk_map=rew implements the map described by
+   Russ Rew at 
+   http://www.unidata.ucar.edu/staff/russ/public/chunk_shape_3D.py
+   This map strives to balance 1-D (e.g., point timeseries) access  
+   speeds with 2-D (e.g., lat/lon map) access speeds.
+   http://nco.sf.net/nco.html#cnk fxm
 
 A. cell_methods: ncwa and ncra now support key parts of the CF
    cell_methods convention. Averaging foo(time,lat,lon) now

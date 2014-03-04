@@ -1,3 +1,11 @@
+2014-03-04  Charlie Zender  <zender@uci.edu>
+
+	* User reported extreme slowdown accessing 3-D data with strides
+	Info from R. Signell and J. Whitaker suggests using nco_get_varm() may kill DAP access time
+	All NCO hyperslab code uses nco_get_varm() instead of nco_get_vars(), though never with the necessary mapping vector
+	In other words, nco_get_varm() was mis-used
+	Replacing all instances of nco_get_varm() with nco_get_vars() solved access speed problem
+
 2014-03-03  Charlie Zender  <zender@uci.edu>
 
 	* Add NCOpy by Joe Hamman to homepage
@@ -11748,8 +11756,8 @@
 	stride limits. One line fix to lmt_evl() restored old lmt_evl()
 	dim_idx code to all operators except ncra and ncrcat. The new
 	lmt_evl() code simply will not (and should not) handle wrapped
-	coordinates for the record dimension in multi-file operators. 
-	
+	coordinates for the record dimension in multi-file operators.
+
 1999-05-11  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Tagged this as nco1_1_31
@@ -11784,16 +11792,16 @@
 
 	* Implemented stride for the record dimension in ncra and ncrcat,
 	e.g., ncra -d time,1,100,12 in1.nc in2.nc ... out.nc should now
-	work correctly across files. Currently stride only works on the 
+	work correctly across files. Currently stride only works on the
 	record dimension of ncra and ncrcat, however, not the rest of
 	the dimensions.
 
 	* Implemented index-based hyperslabbing across files in the record
-	dimension in the multi-file operators ncra and ncrcat, e.g., 
+	dimension in the multi-file operators ncra and ncrcat, e.g.,
 	ncra -d time,1,100 in1.nc in2.nc ... out.nc. The User's Guide said
 	this feature had already been implemented, but that, apparently,
 	was not true. The symptom was an "index out of range error" from
-	netCDF. 
+	netCDF.
 
 1999-04-27  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
@@ -11819,7 +11827,7 @@
 
 	* New version requires -lm for log() and ceil() functions
 	Added -lm to Makefile for some architecture which were missing it
-	
+
 	* Tagged and released this as nco1_1_24
 
 	* Fixed bug where ncrcat and ncra omitted the last slice of the
@@ -11827,8 +11835,8 @@
 	user-specified hyperslab information was provided for some
 	dimensions BUT not for the record dimension. This bug only
 	affected ncrcat and ncra and only under these conditions. Thanks
-	to John Sheldon <jps@server1.gfdl.gov> for pointing this out. 
-	
+	to John Sheldon <jps@server1.gfdl.gov> for pointing this out.
+
 1999-04-04  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Tagged and released this as nco1_1_22

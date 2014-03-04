@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.357 2014-02-14 05:22:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.358 2014-03-04 22:44:16 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -550,7 +550,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
     if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
   }else if(!WRP){ /* Copy contiguous array */
-    if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_typ); else nco_get_varm(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,(long *)NULL,void_ptr,var_typ);
+    if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_typ); else nco_get_vars(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,void_ptr,var_typ);
     nco_put_vara(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr,var_typ);
     if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
   }else if(WRP){ /* Copy wrapped array */
@@ -681,10 +681,10 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_typ);
       if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
     }else{ /* SRD */
-      (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,(long *)NULL,void_ptr,var_typ);
+      (void)nco_get_vars(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_typ);
       if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
-      (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,(long *)NULL,void_ptr,var_typ);
+      (void)nco_get_vars(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_typ);
       if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
     } /* end else SRD */
@@ -841,7 +841,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
       else
         (void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
     }else{ 
-      (void)nco_get_varm(nc_id,var->id,var->srt,var->cnt,var->srd,(long *)NULL,var->val.vp,var->typ_dsk);
+      (void)nco_get_vars(nc_id,var->id,var->srt,var->cnt,var->srd,var->val.vp,var->typ_dsk);
     } /* endif non-unity stride  */
   } /* end potential OpenMP critical */
   
@@ -1275,8 +1275,8 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
           nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
           nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);
         }else{
-          (void)nco_get_varm(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
-          (void)nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->xrf->val.vp,var[idx]->type);
+          (void)nco_get_vars(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->srd,var[idx]->val.vp,var[idx]->type);
+          (void)nco_put_vars(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,var[idx]->xrf->val.vp,var[idx]->type);
         } /* endif variable has non-unity stride */
       } /* end if var_sz */
     } /* end if variable is an array */

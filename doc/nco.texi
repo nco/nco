@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.971 2014-03-03 15:55:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.972 2014-03-04 22:44:15 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3313,6 +3313,37 @@ Only the hyperslabbed output data are transferred over the network (to
 the local machine) for the number-crunching to begin.
 The advantages of this are obvious if you are examining small parts of
 large files stored at remote locations.
+
+Natually there are many versions of @acronym{OPeNDAP} servers supplying
+data and bugs in the server can appear to be bugs in @acronym{NCO}.
+However, with very few exceptions
+@footnote{For example, @acronym{DAP} servers do not like variables with
+periods (``.'') in their names even though this is perfectly legal with
+netCDF. 
+Such names may cause the @acronym{DAP} service to fail because 
+@acronym{DAP} interprets the period as structure delimiter in an 
+@acronym{HTTP} query string.} an @acronym{NCO} command that works
+on a local file must work across an @acronym{OPeNDAP} connection or else 
+there is a bug in the server. 
+This is because @acronym{NCO} does nothing special to handle files
+served by @acronym{OPeNDAP}, the whole process is (supposed to be)
+completely transparent to the client @acronym{NCO} software.
+Therefore it is often useful to try @acronym{NCO} commands on various
+@acronym{OPeNDAP} servers in order to isolate whether a problem may be
+due to a bug in the @acronym{OPeNDAP} server on a particular machine.
+For this purpose, one might try variations of the following commands
+that access files on public @acronym{OPeNDAP} servers:
+@example
+# Strided access to HDF5 file
+ncks -v Time -d Time,0,10,2 http://eosdap.hdfgroup.uiuc.edu:8080/opendap/data/NASAFILES/hdf5/BUV-Nimbus04_L3zm_v01-00-2012m0203t144121.h5
+# Strided access to netCDF3 file
+ncks -O -D4 -d time,1 -d lev,0 -d lat,0,100 -d lon,0,100 -v u_velocity http://nomads.ncep.noaa.gov:9090/dods/rtofs/rtofs_global20140303/rtofs_glo_2ds_forecast_daily_prog ~/foo.nc
+ncks -M -v u_velocity http://nomads.ncep.noaa.gov:9090/dods/rtofs/rtofs_global20140303/rtofs_glo_2ds_forecast_daily_prog
+@end example
+@noindent
+These servers were operational at the time of writing, March 2014.
+Unfortunately, administrators often move or rename path directories
+so do not assume any of these servers are still operational.
 
 @html
 <a name="rtn"></a> <!-- http://nco.sf.net/nco.html#rtn -->

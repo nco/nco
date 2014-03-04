@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.218 2014-02-19 17:44:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.219 2014-03-04 22:44:16 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -817,7 +817,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       /* Block is critical/thread-safe for identical/distinct in_id's */
       { /* begin potential OpenMP critical */
 	/* Retrieve this coordinate */
-	if(dmn_srd[idx] == 1L) (void)nco_get_vara(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dim[idx].val.vp,dim[idx].type); else nco_get_varm(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dmn_srd+idx,(long *)NULL,dim[idx].val.vp,dim[idx].type);
+	if(dmn_srd[idx] == 1L) (void)nco_get_vara(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dim[idx].val.vp,dim[idx].type); else nco_get_vars(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dmn_srd+idx,dim[idx].val.vp,dim[idx].type);
       } /* end potential OpenMP critical */
       
       /* Typecast pointer to values before access */
@@ -849,7 +849,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
     }else if(!SRD){
       nco_get_vara(in_id,var.id,dmn_srt,dmn_cnt,var.val.vp,var.type);
     }else if(SRD){
-      nco_get_varm(in_id,var.id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,var.val.vp,var.type);
+      nco_get_vars(in_id,var.id,dmn_srt,dmn_cnt,dmn_srd,var.val.vp,var.type);
     } /* end else */
   } /* end potential OpenMP critical */
 
