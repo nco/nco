@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.52 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.53 2014-03-04 16:59:24 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -48,9 +48,9 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
 
   /* Is cvs_Name keyword expanded? */
   dlr_ptr=(char *)strstr(cvs_Name,spc_dlr);
-  if(dlr_ptr == NULL && nco_dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: INFO cvs_vrs_prs() reports dlr_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",nco_prg_nm_get(),nco_prg_nm_get());
+  if(dlr_ptr == NULL && nco_dbg_lvl_get() >= nco_dbg_io)(void)fprintf(stderr,"%s: INFO cvs_vrs_prs() reports dlr_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",nco_prg_nm_get(),nco_prg_nm_get());
   cvs_nm_ptr=(char *)strstr(cvs_Name,dlr_nm_cln_spc);
-  if(cvs_nm_ptr == NULL && nco_dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: INFO cvs_vrs_prs() reports cvs_nm_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",nco_prg_nm_get(),nco_prg_nm_get());
+  if(cvs_nm_ptr == NULL && nco_dbg_lvl_get() > nco_dbg_io)(void)fprintf(stderr,"%s: INFO cvs_vrs_prs() reports cvs_nm_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",nco_prg_nm_get(),nco_prg_nm_get());
   cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-strlen(dlr_nm_cln_spc)); /* 7 is strlen("$Name: ") */
   if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
 
@@ -124,7 +124,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
     (void)sprintf(cvs_vrs_sng,"%li.%li",cvs_mjr_vrs,cvs_mnr_vrs);
   }/* end else */
 
-  if(nco_dbg_lvl_get() == 4){
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
     (void)fprintf(stderr,"NCO version %s\n",cvs_vrs_sng);
     (void)fprintf(stderr,"cvs_nm_sng %s\n",cvs_nm_sng);
     (void)fprintf(stderr,"cvs_mjr_vrs_sng %s\n",cvs_mjr_vrs_sng);
