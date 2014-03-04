@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.464 2014-03-03 23:32:45 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.465 2014-03-04 01:03:31 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -650,22 +650,21 @@ print "\n";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
-
-my $GRP_BRD_UNDER_DEVELOPMENT = 1;
-	
-if ($GRP_BRD_UNDER_DEVELOPMENT == 0){ 
-    
+	   
 # ncbo #22
 #ncbo -O -v var2 in_grp_1.nc in_grp_2.nc out.nc
-#ncks -d lon1,2,2,1 out.nc
 
     $dsc_sng="(Groups) Process relative match -v var2 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -d lon1,2,2,1 %tmp_fl_00%";
-    $tst_cmd[2]="lon1[2] var2[2]=-1";
+    $tst_cmd[1]="ncks -C -v var2 %tmp_fl_00%";
+    $tst_cmd[2]="lon[3]=4 var2[3]=-1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			      
+    $#tst_cmd=0; # Reset array 	
+
+my $GRP_BRD_UNDER_DEVELOPMENT = 1;
+	
+if ($GRP_BRD_UNDER_DEVELOPMENT == 0){ 			      
     
 # ncbo #23
 # ncbo -O cmip5.nc obs.nc out.nc
