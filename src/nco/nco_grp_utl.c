@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1302 2014-03-04 01:03:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1303 2014-03-04 05:19:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9258,31 +9258,9 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   /* There are NOT ensembles anywhere */
   if (flg_nsm_fl_1 == False && flg_nsm_fl_2 == False){
 
-    /* Loop common names list */
-    for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++){
+    (void)fprintf(stdout,"%s: ERROR No common variables found\n",nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
 
-      trv_sct *trv_1;    /* [sct] Table object */
-      trv_sct *trv_2;    /* [sct] Table object */
-
-      nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
-
-      /* Inquire existence of these (full names, the common list contains group and variables) */
-      trv_1=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_1);
-      trv_2=trv_tbl_var_nm_fll(cmn_lst[idx_cmn].nm,trv_tbl_2);
-
-      /* Object exists and is flagged for extraction only in file 2 */
-      if(trv_2 && cmn_lst[idx_cmn].flg_in_fl[0] == False && cmn_lst[idx_cmn].flg_in_fl[1] && trv_2->flg_xtr){
-
-        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
-
-        /* Try relative match in file 1 */
-        has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
-
-        /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-        if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
-
-      } /* Object exists and is flagged for extraction only in file 2 */
-    } /* Loop common names list */
   } /* There are NOT ensembles anywhere */
 
 

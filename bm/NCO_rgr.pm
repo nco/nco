@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.465 2014-03-04 01:03:31 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.466 2014-03-04 05:19:51 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -640,7 +640,21 @@ print "\n";
 
 # Following tests: Different objects in both files with groups (ensembles, not ensembles)
 # Absolute match test
+
+# Absolute match test
 # ncbo #21
+# ncbo -O in_grp_1.nc in_grp_2.nc out.nc
+
+    $dsc_sng="(Groups) Process absolute match variables -v var1 in_grp_1.nc in_grp_2.nc";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C %tmp_fl_00%";
+    $tst_cmd[2]="lon[3]=4 var1[3]=-1";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
+
+# ncbo #22
 # ncbo -O -v var1  in_grp_1.nc  in_grp_2.nc out.nc
 
     $dsc_sng="(Groups) Process absolute match variables -v var1 in_grp_1.nc in_grp_2.nc";
@@ -651,57 +665,16 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 	   
-# ncbo #22
+# ncbo #23
 #ncbo -O -v var2 in_grp_1.nc in_grp_2.nc out.nc
+# NOTE: var2 is not a common variable
 
     $dsc_sng="(Groups) Process relative match -v var2 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -v var2 %tmp_fl_00%";
-    $tst_cmd[2]="lon[3]=4 var2[3]=-1";
-    $tst_cmd[3]="SS_OK";   
+    $tst_cmd[1]="ncbo: ERROR No common variables found";
+    $tst_cmd[2]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	
-
-my $GRP_BRD_UNDER_DEVELOPMENT = 1;
-	
-if ($GRP_BRD_UNDER_DEVELOPMENT == 0){ 			      
-    
-# ncbo #23
-# ncbo -O cmip5.nc obs.nc out.nc
-# ncks -H -g giss -v tas1 -d time,3,3,1 out.nc
-
-    $dsc_sng="(Groups) Process relative match from model to observations cmip5.nc -> obs.nc";
-    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -g giss -v tas1 -d time,3,3,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[3]=4 tas1[3]=1";
-    $tst_cmd[3]="SS_OK";   
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			       
-
-# ncbo #24
-
-    $dsc_sng="(Groups) Process relative match from observations to model obs.nc -> cmip5.nc";
-    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -g giss -v tas1 -d time,3,3,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[3]=4 tas1[3]=-1";
-    $tst_cmd[3]="SS_OK";   
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	
-
-# ncbo #25
-# ncbo -O mdl.nc obs.nc out.nc
-# ncks -C -v tas1 out.nc
-
-    $dsc_sng="(Groups) Ensemble in file 1, root comparable object in file 2";
-    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc obs.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -v tas1 %tmp_fl_00%";
-    $tst_cmd[2]="";
-    $tst_cmd[3]="SS_OK";   
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	
-
-	} # end GRP_BRD_UNDER_DEVELOPMENT
-    
+    $#tst_cmd=0; # Reset array 	    
 
    } # end HAVE_NETCDF4_H
    
