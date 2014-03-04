@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1303 2014-03-04 05:19:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1304 2014-03-04 23:34:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8878,8 +8878,8 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
- nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
- nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ const nco_bool flg_tbl_1,             /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+ const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
@@ -9118,6 +9118,57 @@ nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute
 
 } /* nco_prc_cmn_var_nm_fll() */
 
+void                          
+nco_cmn_var                            /* [fnc] Common variable exists (ncbo only) */
+(nco_bool *flg_var_cmn,                /* I/O [flg] Common variable exists */
+ nco_bool *flg_var_cmn_rth,            /* I/O [flg] Common variable exists at root */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2)  /* I [sct] GTT (Group Traversal Table) */
+{
+  const char fnc_nm[]="nco_cmn_var()"; /* [sng] Function name */
+
+  *flg_var_cmn=False;
+  *flg_var_cmn_rth=False;
+
+  /* Loop over ensembles in table 1 */
+  for(int idx_nsm_1=0;idx_nsm_1<trv_tbl_1->nsm_nbr;idx_nsm_1++){ 
+
+    /* Loop over ensemble members in table 1 */
+    for(int idx_mbr_1=0;idx_mbr_1<trv_tbl_1->nsm[idx_nsm_1].mbr_nbr;idx_mbr_1++){ 
+
+      /* Loop over variables in table 1 */
+      for(int idx_var=0;idx_var<trv_tbl_1->nsm[idx_nsm_1].mbr[idx_mbr_1].var_nbr;idx_var++){
+
+        char *var_nm_fll=trv_tbl_1->nsm[idx_nsm_1].mbr[idx_mbr_1].var_nm_fll[idx_var];
+
+        /* Get GTT object */
+        trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl_1);
+
+        /* Loop over table 2 */
+        for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl_2->nbr;idx_tbl_2++){
+
+          trv_sct var_trv_2=trv_tbl_2->lst[idx_tbl_2];
+
+          /* Match template name from table 2 in table 1 */
+          if(var_trv_2.nco_typ == nco_obj_typ_var && strcmp(var_trv->nm,var_trv_2.nm) == 0){
+
+            *flg_var_cmn=True;
+            if(var_trv_2.grp_dpt == 0) *flg_var_cmn_rth=True;
+
+            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s ensemble member <%s> from file 1 in file 2 <%s>\n",nco_prg_nm_get(),fnc_nm,
+                var_trv->nm_fll,var_trv_2.nm_fll);        
+            }
+
+          }
+
+        } /* Loop over table 2 */
+      } /* Loop variables table 1 */
+    } /* Loop ensemble members table 1 */
+
+  }/* Loop ensembles table 1  */
+
+}/* nco_cmn_var() */
 
 void                          
 nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) */
@@ -9151,6 +9202,8 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   nco_bool flg_nsm_fl_2;      /* [flg] File 2 contains ensemble members */
   nco_bool flg_var_cmn;       /* [flg] Common variable exists */
   nco_bool flg_var_cmn_rth;   /* [flg] Common variable exists at root */
+  nco_bool flg_tbl_1;         /* [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+  nco_bool flg_grp_1;         /* [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
 
   nco_cmn_t *cmn_lst=NULL;    /* [sct] A list of common names */ 
 
@@ -9207,7 +9260,13 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           nco_prn_nsm(trv_tbl_2);             
         }
 
+        /* Table variable object is from table1 */
+        /* Use table 1 as template for group creation */
+        flg_tbl_1=True;
+        flg_grp_1=True;
 
+        /* Process (define, write) variables belonging to ensembles  */
+        (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_tbl_1,flg_grp_1,flg_dfn);              
 
       }else if(flg_nsm_fl_2 == False){
 
@@ -9271,55 +9330,26 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 } /* nco_grp_brd() */
 
 
-void                          
-nco_cmn_var                            /* [fnc] Common variable exists (ncbo only) */
-(nco_bool *flg_var_cmn,                /* I/O [flg] Common variable exists */
- nco_bool *flg_var_cmn_rth,            /* I/O [flg] Common variable exists at root */
- const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const trv_tbl_sct * const trv_tbl_2)  /* I [sct] GTT (Group Traversal Table) */
+void                                               
+nco_prc_nsm                            /* [fnc] Process (define, write) variables belonging to ensembles (ncbo) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_tbl_1,             /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+ const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False for write variables ) */
 {
-  const char fnc_nm[]="nco_cmn_var()"; /* [sng] Function name */
+  /* Purpose: Process (define, write) absolute variables in both files (same path) (ncbo). NB: using table 1 as template */
 
-  *flg_var_cmn=False;
-  *flg_var_cmn_rth=False;
 
-  /* Loop over ensembles in table 1 */
-  for(int idx_nsm_1=0;idx_nsm_1<trv_tbl_1->nsm_nbr;idx_nsm_1++){ 
 
-    /* Loop over ensemble members in table 1 */
-    for(int idx_mbr_1=0;idx_mbr_1<trv_tbl_1->nsm[idx_nsm_1].mbr_nbr;idx_mbr_1++){ 
-
-      /* Loop over variables in table 1 */
-      for(int idx_var=0;idx_var<trv_tbl_1->nsm[idx_nsm_1].mbr[idx_mbr_1].var_nbr;idx_var++){
-
-        char *var_nm_fll=trv_tbl_1->nsm[idx_nsm_1].mbr[idx_mbr_1].var_nm_fll[idx_var];
-
-        /* Get GTT object */
-        trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl_1);
-
-        /* Loop over table 2 */
-        for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl_2->nbr;idx_tbl_2++){
-
-          trv_sct var_trv_2=trv_tbl_2->lst[idx_tbl_2];
-
-          /* Match template name from table 2 in table 1 */
-          if(var_trv_2.nco_typ == nco_obj_typ_var && strcmp(var_trv->nm,var_trv_2.nm) == 0){
-
-            *flg_var_cmn=True;
-            if(var_trv_2.grp_dpt == 0) *flg_var_cmn_rth=True;
-
-            if(nco_dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s ensemble member <%s> from file 1 in file 2 <%s>\n",nco_prg_nm_get(),fnc_nm,
-                var_trv->nm_fll,var_trv_2.nm_fll);        
-            }
-
-          }
-
-        } /* Loop over table 2 */
-      } /* Loop variables table 1 */
-    } /* Loop ensemble members table 1 */
-
-  }/* Loop ensembles table 1  */
-
-}/* nco_cmn_var() */
-
+} /* nco_prc_nsm() */
