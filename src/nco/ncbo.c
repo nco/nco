@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.293 2014-03-03 23:32:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.294 2014-03-04 00:22:18 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -51,10 +51,6 @@
    
    Test nco_var_cnf_dmn():
    ncks -O -v scalar_var in.nc ~/foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncbo -O -v four_dmn_rec_var in.nc ~/foo.nc foo2.nc */
-
-#if 1 
-#define GRP_BRD /* Group broadcasting */
-#endif 
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -136,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.293 2014-03-03 23:32:46 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.293 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.294 2014-03-04 00:22:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.294 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -582,6 +578,9 @@ main(int argc,char **argv)
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
 
+#if 1
+#define GRP_BRD /* Group broadcasting */
+#endif 
 #ifdef GRP_BRD 
 
   /* Group broadcating (DEFINE mode, True as flg_dfn parameter) */

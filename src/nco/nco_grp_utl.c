@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1300 2014-03-03 23:56:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1301 2014-03-04 00:22:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9177,92 +9177,95 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
   } /* There is a variable with same absolute path in both files */
 
-  /* Memory management for common names list */
-  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
-  if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
-  /*Inquire about group broadcasting (ensembles and not ensembles) */
+
+  /* Inquire about group broadcasting (ensembles and not ensembles) */
 
   /* Inquire about ensembles */
   if(trv_tbl_1->nsm_nbr) flg_nsm_fl_1=True; else flg_nsm_fl_1=False;
   if(trv_tbl_2->nsm_nbr) flg_nsm_fl_2=True; else flg_nsm_fl_2=False;
 
-  /* File 1 has ensembles */
-  if(flg_nsm_fl_1 == True){
+  /* There are ensembles somewhere */
+  if (flg_nsm_fl_1 == True || flg_nsm_fl_2 == True){
 
+    /* File 1 has ensembles */
+    if(flg_nsm_fl_1 == True){
 
-    if(nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 1\n",nco_prg_nm_get(),fnc_nm);
-      nco_prn_nsm(trv_tbl_1);             
-    }
-
-
-
-    /* File 2 has ensembles */
-    if(flg_nsm_fl_2 == True){
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
-        nco_prn_nsm(trv_tbl_2);             
+        (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 1\n",nco_prg_nm_get(),fnc_nm);
+        nco_prn_nsm(trv_tbl_1);             
       }
 
 
 
-    }else if(flg_nsm_fl_2 == False){
+      /* File 2 has ensembles */
+      if(flg_nsm_fl_2 == True){
 
-      /* File 2 does NOT have ensembles */
-
-      /* Inquire about file 2 having a common object from list of file 1 ensembles  */
-      (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,trv_tbl_1,trv_tbl_2);
-
-      if (flg_var_cmn_rth){
-
-        /* file 2 having has a common object at root  */
-        /* ncbo -O mdl.nc obs.nc out.nc */
-
-
-      }else if (flg_var_cmn) {
-
-        /* file 2 having has a common object NOT at root  */
-
-
-      } else {
-
-        /* file 2 having has no common objects  */
-        (void)fprintf(stdout,"%s: ERROR no common variables found\n",nco_prg_nm_get());
-        nco_exit(EXIT_FAILURE);
-      }
-
-
-    } /* File 2 does NOT have ensembles */
-
-  }else if(flg_nsm_fl_1 == False){
-
-    /* File 1 does NOT have ensembles */
-
-
-    /* File 2 has ensembles */
-    if(flg_nsm_fl_2 == True){
-
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
-        nco_prn_nsm(trv_tbl_2);             
-      }
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
+          nco_prn_nsm(trv_tbl_2);             
+        }
 
 
 
+      }else if(flg_nsm_fl_2 == False){
 
-    }else if(flg_nsm_fl_2 == False){
+        /* File 2 does NOT have ensembles */
 
-      /* File 2 does NOT have ensembles */
+        /* Inquire about file 2 having a common object from list of file 1 ensembles  */
+        (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,trv_tbl_1,trv_tbl_2);
 
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s relative match \n",nco_prg_nm_get(),fnc_nm);         
-      }
+        if (flg_var_cmn_rth){
+
+          /* file 2 having has a common object at root  */
+          /* ncbo -O mdl.nc obs.nc out.nc */
 
 
-    } /* File 2 does NOT have ensembles */
-  } /* File 1 does NOT have ensembles */
+        }else if (flg_var_cmn) {
+
+          /* file 2 having has a common object NOT at root  */
+
+
+        } else {
+
+          /* file 2 having has no common objects  */
+          (void)fprintf(stdout,"%s: ERROR no common variables found\n",nco_prg_nm_get());
+          nco_exit(EXIT_FAILURE);
+        }
+
+
+      } /* File 2 does NOT have ensembles */
+
+    }else if(flg_nsm_fl_1 == False){
+
+      /* File 1 does NOT have ensembles */
+
+      /* File 2 has ensembles */
+      if(flg_nsm_fl_2 == True){
+
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
+          nco_prn_nsm(trv_tbl_2);             
+        }
+
+
+      } /* File 2 has ensembles */
+    } /* File 1 does NOT have ensembles */
+  } /* There are ensembles somewhere */
+
+
+  /* There are NOT ensembles anywhere */
+  if (flg_nsm_fl_1 == False && flg_nsm_fl_2 == False){
+
+
+
+  } /* There are NOT ensembles anywhere */
+
+
+  /* Memory management for common names list */
+  for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
+  if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
 } /* nco_grp_brd() */
 
