@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.696 2014-03-04 22:44:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.697 2014-03-04 23:53:55 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
@@ -44,6 +44,11 @@ A. ncwa and ncpdq could sometimes process (i.e., average, permute
    This only occurred if the specified dimension name was a proper
    subset of the name of another dimension. In that case, both would
    be processed. Reported by Marie-Alice Foujols.
+
+A. NCO now employs a faster access method for hyperslabs.
+   The new method dramatically speeds-up access to strided hyperslabs 
+   across DAP connections. Thanks to Rich Signell, Jeff Whittaker, and 
+   Anil for help identifying the problem and the solution.
 
 KNOWN ISSUES NOT YET FIXED:
 

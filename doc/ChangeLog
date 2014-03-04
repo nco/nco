@@ -1,10 +1,15 @@
 2014-03-04  Charlie Zender  <zender@uci.edu>
 
-	* User reported extreme slowdown accessing 3-D data with strides
-	Info from R. Signell and J. Whitaker suggests using nco_get_varm() may kill DAP access time
-	All NCO hyperslab code uses nco_get_varm() instead of nco_get_vars(), though never with the necessary mapping vector
-	In other words, nco_get_varm() was mis-used
-	Replacing all instances of nco_get_varm() with nco_get_vars() solved access speed problem
+	* NCO 4.4.3 release procedure:
+ 	Changes since nco-4_4_2: srd DAP, fxm
+	cd ~/nco;cvs tag -d nco-4_4_3;cvs tag -d nco-4_4_3-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.3 release"
+	cvs tag -c nco-4_4_3;cvs tag -c nco-4_4_3-1
+
+	* User reported extreme slowdown accessing 3-D data with strides from DAP server
+	Info from R. Signell and J. Whitaker suggests using nco_get_vars() instead of nco_get_varm()
+	All NCO hyperslab code uses nco_get_varm() instead of nco_get_vars(), and supplies NULL * as mapping vector
+	Replacing all instances of nco_get_varm() with nco_get_vars() solves access speed problem on DAP
 
 2014-03-03  Charlie Zender  <zender@uci.edu>
 
@@ -22,12 +27,6 @@
 
 	* Diagnose/fix ncwa/ncpdq dimension-matching algorithm
 	Old algorithm matched any dimension that contained specified string
-
-	* NCO 4.4.3 release procedure:
- 	Changes since nco-4_4_2: fxm
-	cd ~/nco;cvs tag -d nco-4_4_3;cvs tag -d nco-4_4_3-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.3 release"
-	cvs tag -c nco-4_4_3;cvs tag -c nco-4_4_3-1
 
 2014-02-20  Charlie Zender  <zender@uci.edu>
 
@@ -6712,7 +6711,7 @@
 	* The first iteration of hyperslabing in ncap2
 
 	* Can hyperslab on LHS with scalar on RHS eg time(5:9)=.4;
-	  or var on RHS. 
+	  or var on RHS.
 
   	* Can also hyperslab on RHS eg three_dmn_var(1,,)=three_dmn_var(9,,);
 
@@ -9696,7 +9695,7 @@
 2004-01-03  Charlie Zender  <zender@uci.edu>
 
 	* Fix bug where nco_put_varm() called nc_get_varm_float() instead
-	of nc_put_varm_float() 
+	of nc_put_varm_float()
 
 	* Replace nco_netcdf.h prototypes with type-safe const'ified prototypes
 
@@ -9714,9 +9713,9 @@
 	* Improve qsort() comparison functions nco_cmp_*() based on
 	responses to comp.lang.c thread 20040101:
 	1. Avoid overflow conditions by not performing subtraction
-	2. Preserve const-ness by using comparison rather than using 
+	2. Preserve const-ness by using comparison rather than using
 	casting and subtraction
-	
+
 2003-12-29  Charlie Zender  <zender@uci.edu>
 
 	* De-lint code with --enable-debug-custom

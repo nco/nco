@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.972 2014-03-04 22:44:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.973 2014-03-04 23:53:56 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,8 +116,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.2
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 28 February 2014
-@set update-month February 2014
+@set update-date 4 March 2014
+@set update-month March 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -3337,13 +3337,13 @@ that access files on public @acronym{OPeNDAP} servers:
 # Strided access to HDF5 file
 ncks -v Time -d Time,0,10,2 http://eosdap.hdfgroup.uiuc.edu:8080/opendap/data/NASAFILES/hdf5/BUV-Nimbus04_L3zm_v01-00-2012m0203t144121.h5
 # Strided access to netCDF3 file
-ncks -O -D4 -d time,1 -d lev,0 -d lat,0,100 -d lon,0,100 -v u_velocity http://nomads.ncep.noaa.gov:9090/dods/rtofs/rtofs_global20140303/rtofs_glo_2ds_forecast_daily_prog ~/foo.nc
-ncks -M -v u_velocity http://nomads.ncep.noaa.gov:9090/dods/rtofs/rtofs_global20140303/rtofs_glo_2ds_forecast_daily_prog
+ncks -O -D 1 -d time,1 -d lev,0 -d lat,0,100,10 -d lon,0,100,10 -v u_velocity http://nomads.ncep.noaa.gov:9090/dods/rtofs/rtofs_global20140303/rtofs_glo_2ds_forecast_daily_prog ~/foo.nc
 @end example
 @noindent
 These servers were operational at the time of writing, March 2014.
-Unfortunately, administrators often move or rename path directories
-so do not assume any of these servers are still operational.
+Unfortunately, administrators often move or rename path directories.
+Recommendations for additional public @acronym{OPeNDAP} servers on
+which to test @acronym{NCO} are welcome.
 
 @html
 <a name="rtn"></a> <!-- http://nco.sf.net/nco.html#rtn -->
