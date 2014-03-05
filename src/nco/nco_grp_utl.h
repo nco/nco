@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.477 2014-03-05 22:02:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.478 2014-03-05 23:28:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -861,7 +861,7 @@ nco_cmn_var                            /* [fnc] Common variable exists (ncbo onl
  const trv_tbl_sct * const trv_tbl_2); /* I [sct] GTT (Group Traversal Table) */
 
 void                                               
-nco_prc_nsm                            /* [fnc] Process (define, write) variables belonging to ensembles (ncbo) */
+nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variables belonging to ensembles in both files (ncbo) */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_id_2,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
@@ -876,6 +876,25 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
+
+
+void                                               
+nco_prc_nsm                            /* [fnc] Process (define, write) variables belonging to ensembles only in 1 file (ncbo) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nm_lst_sct * const var_nm,      /* I [sct] Array of common variable names from file not having ensembles */ 
+ const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ const nco_bool flg_dfn);               /* I [flg] Action type (True for define variables, False for write variables ) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
