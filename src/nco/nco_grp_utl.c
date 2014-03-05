@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1306 2014-03-05 00:39:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1307 2014-03-05 01:07:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9344,6 +9344,9 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
 
   const char fnc_nm[]="nco_prc_nsm()"; /* [sng] Function name */
 
+  trv_sct *trv_1;    /* [sct] Table object */
+  trv_sct *trv_2;    /* [sct] Table object */
+
 
   if (flg_grp_1 == True){
 
@@ -9377,6 +9380,23 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
           }
 
 
+          /* Inquire existence of these objects in tables  */
+          trv_1=trv_tbl_var_nm_fll(trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var],trv_tbl_1);
+
+          assert(trv_1);
+
+          /* Since we're using table 1 as template, for table 2 object has to be searched (using relative name and ensemble parent name) */
+          trv_2=trv_tbl_nsm_nm(trv_1->nm,trv_tbl_1->nsm[idx_nsm].grp_nm_fll_prn,trv_tbl_2);
+
+          /* Both variables exist  */
+          if(trv_1 && trv_2){
+
+            if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
+
+            /* Process common object */
+            (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+
+          } /* Both variables exist */
 
         } /* Loop variables */
       } /* Loop group members */
