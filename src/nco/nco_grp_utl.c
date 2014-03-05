@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1310 2014-03-05 22:02:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1311 2014-03-05 22:59:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9121,10 +9121,21 @@ nco_cmn_var                            /* [fnc] Common variable exists (ncbo onl
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2)  /* I [sct] GTT (Group Traversal Table) */
 {
-  const char fnc_nm[]="nco_cmn_var()"; /* [sng] Function name */
+
 
   *flg_var_cmn=False;
   *flg_var_cmn_rth=False;
+
+  (*var_nm)=(nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
+  (*var_nm)->nbr=0;
+  (*var_nm)->lst=NULL; /* Must be NULL to nco_realloc() correct handling */
+
+  (*var_nm_rth)=(nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
+  (*var_nm_rth)->nbr=0;
+  (*var_nm_rth)->lst=NULL; /* Must be NULL to nco_realloc() correct handling */
+
+  int nbr_var=0;
+  int nbr_var_rth=0;
 
   /* Loop over ensembles in table 1 */
   for(int idx_nsm_1=0;idx_nsm_1<trv_tbl_1->nsm_nbr;idx_nsm_1++){ 
@@ -9148,14 +9159,29 @@ nco_cmn_var                            /* [fnc] Common variable exists (ncbo onl
           /* Match template name from table 2 in table 1 */
           if(var_trv_2.nco_typ == nco_obj_typ_var && strcmp(var_trv->nm,var_trv_2.nm) == 0){
 
-            *flg_var_cmn=True;
-            if(var_trv_2.grp_dpt == 0) *flg_var_cmn_rth=True;
+            /* Root variable */
+            if(var_trv_2.grp_dpt == 0){
 
+              *flg_var_cmn_rth=True;
 
+              /* Add to list  */
+              (*var_nm_rth)->lst=(nm_sct *)nco_realloc((*var_nm_rth)->lst,(nbr_var+1)*sizeof(nm_sct));
+              (*var_nm_rth)->lst[nbr_var].nm=strdup(var_trv_2.nm_fll);
+              (*var_nm_rth)->nbr++;
+              nbr_var++;
 
+            } else {
 
-          }
+              *flg_var_cmn=True;
 
+              /* Add to list  */
+              (*var_nm)->lst=(nm_sct *)nco_realloc((*var_nm)->lst,(nbr_var_rth+1)*sizeof(nm_sct));
+              (*var_nm)->lst[nbr_var].nm=strdup(var_trv_2.nm_fll);
+              (*var_nm)->nbr++;
+              nbr_var_rth++;
+
+            } /* ! Root variable */
+          } /* Match template name from table 2 in table 1 */
         } /* Loop over table 2 */
       } /* Loop variables table 1 */
     } /* Loop ensemble members table 1 */
@@ -9199,8 +9225,8 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   nco_bool flg_grp_1;             /* [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
 
   nco_cmn_t *cmn_lst=NULL;        /* [lst] A list of common variable names */ 
-  nm_lst_sct *rec_dmn_nm=NULL;    /* [lst] A list of variable names */
-  nm_lst_sct *rec_dmn_nm_rth=NULL;/* [lst] A list of variable names found at root */
+  nm_lst_sct *var_nm=NULL;        /* [lst] A list of variable names */
+  nm_lst_sct *var_nm_rth=NULL;    /* [lst] A list of variable names found at root */
 
   /* Inquire about absolute variable matching */
 
@@ -9268,7 +9294,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         /* File 2 does NOT have ensembles */
 
         /* Inquire about file 2 having a common object from list of file 1 ensembles  */
-        (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,&rec_dmn_nm,&rec_dmn_nm_rth,trv_tbl_1,trv_tbl_2);
+        (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_1,trv_tbl_2);
 
         if (flg_var_cmn_rth){
 
@@ -9276,7 +9302,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           /* ncbo -O mdl.nc obs.nc out.nc */
 
           if(nco_dbg_lvl_get() >= nco_dbg_var){
-            (void)fprintf(stdout,"%s: processing root variables <%s> from file 2\n",nco_prg_nm_get());            
+            (void)fprintf(stdout,"%s: processing root variables from file 2\n",nco_prg_nm_get());            
           }
 
 
@@ -9326,6 +9352,16 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   /* Memory management for common names list */
   for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
   if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
+
+  if(var_nm){
+    for(int idx=0;idx<var_nm->nbr;idx++) var_nm->lst[idx].nm=(char *)nco_free(var_nm->lst[idx].nm);
+    var_nm=(nm_lst_sct *)nco_free(var_nm);
+  } 
+
+  if(var_nm_rth){
+    for(int idx=0;idx<var_nm_rth->nbr;idx++) var_nm_rth->lst[idx].nm=(char *)nco_free(var_nm_rth->lst[idx].nm);
+    var_nm_rth=(nm_lst_sct *)nco_free(var_nm_rth);
+  } 
 
 } /* nco_grp_brd() */
 
