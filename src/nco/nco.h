@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.503 2014-03-05 21:46:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.504 2014-03-05 22:02:43 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -992,10 +992,10 @@ extern "C" {
   } nm_sct;
 
   /* Name list structure */
-  typedef struct{ /* nm_tbl_sct */
+  typedef struct{ 
     nm_sct *lst;  /* [sct] List of nm_sct (char * currently) */
     int nbr;      /* [nbr] Number of items in "lst" array */
-  } nm_tbl_sct;
+  } nm_lst_sct;
 
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)

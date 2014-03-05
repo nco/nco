@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1309 2014-03-05 21:46:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1310 2014-03-05 22:02:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3247,7 +3247,7 @@ void
 nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 (const trv_sct * const var_trv,        /* I [sct] Variable object */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- nm_tbl_sct ** rec_dmn_nm)             /* I/O [sct] Array of record names */ 
+ nm_lst_sct ** rec_dmn_nm)             /* I/O [sct] Array of record names */ 
 {
   /* Return array of record names */
 
@@ -3261,7 +3261,7 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
     nbr_rec=(*rec_dmn_nm)->nbr;
   } else {
     nbr_rec=0;
-    (*rec_dmn_nm)=(nm_tbl_sct *)nco_malloc(sizeof(nm_tbl_sct));
+    (*rec_dmn_nm)=(nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
     (*rec_dmn_nm)->nbr=0;
     (*rec_dmn_nm)->lst=NULL; /* Must be NULL to nco_realloc() correct handling */
   }
@@ -3601,8 +3601,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   if(flg_dfn){  
     char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
 
-    nm_tbl_sct *rec_dmn_nm_1=NULL; /* [sct] Record dimension names array */
-    nm_tbl_sct *rec_dmn_nm_2=NULL; /* [sct] Record dimension names array */
+    nm_lst_sct *rec_dmn_nm_1=NULL; /* [sct] Record dimension names array */
+    nm_lst_sct *rec_dmn_nm_2=NULL; /* [sct] Record dimension names array */
 
     nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
@@ -3633,11 +3633,11 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
     if(rec_dmn_nm_1){
       for(int idx=0;idx<rec_dmn_nm_1->nbr;idx++) rec_dmn_nm_1->lst[idx].nm=(char *)nco_free(rec_dmn_nm_1->lst[idx].nm);
-      rec_dmn_nm_1=(nm_tbl_sct *)nco_free(rec_dmn_nm_1);
+      rec_dmn_nm_1=(nm_lst_sct *)nco_free(rec_dmn_nm_1);
     } /* !rec_dmn_nm_1 */
     if(rec_dmn_nm_2){
       for(int idx=0;idx<rec_dmn_nm_2->nbr;idx++) rec_dmn_nm_2->lst[idx].nm=(char *)nco_free(rec_dmn_nm_2->lst[idx].nm);
-      rec_dmn_nm_2=(nm_tbl_sct *)nco_free(rec_dmn_nm_2);
+      rec_dmn_nm_2=(nm_lst_sct *)nco_free(rec_dmn_nm_2);
     } /* !rec_dmn_nm_2 */
 
   }else{ /* !flg_dfn */
@@ -4882,7 +4882,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   nco_bool REDEFINED_RECORD_DIMENSION;       /* [flg] Re-defined record dimension */
   nco_bool dmn_rvr_in[NC_MAX_DIMS];          /* [flg] Reverse dimension  (Stored in GTT ) */
 
-  nm_tbl_sct *rec_dmn_nm;                    /* [sct] Record dimension names array */
+  nm_lst_sct *rec_dmn_nm;                    /* [sct] Record dimension names array */
 
   /* Get Program ID */
   nco_prg_id=nco_prg_id_get(); 
@@ -4960,7 +4960,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
     /* Memory management for record dimension names */
     if(rec_dmn_nm){
       for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
-      rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
+      rec_dmn_nm=(nm_lst_sct *)nco_free(rec_dmn_nm);
     } /* !rec_dmn_nm */
 
     if(rec_dmn_nm_in)rec_dmn_nm_in=(char *)nco_free(rec_dmn_nm_in);
@@ -9116,6 +9116,8 @@ void
 nco_cmn_var                            /* [fnc] Common variable exists (ncbo only) */
 (nco_bool *flg_var_cmn,                /* I/O [flg] Common variable exists */
  nco_bool *flg_var_cmn_rth,            /* I/O [flg] Common variable exists at root */
+ nm_lst_sct **var_nm,                  /* I/O [sct] Array of common variable names */ 
+ nm_lst_sct **var_nm_rth,              /* I/O [sct] Array of common variable names at root */ 
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2)  /* I [sct] GTT (Group Traversal Table) */
 {
@@ -9148,6 +9150,7 @@ nco_cmn_var                            /* [fnc] Common variable exists (ncbo onl
 
             *flg_var_cmn=True;
             if(var_trv_2.grp_dpt == 0) *flg_var_cmn_rth=True;
+
 
 
 
@@ -9186,16 +9189,18 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
   const char fnc_nm[]="nco_grp_brd()"; /* [sng] Function name */
 
-  int nbr_cmn_nm=0;           /* [nbr] Number of common entries */
+  int nbr_cmn_nm=0;               /* [nbr] Number of common entries */
 
-  nco_bool flg_cmn_var_nm_fl; /* [flg] Is there a variable with same absolute path in both files? */
-  nco_bool flg_nsm_fl_1;      /* [flg] File 1 contains ensemble members */
-  nco_bool flg_nsm_fl_2;      /* [flg] File 2 contains ensemble members */
-  nco_bool flg_var_cmn;       /* [flg] Common variable exists */
-  nco_bool flg_var_cmn_rth;   /* [flg] Common variable exists at root */
-  nco_bool flg_grp_1;         /* [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+  nco_bool flg_cmn_var_nm_fl;     /* [flg] Is there a variable with same absolute path in both files? */
+  nco_bool flg_nsm_fl_1;          /* [flg] File 1 contains ensemble members */
+  nco_bool flg_nsm_fl_2;          /* [flg] File 2 contains ensemble members */
+  nco_bool flg_var_cmn;           /* [flg] Common variable exists */
+  nco_bool flg_var_cmn_rth;       /* [flg] Common variable exists at root */
+  nco_bool flg_grp_1;             /* [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
 
-  nco_cmn_t *cmn_lst=NULL;    /* [sct] A list of common names */ 
+  nco_cmn_t *cmn_lst=NULL;        /* [lst] A list of common variable names */ 
+  nm_lst_sct *rec_dmn_nm=NULL;    /* [lst] A list of variable names */
+  nm_lst_sct *rec_dmn_nm_rth=NULL;/* [lst] A list of variable names found at root */
 
   /* Inquire about absolute variable matching */
 
@@ -9263,7 +9268,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         /* File 2 does NOT have ensembles */
 
         /* Inquire about file 2 having a common object from list of file 1 ensembles  */
-        (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,trv_tbl_1,trv_tbl_2);
+        (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,&rec_dmn_nm,&rec_dmn_nm_rth,trv_tbl_1,trv_tbl_2);
 
         if (flg_var_cmn_rth){
 

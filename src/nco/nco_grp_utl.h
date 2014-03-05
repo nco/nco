@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.476 2014-03-05 00:24:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.477 2014-03-05 22:02:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -310,7 +310,7 @@ void
 nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 (const trv_sct * const var_trv,        /* I [sct] Variable object */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- nm_tbl_sct ** rec_dmn_nm);            /* I/O [sct] Array of record names */
+ nm_lst_sct ** rec_dmn_nm);            /* I/O [sct] Array of record names */
  
 void
 nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
@@ -855,6 +855,8 @@ void
 nco_cmn_var                            /* [fnc] Common variable exists (ncbo only) */
 (nco_bool *flg_var_cmn,                /* I/O [flg] Common variable exists */
  nco_bool *flg_var_cmn_rth,            /* I/O [flg] Common variable exists at root */
+ nm_lst_sct **var_nm,                  /* I/O [sct] Array of common variable names */ 
+ nm_lst_sct **var_nm_rth,              /* I/O [sct] Array of common variable names at root */ 
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2); /* I [sct] GTT (Group Traversal Table) */
 

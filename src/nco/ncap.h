@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.98 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.99 2014-03-05 22:02:43 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -65,11 +65,7 @@ typedef union nod_typ_tag{ /* Nie02 nodeTypeTag */
   opr_nod_sct opr; /* [sct] Operator structure */
 } nodeType;
 
-/* Name list structure (for subscript lists) */
-typedef struct{ /* nm_lst_sct */
-  nm_id_sct *lst; /* [sct] List element */
-  int nbr; /* [nbr] Number of structures in list */
-} nm_lst_sct;
+
 
 /* Parse structure 
    prs_sct is easy to confuse with yylval since both are passed to lexer
