@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1308 2014-03-05 01:31:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1309 2014-03-05 21:46:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9149,10 +9149,7 @@ nco_cmn_var                            /* [fnc] Common variable exists (ncbo onl
             *flg_var_cmn=True;
             if(var_trv_2.grp_dpt == 0) *flg_var_cmn_rth=True;
 
-            if(nco_dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s ensemble member <%s> from file 1 in file 2 <%s>\n",nco_prg_nm_get(),fnc_nm,
-                var_trv->nm_fll,var_trv_2.nm_fll);        
-            }
+
 
           }
 
@@ -9270,18 +9267,23 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
         if (flg_var_cmn_rth){
 
-          /* file 2 having has a common object at root  */
+          /* file 2 has a common object at root  */
           /* ncbo -O mdl.nc obs.nc out.nc */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_var){
+            (void)fprintf(stdout,"%s: processing root variables <%s> from file 2\n",nco_prg_nm_get());            
+          }
+
 
 
         }else if (flg_var_cmn) {
 
-          /* file 2 having has a common object NOT at root  */
+          /* file 2 has a common object NOT at root  */
 
 
         } else {
 
-          /* file 2 having has no common objects  */
+          /* file 2 has no common objects  */
           (void)fprintf(stdout,"%s: ERROR no common variables found\n",nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
         }

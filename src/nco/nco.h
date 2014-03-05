@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.502 2014-03-02 19:31:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.503 2014-03-05 21:46:23 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -1011,7 +1011,6 @@ extern "C" {
     int nsm_nbr;            /* [nbr] (ncge) Number of ensembles (i.e., number in first file) */ 
     nsm_sct *nsm;           /* [lst] (ncge) List of ensembles (size is nsm_nbr) */ 
     char *nsm_sfx;          /* [sng] (ncge) Ensemble suffix (e.g., /cesm + _avg). Store here instead of passing as function parameters (ncge only) */
-    nm_tbl_sct *nsm_skp;    /* [lst] (ncge) Skip list (fixed variables to define at ensemble parent group) */ 
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */
