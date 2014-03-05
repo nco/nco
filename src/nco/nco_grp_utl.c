@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1307 2014-03-05 01:07:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1308 2014-03-05 01:31:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9387,6 +9387,12 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
 
           /* Since we're using table 1 as template, for table 2 object has to be searched (using relative name and ensemble parent name) */
           trv_2=trv_tbl_nsm_nm(trv_1->nm,trv_tbl_1->nsm[idx_nsm].grp_nm_fll_prn,trv_tbl_2);
+
+          /* If match object in table 2 does not exist, that's an error  */
+          if (!trv_2){
+            (void)fprintf(stdout,"%s: ERROR No match variable found for <%s>\n",nco_prg_nm_get(),trv_1->nm_fll);
+            nco_exit(EXIT_FAILURE);
+          }
 
           /* Both variables exist  */
           if(trv_1 && trv_2){

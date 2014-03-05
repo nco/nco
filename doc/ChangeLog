@@ -1,3 +1,10 @@
+2014-03-04 Pedro Vicente  <pvicente@uci.edu>
+
+	* ncbo #24. Process variables belonging to ensembles in both files
+	
+	* nco_prc_nsm(). Process variables belonging to ensembles in both files
+
+
 2014-03-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.3 release procedure:
