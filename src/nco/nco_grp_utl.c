@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1304 2014-03-04 23:34:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1305 2014-03-05 00:24:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5990,10 +5990,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
      dimensions on output. */
   
   char *usr_sng;            /* [sng] User-supplied object name */
- 
- 
 
- 
   nco_bool flg_dmn_ins;     /* [flg] Is dimension already inserted in output array  */  
 
   int obj_nbr;              /* [nbr] Number of objects in list */
@@ -6001,8 +5998,6 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
 
   long dmn_cnt;             /* [nbr] Hyperslabbed size of dimension */  
   long dmn_sz;              /* [nbr] Size of dimension  */  
-
-
 
   /* Used only by ncpdq , ncwa */
   assert(nco_prg_id_get() == ncpdq || nco_prg_id_get() == ncwa);
@@ -6015,7 +6010,6 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   for(int idx_obj=0;idx_obj<obj_nbr;idx_obj++){
 
     usr_sng=strdup(obj_lst_in[idx_obj]); 
-
 
     /* Convert pound signs (back) to commas */
     nco_hash2comma(usr_sng);
@@ -9202,7 +9196,6 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   nco_bool flg_nsm_fl_2;      /* [flg] File 2 contains ensemble members */
   nco_bool flg_var_cmn;       /* [flg] Common variable exists */
   nco_bool flg_var_cmn_rth;   /* [flg] Common variable exists at root */
-  nco_bool flg_tbl_1;         /* [flg] Table variable object is from table1 for True, otherwise is from table 2 */
   nco_bool flg_grp_1;         /* [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
 
   nco_cmn_t *cmn_lst=NULL;    /* [sct] A list of common names */ 
@@ -9260,13 +9253,13 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           nco_prn_nsm(trv_tbl_2);             
         }
 
-        /* Table variable object is from table1 */
+        /* ncbo -O mdl.nc mdl2.nc out.nc */
+
         /* Use table 1 as template for group creation */
-        flg_tbl_1=True;
         flg_grp_1=True;
 
         /* Process (define, write) variables belonging to ensembles  */
-        (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_tbl_1,flg_grp_1,flg_dfn);              
+        (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);              
 
       }else if(flg_nsm_fl_2 == False){
 
@@ -9344,11 +9337,50 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_bool flg_tbl_1,             /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
  const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False for write variables ) */
 {
-  /* Purpose: Process (define, write) absolute variables in both files (same path) (ncbo). NB: using table 1 as template */
+  /* Purpose: Process (define, write) variables belonging to ensembles */
+
+  if (flg_grp_1 == True){
+
+    /* Loop ensembles */
+    for(int idx_nsm=0;idx_nsm<trv_tbl_1->nsm_nbr;idx_nsm++){
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl_1->nsm[idx_nsm].grp_nm_fll_prn);
+      }
+
+      /* Loop group members */
+      for(int idx_mbr=0;idx_mbr<trv_tbl_1->nsm[idx_nsm].mbr_nbr;idx_mbr++){
+
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: \t <member %d> <%s>\n",nco_prg_nm_get(),idx_mbr,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
+        }
+
+        /* Loop variables */
+        for(int idx_var=0;idx_var<trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nbr;idx_var++){
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: \t <variable %d> <%s>\n",nco_prg_nm_get(),idx_var,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
+          }
+
+
+
+        } /* Loop variables */
+      } /* Loop group members */
+    } /* Loop ensembles */
+
+
+
+
+  } else if (flg_grp_1 == False) {
+
+
+
+  }
+
+
 
 
 
