@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1305 2014-03-05 00:24:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1306 2014-03-05 00:39:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9342,27 +9342,38 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
 {
   /* Purpose: Process (define, write) variables belonging to ensembles */
 
+  const char fnc_nm[]="nco_prc_nsm()"; /* [sng] Function name */
+
+
   if (flg_grp_1 == True){
+
+    if(nco_dbg_lvl_get() >= nco_dbg_var){
+      (void)fprintf(stdout,"%s: Processing ensembles from from 1\n",nco_prg_nm_get());
+    }
+
 
     /* Loop ensembles */
     for(int idx_nsm=0;idx_nsm<trv_tbl_1->nsm_nbr;idx_nsm++){
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl_1->nsm[idx_nsm].grp_nm_fll_prn);
+        (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+          idx_nsm,trv_tbl_1->nsm[idx_nsm].grp_nm_fll_prn);
       }
 
       /* Loop group members */
       for(int idx_mbr=0;idx_mbr<trv_tbl_1->nsm[idx_nsm].mbr_nbr;idx_mbr++){
 
         if(nco_dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: \t <member %d> <%s>\n",nco_prg_nm_get(),idx_mbr,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
+          (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+            idx_mbr,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
         }
 
         /* Loop variables */
         for(int idx_var=0;idx_var<trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nbr;idx_var++){
 
           if(nco_dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: \t <variable %d> <%s>\n",nco_prg_nm_get(),idx_var,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
+            (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+              idx_var,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
           }
 
 
