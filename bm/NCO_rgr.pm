@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.467 2014-03-05 01:31:49 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.468 2014-03-06 04:22:16 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -687,7 +687,20 @@ print "\n";
     $tst_cmd[2]="time[3] tas1[3]=544.4";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	    	   
+    $#tst_cmd=0; # Reset array 
+	
+# ncbo #25
+#ncbo -O --op_typ=add  mdl.nc obs.nc out.nc
+#ncks -C -g cesm_01 -v tas1 out.nc
+# 544.4 = (file 1 tas1) 272.1 + (file 2 tas1) 273.0
+
+    $dsc_sng="(Groups) Process ensembles in 1 file mdl.nc with common variable at root in file 2 obs.nc";
+    $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg mdl.nc obs.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -C -g cesm_01 -v tas1 %tmp_fl_00%";
+    $tst_cmd[2]="time[3] tas1[3]=545.1";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	    			    	   
 
    } # end HAVE_NETCDF4_H
    
