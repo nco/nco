@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.239 2014-03-04 22:44:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.240 2014-03-06 05:19:50 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -143,13 +143,12 @@ read_lbl:
     { /* begin potential OpenMP critical */
       /* Check for stride */
       if(var_sz > 0){ /* Allow for zero-size record variables TODO nco711 */
-        if(srd_prd == 1L)
-          (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type);
-        else
-	  /* 20140304: User reported extreme slowdown accessing 3-D data with strides 
-	     Info from R. Signell and J. Whitaker suggests using nco_get_vars() instead of nco_get_varm() may be crucial */
-	  /*          (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type); */
-          (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
+	/* 20140304: User reported extreme slowdown accessing 3-D data with strides across DAP connection
+	   Info from R. Signell and J. Whitaker suggests using nco_get_vars() instead of nco_get_varm() may be crucial
+	   Tests bear this out: get_varm() is tortuously slow across DAP 
+	   Always use get_vars() for strides unless using full get_varm() mapping vector */
+	/*          (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type); */
+        if(srd_prd == 1L) (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type); else (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
       } /* end if var_sz */
     } /* end potential OpenMP critical */
 
