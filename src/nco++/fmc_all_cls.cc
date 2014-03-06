@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.65 2014-02-17 23:12:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.66 2014-03-06 11:33:21 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -710,7 +710,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
         case VATT:
 	  if( prs_arg->var_vtr.find(va_nm) !=NULL)
 	    iret=1;
-          else if( (var1=ncap_att_init(va_nm,prs_arg))!=NULL) ;      
+          else if( (var1=ncap_att_init(va_nm,prs_arg))!=NULL) 
             iret=1;
           break;   
 
