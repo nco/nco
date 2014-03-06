@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1313 2014-03-06 04:22:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1314 2014-03-06 19:50:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9296,6 +9296,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         /* Inquire about file 2 having a common object from list of file 1 ensembles  */
         (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_1,trv_tbl_2);
 
+        /* Common variables at root */
         if (flg_var_cmn_rth){
 
           /* file 2 has a common object at root  */
@@ -9322,8 +9323,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           /* file 2 has no common objects  */
           (void)fprintf(stdout,"%s: ERROR no common variables found\n",nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
-        }
-
+        } /* ! flg_var_cmn_rth */
 
       } /* File 2 does NOT have ensembles */
 
@@ -9338,6 +9338,33 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
           nco_prn_nsm(trv_tbl_2);             
         }
+
+        /* Inquire about file 1 having a common object from list of file 2 ensembles (NB: order of tables in parameter switched)  */
+        (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_2,trv_tbl_1);
+
+         /* Common variables at root */
+        if (flg_var_cmn_rth){
+
+          /* file 1 has a common object at root  */
+          /* ncbo -O obs.nc mdl.nc  out.nc */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_var){
+            (void)fprintf(stdout,"%s: processing root variables from file 1\n",nco_prg_nm_get());            
+          }
+
+          /* Do NOT use table 1 as template for group creation */
+          flg_grp_1=False;
+
+          /* Process (define, write) variables belonging to ensembles only in 1 file  */
+          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
+
+        } else {
+
+          /* file 1 has no common objects  */
+          (void)fprintf(stdout,"%s: ERROR no common variables found\n",nco_prg_nm_get());
+          nco_exit(EXIT_FAILURE);
+
+        } /* ! flg_var_cmn_rth */
 
 
       } /* File 2 has ensembles */
@@ -9492,11 +9519,11 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
   trv_sct *trv_1;    /* [sct] Table object */
   trv_sct *trv_2;    /* [sct] Table object */
 
-
+  /* Using table 1 as template */
   if (flg_grp_1 == True){
 
     if(nco_dbg_lvl_get() >= nco_dbg_var){
-      (void)fprintf(stdout,"%s: Processing ensembles from from 1\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: Processing ensembles from table 1\n",nco_prg_nm_get());
     }
 
     /* Loop ensembles */
@@ -9555,12 +9582,73 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
     } /* Loop ensembles */
 
 
+
+    /* Using table 2 as template; same logic looping table 2 */
+
   } else if (flg_grp_1 == False){
 
 
 
-  } /* ! flg_grp_1 */
+    if(nco_dbg_lvl_get() >= nco_dbg_var){
+      (void)fprintf(stdout,"%s: Processing ensembles from table 2\n",nco_prg_nm_get());
+    }
 
+    /* Loop ensembles */
+    for(int idx_nsm=0;idx_nsm<trv_tbl_2->nsm_nbr;idx_nsm++){
 
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+          idx_nsm,trv_tbl_2->nsm[idx_nsm].grp_nm_fll_prn);
+      }
+
+      /* Loop group members */
+      for(int idx_mbr=0;idx_mbr<trv_tbl_2->nsm[idx_nsm].mbr_nbr;idx_mbr++){
+
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+            idx_mbr,trv_tbl_2->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
+        }
+
+        /* Loop variables */
+        for(int idx_var=0;idx_var<trv_tbl_2->nsm[idx_nsm].mbr[idx_mbr].var_nbr;idx_var++){
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+              idx_var,trv_tbl_2->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
+          }
+
+          trv_1=NULL;
+          trv_2=NULL;
+
+          /* Inquire existence of these objects in tables  */
+          trv_2=trv_tbl_var_nm_fll(trv_tbl_2->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var],trv_tbl_2);
+
+          assert(trv_2);
+
+          /* Loop list of variables from other file */
+          for(int idx_var_1=0;idx_var_1<var_lst->nbr;idx_var_1++){
+
+            /* Inquire existence of object in other table  */
+            trv_1=trv_tbl_var_nm_fll(var_lst->lst[idx_var_1].nm,trv_tbl_1);
+
+            assert(trv_1);
+
+            /* Match name (relative, since they are not absolute matches)  */
+            if(strcmp(trv_2->nm,trv_1->nm) == 0){
+
+              if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_2->nm_fll); 
+
+              /* Process common object */
+              (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+
+              break;
+            } /* Match name  */
+          } /* Loop list of variables from other file */
+        } /* Loop variables */
+      } /* Loop group members */
+    } /* Loop ensembles */
+
+  } /* ! Using table 1 as template */ 
 
 } /* nco_prc_nsm() */
+

@@ -1,8 +1,15 @@
+2014-03-06 Pedro Vicente  <pvicente@uci.edu>
+
+    * ncbo #26. Process ensembles in file 2 (obs.nc) with common variable at root in file 1 (mdl.nc)
+
+	* nco_prc_nsm(). Process ensembles in file 2 with common variable at root in file 1
+
+
 2014-03-05 Pedro Vicente  <pvicente@uci.edu>
 
-	* ncbo #25. Process ensembles in 1 file mdl.nc with common variable at root in file 2 obs.nc
+	* ncbo #25. Process ensembles in file 1 (mdl.nc) with common variable at root in file 2 (obs.nc)
 
-	* nco_prc_nsm(). Process ensembles in 1 file with common variable at root in file 2
+	* nco_prc_nsm(). Process ensembles in file 1 with common variable at root in file 2
 
 2014-03-04 Pedro Vicente  <pvicente@uci.edu>
 
