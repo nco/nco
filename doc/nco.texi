@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.973 2014-03-04 23:53:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.974 2014-03-07 17:41:08 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12849,6 +12849,7 @@ As such, it also performs file subtraction, addition, multiplication,
 albeit in a more convoluted way than @command{ncbo}.
 
 @html
+<a name="grp_brd"></a> <!-- http://nco.sf.net/nco.html#grp_brd -->
 <a name="brd_grp"></a> <!-- http://nco.sf.net/nco.html#brd_grp -->
 <a name="gb"></a> <!-- http://nco.sf.net/nco.html#gb -->
 <a name="GB"></a> <!-- http://nco.sf.net/nco.html#GB -->

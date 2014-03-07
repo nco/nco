@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1314 2014-03-06 19:50:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1315 2014-03-07 17:41:08 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9321,7 +9321,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         } else {
 
           /* file 2 has no common objects  */
-          (void)fprintf(stdout,"%s: ERROR no common variables found\n",nco_prg_nm_get());
+          (void)fprintf(stdout,"%s: ERROR no common variables found. HINT: %s expects to find at least one variable of the same name in similar locations in both input files. When such variables are not found in identical locations (i.e., on the same path) then %s attempts group broadcasting to find comparable variables in sub-groups and ensembles. This search for comparable variables has failed. Read more about group broadcasting at http://nco.sf.net/nco.html#grp_brd\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
         } /* ! flg_var_cmn_rth */
 
