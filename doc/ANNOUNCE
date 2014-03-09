@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.697 2014-03-04 23:53:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.698 2014-03-09 19:21:30 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.2 are ready. 
 
@@ -27,15 +27,15 @@ A. Rew chunking map: cnk_map=rew implements the map described by
    speeds with 2-D (e.g., lat/lon map) access speeds.
    http://nco.sf.net/nco.html#cnk fxm
 
-A. cell_methods: ncwa and ncra now support key parts of the CF
-   cell_methods convention. Averaging foo(time,lat,lon) now
-   results in ncwa creating or appending the cell_methods attribute
-   "time, lat, lon: mean" to foo in the output file. 
-   Pre-existing cell_methods are preserved and appended to.
-   cell_methods are turned-on by default. Turn-off with --no_cll_mth.
-   ncwa --op_typ=max in.nc out.nc # Output gets cell_methods
-   ncwa --no_cll_mth in.nc out.nc # Turn-off cell_methods
-   http://nco.sf.net/nco.html#cll_mth fxm
+A. Group broadcasting works with ensembles. Now files containing
+   ensembles (sets of replicated experiments where all ensemble
+   members stored in groups residing under a common group) may be
+   used in binary operations (i.e., ncbo) with "scalar files",
+   i.e., files with the same variables but without ensembles.
+   This is useful, for example, in comparing multiple model results 
+   to a single set of observations.
+   ncbo cmip5.nc obs.nc -p ~/nco/data ~/foo.nc
+   http://nco.sf.net/nco.html#grp_brd fxm
 
 BUG FIXES:
 

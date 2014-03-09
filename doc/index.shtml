@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.877 2014-03-04 23:53:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.878 2014-03-09 19:21:30 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -624,6 +624,7 @@ netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.4.3</b>: (<i>In Progress, features completed or being worked on include</i>)
 Faster DAP access to strided data;
+<a href="http://nco.sf.net/nco.html#grp_brd">Group broadcasting</a> for ensembles;
 <tt>cnk_map=rew</tt>;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
 <li><b>NCO 4.4.2</b>: (<i>Current Stable Release</i>)
