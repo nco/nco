@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1318 2014-03-09 22:26:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1319 2014-03-09 23:00:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9698,6 +9698,33 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
               break;
             } /* Match name  */
           } /* Loop list of variables from other file */
+
+
+          /* Mark fixed templates as extracted */
+
+          /* List of fixed templates  */
+          for(int idx_skp=0;idx_skp<trv_tbl_2->nsm[idx_nsm].skp_nbr;idx_skp++){
+
+            /* Get variable  */
+            trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl_2->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl_2);
+
+            /* Define variable full name (using group name and relative name of fixed template) */
+            char *skp_nm_fll=nco_bld_nm_fll(trv_2->nm_fll,var_trv->nm);
+
+            /* Mark the skip names as extracted variables */ 
+            (void)trv_tbl_mrk_xtr(skp_nm_fll,True,trv_tbl_2); 
+
+            /*And its group too... */ 
+            (void)trv_tbl_mrk_grp_xtr(trv_2->nm_fll,True,trv_tbl_2); 
+
+            /* Define/write fixed variables (ncbo) */
+            (void)nco_fix_dfn_wrt(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,var_trv,trv_tbl_2,flg_dfn);             
+
+            /* Free */
+            skp_nm_fll=(char *)nco_free(skp_nm_fll);
+
+          } /* List of fixed templates  */
+
         } /* Loop variables */
       } /* Loop group members */
     } /* Loop ensembles */
