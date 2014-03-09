@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1315 2014-03-07 17:41:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1316 2014-03-09 21:07:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6588,7 +6588,9 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   } /* !lmt_nbr */
 
   /* Build ensembles */
-  if(nco_prg_id_get() == ncge || nco_prg_id_get() == ncbo) (void)nco_bld_nsm(nc_id,trv_tbl);
+  if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,True,trv_tbl);
+
+  if(nco_prg_id_get() == ncbo) (void)nco_bld_nsm(nc_id,False,trv_tbl);
 
    /* Check valid input (limits) */
   if(lmt_nbr) (void)nco_chk_dmn_in(lmt_nbr,lmt,flg_dne,trv_tbl);
@@ -6599,7 +6601,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     lmt=(lmt_sct **)nco_free(lmt);
   } /* !lmt_nbr */
 
-  if(nco_dbg_lvl_get() == nco_dbg_old) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
+  if(nco_dbg_lvl_get() == nco_dbg_dev) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
 
   return;
 
@@ -8414,6 +8416,7 @@ nco_prn_nsm                                 /* [fnc] Print ensembles  */
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
+ const nco_bool flg_fix_xtr,          /* I [flg] Mark fized variables as extracted  */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Build ensembles  */
@@ -8621,27 +8624,29 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
           } /* Insert members by builing name from group and template */
 
           /* Mark fixed templates as non extracted */
+          if (flg_fix_xtr == True){
 
-          /* List of fixed templates  */
-          for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
+            /* List of fixed templates  */
+            for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
 
-            /* Get variable  */
-            trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
+              /* Get variable  */
+              trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
 
-            /* Define variable full name (using group name and relative name of fixed template) */
-            char *skp_nm_fll=nco_bld_nm_fll(trv.nm_fll,var_trv->nm);
+              /* Define variable full name (using group name and relative name of fixed template) */
+              char *skp_nm_fll=nco_bld_nm_fll(trv.nm_fll,var_trv->nm);
 
-            /* Mark the skip names as non extracted variables */ 
-            (void)trv_tbl_mrk_xtr(skp_nm_fll,False,trv_tbl); 
+              /* Mark the skip names as non extracted variables */ 
+              (void)trv_tbl_mrk_xtr(skp_nm_fll,False,trv_tbl); 
 
-            /*And its group too... */ 
-            (void)trv_tbl_mrk_grp_xtr(trv.nm_fll,False,trv_tbl); 
+              /*And its group too... */ 
+              (void)trv_tbl_mrk_grp_xtr(trv.nm_fll,False,trv_tbl); 
 
-            /* Free */
-            skp_nm_fll=(char *)nco_free(skp_nm_fll);
+              /* Free */
+              skp_nm_fll=(char *)nco_free(skp_nm_fll);
 
-          } /* List of fixed templates  */
+            } /* List of fixed templates  */
 
+          } /* Mark fixed templates as non extracted */
 
       } /* Match */
     } /* Loop table */
@@ -9577,11 +9582,32 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
               break;
             } /* Match name  */
           } /* Loop list of variables from other file */
+
+          /* Mark fixed templates as extracted */
+
+          /* List of fixed templates  */
+          for(int idx_skp=0;idx_skp<trv_tbl_1->nsm[idx_nsm].skp_nbr;idx_skp++){
+
+            /* Get variable  */
+            trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl_1->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl_1);
+
+            /* Define variable full name (using group name and relative name of fixed template) */
+            char *skp_nm_fll=nco_bld_nm_fll(trv_1->nm_fll,var_trv->nm);
+
+            /* Mark the skip names as extracted variables */ 
+            (void)trv_tbl_mrk_xtr(skp_nm_fll,True,trv_tbl_1); 
+
+            /*And its group too... */ 
+            (void)trv_tbl_mrk_grp_xtr(trv_1->nm_fll,True,trv_tbl_1); 
+
+            /* Free */
+            skp_nm_fll=(char *)nco_free(skp_nm_fll);
+
+          } /* List of fixed templates  */
+
         } /* Loop variables */
       } /* Loop group members */
     } /* Loop ensembles */
-
-
 
     /* Using table 2 as template; same logic looping table 2 */
 

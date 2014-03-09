@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.479 2014-03-06 04:22:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.480 2014-03-09 21:07:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -737,6 +737,7 @@ nco_prn_nsm                           /* [fnc] Print ensembles  */
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
+ const nco_bool flg_fix_xtr,          /* I [flg] Mark fized variables as extracted  */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
