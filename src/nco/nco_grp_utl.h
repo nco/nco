@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.480 2014-03-09 21:07:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.481 2014-03-09 21:48:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -896,6 +896,19 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
  const nm_lst_sct * const var_lst,     /* I [sct] Array of common variable names from file not having ensembles */ 
  const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_dfn);               /* I [flg] Action type (True for define variables, False for write variables ) */
+
+void                          
+nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (ncbo) */
+(const int nc_id,                      /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ trv_sct * trv,                        /* I [sct] Table object */
+ trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 #ifdef __cplusplus
 } /* end extern "C" */

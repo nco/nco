@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1316 2014-03-09 21:07:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1317 2014-03-09 21:48:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9600,6 +9600,9 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
             /*And its group too... */ 
             (void)trv_tbl_mrk_grp_xtr(trv_1->nm_fll,True,trv_tbl_1); 
 
+            /* Define/write fixed variables (ncbo) */
+            (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,var_trv,trv_tbl_1,flg_dfn);             
+
             /* Free */
             skp_nm_fll=(char *)nco_free(skp_nm_fll);
 
@@ -9677,4 +9680,79 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
   } /* ! Using table 1 as template */ 
 
 } /* nco_prc_nsm() */
+
+
+
+void                          
+nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (ncbo) */
+(const int nc_id,                      /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ trv_sct * trv,                        /* I [sct] Table object */
+ trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
+{
+  const char fnc_nm[]="nco_fix_dfn_wrt()"; /* [sng] Function name */
+
+  char *grp_out_fll;             /* [sng] Group name */
+
+  int grp_id;                    /* [id] Group ID in input file */
+  int grp_out_id;                /* [id] Group ID in output file */ 
+  int nco_prg_id;                /* [enm] Program ID */
+  int var_id;                    /* [id] Variable ID in input file */
+  int var_out_id;                /* [id] Variable ID in output file */
+
+  /* Edit group name for output */
+  if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv->grp_nm_fll); else grp_out_fll=(char *)strdup(trv->grp_nm_fll);
+
+  /* Obtain group ID using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,trv->grp_nm_fll,&grp_id);
+
+  /* Get variable ID */
+  (void)nco_inq_varid(grp_id,trv->nm,&var_id);
+
+  /* Define mode */
+  if(flg_dfn){  
+    char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
+
+    /* If output group does not exist, create it */
+    if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+
+    /* Detect duplicate GPE names in advance, then exit with helpful error */
+    if(gpe) (void)nco_gpe_chk(grp_out_fll,trv->nm,&gpe_nm,&nbr_gpe_nm);  
+
+    /* Define variable in output file */
+    var_out_id= nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv,trv_tbl);
+
+    /* Copy variable's attributes */
+    (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,True); 
+
+  }else{ /* !flg_dfn */
+    /* Write mode */
+
+    md5_sct *md5=NULL; /* [sct] MD5 configuration */
+
+    int has_mss_val; /* [flg] Variable has missing value */
+
+    ptr_unn mss_val; /* [sct] Missing value */
+
+    /* Get group ID */
+    (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
+
+    /* Get variable ID */
+    (void)nco_inq_varid(grp_out_id,trv->nm,&var_out_id);         
+
+    /* Non-processed variable */
+    (void)nco_cpy_var_val_mlt_lmt_trv(grp_id,grp_out_id,(FILE *)NULL,md5,trv);
+
+  } /* !flg_dfn */
+
+  /* Free output path name */
+  grp_out_fll=(char *)nco_free(grp_out_fll);
+
+} /* nco_fix_dfn_wrt() */
 
