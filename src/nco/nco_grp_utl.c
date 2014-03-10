@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1324 2014-03-10 01:50:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1325 2014-03-10 02:10:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9078,13 +9078,17 @@ nco_cmn_var                            /* [fnc] Does the list of common names co
     /* Object exists and is flagged for extraction only in file 1 */
     else if(trv_1 && trv_1->flg_xtr && cmn_lst[idx_cmn].flg_in_fl[0] && !cmn_lst[idx_cmn].flg_in_fl[1] ){
 
+      nco_bool flg_tbl_1=True;
+      has_mch=nco_rel_mch(trv_1,flg_tbl_1,trv_tbl_1,trv_tbl_2);
+      *flg_cmn_rel_1=has_mch;
     }
-
 
     /* Object exists and is flagged for extraction only in file 2 */
     else if(trv_2 && trv_2->flg_xtr && cmn_lst[idx_cmn].flg_in_fl[0] == False && cmn_lst[idx_cmn].flg_in_fl[1]){
 
-
+      nco_bool flg_tbl_1=False;
+      has_mch=nco_rel_mch(trv_2,flg_tbl_1,trv_tbl_1,trv_tbl_2);
+      *flg_cmn_rel_2=has_mch;
     }
 
 
@@ -9795,4 +9799,41 @@ nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (nc
   grp_out_fll=(char *)nco_free(grp_out_fll);
 
 } /* nco_fix_dfn_wrt() */
+
+nco_bool                               /* O [flg] True for match found */
+nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
+(trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
+ const nco_bool flg_tbl_1,             /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2)  /* I [sct] GTT (Group Traversal Table) */
+{
+  nco_bool rel_mch; /* [flg] A match was found */
+
+  rel_mch=False;
+
+  /* Object is from table 1, look in table 2  */
+  if(flg_tbl_1 == True){
+
+    /* Loop table  */
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl_2->nbr;idx_tbl++){
+      if(trv_tbl_2->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[idx_tbl].nm)){
+        rel_mch=True;  
+      } /* A relative match was found */
+    } /* Loop table  */
+
+    /* Object is from table 2, look in table 1  */
+  }else if(flg_tbl_1 == False){
+
+    /* Loop table  */
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl_1->nbr;idx_tbl++){
+      if(trv_tbl_1->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[idx_tbl].nm)){
+        rel_mch=True;
+      } /* A relative match was found */
+    } /* Loop table  */
+
+  } /* !flg_tbl_1 */
+
+  return rel_mch;
+
+} /* nco_rel_mch() */
 

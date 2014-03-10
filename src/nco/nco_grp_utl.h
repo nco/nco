@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.483 2014-03-10 01:50:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.484 2014-03-10 02:10:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -912,6 +912,14 @@ nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (nc
  trv_sct * trv,                        /* I [sct] Table object */
  trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
+
+
+nco_bool                               /* O [flg] True for match found */
+nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
+(trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
+ const nco_bool flg_tbl_1,             /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2); /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
