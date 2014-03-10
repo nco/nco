@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.295 2014-03-10 02:58:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.296 2014-03-10 23:22:12 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.295 2014-03-10 02:58:36 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.295 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.296 2014-03-10 23:22:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.296 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -651,7 +651,6 @@ main(int argc,char **argv)
     flg_dne1=(nco_dmn_dne_t *)nco_free(flg_dne1);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne2[idx].dim_nm=(char *)nco_free(flg_dne2[idx].dim_nm);
     flg_dne2=(nco_dmn_dne_t *)nco_free(flg_dne2);
-    for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
     flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
 
   } /* !flg_cln */
