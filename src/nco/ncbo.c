@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.294 2014-03-04 00:22:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.295 2014-03-10 02:58:36 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.294 2014-03-04 00:22:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.294 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.295 2014-03-10 02:58:36 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.295 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -578,23 +578,8 @@ main(int argc,char **argv)
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
 
-#if 1
-#define GRP_BRD /* Group broadcasting */
-#endif 
-#ifdef GRP_BRD 
-
   /* Group broadcating (DEFINE mode, True as flg_dfn parameter) */
   (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
-
-#else
-
-  /* Match 2 tables (find common objects) and export common objects */
-  (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
-
-  /* Process common objects (DEFINE mode, True as flg_dfn parameter) */
-  (void)nco_prc_cmn_nm(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,(nco_bool)True);
-
-#endif /* GRP_BRD */
 
   /* Copy global attributes from file 1 */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -613,17 +598,8 @@ main(int argc,char **argv)
     if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
-#ifdef GRP_BRD 
-
   /* Group broadcating (WRITE mode, False as flg_dfn parameter) */
   (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
-
-#else
-
-  /* Process common objects (WRITE mode, False as flg_dfn parameter) */
-  (void)nco_prc_cmn_nm(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,(nco_bool)False);
-
-#endif /* GRP_BRD */
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);

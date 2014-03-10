@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.473 2014-03-09 22:26:35 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.474 2014-03-10 02:58:36 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -664,19 +664,9 @@ print "\n";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
-	   
-# ncbo #23
-#ncbo -O -v var2 in_grp_1.nc in_grp_2.nc out.nc
-# NOTE: var2 is not a common variable
 
-    $dsc_sng="(Groups) Process relative match -v var2 in_grp_1.nc in_grp_2.nc";
-    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncbo: ERROR No common variables found";
-    $tst_cmd[2]="SS_OK";   
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	 
 	
-# ncbo #24
+# ncbo #23
 #ncbo -O --op_typ=add  mdl.nc mdl2.nc out.nc
 #ncks -C -g cesm_01 -v tas1 out.nc
 # 544.4 = (file 1 tas1) 272.1 + (file 2 tas1) 272.3
@@ -689,7 +679,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 
-# ncbo #25
+# ncbo #24
 #ncbo -O mdl.nc mdl2.nc out.nc
 #ncks -g cesm_01 -v time out.nc
 
@@ -701,7 +691,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
-# ncbo #26
+# ncbo #25
 #ncbo -O --op_typ=add  mdl.nc obs.nc out.nc
 #ncks -C -g cesm_01 -v tas1 out.nc
 # 544.1 = (file 1 tas1) 272.1 + (file 2 tas1) 273.0
@@ -714,7 +704,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
-# ncbo #27
+# ncbo #26
 #ncbo -O mdl.nc obs.nc out.nc
 #ncks -g ecmwf_01 -v time
 
@@ -727,7 +717,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 	
 
 	
-# ncbo #28
+# ncbo #27
 #ncbo -O --op_typ=add  obs.nc mdl.nc  out.nc
 #ncks -C -g cesm_01 -v tas1 out.nc
 # 544.1 =  (file 1 tas1) 273.0 + (file 2 tas1) 272.1 
@@ -738,7 +728,20 @@ print "\n";
     $tst_cmd[2]="time[3] tas1[3]=545.1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	    			    	   
+    $#tst_cmd=0; # Reset array 	   
+	
+# ncbo #28
+#ncbo -O cmip5.nc obs.nc out.nc
+#ncks -C -g ecmwf -v tas1 out.nc
+# obs.nc tas1=273, cmip5.nc ecmwf tas1=273
+
+    $dsc_sng="(Groups) Process relative matches (cmip5.nc obs.nc)";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -C -g ecmwf -v tas1 %tmp_fl_00%";
+    $tst_cmd[2]="time[3]=4 tas1[3]=0";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	    			    	 			    	   
 	    			    	   
 
    } # end HAVE_NETCDF4_H
