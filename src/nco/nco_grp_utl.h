@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.481 2014-03-09 21:48:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.482 2014-03-10 01:28:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -794,12 +794,14 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 
-nco_bool                               /* [fnc] True if absolute variables match */                          
-nco_cmn_var_nm_fll                     /* [fnc] Does the list of common names contain absolute variables match? */
+void                          
+nco_cmn_var                            /* [fnc] Does the list of common names contain absolute variables match? */
 (const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
- const int nbr_cmn_nm);                /* I [nbr] Number of common names entries */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
+ nco_bool *flg_cmn_abs,                /* I/O [flg] Does the list of common names contain absolute variables match? */
+ nco_bool *flg_cmn_rel);                /* I/O [flg] Does the list of common names contain relative variables match? */
 
 void                                               
 nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute variables in both files (same path) (ncbo) */
@@ -853,7 +855,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
 
 void                          
-nco_cmn_var                            /* [fnc] Common variable exists (ncbo only) */
+nco_cmn_nsm_var                        /* [fnc] Common variable exist in ensembles (ncbo only) */
 (nco_bool *flg_var_cmn,                /* I/O [flg] Common variable exists */
  nco_bool *flg_var_cmn_rth,            /* I/O [flg] Common variable exists at root */
  nm_lst_sct **var_nm,                  /* I/O [sct] Array of common variable names */ 

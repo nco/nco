@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1322 2014-03-10 00:08:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1323 2014-03-10 01:28:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9041,14 +9041,19 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 } /* nco_prc_cmn_nm() */
 
 
-nco_bool                               /* [fnc] True if absolute variables match */                          
-nco_cmn_var_nm_fll                     /* [fnc] Does the list of common names contain absolute variables match? */
+void                          
+nco_cmn_var                            /* [fnc] Does the list of common names contain absolute variables match? */
 (const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
- const int nbr_cmn_nm)                 /* I [nbr] Number of common names entries */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
+ nco_bool *flg_cmn_abs,                /* I/O [flg] Does the list of common names contain absolute variables match? */
+ nco_bool *flg_cmn_rel)                /* I/O [flg] Does the list of common names contain relative variables match? */
 {
-  /* Purpose: Does the list of *any* common names contain absolute variables match? (ncbo only) */
+  /* Purpose: Does the list of *any* common names contain absolute/relative variables match? (ncbo only) */
+
+  *flg_cmn_abs=False;
+  *flg_cmn_rel=False;
 
   /* Process objects in list */
   for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++){
@@ -9064,13 +9069,11 @@ nco_cmn_var_nm_fll                     /* [fnc] Does the list of common names co
     if(trv_1 && trv_2 && trv_1->flg_xtr && trv_2->flg_xtr){
       assert(cmn_lst[idx_cmn].flg_in_fl[0]);
       assert(cmn_lst[idx_cmn].flg_in_fl[1]);
-      return True;
+      *flg_cmn_abs=True;
     }
   } /* Process objects in list */
 
-  return False;
-
-} /* nco_cmn_var_nm_fll() */
+} /* nco_cmn_var() */
 
 void                                               
 nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute variables in both files (same path) (ncbo) */
@@ -9118,7 +9121,7 @@ nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute
 } /* nco_prc_cmn_var_nm_fll() */
 
 void                          
-nco_cmn_var                            /* [fnc] Common variable exists (ncbo only) */
+nco_cmn_nsm_var                        /* [fnc] Common variable exist in ensembles (ncbo only) */
 (nco_bool *flg_var_cmn,                /* I/O [flg] Common variable exists */
  nco_bool *flg_var_cmn_rth,            /* I/O [flg] Common variable exists at root */
  nm_lst_sct **var_nm,                  /* I/O [sct] Array of common variable names */ 
@@ -9126,8 +9129,6 @@ nco_cmn_var                            /* [fnc] Common variable exists (ncbo onl
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2)  /* I [sct] GTT (Group Traversal Table) */
 {
-
-
   *flg_var_cmn=False;
   *flg_var_cmn_rth=False;
 
@@ -9193,7 +9194,7 @@ nco_cmn_var                            /* [fnc] Common variable exists (ncbo onl
 
   }/* Loop ensembles table 1  */
 
-}/* nco_cmn_var() */
+}/* nco_cmn_nsm_var() */
 
 void                          
 nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) */
@@ -9222,7 +9223,8 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
   int nbr_cmn_nm=0;               /* [nbr] Number of common entries */
 
-  nco_bool flg_cmn_var_nm_fl;     /* [flg] Is there a variable with same absolute path in both files? */
+  nco_bool flg_cmn_abs;           /* [flg] Is there a variable with same absolute path in both files? */
+  nco_bool flg_cmn_rel;           /* [flg] Is there a variable with same relative name in both files? */
   nco_bool flg_nsm_fl_1;          /* [flg] File 1 contains ensemble members */
   nco_bool flg_nsm_fl_2;          /* [flg] File 2 contains ensemble members */
   nco_bool flg_var_cmn;           /* [flg] Common variable exists */
@@ -9238,11 +9240,11 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   /* Match 2 tables (find common objects) and export common objects */
   (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
 
-  /* Inquire if there is a variable with same absolute path in both files */
-  flg_cmn_var_nm_fl=nco_cmn_var_nm_fll(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm);     
+  /* Inquire if there is a variable with same absolute/relative path in both files */
+  (void)nco_cmn_var(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,&flg_cmn_abs,&flg_cmn_rel);     
 
   /* There is a variable with same absolute path in both files. Do them and return */
-  if (flg_cmn_var_nm_fl){
+  if (flg_cmn_abs){
 
     /* Process common variables (same path in both files) */
     (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
@@ -9295,7 +9297,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         /* File 2 does NOT have ensembles */
 
         /* Inquire about file 2 having a common object from list of file 1 ensembles  */
-        (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_1,trv_tbl_2);
+        (void)nco_cmn_nsm_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_1,trv_tbl_2);
 
         /* Common variables at root */
         if (flg_var_cmn_rth){
@@ -9341,7 +9343,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         }
 
         /* Inquire about file 1 having a common object from list of file 2 ensembles (NB: order of tables in parameter switched)  */
-        (void)nco_cmn_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_2,trv_tbl_1);
+        (void)nco_cmn_nsm_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_2,trv_tbl_1);
 
          /* Common variables at root */
         if (flg_var_cmn_rth){
