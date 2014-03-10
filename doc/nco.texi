@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.974 2014-03-07 17:41:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.975 2014-03-10 23:38:18 woodllan Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -16899,7 +16899,7 @@ The first example shows how to process flat files.
 @end example
 
 With the use of @key{group}, the above script
-will be shortened to just @w{TWO LINES}.
+will be shortened to just @w{ONE LINE}.
 @cindex groups, averaging
 @ignore
 Isn't it amazing or what?!
@@ -16910,8 +16910,6 @@ Isn't it amazing or what?!
 nces -O --nsm_grp --nsm_sfx='_avg' \
 sn_LImon_all-mdl_all-xpt_all-nsm_200001-200512.nc \
   sn_LImon_all-mdl_all-xpt_nsm-avg.nc
-ncra -O -g 'avg$' sn_LImon_all-mdl_all-xpt_nsm-avg.nc \
-  sn_LImon_all-mdl_all-xpt_nsm-avg_tm-avg.nc
 @end example
 The input file, @file{sn_LImon_all-mdl_all-xpt_all-nsm_200001-200512.nc}, produced by @file{cmb_fl_grp.sh}, 
 includes all the ensemble members as groups.
@@ -16919,12 +16917,12 @@ The option @samp{--nsm_grp} denotes
 that we are using @uref{http://nco.sf.net/nco.html#nsm_grp, group ensembles mode} of @command{nces},
 instead of @uref{http://nco.sf.net/nco.html#nsm_fl, file ensembles mode}, @samp{--nsm_fl}.
 The option @samp{--nsm_sfx='_avg'} instructs @command{nces} 
-to store the output as a new child group @file{/[model]/[model name]_avg},
-instead of in the parent group @file{/[model]}. 
+to store the output as a new child group @file{/[model]/[model name]_avg/var};
+otherwise, the output will be stored directly in the parent group @file{/[model]/var}. 
 In the final output file, @file{sn_LImon_all-mdl_all-xpt_nsm-avg_tm-avg.nc}, 
 sub-groups with a suffix of `avg' are the long-term averages of each model.
-Here, @samp{-g 'avg$'} is used to retrieve groups having 'avg' at the end of their names,
-i.e., the long-term average groups.
+One thing to notice is that for now, 
+ensembles with only one ensemble member will be left untouched.
 
 @node Annual Average over Regions, Monthly Cycle, Global Distribution of Long-term Average, CMIP5 Example
 @section Annual Average over Regions

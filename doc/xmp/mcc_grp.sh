@@ -13,11 +13,11 @@
 drc='../data/grp/'
 
 # Constants
-pfx='sn_LImon_all-mdl_all-xpt_all-nsm_200001-20051'
+pfx='sn_LImon_all-mdl_all-xpt_all-nsm_200001-200512'
 
 # Greenland
 ncwa -O -w gw -d lat,60.0,75.0 -d lon,300.0,340.0 -a lat,lon \
-  ${drc}${pfx}.nc ${drc}${pfx}_grl
+  ${drc}${pfx}.nc ${drc}${pfx}_grl.nc
 
 # Anomaly from annual average of each year 
 for yyyy in {2000..2005}; do
