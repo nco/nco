@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1328 2014-03-11 03:40:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1329 2014-03-11 03:53:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9042,22 +9042,20 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 
 
 void                          
-nco_cmn_var                            /* [fnc] Does the list of common names contain absolute variables match? */
+nco_cmn_var                            /* [fnc] Does the list of common names contain absolute/relative variables match? */
 (const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  nco_bool *flg_cmn_abs,                /* I/O [flg] Does the list of common names contain absolute variables match? */
- nco_bool *flg_cmn_rel_1,              /* I/O [flg] Does the list of common names contain relative variables match? */
- nco_bool *flg_cmn_rel_2)              /* I/O [flg] Does the list of common names contain relative variables match? */
+ nco_bool *flg_cmn_rel)              /* I/O [flg] Does the list of common names contain relative variables match? */
 {
   /* Purpose: Does the list of *any* common names contain absolute/relative variables match? (ncbo only) */
 
   nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
 
   *flg_cmn_abs=False;
-  *flg_cmn_rel_1=False;
-  *flg_cmn_rel_2=False;
+  *flg_cmn_rel=False;
 
   /* Process objects in list */
   for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++){
@@ -9079,7 +9077,7 @@ nco_cmn_var                            /* [fnc] Does the list of common names co
 
       nco_bool flg_tbl_1=True;
       has_mch=nco_rel_mch(trv_1,flg_tbl_1,trv_tbl_1,trv_tbl_2);
-      *flg_cmn_rel_1=has_mch;
+      *flg_cmn_rel=has_mch;
     }
 
     /* Object exists and is flagged for extraction only in file 2 */
@@ -9087,9 +9085,8 @@ nco_cmn_var                            /* [fnc] Does the list of common names co
 
       nco_bool flg_tbl_1=False;
       has_mch=nco_rel_mch(trv_2,flg_tbl_1,trv_tbl_1,trv_tbl_2);
-      *flg_cmn_rel_2=has_mch;
+      *flg_cmn_rel=has_mch;
     }
-
 
   } /* Process objects in list */
 
@@ -9244,8 +9241,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   int nbr_cmn_nm=0;               /* [nbr] Number of common entries */
 
   nco_bool flg_cmn_abs;           /* [flg] Is there a variable with same absolute path in both files? */
-  nco_bool flg_cmn_rel_1;         /* [flg] Is there a variable with same relative name */
-  nco_bool flg_cmn_rel_2;         /* [flg] Is there a variable with same relative name */
+  nco_bool flg_cmn_rel;           /* [flg] Is there a variable with same relative name */
   nco_bool flg_nsm_fl_1;          /* [flg] File 1 contains ensemble members */
   nco_bool flg_nsm_fl_2;          /* [flg] File 2 contains ensemble members */
   nco_bool flg_var_cmn;           /* [flg] Common variable exists */
@@ -9260,7 +9256,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
 
   /* Inquire if there is a variable with same absolute/relative path in both files */
-  (void)nco_cmn_var(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,&flg_cmn_abs,&flg_cmn_rel_1,&flg_cmn_rel_2);     
+  (void)nco_cmn_var(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,&flg_cmn_abs,&flg_cmn_rel);     
 
   /* There is a variable with same absolute path in both files. Do them and return */
   if (flg_cmn_abs){
@@ -9385,7 +9381,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   } /* There are ensembles somewhere */
 
   /* There are NOT ensembles anywhere, but there are relative matches */
-  if (flg_nsm_fl_1 == False && flg_nsm_fl_2 == False && (flg_cmn_rel_1 == True || flg_cmn_rel_2 ==True) ){
+  if (flg_nsm_fl_1 == False && flg_nsm_fl_2 == False && flg_cmn_rel == True){
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Processing relative matches\n",nco_prg_nm_get(),fnc_nm);
 

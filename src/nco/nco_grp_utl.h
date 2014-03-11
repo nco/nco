@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.485 2014-03-10 02:58:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.486 2014-03-11 03:53:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -801,8 +801,8 @@ nco_cmn_var                            /* [fnc] Does the list of common names co
  const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  nco_bool *flg_cmn_abs,                /* I/O [flg] Does the list of common names contain absolute variables match? */
- nco_bool *flg_cmn_rel_1,              /* I/O [flg] Does the list of common names contain relative variables match? */
- nco_bool *flg_cmn_rel_2);              /* I/O [flg] Does the list of common names contain relative variables match? */
+ nco_bool *flg_cmn_rel);               /* I/O [flg] Does the list of common names contain relative variables match? */
+
 
 void                                               
 nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute variables in both files (same path) (ncbo) */
