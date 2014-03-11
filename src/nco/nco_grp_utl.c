@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1330 2014-03-11 04:35:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1331 2014-03-11 04:53:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9851,6 +9851,9 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
   nco_bool flg_grt_1; /* [flg] File 1 is "larger" */
   nco_bool has_mch;   /* [flg] A relative match was found in file 1 or 2 */
 
+  nco_bool flg_tbl_1; /* [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+  nco_bool flg_grp_1; /* [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+
   trv_sct *trv_1;     /* [sct] Table object */
   trv_sct *trv_2;     /* [sct] Table object */
 
@@ -9880,12 +9883,15 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
       if(trv_1 && trv_2 && cmn_lst[idx_cmn].flg_in_fl[0] && cmn_lst[idx_cmn].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr) assert(0);
 
       /* Object exists and is flagged for extraction only in file 1 */
-      if(trv_1 && cmn_lst[idx_cmn].flg_in_fl[0] && !cmn_lst[idx_cmn].flg_in_fl[1] && trv_1->flg_xtr){
+      if(trv_1 && trv_1->flg_xtr && cmn_lst[idx_cmn].flg_in_fl[0] == True && cmn_lst[idx_cmn].flg_in_fl[1] == False){
 
         if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports element in file 1 to output <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
+        flg_tbl_1=True;
+        flg_grp_1=True;
+
         /* Try relative match in file 2 */
-        has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
+        has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,flg_tbl_1,flg_grp_1,trv_tbl_1,trv_tbl_2,flg_dfn);
 
         /* Match not found in file 2, copy instead object from file 1 as fixed to output */
         if(!has_mch){
@@ -9917,12 +9923,15 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
       if(trv_1 && trv_2 && cmn_lst[idx_cmn].flg_in_fl[0] && cmn_lst[idx_cmn].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr) assert(0);
 
       /* Object exists and is flagged for extraction only in file 2 */
-      if(trv_2 && cmn_lst[idx_cmn].flg_in_fl[0] == False && cmn_lst[idx_cmn].flg_in_fl[1] && trv_2->flg_xtr){
+      if(trv_2 && trv_2->flg_xtr && cmn_lst[idx_cmn].flg_in_fl[0] == False && cmn_lst[idx_cmn].flg_in_fl[1] == True){
 
         if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports element in file 2 to output <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
+        flg_tbl_1=False;
+        flg_grp_1=False;
+
         /* Try relative match in file 1 */
-        has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
+        has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,flg_tbl_1,flg_grp_1,trv_tbl_1,trv_tbl_2,flg_dfn);
 
         /* Match not found in file 2, copy instead object from file 2 as fixed to output */
         if(!has_mch){
