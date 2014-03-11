@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1326 2014-03-10 02:58:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1327 2014-03-11 03:12:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9075,7 +9075,7 @@ nco_cmn_var                            /* [fnc] Does the list of common names co
     }
 
     /* Object exists and is flagged for extraction only in file 1 */
-    else if(trv_1 && trv_1->flg_xtr && cmn_lst[idx_cmn].flg_in_fl[0] && !cmn_lst[idx_cmn].flg_in_fl[1] ){
+    else if(trv_1 && trv_1->flg_xtr && cmn_lst[idx_cmn].flg_in_fl[0] == True && cmn_lst[idx_cmn].flg_in_fl[1] == False ){
 
       nco_bool flg_tbl_1=True;
       has_mch=nco_rel_mch(trv_1,flg_tbl_1,trv_tbl_1,trv_tbl_2);
@@ -9083,7 +9083,7 @@ nco_cmn_var                            /* [fnc] Does the list of common names co
     }
 
     /* Object exists and is flagged for extraction only in file 2 */
-    else if(trv_2 && trv_2->flg_xtr && cmn_lst[idx_cmn].flg_in_fl[0] == False && cmn_lst[idx_cmn].flg_in_fl[1]){
+    else if(trv_2 && trv_2->flg_xtr && cmn_lst[idx_cmn].flg_in_fl[0] == False && cmn_lst[idx_cmn].flg_in_fl[1] == True){
 
       nco_bool flg_tbl_1=False;
       has_mch=nco_rel_mch(trv_2,flg_tbl_1,trv_tbl_1,trv_tbl_2);
@@ -9256,8 +9256,6 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   nm_lst_sct *var_nm=NULL;        /* [lst] A list of variable names */
   nm_lst_sct *var_nm_rth=NULL;    /* [lst] A list of variable names found at root */
 
-  /* Inquire about absolute variable matching */
-
   /* Match 2 tables (find common objects) and export common objects */
   (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
 
@@ -9290,7 +9288,6 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
     /* File 1 has ensembles */
     if(flg_nsm_fl_1 == True){
-
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 1\n",nco_prg_nm_get(),fnc_nm);
@@ -9336,15 +9333,9 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
 
+        }else {
 
-        }else if (flg_var_cmn) {
-
-          /* file 2 has a common object NOT at root  */
-
-
-        } else {
-
-          /* file 2 has no common objects  */
+          /* file 2 has no common objects at root  */
           (void)fprintf(stdout,"%s: ERROR no common variables found. HINT: %s expects to find at least one variable of the same name in similar locations in both input files. When such variables are not found in identical locations (i.e., on the same path) then %s attempts group broadcasting to find comparable variables in sub-groups and ensembles. This search for comparable variables has failed. Read more about group broadcasting at http://nco.sf.net/nco.html#grp_brd\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
         } /* ! flg_var_cmn_rth */
@@ -9384,8 +9375,8 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
         } else {
 
-          /* file 1 has no common objects  */
-          (void)fprintf(stdout,"%s: ERROR no common variables found\n",nco_prg_nm_get());
+          /* file 1 has no common objects at root  */
+          (void)fprintf(stdout,"%s: ERROR no common variables found. HINT: %s expects to find at least one variable of the same name in similar locations in both input files. When such variables are not found in identical locations (i.e., on the same path) then %s attempts group broadcasting to find comparable variables in sub-groups and ensembles. This search for comparable variables has failed. Read more about group broadcasting at http://nco.sf.net/nco.html#grp_brd\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
 
         } /* ! flg_var_cmn_rth */
@@ -9901,7 +9892,6 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
           /* Match not found in file 2, copy instead object from file 1 as fixed to output */
           if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
-
           /* Object exists and is flagged for extraction only in file 2 */
         }else if(trv_2 && cmn_lst[idx_cmn].flg_in_fl[0] == False && cmn_lst[idx_cmn].flg_in_fl[1] && trv_2->flg_xtr){
 
@@ -9922,7 +9912,6 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
         /* Object exists and is flagged for extraction only in file 1 */
         if(trv_1 && cmn_lst[idx_cmn].flg_in_fl[0] && !cmn_lst[idx_cmn].flg_in_fl[1] && trv_1->flg_xtr){
 
-
           if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try relative match in file 2 */
@@ -9933,7 +9922,6 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
 
           /* Object exists and is flagged for extraction only in file 2 */
         }else if(trv_2 && cmn_lst[idx_cmn].flg_in_fl[0] == False && cmn_lst[idx_cmn].flg_in_fl[1] && trv_2->flg_xtr){
-
 
           if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
