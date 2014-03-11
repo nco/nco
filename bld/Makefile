@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.691 2014-02-20 16:43:22 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.692 2014-03-11 05:38:36 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -88,6 +88,11 @@
 # cd ~/bin/AIX;/usr/local/bin/tar cvzf ~/nco-4.4.2.aix53.tar.gz nc*;scp ~/nco-4.4.2.aix53.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # netCDF4 on NCAR Linux cluster systems (mirage):
 # cd ~/nco/bld;make OPTS=D allinone;cd -
+# netCDF4 on ORNL Linux cluster systems (titan, rhea):
+# module avail
+# . ~/.bashrc
+# module add intel netcdf udunits gsl
+# cd ~/nco/bld;make NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D allinone;cd -
 # netCDF4 on NCAR Linux cluster systems (yellowstone):
 # /ncar/opt/hpss/hsi # Starts HPSS session
 # export PATH=${PATH}\:/ncar/opt/hpss
