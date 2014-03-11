@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1333 2014-03-11 05:43:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1334 2014-03-11 18:44:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3478,7 +3478,6 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
  trv_sct * trv_2,                      /* I [sct] Table object */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_bool flg_tbl_1,             /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
  const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
@@ -3513,6 +3512,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
   /* Get Program ID */
   nco_prg_id=nco_prg_id_get(); 
+
+  assert(nco_prg_id == ncbo);
 
   /* Get output file format */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
@@ -3623,29 +3624,12 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(rec_dmn_nm_1->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_1->lst[0].nm);
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
-    nco_bool flg_crt_dmn; /* [flg] Create dimension/coordinate variable (eg. time)  */
-
-    /* flg_grp_1, Use table 1 as template for group creation AND flg_tbl_1, Table variable object is from table 1 */
-    if(flg_grp_1 == True && flg_tbl_1 == True){
-      /* Create dimension/coordinate variable */
-      flg_crt_dmn=True;
-      /* flg_grp_1, Use table 1 as template for group creation AND !flg_tbl_1, Table variable object is from table 2 */
-    } else if(flg_grp_1 == True && flg_tbl_1 == False){
-      /* Do NOT create dimension/coordinate variable */
-      flg_crt_dmn=False;
-     /* ! flg_grp_1, Use table 2 as template for group creation AND flg_tbl_1, Table variable object is from table 1 */
-    } else if(flg_grp_1 == False && flg_tbl_1 == True){
-      /* Do NOT create dimension/coordinate variable */
-      flg_crt_dmn=False;
-     /* ! flg_grp_1, Use table 2 as template for group creation AND flg_tbl_1, Table variable object is from table 2 */
-    } else if(flg_grp_1 == False && flg_tbl_1 == False){
-      /* Create dimension/coordinate variable */
-      flg_crt_dmn=True;
+    /* Define variable in output file. Use table template flag. */
+    if (flg_grp_1){
+      var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1);
+    }else{
+      var_out_id=nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
     }
-
-    /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : 
-      nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Copy variable's attributes */
     if(RNK_1_GTR) (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); else (void)nco_att_cpy(grp_id_2,grp_out_id,var_id_2,var_out_id,PCK_ATT_CPY);
@@ -8920,7 +8904,7 @@ nco_prc_rel_mch                        /* [fnc] Relative match of object in tabl
             var_trv->nm_fll,trv_2->nm_fll);
         }
 
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_tbl_1,flg_grp_1,flg_dfn);
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table  */
 
@@ -8937,7 +8921,7 @@ nco_prc_rel_mch                        /* [fnc] Relative match of object in tabl
         }
 
 
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_tbl_1,flg_grp_1,flg_dfn);
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table  */
   } /* !flg_tbl_1 */
@@ -9036,7 +9020,7 @@ nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
 
       /* Process common object */
-      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_grp_1,flg_dfn);
+      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
     } /* Both variables exist in same location, both are to extract */
   } /* Process objects in list */
@@ -9387,7 +9371,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
             if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
 
             /* Process common object */
-            (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_grp_1,flg_dfn);
+            (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
           } /* Both variables exist */
 
@@ -9502,7 +9486,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
               if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
 
               /* Process common object */
-              (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_grp_1,flg_dfn);
+              (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
               break;
             } /* Match name  */
@@ -9587,7 +9571,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
               if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_2->nm_fll); 
 
               /* Process common object */
-              (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_grp_1,flg_dfn);
+              (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
               break;
             } /* Match name  */

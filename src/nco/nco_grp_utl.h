@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.487 2014-03-11 05:22:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.488 2014-03-11 18:44:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -361,7 +361,6 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
  trv_sct * trv_2,                      /* I [sct] Table object */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_bool flg_tbl_1,             /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
  const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
