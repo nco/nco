@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1332 2014-03-11 05:22:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1333 2014-03-11 05:43:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3580,9 +3580,9 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
     }else{
       /* Still possible that variables are mismatched even if ranks are equal
-	 One or more dimensions could be degenerate
-	 Before subtraction must make sure dimension sizes match
-	 Or re-code ncap_var_cnf_dmn() so that it understands how to broadcast degenerate dimensions */
+      One or more dimensions could be degenerate
+      Before subtraction must make sure dimension sizes match
+      Or re-code ncap_var_cnf_dmn() so that it understands how to broadcast degenerate dimensions */
       for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
         if(var_prc_1->dim[idx_dmn]->sz != var_prc_2->dim[idx_dmn]->sz){
           (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s with sizes %ld and %ld in input files one and two, respectively\n",nco_prg_nm_get(),var_prc_1->nm_fll,var_prc_1->dim[idx_dmn]->nm,var_prc_1->dim[idx_dmn]->sz,var_prc_2->dim[idx_dmn]->sz);
@@ -3622,6 +3622,26 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     /* Use for record dimension name the first in array */
     if(rec_dmn_nm_1->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_1->lst[0].nm);
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
+
+    nco_bool flg_crt_dmn; /* [flg] Create dimension/coordinate variable (eg. time)  */
+
+    /* flg_grp_1, Use table 1 as template for group creation AND flg_tbl_1, Table variable object is from table 1 */
+    if(flg_grp_1 == True && flg_tbl_1 == True){
+      /* Create dimension/coordinate variable */
+      flg_crt_dmn=True;
+      /* flg_grp_1, Use table 1 as template for group creation AND !flg_tbl_1, Table variable object is from table 2 */
+    } else if(flg_grp_1 == True && flg_tbl_1 == False){
+      /* Do NOT create dimension/coordinate variable */
+      flg_crt_dmn=False;
+     /* ! flg_grp_1, Use table 2 as template for group creation AND flg_tbl_1, Table variable object is from table 1 */
+    } else if(flg_grp_1 == False && flg_tbl_1 == True){
+      /* Do NOT create dimension/coordinate variable */
+      flg_crt_dmn=False;
+     /* ! flg_grp_1, Use table 2 as template for group creation AND flg_tbl_1, Table variable object is from table 2 */
+    } else if(flg_grp_1 == False && flg_tbl_1 == False){
+      /* Create dimension/coordinate variable */
+      flg_crt_dmn=True;
+    }
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
     var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : 
