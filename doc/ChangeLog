@@ -1,19 +1,21 @@
+2014-03-10 Pedro Vicente  <pvicente@uci.edu>
+
+	* ncbo #29. Process relative matches, second file greater (obs.nc cmip5.nc )
+
 2014-03-09 Pedro Vicente  <pvicente@uci.edu>
 
     * ncbo #27. Process ensembles in file 2 (obs.nc) with common variable at root in file 1 (mdl.nc)
 	Check fixed variables
 	
-	* ncbo #28. Process relative matches (cmip5.nc obs.nc)
+	* ncbo #28. Process relative matches, first file greater (cmip5.nc obs.nc)
 
 	* nco_prc_rel_cmn_nm(). Process relative matches.
-
 
 2014-03-06 Pedro Vicente  <pvicente@uci.edu>
 
     * ncbo #26. Process ensembles in file 2 (obs.nc) with common variable at root in file 1 (mdl.nc)
 
 	* nco_prc_nsm(). Process ensembles in file 2 with common variable at root in file 1
-
 
 2014-03-05 Pedro Vicente  <pvicente@uci.edu>
 

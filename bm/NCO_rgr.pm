@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.474 2014-03-10 02:58:36 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.475 2014-03-11 04:35:39 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -733,15 +733,28 @@ print "\n";
 # ncbo #28
 #ncbo -O cmip5.nc obs.nc out.nc
 #ncks -C -g ecmwf -v tas1 out.nc
-# obs.nc tas1=273, cmip5.nc ecmwf tas1=273
+# obs.nc tas1=273, cmip5.nc giss tas1=274
 
-    $dsc_sng="(Groups) Process relative matches (cmip5.nc obs.nc)";
+    $dsc_sng="(Groups) Process relative matches, first file greater (cmip5.nc obs.nc)";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -C -g ecmwf -v tas1 %tmp_fl_00%";
-    $tst_cmd[2]="time[3]=4 tas1[3]=0";
+	$tst_cmd[1]="ncks -C -g giss -v tas1 %tmp_fl_00%";
+    $tst_cmd[2]="time[3]=4 tas1[3]=1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	    			    	 			    	   
+    $#tst_cmd=0; # Reset array 	
+	
+# ncbo #29
+#ncbo -O  obs.nc cmip5.nc out.nc
+#ncks -C -g ecmwf -v tas1 out.nc
+# obs.nc tas1=273, cmip5.nc giss tas1=274
+
+    $dsc_sng="(Groups) Process relative matches, second file greater (obs.nc cmip5.nc )";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -C -g giss -v tas1 %tmp_fl_00%";
+    $tst_cmd[2]="time[3]=4 tas1[3]=-1";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	    			    			    	 			    	   
 	    			    	   
 
    } # end HAVE_NETCDF4_H
