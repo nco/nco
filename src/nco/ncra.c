@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.521 2014-03-02 19:31:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.522 2014-03-13 07:32:27 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.521 2014-03-02 19:31:12 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.521 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.522 2014-03-13 07:32:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.522 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -802,7 +802,11 @@ main(int argc,char **argv)
     /* Do ncge ensemble refresh */
     if(nco_prg_id == ncge){
       /* Refresh ensembles */
-      if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl); 
+      if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl);
+   
+      /* Check if ensembles are valid  */       
+      (void)nco_chk_nsm(in_id,trv_tbl); 
+
     }else{ /* ! ncge */
       /* Variables may have different ID, missing_value, type, in each file */
       for(idx=0;idx<nbr_var_prc;idx++){
@@ -1132,7 +1136,7 @@ main(int argc,char **argv)
       (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl1);
 
       /* Check if all input -d dimensions were found */ 
-      (void)nco_chk_dmn(lmt_nbr,flg_dne);     
+      (void)nco_chk_dmn(lmt_nbr,flg_dne);  
 
       /* Loop over ensembles in current file */
       for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 

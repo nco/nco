@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1334 2014-03-11 18:44:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1335 2014-03-13 07:32:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9142,6 +9142,9 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   nm_lst_sct *var_nm=NULL;        /* [lst] A list of variable names */
   nm_lst_sct *var_nm_rth=NULL;    /* [lst] A list of variable names found at root */
 
+  /* Sanity check */
+  assert(nco_prg_id_get() == ncbo);
+
   /* Match 2 tables (find common objects) and export common objects */
   (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
 
@@ -9834,4 +9837,38 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
 
 } /* nco_prc_rel_cmn_nm() */
 
+
+void                  
+nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */                                
+(const int in_id,                      /* I [id] netCDF input-file ID of current file (not first) */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) of *first* file */
+{
+  /* Check if ensembles are valid. Files exist and they have the same dimension */
+
+  const char fnc_nm[]="nco_chk_nsm()"; /* [sng] Function name */
+
+  /* Loop ensembles */
+  for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+      idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+
+    /* Loop members */
+    for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+        idx_mbr,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
+
+      /* Loop variables */
+      for(int idx_var=0;idx_var<trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nbr;idx_var++){
+
+        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+          idx_var,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
+
+
+      } /* Loop variables */
+    } /* Loop members */
+  } /* Loop ensembles */
+
+} /* nco_chk_nsm() */
 
