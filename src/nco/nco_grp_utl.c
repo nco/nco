@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1335 2014-03-13 07:32:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1336 2014-03-13 08:01:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8761,7 +8761,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
     /* Obtain group ID of current ensemble using full group name */
     rcd+=nco_inq_grp_full_ncid_flg(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
 
-    /* Group must exist (file # call > 1 ), if not print error */
+    /* Group must exist (file # call > 1 ), if not exit */
     if(rcd != NC_NOERR){
       (void)fprintf(stdout,"%s: ERROR ensemble <%s> does not exist\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn); 
       (void)fprintf(stdout,"%s: List of ensembles is\n",nco_prg_nm_get()); 
@@ -9840,18 +9840,34 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
 
 void                  
 nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */                                
-(const int in_id,                      /* I [id] netCDF input-file ID of current file (not first) */
+(const int in_id,                      /* I [id] netCDF input-file ID of current file, starting with first */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) of *first* file */
 {
   /* Check if ensembles are valid. Files exist and they have the same dimension */
 
   const char fnc_nm[]="nco_chk_nsm()"; /* [sng] Function name */
 
+  int grp_id;                          /* [id] Group ID */
+  int rcd=NC_NOERR;                    /* [rcd] Return code */
+
   /* Loop ensembles */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
       idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+
+    /* Obtain group ID of current ensemble using full group name */
+    rcd+=nco_inq_grp_full_ncid_flg(in_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
+
+    /* Group must exist (file # call > 1 ), if not exit */
+    if(rcd != NC_NOERR){
+      (void)fprintf(stdout,"%s: ERROR ensemble <%s> does not exist\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn); 
+      (void)fprintf(stdout,"%s: List of ensembles is\n",nco_prg_nm_get()); 
+      for(int idx=0;idx<trv_tbl->nsm_nbr;idx++){
+        (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx].grp_nm_fll_prn);
+        nco_exit(EXIT_FAILURE);
+      } 
+    }
 
     /* Loop members */
     for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
