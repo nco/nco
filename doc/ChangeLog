@@ -1,3 +1,8 @@
+2014-03-12 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add test files in_grp_4.cdl, in_grp_5.cdl; generate test case for nces average members
+	whose hyperslabs resolve to the same size
+
 2014-03-10  Charlie Zender  <zender@uci.edu>
 
 	* Build NCO on rhea at ORNL
