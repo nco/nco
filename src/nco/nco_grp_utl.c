@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1337 2014-03-13 21:39:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1338 2014-03-13 23:29:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8797,7 +8797,6 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 
       int tpl_nbr=trv_tbl->nsm[idx_nsm].tpl_nbr;
 
-
       int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
       trv_tbl->nsm[idx_nsm].mbr_nbr++;
       trv_tbl->nsm[idx_nsm].mbr=(nsm_grp_sct *)nco_realloc(trv_tbl->nsm[idx_nsm].mbr,(mbr_nbr+1)*sizeof(nsm_grp_sct));
@@ -9847,8 +9846,19 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 
   const char fnc_nm[]="nco_chk_nsm()"; /* [sng] Function name */
 
+  char **nm_lst_1;                     /* [sng] List of names */
+  char *grp_nm_fll;                    /* I [sng] Full group name */
+  char *grp_nm;                        /* I [sng] Group name */
+
+  int nm_lst_1_nbr;                    /* [nbr] Number of items in list */
   int grp_id;                          /* [id] Group ID */
+  int nbr_grp;                         /* [nbr] Number of sub-groups */
+  int *grp_ids;                        /* [id] Sub-group IDs array */
+  int dmn_id_var[NC_MAX_DIMS];         /* [ID] Dimensions IDs array for variable */
+  int nbr_dmn_var;                     /* [nbr] Number of dimensions for variable */
   int rcd=NC_NOERR;                    /* [rcd] Return code */
+
+  size_t grp_nm_lng;                   /* [nbr] Group name length */
 
   /* Loop ensembles */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
@@ -9876,42 +9886,85 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
     }
 
 
-    /* Loop members */
-    for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
-
-      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
-        idx_mbr,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
-
-      /* Loop variables */
-      for(int idx_var=0;idx_var<trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nbr;idx_var++){
-
-        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
-          idx_var,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
-
-        /* Obtain check variable objects (for first member, index 0) */
-        if(idx_mbr == 0){
-          var_tpl_trv[idx_var]=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var],trv_tbl);
-        }else{
-
-          trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var],trv_tbl);
-
-          /* Loop dimensions */
-          for(int idx_dmn=0;idx_dmn<var_tpl_trv[idx_var]->nbr_dmn;idx_dmn++){
-
-            if (var_tpl_trv[idx_var]->var_dmn[idx_dmn].crd){
-
-            }else if (var_tpl_trv[idx_var]->var_dmn[idx_dmn].ncd){
-
-            }else assert(0);
-
-          } /* Loop dimensions */
-
-        } /* Obtain check variable objects */
+    /* Get number of sub-groups */
+    (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
+    grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
+    (void)nco_inq_grps(grp_id,(int *)NULL,grp_ids);
 
 
-      } /* Loop variables */
-    } /* Loop members */
+    /* Loop sub-groups */
+    for(int idx_grp=0;idx_grp<nbr_grp;idx_grp++){ 
 
+      /* Get group name length */
+      (void)nco_inq_grpname_len(grp_ids[idx_grp],&grp_nm_lng);
+      grp_nm=(char *)nco_malloc(grp_nm_lng+1L);
+
+      /* Get group name */
+      (void)nco_inq_grpname(grp_ids[idx_grp],grp_nm);
+
+      /* Construct full name  */
+      grp_nm_fll=(char *)nco_malloc(grp_nm_lng+strlen(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)+2L);
+      strcpy(grp_nm_fll,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      strcat(grp_nm_fll,"/");
+      strcat(grp_nm_fll,grp_nm);
+
+      /* Export list of variable names for group */
+      (void)nco_grp_var_lst(in_id,grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
+
+      /* Loop templates */
+      for(int idx_tpl=0;idx_tpl<trv_tbl->nsm[idx_nsm].tpl_nbr;idx_tpl++){ 
+
+        /* Loop variables in group */
+        for(int idx_var=0;idx_var<nm_lst_1_nbr;idx_var++){ 
+
+          /* Match relative name of template variable and variable found in new file  */
+          if(strcmp(nm_lst_1[idx_var],trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl]) == 0){
+
+            /* Obtain GTT check variable objects (for first member, index 0) */         
+            var_tpl_trv[idx_var]=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].mbr[0].var_nm_fll[idx_var],trv_tbl);
+
+            assert(var_tpl_trv[idx_var]);
+
+
+            /* Build new variable name */
+            char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,nm_lst_1[idx_var]);
+
+
+            /* Get number of dimensions */
+            (void)nco_inq_var(grp_ids[idx_grp],idx_var,trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl],NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
+
+            /* Get dimension IDs for variable */
+            (void)nco_inq_vardimid(grp_ids[idx_grp],idx_var,dmn_id_var);
+
+            /* Loop dimensions */
+            for(int idx_dmn=0;idx_dmn<var_tpl_trv[idx_var]->nbr_dmn;idx_dmn++){
+
+              if (var_tpl_trv[idx_var]->var_dmn[idx_dmn].crd){
+
+              }else if (var_tpl_trv[idx_var]->var_dmn[idx_dmn].ncd){
+
+              }else assert(0);
+
+            } /* Loop dimensions */
+
+            var_nm_fll=(char *)nco_free(var_nm_fll);
+
+            break;
+
+          } /* Match relative name  */
+
+        } /* Loop variables in group */
+      } /* Insert members by builing name from group and template */
+
+      /* Free list */
+      for(int idx_nm=0;idx_nm<nm_lst_1_nbr;idx_nm++) nm_lst_1[idx_nm]=(char *)nco_free(nm_lst_1[idx_nm]);
+      nm_lst_1=(char **)nco_free(nm_lst_1);
+      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+
+    } /* Loop sub-groups */
+
+    /* Clean up memory */
+    grp_ids=(int *)nco_free(grp_ids);
     var_tpl_trv=(trv_sct **)nco_free(var_tpl_trv);
 
   } /* Loop ensembles */
