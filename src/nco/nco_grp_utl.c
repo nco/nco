@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1336 2014-03-13 08:01:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1337 2014-03-13 21:39:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9853,13 +9853,19 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
   /* Loop ensembles */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
 
+    trv_sct **var_tpl_trv;
+
+    int nbr_var_mbr=trv_tbl->nsm[idx_nsm].mbr[0].var_nbr;
+
+    var_tpl_trv=(trv_sct **)nco_malloc(nbr_var_mbr*sizeof(trv_sct *));
+
     if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
       idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
 
     /* Obtain group ID of current ensemble using full group name */
     rcd+=nco_inq_grp_full_ncid_flg(in_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
 
-    /* Group must exist (file # call > 1 ), if not exit */
+    /* Group must exist, if not exit */
     if(rcd != NC_NOERR){
       (void)fprintf(stdout,"%s: ERROR ensemble <%s> does not exist\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn); 
       (void)fprintf(stdout,"%s: List of ensembles is\n",nco_prg_nm_get()); 
@@ -9868,6 +9874,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
         nco_exit(EXIT_FAILURE);
       } 
     }
+
 
     /* Loop members */
     for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
@@ -9881,10 +9888,35 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
         if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
           idx_var,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
 
+        /* Obtain check variable objects (for first member, index 0) */
+        if(idx_mbr == 0){
+          var_tpl_trv[idx_var]=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var],trv_tbl);
+        }else{
+
+          trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var],trv_tbl);
+
+          /* Loop dimensions */
+          for(int idx_dmn=0;idx_dmn<var_tpl_trv[idx_var]->nbr_dmn;idx_dmn++){
+
+            if (var_tpl_trv[idx_var]->var_dmn[idx_dmn].crd){
+
+            }else if (var_tpl_trv[idx_var]->var_dmn[idx_dmn].ncd){
+
+            }else assert(0);
+
+          } /* Loop dimensions */
+
+        } /* Obtain check variable objects */
+
 
       } /* Loop variables */
     } /* Loop members */
+
+    var_tpl_trv=(trv_sct **)nco_free(var_tpl_trv);
+
   } /* Loop ensembles */
+
+  
 
 } /* nco_chk_nsm() */
 
