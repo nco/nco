@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1340 2014-03-14 04:22:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1341 2014-03-14 05:10:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9844,6 +9844,11 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 {
   /* Check if ensembles are valid. Ensemble parent group exists, variables have the same dimension sizes and names */
 
+  /* Tests:
+  ncra -Y ncge -O in_grp_4.nc in_grp_5.nc out.nc
+  ncra -Y ncge -O -d lon,0,2,1 -d time,0,5,1 in_grp_4.nc in_grp_5.nc out.nc
+  */
+
   const char fnc_nm[]="nco_chk_nsm()"; /* [sng] Function name */
 
   char **var_nm_lst;                   /* [sng] List of variable names found in ensemble group */
@@ -9942,37 +9947,56 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
               char dmn_nm[NC_MAX_NAME+1L];     /* [nbr] Name of coordinate */
               char tpl_dmn_nm[NC_MAX_NAME+1L]; /* [nbr] Name of template coordinate */
 
-              size_t tpl_sz; /* [nbr] Size of template coordinate */
-              long  dmn_sz;  /* [nbr] Size of coordinate of current variable */
+              size_t tpl_sz;                   /* [nbr] Size of template dimension */
+
+              long dmn_sz;                     /* [nbr] Size of dimension */
+              long dmn_cnt;                    /* [nbr] Hyperslabbed size of dimension */  
+
+              nco_bool flg_has_lmt;            /* [flg] Dimension has hyperslab */
+
+              flg_has_lmt=False;
 
               /* Get size of template variable */
-
               if (var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd){
                 tpl_sz=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->sz;
                 strcpy(tpl_dmn_nm,var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->nm);
+                /* Inquire about hyperslabs*/
+                if(var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr){
+                  flg_has_lmt=True;
+                  dmn_cnt=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+                }
               }else if (var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd){
                 tpl_sz=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->sz;
                 strcpy(tpl_dmn_nm,var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->nm);
+                /* Inquire about hyperslabs*/
+                if(var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr){
+                  flg_has_lmt=True;
+                  dmn_cnt=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+                }
               }else assert(0);
 
-              /* Get size of variable */
+              /* Get name/size of variable */
               (void)nco_inq_dim(grp_ids[idx_grp],dmn_id_var[idx_dmn],dmn_nm,&dmn_sz);
 
-              /* Finally... compare sizes */
-              if (dmn_sz != (long)tpl_sz){
-                (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable <%s> has dimension <%s> with size %ld, expecting size %ld\n",nco_prg_nm_get(),
-                  var_nm_fll,dmn_nm,dmn_sz,tpl_sz);
-                nco_exit(EXIT_FAILURE);
-              }
-
-              /* ... and names */
+              /* Compare names */
               if (strcmp(dmn_nm,tpl_dmn_nm) != 0 ){
                 (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable <%s> has dimension named <%s>, expecting <%s>\n",nco_prg_nm_get(),
                   var_nm_fll,dmn_nm,tpl_dmn_nm);
                 nco_exit(EXIT_FAILURE);
               }
 
+              /* No hyperslab, compare dimension */
+              if (flg_has_lmt == False){
+                /* Compare sizes */
+                if (dmn_sz != (long)tpl_sz){
+                  (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable <%s> has dimension <%s> with size %ld, expecting size %ld\n",nco_prg_nm_get(),
+                    var_nm_fll,dmn_nm,dmn_sz,tpl_sz);
+                  nco_exit(EXIT_FAILURE);
+                }
+              } else {
 
+
+              } /* No hyperslab, compare dimension */
             } /* Loop dimensions */
 
             var_nm_fll=(char *)nco_free(var_nm_fll);
