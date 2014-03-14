@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1339 2014-03-14 00:58:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1340 2014-03-14 04:22:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9842,7 +9842,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 (const int in_id,                      /* I [id] netCDF input-file ID of current file, starting with first */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) of *first* file */
 {
-  /* Check if ensembles are valid. Files exist and they have the same dimension */
+  /* Check if ensembles are valid. Ensemble parent group exists, variables have the same dimension sizes and names */
 
   const char fnc_nm[]="nco_chk_nsm()"; /* [sng] Function name */
 
@@ -9958,12 +9958,20 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
               /* Get size of variable */
               (void)nco_inq_dim(grp_ids[idx_grp],dmn_id_var[idx_dmn],dmn_nm,&dmn_sz);
 
-              /* Finally... compare names and sizes */
+              /* Finally... compare sizes */
               if (dmn_sz != (long)tpl_sz){
                 (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable <%s> has dimension <%s> with size %ld, expecting size %ld\n",nco_prg_nm_get(),
                   var_nm_fll,dmn_nm,dmn_sz,tpl_sz);
                 nco_exit(EXIT_FAILURE);
               }
+
+              /* ... and names */
+              if (strcmp(dmn_nm,tpl_dmn_nm) != 0 ){
+                (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable <%s> has dimension named <%s>, expecting <%s>\n",nco_prg_nm_get(),
+                  var_nm_fll,dmn_nm,tpl_dmn_nm);
+                nco_exit(EXIT_FAILURE);
+              }
+
 
             } /* Loop dimensions */
 
