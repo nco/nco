@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1338 2014-03-13 23:29:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1339 2014-03-14 00:58:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9846,11 +9846,11 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 
   const char fnc_nm[]="nco_chk_nsm()"; /* [sng] Function name */
 
-  char **nm_lst_1;                     /* [sng] List of names */
+  char **var_nm_lst;                   /* [sng] List of variable names found in ensemble group */
   char *grp_nm_fll;                    /* I [sng] Full group name */
   char *grp_nm;                        /* I [sng] Group name */
 
-  int nm_lst_1_nbr;                    /* [nbr] Number of items in list */
+  int nbr_var_nm_lst;                  /* [nbr] Number of items in list */
   int grp_id;                          /* [id] Group ID */
   int nbr_grp;                         /* [nbr] Number of sub-groups */
   int *grp_ids;                        /* [id] Sub-group IDs array */
@@ -9909,41 +9909,61 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
       strcat(grp_nm_fll,grp_nm);
 
       /* Export list of variable names for group */
-      (void)nco_grp_var_lst(in_id,grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
+      (void)nco_grp_var_lst(in_id,grp_nm_fll,&var_nm_lst,&nbr_var_nm_lst);
+
+      int tpl_nbr=trv_tbl->nsm[idx_nsm].tpl_nbr;
 
       /* Loop templates */
-      for(int idx_tpl=0;idx_tpl<trv_tbl->nsm[idx_nsm].tpl_nbr;idx_tpl++){ 
+      for(int idx_tpl=0;idx_tpl<tpl_nbr;idx_tpl++){ 
+
+        /* Obtain GTT check variable objects (for first member, index 0) */         
+        var_tpl_trv[idx_tpl]=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].mbr[0].var_nm_fll[idx_tpl],trv_tbl);
+
+        assert(var_tpl_trv[idx_tpl]);
 
         /* Loop variables in group */
-        for(int idx_var=0;idx_var<nm_lst_1_nbr;idx_var++){ 
+        for(int idx_var=0;idx_var<nbr_var_nm_lst;idx_var++){ 
 
-          /* Match relative name of template variable and variable found in new file  */
-          if(strcmp(nm_lst_1[idx_var],trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl]) == 0){
-
-            /* Obtain GTT check variable objects (for first member, index 0) */         
-            var_tpl_trv[idx_var]=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].mbr[0].var_nm_fll[idx_var],trv_tbl);
-
-            assert(var_tpl_trv[idx_var]);
-
+          /* Match relative name of template variable and variable found in file  */
+          if(strcmp(var_nm_lst[idx_var],trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl]) == 0){
 
             /* Build new variable name */
-            char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,nm_lst_1[idx_var]);
-
+            char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,var_nm_lst[idx_var]);
 
             /* Get number of dimensions */
-            (void)nco_inq_var(grp_ids[idx_grp],idx_var,trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl],NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
+            (void)nco_inq_var(grp_ids[idx_grp],idx_var,var_nm_lst[idx_var],NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
 
             /* Get dimension IDs for variable */
             (void)nco_inq_vardimid(grp_ids[idx_grp],idx_var,dmn_id_var);
 
-            /* Loop dimensions */
-            for(int idx_dmn=0;idx_dmn<var_tpl_trv[idx_var]->nbr_dmn;idx_dmn++){
+            /* Loop dimensions and check GTT template (first) with current variable */
+            for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
-              if (var_tpl_trv[idx_var]->var_dmn[idx_dmn].crd){
+              char dmn_nm[NC_MAX_NAME+1L];     /* [nbr] Name of coordinate */
+              char tpl_dmn_nm[NC_MAX_NAME+1L]; /* [nbr] Name of template coordinate */
 
-              }else if (var_tpl_trv[idx_var]->var_dmn[idx_dmn].ncd){
+              size_t tpl_sz; /* [nbr] Size of template coordinate */
+              long  dmn_sz;  /* [nbr] Size of coordinate of current variable */
 
+              /* Get size of template variable */
+
+              if (var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd){
+                tpl_sz=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->sz;
+                strcpy(tpl_dmn_nm,var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->nm);
+              }else if (var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd){
+                tpl_sz=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->sz;
+                strcpy(tpl_dmn_nm,var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->nm);
               }else assert(0);
+
+              /* Get size of variable */
+              (void)nco_inq_dim(grp_ids[idx_grp],dmn_id_var[idx_dmn],dmn_nm,&dmn_sz);
+
+              /* Finally... compare names and sizes */
+              if (dmn_sz != (long)tpl_sz){
+                (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable <%s> has dimension <%s> with size %ld, expecting size %ld\n",nco_prg_nm_get(),
+                  var_nm_fll,dmn_nm,dmn_sz,tpl_sz);
+                nco_exit(EXIT_FAILURE);
+              }
 
             } /* Loop dimensions */
 
@@ -9954,11 +9974,11 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
           } /* Match relative name  */
 
         } /* Loop variables in group */
-      } /* Insert members by builing name from group and template */
+      } /* Loop templates */
 
       /* Free list */
-      for(int idx_nm=0;idx_nm<nm_lst_1_nbr;idx_nm++) nm_lst_1[idx_nm]=(char *)nco_free(nm_lst_1[idx_nm]);
-      nm_lst_1=(char **)nco_free(nm_lst_1);
+      for(int idx_nm=0;idx_nm<nbr_var_nm_lst;idx_nm++) var_nm_lst[idx_nm]=(char *)nco_free(var_nm_lst[idx_nm]);
+      var_nm_lst=(char **)nco_free(var_nm_lst);
       grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
     } /* Loop sub-groups */
@@ -9969,7 +9989,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 
   } /* Loop ensembles */
 
-  
+
 
 } /* nco_chk_nsm() */
 
