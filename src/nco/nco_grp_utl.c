@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1342 2014-03-14 19:13:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1343 2014-03-14 22:51:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9474,6 +9474,28 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
 
           assert(trv_1);
 
+          /* List of fixed templates  */
+          for(int idx_skp=0;idx_skp<trv_tbl_1->nsm[idx_nsm].skp_nbr;idx_skp++){
+
+            /* Get variable  */
+            trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl_1->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl_1);
+
+            /* Define variable full name (using group name and relative name of fixed template) */
+            char *skp_nm_fll=nco_bld_nm_fll(trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll,var_trv->nm);
+
+            /* Get variable  */
+            trv_sct *skp_trv=trv_tbl_var_nm_fll(skp_nm_fll,trv_tbl_1);
+
+            if (skp_trv){
+
+              /* Define/write fixed variables (ncbo) */
+              (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);   
+
+            }
+
+          } /* List of fixed templates  */
+
+
           /* Loop list of variables from other file */
           for(int idx_var_2=0;idx_var_2<var_lst->nbr;idx_var_2++){
 
@@ -9496,26 +9518,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
 
         } /* Loop variables */
 
-        /* List of fixed templates  */
-        for(int idx_skp=0;idx_skp<trv_tbl_1->nsm[idx_nsm].skp_nbr;idx_skp++){
-
-          /* Get variable  */
-          trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl_1->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl_1);
-
-          /* Define variable full name (using group name and relative name of fixed template) */
-          char *skp_nm_fll=nco_bld_nm_fll(trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll,var_trv->nm);
-
-          /* Get variable  */
-          trv_sct *skp_trv=trv_tbl_var_nm_fll(skp_nm_fll,trv_tbl_1);
-
-          if (skp_trv){
-
-            /* Define/write fixed variables (ncbo) */
-            (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);   
-
-          }
-
-        } /* List of fixed templates  */
+       
       } /* Loop group members */
     } /* Loop ensembles */
 
@@ -9559,6 +9562,26 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
 
           assert(trv_2);
 
+          /* List of fixed templates  */
+          for(int idx_skp=0;idx_skp<trv_tbl_2->nsm[idx_nsm].skp_nbr;idx_skp++){
+
+            /* Get variable  */
+            trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl_2->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl_2);
+
+            /* Define variable full name (using group name and relative name of fixed template) */
+            char *skp_nm_fll=nco_bld_nm_fll(trv_tbl_2->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll,var_trv->nm);
+
+            /* Get variable  */
+            trv_sct *skp_trv=trv_tbl_var_nm_fll(skp_nm_fll,trv_tbl_2);
+
+            if (skp_trv){
+
+              /* Define/write fixed variables (ncbo) */
+              (void)nco_fix_dfn_wrt(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_2,flg_dfn);   
+
+            }
+          } /* List of fixed templates  */
+
           /* Loop list of variables from other file */
           for(int idx_var_1=0;idx_var_1<var_lst->nbr;idx_var_1++){
 
@@ -9580,28 +9603,6 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
           } /* Loop list of variables from other file */
 
         } /* Loop variables */
-
-
-        /* List of fixed templates  */
-        for(int idx_skp=0;idx_skp<trv_tbl_2->nsm[idx_nsm].skp_nbr;idx_skp++){
-
-          /* Get variable  */
-          trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl_2->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl_2);
-
-          /* Define variable full name (using group name and relative name of fixed template) */
-          char *skp_nm_fll=nco_bld_nm_fll(trv_tbl_2->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll,var_trv->nm);
-
-          /* Get variable  */
-          trv_sct *skp_trv=trv_tbl_var_nm_fll(skp_nm_fll,trv_tbl_2);
-
-          if (skp_trv){
-
-            /* Define/write fixed variables (ncbo) */
-            (void)nco_fix_dfn_wrt(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_2,flg_dfn);   
-
-          }
-
-        } /* List of fixed templates  */
 
       } /* Loop group members */
     } /* Loop ensembles */
