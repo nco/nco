@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1341 2014-03-14 05:10:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1342 2014-03-14 19:13:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3624,8 +3624,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(rec_dmn_nm_1->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_1->lst[0].nm);
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
-    /* Define variable in output file. Use table template flag. */
-    if (flg_grp_1){
+    /* Define variable in output file */
+    if (RNK_1_GTR){
       var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1);
     }else{
       var_out_id=nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
