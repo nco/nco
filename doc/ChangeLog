@@ -1,3 +1,9 @@
+2014-03-13 Pedro Vicente  <pvicente@uci.edu>
+
+	* nces #20: Checking of conforming dimensions between ensemble variables
+	
+	* nco_chk_nsm() Check if ensembles dimensions are valid   
+
 2014-03-12 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add test files in_grp_4.cdl, in_grp_5.cdl; generate test case for nces average members

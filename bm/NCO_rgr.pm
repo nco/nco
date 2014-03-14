@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.476 2014-03-11 18:44:40 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.477 2014-03-14 01:17:57 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -918,11 +918,23 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 
     } # #### Group File tests	
+
+	 	
+#nces #14 # TODO	
+    #for i in $(seq -w 0 999) ; do iii=$( printf "%03d" ${i} ) ; ln in.nc foo${iii}.nc ; done
+	# TO DO run bash script above by perl
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v dgn_var $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00%";
+    $dsc_sng="Test file loop";
+    $tst_cmd[2]="dgn[0]=73 dgn_var[0]=73";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
 	
      #### Group Ensemble tests 
     if($HAVE_NETCDF4_H == 1){
 	
-#nces #14
+#nces #15
 # ncra -Y ncge -h -O  mdl.nc out.nc
 # ncks -g cesm -v tas1 out.nc
 	
@@ -934,7 +946,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#nces #15
+#nces #16
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O --nsm_sfx=_avg $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g cesm_avg -v tas1 %tmp_fl_00%";
@@ -944,7 +956,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-#nces #16
+#nces #17
 # ncra -Y ncge -h -O -G /gpe_grp mdl.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
@@ -956,11 +968,12 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 
-#nces #17
+#nces #18
 #ncra -Y ncge -O mdl.nc mdl2.nc out.nc
+ 
+    $dsc_sng="(Groups) 2 files ensembles";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g ecmwf -v tas1 %tmp_fl_00%";
-    $dsc_sng="(Groups) 2 files ensembles";
     $tst_cmd[2]="time[3]=4 tas1[3]=273.25";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -968,30 +981,31 @@ print "\n";
 
 
 # NEW NCO 4.4.2
-#nces #18 (check fixed variables)
+#nces #19 (check fixed variables)
 # ncra -Y ncge -h -O  mdl.nc out.nc
 # ncks -g cesm -v time out.nc
 	
+	$dsc_sng="(Groups) Ensemble fixed variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -g cesm -v time  %tmp_fl_00%";
-    $dsc_sng="(Groups) Ensemble fixed variables";
     $tst_cmd[2]="time dimension 0: time, size = 4 NC_DOUBLE, chunksize = 1 (Record coordinate is time)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-     } # #### Group Ensemble tests	
-	 	
-#nces #19 # TODO	
-    #for i in $(seq -w 0 999) ; do iii=$( printf "%03d" ${i} ) ; ln in.nc foo${iii}.nc ; done
-	# TO DO run bash script above by perl
-    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v dgn_var $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks %tmp_fl_00%";
-    $dsc_sng="Test file loop";
-    $tst_cmd[2]="dgn[0]=73 dgn_var[0]=73";
-    $tst_cmd[3]="SS_OK";
+# NEW NCO 4.4.3
+#nces #20 (error checking of ensemble variable dimensions)
+#  ncra  -Y ncge -O in_grp_4.nc in_grp_5.nc out.nc
+	
+	$dsc_sng="(Groups) Checking of conforming dimensions between ensemble variables";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_4.nc in_grp_5.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncge: ERROR Variables do not conform: variable </cesm/cesm_02/three_dmn_rec_var> has dimension <time> with size 6, expecting size 10";
+    $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array		 
+    $#tst_cmd=0; # Reset array
+
+   } # #### Group Ensemble tests	
+	 
     
 # print "paused - hit return to continue"; my $wait=<STDIN>;
     
