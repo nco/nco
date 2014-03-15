@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.490 2014-03-13 08:01:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.491 2014-03-15 21:23:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -926,6 +926,7 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
 void
 nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */                                
 (const int in_id,                      /* I [id] netCDF input-file ID of current file, starting with first  */
+ const int fl_idx,                     /* I [nbr] Index of file loop  */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) of *first* file */
 
 

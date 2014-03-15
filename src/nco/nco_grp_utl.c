@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1344 2014-03-15 04:25:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1345 2014-03-15 21:23:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9854,6 +9854,7 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
 void                  
 nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */                                
 (const int in_id,                      /* I [id] netCDF input-file ID of current file, starting with first */
+ const int fl_idx,                     /* I [nbr] Index of file loop  */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) of *first* file */
 {
   /* Check if ensembles are valid. Ensemble parent group exists, variables have the same dimension sizes and names */
@@ -9946,8 +9947,16 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
           /* Match relative name of template variable and variable found in file  */
           if(strcmp(var_nm_lst[idx_var],trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl]) == 0){
 
+            trv_sct *var_trv;
+
             /* Build new variable name */
             char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,var_nm_lst[idx_var]);
+
+            /* For first file, GTT was built */
+            if (fl_idx == 0){
+              var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
+              assert(var_trv);
+            }
 
             /* Get number of dimensions */
             (void)nco_inq_var(grp_ids[idx_grp],idx_var,var_nm_lst[idx_var],NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
@@ -9964,7 +9973,8 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
               size_t tpl_sz;                   /* [nbr] Size of template dimension */
 
               long dmn_sz;                     /* [nbr] Size of dimension */
-              long dmn_cnt;                    /* [nbr] Hyperslabbed size of dimension */  
+              long dmn_cnt_tpl;                /* [nbr] Hyperslabbed size of dimension of template variable */ 
+              long dmn_cnt_gtt;                /* [nbr] Hyperslabbed size of dimension of GTT variable (first file only) */  
 
               nco_bool flg_has_lmt;            /* [flg] Dimension has hyperslab */
 
@@ -9977,7 +9987,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
                 /* Inquire about hyperslabs*/
                 if(var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr){
                   flg_has_lmt=True;
-                  dmn_cnt=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+                  dmn_cnt_tpl=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
                 }
               }else if (var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd){
                 tpl_sz=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->sz;
@@ -9985,7 +9995,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
                 /* Inquire about hyperslabs*/
                 if(var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr){
                   flg_has_lmt=True;
-                  dmn_cnt=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+                  dmn_cnt_tpl=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
                 }
               }else assert(0);
 
@@ -10009,8 +10019,25 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
                 }
               } else {
 
+                /* Hyperslab */
 
-              } /* No hyperslab, compare dimension */
+                /* For first file, GTT was built */
+                if (fl_idx == 0){
+
+                  /* Get hyperslabbed size of GTT variable */
+                  if (var_trv->var_dmn[idx_dmn].crd){
+                    dmn_cnt_gtt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+                  }else if (var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd){
+                    dmn_cnt_gtt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+                  }else assert(0);
+
+                  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s <%s> <%s> hyperslabbed size %ld\n",nco_prg_nm_get(),fnc_nm,
+                    var_trv->nm_fll,dmn_nm,dmn_cnt_gtt);
+
+
+                } /* For first file, GTT was built */
+
+              } /* Hyperslab */
             } /* Loop dimensions */
 
             var_nm_fll=(char *)nco_free(var_nm_fll);
