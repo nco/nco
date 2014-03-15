@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1345 2014-03-15 21:23:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1346 2014-03-15 22:13:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9949,6 +9949,8 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 
             trv_sct *var_trv;
 
+            size_t lmn_cnt=1; /* [nbr] Total number of elements */
+
             /* Build new variable name */
             char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,var_nm_lst[idx_var]);
 
@@ -10011,6 +10013,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 
               /* No hyperslab, compare dimension */
               if (flg_has_lmt == False){
+                lmn_cnt*=dmn_sz;
                 /* Compare sizes */
                 if (dmn_sz != (long)tpl_sz){
                   (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable <%s> has dimension <%s> with size %ld, expecting size %ld\n",nco_prg_nm_get(),
@@ -10034,11 +10037,15 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
                   if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s <%s> <%s> hyperslabbed size %ld\n",nco_prg_nm_get(),fnc_nm,
                     var_trv->nm_fll,dmn_nm,dmn_cnt_gtt);
 
+                  lmn_cnt*=dmn_cnt_gtt;
 
                 } /* For first file, GTT was built */
 
               } /* Hyperslab */
             } /* Loop dimensions */
+
+            if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s <%s> elememts %ld\n",nco_prg_nm_get(),fnc_nm,
+              var_trv->nm_fll,lmn_cnt);
 
             var_nm_fll=(char *)nco_free(var_nm_fll);
 
