@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1347 2014-03-16 06:29:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1348 2014-03-16 06:43:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8513,7 +8513,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
               /* Group (NB: outer loop) is ensemble parent group */
               trv_tbl->lst[idx_tbl_1].flg_nsm_prn=True;
 
-              if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              if(nco_dbg_lvl_get() == nco_dbg_old){
                 (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll_prn);             
               }
 
@@ -8534,7 +8534,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll,skp_nbr*sizeof(char *));
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]=(char *)strdup(var_trv->nm_fll);
 
-                  if(nco_dbg_lvl_get() >= nco_dbg_dev) 
+                  if(nco_dbg_lvl_get() == nco_dbg_old) 
                     (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),
                     fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]);
 
@@ -8545,7 +8545,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm,tpl_nbr*sizeof(char *));
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm[tpl_nbr-1]=(char *)strdup(var_trv->nm);
 
-                  if(nco_dbg_lvl_get() >= nco_dbg_dev) 
+                  if(nco_dbg_lvl_get() == nco_dbg_old) 
                     (void)fprintf(stdout,"%s: DEBUG %s inserted template <%s>\n",nco_prg_nm_get(),
                     fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm[tpl_nbr-1]=(char *)strdup(var_trv->nm));
 
@@ -8631,7 +8631,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr*sizeof(char *));
             trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]=(char *)strdup(var_nm_fll);
 
-            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            if(nco_dbg_lvl_get() == nco_dbg_old){
               (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,
                 trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]);             
             }
@@ -8671,7 +8671,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   } /* Loop ensembles */
 
 
-  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+  if(nco_dbg_lvl_get() >= nco_dbg_fl && nco_dbg_lvl_get() != nco_dbg_dev){
     nco_prn_nsm(trv_tbl);
   }
 
@@ -8724,7 +8724,7 @@ nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed var
       /* Copy variable data  */
       if (flg_def == False) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,NULL,var_trv);
 
-      if(nco_dbg_lvl_get() >= nco_dbg_vrb){
+      if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO creating fixed variables <%s> in ensemble parent group <%s>\n",nco_prg_nm_get(),
           trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],grp_out_fll);
       }  
