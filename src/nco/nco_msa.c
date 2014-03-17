@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.240 2014-03-06 05:19:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.241 2014-03-17 03:03:32 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1459,6 +1459,8 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
  var_sct *var_in,                   /* I/O [sct] Variable */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
+  const char fnc_nm[]="nco_msa_var_get_trv()"; /* [sng] Function name  */
+
   int nbr_dim;
   int grp_id;
 
@@ -1496,6 +1498,23 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
 
   /* Copy from table to local MSA */
   (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
+
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s reading <%s>\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
+    /* Loop dimensions */
+    for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+      (void)fprintf(stdout,"%s: DEBUG %s <%s> elements %ld",nco_prg_nm_get(),fnc_nm,
+        lmt_msa[idx_dmn]->dmn_nm,lmt_msa[idx_dmn]->dmn_cnt);
+      for(int idx_lmt=0;idx_lmt<lmt_msa[idx_dmn]->lmt_dmn_nbr;idx_lmt++){
+        (void)fprintf(stdout," : %ld (%ld->%ld)",lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->cnt,
+          lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->srt,
+          lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->end);
+      }
+      (void)fprintf(stdout,"\n");
+    } /* Loop dimensions */
+  }
+
 
   /* Call super-dooper recursive routine */
   typ_tmp=var_in->type;

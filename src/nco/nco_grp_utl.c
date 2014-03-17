@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1348 2014-03-16 06:43:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1349 2014-03-17 03:03:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10044,8 +10044,9 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
               } /* Hyperslab */
             } /* Loop dimensions */
 
-            if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s <%s> elememts %ld\n",nco_prg_nm_get(),fnc_nm,
-              var_trv->nm_fll,lmn_cnt);
+            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              if (fl_idx == 0) (void)fprintf(stdout,"%s: DEBUG %s <%s> elements %ld\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,lmn_cnt);
+            }
 
             var_nm_fll=(char *)nco_free(var_nm_fll);
 
