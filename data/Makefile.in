@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.in,v 1.109 2014-03-16 06:29:41 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.in,v 1.110 2014-03-17 02:21:56 pvicente Exp $ -*-makefile-*-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -196,7 +196,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 test_data = big.nc in.nc in_rec_zero.nc
-test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc obs.nc mdl.nc mdl2.nc hdn.nc
+test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc cmip5.nc obs.nc mdl.nc mdl2.nc hdn.nc
 EXTRA_DIST = big.cdl dsm.cdl hdn.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 
 # Automake manual section 14:

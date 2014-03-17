@@ -1,8 +1,8 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.31 2014-03-16 06:29:41 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.32 2014-03-17 02:21:56 pvicente Exp $ -*-makefile-*-
 
 test_data = big.nc in.nc in_rec_zero.nc
 
-test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc obs.nc mdl.nc mdl2.nc hdn.nc
+test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc cmip5.nc obs.nc mdl.nc mdl2.nc hdn.nc
 
 # netCDF build rules
 %.nc : %.cdl
