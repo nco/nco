@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.478 2014-03-14 19:13:19 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.479 2014-03-18 01:45:59 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -667,12 +667,12 @@ print "\n";
 
 	
 # ncbo #23
-#ncbo -O --op_typ=add  mdl.nc mdl2.nc out.nc
+#ncbo -O --op_typ=add  mdl_1.nc mdl_2.nc out.nc
 #ncks -C -g cesm_01 -v tas1 out.nc
 # 544.4 = (file 1 tas1) 272.1 + (file 2 tas1) 272.3
 
-    $dsc_sng="(Groups) Process ensembles in both files mdl.nc mdl2.nc";
-    $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
+    $dsc_sng="(Groups) Process ensembles in both files mdl_1.nc mdl_2.nc";
+    $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc mdl_2.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -g cesm_01 -v tas1 %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4 tas1[3]=544.4";
     $tst_cmd[3]="SS_OK";   
@@ -680,11 +680,11 @@ print "\n";
     $#tst_cmd=0; # Reset array 
 
 # ncbo #24
-#ncbo -O mdl.nc mdl2.nc out.nc
+#ncbo -O mdl_1.nc mdl_2.nc out.nc
 #ncks -g cesm_01 -v time out.nc
 
-    $dsc_sng="(Groups) Process ensembles in both files mdl.nc mdl2.nc (check fixed variables)";
-    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
+    $dsc_sng="(Groups) Process ensembles in both files mdl_1.nc mdl_2.nc (check fixed variables)";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc mdl_2.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -g cesm_01 -v time %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4";
     $tst_cmd[3]="SS_OK";   
@@ -692,12 +692,12 @@ print "\n";
     $#tst_cmd=0; # Reset array 
 	
 # ncbo #25
-#ncbo -O --op_typ=add  mdl.nc obs.nc out.nc
+#ncbo -O --op_typ=add  mdl_1.nc obs.nc out.nc
 #ncks -C -g cesm_01 -v tas1 out.nc
 # 544.1 = (file 1 tas1) 272.1 + (file 2 tas1) 273.0
 
     $dsc_sng="(Groups) Process ensembles in file 1 with common variable at root in file 2";
-    $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg mdl.nc obs.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc obs.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -g cesm_01 -v tas1 %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4 tas1[3]=545.1";
     $tst_cmd[3]="SS_OK";   
@@ -705,11 +705,11 @@ print "\n";
     $#tst_cmd=0; # Reset array 	
 
 # ncbo #26
-#ncbo -O mdl.nc obs.nc out.nc
+#ncbo -O mdl_1.nc obs.nc out.nc
 #ncks -g ecmwf_01 -v time
 
     $dsc_sng="(Groups) Process ensembles in file 1 with common variable at root in file 2 (check fixed variables)";
-    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc obs.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc obs.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -g ecmwf_01 -v time %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4";
     $tst_cmd[3]="SS_OK";   
@@ -718,7 +718,7 @@ print "\n";
 
 	
 # ncbo #27
-#ncbo -O --op_typ=add  obs.nc mdl.nc  out.nc
+#ncbo -O --op_typ=add  obs.nc mdl_1.nc  out.nc
 #ncks -C -g cesm_01 -v tas1 out.nc
 # 544.1 =  (file 1 tas1) 273.0 + (file 2 tas1) 272.1 
 
@@ -726,7 +726,7 @@ print "\n";
 
     if (0) {
     $dsc_sng="(Groups) Process ensembles in file 2 with common variable at root in file 1";
-    $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg obs.nc mdl.nc  %tmp_fl_00%";
+    $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg obs.nc mdl_1.nc  %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -g cesm_01 -v tas1 %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4 tas1[3]=545.1";
     $tst_cmd[3]="SS_OK";   
@@ -939,12 +939,12 @@ print "\n";
     if($HAVE_NETCDF4_H == 1){
 	
 #nces #15
-# ncra -Y ncge -h -O  mdl.nc out.nc
+# ncra -Y ncge -h -O  mdl_1.nc out.nc
 # ncks -g cesm -v tas1 out.nc
 	
-    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g cesm -v tas1 %tmp_fl_00%";
-    $dsc_sng="(Groups) 1 file mdl.cdl ensemble";
+    $dsc_sng="(Groups) 1 file mdl_1.cdl ensemble";
     $tst_cmd[2]="time[3]=4 tas1[3]=272.15";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -952,7 +952,7 @@ print "\n";
 	
 #nces #16
 	
-    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O --nsm_sfx=_avg $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O --nsm_sfx=_avg $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g cesm_avg -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) 1 file mdl.cdl --nsm_sfx suffix ensemble";
     $tst_cmd[2]="time[3]=4 tas1[3]=272.15 ";
@@ -961,11 +961,11 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 	
 #nces #17
-# ncra -Y ncge -h -O -G /gpe_grp mdl.nc out.nc
+# ncra -Y ncge -h -O -G /gpe_grp mdl_1.nc out.nc
 	
-    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g /gpe_grp/ecmwf -v tas1 %tmp_fl_00%";
-    $dsc_sng="(Groups) GPE 1 file mdl.cdl ensemble";
+    $dsc_sng="(Groups) GPE 1 file mdl_1.cdl ensemble";
     $tst_cmd[2]="time[3]=4 tas1[3]=273.15 ";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -973,10 +973,10 @@ print "\n";
 	
 
 #nces #18
-#ncra -Y ncge -O mdl.nc mdl2.nc out.nc
+#ncra -Y ncge -O mdl_1.nc mdl_2.nc out.nc
  
     $dsc_sng="(Groups) 2 files ensembles";
-    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc mdl_2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g ecmwf -v tas1 %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4 tas1[3]=273.25";
     $tst_cmd[3]="SS_OK";
@@ -986,11 +986,11 @@ print "\n";
 
 # NEW NCO 4.4.2
 #nces #19 (check fixed variables)
-# ncra -Y ncge -h -O  mdl.nc out.nc
+# ncra -Y ncge -h -O  mdl_1.nc out.nc
 # ncks -g cesm -v time out.nc
 	
 	$dsc_sng="(Groups) Ensemble fixed variables";
-    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -g cesm -v time  %tmp_fl_00%";
     $tst_cmd[2]="time dimension 0: time, size = 4 NC_DOUBLE, chunksize = 1 (Record coordinate is time)";
     $tst_cmd[3]="SS_OK";
