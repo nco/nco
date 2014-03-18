@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1350 2014-03-18 01:48:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1351 2014-03-18 22:41:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9090,22 +9090,25 @@ nco_cmn_nsm_var                        /* [fnc] Common variable exist in ensembl
               *flg_var_cmn_rth=True;
 
               /* Add to list  */
-              (*var_nm_rth)->lst=(nm_sct *)nco_realloc((*var_nm_rth)->lst,(nbr_var+1)*sizeof(nm_sct));
-              (*var_nm_rth)->lst[nbr_var].nm=strdup(var_trv_2.nm_fll);
+              (*var_nm_rth)->lst=(nm_sct *)nco_realloc((*var_nm_rth)->lst,(nbr_var_rth+1)*sizeof(nm_sct));
+              (*var_nm_rth)->lst[nbr_var_rth].nm=strdup(var_trv_2.nm_fll);
               (*var_nm_rth)->nbr++;
-              nbr_var++;
+              nbr_var_rth++;
 
             } else {
 
               *flg_var_cmn=True;
 
               /* Add to list  */
-              (*var_nm)->lst=(nm_sct *)nco_realloc((*var_nm)->lst,(nbr_var_rth+1)*sizeof(nm_sct));
+              (*var_nm)->lst=(nm_sct *)nco_realloc((*var_nm)->lst,(nbr_var+1)*sizeof(nm_sct));
               (*var_nm)->lst[nbr_var].nm=strdup(var_trv_2.nm_fll);
               (*var_nm)->nbr++;
-              nbr_var_rth++;
+              nbr_var++;
 
             } /* ! Root variable */
+
+            break;
+
           } /* Match template name from table 2 in table 1 */
         } /* Loop over table 2 */
       } /* Loop variables table 1 */
