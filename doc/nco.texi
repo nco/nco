@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.975 2014-03-10 23:38:18 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.976 2014-03-18 01:48:28 pvicente Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4504,16 +4504,16 @@ cat > ~/ncdismember << 'EOF'
 # Optional fourth argument cf_vrs is CF version to check
 # Optional fifth argument opt passes straight through to ncks
 # chmod a+x ~/sh/ncdismember
-# ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp
-# ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp
-# ncdismember http://dust.ess.uci.edu/nco/mdl.nc /data/zender/nco/tmp
+# ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp
+# ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp
+# ncdismember http://dust.ess.uci.edu/nco/mdl_1.nc /data/zender/nco/tmp
 # ncdismember http://thredds-test.ucar.edu/thredds/dodsC/testdods/foo.nc /data/zender/nco/tmp
-# ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf
-# ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf 1.3
-# ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf 1.5 --fix_rec_dmn=all
+# ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf
+# ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf 1.3
+# ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf 1.5 --fix_rec_dmn=all
 
 # Command line argument defaults
-fl_in="${HOME}/nco/data/mdl.nc" # [sng] Input file to dismember/check
+fl_in="${HOME}/nco/data/mdl_1.nc" # [sng] Input file to dismember/check
 drc_out="${DATA}/nco/tmp" # [sng] Output directory
 flg_cf='0' # [flg] Perform CF-compliance check
 cf_vrs='1.5' # [sng] Compliance-check this CF version (e.g., '1.5')
@@ -4558,15 +4558,15 @@ EOF
 chmod 755 ~/ncdismember # Make command executable
 /bin/mv -f ~/ncdismember ~/sh # Store in location on $PATH, e.g., /usr/local/bin
 
-zender@roulee:~$ ncdismember ~/nco/data/mdl.nc ${DATA}/nco/tmp
-NCO dismembering file /home/zender/nco/data/mdl.nc
-/data/zender/nco/tmp/mdl.nc/cesm.cesm_01.nc
-/data/zender/nco/tmp/mdl.nc/cesm.cesm_02.nc
-/data/zender/nco/tmp/mdl.nc/cesm.nc
-/data/zender/nco/tmp/mdl.nc/ecmwf.ecmwf_01.nc
-/data/zender/nco/tmp/mdl.nc/ecmwf.ecmwf_02.nc
-/data/zender/nco/tmp/mdl.nc/ecmwf.nc
-/data/zender/nco/tmp/mdl.nc/root.nc
+zender@roulee:~$ ncdismember ~/nco/data/mdl_1.nc ${DATA}/nco/tmp
+NCO dismembering file /home/zender/nco/data/mdl_1.nc
+/data/zender/nco/tmp/mdl_1.nc/cesm.cesm_01.nc
+/data/zender/nco/tmp/mdl_1.nc/cesm.cesm_02.nc
+/data/zender/nco/tmp/mdl_1.nc/cesm.nc
+/data/zender/nco/tmp/mdl_1.nc/ecmwf.ecmwf_01.nc
+/data/zender/nco/tmp/mdl_1.nc/ecmwf.ecmwf_02.nc
+/data/zender/nco/tmp/mdl_1.nc/ecmwf.nc
+/data/zender/nco/tmp/mdl_1.nc/root.nc
 @end verbatim
 @end example
 A (potentially more portable) binary executable could be written to
@@ -4604,8 +4604,8 @@ Forschungszentrum J@"ulich and distributed at
 @command{cfchecker} command.
 @example
 @verbatim
-zender@roulee:~$ ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf
-NCO dismembering file /home/zender/nco/data/mdl.nc
+zender@roulee:~$ ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf
+NCO dismembering file /home/zender/nco/data/mdl_1.nc
 CFchecker reports CF-compliance of each group in flat netCDF3 format
 WARNING: Using the default (non-CF) Udunits database
 cesm.cesm_01.nc: 
@@ -4744,7 +4744,7 @@ sudo python setup.py install
 mkdir -p ${DATA}/nco/tmp/hdf
 # Many datasets work with a simpler command...
 ncdismember ~/nco/data/in.nc ${DATA}/nco/tmp/hdf cf 1.5
-ncdismember ~/nco/data/mdl.nc ${DATA}/nco/tmp/hdf cf 1.5
+ncdismember ~/nco/data/mdl_1.nc ${DATA}/nco/tmp/hdf cf 1.5
 ncdismember ${DATA}/hdf/AMSR_E_L2_Rain_V10_200905312326_A.hdf \
             ${DATA}/nco/tmp/hdf cf 1.5
 ncdismember ${DATA}/hdf/BUV-Nimbus04_L3zm_v01-00-2012m0203t144121.h5 \

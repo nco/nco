@@ -936,7 +936,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.6 release"
 	cvs tag -c nco-4_3_6;cvs tag -c nco-4_3_6-1
 
-	* Add mdl.cdl
+	* Add mdl_1.cdl
 
 2013-09-26  Pedro Vicente  <pvicente@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1349 2014-03-17 03:03:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1350 2014-03-18 01:48:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9203,7 +9203,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           nco_prn_nsm(trv_tbl_2);             
         }
 
-        /* ncbo -O mdl.nc mdl2.nc out.nc */
+        /* ncbo -O mdl_1.nc mdl_2.nc out.nc */
 
         /* Use table 1 as template for group creation */
         flg_grp_1=True;
@@ -9222,7 +9222,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         if (flg_var_cmn_rth){
 
           /* file 2 has a common object at root  */
-          /* ncbo -O mdl.nc obs.nc out.nc */
+          /* ncbo -O mdl_1.nc obs.nc out.nc */
 
           if(nco_dbg_lvl_get() >= nco_dbg_var){
             (void)fprintf(stdout,"%s: processing root variables from file 2\n",nco_prg_nm_get());            
@@ -9262,7 +9262,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         if (flg_var_cmn_rth){
 
           /* file 1 has a common object at root  */
-          /* ncbo -O obs.nc mdl.nc  out.nc */
+          /* ncbo -O obs.nc mdl_1.nc  out.nc */
 
           if(nco_dbg_lvl_get() >= nco_dbg_var){
             (void)fprintf(stdout,"%s: processing root variables from file 1\n",nco_prg_nm_get());            

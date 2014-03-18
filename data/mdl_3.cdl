@@ -1,6 +1,6 @@
 // -*-C++-*-
 // Generate netCDF file with:
-// ncgen -k netCDF-4 -b -o ~/nco/data/mdl.nc ~/nco/data/mdl.cdl
+// ncgen -k netCDF-4 -b -o ~/nco/data/mdl_3.nc ~/nco/data/mdl_3.cdl
 
 netcdf mdl {
 

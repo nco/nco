@@ -1,8 +1,8 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.32 2014-03-17 02:21:56 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.33 2014-03-18 01:48:28 pvicente Exp $ -*-makefile-*-
 
 test_data = big.nc in.nc in_rec_zero.nc
 
-test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc cmip5.nc obs.nc mdl.nc mdl2.nc hdn.nc
+test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc cmip5.nc obs.nc mdl_1.nc mdl_2.nc hdn.nc
 
 # netCDF build rules
 %.nc : %.cdl
@@ -49,15 +49,15 @@ hdn.nc : hdn.cdl
 obs.nc : obs.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
-mdl.nc : mdl.cdl
+mdl_1.nc : mdl_1.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
-mdl2.nc : mdl2.cdl
+mdl_2.nc : mdl_2.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 all: ${test_data} ${test_data_netCDF4}
 
-EXTRA_DIST = big.cdl dsm.cdl hdn.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
+EXTRA_DIST = big.cdl dsm.cdl hdn.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl_1.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 
 # Automake manual section 14:
 # If configure built it, 'distclean' should delete it
@@ -65,7 +65,7 @@ EXTRA_DIST = big.cdl dsm.cdl hdn.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl
 DISTCLEANFILES = foo*
 
 # Build procedure produces these files:
-CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc big.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc hdn.nc dsm.nc obs.nc mdl.nc mdl2.nc buggy.nc in_rec_zero.nc ../src/nco_c++/in.nc
+CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc big.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc hdn.nc dsm.nc obs.nc mdl_1.nc mdl_2.nc buggy.nc in_rec_zero.nc ../src/nco_c++/in.nc
 
 MAINTAINERCLEANFILES = Makefile.in
 
