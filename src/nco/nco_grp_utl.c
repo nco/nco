@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1351 2014-03-18 22:41:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1352 2014-03-18 23:36:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9829,7 +9829,9 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
       }
 
       /* Both objects exist in same location, both flagged for extraction */
-      if(trv_1 && trv_2 && cmn_lst[idx_cmn].flg_in_fl[0] && cmn_lst[idx_cmn].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr) assert(0);
+      if(trv_1 && trv_2 && cmn_lst[idx_cmn].flg_in_fl[0] && cmn_lst[idx_cmn].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
+        continue;
+      }
 
       /* Object exists and is flagged for extraction only in file 2 */
       if(trv_2 && trv_2->flg_xtr && cmn_lst[idx_cmn].flg_in_fl[0] == False && cmn_lst[idx_cmn].flg_in_fl[1] == True){
