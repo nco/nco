@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1355 2014-03-19 01:36:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1356 2014-03-19 18:12:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9220,10 +9220,6 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           /* file 2 has a common object at root  */
           /* ncbo -O mdl_1.nc obs.nc out.nc */
 
-          if(nco_dbg_lvl_get() >= nco_dbg_var){
-            (void)fprintf(stdout,"%s: processing root variables from file 2\n",nco_prg_nm_get());            
-          }
-
           /* Use table 1 as template for group creation */
           flg_grp_1=True;
 
@@ -9233,7 +9229,11 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           /* Common variables not at root */
         } else if (flg_var_cmn){
 
-          ;
+          /* Use table 1 as template for group creation */
+          flg_grp_1=True;
+
+          /* Process (define, write) variables belonging to ensembles only in 1 file  */
+          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm,flg_grp_1,flg_dfn);              
 
         }else {
 
@@ -9265,21 +9265,24 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           /* file 1 has a common object at root  */
           /* ncbo -O obs.nc mdl_1.nc  out.nc */
 
-          if(nco_dbg_lvl_get() >= nco_dbg_var){
-            (void)fprintf(stdout,"%s: processing root variables from file 1\n",nco_prg_nm_get());            
-          }
-
           /* Do NOT use table 1 as template for group creation */
           flg_grp_1=False;
 
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
 
-
           /* Common variables not at root */
         } else if (flg_var_cmn){
 
-          ;
+          /* file 1 has a common object not at root  */
+          /* ncra  -Y ncge -O mdl_3.nc ncge_out.nc 
+          ncbo  -O --op_typ=add ncge_out.nc  mdl_3.nc  out.nc */
+
+          /* Do NOT use table 1 as template for group creation */
+          flg_grp_1=False;
+
+          /* Process (define, write) variables belonging to ensembles only in 1 file  */
+          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm,flg_grp_1,flg_dfn);              
 
         } else {
 
