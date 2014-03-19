@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.479 2014-03-18 01:45:59 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.480 2014-03-19 01:08:50 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -647,7 +647,7 @@ print "\n";
 
     $dsc_sng="(Groups) Process absolute match variables -v var1 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -v var1 %tmp_fl_00%";
     $tst_cmd[2]="lon[3]=4 var1[3]=-1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);

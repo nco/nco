@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1353 2014-03-18 23:47:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1354 2014-03-19 01:08:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9171,13 +9171,6 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
     /* Process common variables (same path in both files) */
     (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
-
-    /* Memory management for common names list */
-    for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
-    if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
-
-    /* Nothing else to do */
-    return;
 
   } /* There is a variable with same absolute path in both files */
 
