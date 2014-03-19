@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1354 2014-03-19 01:08:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1355 2014-03-19 01:36:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9230,9 +9230,14 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
 
+          /* Common variables not at root */
+        } else if (flg_var_cmn){
+
+          ;
+
         }else {
 
-          /* file 2 has no common objects at root  */
+          /* file 2 has no common objects   */
           (void)fprintf(stdout,"%s: ERROR no common variables found. HINT: %s expects to find at least one variable of the same name in similar locations in both input files. When such variables are not found in identical locations (i.e., on the same path) then %s attempts group broadcasting to find comparable variables in sub-groups and ensembles. This search for comparable variables has failed. Read more about group broadcasting at http://nco.sf.net/nco.html#grp_brd\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
         } /* ! flg_var_cmn_rth */
@@ -9270,9 +9275,15 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
 
+
+          /* Common variables not at root */
+        } else if (flg_var_cmn){
+
+          ;
+
         } else {
 
-          /* file 1 has no common objects at root  */
+          /* file 1 has no common objects */
           (void)fprintf(stdout,"%s: ERROR no common variables found. HINT: %s expects to find at least one variable of the same name in similar locations in both input files. When such variables are not found in identical locations (i.e., on the same path) then %s attempts group broadcasting to find comparable variables in sub-groups and ensembles. This search for comparable variables has failed. Read more about group broadcasting at http://nco.sf.net/nco.html#grp_brd\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
 
