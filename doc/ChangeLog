@@ -1,6 +1,6 @@
 2014-03-19 Pedro Vicente  <pvicente@uci.edu>
 
-	* ncbo #30: Process cases where both an absolute path variable exists in 2 files and a relative variable match exists
+	* ncbo #29: Process cases where both an absolute path variable exists in 2 files and a relative variable match exists
 	 that it is the result of processing ncge with 1 ensemble member  
 
 
