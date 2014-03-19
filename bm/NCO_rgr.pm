@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.480 2014-03-19 01:08:50 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.481 2014-03-19 19:05:07 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -717,12 +717,14 @@ print "\n";
     $#tst_cmd=0; # Reset array 	
 
 	
-# ncbo #27
+# ncbo 
 #ncbo -O --op_typ=add  obs.nc mdl_1.nc  out.nc
 #ncks -C -g cesm_01 -v tas1 out.nc
 # 544.1 =  (file 1 tas1) 273.0 + (file 2 tas1) 272.1 
 
-#FXM ncbo group broadcasting
+#FXM ncbo group broadcasting, "time" dimension is created at root because conflicting logic in nco_prc_cmn() uses 
+# both RNK_1_GTR and table flag of file 1 or 2
+# result is time[3] instead of time[3]=4
 
     if (0) {
     $dsc_sng="(Groups) Process ensembles in file 2 with common variable at root in file 1";
@@ -734,7 +736,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 	 
 	}  
 	
-# ncbo #28
+# ncbo #27
 #ncbo -O cmip5.nc obs.nc out.nc
 #ncks -C -g ecmwf -v tas1 out.nc
 # obs.nc tas1=273, cmip5.nc giss tas1=274
@@ -747,7 +749,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 	
-# ncbo #29
+# ncbo #28
 #ncbo -O  obs.nc cmip5.nc out.nc
 #ncks -C -g ecmwf -v tas1 out.nc
 # obs.nc tas1=273, cmip5.nc giss tas1=274
@@ -758,9 +760,33 @@ print "\n";
     $tst_cmd[2]="time[3]=4 tas1[3]=-1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	    			    			    	 			    	   
-	    			    	   
+    $#tst_cmd=0; # Reset array 	
+	
+# ncbo #29
+#ncbo ensemble with 1 member 
+#ncra -Y ncge -O mdl_3.nc ncge_out.nc
+#ncbo  -O --op_typ=add ncge_out.nc mdl_3.nc out.nc
+#ncks -H -C -g cesm_01 -v tas1 out.nc
+#ncge_out.nc =
+#/cesm/tas1
+#time[0]=1 tas1[0]=272.15 
+#mdl_3.nc =
+#/cesm/cesm_01/tas1
+#time[0]=1 tas1[0]=272.1
+#result =
+# 544.25 = 272.15 + 272.1
 
+    if (0) {
+    $dsc_sng="(Groups) Ensemble with 1 member (mdl_3.nc)";
+	$tst_cmd[0]="ncra -Y ncge -O $fl_fmt $nco_D_flg $in_pth_arg mdl_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg %tmp_fl_00% mdl_3.nc %tmp_fl_01%";
+	$tst_cmd[2]="ncks -H -C -g cesm_01 -v tas1 %tmp_fl_01%";
+    $tst_cmd[3]="time[3] tas1[3]=544.25";
+    $tst_cmd[4]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 
+	}	    		    			    			    	 			    	   
+	    			    	   
    } # end HAVE_NETCDF4_H
    
    
