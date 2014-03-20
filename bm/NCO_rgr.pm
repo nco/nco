@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.481 2014-03-19 19:05:07 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.482 2014-03-20 03:22:00 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -765,7 +765,7 @@ print "\n";
 # ncbo #29
 #ncbo ensemble with 1 member 
 #ncra -Y ncge -O mdl_3.nc ncge_out.nc
-#ncbo  -O --op_typ=add ncge_out.nc mdl_3.nc out.nc
+#ncbo -O --op_typ=add ncge_out.nc mdl_3.nc out.nc
 #ncks -H -C -g cesm_01 -v tas1 out.nc
 #ncge_out.nc =
 #/cesm/tas1
@@ -776,16 +776,14 @@ print "\n";
 #result =
 # 544.25 = 272.15 + 272.1
 
-    if (0) {
     $dsc_sng="(Groups) Ensemble with 1 member (mdl_3.nc)";
 	$tst_cmd[0]="ncra -Y ncge -O $fl_fmt $nco_D_flg $in_pth_arg mdl_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg %tmp_fl_00% mdl_3.nc %tmp_fl_01%";
+    $tst_cmd[1]="ncbo --op_typ=add -O $fl_fmt $nco_D_flg %tmp_fl_00% $in_pth/mdl_3.nc %tmp_fl_01%";
 	$tst_cmd[2]="ncks -H -C -g cesm_01 -v tas1 %tmp_fl_01%";
     $tst_cmd[3]="time[3] tas1[3]=544.25";
     $tst_cmd[4]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 
-	}	    		    			    			    	 			    	   
+    $#tst_cmd=0; # Reset array     		    			    			    	 			    	   
 	    			    	   
    } # end HAVE_NETCDF4_H
    
