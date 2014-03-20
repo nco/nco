@@ -1,14 +1,13 @@
 2014-03-19 Pedro Vicente  <pvicente@uci.edu>
 
-	* ncbo #29: Process cases where both an absolute path variable exists in 2 files and a relative variable match exists
-	 that it is the result of processing ncge with 1 ensemble member  
-
+	* ncbo #29: Process cases where both an absolute path variable exists in 2 files and
+	a relative variable match exists as a result of processing ncge with 1 ensemble member
 
 2014-03-13 Pedro Vicente  <pvicente@uci.edu>
 
 	* nces #20: Checking of conforming dimensions between ensemble variables
-	
-	* nco_chk_nsm() Check if ensembles dimensions are valid   
+
+	* nco_chk_nsm() Check if ensembles dimensions are valid
 
 2014-03-12 Pedro Vicente  <pvicente@uci.edu>
 
