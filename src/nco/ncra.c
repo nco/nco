@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.523 2014-03-15 21:23:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.524 2014-03-21 03:11:18 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -51,8 +51,8 @@
    nces -O -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
    nces -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc
 
-   ncra -Y ncge -O -p ~/nco/data mdl.nc ~/foo.nc
-   ncra -Y ncge -O --nsm_sfx=_avg -p ~/nco/data mdl.nc ~/foo.nc */
+   ncra -Y ncge -O -p ~/nco/data mdl_1.nc ~/foo.nc
+   ncra -Y ncge -O --nsm_sfx=_avg -p ~/nco/data mdl_1.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.523 2014-03-15 21:23:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.523 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.524 2014-03-21 03:11:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.524 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

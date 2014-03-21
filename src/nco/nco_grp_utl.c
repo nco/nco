@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1356 2014-03-19 18:12:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1357 2014-03-21 03:11:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2333,7 +2333,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst_dmn[idx].lmt_msa.dmn_sz_org=dmn_sz;
     trv_tbl->lst_dmn[idx].lmt_msa.dmn_cnt=dmn_sz;
     trv_tbl->lst_dmn[idx].lmt_msa.WRP=False;
-    trv_tbl->lst_dmn[idx].lmt_msa.BASIC_DMN=True;
+    trv_tbl->lst_dmn[idx].lmt_msa.NON_HYP_DMN=True;
     trv_tbl->lst_dmn[idx].lmt_msa.MSA_USR_RDR=False; 
     trv_tbl->lst_dmn[idx].lmt_msa.lmt_dmn_nbr=0;
     trv_tbl->lst_dmn[idx].lmt_msa.lmt_crr=0;
@@ -2539,7 +2539,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.dmn_cnt=dmn_trv.sz;
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.dmn_sz_org=dmn_trv.sz;
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.WRP=False;
-            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.BASIC_DMN=True;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.NON_HYP_DMN=True;
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.MSA_USR_RDR=False;  
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn_nbr=0;
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_crr=0;
@@ -3065,7 +3065,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->dmn_id=crd->dmn_id;
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->grp_dpt=crd->grp_dpt;
             /* MSA */
-            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->lmt_msa.BASIC_DMN=crd->lmt_msa.BASIC_DMN;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->lmt_msa.NON_HYP_DMN=crd->lmt_msa.NON_HYP_DMN;
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->lmt_msa.dmn_cnt=crd->lmt_msa.dmn_cnt;
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->lmt_msa.dmn_nm=(char *)strdup(crd->lmt_msa.dmn_nm);
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->lmt_msa.dmn_sz_org=crd->lmt_msa.dmn_sz_org;
@@ -4262,7 +4262,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         crd=var_trv->var_dmn[idx_dmn].crd;
         dmn_cmn[idx_dmn].sz=crd->sz;
         dmn_cmn[idx_dmn].is_rec_dmn=crd->is_rec_dmn;
-        dmn_cmn[idx_dmn].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
+        dmn_cmn[idx_dmn].NON_HYP_DMN=crd->lmt_msa.NON_HYP_DMN;
         dmn_cmn[idx_dmn].dmn_cnt=crd->lmt_msa.dmn_cnt;
         strcpy(dmn_cmn[idx_dmn].nm,crd->nm);
       }else{
@@ -4270,7 +4270,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         dmn_trv=var_trv->var_dmn[idx_dmn].ncd;
         dmn_cmn[idx_dmn].sz=dmn_trv->sz;
         dmn_cmn[idx_dmn].is_rec_dmn=dmn_trv->is_rec_dmn;
-        dmn_cmn[idx_dmn].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
+        dmn_cmn[idx_dmn].NON_HYP_DMN=dmn_trv->lmt_msa.NON_HYP_DMN;
         dmn_cmn[idx_dmn].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
         strcpy(dmn_cmn[idx_dmn].nm,dmn_trv->nm);
       } /* This dimension has a coordinate variable */
@@ -4712,7 +4712,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         /* Define record dimension made for ncecat */
         dmn_cmn[0].sz=NC_UNLIMITED;
         dmn_cmn[0].is_rec_dmn=True;
-        dmn_cmn[0].BASIC_DMN=True;
+        dmn_cmn[0].NON_HYP_DMN=True;
         dmn_cmn[0].dmn_cnt=NC_UNLIMITED;
         strcpy(dmn_cmn[0].nm,rec_dmn_nm);
         /* Define full name */ 
@@ -6772,7 +6772,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd;
 
               /* Limit is same as dimension in input file? */
-              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.BASIC_DMN=False;
+              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.NON_HYP_DMN=False;
 
               /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
               (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,lmt[lmt_idx]);
@@ -6801,7 +6801,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               dmn_trv_sct *ncd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd;
 
               /* Limit is same as dimension in input file ? */
-              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.BASIC_DMN=False;
+              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.NON_HYP_DMN=False;
 
               /* Parse user-specified limits into hyperslab specifications. NOTE: Use False parameter and "dmn" */
               (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,ncd->grp_nm_fll,ncd->nm,ncd->sz,ncd->is_rec_dmn,False,lmt[lmt_idx]);
@@ -8006,7 +8006,7 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
       crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd;
 
       /* Limit is same as dimension in input file? */
-      trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.BASIC_DMN=False;
+      trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.NON_HYP_DMN=False;
 
       /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
       (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,lmt[idx_lmt]);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.504 2014-03-05 22:02:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.505 2014-03-21 03:11:18 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -802,7 +802,7 @@ extern "C" {
     char *dmn_nm;         /* [sng] Dimension name */
     long dmn_sz_org;      /* [nbr] Original size of dimension */
     long dmn_cnt;         /* [nbr] Hyperslabbed size of dimension */  
-    nco_bool BASIC_DMN;   /* [flg] Limit is same as dimension in input file */
+    nco_bool NON_HYP_DMN;   /* [flg] Limit is same as dimension in input file */
     nco_bool WRP;         /* [flg] Limit is wrapped (true if wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     int lmt_dmn_nbr;      /* [nbr] Number of lmt arguments */
@@ -1097,7 +1097,7 @@ extern "C" {
     char *nm_fll; /* [sng] Full dimension name */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension/coordinate? */
     size_t sz; /* [nbr] Size of dimension/coordinate */
-    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
+    nco_bool NON_HYP_DMN; /* [flg] Limit is same as dimension in input file */
     size_t dmn_cnt; /* [nbr] Hyperslabbed size of dimension */ 
     int id; /* [id] Dimension ID */ 
   } dmn_cmn_sct; 
