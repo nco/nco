@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.286 2014-03-05 21:46:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.287 2014-03-25 02:19:18 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -947,14 +947,21 @@ trv_tbl_nsm_nm                         /* [fnc] Return variable object  */
  const char * const grp_nm_fll_prn,    /* I [sng] Ensemble parent group */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
-  /* Purpose: Return variable object */
+  /* Purpose: Return variable object that matches criteria of ensemble parent group and variable relative name */
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    /* Match ensemble parent group and variable relative name */
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && 
-      strcmp(var_nm,trv_tbl->lst[idx_tbl].nm) == 0 &&
-      strcmp(grp_nm_fll_prn,trv_tbl->lst[idx_tbl].grp_nm_fll_prn) == 0){
-      return &trv_tbl->lst[idx_tbl];
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];  
+    if(var_trv.nco_typ == nco_obj_typ_var && strcmp(var_nm,var_trv.nm) == 0){
+
+      if (strcmp(grp_nm_fll_prn,var_trv.grp_nm_fll_prn) == 0){
+        return &trv_tbl->lst[idx_tbl];
+      }
+
+      if (strcmp(grp_nm_fll_prn,var_trv.grp_nm_fll) == 0){
+        return &trv_tbl->lst[idx_tbl];
+      }
+
+
     }
   }
 

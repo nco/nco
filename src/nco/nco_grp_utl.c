@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1358 2014-03-25 00:09:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1359 2014-03-25 02:19:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9349,7 +9349,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
   if (flg_grp_1 == True){
 
     if(nco_dbg_lvl_get() >= nco_dbg_var){
-      (void)fprintf(stdout,"%s: Processing ensembles from from 1\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: Processing ensembles from file 1\n",nco_prg_nm_get());
     }
 
     /* Loop ensembles */
@@ -9385,11 +9385,12 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
           trv_2=trv_tbl_nsm_nm(trv_1->nm,trv_tbl_1->nsm[idx_nsm].grp_nm_fll_prn,trv_tbl_2);
 
           /* If match object in table 2 does not exist, that's an error  */
+        
           if (!trv_2){
             (void)fprintf(stdout,"%s: ERROR No match variable found for <%s>\n",nco_prg_nm_get(),trv_1->nm_fll);
             nco_exit(EXIT_FAILURE);
           }
-
+         
           /* Both variables exist  */
           if(trv_1 && trv_2){
 
