@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.288 2014-03-25 21:36:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.289 2014-03-25 22:14:11 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -956,7 +956,6 @@ trv_tbl_nsm_nm                         /* [fnc] Return variable object  */
       if (strcmp(grp_nm_fll_prn,var_trv.grp_nm_fll_prn) == 0){
         return &trv_tbl->lst[idx_tbl];
       }
-
 
     }
   }
