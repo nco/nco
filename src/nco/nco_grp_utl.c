@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1359 2014-03-25 02:19:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1360 2014-03-25 17:59:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8671,7 +8671,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   } /* Loop ensembles */
 
 
-  if(nco_dbg_lvl_get() >= nco_dbg_fl && nco_dbg_lvl_get() != nco_dbg_dev){
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
     nco_prn_nsm(trv_tbl);
   }
 
@@ -9990,7 +9990,6 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
               size_t tpl_sz;                   /* [nbr] Size of template dimension */
 
               long dmn_sz;                     /* [nbr] Size of dimension */
-              long dmn_cnt_tpl;                /* [nbr] Hyperslabbed size of dimension of template variable */ 
               long dmn_cnt_gtt;                /* [nbr] Hyperslabbed size of dimension of GTT variable (first file only) */  
 
               nco_bool flg_has_lmt;            /* [flg] Dimension has hyperslab */
@@ -10004,7 +10003,6 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
                 /* Inquire about hyperslabs*/
                 if(var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr){
                   flg_has_lmt=True;
-                  dmn_cnt_tpl=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
                 }
               }else if (var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd){
                 tpl_sz=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->sz;
@@ -10012,7 +10010,6 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
                 /* Inquire about hyperslabs*/
                 if(var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr){
                   flg_has_lmt=True;
-                  dmn_cnt_tpl=var_tpl_trv[idx_tpl]->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
                 }
               }else assert(0);
 
