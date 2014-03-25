@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.287 2014-03-25 02:19:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.288 2014-03-25 21:36:44 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -954,10 +954,6 @@ trv_tbl_nsm_nm                         /* [fnc] Return variable object  */
     if(var_trv.nco_typ == nco_obj_typ_var && strcmp(var_nm,var_trv.nm) == 0){
 
       if (strcmp(grp_nm_fll_prn,var_trv.grp_nm_fll_prn) == 0){
-        return &trv_tbl->lst[idx_tbl];
-      }
-
-      if (strcmp(grp_nm_fll_prn,var_trv.grp_nm_fll) == 0){
         return &trv_tbl->lst[idx_tbl];
       }
 
