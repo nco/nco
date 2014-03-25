@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1357 2014-03-21 03:11:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1358 2014-03-25 00:09:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8534,7 +8534,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll,skp_nbr*sizeof(char *));
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]=(char *)strdup(var_trv->nm_fll);
 
-                  if(nco_dbg_lvl_get() == nco_dbg_old) 
+                  if(nco_dbg_lvl_get() >= nco_dbg_dev) 
                     (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),
                     fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]);
 
@@ -8639,7 +8639,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             /* Free */
             var_nm_fll=(char *)nco_free(var_nm_fll);
 
-          } /* Insert members by builing name from group and template */
+          } /* Insert members by building name from group and template */
 
           /* Mark fixed templates as non extracted */
           if (flg_fix_xtr == True){

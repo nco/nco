@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.242 2014-03-21 03:11:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.243 2014-03-25 00:09:20 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1500,7 +1500,7 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
 
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+  if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s reading <%s>\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
     /* Loop dimensions */
     for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
