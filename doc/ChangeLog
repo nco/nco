@@ -1,3 +1,11 @@
+2014-03-26 Pedro Vicente  <pvicente@uci.edu>
+
+	* ncwa #58-62: Cell methods regressions
+	
+	* ncwa #63: Cell methods test with repeated dimension names (test absolute dimension name)
+	
+	* nco_cnv_cf_cll_mth_add() Use absolute dimension name to match dimensions
+
 2014-03-19 Pedro Vicente  <pvicente@uci.edu>
 
 	* ncbo #29: Process cases where both an absolute path variable exists in 2 files and

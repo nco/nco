@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1360 2014-03-25 17:59:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1361 2014-03-26 18:55:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6109,6 +6109,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
               }
 
               (*dmn_avg)[nbr_avg_dmn]->nm=(char *)strdup(trv_obj.var_dmn[idx_var_dmn].dmn_nm);
+              (*dmn_avg)[nbr_avg_dmn]->nm_fll=(char *)strdup(trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll);
               (*dmn_avg)[nbr_avg_dmn]->id=trv_obj.var_dmn[idx_var_dmn].dmn_id;
               (*dmn_avg)[nbr_avg_dmn]->nc_id=nc_id;
               (*dmn_avg)[nbr_avg_dmn]->xrf=NULL;
@@ -8378,6 +8379,7 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
   for(int idx=0;idx<nbr_lmt;idx++){
     (*dmn)[idx]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     (*dmn)[idx]->nm=(char *)strdup(lmt[idx]->nm);
+    (*dmn)[idx]->nm_fll=(char *)strdup(lmt[idx]->nm_fll);
     (*dmn)[idx]->id=-1;
     (*dmn)[idx]->nc_id=-1;
     (*dmn)[idx]->xrf=NULL;

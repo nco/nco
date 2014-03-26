@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.112 2014-03-16 06:29:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.113 2014-03-26 18:55:58 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -292,7 +292,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   /* Allocate space for maximum number of matching dimensions */
   dmn_mch=(int *)nco_calloc(dmn_nbr_rdc,sizeof(int));
-  
+
   /* Process all variables */
   for(var_idx=0;var_idx<var_nbr;var_idx++){ 
 
@@ -320,15 +320,16 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Format: blank-separated phrases of form "dmn1[, dmn2[...]]: op_typ" */ 
     for(dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
       for(dmn_idx_rdc=0;dmn_idx_rdc<dmn_nbr_rdc;dmn_idx_rdc++){
-	/* 20140216 fxm: broken? should compare full names not short names? */
-        if(!strcmp(var_trv->var_dmn[dmn_idx_var].dmn_nm,dmn_rdc[dmn_idx_rdc]->nm)){
-	  /* Add length of each matching dimension to accumulating attribute size */
+        assert(dmn_rdc[dmn_idx_rdc]->nm_fll);
+        /* Compare full names */
+        if(!strcmp(var_trv->var_dmn[dmn_idx_var].dmn_nm_fll,dmn_rdc[dmn_idx_rdc]->nm_fll)){
+          /* Add length of each matching dimension to accumulating attribute size */
           aed.sz+=strlen(dmn_rdc[dmn_idx_rdc]->nm);
           dmn_mch[dmn_nbr_mch++]=dmn_idx_rdc;
         } /* !match */
       } /* dmn_idx_rdc */
     } /* dmn_idx_var */
-    
+
     assert(dmn_nbr_mch != 0);
 
     /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
@@ -351,7 +352,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s cell_method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,nco_op_typ);
       continue;
     } /* End switch */
-    
+
     /* Initialize to size of ": " plus length of operation string */
     aed.sz+=2L+strlen(att_op_sng);
     /* Add room for commas and spaces, i.e., "dmn1, dmn2, dmn3" */
