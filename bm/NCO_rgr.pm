@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.482 2014-03-20 03:22:00 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.483 2014-03-26 18:26:51 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4942,8 +4942,8 @@ if (0){
 #ncwa #58
 #ncwa -O -y avg -a time301 -v time301 -C in_grp_3.nc out.nc
 #ncks -m out.nc
-if (0){
-    $dsc_sng="Cell methods (Create, average) -y avg -a time -v time";
+
+    $dsc_sng="Groups (Cell methods) (Create, average) -y avg -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y avg -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";
     $tst_cmd[2]="time301 attribute 1: cell_methods, size = 13 NC_CHAR, value = time301: mean";
@@ -4956,38 +4956,22 @@ if (0){
 #ncwa -O -y max -a time301 -v time301 -C in_grp_3.nc out.nc	  
 #ncks -m out.nc	
 
-    $dsc_sng="Cell methods (Create, maximum) -y max -a time -v time";
+    $dsc_sng="Groups (Cell methods) (Create, maximum) -y max -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y max -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";
     $tst_cmd[2]="time301 attribute 1: cell_methods, size = 13 NC_CHAR, value = time301: mean";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array	
-	}	
-
-	
-#NEW 4.4.2	
-#ncwa #60 Append cell_methods
-#ncwa -O -y max -a time302 -v time302 -C in_grp_3.nc out.nc
-#ncks -m out.nc	
-if (0) {
-    $dsc_sng="Cell methods (Append) -y max -a time -v time";
-    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y max -a time302 -v time302 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m %tmp_fl_00%";
-    $tst_cmd[2]="time302 attribute 1: cell_methods, size = 13 NC_CHAR, value = time302: mean";
-    $tst_cmd[3]="SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array
-	} # if (0)
+    $#tst_cmd=0; # Reset array		
 	
 	} #### Group tests	
 
 
 #NEW 4.4.2	
-#ncwa #61 (part 1)
+#ncwa #60 (part 1)
 #ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc out.nc	
 #ncks -m -C -v three_dmn_rec_var out.nc
-if (0){	
+
     $dsc_sng="Cell methods (Create, average) -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  -m -C -v three_dmn_rec_var %tmp_fl_00%";
@@ -4997,7 +4981,7 @@ if (0){
     $#tst_cmd=0; # Reset array		
 
 #NEW 4.4.2	
-#ncwa #62 (part 2)
+#ncwa #61 (part 2)
 #ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc out.nc	
 #ncks -m -C -v one_dmn_rec_var out.nc
 	
@@ -5010,7 +4994,7 @@ if (0){
     $#tst_cmd=0; # Reset array		
 
 #NEW 4.4.2	
-#ncwa #63 max
+#ncwa #62 max
 #ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc out.nc	
 #ncks -m -C -v one_dmn_rec_var out.nc
 	
@@ -5021,7 +5005,26 @@ if (0){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-	}		
+
+
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){	
+
+#NEW 4.4.3	
+#ncwa #63 
+#ncwa -g cesm,ecmwf -v time -a time -O  cmip5.nc out.nc	
+#ncks -m  out.nc
+if (0){	
+    $dsc_sng="Groups (Cell methods) -g cesm,ecmwf -v time -a time";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -g cesm,ecmwf -v time -a time $in_pth_arg cmip5.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -g ecmwf -v time %tmp_fl_00%";
+    $tst_cmd[2]="time attribute 0: cell_methods, size = 16 NC_CHAR, value = time, time: mean";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+	}
+	}
+		
     
 ####################
 #### ncrename tests #### OK!
