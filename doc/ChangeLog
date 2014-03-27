@@ -1,3 +1,10 @@
+2014-03-27 Pedro Vicente  <pvicente@uci.edu>
+
+	* ncge: Detect NCAR CCM/CCSM/CF conventions for handling fixed variables 
+	
+	* nco_var_is_fix() Variable should be treated as a fixed variable 
+
+
 2014-03-26 Pedro Vicente  <pvicente@uci.edu>
 
 	* ncwa #58-62: Cell methods regressions

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1361 2014-03-26 18:55:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1362 2014-03-27 19:19:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6506,6 +6506,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */
+ const int nco_pck_plc,               /* I [enm] Packing policy */
  nco_dmn_dne_t **flg_dne,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
@@ -6607,9 +6608,9 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   } /* !lmt_nbr */
 
   /* Build ensembles */
-  if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,True,trv_tbl);
+  if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,True,CNV_CCM_CCSM_CF,nco_pck_plc,trv_tbl);
 
-  if(nco_prg_id_get() == ncbo) (void)nco_bld_nsm(nc_id,False,trv_tbl);
+  if(nco_prg_id_get() == ncbo) (void)nco_bld_nsm(nc_id,False,CNV_CCM_CCSM_CF,nco_pck_plc,trv_tbl);
 
    /* Check valid input (limits) */
   if(lmt_nbr) (void)nco_chk_dmn_in(lmt_nbr,lmt,flg_dne,trv_tbl);
@@ -8437,6 +8438,8 @@ void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const nco_bool flg_fix_xtr,          /* I [flg] Mark fized variables as extracted  */
+ const nco_bool CNV_CCM_CCSM_CF,      /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_pck_plc,               /* I [enm] Packing policy */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Build ensembles  */
@@ -8450,6 +8453,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   int nm_lst_2_nbr;                    /* [nbr] Number of items in list */
   int nbr_cmn_nm;                      /* [nbr] Number of common entries */
   int nbr_nm;                          /* [nbr] Number of total entries */
+
+  int nco_prg_id=nco_prg_id_get();     /* [enm] Program key */
 
   nco_bool flg_nsm_tpl;                /* [flg] Variable is template */       
 
@@ -8528,8 +8533,14 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                 /* Get GTT object  */
                 trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
 
+                nco_bool var_is_fix=False;  /* [fnc] Variable should be treated as a fixed variable */
+
+                if(CNV_CCM_CCSM_CF){
+                  var_is_fix=nco_var_is_fix(var_trv->nm,nco_prg_id,nco_pck_plc);  
+                } 
+
                 /* Define as either fixed template or template  */
-                if (var_trv->is_crd_var || var_trv->is_rec_var){
+                if (var_trv->is_crd_var || var_trv->is_rec_var || var_is_fix){
 
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr++;
                   int skp_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr;

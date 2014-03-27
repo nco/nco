@@ -4,6 +4,8 @@
 
 netcdf mdl {
 
+ :Conventions = "CF-1.5";
+
  group: cesm {
 
   group: cesm_01 {
@@ -19,10 +21,12 @@ netcdf mdl {
       float tas1(time);
 	  float tas2(time);
 	  double time(time);
+	  float gw(time); //test CF fixed variables (using time as dimension, usually dimension is lat)
     data:
       tas1=272.1,272.1,272.1,272.1;
 	  tas2=272.1,272.1,272.1,272.1;
 	  time=1.,2.,3.,4.;
+	  gw=1.,2.,3.,4.;
  
     } // cesm_01
 
@@ -39,10 +43,12 @@ netcdf mdl {
       float tas1(time);
 	  float tas2(time);
 	  double time(time);
+	  float gw(time);
     data:
       tas1=272.2,272.2,272.2,272.2;
 	  tas2=272.2,272.2,272.2,272.2;
 	  time=1.,2.,3.,4.;
+	  gw=1.,2.,3.,4.;
       
     } // cesm_02
     
