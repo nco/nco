@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.484 2014-03-26 18:55:57 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.485 2014-03-27 21:21:58 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1029,6 +1029,18 @@ print "\n";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_4.nc in_grp_5.nc %tmp_fl_00%";
     $tst_cmd[1]="ncge: ERROR Variables do not conform: variable </cesm/cesm_02/three_dmn_rec_var> has dimension <time> with size 6, expecting size 10";
     $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+# NEW NCO 4.4.3
+#nces #21 
+# ncra -Y ncge -h -O mdl_1.nc out.nc
+	
+	$dsc_sng="(Groups) Test CF fixed variables";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -C -v gw %tmp_fl_00%";
+    $tst_cmd[2]="time[3]=4 gw[3]=1";
+    $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
