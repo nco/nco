@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.167 2014-03-27 18:13:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.168 2014-03-27 18:25:16 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -870,8 +870,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   int idx_dmn;
   int idx_xcl;
   int var_op_typ[NC_MAX_VARS];
-
-  nco_bool is_sz_rnk_prv_rth_opr; /* [flg] Size- and rank-preserving operator */
+  
   nco_bool var_typ_fnk=False; /* [flg] Variable type is too funky for arithmetic */ /* CEWI */
 
   nc_type var_typ=NC_NAT; /* NC_NAT present in netcdf.h version netCDF 3.5+ */
@@ -890,9 +889,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   var_fix=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
   var_fix_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
   var_prc=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
-  var_prc_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
-
-  is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(nco_prg_id,nco_pck_plc);
+  var_prc_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));  
 
   /* Find operation type for each variable: for now this is either fix or prc */
   for(idx=0;idx<nbr_var;idx++){
@@ -1013,7 +1010,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
       nco_bool var_is_fix;  /* [fnc] Variable should be treated as a fixed variable */
 
-      var_is_fix=nco_var_is_fix(var_nm,is_sz_rnk_prv_rth_opr,nco_prg_id,nco_pck_plc);  
+      var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc);  
 
       if (var_is_fix) var_op_typ[idx]=fix_typ;
 
@@ -1121,14 +1118,11 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   int idx_xcl;
   prc_typ_enm var_op_typ;
 
-  nco_bool is_sz_rnk_prv_rth_opr; /* [flg] Size- and rank-preserving operator */
   nco_bool var_typ_fnk=False;     /* [flg] Variable type is too funky for arithmetic */ 
 
   nc_type var_typ=NC_NAT;         /* NC_NAT present in netcdf.h version netCDF 3.5+ */
 
   nco_prg_id=nco_prg_id_get(); 
-
-  is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(nco_prg_id,nco_pck_plc);
 
   /* Initialize operation type to processed. Change to fixed where warranted later. */
   var_op_typ=prc_typ;
@@ -1233,7 +1227,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
 
     nco_bool var_is_fix;  /* [fnc] Variable should be treated as a fixed variable */
 
-    var_is_fix=nco_var_is_fix(var_nm,is_sz_rnk_prv_rth_opr,nco_prg_id,nco_pck_plc);  
+    var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc);  
 
     if (var_is_fix) var_op_typ=fix_typ;
 
@@ -1259,16 +1253,16 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
 
 } /* end nco_var_lst_dvd_trv */
 
-
-
 nco_bool
 nco_var_is_fix                               /* [fnc] Variable should be treated as a fixed variable */
 (const char * const var_nm,                  /* I [sng] Variable name */
- const nco_bool is_sz_rnk_prv_rth_opr,       /* [flg] Size- and rank-preserving operator */
  const int nco_prg_id,                       /* I [enm] Program key */
  const int nco_pck_plc)                      /* I [enm] Packing policy */
 {
-  nco_bool var_is_fix;  /* [fnc] Variable should be treated as a fixed variable */
+  nco_bool var_is_fix;            /* [fnc] Variable should be treated as a fixed variable (return value) */
+  nco_bool is_sz_rnk_prv_rth_opr; /* [flg] Size- and rank-preserving operator */
+
+  is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(nco_prg_id,nco_pck_plc);
 
   var_is_fix=False;
 

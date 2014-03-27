@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.74 2014-03-27 18:13:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.75 2014-03-27 18:25:16 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -145,7 +145,6 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
 nco_bool
 nco_var_is_fix                               /* [fnc] Variable should be treated as a fixed variable */
 (const char * const var_nm,                  /* I [sng] Variable name */
- const nco_bool is_sz_rnk_prv_rth_opr,       /* [flg] Size- and rank-preserving operator */
  const int nco_prg_id,                       /* I [enm] Program key */
  const int nco_pck_plc);                     /* I [enm] Packing policy */
 
