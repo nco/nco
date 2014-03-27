@@ -2,7 +2,7 @@
 // Generate netCDF file with:
 // ncgen -k netCDF-4 -b -o ~/nco/data/mdl_1.nc ~/nco/data/mdl_1.cdl
 
-netcdf mdl {
+netcdf mdl_1 {
 
  :Conventions = "CF-1.5";
 

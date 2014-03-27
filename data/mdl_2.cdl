@@ -2,7 +2,7 @@
 // Generate netCDF file with:
 // ncgen -k netCDF-4 -b -o ~/nco/data/mdl_2.nc ~/nco/data/mdl_2.cdl
 
-netcdf mdl {
+netcdf mdl_2 {
 
  group: cesm {
 
