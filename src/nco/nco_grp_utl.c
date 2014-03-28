@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1362 2014-03-27 19:19:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1363 2014-03-28 03:44:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8409,6 +8409,12 @@ nco_prn_nsm                                 /* [fnc] Print ensembles  */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
     (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
   } 
+
+  (void)fprintf(stdout,"%s: list of fixed templates\n",nco_prg_nm_get()); 
+  for(int idx_skp=0;idx_skp<trv_tbl->nsm->skp_nbr;idx_skp++){
+    (void)fprintf(stdout,"%s: <template> %d <%s>\n",nco_prg_nm_get(),idx_skp,trv_tbl->nsm->skp_nm_fll[idx_skp]); 
+  }
+
 
   (void)fprintf(stdout,"%s: list of templates\n",nco_prg_nm_get()); 
   int idx_tpl=0;
