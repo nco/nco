@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.527 2014-03-29 19:05:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.528 2014-03-29 20:11:29 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.527 2014-03-29 19:05:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.527 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.528 2014-03-29 20:11:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.528 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1311,6 +1311,10 @@ main(int argc,char **argv)
 
         /* Create attribute to note ensenmble average */
         (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+
+        aed.var_nm=NULL;
+        aed.id=NC_GLOBAL;
+        (void)nco_aed_prc(grp_out_id,NC_GLOBAL,aed);
 
         /* Build variable name */
         char *var_nm_fll=nco_bld_nm_fll(grp_out_fll,var_prc_out[idx]->nm);;
