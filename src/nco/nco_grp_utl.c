@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1365 2014-03-29 20:48:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1366 2014-03-29 21:11:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10132,7 +10132,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
     /* Obtain output group ID using full group name */
     (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
 
-    /* Does variable already have "cell_methods" attribute? */
+    /* Does attribute exist? */
     rcd=nco_inq_att_flg(grp_id,NC_GLOBAL,"ensemble",&att_typ,(long *)NULL);
     if(rcd == NC_NOERR){
       *flg_nsm_att=True;
