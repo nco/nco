@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.492 2014-03-27 19:19:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.493 2014-03-29 20:27:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -931,6 +931,11 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 (const int in_id,                      /* I [id] netCDF input-file ID of current file, starting with first  */
  const int fl_idx,                     /* I [nbr] Index of file loop  */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) of *first* file */
+
+void                          
+nco_nsm_att                            /* [fnc] Inquire if ensemble parent group has "ensemble" attribute (ncbo only) */
+(const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ nco_bool *flg_nsm_att);               /* I/O [flg] "ensemble" attribute exists */
 
 
 #ifdef __cplusplus

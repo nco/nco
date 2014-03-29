@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1363 2014-03-28 03:44:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1364 2014-03-29 20:27:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8969,7 +8969,7 @@ nco_cmn_var                            /* [fnc] Does the list of common names co
  const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  nco_bool *flg_cmn_abs,                /* I/O [flg] Does the list of common names contain absolute variables match? */
- nco_bool *flg_cmn_rel)              /* I/O [flg] Does the list of common names contain relative variables match? */
+ nco_bool *flg_cmn_rel)                /* I/O [flg] Does the list of common names contain relative variables match? */
 {
   /* Purpose: Does the list of *any* common names contain absolute/relative variables match? (ncbo only) */
 
@@ -9171,6 +9171,8 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   nco_bool flg_var_cmn;           /* [flg] Common variable exists */
   nco_bool flg_var_cmn_rth;       /* [flg] Common variable exists at root */
   nco_bool flg_grp_1;             /* [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+  nco_bool flg_nsm_att_1;         /* [flg] "ensemble" attribute exists in table 1 */
+  nco_bool flg_nsm_att_2;         /* [flg] "ensemble" attribute exists in table 2 */
 
   nco_cmn_t *cmn_lst=NULL;        /* [lst] A list of common variable names */ 
   nm_lst_sct *var_nm=NULL;        /* [lst] A list of variable names */
@@ -9183,7 +9185,11 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
 
   /* Inquire if there is a variable with same absolute/relative path in both files */
-  (void)nco_cmn_var(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,&flg_cmn_abs,&flg_cmn_rel);     
+  (void)nco_cmn_var(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,&flg_cmn_abs,&flg_cmn_rel); 
+
+  /* Inquire if ensembles have "ensemble" attribute (meaning they were done by ncge already) */
+  (void)nco_nsm_att(trv_tbl_1,&flg_nsm_att_1); 
+  (void)nco_nsm_att(trv_tbl_2,&flg_nsm_att_2);
 
   /* There is a variable with same absolute path in both files. Do them and return */
   if (flg_cmn_abs){
@@ -10101,7 +10107,19 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 
   } /* Loop ensembles */
 
-
-
 } /* nco_chk_nsm() */
 
+
+void                          
+nco_nsm_att                            /* [fnc] Inquire if ensemble parent group has "ensemble" attribute (ncbo only) */
+(const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ nco_bool *flg_nsm_att)                /* I/O [flg] "ensemble" attribute exists */
+{
+  /* Purpose: Inquire if ensemble parent group has "ensemble" attribute (ncbo only) */
+
+  for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+    (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+  } 
+
+
+}
