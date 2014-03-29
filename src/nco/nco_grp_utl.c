@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1364 2014-03-29 20:27:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1365 2014-03-29 20:48:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9188,8 +9188,8 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   (void)nco_cmn_var(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,&flg_cmn_abs,&flg_cmn_rel); 
 
   /* Inquire if ensembles have "ensemble" attribute (meaning they were done by ncge already) */
-  (void)nco_nsm_att(trv_tbl_1,&flg_nsm_att_1); 
-  (void)nco_nsm_att(trv_tbl_2,&flg_nsm_att_2);
+  (void)nco_nsm_att(nc_id_1,trv_tbl_1,&flg_nsm_att_1); 
+  (void)nco_nsm_att(nc_id_2,trv_tbl_2,&flg_nsm_att_2);
 
   /* There is a variable with same absolute path in both files. Do them and return */
   if (flg_cmn_abs){
@@ -10112,14 +10112,33 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 
 void                          
 nco_nsm_att                            /* [fnc] Inquire if ensemble parent group has "ensemble" attribute (ncbo only) */
-(const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+(const int nc_id,                      /* I [id] netCDF file ID  */
+ const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  nco_bool *flg_nsm_att)                /* I/O [flg] "ensemble" attribute exists */
 {
   /* Purpose: Inquire if ensemble parent group has "ensemble" attribute (ncbo only) */
 
+  int grp_id;  /* [id] Group ID  */
+  int rcd;     /* [rcd] Return code */
+
+  nc_type att_typ; /* [nbr] Attribute type */
+
+  *flg_nsm_att=False;
+
+  /* Loop ensemble group parents */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
     (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
-  } 
+
+    /* Obtain output group ID using full group name */
+    (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
+
+    /* Does variable already have "cell_methods" attribute? */
+    rcd=nco_inq_att_flg(grp_id,NC_GLOBAL,"ensemble",&att_typ,(long *)NULL);
+    if(rcd == NC_NOERR){
+      *flg_nsm_att=True;
+    }
+
+  } /* Loop ensemble group parents */
 
 
-}
+} /* nco_nsm_att() */
