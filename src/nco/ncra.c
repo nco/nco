@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.526 2014-03-27 19:19:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.527 2014-03-29 19:05:05 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.526 2014-03-27 19:19:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.526 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.527 2014-03-29 19:05:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.527 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1293,6 +1293,36 @@ main(int argc,char **argv)
       /* Packing/Unpacking */
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
       if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+
+      /* For ncge, save helpful metadata for later handling by ncbo */
+      if(nco_prg_id == ncge){
+
+        aed_sct aed; /* [sct] Structure containing information necessary to edit */
+
+        /* Initialize attribute-edit structure for this variable */
+        aed.att_nm=strdup("ensemble");
+        aed.type=NC_CHAR;
+        aed.var_nm=var_prc_out[idx]->nm;
+        aed.id=var_out_id;
+        aed.sz=strlen("average");
+        aed.val.cp=(char *)nco_malloc((aed.sz+1L)*sizeof(char));
+        (void)strcpy(aed.val.cp,"average");
+        aed.mode=aed_create;
+
+        /* Create attribute to note ensenmble average */
+        (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+
+        /* Build variable name */
+        char *var_nm_fll=nco_bld_nm_fll(grp_out_fll,var_prc_out[idx]->nm);;
+        if(nco_dbg_lvl_get() >= nco_dbg_fl){
+          (void)fprintf(stdout,"%s: <variable %d> <%s>\n",nco_prg_nm_get(),idx,var_nm_fll); 
+        }
+        /* Free built variable name */
+        var_nm_fll=(char *)nco_free(var_nm_fll);
+        if(aed.att_nm) aed.att_nm=(char *)nco_free(aed.att_nm);
+        if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp); 
+
+      } /* ncge */
 
       /* Memory management after current extracted group */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
