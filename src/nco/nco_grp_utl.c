@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1366 2014-03-29 21:11:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1367 2014-03-30 22:22:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10127,8 +10127,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 
   /* Loop ensemble group parents */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
-    (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
-
+    
     /* Obtain output group ID using full group name */
     (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
 
@@ -10136,6 +10135,9 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
     rcd=nco_inq_att_flg(grp_id,NC_GLOBAL,"ensemble",&att_typ,(long *)NULL);
     if(rcd == NC_NOERR){
       *flg_nsm_att=True;
+
+      (void)fprintf(stdout,"%s: ATTRIBUTE ensemble <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+
     }
 
   } /* Loop ensemble group parents */
