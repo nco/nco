@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1368 2014-03-31 20:32:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1369 2014-03-31 22:14:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1336,7 +1336,7 @@ nco_get_prg_info(void) /* [fnc] Get program info */
 {
   /* Purpose: Return a numeric code depending on netCDF library version */
 
-  int rcd=30;
+  int rcd=3;
   char lbr_sng[NC_MAX_NAME+1];
 
   strcpy(lbr_sng,nc_inq_libvers());
@@ -1347,7 +1347,7 @@ nco_get_prg_info(void) /* [fnc] Get program info */
   {
     rcd=41;
   }
-  else if (lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' )
+  else if (lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '1' )
   {
     rcd=43;
   }

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.487 2014-03-31 21:09:03 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.488 2014-03-31 22:14:39 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -97,10 +97,24 @@ if( $? == -1 ){
 }else{
   my $exit_value=$? >> 8;
 
-  if ($exit_value==40) {$RUN_NETCDF4_TESTS=1;}
-  if ($exit_value==41) {$RUN_NETCDF4_TESTS=1;}
+  # nco_get_prg_info() returns codes
+  # 3 (for library 3.x )
+  # 41 (for library 4.1.x)
+  # 43 (for library 4.3.1.x)
+
+  if ($exit_value==40)  {$RUN_NETCDF4_TESTS=1;}
+  if ($exit_value==41)  {$RUN_NETCDF4_TESTS=1;}
   if ($exit_value==43) {$RUN_NETCDF4_TESTS=1;}
   if ($exit_value==43) {$RUN_NETCDF4_TESTS_VERSION_43=1;}
+
+  if ($exit_value==41)
+  {
+   print "netCDF version 4.1.x detected\n";
+  }
+  if ($exit_value==43)
+  {
+   print "netCDF version 4.3.1.x detected\n";
+  }
 
 }
 print "\n";
