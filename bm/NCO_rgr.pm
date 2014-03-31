@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.485 2014-03-27 21:21:58 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.486 2014-03-31 20:32:23 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -82,61 +82,26 @@ sub tst_rgr {
     NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from tst_rgr()  -------------");
     
     if(0){} #################  SKIP THESE #####################
-
-
-# NCO 4.2.4
-# Output for some tests vary when ENABLE_NETCDF4 is not set
-# Add check for ENABLE_NETCDF4 by reading config.h 
-
-# error messages for ENABLE_NETCDF4 not defined
-my $ncks_msg_no_netcdf4 = "ncks: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install";
-my $ncecat_msg_no_netcdf4 = "ncecat: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install";
-# error messages for HAVE_NETCDF4_H not defined
-my $ncks_msg_no_have_netcdf4 = "nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)";
-# strings to find
-my $find_undef_enable_netcdf4 = "undef ENABLE_NETCDF4";
-my $find_define_enable_netcdf4 = "define ENABLE_NETCDF4";
-my $find_undef_have_netcdf4 = "undef HAVE_NETCDF4_H";
-my $find_define_have_netcdf4 = "define HAVE_NETCDF4_H";
-my $ENABLE_NETCDF4=-1;
-my $HAVE_NETCDF4_H=-1;
     
 print "\n";
 
-# Read config.h
-my $use_config_h=0;
-if ($use_config_h == 1){
-	open FILE, "../config.h" or die $!;
-	while (my $line = <FILE>) { 
-	if ($line =~ /$find_undef_enable_netcdf4/){
-	  print "INFO: ENABLE_NETCDF4 is disabled in config.h\n";
-	  $ENABLE_NETCDF4=0;
-	 }
-	if ($line =~ /$find_define_enable_netcdf4/){
-	  print "INFO: ENABLE_NETCDF4 is defined in config.h\n";
-	  $ENABLE_NETCDF4=1;
-	 }
-	if ($line =~ /$find_undef_have_netcdf4/){
-	  print "INFO: HAVE_NETCDF4_H is disabled in config.h\n";
-	  $HAVE_NETCDF4_H=0;
-	 }
-	if ($line =~ /$find_define_have_netcdf4/){
-	  print "INFO: HAVE_NETCDF4_H is defined in config.h\n";
-	  $HAVE_NETCDF4_H=1;
-	 } 
-	}
-} #$use_config_h
+
+my $RUN_NETCDF4_TESTS=0;
+my $RUN_NETCDF4_TESTS_VERSION_43=0;
 
 system("ncks --get_prg_info");
 # system() runs a command and returns exit status information as a 16 bit value: 
 # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
-# fxm: 20130125 deprecate this hack in favor of obtaining tokens directly from ncks
 if( $? == -1 ){
     print "failed to execute: ncks --get_prg_info: $!\n";
 }else{
   my $exit_value=$? >> 8;
-  if ($exit_value==20) {$HAVE_NETCDF4_H=0;}else{$HAVE_NETCDF4_H=1;}
-  if ($exit_value==30) {$ENABLE_NETCDF4=1;}else{$ENABLE_NETCDF4=0;}
+
+  if ($exit_value==40) {$RUN_NETCDF4_TESTS=1;}
+  if ($exit_value==41) {$RUN_NETCDF4_TESTS=1;}
+  if ($exit_value==43) {$RUN_NETCDF4_TESTS=1;}
+  if ($exit_value==43) {$RUN_NETCDF4_TESTS_VERSION_43=1;}
+
 }
 print "\n";
 
@@ -318,7 +283,12 @@ print "\n";
 #ncatted #6
 #ncatted -O -a purpose,rlev,m,c,new_value in_grp_3.nc out.nc
 
-    if($HAVE_NETCDF4_H == 1){
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
+
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
 	$dsc_sng="(Groups) Modify attribute for variable (input relative name)";
@@ -376,11 +346,10 @@ print "\n";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array		
-
-
 	
-    } # $HAVE_NETCDF4_H	
-    }
+    } # $RUN_NETCDF4_TESTS	
+
+    } #dodap
     
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
     
@@ -564,8 +533,12 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 
-#### Group tests	
-	if($HAVE_NETCDF4_H == 1){
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
+
 
 #    
 # NCO 4.3.0: added support for groups; ncbo -g
@@ -785,7 +758,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array     		    			    			    	 			    	   
 	    			    	   
-   } # end HAVE_NETCDF4_H
+   } # end RUN_NETCDF4_TESTS
    
    
 ####################
@@ -905,10 +878,12 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 	
-#### Group File tests	
-	if($HAVE_NETCDF4_H == 1){
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
 
-	
+    if($RUN_NETCDF4_TESTS == 1){
+
 #nces #11
 # same as #nces #01 , with group
 	
@@ -959,8 +934,12 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 	
-     #### Group Ensemble tests 
-    if($HAVE_NETCDF4_H == 1){
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
+
 	
 #nces #15
 # ncra -Y ncge -h -O  mdl_1.nc out.nc
@@ -1081,12 +1060,14 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 	
-#### Group tests	
-	if($HAVE_NETCDF4_H == 1){
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
 
 #ncecat #3    
     
-    if ($ENABLE_NETCDF4 == 1) {
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -O -h -m -v area %tmp_fl_01% | grep \"ensemble../area\" | wc | cut -c 7";
@@ -1095,15 +1076,7 @@ print "\n";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
-    }elsif ($ENABLE_NETCDF4 == 0) {
-    $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
-    $dsc_sng="group aggregate var with hyperslabbing (requires netCDF4)";
-    $tst_cmd[2]=$ncecat_msg_no_netcdf4; 
-    $tst_cmd[3]="SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 
-    } # end $ENABLE_NETCDF4
+   
     
 #    
 # NCO 4.3.1 - ncecat for groups 
@@ -1114,14 +1087,11 @@ print "\n";
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -H -d record,1,1,1 %tmp_fl_00%";
     $tst_cmd[2]="record[1] v1[1]=11";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			     
 
@@ -1131,14 +1101,11 @@ print "\n";
     
     $dsc_sng="(Groups) Concatenate variables/groups 2: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'v1 dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)'";
     $tst_cmd[2]="v1 dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
     
@@ -1149,14 +1116,11 @@ print "\n";
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area %tmp_fl_00%";
     $tst_cmd[2]="record[1] lat[1]=90 area[3]=50";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			     
 
@@ -1167,14 +1131,11 @@ print "\n";
     
     $dsc_sng="(Groups) Concatenate variables/groups 2: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -C -g g6g1 -v area %tmp_fl_00% | grep 'area dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)'";
     $tst_cmd[2]="area dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
     
@@ -1184,14 +1145,11 @@ print "\n";
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: 2D -v two_dmn_rec_var";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -v two_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="record[1] time[9]=10 lev[2]=1000 two_dmn_rec_var[59]=3";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	   
@@ -1202,14 +1160,11 @@ print "\n";
 
     $dsc_sng="(Groups) Concatenate variables/groups";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -m -C -g g25g1  -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="one_dmn_rec_var dimension 1: time, size = 10 NC_DOUBLE, chunksize = 10 (Coordinate is time)";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
@@ -1341,8 +1296,12 @@ print "\n";
     $#tst_cmd=0; # Reset array 	
 
 	
-#### Group tests	
-	if($HAVE_NETCDF4_H == 1){	
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
+
 		
 #ncflint #6 
 # ncflint -4 -O -w 0.8,0.0 in.nc in.nc out.nc
@@ -1377,14 +1336,11 @@ print "\n";
 
     $dsc_sng="(Groups) Weight 1D -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -h -O -v one_dmn_rec_var -w 1,1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks  -H -C -O -g g4 -d time,9 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="time[9]=20 one_dmn_rec_var[9]=20";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			   
 
@@ -1602,8 +1558,12 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array  
 	
-#### Group tests	
-	if($HAVE_NETCDF4_H == 1){	
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
+
 #   
 #NCO 4.2.2   
 # 
@@ -1612,19 +1572,11 @@ print "\n";
 
     $dsc_sng="(Groups) Extract associated coordinate variable";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 0){    
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1){
-    if($ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
     $tst_cmd[2]="-9090";
     $tst_cmd[3]="SS_OK";
-    }elsif($ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";
-    } # !ENABLE_NETCDF4 
-    } # !HAVE_NETCDF4_H
+  
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array    
  
@@ -1633,17 +1585,11 @@ print "\n";
 
     $dsc_sng="(Groups) Add CF convention variables";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g7 -v gds_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_gds %tmp_fl_00%";  
     $tst_cmd[2]="-90-30-3000303090";
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
@@ -1651,17 +1597,11 @@ print "\n";
 
     $dsc_sng="(Groups) Extract variables in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="1.11";
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
@@ -1669,17 +1609,11 @@ print "\n";
 
     $dsc_sng="(Groups) Create variables in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g8 -g g3 -v scl $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%"; 
     $tst_cmd[2]="1.3";
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
@@ -1687,17 +1621,11 @@ print "\n";
 
     $dsc_sng="(Groups) Hyperslabs in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks -H -s '%d' %tmp_fl_00%"; 
     $tst_cmd[2]="2";
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
@@ -1709,17 +1637,11 @@ print "\n";
 
     $dsc_sng="(Groups) Extract group attributes";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
@@ -1727,17 +1649,11 @@ print "\n";
 
     $dsc_sng="Extract global attributes";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks %tmp_fl_00% | grep Conventions";
     $tst_cmd[2]="Global attribute 0: Conventions, size = 6 NC_CHAR, value = CF-1.0";
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
@@ -1745,17 +1661,11 @@ print "\n";
 
     $dsc_sng="(Groups) Extract 'bounds' variables";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks -a -O -H  -s '%g' %tmp_fl_00% ";    
     $tst_cmd[2]="1005001000";
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
@@ -1763,17 +1673,11 @@ print "\n";
 
     $dsc_sng="(Groups) GPE group attribute extraction";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g9 -g g3 -v scl $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
@@ -1781,17 +1685,11 @@ print "\n";
 
     $dsc_sng="(Groups) Group dimension hyperslabs";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks -C -H -v lat_gds -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="-30";
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
@@ -1803,13 +1701,10 @@ print "\n";
 
     $dsc_sng="(Groups) Sort output alphabetically";
     $tst_cmd[0]="ncks -z $in_pth_arg in_grp.nc | tail -1";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="var: /unique";
     $tst_cmd[2]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
@@ -1829,17 +1724,11 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks -v area1 %tmp_fl_00%";
     $tst_cmd[2]="lat[1] area1[1]=31";
     $tst_cmd[3]="SS_OK";
-	 }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 
@@ -1849,17 +1738,11 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6 $in_pth_arg in_grp.nc %tmp_fl_00%";
-	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
     $tst_cmd[1]="ncks -v area1 -d lat,0,0 %tmp_fl_00%";
     $tst_cmd[2]="lat[0] area1[0]=21";
     $tst_cmd[3]="SS_OK";
-	 }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
  
@@ -1869,13 +1752,10 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6g1 $in_pth_arg in_grp.nc";
-	if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="lat[1]=90 area[1]=50";
     $tst_cmd[2]="SS_OK";  
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
   
@@ -1887,13 +1767,10 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 4-1 (netCDF4 file)";
    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
-	if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="/g6/g6g1/area";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
@@ -1904,13 +1781,10 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 4-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /g6/area";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK"; 
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	
@@ -1921,13 +1795,10 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 4-3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -o -w area";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="area";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 	
@@ -1936,13 +1807,10 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 5 (netCDF4 file)";
     $tst_cmd[0]="ncks -H $fl_fmt $nco_D_flg -C -s '%g' -v area -g g6g1 -d lat,0 $in_pth_arg in_grp.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="40";
     $tst_cmd[2]="SS_OK";    
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array			
 	
@@ -1952,13 +1820,10 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 6 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6g1 $in_pth_arg in_grp.nc";
-	if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="lat[1]=90 area[1]=50";
     $tst_cmd[2]="SS_OK";  
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
@@ -1969,13 +1834,10 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 7-1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1 $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
-	if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="/g6/g6g1/area";
     $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 							
 	
@@ -1985,13 +1847,10 @@ print "\n";
 
     $dsc_sng="(Groups) Variable/Group extraction test 7-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1 $in_pth_arg in_grp.nc | grep -w /g6/area";
-	if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
@@ -2035,17 +1894,11 @@ print "\n";
 
     $dsc_sng="(Groups) Extract associated coordinates test 3 (netCDF4 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g5g1 -v rz $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+
 	$tst_cmd[1]="ncks -H %tmp_fl_00%";
 	$tst_cmd[2]="rlev[2]=1"; # data for /g3/rlev differs from /g5/rlev
     $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
@@ -2055,13 +1908,10 @@ print "\n";
 
     $dsc_sng="(Groups) Extract CF 'coordinates' variables(netCDF4 file)";
     $tst_cmd[0]="ncks $nco_D_flg -v gds_crd $in_pth_arg in_grp.nc | grep -w /g7/lat_gds";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="/g7/lat_gds";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 	
@@ -2080,13 +1930,10 @@ print "\n";
 
     $dsc_sng="(Groups) Extract CF 'bounds' variables (netCDF4 file)";
     $tst_cmd[0]="ncks $nco_D_flg -g g8 -v lev $in_pth_arg in_grp_3.nc | grep -w /g8/ilev";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="/g8/ilev";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	
@@ -2114,14 +1961,11 @@ print "\n";
     
     $dsc_sng="(Groups) Check --mk_rec_dmn (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --mk_rec_dmn lat -v lat_lon $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -C -m -v lat %tmp_fl_00% | egrep -o -w 'Record coordinate is lat'";
     $tst_cmd[2]="Record coordinate is lat";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 
@@ -2139,14 +1983,11 @@ print "\n";
 
     $dsc_sng="(Groups) Check --fix_rec_dmn (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --fix_rec_dmn time -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate is time'";
     $tst_cmd[2]="Coordinate is time";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 
@@ -2164,14 +2005,10 @@ print "\n";
 	# NB: does not actually test3 code for reasons explained in header of nco_use_mm3_workaround()
 	$dsc_sng="(Groups) --fix_rec_dmn with MM3 workaround (netCDF4->netCDF3 file)";
 	$tst_cmd[0]="ncks -O -3 $nco_D_flg --fix_rec_dmn time -v /g10/two_dmn_rec_var,/g10/three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-	if($HAVE_NETCDF4_H == 1){
-	    $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate dimension'";
-	    $tst_cmd[2]="Record coordinate dimension";
-	    $tst_cmd[3]="SS_OK";   
-	}elsif($HAVE_NETCDF4_H == 0){
-	    $tst_cmd[1]=""; 
-	    $tst_cmd[2]="SS_OK";     
-	}
+	$tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate dimension'";
+	$tst_cmd[2]="Record coordinate dimension";
+	$tst_cmd[3]="SS_OK";   
+
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array 			
     } # endif false
@@ -2206,14 +2043,11 @@ print "\n";
 
     $dsc_sng="(Groups) Chunking --cnk_plc=all --v lat_lon";
     $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -C -m -v lat_lon %tmp_fl_00% | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'";
     $tst_cmd[2]="lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";      
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
     
@@ -2225,14 +2059,11 @@ print "\n";
 
     $dsc_sng="(Groups) Chunking --cnk_plc=cnk_g3d --cnk_dmn time,2";
     $tst_cmd[0]="ncks $nco_D_flg -O -4 --cnk_plc=cnk_g3d --cnk_dmn time,2 -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -C -m -v three_dmn_rec_var %tmp_fl_00% | grep 'three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate is /time)'";
     $tst_cmd[2]="three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate is /time)";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";      
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			 
     
@@ -2248,13 +2079,10 @@ print "\n";
 #
     $dsc_sng="(Groups) MSA --dmn time,1,3,2 --dmn lev,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -C --dmn time,1,3,2 --dmn lev,1,1,1 -v two_dmn_rec_var $in_pth_arg in_grp.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
 
@@ -2268,13 +2096,10 @@ print "\n";
 
     $dsc_sng="(Groups) MSA --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1 -v two_dmn_rec_var $in_pth_arg in_grp.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
 
@@ -2286,13 +2111,10 @@ print "\n";
 
     $dsc_sng="(Groups) MSA -d lon2,1,3,2 -v lon2_var";
     $tst_cmd[0]="ncks $nco_D_flg -H -d lon2,1,3,2 -v lon2_var $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -2304,13 +2126,10 @@ print "\n";
 
     $dsc_sng="(Groups) MSA -d lon2,1,3,2 -v lon2_var";
     $tst_cmd[0]="ncks $nco_D_flg -d lon2,1,1,1 -d lon2,3,3,1 -v lon2_var $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";       
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -2328,13 +2147,10 @@ print "\n";
 
     $dsc_sng="(Groups) CF MSA -v gds_var -d gds_crd,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -v gds_var -d gds_crd,1,1,1 $in_pth_arg in_grp.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="gds_crd[1]=1 lon_gds[1]=0";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";       
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
   
@@ -2348,13 +2164,10 @@ print "\n";
 
     $dsc_sng="(Groups) MSA -H -C -g g7g1 -v gds_var -d gds_crd,1,1,1 -d gds_crd,3,3,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -C -g g7g1 -v gds_var -d gds_crd,1,1,1 -d gds_crd,3,3,1 $in_pth_arg in_grp.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="gds_crd[3]=3 gds_var[3]=273.4";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";    
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -2367,13 +2180,10 @@ print "\n";
 
     $dsc_sng="(Groups) Parallel scope MSA -g g16g1 -v lon1 -d lon1,3,3,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1 -d lon1,3,3,1  $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="lon1[3]=3";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";      
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			 
 
@@ -2383,13 +2193,10 @@ print "\n";
 
     $dsc_sng="(Groups) Parallel scope MSA -g g16g1 -v lon1_var -d lon1,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="lon1[1]=1 lon1_var[1]=1";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";    
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
 
@@ -2399,13 +2206,10 @@ print "\n";
 
     $dsc_sng="(Groups) Parallel scope MSA -g g16g2 -v lon1_var -d lon1,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g2 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="lon1[1]=4 lon1_var[1]=1";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";      
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -2417,14 +2221,11 @@ print "\n";
 
     $dsc_sng="(Groups) Dimensions in ancestor groups -g g6g1 -v area";
     $tst_cmd[0]="ncks $nco_D_flg -O -g g6g1 -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -H -C -v area -d lat,1,1 %tmp_fl_00%";
     $tst_cmd[2]="lat[1]=90 area[1]=50";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";     
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 
@@ -2437,14 +2238,11 @@ print "\n";
 
     $dsc_sng="(Groups) GPE and Dimensions in ancestor groups -G o1 -g g6g1 -v area";
     $tst_cmd[0]="ncks $nco_D_flg -O -G o1 -g g6g1 -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks -H -C -v area -d lat,0,1 %tmp_fl_00%";
     $tst_cmd[2]="lat[1]=90 area[1]=50";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";    
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			      
          
@@ -2454,13 +2252,10 @@ print "\n";
 
     $dsc_sng="(Groups) Out of scope coordinate -v lon3_var";
     $tst_cmd[0]="ncks $nco_D_flg -H -v lon3_var $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="lon3[3] lon3_var[3]=3";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";       
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -2470,13 +2265,10 @@ print "\n";
 
     $dsc_sng="(Groups) Order coordinates by group depth -v lon4_var";
     $tst_cmd[0]="ncks $nco_D_flg -C -H -v lon4_var $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="lon4[1]=4 lon4_var[1]=1";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			      
     
@@ -2486,13 +2278,10 @@ print "\n";
 
     $dsc_sng="(Groups) Auxiliary coordinates -C -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="time[9] gds_crd[1]=1 gds_3dvar[73]=282.2 meter";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 	
@@ -2502,13 +2291,10 @@ print "\n";
 
     $dsc_sng="(Groups) Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="time[9] gds_crd[1]=1 gds_3dvar[73]=282.2 meter";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 	
@@ -2529,13 +2315,10 @@ print "\n";
 
     $dsc_sng="(Groups) Limits -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -g g19g3 -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 $in_pth_arg in_grp_3.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="time[2]=3 lat[0]=-90 lon[3]=270 three_dmn_var_dbl[19]=20 watt meter-2";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
@@ -2544,13 +2327,10 @@ print "\n";
 
     $dsc_sng="(Groups) Invalid dimension input -v lat -d latitude,0,1,1 in_grp.nc";
     $tst_cmd[0]="ncks $nco_D_flg -v lat -d latitude,0,1,1 $in_pth_arg in_grp.nc";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[1]="ncks: ERROR dimension latitude is not in input file";
     $tst_cmd[2]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
@@ -2561,13 +2341,10 @@ print "\n";
     $dsc_sng="(Groups) Copy/print metadata-only leaf group";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --cdl -g g8g1g1g1 %tmp_fl_00% | grep answer";
-    if($HAVE_NETCDF4_H == 1){
+
     $tst_cmd[2]="            :answer = \"Twerking\" ;";
     $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[2]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-     $tst_cmd[3]="SS_OK";        
-    }
+
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
@@ -3180,8 +2957,11 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 	
-	#### Group tests	
-	if($HAVE_NETCDF4_H == 1){
+	#######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
 
 #####################
 #### ncpdq GROUP tests 
@@ -3759,8 +3539,11 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#### Group tests	
-	if($HAVE_NETCDF4_H == 1){
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
 	
 #ncrcat #22	
 # same as ncrcat #02 with group
@@ -3839,8 +3622,11 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 	
-#### Group tests	
-	if($HAVE_NETCDF4_H == 1){	
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
 
 #ncrcat #28
 #ncks -h -O -g g4 -v one_dmn_rec_var in_grp.nc in_grp1.nc
@@ -4124,8 +3910,11 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#### Group tests	
-	if($HAVE_NETCDF4_H == 1){	
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
 	
 # ncra #23
 # same as ncra #02, for groups
@@ -4244,8 +4033,11 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
-	#### Group tests	
-	if($HAVE_NETCDF4_H == 1){
+	#######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
 	
 #NEW 4.4.2	
 #ncra #32
@@ -4751,8 +4543,11 @@ if (0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 	
-#### Group tests	
-	if($HAVE_NETCDF4_H == 1){	
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
 	
 #ncwa #44
 #NEW NCO 4.3.3
@@ -5020,7 +4815,7 @@ if (0){
 
 
 #### Group tests	
-	if($HAVE_NETCDF4_H == 1){	
+	if($RUN_NETCDF4_TESTS == 1){	
 
 #NEW 4.4.3	
 #ncwa #63 
@@ -5042,8 +4837,11 @@ if (0){
     $opr_nm='ncrename';
 ####################
 
-#### Group tests	
-	if($HAVE_NETCDF4_H == 1){	
+    #######################################
+    #### Group tests (requires netCDF4) ###
+    #######################################
+
+    if($RUN_NETCDF4_TESTS == 1){
 
 #################### Attributes
 

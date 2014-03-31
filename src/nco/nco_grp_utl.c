@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1367 2014-03-30 22:22:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1368 2014-03-31 20:32:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1334,16 +1334,23 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 void
 nco_get_prg_info(void) /* [fnc] Get program info */
 {
-  /* fxm: routine is a kludge for Perl in nco_bm.pl and should be eliminated at first opportunity */
-  int rcd=10;
-#ifndef HAVE_NETCDF4_H 
-  rcd=20;
-#else /* HAVE_NETCDF4_H */
-#ifdef ENABLE_NETCDF4 
-  rcd=30;
-#else /* HAVE_NETCDF4_H */
+  /* Purpose: Return a numeric code depending on netCDF library version */
+
+  int rcd=30;
+  char lbr_sng[NC_MAX_NAME+1];
+
+  strcpy(lbr_sng,nc_inq_libvers());
+#if defined(ENABLE_NETCDF4) && defined(ENABLE_NETCDF4)
   rcd=40;
-#endif /* ENABLE_NETCDF4 */
+  /* Used to detect buggy netCDF version 4.1; other versions are irrelavant */
+  if (lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '1' )
+  {
+    rcd=41;
+  }
+  else if (lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' )
+  {
+    rcd=43;
+  }
 #endif /* HAVE_NETCDF4_H */
 
   exit(rcd);
