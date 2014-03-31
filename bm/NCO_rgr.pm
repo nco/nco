@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.486 2014-03-31 20:32:23 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.487 2014-03-31 21:09:03 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2351,6 +2351,8 @@ print "\n";
 #ncks #75
 # ncks -O -c in_grp.nc out.nc
 
+    if($RUN_NETCDF4_TESTS_VERSION_43 == 1){
+
     $dsc_sng="(Groups) -c Extract all coordinate variables";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg -c in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v lat %tmp_fl_00% | grep 'lat size'";
@@ -2358,6 +2360,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+	} #RUN_NETCDF4_TESTS_VERSION_43
 	
 #ncks #76
 # ncks -O in_grp.nc out.nc
@@ -2402,7 +2406,9 @@ print "\n";
     $tst_cmd[2]="delta_time_start dimension 0: delta_time_start, size = 1 NC_FLOAT (Coordinate is delta_time_start)";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array		
+    $#tst_cmd=0; # Reset array	
+	
+	if($RUN_NETCDF4_TESTS_VERSION_43 == 1){	
 	
 #ncks #80
 #ncks -O -4 -L 0 --cnk_dmn lev,1  -v two_dmn_var in_grp_3.nc out.nc
@@ -2479,6 +2485,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+
+	} # RUN_NETCDF4_TESTS_VERSION_43
 	
 #ncks #86
 #ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var in_grp.nc out.nc
@@ -4933,6 +4941,8 @@ if (0){
 	
 #################### Dimensions	
 
+   if($RUN_NETCDF4_TESTS_VERSION_43 == 1){
+
 #ncrename #8	
 #ncrename -O -d lat,new_lat in_grp.nc out.nc
 # relative rename lat to new_lat
@@ -4980,6 +4990,8 @@ if (0){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
+
+	} # RUN_NETCDF4_TESTS_VERSION_43 
 
 #ncrename #12
 #ncrename -O -d ./lat_non_existing,new_lat in_grp.nc out.nc
@@ -5060,6 +5072,8 @@ if (0){
 #ncrename -O -g g1,new_g1 in_grp.nc out.nc 
 # relative rename g1 to new_g1
 
+   if($RUN_NETCDF4_TESTS_VERSION_43 == 1){
+
     $dsc_sng="Groups: Relative rename 'g1' to 'new_g1' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g g1,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -g new_g1 %tmp_fl_00% | grep new_g1";
@@ -5091,6 +5105,8 @@ if (0){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
+
+	} # RUN_NETCDF4_TESTS_VERSION_43
 
 #ncrename #21	
 #ncrename -O -g .gfoo,new_g1 in_grp.nc out.nc 
