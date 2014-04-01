@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.41 2014-03-16 06:29:41 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.42 2014-04-01 17:46:58 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1023,6 +1023,7 @@ if test "${PATH_TO_NCGEN}"; then
 		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp_4.nc data/in_grp_4.cdl
 		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp_5.nc data/in_grp_5.cdl
 		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp_6.nc data/in_grp_6.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp_7.nc data/in_grp_7.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_1.nc data/in_1.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_2.nc data/in_2.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/cmip5.nc data/cmip5.cdl

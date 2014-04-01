@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.34 2014-03-19 18:28:00 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.35 2014-04-01 17:46:59 pvicente Exp $ -*-makefile-*-
 
 test_data = big.nc in.nc in_rec_zero.nc
 
@@ -37,6 +37,11 @@ in_grp_5.nc : in_grp_5.cdl
 in_grp_6.nc : in_grp_6.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
+
+in_grp_7.nc : in_grp_7.cdl
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+
+
 cmip5.nc : cmip5.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
@@ -61,7 +66,7 @@ mdl_3.nc : mdl_3.cdl
 
 all: ${test_data} ${test_data_netCDF4}
 
-EXTRA_DIST = big.cdl dsm.cdl hdn.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl_1.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
+EXTRA_DIST = big.cdl dsm.cdl hdn.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_grp_4.cdl in_grp_5.cdl in_grp_6.cdl in_grp_7.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl_1.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 
 # Automake manual section 14:
 # If configure built it, 'distclean' should delete it
