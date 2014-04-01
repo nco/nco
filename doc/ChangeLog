@@ -4,7 +4,7 @@
 	
 	* Regression script NCO_rgr.pm detects return code made by function nco_get_prg_info()
 	
-	* nco_get_prg_info() Make return code 41 for netCDF version 4.1x linkage and return code 43 for netCDF version 4.1.3.x linkage
+	* nco_get_prg_info() Make return code 41 for netCDF version 4.1x linkage and return code 43 for netCDF version 4.3.1.x linkage
 
 
 2014-03-27 Pedro Vicente  <pvicente@uci.edu>
