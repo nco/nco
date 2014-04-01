@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.698 2014-03-20 23:28:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.699 2014-04-01 17:40:23 pvicente Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1821,7 +1821,7 @@ ${MY_DAT_DIR}/buggy.nc: ${MY_DAT_DIR}/buggy.cdl
 dap:	data
 	-cd ~/nco/data; scp in.nc in.cdl dust.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/data/dodsdata
 data:	dat
-dat:	${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/dsm.nc ${MY_DAT_DIR}/hdn.nc ${MY_DAT_DIR}/hdf.hdf ${MY_DAT_DIR}/mdl_1.nc ${MY_DAT_DIR}/mdl_2.nc ${MY_DAT_DIR}/mdl_3.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_grp_4.nc ${MY_DAT_DIR}/in_grp_5.nc ${MY_DAT_DIR}/in_grp_6.nc ${MY_DAT_DIR}/in_rec_zero.nc
+dat:	${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/dsm.nc ${MY_DAT_DIR}/hdn.nc ${MY_DAT_DIR}/hdf.hdf ${MY_DAT_DIR}/mdl_1.nc ${MY_DAT_DIR}/mdl_2.nc ${MY_DAT_DIR}/mdl_3.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_grp_4.nc ${MY_DAT_DIR}/in_grp_5.nc ${MY_DAT_DIR}/in_grp_6.nc ${MY_DAT_DIR}/in_grp_7.nc ${MY_DAT_DIR}/in_rec_zero.nc
 	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	ncgen -b -o $@ $<
@@ -1846,6 +1846,8 @@ ${MY_DAT_DIR}/in_grp_4.nc: ${MY_DAT_DIR}/in_grp_4.cdl
 ${MY_DAT_DIR}/in_grp_5.nc: ${MY_DAT_DIR}/in_grp_5.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/in_grp_6.nc: ${MY_DAT_DIR}/in_grp_6.cdl
+	-ncgen -k netCDF-4 -b -o $@ $<
+${MY_DAT_DIR}/in_grp_7.nc: ${MY_DAT_DIR}/in_grp_7.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/cmip5.nc: ${MY_DAT_DIR}/cmip5.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
@@ -2104,7 +2106,7 @@ dbg:
 distclean: dst_cln
 dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
-	cd ${MY_DAT_DIR}; rm -f buggy.nc cmip5.nc dsm.nc obs.nc hdf.hdf mdl_1.nc mdl_2.nc mdl_3.nc in.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_rec_zero.nc *~
+	cd ${MY_DAT_DIR}; rm -f buggy.nc cmip5.nc dsm.nc obs.nc hdf.hdf mdl_1.nc mdl_2.nc mdl_3.nc in.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_rec_zero.nc *~
 tags: 
 	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
 
