@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.878 2014-03-09 19:21:30 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.879 2014-04-02 05:40:24 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -68,7 +68,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.4.2 last updated on <!--#flastmod file="VERSION"-->
+Current NCO version is 4.4.3 last updated on <!--#flastmod file="VERSION"-->
 </h2>
 
 <table border=0 width=100%>
@@ -147,8 +147,10 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2014 Mar&nbsp;25: (TBD) NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
-<li>2014 Mar&nbsp;??: NCO 4.4.3 (<i>In progress</i>)
+<li>2014 Apr&nbsp;??: NCO 4.4.4 (<i>In progress</i>)
+<li>2014 Apr&nbsp;02: NCO 4.4.3 (Stability)
+<li>2014 Mar&nbsp;27: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">Talk</a> at NASA GSFC, Greenbelt, Maryland</li>
+<li>2014 Mar&nbsp;25: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2014 Feb&nbsp;20: NCO 4.4.2 (Stability)
 <li>2014 Jan&nbsp;29: NCO 4.4.1 (Stability)
 <li>2014 Jan&nbsp;09: NCO 4.4.0 (Stability)
@@ -618,16 +620,17 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.4.4</b>: (<i>Future</i>) 
+<li><b>NCO 4.4.5</b>: (<i>Future</i>) 
 extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
-<li><b>NCO 4.4.3</b>: (<i>In Progress, features completed or being worked on include</i>)
-Faster DAP access to strided data;
-<a href="http://nco.sf.net/nco.html#grp_brd">Group broadcasting</a> for ensembles;
+<li><b>NCO 4.4.4</b>: (<i>In Progress, features completed or being worked on include</i>)
 <tt>cnk_map=rew</tt>;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
-<li><b>NCO 4.4.2</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.4.3</b>: (<i>Current Stable Release</i>) 
+Faster DAP access to strided data;
+<a href="http://nco.sf.net/nco.html#grp_brd">Group broadcasting</a> for ensembles;
+<li><b>NCO 4.4.2</b>:
 CF <tt>cell_methods</tt> support;
 Bugfixes for <tt>nces</tt> memory, LLVM/clang builds, <tt>-X</tt>, RX's with groups, <tt>--cnk_dmn</tt>;</li>
 <li><b>NCO 4.4.1</b>: 
@@ -953,7 +956,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.4.2</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.4.3</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/natty/nco">Ubuntu NCO</a> homepages.
@@ -961,12 +964,12 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.4.2-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_4.4.2-1_amd64.deb">nco_4.4.2-1_amd64.deb</a> (<!--#fsize file="src/nco_4.4.2-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.4.2-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.4.2-1.dsc">nco_4.4.2-1.dsc</a> (<!--#fsize file="src/nco_4.4.2-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.4.2-1.dsc"-->)</li>
-<li><a href="src/nco_4.4.2-1_amd64.changes">nco_4.4.2-1_amd64.changes</a> (<!--#fsize file="src/nco_4.4.2-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.4.2-1_amd64.changes"-->)</li>
-<li><a href="src/nco_4.4.2.orig.tar.gz">nco_4.4.2.orig.tar.gz</a> (<!--#fsize file="src/nco_4.4.2.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.4.2.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.4.2-1.diff.gz">nco_4.4.2-1.diff.gz</a> (<!--#fsize file="src/nco_4.4.2-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.4.2-1_amd64.changes"-->)</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.4.3-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_4.4.3-1_amd64.deb">nco_4.4.3-1_amd64.deb</a> (<!--#fsize file="src/nco_4.4.3-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.4.3-1_amd64.deb"-->)</li>
+<li><a href="src/nco_4.4.3-1.dsc">nco_4.4.3-1.dsc</a> (<!--#fsize file="src/nco_4.4.3-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.4.3-1.dsc"-->)</li>
+<li><a href="src/nco_4.4.3-1_amd64.changes">nco_4.4.3-1_amd64.changes</a> (<!--#fsize file="src/nco_4.4.3-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.4.3-1_amd64.changes"-->)</li>
+<li><a href="src/nco_4.4.3.orig.tar.gz">nco_4.4.3.orig.tar.gz</a> (<!--#fsize file="src/nco_4.4.3.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.4.3.orig.tar.gz"-->)</li>
+<li><a href="src/nco_4.4.3-1.diff.gz">nco_4.4.3-1.diff.gz</a> (<!--#fsize file="src/nco_4.4.3-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.4.3-1_amd64.changes"-->)</li>
 Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -1011,7 +1014,7 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <ul>
 <!-- 
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.2.macosx.10.9.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.3.macosx.10.9.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
 <li><a href="src/nco-4.4.2.macosx.10.9.tar.gz">nco-4.4.2.macosx.10.9.tar.gz</a> (<!--#fsize file="src/nco-4.4.2.macosx.10.9.tar.gz"-->): Executables MacOSX 10.9-compatible (last updated <!--#flastmod file="src/nco-4.4.2.macosx.10.9.tar.gz"-->). 
@@ -1039,9 +1042,9 @@ To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.2.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.2.win32.cygwin.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.2.macosx.10.9.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.3.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.3.win32.cygwin.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.3.macosx.10.9.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 <li><a href="src/nco-4.4.2.windows.mvs.exe">nco-4.4.2.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.4.2.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.4.2.windows.mvs.exe"-->). Maintained by NCO Project.</li>
 </ul>
@@ -1176,10 +1179,10 @@ The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS
 The second best way is to download the source as a compressed tarfile:
 <ul>
 <li>
-<a href="src/nco-4.4.2.tar.gz">nco-4.4.2.tar.gz</a> 
-(<!--#fsize file="src/nco-4.4.2.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.4.2.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.4.2.tar.gz"--> 
+<a href="src/nco-4.4.3.tar.gz">nco-4.4.3.tar.gz</a> 
+(<!--#fsize file="src/nco-4.4.3.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.4.3.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.4.3.tar.gz"--> 
 </li>
 </ul>
 
@@ -1202,19 +1205,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>4.4.2</tt> (which is
-tagged as <tt>nco-4_4_2</tt> due to CVS rules) into local directory
-<tt>nco-4.4.2</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_4_2 -d nco-4.4.2 nco</tt></p>
+This command retrieves and places NCO version <tt>4.4.3</tt> (which is
+tagged as <tt>nco-4_4_3</tt> due to CVS rules) into local directory
+<tt>nco-4.4.3</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_4_3 -d nco-4.4.3 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4_4_2</tt>) and the development version is that the
+(e.g., <tt>nco-4_4_3</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.4.2</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.4.3</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1327,7 +1330,7 @@ For Mac OS X with MacPorts:
 <tt>
 <dt>wget http://dust.ess.uci.edu/nco/nco.tar.gz</dt>
 <dt>tar xvzf nco.tar.gz</dt>
-<dt>cd nco-4.4.2</dt>
+<dt>cd nco-4.4.3</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>

@@ -1,12 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.698 2014-03-09 19:21:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.699 2014-04-02 05:40:23 zender Exp $ -*-text-*-
 
-The netCDF Operators NCO version 4.4.2 are ready. 
+The netCDF Operators NCO version 4.4.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release is mainly a bugfix and stability release. 
-An ncwa bug ...
 
 Work on NCO 4.4.4 is underway, focused on stability and speed.   
 There will be more netCDF4 mop-up, improved group broadcasting
@@ -16,16 +15,9 @@ manipulation for chunking.
 Enjoy,
 Charlie
 
-"New stuff" in 4.4.2 summary (full details always in ChangeLog):
+"New stuff" in 4.4.3 summary (full details always in ChangeLog):
 
 NEW FEATURES:
-
-A. Rew chunking map: cnk_map=rew implements the map described by
-   Russ Rew at 
-   http://www.unidata.ucar.edu/staff/russ/public/chunk_shape_3D.py
-   This map strives to balance 1-D (e.g., point timeseries) access  
-   speeds with 2-D (e.g., lat/lon map) access speeds.
-   http://nco.sf.net/nco.html#cnk fxm
 
 A. Group broadcasting works with ensembles. Now files containing
    ensembles (sets of replicated experiments where all ensemble
@@ -54,7 +46,7 @@ KNOWN ISSUES NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.4.2 built/tested with netCDF
+   These problems occur with NCO 4.4.3 built/tested with netCDF
    4.3.1 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-

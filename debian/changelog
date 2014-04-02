@@ -1,3 +1,9 @@
+nco (4.4.3-1) unstable; urgency=low
+
+  * new upstream version (DAP srd fix, nsm brd, rgr wrk)
+
+ -- Charlie Zender <zender@uci.edu>  Thu, 2 April 2014 12:25:00 -0700
+
 nco (4.4.2-1) unstable; urgency=low
 
   * new upstream version (ncra.c mmr 4 LLVM/clang, -X, rx nsx, cll_mth, ncwa sng)
