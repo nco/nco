@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.700 2014-04-02 05:40:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.701 2014-04-02 19:23:46 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1831,13 +1831,13 @@ ${MY_DAT_DIR}/in_grp.nc: ${MY_DAT_DIR}/in_grp.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/in_4.nc: ${MY_DAT_DIR}/in_4.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
-${MY_DAT_DIR}/in_grp_1.nc: ${MY_DAT_DIR}/in_grp_1.cdl
-	-ncgen -k netCDF-4 -b -o $@ $<
-${MY_DAT_DIR}/in_grp_2.nc: ${MY_DAT_DIR}/in_grp_2.cdl
-	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/in_1.nc: ${MY_DAT_DIR}/in_1.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/in_2.nc: ${MY_DAT_DIR}/in_2.cdl
+	-ncgen -k netCDF-4 -b -o $@ $<
+${MY_DAT_DIR}/in_grp_1.nc: ${MY_DAT_DIR}/in_grp_1.cdl
+	-ncgen -k netCDF-4 -b -o $@ $<
+${MY_DAT_DIR}/in_grp_2.nc: ${MY_DAT_DIR}/in_grp_2.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/in_grp_3.nc: ${MY_DAT_DIR}/in_grp_3.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.699 2014-04-02 05:40:23 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.700 2014-04-02 19:23:46 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.3 are ready. 
 
@@ -6,11 +6,14 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release is mainly a bugfix and stability release. 
+The new features may interest those using hierarchical group files,
+needing Python wrappers for NCO, and those accessing strided data
+over DAP.
 
-Work on NCO 4.4.4 is underway, focused on stability and speed.   
+Work on NCO 4.4.4 is underway, still focused on stability and speed.   
 There will be more netCDF4 mop-up, improved group broadcasting
-algorithms, and, possibly, improved HDF4 support, and cache
-manipulation for chunking.
+algorithms, and, possibly, improved HDF4 support, and new chunking
+features.
 
 Enjoy,
 Charlie
@@ -27,27 +30,36 @@ A. Group broadcasting works with ensembles. Now files containing
    This is useful, for example, in comparing multiple model results 
    to a single set of observations.
    ncbo cmip5.nc obs.nc -p ~/nco/data ~/foo.nc
-   http://nco.sf.net/nco.html#grp_brd fxm
+   http://nco.sf.net/nco.html#grp_brd
+
+A. Contributed Python wrappers: Check-out NCOpy by Joe Hamman
+   http://nco.sf.net#python
 
 BUG FIXES:
 
-A. ncwa and ncpdq could sometimes process (i.e., average, permute
+A. NCO now employs a much faster access method for hyperslabs.
+   The new method dramatically speeds-up access to strided hyperslabs 
+   across DAP connections. Thanks to Rich Signell, Jeff Whittaker, and 
+   Anil for help identifying the problem and the solution.
+
+B. ncwa and ncpdq could sometimes process (i.e., average, permute
    or pack) over dimensions besides those specified by the user. 
    This only occurred if the specified dimension name was a proper
    subset of the name of another dimension. In that case, both would
    be processed. Reported by Marie-Alice Foujols.
 
-A. NCO now employs a faster access method for hyperslabs.
-   The new method dramatically speeds-up access to strided hyperslabs 
-   across DAP connections. Thanks to Rich Signell, Jeff Whittaker, and 
-   Anil for help identifying the problem and the solution.
+C. Fix a problem where cell_methods could be written multiple times in
+   ensemble datasets.
+
+D. Segregate regression tests so there are fewer failures on older
+   netCDF libraries.
 
 KNOWN ISSUES NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.4.3 built/tested with netCDF
-   4.3.1 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.3.2-rc1 on top of HDF5 hdf5-1.8.12 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
