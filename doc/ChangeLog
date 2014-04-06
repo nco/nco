@@ -1,3 +1,7 @@
+2014-04-06 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add /doc/README_msvc.txt, Microsoft Windows Visual Studio 2010 (MSVC) build instructions.
+
 2014-04-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.3 release procedure:
