@@ -1,3 +1,8 @@
+2014-04-07 Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_nsm_att() Inquire if ensemble parent group has "ensemble_source" attribute (ncbo only);
+	This attribute is saved in ncge.
+
 2014-04-06 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add /doc/README_msvc.txt, Microsoft Windows Visual Studio 2010 (MSVC) build instructions.

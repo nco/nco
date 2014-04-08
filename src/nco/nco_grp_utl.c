@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1369 2014-03-31 22:14:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1370 2014-04-08 05:22:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10118,7 +10118,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 
 
 void                          
-nco_nsm_att                            /* [fnc] Inquire if ensemble parent group has "ensemble" attribute (ncbo only) */
+nco_nsm_att                            /* [fnc] Inquire if ensemble parent group has "ensemble_source" attribute (ncbo only) */
 (const int nc_id,                      /* I [id] netCDF file ID  */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  nco_bool *flg_nsm_att)                /* I/O [flg] "ensemble" attribute exists */
@@ -10132,22 +10132,30 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 
   *flg_nsm_att=False;
 
-  /* Loop ensemble group parents */
-  for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
-    
-    /* Obtain output group ID using full group name */
-    (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
+  /* Loop table  */
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
-    /* Does attribute exist? */
-    rcd=nco_inq_att_flg(grp_id,NC_GLOBAL,"ensemble",&att_typ,(long *)NULL);
-    if(rcd == NC_NOERR){
-      *flg_nsm_att=True;
+      /* Filter groups */
+      if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp){
 
-      (void)fprintf(stdout,"%s: ATTRIBUTE ensemble <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+          trv_sct trv=trv_tbl->lst[idx_tbl];
 
-    }
+          /* Obtain output group ID using full group name */
+          (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
 
-  } /* Loop ensemble group parents */
+          /* Does attribute "ensemble_source" exist? (saved in ncge); string is hard coded and duplicated  */
+          rcd=nco_inq_att_flg(grp_id,NC_GLOBAL,"ensemble_source",&att_typ,(long *)NULL);
+
+          /* Check retrun code */
+          if(rcd == NC_NOERR){
+              *flg_nsm_att=True;
+
+              (void)fprintf(stdout,"%s: ATTRIBUTE ensemble_source in <%s>\n",nco_prg_nm_get(),trv.grp_nm_fll);
+
+          } /* Check retrun code */
+
+      }  /* Filter groups */
+  } /* Loop table  */
 
 
 } /* nco_nsm_att() */
