@@ -26,10 +26,33 @@ Example
 HEADER_NETCDF 
 J:\netcdf-c-4.3.1.1\include
 
-LIB_NETCDF defines the absolute name (eith path) of the netCDF library (called netcdf.lib), located on your local hard drive.
+LIB_NETCDF defines the absolute name (with path) of the netCDF library (the file is called netcdf.lib), located on your local hard drive.
 Note that here, the file name is included 
 	
 Example
 	
 LIB_NETCDF  
 J:\netcdf-c-4.3.1.1\build\liblib\Debug\netcdf.lib	
+
+Note:
+
+To define an enviroment variable in Microsoft Windows, do:
+
+1) Go to menu “Start”
+2) Go to menu “Computer”
+3) Right click menu "Properties"
+4) Choose option “Advanced System Settings”
+5) Choose option “Environment Variables”
+6) Choose "New" button on the section "System Variables"
+7) Enter a pair name, value
+
+From the previous example, a name would be 
+HEADER_NETCDF
+with value
+J:\netcdf-c-4.3.1.1\include
+
+Note: You’ll have to exit Visual Studio and open the project again so that these values are detected by MSVC.
+
+
+
+
