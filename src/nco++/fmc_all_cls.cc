@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.67 2014-03-25 14:21:26 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.68 2014-04-10 10:45:49 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -932,14 +932,13 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       
 
 
-    
-    if(prs_arg->ntl_scn)
-       if(var1->undefined || var2->undefined){
+     // check for undefined
+     if( var1->undefined || var2->undefined ) {
 	var1=nco_var_free(var1);
         var2=nco_var_free(var2);
         var=ncap_var_udf("~mth2_cls");
         return var;
-       }                          
+     }                          
       
 
     switch(fdx){
@@ -952,10 +951,13 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       var=ncap_var_var_op(var1,var2,ATAN2);
         break;                
 
-      case PCONVERT:{
+    case PCONVERT:          
+      if(prs_arg->ntl_scn){
+        var=ncap_var_udf("~mth2_cls");  
+       }else{
+
         /* Change type to int */
         int c_typ;
-
         var2=nco_var_cnf_typ(NC_INT,var2);
         (void)cast_void_nctype(NC_INT,&var2->val);
         c_typ=var2->val.ip[0];      
@@ -963,8 +965,9 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
         var2=nco_var_free(var2);
 
         var=nco_var_cnf_typ( (nc_type)c_typ, var1);
+      } 
         break;
-      }    
+         
 
     }
       
