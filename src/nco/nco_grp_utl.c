@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1370 2014-04-08 05:22:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1371 2014-04-11 14:31:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1218,14 +1218,14 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 {
   /* Purpose: Add to extraction list all coordinates associated with extracted variables */
 
-  char dmn_nm_var[NC_MAX_NAME];    /* [sng] Dimension name for *variable* */ 
+  char dmn_nm_var[NC_MAX_NAME+1];    /* [sng] Dimension name for *variable* */ 
 
-  int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
-  int grp_id;                  /* [ID] Group ID */
-  int nbr_dmn_var;             /* [nbr] Number of dimensions associated with current matched variable */
-  int var_id;                  /* [ID] Variable ID */
+  int *dmn_id_var;      /* [ID] Dimensions IDs array for variable */
+  int grp_id;           /* [ID] Group ID */
+  int nbr_dmn_var;      /* [nbr] Number of dimensions associated with current matched variable */
+  int var_id;           /* [ID] Variable ID */
 
-  long dmn_sz;                 /* [nbr] Dimension size */  
+  long dmn_sz;          /* [nbr] Dimension size */  
 
   /* Loop table */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -1245,6 +1245,8 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
       assert(nbr_dmn_var == var_trv.nbr_dmn);
 
+      dmn_id_var=(int *)nco_malloc(nbr_dmn_var*sizeof(int)); 
+
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
 
@@ -1254,7 +1256,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm_var,&dmn_sz);
 
-        char dmn_nm_grp[NC_MAX_NAME];    /* [sng] Dimension name for *group*  */ 
+        char dmn_nm_grp[NC_MAX_NAME+1];    /* [sng] Dimension name for *group*  */ 
         
         const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
 
@@ -1324,11 +1326,18 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
             if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
           } /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
-        }  /* Loop dimensions visible to group  */
+        }  /* Loop dimensions visible to group  */    
+
       } /* Loop over dimensions of variable */
+
+      /* Free dimension IDs array */
+      dmn_id_var=(int *)nco_free(dmn_id_var);
+
     } /* Filter variables to extract */
   } /* Loop table */
+
   return;
+
 } /* end nco_xtr_crd_ass_cdf_add */
 
 void
