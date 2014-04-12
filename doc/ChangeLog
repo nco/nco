@@ -1,3 +1,7 @@
+2014-04-12  Charlie Zender  <zender@uci.edu>
+
+	* Hunt for ncks --cdl formatting bug that truncates e-10 exponents...
+
 2014-04-07 Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_nsm_att() Inquire if ensemble parent group has "ensemble_source" attribute (ncbo only);

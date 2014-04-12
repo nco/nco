@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1262 2014-02-18 17:44:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1263 2014-04-12 18:55:15 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -651,10 +651,10 @@ nco1102. ncatted handle arrays of NC_STRINGs with embedded delimiters
 nco1104. ncrename and ncatted copy through API with --hdf4
 nco1106. autoconvert netCDF4 string variable to netCDF3 nc_char type. requires dummy dimension for NC_CHAR array length
          ncks -O -G : -g /g11/ -v string_var -3 ~/nco/data/in_grp.nc ~/foo.nc
-nco1107. add switch to retain dimensions no longer referenced?
-nco1108. add switch to retain dimensions no longer referenced?
+nco1108. add switch to retain dimensions no longer referenced? i.e., retain orphaned dimensions
 nco1109. broadcast degenerate dimensions in nco_var_cnf_dmn()/ncap_var_cnf_dmn(): helps ncap/ncwa/ncbo/ncflint
-nco1110. 
+nco1110. ncap2: allow type specification as per christine smit (GSFC) request 20140407
+nco1111. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
