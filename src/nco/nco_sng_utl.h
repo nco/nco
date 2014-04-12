@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.44 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.45 2014-04-12 20:57:41 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -100,7 +100,7 @@ sng_idx_dlm_c2f /* [fnc] Replace brackets with parentheses in a string */
 (char *sng); /* [sng] String to change from C to Fortran notation */
 
 void /* O [nbr]  */
-sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating point string */
+sng_trm_trl_zro /* [fnc] Trim zeros trailing decimal point and preceding exponent from floating point string */
 (char * const sng, /* I/O [sng] String to process */
  const int trl_zro_max); /* [nbr] Maximum number of trailing zeros allowed */
 

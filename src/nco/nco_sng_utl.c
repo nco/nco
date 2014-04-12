@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.72 2014-01-29 20:59:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.73 2014-04-12 20:57:41 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -393,15 +393,16 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
 } /* end sng_ascii_trn() */
 
 void /* O [nbr]  */
-sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating point string */
+sng_trm_trl_zro /* [fnc] Trim zeros trailing decimal point and preceding exponent from floating point string */
 (char * const sng, /* I/O [sng] String to process */
  const int trl_zro_max) /* [nbr] Maximum number of trailing zeros allowed */
 {
-  /* Purpose: Trim zeros trailing decimal point from floating point string
+  /* Purpose: Trim zeros trailing decimal point and preceding exponent from floating point string
      Allow trl_zro_max trailing zeros to remain */
 
   char *trl_zro_ptr; /* [sng] Trailing zero pointer */
   char *dcm_ptr; /* [sng] Decimal point pointer */
+  char *xpn_ptr; /* [sng] Exponent pointer */
   char *vld_ptr=NULL; /* [sng] Valid pointer */
   char chr_val; /* [chr] Character value */
 
@@ -410,11 +411,13 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating poi
   /* Find decimal point, if any */
   dcm_ptr=strchr(sng,'.'); 
   if(dcm_ptr){
+    /* Find exponent portion, if any, of string fxm */
+    
     /* Find last zero after decimal point, if any */
     trl_zro_ptr=strrchr(dcm_ptr,'0'); 
     if(trl_zro_ptr){
       chr_val=*(trl_zro_ptr+1);
-      /* If the next character is a (non-zero) digit, then this is not a trailing zero */
+      /* If next character is a (non-zero) digit, then this is not a trailing zero */
       if(isdigit(chr_val)) return;
       /* Next character is a NUL or exponent (d,D,e,E) or floating type suffix (d,D,f,F) */
       /* This is a trailing zero. Allow given number of trailing zeros. */
