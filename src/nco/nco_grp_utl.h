@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.495 2014-04-12 20:03:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.496 2014-04-12 20:38:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -230,6 +230,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
  const md5_sct * const md5,           /* I [sct] MD5 configuration */
  const nco_bool CPY_GRP_METADATA,     /* I [flg] Copy group metadata (attributes) */
  const nco_bool CPY_VAR_METADATA,     /* I [flg] Copy variable metadata (attributes) */
+ const nco_bool RETAIN_ALL_DIMS,      /* I [flg] Retain all dimensions */
  const int nco_pck_plc,               /* I [enm] Packing policy */
  const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */

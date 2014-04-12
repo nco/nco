@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.288 2014-03-27 19:19:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.289 2014-04-12 20:38:15 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.288 2014-03-27 19:19:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.288 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.289 2014-04-12 20:38:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.289 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -600,7 +600,7 @@ main(int argc,char **argv)
   (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);         
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id_1,out_id,&cnk,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
+  (void)nco_xtr_dfn(in_id_1,out_id,&cnk,dfl_lvl,gpe,md5,True,True,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);

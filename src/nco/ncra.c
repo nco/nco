@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.529 2014-04-07 02:46:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.530 2014-04-12 20:38:16 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.529 2014-04-07 02:46:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.529 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.530 2014-04-12 20:38:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.530 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -709,7 +709,7 @@ main(int argc,char **argv)
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
+  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Define ensemble fixed variables (True parameter) */
   if(nco_prg_id_get() == ncge) (void)nco_nsm_dfn_wrt(in_id,out_id,&cnk,dfl_lvl,gpe,True,trv_tbl); 

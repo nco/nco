@@ -153,6 +153,7 @@
     <ClCompile Include="..\..\src\nco\nco_scl_utl.c" />
     <ClCompile Include="..\..\src\nco\nco_scm.c" />
     <ClCompile Include="..\..\src\nco\nco_sng_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_srm.c" />
     <ClCompile Include="..\..\src\nco\nco_var_avg.c" />
     <ClCompile Include="..\..\src\nco\nco_var_lst.c" />
     <ClCompile Include="..\..\src\nco\nco_var_rth.c" />
@@ -196,6 +197,7 @@
     <ClInclude Include="..\..\src\nco\nco_scl_utl.h" />
     <ClInclude Include="..\..\src\nco\nco_scm.h" />
     <ClInclude Include="..\..\src\nco\nco_sng_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_srm.h" />
     <ClInclude Include="..\..\src\nco\nco_typ.h" />
     <ClInclude Include="..\..\src\nco\nco_var_avg.h" />
     <ClInclude Include="..\..\src\nco\nco_var_lst.h" />

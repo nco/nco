@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.712 2014-04-12 20:03:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.713 2014-04-12 20:38:15 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -130,7 +130,7 @@ main(int argc,char **argv)
   nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
   nco_bool PRN_NEW_FMT=False; /* [flg] Print using new print format */
-  nco_bool RETAIN_DIMS=False; /* [flg] Retain all dimensions */
+  nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -166,8 +166,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.712 2014-04-12 20:03:10 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.712 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.713 2014-04-12 20:38:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.713 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -469,7 +469,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")) PRN_DMN_VAR_NM=False;
-      if(!strcmp(opt_crr,"rad")) RETAIN_DIMS=True;
+      if(!strcmp(opt_crr,"rad")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
@@ -782,10 +782,10 @@ main(int argc,char **argv)
     if(nco_dbg_lvl >= nco_dbg_dev) (void)nco_prn_var(out_id,trv_tbl); 
 
     /* Define extracted groups, variables, and attributes in output file */
-    (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
+    (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
 
     /* Retain all dimensions */
-    if (RETAIN_DIMS){
+    if (RETAIN_ALL_DIMS){
       (void)nco_rad(out_id,trv_tbl);
     }
 

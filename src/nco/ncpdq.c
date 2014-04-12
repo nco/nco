@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.392 2014-03-27 19:19:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.393 2014-04-12 20:38:16 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.392 2014-03-27 19:19:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.392 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.393 2014-04-12 20:38:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.393 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -690,7 +690,7 @@ main(int argc,char **argv)
   } /* nco_pck_plc == nco_pck_plc_nil */
 
   /* Define dimensions, extracted groups, variables, and attributes in output file. NOTE. record name is NULL */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,nco_pck_plc,(char *)NULL,trv_tbl);
+  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,False,nco_pck_plc,(char *)NULL,trv_tbl);
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
