@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.496 2014-04-12 20:38:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.497 2014-04-12 21:25:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -419,6 +419,7 @@ nco_cpy_var_dfn_trv                    /* [fnc] Define specified variable in out
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  const char * const rec_dmn_nm_cst,    /* I [sng] User-specified record dimension, if any, to create or fix in output file */
  trv_sct *var_trv,                     /* I/O [sct] Object to write (variable) */
+ const nco_bool RETAIN_ALL_DIMS,       /* I [flg] Retain all dimensions */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 void
@@ -942,6 +943,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
 (const int nc_out_id,                  /* I [ID] netCDF output file ID */
+ const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure in output file */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 

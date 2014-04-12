@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.713 2014-04-12 20:38:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.714 2014-04-12 21:25:04 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -166,8 +166,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.713 2014-04-12 20:38:15 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.713 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.714 2014-04-12 21:25:04 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.714 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -783,11 +783,6 @@ main(int argc,char **argv)
 
     /* Define extracted groups, variables, and attributes in output file */
     (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
-
-    /* Retain all dimensions */
-    if (RETAIN_ALL_DIMS){
-      (void)nco_rad(out_id,trv_tbl);
-    }
 
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
