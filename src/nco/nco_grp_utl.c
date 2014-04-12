@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1374 2014-04-12 21:25:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1375 2014-04-12 21:36:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4701,6 +4701,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     } 
 
   } /* !ncwa */
+
+  /* Retain all dimensions */ 
+  if (RETAIN_ALL_DIMS){ 
+    (void)nco_rad(nc_out_id,nbr_dmn_var_out,dmn_cmn,trv_tbl); 
+  } 
 
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -10176,6 +10181,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
 (const int nc_out_id,                  /* I [ID] netCDF output file ID */
+ int nbr_dmn_var_out,                  /* I [nbr] Number of dimensions for variable on output  */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure in output file */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.497 2014-04-12 21:25:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.498 2014-04-12 21:36:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -943,6 +943,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
 (const int nc_out_id,                  /* I [ID] netCDF output file ID */
+ int nbr_dmn_var_out,                  /* I [nbr] Number of dimensions for variable on output  */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure in output file */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
