@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1371 2014-04-11 14:31:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1372 2014-04-12 20:03:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10168,3 +10168,28 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 
 
 } /* nco_nsm_att() */
+
+
+
+void                      
+nco_rad                                /* [fnc] Retain all dimensions */
+(const int nc_out_id,                  /* I [ID] netCDF output file ID */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Retain all dimensions */
+
+  const char fnc_nm[]="nco_rad()"; /* [sng] Function name */
+
+  /* Loop unique dimensions list */
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
+
+
+
+
+
+  } /* Loop unique dimensions list */
+} /* nco_rad() */
+
+
+

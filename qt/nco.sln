@@ -145,6 +145,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = ..
 		QtVersion = qt-everywhere-opensource-src-4.8.3
 	EndGlobalSection
 EndGlobal
