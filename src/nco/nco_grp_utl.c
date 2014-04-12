@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1375 2014-04-12 21:36:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1376 2014-04-12 21:59:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10189,15 +10189,22 @@ nco_rad                                /* [fnc] Retain all dimensions */
 
   const char fnc_nm[]="nco_rad()"; /* [sng] Function name */
 
-  /* Loop unique dimensions list */
-  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
+  /* Loop variable dimensions on output  */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
 
+    /* Loop unique dimensions list */
+    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
+      /* Match full name */
+      if(strcmp(dmn_trv.nm_fll,dmn_cmn[idx_dmn].nm_fll)){
 
+        break;
 
+      }  /* Match full name */
+    } /* Loop unique dimensions list */
+  } /* Loop variable dimensions on output  */
 
-  } /* Loop unique dimensions list */
 } /* nco_rad() */
 
 
