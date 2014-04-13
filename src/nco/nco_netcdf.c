@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.234 2014-02-19 17:44:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.235 2014-04-13 06:13:08 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1099,8 +1099,13 @@ int
 nco_inq_dim(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
 {
   /* Purpose: Wrapper for nc_inq_dim() */
+  const char fnc_nm[]="nco_inq_dim()";
   int rcd;
   rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,(size_t *)dmn_sz);
+  if(rcd == NC_EBADDIM){
+    (void)fprintf(stdout,"ERROR: %s reports requested dimension \"%s\" is not in input file\n",fnc_nm,dmn_nm);
+    nco_err_exit(rcd,fnc_nm);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim()");
   return rcd;
 }/* end nco_inq_dim */

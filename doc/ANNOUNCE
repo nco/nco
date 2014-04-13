@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.701 2014-04-13 02:36:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.702 2014-04-13 06:13:03 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.3 are ready. 
 
@@ -32,8 +32,9 @@ A. Fix bug that caused CDL and XML printing to truncate trailing zeros
    exponents that end in zero (i.e., +/- 10, 20, 30 ... 200, 210...).
    Users of CDL and XML mode are urged to upgrade. This bug changed
    affected values by some multiple of 10 orders of magnitude. 
-   Hence it is unlikely that you would be affected by this bug and NOT
-   notice it.Thanks to Stubaan for reporting this.
+   Hence it is likely that users affected by this bug would notice it
+   when carefully performing any statistics, yet possible they would
+   not for fields with large dynamic ranges. Thanks to Stubaan for report.
 
 KNOWN ISSUES NOT YET FIXED:
 
