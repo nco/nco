@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.700 2014-04-02 19:23:46 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.701 2014-04-13 02:36:55 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.3 are ready. 
 
@@ -6,9 +6,7 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release is mainly a bugfix and stability release. 
-The new features may interest those using hierarchical group files,
-needing Python wrappers for NCO, and those accessing strided data
-over DAP.
+This release fixes a serious printing bug with ncks CDL and XML mode. 
 
 Work on NCO 4.4.4 is underway, still focused on stability and speed.   
 There will be more netCDF4 mop-up, improved group broadcasting
@@ -22,37 +20,20 @@ Charlie
 
 NEW FEATURES:
 
-A. Group broadcasting works with ensembles. Now files containing
-   ensembles (sets of replicated experiments where all ensemble
-   members stored in groups residing under a common group) may be
-   used in binary operations (i.e., ncbo) with "scalar files",
-   i.e., files with the same variables but without ensembles.
-   This is useful, for example, in comparing multiple model results 
-   to a single set of observations.
-   ncbo cmip5.nc obs.nc -p ~/nco/data ~/foo.nc
-   http://nco.sf.net/nco.html#grp_brd
-
-A. Contributed Python wrappers: Check-out NCOpy by Joe Hamman
-   http://nco.sf.net#python
+A. Hi
+   
 
 BUG FIXES:
 
-A. NCO now employs a much faster access method for hyperslabs.
-   The new method dramatically speeds-up access to strided hyperslabs 
-   across DAP connections. Thanks to Rich Signell, Jeff Whittaker, and 
-   Anil for help identifying the problem and the solution.
-
-B. ncwa and ncpdq could sometimes process (i.e., average, permute
-   or pack) over dimensions besides those specified by the user. 
-   This only occurred if the specified dimension name was a proper
-   subset of the name of another dimension. In that case, both would
-   be processed. Reported by Marie-Alice Foujols.
-
-C. Fix a problem where cell_methods could be written multiple times in
-   ensemble datasets.
-
-D. Segregate regression tests so there are fewer failures on older
-   netCDF libraries.
+A. Fix bug that caused CDL and XML printing to truncate trailing zeros
+   of floating point exponents. Before this bugfix, ncks --cdl would
+   print 1.100e-10 as 1.100e-1 instead of 1.1e-10. All CDL and XML
+   printing prior to 4.4.4 mis-prints floating point numbers with
+   exponents that end in zero (i.e., +/- 10, 20, 30 ... 200, 210...).
+   Users of CDL and XML mode are urged to upgrade. This bug changed
+   affected values by some multiple of 10 orders of magnitude. 
+   Hence it is unlikely that you would be affected by this bug and NOT
+   notice it.Thanks to Stubaan for reporting this.
 
 KNOWN ISSUES NOT YET FIXED:
 

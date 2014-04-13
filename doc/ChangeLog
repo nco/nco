@@ -1,5 +1,11 @@
 2014-04-12  Charlie Zender  <zender@uci.edu>
 
+	* Fix nco_trm_trl_zro() bug which used last zero, if any, in
+	exponent instead last zero after decimal point before exponent.
+	This caused CDL and XML mode to truncate trailing zeros of exponent
+	Hence all CDL and XML printing prior to 4.4.4 mis-prints floating
+	point numbers with exponents +/- 10, 20, 30 ... 200, 210, 220...
+
 	* Hunt for ncks --cdl formatting bug that truncates e-10 exponents...
 
 2014-04-07 Pedro Vicente  <pvicente@uci.edu>

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.73 2014-04-12 20:57:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.74 2014-04-13 02:36:55 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -405,16 +405,30 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing decimal point and preceding exponen
   char *xpn_ptr; /* [sng] Exponent pointer */
   char *vld_ptr=NULL; /* [sng] Valid pointer */
   char chr_val; /* [chr] Character value */
+  char xpn_chr; /* [chr] Exponent indicator */
 
   int cnt_zro_rmn; /* [nbr] Number of trailing zeros remaining until maximum reached */
   
   /* Find decimal point, if any */
   dcm_ptr=strchr(sng,'.'); 
   if(dcm_ptr){
-    /* Find exponent portion, if any, of string fxm */
-    
-    /* Find last zero after decimal point, if any */
+    /* Cleave string at exponent portion, if any, then restore exponent later */
+    xpn_ptr=strchr(sng,'d'); 
+    if(!xpn_ptr) xpn_ptr=strchr(sng,'D'); 
+    if(!xpn_ptr) xpn_ptr=strchr(sng,'e'); 
+    if(!xpn_ptr) xpn_ptr=strchr(sng,'E'); 
+    if(xpn_ptr){
+      xpn_chr=*xpn_ptr;
+      /* Amputate exponent so strrchr() finds zeros in decimal not in exponent */
+      *xpn_ptr='\0';
+    } /* !xpn_ptr */
+
+    /* Find last zero, if any, after decimal point and before exponent */
     trl_zro_ptr=strrchr(dcm_ptr,'0'); 
+    /* Restore exponent indicator, if any */
+    if(xpn_ptr) *xpn_ptr=xpn_chr;
+
+    /* Zero exists to right of decimal and left of exponent */
     if(trl_zro_ptr){
       chr_val=*(trl_zro_ptr+1);
       /* If next character is a (non-zero) digit, then this is not a trailing zero */

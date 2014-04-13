@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.186 2014-04-12 20:57:41 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.187 2014-04-13 02:36:53 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -415,7 +415,7 @@ variables:
 	upk_arr:note = "Unpacked value is -32767.d, 0.d, 1.d, 32767.d, packed is same in short. Packing algorithm should yield an NC_SHORT array = [] with packing attributes scale_factor=1.0d, add_offset=0.0d";
 
 	float val_eminusten;
-	//	val_eminusten:long_name = "Floating point number with exponent e-10";
+	val_eminusten:long_name = "Floating point number with exponent ending in zero to test sng_trm_trl_zro()";
         val_eminusten:att_eminusten = 1.1e-10f;
 
 	int val_one_int;
