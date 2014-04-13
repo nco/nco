@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1377 2014-04-13 21:35:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1378 2014-04-13 21:54:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1608,28 +1608,30 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
  trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Define groups, variables, and attributes in output file
-     rec_dmn_nm, if any, is name requested for (netCDF3) sole record dimension */
+  rec_dmn_nm, if any, is name requested for (netCDF3) sole record dimension */
 
   const char fnc_nm[]="nco_xtr_dfn()"; /* [sng] Function name */
 
-  char *grp_out_fll; /* [sng] Group name */
+  char *grp_out_fll;                   /* [sng] Group name */
 
-  gpe_nm_sct *gpe_nm; /* [sct] GPE name duplicate check array */
+  int fl_fmt;                          /* [enm] netCDF file format */
+  int grp_id;                          /* [ID] Group ID in input file */
+  int grp_out_id;                      /* [ID] Group ID in output file */ 
+  int nbr_gpe_nm;                      /* [nbr] Number of GPE entries */
+  int var_out_id;                      /* [ID] Variable ID in output file */
+  int nco_prg_id;                      /* [enm] Program ID */
+  int nbr_dmn_cmn_out;                 /* [sct] Number of all dimensions in output file (used for RETAIN_ALL_DIMS) */
 
-  int fl_fmt; /* [enm] netCDF file format */
-  int grp_id; /* [ID] Group ID in input file */
-  int grp_out_id; /* [ID] Group ID in output file */ 
-  int nbr_gpe_nm; /* [nbr] Number of GPE entries */
-  int var_out_id; /* [ID] Variable ID in output file */
-  int nco_prg_id; /* [enm] Program ID */
+  nco_bool PCK_ATT_CPY;                /* [flg] Copy attributes "scale_factor", "add_offset" */
 
-  nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
+  gpe_nm_sct *gpe_nm;                  /* [sct] GPE name duplicate check array */
 
-  /* Get Program ID */
+  dmn_cmn_sct *dmn_cmn_out;            /* [sct] List of all dimensions in output file (used for RETAIN_ALL_DIMS) */
+
   nco_prg_id=nco_prg_id_get(); 
-
   nbr_gpe_nm=0;
   gpe_nm=NULL;
+  nbr_dmn_cmn_out=0;
 
   /* Get file format */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
@@ -1637,7 +1639,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   /* Isolate extra complexity of copying group metadata */
   if(CPY_GRP_METADATA){
     /* Extraction flag for groups was set in nco_xtr_grp_mrk() 
-       This loop defines those groups in output file and copies their metadata */
+    This loop defines those groups in output file and copies their metadata */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct grp_trv=trv_tbl->lst[idx_tbl];
 
@@ -1651,7 +1653,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         if(nco_prg_id_get() == ncge){
 
           if(grp_trv.flg_nsm_prn){
-	    /* Ensemble parent groups */
+            /* Ensemble parent groups */
             if(trv_tbl->nsm_sfx){
               /* Define new name by appending suffix (e.g., /cesm + _avg) */
               char *nm_fll_sfx=nco_bld_nsm_sfx(grp_trv.grp_nm_fll_prn,trv_tbl);
@@ -1739,7 +1741,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
 
       /* Define variable in output file */
-      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,RETAIN_ALL_DIMS,trv_tbl);
+      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,NULL,0,trv_tbl);
 
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
@@ -1784,6 +1786,11 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
     } /* end if variable and flg_xtr */
   } /* end loop over idx_tbl */
+
+  /* Retain all dimensions */ 
+  if (RETAIN_ALL_DIMS){ 
+    (void)nco_rad(nc_out_id,nbr_dmn_cmn_out,dmn_cmn_out,trv_tbl); 
+  } 
 
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
@@ -3643,9 +3650,9 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
     /* Define variable in output file */
     if (RNK_1_GTR){
-      var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,False,trv_tbl_1);
+      var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,NULL,0,trv_tbl_1);
     }else{
-      var_out_id=nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,False,trv_tbl_2);
+      var_out_id=nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,NULL,0,trv_tbl_2);
     }
 
     /* Copy variable's attributes */
@@ -3814,7 +3821,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
     if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
 
     /* Define variable in output file */
-    var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,(char *)NULL,trv_1,False,trv_tbl_1);
+    var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,(char *)NULL,trv_1,NULL,0,trv_tbl_1);
 
     /* Copy variable's attributes */
     (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); 
@@ -4182,6 +4189,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   return var;
 } /* nco_var_fll_trv() */
 
+
 int                                 /* O [id] Output file variable ID */
 nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output file */
 (const int nc_in_id,                /* I [ID] netCDF input file ID */
@@ -4192,7 +4200,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
  const gpe_sct * const gpe,         /* I [sct] GPE structure */
  const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
  trv_sct *var_trv,                  /* I/O [sct] Object to write (variable) trv_map_dmn_set() is O */
- const nco_bool RETAIN_ALL_DIMS,    /* I [flg] Retain all dimensions */
+ dmn_cmn_sct **dmn_cmn_out,         /* I/O [sct] List of all dimensions in output file (used for RETAIN_ALL_DIMS) */
+ int *nbr_dmn_cmn_out,              /* I/O [sct] Number of all dimensions in output file (used for RETAIN_ALL_DIMS) */
  trv_tbl_sct * const trv_tbl)       /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
@@ -4254,7 +4263,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   dmn_trv_sct *dmn_trv;                  /* [sct] Unique dimension object */
   
-  dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];      /* [sct] Dimension information on output */
+  dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];      /* [sct] Dimension information on output (for a variable ) */
 
   rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
@@ -4686,7 +4695,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
     if(nco_prg_id == ncks && fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_out)) var_typ_out=nco_typ_nc4_nc3(var_typ_out);
     /* fxm TODO nco1106 too complicated--need phony dimensions for NC_CHAR array length */
-    /*      if(var_typ_out == NC_STRING) nbr_dmn_var_out++; */ 
+    /* if(var_typ_out == NC_STRING) nbr_dmn_var_out++; */ 
 
     (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var_out,dmn_out_id,&var_out_id);
 
@@ -4700,10 +4709,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   } /* !ncwa */
 
-  /* Retain all dimensions */ 
-  if (RETAIN_ALL_DIMS){ 
-    (void)nco_rad(nc_out_id,nbr_dmn_var_out,dmn_cmn,trv_tbl); 
-  } 
+
+
+
 
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -8755,7 +8763,7 @@ nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed var
       trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
 
       /* Define variable  */
-      if (flg_def == True) (void)nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,False,trv_tbl);
+      if (flg_def == True) (void)nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,NULL,0,trv_tbl);
 
       /* Obtain group IDs using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id_in);
@@ -9722,7 +9730,7 @@ nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (nc
     if(gpe) (void)nco_gpe_chk(grp_out_fll,trv->nm,&gpe_nm,&nbr_gpe_nm);  
 
     /* Define variable in output file */
-    var_out_id= nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv,False,trv_tbl);
+    var_out_id= nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv,NULL,0,trv_tbl);
 
     /* Copy variable's attributes */
     (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,True); 

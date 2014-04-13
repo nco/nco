@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.498 2014-04-12 21:36:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.499 2014-04-13 21:54:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -419,7 +419,8 @@ nco_cpy_var_dfn_trv                    /* [fnc] Define specified variable in out
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  const char * const rec_dmn_nm_cst,    /* I [sng] User-specified record dimension, if any, to create or fix in output file */
  trv_sct *var_trv,                     /* I/O [sct] Object to write (variable) */
- const nco_bool RETAIN_ALL_DIMS,       /* I [flg] Retain all dimensions */
+ dmn_cmn_sct **dmn_cmn_out,            /* I/O [sct] List of all dimensions in output file (used for RETAIN_ALL_DIMS) */
+ int *nbr_dmn_cmn_out,                 /* I/O [sct] Number of all dimensions in output file (used for RETAIN_ALL_DIMS) */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 void
