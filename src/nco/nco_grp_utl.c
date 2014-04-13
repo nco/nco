@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1376 2014-04-12 21:59:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1377 2014-04-13 21:35:28 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4582,9 +4582,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         /* Define dimension and obtain dimension ID */
         (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_cnt,&dmn_id_out);
 
-        if(nco_dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_nm,dmn_id_out);
-        } 
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_nm,dmn_id_out);
 
         /* Redefine output dimension array for this dimension */
         (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
@@ -10172,11 +10170,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 
       }  /* Filter groups */
   } /* Loop table  */
-
-
 } /* nco_nsm_att() */
-
-
 
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
@@ -10195,17 +10189,9 @@ nco_rad                                /* [fnc] Retain all dimensions */
     /* Loop unique dimensions list */
     for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
       dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
-
       /* Match full name */
-      if(strcmp(dmn_trv.nm_fll,dmn_cmn[idx_dmn].nm_fll)){
-
-        break;
-
-      }  /* Match full name */
+      if(strcmp(dmn_trv.nm_fll,dmn_cmn[idx_dmn].nm_fll)) break;
     } /* Loop unique dimensions list */
   } /* Loop variable dimensions on output  */
 
 } /* nco_rad() */
-
-
-

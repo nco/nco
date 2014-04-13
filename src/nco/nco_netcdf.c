@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.236 2014-04-13 07:56:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.237 2014-04-13 21:35:29 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1097,15 +1097,11 @@ nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * co
   rcd=nc_def_dim(nc_id,dmn_nm,(size_t)dmn_sz,dmn_id);
   if(rcd == NC_EBADNAME){
     char *nm_nc=NULL; /* [sng] netCDF-compatible name */
-    (void)fprintf(stdout,"WARNING: %s reports requested dimension name \"%s\" is bad\n",fnc_nm,dmn_nm);
-    (void)fprintf(stdout,"INFO: Attempting to netCDF-ize dimension name \"%s\" with nm2sng_nc()...\n",dmn_nm);
     nm_nc=nm2sng_nc(dmn_nm);
+    (void)fprintf(stdout,"WARNING: %s reports initial dimension name \"%s\" contains illegal characters. Attempting to define dimension with nm2sng_nc() netCDF'ized name \"%s\" instead...\n",fnc_nm,dmn_nm,nm_nc);
     rcd=nc_def_dim(nc_id,nm_nc,(size_t)dmn_sz,dmn_id);
-    if(rcd == NC_EBADNAME){
-      (void)fprintf(stdout,"ERROR: netCDF-ized name \"%s\" is also bad\n",nm_nc);
-      nco_err_exit(rcd,fnc_nm);
-    } /* endif err */
     if(nm_nc) nm_nc=(char *)nco_free(nm_nc);
+    if(rcd == NC_EBADNAME) nco_err_exit(rcd,fnc_nm);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
@@ -1214,8 +1210,8 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
   rcd=nc_def_var(nc_id,var_nm,var_typ,dmn_nbr,dmn_id,var_id);
   if(rcd == NC_EBADNAME){
     char *nm_nc=NULL; /* [sng] netCDF-compatible name */
-    (void)fprintf(stdout,"WARNING: %s reports requested variable name \"%s\" is bad. Will attempt to netCDF-ize name with nm2sng_nc()...\n",fnc_nm,var_nm);
     nm_nc=nm2sng_nc(var_nm);
+    (void)fprintf(stdout,"WARNING: %s reports initial variable name \"%s\" contains illegal characters. Attempting to define variable with nm2sng_nc() netCDF'ized name \"%s\" instead...\n",fnc_nm,var_nm,nm_nc);
     rcd=nc_def_var(nc_id,nm_nc,var_typ,dmn_nbr,dmn_id,var_id);
     if(nm_nc) nm_nc=(char *)nco_free(nm_nc);
     if(rcd == NC_EBADNAME) nco_err_exit(rcd,fnc_nm);

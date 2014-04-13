@@ -62,6 +62,8 @@ endif
 # Thus environment variables that point, e.g., to /usr/local, are unhelpful
 config.status: configure
 	dh_testdir
+# 20140413 call dh_autoreconf before calling configure (in build or configure target) per Debian Bug #744476
+	dh_autoreconf
 	LD_LIBRARY_PATH='' LDFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' NETCDF_ROOT='/usr' NETCDF4_ROOT='/usr' \
 	./configure $(confflags) \
 		--prefix=/usr \
@@ -94,7 +96,8 @@ clean:
 	[ ! -f Makefile ] || $(MAKE) distclean
 
 	rm -f data/big.nc
-
+# 20140413 call dh_autoreconf_clean before dh_clean in the clean target per Debian Bug #744476
+	dh_autoreconf_clean
 	dh_clean
 
 install: install-arch

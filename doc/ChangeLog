@@ -1,6 +1,9 @@
 2014-04-13  Charlie Zender  <zender@uci.edu>
 
-	* Start nm2sng_nc() to netCDF-ize problematic HDF4 names
+	* Address Debian bug #744476 by utilizing dh_autoreconf in rules
+
+	* Write nm2sng_nc() to netCDF-ize problematic HDF4 names
+	Replaces slash and leading special characters by underscore
 
 2014-04-12  Charlie Zender  <zender@uci.edu>
 
