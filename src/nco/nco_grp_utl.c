@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1378 2014-04-13 21:54:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1379 2014-04-13 22:54:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4709,9 +4709,43 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   } /* !ncwa */
 
+  /* If output dimensions array exists */
+  if (dmn_cmn_out!=NULL){
+
+    int nbr_dmn_out_tmp = *nbr_dmn_cmn_out;  
+    nco_bool dmn_flg=False;
+
+    /* Loop over each dimension in variable */
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+
+      /* Loop constructed array of output dimensions to see if already inserted  */
+      for(int idx_dmn_out=0;idx_dmn_out<nbr_dmn_out_tmp;idx_dmn_out++){
+
+        /* Match by ID */
+        if(dmn_cmn_out[idx_dmn_out]->id==dmn_cmn[idx_dmn].id){
+          dmn_flg=True;
+          break;
+        }  /* Match by ID */
+      } /* Loop constructed array of output dimensions to see if already inserted  */ 
+
+      /* If this dimension is not in output array */
+      if(!dmn_flg){
+
+        /* Add one more element to array  */
+        (*dmn_cmn_out)=(dmn_cmn_sct *)nco_realloc((*dmn_cmn_out),(nbr_dmn_out_tmp+1)*sizeof(dmn_cmn_sct *));
+
+        (*dmn_cmn_out)[nbr_dmn_out_tmp].id=dmn_cmn[idx_dmn].id;
 
 
 
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s Inserted dimension #%d to output list\n",nco_prg_nm_get(),fnc_nm,
+            dmn_cmn[idx_dmn].id);
+        } 
+
+      }  /* If this dimension is not in output array */
+    } /* Loop over each dimension in variable */
+  } /* If output dimensions array exists */
 
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -10195,8 +10229,8 @@ nco_rad                                /* [fnc] Retain all dimensions */
   for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
 
     /* Loop unique dimensions list */
-    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
-      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
+    for(unsigned idx_dmn_tbl=0;idx_dmn_tbl<trv_tbl->nbr_dmn;idx_dmn_tbl++){
+      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn_tbl]; 
       /* Match full name */
       if(strcmp(dmn_trv.nm_fll,dmn_cmn[idx_dmn].nm_fll)) break;
     } /* Loop unique dimensions list */

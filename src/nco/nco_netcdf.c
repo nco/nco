@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.237 2014-04-13 21:35:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.238 2014-04-13 22:54:04 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -7,6 +7,7 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
+#include "nco_mmr.h" /* Memory management */
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
 char * /* O [sng] netCDF-compatible name */
