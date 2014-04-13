@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.112 2014-02-06 00:48:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.113 2014-04-13 07:56:41 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -215,6 +215,10 @@ const char * /* O [sng] String describing endianness for hidden attributes */
 nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attributes */
 (const int flg_ndn); /* I [enm] netCDF endianness */
 /* End Utility Routines */
+
+char * /* O [sng] netCDF-compatible name */
+nm2sng_nc /* [fnc] Turn group/variable/dimension/attribute name into legal netCDF */
+(const char * const nm_sng); /* I [sng] Name to netCDF-ize */
 
 #if 0
 #ifdef HAVE_NETCDF4_H

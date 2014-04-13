@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.235 2014-04-13 06:13:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.236 2014-04-13 07:56:41 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -9,6 +9,35 @@
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
+char * /* O [sng] netCDF-compatible name */
+nm2sng_nc /* [fnc] Turn group/variable/dimension/attribute name into legal netCDF */
+(const char * const nm_sng) /* I [sng] Name to netCDF-ize */
+{
+  /* Purpose: Turn variable/dimension/attribute name into legal netCDF
+     Currently this means replacing forward slash by underscore and parentheses by underscore
+     NB: Calling function must free() memory containing netCDF-ized string
+     Weird file menagerie shows that:
+     NASA HDF4 CERES files (CER*) have forward slashes and spaces in attribute, dimension, and variable names: "Clear/layer/overlap percent coverages"
+     NASA HDF4 CERES files (CER*) have dimension names that begin with special characters: "(FOV) Footprints" */
+
+  char *nm_nc; /* [sng] netCDF-compatible name */
+  char *nm_cpy; /* [sng] Moving pointer to netCDF-compatible name */
+
+  if(nm_sng == NULL) return NULL;
+
+  nm_cpy=nm_nc=(char *)strdup(nm_sng);
+
+  /* Purpose: Replace slashes and parentheses with underscores */
+  while(*nm_cpy){
+    if(*nm_cpy == '/') *nm_cpy='_';
+    if(*nm_cpy == '(') *nm_cpy='_';
+    if(*nm_cpy == ')') *nm_cpy='_';
+    nm_cpy++;
+  } /* end while */
+
+  return nm_nc;
+} /* end nm2sng_nc() */
+
 void
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 (const int rcd, /* I [enm] netCDF error code */
@@ -1063,9 +1092,22 @@ int
 nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * const dmn_id)
 {
   /* Purpose: Wrapper for nc_def_dim() */
+  const char fnc_nm[]="nco_def_dim()";
   int rcd;
   rcd=nc_def_dim(nc_id,dmn_nm,(size_t)dmn_sz,dmn_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_dim()");
+  if(rcd == NC_EBADNAME){
+    char *nm_nc=NULL; /* [sng] netCDF-compatible name */
+    (void)fprintf(stdout,"WARNING: %s reports requested dimension name \"%s\" is bad\n",fnc_nm,dmn_nm);
+    (void)fprintf(stdout,"INFO: Attempting to netCDF-ize dimension name \"%s\" with nm2sng_nc()...\n",dmn_nm);
+    nm_nc=nm2sng_nc(dmn_nm);
+    rcd=nc_def_dim(nc_id,nm_nc,(size_t)dmn_sz,dmn_id);
+    if(rcd == NC_EBADNAME){
+      (void)fprintf(stdout,"ERROR: netCDF-ized name \"%s\" is also bad\n",nm_nc);
+      nco_err_exit(rcd,fnc_nm);
+    } /* endif err */
+    if(nm_nc) nm_nc=(char *)nco_free(nm_nc);
+  } /* endif */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_def_dim */
 
@@ -1167,8 +1209,17 @@ int
 nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id)
 {
   /* Purpose: Wrapper for nc_def_var() */
+  const char fnc_nm[]="nco_def_var()";
   int rcd;
   rcd=nc_def_var(nc_id,var_nm,var_typ,dmn_nbr,dmn_id,var_id);
+  if(rcd == NC_EBADNAME){
+    char *nm_nc=NULL; /* [sng] netCDF-compatible name */
+    (void)fprintf(stdout,"WARNING: %s reports requested variable name \"%s\" is bad. Will attempt to netCDF-ize name with nm2sng_nc()...\n",fnc_nm,var_nm);
+    nm_nc=nm2sng_nc(var_nm);
+    rcd=nc_def_var(nc_id,nm_nc,var_typ,dmn_nbr,dmn_id,var_id);
+    if(nm_nc) nm_nc=(char *)nco_free(nm_nc);
+    if(rcd == NC_EBADNAME) nco_err_exit(rcd,fnc_nm);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var()");
   return rcd;
 } /* end nco_def_var */

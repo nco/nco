@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.74 2014-04-13 02:36:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.75 2014-04-13 07:56:41 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -155,6 +155,7 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
      Weird file menagerie shows that:
      NASA HDF4 TRMM files (3B43*.HDF) have filenames starting with numerals (and no metadata)
      NASA HDF4 AIRS files (AIRS*.hdf) have colons in dimension names
+     NASA HDF4 CERES files (CER*) have forward slashes and spaces in attribute, dimension, and variable names
      NASA HDF4 AMSR_E files (AMSR_E*.hdf) have spaces in variable names, colons and spaces in dimension names
      NASA HDF4 MODIS files (MOD*.hdf) have colons in names
      NASA HDF4 MOPPITT files (MOP*.hdf) have spaces in variable names, colons and spaces in dimension names */
@@ -246,7 +247,7 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   nm_cpy=(char *)nco_free(nm_cpy);
 
   return nm_cdl;
-} /* end nm2sng_cdl */
+} /* end nm2sng_cdl() */
 
 char * /* O [sng] String containing printable result */
 chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII bytes */
@@ -275,7 +276,7 @@ chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII 
   } /* end switch */
 
   return val_sng;
-} /* end chr2sng_cdl */
+} /* end chr2sng_cdl(0 */
 
 char * /* O [sng] String containing printable result */
 chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII bytes */
@@ -305,7 +306,7 @@ chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII 
   } /* end switch */
 
   return val_sng;
-} /* end chr2sng_xml */
+} /* end chr2sng_xml(0 */
 
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */

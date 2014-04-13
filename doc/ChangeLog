@@ -1,3 +1,7 @@
+2014-04-13  Charlie Zender  <zender@uci.edu>
+
+	* Start nm2sng_nc() to netCDF-ize problematic HDF4 names
+
 2014-04-12  Charlie Zender  <zender@uci.edu>
 
 	* Fix nco_trm_trl_zro() bug which used last zero, if any, in
