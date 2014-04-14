@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1380 2014-04-14 05:11:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1381 2014-04-14 05:32:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4736,6 +4736,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
         (*dmn_cmn_out)[nbr_dmn_out_tmp].id=dmn_cmn[idx_dmn].id;
         (*dmn_cmn_out)[nbr_dmn_out_tmp].nm_fll=(char *)strdup(dmn_cmn[idx_dmn].nm_fll);
+        strcpy((*dmn_cmn_out)[nbr_dmn_out_tmp].nm,dmn_cmn[idx_dmn].nm);
+        (*dmn_cmn_out)[nbr_dmn_out_tmp].dmn_cnt=dmn_cmn[idx_dmn].dmn_cnt;
+        (*dmn_cmn_out)[nbr_dmn_out_tmp].is_rec_dmn=dmn_cmn[idx_dmn].is_rec_dmn;
+        (*dmn_cmn_out)[nbr_dmn_out_tmp].NON_HYP_DMN=dmn_cmn[idx_dmn].NON_HYP_DMN;
+        (*dmn_cmn_out)[nbr_dmn_out_tmp].sz=dmn_cmn[idx_dmn].sz;
 
         nbr_dmn_out_tmp++;
         *nbr_dmn_cmn_out=nbr_dmn_out_tmp;
@@ -10227,15 +10232,36 @@ nco_rad                                /* [fnc] Retain all dimensions */
 
   const char fnc_nm[]="nco_rad()"; /* [sng] Function name */
 
-  /* Loop variable dimensions on output  */
-  for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
+  /* Loop unique dimensions list */
+  for(unsigned idx_dmn_tbl=0;idx_dmn_tbl<trv_tbl->nbr_dmn;idx_dmn_tbl++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn_tbl]; 
 
-    /* Loop unique dimensions list */
-    for(unsigned idx_dmn_tbl=0;idx_dmn_tbl<trv_tbl->nbr_dmn;idx_dmn_tbl++){
-      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn_tbl]; 
+    nco_bool has_dmn=False;
+
+    /* Loop variable dimensions on output  */
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
+
       /* Match full name */
-      if(strcmp(dmn_trv.nm_fll,dmn_cmn[idx_dmn].nm_fll)) break;
-    } /* Loop unique dimensions list */
-  } /* Loop variable dimensions on output  */
+      if(strcmp(dmn_trv.nm_fll,dmn_cmn[idx_dmn].nm_fll) == 0){
+
+        has_dmn=True;
+        break;
+      }
+    } /* Loop variable dimensions on output  */
+
+
+    /* Not found make them */
+
+    if (has_dmn == False){
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s making <%s> to output\n",nco_prg_nm_get(),fnc_nm,
+          dmn_trv.nm_fll);
+      }
+    }
+
+
+  } /* Loop unique dimensions list */
+
 
 } /* nco_rad() */
