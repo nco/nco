@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1381 2014-04-14 05:32:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1382 2014-04-14 05:39:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1632,6 +1632,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   nbr_gpe_nm=0;
   gpe_nm=NULL;
   nbr_dmn_cmn_out=0;
+  dmn_cmn_out=NULL;
 
   /* Get file format */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
