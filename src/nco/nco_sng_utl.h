@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.45 2014-04-12 20:57:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.46 2014-04-14 04:54:12 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -28,7 +28,7 @@
 #endif /* !_MSC_VER */
 
 #if defined(NEED_STRCASECMP) || defined(NEED_STRCASESTR)
-# include <ctype.h> /* tolower() */
+# include <ctype.h> /* isalnum(), isdigit(), tolower() */
 #endif /* !NEED_STRCASECMP || !NEED_STRCASESTR */
 
 /* 3rd party vendors */

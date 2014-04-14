@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.113 2014-04-13 07:56:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.114 2014-04-14 04:54:12 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -39,6 +39,7 @@
 #define NCO_NETCDF_H
 
 /* Standard header files */
+#include <ctype.h> /* isalnum(), isdigit(), tolower() */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp() */

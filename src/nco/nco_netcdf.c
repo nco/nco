@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.238 2014-04-13 22:54:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.239 2014-04-14 04:54:12 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -7,7 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
-#include "nco_mmr.h" /* Memory management */
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
 char * /* O [sng] netCDF-compatible name */
@@ -21,6 +20,8 @@ nm2sng_nc /* [fnc] Turn group/variable/dimension/attribute name into legal netCD
      NASA HDF4 CERES files (CER*) have forward slashes and spaces in attribute, dimension, and variable names: "Clear/layer/overlap percent coverages"
      NASA HDF4 CERES files (CER*) have dimension names that begin with special characters: "(FOV) Footprints" */
 
+  char chr_sf='_'; /* [chr] Safe character */
+  char chr_1st; /* [chr] First character of name */
   char *nm_nc; /* [sng] netCDF-compatible name */
   char *nm_cpy; /* [sng] Moving pointer to netCDF-compatible name */
 
@@ -28,13 +29,25 @@ nm2sng_nc /* [fnc] Turn group/variable/dimension/attribute name into legal netCD
 
   nm_cpy=nm_nc=(char *)strdup(nm_sng);
 
-  /* Purpose: Replace slashes and parentheses with underscores */
+  /* netCDF disallows forward slashes in element name. Replace slash by underscore. */
   while(*nm_cpy){
-    if(*nm_cpy == '/') *nm_cpy='_';
-    if(*nm_cpy == '(') *nm_cpy='_';
-    if(*nm_cpy == ')') *nm_cpy='_';
+    if(*nm_cpy == '/') *nm_cpy=chr_sf;
     nm_cpy++;
   } /* end while */
+
+  /* netCDF requires first character of element name to be alphanumeric
+     Change first character that is special by underscore */
+  nm_cpy=nm_nc;
+  chr_1st=nm_cpy[0];
+  if(!isalnum(chr_1st)) nm_cpy[0]=chr_sf;
+  if(chr_1st == '('){
+    /* Change all parentheses to underscores */
+    while(*nm_cpy){
+      if(*nm_cpy == '(') *nm_cpy=chr_sf;
+      if(*nm_cpy == ')') *nm_cpy=chr_sf;
+      nm_cpy++;
+    } /* end while */
+  } /* endif parentheses*/
 
   return nm_nc;
 } /* end nm2sng_nc() */
@@ -1101,7 +1114,7 @@ nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * co
     nm_nc=nm2sng_nc(dmn_nm);
     (void)fprintf(stdout,"WARNING: %s reports initial dimension name \"%s\" contains illegal characters. Attempting to define dimension with nm2sng_nc() netCDF'ized name \"%s\" instead...\n",fnc_nm,dmn_nm,nm_nc);
     rcd=nc_def_dim(nc_id,nm_nc,(size_t)dmn_sz,dmn_id);
-    if(nm_nc) nm_nc=(char *)nco_free(nm_nc);
+    if(nm_nc) free(nm_nc);
     if(rcd == NC_EBADNAME) nco_err_exit(rcd,fnc_nm);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
@@ -1214,7 +1227,7 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
     nm_nc=nm2sng_nc(var_nm);
     (void)fprintf(stdout,"WARNING: %s reports initial variable name \"%s\" contains illegal characters. Attempting to define variable with nm2sng_nc() netCDF'ized name \"%s\" instead...\n",fnc_nm,var_nm,nm_nc);
     rcd=nc_def_var(nc_id,nm_nc,var_typ,dmn_nbr,dmn_id,var_id);
-    if(nm_nc) nm_nc=(char *)nco_free(nm_nc);
+    if(nm_nc) free(nm_nc);
     if(rcd == NC_EBADNAME) nco_err_exit(rcd,fnc_nm);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var()");
