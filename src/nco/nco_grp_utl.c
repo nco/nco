@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1379 2014-04-13 22:54:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1380 2014-04-14 05:11:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1741,7 +1741,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
 
       /* Define variable in output file */
-      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,NULL,0,trv_tbl);
+      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,&dmn_cmn_out,&nbr_dmn_cmn_out,trv_tbl);
 
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
@@ -4722,7 +4722,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       for(int idx_dmn_out=0;idx_dmn_out<nbr_dmn_out_tmp;idx_dmn_out++){
 
         /* Match by ID */
-        if(dmn_cmn_out[idx_dmn_out]->id==dmn_cmn[idx_dmn].id){
+        if( (*dmn_cmn_out)[idx_dmn_out].id==dmn_cmn[idx_dmn].id){
           dmn_flg=True;
           break;
         }  /* Match by ID */
@@ -4732,11 +4732,13 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(!dmn_flg){
 
         /* Add one more element to array  */
-        (*dmn_cmn_out)=(dmn_cmn_sct *)nco_realloc((*dmn_cmn_out),(nbr_dmn_out_tmp+1)*sizeof(dmn_cmn_sct *));
+        (*dmn_cmn_out)=(dmn_cmn_sct *)nco_realloc((*dmn_cmn_out),(nbr_dmn_out_tmp+1)*sizeof(dmn_cmn_sct));
 
         (*dmn_cmn_out)[nbr_dmn_out_tmp].id=dmn_cmn[idx_dmn].id;
+        (*dmn_cmn_out)[nbr_dmn_out_tmp].nm_fll=(char *)strdup(dmn_cmn[idx_dmn].nm_fll);
 
-
+        nbr_dmn_out_tmp++;
+        *nbr_dmn_cmn_out=nbr_dmn_out_tmp;
 
         if(nco_dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: DEBUG %s Inserted dimension #%d to output list\n",nco_prg_nm_get(),fnc_nm,
