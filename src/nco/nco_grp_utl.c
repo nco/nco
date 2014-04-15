@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1383 2014-04-14 05:46:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1384 2014-04-15 05:04:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10233,6 +10233,11 @@ nco_rad                                /* [fnc] Retain all dimensions */
 
   const char fnc_nm[]="nco_rad()"; /* [sng] Function name */
 
+  int grp_dmn_out_id;              /* [id] Group ID where dimension visible to specified group is defined */
+  int dmn_id_out;                  /* [id] Dimension ID defined in outout group */  
+
+  char *grp_dmn_out_fll;            /* [sng] Group name of dimension in output */
+
   /* Loop unique dimensions list */
   for(unsigned idx_dmn_tbl=0;idx_dmn_tbl<trv_tbl->nbr_dmn;idx_dmn_tbl++){
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn_tbl]; 
@@ -10251,17 +10256,33 @@ nco_rad                                /* [fnc] Retain all dimensions */
     } /* Loop variable dimensions on output  */
 
 
-    /* Not found make them */
-
+    /* Dimension not found, make it */
     if (has_dmn == False){
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s making <%s> to output\n",nco_prg_nm_get(),fnc_nm,
           dmn_trv.nm_fll);
       }
-    }
 
+      grp_dmn_out_fll=(char *)strdup(dmn_trv.grp_nm_fll);
 
+      /* Test existence of group and create if not existent */
+      if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id)){
+        nco_def_grp_full(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id);
+      }
+
+      /* Define dimension and obtain dimension ID */
+      (void)nco_def_dim(grp_dmn_out_id,dmn_trv.nm,dmn_trv.sz,&dmn_id_out);
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,
+          grp_dmn_out_fll,dmn_trv.nm,dmn_id_out);
+      }
+
+      /* Memory management after defining current output dimension */
+      if(grp_dmn_out_fll) grp_dmn_out_fll=(char *)nco_free(grp_dmn_out_fll);
+
+    } /* Dimension not found, make it */
   } /* Loop unique dimensions list */
 
 
