@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1384 2014-04-15 05:04:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1385 2014-04-15 05:14:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4711,7 +4711,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   } /* !ncwa */
 
   /* If output dimensions array exists */
-  if (dmn_cmn_out!=NULL && *dmn_cmn_out!=NULL){
+  if (dmn_cmn_out!=NULL && nco_prg_id == ncks){
 
     int nbr_dmn_out_tmp = *nbr_dmn_cmn_out;  
     nco_bool dmn_flg=False;
