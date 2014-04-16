@@ -53,6 +53,27 @@ J:\netcdf-c-4.3.1.1\include
 
 Note: You’ll have to exit Visual Studio and open the project again so that these values are detected by MSVC.
 
+Building ncap2
+
+ncpa2 requires 2 additional libraries, Antlr, and gsl.
+
+Define these environment variables (examples follow)
+
+HEADER_ANTLR
+J:\antlr-2.7.7\lib\cpp
+
+LIB_ANTLR
+J:\antlr-2.7.7\lib\cpp\debug\antlr.lib
+
+HEADER_GSL
+J:\gsl-1.8\src\gsl\1.8\gsl-1.8
+
+LIB_GSL
+J:\gsl-1.8\src\gsl\1.8\gsl-1.8\VC8\libgsl\Debug-StaticLib\libgsl_d.lib
+
+
+
+
 
 
 
