@@ -1,5 +1,9 @@
 2014-04-16  Charlie Zender  <zender@uci.edu>
 
+	* Restore former tolerance of -x EXCLUDE_INPUT_LIST for	non-existent elements
+	Tolerance was lost in 4.2.x when nco_xtr_mk() replaced older method
+	Thanks to Keith Lindsay for this bug report
+
 	* CDL mode prints orphaned dimensions with --rad flag
 
 2014-04-15 Pedro Vicente  <pvicente@uci.edu>
@@ -27,12 +31,12 @@
 
 2014-04-07 Pedro Vicente  <pvicente@uci.edu>
 
-	* nco_nsm_att() Inquire if ensemble parent group has "ensemble_source" attribute (ncbo only);
-	This attribute is saved in ncge.
+	* nco_nsm_att() Inquire if ensemble parent group has "ensemble_source" attribute (ncbo only)
+	This attribute is saved in ncge
 
 2014-04-06 Pedro Vicente  <pvicente@uci.edu>
 
-	* Add /doc/README_msvc.txt, Microsoft Windows Visual Studio 2010 (MSVC) build instructions.
+	* Add /doc/README_msvc.txt, Microsoft Windows Visual Studio 2010 (MSVC) build instructions
 
 2014-04-01  Charlie Zender  <zender@uci.edu>
 
