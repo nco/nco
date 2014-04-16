@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1387 2014-04-16 19:33:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1388 2014-04-16 21:06:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10207,6 +10207,8 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
   int rcd;         /* [rcd] Return code */
   int nbr_nm;      /* [nbr] Number of names in list */ 
 
+  long att_sz;
+
   nc_type att_typ; /* [nbr] Attribute type */
 
   *flg_nsm_att=False;
@@ -10229,7 +10231,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
           (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
 
           /* Does attribute "ensemble_source" exist? (saved in ncge); string is hard coded and duplicated  */
-          rcd=nco_inq_att_flg(grp_id,NC_GLOBAL,"ensemble_source",&att_typ,(long *)NULL);
+          rcd=nco_inq_att_flg(grp_id,NC_GLOBAL,"ensemble_source",&att_typ,&att_sz);
 
           /* Check retrun code */
           if(rcd == NC_NOERR){
@@ -10240,11 +10242,22 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
             /* Add one more element to table */
             (*nsm_grp_nm_fll_prn)->lst=(nm_sct *)nco_realloc((*nsm_grp_nm_fll_prn)->lst,(nbr_nm+1)*sizeof(nm_sct));
 
+            char *attr_sng=NULL_CEWI;
+
+            /* Get attribute */
+
+            attr_sng=(char *)nco_malloc((att_sz+1UL)*sizeof(char));
+
+            (void)nco_get_att(grp_id,NC_GLOBAL,"ensemble_source",attr_sng,att_typ);
+            attr_sng[att_sz]='\0';
+
             /* Duplicate string into list */
-            (*nsm_grp_nm_fll_prn)->lst[nbr_nm].nm=strdup("test");
+            (*nsm_grp_nm_fll_prn)->lst[nbr_nm].nm=strdup(attr_sng);
 
             nbr_nm++;
             (*nsm_grp_nm_fll_prn)->nbr=nbr_nm;
+
+            attr_sng=(char *)nco_free(attr_sng);
 
           } /* Check retrun code */
 
