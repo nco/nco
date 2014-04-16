@@ -1,8 +1,11 @@
+2014-04-16  Charlie Zender  <zender@uci.edu>
+
+	* CDL mode prints orphaned dimensions with --rad flag
+
 2014-04-15 Pedro Vicente  <pvicente@uci.edu>
 
-	* ncks --rad. Using --rad, ncks retains all dimensions, regardeless of variables 
-	to be extracted (with -v).
-	
+	* ncks --rad, --orphan, --rph: Retain all (including orphaned) dimensions
+
 	* nco_rad() Retain all dimensions.
 
 2014-04-13  Charlie Zender  <zender@uci.edu>

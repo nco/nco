@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.715 2014-04-14 05:11:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.716 2014-04-16 18:00:08 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -166,8 +166,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.715 2014-04-14 05:11:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.715 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.716 2014-04-16 18:00:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.716 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -260,8 +260,11 @@ main(int argc,char **argv)
       {"no_clobber",no_argument,0,0},
       {"no_dmn_var_nm",no_argument,0,0}, /* [flg] Print dimension/variable names */
       {"no_nm_prn",no_argument,0,0}, /* [flg] Print dimension/variable names */
-      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
       {"rad",no_argument,0,0}, /* [flg] Retain all dimensions */
+      {"retain_all_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
+      {"orphan_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
+      {"rph_dmn",no_argument,0,0}, /* [flg] Retain all dimensions */
+      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
       {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
       {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
       {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
@@ -469,7 +472,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")) PRN_DMN_VAR_NM=False;
-      if(!strcmp(opt_crr,"rad")) RETAIN_ALL_DIMS=True;
+      if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
@@ -842,6 +845,7 @@ main(int argc,char **argv)
     if((prn_flg.cdl || prn_flg.xml) && nco_dbg_lvl >= nco_dbg_std) prn_flg.nfo_xtr=True; else prn_flg.nfo_xtr=False;
     prn_flg.new_fmt=(PRN_CDL || PRN_JSN || PRN_SRM || PRN_XML || PRN_NEW_FMT);
     prn_flg.hdn=PRN_HDN;
+    prn_flg.rad=RETAIN_ALL_DIMS;
     /* CDL must print filename stub */
     if(prn_flg.cdl || prn_flg.xml){
       fl_in_dpl=strdup(fl_in);

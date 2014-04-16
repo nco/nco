@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.219 2014-03-04 22:44:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.220 2014-04-16 18:00:08 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -2104,8 +2104,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   /* Find dimension information for group */
   for(dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    /* Will dimension be extracted? */
-    if(trv_tbl->lst_dmn[dmn_idx].flg_xtr){
+    /* Will dimension be extracted? (or are we printing all dimensions?)*/
+    if(trv_tbl->lst_dmn[dmn_idx].flg_xtr || prn_flg->rad){
       /* And was dimension defined in this group? */
       if(!strcmp(grp_nm_fll,trv_tbl->lst_dmn[dmn_idx].grp_nm_fll)){
 	/* Add dimension to list of dimensions defined in group */

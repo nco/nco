@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.978 2014-04-02 05:40:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.979 2014-04-16 18:00:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13786,7 +13786,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdn] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] 
-[-Q] [-q] [-R] [-r] [--ram_all] [-s @var{format}] 
+[-Q] [-q] [-R] [-r] [--rad] [--ram_all] [-s @var{format}] 
 [-u] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
 @var{input-file} [[@var{output-file}]]
 @end example
@@ -14285,6 +14285,22 @@ automatically sets @code{-q}.
 This allows @command{ncks} to retrieve remote files without
 automatically trying to print them.
 Also @samp{--quiet}.
+
+@cindex @code{--rad}
+@cindex orphan dimensions
+@cindex @code{--retain_all_dimensions}
+@cindex @code{--orphan_dimensions}
+@cindex @code{--rph_dmn}
+@item --rad
+Retain all dimensions.
+When invoked with @code{--rad} (@pxref{Retaining Retrieved Files}),
+@command{ncks} copies each dimension in the input file to the output
+file, regardless of whether the dimension is utilized by any variables. 
+Normally @command{ncks} discards ``orphan dimensions'', i.e., dimensions
+not referenced by any variables.
+This switch allows users to keep non-referenced dimensions in the workflow.
+Also @samp{--retain_all_dimensions}, @samp{--orphan_dimensions}, and
+@samp{--rph_dmn}. 
 
 @cindex @code{-s}
 @cindex @code{--string}
