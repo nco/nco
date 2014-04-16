@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1385 2014-04-15 05:14:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1386 2014-04-16 07:05:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9231,23 +9231,25 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   in the output file, file 3. Each group in file 3 contains the output of the corresponding
   group in file 1 operating on the data in the single group in file 2. */
 
-  const char fnc_nm[]="nco_grp_brd()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_grp_brd()";  /* [sng] Function name */
 
-  int nbr_cmn_nm=0;               /* [nbr] Number of common entries */
+  int nbr_cmn_nm=0;                      /* [nbr] Number of common entries */
 
-  nco_bool flg_cmn_abs;           /* [flg] Is there a variable with same absolute path in both files? */
-  nco_bool flg_cmn_rel;           /* [flg] Is there a variable with same relative name */
-  nco_bool flg_nsm_fl_1;          /* [flg] File 1 contains ensemble members */
-  nco_bool flg_nsm_fl_2;          /* [flg] File 2 contains ensemble members */
-  nco_bool flg_var_cmn;           /* [flg] Common variable exists */
-  nco_bool flg_var_cmn_rth;       /* [flg] Common variable exists at root */
-  nco_bool flg_grp_1;             /* [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
-  nco_bool flg_nsm_att_1;         /* [flg] "ensemble" attribute exists in table 1 */
-  nco_bool flg_nsm_att_2;         /* [flg] "ensemble" attribute exists in table 2 */
+  nco_bool flg_cmn_abs;                  /* [flg] Is there a variable with same absolute path in both files? */
+  nco_bool flg_cmn_rel;                  /* [flg] Is there a variable with same relative name */
+  nco_bool flg_nsm_fl_1;                 /* [flg] File 1 contains ensemble members */
+  nco_bool flg_nsm_fl_2;                 /* [flg] File 2 contains ensemble members */
+  nco_bool flg_var_cmn;                  /* [flg] Common variable exists */
+  nco_bool flg_var_cmn_rth;              /* [flg] Common variable exists at root */
+  nco_bool flg_grp_1;                    /* [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+  nco_bool flg_nsm_att_1;                /* [flg] "ensemble" attribute exists in table 1 */
+  nco_bool flg_nsm_att_2;                /* [flg] "ensemble" attribute exists in table 2 */
 
-  nco_cmn_t *cmn_lst=NULL;        /* [lst] A list of common variable names */ 
-  nm_lst_sct *var_nm=NULL;        /* [lst] A list of variable names */
-  nm_lst_sct *var_nm_rth=NULL;    /* [lst] A list of variable names found at root */
+  nco_cmn_t *cmn_lst=NULL;               /* [lst] A list of common variable names */ 
+  nm_lst_sct *var_nm=NULL;               /* [lst] A list of variable names */
+  nm_lst_sct *var_nm_rth=NULL;           /* [lst] A list of variable names found at root */
+  nm_lst_sct *nsm_grp_nm_fll_prn_1=NULL; /* I/O [sct] Array of ensemble paths read in the attributes */ 
+  nm_lst_sct *nsm_grp_nm_fll_prn_2=NULL; /* I/O [sct] Array of ensemble paths read in the attributes */ 
 
   /* Sanity check */
   assert(nco_prg_id_get() == ncbo);
@@ -9259,8 +9261,17 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   (void)nco_cmn_var(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,&flg_cmn_abs,&flg_cmn_rel); 
 
   /* Inquire if ensembles have "ensemble" attribute (meaning they were done by ncge already) */
-  (void)nco_nsm_att(nc_id_1,trv_tbl_1,&flg_nsm_att_1); 
-  (void)nco_nsm_att(nc_id_2,trv_tbl_2,&flg_nsm_att_2);
+  (void)nco_nsm_att(nc_id_1,trv_tbl_1,&flg_nsm_att_1,&nsm_grp_nm_fll_prn_1); 
+  (void)nco_nsm_att(nc_id_2,trv_tbl_2,&flg_nsm_att_2,&nsm_grp_nm_fll_prn_2);
+
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev && flg_nsm_att_2){
+    (void)fprintf(stdout,"%s: DEBUG %s ensemble names read from attributes from file 2\n",nco_prg_nm_get(),fnc_nm);
+    for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++){
+      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,
+        nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);          
+    }
+  }
 
   /* There is a variable with same absolute path in both files. Do them and return */
   if (flg_cmn_abs){
@@ -10185,16 +10196,24 @@ void
 nco_nsm_att                            /* [fnc] Inquire if ensemble parent group has "ensemble_source" attribute (ncbo only) */
 (const int nc_id,                      /* I [id] netCDF file ID  */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- nco_bool *flg_nsm_att)                /* I/O [flg] "ensemble" attribute exists */
+ nco_bool *flg_nsm_att,                /* I/O [flg] "ensemble" attribute exists */
+ nm_lst_sct **nsm_grp_nm_fll_prn)      /* I/O [sct] Array of ensemble paths read in the attributes */ 
 {
   /* Purpose: Inquire if ensemble parent group has "ensemble" attribute (ncbo only) */
 
-  int grp_id;  /* [id] Group ID  */
-  int rcd;     /* [rcd] Return code */
+  int grp_id;      /* [id] Group ID  */
+  int rcd;         /* [rcd] Return code */
+  int nbr_nm;      /* [nbr] Number of names in list */ 
 
   nc_type att_typ; /* [nbr] Attribute type */
 
   *flg_nsm_att=False;
+
+  (*nsm_grp_nm_fll_prn)=(nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
+  (*nsm_grp_nm_fll_prn)->nbr=0;
+  (*nsm_grp_nm_fll_prn)->lst=NULL; /* Must be NULL to nco_realloc() correct handling */
+
+  nbr_nm=0;
 
   /* Loop table  */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -10212,9 +10231,18 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 
           /* Check retrun code */
           if(rcd == NC_NOERR){
-              *flg_nsm_att=True;
+            *flg_nsm_att=True;
 
-              (void)fprintf(stdout,"%s: ATTRIBUTE ensemble_source in <%s>\n",nco_prg_nm_get(),trv.grp_nm_fll);
+            (void)fprintf(stdout,"%s: ATTRIBUTE ensemble_source in <%s>\n",nco_prg_nm_get(),trv.grp_nm_fll);
+
+            /* Add one more element to table */
+            (*nsm_grp_nm_fll_prn)->lst=(nm_sct *)nco_realloc((*nsm_grp_nm_fll_prn)->lst,(nbr_nm+1)*sizeof(nm_sct));
+
+            /* Duplicate string into list */
+            (*nsm_grp_nm_fll_prn)->lst[nbr_nm].nm=strdup("test");
+
+            nbr_nm++;
+            (*nsm_grp_nm_fll_prn)->nbr=nbr_nm;
 
           } /* Check retrun code */
 

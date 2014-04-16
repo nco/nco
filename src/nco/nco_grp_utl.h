@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.499 2014-04-13 21:54:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.500 2014-04-16 07:05:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -939,7 +939,8 @@ void
 nco_nsm_att                            /* [fnc] Inquire if ensemble parent group has "ensemble" attribute (ncbo only) */
 (const int nc_id,                      /* I [id] netCDF file ID  */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- nco_bool *flg_nsm_att);               /* I/O [flg] "ensemble" attribute exists */
+ nco_bool *flg_nsm_att,                /* I/O [flg] "ensemble" attribute exists */
+ nm_lst_sct **nsm_grp_nm_fll_prn);     /* I/O [sct] Array of ensemble paths read in the attributes */ 
 
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
