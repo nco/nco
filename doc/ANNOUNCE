@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.704 2014-04-16 19:38:05 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.705 2014-04-16 20:29:05 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.3 are ready. 
 
@@ -35,6 +35,21 @@ A. ncks --rad to Retain all dimensions.
 
 A. nm2sng_nc
    http://nco.sf.net/nco.html#hdf4
+
+A. nces now computes statistics on ensemble members whose specified
+   hyperslabs resolve to the same size. nces has always worked well
+   with identically shaped ensemble members, and on ensemble members
+   whose hyperslabs along the record dimension resolve to the same
+   size. Now nces works well with ensemble members whose specified
+   hyperslabs along any dimension resolve to the same size. The
+   use-case that demanded this was a researcher who wished to compare
+   a certain lat/lon region (stored in some regional files) with the
+   same region stored in other global files (with the same grid).
+   The regional files (e.g., Greenland only) are much smaller than
+   global files so nces's new capability allows users to get by with
+   regional files rather than always storing global files.
+   nces -O --nsm_grp -d lat,0 -d lon,2 -d time,0 -p ~/nco/data grp1.nc grp2.nc ~/foo.nc
+   fxm better example
 
 BUG FIXES:
 
