@@ -2,7 +2,7 @@
 
 	* Restore former tolerance of -x EXCLUDE_INPUT_LIST for	non-existent elements
 	Tolerance was lost in 4.2.x when nco_xtr_mk() replaced older method
-	Thanks to Keith Lindsay for this bug report
+	Thanks to Keith Oleson for this bug report
 
 	* CDL mode prints orphaned dimensions with --rad flag
 

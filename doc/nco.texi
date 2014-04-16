@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.979 2014-04-16 18:00:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.980 2014-04-16 19:33:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.3
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 2 April 2014
+@set update-date 16 April 2014
 @set update-month April 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3820,6 +3820,7 @@ versions of the netCDF standard.
 build time. 
 
 @html
+<a name="x"></a> <!-- http://nco.sf.net/nco.html#x -->
 <a name="grp"></a> <!-- http://nco.sf.net/nco.html#grp -->
 <a name="var"></a> <!-- http://nco.sf.net/nco.html#var -->
 <a name="xcl"></a> <!-- http://nco.sf.net/nco.html#xcl -->
@@ -13919,6 +13920,7 @@ Features common to many operators are described in
 
 @html
 <a name="-5"></a> <!-- http://nco.sf.net/nco.html#-5 -->
+<a name="5"></a> <!-- http://nco.sf.net/nco.html#5 -->
 @end html
 @cindex @code{-5}
 @item -5 
@@ -13929,6 +13931,10 @@ and may be selected for traditional mode printing with @samp{-5}
 (The switch for invocation may change to something more descriptive in
 the future). 
 
+@html
+<a name="abc"></a> <!-- http://nco.sf.net/nco.html#abc -->
+<a name="alphabetize"></a> <!-- http://nco.sf.net/nco.html#alphabetize -->
+@end html
 @cindex alphabetization
 @cindex sort alphabetically
 @cindex @code{-a}
@@ -13946,6 +13952,10 @@ file.
 Thus @code{-a} retains the original ordering of the variables.
 Also @samp{--abc} and @samp{--alphabetize}.
 
+@html
+<a name="bnr"></a> <!-- http://nco.sf.net/nco.html#bnr -->
+<a name="binary"></a> <!-- http://nco.sf.net/nco.html#binary -->
+@end html
 @cindex binary format
 @cindex @code{-b}
 @cindex @code{--fl_bnr}
@@ -14103,7 +14113,8 @@ See @ref{ncecat netCDF Ensemble Concatenator} and
 changing variable dimensionality, including the record dimension. 
 
 @html
-<a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->
+<a name="H"></a> <!-- http://nco.sf.net/nco.html#H -->
+<a name="data"></a> <!-- http://nco.sf.net/nco.html#data -->
 @end html
 @cindex @code{-H}
 @cindex @code{--data}
@@ -14163,6 +14174,10 @@ lat[0]=90 lev[0]=1000 lon[2]=180 three_dmn_var[2]=22
 lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23 
 @end example
 
+@html
+<a name="Metadata"></a> <!-- http://nco.sf.net/nco.html#Metadata -->
+<a name="M"></a> <!-- http://nco.sf.net/nco.html#M -->
+@end html
 @cindex @code{-M}
 @cindex @code{--Mtd}
 @cindex @code{--Metadata}
@@ -14217,6 +14232,11 @@ ncks -A -M -m -v one in.nc out.nc # Append GAs not VAs
 where @code{VAs} and @code{GAs} denote variable and group/global
 attributes, respectively. 
 
+@html
+<a name="m"></a> <!-- http://nco.sf.net/nco.html#m -->
+<a name="mtd"></a> <!-- http://nco.sf.net/nco.html#mtd -->
+<a name="metadata"></a> <!-- http://nco.sf.net/nco.html#metadata -->
+@end html
 @cindex @command{ncdump}
 @cindex @code{-m}
 @cindex @code{--mtd}
@@ -14241,6 +14261,11 @@ specified.
 Also use @samp{-m} to turn-off copying of variable metadata to an output
 file.
 
+@html
+<a name="no_blank"></a> <!-- http://nco.sf.net/nco.html#no_blank -->
+<a name="noblank"></a> <!-- http://nco.sf.net/nco.html#noblank -->
+<a name="no-blank"></a> <!-- http://nco.sf.net/nco.html#no-blank -->
+@end html
 @cindex @code{--no_blank}
 @cindex @code{--noblank}
 @cindex @code{--no-blank}
@@ -14255,6 +14280,10 @@ To enable the old behavior of printing the numeric representation of
 missing values (e.g., @code{1.0e36}), use the @samp{--no_blank} switch.
 Also activated using @samp{--noblank} or @samp{--no-blank}.
 
+@html
+<a name="P"></a> <!-- http://nco.sf.net/nco.html#P -->
+<a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->
+@end html
 @cindex @code{-P}
 @cindex @code{--print}
 @cindex @code{--prn}
@@ -14265,6 +14294,9 @@ The @samp{-P} switch is a convenience abbreviation for
 Also activated using @samp{--print} or @samp{--prn}.
 This set of switches is useful for exploring file contents.
 
+@html
+<a name="Q"></a> <!-- http://nco.sf.net/nco.html#Q -->
+@end html
 @cindex @code{-Q}
 @item -Q 
 Toggle printing of dimension indices and coordinate values when printing
@@ -14273,6 +14305,10 @@ Each variable's name appears flush left in the output.
 This helps locate specific variables in lists with many variables and 
 different dimensions. 
 
+@html
+<a name="q"></a> <!-- http://nco.sf.net/nco.html#q -->
+<a name="quiet"></a> <!-- http://nco.sf.net/nco.html#quiet -->
+@end html
 @cindex @code{-q}
 @cindex @code{--quiet}
 @cindex quiet
@@ -14286,6 +14322,11 @@ This allows @command{ncks} to retrieve remote files without
 automatically trying to print them.
 Also @samp{--quiet}.
 
+@html
+<a name="rad"></a> <!-- http://nco.sf.net/nco.html#rad -->
+<a name="orphan"></a> <!-- http://nco.sf.net/nco.html#orphan -->
+<a name="rph_dmn"></a> <!-- http://nco.sf.net/nco.html#rph_dmn -->
+@end html
 @cindex @code{--rad}
 @cindex orphan dimensions
 @cindex @code{--retain_all_dimensions}
@@ -14293,15 +14334,22 @@ Also @samp{--quiet}.
 @cindex @code{--rph_dmn}
 @item --rad
 Retain all dimensions.
-When invoked with @code{--rad} (@pxref{Retaining Retrieved Files}),
+When invoked with @code{--rad} (Retain All Dimensions),
 @command{ncks} copies each dimension in the input file to the output
 file, regardless of whether the dimension is utilized by any variables. 
 Normally @command{ncks} discards ``orphan dimensions'', i.e., dimensions
 not referenced by any variables.
 This switch allows users to keep non-referenced dimensions in the workflow.
+When invoked in printing mode, causes orphaned dimensions to be printed
+(they are not printed by default).
 Also @samp{--retain_all_dimensions}, @samp{--orphan_dimensions}, and
 @samp{--rph_dmn}. 
 
+@html
+<a name="s"></a> <!-- http://nco.sf.net/nco.html#s -->
+<a name="sng_fmt"></a> <!-- http://nco.sf.net/nco.html#sng_fmt -->
+<a name="string"></a> <!-- http://nco.sf.net/nco.html#string -->
+@end html
 @cindex @code{-s}
 @cindex @code{--string}
 @cindex @code{--sng_fmt}
@@ -14312,6 +14360,10 @@ String format for text output.
 Accepts @w{C language} escape sequences and @code{printf()} formats. 
 Also @samp{--string}  and @samp{--sng_fmt}. 
 
+@html
+<a name="units"></a> <!-- http://nco.sf.net/nco.html#units -->
+<a name="u"></a> <!-- http://nco.sf.net/nco.html#u -->
+@end html
 @cindex @code{-u}
 @cindex @code{--units}
 @item -u 

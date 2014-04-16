@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.500 2014-04-16 07:05:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.501 2014-04-16 19:33:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -139,6 +139,7 @@ nco_xtr_mk                           /* [fnc] Check -v and -g input names and cr
  const int grp_xtr_nbr,              /* I [nbr] Number of groups in list */
  char **var_lst_in,                  /* I [sng] User-specified list of variables */
  const int var_xtr_nbr,              /* I [nbr] Number of variables in list */
+ const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables */
  const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
  const nco_bool flg_unn,             /* I [flg] Select union of specified groups and variables */
  trv_tbl_sct * const trv_tbl);       /* I/O [sct] Traversal table */

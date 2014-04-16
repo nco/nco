@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1386 2014-04-16 07:05:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1387 2014-04-16 19:33:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -639,6 +639,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
  const int grp_xtr_nbr,               /* I [nbr] Number of groups in list */
  char ** var_lst_in,                  /* I [sng] User-specified list of variables */
  const int var_xtr_nbr,               /* I [nbr] Number of variables in list */
+ const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */ 
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
@@ -647,6 +648,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
      Verify both variables and groups
      Handle regular expressions 
      Set flags in traversal table to help generate extraction list
+     Unmatched exclusion lists should succeed
 
      Tests:
      ncks -O -D 5 -g / ~/nco/data/in_grp.nc ~/foo.nc
@@ -656,6 +658,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
      ncks -O -D 5 -g /g1/g1 ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -g g1.+ ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -v v1 ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -x -v lat2 ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -g g1.+ -v v1,sc. ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -g g3g.+,g9/ -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc */
@@ -868,7 +871,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
           } /* endif nco_obj_typ */
         } /* end loop over tbl_idx */
 
-        if(!flg_usr_mch_obj){
+        if(!flg_usr_mch_obj && !EXCLUDE_INPUT_LIST){
           (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
           nco_exit(EXIT_FAILURE);
         } /* flg_usr_mch_obj */
@@ -969,16 +972,15 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
      NB: Exclusion is ambiguous for groups
      Consider, e.g., ncks -x -v /g1/v1 
      Should that exclude g1 completely? what about other variables like /g1/v2?
-     Hence, the exclusion flag should not always be used to permanant exclude groups
+     Hence, the exclusion flag should not always be used to permanantly exclude groups
      On the other hand, there are some uses where the exclusion flag should exclude groups
      Consider, e.g., ncks -x -g g1
      In this case g1 and all descendents should be excluded
      Given that, here is how this routine and NCO actually uses flg_xcl:
      For variables, -x sets the exclusion flag and is "permanent", i.e., removes variable from extraction list
-     For groups, -x sets the exclusion flag but is not "permanent"---it does not group from extraction list
+     For groups, -x sets the exclusion flag but is not "permanent"---it does not remove group from extraction list
      Instead it is used to help determine whether group should be excluded for metadata-only containing groups 
      Group extraction is reset and done from scratch (except for flg_xcl/flg_mtd) in nco_xtr_grp_mrk() */
-
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_tbl->lst[idx_tbl].flg_xtr=!trv_tbl->lst[idx_tbl].flg_xtr; /* Toggle extraction flag */
@@ -6644,7 +6646,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(aux_nbr) (void)nco_bld_crd_aux(nc_id,trv_tbl);        
 
   /* Check -v and -g input names and create extraction list */
-  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
+  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
