@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1388 2014-04-16 21:06:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1389 2014-04-16 21:41:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9266,15 +9266,6 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   (void)nco_nsm_att(nc_id_1,trv_tbl_1,&flg_nsm_att_1,&nsm_grp_nm_fll_prn_1); 
   (void)nco_nsm_att(nc_id_2,trv_tbl_2,&flg_nsm_att_2,&nsm_grp_nm_fll_prn_2);
 
-
-  if(nco_dbg_lvl_get() >= nco_dbg_dev && flg_nsm_att_2){
-    (void)fprintf(stdout,"%s: DEBUG %s ensemble names read from attributes from file 2\n",nco_prg_nm_get(),fnc_nm);
-    for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,
-        nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);          
-    }
-  }
-
   /* There is a variable with same absolute path in both files. Do them and return */
   if (flg_cmn_abs){
 
@@ -9308,13 +9299,32 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           nco_prn_nsm(trv_tbl_2);             
         }
 
-        /* ncbo -O mdl_1.nc mdl_2.nc out.nc */
+        /* File 2 has ensembles in "special" places , defined in attributes */
+        if (flg_nsm_att_2){
 
-        /* Use table 1 as template for group creation */
-        flg_grp_1=True;
+          if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s ensemble names read from attributes from file 2\n",nco_prg_nm_get(),fnc_nm);
+            for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++){
+              (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,
+                nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);          
+            }
+          }
 
-        /* Process (define, write) variables belonging to ensembles in *both* files  */
-        (void)nco_prc_cmn_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);              
+
+
+
+          /* File 2 has ensembles in the expected places */
+        } else {
+
+          /* ncbo -O mdl_1.nc mdl_2.nc out.nc */
+
+          /* Use table 1 as template for group creation */
+          flg_grp_1=True;
+
+          /* Process (define, write) variables belonging to ensembles in *both* files  */
+          (void)nco_prc_cmn_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);              
+
+        } /* File 2 has ensembles in the expected places */
 
       }else if(flg_nsm_fl_2 == False){
 
