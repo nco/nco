@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1390 2014-04-17 05:46:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1391 2014-04-17 06:13:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10409,20 +10409,37 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
 
           assert(trv_1);
 
-         
+
+          /* For file 2, a list with names is argument   */
+          for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn->nbr;idx_nm++){
+
+            /* Match full name */
+            if(strcmp(nsm_grp_nm_fll_prn->lst[idx_nm].nm,trv_1->grp_nm_fll_prn) == 0){
+
+              if(nco_dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: DEBUG %s Found name for <%s>\n",nco_prg_nm_get(),fnc_nm,
+                  nsm_grp_nm_fll_prn->lst[idx_nm].nm);   
+              }
+
+  
+              /* Since we're using table 1 as template, for table 2 object has to be searched (using relative name and ensemble parent name) */
+              trv_2=trv_tbl_nsm_nm_att(trv_1->nm,nsm_grp_nm_fll_prn->lst[idx_nm].nm,trv_tbl_2);
 
 
-         
-          /* Both variables exist  */
-          if(trv_1 && trv_2){
+              /* Both variables exist  */
+              if(trv_1 && trv_2){
 
-            if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
+                if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
 
-            /* Process common object */
-            (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+                /* Process common object */
+                (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
-          } /* Both variables exist */
+              } /* Both variables exist */
 
+              break;
+
+            } /* Match full name */
+          } /* For file 2, a list with names is argument   */
         } /* Loop variables */
 
         /* List of fixed templates  */
