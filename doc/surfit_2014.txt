@@ -1,46 +1,22 @@
-# Purpose: Project description for 2013 UCI Calit2 Surf-IT program 
+# Purpose: Project description for 2014 UCI Calit2 Surf-IT program 
 # (Summer Undergraduate Research Fellowships in Information Technologies)
-# Submitted to Stu Ross 20130228
-
-(20130520: Notes on future SURF-IT ads:
-1. Make first affiliation CS not ESS to get more CS applicants
-2. Format ads so Windows line-breaking won't create widows/orphans
-3. Prerequisites: Good programming skills at the level of third year
-computer science. Proficiency with C and a scripting language.)
+# 20140416: Submitted to Brittany Gray <grayb@uci.edu> 
 
 Optimized Storage Shapes for Multi-dimensional Gridded Datasets
 
 PI: Prof. Charlie Zender
-    Departments of Earth System Science and Computer Science
+    Departments of Computer Science and of Earth System Science
 
 Description:
-Many if not most geophysical datasets such as climate simulations
-are stored in a self-describing data format called netCDF. 
-Data access speeds vary by factors of thousands, and depends primarily
-upon how well their storage layout matches the hyperslab request.  
-This project will improve understanding and parameterization of the
-optimal layout (i.e., the "chunking") to maximize fast access and
-minimize slow access to netCDF datasets.
+Many if not most geophysical datasets such as climate simulations are stored in a self-describing data format called netCDF. Data access speeds vary by factors of thousands, and depends primarily upon how well their storage layout matches the hyperslab request. This project will improve understanding and parameterization of the optimal layout (i.e., the "chunking") to maximize fast access and minimize slow access to netCDF datasets.
 
-Our netCDF Operators (NCO) are a widely used, opensource toolkit for
-manipulating and analyzing (statistics, trends, comparison with
-observations) netCDF data. NCO supports a range of chunking policies,
-but has no heuristic for guiding the user on optimal chunking.
-The student will first conduct sensitivity tests to benchmark access
-times for common hyperslab requests. Then the student will construct
-and implement new, optimal chunking policies. 
+Our netCDF Operators (NCO) are a widely used, opensource toolkit for manipulating and analyzing (statistics, trends, comparison with observations) netCDF data. NCO supports a range of chunking policies, yet has no heuristic for guiding the user on optimal chunking. The student will first conduct sensitivity tests to benchmark access times for common hyperslab requests. Then the student will construct and implement new, optimal chunking policies. The goal is for the student to systematically "discover" the optimal chunking algorithm for a given multi-dimensional array shape.
 
-The first few weeks would be devoted to literature review and to
-scripting benchmark tests to assess the dependence of wallclock time
-on data layout. The next few weeks would be analysis and hypothesis
-testing of generic chunking policies motivated by the benchmarking
-results. The last few weeks would be implementation and analysis of
-optimized chunking policies in NCO.
+The first few weeks would be devoted to literature review and to scripting benchmark tests to assess the dependence of wallclock time on data layout. The next few weeks would be analysis and hypothesis testing of generic chunking policies motivated by the benchmarking results. The last few weeks would be implementation and analysis of optimized chunking policies in NCO.
 
-Prerequisites: Proficiency with C and multi-dimensional data
+Prerequisites: Good programming skills at the level of third year computer science. Proficiency with C and a scripting language.
 
-Outcomes: Skills and understanding of scientific data analysis,
-benchmarking, interpretation of results.
+Outcomes: Skills and understanding of scientific data analysis, benchmarking, interpretation of results.
 
 Recommended Web sites and publications:
 1. Chunking Data: Why it Matters
