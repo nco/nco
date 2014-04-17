@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1389 2014-04-16 21:41:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1390 2014-04-17 05:46:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9310,8 +9310,11 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
             }
           }
 
+          /* Use table 1 as template for group creation */
+          flg_grp_1=True;
 
-
+          /* Process (define, write) variables belonging to ensembles in *both* files (special attribute version)   */
+          (void)nco_prc_cmn_nsm_att(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn,nsm_grp_nm_fll_prn_2);              
 
           /* File 2 has ensembles in the expected places */
         } else {
@@ -10340,3 +10343,116 @@ nco_rad                                /* [fnc] Retain all dimensions */
 
 
 } /* nco_rad() */
+
+
+void                                               
+nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variables belonging to ensembles in both files (ncbo) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ const nco_bool flg_dfn,               /* I [flg] Action type (True for define variables, False for write variables ) */
+ nm_lst_sct *nsm_grp_nm_fll_prn)       /* I/O [sct] Array of ensemble paths read in the attributes */ 
+{
+  /* Purpose: Process (define, write) variables belonging to ensembles in *both* files (both files have ensembles)
+  special attribute ensemble version */
+
+  const char fnc_nm[]="nco_prc_cmn_nsm()"; /* [sng] Function name */
+
+  trv_sct *trv_1;    /* [sct] Table object */
+  trv_sct *trv_2;    /* [sct] Table object */
+
+  if (flg_grp_1 == True){
+
+    if(nco_dbg_lvl_get() >= nco_dbg_var){
+      (void)fprintf(stdout,"%s: Processing ensembles from file 1\n",nco_prg_nm_get());
+    }
+
+    /* Loop ensembles */
+    for(int idx_nsm=0;idx_nsm<trv_tbl_1->nsm_nbr;idx_nsm++){
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+          idx_nsm,trv_tbl_1->nsm[idx_nsm].grp_nm_fll_prn);
+      }
+
+      /* Loop group members */
+      for(int idx_mbr=0;idx_mbr<trv_tbl_1->nsm[idx_nsm].mbr_nbr;idx_mbr++){
+
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+            idx_mbr,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
+        }
+
+        /* Loop variables */
+        for(int idx_var=0;idx_var<trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nbr;idx_var++){
+
+          trv_1=NULL;
+          trv_2=NULL;
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
+              idx_var,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
+          }
+
+          /* Inquire existence of these objects in tables  */
+          trv_1=trv_tbl_var_nm_fll(trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var],trv_tbl_1);
+
+          assert(trv_1);
+
+         
+
+
+         
+          /* Both variables exist  */
+          if(trv_1 && trv_2){
+
+            if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
+
+            /* Process common object */
+            (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+
+          } /* Both variables exist */
+
+        } /* Loop variables */
+
+        /* List of fixed templates  */
+        for(int idx_skp=0;idx_skp<trv_tbl_1->nsm[idx_nsm].skp_nbr;idx_skp++){
+
+          /* Get variable  */
+          trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl_1->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl_1);
+
+          /* Define variable full name (using group name and relative name of fixed template) */
+          char *skp_nm_fll=nco_bld_nm_fll(trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll,var_trv->nm);
+
+          /* Get variable  */
+          trv_sct *skp_trv=trv_tbl_var_nm_fll(skp_nm_fll,trv_tbl_1);
+
+          if (skp_trv){
+
+            /* Define/write fixed variables (ncbo) */
+            (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);   
+
+          }
+
+        } /* List of fixed templates  */
+
+      } /* Loop group members */
+    } /* Loop ensembles */
+
+  } else if (flg_grp_1 == False) {
+
+
+
+  } /* ! flg_grp_1 */
+
+} /* nco_prc_cmn_nsm_att() */
