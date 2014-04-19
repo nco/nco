@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1391 2014-04-17 06:13:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1392 2014-04-19 21:26:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1220,6 +1220,8 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 {
   /* Purpose: Add to extraction list all coordinates associated with extracted variables */
 
+  const char fnc_nm[]="nco_xtr_crd_ass_add()"; /* [sng] Function name */
+
   char dmn_nm_var[NC_MAX_NAME+1];    /* [sng] Dimension name for *variable* */ 
 
   int *dmn_id_var;      /* [ID] Dimensions IDs array for variable */
@@ -1244,6 +1246,11 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
       /* Get number of dimensions for *variable* */
       (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s <%s> nbr_dmn_var=%d var_trv.nbr_dmn=%d\n",nco_prg_nm_get(),fnc_nm,
+          var_trv.nm_fll,nbr_dmn_var,var_trv.nbr_dmn); 
+      }
 
       assert(nbr_dmn_var == var_trv.nbr_dmn);
 
@@ -1878,7 +1885,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
         /* Get output group ID */
         (void)nco_inq_grp_full_ncid(nc_id_out,grp_out_fll,&grp_id_out);
 
-        if(nco_dbg_lvl_get() >= nco_dbg_vrb){
+        if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s writing variable <%s> from ",nco_prg_nm_get(),fnc_nm,trv.nm_fll);        
           (void)nco_prn_grp_nm_fll(grp_id_in);
           (void)fprintf(stdout," to ");   
@@ -4748,7 +4755,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         nbr_dmn_out_tmp++;
         *nbr_dmn_cmn_out=nbr_dmn_out_tmp;
 
-        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        if(nco_dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: DEBUG %s Inserted dimension #%d to output list\n",nco_prg_nm_get(),fnc_nm,
             dmn_cmn[idx_dmn].id);
         } 
