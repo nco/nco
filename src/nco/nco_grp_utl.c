@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1394 2014-04-20 01:02:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1395 2014-04-20 05:13:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10536,8 +10536,8 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
     /* Get dimension name */
     (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm_var,&dmn_sz);
 
-    (void)fprintf(stdout,"%s: DEBUG %s <%s> API size is %ld\n",nco_prg_nm_get(),fnc_nm,
-      dmn_nm_var,dmn_sz); 
+    (void)fprintf(stdout,"%s: DEBUG %s <%s><%s> #%d API size is %ld\n",nco_prg_nm_get(),fnc_nm,
+      var_nm_fll,dmn_nm_var,dmn_id_var[idx_var_dim],dmn_sz); 
 
   } /* Loop over dimensions of variable */
 
@@ -10552,14 +10552,19 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
   /* Loop over dimensions of variable */
   for(int idx_var_dim=0;idx_var_dim<var_trv->nbr_dmn;idx_var_dim++){
 
+    int dmn_id;
+
     if (var_trv->var_dmn[idx_var_dim].crd){
       dmn_sz=var_trv->var_dmn[idx_var_dim].crd->sz;
+      dmn_id=var_trv->var_dmn[idx_var_dim].crd->dmn_id;
     }else if (var_trv->var_dmn[idx_var_dim].ncd) {
       dmn_sz=var_trv->var_dmn[idx_var_dim].ncd->sz;
+      dmn_id=var_trv->var_dmn[idx_var_dim].ncd->dmn_id;
     } else assert (0);
 
-    (void)fprintf(stdout,"%s: DEBUG %s <%s> table size is %ld\n",nco_prg_nm_get(),fnc_nm,
-      var_trv->var_dmn[idx_var_dim].dmn_nm_fll,dmn_sz); 
+
+    (void)fprintf(stdout,"%s: DEBUG %s <%s><%s> #%d table size is %ld\n",nco_prg_nm_get(),fnc_nm,
+      var_nm_fll,var_trv->var_dmn[idx_var_dim].dmn_nm_fll,dmn_id,dmn_sz); 
 
   } /* Loop over dimensions of variable */
 
