@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1392 2014-04-19 21:26:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1393 2014-04-20 00:24:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1250,6 +1250,20 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s <%s> nbr_dmn_var=%d var_trv.nbr_dmn=%d\n",nco_prg_nm_get(),fnc_nm,
           var_trv.nm_fll,nbr_dmn_var,var_trv.nbr_dmn); 
+
+        if (nbr_dmn_var != var_trv.nbr_dmn){
+          (void)fprintf(stdout,"%s: ERROR %s <%s> nbr_dmn_var=%d var_trv.nbr_dmn=%d\n",nco_prg_nm_get(),fnc_nm,
+            var_trv.nm_fll,nbr_dmn_var,var_trv.nbr_dmn); 
+
+          (void)nco_prt_dmn(nc_id,var_trv.grp_nm_fll,var_trv.nm,trv_tbl);
+        }
+
+        (void)fflush(stdout);
+      }
+
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)nco_prt_dmn(nc_id,var_trv.grp_nm_fll,var_trv.nm,trv_tbl);
       }
 
       assert(nbr_dmn_var == var_trv.nbr_dmn);
@@ -10480,3 +10494,56 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
   } /* ! flg_grp_1 */
 
 } /* nco_prc_cmn_nsm_att() */
+
+
+
+
+void
+nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
+(const int nc_id,                      /* I [ID] netCDF file ID */
+ const char * const grp_nm_fll,        /* I [sng] Group name full */
+ const char * const var_nm,            /* I [sng] Variable name relative */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Print dimensions (debug) */
+
+  const char fnc_nm[]="nco_prt_dmn()"; /* [sng] Function name */
+
+  char dmn_nm_var[NC_MAX_NAME+1];      /* [sng] Dimension name for *variable* */ 
+
+  int dmn_id_var[NC_MAX_DIMS];         /* [ID] Dimensions IDs array for variable */
+  int grp_id;                          /* [ID] Group ID */
+  int nbr_dmn_var;                     /* [nbr] Number of dimensions associated with current matched variable */
+  int var_id;                          /* [ID] Variable ID */
+
+  long dmn_sz;                         /* [nbr] Dimension size */  
+
+  /* Obtain group ID using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+
+  /* Obtain variable ID using group ID */
+  (void)nco_inq_varid(grp_id,var_nm,&var_id);
+
+  /* Get number of dimensions for variable */
+  (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
+
+  /* Get dimension IDs for variable */
+  (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
+
+  /* Loop over dimensions of variable */
+  for(int idx_var_dim=0;idx_var_dim<nbr_dmn_var;idx_var_dim++){
+
+    /* Get dimension name */
+    (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm_var,&dmn_sz);
+
+    (void)fprintf(stdout,"%s: DEBUG %s <%s> size is %d\n",nco_prg_nm_get(),fnc_nm,
+      dmn_nm_var,dmn_sz); 
+
+  } /* Loop over dimensions of variable */
+
+} /* nco_prt_dmn() */
+
+
+
+
+

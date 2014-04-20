@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.502 2014-04-17 05:46:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.503 2014-04-20 00:24:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -968,6 +968,13 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
  const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_dfn,               /* I [flg] Action type (True for define variables, False for write variables ) */
  nm_lst_sct *nsm_grp_nm_fll_prn);      /* I/O [sct] Array of ensemble paths read in the attributes */ 
+
+void
+nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
+(const int nc_id,                      /* I [ID] netCDF file ID */
+ const char * const grp_nm_fll,        /* I [sng] Group name full */
+ const char * const var_nm,            /* I [sng] Variable name relative */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 
 #ifdef __cplusplus
