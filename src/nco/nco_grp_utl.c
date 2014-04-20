@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1393 2014-04-20 00:24:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1394 2014-04-20 01:02:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1255,15 +1255,14 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
           (void)fprintf(stdout,"%s: ERROR %s <%s> nbr_dmn_var=%d var_trv.nbr_dmn=%d\n",nco_prg_nm_get(),fnc_nm,
             var_trv.nm_fll,nbr_dmn_var,var_trv.nbr_dmn); 
 
-          (void)nco_prt_dmn(nc_id,var_trv.grp_nm_fll,var_trv.nm,trv_tbl);
+          (void)nco_prt_dmn(nc_id,var_trv.grp_nm_fll,var_trv.nm,var_trv.nm_fll,trv_tbl);
         }
 
         (void)fflush(stdout);
       }
 
-
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)nco_prt_dmn(nc_id,var_trv.grp_nm_fll,var_trv.nm,trv_tbl);
+        (void)nco_prt_dmn(nc_id,var_trv.grp_nm_fll,var_trv.nm,var_trv.nm_fll,trv_tbl);
       }
 
       assert(nbr_dmn_var == var_trv.nbr_dmn);
@@ -10503,6 +10502,7 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
 (const int nc_id,                      /* I [ID] netCDF file ID */
  const char * const grp_nm_fll,        /* I [sng] Group name full */
  const char * const var_nm,            /* I [sng] Variable name relative */
+ const char * const var_nm_fll,        /* I [sng] Variable name full */
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Print dimensions (debug) */
@@ -10536,10 +10536,34 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
     /* Get dimension name */
     (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm_var,&dmn_sz);
 
-    (void)fprintf(stdout,"%s: DEBUG %s <%s> size is %d\n",nco_prg_nm_get(),fnc_nm,
+    (void)fprintf(stdout,"%s: DEBUG %s <%s> API size is %ld\n",nco_prg_nm_get(),fnc_nm,
       dmn_nm_var,dmn_sz); 
 
   } /* Loop over dimensions of variable */
+
+
+  trv_sct *var_trv=NULL;
+
+  /* Obtain variable GTT object using full variable name */
+  var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
+
+  assert(var_trv);
+
+  /* Loop over dimensions of variable */
+  for(int idx_var_dim=0;idx_var_dim<var_trv->nbr_dmn;idx_var_dim++){
+
+    if (var_trv->var_dmn[idx_var_dim].crd){
+      dmn_sz=var_trv->var_dmn[idx_var_dim].crd->sz;
+    }else if (var_trv->var_dmn[idx_var_dim].ncd) {
+      dmn_sz=var_trv->var_dmn[idx_var_dim].ncd->sz;
+    } else assert (0);
+
+    (void)fprintf(stdout,"%s: DEBUG %s <%s> table size is %ld\n",nco_prg_nm_get(),fnc_nm,
+      var_trv->var_dmn[idx_var_dim].dmn_nm_fll,dmn_sz); 
+
+  } /* Loop over dimensions of variable */
+
+
 
 } /* nco_prt_dmn() */
 
