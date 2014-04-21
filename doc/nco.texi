@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.980 2014-04-16 19:33:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.981 2014-04-21 05:11:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5109,7 +5109,7 @@ If the record variable represents time in these files, then the
 values in @file{fl_1.nc} precede those in @file{fl_2.nc}, so why
 do the files appear in the reverse order on the command line?
 @file{fl_1.nc} is the last file named because it is the pre-existing
-output file to which we are appending all of the other input files
+output file to which we will append all the other input files listed
 (in this case only @file{fl_2.nc}).
 The contents of @file{fl_1.nc} are completely preserved, and only
 values in @file{fl_2.nc} (and any other input files) are copied. 

@@ -1,3 +1,7 @@
+2014-04-20  Charlie Zender  <zender@uci.edu>
+
+	* Update bld/Makefile for Yellowstone configuration changes
+
 2014-04-16 Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_prc_cmn_nsm_att() Process (define, write) variables belonging to ensembles in both files (ncbo);
