@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.239 2014-04-14 04:54:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.240 2014-04-23 09:33:23 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1114,8 +1114,14 @@ nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * co
     nm_nc=nm2sng_nc(dmn_nm);
     (void)fprintf(stdout,"WARNING: %s reports initial dimension name \"%s\" contains illegal characters. Attempting to define dimension with nm2sng_nc() netCDF'ized name \"%s\" instead...\n",fnc_nm,dmn_nm,nm_nc);
     rcd=nc_def_dim(nc_id,nm_nc,(size_t)dmn_sz,dmn_id);
-    if(nm_nc) free(nm_nc);
+    /* Did sanitized name pass syntax checker? */
     if(rcd == NC_EBADNAME) nco_err_exit(rcd,fnc_nm);
+    /* Is dimension with sanitized name already defined? */
+    if(rcd == NC_ENAMEINUSE){
+      rcd=nc_inq_dimid(nc_id,nm_nc,dmn_id);
+      (void)fprintf(stdout,"WARNING: %s reports netCDF'ized dimension name \"%s\" is already defined. Returning existing dimension ID = %d.\n",fnc_nm,nm_nc,*dmn_id);
+    } /* endif */
+    if(nm_nc) free(nm_nc);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
@@ -1223,12 +1229,15 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
   int rcd;
   rcd=nc_def_var(nc_id,var_nm,var_typ,dmn_nbr,dmn_id,var_id);
   if(rcd == NC_EBADNAME){
+    char att_nm[]="hdf_name"; /* [sng] Attribute to preserve original name */
     char *nm_nc=NULL; /* [sng] netCDF-compatible name */
     nm_nc=nm2sng_nc(var_nm);
-    (void)fprintf(stdout,"WARNING: %s reports initial variable name \"%s\" contains illegal characters. Attempting to define variable with nm2sng_nc() netCDF'ized name \"%s\" instead...\n",fnc_nm,var_nm,nm_nc);
     rcd=nc_def_var(nc_id,nm_nc,var_typ,dmn_nbr,dmn_id,var_id);
-    if(nm_nc) free(nm_nc);
+    if(rcd == NC_NOERR) (void)fprintf(stdout,"WARNING: %s reports initial variable name \"%s\" contains illegal characters. Defined variable with nm2sng_nc() netCDF'ized name \"%s\" instead. ",fnc_nm,var_nm,nm_nc);
     if(rcd == NC_EBADNAME) nco_err_exit(rcd,fnc_nm);
+    rcd=NCO_PUT_ATT_CHAR(nc_id,*var_id,att_nm,NC_CHAR,(size_t)strlen(var_nm),(const nco_char *)var_nm);
+    if(nm_nc) free(nm_nc);
+    if(rcd == NC_NOERR) (void)fprintf(stdout,"Added \"%s\" attribute to preserve original variable name.\n",att_nm);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var()");
   return rcd;
@@ -1483,7 +1492,15 @@ nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
   const char fnc_nm[]="nco_inq_varid()";
   int rcd;
   rcd=nc_inq_varid(nc_id,var_nm,var_id);
-  if(rcd == NC_ENOTVAR) (void)fprintf(stdout,"ERROR: %s reports requested variable \"%s\" is not in input file\n",fnc_nm,var_nm);
+  if(rcd == NC_ENOTVAR){
+    /* Variable of input name is not in file
+       Check if variable with netCDF-sanitized version of input name exists */
+    char *nm_nc=NULL; /* [sng] netCDF-compatible name */
+    nm_nc=nm2sng_nc(var_nm);
+    rcd=nc_inq_varid(nc_id,nm_nc,var_id);
+    if(rcd == NC_NOERR) (void)fprintf(stdout,"WARNING: %s reports requested variable \"%s\" is not in input file, though variable with netCDF-sanitized name %s is. Returning sanitized variable ID = %d.\n",fnc_nm,var_nm,nm_nc,*var_id); else (void)fprintf(stdout,"ERROR: %s reports requested variable \"%s\" is not in input file\n",fnc_nm,var_nm);
+    if(nm_nc) free(nm_nc);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_varid */

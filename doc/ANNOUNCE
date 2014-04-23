@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.705 2014-04-16 20:29:05 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.706 2014-04-23 09:33:22 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.3 are ready. 
 
@@ -19,6 +19,8 @@ Charlie
 "New stuff" in 4.4.3 summary (full details always in ChangeLog):
 
 NEW FEATURES:
+
+A. netCDF'ize non-compliant element names; CERES fxm
 
 A. ncks --rad to Retain all dimensions.
    When invoked with --rad, ncks copies each dimension in the input
@@ -72,6 +74,7 @@ A. Restore former tolerance of -x for non-existent elements.
    non-existent variables should one again work, e.g., 
    ncks -O -x -v no_such_variable ~/nco/data/in.nc ~/foo.nc
    Thanks to Keith Oleson for this bug report.
+   http://nco.sf.net/nco.html#x
    
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 

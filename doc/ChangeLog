@@ -1,3 +1,14 @@
+2014-04-22  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.4.4 release procedure:
+ 	Changes since nco-4_4_3: -x tolerance, --rad orphans, CERES
+	cd ~/nco;cvs tag -d nco-4_4_4;cvs tag -d nco-4_4_4-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
+	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
+
+	* Finish hacks to nco_netcdf.c nco_inq_varid() and nco_def_dim()
+	that allow file translation to work with crazy HDF4 names.
+
 2014-04-20  Charlie Zender  <zender@uci.edu>
 
 	* Update bld/Makefile for Yellowstone configuration changes

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.879 2014-04-02 05:40:24 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.880 2014-04-23 09:33:22 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -625,6 +625,9 @@ extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.4.4</b>: (<i>In Progress, features completed or being worked on include</i>)
+netCDF'ize non-compliant element names;
+<tt>-x var</tt> tolerates non-existence;
+<tt>--rad</tt> <a href="http://nso.sf.net/nco.html#rad">orphan dimensions</a>;
 <tt>cnk_map=rew</tt>;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
 <li><b>NCO 4.4.3</b>: (<i>Current Stable Release</i>) 
