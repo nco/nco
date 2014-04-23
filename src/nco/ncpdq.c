@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.393 2014-04-12 20:38:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.394 2014-04-23 15:49:04 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -93,6 +93,7 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_dmn_prc_usr_spc=False; /* [flg] Processed dimensions specified on command line */
 
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
   char **dmn_rdr_lst_in_rvr=NULL_CEWI; /* Option a (same list, keep the '-' )*/
@@ -120,8 +121,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.393 2014-04-12 20:38:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.393 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.394 2014-04-23 15:49:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.394 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -394,6 +395,7 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Re-order dimensions */
+      flg_dmn_prc_usr_spc=True;
       dmn_rdr_lst_in=nco_lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
       dmn_rdr_lst_in_rvr=nco_lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
       dmn_rdr_nbr=dmn_rdr_nbr_in;
@@ -621,7 +623,7 @@ main(int argc,char **argv)
   if(IS_REORDER){
 
     /* Create list of dimensions to average(ncwa)/re-order(ncpdq) */
-    (void)nco_dmn_avg_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr_in,False,trv_tbl,&dmn_rdr,&dmn_rdr_nbr);
+    (void)nco_dmn_avg_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr_in,flg_dmn_prc_usr_spc,False,trv_tbl,&dmn_rdr,&dmn_rdr_nbr);
 
   } /* If re-ordering */
 

@@ -1,4 +1,4 @@
-2014-04-22  Charlie Zender  <zender@uci.edu>
+2014-04-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.4 release procedure:
  	Changes since nco-4_4_3: -x tolerance, --rad orphans, CERES
@@ -6,8 +6,16 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
 	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
 
+	* Attempt regular expression parsing in nco_dmn_avg_mk() only when
+	user explicitly specifies dimensions to process. This allows ncwa
+	to work on files with crazy HDF names for dimensions.
+
+	* Clean-up warnings for crazy HDF names
+
+2014-04-22  Charlie Zender  <zender@uci.edu>
+
 	* Finish hacks to nco_netcdf.c nco_inq_varid() and nco_def_dim()
-	that allow file translation to work with crazy HDF4 names.
+	that allow file translation to work with crazy HDF names.
 
 2014-04-20  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.411 2014-04-12 20:38:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.412 2014-04-23 15:49:04 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -106,6 +106,7 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_dmn_prc_usr_spc=False; /* [flg] Processed dimensions specified on command line */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
   
@@ -134,8 +135,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.411 2014-04-12 20:38:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.411 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.412 2014-04-23 15:49:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.412 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -428,6 +429,7 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Dimensions over which to average hyperslab */
+      flg_dmn_prc_usr_spc=True;
       if(dmn_avg_lst_in){
         (void)fprintf(fp_stdout,"%s: ERROR Option -a appears more than once\n",nco_prg_nm);
         (void)fprintf(fp_stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",nco_prg_nm);
@@ -650,7 +652,7 @@ main(int argc,char **argv)
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));
 
   /* Create list of dimensions to average */
-  (void)nco_dmn_avg_mk(in_id,dmn_avg_lst_in,dmn_avg_nbr,flg_rdd,trv_tbl,&dmn_avg,&dmn_avg_nbr);
+  (void)nco_dmn_avg_mk(in_id,dmn_avg_lst_in,dmn_avg_nbr,flg_dmn_prc_usr_spc,flg_rdd,trv_tbl,&dmn_avg,&dmn_avg_nbr);
 
   /* Create list of dimensions to keep on output */
   (void)nco_dmn_out_mk(dim,nbr_dmn_xtr,trv_tbl,&dmn_out,&nbr_dmn_out);

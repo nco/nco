@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1395 2014-04-20 05:13:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1396 2014-04-23 15:49:04 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6078,6 +6078,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
 (const int nc_id,                      /* I [id] netCDF file ID */
  char **obj_lst_in,                    /* I [sng] User-specified list of dimension names (-a names) */
  const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list (size of above array) */
+ const nco_bool flg_dmn_prc_usr_spc,   /* I [flg] Processed dimensions specified on command line */
  const nco_bool flg_rdd,               /* I [flg] Retain degenerate dimensions */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  dmn_sct ***dmn_avg,                   /* O [sct] Array of dimensions to average */
@@ -6125,18 +6126,21 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
     /* Convert pound signs (back) to commas */
     nco_hash2comma(usr_sng);
 
-    /* If usr_sng is regular expression ... */
-    if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
-      /* ... and regular expression library is present */
+    /* Look for regular expressions only when user explicitly specified dimensions */
+    if(flg_dmn_prc_usr_spc){
+      /* If usr_sng is regular expression ... */
+      if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
+	/* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-      /* fxm 20131217 TODO */ 
-      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) is not implemented for -a option.\n",nco_prg_nm_get()); 
-      nco_exit(EXIT_FAILURE); 
+	/* fxm 20131217 TODO */ 
+	(void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to dimension names) is not implemented for -a option.\n",nco_prg_nm_get()); 
+	nco_exit(EXIT_FAILURE); 
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
-      nco_exit(EXIT_FAILURE);
+	(void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to dimension names) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
+	nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-    } /* end if regular expression */
+      } /* end if regular expression */
+    } /* flg_dmn_prc_usr_spc */    
 
     /* Loop table */
     for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -6236,9 +6240,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
 
   if(nco_dbg_lvl_get() >= nco_dbg_var){ 
     (void)fprintf(stdout,"%s: INFO dimensions to average: ",nco_prg_nm_get());        
-    for(int idx_dmn=0;idx_dmn<nbr_avg_dmn;idx_dmn++){
-      (void)fprintf(stdout,"<%s>",(*dmn_avg)[idx_dmn]->nm);
-    }
+    for(int idx_dmn=0;idx_dmn<nbr_avg_dmn;idx_dmn++) (void)fprintf(stdout,"<%s>",(*dmn_avg)[idx_dmn]->nm);
     (void)fprintf(stdout,"\n");    
   } /* endif dbg */
 

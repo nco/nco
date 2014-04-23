@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.504 2014-04-20 01:02:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.505 2014-04-23 15:49:04 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -501,6 +501,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
 (const int nc_id,                      /* I [id] netCDF file ID */
  char **obj_lst_in,                    /* I [sng] User-specified list of dimension names (-a names without the - ) */
  const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list (size of above array) */
+ const nco_bool flg_dmn_prc_usr_spc,   /* I [flg] Processed dimensions specified on command line */
  const nco_bool flg_rdd,               /* I [flg] Retain degenerate dimensions */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  dmn_sct ***dmn_avg,                   /* O [sct] Array of dimensions to average */
