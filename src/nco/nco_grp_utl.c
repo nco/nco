@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1396 2014-04-23 15:49:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1397 2014-04-24 06:30:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1291,6 +1291,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         /* Obtain dimension IDs */
         (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
 
+
         /* Loop dimensions visible to group  */
         for(int idx_dmn=0;idx_dmn<nbr_dmn_grp;idx_dmn++){
 
@@ -2086,9 +2087,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
   const int flg_prn=0;             /* [flg] All the dimensions in all parent groups will also be retrieved */    
 
-  int dmn_ids_grp[NC_MAX_DIMS];    /* [ID]  Dimension IDs array for group */ 
-  int dmn_ids_grp_ult[NC_MAX_DIMS];/* [ID] Unlimited (record) dimensions IDs array for group */
-  int dmn_id_var[NC_MAX_DIMS];     /* [ID] Dimensions IDs array for variable */
+  int *dmn_ids_grp=NULL;           /* [ID] Dimension IDs array for group */ 
+  int *dmn_ids_grp_ult=NULL;       /* [ID] Unlimited (record) dimensions IDs array for group */
+  int *dmn_id_var=NULL;            /* [ID] Dimensions IDs array for variable */
   int *grp_ids;                    /* [ID] Sub-group IDs array */  
   int grp_dpt=0;                   /* [nbr] Depth of group (root = 0) */
   int nbr_att;                     /* [nbr] Number of attributes */
@@ -2117,8 +2118,16 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   /* Obtain number of dimensions/variable/attributes for group; NB: ignore record dimension ID */
   rcd+=nco_inq(grp_id,&nbr_dmn_grp,&nbr_var,&nbr_att,(int *)NULL);
 
+  /* Alloc dimension IDs array */
+  dmn_ids_grp=(int *)nco_malloc(nbr_dmn_grp*sizeof(int));
+
   /* Obtain dimensions IDs for group */
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_ids_grp,flg_prn);
+
+  rcd+=nco_inq_unlimdims(grp_id,&nbr_rec,NULL);
+
+   /* Alloc dimension IDs array */
+  dmn_ids_grp_ult=(int *)nco_malloc(nbr_rec*sizeof(int));
 
   /* Obtain unlimited dimensions for group */
   rcd+=nco_inq_unlimdims(grp_id,&nbr_rec,dmn_ids_grp_ult);
@@ -2196,8 +2205,13 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
 
+    dmn_id_var=NULL;
+
     /* Get type of variable and number of dimensions */
     rcd+=nco_inq_var(grp_id,idx_var,var_nm,&var_typ,&nbr_dmn_var,(int *)NULL,&nbr_att);
+
+    /* Alloc dimension IDs array */
+    dmn_id_var=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
 
     /* Get dimension IDs for variable */
     (void)nco_inq_vardimid(grp_id,idx_var,dmn_id_var);
@@ -2322,6 +2336,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
 
+    /* Free dimension IDs array */
+    dmn_id_var=(int *)nco_free(dmn_id_var);
+
   } /* Iterate variables for this group */
 
   /* Add dimension objects */ 
@@ -2398,7 +2415,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
   rcd+=nco_inq_grps(grp_id,&nbr_grp,grp_ids);
 
-  /* Heart of traversal construction: construct a new sub-group path and call function recursively with this new name; Voila */
+  /* Heart of traversal construction: 
+  construct a new sub-group path and call function recursively with this new name; 
+  Voila */
   for(int grp_idx=0;grp_idx<nbr_grp;grp_idx++){
     char *sub_grp_nm_fll=NULL; /* [sng] Sub group path */
     int gid=grp_ids[grp_idx]; /* [id] Current group ID */  
@@ -2425,7 +2444,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
   } /* end loop over groups */
 
-  (void)nco_free(grp_ids); 
+  grp_ids=(int *)nco_free(grp_ids); 
+  dmn_ids_grp=(int *)nco_free(dmn_ids_grp);
+  dmn_ids_grp_ult=(int *)nco_free(dmn_ids_grp_ult);
+
   return rcd;
 } /* end nco_grp_itr() */
 
@@ -4467,6 +4489,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Check output group (only) dimensions */
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
+
 
     /* Loop output group defined dimensions to check if dimension is already defined */
     for(int idx_dmn_grp=0;idx_dmn_grp<nbr_dmn_out_grp;idx_dmn_grp++){
@@ -8429,6 +8452,7 @@ nco_dmn_malloc                        /* [fnc] Inquire about number of dimension
 
   /* Obtain dimensions IDs for group */
   (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
+
 
   /* Export number of dimensions */
   *dmn_nbr=nbr_dmn;
