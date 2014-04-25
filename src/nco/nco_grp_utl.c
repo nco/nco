@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1400 2014-04-25 05:52:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1401 2014-04-25 19:04:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10311,7 +10311,10 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
           if(rcd == NC_NOERR){
             *flg_nsm_att=True;
 
-            (void)fprintf(stdout,"%s: ATTRIBUTE ensemble_source in <%s>\n",nco_prg_nm_get(),trv.grp_nm_fll);
+            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: ATTRIBUTE ensemble_source in <%s>\n",nco_prg_nm_get(),trv.grp_nm_fll);
+            }
+     
 
             /* Add one more element to table */
             (*nsm_grp_nm_fll_prn)->lst=(nm_sct *)nco_realloc((*nsm_grp_nm_fll_prn)->lst,(nbr_nm+1)*sizeof(nm_sct));
