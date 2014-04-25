@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1401 2014-04-25 19:04:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1402 2014-04-25 20:16:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8908,7 +8908,6 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
   int *grp_ids;                        /* [id] Sub-group IDs array */
   int mbr_srt;                         /* [nbr] Offset */
   int rcd=NC_NOERR;                    /* [rcd] Return code */
-  int dmn_id_var_2[NC_MAX_DIMS];       /* [ID] Dimensions IDs array for variable */
   int nbr_dmn_var_2;                   /* [nbr] Number of dimensions for variable */
 
   size_t grp_nm_lng;                   /* [nbr] Group name length */
@@ -8990,9 +8989,6 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
             /* Get number of dimensions */
             (void)nco_inq_var(grp_ids[idx_grp],idx_var,trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl],NULL,&nbr_dmn_var_2,(int *)NULL,(int *)NULL);
 
-            /* Get dimension IDs for variable */
-            (void)nco_inq_vardimid(grp_ids[idx_grp],idx_var,dmn_id_var_2);
-
             /* Insert variable in table ensemble struct */
             trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr++;
             trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr*sizeof(char *));
@@ -9002,7 +8998,6 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
               (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,
                 trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]);             
             }
-
 
             var_nm_fll=(char *)nco_free(var_nm_fll);
 
@@ -10072,7 +10067,8 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
   int grp_id;                          /* [id] Group ID */
   int nbr_grp;                         /* [nbr] Number of sub-groups */
   int *grp_ids;                        /* [id] Sub-group IDs array */
-  int dmn_id_var[NC_MAX_DIMS];         /* [ID] Dimensions IDs array for variable */
+  int *dmn_id_var;                     /* [ID] Dimensions IDs array for variable */
+
   int nbr_dmn_var;                     /* [nbr] Number of dimensions for variable */
   int rcd=NC_NOERR;                    /* [rcd] Return code */
 
@@ -10161,6 +10157,9 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
             /* Get number of dimensions */
             (void)nco_inq_var(grp_ids[idx_grp],idx_var,var_nm_lst[idx_var],NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
 
+            /* Alloc dimension IDs array */
+            dmn_id_var=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
+
             /* Get dimension IDs for variable */
             (void)nco_inq_vardimid(grp_ids[idx_grp],idx_var,dmn_id_var);
 
@@ -10238,6 +10237,10 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 
               } /* Hyperslab */
             } /* Loop dimensions */
+
+
+            /* Free dimension IDs array */
+            dmn_id_var=(int *)nco_free(dmn_id_var);
 
             if(nco_dbg_lvl_get() >= nco_dbg_dev){
               if (fl_idx == 0) (void)fprintf(stdout,"%s: DEBUG %s <%s> elements %ld\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,lmn_cnt);
@@ -10555,7 +10558,8 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
 
   char dmn_nm_var[NC_MAX_NAME+1+1];      /* [sng] Dimension name for *variable* */ 
 
-  int dmn_id_var[NC_MAX_DIMS];         /* [ID] Dimensions IDs array for variable */
+  int *dmn_id_var;                    /* [ID] Dimensions IDs array for variable */
+
   int grp_id;                          /* [ID] Group ID */
   int nbr_dmn_var;                     /* [nbr] Number of dimensions associated with current matched variable */
   int var_id;                          /* [ID] Variable ID */
@@ -10570,6 +10574,8 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
 
   /* Get number of dimensions for variable */
   (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
+
+  dmn_id_var=(int *)nco_malloc(nbr_dmn_var*sizeof(int)); 
 
   /* Get dimension IDs for variable */
   (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
@@ -10612,7 +10618,7 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
 
   } /* Loop over dimensions of variable */
 
-
+  dmn_id_var=(int *)nco_free(dmn_id_var); 
 
 } /* nco_prt_dmn() */
 
