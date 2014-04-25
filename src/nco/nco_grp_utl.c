@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1399 2014-04-25 05:21:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1400 2014-04-25 05:52:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4032,8 +4032,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   char dmn_nm[NC_MAX_NAME+1];      /* [sng] Dimension name  */  
 
   int fl_fmt;                    /* [enm] File format */  
-  int dmn_in_id_var[NC_MAX_DIMS];/* [id] Dimension IDs array for variable */
-  int nco_prg_id;                    /* [enm] Program ID */
+  int *dmn_in_id_var;            /* [id] Dimension IDs array for variable */
+  int nco_prg_id;                /* [enm] Program ID */
   int dmn_id;                    /* [nbr] Dimension ID */
   
   long dmn_cnt;                  /* [nbr] Dimensio hyperslabbed count (size) */
@@ -4071,6 +4071,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   assert(var->nbr_dim == var_trv->nbr_dmn);
   assert(var->nbr_att == var_trv->nbr_att);
+
+  dmn_in_id_var=(int *)nco_malloc(sizeof(int));
 
   /* Get dimension IDs for *variable* */
   (void)nco_inq_vardimid(var->nc_id,var->id,dmn_in_id_var); 
@@ -4242,6 +4244,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   }
 
   var->undefined=False; /* [flg] Used by ncap parser */
+
+  dmn_in_id_var=(int *)nco_free(dmn_in_id_var);
   return var;
 } /* nco_var_fll_trv() */
 
