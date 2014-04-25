@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1398 2014-04-25 05:10:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1399 2014-04-25 05:21:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1928,7 +1928,7 @@ nco_prn_dmn /* [fnc] Print dimensions for a group  */
   char dmn_nm[NC_MAX_NAME+1];     /* [sng] Dimension name */ 
 
   int *dmn_ids;                 /* [nbr] Dimensions IDs array */
-  int dmn_ids_ult[NC_MAX_DIMS]; /* [nbr] Unlimited dimensions IDs array */
+  int *dmn_ids_ult;             /* [nbr] Unlimited dimensions IDs array */
   int grp_id;                   /* [ID]  Group ID */
   int nbr_dmn;                  /* [nbr] Number of dimensions */
   int nbr_dmn_ult;              /* [nbr] Number of unlimited dimensions */
@@ -1937,6 +1937,11 @@ nco_prn_dmn /* [fnc] Print dimensions for a group  */
 
   /* Obtain group ID from netCDF API using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+
+  (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,NULL);
+
+  /* Alloc dimension IDs array */
+  dmn_ids_ult=(int *)nco_malloc(nbr_dmn_ult*sizeof(int));
 
   /* Obtain unlimited dimensions for group */
   (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
@@ -1963,6 +1968,7 @@ nco_prn_dmn /* [fnc] Print dimensions for a group  */
   } /* end dnm_idx dimensions */
 
   dmn_ids=(int *)nco_free(dmn_ids);
+  dmn_ids_ult=(int *)nco_free(dmn_ids_ult);
 } /* end nco_prn_dmn() */
 
 void                          
@@ -3209,7 +3215,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
   int nbr_dmn_var;             /* [nbr] Number of variables in group */
   int grp_id;                  /* [id] Group ID */
   int var_id;                  /* [id] Variable ID */
-  int dmn_id_var[NC_MAX_DIMS]; /* [id] Dimensions IDs array for variable */
+  int *dmn_id_var;             /* [id] Dimensions IDs array for variable */
 
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
@@ -3234,6 +3240,9 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
 
       /* Get type of variable and number of dimensions */
       (void)nco_inq_var(grp_id,var_id,(char *)NULL,(nc_type *)NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
+
+      /* Alloc dimension IDs array */
+      dmn_id_var=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
 
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
@@ -3260,6 +3269,8 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
       if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"\n");
       }
+
+      dmn_id_var=(int *)nco_free(dmn_id_var);
 
     } /* endif */
 
