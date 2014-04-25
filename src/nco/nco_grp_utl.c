@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1397 2014-04-24 06:30:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1398 2014-04-25 05:10:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -302,7 +302,7 @@ nco_def_grp_rcr                       /* [fnc] Define groups */
  const int rcr_lvl)                   /* I [nbr] Recursion level */
 {
   /* Purpose: Recursively define parent group and all subgroups in output file */
-  char grp_nm[NC_MAX_NAME];
+  char grp_nm[NC_MAX_NAME+1];
 
   int idx;
   int grp_nbr; /* I [nbr] Number of sub-groups */
@@ -1052,7 +1052,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
 
   char **cf_lst; /* [sng] 1D array of list elements */
 
-  char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
+  char att_nm[NC_MAX_NAME+1]; /* [sng] Attribute name */
 
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
 
@@ -1222,7 +1222,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
   const char fnc_nm[]="nco_xtr_crd_ass_add()"; /* [sng] Function name */
 
-  char dmn_nm_var[NC_MAX_NAME+1];    /* [sng] Dimension name for *variable* */ 
+  char dmn_nm_var[NC_MAX_NAME+1+1];    /* [sng] Dimension name for *variable* */ 
 
   int *dmn_id_var;      /* [ID] Dimensions IDs array for variable */
   int grp_id;           /* [ID] Group ID */
@@ -1278,7 +1278,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm_var,&dmn_sz);
 
-        char dmn_nm_grp[NC_MAX_NAME+1];    /* [sng] Dimension name for *group*  */ 
+        char dmn_nm_grp[NC_MAX_NAME+1+1];    /* [sng] Dimension name for *group*  */ 
         
         const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
 
@@ -1369,7 +1369,7 @@ nco_get_prg_info(void) /* [fnc] Get program info */
   /* Purpose: Return a numeric code depending on netCDF library version */
 
   int rcd=3;
-  char lbr_sng[NC_MAX_NAME+1];
+  char lbr_sng[NC_MAX_NAME+1+1];
 
   strcpy(lbr_sng,nc_inq_libvers());
 #if defined(ENABLE_NETCDF4) && defined(ENABLE_NETCDF4)
@@ -1925,7 +1925,7 @@ nco_prn_dmn /* [fnc] Print dimensions for a group  */
 (const int nc_id, /* I [ID] File ID */
  const char * const grp_nm_fll) /* I [sng] Full name of group */
 {
-  char dmn_nm[NC_MAX_NAME];     /* [sng] Dimension name */ 
+  char dmn_nm[NC_MAX_NAME+1];     /* [sng] Dimension name */ 
 
   int *dmn_ids;                 /* [nbr] Dimensions IDs array */
   int dmn_ids_ult[NC_MAX_DIMS]; /* [nbr] Unlimited dimensions IDs array */
@@ -2076,10 +2076,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
   const char sls_sng[]="/";        /* [sng] Slash string */
 
-  char grp_nm[NC_MAX_NAME+1];      /* [sng] Group name */
-  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name */ 
-  char dmn_nm[NC_MAX_NAME+1];      /* [sng] Dimension name */ 
-  char rec_nm[NC_MAX_NAME+1];      /* [sng] Record dimension name */ 
+  char grp_nm[NC_MAX_NAME+1+1];      /* [sng] Group name */
+  char var_nm[NC_MAX_NAME+1+1];      /* [sng] Variable name */ 
+  char dmn_nm[NC_MAX_NAME+1+1];      /* [sng] Dimension name */ 
+  char rec_nm[NC_MAX_NAME+1+1];      /* [sng] Record dimension name */ 
 
   char *var_nm_fll;                /* [sng] Full path for variable */
   char *dmn_nm_fll;                /* [sng] Full path for dimension */
@@ -2322,7 +2322,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     /* Variable dimensions; store what we know at this time: relative name and ID */
     for(int idx_dmn_var=0;idx_dmn_var<nbr_dmn_var;idx_dmn_var++){
 
-      char dmn_nm_var[NC_MAX_NAME+1]; /* [sng] Dimension name */
+      char dmn_nm_var[NC_MAX_NAME+1+1]; /* [sng] Dimension name */
       long dmn_sz_var;                /* [nbr] Dimension size */ 
 
       /* Get dimension name; netCDF nc_inq_dimname() currently relative name */
@@ -3245,7 +3245,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
       /* Variable dimensions */
       for(int idx_dmn_var=0;idx_dmn_var<nbr_dmn_var;idx_dmn_var++){
 
-        char dmn_nm_var[NC_MAX_NAME+1]; /* [sng] Dimension name */
+        char dmn_nm_var[NC_MAX_NAME+1+1]; /* [sng] Dimension name */
         long dmn_sz_var;                /* [nbr] Dimension size */ 
 
         /* Get dimension name */
@@ -4018,7 +4018,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 {
   /* Purpose: nco_malloc() and return a completed var_sct; traversal version of nco_var_fll() */
 
-  char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name  */  
+  char dmn_nm[NC_MAX_NAME+1];      /* [sng] Dimension name  */  
 
   int fl_fmt;                    /* [enm] File format */  
   int dmn_in_id_var[NC_MAX_DIMS];/* [id] Dimension IDs array for variable */
@@ -4263,12 +4263,12 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   const char fnc_nm[]="nco_cpy_var_dfn_trv()"; /* [sng] Function name */
 
-  char var_nm[NC_MAX_NAME+1];            /* [sng] Variable name (local copy of object name) */ 
+  char var_nm[NC_MAX_NAME+1+1];            /* [sng] Variable name (local copy of object name) */ 
   char *rec_dmn_nm=NULL;                 /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL;             /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
   char *grp_dmn_out_fll=NULL;            /* [sng] Group name of dimension in output */
-  char dmn_nm[NC_MAX_NAME];              /* [sng] Dimension name  */
-  char dmn_nm_grp[NC_MAX_NAME];          /* [sng] Dimension name for group */  
+  char dmn_nm[NC_MAX_NAME+1];              /* [sng] Dimension name  */
+  char dmn_nm_grp[NC_MAX_NAME+1];          /* [sng] Dimension name for group */  
 
   int dmn_in_id_var[NC_MAX_DIMS];        /* [id] Dimension IDs array for input variable */
   int dmn_out_id[NC_MAX_DIMS];           /* [id] Dimension IDs array for output variable */
@@ -5759,10 +5759,10 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
   const char fnc_nm[]="nco_dmn_msa_tbl()"; /* [sng] Function name */
 
-  char var_nm[NC_MAX_NAME+1];            /* [sng] Variable name (local copy of object name) */ 
+  char var_nm[NC_MAX_NAME+1+1];            /* [sng] Variable name (local copy of object name) */ 
   char *rec_dmn_nm=NULL;                 /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL;             /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
-  char dmn_nm[NC_MAX_NAME];              /* [sng] Dimension names  */
+  char dmn_nm[NC_MAX_NAME+1];              /* [sng] Dimension names  */
 
   int dmn_in_id_var[NC_MAX_DIMS];        /* [id] Dimension IDs array for input variable */
   int var_in_id;                         /* [id] Variable ID */
@@ -7763,7 +7763,7 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
 {
   /* Purpose: Export list of variable names for group */
 
-  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name */ 
+  char var_nm[NC_MAX_NAME+1+1];      /* [sng] Variable name */ 
 
   int nbr_var;                     /* [nbr] Number of variables */
   int grp_id;                      /* [id] Group ID */
@@ -7802,7 +7802,7 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
 
   char **cf_lst;                /* [sng] 1D array of list elements */
-  char att_nm[NC_MAX_NAME];     /* [sng] Attribute name */
+  char att_nm[NC_MAX_NAME+1];     /* [sng] Attribute name */
   const char dlm_sng[]=" ";     /* [sng] Delimiter string */
 
   int grp_id;                   /* [id] Group ID */
@@ -7960,7 +7960,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
           lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
           int aux_lmt_nbr;           /* Number of auxiliary coordinate limits */
           nc_type crd_typ;           /* [enm] netCDF type of both "latitude" and "longitude" */
-          char units[NC_MAX_NAME+1];
+          char units[NC_MAX_NAME+1+1];
 
           aux_lmt_nbr=0;
           crd_typ=trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].lat_crd[0].crd_typ;
@@ -8240,8 +8240,8 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
     /* Filter variables. */ 
     if(var_trv.nco_typ == nco_obj_typ_var){
 
-      char units_lat[NC_MAX_NAME+1];
-      char units_lon[NC_MAX_NAME+1];
+      char units_lat[NC_MAX_NAME+1+1];
+      char units_lon[NC_MAX_NAME+1+1];
 
       has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&dmn_id,&crd_typ,units_lat);
 
@@ -10152,8 +10152,8 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
             /* Loop dimensions and check GTT template (first) with current variable */
             for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
-              char dmn_nm[NC_MAX_NAME+1L];     /* [nbr] Name of coordinate */
-              char tpl_dmn_nm[NC_MAX_NAME+1L]; /* [nbr] Name of template coordinate */
+              char dmn_nm[NC_MAX_NAME+1+1L];     /* [nbr] Name of coordinate */
+              char tpl_dmn_nm[NC_MAX_NAME+1+1L]; /* [nbr] Name of template coordinate */
 
               size_t tpl_sz;                   /* [nbr] Size of template dimension */
 
@@ -10535,7 +10535,7 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
 
   const char fnc_nm[]="nco_prt_dmn()"; /* [sng] Function name */
 
-  char dmn_nm_var[NC_MAX_NAME+1];      /* [sng] Dimension name for *variable* */ 
+  char dmn_nm_var[NC_MAX_NAME+1+1];      /* [sng] Dimension name for *variable* */ 
 
   int dmn_id_var[NC_MAX_DIMS];         /* [ID] Dimensions IDs array for variable */
   int grp_id;                          /* [ID] Group ID */
