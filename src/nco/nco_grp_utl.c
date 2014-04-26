@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1402 2014-04-25 20:16:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1403 2014-04-26 15:55:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4072,7 +4072,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   assert(var->nbr_dim == var_trv->nbr_dmn);
   assert(var->nbr_att == var_trv->nbr_att);
 
-  dmn_in_id_var=(int *)nco_malloc(sizeof(int));
+  dmn_in_id_var=(int *)nco_malloc(var->nbr_dim*sizeof(int));
 
   /* Get dimension IDs for *variable* */
   (void)nco_inq_vardimid(var->nc_id,var->id,dmn_in_id_var); 
@@ -5774,12 +5774,12 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
   const char fnc_nm[]="nco_dmn_msa_tbl()"; /* [sng] Function name */
 
-  char var_nm[NC_MAX_NAME+1+1];            /* [sng] Variable name (local copy of object name) */ 
+  char var_nm[NC_MAX_NAME+1+1];          /* [sng] Variable name (local copy of object name) */ 
   char *rec_dmn_nm=NULL;                 /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL;             /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
-  char dmn_nm[NC_MAX_NAME+1];              /* [sng] Dimension names  */
+  char dmn_nm[NC_MAX_NAME+1];            /* [sng] Dimension names  */
 
-  int dmn_in_id_var[NC_MAX_DIMS];        /* [id] Dimension IDs array for input variable */
+  int *dmn_in_id_var;                    /* [id] Dimension IDs array for input variable */
   int var_in_id;                         /* [id] Variable ID */
   int fl_fmt;                            /* [enm] Output file format */
   int nbr_dmn_var;                       /* [nbr] Number of dimensions for variable */
@@ -5812,6 +5812,8 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
   /* Get type of variable and number of dimensions from input */
   (void)nco_inq_var(grp_in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_var,(int *)NULL,(int *)NULL);  
+
+  dmn_in_id_var=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
 
   /* Get Program ID */
   nco_prg_id=nco_prg_id_get(); 
@@ -5986,6 +5988,8 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
       } /* Define dimension size */
     } /* end if dimension is not yet defined */
   } /* End of the very important dimension loop */
+
+  dmn_in_id_var=(int *)nco_free(dmn_in_id_var);
 
 } /* end nco_dmn_msa_tbl() */
 
