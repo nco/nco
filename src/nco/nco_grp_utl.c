@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1403 2014-04-26 15:55:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1404 2014-04-26 20:56:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5479,9 +5479,9 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
   long *var_in_cnt;                /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
   long var_sz;                     /* [nbr] Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
 
-  int dmn_idx_out_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
+  int *dmn_idx_out_in;             /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
 
-  nco_bool dmn_rvr_in[NC_MAX_DIMS];/* [flg] Reverse dimension  (Stored in GTT ) */
+  nco_bool *dmn_rvr_in;            /* [flg] Reverse dimension  (Stored in GTT ) */
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -5495,6 +5495,9 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
       assert(var_trv.nbr_dmn==var_out->nbr_dim);
 
       /* Transfer dimension structures to be re-ordered *from* GTT */
+
+      dmn_idx_out_in=(int *)nco_malloc(var_trv.nbr_dmn*sizeof(int));
+      dmn_rvr_in=(nco_bool *)nco_malloc(var_trv.nbr_dmn*sizeof(nco_bool));
 
       /* Loop variable dimensions */
       for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
@@ -5631,6 +5634,10 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
       /* Begin Method 2: Loop over input dimensions */
       /* End Method 2: Loop over input dimensions */
+
+
+      dmn_idx_out_in=(int *)nco_free(dmn_idx_out_in);
+      dmn_rvr_in=(nco_bool *)nco_free(dmn_rvr_in);
 
     } /* Match by full variable name  */
   } /* Loop table */
