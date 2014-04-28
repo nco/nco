@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1406 2014-04-28 05:54:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1407 2014-04-28 23:48:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4288,8 +4288,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int *dmn_in_id_var;                    /* [id] Dimension IDs array for input variable */
   int dmn_out_id[NC_MAX_DIMS];           /* [id] Dimension IDs array for output variable */
   int *dmn_out_id_grp;                   /* [id] Dimension IDs array in output group */ 
-  int dmn_idx_in_out[NC_MAX_DIMS];       /* [idx] Dimension correspondence, input->output (ncpdq) */
-  int dmn_out_id_tmp[NC_MAX_DIMS];       /* [idx] Copy of dmn_out_id (ncpdq) */
+  int *dmn_idx_in_out;                   /* [idx] Dimension correspondence, input->output (ncpdq) */
+  int *dmn_out_id_tmp;                   /* [idx] Copy of dmn_out_id (ncpdq) */
   int rec_dmn_out_id;                    /* [id] Record dimension for output variable */
   int var_in_id;                         /* [id] Variable ID */
   int var_out_id;                        /* [id] Variable ID */
@@ -4396,6 +4396,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* Alloc array */
   dmn_in_id_var=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
+  dmn_idx_in_out=(int *)nco_malloc(nbr_dmn_var*sizeof(int));                 
+  dmn_out_id_tmp=(int *)nco_malloc(nbr_dmn_var*sizeof(int)); 
 
   /* Get dimension IDs for variable */
   (void)nco_inq_vardimid(grp_in_id,var_in_id,dmn_in_id_var);
@@ -4909,6 +4911,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(rec_dmn_nm_mlc) rec_dmn_nm_mlc=(char *)nco_free(rec_dmn_nm_mlc);
 
   dmn_in_id_var=(int *)nco_free(dmn_in_id_var);
+  dmn_idx_in_out=(int *)nco_free(dmn_idx_in_out);                 
+  dmn_out_id_tmp=(int *)nco_free(dmn_out_id_tmp); 
 
   return var_out_id;
 } /* end nco_cpy_var_dfn_trv() */
