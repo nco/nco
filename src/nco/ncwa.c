@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.412 2014-04-23 15:49:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.413 2014-04-29 03:29:34 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.412 2014-04-23 15:49:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.412 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.413 2014-04-29 03:29:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.413 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -441,7 +441,7 @@ main(int argc,char **argv)
     case 'B': /* Mask string to be parsed */
       msk_cnd_sng=(char *)strdup(optarg);
 #ifdef _MSC_VER
-      (void)fprintf(fp_stdout,"%s: ERROR -B and --mask_condition options unsupported on Windows, which lacks a free, standard parser and lexer. HINT: Break condition into component -m -T -M switches, e.g., use -m ORO -T lt -M 1.0 instead of -B \"ORO < 1\"\n",nco_prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR -B and --mask_condition options unsupported on Windows, which lacks a standard parser and lexer that are free. HINT: Break condition into component -m -T -M switches, e.g., use -m ORO -T lt -M 1.0 instead of -B \"ORO < 1\"\n",nco_prg_nm);
       nco_exit(EXIT_FAILURE);
 #endif /* !_MSC_VER */
       break;
