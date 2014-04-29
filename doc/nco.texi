@@ -1,13 +1,13 @@
 \input texinfo @c -*-texinfo-*- 
 @c \input /home/zender/texinfo_fedora.tex
 @c \input /home/zender/texinfo_ubuntu.tex
-
+ 
 @c 19980817: TeX-based systems (texi2dvi, texi2dvi --pdf) require texinfo.tex
 @c Hyper-text systems (texi2html, makeinfo) do not require texinfo.tex
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.982 2014-04-29 03:29:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.983 2014-04-29 05:43:46 pvicente Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.3
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 23 April 2014
+@set update-date 16 April 2014
 @set update-month April 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1209,6 +1209,9 @@ See @ref{File Formats and Conversion} for more details.
 <a name="hdf4"></a> <!-- http://nco.sf.net/nco.html#hdf4 -->
 <a name="HDF4"></a> <!-- http://nco.sf.net/nco.html#HDF4 -->
 @end html
+@cindex @acronym{H4CF}
+@cindex @command{h4tonccf}
+@cindex @command{ncl_convert2nc}
 @cindex @acronym{HDF4}
 @cindex @samp{--hdf4}
 When linked to a netCDF library that was built with @acronym{HDF4}
@@ -1220,12 +1223,12 @@ files and writing them as netCDF3/netCDF4/@acronym{HDF5} files.
 @acronym{NCO} can only write through the netCDF @acronym{API}, which
 can only write netCDF3/netCDF4/@acronym{HDF5} files. 
 So @acronym{NCO} can @emph{read} @acronym{HDF4} files, perform
-manipulations and calculations, and then it must @emph{write} the
-results in netCDF format. 
+manipulations and calculations, and then @emph{write} the results in
+netCDF format. 
 
 Full support for these features is forthcoming, yet support as of
-December, 2013 was quite functional.
-For best results install @acronym{NCO} versions 4.4.0 or later on top of 
+December, 2013 is quite functional.
+For best results install @acronym{NCO} versions 4.4.0 or later on top of
 netCDF versions 4.3.1 or later. 
 Getting to this point has been an iterative effort where Unidata
 improved netCDF library capabilities in response to our requests.
@@ -1264,7 +1267,6 @@ types, e.g., unsigned bytes, so this procedure is the most typical.
 Conversion of @acronym{HDF4} to netCDF4 as above suffices when the data
 will only be processed by @acronym{NCO} and other netCDF4-aware tools.  
 
-@cindex @command{ncl_convert2nc}
 However, many tools are not fully netCDF4-aware, and so conversion to
 netCDF3 may be desirable.
 Obtaining a netCDF3 file from an @acronym{HDF4} is now easy:
@@ -1298,41 +1300,13 @@ Unsigned bytes stay unsigned bytes.
 Strings stay strings. 
 Hence, @command{ncks} conversions often result in smaller files than
 @command{ncl_convert2nc} conversions.
-
-@cindex @code{hdf_name}
-@cindex illegal names
-As of @acronym{NCO} version 4.4.4 (May, 2014) both
-@command{ncl_convert2nc} and @acronym{NCO} have built-in, automatic
-workarounds to handle element names that contain characters that are
-legal in @acronym{HDF} though are illegal in @acronym{netCDF}. 
-For example, slashes and leading special characters are are legal in
-@acronym{HDF} and illegal in @acronym{netCDF} element (i.e., group,
-variable, dimension, and attribute) names.
-@acronym{NCO} converts these forbidden characters to underscores, and
-retains the original names of variables in automatically produced
-attributes named @code{hdf_name}.
-@footnote{Two real-world examples: @acronym{NCO} translates the
-@acronym{NASA} @acronym{CERES} dimension @code{(FOV) Footprints} to
-@code{_FOV_ Footprints}, and 
-@code{Cloud & Aerosol, Cloud Only, Clear Sky w/Aerosol, and Clear Sky} 
-(yes, that's really a dimension name) to 
-@code{Cloud & Aerosol, Cloud Only, Clear Sky w_Aerosol, and Clear Sky}}.
-@command{ncl_convert2nc} makes the element name netCDF-safe in a
-different manner, yet also stores the original name in the
-@code{hdf_name} attribute.
-
-@cindex @acronym{H4CF}
-@cindex @command{h4tonccf}
 Finally, in February 2014, we learned that the @acronym{HDF} group
-has a project called @acronym{H4CF} 
-(described @uref{http://hdfeos.org/software/h4cflib.php, here})
-whose goal is to make @acronym{HDF4} files accessible to @acronym{CF}
-tools and conventions. 
+has a project called @acronym{H4CF} whose goal is to make @acronym{HDF4} 
+files accessible to @acronym{CF} tools and conventions.
 Their project includes a tool named @command{h4tonccf} that converts
 @acronym{HDF4} files to netCDF3 or netCDF4 files.
-We are not yet sure what advantages or features @command{h4tonccf} has
-that are not in @acronym{NCO}, though we suspect both methods have their
-own advantages. Corrections welcome.}. 
+We know of no features in @command{h4tonccf} that are not in
+@acronym{NCO}. Corrections welcome.}.
 
 @cindex @acronym{RPM}
 @cindex Debian
