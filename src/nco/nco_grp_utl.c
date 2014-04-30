@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1408 2014-04-30 00:55:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1409 2014-04-30 01:58:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3788,10 +3788,10 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   } /* !flg_dfn */
 
   /* Free allocated variable structures */
-  var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
-  var_prc_2->val.vp=nco_free(var_prc_2->val.vp);
-  var_prc_1=(var_sct *)nco_free(var_prc_1);
-  var_prc_2=(var_sct *)nco_free(var_prc_2);
+  var_prc_1=(var_sct *)nco_var_free(var_prc_1);
+  var_prc_2=(var_sct *)nco_var_free(var_prc_2);
+
+  var_prc_out->val.vp=nco_free(var_prc_out->val.vp);
   var_prc_out=(var_sct *)nco_free(var_prc_out);
 
   /* Free output path name */
