@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.297 2014-03-27 19:19:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.298 2014-04-30 00:55:45 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.297 2014-03-27 19:19:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.297 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.298 2014-04-30 00:55:45 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.298 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -543,8 +543,12 @@ main(int argc,char **argv)
   flg_dne=(nco_dmn_dne_t *)nco_malloc(2*lmt_nbr*sizeof(nco_dmn_dne_t));
 
   /* Merge "dne" lists */
-  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) flg_dne[lmt_idx]=flg_dne1[lmt_idx]; 
-  for(int lmt_idx=lmt_nbr;lmt_idx<2*lmt_nbr;lmt_idx++) flg_dne[lmt_idx]=flg_dne2[lmt_idx]; 
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+    flg_dne[lmt_idx]=flg_dne1[lmt_idx]; 
+  }
+  for(int lmt_idx=lmt_nbr;lmt_idx<2*lmt_nbr;lmt_idx++){
+    flg_dne[lmt_idx]=flg_dne2[lmt_idx];
+  }
  
   /* Check if all input -d dimensions were found */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);     

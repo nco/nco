@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.505 2014-04-23 15:49:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.506 2014-04-30 00:55:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -649,7 +649,7 @@ nco_chk_dmn                           /* [fnc] Check valid dimension names */
 
 void
 nco_chk_dmn_in                        /* [fnc] Check input dimensions */
-(int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+(const int lmt_nbr,                   /* I [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
  nco_dmn_dne_t **dne_lst,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
