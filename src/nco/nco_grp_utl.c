@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1409 2014-04-30 01:58:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1410 2014-05-01 03:11:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8566,6 +8566,9 @@ void
 nco_prn_nsm                                 /* [fnc] Print ensembles  */                                
 (const trv_tbl_sct * const trv_tbl)         /* I [sct] Traversal table */
 {
+
+  if (!trv_tbl->nsm_nbr) return;
+
   (void)fprintf(stdout,"%s: list of ensembles\n",nco_prg_nm_get()); 
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
     (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
