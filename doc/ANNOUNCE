@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.706 2014-04-23 09:33:22 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.707 2014-05-01 19:05:39 zender Exp $ -*-text-*-
 
-The netCDF Operators NCO version 4.4.3 are ready. 
+The netCDF Operators NCO version 4.4.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -16,7 +16,7 @@ features.
 Enjoy,
 Charlie
 
-"New stuff" in 4.4.3 summary (full details always in ChangeLog):
+"New stuff" in 4.4.4 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
@@ -55,6 +55,8 @@ A. nces now computes statistics on ensemble members whose specified
 
 BUG FIXES:
 
+A. Fix numerous memory leaks and some corner-case segfaults
+
 A. Fix bug that caused CDL and XML printing to truncate trailing zeros
    of floating point exponents. Before this bugfix, ncks --cdl would
    print 1.100e-10 as 1.100e-1 instead of 1.1e-10. All CDL and XML
@@ -78,8 +80,8 @@ A. Restore former tolerance of -x for non-existent elements.
    
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.4.3 built/tested with netCDF
-   4.3.2-rc1 on top of HDF5 hdf5-1.8.12 with these methods: 
+   These problems occur with NCO 4.4.4 built/tested with netCDF
+   4.3.3-rc1 on top of HDF5 hdf5-1.8.12 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
