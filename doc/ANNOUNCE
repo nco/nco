@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.707 2014-05-01 19:05:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.708 2014-05-02 14:43:28 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.4 are ready. 
 
@@ -20,7 +20,20 @@ Charlie
 
 NEW FEATURES:
 
-A. netCDF'ize non-compliant element names; CERES fxm
+A. NCO now contains automatic workarounds to handle element names that
+   contain characters that are legal in HDF though are illegal in
+   netCDF.  For example, slashes and leading special characters are
+   are legal in HDF and illegal in netCDF element (i.e., group,
+   variable, dimension, and attribute) names. NCO converts these
+   forbidden characters to underscores, and retains the original names
+   of variables in automatically produced attributes named hdf_name.
+   Two real-world examples: NCO translates the NASA CERES dimension
+   "(FOV) Footprints" to " _FOV_ Footprints", and "Cloud & Aerosol,
+   Cloud Only, Clear Sky w/Aerosol, and Clear Sky" (yes, that's really
+   a dimension name) to "Cloud & Aerosol, Cloud Only, Clear Sky
+   w_Aerosol, and Clear Sky".
+   ncks CERES_MODIS.hdf CERES_MODIS.nc
+   http://nco.sf.net/nco.html#hdf4
 
 A. ncks --rad to Retain all dimensions.
    When invoked with --rad, ncks copies each dimension in the input
