@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.507 2014-04-16 18:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.508 2014-05-04 06:28:51 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -11,6 +11,8 @@
 
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
+
+#define DEBUG_LEAKS
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
@@ -438,7 +440,8 @@ extern "C" {
     nco_dbg_vrb,   /* 10 [enm] Verbose, print everything possible */
     nco_dbg_old,   /* 11 [enm] Old debugging blocks not used anymore */
     nco_dbg_dev,   /* 12 [enm] NCO developer information; only useful for debugging */
-    nco_dbg_nbr    /* 13 [enm] Number of debugging types (equals last enumerated value) */
+    nco_dbg_sup,   /* 13 [enm] NCO extra developer information not usually used (debug memory leaks) */
+    nco_dbg_nbr    /* 14 [enm] Number of debugging types (equals last enumerated value) */
   }; /* end nco_dbg_typ_enm */
 
   enum nco_op_typ{ /* [enm] Operation type */

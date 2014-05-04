@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1411 2014-05-04 06:10:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1412 2014-05-04 06:28:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3078,6 +3078,10 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
   const char fnc_nm[]="nco_bld_var_dmn()"; /* [sng] Function name  */
 
+#ifdef DEBUG_LEAKS
+  int crt_counter=0;
+#endif
+
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
 
@@ -3125,6 +3129,10 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
             /* Mark as True */
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].is_crd_var=True;
+
+#ifdef DEBUG_LEAKS
+            crt_counter++;
+#endif
 
             /* Deep-copy coordinate  */
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd=(crd_sct *)nco_malloc(sizeof(crd_sct));
@@ -3200,6 +3208,10 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
   } /* Loop table */
+
+#ifdef DEBUG_LEAKS
+  if(nco_dbg_lvl_get() >= nco_dbg_sup)(void)fprintf(stdout,"%s: %s DEBUG %d crd",nco_prg_nm_get(),fnc_nm,crt_counter);
+#endif
 
 } /* nco_bld_var_dmn() */
 

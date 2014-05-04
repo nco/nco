@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.290 2014-04-17 06:13:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.291 2014-05-04 06:28:51 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -42,6 +42,12 @@ void
 trv_tbl_free                           /* [fnc] GTT free memory */
 (trv_tbl_sct *tbl)                     /* I [sct] Traversal table */
 {
+
+  const char fnc_nm[]="trv_tbl_free()"; /* [sng] Function name  */
+
+#ifdef DEBUG_LEAKS
+  int crt_counter=0;
+#endif
 
   /* Object (group/variable) list */
   for(unsigned idx=0;idx<tbl->nbr;idx++){
@@ -87,6 +93,11 @@ trv_tbl_free                           /* [fnc] GTT free memory */
           }  
           tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn);
           tbl->lst[idx].var_dmn[dmn_idx].crd=(crd_sct *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd);
+
+#ifdef DEBUG_LEAKS
+          crt_counter++;
+#endif
+
         } /* Coordinate structure */ 
 
       } /* Dimensions */
@@ -156,6 +167,12 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   tbl->nsm_sfx=(char *)nco_free(tbl->nsm_sfx);  
 
   tbl=(trv_tbl_sct *)nco_free(tbl);
+
+
+#ifdef DEBUG_LEAKS
+  if(nco_dbg_lvl_get() >= nco_dbg_sup)(void)fprintf(stdout,"%s: DEBUG %d crd",nco_prg_nm_get(),fnc_nm,crt_counter);
+#endif
+
 } /* end trv_tbl_free() */
 
 void                       
