@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1416 2014-05-04 21:13:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1417 2014-05-04 21:28:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1785,6 +1785,11 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         PCK_ATT_CPY=nco_pck_cpy_att(nco_prg_id,nco_pck_plc,var_prc);
 
         (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,PCK_ATT_CPY);
+
+        for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
+          var_prc->dim[idx_dmn]->xrf=(dmn_sct *)nco_dmn_free(var_prc->dim[idx_dmn]->xrf);
+          var_prc->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc->dim[idx_dmn]);   
+        }
 
         var_prc=(var_sct *)nco_var_free(var_prc);
       } /* !CPY_VAR_METADATA */
