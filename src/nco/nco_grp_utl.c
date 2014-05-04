@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1414 2014-05-04 19:00:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1415 2014-05-04 20:02:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1819,7 +1819,12 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
-  
+  for(int idx=0;idx<nbr_dmn_cmn_out;idx++){
+    dmn_cmn_out[idx].nm_fll=(char *)nco_free(dmn_cmn_out[idx].nm_fll);
+  }
+  dmn_cmn_out=(dmn_cmn_sct *)nco_free(dmn_cmn_out);
+
+
   /* Print extraction list in developer mode */
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
