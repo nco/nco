@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1410 2014-05-01 03:11:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1411 2014-05-04 06:10:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6790,7 +6790,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 void
 nco_chk_dmn                           /* [fnc] Check valid dimension names */
 (const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
- nco_dmn_dne_t * flg_dne)             /* I [lst] Flag to check if input dimension -d "does not exist" */
+ nco_dmn_dne_t * flg_dne)             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
 {
   /* Check if all input -d dimensions were found */ 
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
@@ -6810,7 +6810,7 @@ nco_chk_dmn_in                        /* [fnc] Check input dimensions */
  nco_dmn_dne_t **dne_lst,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 { 
-  (*dne_lst)=(nco_dmn_dne_t *)nco_malloc(lmt_nbr*sizeof(nco_dmn_dne_t));
+  *dne_lst=(nco_dmn_dne_t *)nco_malloc(lmt_nbr*sizeof(nco_dmn_dne_t));
 
   /* Be pessimistic and assume invalid user input */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) (*dne_lst)[lmt_idx].flg_dne=True; 

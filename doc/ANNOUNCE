@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.708 2014-05-02 14:43:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.709 2014-05-04 06:10:55 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.4 are ready. 
 
@@ -47,9 +47,6 @@ A. ncks --rad to Retain all dimensions.
    ncks --rad -O -x -v lat ~/foo.nc ~/foo2.nc
    ncks --rad --cdl ~/foo2.nc
    http://nco.sf.net/nco.html#rad
-
-A. nm2sng_nc
-   http://nco.sf.net/nco.html#hdf4
 
 A. nces now computes statistics on ensemble members whose specified
    hyperslabs resolve to the same size. nces has always worked well
