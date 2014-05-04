@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1413 2014-05-04 16:50:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1414 2014-05-04 19:00:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1819,6 +1819,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
+  
   /* Print extraction list in developer mode */
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
@@ -4797,14 +4798,13 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* If output dimensions array exists */
   if (dmn_cmn_out!=NULL && nco_prg_id == ncks){
 
-    int nbr_dmn_out_tmp = *nbr_dmn_cmn_out;  
     nco_bool dmn_flg=False;
 
     /* Loop over each dimension in variable */
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
       /* Loop constructed array of output dimensions to see if already inserted  */
-      for(int idx_dmn_out=0;idx_dmn_out<nbr_dmn_out_tmp;idx_dmn_out++){
+      for(int idx_dmn_out=0;idx_dmn_out<*nbr_dmn_cmn_out;idx_dmn_out++){
 
         /* Match by ID */
         if( (*dmn_cmn_out)[idx_dmn_out].id==dmn_cmn[idx_dmn].id){
@@ -4815,6 +4815,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
       /* If this dimension is not in output array */
       if(!dmn_flg){
+
+        int nbr_dmn_out_tmp = *nbr_dmn_cmn_out;  
 
         /* Add one more element to array  */
         (*dmn_cmn_out)=(dmn_cmn_sct *)nco_realloc((*dmn_cmn_out),(nbr_dmn_out_tmp+1)*sizeof(dmn_cmn_sct));
