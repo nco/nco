@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.291 2014-05-04 06:28:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.292 2014-05-04 16:50:41 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -170,7 +170,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
 
 #ifdef DEBUG_LEAKS
-  if(nco_dbg_lvl_get() >= nco_dbg_sup)(void)fprintf(stdout,"%s: DEBUG %d crd",nco_prg_nm_get(),fnc_nm,crt_counter);
+  if(nco_dbg_lvl_get() >= nco_dbg_sup)(void)fprintf(stdout,"%s: DEBUG %s %d crd",nco_prg_nm_get(),fnc_nm,crt_counter);
 #endif
 
 } /* end trv_tbl_free() */

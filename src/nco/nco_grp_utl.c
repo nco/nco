@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1412 2014-05-04 06:28:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1413 2014-05-04 16:50:41 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6781,17 +6781,13 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Build ensembles */
   if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,True,CNV_CCM_CCSM_CF,nco_pck_plc,trv_tbl);
-
   if(nco_prg_id_get() == ncbo) (void)nco_bld_nsm(nc_id,False,CNV_CCM_CCSM_CF,nco_pck_plc,trv_tbl);
 
    /* Check valid input (limits) */
   if(lmt_nbr) (void)nco_chk_dmn_in(lmt_nbr,lmt,flg_dne,trv_tbl);
 
   /* Free limits */
-  if(lmt_nbr){
-    for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
-    lmt=(lmt_sct **)nco_free(lmt);
-  } /* !lmt_nbr */
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
 
   if(nco_dbg_lvl_get() == nco_dbg_old) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
 
@@ -6818,8 +6814,8 @@ nco_chk_dmn                           /* [fnc] Check valid dimension names */
 void
 nco_chk_dmn_in                        /* [fnc] Check input dimensions */
 (const int lmt_nbr,                   /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
- nco_dmn_dne_t **dne_lst,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_sct,lmt), /* I [sct] List of user-specified dimension limits */
+ nco_dmn_dne_t ** const dne_lst,      /* I/O [lst] Input dimension does not exist */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 { 
   *dne_lst=(nco_dmn_dne_t *)nco_malloc(lmt_nbr*sizeof(nco_dmn_dne_t));
@@ -6827,7 +6823,7 @@ nco_chk_dmn_in                        /* [fnc] Check input dimensions */
   /* Be pessimistic and assume invalid user input */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) (*dne_lst)[lmt_idx].flg_dne=True; 
 
-  /* Loop input name list */
+  /* Loop over input names */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
     assert(lmt[lmt_idx]->nm);
 
@@ -6836,7 +6832,7 @@ nco_chk_dmn_in                        /* [fnc] Check input dimensions */
     /* Match input relative name to dimension relative name */ 
     for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
       if(!strcmp(lmt[lmt_idx]->nm,trv_tbl->lst_dmn[dmn_idx].nm)) (*dne_lst)[lmt_idx].flg_dne=False; 
-  } /* Loop input name list */
+  } /* end for */
 } /* nco_chk_dmn_in() */
 
 void
