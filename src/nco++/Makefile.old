@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.124 2013-12-31 05:14:02 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.125 2014-05-04 05:39:01 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -429,7 +429,12 @@ endif # end if
 ifeq (${UDUNITS2},Y)
 # 20130607: -lexpat needed on .deb systems, not on RPM systems
 UDUNITS_RPM_DRC := /usr/include/udunits2
-UDUNITS_RPM_TST := $(shell ls ${UDUNITS_RPM_DRC}/udunits2.h)
+ifneq (${UDUNITS_INC},/usr/local/include)
+# UDUNITS_RPM_TST := $(shell ls ${UDUNITS_RPM_DRC}/udunits2.h)
+ UDUNITS_RPM_TST := ${UDUNITS_RPM_DRC}/udunits2.h
+else
+ UDUNITS_RPM_TST := /usr/include/udunits2.h
+endif # end if
 ifeq (${UDUNITS_RPM_TST},${UDUNITS_RPM_DRC}/udunits2.h)
  NETCDF_INC += -I${UDUNITS_RPM_DRC}
 endif # end if
