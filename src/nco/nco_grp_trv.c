@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.292 2014-05-04 16:50:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.293 2014-05-04 23:01:31 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -130,6 +130,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll);
+      tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm);
 
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm);
 

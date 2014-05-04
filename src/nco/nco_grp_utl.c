@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1418 2014-05-04 21:53:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1419 2014-05-04 23:01:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1195,6 +1195,8 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
       (void)nco_inq_grp_full_ncid(nc_id_out,grp_out_fll,&grp_id_out);
       /* Get variable ID */
       (void)nco_inq_varid(grp_id_in,trv_tbl->lst[idx_tbl].nm,&var_id);
+
+      grp_out_fll=(char *)nco_free(grp_out_fll);
 
       /* 20130213: Necessary to allow MM3->MM4 and MM4->MM3 workarounds
 	 Store in/out group IDs as determined in nco_xtr_dfn() 
@@ -2609,7 +2611,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->dmn_grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
 
             /* Store relative name (same for dimension and variable) */
-            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->nm=strdup(var_trv.nm);
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->nm=strdup(var_trv.nm); 
 
             /* Is a record dimension(variable) if the dimennsion is a record dimension */
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->is_rec_dmn=dmn_trv.is_rec_dmn;
@@ -4700,9 +4702,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         dmn_out_id[idx_dmn]=dmn_id_out; 
       } /* !DEFINE_DIM */
 
-      /* Memory management after defining current output dimension */
-      if(grp_dmn_out_fll) grp_dmn_out_fll=(char *)nco_free(grp_dmn_out_fll);
-
     } /* end if dimension is not yet defined */
 
     /* Die informatively if record dimension is not first dimension in netCDF3 output */
@@ -4710,6 +4709,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",nco_prg_nm_get(),rec_dmn_nm,var_nm,idx_dmn+1);  
       nco_exit(EXIT_FAILURE);
     } /* end if err */
+
+    /* Memory management after defining current output dimension */
+    if(grp_dmn_out_fll) grp_dmn_out_fll=(char *)nco_free(grp_dmn_out_fll); 
 
   } /* End of the very important dimension loop */
 
