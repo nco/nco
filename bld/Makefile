@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.703 2014-05-01 19:05:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.704 2014-05-04 05:25:46 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -511,6 +511,8 @@ else
 endif # end if
 ifeq (${UDUNITS_RPM_TST},${UDUNITS_RPM_DRC}/udunits2.h)
  NETCDF_INC += -I${UDUNITS_RPM_DRC}
+else
+ NETCDF_INC += -I${UDUNITS_INC}
 endif # end if
 ifneq (${UDUNITS_RPM_TST},${UDUNITS_RPM_DRC}/udunits2.h)
  NC_LIBS += -ludunits2 -lexpat
