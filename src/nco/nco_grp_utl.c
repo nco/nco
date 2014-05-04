@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1415 2014-05-04 20:02:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1416 2014-05-04 21:13:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4197,7 +4197,9 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     dim->xrf->is_rec_dmn=dim->is_rec_dmn;
     dim->xrf->is_crd_dmn=dim->is_crd_dmn;
 
-    var->dim[idx_dmn]->xrf=dim->xrf;
+    var->dim[idx_dmn]->xrf=nco_dmn_dpl(dim->xrf);
+    dim->xrf=nco_dmn_free(dim->xrf);
+    dim=nco_dmn_free(dim);
 
   } /* Loop dimensions */
 
@@ -4764,6 +4766,10 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Obtain netCDF type to define variable from NCO program ID */
     var_typ_out=nco_get_typ(var_prc);
 
+    for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
+      var_prc->dim[idx_dmn]->xrf=(dmn_sct *)nco_dmn_free(var_prc->dim[idx_dmn]->xrf);
+      var_prc->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc->dim[idx_dmn]);   
+    }
     var_prc=(var_sct *)nco_var_free(var_prc);
   } /* !(ncflint || ncpdq) */
 
