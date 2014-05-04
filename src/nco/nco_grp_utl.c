@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1417 2014-05-04 21:28:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1418 2014-05-04 21:53:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1920,6 +1920,9 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
         /* Copy variable data from input netCDF file to output netCDF file */
         (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,fp_bnr,md5,&trv); 
+
+        /* Memory management */
+        if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
       } /* endif */
 
