@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.293 2014-05-04 23:01:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.294 2014-05-05 15:33:06 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -49,6 +49,9 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   int crt_counter=0;
 #endif
 
+  /* Hash Table */
+  nco_trv_hsh_del(tbl);
+  
   /* Object (group/variable) list */
   for(unsigned idx=0;idx<tbl->nbr;idx++){
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
@@ -70,13 +73,10 @@ trv_tbl_free                           /* [fnc] GTT free memory */
         tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
 
         int nbr_lat_crd=tbl->lst[idx].var_dmn[dmn_idx].nbr_lat_crd;
-        for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++){     
-          tbl->lst[idx].var_dmn[dmn_idx].lat_crd[idx_crd].nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].lat_crd[idx_crd].nm_fll); 
-        }   
+        for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++) tbl->lst[idx].var_dmn[dmn_idx].lat_crd[idx_crd].nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].lat_crd[idx_crd].nm_fll);
+
         int nbr_lon_crd=tbl->lst[idx].var_dmn[dmn_idx].nbr_lon_crd;
-        for(int idx_crd=0;idx_crd<nbr_lon_crd;idx_crd++){     
-          tbl->lst[idx].var_dmn[dmn_idx].lon_crd[idx_crd].nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].lon_crd[idx_crd].nm_fll); 
-        }    
+        for(int idx_crd=0;idx_crd<nbr_lon_crd;idx_crd++) tbl->lst[idx].var_dmn[dmn_idx].lon_crd[idx_crd].nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].lon_crd[idx_crd].nm_fll);
 
         /* Coordinate structure */ 
         if(tbl->lst[idx].var_dmn[dmn_idx].crd){
@@ -88,9 +88,8 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
           tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm);
 
-          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
-            tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]);
-          }  
+          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr;lmt_idx++) tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]);
+
           tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn);
           tbl->lst[idx].var_dmn[dmn_idx].crd=(crd_sct *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd);
 
@@ -154,13 +153,9 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   for(int idx_nsm=0;idx_nsm<tbl->nsm_nbr;idx_nsm++){
     tbl->nsm[idx_nsm].grp_nm_fll_prn=(char *)nco_free(tbl->nsm[idx_nsm].grp_nm_fll_prn);
 
-    for(int idx=0;idx<tbl->nsm[idx_nsm].tpl_nbr;idx++){
-      tbl->nsm[idx_nsm].tpl_mbr_nm[idx]=(char *)nco_free(tbl->nsm[idx_nsm].tpl_mbr_nm[idx]);
-    }
+    for(int idx=0;idx<tbl->nsm[idx_nsm].tpl_nbr;idx++) tbl->nsm[idx_nsm].tpl_mbr_nm[idx]=(char *)nco_free(tbl->nsm[idx_nsm].tpl_mbr_nm[idx]);
 
-    for(int idx=0;idx<tbl->nsm[idx_nsm].skp_nbr;idx++){
-      tbl->nsm[idx_nsm].skp_nm_fll[idx]=(char *)nco_free(tbl->nsm[idx_nsm].skp_nm_fll[idx]);
-    }
+    for(int idx=0;idx<tbl->nsm[idx_nsm].skp_nbr;idx++) tbl->nsm[idx_nsm].skp_nm_fll[idx]=(char *)nco_free(tbl->nsm[idx_nsm].skp_nm_fll[idx]);
 
     tbl->nsm[idx_nsm].mbr=(nsm_grp_sct*)nco_free(tbl->nsm[idx_nsm].mbr);
   } /* Ensembles */
@@ -168,7 +163,6 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   tbl->nsm_sfx=(char *)nco_free(tbl->nsm_sfx);  
 
   tbl=(trv_tbl_sct *)nco_free(tbl);
-
 
 #ifdef DEBUG_LEAKS
   if(nco_dbg_lvl_get() >= nco_dbg_sup)(void)fprintf(stdout,"%s: DEBUG %s %d crd",nco_prg_nm_get(),fnc_nm,crt_counter);
