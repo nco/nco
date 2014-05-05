@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1419 2014-05-04 23:01:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1420 2014-05-05 23:21:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3107,6 +3107,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
       /* Loop dimensions for object (variable)  */
       for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++) {
+
+        trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd=NULL;
 
         /* Get unique dimension ID from variable dimension */
         int var_dmn_id=var_trv.var_dmn[idx_dmn_var].dmn_id;
