@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.880 2014-04-23 09:33:22 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.881 2014-05-06 19:49:33 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -147,7 +147,7 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2014 Apr&nbsp;??: NCO 4.4.4 (<i>In progress</i>)
+<li>2014 May&nbsp;??: NCO 4.4.4 (<i>In progress</i>)
 <li>2014 Apr&nbsp;02: NCO 4.4.3 (Stability)
 <li>2014 Mar&nbsp;27: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">Talk</a> at NASA GSFC, Greenbelt, Maryland</li>
 <li>2014 Mar&nbsp;25: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>

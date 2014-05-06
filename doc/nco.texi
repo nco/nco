@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.986 2014-05-02 20:48:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.987 2014-05-06 19:49:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.4
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 2 May 2014
+@set update-date 6 May 2014
 @set update-month May 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1153,8 +1153,8 @@ You must build @acronym{NCO} with netCDF4 to obtain this support.
 @cindex @code{NC_UINT}
 @cindex @code{NC_INT64}
 @cindex @code{NC_UINT64}
-The main netCDF4 features that NCO currently supports are the new 
-atomic data types, Lempel-Ziv compression (deflation), and chunking. 
+@acronym{NCO} supports many netCDF4 features including atomic data
+types, Lempel-Ziv compression (deflation), chunking, and groups.  
 The new atomic data types are @code{NC_UBYTE}, @code{NC_USHORT}, 
 @code{NC_UINT}, @code{NC_INT64}, and @code{NC_UINT64}.
 Eight-byte integer support is an especially useful improvement from
@@ -1223,8 +1223,8 @@ So @acronym{NCO} can @emph{read} @acronym{HDF4} files, perform
 manipulations and calculations, and then it must @emph{write} the
 results in netCDF format. 
 
-Full support for these features is forthcoming, yet support as of
-December, 2013 was quite functional.
+@acronym{NCO} support for @acronym{HDF4} has been quite functional since
+December, 2013.
 For best results install @acronym{NCO} versions 4.4.0 or later on top of 
 netCDF versions 4.3.1 or later. 
 Getting to this point has been an iterative effort where Unidata
@@ -1244,8 +1244,9 @@ handle @acronym{HDF4} files.
 In particular, the @samp{--hdf4} switch is obsolete. 
 Current versions of @acronym{NCO} use netCDF to determine automatically
 whether the underlying file is @acronym{HDF4}, and then take appropriate
-precautions to avoid calls not yet supported by the netCDF4 subset
-@acronym{HDF4}. 
+precautions to avoid netCDF4 @acronym{API} calls that fail when applied
+to @acronym{HDF4} files (e.g., @code{nc_inq_var_chunking()},
+@code{nc_inq_var_deflate()}).  
 The @samp{--hdf4} switch is supported (for backwards compatibility) yet
 redundant (i.e., does no harm) with current versions of @acronym{NCO}
 and netCDF. 
@@ -1281,7 +1282,7 @@ even when the @acronym{HDF4} file contains netCDF4 atomic types (e.g.,
 unsigned bytes, 64-bit integers) because @acronym{NCO} can autoconvert
 everything to atomic types supported by netCDF3
 @footnote{
-Prior to @acronym{NCO} version 4.4.0 (January, 2014), we recommend the
+Prior to @acronym{NCO} version 4.4.0 (January, 2014), we recommended the 
 @command{ncl_convert2nc} tool to convert @acronym{HDF} to netCDF3 when
 both these are true: @w{1. You} must have netCDF3 and @w{2. the}
 @acronym{HDF} file contains netCDF4 atomic types. 
@@ -1297,7 +1298,7 @@ Unsigned bytes stay unsigned bytes.
 64-bit integers stay 64-bit integers. 
 Strings stay strings. 
 Hence, @command{ncks} conversions often result in smaller files than
-@command{ncl_convert2nc} conversions.
+@command{ncl_convert2nc} conversions.}. 
 
 @cindex @code{hdf_name}
 @cindex illegal names
@@ -1310,16 +1311,16 @@ For example, slashes and leading special characters are are legal in
 variable, dimension, and attribute) names.
 @acronym{NCO} converts these forbidden characters to underscores, and
 retains the original names of variables in automatically produced
-attributes named @code{hdf_name}.
+attributes named @code{hdf_name}
 @footnote{Two real-world examples: @acronym{NCO} translates the
 @acronym{NASA} @acronym{CERES} dimension @code{(FOV) Footprints} to
 @code{_FOV_ Footprints}, and 
 @code{Cloud & Aerosol, Cloud Only, Clear Sky w/Aerosol, and Clear Sky} 
-(yes, that's really a dimension name) to 
-@code{Cloud & Aerosol, Cloud Only, Clear Sky w_Aerosol, and Clear Sky}}.
+(yes, the dimension name includes whitespace and special characters) to 
+@code{Cloud & Aerosol, Cloud Only, Clear Sky w_Aerosol, and Clear Sky}
 @command{ncl_convert2nc} makes the element name netCDF-safe in a
-different manner, yet also stores the original name in the
-@code{hdf_name} attribute.
+slightly different manner, and also stores the original name in the
+@code{hdf_name} attribute.}.
 
 @cindex @acronym{H4CF}
 @cindex @command{h4tonccf}
@@ -1332,7 +1333,7 @@ Their project includes a tool named @command{h4tonccf} that converts
 @acronym{HDF4} files to netCDF3 or netCDF4 files.
 We are not yet sure what advantages or features @command{h4tonccf} has
 that are not in @acronym{NCO}, though we suspect both methods have their
-own advantages. Corrections welcome.}. 
+own advantages. Corrections welcome.
 
 @cindex @acronym{RPM}
 @cindex Debian

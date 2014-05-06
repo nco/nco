@@ -1,10 +1,14 @@
-2014-05-05  Charlie Zender  <zender@uci.edu>
+2014-05-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.4 release procedure:
  	Changes since nco-4_4_3: -x tolerance, --rad orphans, CERES, mmr
 	cd ~/nco;cvs tag -d nco-4_4_4;cvs tag -d nco-4_4_4-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
 	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
+
+	* Improve HDF4 documentation accuracy and clarity
+
+2014-05-05  Charlie Zender  <zender@uci.edu>
 
 	* Free hash table with nco_trv_hsh_del(tbl)
 
