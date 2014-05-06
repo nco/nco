@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1420 2014-05-05 23:21:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1421 2014-05-06 02:57:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3887,9 +3887,8 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
   (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
 
   if(prc_typ_1 != fix_typ){
-    var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
-    var_prc_1=(var_sct *)nco_free(var_prc_1);
-    var_prc_out=(var_sct *)nco_free(var_prc_out);
+    var_prc_1=(var_sct *)nco_var_free(var_prc_1);
+    var_prc_out=(var_sct *)nco_var_free(var_prc_out);
     grp_out_fll=(char *)nco_free(grp_out_fll);
     return;
   } /* endif */
@@ -3923,13 +3922,12 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 
     /* Copy non-processed variable */
     (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,md5,trv_1); 
-  
+
   } /* !flg_dfn */
 
   /* Free allocated variable structures */
-  var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
-  var_prc_1=(var_sct *)nco_free(var_prc_1);
-  var_prc_out=(var_sct *)nco_free(var_prc_out);
+  var_prc_1=(var_sct *)nco_var_free(var_prc_1);
+  var_prc_out=(var_sct *)nco_var_free(var_prc_out);
 
   /* Free output path name */
   grp_out_fll=(char *)nco_free(grp_out_fll);
