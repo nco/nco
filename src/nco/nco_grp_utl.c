@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1421 2014-05-06 02:57:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1422 2014-05-07 05:25:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3603,9 +3603,9 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   int var_id_2;                  /* [id] Variable ID in input file */
   int var_out_id;                /* [id] Variable ID in output file */
 
-  var_sct *var_prc_1;            /* [sct] Variable to process in file 1 */
-  var_sct *var_prc_2;            /* [sct] Variable to process in file 2 */
-  var_sct *var_prc_out;          /* [sct] Variable to process in output */
+  var_sct *var_prc_1=NULL;            /* [sct] Variable to process in file 1 */
+  var_sct *var_prc_2=NULL;            /* [sct] Variable to process in file 2 */
+  var_sct *var_prc_out=NULL;          /* [sct] Variable to process in output */
   var_sct *var_prc_gtr;          /* [sct] Greater rank variable to process */
   var_sct *var_prc_lsr;          /* [sct] Lesser  rank variable to process */
 
@@ -3783,8 +3783,10 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       var_prc_out->id=var_out_id;
 
       /* fxm: gtr or lsr? */
-      var_prc_out->srt=var_prc_gtr->srt;
-      var_prc_out->cnt=var_prc_gtr->cnt;
+      for(int idx_dmn=0;idx_dmn<var_prc_out->nbr_dim;idx_dmn++) {
+        var_prc_out->srt[idx_dmn]=var_prc_gtr->srt[idx_dmn];
+        var_prc_out->cnt[idx_dmn]=var_prc_gtr->cnt[idx_dmn];
+      }
 
       /* Set missing value */
       has_mss_val=var_prc_gtr->has_mss_val;
@@ -3818,11 +3820,9 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   } /* !flg_dfn */
 
   /* Free allocated variable structures */
+  var_prc_out=(var_sct *)nco_var_free(var_prc_out);
   var_prc_1=(var_sct *)nco_var_free(var_prc_1);
   var_prc_2=(var_sct *)nco_var_free(var_prc_2);
-
-  var_prc_out->val.vp=nco_free(var_prc_out->val.vp);
-  var_prc_out=(var_sct *)nco_free(var_prc_out);
 
   /* Free output path name */
   grp_out_fll=(char *)nco_free(grp_out_fll);
