@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1425 2014-05-10 05:45:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1426 2014-05-10 06:10:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9563,6 +9563,17 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
     for(int idx=0;idx<var_nm_rth->nbr;idx++) var_nm_rth->lst[idx].nm=(char *)nco_free(var_nm_rth->lst[idx].nm);
     var_nm_rth=(nm_lst_sct *)nco_free(var_nm_rth);
   } 
+
+  for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++){
+    nsm_grp_nm_fll_prn_2->lst[idx_nm].nm=(char *)nco_free(nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);   
+  }
+  nsm_grp_nm_fll_prn_2=(nm_lst_sct *)nco_free(nsm_grp_nm_fll_prn_2);
+
+  for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_1->nbr;idx_nm++){
+    nsm_grp_nm_fll_prn_1->lst[idx_nm].nm=(char *)nco_free(nsm_grp_nm_fll_prn_1->lst[idx_nm].nm);   
+  }
+  nsm_grp_nm_fll_prn_1=(nm_lst_sct *)nco_free(nsm_grp_nm_fll_prn_1);
+
 
 } /* nco_grp_brd() */
 
