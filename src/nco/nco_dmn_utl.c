@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.68 2014-01-02 22:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.69 2014-05-10 05:33:52 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -90,6 +90,7 @@ nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
   dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
   
   dmn->nm=(char *)strdup(dmn_nm);
+  dmn->nm_fll=NULL;
   dmn->id=dmn_id;
   dmn->nc_id=nc_id;
   dmn->xrf=NULL;
