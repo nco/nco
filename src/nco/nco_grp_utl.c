@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1424 2014-05-10 05:33:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1425 2014-05-10 05:45:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3820,7 +3820,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   } /* !flg_dfn */
 
   for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
-    var_prc_1->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc_1->dim[idx_dmn]);
+    var_prc_1->dim[idx_dmn]->xrf=(dmn_sct *)nco_dmn_free(var_prc_1->dim[idx_dmn]->xrf);
+    var_prc_1->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc_1->dim[idx_dmn]);   
   }
 
   /* Free allocated variable structures */
