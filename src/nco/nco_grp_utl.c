@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1422 2014-05-07 05:25:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1423 2014-05-10 05:28:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3819,6 +3819,15 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     } /* !prc_typ */
   } /* !flg_dfn */
 
+  for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
+    var_prc_1->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc_1->dim[idx_dmn]);
+  }
+#if 0
+  for(int idx_dmn=0;idx_dmn<var_prc_2->nbr_dim;idx_dmn++){
+    var_prc_2->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc_2->dim[idx_dmn]);
+  }
+#endif
+
   /* Free allocated variable structures */
   var_prc_out=(var_sct *)nco_var_free(var_prc_out);
   var_prc_1=(var_sct *)nco_var_free(var_prc_1);
@@ -4185,6 +4194,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
     var->dim[idx_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     var->dim[idx_dmn]->nm=(char *)strdup(dim->nm);
+    var->dim[idx_dmn]->nm_fll=NULL;
     var->dim[idx_dmn]->id=dim->id;
     var->dim[idx_dmn]->cnk_sz=dim->cnk_sz;
     var->dim[idx_dmn]->srt=dim->srt;
