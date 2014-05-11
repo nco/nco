@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1426 2014-05-10 06:10:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1427 2014-05-11 21:41:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2741,21 +2741,17 @@ nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
         /* a) case where the dimension has coordinate variables */
         if(var_dmn.crd){
 
-          crd_sct *crd=var_dmn.crd;
-
           /* Limits */
-          for(int lmt_idx=0;lmt_idx<crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){ 
-            (void)prt_lmt(lmt_idx,crd->lmt_msa.lmt_dmn[lmt_idx]);
+          for(int lmt_idx=0;lmt_idx<var_dmn.crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){ 
+            (void)prt_lmt(lmt_idx,var_dmn.crd->lmt_msa.lmt_dmn[lmt_idx]);
           }/* Limits */
 
           /* ! case where the dimension has coordinate variables */
         } else {
 
-          dmn_trv_sct *ncd=var_dmn.ncd;
-
           /* Limits */
-          for(int lmt_idx=0;lmt_idx<ncd->lmt_msa.lmt_dmn_nbr;lmt_idx++){ 
-            (void)prt_lmt(lmt_idx,ncd->lmt_msa.lmt_dmn[lmt_idx]);
+          for(int lmt_idx=0;lmt_idx<var_dmn.ncd->lmt_msa.lmt_dmn_nbr;lmt_idx++){ 
+            (void)prt_lmt(lmt_idx,var_dmn.ncd->lmt_msa.lmt_dmn[lmt_idx]);
           }/* Limits */
 
         } /* ! case where the dimension has coordinate variables */
@@ -3130,6 +3126,10 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           /* Store unique dimension (non coordinate ) */
           trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd=dmn_trv;
 
+
+
+
+
         }else if(dmn_trv->crd_nbr > 0){
 
           /* There are coordinates; one must be chosen 
@@ -3185,6 +3185,10 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
             /* Store the unique dimension as if it was a non coordinate */
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd=dmn_trv;
+
+
+
+
 
           } /* None was found in scope */
         } /* There are coordinates; one must be chosen */
