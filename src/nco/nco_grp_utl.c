@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1427 2014-05-11 21:41:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1428 2014-05-11 22:10:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3124,11 +3124,30 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].is_crd_var=False;
 
           /* Store unique dimension (non coordinate ) */
-          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd=dmn_trv;
 
+          /* Deep-copy dimension  */
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd=(dmn_trv_sct *)nco_malloc(sizeof(dmn_trv_sct));
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->grp_nm_fll=(char *)strdup(dmn_trv->grp_nm_fll);
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->nm_fll=(char *)strdup(dmn_trv->nm_fll);
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->nm=(char *)strdup(dmn_trv->nm);
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->crd=NULL;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->crd_nbr=0;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->dmn_id=dmn_trv->dmn_id;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->flg_xtr=dmn_trv->flg_xtr;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->has_crd_scp=dmn_trv->has_crd_scp;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->is_rec_dmn=dmn_trv->is_rec_dmn;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->sz=dmn_trv->sz;
 
-
-
+          /* MSA */
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.NON_HYP_DMN=dmn_trv->lmt_msa.NON_HYP_DMN;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_nm=(char *)strdup(dmn_trv->lmt_msa.dmn_nm);
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_sz_org=dmn_trv->lmt_msa.dmn_sz_org;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.lmt_crr=dmn_trv->lmt_msa.lmt_crr;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.lmt_dmn=NULL;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.lmt_dmn_nbr=0;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.MSA_USR_RDR=dmn_trv->lmt_msa.MSA_USR_RDR;
+          trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.WRP=dmn_trv->lmt_msa.WRP;
 
         }else if(dmn_trv->crd_nbr > 0){
 
@@ -3184,9 +3203,31 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].is_crd_var=False;
 
             /* Store the unique dimension as if it was a non coordinate */
-            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd=dmn_trv;
 
 
+            /* Deep-copy dimension  */
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd=(dmn_trv_sct *)nco_malloc(sizeof(dmn_trv_sct));
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->grp_nm_fll=(char *)strdup(dmn_trv->grp_nm_fll);
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->nm_fll=(char *)strdup(dmn_trv->nm_fll);
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->nm=(char *)strdup(dmn_trv->nm);
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->crd=NULL;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->crd_nbr=0;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->dmn_id=dmn_trv->dmn_id;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->flg_xtr=dmn_trv->flg_xtr;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->has_crd_scp=dmn_trv->has_crd_scp;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->is_rec_dmn=dmn_trv->is_rec_dmn;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->sz=dmn_trv->sz;
+
+            /* MSA */
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.NON_HYP_DMN=dmn_trv->lmt_msa.NON_HYP_DMN;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_nm=(char *)strdup(dmn_trv->lmt_msa.dmn_nm);
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_sz_org=dmn_trv->lmt_msa.dmn_sz_org;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.lmt_crr=dmn_trv->lmt_msa.lmt_crr;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.lmt_dmn=NULL;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.lmt_dmn_nbr=0;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.MSA_USR_RDR=dmn_trv->lmt_msa.MSA_USR_RDR;
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].ncd->lmt_msa.WRP=dmn_trv->lmt_msa.WRP;
 
 
 
