@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.489 2014-04-01 17:40:23 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.490 2014-05-15 21:03:39 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -76,7 +76,7 @@ sub tst_rgr {
     
     if($dodap ne "FALSE"){
 	print "DEBUG: in tst_rgr(), \$dodap = $dodap \n";
-	if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = "-p $fl_pth"; }
+	if ($dodap ne "" && $fl_pth =~ /http/) { $in_pth_arg = "-p $fl_pth"; }
 	if ($dodap eq "") { $in_pth_arg = "-p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata"; }
     }
     NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from tst_rgr()  -------------");
@@ -92,13 +92,13 @@ my $RUN_NETCDF4_TESTS_VERSION_43=0;
 system("ncks --get_prg_info");
 # system() runs a command and returns exit status information as a 16 bit value: 
 # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
-if( $? == -1 ){
+if($? == -1){
     print "failed to execute: ncks --get_prg_info: $!\n";
 }else{
   my $exit_value=$? >> 8;
 
   # nco_get_prg_info() returns codes
-  # 3 (for library 3.x )
+  # 3 (for library 3.x)
   # 41 (for library 4.1.x)
   # 43 (for library 4.3.1.x)
 
@@ -741,7 +741,7 @@ print "\n";
 #ncks -C -g ecmwf -v tas1 out.nc
 # obs.nc tas1=273, cmip5.nc giss tas1=274
 
-    $dsc_sng="(Groups) Process relative matches, second file greater (obs.nc cmip5.nc )";
+    $dsc_sng="(Groups) Process relative matches, second file greater (obs.nc cmip5.nc)";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -g giss -v tas1 %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4 tas1[3]=-1";
@@ -911,7 +911,7 @@ print "\n";
 	
 	
 #nces #12
-# 2 groups, each one with a record (part 1 )
+# 2 groups, each one with a record (part 1)
 # ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
@@ -923,7 +923,7 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 
 #nces #13
-# 2 groups, each one with a record (part 2 )
+# 2 groups, each one with a record (part 2)
 # ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
@@ -938,7 +938,7 @@ print "\n";
 
 	 	
 #nces #14 # TODO	
-    #for i in $(seq -w 0 999) ; do iii=$( printf "%03d" ${i} ) ; ln in.nc foo${iii}.nc ; done
+    #for i in $(seq -w 0 999) ; do iii=$(printf "%03d" ${i}) ; ln in.nc foo${iii}.nc ; done
 	# TO DO run bash script above by perl
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v dgn_var $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00%";
@@ -1003,12 +1003,12 @@ print "\n";
 
 # NEW NCO 4.4.2
 #nces #19 (check fixed variables)
-# ncra -Y ncge -h -O  mdl_1.nc out.nc
+# ncra -Y ncge -h -O mdl_1.nc out.nc
 # ncks -g cesm -v time out.nc
 	
 	$dsc_sng="(Groups) Ensemble fixed variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -g cesm -v time  %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -g cesm -v time %tmp_fl_00%";
     $tst_cmd[2]="time dimension 0: time, size = 4 NC_DOUBLE, chunksize = 1 (Record coordinate is time)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -1101,11 +1101,9 @@ print "\n";
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -H -d record,1,1,1 %tmp_fl_00%";
     $tst_cmd[2]="record[1] v1[1]=11";
     $tst_cmd[3]="SS_OK";   
-   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			     
 
@@ -1115,14 +1113,11 @@ print "\n";
     
     $dsc_sng="(Groups) Concatenate variables/groups 2: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-
-    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'v1 dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)'";
-    $tst_cmd[2]="v1 dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)";
+    $tst_cmd[1]="ncks --cdl %tmp_fl_00% | grep 'v1 ='";
+    $tst_cmd[2]="        v1 = 11, 11 ;";
     $tst_cmd[3]="SS_OK";   
-   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
-    
 
 #ncecat #6 part1
 #ncecat  -h -O -g g6g1 -v area in_grp.nc in_grp.nc out.nc
@@ -1130,11 +1125,9 @@ print "\n";
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area %tmp_fl_00%";
     $tst_cmd[2]="record[1] lat[1]=90 area[3]=50";
     $tst_cmd[3]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			     
 
@@ -1145,11 +1138,9 @@ print "\n";
     
     $dsc_sng="(Groups) Concatenate variables/groups 2: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -C -g g6g1 -v area %tmp_fl_00% | grep 'area dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)'";
     $tst_cmd[2]="area dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
     
@@ -1159,7 +1150,6 @@ print "\n";
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: 2D -v two_dmn_rec_var";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -v two_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="record[1] time[9]=10 lev[2]=1000 two_dmn_rec_var[59]=3";
     $tst_cmd[3]="SS_OK";   
@@ -1174,11 +1164,9 @@ print "\n";
 
     $dsc_sng="(Groups) Concatenate variables/groups";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -m -C -g g25g1  -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="one_dmn_rec_var dimension 1: time, size = 10 NC_DOUBLE, chunksize = 10 (Coordinate is time)";
     $tst_cmd[3]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
@@ -1208,7 +1196,6 @@ print "\n";
 
     } #### Group tests	
 	
-		
 #ncecat #12
 #Concatenate files containing same variable in different orders
 # ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
@@ -1607,7 +1594,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
-#ncks #21 groups: Extract variables in groups (test -g with -v )
+#ncks #21 groups: Extract variables in groups (test -g with -v)
 
     $dsc_sng="(Groups) Extract variables in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -1619,7 +1606,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-#ncks #22 groups: Create variables in groups (test -G with -v and -g )
+#ncks #22 groups: Create variables in groups (test -G with -v and -g)
 
     $dsc_sng="(Groups) Create variables in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g8 -g g3 -v scl $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -1631,7 +1618,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
-#ncks #23 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
+#ncks #23 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var)
 
     $dsc_sng="(Groups) Hyperslabs in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -4318,7 +4305,7 @@ if (0){
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_int -d time,2 -d lat,0 %tmp_fl_00%");
-    # used to cut field 5: ( 1 + 2x2 + 0x1 = 5) 
+    # used to cut field 5: (1 + 2x2 + 0x1 = 5) 
     $dsc_sng="Dimension reduction on type int with min switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
@@ -4330,7 +4317,7 @@ if (0){
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_int -d time,3 -d lat,0 %tmp_fl_00%");
-    # used to cut field 7: ( 1 + 3x2 + 0x1 = 7) 
+    # used to cut field 7: (1 + 3x2 + 0x1 = 7) 
     $dsc_sng="Dimension reduction on type int variable";
     $prsrv_fl=1;
     push(@tst_cmd, "25");
@@ -4343,7 +4330,7 @@ if (0){
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_sht -d time,9 -d lat,1 %tmp_fl_00%");
-    # used to cut field 20: ( 1 + 9x2 + 1x1 = 20) 
+    # used to cut field 20: (1 + 9x2 + 1x1 = 20) 
     $dsc_sng="Dimension reduction on type short variable with min switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
@@ -4355,7 +4342,7 @@ if (0){
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_sht -d time,3 -d lat,1 %tmp_fl_00%");
-    # used to cut field 8: ( 1 + 3x2 + 1x1 = 8) 
+    # used to cut field 8: (1 + 3x2 + 1x1 = 8) 
     $dsc_sng="Dimension reduction on type short variable";
     $prsrv_fl=1;
     push(@tst_cmd, "29");
@@ -4389,7 +4376,7 @@ if (0){
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -v three_dmn_var_dbl -d time,3 %tmp_fl_00%");
-    # used to cut field 4: ( 1 + 3x1=4) 
+    # used to cut field 4: (1 + 3x1=4) 
     $dsc_sng="Dimension reduction on type double variable with max switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
@@ -4401,7 +4388,7 @@ if (0){
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,4 %tmp_fl_00%"); 
-    # used to cut field 5: ( 1 + 4x1=5) 
+    # used to cut field 5: (1 + 4x1=5) 
     $dsc_sng="Dimension reduction on type double variable";
     $prsrv_fl=1;
     push(@tst_cmd, "40");
@@ -4414,7 +4401,7 @@ if (0){
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_int -d time,2 -d lon,0 %tmp_fl_00%");
-    # used to cut field 9: ( 1 + 2x4 + 0x1=9) 
+    # used to cut field 9: (1 + 2x4 + 0x1=9) 
     $dsc_sng="Dimension reduction on type int variable with min switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
@@ -4598,7 +4585,7 @@ if (0){
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon $in_pth_arg in_grp_3.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,3 %tmp_fl_00%");
-    # used to cut field 4: ( 1 + 3x1=4) 
+    # used to cut field 4: (1 + 3x1=4) 
     $dsc_sng="(Groups) Dimension reduction on type double variable with max switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
@@ -4614,7 +4601,7 @@ if (0){
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon $in_pth_arg in_grp_3.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,4 %tmp_fl_00%"); 
-    # used to cut field 5: ( 1 + 4x1=5) 
+    # used to cut field 5: (1 + 4x1=5) 
     $dsc_sng="(Groups) Dimension reduction on type double variable";
     $prsrv_fl=1;
     push(@tst_cmd, "40");
@@ -4679,10 +4666,10 @@ if (0){
 # ncwa  -h -O -a time -b  -v time  in_grp.nc out.nc
 # ncks out.nc | grep 'time dimension 0'
 
-    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -b  -v time $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'time dimension 0:'";
-    $dsc_sng="(Groups) -b degenerate a record dimension";
-    $tst_cmd[2]="time dimension 0: time, size = 1 NC_DOUBLE, chunksize = 1 (Record coordinate is time)";
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -b -v time $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -v /g2/time %tmp_fl_00% | grep '=5.5'";
+    $dsc_sng="(Groups) retain degenerate record dimension";
+    $tst_cmd[2]="time[0]=5.5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		

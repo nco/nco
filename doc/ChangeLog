@@ -1,3 +1,8 @@
+2014-05-15  Charlie Zender  <zender@uci.edu>
+
+	* netCDF 4.3.2 default chunksize of record variables is 1048576	not 1
+	Alter regression tests to not fail with this, eliminate false negatives
+
 2014-05-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.4 release procedure:

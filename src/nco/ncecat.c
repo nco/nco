@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.364 2014-04-12 20:38:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.365 2014-05-15 21:03:44 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.364 2014-04-12 20:38:15 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.364 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.365 2014-05-15 21:03:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.365 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -611,10 +611,6 @@ main(int argc,char **argv)
     /* Define dimensions, extracted groups, variables, and attributes in output file */
     (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,False,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
 
-    /* Copy global attributes */
-#ifdef COPY_ROOT_GLOBAL_ATTRIBUTES
-    if(CPY_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); /* Superceded by nco_xtr_dfn() */
-#endif 
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
     /* Add input file list global attribute */
