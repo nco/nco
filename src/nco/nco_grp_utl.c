@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1429 2014-05-14 07:33:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1430 2014-05-17 23:56:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10754,3 +10754,69 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
 
 
 
+void
+nco_nsm_prn_att                      /* [fnc] Save ncge metadata attribute */
+(const int nc_id,                    /* I [ID] netCDF input file ID */
+ const int out_id,                   /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,          /* I [sct] GPE structure */
+ trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
+{
+
+  char *grp_out_fll;                   /* [sng] Group name */
+
+  int grp_id;                          /* [ID] Group ID in input file */
+  int grp_out_id;                      /* [ID] Group ID in output file */ 
+
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct grp_trv=trv_tbl->lst[idx_tbl];
+
+    /* If object is group  */
+    if(grp_trv.nco_typ == nco_obj_typ_grp){
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
+
+      if(grp_trv.flg_nsm_prn){
+
+        /* Ensemble parent groups */
+        if(trv_tbl->nsm_sfx){
+          /* Define new name by appending suffix (e.g., /cesm + _avg) */
+          char *nm_fll_sfx=nco_bld_nsm_sfx(grp_trv.grp_nm_fll_prn,trv_tbl);
+          /* Use then delete new name */
+          if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
+          nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+        }else{
+          if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll_prn); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
+        } /* !nsm_sfx */
+
+        /* Obtain output group ID using full group name */
+        (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+
+        aed_sct aed; /* [sct] Structure containing information necessary to edit */
+
+        aed.att_nm=strdup("ensemble_source");
+        aed.type=NC_CHAR;
+        aed.var_nm=NULL;
+        aed.id=NC_GLOBAL;
+        aed.sz=strlen(grp_out_fll);
+        aed.val.cp=(char *)nco_malloc((aed.sz+1L)*sizeof(char));
+        (void)strcpy(aed.val.cp,grp_out_fll);
+        aed.mode=aed_create;
+
+        /* Create attribute to note ensenmble average */
+        (void)nco_aed_prc(grp_out_id,NC_GLOBAL,aed);
+
+        if(aed.att_nm) aed.att_nm=(char *)nco_free(aed.att_nm);
+        if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp); 
+
+        /* Memory management after current extracted group */
+        if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+
+      } /* !flg_nsm_prn */
+
+    } /* end if group and flg_xtr */
+  } /* end loop to define group attributes */
+
+
+} /* nco_nsm_att() */

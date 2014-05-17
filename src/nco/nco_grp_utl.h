@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.507 2014-05-04 16:50:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.508 2014-05-17 23:56:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -977,6 +977,14 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
  const char * const var_nm,            /* I [sng] Variable name relative */
  const char * const var_nm_fll,        /* I [sng] Variable name full */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
+
+
+void
+nco_nsm_prn_att                      /* [fnc] Save ncge metadata attribute */
+(const int nc_id,                    /* I [ID] netCDF input file ID */
+ const int out_id,                   /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,          /* I [sct] GPE structure */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 
 #ifdef __cplusplus
