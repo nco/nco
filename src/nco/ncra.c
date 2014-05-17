@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.532 2014-05-17 20:57:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.533 2014-05-17 23:23:44 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.532 2014-05-17 20:57:19 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.532 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.533 2014-05-17 23:23:44 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.533 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1294,35 +1294,58 @@ main(int argc,char **argv)
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
       if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 
-      /* For ncge, save helpful metadata for later handling by ncbo */
-      if(nco_prg_id == ncge){
+    } /* end loop over idx */
+  } /* end if ncfe and ncge */
 
-        aed_sct aed; /* [sct] Structure containing information necessary to edit */
 
-        /* Initialize attribute-edit structure for this variable */
-        /* Write ensemble parent group full path as attribute value */
+  /* For ncge, save helpful metadata for later handling by ncbo */
+  if(nco_prg_id == ncge){
+    for(idx=0;idx<nbr_var_prc;idx++){
 
-        aed.att_nm=strdup("ensemble_source");
-        aed.type=NC_CHAR;
-        aed.var_nm=NULL;
-        aed.id=NC_GLOBAL;
-        aed.sz=strlen(grp_out_fll);
-        aed.val.cp=(char *)nco_malloc((aed.sz+1L)*sizeof(char));
-        (void)strcpy(aed.val.cp,grp_out_fll);
-        aed.mode=aed_create;
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var_prc_out[idx]->nm_fll,trv_tbl);
 
-        /* Create attribute to note ensenmble average */
-        (void)nco_aed_prc(grp_out_id,NC_GLOBAL,aed);
+      /* Check if suffix needed. Appends to default name */
+      if(trv_tbl->nsm_sfx){
+        /* Define (append) then use and forget new name */
+        char *nm_fll_sfx=nco_bld_nsm_sfx(var_trv->grp_nm_fll_prn,trv_tbl);
+        /* Use new name */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
+        nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+      }else{ /* Non suffix case */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->nsm_nm); else grp_out_fll=(char *)strdup(var_trv->nsm_nm);
+      } /* !trv_tbl->nsm_sfx */
 
-        if(aed.att_nm) aed.att_nm=(char *)nco_free(aed.att_nm);
-        if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp); 
+      /* Obtain output group ID using full group name */
+      (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
 
-      } /* ncge */
+      aed_sct aed; /* [sct] Structure containing information necessary to edit */
+
+      /* Initialize attribute-edit structure for this variable */
+      /* Write ensemble parent group full path as attribute value */
+
+      aed.att_nm=strdup("ensemble_source");
+      aed.type=NC_CHAR;
+      aed.var_nm=NULL;
+      aed.id=NC_GLOBAL;
+      aed.sz=strlen(grp_out_fll);
+      aed.val.cp=(char *)nco_malloc((aed.sz+1L)*sizeof(char));
+      (void)strcpy(aed.val.cp,grp_out_fll);
+      aed.mode=aed_create;
+
+      /* Create attribute to note ensenmble average */
+      (void)nco_aed_prc(grp_out_id,NC_GLOBAL,aed);
+
+      if(aed.att_nm) aed.att_nm=(char *)nco_free(aed.att_nm);
+      if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp); 
 
       /* Memory management after current extracted group */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
     } /* end loop over idx */
-  } /* end if ncfe and ncge */
+  } /* ncge */
+
+
+
 
   /* Free averaging and tally buffers */
   if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
