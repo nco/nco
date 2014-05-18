@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.709 2014-05-04 06:10:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.710 2014-05-18 04:51:14 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.4 are ready. 
 
@@ -6,9 +6,15 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release is mainly a bugfix and stability release. 
-This release fixes a serious printing bug with ncks CDL and XML mode. 
+A few new features improve some corner-cases:
+It includes workarounds that allow NCO to successfully work with
+some names that violate netCDF but not HDF rules. Users can now
+retain "orphaned" dimensions after variable subsetting. 
+nces now works with hyperslabs that resolve to the same size.
+Group broadcasting by ncbo is more intelligent when differencing
+ensemble means (created by nces) from full datasets.
 
-Work on NCO 4.4.4 is underway, still focused on stability and speed.   
+Work on NCO 4.4.5 is underway, still focused on stability and speed.   
 There will be more netCDF4 mop-up, improved group broadcasting
 algorithms, and, possibly, improved HDF4 support, and new chunking
 features.
@@ -51,19 +57,22 @@ A. ncks --rad to Retain all dimensions.
 A. nces now computes statistics on ensemble members whose specified
    hyperslabs resolve to the same size. nces has always worked well
    with identically shaped ensemble members, and on ensemble members
-   whose hyperslabs along the record dimension resolve to the same
-   size. Now nces works well with ensemble members whose specified
+   whose record-dimension hyperslabs resolve to the same size. 
+   Now nces works well with ensemble members whose specified
    hyperslabs along any dimension resolve to the same size. The
    use-case that demanded this was a researcher who wished to compare
    a certain lat/lon region (stored in some regional files) with the
    same region stored in other global files (with the same grid).
    The regional files (e.g., Greenland only) are much smaller than
-   global files so nces's new capability allows users to get by with
+   global files so nces's new capability allows users to "get by" with 
    regional files rather than always storing global files.
    nces -O --nsm_grp -d lat,0 -d lon,2 -d time,0 -p ~/nco/data grp1.nc grp2.nc ~/foo.nc
    fxm better example
 
 BUG FIXES:
+
+A. Fix regression tests not to cause false negatives due to netCDF
+   4.3.2 record dimension chunk size changes
 
 A. Fix numerous memory leaks and some corner-case segfaults
 

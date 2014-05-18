@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.987 2014-05-06 19:49:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.988 2014-05-18 04:51:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2589,7 +2589,7 @@ The main benefits of threading so far have been to isolate the serial
 from parallel portions of code. 
 This parallelism is now exploited by OpenMP but then runs into the I/O
 bottleneck during output. 
-The bottleneck could be ameliorated for large files by the use of
+The bottleneck will be ameliorated for large files by the use of
 MPI-enabled calls in the netCDF4 library when the underlying filesystem
 is parallel (e.g., @acronym{PVFS} or @acronym{JFS}).
 Implementation of the parallel output calls in @acronym{NCO} is not a
@@ -9317,10 +9317,8 @@ To stop the attribute being written use the ram_delete() method or use a bogus v
 @cindex attribute propagation
 @cindex attribute inheritance
 @itemize @bullet
-  @item Attribute propagation occurs in a regular  assign statement. The variable being defined on the LHS gets copies of the attributes from the leftermost variable on the RHS
-
+  @item Attribute propagation occurs in a regular assign statement. The variable being defined on the LHS gets copies of the attributes from the leftermost variable on the RHS.
   @item Attribute Inheritance: The LHS variable "inherits" attributes from an Input variable with the same name
-
   @item It is possible to have a regular assign statement for which both propagation and inheritance occur.
 @end itemize
 
@@ -13305,12 +13303,13 @@ DESCRIPTION
 @command{ncecat} aggregates an arbitrary number of input files into a 
 single output file using using one of two methods.
 @dfn{Record AGgregation} (@acronym{RAG}), the traditional method employed on
-netCDF3 files and still the default method, stores @var{input-files} as
-consecutive records in the @var{output-file}.
+(flat) netCDF3 files and still the default method, stores
+@var{input-files} as consecutive records in the @var{output-file}.
 @dfn{Group AGgregation} (@acronym{GAG}) stores @var{input-files} as top-level
 groups in the netCDF4 @var{output-file}.
-Record Aggregation (@acronym{RAG}) makes numerous assumptions about the structure
-of input files and Group Aggregation (@acronym{GAG}) makes none.
+Record Aggregation (@acronym{RAG}) makes numerous assumptions about the
+structure of input files and Group Aggregation (@acronym{GAG}) makes
+none. 
 Both methods are described in detail below.
 Since @command{ncecat} aggregates all the contents of the input files,
 it can easily produce large output files so it is often helpful to invoke
@@ -16993,12 +16992,8 @@ The first example shows how to process flat files.
 @verbatiminclude xmp/glb_avg.sh
 @end example
 
-With the use of @key{group}, the above script
-will be shortened to just @w{ONE LINE}.
+With the use of @key{group}, the above script will be shortened to @w{ONE LINE}.
 @cindex groups, averaging
-@ignore
-Isn't it amazing or what?!
-@end ignore
 @example
 # Data from cmb_fl_grp.sh
 # ensemble averaging
