@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1430 2014-05-17 23:56:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1431 2014-05-19 03:38:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10755,18 +10755,21 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
 
 
 void
-nco_nsm_prn_att                      /* [fnc] Save ncge metadata attribute */
+nco_nsm_prn_wrt_att                  /* [fnc] Save ncge metadata attribute */
 (const int nc_id,                    /* I [ID] netCDF input file ID */
  const int out_id,                   /* I [ID] netCDF output file ID */
  const gpe_sct * const gpe,          /* I [sct] GPE structure */
  trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
 {
 
+  /* Purpose:  Write ensemble parent group full path as attribute value in attribute named  "ensemble_source" */
+
   char *grp_out_fll;                   /* [sng] Group name */
 
   int grp_id;                          /* [ID] Group ID in input file */
   int grp_out_id;                      /* [ID] Group ID in output file */ 
 
+  aed_sct aed; /* [sct] Structure containing information necessary to edit */
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct grp_trv=trv_tbl->lst[idx_tbl];
@@ -10778,6 +10781,8 @@ nco_nsm_prn_att                      /* [fnc] Save ncge metadata attribute */
       (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
 
       if(grp_trv.flg_nsm_prn){
+
+        grp_out_fll=NULL;
 
         /* Ensemble parent groups */
         if(trv_tbl->nsm_sfx){
@@ -10791,9 +10796,7 @@ nco_nsm_prn_att                      /* [fnc] Save ncge metadata attribute */
         } /* !nsm_sfx */
 
         /* Obtain output group ID using full group name */
-        (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
-
-        aed_sct aed; /* [sct] Structure containing information necessary to edit */
+        (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);   
 
         aed.att_nm=strdup("ensemble_source");
         aed.type=NC_CHAR;
@@ -10819,4 +10822,4 @@ nco_nsm_prn_att                      /* [fnc] Save ncge metadata attribute */
   } /* end loop to define group attributes */
 
 
-} /* nco_nsm_att() */
+} /* nco_nsm_prn_wrt_att() */
