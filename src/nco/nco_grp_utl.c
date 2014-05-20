@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1432 2014-05-20 16:38:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1433 2014-05-20 21:54:00 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -779,10 +779,10 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
             /* Look for partial match, not necessarily on path boundaries */
             /* 20130829: Variables and group names may be proper subsets of ancestor group names
-            e.g., variable named g9 in group named g90 is /g90/g9
-            e.g., group named g1 in group named g10 is g10/g1
-            Search algorithm must test same full name multiple times in such cases
-            For variables, only final match (closest to end full name) need be fully tested */
+	       e.g., variable named g9 in group named g90 is /g90/g9
+	       e.g., group named g1 in group named g10 is g10/g1
+	       Search algorithm must test same full name multiple times in such cases
+	       For variables, only final match (closest to end full name) need be fully tested */
             sbs_srt=NULL;
             sbs_srt_nxt=trv_obj.nm_fll;
             while((sbs_srt_nxt=strstr(sbs_srt_nxt,usr_sng))){
@@ -798,7 +798,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
             /* Does object name contain usr_sng? */
             if(sbs_srt){
               /* Ensure match spans (begins and ends on) whole path-component boundaries
-              Full path-check starts at current substring */
+		 Full path-check starts at current substring */
 
               /* Does match begin at path component boundary ... directly on a slash? */
               if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
@@ -853,9 +853,9 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
               if(nco_dbg_lvl_get() == nco_dbg_old){
                 /* Redundant call to nco_flg_set_grp_var_ass() here in debugging mode only to set flags for following print statements 
-                Essential call to nco_flg_set_grp_var_ass() occurs after itr loop
-                Most debugging info is available in debugging section at routine end
-                However, group boundary/anchoring/recursion info is only available here */
+		   Essential call to nco_flg_set_grp_var_ass() occurs after itr loop
+		   Most debugging info is available in debugging section at routine end
+		   However, group boundary/anchoring/recursion info is only available here */
                 if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
                 (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
@@ -895,7 +895,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
      An object (group or variable) may have had its flg_mch set multiple times, e.g., once via rx and once via explicit listing
      And since rx's often match multiple objects, no sense in flagging associated objects inside rx loop
      Now all -g and -v constraints have been evaluated (after itr loop)
-     Now speed through table once and set associated objects for all groups and variable flagged with flg_mch */
+     Now speed through table once and set associated objects for all groups and variables flagged with flg_mch */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
     if(trv_tbl->lst[obj_idx].flg_mch) nco_flg_set_grp_var_ass(trv_tbl->lst[obj_idx].grp_nm_fll,trv_tbl->lst[obj_idx].nco_typ,trv_tbl);
 
@@ -918,7 +918,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   } /* flg_unn */
 
   /* Does matched or default group contain only metadata? 
-  Flag used in nco_xtr_grp_mrk() to preserve metadata-only groups on extraction list */
+     Flag used in nco_xtr_grp_mrk() to preserve metadata-only groups on extraction list */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
     if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
       if(trv_tbl->lst[obj_idx].flg_mch || trv_tbl->lst[obj_idx].flg_dfl)
@@ -971,7 +971,20 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
   /* Purpose: Convert extraction list to exclusion list
      NB: Exclusion is ambiguous for groups
      Consider, e.g., ncks -x -v /g1/v1 
-     Should that exclude g1 completely? what about other variables like /g1/v2?
+     Should that exclude g1 completely, exclude /g1/v2 as well? Probably not. 
+     Extraction list for this case is nearly unambiguous: ~(/g1/v1)
+     Now consider a different way of specifying the same thing, i.e., ncks -x -g g1 -v v1 
+     Since g1 is explicitly specified, it is ambiguous whether the -x should apply to all of g1
+     Extraction list for this case, as of 20140520, is same as above: ~(/g1/v1)
+     However, one could also decide to implement this extraction list: *g1*, ~(v1)
+     In other words the exclusion could be applied only to elements of -v arguments, and -g could be used for extraction
+     Here *g1* means the full group path contains a whole component named g1
+     Now consider ncks -x -g g1 -v /g1/v1
+     What should it do?
+     For ncdismember purposes, I want it to create this extraction list: *g1*, ~(/g1/v1)
+     Now consider ncks -x -g /g1/ -v /g1/v1
+     What should it do?
+     For ncdismember purposes, I want it to create this extraction list: *g1*, ~(/g1/v1) (where *g1* means contains group g1)
      Hence, the exclusion flag should not always be used to permanantly exclude groups
      On the other hand, there are some uses where the exclusion flag should exclude groups
      Consider, e.g., ncks -x -g g1
@@ -984,7 +997,7 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_tbl->lst[idx_tbl].flg_xtr=!trv_tbl->lst[idx_tbl].flg_xtr; /* Toggle extraction flag */
-    trv_tbl->lst[idx_tbl].flg_xcl=!trv_tbl->lst[idx_tbl].flg_xcl; /* Mark that this object was explicitly excluded */
+    trv_tbl->lst[idx_tbl].flg_xcl=True; /* Mark that this object was explicitly excluded */
   } /* end for */
 
   return;
@@ -7495,14 +7508,11 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
           } /* Loop over weights */
       } /* Filter variables  */
     } /* Loop table */
-
   }
 
   return NULL;
 
 } /* nco_var_get_wgt_trv() */
-
-
 
 dmn_trv_sct *                         /* O [sct] Table dimension object */
 nco_dmn_usr_sng                       /* [fnc] Parse input string and return table dimension object */
@@ -7563,9 +7573,7 @@ nco_dmn_usr_sng                       /* [fnc] Parse input string and return tab
   } /* Optional relative match */
 
   /* Cases of not found and optional */
-  if(usr_sng[0] == opt_chr){
-    *is_opt=True;
-  }
+  if(usr_sng[0] == opt_chr) *is_opt=True;
 
   return NULL;
 
@@ -7587,24 +7595,14 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
   *is_opt=False;
 
   /* Try absolute match */
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Match absolute name */
-    if(strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm_fll) == 0){
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
+    if(!strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm_fll)) 
       return &trv_tbl->lst[tbl_idx];
-    } /* Match name */
-  } /* Loop table */ 
 
   /* Try relative match */
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Match relative name */
-    if(strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm) == 0){
-      return &trv_tbl->lst[tbl_idx];
-    } /* Match name */
-  } /* Loop table */ 
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
+    if(!strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm))
+       return &trv_tbl->lst[tbl_idx];
 
   /* Try optional absolute match */
 
@@ -7674,7 +7672,6 @@ nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
   return;
 
 } /* nco_aed_prc_grp() */
-
 
 void                                  
 nco_aed_prc_glb                       /* [fnc] Process attributes in root group */
