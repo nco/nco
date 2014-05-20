@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.491 2014-05-20 16:38:19 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.492 2014-05-20 17:36:17 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -240,7 +240,7 @@ print "\n";
 
 	# FAILS!
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -C -m -v lev %tmp_fl_00% | grep units | cut -d' ' -f 11-12"; ## daniel:fixme cut/ncks but how to do grep?
+	$tst_cmd[1]="ncks -C -m -v lev %tmp_fl_00% | grep units | cut -d ' ' -f 11-12"; ## daniel:fixme cut/ncks but how to do grep?
 	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$tst_cmd[2]="meter second-1";
 	$tst_cmd[3]="SS_OK";

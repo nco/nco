@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.988 2014-05-18 04:51:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.989 2014-05-20 17:36:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.4
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 6 May 2014
+@set update-date 20 May 2014
 @set update-month May 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13992,6 +13992,19 @@ Activate native machine binary output writing to binary file
 @file{file}.
 Also @samp{--fl_bnr} and @samp{--binary-file}.
 Writing packed variables in binary format is not supported.
+Metadata is never output to the binary file.
+Examine the netCDF output file to see the variables in the binary file. 
+Use the @samp{-C} switch, if necessary, to avoid wanting unwanted
+coordinates to the binary file:
+@example
+% ncks -O -v one_dmn_rec_var -b ~/bnr.dat -p ~/nco/data in.nc ~/out.nc
+% ls -l ~/bnr.dat | cut -d ' ' -f 5 # 200 B contains time and one_dmn_rec_var
+200
+% ls -l ~/bnr.dat
+% ncks -C -O -v one_dmn_rec_var -b ~/bnr.dat -p ~/nco/data in.nc ~/out.nc
+% ls -l ~/bnr.dat | cut -d ' ' -f # 40 B contains one_dmn_rec_var only
+40
+@end example
 
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->
