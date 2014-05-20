@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.241 2014-04-23 15:06:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.242 2014-05-20 17:17:03 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -83,7 +83,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 #ifdef ENABLE_NETCDF4 
   case NC_ENOTBUILT: (void)fprintf(stdout,"ERROR NC_ENOTBUILT Attempt to use feature that was not turned on when netCDF was built\nHINT: NC_ENOTBUILT errors occur only, in our experience, when NCO attempts to access an HDF4 (including HDF-EOS2) file. It is only possible to access HDF4 files from NCO if NCO is first re-linked to a version of netCDF configured with the --enable-hdf4 option, which itself must be linked to a version of HDF4 configured with the --disable-netcdf option. These are non-standard build options! Full instructions are here: http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html\nFollow those instructions to rebuild HDF4 and netCDF, then rebuild NCO on top of that netCDF, and then your NCO command will likely work.\n"); 
 #endif /* !ENABLE_NETCDF4 */
-  case NC_ENOTNC: (void)fprintf(stdout,"ERROR NC_ENOTNC Not a netCDF file\nHINT: NC_ENOTNC errors can occur for many reasons. If your use case matches one of the four listed below, take the corrective action indicated:\n1. An NCO operator linked to the netCDF3 library attempts to read netCDF4 files. "); 
+  case NC_ENOTNC: (void)fprintf(stdout,"ERROR NC_ENOTNC Not a netCDF file\nHINT: NC_ENOTNC errors can occur for many reasons. If your use-case matches one of the four listed below, take the corrective action indicated:\n1. An NCO operator linked to the netCDF3 library attempts to read netCDF4 (or HDF4 or HDF5) files. "); 
 #ifdef ENABLE_NETCDF4 
      (void)fprintf(stdout," However, this executable seems to have been built with the capability to manipulate netCDF4 files, so it is unlikely that this command failed only because the input datasets are netCDF4 format. Something else is going wrong. \n"); 
 #else /* !ENABLE_NETCDF4 */ 
