@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.490 2014-05-15 21:03:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.491 2014-05-20 16:38:19 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -954,7 +954,6 @@ print "\n";
 
     if($RUN_NETCDF4_TESTS == 1){
 
-	
 #nces #15
 # ncra -Y ncge -h -O  mdl_1.nc out.nc
 # ncks -g cesm -v tas1 out.nc
@@ -988,11 +987,10 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-
 #nces #18
 #ncra -Y ncge -O mdl_1.nc mdl_2.nc out.nc
  
-    $dsc_sng="(Groups) 2 files ensembles";
+    $dsc_sng="(Groups) Two-file ensembles";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc mdl_2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g ecmwf -v tas1 %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4 tas1[3]=273.25";
@@ -1000,25 +998,25 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-
 # NEW NCO 4.4.2
-#nces #19 (check fixed variables)
+#nces #19 (check coordinate variables)
 # ncra -Y ncge -h -O mdl_1.nc out.nc
 # ncks -g cesm -v time out.nc
+# NB: This test succeeds when it fails, i.e., the NCO command fails as it should because the input files do not conform
 	
-	$dsc_sng="(Groups) Ensemble fixed variables";
+    $dsc_sng="(Groups) Ensemble record coordinate variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -g cesm -v time %tmp_fl_00%";
-    $tst_cmd[2]="time dimension 0: time, size = 4 NC_DOUBLE, chunksize = 1 (Record coordinate is time)";
+    $tst_cmd[1]="ncks -m --cdl -g cesm -v time %tmp_fl_00% | grep UNLIMITED";
+    $tst_cmd[2]="      time = UNLIMITED ; // (4 currently)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 # NEW NCO 4.4.3
 #nces #20 (error checking of ensemble variable dimensions)
-#  ncra  -Y ncge -O in_grp_4.nc in_grp_5.nc out.nc
+#  ncra -Y ncge -O in_grp_4.nc in_grp_5.nc out.nc
 	
-	$dsc_sng="(Groups) Checking of conforming dimensions between ensemble variables";
+    $dsc_sng="(Groups) Check when dimensions do not conform between ensemble variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_4.nc in_grp_5.nc %tmp_fl_00%";
     $tst_cmd[1]="ncge: ERROR Variables do not conform: variable </cesm/cesm_02/three_dmn_rec_var> has dimension <time> with size 6, expecting size 10";
     $tst_cmd[2]="SS_OK";
@@ -1029,16 +1027,15 @@ print "\n";
 #nces #21 
 # ncra -Y ncge -h -O mdl_1.nc out.nc
 	
-	$dsc_sng="(Groups) Test CF fixed variables";
+    $dsc_sng="(Groups) Test CCM/CAM/CCSM special fixed variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -C -v gw %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -v gw %tmp_fl_00%";
     $tst_cmd[2]="time[3]=4 gw[3]=1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
    } # #### Group Ensemble tests	
-	 
     
 # print "paused - hit return to continue"; my $wait=<STDIN>;
     

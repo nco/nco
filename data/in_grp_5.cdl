@@ -21,7 +21,7 @@ netcdf in_grp_5 {
     float three_dmn_rec_var(time,lat,lon);
   
     data:
-	 lat=-90,90;
+     lat=-90,90;
      lon=0,90,180,270;
      time=1.,2.,3.,4.,5.,6.;
 
@@ -36,7 +36,7 @@ netcdf in_grp_5 {
 
   group: cesm_04 {
      
-	dimensions:
+     dimensions:
     lat=2;
     lon=4;
     time=unlimited; 

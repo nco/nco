@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1431 2014-05-19 03:38:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1432 2014-05-20 16:38:19 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7633,9 +7633,7 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
   } /* Optional relative match */
 
   /* Cases of not found and optional */
-  if(usr_sng[0] == opt_chr){
-    *is_opt=True;
-  }
+  if(usr_sng[0] == opt_chr) *is_opt=True;
 
   return NULL;
 
@@ -10750,12 +10748,8 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
 
 } /* nco_prt_dmn() */
 
-
-
-
-
 void
-nco_nsm_prn_wrt_att                  /* [fnc] Save ncge metadata attribute */
+nco_nsm_wrt_att                  /* [fnc] Save ncge metadata attribute */
 (const int nc_id,                    /* I [ID] netCDF input file ID */
  const int out_id,                   /* I [ID] netCDF output file ID */
  const gpe_sct * const gpe,          /* I [sct] GPE structure */
@@ -10821,5 +10815,4 @@ nco_nsm_prn_wrt_att                  /* [fnc] Save ncge metadata attribute */
     } /* end if group and flg_xtr */
   } /* end loop to define group attributes */
 
-
-} /* nco_nsm_prn_wrt_att() */
+} /* nco_nsm_wrt_att() */

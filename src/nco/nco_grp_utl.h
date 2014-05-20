@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.509 2014-05-19 03:38:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.510 2014-05-20 16:38:20 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -738,8 +738,6 @@ void
 nco_prn_nsm                           /* [fnc] Print ensembles  */                                
 (const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
-
-
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
@@ -763,7 +761,6 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 (const int nc_id,                     /* I [id] netCDF file ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-
 nco_bool                               /* O [flg] True for match found */
 nco_prc_rel_mch                        /* [fnc] Relative match of object in table 1 to table 2  */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
@@ -783,7 +780,6 @@ nco_prc_rel_mch                        /* [fnc] Relative match of object in tabl
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
-
 void                          
 nco_cmn_var                            /* [fnc] Does the list of common names contain absolute variables match? */
 (const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
@@ -792,7 +788,6 @@ nco_cmn_var                            /* [fnc] Does the list of common names co
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  nco_bool *flg_cmn_abs,                /* I/O [flg] Does the list of common names contain absolute variables match? */
  nco_bool *flg_cmn_rel);               /* I/O [flg] Does the list of common names contain relative variables match? */
-
 
 void                                               
 nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute variables in both files (same path) (ncbo) */
@@ -844,7 +839,6 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
 
-
 void                          
 nco_cmn_nsm_var                        /* [fnc] Common variable exist in ensembles (ncbo only) */
 (nco_bool *flg_var_cmn,                /* I/O [flg] Common variable exists */
@@ -870,7 +864,6 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
-
 
 void                                               
 nco_prc_nsm                            /* [fnc] Process (define, write) variables belonging to ensembles only in 1 file (ncbo) */
@@ -903,14 +896,12 @@ nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (nc
  trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
-
 nco_bool                               /* O [flg] True for match found */
 nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
 (trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
  const nco_bool flg_tbl_1,             /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2); /* I [sct] GTT (Group Traversal Table) */
-
 
 void                          
 nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects from a common mames list (ncbo only) */
@@ -929,7 +920,6 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
  const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
-
 
 void
 nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */                                
@@ -950,7 +940,6 @@ nco_rad                                /* [fnc] Retain all dimensions */
  int nbr_dmn_var_out,                  /* I [nbr] Number of dimensions for variable on output  */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure in output file */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
-
 
 void                                               
 nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variables belonging to ensembles in both files (ncbo) */
@@ -978,14 +967,12 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
  const char * const var_nm_fll,        /* I [sng] Variable name full */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
-
 void
-nco_nsm_prn_wrt_att                  /* [fnc] Save ncge metadata attribute */
+nco_nsm_wrt_att                  /* [fnc] Save ncge metadata attribute */
 (const int nc_id,                    /* I [ID] netCDF input file ID */
  const int out_id,                   /* I [ID] netCDF output file ID */
  const gpe_sct * const gpe,          /* I [sct] GPE structure */
  trv_tbl_sct * const trv_tbl);       /* I/O [sct] GTT (Group Traversal Table) */
-
 
 #ifdef __cplusplus
 } /* end extern "C" */
