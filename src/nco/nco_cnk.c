@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.121 2014-03-21 03:11:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.122 2014-05-20 05:53:20 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -168,8 +168,6 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   /* Discover blocksize if possible */
   fl_sys_blk_sz=nco_fl_blocksize(fl_out);
 
-  /* Linux default blocksize is 4096 B */
-#define NCO_CNK_SZ_BYT_DFL 4096
   if(cnk_sz_byt > 0ULL){
     /* Use user-specified chunk size if available */
     cnk->cnk_sz_byt=cnk_sz_byt;
@@ -759,7 +757,18 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   /* Purpose: Use chunking map and policy to determine chunksize list
      Adapted from nco_cnk_sz_set() to GTT:
      1) Instead of loop for all variables, this functions chunks one variable
-     2) In dimension loop, dimension object is obtained from variable object */
+     2) In dimension loop, dimension object is obtained from variable object
+
+     Unidata defaults set in libsrc4/nc4hdf.c, nc4var.c
+
+     netCDF 4.3.2 and later:
+     DEFAULT_CHUNK_SIZE=4 MB
+     Default chunk size for 1-D record variables is DEFAULT_CHUNK_SIZE/type_size
+     = 1048576 for sizeof(type)=4 
+
+     h5dump prints chunking and compression information for netCDF4/HDF5 files:
+     h5dump -H -p ~/nco/data/hdn.nc
+     Grep for "COMPRESSION" */
 
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
 
@@ -778,10 +787,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   int srg_typ; /* [enm] Storage type */
   int var_id_in; /* [ID] Variable ID in input file */
   int var_id_out; /* [ID] Variable ID in output file */
-  int var_dimid[NC_MAX_VAR_DIMS]; /* [lst] Dimension IDs */
 
   nc_type var_typ_dsk; /* [nbr] Variable type */
 
+  nco_bool *flg_mch; /* [flg] Name match (absolute or relative) between chunking structure 'cnk_sct' and dimension 'dmn_cmn' */
   nco_bool flg_usr_rqs; /* [flg] User requested checking */
   nco_bool is_rec_var; /* [flg] Record variable */
   nco_bool is_chk_var; /* [flg] Check-summed variable */
@@ -789,7 +798,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   nco_bool is_chunked; /* [flg] Chunked variable */
   nco_bool is_xpl_cnk; /* [flg] Explicitly chunked variable */
   nco_bool must_be_chunked; /* [flg] Variable must be chunked */
-  nco_bool flg_mch[NC_MAX_VAR_DIMS]; /* [flg] Name match (absolute or relative) between chunking structure 'cnk_sct' and dimension 'dmn_cmn' */
 
   size_t *cnk_sz=NULL; /* [nbr] Chunksize list */
   size_t cnk_sz_dfl; /* [nbr] Chunksize default */
@@ -858,7 +866,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   (void)nco_inq_varid(grp_id_in,var_nm,&var_id_in);
 
   /* Get type and number of dimensions for variable */
-  (void)nco_inq_var(grp_id_out,var_id_out,(char *)NULL,&var_typ_dsk,&dmn_nbr,var_dimid,(int *)NULL);
+  (void)nco_inq_var(grp_id_out,var_id_out,(char *)NULL,&var_typ_dsk,&dmn_nbr,(int *)NULL,(int *)NULL);
   typ_sz=nco_typ_lng(var_typ_dsk);
 
   if(dmn_nbr == 0){
@@ -967,6 +975,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       if(dmn_cmn[dmn_idx].NON_HYP_DMN){
         /* When not hyperslabbed, use input record dimension size ... */
         cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
+	/* 20140518: As of netCDF 4.3.2, employ smarter defaults for record dimension */
+	if(dmn_nbr == 1) cnk_sz[dmn_idx]=NCO_CNK_SZ_BYT_R1D_DFL/typ_sz;
       }else{ /* !NON_HYP_DMN */
         /* ... and when hyperslabbed, use user-specified count */
         cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].dmn_cnt;
@@ -1084,6 +1094,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 cnk_xpl_override: /* end goto */
 
   /* Override "reasonable" defaults with explicitly set per-dimension sizes, if any */
+  flg_mch=(nco_bool *)nco_malloc(dmn_nbr*sizeof(nco_bool));
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
     /* Initialize to false then override */
@@ -1126,6 +1137,7 @@ cnk_xpl_override: /* end goto */
       } /* cnk_nm != dmn_nm */
     } /* end loop over dimensions */
   } /* end loop over cnk */
+  if(flg_mch) flg_mch=(nco_bool *)nco_free(flg_mch);
 
   /* Status: Previous block implemented per-dimension checks on user-requested chunksizes only
      Block below implements similar final safety check for ALL dimensions and ALL chunking maps
@@ -1144,7 +1156,7 @@ cnk_xpl_override: /* end goto */
   if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev){
     /* Dimensions and chunksizes used by variable in output file */
     (void)fprintf(stdout,"idx dmn_nm\tdmn_sz\tcnk_sz:\n");
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)cnk_sz[dmn_idx]);
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s \t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)cnk_sz[dmn_idx]);
   } /* endif dbg */
 
   /* Set storage (chunked or contiguous) for this variable */

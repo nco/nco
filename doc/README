@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.18 2013-07-25 04:43:29 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.19 2014-05-20 05:53:20 zender Exp $ -*-text-*-
 
 # Purpose: NCO README file
 
@@ -7,10 +7,10 @@ The netCDF Operators, NCO, are a suite of programs known as operators.
 The operators facilitate manipulation and analysis of self-describing
 data stored in the freely available netCDF and HDF formats 
 (http://www.unidata.ucar.edu/packages/netcdf and
-http://hdf.ncsa.uiuc.edu, respectively). 
+http://hdfgroup.org, respectively). 
 Each NCO operator (e.g., ncks) takes netCDF or HDF input file(s),
 performs an operation (e.g., averaging, hyperslabbing, or renaming),
-and outputs a processed netCDF file. 
+and outputs information, usually a processed netCDF file  
 Although most users of netCDF and HDF data are involved in scientific
 research, these data formats, and thus NCO, are generic and are
 equally useful in fields from agriculture to zoology.

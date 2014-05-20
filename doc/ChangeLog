@@ -1,15 +1,19 @@
-2014-05-15  Charlie Zender  <zender@uci.edu>
-
-	* netCDF 4.3.2 default chunksize of record variables is 1048576	not 1
-	Alter regression tests to not fail with this, eliminate false negatives
-
-2014-05-06  Charlie Zender  <zender@uci.edu>
+2014-05-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.4 release procedure:
  	Changes since nco-4_4_3: -x tolerance, --rad orphans, CERES, mmr
 	cd ~/nco;cvs tag -d nco-4_4_4;cvs tag -d nco-4_4_4-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
 	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
+
+	* Tweak chunking for 1D record variables
+
+2014-05-15  Charlie Zender  <zender@uci.edu>
+
+	* netCDF 4.3.2 default chunksize of record variables is 1048576	not 1
+	Alter regression tests to not fail with this, eliminate false negatives
+
+2014-05-06  Charlie Zender  <zender@uci.edu>
 
 	* Improve HDF4 documentation accuracy and clarity
 

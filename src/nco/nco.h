@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.508 2014-05-04 06:28:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.509 2014-05-20 05:53:20 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -137,6 +137,16 @@ extern "C" {
   
   /* Argument to strtol() and strtoul() indicating base-10 conversions */
 #define NCO_SNG_CNV_BASE10 10
+
+  /* netCDF 4.3.2 (201404) implements a configure-time constant called DEFAULT_CHUNK_SIZE = 4194304 = 4 MB
+     This is a good size for HPC systems with MB-scale blocksizes
+     Token is not in netcdf.h, and NCO's equivalent need not match netCDF's
+     NCO uses NCO token    NCO_CNK_SZ_BYT_DFL and default algorithm when user specifies any chunking option
+     NCO uses netCDF token DEFAULT_CHUNK_SIZE and default algorithm when user specifies no  chunking option */
+#define NCO_CNK_SZ_BYT_DFL 4194304
+
+  /* Linux default blocksize is 4096 B---a good chunk size for 1-D record dimension variables */
+#define NCO_CNK_SZ_BYT_R1D_DFL 4096
 
   /* netCDF provides no guidance on maximum nesting of groups */
 #define NCO_MAX_GRP_DEPTH 10
