@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.289 2014-04-12 20:38:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.290 2014-05-21 20:39:29 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.289 2014-04-12 20:38:15 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.289 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.290 2014-05-21 20:39:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.290 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -559,7 +559,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl);
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id_1,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
+  (void)nco_bld_trv_tbl(in_id_1,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,False,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* Check if all input -d dimensions were found */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);     

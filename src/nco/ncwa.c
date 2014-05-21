@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.415 2014-05-02 18:50:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.416 2014-05-21 20:39:29 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.415 2014-05-02 18:50:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.415 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.416 2014-05-21 20:39:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.416 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -626,7 +626,7 @@ main(int argc,char **argv)
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,False,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);

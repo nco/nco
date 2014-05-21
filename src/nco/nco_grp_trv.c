@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.296 2014-05-11 22:10:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.297 2014-05-21 20:39:29 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -333,12 +333,9 @@ trv_tbl_grp_nm_fll                    /* [fnc] Return group object from full nam
 {
   /* Purpose: Return group object with given full name */
 
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp && 
-      strcmp(grp_nm_fll,trv_tbl->lst[idx_tbl].nm_fll) == 0){
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp && !strcmp(grp_nm_fll,trv_tbl->lst[idx_tbl].nm_fll))
       return &trv_tbl->lst[idx_tbl];
-    }
-  }
 
   return NULL;
 } /* trv_tbl_grp_nm_fll() */
@@ -368,11 +365,9 @@ trv_tbl_mrk_grp_xtr                   /* [fnc] Mark extraction flag in table for
  const nco_bool flg_xtr,              /* I [flg] Flag (True or False) */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    if(strcmp(grp_nm_fll,trv_tbl->lst[idx_tbl].nm_fll) == 0){
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(!strcmp(grp_nm_fll,trv_tbl->lst[idx_tbl].nm_fll))
       trv_tbl->lst[idx_tbl].flg_xtr=flg_xtr;
-    }
-  }
 
   return;
 } /* end trv_tbl_mrk_grp_xtr() */
@@ -405,12 +400,10 @@ trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of travers
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
     if(trv_tbl->lst[idx_tbl].flg_xtr) nbr_flg++;
 
-  (void)fprintf(stdout,"%s: INFO %s reports <%d> objects with extraction flag (flg_xtr) set:\n",nco_prg_nm_get(),fnc_nm,nbr_flg); 
+  (void)fprintf(stdout,"%s: INFO %s reports %d objects with extraction flag (flg_xtr) set:\n",nco_prg_nm_get(),fnc_nm,nbr_flg); 
   
-  /* Loop table */
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    if(trv_tbl->lst[idx_tbl].flg_xtr) (void)fprintf(stdout,"[%d] %s\n",idx++,trv_tbl->lst[idx_tbl].nm_fll); 
-  }
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].flg_xtr) (void)fprintf(stdout,"%d %s\n",idx++,trv_tbl->lst[idx_tbl].nm_fll); 
 
 } /* end trv_tbl_prn_xtr() */
 

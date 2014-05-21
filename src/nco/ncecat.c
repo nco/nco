@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.365 2014-05-15 21:03:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.366 2014-05-21 20:39:29 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.365 2014-05-15 21:03:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.365 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.366 2014-05-21 20:39:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.366 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -537,7 +537,7 @@ main(int argc,char **argv)
     (void)nco_inq_format(in_id,&fl_in_fmt); 
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-    (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
+    (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,False,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
     /* Check if all input -d dimensions were found */ 
     (void)nco_chk_dmn(lmt_nbr,flg_dne);     
@@ -742,7 +742,7 @@ main(int argc,char **argv)
       trv_tbl_init(&trv_tbl_gpr);
 
       /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-      (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr_rgn,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl_gpr);
+      (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr_rgn,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,False,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl_gpr);
 
       /* Get number of variables, dimensions, and global attributes in file, file format */
       (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl_gpr);

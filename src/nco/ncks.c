@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.717 2014-04-19 21:26:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.718 2014-05-21 20:39:29 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -107,6 +107,7 @@ main(int argc,char **argv)
   nco_bool GET_PRG_INFO=False; /* [flg] Get compiled program information (e.g., libraries) */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
+  nco_bool GRP_XTR_VAR_XCL=False; /* [flg] Extract matching groups, exclude matching variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -166,8 +167,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.717 2014-04-19 21:26:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.717 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.718 2014-05-21 20:39:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.718 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -279,6 +280,7 @@ main(int argc,char **argv)
       {"nsx",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
       {"union",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
       {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+      {"grp_xtr_var_xcl",no_argument,0,0}, /* [flg] Extract matching groups, exclude matching variables */
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       {"jsn",no_argument,0,0}, /* [flg] Print JSON */
@@ -509,6 +511,10 @@ main(int argc,char **argv)
       } /* endif "tst_udunits" */
       if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
       if(!strcmp(opt_crr,"nsx") || !strcmp(opt_crr,"intersection")) GRP_VAR_UNN=False;
+      if(!strcmp(opt_crr,"grp_xtr_var_xcl")){
+	EXCLUDE_INPUT_LIST=True;
+	GRP_XTR_VAR_XCL=True;
+      } /* endif "grp_xtr_var_xcl" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);
@@ -687,7 +693,7 @@ main(int argc,char **argv)
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
-  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* Check if all input -d dimensions were found */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);    

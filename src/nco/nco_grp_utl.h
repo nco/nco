@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.510 2014-05-20 16:38:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.511 2014-05-21 20:39:29 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -146,7 +146,8 @@ nco_xtr_mk                           /* [fnc] Check -v and -g input names and cr
 
 void
 nco_xtr_xcl                          /* [fnc] Convert extraction list to exclusion list */
-(trv_tbl_sct * const trv_tbl);       /* I/O [sct] Traversal table */
+(nco_bool GRP_XTR_VAR_XCL, /* [flg] Extract matching groups, exclude matching variables */
+ trv_tbl_sct * const trv_tbl); /* I/O [sct] GTT (Group Traversal Table) */
 
 void
 nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction list */
@@ -212,7 +213,7 @@ nco_xtr_dmn_mrk                      /* [fnc] Mark extracted dimensions */
 (trv_tbl_sct * const trv_tbl);       /* I/O [sct] GTT (Group Traversal Table) */
 
 nco_bool                                                         
-nco_pth_mth                            /* [fnc] Name component in full path matches user string  */
+nco_pth_mch                            /* [fnc] Name component in full path matches user string  */
 (char * const nm_fll,                  /* I [sng] Full name (path) */
  char * const nm,                      /* I [sng] Name (relative) */
  char * const usr_sng);                /* [sng] User-supplied object name */
@@ -549,6 +550,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const int var_xtr_nbr,               /* I [nbr] Number of variables in list */
  const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
+ const nco_bool GRP_XTR_VAR_XCL,      /* I [flg] Extract matching groups, exclude matching variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
  const int nco_pck_plc,               /* I [enm] Packing policy */

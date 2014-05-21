@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.492 2014-05-20 17:36:17 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.493 2014-05-21 20:39:29 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1016,7 +1016,7 @@ print "\n";
 #nces #20 (error checking of ensemble variable dimensions)
 #  ncra -Y ncge -O in_grp_4.nc in_grp_5.nc out.nc
 	
-    $dsc_sng="(Groups) Check when dimensions do not conform between ensemble variables";
+    $dsc_sng="(Groups) Invalid input, expect ERROR because dimensions do not conform between ensemble variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_4.nc in_grp_5.nc %tmp_fl_00%";
     $tst_cmd[1]="ncge: ERROR Variables do not conform: variable </cesm/cesm_02/three_dmn_rec_var> has dimension <time> with size 6, expecting size 10";
     $tst_cmd[2]="SS_OK";
@@ -2323,7 +2323,7 @@ print "\n";
 #ncks #73
 # ncks -v lat -d latitude,0,1,1 in_grp.nc
 
-    $dsc_sng="(Groups) Invalid dimension input -v lat -d latitude,0,1,1 in_grp.nc";
+    $dsc_sng="(Groups) Invalid input, expect ERROR because user-specified dimension \"latitude\" DNE";
     $tst_cmd[0]="ncks $nco_D_flg -v lat -d latitude,0,1,1 $in_pth_arg in_grp.nc";
 
     $tst_cmd[1]="ncks: ERROR dimension latitude is not in input file";

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1433 2014-05-20 21:54:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1434 2014-05-21 20:39:29 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -28,7 +28,6 @@ nco_flg_set_grp_var_ass               /* [fnc] Set flags for groups and variable
   trv_sct trv_obj; /* [sct] Traversal table object */
 
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
-    
     /* Create shallow copy to avoid indirection */
     trv_obj=trv_tbl->lst[obj_idx];
     
@@ -42,7 +41,6 @@ nco_flg_set_grp_var_ass               /* [fnc] Set flags for groups and variable
 
     /* Flag ancestor groups of all user-specified groups and variables */
     if(strstr(grp_nm_fll,trv_obj.grp_nm_fll)) trv_tbl->lst[obj_idx].flg_ncs=True;
-
   } /* end loop over obj_idx */
   
 } /* end nco_flg_set_grp_var_ass() */
@@ -547,7 +545,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
 } /* end nco_trv_rx_search() */
 
 nco_bool                                                         
-nco_pth_mth                            /* [fnc] Name component in full path matches user string  */
+nco_pth_mch                            /* [fnc] Name component in full path matches user string  */
 (char * const nm_fll,                  /* I [sng] Full name (path) */
  char * const nm,                      /* I [sng] Name (relative) */
  char * const usr_sng)                 /* [sng] User-supplied object name */
@@ -577,10 +575,10 @@ nco_pth_mth                            /* [fnc] Name component in full path matc
 
   /* Look for partial match, not necessarily on path boundaries */
   /* 20130829: Variables and group names may be proper subsets of ancestor group names
-  e.g., variable named g9 in group named g90 is /g90/g9
-  e.g., group named g1 in group named g10 is g10/g1
-  Search algorithm must test same full name multiple times in such cases
-  For variables, only final match (closest to end full name) need be fully tested */
+     e.g., variable named g9 in group named g90 is /g90/g9
+     e.g., group named g1 in group named g10 is g10/g1
+     Search algorithm must test same full name multiple times in such cases
+     For variables, only final match (closest to end full name) need be fully tested */
   sbs_srt=NULL;
   sbs_srt_nxt=nm_fll;
   while((sbs_srt_nxt=strstr(sbs_srt_nxt,usr_sng))){
@@ -595,7 +593,7 @@ nco_pth_mth                            /* [fnc] Name component in full path matc
   /* Does object name contain usr_sng? */
   if(sbs_srt){
     /* Ensure match spans (begins and ends on) whole path-component boundaries
-    Full path-check starts at current substring */
+       Full path-check starts at current substring */
 
     /* Does match begin at path component boundary ... directly on a slash? */
     if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
@@ -614,24 +612,18 @@ nco_pth_mth                            /* [fnc] Name component in full path matc
         flg_pth_end_bnd=True;
 
     /* Additional condition is user-supplied string must end with short form of name */
-
     if(nm_lng <= usr_sng_lng){
       var_mch_srt=usr_sng+usr_sng_lng-nm_lng;
       if(!strcmp(var_mch_srt,nm)) flg_var_cnd=True;
     } /* endif */     
-
-  }
-
-  /* Set return value */
+  } /* !sbs_srt */
 
   /* Must meet necessary flags  */
-  if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
-    return True;
-  } 
+  if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd) return True;
 
   return False;
 
-} /* nco_pth_mth() */
+} /* nco_pth_mch() */
 
 nco_bool                              /* O [flg] All names are in file */
 nco_xtr_mk                            /* [fnc] Check -v and -g input names and create extraction list */
@@ -930,11 +922,14 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
     /* Extract object if ... */
     if(
+       /* No subsetting */
+      (trv_tbl->lst[obj_idx].flg_dfl) || /* ...user-specified no sub-setting... */
+      /* Intersection mode (default mode) */
+      (!flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch && trv_tbl->lst[obj_idx].flg_nsx) || /* ...intersection mode variable matches group... */
+      /* Union mode */
       (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch) || /* ...union mode object matches user-specified string... */
       (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_vsg) || /* ...union mode variable selected because group matches... */
-      (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_gcv) || /* ...union mode contains matched variable... */
-      (trv_tbl->lst[obj_idx].flg_dfl) || /* ...user-specified no sub-setting... */
-      (!flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch && trv_tbl->lst[obj_idx].flg_nsx) || /* ...intersection mode variable matches group... */
+      (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_gcv) || /* ...union mode group contains matched variable... */
       False) 
       trv_tbl->lst[obj_idx].flg_xtr=True;
   } /* end loop over obj_idx */
@@ -957,7 +952,6 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
     } /* end loop over obj_idx */
   } /* endif dbg */
 
-  /* Print extraction list in debug mode */
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return (nco_bool)True;
@@ -965,42 +959,72 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 } /* end nco_xtr_mk() */
 
 void
-nco_xtr_xcl                           /* [fnc] Convert extraction list to exclusion list */
-(trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
+(nco_bool GRP_XTR_VAR_XCL, /* I [flg] Extract matching groups, exclude matching variables */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Convert extraction list to exclusion list
-     NB: Exclusion is ambiguous for groups
+     Exclusion is ambiguous for groups
      Consider, e.g., ncks -x -v /g1/v1 
-     Should that exclude g1 completely, exclude /g1/v2 as well? Probably not. 
+     Should that exclude g1 completely, e.g., exclude /g1/v2 as well? Probably not. 
      Extraction list for this case is nearly unambiguous: ~(/g1/v1)
      Now consider a different way of specifying the same thing, i.e., ncks -x -g g1 -v v1 
      Since g1 is explicitly specified, it is ambiguous whether the -x should apply to all of g1
      Extraction list for this case, as of 20140520, is same as above: ~(/g1/v1)
+     I.e., extract all except exclude intersection of -g and -v arguments
      However, one could also decide to implement this extraction list: *g1*, ~(v1)
-     In other words the exclusion could be applied only to elements of -v arguments, and -g could be used for extraction
-     Here *g1* means the full group path contains a whole component named g1
-     Now consider ncks -x -g g1 -v /g1/v1
-     What should it do?
-     For ncdismember purposes, I want it to create this extraction list: *g1*, ~(/g1/v1)
-     Now consider ncks -x -g /g1/ -v /g1/v1
-     What should it do?
-     For ncdismember purposes, I want it to create this extraction list: *g1*, ~(/g1/v1) (where *g1* means contains group g1)
-     Hence, the exclusion flag should not always be used to permanantly exclude groups
-     On the other hand, there are some uses where the exclusion flag should exclude groups
+     (here *g1* means the full group path contains a whole component named g1)
+     In other words elements matching -v arguments could be excluded, and those matching -g could be extracted
+     This would make it easy to extract certain groups, while excluding certain variables from those groups
+
+     There are use-cases where the exclusion flag should exclude groups
      Consider, e.g., ncks -x -g g1
      In this case g1 and all descendents should be excluded
+
+     ncdismember needs to create extraction lists like: *g1*, ~(/g1/v1)
+     Potential avenues to implement this include
+     1. ncks -x -g g1 -v v1
+     2. ncks -x -g g1 -v /g1/v1
+     3. ncks --grp_xtr_var_xcl -g g1 -v v1
+
      Given that, here is how this routine and NCO actually uses flg_xcl:
      For variables, -x sets the exclusion flag and is "permanent", i.e., removes variable from extraction list
      For groups, -x sets the exclusion flag but is not "permanent"---it does not remove group from extraction list
      Instead it is used to help determine whether group should be excluded for metadata-only containing groups 
      Group extraction is reset and done from scratch (except for flg_xcl/flg_mtd) in nco_xtr_grp_mrk() */
 
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_tbl->lst[idx_tbl].flg_xtr=!trv_tbl->lst[idx_tbl].flg_xtr; /* Toggle extraction flag */
-    trv_tbl->lst[idx_tbl].flg_xcl=True; /* Mark that this object was explicitly excluded */
-  } /* end for */
+  const char fnc_nm[]="nco_xtr_xcl()"; /* [sng] Function name */
+
+  if(GRP_XTR_VAR_XCL){
+    /* Block implements GRP_XTR_VAR_XCL option introduced 20140521 */
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
+	/* Toggle variable extraction under any of following conditions */
+	if(
+	   /* Variable set to be extracted because it matches explicit -v extraction string */
+	   (trv_tbl->lst[idx_tbl].flg_mch) ||
+	   /* Variable does not match explicit -v extraction string (so will not be excluded)
+	      and variable is in group that does match explicit -g extraction string */
+	   (!trv_tbl->lst[idx_tbl].flg_mch && trv_tbl->lst[idx_tbl].flg_vsg) ||
+	   False){
+	  trv_tbl->lst[idx_tbl].flg_xtr=!trv_tbl->lst[idx_tbl].flg_xtr; /* Toggle extraction flag */
+	  trv_tbl->lst[idx_tbl].flg_xcl=True; /* Extraction flag was toggled by exclusion option */
+	} /* end if */
+      } /* end if */
+    } /* end for */
+  }else{
+    /* Block implements default (and only) behavior until 20140521,
+       i.e., extract all except exclude intersection of -g and -v arguments */
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      trv_tbl->lst[idx_tbl].flg_xtr=!trv_tbl->lst[idx_tbl].flg_xtr; /* Toggle extraction flag */
+      trv_tbl->lst[idx_tbl].flg_xcl=True; /* Extraction flag was toggled by exclusion option */
+    } /* end for */
+  } /* !GRP_XTR_VAR_XCL */
+
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
+
 } /* end nco_xtr_xcl() */
 
 void
@@ -1592,7 +1616,7 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
      2. For default (non user-specified) groups
      3. For metadata-only groups that do not conflict with the above
      What is lacking here is extraction flags for ancestors of all extracted groups
-     Ancestor flags have been set in nco_xtr_mk() but must be discarded and reset
+     Ancestor flags were set in nco_xtr_mk() but must be discarded and reset
      for same reasons that group flags in nco_xtr_mk() are unreliable for final list.
      This loop ensures groups are marked for extraction if any descendents are marked
      Mainly (only?) this catches ancestors of metadata only groups
@@ -6338,7 +6362,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
           char *dmn_nm=trv_obj.var_dmn[idx_var_dmn].dmn_nm;
 
           /* Must meet necessary flags */
-          nco_bool pth_mth=nco_pth_mth(dmn_nm_fll,dmn_nm,usr_sng); 
+          nco_bool pth_mth=nco_pth_mch(dmn_nm_fll,dmn_nm,usr_sng); 
           if(pth_mth){
 
             flg_dmn_ins=False;
@@ -6766,8 +6790,9 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const int grp_lst_in_nbr,            /* I [nbr] Number of groups in list */
  char **var_lst_in,                   /* I [sng] User-specified list of variables */
  const int var_xtr_nbr,               /* I [nbr] Number of variables in list */
- const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
+ const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */ 
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
+ const nco_bool GRP_XTR_VAR_XCL,      /* I [flg] Extract matching groups, exclude matching variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */
  const int nco_pck_plc,               /* I [enm] Packing policy */
@@ -6840,7 +6865,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
 
   /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
+  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(GRP_XTR_VAR_XCL,trv_tbl);
 
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
@@ -10561,27 +10586,19 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
   trv_sct *trv_1;    /* [sct] Table object */
   trv_sct *trv_2;    /* [sct] Table object */
 
-  if (flg_grp_1 == True){
+  if(flg_grp_1){
 
-    if(nco_dbg_lvl_get() >= nco_dbg_var){
-      (void)fprintf(stdout,"%s: Processing ensembles from file 1\n",nco_prg_nm_get());
-    }
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: Processing ensembles from file 1\n",nco_prg_nm_get());
 
     /* Loop ensembles */
     for(int idx_nsm=0;idx_nsm<trv_tbl_1->nsm_nbr;idx_nsm++){
 
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
-          idx_nsm,trv_tbl_1->nsm[idx_nsm].grp_nm_fll_prn);
-      }
+      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl_1->nsm[idx_nsm].grp_nm_fll_prn);
 
       /* Loop group members */
       for(int idx_mbr=0;idx_mbr<trv_tbl_1->nsm[idx_nsm].mbr_nbr;idx_mbr++){
 
-        if(nco_dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
-            idx_mbr,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
-        }
+        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_mbr,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
 
         /* Loop variables */
         for(int idx_var=0;idx_var<trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nbr;idx_var++){
@@ -10589,41 +10606,29 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
           trv_1=NULL;
           trv_2=NULL;
 
-          if(nco_dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
-              idx_var,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
-          }
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_var,trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var]); 
 
           /* Inquire existence of these objects in tables  */
           trv_1=trv_tbl_var_nm_fll(trv_tbl_1->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var],trv_tbl_1);
-
           assert(trv_1);
 
-
-          /* For file 2, a list with names is argument   */
+          /* For file 2, a list with names is argument */
           for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn->nbr;idx_nm++){
 
             /* Match full name */
-            if(strcmp(nsm_grp_nm_fll_prn->lst[idx_nm].nm,trv_1->grp_nm_fll_prn) == 0){
+            if(!strcmp(nsm_grp_nm_fll_prn->lst[idx_nm].nm,trv_1->grp_nm_fll_prn)){
 
-              if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(stdout,"%s: DEBUG %s Found name for <%s>\n",nco_prg_nm_get(),fnc_nm,
-                  nsm_grp_nm_fll_prn->lst[idx_nm].nm);   
-              }
-
+              if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Found name for <%s>\n",nco_prg_nm_get(),fnc_nm,nsm_grp_nm_fll_prn->lst[idx_nm].nm);   
   
               /* Since we're using table 1 as template, for table 2 object has to be searched (using relative name and ensemble parent name) */
               trv_2=trv_tbl_nsm_nm_att(trv_1->nm,nsm_grp_nm_fll_prn->lst[idx_nm].nm,trv_tbl_2);
-
 
               /* Both variables exist  */
               if(trv_1 && trv_2){
 
                 if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
-
                 /* Process common object */
                 (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
-
               } /* Both variables exist */
 
               break;
@@ -10644,28 +10649,16 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
           /* Get variable  */
           trv_sct *skp_trv=trv_tbl_var_nm_fll(skp_nm_fll,trv_tbl_1);
 
-          if (skp_trv){
-
-            /* Define/write fixed variables (ncbo) */
-            (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);   
-
-          }
-
+	  /* Define/write fixed variables (ncbo) */
+          if (skp_trv) (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);   
+                      
         } /* List of fixed templates  */
 
       } /* Loop group members */
     } /* Loop ensembles */
-
-  } else if (flg_grp_1 == False) {
-
-
-
-  } /* ! flg_grp_1 */
+  } /* !flg_grp_1 */
 
 } /* nco_prc_cmn_nsm_att() */
-
-
-
 
 void
 nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
