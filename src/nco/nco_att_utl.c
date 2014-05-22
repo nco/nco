@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.171 2014-01-09 00:08:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.172 2014-05-22 15:40:34 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -8,7 +8,10 @@
 
 #include "nco_att_utl.h" /* Attribute utilities */
 
-/* Microsoft standard C library lacks standard definitions for strtoll(), strtoull() */
+/* Microsoft standard C library lacks standard definitions for strtoll(), strtoull()
+   20140522 fxm: strtoll() and strtull() currently only used in nco_att_utl.c
+   Yes Microsoft replacement functions are generic
+   Should dangling definitions be placed in other header file, e.g., nco_rth_flt.h? */
 #ifdef _MSC_VER
 # define strtoull _strtoui64 
 # define strtoll  _strtoi64
