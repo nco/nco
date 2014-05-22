@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.244 2014-05-22 01:52:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.245 2014-05-22 05:17:20 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1267,7 +1267,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 	   Too many other limits on string translation to list them all :)
 	   This only handles plain strings */
 	if(var_out.sz > 1L){
-	  (void)fprintf(stdout,"%s: ERROR Unable to autoconvert. %s reports string variable %s contains %li strings. Autoconversion of string variables is currently limited to string variables that contain a single string, not an array of strings. And even single strings are currently translated incorrectly because each string is typically a distinct size, meaning a distinct phony dimension would need to be created for every single string and NCO is loathe to do that. Complaints? Let us know.\n",nco_prg_nm_get(),fnc_nm,var_nm,var_out.sz);
+	  (void)fprintf(stdout,"%s: ERROR Unable to autoconvert. %s reports string variable %s contains %li strings. Autoconversion of string variables is currently limited to scalar string variables (that contain a single string), and does not work on arrays of strings. Even single strings are currently translated incorrectly because each string is typically a distinct size, meaning a distinct phony dimension would need to be created for every single string and NCO is loathe to do that. Complaints? Let us know.\n",nco_prg_nm_get(),fnc_nm,var_nm,var_out.sz);
 	  nco_exit(EXIT_FAILURE);
 	} /* endif err */
 
