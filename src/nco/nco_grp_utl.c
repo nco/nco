@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1434 2014-05-21 20:39:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1435 2014-05-22 01:52:54 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1002,7 +1002,7 @@ nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
 	/* Toggle variable extraction under any of following conditions */
 	if(
 	   /* Variable set to be extracted because it matches explicit -v extraction string */
-	   (trv_tbl->lst[idx_tbl].flg_mch) ||
+	   (trv_tbl->lst[idx_tbl].flg_xtr) ||
 	   /* Variable does not match explicit -v extraction string (so will not be excluded)
 	      and variable is in group that does match explicit -g extraction string */
 	   (!trv_tbl->lst[idx_tbl].flg_mch && trv_tbl->lst[idx_tbl].flg_vsg) ||

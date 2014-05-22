@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.989 2014-05-20 17:36:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.990 2014-05-22 01:52:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4546,6 +4546,8 @@ drc_out="${DATA}/nco/tmp" # [sng] Output directory
 flg_cf='0' # [flg] Perform CF-compliance check
 cf_vrs='1.5' # [sng] Compliance-check this CF version (e.g., '1.5')
 opt='' # [flg] Additional ncks options (e.g., '--fix_rec_dmn=all')
+# Use single quotes to pass multiple arguments to opt=${5}
+# Otherwise arguments would be seen as ${5}, ${6}, ${7} ...
 
 # Command line argument option parsing
 if [ -n "${1}" ]; then fl_in=${1}; fi
@@ -4570,7 +4572,9 @@ for grp_in in ${grp_lst} ; do
     # Tell older NCO/netCDF if HDF4 with --hdf4 switch (signified by .hdf/.HDF suffix)
     hdf4=`echo ${fl_in} | awk '{if(match(tolower($1),".hdf$")) hdf4="--hdf4"; print hdf4}'`
     # Flatten to netCDF3, anchor, no history, no temporary file, padding, HDF4 flag, options
-    ncks -O -3 -G : -g ${grp_in}/ -h --no_tmp_fl --hdr_pad=40 ${hdf4} ${opt} ${fl_in} ${drc_out}/${grp_out}.nc
+    cmd="ncks -O -3 -G : -g ${grp_in}/ -h --no_tmp_fl --hdr_pad=40 ${hdf4} ${opt} ${fl_in} ${drc_out}/${grp_out}.nc"
+    # Use eval in case ${opt} contains multiple arguments separated by whitespace
+    eval ${cmd}
     if [ ${flg_cf} = 'cf' ]; then
        # cfchecker needs Conventions <= 1.5
        ncatted -h -a Conventions,global,o,c,"CF-${cf_vrs}" ${drc_out}/${grp_out}.nc

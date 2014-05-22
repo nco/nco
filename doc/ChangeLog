@@ -6,7 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
 	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
 
-	* Implement --grp_xtr_var_xcl for ncdismember
+	* Change ncdismember to use eval so ${opt}=${5} may contain multiple whitespace-separated arguments
+
+	* Implement --grp_xtr_var_xcl for ncdismember. Fixes problems for TES, SMAP data.
 
 2014-05-20  Charlie Zender  <zender@uci.edu>
 
