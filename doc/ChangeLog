@@ -1,10 +1,14 @@
-2014-05-21  Charlie Zender  <zender@uci.edu>
+2014-05-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.4 release procedure:
  	Changes since nco-4_4_3: -x tolerance, --rad orphans, CERES, mmr
 	cd ~/nco;cvs tag -d nco-4_4_4;cvs tag -d nco-4_4_4-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
 	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
+
+	* ncdismember handles whitespace in group names in ncatted phase
+
+2014-05-21  Charlie Zender  <zender@uci.edu>
 
 	* Change ncdismember to use eval so ${opt}=${5} may contain multiple whitespace-separated arguments
 

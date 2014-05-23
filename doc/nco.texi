@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.990 2014-05-22 01:52:54 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.991 2014-05-23 20:37:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4577,7 +4577,8 @@ for grp_in in ${grp_lst} ; do
     eval ${cmd}
     if [ ${flg_cf} = 'cf' ]; then
        # cfchecker needs Conventions <= 1.5
-       ncatted -h -a Conventions,global,o,c,"CF-${cf_vrs}" ${drc_out}/${grp_out}.nc
+       no_bck_sls=`echo ${drc_out}/${grp_out} | sed 's/\\\ / /g'`
+       ncatted -h -a Conventions,global,o,c,CF-${cf_vrs} ${no_bck_sls}.nc
     else # !flg_cf
        echo ${drc_out}/${grp_out}.nc
     fi # !flg_cf

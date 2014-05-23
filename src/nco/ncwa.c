@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.416 2014-05-21 20:39:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.417 2014-05-23 20:37:23 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.416 2014-05-21 20:39:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.416 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.417 2014-05-23 20:37:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.417 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -713,9 +713,9 @@ main(int argc,char **argv)
   if(msk_nm){
     for(idx=0;idx<nbr_var_prc;idx++){
       char *grp_out_fll=NULL; /* [sng] Group name */
-      int grp_out_id;    /* [ID] Group ID (output) */
-      int var_out_id;    /* [ID] Variable ID (output) */
-      trv_sct *var_trv;  /* [sct] Variable GTT object */
+      int grp_out_id; /* [ID] Group ID (output) */
+      int var_out_id; /* [ID] Variable ID (output) */
+      trv_sct *var_trv; /* [sct] Variable GTT object */
 
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
