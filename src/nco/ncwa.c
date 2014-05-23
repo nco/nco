@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.417 2014-05-23 20:37:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.418 2014-05-23 22:52:15 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.417 2014-05-23 20:37:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.417 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.418 2014-05-23 22:52:15 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.418 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -739,7 +739,7 @@ main(int argc,char **argv)
       if(!var_prc_out[idx]->has_mss_val){
         var_prc_out[idx]->has_mss_val=True;
         var_prc_out[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);
-        (void)nco_put_att(grp_out_id,var_prc_out[idx]->id,nco_mss_val_sng_get(),var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
+        (void)nco_put_att(grp_out_id,var_prc_out[idx]->id,nco_mss_val_sng_get(),var_prc_out[idx]->type,(long)1,var_prc_out[idx]->mss_val.vp);
       } /* end if */
     } /* end for */
   } /* end if */
