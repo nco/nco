@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.494 2014-05-27 02:55:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.495 2014-05-27 03:26:18 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4777,8 +4777,7 @@ if (0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 	
-	} #### Group tests	
-
+    } #### Group tests	
 
 #NEW 4.4.2	
 #ncwa #60 (part 1)
@@ -4819,7 +4818,6 @@ if (0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-
 #### Group tests	
     if($RUN_NETCDF4_TESTS == 1){	
 
@@ -4836,13 +4834,14 @@ if (0){
     $#tst_cmd=0; # Reset array
     }
 		
+#NEW 4.4.4
 #ncwa #64
-# ncwa -O -C -v Lat -a Lat --mask_condition "Lat < -20.0" ~/Lat.nc ~/foo.nc
+# ncwa -O -C -v Lat -a Lat --mask_condition "Lat < -60.0" ~/Lat.nc ~/foo.nc
 # ncks -H -v Lat ~/foo.nc
     $dsc_sng="Mask condition with negative value";
-    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -v Lat -a Lat --mask_condition 'Lat < -20.0' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -v Lat -a Lat --mask_condition 'Lat < -60.0' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -s %g -v Lat %tmp_fl_00%";
-    $tst_cmd[2]="-45";
+    $tst_cmd[2]="_";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array

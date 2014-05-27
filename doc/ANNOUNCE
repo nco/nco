@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.712 2014-05-27 02:55:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.713 2014-05-27 03:26:18 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.4 are ready. 
 
@@ -71,9 +71,9 @@ A. nces now computes statistics on ensemble members whose specified
 
 BUG FIXES:
 
-A. Fixed ncwa incorrect interpretation ofsome --mask_conditions.
-   Due to an unlikely effect of a memory error in an obscurely related 
-   code-snippet. Thanks to Keith Lindsay for reporting.
+A. Fixed ncwa incorrect interpretation of some --mask_conditions.
+   Parser could return incorrect RHS values for negative numbers.
+   Thanks to Keith Lindsay for reporting.
 
 A. ncdismember better handles whitespace in group names
 

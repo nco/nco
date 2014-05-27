@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.82 2014-05-27 02:55:26 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.83 2014-05-27 03:26:18 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -1065,7 +1065,7 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
   
   nco_bool scv_dfn=False;
   int op_typ=-1;
-  int rcd=1;
+  int rcd=NCO_NOERR;
   char *fnl_sng;
   char *msk_nm_LHS=NULL;
   scv_sct scv_out;
@@ -1109,22 +1109,22 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
     } /* end switch */
   } /* end while */
   
-  /* Check all three items have been scanned in */
+  /* Check that all three required items for an ncwa mask_condition have been scanned */
   if(msk_nm_LHS == (char *)NULL){
     (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid variable name\n",nco_prg_nm_get(),msk_sng);
-    rcd=0;
+    rcd=NCO_ERR;
   }else{
     *msk_nm=msk_nm_LHS;
   } /* endif */
   if(op_typ == -1){
     (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid comparison operator\n",nco_prg_nm_get(),msk_sng);
-    rcd=0;
+    rcd=NCO_ERR;
   }else{
     *op_typ_rlt=op_typ;
   } /* endif */
   if(scv_dfn == False){
     (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid number\n",nco_prg_nm_get(),msk_sng);
-    rcd=0;
+    rcd=NCO_ERR;
   }else{ 
     (void)nco_scv_cnf_typ((nc_type)NC_DOUBLE,&scv_out);
     *msk_val=scv_out.val.d;

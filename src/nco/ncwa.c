@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.419 2014-05-27 02:04:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.420 2014-05-27 03:26:18 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.419 2014-05-27 02:04:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.419 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.420 2014-05-27 03:26:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.420 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -601,7 +601,7 @@ main(int argc,char **argv)
     /* Initialize line counter */
     ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
     ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
-    if(ncap_ncwa_scn(&prs_arg,msk_cnd_sng,&msk_nm,&msk_val,&op_typ_rlt) == 0) nco_exit(EXIT_FAILURE); 
+    if(ncap_ncwa_scn(&prs_arg,msk_cnd_sng,&msk_nm,&msk_val,&op_typ_rlt) != NCO_NOERR) nco_exit(EXIT_FAILURE); 
   } /* endif msk_cnd_sng */ 
 #endif /* _MSC_VER */
 

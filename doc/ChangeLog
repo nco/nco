@@ -6,7 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
 	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
 
-	* Add regression test for negative-valued ncwa --mask_condition
+	* Add regression test for negative-valued ncwa --mask_condition,
+	but test does not yet work. Unsure why.
 
 	* Start using NC_FILL_STRING
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.509 2014-05-20 05:53:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.510 2014-05-27 03:26:18 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -397,11 +397,10 @@ extern "C" {
 
   /* NB: Use NCO_NOERR and NCO_ERR as return codes to other functions, not to shell (e.g., Bash, Csh)
      Shell exit codes (where 0 indicates success) are traditionally opposite C exit codes (where 0 indicates failure) */
-/* Internal NCO return code indicating success */
+/* Internal NCO function return code indicating success */
 #define NCO_NOERR 1
-/* Internal NCO return code indicating failure */
+/* Internal NCO function return code indicating failure */
 #define NCO_ERR 0
-
 
 /* UDUnits return code indicating success */
 #define UDUNITS_NOERR 0
