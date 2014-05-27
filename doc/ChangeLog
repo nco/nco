@@ -8,7 +8,7 @@
 
 	* Regression test for negative-valued ncwa --mask_condition works
 
-	* Isolated cause of bug: lexer ignores minus sign in msk_val in	conditions
+	* Isolated bug: ncap_ncwa_scn() lexing ignores msk_val minus sign in conditions
 	Notes in ncap_lex.l near rules for parsing doubles and long doubles
 	Does same problem exist in ncap2 treatment of conditions with negative numbers?
 
