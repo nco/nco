@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.157 2014-02-17 23:12:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.158 2014-05-27 16:51:56 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2122,7 +2122,7 @@ ncap_cst_do(
 
 // Return true if string is only made of 0..9 chars
 bool
-str_is_num(
+str_is_nbr(
 	   std::string snm)
 { 
   unsigned idx;
@@ -2148,7 +2148,7 @@ ncap_dmn_mtd(
   str_vtr_sz=str_vtr.size();
   for(idx=0 ; idx <str_vtr_sz ; idx++){
     // deal with position args e.g., $0,$1,$2 etc
-    if( str_is_num(str_vtr[idx])) {
+    if( str_is_nbr(str_vtr[idx])) {
       icnt=atoi(str_vtr[idx].c_str());
       if(icnt < nbr_dim && !dmn_vtr.find(var->dim[icnt]->nm)) 
 	dmn_vtr.push_back( var->dim[icnt]);

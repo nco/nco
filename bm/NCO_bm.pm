@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.87 2013-12-31 05:14:01 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.88 2014-05-27 16:51:56 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -460,7 +460,7 @@ sub tst_run {
     my @cmd_lst= @$arr_ref; # Dereference to new array name
     # Clear variables
     my $ssdwrap_cmd = $dbg_sng = $err_sng = $pfx_mpi = $pfx_fk = "";
-    my $cmd_rsl_is_num = 1; my $xpc_is_num = 1; # for extra return value checks
+    my $cmd_rsl_is_nbr = 1; my $xpc_is_nbr = 1; # for extra return value checks
     
     # Twiddle $pfx_cmd to allow running mpnc* as non-MPI'd  executable
     if ($mpi_fk) {$pfx_fk = "$MY_BIN_DIR/mp"; }
@@ -635,15 +635,15 @@ sub tst_run {
 # 			}
 # 			# figure out if $cmd_rsl is numeric or alpha
 # 			if ($cmd_rsl =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-# 				$cmd_rsl !~ /[a-df-zA-DF-Z ,]/) { $cmd_rsl_is_num = 1;}
+# 				$cmd_rsl !~ /[a-df-zA-DF-Z ,]/) { $cmd_rsl_is_nbr = 1;}
 # 			else { #print "DEBUG: \$cmd_rsl is not numeric: $cmd_rsl \n";
-# 				$cmd_rsl_is_num = 0;
+# 				$cmd_rsl_is_nbr = 0;
 # 			}
 # 			# figure out if $nsr_xpc is numeric or alpha
 # 			if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-# 				$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $xpc_is_num = 1;}
+# 				$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $xpc_is_nbr = 1;}
 # 			else { #print "DEBUG: \$nsr_xpc is not numeric: $nsr_xpc \n";
-# 				$xpc_is_num = 0;
+# 				$xpc_is_nbr = 0;
 # 			}
 	    
 	    if ($timed) {
@@ -705,19 +705,19 @@ sub tst_run {
     }
     # Is $cmd_rsl numeric or alpha?
     if ($cmd_rsl =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-	$cmd_rsl !~ /[a-df-zA-DF-Z ,]/) { $cmd_rsl_is_num = 1;}
+	$cmd_rsl !~ /[a-df-zA-DF-Z ,]/) { $cmd_rsl_is_nbr = 1;}
     else { #print "DEBUG: \$cmd_rsl is not numeric: $cmd_rsl \n";
-	$cmd_rsl_is_num = 0;
+	$cmd_rsl_is_nbr = 0;
     }
     # Is $nsr_xpc numeric or alpha?
     if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-	$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $xpc_is_num = 1;}
+	$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $xpc_is_nbr = 1;}
     else { #print "DEBUG: \$nsr_xpc is not numeric: $nsr_xpc \n";
-	$xpc_is_num = 0;
+	$xpc_is_nbr = 0;
     }
     
     # Compare numeric results
-    if ($cmd_rsl_is_num && $xpc_is_num) { # && it equals the expected value
+    if ($cmd_rsl_is_nbr && $xpc_is_nbr) { # && it equals the expected value
 #print "\n \$nsr_xpc [$nsr_xpc] considered a number\n";
 	$dbg_sng .= "DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc & actual  \$cmd_rsl = [$cmd_rsl]\n";
 	if ($nsr_xpc == $cmd_rsl) {
@@ -734,7 +734,7 @@ sub tst_run {
 	    my $diff = abs($nsr_xpc - $cmd_rsl);
 	    $dbg_sng .= "DEBUG: !!FAILED (Numeric output) [expected: $nsr_xpc vs result: $cmd_rsl].  Difference = $diff.\n";
 	}
-    }elsif(!$cmd_rsl_is_num && !$xpc_is_num)
+    }elsif(!$cmd_rsl_is_nbr && !$xpc_is_nbr)
     {# Compare non-numeric tests
 	 dbg_msg(2,"DEBUG: expected value assumed to be alphabetic: $nsr_xpc\n\$cmd_rsl = $cmd_rsl\n");
 #print "\n \$nsr_xpc [$nsr_xpc] considered a string\n";
@@ -750,7 +750,7 @@ sub tst_run {
 	     $dbg_sng .= "DEBUG: !!FAILED Alphabetic output (expected: $nsr_xpc vs result: $cmd_rsl) ";
 	 }
      }  else {  # No result at all?
-	 print STDERR " !!FAILED\n  \$cmd_rsl_is_num = $cmd_rsl_is_num and \$xpc_is_num = $xpc_is_num\n";
+	 print STDERR " !!FAILED\n  \$cmd_rsl_is_nbr = $cmd_rsl_is_nbr and \$xpc_is_nbr = $xpc_is_nbr\n";
 	 &failed();
 	 $dbg_sng .= "DEBUG: !!FAILED - No result from [$opr_nm]\n";
 						   }

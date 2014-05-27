@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.83 2014-05-27 03:26:18 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.84 2014-05-27 16:51:56 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -300,9 +300,19 @@ XPN [eE][+-]?[0-9]+
 
 {DGT}*\.{DGT}*({XPN})?[LlDd]?|{DGT}*({XPN})[LlDd]? {
   /* double or long double */
-  /* NB: Tempted to prepend lexer expressions for floats and doubles with [+-]? 
+  /* {DGT}*\.{DGT}*({XPN})?[LlDd]?|{DGT}*({XPN})[LlDd]? # Original rule and comments used until 20140527
+     NB: Tempted to prepend lexer expressions for floats and doubles with [+-]? 
      so that unary plus/minus is handled in lexer rather than parser.
-     However, this has unintended side effects so let parser handle it for now */
+     However, this has unintended side-effects so let parser handle it for now */
+  /* 20140527: Many years after writing the above line I regret not recording what those unintended side-effects were...
+     [+-]?{DGT}*\.{DGT}*({XPN})?[LlDd]?|{DGT}*({XPN})[LlDd]? # Potential rule tested 20140527
+     Not including sign signifiers [+-]? causes bug parsing --mask_condition expressions with negative msk_val
+     Without the optional signage, ncap_ncwa_scn() ignores unary negative sign so msk_val is returned as abs(msk_val)
+     Prepending [+-]? to number rules for doubles, floats etc fixes this particular problem but causes others
+     Specifically, when lexer ingests signage tokens then parser treatment of subtraction fails, e.g.,
+     ncap -O -D 4 -v -s 'zero=1-1.0' ~/nco/data/in.nc ~/foo.nc # Result is zero=1 
+     Hence the "unintended side-effects" mentioned above includes, roughly, 
+     that using [+-]? in lexer interferes with parser handling of unary signs */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
   lval_ptr->scv.val.d=strtod(yytext,&sng_cnv_rcd);

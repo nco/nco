@@ -1,4 +1,4 @@
-2014-05-26  Charlie Zender  <zender@uci.edu>
+2014-05-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.4 release procedure:
  	Changes since nco-4_4_3: -x tolerance, --rad orphans, CERES, mmr
@@ -6,8 +6,13 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
 	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
 
-	* Add regression test for negative-valued ncwa --mask_condition,
-	but test does not yet work. Unsure why.
+	* Regression test for negative-valued ncwa --mask_condition works
+
+	* Isolated cause of bug: lexer ignores minus sign in msk_val in	conditions
+	Notes in ncap_lex.l near rules for parsing doubles and long doubles
+	Does same problem exist in ncap2 treatment of conditions with negative numbers?
+
+2014-05-26  Charlie Zender  <zender@uci.edu>
 
 	* Start using NC_FILL_STRING
 
