@@ -6,6 +6,10 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
 	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
 
+	* Add regression test for negative-valued ncwa --mask_condition
+
+	* Start using NC_FILL_STRING
+
 	* Leave ncap (not ncap2) bug found by clang in ncap_lex.l because ncap is deprecated
 
 	* Fix units bug found by clang in nco_aux.c:nco_find_lat_lon()

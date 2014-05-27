@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.81 2014-05-27 02:04:18 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.82 2014-05-27 02:55:26 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -1061,10 +1061,9 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
   /*
     #include "ncap_yacc.h" 
     extern int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg); 
-    extern int yy_scan_string(const char *);
-  */
+    extern int yy_scan_string(const char *); */
   
-  nco_bool scv_def=False;
+  nco_bool scv_dfn=False;
   int op_typ=-1;
   int rcd=1;
   char *fnl_sng;
@@ -1097,7 +1096,7 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
       break;
     case SCV:	
       scv_out=lval.scv;
-      scv_def=True;
+      scv_dfn=True;
       break;
     default: 
       /* Tokens that fall through are perfectly safe and normal
@@ -1123,7 +1122,7 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
   }else{
     *op_typ_rlt=op_typ;
   } /* endif */
-  if(scv_def == False){
+  if(scv_dfn == False){
     (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid number\n",nco_prg_nm_get(),msk_sng);
     rcd=0;
   }else{ 

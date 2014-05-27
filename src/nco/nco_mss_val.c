@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.54 2014-05-27 02:04:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.55 2014-05-27 02:55:26 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -34,7 +34,7 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
   case NC_UINT: *mss_val.uip=NC_FILL_UINT; break;
   case NC_INT64: *mss_val.i64p=NC_FILL_INT64; break;
   case NC_UINT64: *mss_val.ui64p=NC_FILL_UINT64; break;
-    /* 20140526: Changed to NC_FILL_STRING (available as of netCDF 4.3.2? */
+    /* 20140526: Changed to NC_FILL_STRING (available as of netCDF 4.3.1?) */
     /* case NC_STRING: *mss_val.sngp='\0'; break; fxm: NC_FILL_STRING? TODO nco839 */
   case NC_STRING: *mss_val.sngp=(char *)NC_FILL_STRING; break;
   default: nco_dfl_case_nc_type_err(); break;

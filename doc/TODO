@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1264 2014-05-27 02:04:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1265 2014-05-27 02:55:26 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -425,7 +425,6 @@ nco834. Add atomic type string NC_STRING to nco_c++ get/put var
 nco835. ncks: uint64_var(ULLONG_MAX) = int64_var(LLONG_MAX) (problem with libnetcdf4?) PBN4
 	ccc
 	ncks -v '.?_var$' ~/c++/foo.nc
-nco839. What, if anything, should NC_FILL_STRING be?
 nco845. Add -Wno-switch to quiet GCC enum warnings on netCDF4 case labels?
 nco846. netCDF4: switch to long long array offsets everywhere? 
         e.g., can long tally hold > 2 GB array?
