@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.37 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.38 2014-05-27 02:04:18 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -123,7 +123,8 @@ C code." */
 # define NC_FILL_UINT64  ((unsigned long long int)18446744073709551614ULL)
 #endif
 #ifndef NC_FILL_STRING
-# define NC_FILL_STRING  ""
+/* 20140526: Changed from "" to (char *)"" */
+# define NC_FILL_STRING  (char *)""
 #endif
 /* end define compatibility tokens when user does not have netCDF4 netcdf.h */
 

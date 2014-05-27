@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.80 2014-02-04 22:40:20 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.81 2014-05-27 02:04:18 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -303,7 +303,7 @@ XPN [eE][+-]?[0-9]+
   /* NB: Tempted to prepend lexer expressions for floats and doubles with [+-]? 
      so that unary plus/minus is handled in lexer rather than parser.
      However, this has unintended side effects so let parser handle it for now */
-  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
   lval_ptr->scv.val.d=strtod(yytext,&sng_cnv_rcd);
   if(*sng_cnv_rcd) nco_sng_cnv_err(yytext,"strtod",sng_cnv_rcd);
@@ -1029,6 +1029,8 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       /* Add dimensions defined in LHS subscripts */
       lst_t=lst_d;
       lst_t_nbr=lst_t_nbr+0;
+      /* 20140526: clang flags argument lval.sbs_lst->lst as incompatible with nm_id_sct * in receiving prototype
+	 This is true. Not sure how/if this line ever worked. Were ncap not in maintenance mode, would be worth fixing? */
       lst_d=nco_var_lst_add(lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);
       if(lst_t_nbr > 0) (void)nco_nm_id_lst_free(lst_t,lst_t_nbr);
       break;

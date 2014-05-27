@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.418 2014-05-23 22:52:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.419 2014-05-27 02:04:18 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.418 2014-05-23 22:52:15 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.418 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.419 2014-05-27 02:04:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.419 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -855,7 +855,7 @@ main(int argc,char **argv)
       /* Check mask found for this variable, using msk */
       if(msk && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
         msk_out=nco_var_cnf_dmn(var_prc[idx],msk,msk_out,MUST_CONFORM,&DO_CONFORM_MSK);
-        /* If msk and var did not conform then do not mask var! */
+        /* Mask variable iff msk and var conform */
         if(DO_CONFORM_MSK){
           msk_out=nco_var_cnf_typ(var_prc[idx]->type,msk_out);
 

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.991 2014-05-23 20:37:23 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.992 2014-05-27 02:04:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -484,18 +484,18 @@ development.
 Fortunately we could justify supporting Henry Butowsky on other research 
 grants until May, 2010 while he developed the key @command{ncap2}
 features used in our climate research.
-And recentely the NASA ACCESS program commenced funding NCO support for
+And recently the NASA ACCESS program commenced funding NCO support for
 netCDF4 group functionality.@* 
 Thus @acronym{NCO} will grow and evade bit-rot for the foreseeable future.
 
 On a personal level, I continue to receive with gratitude the thanks of
 @acronym{NCO} users at nearly every scientific meeting I attend. 
-People introduce themselves, shake my hand and extol, sometimes rather
-effusively, these time-saving tools.
+People introduce themselves, shake my hand and often extol, sometimes
+effusively, @acronym{NCO} as time-saving tools.
 These exchanges lighten me like anti-gravity.
 Sometimes I daydream how many hours @acronym{NCO} has turned from grunt
 work to productive research for researchers world-wide, or from research
-into early happy hours. 
+into early happy-hours. 
 It's a cool feeling.
 
 @c @uref{http://www.nasa.gov/mission_pages/IPY/main/PolarExploration.html,NNX07AR23G}.@*

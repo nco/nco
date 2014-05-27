@@ -1,10 +1,18 @@
-2014-05-23  Charlie Zender  <zender@uci.edu>
+2014-05-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.4 release procedure:
  	Changes since nco-4_4_3: -x tolerance, --rad orphans, CERES, mmr
 	cd ~/nco;cvs tag -d nco-4_4_4;cvs tag -d nco-4_4_4-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.4 release"
 	cvs tag -c nco-4_4_4;cvs tag -c nco-4_4_4-1
+
+	* Leave ncap (not ncap2) bug found by clang in ncap_lex.l because ncap is deprecated
+
+	* Fix units bug found by clang in nco_aux.c:nco_find_lat_lon()
+
+	* Tidy to quiet clang warnings
+
+2014-05-23  Charlie Zender  <zender@uci.edu>
 
 	* ncdismember handles whitespace in group names in ncatted phase
 

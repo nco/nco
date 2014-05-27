@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.705 2014-05-04 05:30:49 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.706 2014-05-27 02:04:18 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1031,8 +1031,11 @@ ifeq (${GCC_OR_CLANG},Y)
 # -Dinline=: inline is not an ANSI keyword, must undefine inline to work with -ansi
 # -fshort-enums: Make enums as short as possible, ususally non-int. Do not ever invoke this! This breaks ABI and causes subtle problems
 ifeq (${OMP},Y)
+ifneq (clang,$(firstword ${CC}))
+# 20140526 clang does not recognize/utilize -fopenmp
  OMP_FLG_C := -fopenmp
  OMP_FLG_F := -fopenmp
+endif # endif clang
  LDFLAGS += -lgomp -lpthread
 endif # endif OMP
 ifeq (${OPTS},O)
