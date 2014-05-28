@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.84 2014-05-27 16:51:56 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.85 2014-05-28 19:37:20 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -1074,6 +1074,7 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
     extern int yy_scan_string(const char *); */
   
   nco_bool scv_dfn=False;
+  nco_bool minus_dfn=False;
   int op_typ=-1;
   int rcd=NCO_NOERR;
   char *fnl_sng;
@@ -1104,8 +1105,12 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
     case COMPARISON:
       op_typ=lval.nco_rlt_opr;
       break;
+    case '-':
+      minus_dfn=True;
+      break; 
     case SCV:	
       scv_out=lval.scv;
+      if (minus_dfn) (void)ncap_scv_minus(&scv_out); 
       scv_dfn=True;
       break;
     default: 
