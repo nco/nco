@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.85 2014-05-28 19:37:20 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.86 2014-05-28 20:05:30 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -617,7 +617,6 @@ M_PI {return NAMED_CONSTANT;}
 
     rcd_out=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
 
-
     if(rcd == NC_NOERR || rcd_out == NC_NOERR || blkp ){
       lval_ptr->aed.att_nm=(char *)strdup(att_nm);
       lval_ptr->aed.var_nm=(char *)strdup(var_nm);
@@ -773,14 +772,12 @@ M_PI {return NAMED_CONSTANT;}
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
   
-  
-  /* don't initalize val in intial scan  */
+  /* Do not initialize val in initial scan */
   if(prs_arg->ntl_scn) {
     var->val.vp=(void*)NULL;
     goto end_var;
   }
   
-
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
   if((var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type))) == NULL){

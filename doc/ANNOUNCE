@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.714 2014-05-27 22:13:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.715 2014-05-28 20:05:30 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.4 are ready. 
 
@@ -8,11 +8,14 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 This release is mainly a bugfix and stability release. 
 A few new features improve some corner-cases:
 It includes workarounds that allow NCO to successfully work with
-some names that violate netCDF but not HDF rules. Users can now
-retain "orphaned" dimensions after variable subsetting. 
+some names that violate netCDF but not HDF rules. 
+Users can now retain "orphaned" dimensions after variable subsetting. 
 nces now works with hyperslabs that resolve to the same size.
 Group broadcasting by ncbo is more intelligent when differencing
-ensemble means (created by nces) from full datasets.
+ensemble means (created by nces) from full datasets. 
+
+A potentially serious bug in ncwa --mask_condition has been fixed.
+Users of ncwa --mask_condition are strongly urged to upgrade.
 
 Work on NCO 4.4.5 is underway, still focused on stability and speed.   
 There will be more netCDF4 mop-up, improved group broadcasting
@@ -73,7 +76,13 @@ BUG FIXES:
 
 A. Fixed ncwa incorrect interpretation of some --mask_conditions.
    Lexer/Parser could return incorrect mask values for negative numbers.
-   Thanks to Keith Lindsay for reporting.
+   Thanks to Keith Lindsay for report, and to Henry Butowsky for fix. 
+   Prior to this fix, the ncwa lexer would drop the negative sign, if
+   any, from the comparators appearing in the mask condition, e.g.,
+   ncwa --mask_condition "lat < -20" 
+   used to be parsed as "lat < 20" not "lat < -20". 
+   Hence, users of ncwa --mask_condition (or -B) should upgrade.
+   NB: The -m -M -T form of ncwa masking is/was not buggy.
 
 A. ncdismember better handles whitespace in group names
 
