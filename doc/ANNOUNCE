@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.716 2014-05-29 18:00:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.717 2014-05-29 18:19:54 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.4 are ready. 
 
@@ -80,6 +80,7 @@ A. Fixed ncwa incorrect interpretation of some --mask_conditions.
    ncwa --mask_condition "lat < -20" was parsed as "lat < 20" not 
    "lat < -20". Hence, users of ncwa --mask_condition (or -B) should
    upgrade. NB: The -m -M -T form of ncwa masking is/was not buggy.
+   http://nco.sf.net#bug_ncwa_mask_condition
 
 B. Restore former tolerance of -x for non-existent elements.
    NCO normally requires that variables and groups specified with -v

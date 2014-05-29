@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.882 2014-05-29 18:00:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.883 2014-05-29 18:19:54 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -147,7 +147,8 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2014 May&nbsp;??: NCO 4.4.4 (<i>In progress</i>)
+<li>2014 Jun&nbsp;??: NCO 4.4.5 (<i>In progress</i>)
+<li>2014 May&nbsp;29: NCO 4.4.4 (Stability)
 <li>2014 Apr&nbsp;02: NCO 4.4.3 (Stability)
 <li>2014 Mar&nbsp;27: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">Talk</a> at NASA GSFC, Greenbelt, Maryland</li>
 <li>2014 Mar&nbsp;25: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
@@ -620,17 +621,19 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.4.5</b>: (<i>Future</i>) 
+<li><b>NCO 4.4.6</b>: (<i>Future</i>) 
 extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
-<li><b>NCO 4.4.4</b>: (<i>In Progress, features completed or being worked on include</i>)
+<li><b>NCO 4.4.5</b>: (<i>In Progress, features completed or being worked on include</i>)
+Chunking <tt>cnk_map=rew</tt>;
+<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
+<li><b>NCO 4.4.4</b>: (<i>Current Stable Release</i>) 
 netCDF'ize non-compliant element names;
 <tt>-x var</tt> tolerates non-existence;
 <tt>--rad</tt> <a href="http://nso.sf.net/nco.html#rad">orphan dimensions</a>;
-<tt>cnk_map=rew</tt>;
-<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
-<li><b>NCO 4.4.3</b>: (<i>Current Stable Release</i>) 
+<tt>ncwa --mask_condition</tt> <a href="#bug_ncwa_mask_condition">bugfix</a></li>
+<li><b>NCO 4.4.3</b>:
 Faster DAP access to strided data;
 <a href="http://nco.sf.net/nco.html#grp_brd">Group broadcasting</a> for ensembles;
 <li><b>NCO 4.4.2</b>:
@@ -1755,6 +1758,24 @@ in NCO 4.0.9, which assumes that netCDF 4.1.3 or later is installed.
 
 <ul><b>Recent Operator-specific Run-time Problems:</b>
 
+<!-- http://nco.sf.net#bug_ncwa_mask_condition -->
+<a name="bug_ncwa_mask_condition"></a>
+<li><i><tt>ncwa</tt> mask condition bug:</i>
+All versions through 4.4.3 of <tt>ncwa</tt> could return incorrect
+mask values for negative numbers. 
+Thanks to Keith Lindsay for report, and to Henry Butowsky for fix. 
+Prior to this fix, the <tt>ncwa lexer</tt> would drop the negative
+sign, if any, from the comparators appearing in the mask condition,
+e.g., <tt>ncwa --mask_condition "lat < -20"</tt> was parsed as 
+<tt>"lat < 20"</tt> not <tt>"lat < -20"</tt>. 
+Hence, users of <tt>ncwa --mask_condition</tt> (or of <tt>-B</tt>)
+should upgrade. NB: The <tt>-m -M -T</tt> form of <tt>ncwa</tt>
+masking is/was not buggy. 
+Thus the workaround is to use the <tt>-m -M -T</tt> form
+of <tt>ncwa</tt> masking, while the long-term solution is to upgrade  
+to NCO&nbsp;4.4.4.
+</li>
+
 <!-- http://nco.sf.net#bug_ncra_no_fl_close -->
 <a name="bug_ncra_no_fl_close"></a>
 <li><i><tt>ncra</tt>, <tt>ncea</tt>, and <tt>ncrcat</tt> file close bug:</i>
@@ -1769,10 +1790,9 @@ would fail when processing more than 256 files at a time).
 This is embarassing because NCO has always been designed to work with
 arbitrary numbers of input files and we want power users to be
 comfortable running it on hundreds of thousands of input files.
-The solution is to avoid versions 4.3.9&mdash;4.4.0 or to upgrade to
-NCO&nbsp;4.4.1.
+The workaround is to avoid versions 4.3.9&mdash;4.4.0, while the
+long-term solution is to upgrade to NCO&nbsp;4.4.1.
 </li>
-</ul>
 
 <!-- http://nco.sf.net#bug_ncra_mro_mss_val -->
 <a name="bug_ncra_mro_mss_val"></a>
@@ -1788,7 +1808,6 @@ The workaround is to run the affected versions of ncra using the
 are not promoted prior to arithmetic.
 The solution is to upgrade to NCO 4.4.0.
 </li>
-</ul>
 
 <!-- http://nco.sf.net#bug_ncwa_lmt -->
 <a name="bug_ncwa_lmt"></a>
@@ -1802,7 +1821,6 @@ by simultaneously invoking <tt>-a</tt> and <tt>-d</tt> switches);
 &ldquo;global averages&rdquo; were unaffected.
 We urge all <tt>ncwa</tt> users to upgrade to NCO 4.3.6.
 </li>
-</ul>
 
 <!-- http://nco.sf.net#bug_ncpdq_upk -->
 <a name="bug_ncpdq_upk"></a>
@@ -1820,6 +1838,7 @@ All <tt>ncpdq</tt> users are encouraged to upgrade.
 NB: this bug did not affect the other arithmetic operators which
 unpack data prior to arithmetic.
 </li>
+</ul>
 
 <ul><b>Recent Platform-specific Run-time Problems:</b>
 No known platform-specific problems with recent releases.
