@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.706 2014-05-27 02:04:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.707 2014-05-29 18:00:25 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -608,8 +608,9 @@ MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,libnco_tst.c libnco_c++_tst.cc Makefil
 MDL_BLD_SRC += $(addprefix ${MY_BM_DIR}/,NCO_bm.pm NCO_benchmarks.pm NCO_rgr.pm nco_bm.pl nco_bm.sh mk_bm_plots.pl) # `make tags' includes these files
 MDL_BLD_SRC += $(addprefix ${MY_DAT_DIR}/,Makefile.am) $(addprefix ${MY_SRC_DIR}/,Makefile.am) $(addprefix ${MY_DOC_DIR}/,Makefile.am) $(addprefix ${NCO_CXX_SRC_DIR}/,Makefile.am)  $(addprefix ${NCOXX_SRC_DIR}/,Makefile.am) # `make tags' includes these files
 # Files, if any, to exclude from tags
-# TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc ../src/nco/lex.${NCO_YY_PFX}.c
-TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
+#TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc ../src/nco/lex.${NCO_YY_PFX}.c
+TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc ../bld/lex.${NCO_YY_PFX}.c
+# TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
 
 # Variables having to do with Qt build system
 MDL_QT_SRC := $(addprefix ${MY_QT_DIR}/,nco.pro libnco/libnco.pro ncatted/ncatted.pro ncbo/ncbo.pro ncecat/ncecat.pro ncflint/ncflint.pro ncks/ncks.pro ncpdq/ncpdq.pro ncra/ncra.pro ncrename/ncrename.pro ncwa/ncwa.pro tst_nco_c++/tst_nco_c++.pro) # `make tags' includes these files
@@ -622,6 +623,8 @@ MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,${MDL_NCAP_TRG}) # `make distclean' remov
 # Variables having to do with C++ source and documentation
 # fxm: auto-generate source code components of C++ lists
 MDL_CXX_SRC := $(addprefix ${NCOXX_SRC_DIR}/,libnco++.hh Makefile.am Makefile.old ncap2.cc ncap2.hh ncap2_utl.cc NcapVar.cc NcapVar.hh NcapVarVector.cc NcapVarVector.hh NcapVector.hh ncoGrammer.g nco_antlr_pst_prc.pl fmc_cls.cc fmc_cls.hh fmc_all_cls.cc fmc_all_cls.hh fmc_gsl_cls.cc fmc_gsl_cls.hh Invoke.cc Invoke.hh map_srt_tmp.hh nco_gsl.c nco_gsl.h prs_cls.cc prs_cls.hh sdo_utl.cc sdo_utl.hh sym_cls.cc sym_cls.hh VarOp.hh vtl_cls.hh) $(addprefix ${NCO_CXX_SRC_DIR}/,INSTALL libnco_c++.hh Makefile.am Makefile.old nco_att.cc nco_att.hh nco_dmn.cc nco_dmn.hh nco_fl.cc nco_fl.hh nco_hgh.cc nco_hgh.hh nco_utl.cc nco_utl.hh nco_var.cc nco_var.hh README TODO tst.cc) # `make tags' includes these files
+
+TAGS_FILES := ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
 
 # Redefine default C and C++ pattern rules
 ${MY_OBJ_DIR}/%.o : %.c
@@ -2100,6 +2103,8 @@ dbg:
 	@printf "SRC_LST = $(SRC_LST)\n"
 	@printf "STC = ${STC}\n"
 	@printf "SZ = ${SZ}\n"
+	@printf "TAGS_FILES = ${TAGS_FILES}\n"
+	@printf "TAGS_FILTER_FILES = ${TAGS_FILTER_FILES}\n"
 	@printf "THR_NBR = ${THR_NBR}\n"
 	@printf "THR_NBR_SNG = ${THR_NBR_SNG}\n"
 	@printf "TMP_LDFLAGS = ${TMP_LDFLAGS}\n"
@@ -2118,7 +2123,8 @@ dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
 	cd ${MY_DAT_DIR}; rm -f buggy.nc cmip5.nc dsm.nc obs.nc hdf.hdf mdl_1.nc mdl_2.nc mdl_3.nc in.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_rec_zero.nc *~
 tags: 
-	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
+	etags ${TAGS_FILES}
+#	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
 
 # Reset internal YACC and LEX patterns
 %.c : %.y
