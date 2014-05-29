@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.993 2014-05-29 18:00:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.994 2014-05-29 18:36:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -112,8 +112,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.4.4
-@set doc-edition 4.4.4
+@set nco-edition 4.4.5
+@set doc-edition 4.4.5
 @set copyright-years 1995--2014
 @set update-year 2014
 @set update-date 29 May 2014
@@ -4739,12 +4739,12 @@ LDFLAGS="-L${H5DIR}/lib -L${H4DIR}/lib" \
 ./configure --enable-hdf4 --enable-hdf4-file-tests
 make && make check && make installas
 
-# 4. NCO version 4.4.4. No RPM for this version. Must install by hand.
+# 4. NCO version 4.4.5. No RPM for this version. Must install by hand.
 # Earlier versions of NCO are relatively useless for ncdismember
 cd ${DATA}/tmp
-wget http://nco.sourceforge.net/src/nco-4.4.4.tar.gz .
-tar xvzf nco-4.4.4.tar.gz
-cd nco-4.4.4
+wget http://nco.sourceforge.net/src/nco-4.4.5.tar.gz .
+tar xvzf nco-4.4.5.tar.gz
+cd nco-4.4.5
 ./configure --prefix=${NCODIR}
 make && make install
 

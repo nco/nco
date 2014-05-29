@@ -1,5 +1,11 @@
 2014-05-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.5 release procedure:
+ 	Changes since nco-4_4_4: fxm
+	cd ~/nco;cvs tag -d nco-4_4_5;cvs tag -d nco-4_4_5-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
+	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
+
 	* NCO 4.4.4 release procedure:
  	Changes since nco-4_4_3: -x tolerance, --rad orphans, CERES, mmr, ncwa msk
 	cd ~/nco;cvs tag -d nco-4_4_4;cvs tag -d nco-4_4_4-1
