@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.709 2014-05-30 04:04:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.710 2014-05-30 17:06:33 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -59,27 +59,28 @@
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
-# cd ${HOME}/nco/bld;make cln all ncap2;cd - # New default for most machines
-# cd ${HOME}/nco/bld;make OMP=Y CUDA=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre
-# cd ${HOME}/nco/bld;make OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre, neige
-# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # glace, virga
+# cd ~/nco/bld;make cln all ncap2;cd - # New default for most machines
+# cd ~/nco/bld;make UDUNITS_INC='/opt/local/include/udunits2';cd - # MacOS X aerosol
+# cd ~/nco/bld;make OMP=Y CUDA=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre
+# cd ~/nco/bld;make OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre, neige
+# cd ~/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # glace, virga
 # mpi-selector --set openmpi_gcc-1.3.3 # Then use /sopt/netcdf/netcdf3-gcc-serial serial libraries
 # mpi-selector --set mpich_pgi_1.2.7p1 # After compiling
-# cd ${HOME}/nco/bld;ANTLR_ROOT=/sopt/gfortran_g++ CNK=N NETCDF_ROOT=/sopt/gfortran_g++ SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet gcc
-# cd ${HOME}/nco/bld;ANTLR=/home/pvicente/install/antlr-2.7.7/bin/antlr ANTLR_ROOT=/home/pvicente/install/antlr-2.7.7 NETCDF_ROOT=/home/pvicente/install/netcdf-4.3.0 UDUNITS_INC=/home/pvicente/install/udunits-2.1.24/include UDUNITS_LIB=/home/pvicente/install/udunits-2.1.24/lib make OPTS=D allinone;cd - # greenplanet gcc pedro
-# cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet intel
-# cd ${HOME}/nco/bld;ANTLR=/sopt/pgf90_pgcc/bin/antlr ANTLR_ROOT=/sopt/pgf90_pgcc CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N SZ=Y UDUNITS2=N allinone;cd - # greenplanet pgi
-# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # pbs
-# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
-# cd ${HOME}/nco/bld;make NETCDF4=N all ncap2;cd - # tephra
-# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # silt, clay
-# cd ${HOME}/nco/bld;NETCDF_INC='/usr/include/netcdf-3' NETCDF_LIB='/usr/lib64' make GSL=N OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS=N allinone;cd - # snow
-# cd ${HOME}/nco/bld;make OMP=N DAP_OPENDAP=Y OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd - # snow w/OPeNDAP
-# cd ${HOME}/nco/bld;make OPTS=D USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
+# cd ~/nco/bld;ANTLR_ROOT=/sopt/gfortran_g++ CNK=N NETCDF_ROOT=/sopt/gfortran_g++ SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet gcc
+# cd ~/nco/bld;ANTLR=/home/pvicente/install/antlr-2.7.7/bin/antlr ANTLR_ROOT=/home/pvicente/install/antlr-2.7.7 NETCDF_ROOT=/home/pvicente/install/netcdf-4.3.0 UDUNITS_INC=/home/pvicente/install/udunits-2.1.24/include UDUNITS_LIB=/home/pvicente/install/udunits-2.1.24/lib make OPTS=D allinone;cd - # greenplanet gcc pedro
+# cd ~/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet intel
+# cd ~/nco/bld;ANTLR=/sopt/pgf90_pgcc/bin/antlr ANTLR_ROOT=/sopt/pgf90_pgcc CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N SZ=Y UDUNITS2=N allinone;cd - # greenplanet pgi
+# cd ~/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # pbs
+# cd ~/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
+# cd ~/nco/bld;make NETCDF4=N all ncap2;cd - # tephra
+# cd ~/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # silt, clay
+# cd ~/nco/bld;NETCDF_INC='/usr/include/netcdf-3' NETCDF_LIB='/usr/lib64' make GSL=N OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS=N allinone;cd - # snow
+# cd ~/nco/bld;make OMP=N DAP_OPENDAP=Y OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd - # snow w/OPeNDAP
+# cd ~/nco/bld;make OPTS=D USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 64-bit ABI on UCI MPC:
-# cd ${HOME}/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
+# cd ~/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
 # 64-bit ABI on UCI IPCC:
-# cd ${HOME}/nco/bld;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make --jobs=1 ABI=64 allinone;cd -
+# cd ~/nco/bld;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make --jobs=1 ABI=64 allinone;cd -
 # 64-bit ABI netCDF3 on NCAR AIX systems (bluefire):
 # cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N allinone ABI=64;cd -
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
@@ -964,6 +965,9 @@ CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := ${LINUX_FC}
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+ifeq (${PVM_ARCH},MACOSX)
+ LDFLAGS += -lresolv
+endif # endif MACOSX
 LEX := flex
 LINT := lint
 YACC := bison
