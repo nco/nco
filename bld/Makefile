@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.708 2014-05-29 18:36:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.709 2014-05-30 04:04:23 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -953,8 +953,8 @@ endif
 endif
 # endif HPPA
 
-# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSD))
+# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOSX
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOSX))
 CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CC}
@@ -1274,15 +1274,16 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD
+# endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD, MACOSX
 
-ifeq (${PVM_ARCH},MACOSX)
-CXX := c++
+ifeq (${PVM_ARCH},MACOSXOLD)
+CXX := ${LINUX_CXX}
 # NB: -D_POSIX_SOURCE breaks MACOSX build in nco_fl_utl.c, nco_mmr.c
-CC := cc -std=c99 -pedantic -D_BSD_SOURCE
+#CC := cc -std=c99 -pedantic -D_BSD_SOURCE
+CC := ${LINUX_CC} -std=c99 -pedantic -D_BSD_SOURCE
+CPP := ${CC}
 # -fno-common: Allows shared libraries to build
 CFLAGS := -Wall -Werror=format-security -fno-common
-CPP := ${CC}
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
@@ -1310,7 +1311,7 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif MACOSX
+# endif MACOSXOLD
 
 ifeq (${PVM_ARCH},NECSX)
 ifeq (${OMP},Y)
