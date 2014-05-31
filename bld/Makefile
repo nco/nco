@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.710 2014-05-30 17:06:33 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.711 2014-05-31 15:07:18 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1078,7 +1078,7 @@ ifeq (${ABI},64)
 endif # endif ABI
 endif # endif LINUXAMD64
  CXXFLAGS := ${CFLAGS}
-endif # endif GNU Compiler Collection
+endif # endif GNU Compiler Collection or LLVM
 # Intel (Kai) C Compiler
 ifeq (icc,$(firstword ${CC}))
 # -fast: enable -xP -O3 -ipo -static

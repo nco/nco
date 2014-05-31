@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.20 2013-12-31 05:14:02 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.21 2014-05-31 15:07:18 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF attribute routines
 
@@ -363,6 +363,7 @@ nco_get_att // [fnc] Get attribute value
   // Purpose: Wrapper for nco_get_att()
   typ_ntr att_val; // O [frc] Attribute value
   int rcd=nco_get_att(nc_id,var_id,att_nm,att_val);
+  rcd+=0; // 20140531 CEWI to prevent -Wunused-variable
   return att_val;
 } // end nco_get_att<typ_ntr>()
 
@@ -390,6 +391,7 @@ nco_get_att // [fnc] Get attribute value
 
   typ_ntr att_val; // O [frc] Attribute value
   int rcd=nco_get_att(nc_id,nco_inq_varid(nc_id,var_nm),att_nm,att_val);
+  rcd+=0; // 20140531 CEWI to prevent -Wunused-variable
   return att_val;
 } // end nco_get_att<typ_ntr>()
 

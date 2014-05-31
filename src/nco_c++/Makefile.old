@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.107 2014-05-31 04:57:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.108 2014-05-31 15:07:18 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -786,8 +786,15 @@ ifeq (${OPTS},X)
 endif
  CXXFLAGS := ${CFLAGS}
 endif # endif Comeau C Compiler
-# GNU Compiler Collection
-ifeq (${CXX},g++)
+# GNU Compiler Collection or LLVM
+# 20140204: gcc and clang should receive identical options
+ifeq (g++,$(firstword ${CXX}))
+ GCC_OR_CLANG := Y
+endif
+ifeq (clang,$(firstword ${CXX}))
+ GCC_OR_CLANG := Y
+endif
+ifeq (${GCC_OR_CLANG},Y)
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall -Wno-unused-variable
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
@@ -819,8 +826,11 @@ ifeq (${CXX},g++)
 # -Dinline=: inline is not an ANSI keyword, must undefine inline to work with -ansi
 # -fshort-enums: Make enums as short as possible, ususally non-int. Do not ever invoke this! This breaks ABI and causes subtle problems
 ifeq (${OMP},Y)
+ifneq (clang,$(firstword ${CXX}))
+# 20140526 clang does not recognize/utilize -fopenmp
  OMP_FLG_C := -fopenmp
  OMP_FLG_F := -fopenmp
+endif # endif clang
  LDFLAGS += -lgomp -lpthread
 endif # endif OMP
 ifeq (${OPTS},O)
@@ -843,7 +853,7 @@ ifeq (${ABI},64)
 endif # endif ABI
 endif # endif LINUXAMD64
  CXXFLAGS := ${CFLAGS}
-endif # endif GNU Compiler Collection
+endif # endif GNU Compiler Collection or LLVM
 # Intel (Kai) C++ Compiler
 ifeq (icpc,$(firstword ${CXX}))
 # -cxxlib-gcc: link using C++ run-time libraries provided with GCC (default) (generated code is binary compatible with g++)
