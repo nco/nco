@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.125 2014-05-04 05:39:01 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.126 2014-05-31 04:57:04 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -829,8 +829,8 @@ ${MY_OBJ_DIR}/%.o : %.f
 endif
 # endif CRAY
 
-# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSD))
+# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOSX
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOSX))
 CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CXX}
@@ -839,6 +839,9 @@ CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} -I
 FC := ${LINUX_FC}
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+ifeq (${PVM_ARCH},MACOSX)
+ LDFLAGS += -lresolv
+endif # endif MACOSX
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1071,14 +1074,14 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif LINUX
+# endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOSX
 
-ifeq (${PVM_ARCH},MACOSX)
+ifeq (${PVM_ARCH},MACOSXOLD)
 CXX := c++
 CC := cc
 CFLAGS := -Wall
 CPP := ${CC}
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC} -I${ANTLR_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I${ANTLR_INC}
 FC := f90
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lresolv -lm
@@ -1105,7 +1108,7 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif MACOSX
+# endif MACOSXOLD
 
 ifeq (${PVM_ARCH},NECSX)
 ifeq (${OMP},Y)
