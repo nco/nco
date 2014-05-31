@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.994 2014-05-29 18:36:54 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.995 2014-05-31 14:19:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4689,15 +4689,15 @@ of the procedure necessary to check @acronym{HDF} files for
 @example
 @verbatim
 cat > ~/ncdismember.txt << 'EOF'
-    Preparing an RPM-based OS to Test Hierarchical Files for CF-Compliance
+    Preparing an RPM-based OS to Test HDF & netCDF Files for CF-Compliance
 
 By Charlie Zender, UCI & NASA Dataset Interoperability Working Group (DIWG)
 
 Installation Summary:
-1. HDF4 [with netCDF support _disabled_]
+1. HDF4 [with internal netCDF support _disabled_]
 2. HDF5
-3. netCDF version 4.3.1 (or later) [with HDF4 support _enabled_]
-4. NCO version 4.4.0 (or later)
+3. netCDF [with external HDF4 support _enabled_]
+4. NCO
 5. numpy
 6. netcdf4-python
 7. python-lxml
@@ -4728,23 +4728,22 @@ cd hdf5-1.8.11
 ./configure --enable-shared --prefix=${H5DIR}
 make && make check && make install
 
-# 3. netCDF version 4.3.1. Build in non-default manner with HDF4. No RPM.
+# 3. netCDF version 4.3.1 or later. Build in non-default manner with HDF4.
 # Per http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html
 # Earlier versions of netCDF may fail checking some HDF4 files
-wget -c ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.3.1.tar.gz
-tar xvzf netcdf-4.3.1.tar.gz
-cd netcdf-4.3.1
+wget -c ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.3.2.tar.gz
+tar xvzf netcdf-4.3.2.tar.gz
+cd netcdf-4.3.2
 CPPFLAGS="-I${H5DIR}/include -I${H4DIR}/include" \
 LDFLAGS="-L${H5DIR}/lib -L${H4DIR}/lib" \
 ./configure --enable-hdf4 --enable-hdf4-file-tests
-make && make check && make installas
+make && make check && make install
 
-# 4. NCO version 4.4.5. No RPM for this version. Must install by hand.
-# Earlier versions of NCO are relatively useless for ncdismember
-cd ${DATA}/tmp
-wget http://nco.sourceforge.net/src/nco-4.4.5.tar.gz .
-tar xvzf nco-4.4.5.tar.gz
-cd nco-4.4.5
+# 4. NCO version 4.4.0 or later. Some RPMs available. Or install by hand.
+# Later versions of NCO have much better support for ncdismember
+wget http://nco.sourceforge.net/src/nco-4.4.4.tar.gz .
+tar xvzf nco-4.4.4.tar.gz
+cd nco-4.4.4
 ./configure --prefix=${NCODIR}
 make && make install
 
@@ -4759,14 +4758,13 @@ sudo yum install python-lxml -y
 
 # 8. CFunits-python. No RPM available. Must install by hand.
 # http://code.google.com/p/cfunits-python/
-cd ${DATA}/tmp
 wget http://cfunits-python.googlecode.com/files/cfunits-0.9.6.tar.gz .
+tar xvzf cfunits-0.9.6.tar.gz
 cd cfunits-0.9.6
 sudo python setup.py install
 
 # 9. CFChecker. No RPM available. Must install by hand.
 # https://bitbucket.org/mde_/cfchecker
-cd ${DATA}/tmp
 wget https://bitbucket.org/mde_/cfchecker/downloads/CFchecker-1.5.15.tar.bz2 . 
 tar xvjf CFchecker-1.5.15.tar.bz2 
 cd CFchecker
