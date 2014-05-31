@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.127 2014-05-31 15:07:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.128 2014-05-31 23:16:39 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -908,8 +908,8 @@ ifneq (clang,$(firstword ${CXX}))
 # 20140526 clang does not recognize/utilize -fopenmp
  OMP_FLG_C := -fopenmp
  OMP_FLG_F := -fopenmp
-endif # endif clang
  LDFLAGS += -lgomp -lpthread
+endif # endif clang
 endif # endif OMP
 ifeq (${OPTS},O)
  CFLAGS += -O -g ${GCC_RCH_ARG}

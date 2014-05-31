@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.711 2014-05-31 15:07:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.712 2014-05-31 23:15:51 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -228,7 +228,7 @@ ifdef LIB_NCAR
 else # endelse LIB_NCAR
  NETCDF_LIB := ${NETCDF_ROOT}/lib # Directory containing libnetcdf.a
 endif # endif LIB_NCAR
-endif
+endif # endif NETCDF_LIB
 ifndef ${OMP} # OpenMP
  OMP := Y
 endif # endif OMP
@@ -1042,8 +1042,8 @@ ifneq (clang,$(firstword ${CC}))
 # 20140526 clang does not recognize/utilize -fopenmp
  OMP_FLG_C := -fopenmp
  OMP_FLG_F := -fopenmp
-endif # endif clang
  LDFLAGS += -lgomp -lpthread
+endif # endif clang
 endif # endif OMP
 ifeq (${OPTS},O)
  CFLAGS += -O4 -g ${GCC_RCH_ARG}
