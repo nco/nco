@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.887 2014-06-01 02:05:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.888 2014-06-01 04:52:35 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -246,15 +246,40 @@ command-line programs that take
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>,
 <a href="http://hdfgroup.org">HDF</a>, and/or
 <a href="http://opendap.org">DAP</a>
-files as input, then operate (e.g., derive new data, average, print,
-hyperslab, manipulate metadata) and output the results to screen or 
-files in text, binary, or netCDF formats.
-NCO aids manipulation and analysis of gridded scientific data.  
+files as input, then operate (e.g., derive new data, compute
+statistics, print, hyperslab, manipulate metadata) and output the
+results to screen or files in text, binary, or netCDF formats.
+NCO aids analysis of gridded scientific data.  
 The shell-command style of NCO allows users to manipulate and analyze
-files interactively, or with simple scripts that avoid some overhead
-(and power) of higher level programming environments.  
-The <a href="./nco.html">NCO User's Guide</a> illustrates their use 
-with examples of climate data analysis:
+files interactively, or with expressive scripts that avoid some
+overhead of higher-level programming environments.  
+</p>
+
+<p>
+Traditional geoscience data analysis requires users to work with
+numerous flat (data in one level or namespace) files. 
+In that paradigm instruments or models produce, and then repositories
+archive and distribute, and then researchers request and analyze,
+collections of flat files.
+NCO works well with that paradigm, yet it also embodies the necessary
+algorithms to transition geoscience data analysis from relying solely
+on traditional (or &ldquo;flat&rdquo;) datasets to allowing newer
+hierarchical (or &ldquo;nested&rdquo;) datasets.  
+</p>
+
+<p>
+The next logical step is to support and enable combining all
+datastreams that meet user-specified criteria into a 
+single or small number of files that hold <i>all</i> the
+science-relevant data organized in hierarchical structures.
+NCO (and no other software to our knowledge) can do this now.
+We call the resulting data storage, distribution, and analysis
+paradigm Group-Oriented Data Analysis and Distribution (GODAD).
+GODAD lets the scientific question organize the data, not the
+<i>ad hoc</i> granularity of all relevant datasets.
+The <a href="./nco.html">User Guide</a> illustrates 
+<a href="http://nco.sf.net/nco.html#godad">GODAD</a> 
+techniques for climate data analysis: 
 <ul>
 <li><a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processor (<a href="./nco.html#xmp_ncap">examples</a>)</li>
 <li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF ATTribute EDitor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
@@ -285,7 +310,6 @@ NCO is designed to be used both interactively and with large batch jobs.
 The default operator behavior is often sufficient for everyday needs, 
 and there are numerous command line (i.e., run-time) options, for
 special cases.
-NCO works well and is used on most modern operating systems.
 </p>
 
 <p><hr width="100%"></p>
