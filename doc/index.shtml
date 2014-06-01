@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.889 2014-06-01 05:03:35 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.890 2014-06-01 05:16:19 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -356,17 +356,21 @@ influence of your monetary donations on NCO development:
 <h2>NASA ACCESS 2011 Project</h2>
 <img src="nasa.png" height=180 width=180 align=right>
 <p>
-The National Aeronautics and Space Administration Cooperative Agreement (CA)
-<a href="11-ACCESS11-32">NASA 11-ACCESS11-32</a>
+The National Aeronautics and Space Administration (NASA) Cooperative
+Agreement <a href="NNX12AF48A">NNX12AF48A</a>
 funded our
 <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">ACCESS Project</a>,
 &ldquo;Simplifying and accelerating model evaluation by NASA satellite data&rdquo;
 from 20120208&ndash;20140207 as part of the 
-<a href="http://science.nasa.gov/earth-science/earth-science-data/access">Advancing Collaborative Connections for Earth System Science (ACCESS)</a> program.
+Advancing Collaborative Connections for Earth System Science 
+(<a href="http://science.nasa.gov/earth-science/earth-science-data/access">ACCESS</a>)
+program. 
 We appreciate the proposal reviewers for and the staff of the 
-<a href="http://science.nasa.gov/researchers/sara/division-corner/earth-science-division-corner">Earth Science Division (ESD) Research and Analysis (R&amp;A)</a>
-in the 
-<a href="http://science.nasa.gov/about-us/organization-and-leadership">Science Mission Directorate (SMD)</a>.
+Earth Science Division 
+(<a href="http://science.nasa.gov/researchers/sara/division-corner/earth-science-division-corner">ESD</a>) 
+in the Science Mission Directorate 
+(<a href="http://science.nasa.gov/about-us/organization-and-leadership">SMD</a>)
+Earth Science Data Systems (ESDS) Office.
 NCO development was completely voluntary and without
 institutional support from August, 2008&ndash;February, 2012.
 This NASA support dramatically changed the scale and pace of NCO development. 
@@ -443,14 +447,17 @@ funded our
 <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">SEI Project</a>,
 &ldquo;SEI(GEO): Scientific Data Operators Optimized for Efficient Distributed Interactive and Batch Analysis of Tera-Scale Geophysical Data&rdquo;
 from 20040901&ndash;20080831 as part of the 
-<a href="http://www.cise.nsf.gov/funding/pgm_display.cfm?pub_id=9473&div=iis">Science
-  and Engineering Informatics (SEI)</a> program.
+Science and Engineering Informatics 
+(<a href="http://www.cise.nsf.gov/funding/pgm_display.cfm?pub_id=9473&div=iis">SEI</a>)
+program. 
 We appreciate the proposal reviewers for and staff of the Divisions of
-<a href="http://www.cise.nsf.gov/div/index.cfm?div=iis">Information and Intelligent Systems (IIS)</a>
+Information and Intelligent Systems
+(<a href="http://www.cise.nsf.gov/div/index.cfm?div=iis">IIS</a>) 
 and
-<a href="http://www.cise.nsf.gov/div/index.cfm?div=sci">Shared Cyberinfrastructure (SC)</a>
-in the 
-<a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
+Shared Cyberinfrastructure
+(<a href="http://www.cise.nsf.gov/div/index.cfm?div=sci">SC</a>) in the 
+Directorate for Computer and Information Science and Engineering
+(<a href="http://www.nsf.gov/home/cise">CISE</a>).
 Until September 2004, NCO development was completely voluntary and without institutional support.
 This NSF support dramatically changed the scale and pace of NCO development.
 This URL,
@@ -479,19 +486,21 @@ Another graduate student helped us design, implement, and release major
 code changes.</p>
 
 <p>On the institutional and hardware side, this project connected the
-<a href="http://www.ess.uci.edu/esmf">Earth System Modeling Facility</a> (ESMF)
-to the
-<a href="http://www.calit2.net">California Institute for Telecommunications and Information Technology</a> (Cal-IT2)
+Earth System Modeling Facility
+(<a href="http://www.ess.uci.edu/esmf">ESMF</a>) to the
+California Institute for Telecommunications and Information Technology
+(<a href="http://www.calit2.net">Cal-IT2</a>)
 <a href="http://www.optiputer.net">OptIPuter</a> at the
-<a href="http://sdsc.ucsd.edu">San Diego Supercomputer Center</a>.
+San Diego Supercomputer Center
+(<a href="http://sdsc.ucsd.edu">SDSC</a>).
 These supercomputers dedicated a TB of storage each to
 <a href="http://www.opendap.org">OPeNDAP</a>-served climate simulation
 datasets for DDRA.
 After the proof-of-concept NCO DDRA was complete, we attempted a DDRA 
 intercomparison of the internationally distributed
-<a href="http://www.ccsm.ucar.edu/experiments/ccsm3.0">global climate change simulations</a>
-that reside on the 
-<a href="http://www.earthsystemgrid.org">Earth System Grid</a>.
+CMIP3 global climate change simulations that reside on the 
+Earth System Grid
+(<a href="http://www.earthsystemgrid.org">ESG</a>).
 Our techniques tremendously accelerated the analysis of different
 climate prediction scenarios for the same model, and among different
 climate models (see <a href="#pub">publications</a>).</p> 
