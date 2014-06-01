@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.496 2014-05-27 16:51:56 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.497 2014-06-01 00:25:25 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -261,7 +261,6 @@ print "\n";
 	$#tst_cmd=0; # Reset array
 
 #ncatted #3
-
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,wgt_one,c,f,200.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v wgt_one %tmp_fl_00%";
 	$dsc_sng="Create new _FillValue attribute ";
@@ -271,8 +270,7 @@ print "\n";
 	$#tst_cmd=0; # Reset array
 
 #ncatted #4
-
-# Fragile: This test fails when length of command changes
+# Fragile: Test fails when command length changes, e.g., on MACOSX
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep hdr_pad | wc > %tmp_fl_01%";
 	$tst_cmd[2]="cut -c 14-15 %tmp_fl_01%"; ## Daniel:fxm cut/ncks, but how to do grep and wc???
@@ -1077,8 +1075,8 @@ print "\n";
 
     if($RUN_NETCDF4_TESTS == 1){
 
+# Fragile, depends on cut, expect failure on MACOSX
 #ncecat #3    
-    
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -O -h -m -v area %tmp_fl_01% | grep \"ensemble../area\" | wc | cut -c 7";

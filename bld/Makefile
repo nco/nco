@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.712 2014-05-31 23:15:51 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.713 2014-06-01 00:25:25 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1026,7 +1026,7 @@ ifeq (${GCC_OR_CLANG},Y)
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
 # -pg: Enable profiling, generate gmon.out output files (also needed by linker)
-# -O4: Turn on optimization so uninitialized variables are flagged. Downside: optimizes-out many symblols useful for debugging
+# -O4: Turn on optimization so uninitialized variables are flagged. Downside: optimizes-out many debugging symbols
 # Compilation flags recommended by GSL that I do not like and do not use:
 # -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
 # --no-alias? -fstrict-aliasing
@@ -2100,6 +2100,7 @@ dbg:
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
 	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
 	@printf "OMP = ${OMP}\n"
+	@printf "OPTS = ${OPTS}\n"
 	@printf "PGI_RCH_ARG = ${PGI_RCH_ARG}\n"
 	@printf "PSC_RCH_ARG = ${PSC_RCH_ARG}\n"
 	@printf "PNETCDF = ${PNETCDF}\n"

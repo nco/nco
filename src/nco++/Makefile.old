@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.128 2014-05-31 23:16:39 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.129 2014-06-01 00:25:25 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -892,7 +892,7 @@ ifeq (${GCC_OR_CLANG},Y)
 # -Wwrite-strings: Apply const-qualifier to string constants, die if overwritten
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
-# -O4: Turn on optimization so unitialized variables are flagged
+# -O4: Turn on optimization so uninitialized variables are flagged
 # Compilation flags recommended by GSL that I do not like and do not use:
 # -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
 # --no-alias? -fstrict-aliasing
@@ -911,6 +911,11 @@ ifneq (clang,$(firstword ${CXX}))
  LDFLAGS += -lgomp -lpthread
 endif # endif clang
 endif # endif OMP
+ifeq (clang,$(firstword ${CXX}))
+# 20140531 avoid clang error that -O4 is ame as -O3
+ CFLAGS := $(subst -O4,-O3,${CFLAGS})
+ LDFLAGS += -lstdc++
+endif # endif clang
 ifeq (${OPTS},O)
  CFLAGS += -O -g ${GCC_RCH_ARG}
 endif
