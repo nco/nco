@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.891 2014-06-01 05:30:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.892 2014-06-01 05:37:03 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -505,9 +505,12 @@ climate models (see <a href="#pub">publications</a>).</p>
 <dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
 <h2>Publications and Presentations</h2>
 <ul>
+<li><!-- Zen14 --> <a name="Zen14"></a> <!--http://www.ess.uci.edu/~zender#Zen14 -->
+Zender, C.&nbsp;S. (2014): <i>Use Hierarchical Storage and Analysis to Exploit Intrinsic Parallelism</i>. Presented to the NASA Goddard Earth Sciences (GES) Data and Information Services Center (DISC), Goddard Space Flight Center, Greenbelt, MD, March&nbsp;27, 2014.
+<a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">PDF</a> (&copy;&nbsp;2014 by me)</a></li>
 
-<li><!-- ZVW13 --> <a name="ZVW12"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
-Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2012): <i>Use Hierarchical Storage and Analysis to Exploit Intrinsic Parallelism</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 9&ndash;13, 2013. <i>Eos Trans. AGU</i>, <b>93</b>(53), Fall Meet. Suppl., Abstract IN52A-06.
+<li><!-- ZVW13 --> <a name="ZVW13"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
+Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2013): <i>Use Hierarchical Storage and Analysis to Exploit Intrinsic Parallelism</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 9&ndash;13, 2013. <i>Eos Trans. AGU</i>, <b>93</b>(53), Fall Meet. Suppl., Abstract IN52A-06.
 <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201312.pdf">PDF</a> (&copy;&nbsp;2013 by me)</a></li>
 
 <li><!-- ZVW13 --> <a name="ZVW13"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
