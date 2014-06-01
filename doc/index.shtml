@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.888 2014-06-01 04:52:35 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.889 2014-06-01 05:03:35 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -353,18 +353,18 @@ influence of your monetary donations on NCO development:
 <a name="nasa"></a> <!-- http://nco.sf.net#nasa -->
 <a name="access"></a> <!-- http://nco.sf.net#access -->
 <dt><a name="prp_access"></a></dt> <!-- http://nco.sf.net#prp_access -->
-<h2>NASA ACCESS Project</h2>
+<h2>NASA ACCESS 2011 Project</h2>
 <img src="nasa.png" height=180 width=180 align=right>
 <p>
 The National Aeronautics and Space Administration Cooperative Agreement (CA)
-<a href="fxm 11-ACCESS11-32">NASA 11-ACCESS11-32</a>
+<a href="11-ACCESS11-32">NASA 11-ACCESS11-32</a>
 funded our
 <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">ACCESS Project</a>,
 &ldquo;Simplifying and accelerating model evaluation by NASA satellite data&rdquo;
 from 20120208&ndash;20140207 as part of the 
 <a href="http://science.nasa.gov/earth-science/earth-science-data/access">Advancing Collaborative Connections for Earth System Science (ACCESS)</a> program.
 We appreciate the proposal reviewers for and the staff of the 
-<a href="http://science.nasa.gov/researchers/sara/division-corner/earth-science-division-corner">Earth Science Division (ESD) Research and Analysis (R\&A)</a>
+<a href="http://science.nasa.gov/researchers/sara/division-corner/earth-science-division-corner">Earth Science Division (ESD) Research and Analysis (R&amp;A)</a>
 in the 
 <a href="http://science.nasa.gov/about-us/organization-and-leadership">Science Mission Directorate (SMD)</a>.
 NCO development was completely voluntary and without
@@ -374,34 +374,34 @@ This URL,
 <a href="http://nco.sf.net#prp_access"><tt>http://nco.sf.net#prp_access</tt></a>,
 points to the most up-to-date information on the ACCESS proposal.</p> 
 
-<p>The ACCESS project provides the human resources to implement support 
+<p>The ACCESS project provided human resources to implement support 
 in NCO for hierarchical group features in netCDF4 files and for NCO to
-process (using wrappers) HDF-EOS files. 
-Groups are a powerful HDF feature that some NASA satellite datasets
-(e.g., HIRDLS) exploit, and that sources of netCDF data (e.g., the
-CMIP5 archive of climate simulations for IPCC AR5) could better
-exploit.  
-By supporting groups in a generic fashion, NCO hopes to remove one of
-the barriers to more widespread adoption of netCDF4 features.</p>
+process HDF files. 
+Groups are a powerful HDF feature that many NASA satellite datasets
+exploit, and that sources of netCDF data (e.g., the CMIP5 archive of
+climate simulations for IPCC AR5) could better exploit.  
+By supporting groups in a generic fashion, NCO helps make possible
+more widespread adoption of hierarchical data analysis, aka 
+Group-Oriented Data Analysis and Distribution 
+(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>).</p>  
 
-<p>We recruited (i.e., these positions have been filled) two
-personnel, a programmer (aka software engineer) 
+<p>We recruited two personnel, a programmer (aka software engineer) 
 and a graduate student (scientific specialist) both based at UCI for
 at least two years, to accomplish our ACCESS objectives. 
 As described in the proposal, the responsibilities of positions are
 roughly segregated as follows: 
 The 
 <a href="http://dust.ess.uci.edu/hire/prg_anl_05_adv.pdf">programmer</a> 
-is re-factoring the code-base to support groups, writing wrappers for
-NCO, an improving the build system (e.g., now we have native Windows builds!).
+helped re-factor the code-base to support groups and improved the
+build system so that now we have native Windows builds. 
 The 
 <a href="http://dust.ess.uci.edu/hire/sdn_grd_03_adv.pdf">graduate student researcher</a> 
 is analyzing and intercomparing snow cover and snow albedo datasets
 from NASA MODIS and MISR datasets (in HDF format) and CMIP5
 simulations (in netCDF format).
-Her analysis informs the development of NCO commands and wrappers for
-HDF atasets so that we solve the most important problems real-world
-researchers encounter in evaluating GCMs against NASA data.</p> 
+Her analysis informs the development of GODAD so that NCO can solve
+the most important problems real-world researchers encounter in
+evaluating GCMs against satellite data.</p>  
 
 <p>We continue to encourage you to e-mail NCO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
