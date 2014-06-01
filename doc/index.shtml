@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.885 2014-06-01 01:42:07 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.886 2014-06-01 02:00:39 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -116,13 +116,13 @@ Keep the size &lt;250&times;250 pixels.<br>
 -->
 </td>
 
-NCO manipulates data stored in
+The NCO toolkit manipulates and analyzes data stored in
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>-accessible
 formats, including 
 <a href="http://opendap.org">DAP</a>,
 <a href="http://hdfgroup.org/products/hdf4">HDF4</a>, and 
 <a href="http://hdfgroup.org/HDF5">HDF5</a>.
-It also exploits the geophysical expressivity of many 
+It exploits the geophysical expressivity of many 
 <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a> 
 (Climate &amp; Forecast) metadata conventions, 
 the flexible description of physical dimensions translated by
@@ -242,8 +242,9 @@ and
 <h2>What is NCO?</h2>
 <p>The netCDF Operators (NCO) comprise a dozen standalone,
 command-line programs that take 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> or
-<a href="http://hdfgroup.org">HDF</a> 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>,
+<a href="http://hdfgroup.org">HDF</a>, and/or
+<a href="http://opendap.org">DAP</a>
 files as input, then operate (e.g., derive new data, average, print,
 hyperslab, manipulate metadata) and output the results to screen or 
 files in text, binary, or netCDF formats.
@@ -983,7 +984,7 @@ NCO for Debian over the years.
 <a name="centos"></a><a name="cnt"></a><a name="rhel"></a> <!-- http://nco.sf.net#centos --> <!-- http://nco.sf.net#cnt --> <!-- http://nco.sf.net#rhel -->
 <h3><a href="http://fedora.redhat.com">Fedora</a>, RedHat Enterprise Linux (<a href="http://www.redhat.com/rhel">RHEL</a>), and Community ENTerprise Operating System (<a href="http://www.centos.org">CentOS</a>) GNU/Linux</h3>
 <ul>
-<dt>The <a href="https://admin.fedoraproject.org/pkgdb/packages/name/nco">Fedora NCO</a> RPMs are usually up-to-date so that &lsquo;<tt>yum install nco</tt>&rsquo; will install a recent version. 
+<dt>The <a href="https://admin.fedoraproject.org/pkgdb/package/nco">Fedora NCO</a> RPMs are usually up-to-date so that &lsquo;<tt>yum install nco</tt>&rsquo; will install a recent version. 
 A comprehensive list of pre-built RPMs for many OS's is <a href="http://rpmfind.net/linux/rpm2html/search.php?query=nco">here</a>.
 <li><a href="ftp://rpmfind.net/linux/fedora/linux/development/rawhide/x86_64/os/Packages/n/nco-4.3.2-1.fc20.x86_64.rpm">nco-4.3.2-1.fc20.x86_64.rpm</a>: Executables for x86_64/Fedora Core&nbsp;20-compatible environments</li></dt>
 <dt>If not, try our own most recent (we stopped building RPMs many years ago and are looking for a volunteer to do this instead) self-built NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.5-1.fc7.i386.rpm</tt>&rsquo;):
