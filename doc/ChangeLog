@@ -6,7 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
 
-	* Mac OS X compatibility with bld/Makefile complete. No regressions!
+	* Mac OS X compatibility with bld/Makefile complete. No	regressions!
+	Using MacPorts netCDF 4.3.1, Xcode 5.1, GNU coreutils (for cut)
 
 2014-05-29  Charlie Zender  <zender@uci.edu>
 
