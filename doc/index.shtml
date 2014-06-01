@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.890 2014-06-01 05:16:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.891 2014-06-01 05:30:06 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -274,7 +274,8 @@ single or small number of files that hold <i>all</i> the
 science-relevant data organized in hierarchical structures.
 NCO (and no other software to our knowledge) can do this now.
 We call the resulting data storage, distribution, and analysis
-paradigm Group-Oriented Data Analysis and Distribution (GODAD).
+paradigm Group-Oriented Data Analysis and Distribution 
+(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>).
 GODAD lets the scientific question organize the data, not the
 <i>ad hoc</i> granularity of all relevant datasets.
 The <a href="./nco.html">User Guide</a> illustrates 
@@ -407,31 +408,22 @@ Her analysis informs the development of GODAD so that NCO can solve
 the most important problems real-world researchers encounter in
 evaluating GCMs against satellite data.</p>  
 
-<p>We continue to encourage you to e-mail NCO endorsements to
+<p>We encourage you to e-mail NCO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
 with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 
 An endorsement can be a sentence or a page, describing how NCO
 benefits your work or research.
-The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.
-&ldquo;What future proposals?&rdquo; you ask, &ldquo;Didn't you just get funded?&rdquo;
-Yes, we are funded to implement netCDF4 groups and HDF-EOS wrappers in NCO.
-Our ambition is get one more grant funded to fully support netCDF4
-capabilities in NCO.
-For example, user-defined types, multiple record coordinates, and some
-more CF conventions.
+This information will be useful advocating for more NCO support.
+&ldquo;What future proposals?&rdquo; you ask, &ldquo;Weren't you already funded?&rdquo;
+Yes, we were funded to implement netCDF4 groups and HDF support in NCO.
+Yet these funds have been spent well before achieving our ambition: to
+shift geoscience data analysis from a flat- to a hierarchical-paradigm
+(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>).
+Other more prosaic tasks that need work are, for example,
+parallelization, user-defined types, irregular grids, and more CF conventions. 
 Need I say more? 
 If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
 </ul>
-
-<a href="xmp_cesm.html">Pre-ACCESS CMIP5/MODIS analysis scripts</a>
-<!-- Copy files from http://glace.ess.uci.edu
-/usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/nco/doc/xmp_cesm.html pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/nco/doc/cesm-eg.fig1.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/nco/doc/cesm-eg.fig2.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/nco/doc/cesm-eg.fig3.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
---> 
-
 <hr></p>
 
 <a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
@@ -504,20 +496,6 @@ Earth System Grid
 Our techniques tremendously accelerated the analysis of different
 climate prediction scenarios for the same model, and among different
 climate models (see <a href="#pub">publications</a>).</p> 
-
-<p>We encourage you to e-mail NCO endorsements to
-<a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
-with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 
-An endorsement can be a sentence or a page, describing how NCO
-benefits your work or research.
-The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.
-&ldquo;What future proposals?&rdquo; you ask, &ldquo;Didn't you just get funded?&rdquo;
-Yes, we are funded to optimize and &ldquo;grid-enable&rdquo; NCO.
-There are still many desirable and unexplored methods for distributed data analysis
-and reduction (DDRA) that would benefit geosciences.
-For example, have you tried analyzing multiple NASA satellite datasets in HDF5 format?
-Need I say more? 
-If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
 </ul>
 <hr></p>
 
