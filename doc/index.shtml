@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.886 2014-06-01 02:00:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.887 2014-06-01 02:05:34 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -68,7 +68,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.4.3 last updated on <!--#flastmod file="VERSION"-->
+Current NCO version is 4.4.4 last updated on <!--#flastmod file="VERSION"-->
 </h2>
 
 <table border=0 width=100%>
@@ -147,7 +147,8 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2014 May&nbsp;??: NCO 4.4.4 (<i>In progress</i>)
+<li>2014 Jun&nbsp;??: NCO 4.4.5 (<i>In progress</i>)
+<li>2014 May&nbsp;29: NCO 4.4.4 (Stability)
 <li>2014 Apr&nbsp;02: NCO 4.4.3 (Stability)
 <li>2014 Mar&nbsp;27: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">Talk</a> at NASA GSFC, Greenbelt, Maryland</li>
 <li>2014 Mar&nbsp;25: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
@@ -621,17 +622,19 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.4.5</b>: (<i>Future</i>) 
+<li><b>NCO 4.4.6</b>: (<i>Future</i>) 
 extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
-<li><b>NCO 4.4.4</b>: (<i>In Progress, features completed or being worked on include</i>)
+<li><b>NCO 4.4.5</b>: (<i>In Progress, features completed or being worked on include</i>)
+Chunking <tt>cnk_map=rew</tt>;
+<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
+<li><b>NCO 4.4.4</b>: (<i>Current Stable Release</i>) 
 netCDF'ize non-compliant element names;
 <tt>-x var</tt> tolerates non-existence;
 <tt>--rad</tt> <a href="http://nso.sf.net/nco.html#rad">orphan dimensions</a>;
-<tt>cnk_map=rew</tt>;
-<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
-<li><b>NCO 4.4.3</b>: (<i>Current Stable Release</i>) 
+<tt>ncwa --mask_condition</tt> <a href="#bug_ncwa_mask_condition">bugfix</a></li>
+<li><b>NCO 4.4.3</b>:
 Faster DAP access to strided data;
 <a href="http://nco.sf.net/nco.html#grp_brd">Group broadcasting</a> for ensembles;
 <li><b>NCO 4.4.2</b>:
@@ -960,7 +963,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.4.3</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.4.4</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/natty/nco">Ubuntu NCO</a> homepages.
@@ -968,12 +971,12 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.4.3-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_4.4.3-1_amd64.deb">nco_4.4.3-1_amd64.deb</a> (<!--#fsize file="src/nco_4.4.3-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.4.3-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.4.3-1.dsc">nco_4.4.3-1.dsc</a> (<!--#fsize file="src/nco_4.4.3-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.4.3-1.dsc"-->)</li>
-<li><a href="src/nco_4.4.3-1_amd64.changes">nco_4.4.3-1_amd64.changes</a> (<!--#fsize file="src/nco_4.4.3-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.4.3-1_amd64.changes"-->)</li>
-<li><a href="src/nco_4.4.3.orig.tar.gz">nco_4.4.3.orig.tar.gz</a> (<!--#fsize file="src/nco_4.4.3.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.4.3.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.4.3-1.diff.gz">nco_4.4.3-1.diff.gz</a> (<!--#fsize file="src/nco_4.4.3-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.4.3-1_amd64.changes"-->)</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.4.4-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_4.4.4-1_amd64.deb">nco_4.4.4-1_amd64.deb</a> (<!--#fsize file="src/nco_4.4.4-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.4.4-1_amd64.deb"-->)</li>
+<li><a href="src/nco_4.4.4-1.dsc">nco_4.4.4-1.dsc</a> (<!--#fsize file="src/nco_4.4.4-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.4.4-1.dsc"-->)</li>
+<li><a href="src/nco_4.4.4-1_amd64.changes">nco_4.4.4-1_amd64.changes</a> (<!--#fsize file="src/nco_4.4.4-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.4.4-1_amd64.changes"-->)</li>
+<li><a href="src/nco_4.4.4.orig.tar.gz">nco_4.4.4.orig.tar.gz</a> (<!--#fsize file="src/nco_4.4.4.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.4.4.orig.tar.gz"-->)</li>
+<li><a href="src/nco_4.4.4-1.diff.gz">nco_4.4.4-1.diff.gz</a> (<!--#fsize file="src/nco_4.4.4-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.4.4-1_amd64.changes"-->)</li>
 Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -1185,10 +1188,10 @@ The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS
 The second best way is to download the source as a compressed tarfile:
 <ul>
 <li>
-<a href="src/nco-4.4.3.tar.gz">nco-4.4.3.tar.gz</a> 
-(<!--#fsize file="src/nco-4.4.3.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.4.3.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.4.3.tar.gz"--> 
+<a href="src/nco-4.4.4.tar.gz">nco-4.4.4.tar.gz</a> 
+(<!--#fsize file="src/nco-4.4.4.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.4.4.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.4.4.tar.gz"--> 
 </li>
 </ul>
 
@@ -1211,19 +1214,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>4.4.3</tt> (which is
-tagged as <tt>nco-4_4_3</tt> due to CVS rules) into local directory
-<tt>nco-4.4.3</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_4_3 -d nco-4.4.3 nco</tt></p>
+This command retrieves and places NCO version <tt>4.4.4</tt> (which is
+tagged as <tt>nco-4_4_4</tt> due to CVS rules) into local directory
+<tt>nco-4.4.4</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_4_4 -d nco-4.4.4 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4_4_3</tt>) and the development version is that the
+(e.g., <tt>nco-4_4_4</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.4.3</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.4.4</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1336,7 +1339,7 @@ For Mac OS X with MacPorts:
 <tt>
 <dt>wget http://dust.ess.uci.edu/nco/nco.tar.gz</dt>
 <dt>tar xvzf nco.tar.gz</dt>
-<dt>cd nco-4.4.3</dt>
+<dt>cd nco-4.4.4</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>
@@ -1758,6 +1761,24 @@ in NCO 4.0.9, which assumes that netCDF 4.1.3 or later is installed.
 
 <ul><b>Recent Operator-specific Run-time Problems:</b>
 
+<!-- http://nco.sf.net#bug_ncwa_mask_condition -->
+<a name="bug_ncwa_mask_condition"></a>
+<li><i><tt>ncwa</tt> mask condition bug:</i>
+All versions through 4.4.3 of <tt>ncwa</tt> could return incorrect
+mask values for negative numbers. 
+Thanks to Keith Lindsay for report, and to Henry Butowsky for fix. 
+Prior to this fix, the <tt>ncwa lexer</tt> would drop the negative
+sign, if any, from the comparators appearing in the mask condition,
+e.g., <tt>ncwa --mask_condition "lat < -20"</tt> was parsed as 
+<tt>"lat < 20"</tt> not <tt>"lat < -20"</tt>. 
+Hence, users of <tt>ncwa --mask_condition</tt> (or of <tt>-B</tt>)
+should upgrade. NB: The <tt>-m -M -T</tt> form of <tt>ncwa</tt>
+masking is/was not buggy. 
+Thus the workaround is to use the <tt>-m -M -T</tt> form
+of <tt>ncwa</tt> masking, while the long-term solution is to upgrade  
+to NCO&nbsp;4.4.4.
+</li>
+
 <!-- http://nco.sf.net#bug_ncra_no_fl_close -->
 <a name="bug_ncra_no_fl_close"></a>
 <li><i><tt>ncra</tt>, <tt>ncea</tt>, and <tt>ncrcat</tt> file close bug:</i>
@@ -1772,10 +1793,9 @@ would fail when processing more than 256 files at a time).
 This is embarassing because NCO has always been designed to work with
 arbitrary numbers of input files and we want power users to be
 comfortable running it on hundreds of thousands of input files.
-The solution is to avoid versions 4.3.9&mdash;4.4.0 or to upgrade to
-NCO&nbsp;4.4.1.
+The workaround is to avoid versions 4.3.9&mdash;4.4.0, while the
+long-term solution is to upgrade to NCO&nbsp;4.4.1.
 </li>
-</ul>
 
 <!-- http://nco.sf.net#bug_ncra_mro_mss_val -->
 <a name="bug_ncra_mro_mss_val"></a>
@@ -1791,7 +1811,6 @@ The workaround is to run the affected versions of ncra using the
 are not promoted prior to arithmetic.
 The solution is to upgrade to NCO 4.4.0.
 </li>
-</ul>
 
 <!-- http://nco.sf.net#bug_ncwa_lmt -->
 <a name="bug_ncwa_lmt"></a>
@@ -1805,7 +1824,6 @@ by simultaneously invoking <tt>-a</tt> and <tt>-d</tt> switches);
 &ldquo;global averages&rdquo; were unaffected.
 We urge all <tt>ncwa</tt> users to upgrade to NCO 4.3.6.
 </li>
-</ul>
 
 <!-- http://nco.sf.net#bug_ncpdq_upk -->
 <a name="bug_ncpdq_upk"></a>
@@ -1823,6 +1841,7 @@ All <tt>ncpdq</tt> users are encouraged to upgrade.
 NB: this bug did not affect the other arithmetic operators which
 unpack data prior to arithmetic.
 </li>
+</ul>
 
 <ul><b>Recent Platform-specific Run-time Problems:</b>
 No known platform-specific problems with recent releases.
