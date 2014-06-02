@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.893 2014-06-01 22:49:56 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.894 2014-06-02 03:42:36 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -284,7 +284,7 @@ techniques for climate data analysis:
 <ul>
 <li><a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processor (<a href="./nco.html#xmp_ncap">examples</a>)</li>
 <li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF ATTribute EDitor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
-<li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>) (<a href="./nco.html#xmp_ncbo">examples</a>)</li>
+<li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (addition, multiplication...) (<a href="./nco.html#xmp_ncbo">examples</a>)</li>
 <li><a href="./nco.html#nces"><tt>nces</tt></a> netCDF Ensemble Statistics (<a href="./nco.html#xmp_nces">examples</a>)</li>
 <li><a href="./nco.html#ncecat"><tt>ncecat</tt></a> netCDF Ensemble conCATenator (<a href="./nco.html#xmp_ncecat">examples</a>)</li>
 <li><a href="./nco.html#ncflint"><tt>ncflint</tt></a> netCDF FiLe INTerpolator (<a href="./nco.html#xmp_ncflint">examples</a>)</li>
@@ -299,9 +299,9 @@ techniques for climate data analysis:
 <p>
 Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> 
 (<tt>ncra</tt> and <tt>ncwa</tt>) are misnamed because they perform
-many non-linear operations as well, e.g., total, minimum, maximum, RMS.
+many non-linear statistics as well, e.g., total, minimum, RMS.
 Moreover, <tt>ncap2</tt> implements a powerful domain language which
-handles arbitrarily complex operations.
+handles arbitrarily complex algebra, calculus, and statistics (using GSL).
 The operators are as general as 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
 itself: there are no restrictions on the contents of input file(s).
@@ -950,17 +950,13 @@ Improve IRIX&nbsp;6.5 support</li>
 <p>NCO developers are too short-handed to provide pre-built binary
 executables for all platforms.
 Our source tarballs are always up-to-date, and work on our
-development systems 
-(<a href="http://www.ubuntu.com">Ubuntu</a>-flavored <a
-href="http://www.debian.org">Debian</a> GNU/Linux for x86_64) 
-and in our high-end scientific computing environments
-(<a href="http://www.ibm.com/servers/aix">AIX&nbsp;5</a> for Power4/5/6/7).
+development systems (Fedora, Ubuntu, and Mac OS X).
 We also attempt to provide (theoretically) platform-independent sources
-in the most common UNIX packaging formats (Debian and RPM).
-Below are links to these and to packages created by volunteers who
-port NCO to other platforms.   
-Volunteers willing to perform regular regression testing and porting
-of NCO to other platforms are welcome.  
+in the most common Linux package formats (Debian and RPM).
+Below are links to these and to packages for other platforms created
+by volunteers.
+Anyone willing to perform regular regression testing and porting 
+of NCO to other platforms is welcome.  
 Previous versions of these binaries are still available by searching
 the directory index <a href="src">here</a>.
 
@@ -1048,11 +1044,6 @@ The most up-to-date binaries are probably those in the tarball below. Those unfa
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>: <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a> for NCO 4.4.4. Maintained by Takeshi Enomoto.</li>
 </ul>
 
-<a name="python"></a> <!-- http://nco.sf.net#python -->
-<a name="NCOpy"></a> <!-- http://nco.sf.net#NCOpy -->
-<a name="pyt"></a> <!-- http://nco.sf.net#pyt -->
-<h3>Python Bindings <a href="https://github.com/jhamman/nco-bindings">Source</a> and <a href="http://www.hydro.washington.edu/~jhamman/hydro-logic/blog/2014/01/29/NCOpy">Documentation</a>
-
 <a name="visual"></a> <!-- http://nco.sf.net#visual -->
 <a name="mvs"></a> <!-- http://nco.sf.net#mvs -->
 <a name="windows"></a> <!-- http://nco.sf.net#windows -->
@@ -1069,19 +1060,21 @@ To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.4.4.win32.cygwin.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.4.4.macosx.10.9.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.4.4.windows.mvs.exe">nco-4.4.4.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.4.4.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.4.4.windows.mvs.exe"-->). Maintained by NCO Project.</li>
+<li><a href="src/nco-4.4.4.windows.mvs.exe">nco-4.4.4.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.4.4.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.4.4.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> (running <a href="http://www.cygwin.org">Cygwin</a> environment, compiled with GNU-toolchain)</h3>
 <ul>
 <li><a href="src/nco-4.4.4.win32.cygwin.tar.gz">nco-4.4.4.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.4.4.win32.cygwin.tar.gz"-->): Executables Cygwin-compatible (last updated <!--#flastmod file="src/nco-4.4.4.win32.cygwin.tar.gz"-->). Maintained by NCO Project.</li>
-First install <tt>curl</tt> (in the "Web" category of Cygwin setup),
-and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the 
-<tt>udunits2.xml</tt> file, e.g., with
-<tt>export UDUNITS2_XML_PATH='/usr/local/share/udunits/udunits2.xml'</tt>. 
-Thanks to Mark Hadfield for creating Cygwin tarballs.
+First install <tt>curl</tt> (in the "Web" category of Cygwin setup), and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the <tt>udunits2.xml</tt> file, e.g., with <tt>export UDUNITS2_XML_PATH='/usr/local/share/udunits/udunits2.xml'</tt>. 
+Thanks to Mark Hadfield and Pedro Vicente for creating Cygwin tarballs.
 Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin over the years. 
+
+<a name="python"></a> <!-- http://nco.sf.net#python -->
+<a name="NCOpy"></a> <!-- http://nco.sf.net#NCOpy -->
+<a name="pyt"></a> <!-- http://nco.sf.net#pyt -->
+<h3>Python Bindings <a href="https://github.com/jhamman/nco-bindings">Source</a> and <a href="http://www.hydro.washington.edu/~jhamman/hydro-logic/blog/2014/01/29/NCOpy">Documentation</a>
 </ul>
 
 <hr></p>
