@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.894 2014-06-02 03:42:36 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.895 2014-06-03 22:51:06 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1067,6 +1067,7 @@ To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> (running <a href="http://www.cygwin.org">Cygwin</a> environment, compiled with GNU-toolchain)</h3>
 <ul>
 <li><a href="src/nco-4.4.4.win32.cygwin.tar.gz">nco-4.4.4.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.4.4.win32.cygwin.tar.gz"-->): Executables Cygwin-compatible (last updated <!--#flastmod file="src/nco-4.4.4.win32.cygwin.tar.gz"-->). Maintained by NCO Project.</li>
+</ul>
 First install <tt>curl</tt> (in the "Web" category of Cygwin setup), and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the <tt>udunits2.xml</tt> file, e.g., with <tt>export UDUNITS2_XML_PATH='/usr/local/share/udunits/udunits2.xml'</tt>. 
 Thanks to Mark Hadfield and Pedro Vicente for creating Cygwin tarballs.
 Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin over the years. 
@@ -1074,8 +1075,7 @@ Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin 
 <a name="python"></a> <!-- http://nco.sf.net#python -->
 <a name="NCOpy"></a> <!-- http://nco.sf.net#NCOpy -->
 <a name="pyt"></a> <!-- http://nco.sf.net#pyt -->
-<h3>Python Bindings <a href="https://github.com/jhamman/nco-bindings">Source</a> and <a href="http://www.hydro.washington.edu/~jhamman/hydro-logic/blog/2014/01/29/NCOpy">Documentation</a>
-</ul>
+<h3><a href="http://www.python.org">Python</a> Bindings <a href="https://github.com/jhamman/nco-bindings">Source</a> and <a href="http://www.hydro.washington.edu/~jhamman/hydro-logic/blog/2014/01/29/NCOpy">Documentation</a>
 
 <hr></p>
 <!-- End http://nco.sf.net#bnr -->
@@ -2226,7 +2226,7 @@ Bug-fixes:
 <a name="people"></a> <!-- http://nco.sf.net#people -->
 <dt><a name="People"></a></dt> <!-- http://nco.sf.net#People -->
 <h2>People:</h2>
-<p>Current Developers (please <a href="#Contact">communicate</a> with us using the project forums rather than contacting us individually):
+<p>Current Developers (please <a href="#Contact">contact</a> us via the project forums not via email):
 <ul>
 
 <li>
@@ -2239,10 +2239,13 @@ Computer Science
 <i>Role</i>: Project PI.
 <i>Contributions</i>: NCO core library, porting, release manager
 <i>Related Research</i>: 
-1.&nbsp;Extend empirically verified analytic model for terascale data 
-reduction of gridded datasets to account for cluster- and network-
-effects.  
-2.&nbsp;Enable and optimize NCO for intra-file-level parallelism using  
+1.&nbsp;Group-Oriented Data Analysis and Distribution 
+(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>).
+2.&nbsp;Extend empirically verified analytic model
+(described <a href="http://www.ess.uci.edu/~zender#ZeM07">here</a>)
+for terascale data reduction of gridded datasets to account for
+cluster- and network-effects.  
+3.&nbsp;Enable and optimize NCO for intra-file-level parallelism using   
 netCDF4/HDF5 parallel filesystem features.
 <i>Other Interests</i>: Atmospheric Physics, Climate Change.
 </li>
@@ -2259,31 +2262,34 @@ software engineer.
 </li>
 
 <li><dt>
-<a name="vicente"></a><a name="Vicente"></a> <!-- http://nco.sf.net#vicente -->
-<a href="http://dust.ess.uci.edu/pvicente">Pedro Vicente</a>, 
-software engineer.
-<i>Roles</i>: Scientific programmer
-<i>Current Research</i>: 
-1.&nbsp;Support for hierarchical datasets.
-2.&nbsp;Optimization of hierarchical access.
-<i>Other Interests</i>: HDF and netCDF data visualization.
-</li>
-
-<li><dt>
 <a name="wenshan"></a><a name="Wenshan"></a> <!-- http://nco.sf.net#wenshan -->
 <a href="http://dust.ess.uci.edu/wenshanw">Wenshan Wang</a>, 
-software engineer.
 <i>Roles</i>: Graduate Student
 <i>Current Research</i>: 
-1.&nbsp;Causes and implications of snowpack darkening.
+1.&nbsp;Causes and implications of Greenland snowmelt.
 2.&nbsp;Rapid evaluation and exploitation of multi-model datasets.
-<i>Other Interests</i>: Passing Comps.
+<i>Other Interests</i>: Advancing to candidacy.
 </li>
 
 </ul>
 
 <p>Alumni Developers:
 <ul>
+
+<li>
+<a name="capps"></a><a name="Capps"></a> <!-- http://nco.sf.net#capps -->
+<a href="http://dust.ess.uci.edu/scapps/web">Dr.&nbsp;Scott Capps</a>, 
+earned Earth System Science Ph.D. (2009) with Zender at UCI, then
+moved UCLA, now at Vertum Partners.
+<!--
+<i>Related Research</i>: 
+1.&nbsp;Test NCO on real tera-scale geoscience analysis problems and
+identify necessary improvements in <tt>ncap2</tt> and in SWAMP.
+2.&nbsp;Role of satellite-observed sub-gridscale wind variability 
+on air-surface exchange.
+<i>Other Interests</i>: Weather, climate
+-->
+</li>
 
 <li>
 <a name="jenks"></a><a name="Jenks"></a> <!-- http://nco.sf.net#jenks -->
@@ -2299,16 +2305,15 @@ former Assistant Professor of Electrical Engineering and Computer Science
 </li>
 
 <li>
-<a name="capps"></a><a name="Capps"></a> <!-- http://nco.sf.net#capps -->
-<a href="http://dust.ess.uci.edu/scapps/web">Dr.&nbsp;Scott Capps</a>, 
-earned Earth System Science Ph.D. (2009) with Zender at UCI, now at UCLA.
+<a name="vicente"></a><a name="Vicente"></a> <!-- http://nco.sf.net#vicente -->
+<a href="http://dust.ess.uci.edu/pvicente">Pedro Vicente</a>, 
+software engineer, 201206&mdash;201405.
 <!--
-<i>Related Research</i>: 
-1.&nbsp;Test NCO on real tera-scale geoscience analysis problems and
-identify necessary improvements in <tt>ncap2</tt> and in SWAMP.
-2.&nbsp;Role of satellite-observed sub-gridscale wind variability 
-on air-surface exchange.
-<i>Other Interests</i>: Weather, climate
+<i>Roles</i>: Scientific programmer
+<i>Current Research</i>: 
+1.&nbsp;Support for hierarchical datasets.
+2.&nbsp;Optimization of hierarchical access.
+<i>Other Interests</i>: HDF and netCDF data visualization.
 -->
 </li>
 
@@ -2346,7 +2351,7 @@ community.
 <a name="contact"></a> <!-- http://nco.sf.net#contact -->
 <dt><a name="Contact"></a></dt> <!-- http://nco.sf.net#Contact -->
 <h2>Contacting the Project:</h2>
-<p>Contact us through the Project Forums (rather than personal e-mail)
+<p>Contact us via the Project Forums (rather than personal e-mail)
 so other users can benefit from and contribute to our exchange.
 Let us know how NCO is working for you&mdash;we'd like to hear.
 Have you read the <a href="#RTFM">documentation</a> and browsed the

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.472 2014-05-29 18:36:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.473 2014-06-03 22:51:15 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -23,7 +23,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_nm[]="xlC"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __xlC__ defined in nco_cmp_get(), probably compiled with AIX xlC_r or xlC"; /* [sng] Compiler string */
 #endif /* !__xlC__ */
-#if defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
+#if defined(__GNUC__) && !defined(__clang) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Testing for GCC macros early is dangerous because some compilers, 
      including Intel's, define GCC macros for compatibility */
   static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
@@ -42,6 +42,11 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
     (void)fprintf(stderr,"%s: INFO GCC version is %s\n",nco_prg_nm_get(),cmp_vrs);
   } /* endif dbg */
 #endif /* !__GNUC__ */
+#ifdef __clang
+  /* Some compilers, including clang, also define __GNUC__ by default */
+  static const char cmp_nm[]="clang";
+  static const char cmp_sng[]="Token __clang defined in nco_cmp_get(), probably compiled with LLVM clang"; /* [sng] Compiler string */
+#endif /* !__clang */
 #ifdef __INTEL_COMPILER
   /* Some compilers, including icc, also define __GNUC__ by default */
   static const char cmp_nm[]="icc";
