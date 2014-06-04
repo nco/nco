@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.718 2014-05-21 20:39:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.719 2014-06-04 19:44:43 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -118,7 +118,7 @@ main(int argc,char **argv)
   nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
   nco_bool PRN_XML_LOCATION=True; /* [flg] Print XML location tag */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
-  nco_bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
+  nco_bool PRN_DMN_UNITS=True; /* [flg] Print dimensional units Option u */
   nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
   nco_bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
   nco_bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
@@ -167,8 +167,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.718 2014-05-21 20:39:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.718 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.719 2014-06-04 19:44:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.719 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

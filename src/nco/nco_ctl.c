@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.474 2014-06-04 19:43:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.475 2014-06-04 19:44:43 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -27,7 +27,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   /* Testing for GCC macros early is dangerous because some compilers, 
      including Intel's, define GCC macros for compatibility */
   static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(), probably compiled with GNU gcc"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(). Compiled with GNU gcc (or a compiler that emulates gcc)."; /* [sng] Compiler string */
   static const char cmp_vrs[]=TKN2SNG(__VERSION__); // [sng] Compiler version
   static const char cmp_vrs_mjr[]=TKN2SNG(__GNUC__); // [sng] Compiler major version
   static const char cmp_vrs_mnr[]=TKN2SNG(__GNUC_MINOR__); // [sng] Compiler minor version
@@ -62,7 +62,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_sng[]="Token PGI_CC defined in nco_cmp_get(), probably compiled with PGI pgcc"; /* [sng] Compiler string */
 #endif /* !PGI_CC */
 
-  /* In case none tokens above matched */
+  /* No tokens matched */
 #if !defined(NCO_XLC_LIKELY) && !defined(__clang) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Unknown compiler */
   static const char cmp_nm[]="unknown"; /* [sng] Compiler name */
