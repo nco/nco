@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.473 2014-06-03 22:51:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.474 2014-06-04 19:43:07 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -62,8 +62,8 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_sng[]="Token PGI_CC defined in nco_cmp_get(), probably compiled with PGI pgcc"; /* [sng] Compiler string */
 #endif /* !PGI_CC */
 
-  /* In case none of the above tokens matched */
-#if !defined(NCO_XLC_LIKELY) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
+  /* In case none tokens above matched */
+#if !defined(NCO_XLC_LIKELY) && !defined(__clang) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Unknown compiler */
   static const char cmp_nm[]="unknown"; /* [sng] Compiler name */
   static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */

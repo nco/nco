@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.718 2014-05-29 18:36:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.719 2014-06-04 19:44:43 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -7,17 +7,9 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release is mainly a bugfix and stability release. 
 A few new features improve some corner-cases:
-It includes workarounds that allow NCO to successfully work with
-some names that violate netCDF but not HDF rules. 
-Users can now retain "orphaned" dimensions after variable subsetting. 
-nces now works with hyperslabs that resolve to the same size.
-Group broadcasting by ncbo is more intelligent when differencing
-ensemble means (created by nces) from full datasets. 
+NCO now accesses DAP files on HTTPS servers.
 
-A potentially serious bug in ncwa --mask_condition has been fixed.
-Users of ncwa --mask_condition are encouraged to upgrade.
-
-Work on NCO 4.4.5 is underway, still focused on stability and speed.   
+Work on NCO 4.4.6 is underway, still focused on stability and speed.   
 This includes more netCDF4 mop-up, improved group broadcasting
 algorithms, and, possibly, improved HDF4 support, and new chunking 
 features.
@@ -27,88 +19,15 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. NCO now contains automatic workarounds to handle element names that
-   contain characters that are legal in HDF though are illegal in
-   netCDF.  For example, slashes and leading special characters are
-   are legal in HDF and illegal in netCDF element (i.e., group,
-   variable, dimension, and attribute) names. NCO converts these
-   forbidden characters to underscores, and retains the original names
-   of variables in automatically produced attributes named hdf_name.
-   Two real-world examples: NCO translates the NASA CERES dimension
-   "(FOV) Footprints" to "_FOV_ Footprints", and "Cloud & Aerosol,
-   Cloud Only, Clear Sky w/Aerosol, and Clear Sky" (yes, that's really
-   a dimension name) to "Cloud & Aerosol, Cloud Only, Clear Sky
-   w_Aerosol, and Clear Sky".
-   ncks CERES_MODIS.hdf CERES_MODIS.nc
-   http://nco.sf.net/nco.html#hdf4
+A. NCO now accesses DAP files on HTTPS servers. Previously NCO would
+   only test filenames beginning with "http://" for DAP access. Now
+   NCO also tests filenames beginning with "https://" for DAP access.
 
-B. ncks --rad to Retain all dimensions.
-   When invoked with --rad, ncks copies each dimension in the input
-   file to the output file, regardless of whether the dimension is
-   utilized by any variables. Normally ncks discards "orphan
-   dimensions", i.e., dimensions not referenced by any variables.
-   This switch allows users to keep non-referenced dimensions.
-   When invoked in printing mode, this causes orphaned dimensions to
-   be printed (they are not printed by default).
-   ncks -O -C -v lat,lon ~/nco/data/in.nc ~/foo.nc
-   ncks --rad -O -x -v lat ~/foo.nc ~/foo2.nc
-   ncks --rad --cdl ~/foo2.nc
-   http://nco.sf.net/nco.html#rad
-
-C. nces now computes statistics on ensemble members whose specified
-   hyperslabs resolve to the same size. nces has always worked well
-   with identically shaped ensemble members, and on ensemble members
-   whose record-dimension hyperslabs resolve to the same size. 
-   Now nces works well with ensemble members whose specified
-   hyperslabs along any dimension resolve to the same size. The
-   use-case that demanded this was a researcher who wished to compare
-   a certain lat/lon region (stored in some regional files) with the
-   same region stored in other global files (with the same grid).
-   The regional files (e.g., Greenland only) are much smaller than
-   global files so nces's new capability allows users to "get by" with 
-   regional files rather than always storing global files.
-   nces -O --nsm_grp -d lat,0 -d lon,2 -d time,0 -p ~/nco/data grp1.nc grp2.nc ~/foo.nc
-   http://nco.sf.net/nco.html#nces
+A. fxm
 
 BUG FIXES:
 
-A. Fixed ncwa incorrect interpretation of some --mask_conditions.
-   Lexer/Parser could return incorrect mask values for negative numbers.
-   Thanks to Keith Lindsay for report, and to Henry Butowsky for fix. 
-   Prior to this fix, the ncwa lexer would drop the negative sign, if
-   any, from the comparators appearing in the mask condition, e.g.,
-   ncwa --mask_condition "lat < -20" was parsed as "lat < 20" not 
-   "lat < -20". Hence, users of ncwa --mask_condition (or -B) should
-   upgrade. NB: The -m -M -T form of ncwa masking is/was not buggy.
-   http://nco.sf.net#bug_ncwa_mask_condition
-
-B. Restore former tolerance of -x for non-existent elements.
-   NCO normally requires that variables and groups specified with -v
-   and -g must match the input file contents. The exception is when
-   the -x flag tells NCO to exclude these elements. This exception
-   was broken since NCO 4.2.x, and is now working again. Now excluding
-   non-existent variables should one again work, e.g., 
-   ncks -O -x -v no_such_variable ~/nco/data/in.nc ~/foo.nc
-   Thanks to Keith Oleson for this bug report.
-   http://nco.sf.net/nco.html#x
-   
-C. Fix bug that caused CDL and XML printing to truncate trailing zeros
-   of floating point exponents. Before this bugfix, ncks --cdl would
-   print 1.100e-10 as 1.100e-1 instead of 1.1e-10. All CDL and XML
-   printing prior to 4.4.4 mis-prints floating point numbers with
-   exponents that end in zero (i.e., +/- 10, 20, 30 ... 200, 210...).
-   Users of CDL and XML mode are urged to upgrade. This bug changed
-   affected values by some multiple of 10 orders of magnitude. 
-   Hence it is likely that users affected by this bug would notice it
-   when carefully performing any statistics, yet possible they would
-   not for fields with large dynamic ranges. Thanks to Stubaan for report.
-
-D. Fix regression tests not to cause false negatives due to netCDF
-   4.3.2 record dimension chunk size changes
-
-E. ncdismember better handles whitespace in group names
-
-F. Fix numerous memory leaks and some corner-case segfaults
+A. Hi
 
 KNOWN PROBLEMS:
 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.895 2014-06-03 22:51:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.896 2014-06-04 19:43:07 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1030,6 +1030,7 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
 <ul>
 <!-- 
+# Mac OS X 10.9 (Mavericks) systems (aerosol):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
 cd ~/bin/MACOSX;tar cvzf ${DATA}/nco-4.4.4.macosx.10.9.tar.gz nc*;scp ${DATA}/nco-4.4.4.macosx.10.9.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->

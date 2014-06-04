@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.714 2014-06-01 01:42:07 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.715 2014-06-04 19:43:06 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -60,7 +60,6 @@
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
 # cd ~/nco/bld;make cln all ncap2;cd - # New default for most machines
-# cd ~/nco/bld;make UDUNITS_INC='/opt/local/include/udunits2';cd - # MacOS X aerosol
 # cd ~/nco/bld;make OMP=Y CUDA=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre
 # cd ~/nco/bld;make OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre, neige
 # cd ~/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # glace, virga
@@ -85,7 +84,6 @@
 # cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N allinone ABI=64;cd -
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
 # cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' CURL_LIB='/contrib/curl/7.21.2/lib' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' HDF5_ROOT='/contrib/hdf5-1.8.7_seq' LDFLAGS='-lnetcdf -lhdf5_hl -lhdf5 -lz' NETCDF_ROOT='/contrib/netcdf/4.1.3_seq' SZ_LIB='/contrib/szip/lib' UDUNITS_LIB='/contrib/zlib/lib' make --jobs=1 OPTS=D SZ=Y allinone ABI=64;cd -
-# Mac OS X 10.9 (Mavericks) systems (aerosol):
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
 # cd ~/bin/AIX;/usr/local/bin/tar cvzf ~/nco-4.4.5.aix53.tar.gz nc*;scp ~/nco-4.4.5.aix53.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # netCDF4 on NCAR Linux cluster systems (mirage):
@@ -2050,6 +2048,8 @@ dbg:
 	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "GSL = $(GSL)\n"
+	@printf "GSL_INC = $(GSL_INC)\n"
+	@printf "GSL_LIB = $(GSL_LIB)\n"
 	@printf "HDF5_ROOT = ${HDF5_ROOT}\n"
 	@printf "HDF5_INC = ${HDF5_INC}\n"
 	@printf "HDF5_LIB = ${HDF5_LIB}\n"
