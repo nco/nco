@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.240 2014-05-22 15:40:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.241 2014-06-04 17:46:41 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -532,6 +532,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   const char fnc_nm[]="nco_fl_mk_lcl()"; /* [sng] Function name */
   const char ftp_url_sng[]="ftp://";
   const char http_url_sng[]="http://";
+  const char https_url_sng[]="https://";
   const char sftp_url_sng[]="sftp://";
 
 #ifdef ENABLE_DAP
@@ -571,8 +572,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
-  }else if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl){
-    /* Filename starts with "http://": Try DAP first (if available), then wget */
+  }else if((strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,https_url_sng) == fl_nm_lcl)){
+    /* Filename starts with "http://" or "https://" so try DAP first (if available), then wget */
 
 #ifdef ENABLE_DAP
     /* Filename has http:// prefix so try DAP access to unadulterated filename */

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.996 2014-06-01 04:52:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.997 2014-06-04 17:46:40 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3298,7 +3298,7 @@ input and output file format:
 one = 1
 @end example
 And, of course, @acronym{OPeNDAP}-enabled @acronym{NCO} clients continue
-to support other, orthogonal features such as UDUnits 
+to support orthogonal features such as UDUnits 
 (@pxref{UDUnits Support}):
 @example
 % ncks -u -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' \
@@ -3323,9 +3323,9 @@ http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis.dailyavgs/su
 @cindex unpacking
 All with one command!
 The data in this particular input file also happen to be packed
-(@pxref{Methods and functions}), although this is completely transparent
-to the user since @acronym{NCO} automatically unpacks data before
-attempting arithmetic. 
+(@pxref{Methods and functions}), although this complication is
+transparent to the user since @acronym{NCO} automatically unpacks data
+before attempting arithmetic. 
 
 @acronym{NCO} obtains remote files from the @acronym{OPeNDAP} server
 (e.g., @file{www.cdc.noaa.gov}) rather than the local machine. 

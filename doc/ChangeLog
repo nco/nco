@@ -1,3 +1,7 @@
+2014-06-04  Charlie Zender  <zender@uci.edu>
+
+	* Filenames that begin with https:// now trigger DAP access code path
+
 2014-05-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.5 release procedure:
