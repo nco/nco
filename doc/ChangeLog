@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
 
+	* Add pnetCDF token stubs. Build pnetCDF-enabled netCDF4 in /usr/local/parallel.
+
 	* Filenames that begin with https:// now trigger DAP access code path
 
 2014-05-31  Charlie Zender  <zender@uci.edu>

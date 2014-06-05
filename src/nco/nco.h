@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.510 2014-05-27 03:26:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.511 2014-06-05 04:57:12 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -313,6 +313,18 @@ extern "C" {
 #endif
 #ifndef NC_FORMAT_DAP4
 # define NC_FORMAT_DAP4    (6)
+#endif
+
+  /* Three compatibility tokens from pnetcdf.h introduced to NCO 20140604 
+     None are used yet */
+#ifndef NC_64BIT_DATA
+# define NC_64BIT_DATA	0x0010 /* CDF-5 format, (64-bit) supported */
+#endif
+#ifndef NC_FORMAT_CDF5
+# define NC_FORMAT_CDF5  5 /* CDF-5 format, with NC_64BIT_DATA. */
+#endif
+#ifndef NC_FORMAT_64BIT_DATA
+# define NC_FORMAT_64BIT_DATA	NC_FORMAT_CDF5
 #endif
 
   /* Backwards-compatibility error codes for netCDF4

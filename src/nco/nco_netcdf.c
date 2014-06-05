@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.242 2014-05-20 17:17:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.243 2014-06-05 04:57:12 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -450,6 +450,8 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
     return "NC_FORMAT_NETCDF4";
   case NC_FORMAT_NETCDF4_CLASSIC:
     return "NC_FORMAT_NETCDF4_CLASSIC";
+  case NC_FORMAT_CDF5:
+    return "NC_FORMAT_CDF5";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -472,6 +474,8 @@ nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden at
     return "netCDF-4";
   case NC_FORMAT_NETCDF4_CLASSIC:
     return "netCDF-4 classic model";
+  case NC_FORMAT_CDF5:
+    return "64-bit-variable";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 

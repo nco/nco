@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.715 2014-06-04 19:43:06 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.716 2014-06-05 04:57:12 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -102,6 +102,8 @@
 # cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0-rc4/gnu/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/gnu/default/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/gnu/default/lib' OPTS=D allinone;cd -
 # Intel (works as of 20140129):
 # module add intel;module add gsl;module add netcdf/4.3.0;
+# https://www2.cisl.ucar.edu/sites/default/files/Yellowstone_Started_Nov30-2.pdf
+# module add pnetcdf/1.4.1
 # export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}\:/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib
 # cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
 # Cygwin on Windows Vista systems:
