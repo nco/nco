@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.193 2014-05-21 20:39:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.194 2014-06-05 22:26:12 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.193 2014-05-21 20:39:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.193 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.194 2014-06-05 22:26:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.194 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -233,6 +233,7 @@ main(int argc,char **argv)
     case 'D': /* Debugging level. Default is 0. */
       nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      nc_set_log_level(nco_dbg_lvl);
       break;
     case 'd': /* Copy argument for later processing */
       dmn_rnm_arg[nbr_dmn_rnm]=(char *)strdup(optarg);

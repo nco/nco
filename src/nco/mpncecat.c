@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.119 2014-01-06 06:46:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.120 2014-06-05 22:26:11 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.119 2014-01-06 06:46:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.119 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.120 2014-06-05 22:26:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.120 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -374,6 +374,7 @@ main(int argc,char **argv)
     case 'D': /* Debugging level. Default is 0. */
       nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      nc_set_log_level(nco_dbg_lvl);
       break;
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.187 2014-05-21 20:39:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.188 2014-06-05 22:26:11 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -158,8 +158,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.187 2014-05-21 20:39:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.187 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.188 2014-06-05 22:26:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.188 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -281,6 +281,7 @@ main(int argc,char **argv)
     case 'D': /* Debugging level. Default is 0. */
       nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      nc_set_log_level(nco_dbg_lvl);
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
