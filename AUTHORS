@@ -1,7 +1,63 @@
-Charlie Zender <surname at uci dot edu>
-CZ holds all copyright on NCO code.
-All other contributors have assigned their copyright to Zender,
-or did not make contributions that are legally significant for
-copyright purposes. These contributors are all listed under
-"Contributors" in the Users Guide documentation (nco.texi) at
-http://nco.sf.net/nco.html#ppl
+The User Guide documentation (nco.texi) contains the most up-to-date list  
+of contributors to the NCO project, see http://nco.sf.net/nco.html#ppl
+
+Henry Butowsky
+     Non-linear operations and 'min()', 'max()', 'total()' support in
+     'ncra' and 'ncwa'.  Type conversion for arithmetic.  Migration to
+     netCDF3 API. 'ncap2' parser, lexer, GSL-support, and I/O.
+     Multislabbing algorithm.  Variable wildcarding.  Numerous hacks.
+     'ncap2' language.
+Rorik Peterson
+     Original autotool build support.  Long command-line options.
+     Original UDUnits support.  Debianization.  Numerous bug-fixes.
+Joe Hamman
+     Python bindings (NCOpy).
+Daniel Wang
+     Script Workflow Analysis for MultiProcessing (SWAMP).  RPM support.
+Harry Mangalam
+     Benchmarking.  OPeNDAP configuration.
+Pedro Vicente
+     Windows Visual Studio support.  netCDF4 groups.
+Russ Rew
+     Advice on NCO structural algorithms
+Brian Mays
+     Original packaging for Debian GNU/Linux, 'nroff' man pages.
+George Shapovalov
+     Packaging for Gentoo GNU/Linux.
+Bill Kocik
+     Memory management.
+Len Makin
+     NEC SX architecture support.
+Jim Edwards
+     AIX architecture support.
+Juliana Rew
+     Compatibility with large PIDs.
+Karen Schuchardt
+     Auxiliary coordinate support.
+Gayathri Venkitachalam
+     MPI implementation.
+Scott Capps
+     Large work-load testing
+Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Gary Strand, George White Andrew Wittenberg, Remik Ziemlinski
+     Excellent bug reports and feature requests.
+Daniel Baumann, Nick Bower, Luk Claebs, Barry deFreese, Aleksandar Jelenak, Francesco Lovergine, Matej Vela
+     Debian packaging
+Patrice Dumas, Ed Hill, Orion Poplawski
+     RedHat packaging
+George Shapavalov, Patrick Kursawe
+     Gentoo packaging
+Filipe Fernandes
+     OpenSuse packaging
+Takeshi Enomoto, Alexander Hansen
+     Mac OS packaging
+Eric Blake
+     Autoconf/M4 help
+Gavin Burris, Kyle Wilcox
+     RHEL and CentOS build scripts and bug reports.
+Andrea Cimatoribus
+     NCO Spiral Logo
+Martin Otte, Etienne Tourigny
+     Single bug reports and fixes
+Wenshan Wang
+     CMIP5 and MODIS processing documentation.
+   Please let me know if your name was omitted!

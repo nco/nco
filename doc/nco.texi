@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.998 2014-06-05 22:26:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.999 2014-06-06 17:43:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,8 +116,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.5
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 29 May 2014
-@set update-month May 2014
+@set update-date 6 June 2014
+@set update-month June 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -9929,21 +9929,73 @@ to set its values less than 8 or greater than 80 @w{to 0}:
 where(RDM < 8 || RDM > 80) RDM=0;          
 @end example
 
+@html
+<a name="WRF"></a> <!-- http://nco.sf.net/nco.html#WRF -->
+<a name="SLD"></a> <!-- http://nco.sf.net/nco.html#SLD -->
+<a name="wrf"></a> <!-- http://nco.sf.net/nco.html#wrf -->
+<a name="sld"></a> <!-- http://nco.sf.net/nco.html#sld -->
+@end html
+@cindex Weather and Research Forecast (@acronym{WRF}) Model
+@cindex Swath-like Data (@acronym{SLD})
+@cindex @acronym{WRF} (Weather and Research Forecast Model)
+@cindex @acronym{SLD} (Swath-like Data)
 Consider irregularly gridded data, described using @w{rank 2} coordinates: 
 @code{double lat(south_north,east_west)},
 @code{double lon(south_north,east_west)}, 
 @code{double temperature(south_north,east_west)}.
+This type of structure is often found in regional weather/climate model
+(such as @acronym{WRF}) output, and in satellite swath data.
+For this reason we call it ``Swath-like Data'', or @acronym{SLD}.
 To find the average temperature in a region bounded by
 [@var{lat_min},@var{lat_max}] and [@var{lon_min},@var{lon_max}]:
 @example
 temperature_msk[$south_north,$east_west]=0.0;
-where(lat >= lat_min && lat <= lat_max) && (lon >= lon_min && lon <= lon_max)
+where((lat >= lat_min && lat <= lat_max) && (lon >= lon_min && lon <= lon_max))
   temperature_msk=temperature;	
 elsewhere
   temperature_msk=temperature@@_FillValue;
 
 temp_avg=temperature_msk.avg();
 temp_max=temperature.max();
+@end example
+
+@html
+<a name="NARR"></a> <!-- http://nco.sf.net/nco.html#NARR -->
+<a name="narr"></a> <!-- http://nco.sf.net/nco.html#narr -->
+@end html
+@cindex @acronym{NARR} (North American Regional Reanalysis)a
+@cindex North American Regional Reanalysis (@acronym{NARR})
+For North American Regional Reanalysis (@acronym{NARR}) data
+(example
+@uref{http://dust.ess.uci.edu/diwg/narr_uwnd.199605.nc, dataset})
+the procedure looks like this
+@example
+@verbatim
+ncap2 -O -v -S ~/narr.nco ${DATA}/hdf/narr_uwnd.199605.nc ~/foo.nc
+@end verbatim
+@end example
+where @file{narr.nco} is an @command{ncap2} script like this:
+@example
+@verbatim
+/* North American Regional Reanalysis (NARR) Statistics
+   NARR stores grids with 2-D latitude and longitude, aka Swath-like Data (SLD) 
+   Here we work with three variables:
+   lat(y,x), lon(y,x), and uwnd(time,level,y,x);
+   To study sub-regions of SLD, we use masking techniques:
+   1. Create mask as RAM variable (with asterisk) to avoid writing it to output
+   2. Define mask as zero times variable to be masked
+      Then mask automatically inherits variable attributes
+      And average below will inherit mask attributes
+   3. Example could be extended to preserve mean lat and lon of sub-region */
+*uwnd_msk=0.0*uwnd;
+where((lat >= 35.6 && lat <= 37.0) && (lon >= -100.5 && lon <= -99.0))
+  uwnd_msk=uwnd;
+elsewhere
+  uwnd_msk=uwnd@_FillValue;
+
+// Average only over horizontal dimensions x and y (preserve level and time)
+uwnd_avg=uwnd_msk.avg($y,$x); 
+@end verbatim
 @end example
 
 @html
@@ -10409,10 +10461,6 @@ ncap2 -S ncap2.in in.nc out.nc
 @end verbatim
 @end example
 
-@html
-<a name="wrf"></a> <!-- http://nco.sf.net/nco.html#wrf -->
-<a name="WRF"></a> <!-- http://nco.sf.net/nco.html#WRF -->
-@end html
 @ignore
 http://foehn.colorado.edu/wrfout_to_cf/wrfout_to_cf.ncl
 ncl 'file_in="wrfout.nc"' 'file_out="wrfpost.nc"' wrfout_to_cf.ncl
@@ -10425,7 +10473,7 @@ one must use global metadata to determine the grid staggering and
 offsets to translate @code{XLAT} and @code{XLONG} into real latitudes, 
 longitudes, and missing points. 
 The @acronym{WRF} grid documentation should describe this.
-For @acronym{WRF} files creating regional masks looks like 
+For @acronym{WRF} files creating regional masks looks, in general, like 
 @example
 mask_var = (XLAT >= lat_min && XLAT <= lat_max) && (XLONG >= lon_min && XLONG <= lon_max);
 @end example
@@ -16607,7 +16655,7 @@ research, releases.
 Non-linear operations and @code{min()}, @code{max()}, @code{total()}
 support in @command{ncra} and @command{ncwa}. 
 Type conversion for arithmetic.
-Migration to netCDF3 API.
+Migration to netCDF3 @acronym{API}.
 @command{ncap2} parser, lexer, @acronym{GSL}-support, @w{and I/O}.
 Multislabbing algorithm.
 Variable wildcarding.
@@ -16615,7 +16663,7 @@ Numerous hacks.
 @command{ncap2} language.
 @cindex Rorik Peterson
 @item Rorik Peterson
-Original autotool build support. 
+Original autotools build support. 
 Long command-line options.
 Original UDUnits support.
 Debianization.
@@ -16637,7 +16685,7 @@ Windows Visual Studio support.
 netCDF4 groups.
 @cindex Russ Rew
 @item Russ Rew
-Advice on NCO structural algorithms
+Advice on @acronym{NCO} structural algorithms
 @cindex Brian Mays
 @item Brian Mays
 Original packaging for Debian @acronym{GNU}/Linux, @command{nroff} man pages.
