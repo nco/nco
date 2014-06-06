@@ -1,14 +1,17 @@
 2014-06-06  Charlie Zender  <zender@uci.edu>
 
-	* Document NARR example of SLD statistics
-
-2014-06-05  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.4.5 release procedure:
  	Changes since nco-4_4_4: https DAP,
 	cd ~/nco;cvs tag -d nco-4_4_5;cvs tag -d nco-4_4_5-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
+
+	* Improve NCO compliance with NASA Reuse-Readiness Levels (RRLs)
+	Reorganize documentation on citation, authorship, copyright, and licensing
+
+	* Document NARR example of SLD statistics
+
+2014-06-05  Charlie Zender  <zender@uci.edu>
 
 	* nc_set_log_level(nco_dbg_lvl) to quiet HDF logging messages for ncdismember
 

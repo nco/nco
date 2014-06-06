@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.999 2014-06-06 17:43:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1000 2014-06-06 19:53:05 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9982,11 +9982,14 @@ where @file{narr.nco} is an @command{ncap2} script like this:
    Here we work with three variables:
    lat(y,x), lon(y,x), and uwnd(time,level,y,x);
    To study sub-regions of SLD, we use masking techniques:
-   1. Create mask as RAM variable (with asterisk) to avoid writing it to output
-   2. Define mask as zero times variable to be masked
+   1. Define mask as zero times variable to be masked
       Then mask automatically inherits variable attributes
       And average below will inherit mask attributes
-   3. Example could be extended to preserve mean lat and lon of sub-region */
+   2. Optionally, create mask as RAM variable (as below with asterisk *)
+      NCO does not write RAM variable to output
+      Masks are often unwanted, and can be big, so this speeds execution
+   3. Example could be extended to preserve mean lat and lon of sub-region
+      Do this by following uwnd example: lat_msk=0.0*lat ... lat_avg=lat.avg($y,$x) */
 *uwnd_msk=0.0*uwnd;
 where((lat >= 35.6 && lat <= 37.0) && (lon >= -100.5 && lon <= -99.0))
   uwnd_msk=uwnd;
@@ -9997,6 +10000,17 @@ elsewhere
 uwnd_avg=uwnd_msk.avg($y,$x); 
 @end verbatim
 @end example
+Note that, when stripped of comments and formatting, this example is a
+three-statement script executed by a one-line command.
+@acronym{NCO} needs only this meagre input to unpack and copy the input
+data and attributes, compute the statistics, and then define and write
+the output file.  
+Unless the comments pointed out that wind variable (@code{uwnd}) was
+four-dimensional and the latitude/longitude grid variables were both
+two-dimensional, there would be no way to tell.
+This is an example of how @acronym{NCO} hides from the user the
+complexity of analyzing multi-dimensional @acronym{SLD}.
+We plan to extend such @acronym{SLD} features to more operators soon.
 
 @html
 <a name="ncap_lop"></a> <!-- http://nco.sf.net/nco.html#ncap_lop -->
@@ -16609,10 +16623,11 @@ So you could be the third!
 @end html
 @menu
 * Contributors::
+* Citation::
 * Proposals for Institutional Funding::
 @end menu
 
-@node Contributors, Proposals for Institutional Funding, Contributing, Contributing
+@node Contributors, Citation, Contributing, Contributing
 @section Contributors
 @acronym{NCO} would not exist without the dedicated efforts of the
 remarkable software engineers who conceive, develop, and
@@ -16775,6 +16790,33 @@ Single bug reports and fixes
 Please let me know if your name was omitted!
 
 @html
+<a name="ctt"></a> <!-- http://nco.sf.net/nco.html#ctt -->
+@end html
+@node Citation, Proposals for Institutional Funding, Contributors, Contributing
+@section Citation
+@cindex citation
+The recommended citations for @acronym{NCO} software are
+@example
+@verbatim
+Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience
+Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10),
+1338-1342, doi:10.1016/j.envsoft.2008.03.004. 
+
+Zender, C. S. (2014), netCDF Operator (NCO) User Guide, Version 4.4.3,
+http://nco.sf.net/nco.pdf. 
+@end verbatim
+@end example
+Use the former when referring to overall design, purpose, and 
+optimization of @acronym{NCO}, and use the latter when referring to
+specific features and/or the User Guide itself.
+
+Additional information on citing @acronym{NCO} is in the User Guide at 
+@url{http://nco.sf.net#ctt}.
+A complete list of @acronym{NCO} publications and presentations is at
+@url{http://nco.sf.net#pub}.
+This list links to the full papers and seminars themselves.
+
+@html
 <a name="prp"></a> <!-- http://nco.sf.net/nco.html#prp -->
 <a name="prp_sei"></a> <!-- http://nco.sf.net/nco.html#prp_sei -->
 <a name="fnd"></a> <!-- http://nco.sf.net/nco.html#fnd -->
@@ -16783,7 +16825,7 @@ Please let me know if your name was omitted!
 * Proposals for Institutional Funding::  
 @end menu
 
-@node Proposals for Institutional Funding,  , Contributors, Contributing
+@node Proposals for Institutional Funding,  , Citation, Contributing
 @section Proposals for Institutional Funding
 @cindex funding
 @cindex proposals

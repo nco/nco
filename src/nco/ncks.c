@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.720 2014-06-05 22:26:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.721 2014-06-06 19:53:05 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -7,9 +7,10 @@
 
 /* Copyright (C) 1995--2014 Charlie Zender
 
+   This file is part of NCO.
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
-   and in the file nco/doc/LICENSE in the NCO source distribution.
+   and in the file COPYING. 
    
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
@@ -167,8 +168,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.720 2014-06-05 22:26:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.720 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.721 2014-06-06 19:53:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.721 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

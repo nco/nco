@@ -1,0 +1,20 @@
+The recommended citation for NCO software is
+
+Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience
+Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10),
+1338-1342, doi:10.1016/j.envsoft.2008.03.004. 
+
+or
+
+Zender, C. S. (2014), netCDF Operator (NCO) User Guide, Version 4.4.3,
+http://nco.sf.net/nco.pdf. 
+
+Use the former when referring to overall design, purpose, and
+optimization of NCO, and use the latter when referring to specific
+features and/or the Users Guide itself.
+
+Additional information on citing NCO is in the User Guide at
+http://nco.sf.net#ctt
+A complete list of NCO publications and presentations is at
+http://nco.sf.net#pub
+This list links to the full papers and seminars themselves.
