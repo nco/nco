@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1000 2014-06-06 19:53:05 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1001 2014-06-09 19:51:43 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9609,10 +9609,10 @@ They only work on variables in Output.
  If the variable has no missing value then an error is returned.   
 @item delete_miss()
 @cindex @code{delete_miss()}
- Deletes the missing value associated with a variable.
+ Delete the missing value associated with a variable.
 @item number_miss()
 @cindex @code{number_miss()}
- Counts the number of missing values a variable contains.
+ Count the number of missing values a variable contains.
 @end table
 
 @example
