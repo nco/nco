@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1437 2014-05-27 01:23:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1438 2014-06-11 04:18:55 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -981,11 +981,11 @@ nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
      Consider, e.g., ncks -x -g g1
      In this case g1 and all descendents should be excluded
 
-     ncdismember needs to create extraction lists like: *g1*, ~(/g1/v1)
+     ncdismember needs to create extraction lists like: *g1*, ~(/g1/v1); or *g1*, ~v1;
      Potential avenues to implement this include
      1. ncks -x -g g1 -v v1
      2. ncks -x -g g1 -v /g1/v1
-     3. ncks --grp_xtr_var_xcl -g g1 -v v1
+     3. ncks --grp_xtr_var_xcl -g g1 -v v1 (method implemented in NCO 4.4.4 in 201405)
 
      Given that, here is how this routine and NCO actually uses flg_xcl:
      For variables, -x sets the exclusion flag and is "permanent", i.e., removes variable from extraction list

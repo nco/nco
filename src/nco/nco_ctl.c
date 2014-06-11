@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.476 2014-06-05 22:26:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.477 2014-06-11 04:18:55 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -927,7 +927,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fix_rec_crd] [--fl_fmt fmt] [-h] [--hdf] [--hdr_pad nbr] [-i var,val] [-L lvl] [-l path] [--msa] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [-v ...] [-X box] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
     break;
   case ncks:
-    opt_sng=(char *)strdup("[-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cdl] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fix_rec_dmn dim] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-H] [-h] [--hdn] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [-m] [--md5_dgs] [--md5_wrt] [--mk_rec_dmn dim] [--msa] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [-s format] [-u] [--unn] [-v ...] [-X box] [-x] [--xml] [--xml_no_loc] [--xml_spr_chr sng] [--xml_spr_nmr sng] in.nc [[out.nc]]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cdl] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fix_rec_dmn dim] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [--grp_xtr_var_xcl] [-H] [-h] [--hdn] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [-m] [--md5_dgs] [--md5_wrt] [--mk_rec_dmn dim] [--msa] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [-s format] [-u] [--unn] [-v ...] [-X box] [-x] [--xml] [--xml_no_loc] [--xml_spr_chr sng] [--xml_spr_nmr sng] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [-a ...] [--bfr sz] [-C] [-c] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [-M pck_map] [--mrd] [--msa] [--no_tmp_fl] [-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-U] [-v ...] [-X box] [-x] in.nc [out.nc]\n");
@@ -1014,6 +1014,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-g, --grp --group\told_grp,new_grp Group's old and new names\n");
     if(prg_lcl != ncrename) (void)fprintf(stdout,"-g, --grp grp1[,grp2[...]] Group(s) to process (regular expressions supported)\n");
   } /* end if */
+  if(strstr(opt_sng,"--gxvx, --grp_xtr_var_xcl")) (void)fprintf(stdout,"    --gxvx, --grp_xtr_var_xcl\tGroup Extraction Variable Exclusion\n");
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-H]")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --data, --hieronymus\tToggle printing data\n");

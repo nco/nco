@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1002 2014-06-10 17:39:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1003 2014-06-11 04:18:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -116,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.5
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 6 June 2014
+@set update-date 10 June 2014
 @set update-month June 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13989,7 +13989,7 @@ SYNTAX
 ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdn] [--hdr_pad @var{nbr}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--grp_xtr_var_xcl] [-H] [-h] [--hdn] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] 
 [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [-s @var{format}] 

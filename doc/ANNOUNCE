@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.719 2014-06-04 19:44:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.720 2014-06-11 04:18:55 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -23,7 +23,13 @@ A. NCO now accesses DAP files on HTTPS servers. Previously NCO would
    only test filenames beginning with "http://" for DAP access. Now
    NCO also tests filenames beginning with "https://" for DAP access.
 
-A. fxm
+A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
+   This new switch helps control variable and group extraction.
+   Normally NCO works in "intersection mode" where the objects
+   extracted are the intersection of arguments to -g and -v.
+   And the --union switch can be used to make their union.
+   What about 
+   fxm
 
 BUG FIXES:
 

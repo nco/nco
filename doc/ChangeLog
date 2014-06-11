@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
 
+	* Document --grp_xtr_var_xcl
+
 	* Utilize @verbatim environment in all nco.texi @examples
 
 2014-06-06  Charlie Zender  <zender@uci.edu>
