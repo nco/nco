@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1003 2014-06-11 04:18:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1004 2014-06-11 17:28:22 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3901,13 +3901,9 @@ build time.
 @cindex @code{--xcl}
 @cindex @code{--unn}
 @cindex @code{--union}
+@cindex @code{--gxvx}
+@cindex @code{--grp_xtr_var_xcl}
 @cartouche
-Options @code{--unn}@*
-Availability: @command{ncbo}, @command{nces},
-@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
-@command{ncra}, @command{ncrcat}, @command{ncwa}@* 
-Short options: @*
-Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
 Availability: @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
@@ -3920,6 +3916,16 @@ Availability: (@command{ncap2}), @command{ncbo}, @command{nces},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-v}, @samp{-x}@*
 Long options: @samp{--variable}, @samp{--exclude} or @samp{--xcl}@*
+Options @code{--unn}@*
+Availability: @command{ncbo}, @command{nces},
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
+@command{ncra}, @command{ncrcat}, @command{ncwa}@* 
+Short options: @*
+Long options: @samp{--unn} and @samp{--union}@*
+Options @code{--grp_xtr_var_xcl}@*
+Availability: @command{ncks}@*
+Short options: @*
+Long options: @samp{--gxvx} and @samp{--grp_xtr_var_xcl}@*
 @end cartouche
 Subsetting variables refers to explicitly specifying variables and
 groups to be included or excluded from operator actions.
@@ -3955,6 +3961,25 @@ group subsetting is controlled by a few powerful yet subtle syntactical
 distinctions.
 When learning this syntax it is helpful to keep in mind the similarity
 between group hierarchies and directory structures. 
+
+@html
+<a name="gxvx"></a> <!-- http://nco.sf.net/nco.html#gxvx -->
+<a name="grp_xtr_var_xcl"></a> <!-- http://nco.sf.net/nco.html#grp_xtr_var_xcl -->
+@end html
+As of @acronym{NCO} 4.4.4 (June, 2014), @command{ncks} (alone) supports 
+an option to include specified groups yet exclude specified variables.
+The @samp{--grp_xtr_var_xcl} switch (with long option equivalent
+@samp{--gxvx}) extracts all contents of groups given as arguments to
+@samp{-g @var{grp}[,@dots{}]}, except for variables given as arguments
+to @samp{-v @var{var}[,@dots{}]}.
+Use this when one or a few variables in hierarchical files are not to be
+extracted, and all other variables are.  
+This is useful when coercing netCDF4 files into netCDF3 files such as
+with converting, flattening, or dismembering files 
+(see @ref{Flattening Groups}).
+@example       
+ncks --grp_xtr_var_xcl -g g1 -v v1 # Extract all of group g1 except v1
+@end example
 
 @cindex @command{mv}
 @cindex @command{cp}
@@ -4363,6 +4388,14 @@ Hence, @samp{-G :-1} is the same as @samp{-G @@1}.
 This is simply a way of making the @var{lvl_nbr} argument
 positive-definite. 
 
+@menu
+* Flattening Groups::
+* Moving Groups::
+* Dismembering Files::
+* Checking CF-compliance::
+@end menu
+@node Flattening Groups, Moving Groups, Group Path Editing, Group Path Editing
+@subsection Deletion, Truncation, and Flattening of Groups
 @html
 <a name="flatten"></a> <!-- http://nco.sf.net/nco.html#flatten -->
 <a name="delete"></a> <!-- http://nco.sf.net/nco.html#delete -->
@@ -4481,6 +4514,8 @@ ncks -G g1:-1 -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/g1/v1
 <a name="mv"></a> <!-- http://nco.sf.net/nco.html#mv -->
 <a name="move"></a> <!-- http://nco.sf.net/nco.html#move -->
 @end html
+@node Moving Groups, Dismembering Files, Flattening Groups, Group Path Editing
+@subsection Moving Groups
 @cindex move groups
 @cindex groups, moving
 @cindex rename groups
@@ -4538,6 +4573,8 @@ all other groups (e.g., @code{ecmwf}, @code{giss}).
 <a name="disaggregate"></a> <!-- http://nco.sf.net/nco.html#disaggregate -->
 <a name="ncdismember"></a> <!-- http://nco.sf.net/nco.html#ncdismember -->
 @end html
+@node Dismembering Files, Checking CF-compliance, Moving Groups, Group Path Editing
+@subsection Dismembering Files
 @cindex disaggregate
 @cindex dismember
 @findex ncdismember
@@ -4654,6 +4691,8 @@ as @code{NC_STRING} and @code{NC_UBYTE}) to corresponding netCDF3
 atomic types (@code{NC_CHAR} and @code{NC_SHORT}) when the output format
 is netCDF3. 
 
+@node Checking CF-compliance,  , Dismembering Files, Group Path Editing
+@subsection Checking CF-compliance
 @cindex @acronym{CF} compliance checker
 @findex cfchecker
 @findex ncdismember

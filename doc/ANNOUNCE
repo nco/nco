@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.720 2014-06-11 04:18:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.721 2014-06-11 17:28:22 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -28,8 +28,17 @@ A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
    Normally NCO works in "intersection mode" where the objects
    extracted are the intersection of arguments to -g and -v.
    And the --union switch can be used to make their union.
-   What about 
-   fxm
+   As of 4.4.4 (June, 2014), ncks (alone) supports an option to
+   include specified groups yet exclude specified variables. 
+   The --grp_xtr_var_xcl switch (with long option equivalent --gxvx
+   extracts all contents of groups given as arguments to 
+   -g except for variables given as arguments to -v.
+   Use this when one or a few variables in hierarchical files are not
+   to be extracted, and all other variables are. This is useful when
+   coercing netCDF4 files into netCDF3 files such as with converting,
+   flattening, or dismembering files.
+   ncks --grp_xtr_var_xcl -g g1 -v v1 # Extract all of group g1 except v1
+   http://nco.sf.net/nco.html#
 
 BUG FIXES:
 

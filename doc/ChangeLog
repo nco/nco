@@ -1,4 +1,5 @@
-2014-06-10  Charlie Zender  <zender@uci.edu>
+2014-06-11  Charlie Zender  <zender@uci.edu>
+
 
 	* NCO 4.4.5 release procedure:
  	Changes since nco-4_4_4: https DAP,
@@ -7,6 +8,8 @@
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
 
 	* Document --grp_xtr_var_xcl
+
+2014-06-10  Charlie Zender  <zender@uci.edu>
 
 	* Utilize @verbatim environment in all nco.texi @examples
 
