@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.244 2014-06-09 19:51:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.245 2014-06-12 19:13:25 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1936,9 +1936,21 @@ int
 nco_rename_att(const int nc_id,const int var_id,const char * const att_nm,const char * const att_new_nm)
 {
   /* Purpose: Wrapper for nc_rename_att() */
+  const char fnc_nm[]="nco_rename_att()";
   int rcd;
   rcd=nc_rename_att(nc_id,var_id,att_nm,att_new_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_att()");
+  if(rcd == NC_ENAMEINUSE){
+    if(var_id > NC_GLOBAL){
+      char var_nm[NC_MAX_NAME+1L];
+      (void)nco_inq_varname(nc_id,var_id,var_nm);
+      (void)fprintf(stdout,"ERROR: %s unable to rename variable \"%s\" attribute \"%s\" to \"%s\"\n",fnc_nm,var_nm,att_nm,att_new_nm);
+    }else{
+      char grp_nm[NC_MAX_NAME+1L];
+      (void)nco_inq_grpname(nc_id,grp_nm);
+      (void)fprintf(stdout,"ERROR: %s unable to rename group \"%s\" attribute \"%s\" to \"%s\"\n",fnc_nm,grp_nm,att_nm,att_new_nm);
+    } /* endif */
+  } /* !NC_ENAMEINUSE */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 }  /* end nco_rename_att */
 

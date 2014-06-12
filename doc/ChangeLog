@@ -1,3 +1,7 @@
+2014-06-12  Charlie Zender  <zender@uci.edu>
+
+	* Improve ncrename diagnostics, fix unset pointer de-reference
+
 2014-06-11  Charlie Zender  <zender@uci.edu>
 
 

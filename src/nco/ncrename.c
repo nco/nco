@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.194 2014-06-05 22:26:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.195 2014-06-12 19:13:25 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.194 2014-06-05 22:26:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.194 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.195 2014-06-12 19:13:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.195 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -447,15 +447,13 @@ main(int argc,char **argv)
       trv_obj=nco_obj_usr_sng(var_nm,trv_tbl,&is_opt);  
 
       /* If object is group, set NC_GLOBAL */
-      if(trv_obj && trv_obj->nco_typ == nco_obj_typ_grp){ 
-        var_id=NC_GLOBAL;
-      }
+      if(trv_obj && trv_obj->nco_typ == nco_obj_typ_grp) var_id=NC_GLOBAL;
 
       /* Object found that matches "var_nm" */
-      if (trv_obj || IS_GLB_GRP_ATT){
+      if(trv_obj || IS_GLB_GRP_ATT){
 
         /* If object found get group ID, else groud ID is root (cases of "global") */
-        if (trv_obj) (void)nco_inq_grp_full_ncid(nc_id,trv_obj->grp_nm_fll,&grp_id); else grp_id=nc_id;
+        if(trv_obj) (void)nco_inq_grp_full_ncid(nc_id,trv_obj->grp_nm_fll,&grp_id); else grp_id=nc_id;
 
         /* Get var_id of variable */
         if(IS_GLB_GRP_ATT){
@@ -474,9 +472,7 @@ main(int argc,char **argv)
           }else{ /* Variable name does not contain opt_chr so variable presence is required */
 
             /* Get ID only if object is variable (not group). NB: use relative name found */
-            if(trv_obj->nco_typ == nco_obj_typ_var){ 
-              rcd=nco_inq_varid(grp_id,trv_obj->nm,&var_id);
-            } /* Get ID only if object is variable (not group) */
+            if(trv_obj->nco_typ == nco_obj_typ_var) rcd=nco_inq_varid(grp_id,trv_obj->nm,&var_id);
 
           } /* end if */
         } /* !IS_GLB_GRP_ATT */
@@ -507,29 +503,22 @@ main(int argc,char **argv)
 
       } /* Match variable by name */
 
+    }else{ /* ...or rename attribute for all variables and groups... */
 
-    }else{ /* ...or rename attribute for all variables... */
-
-      /* Loop table */
       for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
         (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
 
-        /* We are in NC_GLOBAL zone if group  */
-        if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp){
-          var_id=NC_GLOBAL;
-        }else {
-          (void)nco_inq_varid(grp_id,trv_tbl->lst[idx_tbl].nm,&var_id);
-        }
+        if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp) var_id=NC_GLOBAL; else (void)nco_inq_varid(grp_id,trv_tbl->lst[idx_tbl].nm,&var_id);
 
         if(att_rnm_lst[idx_att].old_nm[0] == opt_chr){
-          /* Rename attribute if variable contains attribute else do nothing */
+          /* Rename attribute if variable/group contains attribute else do nothing */
           rcd=nco_inq_attid_flg(grp_id,var_id,att_rnm_lst[idx_att].old_nm+1L,&att_rnm_lst[idx_att].id);
           if(rcd == NC_NOERR){
             (void)nco_rename_att(grp_id,var_id,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm);
             nbr_rnm++;
             /* Inform user which variable had attribute renamed */
             if(var_id > NC_GLOBAL){
-              if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm,var_nm);
+              if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm,trv_tbl->lst[idx_tbl].nm);
             }else{
               if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm);
             } /* end else */
