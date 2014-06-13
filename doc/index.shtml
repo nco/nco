@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.898 2014-06-13 19:43:50 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.899 2014-06-13 19:57:15 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -330,6 +330,23 @@ See the ads for more details.
 (<a href="http://dust.ess.uci.edu/hire/prg_anl_06_adv.pdf">PDF</a>, 
  <a href="http://dust.ess.uci.edu/hire/prg_anl_06_adv.txt">TXT</a>).
 
+<p>We encourage you to e-mail NCO endorsements to
+<a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
+with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 
+An endorsement can be a few sentences that describes how NCO benefits your work or research.
+This information will be useful advocating for more NCO support.
+&ldquo;What future proposals?&rdquo; you ask, &ldquo;Weren't you already funded?&rdquo;
+Yes, in 2012 NASA funded us to implement netCDF4 groups and HDF support in NCO,
+and in 2014 NASA funded us to improve SLD handling in NCO.
+Yet these funds have been spent well before achieving our ambition: to
+shift geoscience data analysis from a flat- to a hierarchical-paradigm
+(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>).
+Other more prosaic tasks that need work are, for example,
+parallelization of I/O (!!!), user-defined and non-atomic types, more CF conventions, 
+cloud-services, JSON back-end, and user-defined <tt>ncap2</tt> functions.
+Need I say more? 
+If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
+
 <dt><a name="prp_access"></a></dt> <!-- http://nco.sf.net#prp_access -->
 <h2>NASA ACCESS 2011 Project</h2>
 <img src="nasa.png" height=180 width=180 align=right>
@@ -384,22 +401,6 @@ simulations (in netCDF format).
 Her analysis informs the development of GODAD so that NCO can solve
 the most important problems real-world researchers encounter in
 evaluating GCMs against satellite data.</p>  
-
-<p>We encourage you to e-mail NCO endorsements to
-<a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
-with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 
-An endorsement can be a sentence or a page, describing how NCO
-benefits your work or research.
-This information will be useful advocating for more NCO support.
-&ldquo;What future proposals?&rdquo; you ask, &ldquo;Weren't you already funded?&rdquo;
-Yes, we were funded to implement netCDF4 groups and HDF support in NCO.
-Yet these funds have been spent well before achieving our ambition: to
-shift geoscience data analysis from a flat- to a hierarchical-paradigm
-(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>).
-Other more prosaic tasks that need work are, for example,
-parallelization, user-defined types, irregular grids, and more CF conventions. 
-Need I say more? 
-If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
 </ul>
 <hr></p>
 
