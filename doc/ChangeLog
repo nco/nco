@@ -11677,7 +11677,7 @@
 2000-07-09  Charlie Zender  <zender@uci.edu>
 
         * Added section on Contributing/contributors to nco.texi
-	
+
 	* Fixed case when missing value is first in min and max operators
 
 	* Added min, max, ttl cases to nco_tst.sh
@@ -11685,7 +11685,7 @@
 	* Added temporary variable to all low-level arithmetic routines
 	(e.g., var_add()) to store missing value in order to reduce
 	dereferencing of pointers to missing values. This may result in
-	measurable speedups for all arithmetic operators. 
+	measurable speedups for all arithmetic operators.
 
 2000-07-08  Charlie Zender  <zender@uci.edu>
 
@@ -11747,7 +11747,7 @@
 
 	* Tagged this as nco1_1_48
 
-	* Found and fixed ncdiff bug in TODO #155. 
+	* Found and fixed ncdiff bug in TODO #155.
 	Bug had been inserted in ncdiff 1.5 (nco-1.1.15, November 1998)
 	when I switched from using dimension IDs to using dimension names
 	to identify and compare dimensions in var_conform_dim(). Problem
@@ -11758,10 +11758,10 @@
 	out in ncdiff() so I was able to check that turning it back on
 	solves the problem. Now I have removed old commented-out block
 	from ncdiff (because it was confusing) and all logic is now local
-	to var_conform_dim(). This fix increases the number of strstr() 
+	to var_conform_dim(). This fix increases the number of strstr()
 	comparisons of dimension names because names must now be compared
-	twice in var_conform_dim() for each variable being expanded. 
-	Oh well. 
+	twice in var_conform_dim() for each variable being expanded.
+	Oh well.
 
 2000-05-12  Charlie Zender  <zender@uci.edu>
 
@@ -11771,8 +11771,8 @@
 
 	* Finished testing of feature allowing skipping of initial files
 	when lmt_typ = dim_idx. Seems to work. Now dim_idx and crd_val
-	hyperslabs may have arbitrary numbers of superfluous files at 
-	beginning and end. 
+	hyperslabs may have arbitrary numbers of superfluous files at
+	beginning and end.
 
 	* Added rec_skp_nsh member to lmt structure to support keeping
 	track of records skipped in superfluous initial files for lmt_typ
@@ -11792,13 +11792,13 @@
 
 	* Switched NCO from atof(), atol() to strtod(), strtol()
 
-	* Added ability to skip superfluous trailing files to lmt_evl() 
+	* Added ability to skip superfluous trailing files to lmt_evl()
 	when limits are coordinate values. Needs testing but appears to
 	work. Had to use a goto statement, icky. Fixes TODO #157?
 
 2000-05-04  Charlie Zender  <zender@uci.edu>
 
-	* More fixes to fix problems with Electric Fence 
+	* More fixes to fix problems with Electric Fence
 
 2000-04-18  Charlie Zender  <zender@uci.edu>
 

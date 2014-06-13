@@ -1,0 +1,96 @@
+<!-- $Header: /data/zender/nco_20150216/nco/doc/milestones_old.shtml,v 1.1 2014-06-13 19:43:50 zender Exp $
+
+Purpose: Milestones archive
+
+URL:
+http://nco.sf.net/milestones_old.shtml
+http://dust.ess.uci.edu/nco/milestones_old.shtml
+file:///home/zender/nco/doc/milestones_old.shtml
+
+Usage:
+/usr/bin/scp ~/nco/doc/milestones_old.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/milestones_old.shtml dust.ess.uci.edu:/var/www/html/nco
+-->
+
+<!doctype html public "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+   <title>NCO Homepage</title>
+   <meta name="GENERATOR" content="Mozilla/3.04Gold (X11; I; Linux 2.0.0 i686) [Netscape]">
+   <meta name="Author" content="Charles S. Zender">
+   <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
+</head>
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
+
+<dt><a name="News"></a></dt>
+<h2>Releases &amp; Milestones from 2003&ndash;2012 (versions 2.8.4&ndash;4.2.3)</h2>
+
+<ul>
+<li>2012 Dec&nbsp;05: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201212.pdf">Talk</a> at Fall AGU, San Francisco, California</li>
+<li>2012 Nov&nbsp;28: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201211.pdf">Poster</a> at NASA ESDSWG, Annapolis, Maryland</li>
+<li>2012 Nov&nbsp;13: NCO 4.2.3 (GPE)</li>
+<li>2012 Oct&nbsp;29: NCO 4.2.2 (<tt>ncks, ncecat</tt> Groups)</li>
+<li>2012 Aug&nbsp;02: NCO 4.2.1 (RAM disks)</li>
+<li>2012 Jun&nbsp;12: NCO 4.2.0 (Windows support)</li>
+<li>2012 Apr&nbsp;23: Received funding for NASA ACCESS 2011 <a href="#prp_access">project</a></li>
+<li>2012 Mar&nbsp;29: NCO 4.1.0 (MD5 support, MM3)</li>
+<li>2012 Feb&nbsp;13: NCO 4.0.9</li>
+<li>2011 Jun&nbsp;03: Submitted NASA ACCESS 2011 <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">proposal</a></li>
+<li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support, NOFILL workaround, <i>upgrade recommended</i>)</li>
+<li>2011 Feb&nbsp;21: NCO 4.0.7 (<i>upgrade recommended</i>)</li>
+<li>2011 Jan&nbsp;15: NCO 4.0.6</li>
+<li>2010 Oct&nbsp;13: NCO 4.0.5</li>
+<li>2010 Sep&nbsp;24: NCO 4.0.4 (chunking everywhere)</li>
+<li>2010 Sep&nbsp;02: NCO 4.0.3</li>
+<li>2010 Jun&nbsp;27: NCO 4.0.2</li>
+<li>2010 Apr&nbsp;05: NCO 4.0.1</li>
+<li>2010 Jan&nbsp;05: NCO 4.0.0 (bilinear interpolation, calendar attributes)</li>
+<li>2009 Jul&nbsp;15: NCO 3.9.9 (chunking, re-basing, GSL stats/interp)</li>
+<li>2009 Apr&nbsp;29: NCO 3.9.8 (GSL RNG/PDF functions)</li>
+<li>2009 Mar&nbsp;18: NCO 3.9.7</li>
+<li>2009 Jan&nbsp;22: NCO 3.9.6 (GSL special functions) (<i>upgrade highly recommended</i>)</li>
+<li>2008 Sep&nbsp;24: <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a></li>
+<li>2008 Aug&nbsp;31: <a href="http://www.nsf.gov">NSF</a> funding ends</a></li>
+<li>2008 Aug&nbsp;08: NCO <a href="http://nco.wiki.sf.net">Wiki</a>!</li>
+<li>2008 May&nbsp;22: SWAMP <a href="http://dust.ess.uci.edu/ppr/smn_WZJ08_ccgrid_200805.pdf">Talk</a> at CCGRID08 in Lyon, France</li>
+<li>2008 May&nbsp;11: NCO 3.9.5</li>
+<li>2008 Apr&nbsp;28: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">overview</a> paper in EMS</li>
+<li>2008 Mar&nbsp;04: NCO 3.9.4</li>
+<li>2007 Dec&nbsp;10: SWAMP <a href="http://dust.ess.uci.edu/ppr/pst_WZJ074.pdf">Poster</a> at Fall AGU, San Francisco, California</li>
+<li>2007 Dec&nbsp;07: NCO 3.9.3 (SWAMP!)</li>
+<li>2007 Dec&nbsp;04: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">scaling paper</a> in IJHPCA</li>
+<li>2007 Aug&nbsp;29: NCO 3.9.2 (<tt>_FillValue</tt>s)</li>
+<li>2007 Aug&nbsp;27: <a href="http://swamp.googlecode.com">SWAMP site</a> spins-off from NCO</li>
+<li>2007 Jun&nbsp;29: NCO 3.9.1 (netCDF4 deflation)</li>
+<li>2007 May&nbsp;26: NCO 3.9.0 (netCDF4 atomic types)</li>
+<li>2007 May&nbsp;02: SWAMP <a href="http://dust.ess.uci.edu/smn/smn_WZJ07_gpc_200705.pdf">Talk</a> at GPC, Paris, France</li> 
+<li>2007 Apr&nbsp;20: NCO 3.2.0</li>
+<li>2007 Mar&nbsp;29: NCO 3.1.9 x86_64 RPMs</li>
+<li>2007 Mar&nbsp;10: NCO 3.1.9 (i386/x86_64 debs and i386 RPMs)</li>
+<li>2007 Feb&nbsp;22: SWAMP <a href="http://dust.ess.uci.edu/smn/smn_WZJ07_opendap_200702.pdf">Talk</a> at OPeNDAP Developer's Workshop, Boulder, Colorado</li>
+<li>2007 Jan&nbsp;15: <a href="http://dust.ess.uci.edu/smn/smn_nco_ams_200701.pdf">Talk</a> and <a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.pdf">Extended Abstract</a> on NCO Scaling at AMS IIPS, San Antonio, Texas</li>
+<li>2007 Jan&nbsp;09: <a href="http://dust.ess.uci.edu/ppr/pst_ZMW06.pdf">Poster</a> on NCO Scaling at Fall AGU, San Francisco, California</li>
+<li>2006 Dec&nbsp;09: <a href="http://dust.ess.uci.edu/ppr/pst_WZJ06.pdf">Poster</a> on SWAMP at Fall AGU, San Francisco, California</li>
+<li>2006 Dec&nbsp;06: NCO 3.1.8</li>
+<li>2006 Nov&nbsp;11: NCO 3.1.7</li>
+<li>2006 Sep&nbsp;18: NCO 3.1.6</li>
+<li>2006 Aug&nbsp;29: NCO 3.1.5</li>
+<li>2006 Jun&nbsp;07: NCO 3.1.4</li>
+<li>2006 May&nbsp;30: NCO 3.1.3</li>
+<li>2006 Apr&nbsp;21: NCO 3.1.2</li>
+<li>2006 Jan&nbsp;30: NCO 3.1.1</li>
+<li>2005 Dec&nbsp;02: NCO 3.1.0 (MPI!)</li>
+<li>2005 Oct&nbsp;28: NCO 3.0.3</li>
+<li>2005 Oct&nbsp;17: <a href="#BM">NCO parallel benchmarks</a></li>
+<li>2005 Aug&nbsp;22: NCO 3.0.2</li>
+<li>2005 Jun&nbsp;10: NCO 3.0.1</li>
+<li>2005 Mar&nbsp;24: NCO 3.0.0</li>
+<li>2004 Sep&nbsp;07: NCO 2.9.9 (<tt>ncpdq</tt> packs data quietly)</li>
+<li>2004 Sep&nbsp;01: Funding for NSF <a href="#prp_sei">SEI Project</a> begins</li>
+<li>2004 Aug&nbsp;07: NCO 2.9.8 (<a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> re-orders dimensions)</li>
+<li>2004 Mar&nbsp;04: Submit NSF <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">SEI proposal</a></li>
+</ul>
+<hr></p>
+
+</body>
+</html>

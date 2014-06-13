@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.22 2012-06-14 20:20:14 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.23 2014-06-13 19:43:51 zender Exp $
 
 Purpose: NCO news archive
 
@@ -23,11 +23,7 @@ scp -p ~/nco/doc/nco_news.shtml nco.sf.net:/home/project-web/nco/htdocs/nco_news
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
 <dt><a name="News"></a></dt>
-<h2>NCO News</h2>
-
-<ul>
-<li><a href="./nco_news.shtml">Past NCO News \& Announcements</a></li>
-</ul>
+<h2>NCO News and Announcements from 20030624 (version 2.8.3) and earlier</h2>
 
 <a name="20030624"></a>
 <p>2003/06/24: A potpurri of old news which is no longer needed on the homepage
