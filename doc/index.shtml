@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.899 2014-06-13 19:57:15 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.900 2014-06-13 20:15:21 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -335,12 +335,17 @@ See the ads for more details.
 with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 
 An endorsement can be a few sentences that describes how NCO benefits your work or research.
 This information will be useful advocating for more NCO support.
-&ldquo;What future proposals?&rdquo; you ask, &ldquo;Weren't you already funded?&rdquo;
+&ldquo;What future proposals?&rdquo; you ask, &ldquo;Aren't you already funded?&rdquo;
 Yes, in 2012 NASA funded us to implement netCDF4 groups and HDF support in NCO,
 and in 2014 NASA funded us to improve SLD handling in NCO.
-Yet these funds have been spent well before achieving our ambition: to
-shift geoscience data analysis from a flat- to a hierarchical-paradigm
-(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>).
+These funds are/were primarily for development and maintainance of
+specific features. 
+Achieving our grander ambition, to shift geoscience data analysis from
+a flat- to a hierarchical-paradigm
+(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>), 
+will require a sustained effort and software ecosystem that
+understands and implement hierarchical dataset concepts.
+And it's hard to sell a federal agency on the wisdom of investing in a paradigm shift!
 Other more prosaic tasks that need work are, for example,
 parallelization of I/O (!!!), user-defined and non-atomic types, more CF conventions, 
 cloud-services, JSON back-end, and user-defined <tt>ncap2</tt> functions.

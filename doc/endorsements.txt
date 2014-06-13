@@ -1,0 +1,141 @@
+Received fxm:
+
+************************************************************************
+Received 20140613:
+
+NCO benefits my research in dynamic global vegetation models and
+climate change research by allowing me to easily modify and analyze
+climate data and vegetation simulation data. 
+
+--
+John B. Kim
+PNW Research Station & WWETAC, US Forest Service
+jbkim@fs.fed.us  541-750-7287 (o)  541-286-5546 (m)
+
+************************************************************************
+Received 20110325:
+
+Dear Prof. Zender,
+
+I am composing this email to express my strongest endorsement for the
+NCO software and its development. I am an assistant professor in
+Department of Atmospheric, Oceanic, and Space Sciences at the
+University of Michigan. My research area is in understanding various
+issues associated with radiative transfer, water vapor, clouds, and
+their interactions via diagnosis analysis of observations and GCM
+outputs. I have been using NCO operators since 2006. As my group and I
+have to constantly deal with large amount of data sets of reanalysis,
+GCM simualtions, and satellite data products, we benefit enormously
+from using NCO. It saves a great amount of our time in programming and
+preprocessing data, and it greatly simplifies such coding tasks. For
+our day-to-day research work, NCO software is as important as Matlab,
+Fortran, and Perl. It has already become an inseparable and critical
+component in data analysis and our research. And I know many
+researchers share the same view with me regarding the technical
+importance of NCO. Therefore, I endorse the development of NCO without
+any reservation. 
+
+    Sincerely,
+
+    Xianglei Huang
+
+
+-------------------------------------------------------------------
+Xianglei Huang
+Assistant Professor
+Department of Atmospheric, Oceanic, and Space Sciences
+College of Engineering, University of Michigan
+2455 Hayward St, Ann Arbor, MI 48109
+Phone: 734-936-0491 FAX: 734-936-0503
+xianglei@umich.edu
+-------------------------------------------------------------------
+
+************************************************************************
+Received 20040809:
+
+Prof Zender,
+
+I'm writing in support of the recent NSF proposal [1] to improve the
+"NCO" suite of NetCDF/HDF data analysis tools.  Our group:
+
+  http://paoc.mit.edu/cmi/
+  http://mitgcm.org/
+
+and many of our collaborators are steadily moving toward the use of both
+hierarchical data formats (such as NetCDF and HDF) and multi-terabyte
+data sets.  Under these circumstances, tools such as NCO become
+increasingly useful and important for our work.
+
+I am impressed with the capabilities offered by current NCO releases and
+would very much like to see it extended (per the above proposal) to take
+fuller advantage of parallel systems.  I believe that such a free, open,
+and extensible set of parallel analysis tools would be an important
+resource for the GFD community.  While nearly all ocean and atmospheric
+models have evolved to take advantage of parallel execution, it seems
+that many of the data analysis tools have lagged.  Thus, for many
+researchers, it is the pre- and post-processing steps that consume the
+most time and can be the greatest barrier to experimental progress.
+
+Thus, I look forward to parallel versions of the NCO tools that will
+take better advantage of both our SMP (threaded) and cluster (MPI-based)
+computing resources.
+
+Best regards,
+Ed Hill
+
+ [1] SEI(GEO): Scientific Data Operators Optimized for 
+     Distributed Interactive and Batch Analysis of Tera-Scale
+     Geophysical Data,  Dr. Charles S. Zender, Department of 
+     Earth System Science, University of California at Irvine
+
+
+-- Edward H. Hill III, PhD office: MIT Dept. of EAPS; Rm 54-1424; 77
+   Massachusetts Ave. Cambridge, MA 02139-4307 emails: eh3@mit.edu
+   ed@eh3.com URLs: http://web.mit.edu/eh3/ http://eh3.com/ phone:
+   617-253-0098 fax: 617-253-4464 
+
+************************************************************************
+Received 20040611:
+
+The best netCDF processing software I have ever used. NCO is 
+indispensible in my work.
+Good luck!
+
+Haijun
+
+--------------------------------------------
+Haijun Yang, Associate Professor
+Department of Atmospheric Science
+School of Physics, Peking University
+209 Chengfu Road, Beijing, China 100871
+Tel: 86-10-62767436
+Fax: 86-10-62751094
+Email: hjyang@pku.edu.cn
+--------------------------------------------
+************************************************************************
+Received 20040430:
+
+I find the NCO operators to be indispensable in my work, and
+many of my colleagues would say the same.  Their usefulness
+is perhaps best captured by the surprise of some people to whom
+I have introduced NCO when they learned that it is a separate
+entity from the NETCDF library.
+
+The developers of NCO have always replied promptly to my help
+requests and have on occasion even added new functionality
+that I had requested.
+
+In my opinion, the advantages of NCO compared to mathematically more
+comprehensive packages reading NETCDF files are that it is fast, very
+concise, free of charge, runs on almost any platform, and can be
+easily integrated into shell or other kinds of scripts. And with
+the evolution of the ncap utility, the capabilities of NCO are
+becoming sufficient for tasks of greater numerical complexity.
+
+------------------------------------------------------------
+Dr. Maxwell Kelley
+Laboratoire des Sciences du Climat et de l'Environnement
+L'Orme des Merisiers CEA Saclay
+91191 Gif sur Yvette cedex        mkelley@lsce.saclay.cea.fr
+France                                +33 1 69 08 27 02
+------------------------------------------------------------
