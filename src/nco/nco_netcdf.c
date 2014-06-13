@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.245 2014-06-12 19:13:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.246 2014-06-13 00:14:04 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1943,11 +1943,11 @@ nco_rename_att(const int nc_id,const int var_id,const char * const att_nm,const 
     if(var_id > NC_GLOBAL){
       char var_nm[NC_MAX_NAME+1L];
       (void)nco_inq_varname(nc_id,var_id,var_nm);
-      (void)fprintf(stdout,"ERROR: %s unable to rename variable \"%s\" attribute \"%s\" to \"%s\"\n",fnc_nm,var_nm,att_nm,att_new_nm);
+      (void)fprintf(stdout,"ERROR: %s unable to rename variable \"%s\" attribute \"%s\" to \"%s\" because the variable already has an attribute of that name\n",fnc_nm,var_nm,att_nm,att_new_nm);
     }else{
       char grp_nm[NC_MAX_NAME+1L];
       (void)nco_inq_grpname(nc_id,grp_nm);
-      (void)fprintf(stdout,"ERROR: %s unable to rename group \"%s\" attribute \"%s\" to \"%s\"\n",fnc_nm,grp_nm,att_nm,att_new_nm);
+      (void)fprintf(stdout,"ERROR: %s unable to rename group \"%s\" attribute \"%s\" to \"%s\" because the group already has an attribute of that name\n",fnc_nm,grp_nm,att_nm,att_new_nm);
     } /* endif */
   } /* !NC_ENAMEINUSE */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);

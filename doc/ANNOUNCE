@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.721 2014-06-11 17:28:22 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.722 2014-06-13 00:14:04 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -20,8 +20,10 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. NCO now accesses DAP files on HTTPS servers. Previously NCO would
-   only test filenames beginning with "http://" for DAP access. Now
-   NCO also tests filenames beginning with "https://" for DAP access.
+   only test filenames beginning with "http://" for DAP access. 
+   Now NCO also tests filenames beginning with "https://" for DAP.
+   If you use DAP servers with a protocol besides HTTP or HTTPS please
+   tell us so we can enable NCO for those services too.
 
 A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
    This new switch helps control variable and group extraction.
@@ -38,11 +40,11 @@ A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
    coercing netCDF4 files into netCDF3 files such as with converting,
    flattening, or dismembering files.
    ncks --grp_xtr_var_xcl -g g1 -v v1 # Extract all of group g1 except v1
-   http://nco.sf.net/nco.html#
+   http://nco.sf.net/nco.html#gxvx
 
 BUG FIXES:
 
-A. Hi
+A. ncrename: fix unsafe pointer de-reference and improve diagnostics
 
 KNOWN PROBLEMS:
 

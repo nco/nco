@@ -2,6 +2,7 @@
 # (Summer Undergraduate Research Fellowships in Information Technologies)
 # 20140416: Submitted to Brittany Gray <grayb@uci.edu> 
 
+cat > ${HOME}/sdn_ugr_03_adv.txt << 'EOF'
 Optimized Storage Shapes for Multi-dimensional Gridded Datasets
 
 PI: Prof. Charlie Zender
@@ -28,11 +29,15 @@ Recommended Web sites and publications:
 4. netCDF Operators http://nco.sf.net
 5. Zender, C. S., and H. J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, Int. J. High Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
 6. Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10), 1338-1342, doi:10.1016/j.envsoft.2008.03.004.
+EOF
+scp ${HOME}/sdn_ugr_03_adv.txt dust.ess.uci.edu:/var/www/html/hire
+URL: http://dust.ess.uci.edu/hire/sdn_ugr_03_adv.txt
 
 ************************************************************************
 NB: Following project not "researchy" enough, maybe next year
 ************************************************************************
 
+cat > ${HOME}/sdn_ugr_02_adv.txt << 'EOF'
 Next Generation Parser for Structured Data Analysis
 
 PI: Prof. Charlie Zender
@@ -61,4 +66,7 @@ Recommended Web sites and publications:
 2. netCDF Operators http://nco.sf.net
 3. Zender, C. S., and H. J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, Int. J. High Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
 4. Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10), 1338-1342, doi:10.1016/j.envsoft.2008.03.004.
+EOF
+scp ${HOME}/sdn_ugr_02_adv.txt dust.ess.uci.edu:/var/www/html/hire
+URL: http://dust.ess.uci.edu/hire/sdn_ugr_02_adv.txt
 

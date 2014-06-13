@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.896 2014-06-04 19:43:07 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.897 2014-06-13 00:14:04 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -7,7 +7,7 @@ http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
 Usage:
-/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_nco_stk.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_srl.png ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png zender,nco@web.sf.net:/home/project-web/nco/htdocs
+/usr/bin/scp ~/nco/doc/doe.jpg ~/nco/doc/index.shtml ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_nco_stk.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_srl.png ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png zender,nco@web.sf.net:/home/project-web/nco/htdocs
 scp -p ~/nco/doc/index.shtml ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_nco_stk.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_srl.png ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png dust.ess.uci.edu:/var/www/html/nco
 scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp -p ~/nco/doc/.htaccess dust.ess.uci.edu:/var/www/html/nco/src
@@ -149,6 +149,7 @@ and
 <ul>
 <li>2014 Jun&nbsp;??: NCO 4.4.5 (<i>In progress</i>)
 <li>2014 May&nbsp;29: NCO 4.4.4 (Stability)
+<li>2014 May&nbsp;13: Received funding for NASA ACCESS 2013 <a href="#prp_axs">project</a></li>
 <li>2014 Apr&nbsp;02: NCO 4.4.3 (Stability)
 <li>2014 Mar&nbsp;27: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">Talk</a> at NASA GSFC, Greenbelt, Maryland</li>
 <li>2014 Mar&nbsp;25: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
@@ -353,6 +354,44 @@ influence of your monetary donations on NCO development:
 
 <a name="nasa"></a> <!-- http://nco.sf.net#nasa -->
 <a name="access"></a> <!-- http://nco.sf.net#access -->
+<dt><a name="prp_axs"></a></dt> <!-- http://nco.sf.net#prp_axs -->
+<h2>NASA ACCESS 2013 Project</h2>
+<img src="nasa.png" height=180 width=180 align=right>
+<p>
+The National Aeronautics and Space Administration (NASA) Cooperative
+Agreement <a href="NNX14AH55A">NNX14AH55A</a>
+funds our
+<a href="http://dust.ess.uci.edu/prp/prp_access/prp_axs.pdf">project</a>,
+&ldquo;Easy Access to and Analysis of NASA and Model Swath-like Data&rdquo;
+from 20140701&ndash;20160630 as part of the 
+Advancing Collaborative Connections for Earth System Science 
+(<a href="http://science.nasa.gov/earth-science/earth-science-data/access">ACCESS</a>)
+program. 
+This URL,
+<a href="http://nco.sf.net#prp_axs"><tt>http://nco.sf.net#prp_axs</tt></a>,
+points to the most up-to-date information on the ACCESS 2013 project.</p> 
+
+<p>This ACCESS project provides resources to implement support in NCO
+for Swath-like data (SLD), i.e., dataset with non-rectangular and/or
+time-varying spatial grids in which one or more coordinates are multi-dimensional.
+It is often challenging and time-consuming to work with SLD, 
+including all NASA Level&nbsp;2 satellite-retrieved data, non-rectangular 
+subsets of Level&nbsp;3 data, and model data (e.g., CMIP5) that are
+increasingly stored on non-rectangular grids.
+Spatially intelligent software tools is a key component of the
+Group-Oriented Data Analysis and Distribution 
+(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>) paradigm we
+are developing for geoscience data analysis.</p>  
+
+<p>We are currently recruiting a programmer (aka software engineer) 
+or postdoc based at UCI for at least two years, to accomplish our
+ACCESS objectives.
+As described in the proposal, this person will be responsible for 
+incorporating geospatial features and parallelism into NCO. 
+See the ads for more details.
+(<a href="http://dust.ess.uci.edu/hire/prg_anl_06_adv.pdf">PDF</a>, 
+ <a href="http://dust.ess.uci.edu/hire/prg_anl_06_adv.txt">TXT</a>).
+
 <dt><a name="prp_access"></a></dt> <!-- http://nco.sf.net#prp_access -->
 <h2>NASA ACCESS 2011 Project</h2>
 <img src="nasa.png" height=180 width=180 align=right>
@@ -360,7 +399,7 @@ influence of your monetary donations on NCO development:
 The National Aeronautics and Space Administration (NASA) Cooperative
 Agreement <a href="NNX12AF48A">NNX12AF48A</a>
 funded our
-<a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">ACCESS Project</a>,
+<a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">project</a>,
 &ldquo;Simplifying and accelerating model evaluation by NASA satellite data&rdquo;
 from 20120208&ndash;20140207 as part of the 
 Advancing Collaborative Connections for Earth System Science 
@@ -377,9 +416,9 @@ institutional support from August, 2008&ndash;February, 2012.
 This NASA support dramatically changed the scale and pace of NCO development. 
 This URL,
 <a href="http://nco.sf.net#prp_access"><tt>http://nco.sf.net#prp_access</tt></a>,
-points to the most up-to-date information on the ACCESS proposal.</p> 
+points to the most up-to-date information on the ACCESS 2011 project.</p> 
 
-<p>The ACCESS project provided human resources to implement support 
+<p>This ACCESS project provided human resources to implement support 
 in NCO for hierarchical group features in netCDF4 files and for NCO to
 process HDF files. 
 Groups are a powerful HDF feature that many NASA satellite datasets

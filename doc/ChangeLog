@@ -1,15 +1,16 @@
 2014-06-12  Charlie Zender  <zender@uci.edu>
 
-	* Improve ncrename diagnostics, fix unset pointer de-reference
-
-2014-06-11  Charlie Zender  <zender@uci.edu>
-
-
 	* NCO 4.4.5 release procedure:
  	Changes since nco-4_4_4: https DAP,
 	cd ~/nco;cvs tag -d nco-4_4_5;cvs tag -d nco-4_4_5-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
+
+	* Update project homepage
+
+	* Improve ncrename diagnostics, fix unset pointer de-reference
+
+2014-06-11  Charlie Zender  <zender@uci.edu>
 
 	* Document --grp_xtr_var_xcl
 
