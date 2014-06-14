@@ -1,3 +1,14 @@
+NCO is three things: a geoscience data analysis toolkit, an
+open-source software project, and an academic enterprise that embodies
+fundamental new (research-level) algorithms for geoscience data
+analysis. Successful academic research depends upon peer-evaluation,
+dissemination, and explicit acknowledgement of prior work and original
+results. The accepted way to convey acknowledgement to NCO for ideas
+or assistance in workflow processing is to cite its peer-reviewed 
+description and or its User Guide. We encourage users and data science 
+researchers to cite NCO for another reason, too: it helps funding
+agencies track the impact of the work they fund.
+
 The recommended citation for NCO software is
 
 Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience
