@@ -1,15 +1,15 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/problems_old.shtml,v 1.1 2014-06-15 16:36:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/problems_old.shtml,v 1.2 2014-06-15 16:45:40 zender Exp $
 
 Purpose: Problems archive
 
 URL:
-http://nco.sf.net/milestones_old.shtml
-http://dust.ess.uci.edu/nco/milestones_old.shtml
-file:///home/zender/nco/doc/milestones_old.shtml
+http://nco.sf.net/problems_old.shtml
+http://dust.ess.uci.edu/nco/problems_old.shtml
+file:///home/zender/nco/doc/problems_old.shtml
 
 Usage:
-/usr/bin/scp ~/nco/doc/milestones_old.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-scp -p ~/nco/doc/milestones_old.shtml dust.ess.uci.edu:/var/www/html/nco
+/usr/bin/scp ~/nco/doc/problems_old.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/problems_old.shtml dust.ess.uci.edu:/var/www/html/nco
 -->
 
 <!doctype html public "-//W3C//DTD HTML 3.2//EN">

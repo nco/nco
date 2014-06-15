@@ -1,0 +1,313 @@
+<!-- $Header: /data/zender/nco_20150216/nco/doc/build_hints.shtml,v 1.1 2014-06-15 16:45:40 zender Exp $
+
+Purpose: Build_Hints archive
+
+URL:
+http://nco.sf.net/build_hints.shtml
+http://dust.ess.uci.edu/nco/build_hints.shtml
+file:///home/zender/nco/doc/build_hints.shtml
+
+Usage:
+/usr/bin/scp ~/nco/doc/build_hints.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/build_hints.shtml dust.ess.uci.edu:/var/www/html/nco
+-->
+
+<!doctype html public "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+   <title>NCO Homepage</title>
+   <meta name="GENERATOR" content="Mozilla/3.04Gold (X11; I; Linux 2.0.0 i686) [Netscape]">
+   <meta name="Author" content="Charles S. Zender">
+   <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
+</head>
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
+
+<dt><a name="Makefile"></a></dt> <!-- http://nco.sf.net#Makefile -->
+<dt><a name="hnt"></a></dt> <!-- http://nco.sf.net#hnt -->
+<dt><a name="bld_hnt"></a></dt> <!-- http://nco.sf.net#bld_hnt -->
+<h2>Hints to Build-from-Source:</h2>
+
+<ul><b>Generic Build Hints:</b>
+
+<a name="bld_cnf"></a> <!-- http://nco.sf.net#bld_cnf -->
+<li><i>The two NCO build mechanisms:</i>
+NCO has two build mechanisms: (1)&nbsp;GNU configure and 
+(2)&nbsp; a custom Makefile (<tt>nco/bld/Makefile</tt>)
+designed for hand-editing.
+Try the traditional GNU <tt>configure</tt> method first, i.e.,
+<tt>./configure;make;make check;make install</tt>. 
+This method involves no hand-editing of makefiles, but trouble-free
+builds with it are less common than we would like.  
+The file <tt>nco/configure.eg</tt> contains a table which describes the 
+success you can expect building NCO with the <tt>configure</tt>
+mechanism. 
+If the simple <tt>configure</tt> recipe above does not work, savvy
+users may find it straightforward to modify and use the following, more
+advanced <tt>configure</tt> recipe:
+<tt>
+<pre class="example">
+# gcc/g++ Sysadmins use/modify this to install/update NCO in /usr/local, based on netCDF4 also in /usr/local (works on givre 20100727):
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+CPPFLAGS='-DHAVE_NETCDF4_H -I/usr/local/include' LDFLAGS='-L/usr/local/lib' ./configure --prefix='/usr/local' --enable-ncap2 --enable-netcdf4 > nco.configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
+/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
+make clean;make > nco.make.${GNU_TRP}.foo 2>&1
+make check >> nco.make.${GNU_TRP}.foo 2>&1
+sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
+</pre>
+</tt>
+This is the recipe that the developers use to test <tt>configure</tt>
+on their machines.
+Please contribute patches required to get the <tt>configure</tt> 
+mechanism working properly for NCO on your platform.
+The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
+contains gory details of successful (and failed) builds for many platforms.  
+Plaform-specific build hints (CentOS, Mac OS&nbsp;X, RHEL, Solaris)
+are listed <a href="#bld_plt_spc">below</a>.
+<br>
+
+All platforms continue to work fine with the <tt>nco/bld/Makefile</tt>
+method: 
+<tt>
+<pre class="example">
+export MY_BIN_DIR='/home/username/bin' # Executables installed here
+export MY_OBJ_DIR='/home/username/obj' # Object files placed here
+export MY_LIB_DIR='/home/username/lib' # Libraries built here
+mkdir -p ${MY_BIN_DIR} ${MY_OBJ_DIR} ${MY_LIB_DIR}
+cd ~/nco/bld
+make dir
+make all
+make ncap2
+make test
+</pre>
+</tt> 
+Disadvantages are that <tt>nco/bld/Makefile</tt> (1)&nbsp;Usually requires
+editing to fix your platforms paths; (2)&nbsp;Does not support shared
+libraries; and (3)&nbsp;Requires a degree from Hogwarts to understand.
+</li>
+
+<!-- http://nco.sf.net#dpl_sym -->
+<a name="dpl_sym"></a>
+<li><i>Duplicate symbols errors:</i>
+When building NCO with the netCDF4 library and headers, some compilers
+emit errors due to duplicate symbol definitions.
+This arises because of the complexity of the build system.
+Essentially, NCO has to define some netCDF API prototypes itself
+to handle the corner case where the netCDF4 distribution is used 
+to build netCDF3 libraries. 
+We have tried to address this issue using <tt>autoconf/configure</tt>
+but it is beyond our abilities.
+The fix is to manually tell NCO that the netCDF4 header
+file <tt>netcdf.h</tt> is in fact being used so that NCO should
+not attempt to define these prototypes.
+Do this, e.g., with <tt>CPPFLAGS='-DHAVE_NETCDF4_H'</tt> or
+<tt>USR_TKN='-DHAVE_NETCDF4_H'</tt> if you use <tt>configure</tt>.
+</li>
+
+<!-- http://nco.sf.net#bld_chn -->
+<a name="bld_chn"></a>
+<li><i>Build Chain Version Incompatibilities:</i>
+NCO requires GNU <tt>make</tt> version &ge;&nbsp;3.78.1 to support target-specific variable values in <tt>bld/Makefile</tt>.
+NCO most often fails to build because <tt>ncap</tt> fails to build.
+Two of the most common reasons that <tt>ncap</tt> fails to build are
+(1)&nbsp;GNU <tt>bison</tt> is out-of-date (upgrade <tt>bison</tt>)
+and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to 
+<tt>configure</tt> (do not specify it).<br>
+</li>
+
+<!-- http://nco.sf.net#bld_c99 -->
+<a name="bld_c99"></a>
+<li><i>C99-compliance &amp; old compilers:</i>
+NCO versions &ge;&nbsp;2.9.8 require the compiler to
+support the 1999 ISO C-Standard called&nbsp;C99.
+NCO takes advantage of two C99 features, restricted pointers and
+designated initializers.
+To build NCO versions &ge;&nbsp;2.9.8 without a C99-compliant
+compiler, simply undefine the <tt>restrict</tt> type qualifier 
+before compiling NCO.
+Do this, e.g., with <tt>CPPFLAGS='-Drestrict='</tt>.
+More details on C99 compatibility are in the header file
+<a href="http://nco.cvs.sf.net/nco/nco/src/nco/nco.h"><tt>nco/src/nco/nco.h</tt></a>.<br>
+</li>
+
+<!-- http://nco.sf.net#bld_netcdf -->
+<a name="bld_netcdf"></a>
+<li><i>Old netCDF libraries:</i>
+NCO versions &ge;&nbsp;3.0.0 require netCDF versions
+&ge;&nbsp;3.6 to take advantage of the new 64-bit offset file type.  
+The library <i>and</i> include directories (e.g., <tt>/usr/lib</tt> and
+<tt>/usr/include</tt>, respectively) for netCDF version &ge;&nbsp;3.6
+must be on the path searched by the compiler, and must precede the
+locations of any older netCDF installations.
+To build NCO versions &ge;&nbsp;3.0.0 with older netCDF versions
+&lt;&nbsp;3.6, simply define the pre-processor token
+<tt>NC_64BIT_OFFSET</tt> to <tt>0</tt> before compiling NCO.
+Do this, e.g., with <tt>CPPFLAGS='-DNC_64BIT_OFFSET=0'</tt> or
+<tt>USR_TKN='-DNC_64BIT_OFFSET=0'</tt> if you use <tt>configure</tt> 
+or <tt>bld/Makefile</tt>, respectively.
+Users attempting to build NCO with OPeNDAP versions &le; 3.6.x may
+need this workaround because OPeNDAP did not fully support netCDF
+version&nbsp;3.6.x functionality until OPeNDAP versions &ge;&nbsp;3.7.0.
+(The indicator for this problem is a build error like 
+<tt>"nco_fl_utl.c", line 30.20: 1506-045 (S) Undeclared identifier
+NC_64BIT_OFFSET</tt>.)  
+All modern NCO versions require netCDF versions &ge;&nbsp;3.5.0 to
+support <tt>nc_type NC_NAT</tt> in NCO source code.  
+NCO versions 3.9.0 and greater (May, 2007) require netCDF versions
+&ge;&nbsp;3.6.0 to resolve the <tt>nc_inq_format()</tt> function.
+</li>
+
+<!-- http://nco.sf.net#bld_ncap -->
+<a name="bld_ncap"></a>
+<li><i><tt>ncap</tt> build hints:</i>
+<tt>ncap</tt> is a sophisticated and somewhat fragile program.
+<tt>ncap</tt> requires <tt>flex</tt> to build correctly.
+AT&T <tt>lex</tt> will not work because it does not understand
+<tt>EOF</tt> rules used in <tt>ncap_lex.l</tt>.
+<tt>bison</tt> version 1.29 (the default version on early
+Mac OS&nbsp;X) is buggy and does not parse <tt>ncap_yacc.y</tt>
+correctly; previous and later <tt>bison</tt>'s work
+correctly. 
+<tt>bison</tt> version 1.25 will not build <tt>ncap</tt> on Solaris.
+Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
+before reporting <tt>ncap</tt> build problems.
+If <tt>ncap</tt> keeps you from building NCO, and you do not need
+<tt>ncap</tt>, configure with <tt>--disable-ncap</tt> (and know that
+<tt>ncwa</tt> will fail to build as a result). 
+</li>
+
+<!-- http://nco.sf.net#bld_GSL -->
+<a name="bld_gsl"></a><a name="bld_GSL"></a>
+<li><i>Build Hints with GSL:</i><br>
+NCO versions 3.9.6&mdash; support automatic building and linking
+for <a href="http://www.gnu.org/software/gsl">GSL</a>
+versions&nbsp;1.4&mdash;. 
+Earlier GSL versions are not supported.<br>
+</li>
+
+<!-- http://nco.sf.net#bld_DAP -->
+<a name="bld_dap"></a><a name="bld_DAP"></a><a name="bld_DODS"></a><a name="bld_OPeNDAP"></a>
+<li><i>Build Hints with DAP:</i><br>
+NCO versions 3.9.9&mdash; support automatic building and linking
+for DAP supplied from <a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/DAP-Support.html">libnetcdf</a> versions&nbsp;4.1-beta1 and beyond<br>
+NCO versions 3.1.3&mdash; support automatic building and linking
+for <a href="http://opendap.org">OPeNDAP</a> versions&nbsp;3.6.x and
+GCC versions&nbsp;4.0+.<br>
+NCO versions 3.0.1&mdash;3.1.2 support automatic building and linking
+for <a href="http://opendap.org">OPeNDAP</a> versions&nbsp;3.5.x and
+GCC versions&nbsp;3.4+.<br>
+NCO versions 2.8.5&mdash;3.0.0 support automatic building and linking
+for <a href="http://opendap.org">OPeNDAP</a> versions&nbsp;3.4.x and
+GCC versions&nbsp;3.3+.<br>
+NCO versions ?.?.?&mdash;2.8.4 support automatic building and linking
+for <a href="http://opendap.org">DODS</a> versions&nbsp;3.2.x and
+GCC versions&nbsp;3.2+.<br> 
+No other version combinations are supported.
+</li>
+
+<!-- http://nco.sf.net#bld_nco_c++ -->
+<a name="bld_nco_c++"></a>
+<li><i><tt>libnco_c++</tt> build hints:</i>
+<tt>libnco_c++</tt> requires a good C++ compiler to build correctly.
+Few people need <tt>libnco_c++</tt>, so the workaround is not to build it.
+This is done by configuring with <tt>--disable-nco_cplusplus</tt>.
+</li>
+
+</ul>
+
+<!-- http://nco.sf.net#bld_plt_spc -->
+<a name="bld_plt_spc"></a>
+<ul><b>Platform-Specific Build Hints:</b>
+<!-- http://nco.sf.net#bld_aix -->
+<a name="bld_aix"></a>
+<li><i>AIX build hints:</i>
+NCO versions 2.8.7+ do not build with autotools under AIX when
+<tt>--enable-optimize-*</tt> is selected.
+The workaround is to not use <tt>--enable-optimize-*</tt>.
+NCO versions 2.9.7+ do not build shared libraries with AIX xlc
+compilers because of silly AIX library dependencies activated
+by OpenMP directives.
+The workaround is to configure with <tt>--disable-shared</tt>.
+</li>
+
+<!-- http://nco.sf.net#bld_irix -->
+<a name="bld_irix"></a>
+<li><i>IRIX build hints:</i>
+The most common problem with building on SGI IRIX is an out-of-date toolchain.
+</li>
+
+<!-- http://nco.sf.net#bld_osx -->
+<a name="bld_osx"></a>
+<li><i>Mac OS&nbsp;X build hints:</i>
+Mac OS&nbsp;X users report success building NCO without patches so
+long as they (1)&nbsp;Install the latest version of <tt>bison</tt>,
+(2)&nbsp;Disable shared libraries and (3)&nbsp;Disable extended regular
+expressions. This is done with 
+<tt>./configure --disable-regex --disable-shared</tt>
+
+Building NCO with shared libraries on Mac OS&nbsp;X on may be possible.
+To try, first re-build and re-install the netCDF library using
+<tt>CFLAGS=-fno-common</tt>.
+Apparently netCDF, unlike most codes, does not set this automatically.
+Then build NCO normally.
+
+Mac OS&nbsp;X ships with a broken version of the POSIX <tt>cut</tt>
+utility which causes many NCO regression tests to appear to fail.
+In fact the NCO commands succeed, but the <tt>cut</tt> output fails.
+The workaround is not to heed the regression tests, or to install a
+working <tt>cut</tt>, e.g., from the GNU <tt>coreutils</tt> package.
+</li>
+
+<!-- http://nco.sf.net#bld_rhel -->
+<a name="bld_rhel"></a>
+<a name="bld_centos"></a> <!-- http://nco.sf.net#bld_centos -->
+<li><i>RHEL build hints:</i>
+Scripts for generating executables for recent (4.0.x, ~2011) versions of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5 platforms are described <a href="http://sf.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.
+Older information on building x86_64 RPMs is available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a>.
+</li>
+
+<!-- http://nco.sf.net#bld_slr -->
+<a name="bld_slr"></a>
+<li><i>Solaris build hints:</i>
+All recent NCO versions build with autotools on Solaris 2.7&mdash;2.9.
+The most common problem with building on Solaris with
+<tt>cc</tt>/<tt>CC</tt> is that <tt>bison</tt> may be out-of-date.
+Install an up-to-date <tt>bison</tt> (e.g., 1.875+).
+Solaris 2.10, i.e., Solaris10, had the audacity to change the
+prototype of the <tt>ctime_r()</tt> function and so does not build
+NCO&nbsp;3.0.1.
+The fix is to upgrade to the current NCO version.
+</li>
+
+<!-- http://nco.sf.net#bld_sx -->
+<a name="bld_sx"></a>
+<li><i>SX build hints:</i>
+NEC&nbsp;SX does not understand the <tt>S_ISLNK</tt> macro, 
+preferring instead the (non-POSIX) <tt>S_IFLNK</tt> macro.
+This macro appears in the file 
+<a href="http://nco.cvs.sf.net/nco/nco/src/nco/nco_fl_utl.c"><tt>nco_fl_utl.c</tt></a>.
+The patch I wrote for this may be broken.
+Will someone with NEC&nbsp;SX please send us a working patch?
+</li>
+
+<!-- http://nco.sf.net#bld_wnd -->
+<a name="bld_wnd"></a>
+<li><i>Windows build hints:</i>
+Building on Microsoft Windows is possible with Cygwin.
+The resulting executables will behave normally on local files,
+but will not have some (most?) of NCO's network functionality
+(e.g., <tt>scp</tt>, <a href="http://opendap.org">OPeNDAP</a>).
+See the <a href="http://nco.sf.net/nco.html#wnd">User's Guide</a>
+for more details.
+</li>
+
+<!--Qt/MSVC -->
+<li><i>Windows build with Qt/MSVC:</i>
+As of NCO 4.2.0, you may build NCO from source using MSVC and Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
+</li>
+</ul>
+<hr></p>
+
+</body>
+</html>
