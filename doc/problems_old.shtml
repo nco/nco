@@ -1,0 +1,440 @@
+<!-- $Header: /data/zender/nco_20150216/nco/doc/problems_old.shtml,v 1.1 2014-06-15 16:36:28 zender Exp $
+
+Purpose: Problems archive
+
+URL:
+http://nco.sf.net/milestones_old.shtml
+http://dust.ess.uci.edu/nco/milestones_old.shtml
+file:///home/zender/nco/doc/milestones_old.shtml
+
+Usage:
+/usr/bin/scp ~/nco/doc/milestones_old.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/milestones_old.shtml dust.ess.uci.edu:/var/www/html/nco
+-->
+
+<!doctype html public "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+   <title>NCO Homepage</title>
+   <meta name="GENERATOR" content="Mozilla/3.04Gold (X11; I; Linux 2.0.0 i686) [Netscape]">
+   <meta name="Author" content="Charles S. Zender">
+   <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
+</head>
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
+
+<dt><a name="News"></a></dt>
+<h2>Known Problems through 2012 (version 4.2.3)</h2>
+
+<ul><b>Older Generic Run-time Problems:</b>
+
+<!-- http://nco.sf.net#bug_mm3 -->
+<a name="bug_mm3"></a>
+<li><i><tt>MM3</tt> slowdown:</i>
+A longstanding &ldquo;feature&rdquo; of netCDF3 was identified in
+March, 2012, and is now known by the tag MM3.
+The MM3 issue can lead to unusually slow performance. 
+The problem is triggered by an aggregate pattern of file access so the
+workaround must be implemented in the application software (e.g., NCO)
+rather than in the netCDF library itself.   
+The name MM3 fits because the problem is normally encountered on
+Multi-record Multi-variable netCDF3 files.
+And we call our &ldquo;solution&rdquo; the MM3-workaround.  
+If you encounter unusually slow NCO performance while using NCO to
+analyze MM3 files on a large blocksize filesystem, 
+chances are you are encountering an MM3-induced slowdown. 
+NCO release 4.1.0 implements the MM3-workaround for <tt>ncks</tt>.  
+It speeds-up common ncks sub-setting on NCAR's GLADE by 10-50x.  
+MM3-induced slowdowns are present in other NCO operators and we are 
+prioritizing our MM3-patches to those encountered most often.  
+Thanks to Gary Strand for reporting this problem, and to Russ Rew for 
+creating the workaround algorithm, which is also now in <tt>nccopy</tt>.
+</li>
+
+<!-- http://nco.sf.net#bug_nofill -->
+<a name="bug_nofill"></a>
+<li><i><tt>NOFILL</tt> bug:</i>
+All netCDF versions prior to 4.1.3 may create corrupt netCDF3 files 
+when linked to any version of NCO except 4.0.8.
+The solution is to install netCDF version 4.1.3 or later.
+The corruption occurs silently (without warning or error messages). 
+The problem has been seen "in the wild" only on filesystems with
+large block sizes (e.g., Lustre), although it may be more widespread. 
+It is caused by a netCDF bug that NCO triggers by invoking
+NOFILL mode for faster writes. Hence it is called the NOFILL bug.  
+The bug is hard to trigger, it depends on a rare interaction of
+filesystem block-size, hyperslab size, and order-of-variable writing.
+The bug exists in all versions of netCDF through 4.1.2.
+
+If you have a large block filesystem and cannot upgrade your netCDF
+library, then use NCO version 4.0.8, which disables NOFILL mode (and
+thus writes files more slowly).  
+NCO 4.0.8 and will workaround the NOFILL bug on all versions of netCDF
+(i.e., 4.1.2 and earlier). 
+Hence NCO 4.0.8 will always correctly write netCDF3 files.
+Other temporary workarounds include creating only netCDF4 files 
+(e.g., <tt>ncks -4 ...</tt>) instead of netCDF3 files.
+The NOFILL patch included in NCO 4.0.8 was subsequently removed
+in NCO 4.0.9, which assumes that netCDF 4.1.3 or later is installed.
+</li>
+
+<!-- http://nco.sf.net#bug_hyp_dgn -->
+<a name="bug_hyp_dgn"></a>
+<li><i>Degenerate hyperslabbing bug:</i>
+Versions ???&mdash;4.0.6 could return incorrect hyperslabs when
+user-specified hyperslabs did not include at least one point.  
+In such cases, instead of returning no data, hyperslabs could return all data. 
+To determine whether your NCO is affected by this bug, run these commands:
+<tt>ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc</tt>
+If the returned hyperslab contains any data, then your NCO is buggy
+(because that hyperslab should be empty).
+This can lead to incorrect answers for hyperslabs that should be empty.
+Analogous problems would occur with empty auxiliary coordinate bounding boxes.
+Although most users do not specify empty hyperslabs, we urge all users
+to upgrade to NCO 4.0.7+ just to be safe.
+</li>
+
+<!-- http://nco.sf.net#bug_thr_msa -->
+<a name="bug_thr_msa"></a>
+<li><i>Threading problems with MSA:</i>
+NCO version 3.9.5 has a nasty bug that causes threaded arithmetic
+operators, e.g., <tt>nces</tt> to produce incorrect results under some
+conditions. 
+The problem may occur whenever OpenMP is enabled and the operators 
+run on a multi-core CPU with more than one thread.
+These incorrect answers, if generated, are relatively easy to notice.
+The number of threads used to generate a file is, by default, recorded
+in the global attribute <tt>nco_openmp_thread_number</tt> which may
+be examined with <tt>ncks -M foo.nc | grep nco_openmp_thread_number</tt>.
+The only action that will correct a file that you think (or know)
+contains corrupted data because of this NCO bug is to re-process the
+file with a non-buggy NCO version.
+<i>Version&nbsp;3.9.5 is buggy and should be upgraded ASAP</i>.
+Be careful with data processed using this NCO version on multi-core CPUs.
+The (one-line!) patch to fix this bug in 3.9.5 is 
+<a href="http://sf.net/forum/message.php?msg_id=6217274">here</a>.
+</li>
+
+<!-- http://nco.sf.net#bug_idx_hyp -->
+<a name="bug_idx_hyp"></a>
+<li><i>Index-based hyperslab problems:</i>
+NCO versions 2.7.3&mdash;2.8.3 have a nasty bug that causes
+index-based hyperslabs, e.g., <tt>-d lat,1,</tt> to 
+behave like value-based hyperslabs, e.g., <tt>-d lat,1.0</tt> under
+some conditions.
+Unfortunately, the incorrect answers generated may be hard to notice!
+This problem was most often enountered by users trying to assemble
+monthly averages using the stride feature of <tt>ncrcat</tt>.
+One common symptom is that the time-offset of the output file is
+incorrect. 
+<i>Versions 2.7.3&mdash;2.8.3 are buggy and should be upgraded ASAP</i>.
+Re-do any data-processing that used index-based hyperslabbing with
+these versions of NCO.
+</li>
+</ul>
+
+<ul><b>Older Operator-specific Run-time Problems:</b>
+
+<!-- http://nco.sf.net#bug_ncks_aux -->
+<a name="bug_ncks_aux"></a>
+<li><i><tt>ncks</tt> bug with auxiliary coordinates:</i>
+Versions 4.2.x&ndash;4.3.1 of <tt>ncks</tt> did not correctly 
+support auxiliary coordinates (specified with <tt>-X</tt>). 
+Auxiliary coordinates continued to work with the other hyperslabbing
+NCO operators. Auxiliary coordinates once again work in all
+hyperslabbing operators, including on netCDF4 group files in operators
+that support them.
+Fixed in version 4.3.2.
+</li>
+
+<!-- http://nco.sf.net#bug_ncatted_strcmp -->
+<a name="bug_ncatted_strcmp"></a>
+<li><i><tt>ncatted</tt> bug on implicit attribute names:</i>
+Versions 4.2.x&ndash;4.3.0 of <tt>ncatted</tt> could segfault when
+processing attributes specified implicitly (i.e., by leaving the
+attribute field blank in the <tt>-a</tt> specification.
+Fixed in version 4.3.1.
+</li>
+
+<!-- http://nco.sf.net#bug_ncbo_ccm_ccsm_cf -->
+<a name="bug_ncbo_ccm_ccsm_cf"></a>
+<li><i><tt>ncbo</tt> bug handling certain special variables:</i>
+Version 4.3.0 of <tt>ncbo</tt> inadvertently always turns off
+certain <a href="http://nco.sf.net/nco.html#prc_xcp">exceptions</a>  
+to variable list processing.
+This may cause some grid-related variables (e.g., <tt>ntrm</tt> and <tt>nbdate</tt>)
+and some non-grid variables (e.g., <tt>ORO</tt> and <tt>gw</tt>) to be
+arithmetically processed (e.g., subtracted) even when that makes no
+sense in most climate model datasets. 
+Fixed in version 4.3.1.
+</li>
+
+<!-- http://nco.sf.net#bug_ncks_mtd -->
+<a name="bug_ncks_mtd"></a>
+<li><i><tt>ncks</tt> bug copying metadata:</i>
+Version 4.2.6 of <tt>ncks</tt> does not copy variable metadata by default. 
+Thus output files appear stripped of metadata.
+One can work around this problem in 4.2.6 by specifying the  <tt>-m</tt> option.
+Otherwise an upgrade is recommended.
+Fixed in version 4.3.0.
+</li>
+
+<!-- http://nco.sf.net#bug_ncks_sbs -->
+<a name="bug_ncks_sbs"></a>
+<li><i><tt>ncks</tt> bug subsetting variables:</i>
+Version 4.2.4 of <tt>ncks</tt> sometimes dumps core
+when subsetting variables with <tt>-v var</tt>.
+Fixed in version 4.2.5.
+</li>
+
+<!-- http://nco.sf.net#bug_ncks_mk_rec_dmn -->
+<a name="bug_ncks_mk_rec_dmn"></a>
+<li><i><tt>ncks</tt> bug with altering record dimensions:</i>
+Version 4.2.4 of <tt>ncks</tt> ignored both the 
+<tt>--mk_rec_dmn</tt> and the <tt>--fix_rec_dmn</tt> switches.  
+It exited successfully without altering the record variable.
+Fixed in version 4.2.5.
+</li>
+
+<!-- http://nco.sf.net#bug_nces_rec_var -->
+<a name="bug_nces_rec_var"></a>
+<li><i><tt>nces</tt> bug with non-record files:</i>
+Versions 4.2.1&mdash;4.2.3 of <tt>nces</tt> incorrectly referenced
+the record variable on files which do not contain it.
+This caused a segmentation violation and core dump.
+</li>
+
+<!-- http://nco.sf.net#bug_ncra_flg_bfr_nrm -->
+<a name="bug_ncra_flg_bfr_nrm"></a>
+<li><i><tt>ncra</tt> bug when last file(s) is/are superfluous:</i>
+Versions 4.2.1&mdash;4.2.3 of <tt>ncra</tt> incorrectly skipped
+writing the results of the final normalization when trailing files
+were superfluous (not used). 
+In the most common case, all values are zeros in the output file.
+Upgrade if you call <tt>ncra</tt> with trailing superfluous files. 
+</li>
+
+<!-- http://nco.sf.net#bug_ncecat_nintap -->
+<a name="bug_ncecat_nintap"></a>
+<li><i><tt>ncecat</tt> bug when files generated with <tt>-n</tt>:</i>
+Version 4.2.2 of <tt>ncecat</tt> could incorrectly skip the first
+input file in the default mode (RECORD_AGGREGATE) when 
+the <tt>-n NINTAP</tt> switch is used to automate filename generation.
+Upgrade if you use <tt>ncecat -n</tt>.
+</li>
+
+<!-- http://nco.sf.net#bug_ncra_cf_crd_rec_crd -->
+<a name="bug_ncra_cf_crd_rec_crd"></a>
+<li><i><tt>ncra</tt> bug handling CF <tt>coordinates</tt> attributes   
+that contain the name of the record coordinate:</i>
+Versions 4.0.3&mdash;4.0.4 of <tt>ncra</tt> incorrectly treat the
+record variable (usually <tt>time</tt>) as a fixed variable if it 
+is specified in the <tt>coordinates</tt> attribute of any variable in
+a file processed with CCM/CCSM/CF metadata conventions. 
+This bug caused core dumps, and even weirder behavior like 
+creating imaginary time slices in the ouput.
+Upgrade recommended if you work with NCAR CCSM/CESM model output.
+
+One workaround that does not require NCO upgrades is to remove the
+record coordinate name (usually <tt>time</tt>) from
+the <tt>coordinates</tt> attribute of all variables in CF-compliant
+files before processing the file with <tt>ncra</tt>.
+</li>
+
+<!-- http://nco.sf.net#bug_ncra_cf_YYYYMMDD_date -->
+<a name="bug_ncra_cf_YYYYMMDD_date"></a>
+<li><i><tt>ncra</tt> bug averaging YYYYMMDD-format <tt>date</tt>
+variables in CCSM/CF-compliant files:</i>
+Versions ???&mdash;4.0.5 of <tt>ncra</tt> contain a bug which
+produces an incorrect average (usually zero) of the <tt>date</tt>
+variable which many CCSM/CF-compliant files use to track model dates
+in the human-readable YYYYMMDD-format.
+Averaging YYYYMMDD-format integers is intrinsically difficult, since
+such dates have calendar assumptions built-in.
+NCO attempts this in CCSM/CF-compliant files by using the
+<tt>nbdate</tt> (beginning date) and <tt>time</tt> (days
+since <tt>nbdate</tt>) variables to find the average date,
+converting that to YYYYMMDD, and writing that as the average value
+of <tt>date</tt>. 
+</li>
+
+<!-- http://nco.sf.net#bug_ncks_nc4_nc4_hyp_fix -->
+<a name="bug_ncks_nc4_nc4_hyp_fix"></a>
+<li><i><tt>ncks</tt> bug hyperslabbinging fixed netCDF4 dimensions:</i>
+Versions 4.0.3&mdash;4.0.4 of <tt>ncks</tt> contain a bug which
+triggers a core-dump when hyperslabbing (along a non-record
+dimension) a netCDF4-format input file into a netCDF4-format output 
+file, e.g., <tt>ncks -d 0,1,lat in4.nc out4.nc</tt>. 
+Three workarounds that do not require NCO upgrades (or downgrades) are 
+to explicitly specify chunking with, e.g., 
+<tt>ncks --cnk_plc=all -d 0,1,lat in4.nc out4.nc</tt>, or, to use 
+<tt>nces</tt> instead of <tt>ncks</tt> for hyperslabbing, e.g.,
+<tt>nces -d 0,1,lat in4.nc out4.nc</tt> (<tt>nces</tt> does a no-op
+when there is only one input file), or to write to a netCDF3 file,
+<tt>ncks -3 -d 0,1,lat in4.nc out3.nc</tt>.
+</li>
+
+<!-- http://nco.sf.net#bug_ncks_m -->
+<a name="bug_ncks_m"></a>
+<li><i>Core dump with <tt>ncks</tt>:</i>
+Printing variables to screen with <tt>ncks</tt> can trigger a segfault
+in NCO 3.9.9&mdash;4.0.3. 
+Users may upgrade, downgrade, or apply this one-line patch to 3.9.9 sources:
+Remove this line
+&ldquo;<tt>*cnk_sz=(size_t)NULL;</tt>&rdquo;
+&mdash;near line&nbsp;751 of <tt>nco/src/nco/nco_netcdf.c</tt>&mdash;
+should fix the problem.
+The problem in later NCO versions is due to a different bug and this
+patch will not work.
+</li>
+
+<!-- http://nco.sf.net#bug_ncrename_dot -->
+<a name="bug_ncrename_dot"></a>
+<li><i><tt>ncrename</tt> erroneous error exit:</i>
+Versions 4.0.1&mdash;4.0.3 of <tt>ncrename</tt> contain a bug where
+commands like <tt>ncrename -a .old_nm,new_nm in.nc out.nc</tt>
+would, if <tt>old_nm</tt> did not exist, write the correct file and
+then exit with an error message although no error had occurred.
+The files written were fine, and the error message can be safely
+ignored. This was due to not clearing an extraneous return code.
+
+<!-- http://nco.sf.net#bug_ncbo_rfr -->
+<a name="bug_ncbo_rfr"></a>
+<li><i><tt>ncbo</tt> segmentation fault:</i>
+<tt>ncbo</tt> versions 4.0.0&mdash;4.0.2 incorrectly refreshed
+internal metadata, leading to segmentation faults and core dumps with
+some exacting compilers, notably xlC on AIX. 
+
+<!-- http://nco.sf.net#bug_ncra_date -->
+<a name="bug_ncra_date"></a>
+<li><i><tt>ncra</tt> segmentation fault:</i>
+<tt>ncra</tt> versions 4.0.0&mdash;4.0.1 mishandled some CF-compliant  
+dates, leading to segmentation faults and core dumps.
+
+<!-- http://nco.sf.net#bug_ncap_cmt -->
+<a name="bug_ncap_cmt"></a>
+<li><i>Arithmetic problems with <tt>ncap</tt> division, modulo, and exponentiation:</i>
+<tt>ncap</tt> versions &lt;&nbsp;3.0.1 incorrectly exponentiate
+variables to variable powers (<tt>V^V</tt>).
+We recommend that all <tt>ncap</tt> users upgrade.<br>
+  
+<tt>ncap</tt> versions up to 2.9.1 incorrectly handle division,
+modulo, and exponentiation operations of the form <tt>S/V</tt>,
+<tt>S%V</tt>, and <tt>S^V</tt> where first operand (<tt>S</tt>) is 
+scalar (i.e., either typed directly in the <tt>ncap</tt> script or 
+converted from an attribute) and the second operand (<tt>V</tt>) is
+a full variable (i.e., stored in a file or computed by <tt>ncap</tt>).
+Instead of the requested quantity, <tt>ncap</tt> returned
+<tt>V/S</tt>, <tt>V%S</tt>, and <tt>V^S</tt>.
+In other words <tt>ncap</tt> treated some non-commutative operations
+as commutative. This is now fixed. 
+The 
+<tt>V/V</tt>, <tt>V%V</tt>, <tt>V^V</tt>, 
+<tt>V/S</tt>, <tt>V%S</tt>, <tt>V^S</tt>, 
+<tt>S/S</tt>, <tt>S%S</tt>, and <tt>S^S</tt> operations were never
+affected. 
+We recommend that all <tt>ncap</tt> users upgrade.
+</li>
+
+<!-- http://nco.sf.net#bug_ncbo_pck -->
+<a name="bug_ncbo_pck"></a>
+<li><i>Incorrect <tt>ncbo</tt> output for packed input:</i>
+<tt>ncbo</tt> versions ???&mdash;3.2.0 incorrectly write differences
+of packed input. This only affects packed variables. 
+
+<!-- http://nco.sf.net#bug_ncflint_mss_val -->
+<a name="bug_ncflint_mss_val"></a>
+<li><i>Problems with <tt>ncflint</tt> and <tt>missing_value</tt>s:</i>
+The algorithm <tt>ncflint</tt> used to perform interpolation in
+versions up to 2.9.4 was not commutative.
+It returned the weighted valid datum when the other datum was
+<tt>missing_value</tt>, or it returned <tt>missing_value</tt>,
+depending on the order the input files were specified.
+As of version 2.9.5, <tt>ncflint</tt> always returns
+<tt>missing_value</tt> when either input datum is
+<tt>missing_value</tt>. 
+Possible future implementations are discussed 
+<a href="http://nco.sf.net/nco.html#ncflint">here</a>.
+
+<!-- http://nco.sf.net#bug_mss_val_zro_ncra -->
+<a name="bug_mss_val_zro_ncra"></a>
+<li><i>Problems with <tt>ncra</tt> and <tt>nces</tt> when <tt>missing_value</tt> = 0.0:</i>
+The algorithm <tt>ncra</tt> and <tt>nces</tt> used to perform
+arithmetic in versions up to 2.9.2 breaks if <tt>missing_value</tt>
+is&nbsp;0.0. 
+Why, you ask?
+Running average (or total, etc.) algorithms must initialize the answer  
+to&nbsp;0.0.
+This is done since the sum accumulates in place as <tt>ncra</tt> and
+<tt>nces</tt> proceeds across records and files.  
+(Normalizing this accumulation by the total number of records is the
+last step).
+The old algorithm compared both the current running average and the
+new record to the <tt>missing_value</tt>.
+If either comparison matched, then nothing accumulated for that
+record. 
+This zero-initialization led to a state where it was impossible 
+to ever recognize valid data.
+As a result nothing accumulated and the answer was always zero.
+The record and ensemble averages would also fail (in a non-obvious)
+way whenever an intermediate sum equalled <tt>missing_value</tt>.
+The chances of the latter event ever happening are exceedingly
+remote. 
+The new algorithm compares only the new record to the
+<tt>missing_value</tt>. 
+This fixes both problems and is faster, too.
+
+<!-- http://nco.sf.net#bug_pck_ncwa -->
+<a name="bug_pck_ncwa"></a>
+<li><i>Packing problems with <tt>ncwa</tt>:</i>
+NCO versions ???&mdash;2.9.0 have a bug that causes <tt>ncwa</tt>
+to fail (produce garbage answers) when processing packed
+<tt>NC_FLOAT</tt> data.  Version 2.9.1 fixes this problem.
+This problem may have been noticed most by
+<a href="http://opendap.org">OPeNDAP</a> users since many 
+netCDF climate datasets served by
+<a href="http://opendap.org">OPeNDAP</a> are packed
+<tt>NC_FLOAT</tt>s.  
+Upgrade to&nbsp;2.9.1 if you use <tt>ncwa</tt> on packed data.
+</li>
+
+<!-- http://nco.sf.net#bug_pck -->
+<a name="bug_pck"></a>
+<li><i>Packing problems with <tt>ncap</tt>:</i>
+NCO versions 2.8.4&mdash;2.8.6 have a bug that causes the <tt>ncap</tt>
+intrinsic packing function <tt>pack()</tt> to fail.
+Version&nbsp;2.8.7 fixes this problem.
+</li>
+</ul>
+
+<ul><b>Older Platform-specific Run-time Problems:</b>
+<a name="bug_ncap_flt_fnc_aix"></a>
+<li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
+<tt>ncap</tt> versions through 4.0.4 have a bug that causes all float-valued
+intrinsic math functions to fail under AIX.
+Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
+<tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
+The user does not invoke these functions directly&mdash;
+the user always specifies the <i>generic function name</i>, e.g.,
+<tt>cos()</tt>, <tt>abs()</tt>, <tt>log()</tt>.
+NCO automatically calls the native single precision (i.e.,
+float-valued) math functions when the generic function argument 
+is a native float (e.g., naked constants like <tt>1.0f</tt> or
+variables stored as <tt>NC_FLOAT</tt>).
+Double precision arguments cause NCO to invoke the standard
+(double-valued) form of the generic function, e.g., <tt>cos()</tt>, 
+<tt>fabs()</tt>, <tt>log()</tt>. 
+<!-- Whevnever this bug is fixed, here is some text
+Version info:
+<tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
+ANNOUNCE info:
+First, AIX NCO installations should upgrade to this version to get the
+AIX-specific ncap bug-fix.
+Bug-fixes:
+1. fxm: AIX uses NCO-supplied float-valued functions (e.g., cosf())
+-->
+</li>
+</ul>
+<hr></p>
+
+</body>
+</html>
