@@ -1,10 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.20 2013-04-16 21:53:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.21 2014-06-15 21:06:24 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
-/* Copyright (C) 1995--2008 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
-   See http://www.gnu.org/copyleft/gpl.html for full license text */
+/* Copyright (C) 1995--2014 Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* Usage:
    #include "ncap.h" *//* netCDF arithmetic processor-specific definitions (symbol table, ...) */

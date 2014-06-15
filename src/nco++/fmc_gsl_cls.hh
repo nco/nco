@@ -1,8 +1,9 @@
 /* Purpose: netCDF arithmetic processor class methods */
 
 /* Copyright (C) 1995--2014 Charlie Zender
-   License: GNU General Public License (GPL) Version 3
-   See http://www.gnu.org/copyleft/gpl.html for full license text */
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #ifndef FMC_GSL_CLS_HH // Contents have not yet been inserted in current source file  
 #define FMC_GSL_CLS_HH

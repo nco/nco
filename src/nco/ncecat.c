@@ -1,15 +1,13 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.367 2014-06-05 22:26:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.368 2014-06-15 21:06:21 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
 /* Purpose: Join variables across files with new record variable or aggregate files as groups */
 
 /* Copyright (C) 1995--2014 Charlie Zender
-
-   License: GNU General Public License (GPL) Version 3
-   The full license text is at http://www.gnu.org/copyleft/gpl.html 
-   and in the file nco/doc/LICENSE in the NCO source distribution.
-   
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3.
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
@@ -124,8 +122,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.367 2014-06-05 22:26:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.367 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.368 2014-06-15 21:06:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.368 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

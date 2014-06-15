@@ -1,11 +1,12 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.206 2014-05-01 19:05:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.207 2014-06-15 21:06:25 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
-/* Copyright (C) 2005--2014 Charlie Zender
-   License: GNU General Public License (GPL) Version 3
-   See http://www.gnu.org/copyleft/gpl.html for full license text */
+/* Copyright (C) 1995--2014 Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
     // C Standard Headers
     #include <assert.h>

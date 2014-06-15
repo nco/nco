@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.22 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.23 2014-06-15 21:06:23 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -14,8 +14,9 @@
    Cross-platform link weirdness (e.g., AIX) makes avoiding this desirable */
 
 /* Copyright (C) 1995--2014 Charlie Zender
-   License: GNU General Public License (GPL) Version 3
-   See http://www.gnu.org/copyleft/gpl.html for full license text */
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* Usage:
    #include "nco_mpi.h" *//* MPI utilities */

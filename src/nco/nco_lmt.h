@@ -1,10 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.69 2014-01-28 07:15:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.70 2014-06-15 21:06:23 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
 /* Copyright (C) 1995--2014 Charlie Zender
-   License: GNU General Public License (GPL) Version 3
-   See http://www.gnu.org/copyleft/gpl.html for full license text */
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* Usage:
    #include "nco_lmt.h" *//* Hyperslab limits */

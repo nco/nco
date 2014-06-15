@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.151 2014-06-05 22:26:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.152 2014-06-15 21:06:21 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF record averager
@@ -10,17 +10,15 @@
    to a single file. */
 
 /* Copyright (C) 1995--2014 Charlie Zender
-   
-   License: GNU General Public License (GPL) Version 3
-   The full license text is at http://www.gnu.org/copyleft/gpl.html 
-   and in the file nco/doc/LICENSE in the NCO source distribution.
-   
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3.
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
    HDF, netCDF, OPeNDAP, and UDUnits licenses.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
@@ -152,8 +150,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.151 2014-06-05 22:26:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.151 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.152 2014-06-15 21:06:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.152 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.67 2014-06-14 01:50:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.68 2014-06-15 21:06:20 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -121,15 +121,19 @@ nco/doc/TAG		CVS tag for this version
 nco/doc/TODO		List of tasks for future releases
 nco/doc/VERSION		NCO version 
 nco/doc/beta.txt	Availability of beta- or pre-release Debian packages
+nco/doc/build_hints.shtml Hints to build from source
 nco/doc/debian.txt	Creating and updating Debian NCO .deb packages
 nco/doc/dir		Example Info file to load nco.info
 nco/doc/dods.sh		Install OPeNDAP 3.4.X for NCO DAP-enabled clients
 nco/doc/doe.jpg		DOE logo (JPG format)
+nco/doc/endorsements.txt Statements of support for NCO
 nco/doc/help.txt	Advertisement for help with NCO (outdated---from 2000)
+nco/doc/highlights_old.shtml Short summaries of old releases
 nco/doc/index.shtml	NCO website homepage
 nco/doc/logo_srl.png	NCO spiral logo PNG raster format
 nco/doc/logo_srl.svg	NCO spiral logo Scalable Vector Graphic format
 nco/doc/logo_srl.xcf	NCO spiral logo GIMP format
+nco/doc/milestones_old.shtml Milestones in old releases
 nco/doc/mpi.txt		MPI Environments for NCO
 nco/doc/my-bib-macros.texi TeXInfo bibliography macros for nco.texi
 nco/doc/nasa.png	NASA logo (PNG format)
@@ -141,13 +145,11 @@ nco/doc/nco.pdf(v)	NCO User's Guide: Portable Document Format
 nco/doc/nco.png		NCO Webpage icon (PNG format)
 nco/doc/nco.ps(v)	NCO User's Guide: Postscript format
 nco/doc/nco.texi	NCO User's Guide: TeXInfo format
-nco/doc/highlights_old.shtml Short summaries of old releases
-nco/doc/milestones_old.shtml Milestones in old releases
-nco/doc/endorsements.txt Statements of support for NCO
 nco/doc/nco_news.shtml	NCO news archive
 nco/doc/netcdf4.sh	Install latest netcdf4 and HDF libraries for NCO
 nco/doc/nsf.png		NSF logo (PNG format)
 nco/doc/opendap.sh	Install OPeNDAP 3.5.X for NCO DAP-enabled clients
+nco/doc/problems_old.shtml Summaries of old bugs
 nco/doc/surfit.txt	Summer research project advertisement for UCI
 nco/doc/tags_doc.sh	Generate Emacs tags for all NCO documents
 nco/doc/valgrind.txt	Valgrind suppressions file for debugging NCO 

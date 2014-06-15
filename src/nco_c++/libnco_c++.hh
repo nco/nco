@@ -1,10 +1,11 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/libnco_c++.hh,v 1.19 2013-12-31 05:14:02 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/libnco_c++.hh,v 1.20 2014-06-15 21:06:25 zender Exp $ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco_c++
 
-/* Copyright (C) 2001--2014 Charlie Zender
-   License: GNU General Public License (GPL) Version 3
-   See http://www.gnu.org/copyleft/gpl.html for full license text */
+/* Copyright (C) 1995--2014 Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* libnco_c++.hh headers depend only on system headers
    Thus libnco_c++.a may be built independently of any other libraries

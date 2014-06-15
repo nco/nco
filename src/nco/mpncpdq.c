@@ -1,21 +1,19 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.115 2014-06-05 22:26:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.116 2014-06-15 21:06:21 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
 /* Purpose: Pack, re-dimension, query single netCDF file and output to a single file */
 
 /* Copyright (C) 1995--2014 Charlie Zender
-   
-   License: GNU General Public License (GPL) Version 3
-   The full license text is at http://www.gnu.org/copyleft/gpl.html 
-   and in the file nco/doc/LICENSE in the NCO source distribution.
-   
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3.
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
    HDF, netCDF, OPeNDAP, and UDUnits licenses.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
@@ -119,8 +117,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.115 2014-06-05 22:26:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.115 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.116 2014-06-15 21:06:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.116 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.143 2014-06-05 22:26:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.144 2014-06-15 21:06:21 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -6,17 +6,15 @@
    in a single input netCDF file and output them to a single file. */
 
 /* Copyright (C) 1995--2014 Charlie Zender
-   
-   License: GNU General Public License (GPL) Version 3
-   The full license text is at http://www.gnu.org/copyleft/gpl.html 
-   and in the file nco/doc/LICENSE in the NCO source distribution.
-   
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3.
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
    HDF, netCDF, OPeNDAP, and UDUnits licenses.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
@@ -128,8 +126,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.143 2014-06-05 22:26:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.143 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.144 2014-06-15 21:06:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.144 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;

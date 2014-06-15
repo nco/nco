@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.716 2014-06-05 04:57:12 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.717 2014-06-15 21:06:20 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -88,7 +88,7 @@
 # cd ~/bin/AIX;/usr/local/bin/tar cvzf ~/nco-4.4.5.aix53.tar.gz nc*;scp ~/nco-4.4.5.aix53.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # netCDF4 on NCAR Linux cluster systems (mirage):
 # cd ~/nco/bld;make OPTS=D allinone;cd -
-# netCDF4 on ORNL Linux cluster systems (titan, rhea):
+# netCDF4 on ORNL Linux cluster systems (titan, rhea.ccs.ornl.gov):
 # module avail
 # . ~/.bashrc
 # module add intel netcdf udunits gsl

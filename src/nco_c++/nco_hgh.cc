@@ -1,10 +1,11 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.20 2013-12-31 05:14:02 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.21 2014-06-15 21:06:25 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to high-level NCO utilities
 
-/* Copyright (C) 2001--2014 Charlie Zender
-   License: GNU General Public License (GPL) Version 3
-   See http://www.gnu.org/copyleft/gpl.html for full license text */
+/* Copyright (C) 1995--2014 Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include <nco_hgh.hh> // High-level NCO utilities
 

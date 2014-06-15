@@ -1,8 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.81 2014-05-27 02:04:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.82 2014-06-15 21:06:21 zender Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
-   License: GNU General Public License (GPL) Version 3
-   See http://www.gnu.org/copyleft/gpl.html for full license text */
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You can redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* Purpose: Support hyperslabbing cell-based grids over coordinate ranges 
    This works on datasets that contain CF-convention auxiliary coordinate variables.
