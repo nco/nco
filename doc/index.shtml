@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.904 2014-06-16 21:07:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.905 2014-06-16 23:04:51 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -7,6 +7,8 @@ http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
 Usage:
+/usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/index.shtml dust.ess.uci.edu:/var/www/html/nco
 /usr/bin/scp ~/nco/doc/doe.jpg ~/nco/doc/index.shtml ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_nco_stk.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_srl.png ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png zender,nco@web.sf.net:/home/project-web/nco/htdocs
 scp -p ~/nco/doc/index.shtml ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_nco_stk.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_srl.png ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png dust.ess.uci.edu:/var/www/html/nco
 scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
@@ -256,11 +258,11 @@ special cases.
 
 <!-- http://nco.sf.net#Contribute -->
 <dt><a name="Contribute"></a></dt>
-<h2>How to Contribute</h2>
+<h2>How to Contribute: Volunteer, Endorse, or Donate</h2>
 <p>In March, 2000, NCO became an Open Source project hosted by
 <a href="http://sf.net">SourceForge.net</a>.
 This facilitates collaboration, code contributions, and support.
-There is a <a href="./TODO">TODO list</a> about 200 items long! 
+There is a <a href="./TODO">TODO list</a> hundreds of items long! 
 No matter what your programming background there is a task you can help with. 
 From re-organizing the TODO list itself, to improving this cheesy
 webpage, to documentation, to designing and implementing new features
@@ -269,15 +271,40 @@ The <a href="http://sf.net/projects/nco">project homepage</a>
 contains mailing lists, discussion forums, and instructions to make
 contributing to NCO easy. 
 
+<dt><a name="Endorsements"></a></dt> <!-- http://nco.sf.net#Endorsements -->
+<dt><a name="endorsement"></a></dt> <!-- http://nco.sf.net#endorsement -->
+<dt><a name="ndr"></a></dt> <!-- http://nco.sf.net#ndr -->
+<dt><a name="Endorsement"></a></dt> <!-- http://nco.sf.net#Endorsement -->
+<dt><a name="endorse"></a></dt> <!-- http://nco.sf.net#endorse -->
 <p>Many users feel unable to volunteer their time.
 An equally effective contribution in the long-run would be your 
 <a href="#ndr">endorsement</a>, which may make the difference 
 between a declined and an accepted proposal.
-Lastly, as of June, 2003, if you're really strapped for time and want
-to contribute something back, you may easily donate money.
-Send your donation to NCO developers as a reward for good behavior, 
-or as an incentive to tackle more <a href="./TODO"><tt>TODO</tt></a>
-items. 
+An endorsement can be a few sentences that describes how NCO benefits your work or research.
+E-mail your endorsement to
+<a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
+with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 
+This information is useful advocating for more NCO support.
+&ldquo;What future proposals?&rdquo; you ask, &ldquo;Aren't you already funded?&rdquo;
+Yes, in 2012 NASA funded us to implement netCDF4 groups and HDF support,
+and in 2014 NASA funded us to improve SLD handling.
+These funds are/were primarily for development and maintainance of
+specific features. 
+To realize our grander ambition, i.e., to shift geoscience data
+analysis from a flat- to a hierarchical-paradigm
+(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>), 
+will require a sustained effort and software ecosystem that
+understands and implement hierarchical dataset concepts.
+And it's hard to sell a federal agency on the wisdom of investing in a paradigm shift!
+Other more prosaic tasks that need work are, for example,
+parallelization of I/O (!!!), user-defined and non-atomic types, more CF conventions, 
+cloud-services, JSON back-end, and user-defined <tt>ncap2</tt> functions.
+Need I say more? 
+If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
+
+Lastly, as of June, 2003, if you're more strapped for time than money
+and want to contribute something back, consider a monetary donation.
+This may incentivize us to tackle your favorite <a href="./TODO"><tt>TODO</tt></a> items. 
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_xclick">
 <input type="hidden" name="business" value="zender@uci.edu">
@@ -334,34 +361,6 @@ incorporating geospatial features and parallelism into NCO.
 See the ads for more details.
 (<a href="http://dust.ess.uci.edu/hire/prg_anl_06_adv.pdf">PDF</a>, 
  <a href="http://dust.ess.uci.edu/hire/prg_anl_06_adv.txt">TXT</a>).
-
-<!-- http://nco.sf.net#Endorsement -->
-<!-- http://nco.sf.net#endorsement -->
-<!-- http://nco.sf.net#endorse -->
-<!-- http://nco.sf.net#ndr -->
-<dt><a name="Endorsements"></a></dt>
-<h3>Endorsements</h3>
-<p>We encourage you to e-mail NCO endorsements to
-<a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
-with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 
-An endorsement can be a few sentences that describes how NCO benefits your work or research.
-This information will be useful advocating for more NCO support.
-&ldquo;What future proposals?&rdquo; you ask, &ldquo;Aren't you already funded?&rdquo;
-Yes, in 2012 NASA funded us to implement netCDF4 groups and HDF support in NCO,
-and in 2014 NASA funded us to improve SLD handling in NCO.
-These funds are/were primarily for development and maintainance of
-specific features. 
-Achieving our grander ambition, to shift geoscience data analysis from
-a flat- to a hierarchical-paradigm
-(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>), 
-will require a sustained effort and software ecosystem that
-understands and implement hierarchical dataset concepts.
-And it's hard to sell a federal agency on the wisdom of investing in a paradigm shift!
-Other more prosaic tasks that need work are, for example,
-parallelization of I/O (!!!), user-defined and non-atomic types, more CF conventions, 
-cloud-services, JSON back-end, and user-defined <tt>ncap2</tt> functions.
-Need I say more? 
-If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
 
 <dt><a name="prp_access"></a></dt> <!-- http://nco.sf.net#prp_access -->
 <h2>NASA ACCESS 2011 Project</h2>

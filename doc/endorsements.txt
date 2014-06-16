@@ -13,6 +13,17 @@ PNW Research Station & WWETAC, US Forest Service
 jbkim@fs.fed.us  541-750-7287 (o)  541-286-5546 (m)
 
 ************************************************************************
+Received 20120720:
+
+I installed NCO in Windows 7 and have crosschequed the results of ncra
+with ArcGIS, and they match perfectly.  NCO Works  like a champ. it
+takes only a fraction of a second to average over 10 million records
+(argis takes over 10 minutes). I am curious how can this be even
+possible but what it matters is that the results are correct. 
+Thanks,
+Camilo Mora
+************************************************************************
+
 Received 20110325:
 
 Dear Prof. Zender,

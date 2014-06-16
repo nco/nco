@@ -12249,9 +12249,9 @@ Mon Aug 10 21:53:34 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
 Sun Jun  7 17:45:20 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
-	* Added more descriptive error diagnostics to ncvarid() calls 
+	* Added more descriptive error diagnostics to ncvarid() calls
 	to var_lst_mk() ncks to report the names of user-specified
-	variables which do not exist in input files. 
+	variables which do not exist in input files.
 
 1998-05-16  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
@@ -12260,7 +12260,7 @@ Sun Jun  7 17:45:20 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 1998-05-08  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
 	* Added improved error diagnostics to ncks when -A fails.
-	Added improved error diagnostics to fl_out_close() and fl_mv(). 
+	Added improved error diagnostics to fl_out_close() and fl_mv().
 	-r now prints library version for all operators.
 	-r and usg_prn() now prints NCO homepage URL.
 
@@ -12281,13 +12281,13 @@ Mon Feb  9 09:50:26 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
 	loop over variables. This reduces peak memory consumption by a
 	factor of three and sustained memory by a factor of two to three.
 	ncwa performance should be noticeably enhanced by this.	This
-	problem affected, and this fix improves, only the ncwa operator. 
-	
+	problem affected, and this fix improves, only the ncwa operator.
+
 Sun Feb  8 21:50:32 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
 
 	* Downloaded and altered pvmgetarch from pvm3.4b6. This version
 	was returning SGI instead of CRAY on Ouray (=Cray J90 Unicos
-	10.0.0) because pvmgetarch thinks machines with /bin/4D are SGI. 
+	10.0.0) because pvmgetarch thinks machines with /bin/4D are SGI.
 	Distributing this customized version of pvmgetarch with NCO.
 	Also changed new pvmgetarch so it returns SUNMP on any Sun
 	multiprocessor, regardless of whether PVM_SHMEM is set to ON.
@@ -12343,19 +12343,19 @@ Fri Oct 17 12:53:54 1997  Charlie Zender  <zender@odin.cgd.ucar.edu>
 	* Fixed fl_out_open() to abort after receiving more than 10
 	incorrect user responses. This fixes a bug where NCO would
 	crash in non-interactive shells when the -O or -A options were
-	omitted. 
+	omitted.
 
 1997-10-07  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Finished ncatted documentation. Cleaned up code to avoid
 	compilation errors with SGI on memcpy(). Touched up manual.
 	Releasing this as NCO Version 1.1.
-	
+
 Sun Sep 21 15:08:49 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Merged WIN32 modifications into distribution. Added WIN32 and
 	C_ONLY 	tokens to code. Relinked with netCDF 3.3.1, had no
-	problems. 
+	problems.
 
 Tue Sep 16 23:53:44 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
 
@@ -12367,7 +12367,7 @@ Tue Sep 16 23:53:44 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
 Thu Aug 28 17:07:50 1997  Charlie Zender  <zender@heinlein.cgd.ucar.edu>
 
 	* Rewrote ncdiff documention, which had many errors and
-	omissions. 
+	omissions.
 
 Sat Jun 28 23:26:40 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
 
@@ -12390,7 +12390,7 @@ Fri May 30 13:12:25 1997  Charlie Zender  <zender@heinlein.cgd.ucar.edu>
 
 	* Added routines to process time variables in ARM files.
 
-	* Added hyam,hybm,hyai,hybi to list of variables which will not 
+	* Added hyam,hybm,hyai,hybi to list of variables which will not
 	be differenced by ncdiff.
 
 	* ncdiff now chooses mss_val from either file where it's valid,
@@ -12446,7 +12446,7 @@ Wed Mar 26 21:13:09 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
 	distribution
 
 	* Changed ncks -s option to accept full printf() style format
-	strings 
+	strings
 
 	* Fixed memory leak in var_get() in nc_utl.c which caused memory
 	to be allocated twice. This also fixed longstanding performance
@@ -12454,7 +12454,7 @@ Wed Mar 26 21:13:09 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
 	current record. Thanks to jps@GFDL.GOV (John Sheldon) for
 	discovering this bug.
 
-	* General release of nco-0.9 on netCDF and CCM mailing lists 
+	* General release of nco-0.9 on netCDF and CCM mailing lists
 
 Thu Feb  8 23:01:04 MST 1996  Charlie Zender  <zender@ncar.ucar.edu>
 

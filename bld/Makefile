@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.717 2014-06-15 21:06:20 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.718 2014-06-16 23:04:51 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -13,14 +13,16 @@
 # scp ~/nco/bld/Makefile gplogin2.ps.uci.edu:nco/bld
 
 # Machine build parameters
-# givre.ess.uci.edu  : Source: NCO + netCDF, Method: Makefile,  Packages: All else
-# roulee.ess.uci.edu : Source: NCO + netCDF, Method: Makefile,  Packages: All else
-# neige.ess.uci.edu  : Source: NCO         , Method: Makefile,  Packages: All else
-# dust.ess.uci.edu   : Source: -           , Method: -       ,  Packages: All
-# glace.ess.uci.edu  : Source: NCO         , Method: Configure, Packages: All else
-# grele.ess.uci.edu  : Source: NCO         , Method: Makefile,  Packages: All else
-# tephra.ess.uci.edu : Source: NCO         , Method: Makefile,  Packages: All else
-# yellowstone.ucar.edu: Source: NCO        , Method: Makefile,  Packages: All else
+#                         Source     Method   Packages Compiler
+# givre.ess.uci.edu  : NCO + netCDF Makefile  All else LLVM
+# roulee.ess.uci.edu : NCO + netCDF Makefile  All else GCC
+# neige.ess.uci.edu  : NCO          Makefile  All else GCC
+# dust.ess.uci.edu   : -            -         All
+# glace.ess.uci.edu  : NCO          Configure All else GCC
+# grele.ess.uci.edu  : NCO          Makefile  All else GCC
+# tephra.ess.uci.edu : NCO          Makefile  All else
+# yellowstone.ucar.e : NCO          Makefile  All else Intel
+# rhea.ccs.ornl.gov  : NCO          Makefile  All else 
 
 # Usage (testing):
 # make tst                           # Vanilla regression test
