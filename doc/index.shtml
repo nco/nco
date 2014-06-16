@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.903 2014-06-16 18:15:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.904 2014-06-16 21:07:19 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -269,7 +269,7 @@ The <a href="http://sf.net/projects/nco">project homepage</a>
 contains mailing lists, discussion forums, and instructions to make
 contributing to NCO easy. 
 
-<p>Many users feel unable to contribute volunteer-time.
+<p>Many users feel unable to volunteer their time.
 An equally effective contribution in the long-run would be your 
 <a href="#ndr">endorsement</a>, which may make the difference 
 between a declined and an accepted proposal.
@@ -1062,21 +1062,21 @@ system, e.g.,
 <tt>
 <dt>sudo aptitude install nco # Debian-based systems like Debian, Mint, Ubuntu</dt>
 <dt>sudo yum-install nco      # RPM-based systems like CentOS, Fedora, RHEL</dt>
+<dt>sudo port install nco     # MacPorts (after installing MacPorts on Mac OS X)</dt>
 </tt>
-If the pre-built executables do not satisfy you, or are out-of-date
-and you want the latest, greatest NCO features, then the recommended
-first steps to build (i.e., compile, for the most part) NCO from
-source code are to install 
+If pre-built executables do not satisfy you (e.g., are out-of-date)
+and you want the latest, greatest features, then the first steps to
+build (i.e., compile, for the most part) NCO from source code are to
+install the prerequisites:
 <a href="http://www.antlr.org">ANTLR 2.7.x</a> (not version 3.x or 4.x!) (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
-<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations) 
-before building NCO.
+<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations).
 If possible, install this software stack from pre-built binaries 
 (commands to do so on Debian and RPM systems are given just below).
-Failing that (e.g., you lack root access or are on a non-package
-system such as AIX), build these all with the same compiler (and switches).
+Failing that (e.g., lack of root access, or systems without packages
+such as AIX), build these all with the same compiler and switches. 
 Recent versions of netCDF automatically build OPeNDAP and UDUnits.
 NCO is mostly written in&nbsp;C99, and although you <i>may</i> mix and
 match compilers, this is often difficult in practice and is not recommended.

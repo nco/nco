@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.723 2014-06-13 00:14:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.724 2014-06-16 21:07:19 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -165,8 +165,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.723 2014-06-13 00:14:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.723 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.724 2014-06-16 21:07:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.724 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -235,18 +235,20 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"cmp",no_argument,0,0},
+      {"compiler",no_argument,0,0},
+      {"copyright",no_argument,0,0},
+      {"cpy",no_argument,0,0},
       {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
+      {"hdn",no_argument,0,0}, /* [flg] Print hidden attributes */
+      {"hidden",no_argument,0,0}, /* [flg] Print hidden attributes */
+      {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
+      {"lbr",no_argument,0,0},
+      {"library",no_argument,0,0},
       {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
       {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
       {"md5_wrt_att",no_argument,0,0}, /* [flg] Write MD5 digests as attributes */
       {"md5_write_attribute",no_argument,0,0}, /* [flg] Write MD5 digests as attributes */
-      {"cmp",no_argument,0,0},
-      {"compiler",no_argument,0,0},
-      {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
-      {"hdn",no_argument,0,0}, /* [flg] Print hidden attributes */
-      {"hidden",no_argument,0,0}, /* [flg] Print hidden attributes */
-      {"lbr",no_argument,0,0},
-      {"library",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
       {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       {"msa_user_order",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -430,6 +432,10 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"%s\n",nco_cmp_get());
         nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
+      if(!strcmp(opt_crr,"cpy") || !strcmp(opt_crr,"copyright")){
+	(void)nco_cpy_prn();
+        nco_exit(EXIT_SUCCESS);
+      } /* endif "copyright" */
       if(!strcmp(opt_crr,"cdl")) PRN_CDL=True; /* [flg] Print CDL */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
@@ -477,7 +483,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */
