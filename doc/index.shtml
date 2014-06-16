@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.902 2014-06-15 16:45:40 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.903 2014-06-16 18:15:53 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -265,11 +265,16 @@ No matter what your programming background there is a task you can help with.
 From re-organizing the TODO list itself, to improving this cheesy
 webpage, to documentation, to designing and implementing new features
 and interfaces, we need your help!   
-The <a href="http://sf.net/projects/nco">NCO project homepage</a>
+The <a href="http://sf.net/projects/nco">project homepage</a>
 contains mailing lists, discussion forums, and instructions to make
 contributing to NCO easy. 
 
-<p>As of June, 2003, you may easily donate your hard-earned money to NCO.
+<p>Many users feel unable to contribute volunteer-time.
+An equally effective contribution in the long-run would be your 
+<a href="#ndr">endorsement</a>, which may make the difference 
+between a declined and an accepted proposal.
+Lastly, as of June, 2003, if you're really strapped for time and want
+to contribute something back, you may easily donate money.
 Send your donation to NCO developers as a reward for good behavior, 
 or as an incentive to tackle more <a href="./TODO"><tt>TODO</tt></a>
 items. 
@@ -286,7 +291,7 @@ items.
 Inspired by President Obama's plan to bring more transparency to
 government investment, these homepage donation counters track the
 influence of your monetary donations on NCO development: 
-<dt>Donations received between 20030624 and 20120301: US$144.55. Thank you, donors!</dt>
+<dt>Donations received between 20030624 and 20140615: US$144.55. Thank you, donors!</dt>
 <dt>NCO features &ldquo;incentivized&rdquo; by these donations: More emoticons in the documentation :)</dt>
 <hr></p>
 
@@ -330,6 +335,12 @@ See the ads for more details.
 (<a href="http://dust.ess.uci.edu/hire/prg_anl_06_adv.pdf">PDF</a>, 
  <a href="http://dust.ess.uci.edu/hire/prg_anl_06_adv.txt">TXT</a>).
 
+<!-- http://nco.sf.net#Endorsement -->
+<!-- http://nco.sf.net#endorsement -->
+<!-- http://nco.sf.net#endorse -->
+<!-- http://nco.sf.net#ndr -->
+<dt><a name="Endorsements"></a></dt>
+<h3>Endorsements</h3>
 <p>We encourage you to e-mail NCO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
 with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 

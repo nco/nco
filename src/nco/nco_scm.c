@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.54 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.55 2014-06-16 18:15:54 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -149,7 +149,7 @@ nco_cpy_prn(void) /* [fnc] Print copyright notice */
 {
   /* Purpose: Print copyright notice */
   (void)fprintf(stderr,"Copyright (C) 1995--2014 Charlie Zender\n");
-  (void)fprintf(stdout,"NCO is free software and comes with a BIG FAT KISS and ABOLUTELY NO WARRANTY\nLicense: GNU General Public License (GPL) Version 3\n");
+  (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABOLUTELY NO WARRANTY\nYou can redistribute and/or modify NCO under the terms of the\nGNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\n");
 } /* end copyright_prn() */
 
 void
