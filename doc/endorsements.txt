@@ -23,7 +23,6 @@ possible but what it matters is that the results are correct.
 Thanks,
 Camilo Mora
 ************************************************************************
-
 Received 20110325:
 
 Dear Prof. Zender,
