@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1004 2014-06-11 17:28:22 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1005 2014-06-17 20:39:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -81,6 +81,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @command{}: Commands, e.g., @command{ncra}
 @dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
 @email{}: E-mail address, e.g., @email{surname at uci dot edu}
+@emph{}: Emphasize text, e.g., @emph{important}
 @env{}: Environment variable, e.g., @env{HOME}
 @file{}: Filename, e.g., @file{in.nc}
 @html: Text until @end html passed without translation
@@ -93,6 +94,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @url{}: URL, synonym for @uref
 @var{}: Metasyntactic variable, e.g., @var{}
 @verbatim: Anything goes inside environment (no @'s needed to protect special characters like braces)
+@verbatiminclude: Insert contents of file here, e.g., @verbatiminclude{nco.sh}
 @example: Quoted environment (@'s needed to protect special characters like braces)
 @w{}: Unbreakable text, e.g., @w{of 1}
 
@@ -2531,7 +2533,8 @@ Availability: All operators@*
 @cindex L10N
 @acronym{NCO} support for @dfn{internationalization} of textual input
 and output (e.g., Warning messages) is nascent.
-We hope to produce foreign language string catalogues in 2004.
+We introduced a foreign language string catalogue (French and Spanish) in
+@command{ncra} in 2004. 
 @c fxm: Work on this section
 
 @html
@@ -17175,7 +17178,7 @@ responses of climate models from around the world.
 However, it is a tremendous workload to retrieve a single climate
 statistic from all these models, each of which includes several ensemble 
 members.  
-Not only that, it is too often a repetitive process that impedes new
+Not only that, it is too often a tedious process that impedes new
 research and hypothesis testing.  
 Our @acronym{NASA} @acronym{ACCESS} 2011 project simplified and
 accelerated this process.   
@@ -17190,11 +17193,13 @@ necessary algorithms to transition geoscience data analysis from relying
 solely on traditional (or ``flat'') datasets to allowing newer
 hierarchical (or ``nested'') datasets.  
 
-The next logical step is to support and enable combining all
-datastreams that meet user-specified criteria into a 
-single or small number of files that hold @emph{all} the
-science-relevant data organized in hierarchical structures.
-@acronym{NCO} (and no other software to our knowledge) can do this now. 
+Hierarchical datasets support and enable combining all datastreams that
+meet user-specified criteria into a single or small number of files that
+hold @emph{all} the science-relevant data.
+@acronym{NCO} (and no other software to our knowledge) exploits this
+capability now.
+Data and metadata may be aggregated into and analyzed in hierarchical
+structures.
 We call the resulting data storage, distribution, and analysis
 paradigm Group-Oriented Data Analysis and Distribution
 (@acronym{GODAD}). 
@@ -17238,8 +17243,8 @@ group-based processing as well.
 @cindex file combination
 Sometimes, the data of one ensemble member will be stored in several
 files to reduce single file size.
-But it is not convenient to process in a batch mode.
-The following script illustrates how to concatenate these files into one.
+It is more convenient to concatenate these files into a single
+timeseries, and the following script illustrates how.
 Key steps include: 
 @enumerate
 @item Obtain number and names (or partial names) of files in a directory
@@ -17250,20 +17255,20 @@ Key steps include:
 @verbatiminclude xmp/cmb_fl.sh
 @end example
 
-Right now, @acronym{CMIP5} model data downloaded from Earth System Grid
+@acronym{CMIP5} model data downloaded from the Earth System Grid
 Federation (@uref{http://pcmdi9.llnl.gov/esgf-web-fe/, @acronym{ESGF}}) 
-will not contain @key{group} features yet. 
-Therefore users can aggregate the flat files into groups themselves.
-The following script shows how to aggregate models to one file.
+does not contain group features yet. 
+Therefore users must aggregate flat files into hierarchical ones themselves.
+The following script shows how.
 Each dataset becomes a group in the output file.
 There can be several levels of groups.
-In this example, we employ two experiments as the top-level.
-The second-level comprises different models.
-Some models have more than one ensemble member.
-These ensemble members are on the third level.
-In each sub-group of ensemble members, we appended two variables,
-@var{snc} and @var{snd} (these stand for snow cover and snow depth, by
-the way).
+In this example, we employ two experiments (``scenarios'') as the top-level.
+The second-level comprises different models (e.g., CCSM4, CESM1-BGC).
+Many models are run multiple times with slight perturbed initial
+conditions to produce an ensemble of realizations.
+These ensemble members comprise the third level of the hierarchy.
+The script selects two variables, @var{snc} and @var{snd} (snow cover
+and snow depth).
 @cindex @option{--gag}
 @cindex aggregation
 @cindex group aggregation

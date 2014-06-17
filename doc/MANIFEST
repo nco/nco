@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.68 2014-06-15 21:06:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.69 2014-06-17 20:39:51 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -175,6 +175,15 @@ nco/man/ncwa.1		ncwa man page
 
 Object directory:
 nco/obj/README		Description of object directory
+
+Portable Object Template directory:
+nco/po/nco.pot		Portable Object Template file for NCO
+
+Portable Object Spanish directory:
+nco/po/es/nco.po	Portable Object Spanish translations for NCO
+
+Portable Object French directory:
+nco/po/fr/nco.po	Portable Object French translations for NCO
 
 Source code directories:
 nco/src/nco		Source for base NCO library and operators

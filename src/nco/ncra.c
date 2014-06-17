@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.540 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.541 2014-06-17 20:39:52 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -74,8 +74,9 @@
 # endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
-/* Internationalization i18n, Linux Journal 200211 p. 57--59 */
+/* Internationalization i18n, Linux Journal 200211 p. 57--59 http://www.linuxjournal.com/article/6176 http://fedoraproject.org/wiki/How_to_do_I18N_through_gettext */
 #ifdef I18N
+# include <langinfo.h> /* nl_langinfo() */
 # include <libintl.h> /* Internationalization i18n */
 # include <locale.h> /* Locale setlocale() */
 # define _(sng) gettext (sng)
@@ -135,8 +136,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.540 2014-06-15 21:06:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.540 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.541 2014-06-17 20:39:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.541 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -378,7 +379,7 @@ main(int argc,char **argv)
   setlocale(LC_ALL,""); /* LC_ALL sets all localization tokens to same value */
   bindtextdomain("nco","/home/zender/share/locale"); /* ${LOCALEDIR} is e.g., /usr/share/locale */
   /* MO files should be in ${LOCALEDIR}/es/LC_MESSAGES */
-  textdomain("nco"); /* PACKAGE is name of program */
+  textdomain("nco"); /* PACKAGE is name of program or library */
 #endif /* not _LIBINTL_H */
 
   /* Start timer and save command line */ 
@@ -610,6 +611,10 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
+
+#ifdef _LANGINFO_H
+  if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N Current charset = %s\n"),nco_prg_nm,nl_langinfo(CODESET));
+#endif /* !_LANGINFO_H */
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -853,7 +858,7 @@ main(int argc,char **argv)
         /* This file may be superfluous though valid data will be found in upcoming files */
         if(nco_dbg_lvl >= nco_dbg_std)
           if((lmt_rec[idx_rec]->srt > lmt_rec[idx_rec]->end) && (lmt_rec[idx_rec]->rec_rmn_prv_ssc == 0L))
-            (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),nco_prg_nm_get(),fl_in,fl_idx);
+            (void)fprintf(fp_stdout,"%s: INFO %s (input file %d) is superfluous\n",nco_prg_nm_get(),fl_in,fl_idx);
 
         rec_dmn_sz=lmt_rec[idx_rec]->rec_dmn_sz;
         rec_rmn_prv_ssc=lmt_rec[idx_rec]->rec_rmn_prv_ssc; /* Local copy may be decremented later */
@@ -889,7 +894,7 @@ main(int argc,char **argv)
           if(rec_rmn_prv_ssc == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
 
           /* Process all variables in current record */
-          if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,gettext("%s: INFO Record %ld of %s contributes to output record %ld\n"),nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
+          if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,nco_dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,REC_FRS_GRP,REC_LST_DSR,md5,nbr_var_prc,nco_op_typ,FLG_BFR_NRM,FLG_MRO,out_id,nco_prg_id,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,var_out_id,idx_rec,flg_skp1,flg_skp2,lmt_rec,nbr_rec)
@@ -1070,11 +1075,11 @@ main(int argc,char **argv)
             rec_nbr_trn=max_int(rec_nbr_spn_max-rec_nbr_spn_act,0L);
             /* Records requested is maximum minus any truncated in last group */
             rec_nbr_rqs=rec_nbr_rqs_max-rec_nbr_trn;
-            if(rec_nbr_rqs != rec_usd_cml[idx_rec]) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found and used\n"),nco_prg_nm_get(),rec_nbr_rqs,rec_usd_cml[idx_rec]);
+            if(rec_nbr_rqs != rec_usd_cml[idx_rec]) (void)fprintf(fp_stdout,"%s: WARNING User requested %li records but only %li were found and used\n",nco_prg_nm_get(),rec_nbr_rqs,rec_usd_cml[idx_rec]);
           } /* end if */
           /* ... and die if no records were read ... */
           if(rec_usd_cml[idx_rec] <= 0){
-            (void)fprintf(fp_stdout,gettext("%s: ERROR No records lay within specified hyperslab\n"),nco_prg_nm_get());
+            (void)fprintf(fp_stdout,"%s: ERROR No records lay within specified hyperslab\n",nco_prg_nm_get());
             nco_exit(EXIT_FAILURE);
           } /* end if */
         } /* end if */

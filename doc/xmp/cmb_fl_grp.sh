@@ -5,7 +5,7 @@
 #
 # Method:
 # - Create files with groups by ncecat --gag
-#	- Append groups level by level using ncks
+# - Append groups level by level using ncks
 #
 # Input files like:
 # snc_LImon_CCSM4_historical_r1i1p1_199001-200512.nc
@@ -25,7 +25,7 @@ drc_out='../data/grp/'
 
 # Constants
 rlm='LImon'         # Realm: LandIce; Time frequency: monthly
-tms='200001-200512' # Timeseris
+tms='200001-200512' # Timeseries
 flt='nc'            # File Type
 
 # Geographical weights
