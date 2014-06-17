@@ -35,3 +35,8 @@ msgstr "%s: INFO Fichier d'entrée %d est %s"
 #, c-format
 msgid ", local file is %s"
 msgstr ", fichier local est %s"
+
+#: ../src/nco/ncks.c:717
+#, c-format
+msgid "%s: I18N This text may appear in a foreign language\n"
+msgstr "%s: I18N Ce texte peut apparaître dans une langue étrangère\n"

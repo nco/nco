@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.541 2014-06-17 20:39:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.542 2014-06-17 23:50:01 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -74,7 +74,6 @@
 # endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
-/* Internationalization i18n, Linux Journal 200211 p. 57--59 http://www.linuxjournal.com/article/6176 http://fedoraproject.org/wiki/How_to_do_I18N_through_gettext */
 #ifdef I18N
 # include <langinfo.h> /* nl_langinfo() */
 # include <libintl.h> /* Internationalization i18n */
@@ -136,8 +135,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.541 2014-06-17 20:39:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.541 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.542 2014-06-17 23:50:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.542 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -611,10 +610,6 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
-
-#ifdef _LANGINFO_H
-  if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N Current charset = %s\n"),nco_prg_nm,nl_langinfo(CODESET));
-#endif /* !_LANGINFO_H */
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.479 2014-06-15 21:06:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.480 2014-06-17 23:50:01 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -686,7 +686,7 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
   /* Purpose: Print NCO configuration and help text */
 
   (void)fprintf(stdout,"Homepage: http://nco.sf.net\n");
-  (void)fprintf(stdout,"User's Guide: http://nco.sf.net/nco.html\n");
+  (void)fprintf(stdout,"User Guide: http://nco.sf.net/nco.html\n");
   /* fxm: TKN2YESNO breaks when TKN is undefined
      Full macro language like M4 might be useful here, though probably too much trouble */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
@@ -1119,7 +1119,7 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"\nEight ways to find more help on %s and/or NCO:\n",nco_prg_nm_get());
   (void)fprintf(stdout,"1. Examples:     http://nco.sf.net/nco.html#xmp_%s\n",nco_prg_nm_get());
   (void)fprintf(stdout,"2. Ref. manual:  http://nco.sf.net/nco.html#%s\n",nco_prg_nm_get());
-  (void)fprintf(stdout,"3. User's Guide: http://nco.sf.net#RTFM\n");
+  (void)fprintf(stdout,"3. User Guide:   http://nco.sf.net#RTFM\n");
   (void)fprintf(stdout,"4. Manual pages: \'man %s\', \'man nco\', ...\n",nco_prg_nm_get());
   (void)fprintf(stdout,"5. Homepage:     http://nco.sf.net\n");
   (void)fprintf(stdout,"6. FAQ:          http://nco.sf.net#FAQ\n");

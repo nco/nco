@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.725 2014-06-17 13:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.726 2014-06-17 23:50:01 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -78,6 +78,19 @@
 #  include <getopt.h>
 # endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
+
+#ifdef I18N
+# include <langinfo.h> /* nl_langinfo() */
+# include <libintl.h> /* Internationalization i18n */
+# include <locale.h> /* Locale setlocale() */
+# define _(sng) gettext (sng)
+# define gettext_noop(sng) (sng)
+# define N_(sng) gettext_noop(sng)
+#endif /* I18N */
+/* Supply stub gettext() function in case i18n failed */
+#ifndef _LIBINTL_H
+# define gettext(foo) foo
+#endif /* _LIBINTL_H */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
@@ -165,8 +178,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.725 2014-06-17 13:28:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.725 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.726 2014-06-17 23:50:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.726 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -383,6 +396,13 @@ main(int argc,char **argv)
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
 
+#ifdef _LIBINTL_H
+  setlocale(LC_ALL,""); /* LC_ALL sets all localization tokens to same value */
+  bindtextdomain("nco","/home/zender/share/locale"); /* ${LOCALEDIR} is e.g., /usr/share/locale */
+  /* MO files should be in ${LOCALEDIR}/es/LC_MESSAGES */
+  textdomain("nco"); /* PACKAGE is name of program or library */
+#endif /* not _LIBINTL_H */
+
   /* Start timer and save command line */ 
   ddra_info.tmr_flg=nco_tmr_srt;
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
@@ -433,7 +453,7 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"%s\n",nco_cmp_get());
         nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
-      if(!strcmp(opt_crr,"cpy") || !strcmp(opt_crr,"copyright" || !strcmp(opt_crr,"license"))){
+      if(!strcmp(opt_crr,"cpy") || !strcmp(opt_crr,"copyright") || !strcmp(opt_crr,"license")){
 	(void)nco_cpy_prn();
         nco_exit(EXIT_SUCCESS);
       } /* endif "copyright" */
@@ -681,6 +701,26 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
+
+#ifdef _LANGINFO_H
+/* Internationalization i18n
+   Linux Journal 200211 p. 57--59 http://www.linuxjournal.com/article/6176 
+   Fedora: http://fedoraproject.org/wiki/How_to_do_I18N_through_gettext
+   cd ~/nco/bld;make I18N=Y
+   cd ~/nco/bld;xgettext --default-domain=nco --join-existing -o ../po/nco.pot ../src/nco/ncks.c ../src/nco/ncra.c
+   for LL in fr es; do
+     msgfmt ~/nco/po/${LL}/nco.po -o ~/nco/po/${LL}/nco.mo
+     /bin/cp ~/nco/po/${LL}/nco.mo ~/share/locale/${LL}/LC_MESSAGES
+#     sudo /bin/cp ~/nco/po/${LL}/nco.mo /usr/share/locale/${LL}/LC_MESSAGES  
+   done
+   export LOCALEDIR=${HOME}/share/locale
+   LC_ALL=en ncks -D 1 -O ~/nco/data/in.nc ~/foo.nc
+   LANG=en_GB.utf8 LANGUAGE=en_GB:en:fr_FR:fr LC_ALL=en_GB.utf8 ncks -D 1 -O ~/nco/data/in.nc ~/foo.nc
+   LANG=es ncks -D 1 -O ~/nco/data/in.nc ~/foo.nc
+   LANG=fr_FR.utf8 LANGUAGE=fr_FR:fr:en_GB:en LC_ALL=fr_FR.utf8 ncks -D 1 -O ~/nco/data/in.nc ~/foo.nc */
+  if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N Current charset = %s\n"),nco_prg_nm,nl_langinfo(CODESET));
+  if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N This text may appear in a foreign language\n"),nco_prg_nm);
+#endif /* !_LANGINFO_H */
 
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);
