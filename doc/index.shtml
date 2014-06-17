@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.905 2014-06-16 23:04:51 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.906 2014-06-17 00:10:32 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -297,10 +297,9 @@ will require a sustained effort and software ecosystem that
 understands and implement hierarchical dataset concepts.
 And it's hard to sell a federal agency on the wisdom of investing in a paradigm shift!
 Other more prosaic tasks that need work are, for example,
-parallelization of I/O (!!!), user-defined and non-atomic types, more CF conventions, 
+I/O parallelization (!!!), user-defined and non-atomic types, more CF conventions, 
 cloud-services, JSON back-end, and user-defined <tt>ncap2</tt> functions.
-Need I say more? 
-If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
+If you send an endorsement, please include (at least) your Name, Title, and Institutional affiliation.</p>
 
 Lastly, as of June, 2003, if you're more strapped for time than money
 and want to contribute something back, consider a monetary donation.

@@ -11177,7 +11177,7 @@
 
 	* Created ncap_var_stretch() which generalizes var_conform_dim()
 	by including convolution of variables. ncap_var_stretch() appears
-	to work as drop in replacement for var_conform_dim(). 
+	to work as drop in replacement for var_conform_dim().
 	Convolution is just a stub which does not do anything yet.
 	Realized that expansion might work by creating arbitrary variable
 	of convolution size and then separately calling var_conform_dim()
@@ -11196,7 +11196,7 @@
 	All of these machines have bison installed
 	Some of these builds require building getopt.o separately
 	Build fails on IBM because yacc does not understand pure_parser
-	
+
 2001-12-28  Charlie Zender  <zender@uci.edu>
 
 	* More CEWI initializations
@@ -11206,7 +11206,7 @@
 	* Remove C++ comment characters that crept into various routines
 	Using // comments causes default to compilation to break on many
 	architectures (Linux being an exception)
-	
+
 	* cvs tag -c nco-2_1_1
 	Changes since nco-2_1_0: ncap uses @ for attributes
 	Mixed rank handling improved but still broken
@@ -11225,12 +11225,12 @@
 	          i.e var_nm@att_nm rather than var_nm:att_nm
 
 	* Changed ncap.y So that 1-D variables can be saved in an attribute
-	
+
 	* Attempted to fix the rank problem. Added ncap_var_conform_dim() to
 	  ncap_utl.c, Its not working correctly at the mo.
-	
+
         * Added att_lst_max to ncap.c
-	
+
 	* Updated ncap.in
 
 2001-12-02  Charlie Zender  <zender@uci.edu>
@@ -11256,7 +11256,7 @@
 2001-10-30  Charlie Zender  <zender@uci.edu>
 
 	* Fixed getopt dependencies and included nco_netcdf.h nco.h in
-	ncap stuff 
+	ncap stuff
 
 2001-10-28  Charlie Zender  <zender@uci.edu>
 
@@ -11266,7 +11266,7 @@
 
 	* Use NC_REC_DMN_UNDEFINED instead of -1 where appropriate
 
-	* Fix argument list to nco_inq_varid() call in ncap 
+	* Fix argument list to nco_inq_varid() call in ncap
 
 	* Fix netCDF3 migration bug that could cause core dumps because
 	non-coordinate dimensions where being interpreted as coordinate
@@ -11276,7 +11276,7 @@
 
 	* Added VERSION infrastructure for recording build information in executable
 
-	* Check rcd before Exit_Gracefully() in main() routines so 
+	* Check rcd before Exit_Gracefully() in main() routines so
 	rcd does not generate "set but not used warnings"
 
 2001-10-07  Charlie Zender  <zender@uci.edu>
@@ -11288,7 +11288,7 @@
 	information-specific versions of inquire functions where
 	possible.
 
-	* Verified nco-2_0_2 passes test suite 
+	* Verified nco-2_0_2 passes test suite
 
 	* nco_typ_sng(): NC_CHAR is unsigned char, moved nco_typ_sng(),
 	c_type_nm(), fortran_typ_nm() to nco_netcdf library so that
@@ -11533,7 +11533,7 @@
 	* Added OpenMP critical regions to var_get() and var_refresh()
 
 	* Added OpenMP critical regions around thread-unsafe netCDF
-	write calls in ncwa and ncra/ncea. 
+	write calls in ncwa and ncra/ncea.
 
 	* Finally removed 1995--1996-era SGI enum workarounds from nc.h
 	SGI compiler on dataproc seems to behave sanely now
@@ -11548,7 +11548,7 @@
 	work either.
 
 	* Multi-threaded version of ncwa averages variables in T42 file
-	correctly sometimes, but also incorrectly. Currently unpredictable 
+	correctly sometimes, but also incorrectly. Currently unpredictable
 	what causes discrepancy.
 
 	* Removed arg_cnt from ncwa.c. ncwa.c now uses standard
@@ -11565,7 +11565,7 @@
 2000-09-13  Charlie Zender  <zender@uci.edu>
 
 	* Contrary to the documentation, ncflint has always processed
-	coordinate variables. Perhaps fixing coordinate variables is a 
+	coordinate variables. Perhaps fixing coordinate variables is a
 	better idea? Patched var_lst_divide() to fix all non-record
 	coordinate variable to ncflint. Not sure if I will release this
 	though. Perhaps it should be a switch?
@@ -11591,7 +11591,7 @@
 
 	* Added some clarifications to memory handling in the manual, and
 	additional examples provoked by John Sheldon's GFDL netCDF
-	website. 
+	website.
 
 	* Integrated ncvarid_or_die() and ncdimid_or_die() into ncrename
 
@@ -11602,7 +11602,7 @@
 	* Will all previous changes to nco_malloc(), nco_realloc(), and
 	memory management in general, make tst now seems to be well
 	behaved with Electric Fence, and duplicates answers without
-	Electric Fence. 
+	Electric Fence.
 
 	* Another nco_realloc() tweak to satisfy Electric Fence:
 	Now realloc() is never called when size == 0
@@ -11632,18 +11632,18 @@
 2000-08-23  Charlie Zender  <zender@uci.edu>
 
 	* Functionalized type conversion routines nco_cnv_var_dbl() and
-	nco_cnv_dbl_var() 
+	nco_cnv_dbl_var()
 
 	* Fixed x:y bug in opt arg of ncra.c introduced in 1.2
 
 2000-08-14  Charlie Zender  <zender@uci.edu>
 
-	* Added this text to the license, provided by Steven G. Johnson 
+	* Added this text to the license, provided by Steven G. Johnson
 
-	"As a special exception to the terms of the GPL, you are permitted 
-	to link the NCO source code with the NetCDF and HDF libraries 
-	and distribute the resulting executables under the terms of the GPL, 
-	but in addition obeying the extra stipulations of the netCDF and 
+	"As a special exception to the terms of the GPL, you are permitted
+	to link the NCO source code with the NetCDF and HDF libraries
+	and distribute the resulting executables under the terms of the GPL,
+	but in addition obeying the extra stipulations of the netCDF and
 	HDF library licenses."
 
 	This is intended to allow NCO to link to the non-GPL licenses of
@@ -11833,9 +11833,9 @@
 	* Tagged this as nco-1_1_45
 
 	* Fix to PID length bug in fl_out_open() on SGIs
-	Now use dynamically allocated string to hold PID 
+	Now use dynamically allocated string to hold PID
 	Kudos to Juliana Rew for finding this bug
-	
+
 2000-01-16  Charlie Zender  <zender@uci.edu>
 
 	* Changed all addresses except website to UCI ESS
@@ -11845,7 +11845,7 @@
 2000-01-14  Charlie Zender  <zender@uci.edu>
 
 	* Calling ncwa without arguments now causes operator to print
-	usage and exit successfully 
+	usage and exit successfully
 
 	* Print error message and hint when ncwa called with -a dim1 -a
 	dim2 instead of -a dim1,dim2
@@ -11887,7 +11887,7 @@
 	ncatted -O -h -a test,global,o,c,"NREL, NCAR" in.nc
 	because the new attribute value followed the comma delimiter used
 	internally by ncatted to delimit list elements
-	
+
 	* Fixed so that setting strings to zero length with ncatted works,
 	e.g., ncatted -O -a history,global,o,c,"" in.nc
 
@@ -11900,10 +11900,10 @@
 	-DAIX on the IBM SP cluster environment
 
 1999-10-21  Charlie Zender  <zender@dust.ps.uci.edu>
-	
+
 	* Defined MY_BLD_DIR in Makefile before it is used
 	Re-tagged this as nco1_1_41
-	
+
 1999-10-17  Charlie Zender  <zender@dust.ps.uci.edu>
 
 	* Tagged this as nco1_1_41
@@ -11920,7 +11920,7 @@
 	* Fixed another bug in ncwa reported by Keith Lindsay.
 	The denominator in normalized averages did not always account for
 	missing values in the variable being averaged. This bug may have
-	been introduced sometime during ncwa rewrites around 19981201. 
+	been introduced sometime during ncwa rewrites around 19981201.
 	I'm sure it has not always been there.
 
 1999-10-03  Charlie Zender  <zender@dust.ps.uci.edu>
@@ -11929,10 +11929,10 @@
 
 	* Added test target in bld/Makefile. Now `make test' automatically
 	downloads a small (66 kb) file on which it performs a small
-	battery of tests (bld/nco_tst.sh). 
+	battery of tests (bld/nco_tst.sh).
 
 	* Revamped build procedure to use GNU make dependencies rather
-	than makdep perl script. 
+	than makdep perl script.
 
 	* All *.c files now build cleanly with gcc -Wall
 
@@ -11955,13 +11955,13 @@
 	* Added ncwa test #12 to nco_tst.sh. This tests for a bug
 	reported by Keith Lindsay where ncwa averaged a variable which is
 	completely missing_value to a value of 0.0 rather than
-	missing_value. 
+	missing_value.
 
 	* Removed C_ONLY token and made builds completely C-based by
 	default. Introduced new token USE_FORTRAN_ARITHMETIC to build
 	old style NCO with fortran arithmetic routines. Seems to work
-	fine. Translated Fortran date routines newdate() and days2eom() to 
-	C as part of this. 
+	fine. Translated Fortran date routines newdate() and days2eom() to
+	C as part of this.
 
 1999-08-04  Charlie Zender  <zender@dust.acd.ucar.edu>
 
@@ -11980,9 +11980,9 @@
 	multiple colons (which are legal in UNIX). Files with single
 	colons in their names, as opposed to rcp requests, still cause
 	core dumps and will continue to do so until I write a routine
-	which determines whether to treat the filename as an rcp 
+	which determines whether to treat the filename as an rcp
 	request based on some sort of valid hostname recognition
-	algorithm. 
+	algorithm.
 
 1999-07-29  Charlie Zender  <zender@dust.acd.ucar.edu>
 
@@ -12167,7 +12167,7 @@ Fri Dec  4 15:06:23 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
 	* Made sure ncwa weights were being masked when normalization was
 	invoked. Formerly, they were not. This was a bug. The bug is now
-	fixed. 
+	fixed.
 
 	* Rearranged normalization logic of ncwa
 
@@ -12178,7 +12178,7 @@ Fri Dec  4 15:06:23 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 	* Allow hyperslab coordinate specification in exponential format
 	even when decimal point is missing, e.g., "-d lon,36e1" is valid
 
-	* var_conform_dim() now checks dimension names rather than IDs 
+	* var_conform_dim() now checks dimension names rather than IDs
 
 Mon Nov 23 17:29:02 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
@@ -12205,13 +12205,13 @@ Sat Oct 31 14:56:33 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 	triggering this bug. Solution was to make ncra, like ncrcat,
 	simply process ALL record variable even NC_CHAR and NC_BYTE,
 	though the averaging operation on these types is still
-	ill-defined. 
+	ill-defined.
 
 Wed Aug 26 16:30:27 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
 
 	* Fixed bld/nco_tst.sh to work again at NCAR. `make test' now
 	performs non-trivial tests of ncwa and ncdiff. Only works at
-	NCAR (a necessary input file is rather large). 
+	NCAR (a necessary input file is rather large).
 
 Wed Aug 19 11:26:25 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
 
@@ -12228,7 +12228,7 @@ Wed Aug 19 11:26:25 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
 	always printed with -r option.
 
 	* Fixed bug where -n NINTAP list did not recognize `.cdf'
-	suffixes. 
+	suffixes.
 
 Mon Aug 10 21:53:34 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
@@ -12236,16 +12236,16 @@ Mon Aug 10 21:53:34 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 	be avoided if desired.
 
 	* Fixed bug in ncrename where fl_in could be free()'d before it
-	was malloc()'d in fl_nm_prs(). 
+	was malloc()'d in fl_nm_prs().
 
 	* Fixed bug in ncdiff where variables of same rank but different
 	types would cause core dump when being subtracted. Improved
-	diagnostics for failures with ncdiff. 
-	
+	diagnostics for failures with ncdiff.
+
 1998-07-07  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Added -h option (suppresses history concatentation) to all
-	operators. Changed existing ncks -h option to -m (for metadata). 
+	operators. Changed existing ncks -h option to -m (for metadata).
 
 Sun Jun  7 17:45:20 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
