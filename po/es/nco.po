@@ -1,0 +1,42 @@
+# Portable Object French translations for NCO, the netCDF Operators
+# Copyright (C) 1995-2014 Charlie Zender
+# This file is distributed under the same license as the NCO package
+
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: NCO 4.4.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-06-17 13:16-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Charlie Zender <surname@uci.edu>\n"
+"Language-Team: French <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/nco/ncra.c:539
+#, c-format
+msgid "%s: ERROR Incorrect abbreviation for file list\n"
+msgstr "%s: ERREUR abréviation incorrecte pour la liste de fichiers\n"
+
+#: ../src/nco/ncra.c:616
+#, c-format
+msgid "%s: I18N Current charset = %s\n"
+msgstr "%s: I18N Courant charset = %s\n"
+
+#: ../src/nco/ncra.c:796
+#, c-format
+msgid "%s: INFO Input file %d is %s"
+msgstr "%s: INFO Fichier d'entrée %d est %s"
+
+#: ../src/nco/ncra.c:799
+#, c-format
+msgid ", local file is %s"
+msgstr ", fichier local est %s"
+
+#: ../src/nco/ncks.c:717
+#, c-format
+msgid "%s: This text may appear in a foreign language\n"
+msgstr "%s: Ce texte peut apparaître dans une langue étrangère\n"
