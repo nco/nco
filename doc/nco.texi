@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1005 2014-06-17 20:39:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1006 2014-06-19 05:26:22 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.5
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 10 June 2014
+@set update-date 18 June 2014
 @set update-month June 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2533,8 +2533,11 @@ Availability: All operators@*
 @cindex L10N
 @acronym{NCO} support for @dfn{internationalization} of textual input
 and output (e.g., Warning messages) is nascent.
-We introduced a foreign language string catalogue (French and Spanish) in
-@command{ncra} in 2004. 
+We introduced the first foreign language string catalogues (French and
+Spanish) in 2004, yet did not activate these in distributions because 
+the catalogues were nearly empty.
+We seek volunteers to populate our templates with translations for their
+favorite languages.
 @c fxm: Work on this section
 
 @html

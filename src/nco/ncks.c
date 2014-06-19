@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.726 2014-06-17 23:50:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.727 2014-06-19 05:26:22 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -178,8 +178,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.726 2014-06-17 23:50:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.726 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.727 2014-06-19 05:26:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.727 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -709,6 +709,7 @@ main(int argc,char **argv)
    cd ~/nco/bld;make I18N=Y
    cd ~/nco/bld;xgettext --default-domain=nco --join-existing -o ../po/nco.pot ../src/nco/ncks.c ../src/nco/ncra.c
    for LL in fr es; do
+     mkdir -p ~/share/locale/${LL}/LC_MESSAGES
      msgfmt ~/nco/po/${LL}/nco.po -o ~/nco/po/${LL}/nco.mo
      /bin/cp ~/nco/po/${LL}/nco.mo ~/share/locale/${LL}/LC_MESSAGES
 #     sudo /bin/cp ~/nco/po/${LL}/nco.mo /usr/share/locale/${LL}/LC_MESSAGES  

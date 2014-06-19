@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.720 2014-06-18 00:08:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.721 2014-06-19 05:26:22 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -652,7 +652,7 @@ ${MY_INC_DIR}/%.hh : %.hh
 
 # Rules for installing i18n files
 # -k_ : Treat underscore as keyword (so "_" is equivalent to "gettext")
-# --default-domain : Name of rogram or library
+# --default-domain : Name of program or library
 # --join-existing : Join messages with existing file
 %.po : %.c
 	xgettext --default-domain=$* -k_ --join-existing $<
