@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1006 2014-06-19 05:26:22 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1007 2014-06-21 06:09:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3040,16 +3040,18 @@ particular access protocol.
 @html
 <a name="ftp"></a> <!-- http://nco.sf.net/nco.html#ftp -->
 @end html
-To access a file via an anonymous @acronym{FTP} server, supply the
-remote file's @acronym{URL}.
+To access a file via an anonymous @acronym{FTP} server, simply supply
+the remote file's @acronym{URL}.
+Anonymous @acronym{FTP} usually requires no further credentials,
+e.g., no @file{.netrc} file is necessary.
 @acronym{FTP} is an intrinsically insecure protocol because it transfers
-passwords in plain text format. 
+passwords in plain text format.  
 Users should access sites using anonymous @acronym{FTP}, or better yet,
-secure @acronym{FTP} when possible. 
+secure @acronym{FTP} (@acronym{SFTP}, see below) when possible. 
 Some @acronym{FTP} servers require a login/password combination for a
 valid user account.
-@acronym{NCO} allows these transactions so long as the required
-information is stored in the @file{.netrc} file. 
+@acronym{NCO} allows transactions that require additional credentials
+so long as the required information is stored in the @file{.netrc} file.  
 Usually this information is the remote machine name, login, and
 password, in plain text, separated by those very keywords, e.g.,
 @example
@@ -3076,7 +3078,7 @@ specified with a homebrew syntax of the form
 sftp://machine.domain.tld:/path/to/filename
 @end example
 Note the second colon following the top-level-domain, @code{tld}.
-This syntax is a hybrid between an @acronym{FTP URL} and a standard
+This syntax is a hybrid between an @acronym{FTP URL} and standard
 remote file syntax.
 
 @html
