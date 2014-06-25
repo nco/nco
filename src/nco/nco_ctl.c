@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.480 2014-06-17 23:50:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.481 2014-06-25 19:58:14 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -805,7 +805,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always Include terminal \n so mnemonic does not dangle */
-  return "Abalone in Pelican Bay\n";
+  return "NonSToP love\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

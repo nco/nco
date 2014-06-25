@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1007 2014-06-21 06:09:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1008 2014-06-25 19:58:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7655,7 +7655,7 @@ This is why type conversion is limited to the operators @command{ncap2},
 @command{ncwa}.   
 @item The arithmetic operation could benefit from type conversion.
 Operations that could benefit include averaging, summation, or any
-"hard" arithmetic that could overflow or underflow.  
+``hard'' arithmetic that could overflow or underflow.  
 Larger representable sums help avoid overflow, and more precision
 helps to avoid underflow.
 Type conversion does not benefit searching for minima and maxima
@@ -7726,8 +7726,8 @@ These functions round @var{x} to the nearest integer, halfway cases away
 from zero.
 The problem with @code{lround()} is that it always rounds real values
 ending in @code{.5} away from zero.
-This rounds, for example, @code{1.5d} and @code{2.5d} to @code{1s}
-and @code{2s}, respectively.
+This rounds, for example, @code{1.5d} and @code{2.5d} to @code{2s}
+and @code{3s}, respectively.
 
 @findex @code{lrint()}. 
 @cindex @acronym{IEEE}
