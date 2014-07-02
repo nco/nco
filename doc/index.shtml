@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.907 2014-06-17 02:37:14 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.908 2014-07-02 06:39:04 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -57,7 +57,7 @@ Try to disable Spammers' machines:
 
 <td align="right" valign="top">
 [<a href="http://www.antlr.org">ANTLR</a>] 
-[<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a>] 
+[<a href="http://cfconventions.org/1.6.html">CF</a>] 
 [<a href="https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group">DIWG</a>] 
 [<a href="http://www.gnu.org/software/gsl">GSL</a>]
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
@@ -125,7 +125,7 @@ formats, including
 <a href="http://hdfgroup.org/products/hdf4">HDF4</a>, and 
 <a href="http://hdfgroup.org/HDF5">HDF5</a>.
 It exploits the geophysical expressivity of many 
-<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a> 
+<a href="http://cfconventions.org/1.6.html">CF</a> 
 (Climate &amp; Forecast) metadata conventions, 
 the flexible description of physical dimensions translated by
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>,
@@ -940,15 +940,13 @@ Otherwise, you may be on your own.</li>
 <a name="NCAR"></a> <!-- http://nco.sf.net#NCAR -->
 <a name="ncar"></a> <!-- http://nco.sf.net#ncar -->
 <li><i>Does NCAR support NCO?</i>
-The NCAR CISL Technical Consulting Group (TCG) supports NCO like other
-community software packages such as <tt>lapack</tt>. 
-No other NCAR division has coordinated NCO support.
+The NCAR CISL Consulting Service Group (CSG) supports NCO like other
+software packages. 
 The NCAR CISL-suported executables are made available through
-&ldquo;modules&rdquo; so try <tt>module add nco</tt>.
-If you notice problems with the NCO installation on CISL machines,
-or if you would benefit from a more recent release or patch, then
-inform the relevant system administrators, e.g.,
-<a href="mailto:consult1@ncar.ucar.edu">NCAR User Support</a>.
+&ldquo;modules&rdquo; so try <tt>module load nco</tt>. 
+If you notice problems with the NCO installation on CISL machines, or
+if you would benefit from a more recent release or patch, then ask
+<a href="http://www2.cisl.ucar.edu/docs/help">cislhelp</a>. 
 If you have a comment, suggestion, or bug report, then contact the
 developers as described below. 
 </li>
@@ -1487,7 +1485,7 @@ site.</li>
 
 <td align="right" valign="top">
 [<a href="http://www.antlr.org">ANTLR</a>] 
-[<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a>] 
+[<a href="http://cfconventions.org/1.6.html">CF</a>] 
 [<a href="https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group">DIWG</a>] 
 [<a href="http://www.gnu.org/software/gsl">GSL</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 

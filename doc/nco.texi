@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1008 2014-06-25 19:58:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1009 2014-07-02 06:39:04 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.5
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 18 June 2014
-@set update-month June 2014
+@set update-date 1 July 2014
+@set update-month July 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -1029,7 +1029,7 @@ following @acronym{UNIX} commands in the directory where the
 @acronym{NCO} executables are installed.
 @example
 ln -s -f ncbo ncdiff    # ncbo --op_typ='+'
-ln -s -f ncra ncecat    # ncra --pseudonym='ncecat'
+ln -s -f ncra nces      # ncra --pseudonym='nces'
 ln -s -f ncra ncrcat    # ncra --pseudonym='ncrcat'
 ln -s -f ncbo ncadd     # ncbo --op_typ='+'
 ln -s -f ncbo ncsubtract # ncbo --op_typ='-'
@@ -5656,7 +5656,7 @@ ranges.
 This works on datasets that associate coordinate variables to
 grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})   
 @code{coordinates} and @code{standard_name} attributes described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-system, here}. 
+@uref{http://cfconventions.org/1.6.html#coordinate-system, here}. 
 Currently, @acronym{NCO} understands auxiliary coordinate variables 
 pointed to by the @code{standard_name} attributes for @var{latitude} and 
 @var{longitude}.   
@@ -8359,8 +8359,8 @@ Nevertheless, we refer to all such metadata collectively as @acronym{CF}
 metadata. 
 Skip this section if you never work with @acronym{CF} metadata.
 
-The @acronym{CF} netCDF conventions are described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-system, here}. 
+The latest @acronym{CF} netCDF conventions are described 
+@uref{http://cfconventions.org/1.6.html, here}. 
 Most @acronym{CF} netCDF conventions are transparent to @acronym{NCO}  
 @footnote{
 The exception is appending/altering the attributes @code{x_op},
@@ -8456,7 +8456,7 @@ or alter the @code{Conventions} attribute.
 As of @acronym{NCO} version 4.0.8 (April, 2011), @acronym{NCO} 
 supports the @acronym{CF} @code{bounds} convention for cell boundaries
 described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries, here}.
+@uref{http://cfconventions.org/1.6.html#cell-boundaries, here}.
 This convention allows coordinate variables (including multidimensional
 coordinates) to describe the boundaries of their cells.
 This is done by naming the variable which contains the bounds in
@@ -8483,7 +8483,7 @@ Hence the subsets will themselves be @acronym{CF}-compliant.
 @cindex @code{--crd}
 As of @acronym{NCO} version 3.9.6 (January, 2009), @acronym{NCO}
 supports the @acronym{CF} @code{coordinates} convention described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-system, here}. 
+@uref{http://cfconventions.org/1.6.html#coordinate-system, here}. 
 This convention allows variables to specify additional coordinates
 (including multidimensional coordinates) in a space-separated string
 attribute named @code{coordinates}. 
@@ -8506,7 +8506,7 @@ described in @ref{Subsetting Coordinate Variables}.
 @cindex cell methods convention
 As of @acronym{NCO} version 4.4.2 (February, 2014), @acronym{NCO} 
 supports some of the @acronym{CF} @code{cell_methods} 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods, convention}
+@uref{http://cfconventions.org/1.6.html#cell-methods, convention}
 to describe the analysis procedures that have been applied to data.
 The convention creates (or appends to an existing) @code{cell_methods}
 attribute a space-separated list of couplets of the form @var{dmn: op}

@@ -3,7 +3,7 @@
 // Contains nested ensembles, metadata-only leaf groups, and "in-between data"
 // Usage:
 // ncgen -k netCDF-4 -b -o ~/nco/data/dsm.nc ~/nco/data/dsm.cdl
-// ncdismember ~/nco/data/dsm.nc /data/zender/nco/tmp cf 1.3 > ~/foo.txt 2>&1
+// ncdismember ~/nco/data/dsm.nc /data/zender/nco/tmp cf 1.5 > ~/foo.txt 2>&1
 
 netcdf dsm {
 
@@ -19,6 +19,7 @@ netcdf dsm {
     :metadata = "g2 group contains metadata and one variable but no shared dimensions";
   variables:
     float one;
+    one:long_name="the loneliest number";
   data:
     one=1;
   } // g2
@@ -29,6 +30,7 @@ netcdf dsm {
     lat=2;
   variables:
     float one_arr(lat);
+    one_arr:long_name="the loneliest array";
   data:
     one_arr=1,1;
   } // g3
@@ -41,6 +43,7 @@ netcdf dsm {
       :metadata = "g4g1 group contains one variable that depends on an inherited dimension";
     variables:
       float one_arr(lat);
+      one_arr:long_name="the loneliest array";
     data:
       one_arr=1,1;
     } // g4g1
@@ -53,15 +56,43 @@ netcdf dsm {
     lat=2;
   variables:
     float one_arr(lat);
+    one_arr:long_name="the loneliest array";
     group: g5g1 {
       :metadata = "g5g1 group contains one variable that depends on an inherited dimension";
     variables:
       float one_arr(lat);
+      one_arr:long_name="the loneliest array";
     data:
       one_arr=1,1;
     } // g5g1
 
   } // g5
+
+  group: g6 {
+    :metadata = "g6 group contains variables to test CF checkers";
+  dimensions:
+    time_like_2=2;
+    time_like_3=2;
+  variables:
+    int period;
+    period:units="second";
+    period:long_name="length of time between successive orbits";
+    byte time_like_1;
+    time_like_1:units="ns";
+    time_like_1:long_name="time";
+    byte time_like_2(time_like_2);
+    time_like_2:units="ns";
+    time_like_2:long_name="time";
+    byte time_like_3(time_like_3);
+    time_like_3:calendar="none";
+    time_like_3:units="ns";
+    time_like_3:long_name="time";
+    data:
+    period=1;
+    time_like_1=1b;
+    time_like_2=1b,2b;
+    time_like_3=1b,2b;
+  } // g6
 
   group: cesm {
 
@@ -76,7 +107,9 @@ netcdf dsm {
       time=4;
     variables:
       float tas1(time);
-	  float tas2(time);
+      tas1:long_name="temperature";
+      float tas2(time);
+      tas2:long_name="temperature";
     data:
       tas1=272.1,272.1,272.1,272.1;
       tas2=272.1,272.1,272.1,272.1;
@@ -94,10 +127,12 @@ netcdf dsm {
       time=4;
     variables:
       float tas1(time);
-	  float tas2(time);
+      tas1:long_name="temperature";
+      float tas2(time);
+      tas2:long_name="temperature";
     data:
       tas1=272.2,272.2,272.2,272.2;
-	  tas2=272.2,272.2,272.2,272.2;
+      tas2=272.2,272.2,272.2,272.2;
       
     } // cesm_02
     
@@ -116,7 +151,9 @@ netcdf dsm {
       time=4;
     variables:
       float tas1(time);
-	  float tas2(time);
+      tas1:long_name="temperature";
+      float tas2(time);
+      tas2:long_name="temperature";
     data:
       tas1=273.1,273.1,273.1,273.1;
       tas2=273.1,273.1,273.1,273.1;
@@ -134,11 +171,12 @@ netcdf dsm {
       time=4;
     variables:
       float tas1(time);
+      tas1:long_name="temperature";
       float tas2(time);
+      tas2:long_name="temperature";      
     data:
       tas1=273.2,273.2,273.2,273.2;
       tas2=273.2,273.2,273.2,273.2;
-      
     } // ecmwf_02
 
   } // ecmwf
