@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.727 2014-06-19 05:26:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.728 2014-07-05 06:48:25 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -178,8 +178,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.727 2014-06-19 05:26:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.727 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.728 2014-07-05 06:48:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.728 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -334,6 +334,8 @@ main(int argc,char **argv)
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
       {"netcdf4",no_argument,0,'4'},
+      {"pnetcdf",no_argument,0,'5'},
+      {"5",no_argument,0,'5'},
       {"7",no_argument,0,'7'},
       {"abc",no_argument,0,'a'},
       {"alphabetize",no_argument,0,'a'},
@@ -564,6 +566,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case '5': /* Print using new print format */
+      fl_out_fmt=NC_FORMAT_CDF5;
       PRN_NEW_FMT=!PRN_NEW_FMT;
       break;
     case '6': /* Request netCDF3 64-bit offset output storage format */
@@ -722,6 +725,15 @@ main(int argc,char **argv)
   if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N Current charset = %s\n"),nco_prg_nm,nl_langinfo(CODESET));
   if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N This text may appear in a foreign language\n"),nco_prg_nm);
 #endif /* !_LANGINFO_H */
+
+#ifdef ENABLE_PNETCDF
+/* Parallel netCDF
+   cd ~/nco/bld;make PNETCDF=Y;cd -
+   LD_LIBRARY_PATH=/usr/local/parallel/lib\:${LD_LIBRARY_PATH}
+   ncks -O -5 ~/nco/data/in.nc ~/foo.nc
+   od -An -c -N4 ~/foo.nc */
+  if(nco_dbg_lvl >= nco_dbg_quiet) (void)fprintf(stdout,gettext("%s: WARNING Compiled with PnetCDF\n"),nco_prg_nm);
+#endif /* !ENABLE_PNETCDF */
 
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);

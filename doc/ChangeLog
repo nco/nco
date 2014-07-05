@@ -1,14 +1,16 @@
 2014-07-04  Charlie Zender  <zender@uci.edu>
 
-	* Build simply when PNETCDF=Y
-
-2014-07-01  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.4.5 release procedure:
  	Changes since nco-4_4_4: https DAP, gxvx,
 	cd ~/nco;cvs tag -d nco-4_4_5;cvs tag -d nco-4_4_5-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
+
+	* Use -5 --fl_fmt=pnetcdf to create NC_FORMAT_CDF5 files
+
+	* Build simply when PNETCDF=Y
+
+2014-07-01  Charlie Zender  <zender@uci.edu>
 
 	* Improve CF-compliance checking infrastructure for mabel/ICESat2
 

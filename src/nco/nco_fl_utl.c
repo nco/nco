@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.242 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.243 2014-07-05 06:48:25 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -34,6 +34,8 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
   md_create=md_clobber;
   if(fl_out_fmt == NC_FORMAT_64BIT){
     md_create|=NC_64BIT_OFFSET;
+  }else if(fl_out_fmt == NC_FORMAT_CDF5){
+    md_create|=NC_64BIT_DATA;
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4){
     md_create|=NC_NETCDF4;
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -76,6 +78,13 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
     (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64bit\" options.\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_NETCDF4 */
+  }else if(strcasestr("pnetcdf",fl_fmt_sng)){
+#ifdef ENABLE_PNETCDF
+    /* If "pnetcdf" contains string */
+    *fl_fmt_enm=NC_FORMAT_CDF5;
+#else /* !ENABLE_PNETCDF */
+    (void)fprintf(stderr,"%s: ERROR This NCO was not built with PnetCDF (http://trac.mcs.anl.gov/projects/parallel-netcdf) and cannot create the requested PnetCDF file format. HINT: Re-try with different (or no) specified file format, such as \"classic\" or \"64bit\".\n",nco_prg_nm_get());
+#endif /* !ENABLE_PNETCDF */
   }else if(strcasestr("znetcdf",fl_fmt_sng)){
 #ifdef ENABLE_ZNETCDF
     /* If "znetcdf" contains string */
