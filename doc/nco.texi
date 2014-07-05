@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1009 2014-07-02 06:39:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1010 2014-07-05 05:37:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1037,7 +1037,7 @@ ln -s -f ncbo ncmultiply # ncbo --op_typ='*'
 ln -s -f ncbo ncdivide   # ncbo --op_typ='/'
 ln -s -f ncpdq ncpack    # ncpdq
 ln -s -f ncpdq ncunpack  # ncpdq --unpack
-# NB: Cygwin executable (and link) names have an '.exe' suffix, e.g.,
+# NB: Windows/Cygwin executable/link names have '.exe' suffix, e.g.,
 ln -s -f ncbo.exe ncdiff.exe
 ...
 @end example

@@ -79,19 +79,23 @@ netcdf dsm {
     period:long_name="length of time between successive orbits";
     byte time_like_1;
     time_like_1:units="ns";
-    time_like_1:long_name="time";
+    time_like_1:long_name="time as non-coordinate scalar";
     byte time_like_2(time_like_2);
     time_like_2:units="ns";
-    time_like_2:long_name="time";
+    time_like_2:long_name="time is coordinate array";
     byte time_like_3(time_like_3);
     time_like_3:calendar="none";
     time_like_3:units="ns";
-    time_like_3:long_name="time";
+    time_like_3:long_name="time is coordinate array";
+    byte time_like_4(time_like_3);
+    time_like_4:units="ns";
+    time_like_4:long_name="time is non-coordinate array";
     data:
     period=1;
     time_like_1=1b;
     time_like_2=1b,2b;
     time_like_3=1b,2b;
+    time_like_4=1b,2b;
   } // g6
 
   group: cesm {

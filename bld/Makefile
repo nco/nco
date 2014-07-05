@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.721 2014-06-19 05:26:22 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.722 2014-07-05 05:37:39 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -382,9 +382,6 @@ endif # !MPI_ROOT
  NC_LDFLAGS := -L${NETCDF_LIB} $(addprefix -L,${HDF5_LIB})
 # NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz ${NC_LIBS}
  NC_LIBS := $(shell nc-config --libs) ${NC_LIBS}
-ifdef MPI_ROOT
- NC_LIBS += -lmpi
-endif # !MPI_ROOT
 ifdef CURL_LIB
  NC_LDFLAGS += -L${CURL_LIB}
 endif # end 
@@ -400,10 +397,18 @@ ifneq (${HDF5_INC},${NETCDF_INC})
 endif # end 
 endif # endif NETCDF4
 
+# At this point we change NETCDF_INC from a directory to a flag
+NETCDF_INC := -I${NETCDF_INC}
+
 ifeq (${PNETCDF},Y)
 # Enable pnetCDF functionality
- NC_LDFLAGS := -L${NETCDF_LIB}
- NC_LIBS += -lpnetcdf
+# NC_LDFLAGS := -L${NETCDF_LIB}
+# NC_LIBS += -lpnetcdf 
+# NETCDF_INC += -I/usr/include/openmpi-x86_64 -I/usr/local/parallel/include
+# NC_LDFLAGS := -L/usr/local/parallel/lib -L/usr/lib64/openmpi/lib
+ NETCDF_INC := -I/usr/include/openmpi-x86_64 -I/usr/local/parallel/include ${NETCDF_INC}
+ NC_LDFLAGS := -L/usr/local/parallel/lib -L/usr/lib64/openmpi/lib
+ NC_LIBS += -lpnetcdf -lmpi
 endif # endif PNETCDF
 
 ifeq (${ZNETCDF},Y)
@@ -751,7 +756,7 @@ ifneq (${null},$(findstring xl,${CC}))
  CPP_TKN_OS += -I/usr/include -I/usr/vacpp/include
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -DNEED_LOGF
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC} -DNEED_LOGF
 LD := ld
 # 20020422: -lC links to AIX C++ library which contains float intrinsics cosf()...
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
@@ -867,7 +872,7 @@ CXX := cxx
 CC := cc
 CFLAGS := ${OMP_FLG}
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 FC := f90
 FFLAGS := -r8 -i4 -c ${OMP_FLG} -automatic
 FIXEDFLAGS := -extend_source ${OMP_FLG} -automatic
@@ -901,7 +906,7 @@ ifeq (${PVM_ARCH},CRAY)
 CXX := CC
 CC := cc
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 FC := f90
 # -F enables macro substitution
 # -dp enables DOUBLEPRECISION/double
@@ -938,7 +943,7 @@ endif
 ifeq (${PVM_ARCH},HPPA)
 CXX := g++
 CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lnsl -lm
@@ -967,7 +972,7 @@ CC := ${LINUX_CC}
 CPP := ${CC}
 # NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
 CPP_TKN_OS += -Di386
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 FC := ${LINUX_FC}
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
@@ -1294,7 +1299,7 @@ CC := ${LINUX_CC} -std=c99 -pedantic -D_BSD_SOURCE
 CPP := ${CC}
 # -fno-common: Allows shared libraries to build
 CFLAGS := -Wall -Werror=format-security -fno-common
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lresolv -lm
@@ -1332,7 +1337,7 @@ CXX := c++
 CC := cc
 CPP := c++ -E
 #CPP := /usr/lib/cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
@@ -1363,7 +1368,7 @@ ifeq (${PVM_ARCH},RS6K)
 CXX := g++
 CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 CPP := /lib/cpp -P
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 FC := xlf
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
@@ -1400,7 +1405,7 @@ CC := cc -c99
 # 20000302: -w suppresses warnings which will swamp linker
 #CXX := g++ -w
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 ifdef $(MIPSPRO_SGI)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
  CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include ${CPPFLAGS}
@@ -1487,7 +1492,7 @@ CPP := cc -E
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 #CFLAGS := -Wall
 #CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
@@ -1522,7 +1527,7 @@ CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 # NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
 #CPP_TKN_OS += -Di386 -DNEED_STRCASECMP -DNEED_STRDUP -I/usr/include
 CPP_TKN_OS += -Di386 -DNEED_STRDUP -I/usr/include
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
