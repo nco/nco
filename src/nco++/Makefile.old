@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.130 2014-07-06 05:02:01 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.131 2014-07-06 06:13:18 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -127,9 +127,6 @@ endif # endif CNK
 ifndef DAP_NETCDF
  DAP_NETCDF := Y
 endif # DAP_NETCDF
-ifndef DAP_OPENDAP
- DAP_OPENDAP := N
-endif # DAP_OPENDAP
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -346,8 +343,9 @@ ifdef LIB_NCAR
  NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
 endif
 
-OTHER_CFLAGS := ${MPI_CFLAGS} ${GSL_INC} ${UDUNITS_INC} ${ANTLR_INC}
-OTHER_LDFLAGS := ${MPI_LDFLAGS} ${NCO_LDFLAGS} ${GSL_LIB} ${UDUNITS_LIB} ${ANTLR_LIB}
+OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC} ${UDUNITS_INC} ${ANTLR_INC}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB} ${UDUNITS_LIB} ${ANTLR_LIB}
+
 # sort removes duplicates but unfortunately changes precedence too
 # fxm: use uniq instead
 #TMP_LDFLAGS := $(sort ${TMP_LDFLAGS})
@@ -502,9 +500,6 @@ endif # !CNK
 ifeq (${DAP_NETCDF},Y)
  CPP_TKN_OS += -DENABLE_DAP
 endif # !DAP_NETCDF
-ifeq (${DAP_OPENDAP},Y)
- CPP_TKN_OS += -DENABLE_DAP
-endif # !DAP_OPENDAP
 ifeq (${GSL},Y)
  CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H -DNCO_GSL_MINOR_VERSION='${GSL_MINOR_VERSION}'
 endif # !GSL
@@ -534,10 +529,10 @@ ifneq (${null},$(findstring xl,${CC}))
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC} -I/usr/local/include
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS} -I/usr/local/include
 FC := xlf95_r
 LD := ld
-LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS}
+LDFLAGS += ${OTHER_LDFLAGS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -651,13 +646,13 @@ CXX := cxx -std strict_ansi
 CC := cc
 CFLAGS := ${OMP_FLG}
 # OSF1 is for CCM compatibility
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} ${OTHER_CFLAGS} 
 FC := f90
 FFLAGS := -c ${OMP_FLG} -automatic -fpe3
 FIXEDFLAGS := -extend_source
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += ${OMP_FLG} ${NC_LDFLAGS} ${OTHER_LDFLAGS}
+LDFLAGS += ${OMP_FLG} ${OTHER_LDFLAGS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -688,10 +683,10 @@ ifeq (${PVM_ARCH},CRAY)
 CXX := g++
 CC := cc
 CPP := cpp
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS} 
 FC := f90
 LD := ld
-LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS}
+LDFLAGS += ${OTHER_LDFLAGS}
 LDFLAGS += -L/lib -lf
 LEX := lex
 LINT := lint
@@ -726,10 +721,10 @@ CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CXX}
 # HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC} 
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} ${OTHER_CFLAGS} 
 FC := ${LINUX_FC}
 LD := ld
-LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS}
+LDFLAGS += ${OTHER_LDFLAGS}
 ifeq (${PVM_ARCH},MACOSX)
  LDFLAGS += -lresolv
 endif # endif MACOSX
@@ -987,10 +982,10 @@ CXX := c++
 CC := cc
 CFLAGS := -Wall
 CPP := ${CC}
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS} 
 FC := f90
 LD := ld
-LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lresolv -lm
+LDFLAGS += ${OTHER_LDFLAGS} -lresolv -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1025,10 +1020,10 @@ CXX := c++
 CC := cc
 CPP := c++ -E
 #CPP := /usr/lib/cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${OTHER_CFLAGS} 
 FC := f90
 LD := ld
-LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
+LDFLAGS += ${OTHER_LDFLAGS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 # LDFLAGS += -L/lib -lf
 endif
@@ -1059,10 +1054,10 @@ ifeq (${PVM_ARCH},RS6K)
 CXX := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${OTHER_CFLAGS} 
 FC := xlf
 LD := ld
-LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
+LDFLAGS += ${OTHER_LDFLAGS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lxlf90 -lxlf
 endif
@@ -1096,10 +1091,10 @@ CC := cc -c99
 # 20000302: -w suppresses warnings which will swamp linker
 #CXX := g++ -w
 #CC := gcc
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS} 
 FC := f90 -cpp
 LD := ld
-LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS}
+LDFLAGS += ${OTHER_LDFLAGS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1119,7 +1114,7 @@ else # ABI=32
 endif # endif ABI
 endif # endif SGI64, SGIMP64
 ifeq (gcc,$(firstword ${CC}))
- LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
+ LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${OTHER_LDFLAGS} -lm
  CFLAGS := ${GCC_ABI_FLG} -Wall
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1138,7 +1133,7 @@ endif
 # endif CC=gcc
 ifeq (CC,$(firstword ${CXX}))
 # SGI Native C++ headers are in /usr/include/CC
- LDFLAGS := ${SGI_ABI_FLG} ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
+ LDFLAGS := ${SGI_ABI_FLG} ${OTHER_LDFLAGS} -lm
  CFLAGS := ${SGI_ABI_FLG}
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1180,12 +1175,12 @@ CXX := g++
 CC := gcc
 CFLAGS := -Wall
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC} 
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS} 
 FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS := ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lsunmath -lsocket -lnsl
+LDFLAGS := ${OTHER_LDFLAGS} -lsunmath -lsocket -lnsl
 #LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
@@ -1230,10 +1225,10 @@ CC := gcc -ansi
 CPP := cpp
 # NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
 CPP_TKN_OS += -Di386 -DNEED_STRCASECMP -DNEED_STRDUP -I/usr/include
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS} 
 FC := g77
 LD := ld
-LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
+LDFLAGS += ${OTHER_LDFLAGS} -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1382,8 +1377,6 @@ dbg:
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
 	@printf "DAP_NETCDF = ${DAP_NETCDF}\n"
 	@printf "DAP_NETCDF_ROOT = ${DAP_NETCDF_ROOT}\n"
-	@printf "DAP_OPENDAP = ${DAP_OPENDAP}\n"
-	@printf "DAP_OPENDAP_ROOT = ${DAP_OPENDAP_ROOT}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
