@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.243 2014-07-05 06:48:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.244 2014-07-06 20:31:24 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -57,7 +57,9 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
 {
   int rcd=NC_NOERR; /* [rcd] Return code */
 
-  /* Careful! Some valid format strings are subsets of other valid format strings */
+  /* Careful! Some valid format strings are subsets of other valid format strings:
+     "classic" is a sub-string of itself and of "netcdf4_classic"
+     "netcdf4" is a sub-string of itself and of "netcdf4_classic" */
   if(strcasestr("classic",fl_fmt_sng) && !strcasestr(fl_fmt_sng,"netcdf4")){
     /* If "classic" contains string and string does not contain "netcdf4" */
     *fl_fmt_enm=NC_FORMAT_CLASSIC;
@@ -83,15 +85,8 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
     /* If "pnetcdf" contains string */
     *fl_fmt_enm=NC_FORMAT_CDF5;
 #else /* !ENABLE_PNETCDF */
-    (void)fprintf(stderr,"%s: ERROR This NCO was not built with PnetCDF (http://trac.mcs.anl.gov/projects/parallel-netcdf) and cannot create the requested PnetCDF file format. HINT: Re-try with different (or no) specified file format, such as \"classic\" or \"64bit\".\n",nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR This NCO was not built with PnetCDF (http://trac.mcs.anl.gov/projects/parallel-netcdf) and cannot create the requested PnetCDF file format. HINT: Re-try with supported file format such as \"classic\" or \"64bit\".\n",nco_prg_nm_get());
 #endif /* !ENABLE_PNETCDF */
-  }else if(strcasestr("znetcdf",fl_fmt_sng)){
-#ifdef ENABLE_ZNETCDF
-    /* If "znetcdf" contains string */
-    *fl_fmt_enm=NC_COMPRESS;
-#else /* !ENABLE_ZNETCDF */
-    (void)fprintf(stderr,"%s: ERROR This NCO was not built with znetCDF (http://snow.cit.cornell.edu/noon/z_netcdf.html) and cannot create the requested znetCDF file format. HINT: Re-try with different (or no) specified file format, such as \"classic\" or \"64bit\".\n",nco_prg_nm_get());
-#endif /* !ENABLE_ZNETCDF */
   }else{
     (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",nco_prg_nm_get(),fl_fmt_sng);
     nco_exit(EXIT_FAILURE);

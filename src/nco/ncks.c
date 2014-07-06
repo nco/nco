@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.729 2014-07-06 05:02:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.730 2014-07-06 20:31:24 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -178,8 +178,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.729 2014-07-06 05:02:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.729 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.730 2014-07-06 20:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.730 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -731,9 +731,10 @@ main(int argc,char **argv)
    export NETCDF_ROOT=/usr/local/parallel;export NETCDF_INC=/usr/local/parallel/include;export NETCDF_LIB=/usr/local/parallel/lib;export NETCDF4_ROOT=/usr/local/parallel;
    cd ~/nco/bld;make PNETCDF=Y;cd -
    LD_LIBRARY_PATH=/usr/local/parallel/lib\:${LD_LIBRARY_PATH}
+   ldd `which ncks`
    ncks -O -5 ~/nco/data/in.nc ~/foo.nc
    od -An -c -N4 ~/foo.nc */
-  if(nco_dbg_lvl >= nco_dbg_quiet) (void)fprintf(stdout,gettext("%s: WARNING Compiled with PnetCDF\n"),nco_prg_nm);
+  (void)fprintf(stdout,gettext("%s: WARNING Compiled with PnetCDF\n"),nco_prg_nm);
 #endif /* !ENABLE_PNETCDF */
 
   /* Initialize traversal table */

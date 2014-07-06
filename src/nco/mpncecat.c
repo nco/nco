@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.121 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.122 2014-07-06 20:31:24 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -50,8 +50,8 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #ifdef ENABLE_MPI
-#include <mpi.h> /* MPI definitions */
-#include "nco_mpi.h" /* MPI utilities */
+# include <mpi.h> /* MPI definitions */
+# include "nco_mpi.h" /* MPI utilities */
 #endif /* !ENABLE_MPI */
 
 /* Personal headers */
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.121 2014-06-15 21:06:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.121 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.122 2014-07-06 20:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.122 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
