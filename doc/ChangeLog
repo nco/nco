@@ -1,3 +1,7 @@
+2014-07-05  Charlie Zender  <zender@uci.edu>
+
+	* Remove Makefile cruft to simplify building parallel NCO
+
 2014-07-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.5 release procedure:

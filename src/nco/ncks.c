@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.728 2014-07-05 06:48:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.729 2014-07-06 05:02:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -178,8 +178,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.728 2014-07-05 06:48:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.728 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.729 2014-07-06 05:02:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.729 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -728,6 +728,7 @@ main(int argc,char **argv)
 
 #ifdef ENABLE_PNETCDF
 /* Parallel netCDF
+   export NETCDF_ROOT=/usr/local/parallel;export NETCDF_INC=/usr/local/parallel/include;export NETCDF_LIB=/usr/local/parallel/lib;export NETCDF4_ROOT=/usr/local/parallel;
    cd ~/nco/bld;make PNETCDF=Y;cd -
    LD_LIBRARY_PATH=/usr/local/parallel/lib\:${LD_LIBRARY_PATH}
    ncks -O -5 ~/nco/data/in.nc ~/foo.nc

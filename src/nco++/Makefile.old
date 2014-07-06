@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.129 2014-06-01 00:25:25 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.130 2014-07-06 05:02:01 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -15,25 +15,25 @@
 
 # Usage:
 # cd ~/nco/src/nco++;make -f Makefile.old dpn_cln cln all
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D UDUNITS2=Y all # givre, neige
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D UDUNITS2=Y lib_cln cln ncap2 # givre, neige
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=Y all # virga
-# cd ~/nco/src/nco++;SZ_LIB=/sopt/lib make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D SZ=Y UDUNITS2=N all # greenplanet intel
-# cd ~/nco/src/nco++;ANTLR_ROOT=/sopt/gfortran_g++ NETCDF_ROOT=/sopt/gfortran_g++ SZ_LIB=/sopt/lib make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D SZ=Y UDUNITS2=N all # greenplanet gcc
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=N OPTS=D UDUNITS2=Y all # ashes, elnino
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=N all # esmf
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=N all # silt
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=N OPTS=D UDUNITS2=N all # sand, clay, tephra
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D UDUNITS=Y all # givre, neige
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D UDUNITS=Y lib_cln cln ncap2 # givre, neige
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS=Y all # virga
+# cd ~/nco/src/nco++;SZ_LIB=/sopt/lib make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D SZ=Y UDUNITS=N all # greenplanet intel
+# cd ~/nco/src/nco++;ANTLR_ROOT=/sopt/gfortran_g++ NETCDF_ROOT=/sopt/gfortran_g++ SZ_LIB=/sopt/lib make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D SZ=Y UDUNITS=N all # greenplanet gcc
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=N OPTS=D UDUNITS=Y all # ashes, elnino
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS=N all # esmf
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS=N all # silt
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=N OPTS=D UDUNITS=N all # sand, clay, tephra
 # 64-bit ABI on UCI MPC systems:
 # cd ${HOME}/nco/src/nco++;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make -f Makefile.old --jobs=1 ABI=64 all;cd -
 # cd ${HOME}/nco/src/nco++;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make -f Makefile.old --jobs=1 ABI=64 all;cd -
 # 64-bit ABI netCDF3 on NCAR AIX systems (bluefire):
-# cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make -f Makefile.old --jobs=1 ABI=64 OPTS=D NETCDF4=N UDUNITS2=N all;cd -
+# cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make -f Makefile.old --jobs=1 ABI=64 OPTS=D NETCDF4=N UDUNITS=N all;cd -
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
 # cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' CURL_LIB='/contrib/curl/7.21.2/lib' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' GSL_MINOR_VERSION='12' HDF5_ROOT='/contrib/hdf5-1.8.7_seq' LDFLAGS='-lnetcdf -lhdf5_hl -lhdf5 -lz' NETCDF_ROOT='/contrib/netcdf/4.1.3_seq' SZ_LIB='/contrib/szip/lib' UDUNITS_LIB='/contrib/zlib/lib' make -f Makefile.old --jobs=1 ABI=64 OPTS=D SZ=Y all;cd -
 # 
 # Cygwin on Windows Vista systems:
-# cd ~/nco/src/nco++;ANTLR='antlr' make -f Makefile.old GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y all;cd -
+# cd ~/nco/src/nco++;ANTLR='antlr' make -f Makefile.old GSL=Y OPTS=D NETCDF4=Y UDUNITS=Y all;cd -
 
 # NB: ncap2 requires ANTLR headers and library
 # http://www.antlr.org
@@ -105,11 +105,17 @@ endif # endif ANTLR
 ifndef ANTLR_ROOT
  ANTLR_ROOT := /usr/local
 endif
-ifndef ANTLR_INC
- ANTLR_INC := ${ANTLR_ROOT}/include # Directory containing AST.hpp
+ifdef ANTLR_INC
+# Directory containing AST.hpp
+ ANTLR_INC := -I${ANTLR_INC}
+else
+ ANTLR_INC := -I${ANTLR_ROOT}/include
 endif
-ifndef ANTLR_LIB
- ANTLR_LIB := ${ANTLR_ROOT}/lib # Directory containing libantlr.a
+ifdef ANTLR_LIB
+# Directory containing libantlr.a
+ ANTLR_LIB := -L${ANTLR_LIB} -lantlr
+else
+ ANTLR_LIB := -L${ANTLR_ROOT}/lib -lantlr
 endif
 ifndef ${CCACHE}
  CCACHE := N
@@ -195,11 +201,7 @@ ifndef SZ
 endif
 ifndef UDUNITS
 # Use UDUnits functionality
- UDUNITS := N
-endif
-ifndef UDUNITS2
-# Use UDUnits2 functionality
- UDUNITS2 := Y
+ UDUNITS := Y
 endif
 ifndef UNAMES
  UNAMES := $(shell uname -s)
@@ -262,52 +264,11 @@ ifeq (${PRC},D)
 else
  USR_TKN := -DPRC_FLT ${USR_TKN}
 endif # endif PRC
+# Derived-tokens based on primary tokens
+# These tokens should not be altered by hand
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
-
-# Default NCO build: DAP_NETCDF, DAP_OPENDAP, NETCDF4, PNETCDF, and ZNETCDF clauses may overwrite this
-NC_LDFLAGS := -L${NETCDF_LIB}
-NC_LIBS := -lnetcdf 
-
-ifeq (${DAP_NETCDF},Y)
-# Build NCO as DAP-enabled clients with netCDF-provided DAP
-ifndef DAP_NETCDF_ROOT
-# Directory containing libcurl.a
- DAP_NETCDF_ROOT := /usr
-endif # DAP_NETCDF_ROOT
- NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib
-# netCDF 4.0.1+:
- NC_LIBS += -lcurl
-endif # end DAP_NETCDF
-
-ifeq (${DAP_OPENDAP},Y)
-# Build NCO as DAP-enabled clients with OPeNDAP
-# fxm: OPeNDAP bloats executables, should automagically enable stripping?
-# http://www.opendap.org/user/guide-html/guide_28.html
-ifndef DAP_OPENDAP_ROOT
-# Directory containing libdap.a, libnc-dap.a
- DAP_OPENDAP_ROOT := /usr/local
-endif # DAP_OPENDAP_ROOT
- NC_LDFLAGS := -L${DAP_OPENDAP_ROOT}/lib
-# NB: nc-dods, dap++ prior to version 3.5.X must be linked twice!
-# Required libraries for
-# DODS 3.3-:
-# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
-# DODS 3.4.X:
-# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
-# OPeNDAP 3.5.0-3.5.1:
-# NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
-# OPeNDAP 3.5+:
- NC_LIBS := -lnc-dap -ldap -lxml2 -lcurl
-# In addition, AIX OPeNDAP requires these libraries...
-ifneq (${null},$(findstring AIX,${PVM_ARCH}))
- NC_LIBS += -lcrypto -liconv -lssl -lz
-endif # end AIX
-# Get netCDF from OPeNDAP version
- NETCDF_INC=${DAP_OPENDAP_ROOT}/include/libnc-dap
- NETCDF_LIB=${DAP_OPENDAP_ROOT}/lib
-endif # end DAP_OPENDAP
 
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
@@ -315,11 +276,6 @@ ifeq (${I18N},Y)
  MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
  MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif
-
-ifeq (${NETCDF4},Y)
- CPPFLAGS += -DENABLE_NETCDF4 -DHAVE_NETCDF4_H
-endif
-# endif NETCDF4
 
 # Message Passing Interface (MPI)
 ifeq (${MPI_FAKE},Y)
@@ -338,122 +294,60 @@ else # !MPI_PRC
  MPI_PRC_SNG :=
 endif # !MPI_PRC
 
-ifeq (${NETCDF4},Y)
-# Enable netCDF4 functionality
-ifndef HDF5_ROOT
- HDF5_ROOT := ${NETCDF4_ROOT}
-endif
-ifndef HDF5_INC
- HDF5_INC := ${HDF5_ROOT}/include # Directory containing hdf5.h
-endif
-ifndef HDF5_LIB
- HDF5_LIB := ${HDF5_ROOT}/lib # Directory containing libhdf5.a
-endif
-# fxm: Temporary kludge: Machines with MPI_ROOT set are assumed to have parallel filesystems for NCO builds
-ifdef MPI_ROOT
- HDF5_INC += -I${MPI_ROOT}/include # Directory containing mpi.h
- HDF5_LIB += ${MPI_ROOT}/lib64 # Directory containing libmpi.a
-endif # !MPI_ROOT
- NETCDF_INC := ${NETCDF4_ROOT}/include
- NETCDF_LIB := ${NETCDF4_ROOT}/lib
- NC_LDFLAGS := -L${NETCDF_LIB} $(addprefix -L,${HDF5_LIB})
-# NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz ${NC_LIBS}
- NC_LIBS := $(shell nc-config --libs) ${NC_LIBS}
-ifdef MPI_ROOT
- NC_LIBS += -lmpi
-endif # !MPI_ROOT
-ifdef CURL_LIB
- NC_LDFLAGS += -L${CURL_LIB}
-endif # end 
-ifeq (${SZ},Y)
-ifndef SZ_LIB
- SZ_LIB := /usr/lib # Directory containing libsz.a
-endif
- NC_LDFLAGS += -L${SZ_LIB}
- NC_LIBS += -lsz
-endif # !SZ
-ifneq (${HDF5_INC},${NETCDF_INC})
- NETCDF_INC += -I${HDF5_INC}
-endif # end 
-endif # endif NETCDF4
-
-ifeq (${PNETCDF},Y)
-# Enable pnetCDF functionality
- NC_LDFLAGS := -L${NETCDF_LIB}
- NC_LIBS += -lpnetcdf
-endif # endif PNETCDF
-
 ifeq (${GSL},Y)
 # Build GSL-enabled NCO 
-# Place GSL block after DAP block for both to work together
+# Place GSL block after DAP blocks for both to work together
 ifdef GSL_INC
  GSL_INC := -I${GSL_INC}
 else
  GSL_INC := $(shell gsl-config --cflags)
 endif # endif GSL_INC
 ifdef GSL_LIB
- GSL_LIB := -L${GSL_LIB}
+ GSL_LIB := -L${GSL_LIB} -lgsl
 else
  GSL_LIB := $(shell gsl-config --libs)
 endif # endif GSL_LIB
- NETCDF_INC += ${GSL_INC}
- NC_LDFLAGS += ${GSL_LIB}
- NC_LIBS += -lgsl
- # Assumes GSL version in form [1-9].[0-9]+
-ifndef GSL_MINOR_VERSION
- GSL_MINOR_VERSION := $(shell gsl-config --version | sed s/^[1-9]\.// )
- ifeq (${GSL_MINOR_VERSION},${null})
-	GSL_MINOR_VERSION := 4
- endif # end if GSL_MINOR_VERSION
-endif # endif GSL_MINOR_VERSION
+ ifndef GSL_MINOR_VERSION
+  GSL_MINOR_VERSION := $(shell gsl-config --version | sed s/^[1-9]\.// )
+  ifeq (${GSL_MINOR_VERSION},${null})
+        GSL_MINOR_VERSION := 4
+  endif # end if GSL_MINOR_VERSION
+ endif # endif GSL_MINOR_VERSION
 endif # end if GSL
 
-ifeq (${UDUNITS2},Y)
- UDUNITS := Y
-endif # end if UDUNITS
 ifeq (${UDUNITS},Y)
-# Build UDUnits-enabled NCO 
-# Place UDUNITS block after DAP block for both to work together
-ifndef UDUNITS_INC
- UDUNITS_INC := /usr/local/include # Directory containing udunits.h
-endif
-ifndef UDUNITS_LIB
- UDUNITS_LIB := /usr/local/lib # Directory containing libudunits.a
-endif
-ifneq (${UDUNITS_INC},${NETCDF_INC})
- NETCDF_INC += -I${UDUNITS_INC}
-endif # end 
-ifneq (${UDUNITS_LIB},${NETCDF_LIB})
- NC_LDFLAGS += -L${UDUNITS_LIB}
-endif # end if
-ifeq (${UDUNITS2},Y)
 # 20130607: -lexpat needed on .deb systems, not on RPM systems
-UDUNITS_RPM_DRC := /usr/include/udunits2
-ifneq (${UDUNITS_INC},/usr/local/include)
-# UDUNITS_RPM_TST := $(shell ls ${UDUNITS_RPM_DRC}/udunits2.h)
- UDUNITS_RPM_TST := ${UDUNITS_RPM_DRC}/udunits2.h
+ifdef UDUNITS_INC
+ UDUNITS_INC := -I${UDUNITS_INC}
 else
- UDUNITS_RPM_TST := /usr/include/udunits2.h
-endif # end if
-ifeq (${UDUNITS_RPM_TST},${UDUNITS_RPM_DRC}/udunits2.h)
- NETCDF_INC += -I${UDUNITS_RPM_DRC}
-endif # end if
-ifneq (${UDUNITS_RPM_TST},${UDUNITS_RPM_DRC}/udunits2.h)
- NC_LIBS += -ludunits2 -lexpat
-else # end if UDUNITS2 Fedora
- NC_LIBS += -ludunits2
-endif # end if UDUNITS2 Fedora
+ UDUNITS_INC := -I/usr/include/udunits2
+endif # endif UDUNITS_INC
+ifdef UDUNITS_LIB
+ UDUNITS_LIB := -L${UDUNITS_LIB} -ludunits2
 else
- NC_LIBS += -ludunits
-endif # end if UDUNITS2
+ UDUNITS_LIB := -ludunits2
+endif # end if UDUNITS_LIB
 endif # end if UDUNITS
 
-# TMP_* and NCO_* are required to play nicely with DAP flags
-NCO_LDFLAGS := -L${MY_LIB_DIR}
-# NCO_LIBS := -lnco++ -lnco -lnco_c++
-NCO_LIBS := -lnco++ -lnco 
-TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} -L${ANTLR_LIB}
-TMP_LIBS := ${NCO_LIBS} ${NC_LIBS} -lantlr
+# At this point we change NETCDF_INC from a directory to a flag
+NC_CFLAGS := $(shell nc-config --cflags)
+NC_LDFLAGS := $(shell nc-config --libs)
+NCO_LDFLAGS := -L${MY_LIB_DIR} -lnco -lnco++
+
+ifeq (${PNETCDF},Y)
+# Enable pnetCDF functionality
+ NC_CFLAGS := $(shell /usr/local/parallel/bin/nc-config --cflags)
+ NC_LDFLAGS := $(shell /usr/local/parallel/bin/nc-config --libs)
+ MPI_CFLAGS := -I/usr/include/openmpi-x86_64
+ MPI_LDFLAGS := -L/usr/lib64/openmpi/lib -lmpi
+endif # endif PNETCDF
+
+ifdef LIB_NCAR
+ NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
+endif
+
+OTHER_CFLAGS := ${MPI_CFLAGS} ${GSL_INC} ${UDUNITS_INC} ${ANTLR_INC}
+OTHER_LDFLAGS := ${MPI_LDFLAGS} ${NCO_LDFLAGS} ${GSL_LIB} ${UDUNITS_LIB} ${ANTLR_LIB}
 # sort removes duplicates but unfortunately changes precedence too
 # fxm: use uniq instead
 #TMP_LDFLAGS := $(sort ${TMP_LDFLAGS})
@@ -620,10 +514,7 @@ ifneq (${MPI_FAKE},Y)
 endif # MPI_FAKE
 endif # !MPI
 ifeq (${UDUNITS},Y)
- CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
-ifeq (${UDUNITS2},Y)
- CPP_TKN_OS += -DHAVE_UDUNITS2_H
-endif # !UDUNITS2
+ CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H -DHAVE_UDUNITS2_H
 endif # !UDUNITS
 ifeq (${null},$(findstring SGI,${PVM_ARCH}))
  CPP_TKN_OS += -DHAVE_CSTDLIB
@@ -643,10 +534,10 @@ ifneq (${null},$(findstring xl,${CC}))
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I${ANTLR_INC} -I/usr/local/include
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC} -I/usr/local/include
 FC := xlf95_r
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -760,13 +651,13 @@ CXX := cxx -std strict_ansi
 CC := cc
 CFLAGS := ${OMP_FLG}
 # OSF1 is for CCM compatibility
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} -I${NETCDF_INC} -I${ANTLR_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
 FC := f90
 FFLAGS := -c ${OMP_FLG} -automatic -fpe3
 FIXEDFLAGS := -extend_source
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += ${OMP_FLG} ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += ${OMP_FLG} ${NC_LDFLAGS} ${OTHER_LDFLAGS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -797,10 +688,10 @@ ifeq (${PVM_ARCH},CRAY)
 CXX := g++
 CC := cc
 CPP := cpp
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I${ANTLR_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
 FC := f90
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS}
 LDFLAGS += -L/lib -lf
 LEX := lex
 LINT := lint
@@ -835,10 +726,10 @@ CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CXX}
 # HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} -I${ANTLR_INC} 
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC} 
 FC := ${LINUX_FC}
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS}
 ifeq (${PVM_ARCH},MACOSX)
  LDFLAGS += -lresolv
 endif # endif MACOSX
@@ -1096,10 +987,10 @@ CXX := c++
 CC := cc
 CFLAGS := -Wall
 CPP := ${CC}
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I${ANTLR_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
 FC := f90
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lresolv -lm
+LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lresolv -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1134,10 +1025,10 @@ CXX := c++
 CC := cc
 CPP := c++ -E
 #CPP := /usr/lib/cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC} -I${ANTLR_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
 FC := f90
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 # LDFLAGS += -L/lib -lf
 endif
@@ -1168,10 +1059,10 @@ ifeq (${PVM_ARCH},RS6K)
 CXX := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC} -I${ANTLR_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
 FC := xlf
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lxlf90 -lxlf
 endif
@@ -1205,10 +1096,10 @@ CC := cc -c99
 # 20000302: -w suppresses warnings which will swamp linker
 #CXX := g++ -w
 #CC := gcc
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I${ANTLR_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
 FC := f90 -cpp
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1228,7 +1119,7 @@ else # ABI=32
 endif # endif ABI
 endif # endif SGI64, SGIMP64
 ifeq (gcc,$(firstword ${CC}))
- LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+ LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
  CFLAGS := ${GCC_ABI_FLG} -Wall
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1247,7 +1138,7 @@ endif
 # endif CC=gcc
 ifeq (CC,$(firstword ${CXX}))
 # SGI Native C++ headers are in /usr/include/CC
- LDFLAGS := ${SGI_ABI_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+ LDFLAGS := ${SGI_ABI_FLG} ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
  CFLAGS := ${SGI_ABI_FLG}
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1289,12 +1180,12 @@ CXX := g++
 CC := gcc
 CFLAGS := -Wall
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I${ANTLR_INC} 
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC} 
 FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS := ${TMP_LDFLAGS} ${TMP_LIBS} -lsunmath -lsocket -lnsl
+LDFLAGS := ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lsunmath -lsocket -lnsl
 #LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
@@ -1339,10 +1230,10 @@ CC := gcc -ansi
 CPP := cpp
 # NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
 CPP_TKN_OS += -Di386 -DNEED_STRCASECMP -DNEED_STRDUP -I/usr/include
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I${ANTLR_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${NC_CFLAGS} ${OTHER_CFLAGS} -I${ANTLR_INC}
 FC := g77
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+LDFLAGS += ${NC_LDFLAGS} ${OTHER_LDFLAGS} -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1555,7 +1446,6 @@ dbg:
 	@printf "TMP_LDFLAGS = ${TMP_LDFLAGS}\n"
 	@printf "TMP_LIBS = ${TMP_LIBS}\n"
 	@printf "UDUNITS = $(UDUNITS)\n"
-	@printf "UDUNITS2 = $(UDUNITS2)\n"
 	@printf "UDUNITS_INC = $(UDUNITS_INC)\n"
 	@printf "UDUNITS_LIB = $(UDUNITS_LIB)\n"
 	@printf "UNAMES = ${UNAMES}\n"
