@@ -5,7 +5,7 @@
 	* Clean-up nco_get_prg_info(), make consistent with newer netCDF regression tests
 
 	* NCO 4.4.5 release procedure:
- 	Changes since nco-4_4_4: https DAP, gxvx,
+ 	Changes since nco-4_4_4: https DAP, gxvx, mk
 	cd ~/nco;cvs tag -d nco-4_4_5;cvs tag -d nco-4_4_5-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
