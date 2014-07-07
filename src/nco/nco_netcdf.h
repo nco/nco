@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.118 2014-07-06 06:13:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.119 2014-07-07 06:04:23 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -48,9 +48,10 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
-#ifdef ENABLE_PNETCDF
+#ifdef ENABLE_MPI
 # include <mpi.h> /* MPI definitions */
-#endif /* !ENABLE_PNETCDF */
+# include <netcdf_par.h> /* Parallel netCDF definitions */
+#endif /* !ENABLE_MPI */
 
 /* Personal headers */
 #include "nco_typ.h" /* Type definitions, opaque types */
@@ -233,14 +234,19 @@ char * /* O [sng] netCDF-compatible name */
 nm2sng_nc /* [fnc] Turn group/variable/dimension/attribute name into legal netCDF */
 (const char * const nm_sng); /* I [sng] Name to netCDF-ize */
 
-#ifdef ENABLE_PNETCDF
+#ifdef ENABLE_MPI
 # ifdef HAVE_NETCDF4_H
 /* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a */
-int nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id);
+int nco_create_par(const char * const fl_nm,const int cmode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id);
+int nco_open_par  (const char * const fl_nm,const int  mode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id);
+int nco_var_par_access(const int nc_id,const int var_id,const int par_access);
 # endif /* !HAVE_NETCDF4_H */
+# ifdef ENABLE_PNETCDF
 /* pnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
-int ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int mode,MPI_Info mpi_nfo,int * const nc_id);
-#endif /* !ENABLE_PNETCDF */
+int ncompi_create(MPI_Comm mpi_cmm,const char * const fl_nm,const int cmode,MPI_Info mpi_nfo,int * const nc_id);
+int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_Info mpi_nfo,int * const nc_id);
+# endif /* !ENABLE_PNETCDF */
+#endif /* !ENABLE_MPI */
 
 /* Begin file-level routines */
 int nco_create(const char * const fl_nm,const int cmode,int * const nc_id);

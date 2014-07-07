@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.249 2014-07-06 06:13:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.250 2014-07-07 06:04:23 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -656,10 +656,21 @@ nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
   return rcd;
 } /* end nco_open */
 
-#ifdef ENABLE_PNETCDF
+#ifdef ENABLE_MPI
 # ifdef HAVE_NETCDF4_H
 /* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a 
    20051129: nc_*_par() routines require that netCDF4 be configured for parallel filesystems */
+int 
+nco_create_par(const char * const fl_nm,const int cmode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id)
+{
+  /* Purpose: Wrapper for nc_create_par() */
+  const char fnc_nm[]="nco_create_par()";
+  int rcd;
+  rcd=nc_create_par(fl_nm,cmode,mpi_cmm,mpi_nfo,nc_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nco_create_par */
+
 int 
 nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id)
 {
@@ -670,20 +681,43 @@ nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info m
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_open_par */
+
+int 
+nco_var_par_access(const int nc_id,const int var_id,const int par_access)
+{
+  /* Purpose: Wrapper for nc_var_par_access() */
+  const char fnc_nm[]="nco_var_par_access()";
+  int rcd;
+  rcd=nc_var_par_access(nc_id,var_id,par_access);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nco_var_par_access */
 # endif /* !HAVE_NETCDF4_H */
 
+# ifdef ENABLE_PNETCDF
 /* pnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
 int
-ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int mode,MPI_Info mpi_nfo,int * const nc_id)
+ncompi_create(MPI_Comm mpi_cmm,const char * const fl_nm,const int cmode,MPI_Info mpi_nfo,int * const nc_id)
+{
+  /* Purpose: Wrapper for ncmpi_create() */
+  const char fnc_nm[]="ncompi_create()";
+  int rcd;
+  rcd=ncmpi_create(mpi_cmm,fl_nm,cmode,mpi_nfo,nc_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end ncompi_create */
+int
+ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_Info mpi_nfo,int * const nc_id)
 {
   /* Purpose: Wrapper for ncmpi_open() */
   const char fnc_nm[]="ncompi_open()";
   int rcd;
-  rcd=ncmpi_open(mpi_cmm,fl_nm,mode,mpi_nfo,nc_id);
+  rcd=ncmpi_open(mpi_cmm,fl_nm,omode,mpi_nfo,nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end ncompi_open */
-#endif /* !ENABLE_PNETCDF */
+# endif /* !ENABLE_PNETCDF */
+#endif /* !ENABLE_MPI */
 
 int
 nco_redef(const int nc_id)
@@ -2165,7 +2199,7 @@ int NCO_PUT_ATT_UINT64(const int nc_id,const int var_id,const char *att_nm,const
 int NCO_PUT_ATT_STRING(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const char **sngp){return 1;}
 #endif /* ENABLE_NETCDF4 */
 #ifndef ENABLE_NETCDF4
-/* 20051119: netcdf4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
+/* 20051119: netCDF4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
 int NCO_GET_ATT_UBYTE(const int nc_id,const int var_id,const char *att_nm,nco_ubyte *ubp){return 1;}
 int NCO_GET_ATT_USHORT(const int nc_id,const int var_id,const char *att_nm,nco_ushort *usp){return 1;}
 int NCO_GET_ATT_UINT(const int nc_id,const int var_id,const char *att_nm,nco_uint *uip){return 1;}

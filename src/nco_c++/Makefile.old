@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.109 2014-06-01 00:25:25 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.110 2014-07-07 06:04:23 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -93,12 +93,9 @@ endif
 ifndef ${CCACHE}
  CCACHE := N
 endif # CCACHE
-ifndef DAP_NETCDF
- DAP_NETCDF := Y
-endif # DAP_NETCDF
-ifndef DAP_OPENDAP
- DAP_OPENDAP := N
-endif # DAP_OPENDAP
+ifndef DAP
+ DAP := Y
+endif # DAP
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -237,171 +234,25 @@ endif # endif PRC
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
 
-# Default NCO build. DAP, NETCDF4, and PNETCDF clauses may overwrite this
-NC_LDFLAGS := -L${NETCDF_LIB}
-NC_LIBS := -lnetcdf 
-
-ifeq (${DAP_NETCDF},Y)
-# Build NCO as DAP-enabled clients with netCDF-provided DAP
-ifndef DAP_NETCDF_ROOT
-# Directory containing libcurl.a
- DAP_NETCDF_ROOT := /usr
-endif # DAP_NETCDF_ROOT
- NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib
-# netCDF 4.0.1+:
- NC_LIBS += -lcurl
-endif # end DAP_NETCDF
-
-ifeq (${DAP_OPENDAP},Y)
-# Build NCO as DAP-enabled clients with OPeNDAP
-# fxm: OPeNDAP bloats executables, should automagically enable stripping?
-# http://www.opendap.org/user/guide-html/guide_28.html
-ifndef DAP_OPENDAP_ROOT
-# Directory containing libdap.a, libnc-dap.a
- DAP_OPENDAP_ROOT := /usr/local
-endif # DAP_OPENDAP_ROOT
- NC_LDFLAGS := -L${DAP_OPENDAP_ROOT}/lib
-# NB: nc-dods, dap++ prior to version 3.5.X must be linked twice!
-# Required libraries for
-# DODS 3.3-:
-# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
-# DODS 3.4.X:
-# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
-# OPeNDAP 3.5.0-3.5.1:
-# NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
-# OPeNDAP 3.5+:
- NC_LIBS := -lnc-dap -ldap -lxml2 -lcurl
-# In addition, AIX OPeNDAP requires these libraries...
-ifneq (${null},$(findstring AIX,${PVM_ARCH}))
- NC_LIBS += -lcrypto -liconv -lssl -lz
-endif # end AIX
-# Get netCDF from OPeNDAP version
- NETCDF_INC=${DAP_OPENDAP_ROOT}/include/libnc-dap
- NETCDF_LIB=${DAP_OPENDAP_ROOT}/lib
-endif # end DAP_OPENDAP
-
-# Internationalize NCO with i18n features
-ifeq (${I18N},Y)
- MY_SHR_DIR := ${HOME}/share
- MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
- MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
-endif
-
-ifeq (${NETCDF4},Y)
- CPPFLAGS += -DENABLE_NETCDF4 -DHAVE_NETCDF4_H
-endif
-# endif NETCDF4
-
-# Message Passing Interface (MPI)
-ifeq (${MPI_FAKE},Y)
-# MPI_FAKE instructs make to compile mpnc*.c operators without defining ENABLE_MPI
-# Resulting executables use UP or SMP code not MPI code
-# This tests compile, link, execution of MPI mpnc*.c code without using any MPI calls
- MPI := Y
-endif # !MPI_FAKE
-ifdef MPI_PRC
-# MPI_PRC tells test scripts how many MPI processes to spawn
-# Pass this MPI argument to nco_bm.pl
- MPI_PRC_SNG := "--mpi_prc=${MPI_PRC}"
-# MPI_PRC implies MPI
- MPI := Y
-else # !MPI_PRC
- MPI_PRC_SNG :=
-endif # !MPI_PRC
-
-ifeq (${NETCDF4},Y)
-# Enable netCDF4 functionality
-ifndef HDF5_ROOT
- HDF5_ROOT := ${NETCDF4_ROOT}
-endif
-ifndef HDF5_INC
- HDF5_INC := ${HDF5_ROOT}/include # Directory containing hdf5.h
-endif
-ifndef HDF5_LIB
- HDF5_LIB := ${HDF5_ROOT}/lib # Directory containing libhdf5.a
-endif
-# fxm: Temporary kludge: Machines with MPI_ROOT set are assumed to have parallel filesystems for NCO builds
-ifdef MPI_ROOT
- HDF5_INC += -I${MPI_ROOT}/include # Directory containing mpi.h
- HDF5_LIB += ${MPI_ROOT}/lib64 # Directory containing libmpi.a
-endif # !MPI_ROOT
- NETCDF_INC := ${NETCDF4_ROOT}/include
- NETCDF_LIB := ${NETCDF4_ROOT}/lib
- NC_LDFLAGS := -L${NETCDF_LIB} $(addprefix -L,${HDF5_LIB})
-# NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz ${NC_LIBS}
- NC_LIBS := $(shell nc-config --libs) ${NC_LIBS}
-ifdef MPI_ROOT
- NC_LIBS += -lmpi
-endif # !MPI_ROOT
-ifdef CURL_LIB
- NC_LDFLAGS += -L${CURL_LIB}
-endif # end 
-ifeq (${SZ},Y)
-ifndef SZ_LIB
- SZ_LIB := /usr/lib # Directory containing libsz.a
-endif
- NC_LDFLAGS += -L${SZ_LIB}
- NC_LIBS += -lsz
-endif # !SZ
-ifneq (${HDF5_INC},${NETCDF_INC})
- NETCDF_INC += -I${HDF5_INC}
-endif # end 
-endif # endif NETCDF4
+# At this point we change NETCDF_INC from a directory to a flag
+NC_CFLAGS := $(shell nc-config --cflags)
+NC_LDFLAGS := $(shell nc-config --libs)
+NCO_LDFLAGS := -L${MY_LIB_DIR} -lnco -lnco++
 
 ifeq (${PNETCDF},Y)
 # Enable pnetCDF functionality
- NC_LDFLAGS := -L${NETCDF_LIB}
- NC_LIBS += -lpnetcdf
+ NC_CFLAGS := $(shell /usr/local/parallel/bin/nc-config --cflags)
+ NC_LDFLAGS := $(shell /usr/local/parallel/bin/nc-config --libs)
+ MPI_CFLAGS := -I/usr/include/openmpi-x86_64
+ MPI_LDFLAGS := -L/usr/lib64/openmpi/lib -lmpi
 endif # endif PNETCDF
 
-ifeq (${UDUNITS2},Y)
- UDUNITS := Y
-endif # end if UDUNITS
-ifeq (${UDUNITS},Y)
-# Build UDUnits-enabled NCO 
-# Place UDUNITS block after DAP blocks for both to work together
-ifndef UDUNITS_INC
- UDUNITS_INC := /usr/local/include # Directory containing udunits.h
+ifdef LIB_NCAR
+ NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
 endif
-ifndef UDUNITS_LIB
- UDUNITS_LIB := /usr/local/lib # Directory containing libudunits.a
-endif
-ifneq (${UDUNITS_INC},${NETCDF_INC})
- NETCDF_INC += -I${UDUNITS_INC}
-endif # end 
-ifneq (${UDUNITS_LIB},${NETCDF_LIB})
- NC_LDFLAGS += -L${UDUNITS_LIB}
-endif # end if
-ifeq (${UDUNITS2},Y)
-# 20130607: -lexpat needed on .deb systems, not on RPM systems
-UDUNITS_RPM_DRC := /usr/include/udunits2
-ifneq (${UDUNITS_INC},/usr/local/include)
-# UDUNITS_RPM_TST := $(shell ls ${UDUNITS_RPM_DRC}/udunits2.h)
- UDUNITS_RPM_TST := ${UDUNITS_RPM_DRC}/udunits2.h
-else
- UDUNITS_RPM_TST := /usr/include/udunits2.h
-endif # end if
-ifeq (${UDUNITS_RPM_TST},${UDUNITS_RPM_DRC}/udunits2.h)
- NETCDF_INC += -I${UDUNITS_RPM_DRC}
-endif # end if
-ifneq (${UDUNITS_RPM_TST},${UDUNITS_RPM_DRC}/udunits2.h)
- NC_LIBS += -ludunits2 -lexpat
-else # end if UDUNITS2 Fedora
- NC_LIBS += -ludunits2
-endif # end if UDUNITS2 Fedora
-else
- NC_LIBS += -ludunits
-endif # end if UDUNITS2
-endif # end if UDUNITS
 
-# TMP_* and NCO_* are required to play nicely with DAP flags
-NCO_LDFLAGS := -L${MY_LIB_DIR}
-NCO_LIBS := -lnco_c++
-TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS}
-TMP_LIBS := ${NCO_LIBS} ${NC_LIBS}
-# sort removes duplicates but unfortunately changes precedence too
-# fxm: use uniq instead
-#TMP_LDFLAGS := $(sort ${TMP_LDFLAGS})
+OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC} ${UDUNITS_INC}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB} ${UDUNITS_LIB}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -528,12 +379,9 @@ ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # Visual age compiler headers must occur before g++ headers
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # AIX
-ifeq (${DAP_NETCDF},Y)
+ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP
-endif # !DAP_NETCDF
-ifeq (${DAP_OPENDAP},Y)
- CPP_TKN_OS += -DENABLE_DAP
-endif # !DAP_OPENDAP
+endif # !DAP
 ifeq (${MPI},Y)
 ifneq (${MPI_FAKE},Y)
  CPP_TKN_OS += -DENABLE_MPI
@@ -566,10 +414,10 @@ ifneq (${null},$(findstring xl,${CC}))
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS} -I/usr/local/include
 FC := xlf95_r
 LD := ld
-LDFLAGS += -bh:5 ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += -bh:5 ${OTHER_LDFLAGS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -683,13 +531,13 @@ CXX := cxx -std strict_ansi
 CC := cc
 CFLAGS := ${OMP_FLG}
 # OSF1 is for CCM compatibility
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} ${OTHER_CFLAGS}
 FC := f90
 FFLAGS := -c ${OMP_FLG} -automatic -fpe3
 FIXEDFLAGS := -extend_source
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += ${OMP_FLG} ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += ${OMP_FLG} ${OTHER_LDFLAGS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -720,10 +568,10 @@ ifeq (${PVM_ARCH},CRAY)
 CXX := g++
 CC := cc
 CPP := cpp
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS}
 FC := f90
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += ${OTHER_LDFLAGS}
 LDFLAGS += -L/lib -lf
 LEX := lex
 LINT := lint
@@ -758,10 +606,10 @@ CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CXX}
 # HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} 
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} ${OTHER_CFLAGS} 
 FC := ${LINUX_FC}
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += ${OTHER_LDFLAGS}
 ifeq (${PVM_ARCH},MACOSX)
  LDFLAGS += -lresolv
 endif # endif MACOSX
@@ -1016,10 +864,10 @@ CXX := c++
 CC := cc
 CFLAGS := -Wall
 CPP := ${CC}
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS}
 FC := f90
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lresolv -lm
+LDFLAGS += ${OTHER_LDFLAGS} -lresolv -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1054,10 +902,10 @@ CXX := c++
 CC := cc
 CPP := c++ -E
 #CPP := /usr/lib/cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${OTHER_CFLAGS}
 FC := f90
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+LDFLAGS += ${OTHER_LDFLAGS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 # LDFLAGS += -L/lib -lf
 endif
@@ -1088,10 +936,10 @@ ifeq (${PVM_ARCH},RS6K)
 CXX := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${OTHER_CFLAGS}
 FC := xlf
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+LDFLAGS += ${OTHER_LDFLAGS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lxlf90 -lxlf
 endif
@@ -1125,10 +973,10 @@ CC := cc -c99
 # 20000302: -w suppresses warnings which will swamp linker
 #CXX := g++ -w
 #CC := gcc
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS}
 FC := f90 -cpp
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += ${OTHER_LDFLAGS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1148,7 +996,7 @@ else # ABI=32
 endif # endif ABI
 endif # endif SGI64, SGIMP64
 ifeq (gcc,$(firstword ${CC}))
- LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+ LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${OTHER_LDFLAGS} -lm
  CFLAGS := ${GCC_ABI_FLG} -Wall
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1167,7 +1015,7 @@ endif
 # endif CC=gcc
 ifeq (CC,$(firstword ${CXX}))
 # SGI Native C++ headers are in /usr/include/CC
- LDFLAGS := ${SGI_ABI_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+ LDFLAGS := ${SGI_ABI_FLG} ${OTHER_LDFLAGS} -lm
  CFLAGS := ${SGI_ABI_FLG}
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1209,12 +1057,12 @@ CXX := g++
 CC := gcc
 CFLAGS := -Wall
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} 
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS} 
 FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS := ${TMP_LDFLAGS} ${TMP_LIBS} -lsunmath -lsocket -lnsl
+LDFLAGS := ${OTHER_LDFLAGS} -lsunmath -lsocket -lnsl
 #LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
@@ -1259,10 +1107,10 @@ CC := gcc -ansi
 CPP := cpp
 # NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
 CPP_TKN_OS += -Di386 -DNEED_STRCASECMP -DNEED_STRDUP -I/usr/include
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS}
 FC := g77
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+LDFLAGS += ${OTHER_LDFLAGS} -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1375,10 +1223,8 @@ dbg:
 	@printf "CPP_TKN = ${CPP_TKN}\n"
 	@printf "CXX = ${CXX}\n"
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
-	@printf "DAP_NETCDF = ${DAP_NETCDF}\n"
-	@printf "DAP_NETCDF_ROOT = ${DAP_NETCDF_ROOT}\n"
-	@printf "DAP_OPENDAP = ${DAP_OPENDAP}\n"
-	@printf "DAP_OPENDAP_ROOT = ${DAP_OPENDAP_ROOT}\n"
+	@printf "DAP = ${DAP}\n"
+	@printf "DAP_ROOT = ${DAP_ROOT}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"

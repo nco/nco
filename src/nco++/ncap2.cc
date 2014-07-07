@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.191 2014-06-17 00:10:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.192 2014-07-07 06:04:23 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -70,9 +70,8 @@
 
 /* 3rd party vendors */
 #ifdef ENABLE_GSL
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_rng.h>
-
+# include <gsl/gsl_errno.h>
+# include <gsl/gsl_rng.h>
 #endif // !ENABLE_GSL
 
 /* Personal headers */
@@ -143,8 +142,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.191 2014-06-17 00:10:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.191 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.192 2014-07-07 06:04:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.192 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -223,6 +222,27 @@ main(int argc,char **argv)
   
   aed_sct att_item; // Used to convert atts in vector to normal form  
   
+#ifdef ENABLE_MPI
+  /* Declare all MPI-specific variables here */
+  MPI_Comm mpi_cmm=MPI_COMM_WORLD; /* [prc] Communicator */
+# if defined(ENABLE_NETCDF4) || defined(ENABLE_PNETCDF)
+  MPI_Info mpi_nfo=MPI_INFO_NULL; /* [sct] File geometry hints */
+# endif /* !ENABLE_NETCDF4 || !ENABLE_PNETCDF */
+  MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
+  
+  nco_bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
+  
+  int fl_nm_lng; /* [nbr] Output file name length */
+  int msg_bfr[msg_bfr_lng]; /* [bfr] Buffer containing var, idx, tkn_wrt_rsp */
+  int msg_tag_typ; /* [enm] MPI message tag type */
+  int prc_rnk; /* [idx] Process rank */
+  int prc_nbr=0; /* [nbr] Number of MPI processes */
+  int tkn_wrt_rsp; /* [enm] Response to request for write token */
+  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
+  int rnk_wrk; /* [idx] Worker rank */
+  int wrk_id_bfr[wrk_id_bfr_lng]; /* [bfr] Buffer for rnk_wrk */
+#endif /* !ENABLE_MPI */
+
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
@@ -876,7 +896,7 @@ main(int argc,char **argv)
   /* Define non-processed vars */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
   
-  /* Write out new attributes possibly overwriting old ones */
+  /* Write new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
    
     if(var_vtr[idx]->xpr_typ == ncap_var){
@@ -886,35 +906,34 @@ main(int argc,char **argv)
       var_ref=var_vtr[idx]->var;
       rcd=nco_inq_varid_flg(out_id,var_ref->nm,&var_id);
       
-      /* filter out ram vars */ 
+      /* Filter-out RAM vars */ 
       if(rcd!=NC_NOERR || !var_ref->has_mss_val) continue;  
       
-      /* see if missing value already present */
+      /* Is missing value already present? */
       rcd_inq_att=nco_inq_att_flg(out_id,var_id,nco_mss_val_sng_get(),&att_item.type,&att_item.sz);
 
-      /* type mismatch dont overwrite. This can occur when packed vars are in output from using the -A switch */
-      if(rcd_inq_att==NC_NOERR && var_ref->type != att_item.type) continue;   
+      /* Do not overwrite if type mismatch, e.g., packed variable are in output with -A switch */
+      if(rcd_inq_att == NC_NOERR && var_ref->type != att_item.type) continue;   
 
-      /* fill mode and att exists */ 
-      if(prs_arg.NCAP4_FILL && rcd_inq_att==NC_NOERR){
+      /* Fill-mode and attribute exists */ 
+      if(prs_arg.NCAP4_FILL && rcd_inq_att == NC_NOERR){
         (void)nco_rename_att(out_id,var_id,nco_mss_val_sng_get(),att_nm_tmp);     
         (void)nco_put_att(out_id,var_id,att_nm_tmp,var_ref->type,1,var_ref->mss_val.vp);   
         (void)nco_rename_att(out_id,var_id,att_nm_tmp,nco_mss_val_sng_get());  
         continue;
-      }
+      } /* end if */
 
-      /* fill mode and att doesn't exist   */ 
-      if(prs_arg.NCAP4_FILL && rcd_inq_att!=NC_NOERR){
+      /* Fill-mode and attribute does not exist   */ 
+      if(prs_arg.NCAP4_FILL && rcd_inq_att != NC_NOERR){
         (void)nco_put_att(out_id,var_id,att_nm_tmp,var_ref->type,1,var_ref->mss_val.vp);
         (void)nco_rename_att(out_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
         continue;
-      }
+      } /* end if */
 
-      /* netcdf3 file just put att */
+      /* netCDF3 file so just put attribute */
       (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);      
       continue;
-    }
-   
+    } /* endif */
 
      /* Write misssing value contained inside variable */
      /* If missing value type is same as disk type  */  
@@ -957,15 +976,15 @@ main(int argc,char **argv)
     /* NB: These attributes should probably be written prior to last data mode */
     (void)nco_aed_prc(out_id,var_id,att_item);
     
- cln_up: ;
-   att_item.var_nm=(char*)nco_free(att_item.var_nm);
-   att_item.att_nm=(char*)nco_free(att_item.att_nm);
+  cln_up:
+    att_item.var_nm=(char*)nco_free(att_item.var_nm);
+    att_item.att_nm=(char*)nco_free(att_item.att_nm);
   } /* end for */
   
   /* Set chunksize parameters */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,(lmt_msa_sct **)NULL_CEWI,(int)0,&cnk_map,&cnk_plc,cnk_sz_scl,cnk.cnk_dmn,cnk_nbr);
 
-  /* Turn off default filling behavior to enhance efficiency */
+  /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
   /* Take output file out of define mode */

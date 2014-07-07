@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.244 2014-07-06 20:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.245 2014-07-07 06:04:23 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -37,7 +37,11 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
   }else if(fl_out_fmt == NC_FORMAT_CDF5){
     md_create|=NC_64BIT_DATA;
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4){
+#ifdef ENABLE_MPI
+    md_create|=NC_NETCDF4|NC_MPIIO;
+#else
     md_create|=NC_NETCDF4;
+#endif /* !ENABLE_MPI */
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     md_create|=NC_NETCDF4|NC_CLASSIC_MODEL;
   }else if(fl_out_fmt == NC_COMPRESS){ /* fxm: is NC_COMPRESS legal? */
@@ -1370,8 +1374,13 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   if(flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer size = %lu bytes\n",nco_prg_nm_get(),fnc_nm,(unsigned long)*bfr_sz_hnt); 
 
   /* Pass local copy of size hint otherwise user-specified value is overwritten on first call */
+#ifdef ENABLE_MPI
+  /* fxm: should be parallel only for netCDF4 files! */
+  rcd=nco_open_par(fl_nm,md_open|NC_MPIIO,MPI_COMM_WORLD,MPI_INFO_NULL,nc_id);
+#else
   rcd=nco__open(fl_nm,md_open,&bfr_sz_hnt_lcl,nc_id);
-  
+#endif /* !ENABLE_MPI */
+
   /* Print results using same verbosity criteria
      NB: bfr_sz_hnt_lcl is never NULL because nco__open() always returns a valid size */
   if(flg_rqs_vrb_mpl || flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() opened file with buffer size = %lu bytes\n",nco_prg_nm_get(),fnc_nm,(unsigned long)bfr_sz_hnt_lcl);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1439 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1440 2014-07-07 06:04:23 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1400,33 +1400,27 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 void
 nco_get_prg_info(void) /* [fnc] Get program info */
 {
-  /* Purpose: Return a numeric code depending on netCDF library version */
-
+  /* Purpose: Return numeric code depending on netCDF library version */
   char lbr_sng[NC_MAX_NAME+1];
 
   int rcd=3;
-
   strcpy(lbr_sng,nc_inq_libvers());
-#if defined(ENABLE_NETCDF4) && defined(ENABLE_NETCDF4)
-  rcd=40;
-  /* Used to detect buggy netCDF version 4.1; other versions are irrelavant */
-  if (lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '1' )
-  {
-    rcd=41;
-  }
-  else if (lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '1' )
-  {
-    rcd=43;
-  }
+#if defined(ENABLE_NETCDF4) && defined(HAVE_NETCDF4_H)
+  rcd=400;
+  /* Detect buggy netCDF version 4.1; other versions are irrelevant */
+  if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '1'){rcd=410;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '0' ){rcd=430;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '1' ){rcd=431;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '2' ){rcd=432;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '3' ){rcd=433;}
 #endif /* HAVE_NETCDF4_H */
-
   exit(rcd);
 } /* end nco_get_prg_info() */
 
 void 
-nco_xtr_lst_prn                            /* [fnc] Print name-ID structure list */
-(nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
- const int nm_id_nbr)                  /* I [nbr] Number of name-ID structures in list */
+nco_xtr_lst_prn /* [fnc] Print name-ID structure list */
+(nm_id_sct * const nm_id_lst, /* I [sct] Name-ID structure list */
+ const int nm_id_nbr) /* I [nbr] Number of name-ID structures in list */
 {
   (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",nco_prg_nm_get(),nm_id_nbr); 
   for(int idx=0;idx<nm_id_nbr;idx++) (void)fprintf(stdout,"[%d] %s\n",idx,nm_id_lst[idx].nm); 
