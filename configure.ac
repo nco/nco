@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.46 2014-05-29 18:36:54 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.47 2014-07-07 06:04:22 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -306,11 +306,10 @@ if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" =
 	    ])
 fi
 
-# OpenMP
+# Begin OpenMP
 AC_OPENMP
 AC_SUBST(OPENMP_CFLAGS)
 AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [[default=yes]]]),enable_openmp=${enableval},enable_openmp=yes)
-
 # Enable OpenMP unless told not to
 if ((test "${enable_openmp}" != 'no') && (test "${enable_netcdf4}" = 'xyes')); then
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
@@ -321,31 +320,23 @@ fi
 echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
-AC_ARG_ENABLE(dap-netcdf,AS_HELP_STRING([--enable-dap-netcdf],[Build DAP-enabled NCO with netCDF-provided DAP [[default=yes]]]),enable_dap_netcdf=${enableval},enable_dap_netcdf=yes)
-
-# Begin DAP-netCDF
-# Check for DAP-netCDF libraries unless told not to
-if test "${enable_dap_netcdf}" != 'no'; then
+AC_ARG_ENABLE(dap-netcdf,AS_HELP_STRING([--enable-dap],[Build DAP-enabled NCO with netCDF-provided DAP [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)
+# Check for DAP in netCDF library unless told not to
+if test "${enable_dap}" != 'no'; then
     echo "Testing for DAP-netCDF support (is DAP in libnetcdf.a?)..."
-    AC_CHECK_LIB([netcdf],[nc__opendap],,enable_dap_netcdf=no,[-lcurl])
-    if test "${enable_dap_netcdf}" = 'no'; then
+    AC_CHECK_LIB([netcdf],[nc__opendap],,enable_dap=no,[-lcurl])
+    if test "${enable_dap}" = 'no'; then
 	AC_MSG_WARN([DAP-netCDF support through libnetcdf.a disabled (missing DAP functions)])
     fi
-fi
-# End DAP-netCDF
-
-# Begin DAP (all flavors)
-enable_dap='no'
-if (test "x${enable_dap_netcdf}" = 'xyes'); then
-    AC_DEFINE([ENABLE_DAP_NETCDF],[1],[DAP support is from libnetcdf])
-    enable_dap='yes'
-    AC_DEFINE([ENABLE_DAP],[1],[Compile operators with DAP support])
-    AC_MSG_NOTICE([DAP support enabled])
-    LIBS="${LIBS} -lcurl"
-# This would activate conditional GSL tests, if there were any
+    if (test "x${enable_dap}" = 'xyes'); then
+	AC_DEFINE([ENABLE_DAP],[1],[Compile operators with DAP support from libnetcdf])
+	AC_MSG_NOTICE([DAP support enabled])
+	LIBS="${LIBS} -lcurl"
+# This would activate conditional DAP tests, if there were any
 #    AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
+    fi
 fi
-# End DAP (all flavors)
+# End DAP
 
 ##################################################
 # Check libraries, add to link path if found
@@ -1161,7 +1152,6 @@ echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "OPENMP_CFLAGS........ ${OPENMP_CFLAGS}"
-echo "ENABLE_DAP_NETCDF.... ${enable_dap_netcdf}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
 echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.513 2014-06-13 00:14:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.514 2014-07-07 06:04:22 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -241,9 +241,25 @@ extern "C" {
 /* Compatibility tokens for when NCO compiled with older netcdf.h
    It is hard to track where/when many tokens defined
    Easiest to individually check for pre-definition of each */
-/* Three compatibility tokens new to netCDF4 netcdf.h: */
+/* Compatibility tokens new to netCDF4 netcdf.h: */
 #ifndef NC_NETCDF4
-# define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
+# define NC_NETCDF4  0x1000 /* Use netCDF-4/HDF5 format. Mode flag for nc_create(). */
+#endif
+#ifndef NC_MPIIO
+# define NC_MPIIO    0x2000 /* Turn on MPI I/O. Mode flag for both nc_create() and nc_open(). */
+#endif
+#ifndef NC_MPIPOSIX
+# define NC_MPIPOSIX 0x4000 /* Turn on MPI POSIX I/O. Mode flag for both nc_create() and nc_open(). */
+#endif
+#ifndef NC_PNETCDF
+# define NC_PNETCDF  0x8000 /* Use parallel-netcdf library. Mode flag for nc_open(). */
+#endif
+/* Use these with nc_var_par_access(). */
+#ifndef NC_INDEPENDENT
+# define NC_INDEPENDENT 0
+#endif
+#ifndef NC_COLLECTIVE
+# define NC_COLLECTIVE 1
 #endif
 #ifndef NC_ENDIAN_NATIVE
 # define NC_ENDIAN_NATIVE 0

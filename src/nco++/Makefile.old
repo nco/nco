@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.131 2014-07-06 06:13:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.132 2014-07-07 06:04:23 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -124,9 +124,9 @@ ifndef CNK
 # Use newer netCDF4.1 chunking API
  CNK := Y
 endif # endif CNK
-ifndef DAP_NETCDF
- DAP_NETCDF := Y
-endif # DAP_NETCDF
+ifndef DAP
+ DAP := Y
+endif # DAP
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -497,9 +497,9 @@ endif # AIX
 ifeq (${CNK},Y)
  CPP_TKN_OS += -DHAVE_NEW_CHUNKING_API
 endif # !CNK
-ifeq (${DAP_NETCDF},Y)
+ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP
-endif # !DAP_NETCDF
+endif # !DAP
 ifeq (${GSL},Y)
  CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H -DNCO_GSL_MINOR_VERSION='${GSL_MINOR_VERSION}'
 endif # !GSL
@@ -1375,8 +1375,8 @@ dbg:
 	@printf "CURL_LIB = ${CURL_LIB}\n"
 	@printf "CXX = ${CXX}\n"
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
-	@printf "DAP_NETCDF = ${DAP_NETCDF}\n"
-	@printf "DAP_NETCDF_ROOT = ${DAP_NETCDF_ROOT}\n"
+	@printf "DAP = ${DAP}\n"
+	@printf "DAP_ROOT = ${DAP_ROOT}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"

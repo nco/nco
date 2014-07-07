@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.154 2013-10-22 03:12:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.155 2014-07-07 06:04:22 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -41,7 +41,7 @@ use vars qw(
 	    $foo1_fl $foo2_fl $foo_avg_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
 	    $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl $gnu_cut $hiresfound
 	    @ifls $itmp $localhostname $md5 $md5found %MD5_tbl $mpi_fk $mpi_prc
-        $mpi_upx
+            $mpi_upx
 	    $pfx_mpi $MY_BIN_DIR $nco_D_flg %NCO_RC $nco_vrs_sng $ncwa_scl_tst $notbodi
 	    $nsr_xpc $fl_nbr $nvr_my_bin_dir $omp_flg $opr_fmt $opr_lng_max
 	    @opr_lst @opr_lst_all @opr_lst_mpi $opr_nm $opr_rgr_mpi $opr_sng_mpi

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.497 2014-06-01 00:25:25 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.498 2014-07-07 06:04:22 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -87,34 +87,29 @@ print "\n";
 
 
 my $RUN_NETCDF4_TESTS=0;
-my $RUN_NETCDF4_TESTS_VERSION_43=0;
+my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
 
 system("ncks --get_prg_info");
 # system() runs a command and returns exit status information as a 16 bit value: 
 # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
 if($? == -1){
-    print "failed to execute: ncks --get_prg_info: $!\n";
+  print "failed to execute: ncks --get_prg_info: $!\n";
 }else{
-  my $exit_value=$? >> 8;
+#  my $exit_value=$? >> 8;
+    my $exit_value=$?;
 
   # nco_get_prg_info() returns codes
   # 3 (for library 3.x)
-  # 41 (for library 4.1.x)
-  # 43 (for library 4.3.1.x)
+  # 410 (for library 4.1.x)
+  # 430 (for library 4.3.0)
 
-  if ($exit_value==40)  {$RUN_NETCDF4_TESTS=1;}
-  if ($exit_value==41)  {$RUN_NETCDF4_TESTS=1;}
-  if ($exit_value==43) {$RUN_NETCDF4_TESTS=1;}
-  if ($exit_value==43) {$RUN_NETCDF4_TESTS_VERSION_43=1;}
+  if($exit_value >= 400){$RUN_NETCDF4_TESTS=1;}
+  if($exit_value >= 431){$RUN_NETCDF4_TESTS_VERSION_GE_431=1;}
 
-  if ($exit_value==41)
-  {
-   print "netCDF version 4.1.x detected\n";
-  }
-  if ($exit_value==43)
-  {
-   print "netCDF version 4.3.1.x detected\n";
-  }
+  if($exit_value == 410){print "netCDF version 4.1.x detected\n";}
+  if($exit_value == 431){print "netCDF version 4.3.1 detected\n";}
+  if($exit_value == 432){print "netCDF version 4.3.2 detected\n";}
+  if($exit_value == 433){print "netCDF version 4.3.3 detected\n";}
 
 }
 print "\n";
@@ -2347,7 +2342,7 @@ print "\n";
 #ncks #75
 # ncks -O -c in_grp.nc out.nc
 
-    if($RUN_NETCDF4_TESTS_VERSION_43 == 1){
+    if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
 
     $dsc_sng="(Groups) -c Extract all coordinate variables";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg -c in_grp.nc %tmp_fl_00%";
@@ -2357,7 +2352,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-	} #RUN_NETCDF4_TESTS_VERSION_43
+	} #RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #ncks #76
 # ncks -O in_grp.nc out.nc
@@ -2404,7 +2399,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-	if($RUN_NETCDF4_TESTS_VERSION_43 == 1){	
+	if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){	
 	
 #ncks #80
 #ncks -O -4 -L 0 --cnk_dmn lev,1  -v two_dmn_var in_grp_7.nc out.nc
@@ -2482,7 +2477,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-	} # RUN_NETCDF4_TESTS_VERSION_43
+	} # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #ncks #86
 #ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var in_grp.nc out.nc
@@ -4946,7 +4941,7 @@ if (0){
 	
 #################### Dimensions	
 
-   if($RUN_NETCDF4_TESTS_VERSION_43 == 1){
+   if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
 
 #ncrename #8	
 #ncrename -O -d lat,new_lat in_grp.nc out.nc
@@ -4996,7 +4991,7 @@ if (0){
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
-	} # RUN_NETCDF4_TESTS_VERSION_43 
+	} # RUN_NETCDF4_TESTS_VERSION_GE_431 
 
 #ncrename #12
 #ncrename -O -d ./lat_non_existing,new_lat in_grp.nc out.nc
@@ -5077,7 +5072,7 @@ if (0){
 #ncrename -O -g g1,new_g1 in_grp.nc out.nc 
 # relative rename g1 to new_g1
 
-   if($RUN_NETCDF4_TESTS_VERSION_43 == 1){
+   if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
 
     $dsc_sng="Groups: Relative rename 'g1' to 'new_g1' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g g1,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -5111,7 +5106,7 @@ if (0){
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
-	} # RUN_NETCDF4_TESTS_VERSION_43
+	} # RUN_NETCDF4_TESTS_VERSION_GE_431
 
 #ncrename #21	
 #ncrename -O -g .gfoo,new_g1 in_grp.nc out.nc 

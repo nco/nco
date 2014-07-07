@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.730 2014-07-06 20:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.731 2014-07-07 06:04:22 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -94,6 +94,11 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
+#ifdef ENABLE_MPI
+# include <mpi.h> /* MPI definitions */
+# include <netcdf_par.h> /* Parallel netCDF definitions */
+# include "nco_mpi.h" /* MPI utilities */
+#endif /* !ENABLE_MPI */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
@@ -178,8 +183,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.730 2014-07-06 20:31:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.730 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.731 2014-07-07 06:04:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.731 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -238,6 +243,13 @@ main(int argc,char **argv)
 
   nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
+#ifdef ENABLE_MPI
+  /* Declare all MPI-specific variables here */
+  MPI_Comm mpi_cmm=MPI_COMM_WORLD; /* [prc] Communicator */
+  int prc_rnk; /* [idx] Process rank */
+  int prc_nbr=0; /* [nbr] Number of MPI processes */
+#endif /* !ENABLE_MPI */
+  
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
@@ -405,6 +417,13 @@ main(int argc,char **argv)
   textdomain("nco"); /* PACKAGE is name of program or library */
 #endif /* not _LIBINTL_H */
 
+#ifdef ENABLE_MPI
+  /* MPI Initialization */
+  MPI_Init(&argc,&argv);
+  MPI_Comm_size(mpi_cmm,&prc_nbr);
+  MPI_Comm_rank(mpi_cmm,&prc_rnk);
+#endif /* !ENABLE_MPI */
+  
   /* Start timer and save command line */ 
   ddra_info.tmr_flg=nco_tmr_srt;
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
@@ -726,16 +745,17 @@ main(int argc,char **argv)
   if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N This text may appear in a foreign language\n"),nco_prg_nm);
 #endif /* !_LANGINFO_H */
 
-#ifdef ENABLE_PNETCDF
-/* Parallel netCDF
+#ifdef ENABLE_MPI
+/* MPI I/O: Either Parallel netCDF (PnetCDF) or HDF5-based
    export NETCDF_ROOT=/usr/local/parallel;export NETCDF_INC=/usr/local/parallel/include;export NETCDF_LIB=/usr/local/parallel/lib;export NETCDF4_ROOT=/usr/local/parallel;
    cd ~/nco/bld;make PNETCDF=Y;cd -
    LD_LIBRARY_PATH=/usr/local/parallel/lib\:${LD_LIBRARY_PATH}
    ldd `which ncks`
-   ncks -O -5 ~/nco/data/in.nc ~/foo.nc
+   ncks -O -5 ~/nco/data/in.nc ~/foo.nc # PnetCDF 
+   mpiexec -n 1 ncks -O -4 ~/nco/data/in.nc ~/foo.nc # HDF5
    od -An -c -N4 ~/foo.nc */
-  (void)fprintf(stdout,gettext("%s: WARNING Compiled with PnetCDF\n"),nco_prg_nm);
-#endif /* !ENABLE_PNETCDF */
+  (void)fprintf(stdout,gettext("%s: WARNING Compiled with MPI\n"),nco_prg_nm);
+#endif /* !ENABLE_MPI */
 
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);
@@ -1087,6 +1107,10 @@ close_and_free:
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
 
+#ifdef ENABLE_MPI
+  MPI_Finalize();
+#endif /* !ENABLE_MPI */
+  
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.724 2014-07-06 06:13:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.725 2014-07-07 06:04:22 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -157,9 +157,9 @@ endif # endif CNK
 ifndef ${CUDA}
  CUDA := N
 endif # CUDA
-ifndef DAP_NETCDF
- DAP_NETCDF := Y
-endif # DAP_NETCDF
+ifndef DAP
+ DAP := Y
+endif # DAP
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -305,6 +305,11 @@ else # !MPI_PRC
  MPI_PRC_SNG :=
 endif # !MPI_PRC
 
+# PnetCDF implies MPI
+ifeq (${PNETCDF},Y)
+ MPI := Y
+endif # !PNETCDF
+
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 # Decide among the plethora of Linux compilers
 ifndef LINUX_CXX
@@ -396,13 +401,13 @@ NC_CFLAGS := $(shell nc-config --cflags)
 NC_LDFLAGS := $(shell nc-config --libs)
 NCO_LDFLAGS := -L${MY_LIB_DIR} -lnco
 
-ifeq (${PNETCDF},Y)
-# Enable pnetCDF functionality
+ifeq (${MPI},Y)
+# Enable MPI functionality
  NC_CFLAGS := $(shell /usr/local/parallel/bin/nc-config --cflags)
  NC_LDFLAGS := $(shell /usr/local/parallel/bin/nc-config --libs)
  MPI_CFLAGS := -I/usr/include/openmpi-x86_64
  MPI_LDFLAGS := -L/usr/lib64/openmpi/lib -lmpi
-endif # endif PNETCDF
+endif # endif MPI
 
 ifdef LIB_NCAR
  NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
@@ -449,9 +454,11 @@ CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 MDL_BIN_SYM_LNK := ncdiff ncea nces ncrcat # Symbolic links
 ifeq (${MPI},Y)
- MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
+# MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
+ MDL_MPI_TRG := # MPI binary targets
  MDL_MPI_TRG_SMP := ncbo ncecat ncflint ncpdq ncra ncwa # MPI binary targets
- MDL_MPI_SYM_LNK := mpncdiff mpncea mpnces mpncrcat # MPI Symbolic links
+# MDL_MPI_SYM_LNK := mpncdiff mpncea mpnces mpncrcat # MPI Symbolic links
+ MDL_MPI_SYM_LNK := # MPI Symbolic links
  MDL_MPI_STB := ${MDL_MPI_TRG} ${MDL_MPI_SYM_LNK} # All MPI files in MY_BIN_DIR
  MDL_MPI_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_MPI_TRG}) # mpi_cln removes these files
  MDL_MPI_OBJ := $(addsuffix .o,$(addprefix ${MY_OBJ_DIR}/,${MDL_MPI_TRG})) # mpi_cln removes these files
@@ -588,9 +595,9 @@ endif # !(AIX || SGI)
 ifeq (${CNK},Y)
  CPP_TKN_OS += -DHAVE_NEW_CHUNKING_API
 endif # !CNK
-ifeq (${DAP_NETCDF},Y)
- CPP_TKN_OS += -DENABLE_DAP -DENABLE_DAP_NETCDF
-endif # !DAP_NETCDF
+ifeq (${DAP},Y)
+ CPP_TKN_OS += -DENABLE_DAP
+endif # !DAP
 ifeq (${GSL},Y)
  CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H
 endif # !GSL
@@ -602,6 +609,13 @@ endif # !MPI
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H -DHAVE_UDUNITS2_H
 endif # !UDUNITS
+ifeq (${NETCDF4},Y)
+ CPP_TKN_OS += -DENABLE_NETCDF4 -DHAVE_NETCDF4_H
+endif # endif NETCDF4
+ifeq (${PNETCDF},Y)
+ CPP_TKN_OS += -DENABLE_PNETCDF
+endif # !PNETCDF
+# endif PNETCDF
 # Assume strcasecmp() and strdup() routines are present (Comeau, Pathscale are exceptions)
 CPP_TKN_OS += 
 # fxm: Define HAVE_LIBINTL, HAVE_LOCALE_H, HAVE_GETTEXT, HAVE_OMP_H
@@ -1428,21 +1442,6 @@ endif
 endif
 # endif I18N
 
-ifeq (${NETCDF4},Y)
- CPPFLAGS += -DENABLE_NETCDF4 -DHAVE_NETCDF4_H
-endif
-# endif NETCDF4
-
-ifeq (${PNETCDF},Y)
- CPPFLAGS += -DENABLE_PNETCDF
-endif
-# endif PNETCDF
-
-ifeq (${ZNETCDF},Y)
- CPPFLAGS += -DENABLE_ZNETCDF
-endif
-# endif ZNETCDF
-
 # Default to MPICC, MPICXX to CC, CXX and cross your fingers
 MPICC := ${CC}
 MPICXX := ${CXX}
@@ -1528,7 +1527,7 @@ allinone: all nco_c++ nco++
 nco_c++: 
 	-cd ../src/nco_c++; ${MAKE} -f Makefile.old DBG=${DBG} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} lib dat all
 nco++: 
-	-cd ../src/nco++; ${MAKE} -f Makefile.old CNK=${CNK} DAP_NETCDF=${DAP_NETCDF} DBG=${DBG} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} PNETCDF=${PNETCDF} SZ=${SZ} UDUNITS=${UDUNITS} lib all
+	-cd ../src/nco++; ${MAKE} -f Makefile.old CNK=${CNK} DAP=${DAP} DBG=${DBG} GSL=${GSL} MPI=${MPI} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} PNETCDF=${PNETCDF} SZ=${SZ} UDUNITS=${UDUNITS} lib all
 # Targets in bin
 mpi:   mpi_nco
 mpinco:   mpi_nco
@@ -1901,8 +1900,8 @@ dbg:
 	@printf "CURL_LIB = ${CURL_LIB}\n"
 	@printf "CXX = ${CXX}\n"
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
-	@printf "DAP_NETCDF = ${DAP_NETCDF}\n"
-	@printf "DAP_NETCDF_ROOT = ${DAP_NETCDF_ROOT}\n"
+	@printf "DAP = ${DAP}\n"
+	@printf "DAP_ROOT = ${DAP_ROOT}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
@@ -1934,6 +1933,7 @@ dbg:
 	@printf "MDL_PTH = ${MDL_PTH}\n"
 	@printf "MDL_RPM_NST_NM = ${MDL_RPM_NST_NM}\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
+	@printf "MPI = ${MPI}\n"
 	@printf "MPICC = ${MPICC}\n"
 	@printf "MPICH_CC = ${MPICH_CC}\n"
 	@printf "MPICH_CXX = ${MPICH_CXX}\n"
@@ -1965,8 +1965,8 @@ dbg:
 	@printf "OTHER_CFLAGS = ${OTHER_CFLAGS}\n"
 	@printf "OTHER_LDFLAGS = ${OTHER_LDFLAGS}\n"
 	@printf "PGI_RCH_ARG = ${PGI_RCH_ARG}\n"
-	@printf "PSC_RCH_ARG = ${PSC_RCH_ARG}\n"
 	@printf "PNETCDF = ${PNETCDF}\n"
+	@printf "PSC_RCH_ARG = ${PSC_RCH_ARG}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "RPM = ${RPM}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
@@ -1983,7 +1983,6 @@ dbg:
 	@printf "VRS_SNG = ${VRS_SNG}\n"
 	@printf "YACC = ${YACC}\n"
 	@printf "YFLAGS = ${YFLAGS}\n"
-	@printf "ZNETCDF = ${ZNETCDF}\n"
 distclean: dst_cln
 dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
@@ -2046,7 +2045,7 @@ else
 endif
 	chmod 755 ${MY_BIN_DIR}/$@${BNR_SFX}
 ncap2 :
-	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP_NETCDF=${DAP_NETCDF} DBG=${DBG} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} PNETCDF=${PNETCDF} SZ=${SZ} UDUNITS=${UDUNITS} all
+	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP=${DAP} DBG=${DBG} GSL=${GSL} MPI=${MPI} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} PNETCDF=${PNETCDF} SZ=${SZ} UDUNITS=${UDUNITS} all
 
 #	/bin/rm -f ${MDL_NCAP} ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/ncap_yacc.h ${MY_OBJ_DIR}/ncap_yacc.c
 
