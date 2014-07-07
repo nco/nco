@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.192 2014-07-07 06:04:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.193 2014-07-07 18:56:29 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -122,6 +122,8 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   
+  aed_sct att_item; // Used to convert atts in vector to normal form  
+  
   char **fl_lst_abb=NULL_CEWI; /* Option n */
   char **fl_lst_in;
   char **var_lst_in=NULL_CEWI;
@@ -142,8 +144,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.192 2014-07-07 06:04:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.192 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.193 2014-07-07 18:56:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.193 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -220,29 +222,6 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
-  aed_sct att_item; // Used to convert atts in vector to normal form  
-  
-#ifdef ENABLE_MPI
-  /* Declare all MPI-specific variables here */
-  MPI_Comm mpi_cmm=MPI_COMM_WORLD; /* [prc] Communicator */
-# if defined(ENABLE_NETCDF4) || defined(ENABLE_PNETCDF)
-  MPI_Info mpi_nfo=MPI_INFO_NULL; /* [sct] File geometry hints */
-# endif /* !ENABLE_NETCDF4 || !ENABLE_PNETCDF */
-  MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
-  
-  nco_bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
-  
-  int fl_nm_lng; /* [nbr] Output file name length */
-  int msg_bfr[msg_bfr_lng]; /* [bfr] Buffer containing var, idx, tkn_wrt_rsp */
-  int msg_tag_typ; /* [enm] MPI message tag type */
-  int prc_rnk; /* [idx] Process rank */
-  int prc_nbr=0; /* [nbr] Number of MPI processes */
-  int tkn_wrt_rsp; /* [enm] Response to request for write token */
-  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
-  int rnk_wrk; /* [idx] Worker rank */
-  int wrk_id_bfr[wrk_id_bfr_lng]; /* [bfr] Buffer for rnk_wrk */
-#endif /* !ENABLE_MPI */
-
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
