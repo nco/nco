@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.304 2014-07-09 00:09:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.305 2014-07-09 06:50:15 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.304 2014-07-09 00:09:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.304 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.305 2014-07-09 06:50:15 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.305 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -340,7 +340,7 @@ main(int argc,char **argv)
   
 #ifdef ENABLE_MPI
   /* MPI Initialization */
-  (void)fprintf(stdout,gettext("%s: WARNING Compiled with MPI\n"),nco_prg_nm);
+  if(False) (void)fprintf(stdout,gettext("%s: WARNING Compiled with MPI\n"),nco_prg_nm);
   MPI_Init(&argc,&argv);
   MPI_Comm_size(mpi_cmm,&prc_nbr);
   MPI_Comm_rank(mpi_cmm,&prc_rnk);

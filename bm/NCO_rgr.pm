@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.499 2014-07-09 01:11:55 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.500 2014-07-09 06:50:14 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2507,7 +2507,7 @@ print "\n";
 
     $dsc_sng="(Groups) Auxiliary coordinates writing -X 0.,1.,-30.,-29. -g g18g1  -v gds_3dvar";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18g1  -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks $nco_D_flg -v lon_gds_1 %tmp_fl_00%";
+    $tst_cmd[1]="ncks $nco_D_flg -v lon_gds_1 %tmp_fl_00%";
     $tst_cmd[2]="gds_crd[0]=1 lon_gds_1[0]=0 degree";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
@@ -2520,7 +2520,7 @@ print "\n";
 
     $dsc_sng="(Groups) Auxiliary coordinates (writing associated coordinates) -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks $nco_D_flg -g g18g2 -C -v lat_gds_2 %tmp_fl_00%";
+    $tst_cmd[1]="ncks $nco_D_flg -g g18g2 -C -v lat_gds_2 %tmp_fl_00%";
     $tst_cmd[2]="gds_crd[0]=1 lat_gds_2[0]=-30 degree";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
@@ -2541,12 +2541,13 @@ print "\n";
     $#tst_cmd=0; # Reset array 			   
     
 #ncks #91 Extract CF 'ancillary_variables' variables (netCDF3 file)
-
+#ncks -O -d time,5 -v cnv_CF_ncl ~/nco/data/in.nc ~/foo.nc
+#ncks -C -H -v cnv_CF_ncl_var_2 ~/foo.nc
     $dsc_sng="Extract CF 'ancillary_variables' variables (netCDF3 file)";
-    $tst_cmd[0]="ncks $nco_D_flg -d time,5 -v cnv_CF_ncl $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[0]="ncks $nco_D_flg -v cnv_CF_ncl_var_2 %tmp_fl_00%";
-    $tst_cmd[1]="";
-    $tst_cmd[2]="SS_OK";   
+    $tst_cmd[0]="ncks -O $nco_D_flg -d time,5 -v cnv_CF_ncl $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H $nco_D_flg -v cnv_CF_ncl_var_2 %tmp_fl_00%";
+    $tst_cmd[2]="time[0]=6 cnv_CF_ncl_var_2[0]=36";
+    $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 	

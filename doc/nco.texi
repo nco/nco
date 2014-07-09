@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1010 2014-07-05 05:37:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1011 2014-07-09 06:50:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.5
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 1 July 2014
+@set update-date 8 July 2014
 @set update-month July 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -4332,12 +4332,15 @@ automatically specifying that @emph{all} coordinate variables in the
 Thus @samp{-c} allows the user to select all the coordinate variables
 without having to know their names.
 @cindex @acronym{CF} conventions
-As of @acronym{NCO} version 3.9.6 (January, 2009) 
-both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{coordinates}
-convention described in @ref{CF Conventions}.
+As of @acronym{NCO} version 4.4.5 (July, 2014) 
+both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{ancillary_variables}
+convention described in @ref{CF Conventions}. 
 As of @acronym{NCO} version 4.0.8 (April, 2011) 
 both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{bounds}
 convention described in @ref{CF Conventions}. 
+As of @acronym{NCO} version 3.9.6 (January, 2009) 
+both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{coordinates}
+convention described in @ref{CF Conventions}.
 
 @html
 <a name="gpe"></a> <!-- http://nco.sf.net/nco.html#gpe -->
@@ -8468,6 +8471,24 @@ attribute, if any.
 Hence the subsets will themselves be @acronym{CF}-compliant.
 
 @html
+<a name="cnv_CF_ncl"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_ncl -->
+<a name="ncl"></a> <!-- http://nco.sf.net/nco.html#ncl -->
+@end html
+@cindex @code{ancillary_variables}
+@cindex ancillary variables convention
+As of @acronym{NCO} version 4.4.5 (July, 2014), @acronym{NCO} 
+supports the @acronym{CF} @code{ancillary_variables} convention for 
+described 
+@uref{http://cfconventions.org/1.6.html#ancillary-data, here}.
+This convention allows ancillary variables to be associated with one or
+more primary variables.
+@acronym{NCO} attaches any such variables to the extraction list along 
+with the primary variable and its usual (one-dimensional) coordinates,
+if any. 
+Ancillary variables are subject to the user-specified overrides
+described in @ref{Subsetting Coordinate Variables}. 
+
+@html
 <a name="cnv_CF_crd"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_crd -->
 @end html
 @cindex @code{coordinates}
@@ -8487,8 +8508,8 @@ supports the @acronym{CF} @code{coordinates} convention described
 This convention allows variables to specify additional coordinates
 (including multidimensional coordinates) in a space-separated string
 attribute named @code{coordinates}. 
-NCO attaches any such coordinates to the extraction list along with
-variable and its usual (one-dimensional) coordinates, if any.
+@acronym{NCO} attaches any such coordinates to the extraction list along
+with variable and its usual (one-dimensional) coordinates, if any.
 These auxiliary coordinates are subject to the user-specified overrides
 described in @ref{Subsetting Coordinate Variables}.
 
@@ -15048,19 +15069,21 @@ coordinates, except variable @code{time}, from netCDF @file{in.nc}:
 ncks -x -v time in.nc out.nc
 @end example
 As a special case of this, consider how to remove a 
-@acronym{CF} Convention comliant @code{bounds} or @code{coordinates}
-variable (@pxref{CF Conventions}) such as @code{time_bounds}.
-@acronym{NCO} subsetting assumes the user wants all coordinates 
-and bounds and axes associated with all extracted variables 
+@acronym{CF} Convention comliant @code{ancillary_variables},
+@code{bounds}, or @code{coordinates} variable (@pxref{CF Conventions})
+such as @code{time_bounds}. 
+@acronym{NCO} subsetting assumes the user wants all ancillary variables,
+axes, bounds and coordinates associated with all extracted variables 
 (@pxref{Subsetting Coordinate Variables}).
-Hence to exclude a @code{bounds} or @code{coordinates} variable while
-retaining the ``parent'' variable (here @code{time}), one must use the
-@samp{-C} switch: 
+Hence to exclude a @code{ancillary_variables}, @code{bounds}, or
+@code{coordinates} variable while retaining the ``parent'' variable
+(here @code{time}), one must use the @samp{-C} switch: 
 @example
 ncks -C -x -v time_bounds in.nc out.nc
 @end example
 The @samp{-C} switch tells the operator @emph{NOT} to necessarily
-include all the @acronym{CF} coordinates and bounds and axes.
+include all the @acronym{CF} ancillary variables, axes, bounds, and
+coordinates.
 Hence the output file will contain @code{time} and not
 @code{time_bounds}. 
 

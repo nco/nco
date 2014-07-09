@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.722 2014-06-13 00:14:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.723 2014-07-09 06:50:14 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -7,7 +7,8 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release is mainly a bugfix and stability release. 
 A few new features improve some corner-cases:
-NCO now accesses DAP files on HTTPS servers.
+NCO now accesses DAP files on HTTPS servers, and it supports the CF
+ancillary_variables convention.
 
 Work on NCO 4.4.6 is underway, still focused on stability and speed.   
 This includes more netCDF4 mop-up, improved group broadcasting
@@ -19,11 +20,20 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. NCO now supports the CF ancillary_variables convention described at
+   http://cfconventions.org/1.6.html#ancillary-data
+   This convention allows ancillary variables to be associated with
+   one or more primary variables. NCO attaches any such variables to
+   the extraction list along with the primary variable and its
+   coordinates and bounds, if any. 
+   http://nco.sf.net/nco.html#ncl
+
 A. NCO now accesses DAP files on HTTPS servers. Previously NCO would
    only test filenames beginning with "http://" for DAP access. 
    Now NCO also tests filenames beginning with "https://" for DAP.
    If you use DAP servers with a protocol besides HTTP or HTTPS please
-   tell us so we can enable NCO for those services too.
+   tell us so we cavn enable NCO for those services too.
+   http://nco.sf.net/nco.html#dap
 
 A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
    This new switch helps control variable and group extraction.
