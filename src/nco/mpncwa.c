@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.144 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.145 2014-07-09 20:47:53 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.144 2014-06-15 21:06:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.144 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.145 2014-07-09 20:47:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.145 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -1333,6 +1333,7 @@ main(int argc,char **argv)
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   
   nco_exit_gracefully();
   return EXIT_SUCCESS;

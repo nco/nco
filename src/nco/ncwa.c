@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.422 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.423 2014-07-09 20:47:53 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -58,8 +58,26 @@
 # endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
-/* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions and C library */
+#ifdef I18N
+# include <langinfo.h> /* nl_langinfo() */
+# include <libintl.h> /* Internationalization i18n */
+# include <locale.h> /* Locale setlocale() */
+# define _(sng) gettext (sng)
+# define gettext_noop(sng) (sng)
+# define N_(sng) gettext_noop(sng)
+#endif /* I18N */
+/* Supply stub gettext() function in case i18n failed */
+#ifndef _LIBINTL_H
+# define gettext(foo) foo
+#endif /* _LIBINTL_H */
+
+/* 3rd party vendors */	 
+#include <netcdf.h> /* netCDF definitions and C library */	 
+#ifdef ENABLE_MPI
+# include <mpi.h> /* MPI definitions */
+# include <netcdf_par.h> /* Parallel netCDF definitions */
+# include "nco_mpi.h" /* MPI utilities */
+#endif /* !ENABLE_MPI */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
@@ -133,8 +151,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.422 2014-06-15 21:06:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.422 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.423 2014-07-09 20:47:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.423 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -220,6 +238,13 @@ main(int argc,char **argv)
   prs_sct prs_arg;  /* I/O [sct] Global information required in ncwa parser */
 #endif
 
+#ifdef ENABLE_MPI
+  /* Declare all MPI-specific variables here */
+  MPI_Comm mpi_cmm=MPI_COMM_WORLD; /* [prc] Communicator */
+  int prc_rnk; /* [idx] Process rank */
+  int prc_nbr=0; /* [nbr] Number of MPI processes */
+#endif /* !ENABLE_MPI */
+  
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
@@ -347,6 +372,14 @@ main(int argc,char **argv)
   /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
   nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
 
+#ifdef ENABLE_MPI
+  /* MPI Initialization */
+  if(False) (void)fprintf(stdout,gettext("%s: WARNING Compiled with MPI\n"),nco_prg_nm);
+  MPI_Init(&argc,&argv);
+  MPI_Comm_size(mpi_cmm,&prc_nbr);
+  MPI_Comm_rank(mpi_cmm,&prc_rnk);
+#endif /* !ENABLE_MPI */
+  
   /* Parse command line arguments */
   while(1){
     /* getopt_long_only() allows one dash to prefix long options */
@@ -1162,15 +1195,19 @@ main(int argc,char **argv)
     var_out=(var_sct **)nco_free(var_out);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
     if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
+    /* Free traversal table */
+    trv_tbl_free(trv_tbl); 
   } /* !flg_cln */
 
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
 
-  /* Free traversal table */
-  trv_tbl_free(trv_tbl); 
-
+#ifdef ENABLE_MPI
+  MPI_Finalize();
+#endif /* !ENABLE_MPI */
+  
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

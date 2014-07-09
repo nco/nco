@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.191 2014-07-09 06:50:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.192 2014-07-09 20:47:53 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -174,8 +174,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.191 2014-07-09 06:50:15 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.191 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.192 2014-07-09 20:47:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.192 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -399,9 +399,6 @@ main(int argc,char **argv)
   /* Get number of variables in file */
   (void)nco_inq(nc_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
 
-#ifdef ENABLE_MPI
-#endif /* !ENABLE_MPI */
-
   /* Initialize traversal table */ 
   trv_tbl_init(&trv_tbl); 
 
@@ -494,8 +491,8 @@ main(int argc,char **argv)
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
+
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

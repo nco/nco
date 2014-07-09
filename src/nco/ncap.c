@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.286 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.287 2014-07-09 20:47:53 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.286 2014-06-15 21:06:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.286 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.287 2014-07-09 20:47:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.287 $";
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -963,8 +963,8 @@ main(int argc,char **argv)
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
+
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

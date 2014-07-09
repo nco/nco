@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.733 2014-07-09 06:50:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.734 2014-07-09 20:47:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -183,8 +183,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.733 2014-07-09 06:50:15 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.733 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.734 2014-07-09 20:47:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.734 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1107,8 +1107,8 @@ close_and_free:
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
+
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
