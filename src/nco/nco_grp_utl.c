@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1441 2014-07-09 00:09:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1442 2014-07-09 01:11:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1159,14 +1159,11 @@ nco_xtr_cf_prv_add                    /* [fnc] Add variables associated (via CF)
 
           /* If variable is on list */
           if(trv_tbl_fnd_var_nm_fll(cf_lst_var_nm_fll,trv_tbl)){
-
             /* Mark it for extraction */
             (void)trv_tbl_mrk_xtr(cf_lst_var_nm_fll,True,trv_tbl);
-
-            /* Exclude ancestor with lower scope (closer to root) variables, add only the most in scope (usually in same group) */
+            /* Exclude ancestor (greater scope, closer to root) variables, add only most in-scope (usually in same group) */
             break;
-
-          } /* If variable is on list, mark it for extraction */
+          } /* end if */
 
           cf_lst_var_nm_fll[psn_chr]='\0';
           ptr_chr=strrchr(cf_lst_var_nm_fll,sls_chr);

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.498 2014-07-07 06:04:22 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.499 2014-07-09 01:11:55 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -84,7 +84,6 @@ sub tst_rgr {
     if(0){} #################  SKIP THESE #####################
     
 print "\n";
-
 
 my $RUN_NETCDF4_TESTS=0;
 my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
@@ -2529,19 +2528,28 @@ print "\n";
 
    } #### Group tests	
    
-	
 #ncks #90
 # Test -X writing
 # ncks -O -X 0.,1.,-30.,-29. -v gds_3dvar  in.nc out.nc
 
     $dsc_sng="Auxiliary coordinates writing -X 0.,1.,-30.,-29. -v gds_3dvar";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -v gds_3dvar $in_pth_arg in.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks $nco_D_flg -v gds_crd %tmp_fl_00%";
+    $tst_cmd[1]="ncks $nco_D_flg -v gds_crd %tmp_fl_00%";
     $tst_cmd[2]="gds_crd[0]=1 lon_gds[0]=0 degree";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			   
     
+#ncks #91 Extract CF 'ancillary_variables' variables (netCDF3 file)
+
+    $dsc_sng="Extract CF 'ancillary_variables' variables (netCDF3 file)";
+    $tst_cmd[0]="ncks $nco_D_flg -d time,5 -v cnv_CF_ncl $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks $nco_D_flg -v cnv_CF_ncl_var_2 %tmp_fl_00%";
+    $tst_cmd[1]="";
+    $tst_cmd[2]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
 #####################
 #### ncpdq tests #### -OK !
 #####################

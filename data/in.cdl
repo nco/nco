@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.187 2014-04-13 02:36:53 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.188 2014-07-09 01:11:56 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -254,6 +254,22 @@ variables:
 	cnv_CF_crd:long_name = "test CF coordinates conventions";
 	cnv_CF_crd:coordinates = "lat_gds lon_gds ";
 	cnv_CF_crd:reason = "Test whether coordinates attribute strings that end with a space break after nco_var_lst_crd_ass_add() call to nco_lst_prs_2d()";
+
+	float cnv_CF_ncl(time);
+	cnv_CF_ncl:long_name = "test CF ancillary_variables convention";
+        cnv_CF_ncl:standard_name = "specific_humidity";
+        cnv_CF_ncl:ancillary_variables = "cnv_CF_ncl_var_1 cnv_CF_ncl_var_2";
+        cnv_CF_ncl:purpose = "Main variable that has ancillary variables named cnv_CF_ncl_var_1 and cnv_CF_ncl_var_2";
+
+	float cnv_CF_ncl_var_1(time);
+	cnv_CF_ncl_var_1:long_name = "test CF ancillary_variables convention";
+        cnv_CF_ncl_var_1:standard_name = "specific_humidity standard_error";
+        cnv_CF_ncl_var_1:purpose = "Ancillary variable for cnv_CF_ncl. Other ancillary variable is cnv_CF_ncl_var_2.";
+
+	float cnv_CF_ncl_var_2(time);
+	cnv_CF_ncl_var_2:long_name = "test CF ancillary_variables convention";
+        cnv_CF_ncl_var_2:standard_name = "specific_humidity detection_limit";
+        cnv_CF_ncl_var_2:purpose = "Ancillary variable for cnv_CF_ncl. Other ancillary variable is cnv_CF_ncl_var_1.";
 
 	float PS(time,lat,lon);
 	PS:long_name = "surface pressure";
@@ -1063,6 +1079,9 @@ data:
 	char_var_nul='\0';
 	char_var_space=" ";
 	cnv_CF_crd=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
+	cnv_CF_ncl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	cnv_CF_ncl_var_1=11.,22.,23.,24.,25.,26.,27.,28.,29.,30.;
+	cnv_CF_ncl_var_2=21.,32.,33.,34.,35.,36.,37.,38.,39.,40.;
 	date_int=1964,3,12,12,9;
 	dgn=73;
 	dgn_var=73;
