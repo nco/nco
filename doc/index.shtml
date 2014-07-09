@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.909 2014-07-05 05:37:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.910 2014-07-09 00:09:06 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1032,13 +1032,10 @@ over versions should largely disappear.
 Some developers find this documentation helpful, as it can clarify code and data 
 relationships in the code.</p>
 <ul>
-<li><a href="http://sand.ess.uci.edu/nco/doxygen/main/files.html">
-Source documentation for NCO and NetCDF4(alpha13)</a></li>
+<li><a href="http://dust.ess.uci.edu/nco/doxygen/main/files.html">
+Source documentation for NCO and netCDF4(alpha13)</a></li>
 </ul>
-<p>Please be aware that the documentation may be slightly inaccurate and 
-infrequently updated. Comments and suggestions are certainly welcomed on the 
- <a href="http://sf.net/projects/nco/forums/forum/9829">forums</a>.
-</p>
+<p>The Doxygen documentation is infrequently (i.e., never since Daniel left) updated.</p>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#src -->
@@ -1057,7 +1054,7 @@ we recommend that you first try the pre-built binaries for your
 system, e.g.,  
 <tt>
 <dt>sudo aptitude install nco # Debian-based systems like Debian, Mint, Ubuntu</dt>
-<dt>sudo yum-install nco      # RPM-based systems like CentOS, Fedora, RHEL</dt>
+<dt>sudo yum-install nco      # RPM-based systems like CentOS, Fedora, openSUSE, RHEL</dt>
 <dt>sudo port install nco     # MacPorts (after installing MacPorts on Mac OS X)</dt>
 </tt>
 If pre-built executables do not satisfy you (e.g., are out-of-date)

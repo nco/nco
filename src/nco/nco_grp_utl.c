@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1440 2014-07-07 06:04:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1441 2014-07-09 00:09:06 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1057,7 +1057,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
 {
   /* Add to extraction list all variables associated with specified CF convention
      Driver routine for nco_xtr_cf_prv_add()
-     Detect associated coordinates specified by CF "bounds" and "coordinates" conventions
+     Detect associated coordinates specified by CF "ancillary_variables", "bounds", and "coordinates" conventions
      http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
 
   const char fnc_nm[]="nco_xtr_cf_add()"; /* [sng] Function name */
@@ -1065,10 +1065,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
   /* Search for and add CF-compliant bounds and coordinates to extraction list */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv_obj=trv_tbl->lst[idx_tbl];
-    /* Filter extracted variables */
-    if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
-      (void)nco_xtr_cf_prv_add(nc_id,&trv_obj,cf_nm,trv_tbl);
-    } /* Filter extracted variables */
+    if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr) (void)nco_xtr_cf_prv_add(nc_id,&trv_obj,cf_nm,trv_tbl);
   } /* end loop over table */
 
   /* Print extraction list in debug mode */
@@ -1078,15 +1075,16 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
 } /* nco_xtr_cf_add() */
 
 void
-nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordinates of specified variable to extraction list */
+nco_xtr_cf_prv_add                    /* [fnc] Add variables associated (via CF) with specified variable to extraction list */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,       /* I [sct] Variable (object) */
- const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
+ const char * const cf_nm,            /* I [sng] CF convention ("ancillary_variables", "bounds", or "coordinates") */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
-  /* Detect associated coordinates specified by CF "bounds" or "coordinates" convention for single variable
-  Private routine called by nco_xtr_cf_add()
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
+  /* Detect associated variables specified by CF "ancillary_variables", "bounds", or "coordinates" convention
+     Private routine called by nco_xtr_cf_add()
+     http://cfconventions.org/1.6.html#ancillary-data
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
 
   char **cf_lst; /* [sng] 1D array of list elements */
   char att_nm[NC_MAX_NAME+1]; /* [sng] Attribute name */
@@ -1095,7 +1093,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
 
   int grp_id; /* [id] Group ID */
   int nbr_att; /* [nbr] Number of attributes */
-  int nbr_cf; /* [nbr] Number of coordinates specified in "bounds" or "coordinates" attribute */
+  int nbr_cf; /* [nbr] Number of variables specified in CF attribute ("ancillary_variables", "bounds", or "coordinates") */
   int var_id; /* [id] Variable ID */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
@@ -1126,8 +1124,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates CF convention for specifying additional attributes. Therefore will skip this attribute.\n",
-          nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates CF convention for specifying additional attributes. Therefore will skip this attribute. If you want CF to support NC_STRING attributes, please tell them and CC: NCO.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
         return;
       } /* end if */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -1136,9 +1133,9 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
       att_val[att_sz]='\0';
 
       /* Split list into separate coordinate names
-      Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
       cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
-      /* ...for each coordinate in CF convention attribute, i.e., "bounds" or "coordinate"... */
+      /* ...for each coordinate in CF convention attribute, i.e., "ancillary_variables", "bounds", or "coordinate"... */
       for(int idx_cf=0;idx_cf<nbr_cf;idx_cf++){
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;
@@ -1149,7 +1146,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
         char *ptr_chr;            /* [sng] Pointer to character '/' in full name */
         int psn_chr;              /* [nbr] Position of character '/' in in full name */
 
-        /* Construct full name of 'CF' variable to find using the full group name where variable resides */
+        /* Construct full name of CF variable using full group name where variable resides */
         cf_lst_var_nm_fll=(char *)nco_malloc(strlen(var_trv->grp_nm_fll)+strlen(cf_lst_var)+2L);
         strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
         if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcat(cf_lst_var_nm_fll,sls_sng);
