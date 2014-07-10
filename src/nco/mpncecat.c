@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.122 2014-07-06 20:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.123 2014-07-10 23:36:21 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.122 2014-07-06 20:31:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.122 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.123 2014-07-10 23:36:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.123 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -174,9 +174,7 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
   MPI_Comm mpi_cmm=MPI_COMM_WORLD; /* [prc] Communicator */
-# if defined(ENABLE_NETCDF4) || defined(ENABLE_PNETCDF)
   MPI_Info mpi_nfo=MPI_INFO_NULL; /* [sct] File geometry hints */
-# endif /* !ENABLE_NETCDF4 || !ENABLE_PNETCDF */
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
   
   nco_bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
@@ -752,9 +750,6 @@ main(int argc,char **argv)
 #ifdef ENABLE_NETCDF4
     rcd=nco_open_par(fl_in,NC_MPIIO|NC_NETCDF4,mpi_cmm,mpi_nfo,&in_id);
 #endif /* !ENABLE_NETCDF4 */
-#ifdef ENABLE_PNETCDF
-    rcd=ncompi_open(mpi_cmm,fl_in,NC_NOWRITE,mpi_nfo,&in_id);
-#endif /* !ENABLE_PNETCDF */
 #endif /* !0 */
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();

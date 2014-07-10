@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.119 2014-07-07 06:04:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.120 2014-07-10 23:36:22 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -241,11 +241,11 @@ int nco_create_par(const char * const fl_nm,const int cmode,MPI_Comm mpi_cmm,MPI
 int nco_open_par  (const char * const fl_nm,const int  mode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id);
 int nco_var_par_access(const int nc_id,const int var_id,const int par_access);
 # endif /* !HAVE_NETCDF4_H */
-# ifdef ENABLE_PNETCDF
+# ifdef PNETCDF_EXPOSED_API
 /* pnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
 int ncompi_create(MPI_Comm mpi_cmm,const char * const fl_nm,const int cmode,MPI_Info mpi_nfo,int * const nc_id);
 int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_Info mpi_nfo,int * const nc_id);
-# endif /* !ENABLE_PNETCDF */
+# endif /* !PNETCDF_EXPOSED_API */
 #endif /* !ENABLE_MPI */
 
 /* Begin file-level routines */

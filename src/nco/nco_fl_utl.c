@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.245 2014-07-07 06:04:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.246 2014-07-10 23:36:21 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -85,12 +85,12 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
     nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_NETCDF4 */
   }else if(strcasestr("pnetcdf",fl_fmt_sng)){
-#ifdef ENABLE_PNETCDF
+#ifdef ENABLE_MPI
     /* If "pnetcdf" contains string */
     *fl_fmt_enm=NC_FORMAT_CDF5;
-#else /* !ENABLE_PNETCDF */
+#else /* !ENABLE_MPI */
     (void)fprintf(stderr,"%s: ERROR This NCO was not built with PnetCDF (http://trac.mcs.anl.gov/projects/parallel-netcdf) and cannot create the requested PnetCDF file format. HINT: Re-try with supported file format such as \"classic\" or \"64bit\".\n",nco_prg_nm_get());
-#endif /* !ENABLE_PNETCDF */
+#endif /* !ENABLE_MPI */
   }else{
     (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",nco_prg_nm_get(),fl_fmt_sng);
     nco_exit(EXIT_FAILURE);
@@ -1375,9 +1375,8 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
   /* Pass local copy of size hint otherwise user-specified value is overwritten on first call */
 #ifdef ENABLE_MPI
-  /* fxm: should be parallel only for netCDF4 files! */
   rcd=nco_open_par(fl_nm,md_open|NC_MPIIO,MPI_COMM_WORLD,MPI_INFO_NULL,nc_id);
-#else
+#else /* !ENABLE_MPI */
   rcd=nco__open(fl_nm,md_open,&bfr_sz_hnt_lcl,nc_id);
 #endif /* !ENABLE_MPI */
 

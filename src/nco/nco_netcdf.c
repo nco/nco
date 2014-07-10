@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.250 2014-07-07 06:04:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.251 2014-07-10 23:36:21 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -694,8 +694,11 @@ nco_var_par_access(const int nc_id,const int var_id,const int par_access)
 } /* end nco_var_par_access */
 # endif /* !HAVE_NETCDF4_H */
 
-# ifdef ENABLE_PNETCDF
-/* pnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
+# ifdef PNETCDF_EXPOSED_API
+/* PnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a
+   NB: netCDF4 versions 4.3.x automagically call PnetCDF internally, yet do not expose its API
+   These sample prototypes will never be used until/unless someone exposes the PnetCDF API to NCO (unlikely)
+   Until then, the token ENABLE_PNETCDF means that netCDF4 was built with --enable-pnetcdf */
 int
 ncompi_create(MPI_Comm mpi_cmm,const char * const fl_nm,const int cmode,MPI_Info mpi_nfo,int * const nc_id)
 {
@@ -716,7 +719,7 @@ ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_Info m
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end ncompi_open */
-# endif /* !ENABLE_PNETCDF */
+# endif /* !PNETCDF_EXPOSED_API */
 #endif /* !ENABLE_MPI */
 
 int
