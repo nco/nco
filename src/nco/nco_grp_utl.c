@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1443 2014-07-09 06:50:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1444 2014-07-10 22:33:02 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2889,10 +2889,7 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
   } /* Unique dimension list */
 
   /* Unique dimension list */
-  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
-    assert(dmn_trv.has_crd_scp != nco_obj_typ_err);
-  } /* Unique dimension list */
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++) assert(dmn_trv=trv_tbl->lst_dmn[idx_dmn].has_crd_scp != nco_obj_typ_err);
 
 } /* nco_has_crd_dmn_scp() */
 

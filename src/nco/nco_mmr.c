@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.65 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.66 2014-07-10 22:33:02 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -573,6 +573,9 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
 #if (defined LINUX) || (defined LINUXAMD64)
   (void)fprintf(stdout,"%s: INFO %s reports system type is LINUX so getrusage() does implement ru_maxrss [kB] and DOES NOT implement ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",nco_prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !LINUX */
+#ifdef MACOSX
+  (void)fprintf(stdout,"%s: INFO %s reports system type is MACOSX so rusage structure elements ru_utime and ru_stime are of type 'int' not 'long int'.\n",nco_prg_nm_get(),fnc_nm);
+#endif /* !MACOSX */
 #ifdef NECSX
   (void)fprintf(stdout,"%s: INFO %s reports system type is NECSX so getrusage() units for page size and time are unknown.\n",nco_prg_nm_get(),fnc_nm);
 #endif /* !NECSX */
@@ -587,7 +590,8 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
   rcd_sys=rusage_who;
   /* fxm: use input argument rusage_who instead of RUSAGE_SELF */
   rcd_sys=0*rcd_sys+getrusage(RUSAGE_SELF,&usg);
-  if(nco_dbg_lvl_get() > nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",nco_prg_nm_get(),fnc_nm,usg.ru_utime.tv_sec,usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
+  /* MACOSX rusage structure elements ru_utime and ru_stime are of type 'int' not 'long int' */
+  if(nco_dbg_lvl_get() > nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",nco_prg_nm_get(),fnc_nm,usg.ru_utime.tv_sec,(long int)usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,(long int)usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
 
   return (long)usg.ru_maxrss; /* [B] Maximum resident set size */
 #else /* !HAVE_GETRUSAGE */
