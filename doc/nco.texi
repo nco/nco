@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1011 2014-07-09 06:50:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1012 2014-07-10 23:00:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13080,9 +13080,9 @@ In these cases, creating @var{file_2} with @command{ncra} rather than
 @command{ncwa} will cause the @command{ncbo} operation to fail.
 For concreteness say the record dimension in @code{file_1} is
 @code{time}.  
-If @var{file_2} were created by averaging @var{file_1} over the
-@code{time} dimension with the @command{ncra} operator rather than with
-the @command{ncwa} operator, then @var{file_2} will have a @code{time}
+If @var{file_2} was created by averaging @var{file_1} over the
+@code{time} dimension with the @command{ncra} operator (rather than with
+the @command{ncwa} operator), then @var{file_2} will have a @code{time}
 dimension of @w{size 1} rather than having no @code{time} dimension at
 all 
 @cindex degenerate dimension
