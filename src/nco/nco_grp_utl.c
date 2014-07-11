@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1446 2014-07-11 20:55:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1447 2014-07-11 22:44:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -10246,7 +10246,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
               size_t tpl_sz;                   /* [nbr] Size of template dimension */
 
               long dmn_sz;                     /* [nbr] Size of dimension */
-              long dmn_cnt_gtt;                /* [nbr] Hyperslabbed size of dimension of GTT variable (first file only) */  
+              long dmn_cnt_gtt=-1;             /* [nbr] Hyperslabbed size of dimension of GTT variable (first file only) */  
 
               nco_bool flg_has_lmt;            /* [flg] Dimension has hyperslab */
 
@@ -10629,7 +10629,7 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
   /* Loop over dimensions of variable */
   for(int idx_var_dim=0;idx_var_dim<var_trv->nbr_dmn;idx_var_dim++){
 
-    int dmn_id;
+    int dmn_id=-1;
 
     if (var_trv->var_dmn[idx_var_dim].crd){
       dmn_sz=var_trv->var_dmn[idx_var_dim].crd->sz;
