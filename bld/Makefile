@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.725 2014-07-07 06:04:22 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.726 2014-07-11 02:13:50 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -31,9 +31,9 @@
 # make MPI_PRC=3 bm                  # MPI benchmarks
 # make THR_NBR=2 tst                 # OpenMP regression test
 # make THR_NBR=2 bm                  # OpenMP benchmarks
+# make MPI=Y                         # MPI features (HDF5 and PnetCDF I/O)
 # make NETCDF4=Y                     # netCDF4 features
-# make PNETCDF=Y                     # pnetCDF features
-# make ZNETCDF=Y                     # znetCDF features
+# make PNETCDF=Y                     # PnetCDF features
 
 # Usage (Compilation):
 # cd ~/nco/qt;qmake;make;cd -        # Qt

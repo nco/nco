@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.734 2014-07-09 20:47:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.735 2014-07-11 02:13:50 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -183,8 +183,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.734 2014-07-09 20:47:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.734 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.735 2014-07-11 02:13:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.735 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -394,6 +394,7 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"spinlock",no_argument,0,'S'}, /* [flg] Suspend with signal handler to facilitate debugging */
       {"sng_fmt",required_argument,0,'s'},
       {"string",required_argument,0,'s'},
       {"units",no_argument,0,'u'},
@@ -428,7 +429,7 @@ main(int argc,char **argv)
 
 /* MPI I/O: Either Parallel netCDF (PnetCDF) or HDF5-based
    export NETCDF_ROOT=/usr/local/parallel;export NETCDF_INC=/usr/local/parallel/include;export NETCDF_LIB=/usr/local/parallel/lib;export NETCDF4_ROOT=/usr/local/parallel;
-   cd ~/nco/bld;make PNETCDF=Y;cd -
+   cd ~/nco/bld;make MPI=Y;cd -
    LD_LIBRARY_PATH=/usr/local/parallel/lib\:${LD_LIBRARY_PATH}
    ldd `which ncks`
    ncks -O -5 ~/nco/data/in.nc ~/foo.nc # PnetCDF 
@@ -534,7 +535,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */
@@ -690,6 +691,12 @@ main(int argc,char **argv)
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);
       break;
+#ifdef ENABLE_MPI
+    case 'S': /* Suspend with signal handler to facilitate debugging */
+      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(stdout,"%s: ERROR Could not install suspend handler.\n",nco_prg_nm);
+      while(!nco_spn_lck_brk) usleep(nco_spn_lck_us); /* Spinlock. fxm: should probably insert a sched_yield */
+      break;
+#endif /* !ENABLE_MPI */
     case 's': /* User specified delimiter string for printed output */
       dlm_sng=(char *)strdup(optarg);
       break;

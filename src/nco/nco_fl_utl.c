@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.246 2014-07-10 23:36:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.247 2014-07-11 02:13:51 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -37,11 +37,7 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
   }else if(fl_out_fmt == NC_FORMAT_CDF5){
     md_create|=NC_64BIT_DATA;
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4){
-#ifdef ENABLE_MPI
-    md_create|=NC_NETCDF4|NC_MPIIO;
-#else
     md_create|=NC_NETCDF4;
-#endif /* !ENABLE_MPI */
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     md_create|=NC_NETCDF4|NC_CLASSIC_MODEL;
   }else if(fl_out_fmt == NC_COMPRESS){ /* fxm: is NC_COMPRESS legal? */
@@ -50,6 +46,10 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
     (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown file format = %d\n",nco_prg_nm_get(),fl_out_fmt);
     nco_exit(EXIT_FAILURE);
   } /* end else fl_out_fmt */
+
+#ifdef ENABLE_MPI
+  md_create|=NC_NETCDF4|NC_MPIIO;
+#endif /* !ENABLE_MPI */
 
   return md_create;
 } /* end nco_create_mode_mrg() */
@@ -1582,7 +1582,11 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
   if(FORCE_OVERWRITE){
+#ifdef ENABLE_MPI
+    rcd+=nco_create_par(fl_out_tmp,md_create,MPI_COMM_WORLD,MPI_INFO_NULL,out_id);
+#else /* !ENABLE_MPI */
     rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
+#endif /* !ENABLE_MPI */
     return fl_out_tmp;
   } /* end if */
 
@@ -1668,8 +1672,12 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       break;
     case 'O':
     case 'o':
-      rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
-      break;
+#ifdef ENABLE_MPI
+    rcd+=nco_create_par(fl_out_tmp,md_create,MPI_COMM_WORLD,MPI_INFO_NULL,out_id);
+#else /* !ENABLE_MPI */
+    rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
+#endif /* !ENABLE_MPI */
+       break;
     case 'A':
     case 'a':
       /* Incur expense of copying current file to temporary file */
@@ -1684,7 +1692,11 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     md_create=NC_NOCLOBBER;
     md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
     if(RAM_CREATE) md_create|=NC_DISKLESS|NC_WRITE;
+#ifdef ENABLE_MPI
+    rcd+=nco_create_par(fl_out_tmp,md_create,MPI_COMM_WORLD,MPI_INFO_NULL,out_id);
+#else /* !ENABLE_MPI */
     rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
+#endif /* !ENABLE_MPI */
   } /* end if output file does not already exist */
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);

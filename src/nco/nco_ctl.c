@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.486 2014-07-09 06:50:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.487 2014-07-11 02:13:51 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -97,9 +97,13 @@ nco_mpi_get(void) /* [fnc] Return MPI implementation */
   static const char mpi_nm[]="MPICH2"; /* [sng] MPI name */
   static const char mpi_sng[]="Token MPICH2 defined in nco_mpi_get(), MPI environment is probably MPICH2, i.e., MPICH version 2"; /* [sng] MPI string */
 #endif /* !MPICH2 */
+#ifdef OMPI_MPI_H
+  static const char mpi_nm[]="OPENMPI"; /* [sng] MPI name */
+  static const char mpi_sng[]="Token OMPI_MPI_H defined in nco_mpi_get(), MPI environment is probably OpenMPI"; /* [sng] MPI string */
+#endif /* !OMPI_MPI_H */
 
   /* In case no token matched */
-#if !defined(_H_MPI) && !defined(LAM_MPI) && (MPICH_NAME != '1') && !defined(MPICH2)
+#if !defined(_H_MPI) && !defined(LAM_MPI) && (MPICH_NAME != '1') && !defined(MPICH2) && !defined(OMPI_MPI_H)
 #ifndef MPI_VERSION
   /* MPI is not installed */
   static const char mpi_nm[]="none"; /* [sng] MPI name */

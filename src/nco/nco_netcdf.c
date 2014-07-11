@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.251 2014-07-10 23:36:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.252 2014-07-11 02:13:51 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -685,7 +685,9 @@ nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info m
 int 
 nco_var_par_access(const int nc_id,const int var_id,const int par_access)
 {
-  /* Purpose: Wrapper for nc_var_par_access() */
+  /* Purpose: Wrapper for nc_var_par_access()
+     NB: HDF5 allows per-variable setting of access type
+     PnetCDF sets all variables to same access type */
   const char fnc_nm[]="nco_var_par_access()";
   int rcd;
   rcd=nc_var_par_access(nc_id,var_id,par_access);

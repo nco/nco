@@ -1,17 +1,17 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.23 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.24 2014-07-11 02:13:51 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
 /* NB: Currently this header is only accessed by main() MPI programs 
    Hence it is not (yet) part of libnco.a
-   Header assumes its inclusion is already conditional on ENABLE_MPI
+   Header assumes its inclusion depends on ENABLE_MPI
    Header is currently mostly for file-scope constants needed by MPI routines 
    No functions (yet) but some will eventually live here after MPI functionalization
    Adding functions will require creating a corresponding *.c file
    *.c files must reside in libnco.a or link separately to MPI executables
    The latter would slightly complicate the build procedure
-   I am not yet sure I want _any_ MPI dependencies in libnco.a 
-   Cross-platform link weirdness (e.g., AIX) makes avoiding this desirable */
+   Should _any_ MPI dependencies be in libnco.a?
+   Cross-platform link weirdness (e.g., AIX) makes MPI dependencies in libnco.a fragile */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
