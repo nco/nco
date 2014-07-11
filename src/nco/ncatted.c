@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.192 2014-07-09 20:47:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.193 2014-07-11 20:55:45 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -174,8 +174,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.192 2014-07-09 20:47:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.192 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.193 2014-07-11 20:55:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.193 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -441,7 +441,7 @@ main(int argc,char **argv)
   } /* Loop input names */
 
 
-  /* Catenate the timestamped command line to the "history" global attribute */
+  /* Catenate the time-stamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
 
   /* Take output file out of define mode */

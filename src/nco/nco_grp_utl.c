@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1445 2014-07-10 23:00:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1446 2014-07-11 20:55:45 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6855,7 +6855,7 @@ nco_chk_dmn                           /* [fnc] Check valid dimension names */
 (const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
  nco_dmn_dne_t * flg_dne)             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
 {
-  /* Check if all input -d dimensions were found */ 
+  /* Were all user-specified dimensions found? */ 
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
     /* Check this flag */
     if(flg_dne[lmt_idx].flg_dne){
@@ -6863,7 +6863,7 @@ nco_chk_dmn                           /* [fnc] Check valid dimension names */
       flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
       nco_exit(EXIT_FAILURE);
     } /* Check this flag */
-  } /* Check if all input -d dimensions were found */
+  } /* Were all user-specified dimensions found? */
 } /* nco_chk_dmn() */
 
 void

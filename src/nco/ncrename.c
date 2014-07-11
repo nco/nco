@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.197 2014-07-09 20:47:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.198 2014-07-11 20:55:45 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.197 2014-07-09 20:47:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.197 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.198 2014-07-11 20:55:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.198 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -596,7 +596,7 @@ main(int argc,char **argv)
     } /* nbr_rnm */
   } /* end loop over attributes to rename */
 
-  /* Catenate timestamped command line to "history" global attribute */
+  /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
 
 #ifdef _OPENMP

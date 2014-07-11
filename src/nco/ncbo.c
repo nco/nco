@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.306 2014-07-09 20:47:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.307 2014-07-11 20:55:45 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.306 2014-07-09 20:47:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.306 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.307 2014-07-11 20:55:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.307 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -573,7 +573,7 @@ main(int argc,char **argv)
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) flg_dne[lmt_idx]=flg_dne1[lmt_idx]; 
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) flg_dne[lmt_nbr+lmt_idx]=flg_dne2[lmt_idx];
  
-  /* Check if all input -d dimensions were found */ 
+  /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
@@ -610,7 +610,7 @@ main(int argc,char **argv)
 
   /* Copy global attributes from file 1 */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-  /* Catenate timestamped command line to "history" global attribute */
+  /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
 
