@@ -1,10 +1,15 @@
-2014-07-10  Charlie Zender  <zender@uci.edu>
+2014-07-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.5 release procedure:
  	Changes since nco-4_4_4: https DAP, gxvx, mk, ncl_var
 	cd ~/nco;cvs tag -d nco-4_4_5;cvs tag -d nco-4_4_5-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
+
+	* Change FL_LST_IN_MAX_LNG from 10 MB to 504576001 B per request of Christine Smit
+	Use case: 30 years of hourly data files each 192 characters long
+
+2014-07-10  Charlie Zender  <zender@uci.edu>
 
 	* Deprecate ENABLE_PNETCDF from meaning exposed PnetCDF API
 	Soon it will mean that netCDF4 was built with --enable-pnetcdf
