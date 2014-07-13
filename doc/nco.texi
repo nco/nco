@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1012 2014-07-10 23:00:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1013 2014-07-13 02:34:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8469,6 +8469,9 @@ NCO-generated subsets of @acronym{CF}-compliant files with @code{bounds}
 attributes will include the coordinates specified by the @code{bounds}
 attribute, if any.  
 Hence the subsets will themselves be @acronym{CF}-compliant.
+Bounds are subject to the user-specified override switches
+(including @samp{-c} and @samp{-C}) described in 
+@ref{Subsetting Coordinate Variables}. 
 
 @html
 <a name="cnv_CF_ncl"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_ncl -->
@@ -8485,8 +8488,9 @@ more primary variables.
 @acronym{NCO} attaches any such variables to the extraction list along 
 with the primary variable and its usual (one-dimensional) coordinates,
 if any. 
-Ancillary variables are subject to the user-specified overrides
-described in @ref{Subsetting Coordinate Variables}. 
+Ancillary variables are subject to the user-specified override switches 
+(including @samp{-c} and @samp{-C}) described in 
+@ref{Subsetting Coordinate Variables}. 
 
 @html
 <a name="cnv_CF_crd"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_crd -->
@@ -8510,8 +8514,9 @@ This convention allows variables to specify additional coordinates
 attribute named @code{coordinates}. 
 @acronym{NCO} attaches any such coordinates to the extraction list along
 with variable and its usual (one-dimensional) coordinates, if any.
-These auxiliary coordinates are subject to the user-specified overrides
-described in @ref{Subsetting Coordinate Variables}.
+These auxiliary coordinates are subject to the user-specified override
+switches (including @samp{-c} and @samp{-C}) described in 
+@ref{Subsetting Coordinate Variables}. 
 
 @html
 <a name="cnv_CF_cll_mth"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_cll_mth -->
