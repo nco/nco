@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.370 2014-07-11 20:55:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.371 2014-07-15 18:48:55 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.370 2014-07-11 20:55:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.370 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.371 2014-07-15 18:48:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.371 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -856,7 +856,7 @@ main(int argc,char **argv)
 
         /* Write variable into current record in output file */
 
-        /* Obtain output group ID using full group name */
+        /* Obtain output group ID */
         (void)nco_inq_grp_full_ncid(out_id,var_trv->grp_nm_fll,&grp_out_id);
 
         /* Get variable ID */

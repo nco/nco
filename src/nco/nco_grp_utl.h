@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.512 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.513 2014-07-15 18:48:55 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -727,19 +727,13 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 void
-nco_prn_var                           /* [fnc] Print variable (debug only) */
-(const int nc_id,                     /* I [ID] netCDF file ID (Input or output file) */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-void
 nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_sct (name only) */
 (lmt_sct **lmt,                        /* I [lst] lmt_sct array  */
  const int nbr_lmt,                    /* I [nbr] Size of lmt_sct array  */
  dmn_sct ***dmn);                      /* O [sct] dmn_sct array  */
 
 void
-nco_prn_nsm                           /* [fnc] Print ensembles  */                                
-(const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+nco_prn_nsm                           /* [fnc] Print ensembles  */                       (const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */

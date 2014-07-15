@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.82 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.83 2014-07-15 18:48:55 zender Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -425,7 +425,7 @@ nco_aux_evl_trv
 
   *aux_lmt_nbr=0;
 
-  /* Obtain group ID of 'latitude' and 'longitude' from netCDF API using full group name */
+  /* Obtain group ID of 'latitude' and 'longitude' */
   (void)nco_inq_grp_full_ncid(nc_id,lat_trv->grp_nm_fll,&grp_id_lat);
   (void)nco_inq_grp_full_ncid(nc_id,lon_trv->grp_nm_fll,&grp_id_lon);
 
@@ -581,7 +581,7 @@ nco_find_lat_lon_trv
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
-  /* Obtain group ID from netCDF API using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
   /* Obtain variable ID */

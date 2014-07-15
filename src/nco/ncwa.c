@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.423 2014-07-09 20:47:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.424 2014-07-15 18:48:55 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.423 2014-07-09 20:47:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.423 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.424 2014-07-15 18:48:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.424 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -755,7 +755,7 @@ main(int argc,char **argv)
       /* Edit group name for output */
       if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
 
-      /* Obtain output group ID using full group name */
+      /* Obtain output group ID */
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
 
       /* Memory management after current extracted group */
@@ -854,7 +854,7 @@ main(int argc,char **argv)
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
-      /* Obtain group ID using full group name */
+      /* Obtain group ID */
       (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
 
       if(nco_dbg_lvl >= nco_dbg_var && nco_dbg_lvl < nco_dbg_nbr) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -1083,7 +1083,7 @@ main(int argc,char **argv)
       /* Edit group name for output */
       if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
 
-      /* Obtain output group ID using full group name */
+      /* Obtain output group ID */
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
 
       /* Memory management after current extracted group */

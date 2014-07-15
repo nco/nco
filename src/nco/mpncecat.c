@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.123 2014-07-10 23:36:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.124 2014-07-15 18:48:54 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.123 2014-07-10 23:36:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.123 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.124 2014-07-15 18:48:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.124 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -712,7 +712,7 @@ main(int argc,char **argv)
   /* Manager obtains output filename and broadcasts to workers */
   if(prc_rnk == rnk_mgr) fl_nm_lng=(int)strlen(fl_out_tmp);
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,mpi_cmm);
-  if(prc_rnk != rnk_mgr) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
+  if(prc_rnk != rnk_mgr) fl_out_tmp=(char *)nco_malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,mpi_cmm);
   
   if(prc_rnk == rnk_mgr){ /* MPI manager code */

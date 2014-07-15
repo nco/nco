@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.736 2014-07-11 20:55:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.737 2014-07-15 18:48:55 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -183,8 +183,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.736 2014-07-11 20:55:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.736 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.737 2014-07-15 18:48:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.737 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -793,6 +793,8 @@ main(int argc,char **argv)
 
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr) (void)fprintf(stdout,"%s: MPI process rank %d reports %d process%s\n",nco_prg_nm,prc_rnk,prc_nbr,(prc_nbr == 1) ? "" : "es");
+  /* Roll call */
+  (void)fprintf(stdout,"%s: MPI process rank %d reports %d process%s\n",nco_prg_nm,prc_rnk,prc_nbr,(prc_nbr == 1) ? "" : "es");
 #endif /* !ENABLE_MPI */
 
   /* Process -z option if requested */ 
@@ -877,14 +879,16 @@ main(int argc,char **argv)
     /* Create structure with all chunking information */
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
 
-    if(nco_dbg_lvl == nco_dbg_old) (void)nco_prn_var(in_id,trv_tbl);       
-
     /* Define extracted groups, variables, and attributes in output file */
     (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
 
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
     if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
+#ifdef ENABLE_MPI
+    if(prc_rnk == rnk_mgr)
+      if(prc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,prc_nbr);
+#endif /* !ENABLE_MPI */
 
     /* Turn off default filling behavior to enhance efficiency */
     nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -913,7 +917,7 @@ main(int argc,char **argv)
     if(nco_dbg_lvl_get() == 14){
       (void)nco_wrt_trv_tbl(in_id,trv_tbl,True);
       (void)nco_wrt_trv_tbl(out_id,trv_tbl,True);
-    }
+    } /* endif */
 
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
@@ -922,8 +926,6 @@ main(int argc,char **argv)
 
     nco_bool ALPHA_BY_FULL_GROUP=False; /* [flg] Print alphabetically by full group */
     nco_bool ALPHA_BY_STUB_GROUP=True; /* [flg] Print alphabetically by stub group */
-    //      nco_bool ALPHA_BY_FULL_OBJECT=False; /* [flg] Print alphabetically by full object */
-    //      nco_bool ALPHA_BY_STUB_OBJECT=False; /* [flg] Print alphabetically by stub object */
     char *fl_nm_stub;
     char *fl_in_dpl=NULL;
     char *sfx_ptr;
@@ -968,9 +970,7 @@ main(int argc,char **argv)
     if(prn_flg.xml) prn_flg.nwl_pst_val=False; else prn_flg.nwl_pst_val=True;
     prn_flg.dlm_sng=dlm_sng;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
-    // prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;
     prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
-    // prn_flg.ALPHA_BY_STUB_OBJECT=ALPHA_BY_STUB_OBJECT;
     prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
     prn_flg.PRN_DMN_IDX_CRD_VAL=PRN_DMN_IDX_CRD_VAL;
     prn_flg.PRN_DMN_UNITS=PRN_DMN_UNITS;
@@ -1030,33 +1030,21 @@ main(int argc,char **argv)
       
     }else{ 
 
-      /* New file dump format developed 201307 for CDL, TRD, XML, SRM */
+      /* New file dump format(s) developed 201307 for CDL, JSN, SRM, TRD, XML */
 
       if(PRN_SRM){
+	/* Stream printing is pre-alpha. Great project for volunteers! */
         nco_srm_hdr();
         goto close_and_free;
       } /* !PRN_SRM */
 
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
+	/* Ineptly named nco_grp_prn() emits full CDL and XML formats, and partial JSN */
         rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl);
       }else{
-        trv_sct trv_obj; /* [sct] Traversal table object */
-        for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
-          /* Shallow copy to avoid indirection */
-          trv_obj=trv_tbl->lst[obj_idx];
-          /* Print this group */
-          if(trv_obj.nco_typ == nco_obj_typ_grp){
-            /* Print dimensions defined in this group */
-            // (void)nco_prn_dmn_xtr(in_id,trv_tbl);
-            /* Print group attributes */
-            //if(PRN_GLB_METADATA) (void)nco_prn_grp_att(in_id,trv_tbl);
-            ;
-          } /* endif group */
-          if(trv_obj.nco_typ == nco_obj_typ_var){
-            if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
-            if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
-          } /* endif variable */
-        } /* end loop over obj_idx */
+	/* Place-holder for other options for organization/alphabetization */
+	if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
+	if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
       } /* end if */
     } /* endif new format */
 

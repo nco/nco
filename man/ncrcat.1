@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.31 2014-05-29 18:00:26 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.32 2014-07-15 18:48:54 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncrcat
 .\" Usage:
 .\" nroff -man ~/nco/man/ncrcat.1 | less
@@ -136,8 +136,34 @@ concatenates June, 1985--June, 1989:
 ncrcat \-d time,6.,54. ??.nc 8506_8906.nc
 .RE
 
+.SH CAVEAT
+
+.B ncrcat
+does not re-scale packed data (i.e., data stored using the
+.B scale_factor
+and
+.B add_offset 
+attributes recommended by the Unidat and CF conventions.
+.B ncrcat
+just copies the data directly from the input files.
+It copies the relevant metadata (i.e., 
+.B scale_factor 
+and 
+.B add_offset
+attributes) from the first file. 
+Concatenating multiple datasets packed with different scales is beyond
+its capabilities (concatenating data packed with the same scales in
+multiple files works fine). 
+The workaround for cases where the scales change among files is to
+first unpack the data in all the file using 
+.B ncpdq,
+then to concatenate the unpacked data using
+.B ncrcat,
+and finally to repack the result using
+.B ncpdq.
+
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.31 2014-05-29 18:00:26 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.32 2014-07-15 18:48:54 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

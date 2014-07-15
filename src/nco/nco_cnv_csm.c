@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.114 2014-06-15 21:06:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.115 2014-07-15 18:48:55 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -303,7 +303,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Edit group name for output */
     if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
 
-    /* Obtain output group ID using full group name */
+    /* Obtain output group ID */
     (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
 
     /* Memory management after current extracted group */

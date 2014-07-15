@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.247 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.248 2014-07-15 18:48:55 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1477,7 +1477,7 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   var_trv=trv_tbl_var_nm_fll(var_in->nm_fll,trv_tbl);
   assert(var_trv);
 
-  /* Obtain group ID using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
   nbr_dim=var_in->nbr_dim;	

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.221 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.222 2014-07-15 18:48:55 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1160,10 +1160,10 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   size_t cnk_sz[NC_MAX_DIMS]; /* [nbr] Chunk sizes */
   size_t dmn_sz[NC_MAX_DIMS]; /* [nbr] Dimension sizes */
 
-  /* Obtain group ID from netCDF API using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
-  /* Obtain variable ID from netCDF API using group ID */
+  /* Obtain variable ID */
   (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
 
   /* Get number of dimensions, type, and number of attributes for variable */
@@ -1398,7 +1398,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   if(prn_flg->new_fmt && CDL_OR_TRD) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
   if(XML) prn_ndn=prn_flg->ndn;
 
-  /* Obtain group ID where variable is located using full group name */
+  /* Obtain group ID where variable is located */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
   /* Set defaults */
@@ -1789,10 +1789,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           /* Get coordinate from table */
           crd_sct *crd=var_trv->var_dmn[idx].crd;
 
-          /* Obtain group ID using full group name */
+          /* Obtain group ID */
           (void)nco_inq_grp_full_ncid(nc_id,crd->crd_grp_nm_fll,&var_crd.nc_id);
 
-          /* Obtain variable ID using group ID and name */
+          /* Obtain variable ID and name */
           (void)nco_inq_varid(var_crd.nc_id,crd->nm,&var_crd.id);
 
           /* Store "var_sct" members for MSA read */
@@ -2223,7 +2223,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Print variable metadata */ 
     if(prn_flg->PRN_VAR_METADATA || CDL_OR_XML) (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
 
-    /* Obtain variable ID using group ID */
+    /* Obtain variable ID */
     (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
     /* Print variable attributes */

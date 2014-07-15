@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1447 2014-07-11 22:44:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1448 2014-07-15 18:48:55 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -441,7 +441,7 @@ nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_grp && trv.flg_xtr){
-      /* Obtain group ID from netCDF API using full group name */
+      /* Obtain group ID */
       (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
 
       /* Obtain info for group */
@@ -1098,7 +1098,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add variables associated (via CF)
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
-  /* Obtain group ID from netCDF API using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
   /* Obtain variable ID */
@@ -1146,7 +1146,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add variables associated (via CF)
         char *ptr_chr;            /* [sng] Pointer to character '/' in full name */
         int psn_chr;              /* [nbr] Position of character '/' in in full name */
 
-        /* Construct full name of CF variable using full group name where variable resides */
+        /* Construct full name of CF variable */
         cf_lst_var_nm_fll=(char *)nco_malloc(strlen(var_trv->grp_nm_fll)+strlen(cf_lst_var)+2L);
         strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
         if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcat(cf_lst_var_nm_fll,sls_sng);
@@ -1230,9 +1230,9 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
       grp_out_fll=(char *)nco_free(grp_out_fll);
 
       /* 20130213: Necessary to allow MM3->MM4 and MM4->MM3 workarounds
-      Store in/out group IDs as determined in nco_xtr_dfn() 
-      In MM3/4 cases, either grp_in_id or grp_out_id are always root
-      Other is always root unless GPE is used */
+	 Store in/out group IDs as determined in nco_xtr_dfn() 
+	 In MM3/4 cases, either grp_in_id or grp_out_id are always root
+	 Other is always root unless GPE is used */
       xtr_lst[nbr_tbl].grp_id_in=grp_id_in;
       xtr_lst[nbr_tbl].grp_id_out=grp_id_out;
       xtr_lst[nbr_tbl].id=var_id;
@@ -1271,10 +1271,10 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
     /* Filter variables to extract */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-      /* Obtain group ID using full group name */
+      /* Obtain group ID */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-      /* Obtain variable ID using group ID */
+      /* Obtain variable ID */
       (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
       /* Get number of dimensions for *variable* */
@@ -1439,10 +1439,10 @@ nco_prn_xtr_mtd /* [fnc] Print variable metadata */
       int grp_id; /* [id] Group ID */
       int var_id; /* [id] Variable ID */
 
-      /* Obtain group ID using full group name */
+      /* Obtain group ID */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-      /* Obtain variable ID using group ID */
+      /* Obtain variable ID */
       (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
       /* Print variable attributes */
@@ -1686,42 +1686,35 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   /* Isolate extra complexity of copying group metadata */
   if(CPY_GRP_METADATA){
     /* Extraction flag for groups was set in nco_xtr_grp_mrk() 
-    This loop defines those groups in output file and copies their metadata */
+       This loop defines those groups in output file and copies their metadata */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct grp_trv=trv_tbl->lst[idx_tbl];
 
       /* If object is group ancestor of extracted variable */
       if(grp_trv.nco_typ == nco_obj_typ_grp && grp_trv.flg_xtr){
 
-        /* Obtain group ID from netCDF API using full group name */
+        /* Obtain group ID */
         (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
 
-        /* ncge case */ 
-        if(nco_prg_id_get() == ncge){
-
-          if(grp_trv.flg_nsm_prn){
-            /* Ensemble parent groups */
-            if(trv_tbl->nsm_sfx){
-              /* Define new name by appending suffix (e.g., /cesm + _avg) */
-              char *nm_fll_sfx=nco_bld_nsm_sfx(grp_trv.grp_nm_fll_prn,trv_tbl);
-              /* Use then delete new name */
-              if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
-              nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
-            }else{
-              if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll_prn); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
-            } /* !nsm_sfx */
-          }else if(grp_trv.flg_nsm_mbr){
-            /* If group is ensemble member, do not create it in same location as input */
-            continue;
-          }else{
-            /* Regular group */
-            if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
-          } /* !flg_nsm_prn */
-
-        }else{
-          /* Non ncge case: Edit group name for output */
-          if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
-        } /* !ncge */
+        /* ncge groups require special handling */ 
+	if(nco_prg_id == ncge && grp_trv.flg_nsm_prn){
+	  /* Ensemble parent groups */
+	  if(trv_tbl->nsm_sfx){
+	    /* Define new name by appending suffix (e.g., /cesm + _avg) */
+	    char *nm_fll_sfx=nco_bld_nsm_sfx(grp_trv.grp_nm_fll_prn,trv_tbl);
+	    /* Use then delete new name */
+	    if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
+	    nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+	  }else{
+	    if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll_prn); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
+	  } /* !nsm_sfx */
+	}else if(nco_prg_id == ncge && grp_trv.flg_nsm_mbr){
+	  /* Ensemble member groups are not written to output */
+	  continue;
+	}else{
+	  /* Regular (non-ensemble-related) group (within ncge or any other operator) */
+	  if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
+	} /* !flg_nsm */
 
         /* If output group does not exist, create it */
         if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -1730,14 +1723,13 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         if(grp_trv.nbr_att){
           PCK_ATT_CPY=True;
           (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
-        } /* Copy group attributes */
+        } /* grp_trv.nbr_att */
 
         /* Memory management after current extracted group */
         if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
       } /* end if group and flg_xtr */
-    } /* end loop to define group attributes */
-
+    } /* end loop over traversal table */
   } /* !CPY_GRP_METADATA */
 
   /* Define variables */
@@ -1747,45 +1739,38 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
     /* If object is an extracted variable... */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-      /* Obtain group ID using full group name */
+      /* Obtain group ID */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-      /* ncge */
-      if(nco_prg_id_get() == ncge){
-        /* If variable is in an ensemble member, do not create it in same location as input */
-        if(var_trv.flg_nsm_mbr){
-          if(trv_tbl->nsm_sfx){
-            /* Define new name by appending suffix (e.g., /cesm + _avg) */
-            char *nm_fll_sfx=nco_bld_nsm_sfx(var_trv.grp_nm_fll_prn,trv_tbl);
-            /* Use then delete new name */
-            if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
-            nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
-          }else{ /* Non suffix case */
-            if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.nsm_nm); else grp_out_fll=(char *)strdup(var_trv.nsm_nm);
-          } /* !trv_tbl->nsm_sfx */
-
-        }else{
-          /* Edit group name for output */
-          if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
-        } /* !flg_nsm_mbr  */
+      /* Transform ensemble member group paths as above */
+      if(nco_prg_id == ncge && var_trv.flg_nsm_mbr){
+	if(trv_tbl->nsm_sfx){
+	  /* Define new name by appending suffix (e.g., /cesm + _avg) */
+	  char *nm_fll_sfx=nco_bld_nsm_sfx(var_trv.grp_nm_fll_prn,trv_tbl);
+	  /* Use then delete new name */
+	  if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
+	  nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+	}else{ /* Non-suffix case */
+	  if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.nsm_nm); else grp_out_fll=(char *)strdup(var_trv.nsm_nm);
+	} /* !trv_tbl->nsm_sfx */
       }else{
-        /* Edit group name for output */
-        if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
+	/* Variable not in ensembles */
+	if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
       } /* !ncge */
 
       /* If output group does not exist, create it */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
-      /* ncge */
-      if(nco_prg_id_get() == ncge){
-        /* Is requested variable in output file? */
+      if(nco_prg_id == ncge){
+        /* Is requested variable already in output file?
+	   fxm: Seems wasteful. Can ncge restrict definition to only variables in template group? i.e., satifying both flg_xtr and flg_nsm_tpl */
         int rcd=nco_inq_varid_flg(grp_out_id,var_trv.nm,&var_out_id);
         /* Yes, get outta' Dodge... avoid GPE failure on duplicate definition */
-        if(rcd == 0) continue;
+        if(rcd == NC_NOERR) continue;
       } /* ncge */
 
       /* Detect duplicate GPE names in advance, then exit() with helpful error */
-      if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
+      if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);
 
       /* Define variable in output file */
       var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,&dmn_cmn_out,&nbr_dmn_cmn_out,trv_tbl);
@@ -1796,7 +1781,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
         var_sct *var_prc;  /* [sct] Variable to process */
 
-        /* Obtain group ID using full group name */
+        /* Obtain group ID */
         (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
         /* Get variable ID */
@@ -1812,7 +1797,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
           var_prc->dim[idx_dmn]->xrf=(dmn_sct *)nco_dmn_free(var_prc->dim[idx_dmn]->xrf);
           var_prc->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc->dim[idx_dmn]);   
-        }
+        } /* end loop over dimensions */
 
         var_prc=(var_sct *)nco_var_free(var_prc);
       } /* !CPY_VAR_METADATA */
@@ -1839,17 +1824,13 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
     } /* end if variable and flg_xtr */
   } /* end loop over idx_tbl */
 
-  /* Retain all dimensions */ 
-  if (RETAIN_ALL_DIMS){ 
-    (void)nco_rad(nc_out_id,nbr_dmn_cmn_out,dmn_cmn_out,trv_tbl); 
-  } 
+  /* Retain all dimensions */
+  if(RETAIN_ALL_DIMS) (void)nco_rad(nc_out_id,nbr_dmn_cmn_out,dmn_cmn_out,trv_tbl);
 
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
-  for(int idx=0;idx<nbr_dmn_cmn_out;idx++){
-    dmn_cmn_out[idx].nm_fll=(char *)nco_free(dmn_cmn_out[idx].nm_fll);
-  }
+  for(int idx=0;idx<nbr_dmn_cmn_out;idx++) dmn_cmn_out[idx].nm_fll=(char *)nco_free(dmn_cmn_out[idx].nm_fll);
   dmn_cmn_out=(dmn_cmn_sct *)nco_free(dmn_cmn_out);
 
   /* Print extraction list in developer mode */
@@ -1971,7 +1952,7 @@ nco_prn_dmn /* [fnc] Print dimensions for a group  */
 
   long dmn_sz;                  /* [nbr] Dimension size */
 
-  /* Obtain group ID from netCDF API using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,NULL);
@@ -2235,7 +2216,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (ncge) Parent group full name */         
   else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
   trv_tbl->lst[idx].flg_nsm_prn=False;            /* [flg] (ncge) Group is, or variable is in, ensemble parent group */
-  trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] (ncge ) Group is, or variable is in, ensemble member group */  
+  trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] (ncge) Group is, or variable is in, ensemble member group */  
   trv_tbl->lst[idx].flg_nsm_tpl=False;            /* [flg] Group is, or variable is in, template member group */
   trv_tbl->lst[idx].nsm_nm=NULL;                  /* [sng] (ncge) Ensemble parent group name i.e., full path to ensemble parent */ 
 
@@ -2332,8 +2313,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_typ=var_typ; 
     trv_tbl->lst[idx].enm_prc_typ=err_typ;
     trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; 
-    if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (ncge) Parent group full name */         
-    else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
+    if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
     trv_tbl->lst[idx].flg_nsm_prn=False;
     trv_tbl->lst[idx].flg_nsm_mbr=False;
     trv_tbl->lst[idx].flg_nsm_tpl=False;
@@ -3302,8 +3282,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
         (void)fprintf(stdout,"%s: INFO %s variable <%s>",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);        
       } /* endif dbg */
 
-
-      /* Obtain group ID where variable is located using full group name */
+      /* Obtain group ID where variable is located */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
       /* Obtain variable ID */
@@ -3318,9 +3297,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
 
-      if(nco_dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout," %d dimensions: ",nbr_dmn_var);        
-      } /* endif dbg */
+      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout," %d dimensions: ",nbr_dmn_var);        
 
       /* Variable dimensions */
       for(int idx_dmn_var=0;idx_dmn_var<nbr_dmn_var;idx_dmn_var++){
@@ -3330,23 +3307,14 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
 
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_dmn_var],dmn_nm_var,&dmn_sz_var);
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%d'%s' ",dmn_id_var[idx_dmn_var],dmn_nm_var);
+      } /* end for */
 
-        if(nco_dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"#%d'%s' ",
-            dmn_id_var[idx_dmn_var],dmn_nm_var);
-        }
-      }
-
-      if(nco_dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"\n");
-      }
-
+      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"\n");
       dmn_id_var=(int *)nco_free(dmn_id_var);
 
     } /* endif */
-
   } /* end loop over idx_tbl */
-
 } /* nco_wrt_trv_tbl() */
 
 void
@@ -3480,7 +3448,7 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
     if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
       trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
 
-      /* Obtain group ID from API using full group name */
+      /* Obtain group ID from API */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
       /* Get variable ID */
@@ -3538,7 +3506,7 @@ nco_var_trv                           /* [fnc] Fill-in variable structure list f
       int grp_id; /* [ID] Group ID */
       int var_id; /* [ID] Variable ID */
 
-      /* Obtain group ID from API using full group name */
+      /* Obtain group ID from API */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
       /* Get variable ID */
@@ -3584,7 +3552,7 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy fixed variables from input t
         continue;
       }
 
-      /* Obtain group IDs using full group name */
+      /* Obtain group IDs */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id_in);
 
       /* Edit group name for output */
@@ -3677,7 +3645,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_2->grp_nm_fll); else grp_out_fll=(char *)strdup(trv_2->grp_nm_fll);
   } /* !flg_grp_1 */
 
-  /* Obtain group ID using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id_1,trv_1->grp_nm_fll,&grp_id_1);
   (void)nco_inq_grp_full_ncid(nc_id_2,trv_2->grp_nm_fll,&grp_id_2);
 
@@ -3921,7 +3889,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
   /* Edit group name for output */
   if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1->grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1->grp_nm_fll);
 
-  /* Obtain group ID using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id_1,trv_1->grp_nm_fll,&grp_id_1);
 
   /* Get variable ID */
@@ -5749,9 +5717,9 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
         trv_sct var_trv=trv_tbl->lst[idx_tbl];
         /* Filter variables */
         if(var_trv.nco_typ == nco_obj_typ_var){
-          /* Obtain group ID using full group name */
+          /* Obtain group ID */
           (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-          /* Obtain variable ID using group ID */
+          /* Obtain variable ID */
           (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
           /* Edit attribute */
           (void)nco_aed_prc(grp_id,var_id,aed_lst[idx_aed]);
@@ -5769,9 +5737,9 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
         trv_sct var_trv=trv_tbl->lst[idx_tbl];
         /* Filter variables */
         if(var_trv.nco_typ == nco_obj_typ_var ){
-          /* Obtain group ID using full group name */
+          /* Obtain group ID */
           (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-          /* Obtain variable ID using group ID */
+          /* Obtain variable ID */
           (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
           /* Edit attribute */
           (void)nco_aed_prc(grp_id,var_id,aed_lst[idx_aed]);
@@ -5789,9 +5757,9 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
         trv_sct var_trv=trv_tbl->lst[idx_tbl];
         /* Filter variables */
         if(var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
-          /* Obtain group ID using full group name */
+          /* Obtain group ID */
           (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-          /* Obtain variable ID using group ID */
+          /* Obtain variable ID */
           (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
           /* Edit attribute */
           (void)nco_aed_prc(grp_id,NC_GLOBAL,aed_lst[idx_aed]);
@@ -5808,9 +5776,9 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
         trv_sct var_trv=trv_tbl->lst[idx_tbl];
         /* Filter variables */
         if(var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
-          /* Obtain group ID using full group name */
+          /* Obtain group ID */
           (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-          /* Obtain variable ID using group ID */
+          /* Obtain variable ID */
           (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
           /* Edit attribute */
           (void)nco_aed_prc(grp_id,var_id,aed_lst[idx_aed]);
@@ -5840,7 +5808,7 @@ nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hy
     /* If object is an extracted variable... */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-      /* Obtain group ID using full group name */
+      /* Obtain group ID */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
       /* Update for this variable */
@@ -6575,7 +6543,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
             (*lmt_rec)=(lmt_sct **)nco_realloc((*lmt_rec),(rec_nbr+1)*sizeof(lmt_sct *));
             (*lmt_rec)[rec_nbr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 
-            /* Obtain group ID using full group name */
+            /* Obtain group ID */
             (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
             /* a) case where the dimension has coordinate variables */
@@ -7396,7 +7364,7 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
 
     var_sct *wgt_var;
 
-    /* Obtain group ID from API using full group name */
+    /* Obtain group ID from API */
     (void)nco_inq_grp_full_ncid(nc_id,wgt_trv->grp_nm_fll,&grp_id);
 
     /* Get variable ID */
@@ -7451,7 +7419,7 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
             if(!strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){ 
               var_sct *wgt_var;
 
-              /* Obtain group ID from API using full group name */
+              /* Obtain group ID from API */
               (void)nco_inq_grp_full_ncid(nc_id,wgt_trv[idx_wgt]->grp_nm_fll,&grp_id);
 
               /* Get variable ID */
@@ -7903,7 +7871,7 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant attribu
   /* Initialize return value */
   *flg_cf_fnd=False;
 
-  /* Obtain group ID from netCDF API using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
   /* Obtain variable ID */
@@ -8524,7 +8492,7 @@ nco_dmn_malloc                        /* [fnc] Inquire about number of dimension
   int grp_id;            /* [ID]  Group ID */
   int nbr_dmn;           /* [nbr] Number of dimensions */
 
-  /* Obtain group ID from netCDF API using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Obtain number of dimensions for group */
@@ -8542,37 +8510,6 @@ nco_dmn_malloc                        /* [fnc] Inquire about number of dimension
 
   return dmn_ids;
 }
-
-void
-nco_prn_var                           /* [fnc] Print variable (debug only) */
-(const int nc_id,                     /* I [ID] netCDF file ID (Input or output file) */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
-{
-  const char fnc_nm[]="nco_prn_var()"; /* [sng] Function name  */
-
-  int grp_id;
-  int var_id;
-  int nbr_dmn;
-
-  nc_type var_typ; 
-
-  /* Loop table */
-  for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-
-    trv_sct var_trv=trv_tbl->lst[idx_tbl];
-
-    /* Is variable */
-    if(var_trv.nco_typ == nco_obj_typ_var){
-
-      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);   
-      (void)nco_inq_var(grp_id,var_id,(char *)NULL,&var_typ,&nbr_dmn,(int *)NULL,(int *)NULL);
-
-      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Type: %d\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,var_typ); 
-
-    } /* Is variable */
-  } /* Loop table */
-} /* nco_prn_var() */
 
 void
 nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_sct (name only) */
@@ -8939,7 +8876,7 @@ nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed var
       /* Define variable  */
       if (flg_def == True) (void)nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,NULL,0,trv_tbl);
 
-      /* Obtain group IDs using full group name */
+      /* Obtain group IDs */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id_in);
       (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_id_out);
 
@@ -8992,7 +8929,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
       (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     }
 
-    /* Obtain group ID of current ensemble using full group name */
+    /* Obtain group ID of current ensemble */
     rcd+=nco_inq_grp_full_ncid_flg(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
 
     /* Group must exist (file # call > 1 ), if not exit */
@@ -9914,7 +9851,7 @@ nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (nc
   /* Edit group name for output */
   if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv->grp_nm_fll); else grp_out_fll=(char *)strdup(trv->grp_nm_fll);
 
-  /* Obtain group ID using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,trv->grp_nm_fll,&grp_id);
 
   /* Get variable ID */
@@ -10162,7 +10099,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
     if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,
       idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
 
-    /* Obtain group ID of current ensemble using full group name */
+    /* Obtain group ID of current ensemble */
     rcd+=nco_inq_grp_full_ncid_flg(in_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
 
     /* Group must exist, if not exit */
@@ -10373,7 +10310,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 
           trv_sct trv=trv_tbl->lst[idx_tbl];
 
-          /* Obtain output group ID using full group name */
+          /* Obtain output group ID */
           (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
 
           /* Does attribute "ensemble_source" exist? (saved in ncge); string is hard coded and duplicated  */
@@ -10594,10 +10531,10 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
 
   long dmn_sz;                         /* [nbr] Dimension size */  
 
-  /* Obtain group ID using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
-  /* Obtain variable ID using group ID */
+  /* Obtain variable ID */
   (void)nco_inq_varid(grp_id,var_nm,&var_id);
 
   /* Get number of dimensions for variable */
@@ -10669,7 +10606,7 @@ nco_nsm_wrt_att                  /* [fnc] Save ncge metadata attribute */
     /* If object is group  */
     if(grp_trv.nco_typ == nco_obj_typ_grp){
 
-      /* Obtain group ID from netCDF API using full group name */
+      /* Obtain group ID */
       (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
 
       if(grp_trv.flg_nsm_prn){
@@ -10687,7 +10624,7 @@ nco_nsm_wrt_att                  /* [fnc] Save ncge metadata attribute */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll_prn); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
         } /* !nsm_sfx */
 
-        /* Obtain output group ID using full group name */
+        /* Obtain output group ID */
         (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);   
 
         aed.att_nm=strdup("ensemble_source");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.123 2014-06-15 21:06:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.124 2014-07-15 18:48:55 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -862,7 +862,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   is_chunked=False; /* [flg] Chunked variable */
   is_xpl_cnk=False; /* [flg] Explicitly chunked variable */
 
-  /* Obtain variable ID using group ID */
+  /* Obtain variable ID */
   (void)nco_inq_varid(grp_id_out,var_nm,&var_id_out);
   (void)nco_inq_varid(grp_id_in,var_nm,&var_id_in);
 

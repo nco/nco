@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.399 2014-07-11 20:55:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.400 2014-07-15 18:48:55 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.399 2014-07-11 20:55:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.399 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.400 2014-07-15 18:48:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.400 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -813,7 +813,7 @@ main(int argc,char **argv)
       /* Edit group name for output */
       if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
 
-      /* Obtain output group ID using full group name */
+      /* Obtain output group ID */
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
 
       /* Memory management after current extracted group */
@@ -872,7 +872,7 @@ main(int argc,char **argv)
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
 
-        /* Obtain output group ID using full group name */
+        /* Obtain output group ID */
         (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
 
         /* Memory management after current extracted group */

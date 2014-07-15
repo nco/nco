@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.209 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.210 2014-07-15 18:48:55 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1369,7 +1369,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   lmt.srd=1L;
   lmt.flg_input_complete=False;
 
-  /* Obtain group ID using full group name */
+  /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Use parameter to inquire about coordinate. 
@@ -1379,7 +1379,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
      ncks -O -v ts -d time,0,1 -d Latitude,40.0 -d Longitude,-105.0 http://hydro1.sci.gsfc.nasa.gov/opendap/hyrax/ncml/LPRM_AMSRE_D_SOILM3_timeSeries.ncml amsre.nc */
 
   if(is_crd){
-    /* Obtain coordinate variable ID using group ID */
+    /* Obtain coordinate variable ID */
     (void)nco_inq_varid(grp_id,nm,&var_id);
 
     /* Get coordinate type */
@@ -1493,7 +1493,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   /* If there is a coordinate variable */
   if(is_crd){
 
-    /* Get variable ID of coordinate. NOTE: using group ID */
+    /* Get variable ID of coordinate */
     (void)nco_inq_varid(grp_id,lmt.nm,&dim.cid);
 
     char *cln_sng=NULL_CEWI;
