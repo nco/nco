@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.910 2014-07-09 00:09:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.911 2014-07-30 22:47:01 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -149,7 +149,7 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2014 Jun&nbsp;??: 4.4.5 (<i>In progress</i>)
+<li>2014 Aug&nbsp;??: 4.4.5 (<i>In progress</i>)
 <li>2014 May&nbsp;29: 4.4.4 (Stability)
 <li>2014 May&nbsp;13: Received funding for NASA ACCESS 2013 <a href="#prp_axs">project</a></li>
 <li>2014 Apr&nbsp;02: 4.4.3 (Stability)
@@ -631,9 +631,12 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO 4.4.6</b>: (<i>Future</i>) 
 extensive hashing?;
 netCDF4 compound types?;
+Chunking <tt>cnk_map=rew</tt>;
 Optimize diskless files?;</li>
 <li><b>NCO 4.4.5</b>: (<i>In Progress, features completed or being worked on include</i>)
-Chunking <tt>cnk_map=rew</tt>;
+DAP on <a href="http://nco.sf.net/nco.html#dap">HTTPS</a>;
+<tt>ancillary_variables</tt> for <a href="http://nco.sf.net/nco.html#ncl">CF</a>;
+<tt>ncks --grp_xtr_var_xcl</tt> <a href="http://nco.sf.net/nco.html#gxvx">subsetting</a>
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
 <li><b>NCO 4.4.4</b>: (<i>Current Stable Release</i>) 
 netCDF'ize non-compliant element names;

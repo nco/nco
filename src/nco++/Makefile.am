@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.27 2013-07-25 04:51:36 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.28 2014-07-30 22:47:02 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -36,6 +36,10 @@ nco_gsl.c
 ncap2_LDADD = -lnco -lantlr
 # fxm: 20080515 Takeshi Enomoto reports that MACOSX needs
 # ncap2_LDADD = ../nco/.libs/libnco.dylib -lantlr
+
+# fxm: 20140730 Ed Anderson reports that PGI- and GCC-compiled ncap2 need
+# -Xcompiler -shared added to ncap2_LINK which, apparently, would be done with
+# ncap2_LDFLAGS = -Xcompiler -shared
 
 if ENABLE_GSL
 GSL_LIB_ARG = $(shell gsl-config --libs)
