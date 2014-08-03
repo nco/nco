@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.724 2014-07-12 04:21:23 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.725 2014-08-03 23:49:17 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -21,11 +21,10 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. NCO now supports stdin input file lists up to ~50 MB long.
-   Per the request of a power user from NASA, NCO multi-file operators
-   (ncra, ncea, ncrcat) now accept lists of input files 50 MB long.
+   This applies to all NCO multi-file operators (ncra, ncea, ncrcat).
    The previous limit was 10 MB. The new limit suffices for 30 years
    of hourly datasets where each dataset name is 192 bytes long.
-   Currently she is averaging only 10 years of data, or 87600 files.
+   One NASA user is averaging 10 years of data, or 87600 files.
    Who will be the first user to break the million file barrier?
    http://nco.sf.net/nco.html#stdin
 
@@ -41,7 +40,7 @@ A. NCO now accesses DAP files on HTTPS servers. Previously NCO would
    only test filenames beginning with "http://" for DAP access. 
    Now NCO also tests filenames beginning with "https://" for DAP.
    If you use DAP servers with a protocol besides HTTP or HTTPS please
-   tell us so we cavn enable NCO for those services too.
+   tell us so we can enable NCO for those services too.
    http://nco.sf.net/nco.html#dap
 
 A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion

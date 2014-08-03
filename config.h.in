@@ -6,11 +6,8 @@
 /* Compatibility pvmgetarch token for UNICOS on DEC Alpha */
 #undef CRAY
 
-/* Compile operators with DAP support */
+/* Compile operators with DAP support from libnetcdf */
 #undef ENABLE_DAP
-
-/* DAP support is from libnetcdf */
-#undef ENABLE_DAP_NETCDF
 
 /* Custom debugging: Pedantic, bounds checking (slowest execution) */
 #undef ENABLE_DEBUG_CUSTOM

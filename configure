@@ -1485,7 +1485,7 @@ Optional Features:
                           enable-netcdf4) [[default=yes]]
   --disable-openmp        do not use OpenMP
   --enable-openmp         Build NCO with OpenMP [[default=yes]]
-  --enable-dap-netcdf     Build DAP-enabled NCO with netCDF-provided DAP
+  --enable-dap            Build DAP-enabled NCO with netCDF-provided DAP
                           [[default=yes]]
   --enable-ncoxx          Build libnco++ and ncap2 (same as enable-ncap2)
                           [[default=yes]]
@@ -17738,7 +17738,7 @@ fi
 
 fi
 
-# OpenMP
+# Begin OpenMP
 
   OPENMP_CFLAGS=
   # Check whether --enable-openmp was given.
@@ -17813,7 +17813,6 @@ else
   enable_openmp=yes
 fi
 
-
 # Enable OpenMP unless told not to
 if ((test "${enable_openmp}" != 'no') && (test "${enable_netcdf4}" = 'xyes')); then
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
@@ -17826,15 +17825,13 @@ echo "Beginning generic tests for DAP support"
 nco_LIBS_no_DAP="${LIBS}"
 # Check whether --enable-dap-netcdf was given.
 if test "${enable_dap_netcdf+set}" = set; then :
-  enableval=$enable_dap_netcdf; enable_dap_netcdf=${enableval}
+  enableval=$enable_dap_netcdf; enable_dap=${enableval}
 else
-  enable_dap_netcdf=yes
+  enable_dap=yes
 fi
 
-
-# Begin DAP-netCDF
-# Check for DAP-netCDF libraries unless told not to
-if test "${enable_dap_netcdf}" != 'no'; then
+# Check for DAP in netCDF library unless told not to
+if test "${enable_dap}" != 'no'; then
     echo "Testing for DAP-netCDF support (is DAP in libnetcdf.a?)..."
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nc__opendap in -lnetcdf" >&5
 $as_echo_n "checking for nc__opendap in -lnetcdf... " >&6; }
@@ -17880,33 +17877,25 @@ _ACEOF
   LIBS="-lnetcdf $LIBS"
 
 else
-  enable_dap_netcdf=no
+  enable_dap=no
 fi
 
-    if test "${enable_dap_netcdf}" = 'no'; then
+    if test "${enable_dap}" = 'no'; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: DAP-netCDF support through libnetcdf.a disabled (missing DAP functions)" >&5
 $as_echo "$as_me: WARNING: DAP-netCDF support through libnetcdf.a disabled (missing DAP functions)" >&2;}
     fi
-fi
-# End DAP-netCDF
-
-# Begin DAP (all flavors)
-enable_dap='no'
-if (test "x${enable_dap_netcdf}" = 'xyes'); then
-
-$as_echo "#define ENABLE_DAP_NETCDF 1" >>confdefs.h
-
-    enable_dap='yes'
+    if (test "x${enable_dap}" = 'xyes'); then
 
 $as_echo "#define ENABLE_DAP 1" >>confdefs.h
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: DAP support enabled" >&5
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: DAP support enabled" >&5
 $as_echo "$as_me: DAP support enabled" >&6;}
-    LIBS="${LIBS} -lcurl"
-# This would activate conditional GSL tests, if there were any
+	LIBS="${LIBS} -lcurl"
+# This would activate conditional DAP tests, if there were any
 #    AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
+    fi
 fi
-# End DAP (all flavors)
+# End DAP
 
 ##################################################
 # Check libraries, add to link path if found
@@ -23102,7 +23091,6 @@ echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "OPENMP_CFLAGS........ ${OPENMP_CFLAGS}"
-echo "ENABLE_DAP_NETCDF.... ${enable_dap_netcdf}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
 echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
