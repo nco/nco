@@ -203,6 +203,18 @@ public:
   double clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1);
 };
 
+
+//Miscellaneous Function /****************************************/	 
+ class misc_cls: public vtl_cls {	 
+ private:	 
+   enum {PMISC1, PMISC2, PMISC3 };	 
+    bool _flg_dbg;	 
+ public:	 
+   misc_cls(bool flg_dbg);	 
+   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);	 
+ 	 
+ };	 
+ 	 
 // Co-ord class /*********************************************************/
 class cod_cls: public vtl_cls {
 private:
