@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.193 2014-07-07 18:56:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.194 2014-08-11 11:41:26 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.193 2014-07-07 18:56:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.193 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.194 2014-08-11 11:41:26 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.194 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -519,8 +519,8 @@ main(int argc,char **argv)
   bil_cls bil_obj(true); 
   // Co-ordinates functions
   cod_cls cod_obj(true); 
-
-
+  // misc functions
+  misc_cls misc_obj(true); 
 
   // Populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
@@ -537,6 +537,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&arr_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bil_obj);
   (void)pop_fmc_vtr(fmc_vtr,&cod_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&misc_obj);
 
 #ifdef ENABLE_GSL
 #ifdef ENABLE_NCO_GSL
@@ -736,6 +737,7 @@ main(int argc,char **argv)
     xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,(char**)NULL,False,False,&nbr_xtr);      
     for(idx=0;idx<nbr_var_fl;idx++){
       var_tmp=prs_arg.ncap_var_init(xtr_lst_a[idx].nm,false);
+
       Nvar=new NcapVar(var_tmp); 
       Nvar->flg_stt=2;   
       prs_arg.var_vtr.push(Nvar);
