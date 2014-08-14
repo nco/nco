@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1013 2014-07-13 02:34:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1014 2014-08-14 01:12:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2848,12 +2848,15 @@ The first method (explicitly specifying all filenames) works by brute
 force. 
 The second method relies on the operating system shell to @dfn{glob}
 (expand) the @dfn{regular expression} @code{8[56789].nc}.
-The shell passes valid filenames which match the expansion to
-@command{ncra}.
-The third method uses the @samp{-p @var{input-path}} argument to specify 
+The shell then passes the valid filenames (those which match the
+regular expansion) to @command{ncra}.
+In this case @command{ncra} never knows that a regular expression was
+used, because the shell intercepts and expands and matches the regular
+expression before @command{ncra} is actually invoked.
+The third method uses the @samp{-p @var{input-path}} argument to specify   
 the directory where all the input files reside.
 @acronym{NCO} prepends @var{input-path} (e.g.,
-@file{/data/usrname/model}) to all @var{input-files} (though not to
+@file{/data/username/model}) to all @var{input-files} (though not to
 @var{output-file}).  
 Thus, using @samp{-p}, the path to any number of input files need only
 be specified once.
@@ -2862,8 +2865,13 @@ automatically generated if necessary.
 
 The last method passes (with @samp{-n}) syntax concisely describing 
 the entire set of filenames
-@footnote{The @samp{-n} option is a backward compatible superset of the
-@code{NINTAP} option from the @acronym{NCAR} @acronym{CCM} Processor.}. 
+@footnote{The @samp{-n} option is a backward-compatible superset of the 
+@code{NINTAP} option from the @acronym{NCAR} @acronym{CCM} Processor.
+The @acronym{CCM} Processor was custom-written Fortran code maintained
+for many years by Lawrence Buja at @acronym{NCAR}, and phased-out in 
+the late 1990s.
+@acronym{NCO} stole some ideas, like @code{NINTAP}-functionality,
+from the @acronym{CCM} Processor capabilities.}.
 @cindex multi-file operators
 @cindex files, multiple
 This option is only available with the @dfn{multi-file operators}:
@@ -2880,8 +2888,8 @@ For example, in the file @file{ccm3_h0001.nc}, we have
 @var{alphanumeric_prefix} = @file{ccm3_h}, @var{numeric_suffix} =
 @file{0001}, and @var{filetype} = @file{nc}.
 
-@acronym{NCO} is able to decode lists of such filenames encoded using the
-@samp{-n} option. 
+@acronym{NCO} decodes lists of such filenames encoded using the
+@samp{-n} syntax. 
 The simpler (3-argument) @samp{-n} usage takes the form 
 @code{-n @var{file_number},@var{digit_number},@var{numeric_increment}}
 where @var{file_number} is the number of files, @var{digit_number} is
@@ -2930,12 +2938,12 @@ The first example shows that three arguments to the @samp{-n} option
 suffice to specify consecutive months (@code{06, 07, 08}) which do not
 ``wrap'' back to a minimum value.
 The second example shows how to use the optional fourth and fifth
-elements of the @samp{-n} option to specify a wrap value to @acronym{NCO}.
-The fourth argument to @samp{-n}, if present, specifies the maximum
+elements of the @samp{-n} option to specify a wrap value.
+The fourth argument to @samp{-n}, when present, specifies the maximum
 integer value of @var{numeric_suffix}.
-In this case the maximum value @w{is 12,} and will be formatted as
+In the example the maximum value @w{is 12,} and will be formatted as
 @file{12} in the filename string. 
-The fifth argument to @samp{-n}, if present, specifies the minimum
+The fifth argument to @samp{-n}, when present, specifies the minimum
 integer value of @var{numeric_suffix}.
 The default minimum filename suffix @w{is 1,} which is formatted as
 @file{01} in this case.   

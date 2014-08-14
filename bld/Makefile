@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.726 2014-07-11 02:13:50 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.727 2014-08-14 01:12:11 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -397,8 +397,8 @@ endif # end if UDUNITS_LIB
 endif # end if UDUNITS
 
 # At this point we change NETCDF_INC from a directory to a flag
-NC_CFLAGS := $(shell nc-config --cflags)
-NC_LDFLAGS := $(shell nc-config --libs)
+NC_CFLAGS := $(shell ${NETCDF_ROOT}/bin/nc-config --cflags)
+NC_LDFLAGS := $(shell ${NETCDF_ROOT}/bin/nc-config --libs)
 NCO_LDFLAGS := -L${MY_LIB_DIR} -lnco
 
 ifeq (${MPI},Y)

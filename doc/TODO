@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1265 2014-05-27 02:55:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1266 2014-08-14 01:12:13 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -653,7 +653,8 @@ nco1106. autoconvert netCDF4 string variable to netCDF3 nc_char type. requires d
 nco1109. broadcast degenerate dimensions in nco_var_cnf_dmn()/ncap_var_cnf_dmn(): helps ncap/ncwa/ncbo/ncflint
 nco1110. ncap2: allow type specification as per christine smit (GSFC) request 20140407
 nco1111. ncrcat/ncecat check consistency of packing attributes across files (requested by ocehugo 20140522)
-nco1112. 
+nco1112. nco: nintap double iterator rqs by dave allured 20140813
+nco1113. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
