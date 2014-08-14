@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.124 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.125 2014-08-14 22:44:39 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -86,6 +86,8 @@ nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
     return "g2d";
   case nco_cnk_plc_g3d: 
     return "g3d";
+  case nco_cnk_plc_r1d:
+    return "r1d";
   case nco_cnk_plc_xpl: 
     return "xpl";
   case nco_cnk_plc_xst:
@@ -355,6 +357,9 @@ nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
   if(!strcmp(nco_cnk_plc_sng,"cnk_g3d")) return nco_cnk_plc_g3d;
   if(!strcmp(nco_cnk_plc_sng,"plc_g3d")) return nco_cnk_plc_g3d;
   if(!strcmp(nco_cnk_plc_sng,"xpl")) return nco_cnk_plc_xpl;
+  if(!strcmp(nco_cnk_plc_sng,"r1d")) return nco_cnk_plc_r1d;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_r1d")) return nco_cnk_plc_r1d;
+  if(!strcmp(nco_cnk_plc_sng,"plc_r1d")) return nco_cnk_plc_r1d;
   if(!strcmp(nco_cnk_plc_sng,"cnk_xpl")) return nco_cnk_plc_xpl;
   if(!strcmp(nco_cnk_plc_sng,"plc_xpl")) return nco_cnk_plc_xpl;
   if(!strcmp(nco_cnk_plc_sng,"xst")) return nco_cnk_plc_xst;
@@ -792,6 +797,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   nc_type var_typ_dsk; /* [nbr] Variable type */
 
   nco_bool *flg_mch; /* [flg] Name match (absolute or relative) between chunking structure 'cnk_sct' and dimension 'dmn_cmn' */
+  nco_bool flg_ovr; /* [flg] Override default chunking with user-specified chunking for this dimension */
   nco_bool flg_usr_rqs; /* [flg] User requested checking */
   nco_bool is_rec_var; /* [flg] Record variable */
   nco_bool is_chk_var; /* [flg] Check-summed variable */
@@ -1111,30 +1117,47 @@ cnk_xpl_override: /* end goto */
 
       /* Name match found */
       if(flg_mch[dmn_idx]){
-        cnk_sz[dmn_idx]=cnk_dmn[cnk_idx]->sz;
-        /* Is this a record dimension? */
-        if(dmn_cmn[dmn_idx].is_rec_dmn){
-          /* dmn_sz of record dimension can/will be zero in output file
-	     Allow (though warn) when cnk_sz > dmn_sz in such cases */
-          if(dmn_cmn[dmn_idx].NON_HYP_DMN){
-            if(dmn_cmn[dmn_idx].sz > 0 && /* Warn only after records have been written */
-	       cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
-              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds current output file record dimension size = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
-            } /* endif too big */
-          }else{ /* !NON_HYP_DMN */
-            if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].dmn_cnt){
-              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize = %lu which exceeds user-specified record dimension input hyperslab size = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].dmn_cnt);
-            } /* endif too big */
-          } /* !NON_HYP_DMN */
-        }else{ /* !rcd_dmn_id */
-          if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
-            /* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
-            (void)fprintf(stderr,"%s: WARNING %s trimming user-specified fixed dimension %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
-            /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
-            cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
-          } /* endif */
-        } /* !rcd_dmn_id */
-        break;
+
+	flg_ovr=False;
+	/* Override default chunking with user-specified chunking for this dimension if... */
+	if(
+	   /* ... Policy is anything but r1d or ...*/
+	   (cnk_plc != nco_cnk_plc_r1d) ||
+	   /* ... Policy is r1d and this is the matching r1d coordinate or ... */
+	   (cnk_plc == nco_cnk_plc_r1d && (dmn_nbr == 1 && is_rec_var)) ||
+	   False){
+	  /* Perform override */
+	  cnk_sz[dmn_idx]=cnk_dmn[cnk_idx]->sz;
+	  flg_ovr=True;
+	} /* endif */
+
+	/* Sanity checks for dimensions that were over-ridden by user-specified chunksizes */
+	if(flg_ovr){
+	  /* Is this a record dimension? */
+	  if(dmn_cmn[dmn_idx].is_rec_dmn){
+	    /* dmn_sz of record dimension can/will be zero in output file
+	       Allow (though warn) when cnk_sz > dmn_sz in such cases */
+	    if(dmn_cmn[dmn_idx].NON_HYP_DMN){
+	      if(dmn_cmn[dmn_idx].sz > 0 && /* Warn only after records have been written */
+		 cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
+		(void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds current output file record dimension size = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
+	      } /* endif too big */
+	    }else{ /* !NON_HYP_DMN */
+	      if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].dmn_cnt){
+		(void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize = %lu which exceeds user-specified record dimension input hyperslab size = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].dmn_cnt);
+	      } /* endif too big */
+	    } /* !NON_HYP_DMN */
+	  }else{ /* !rcd_dmn_id */
+	    if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
+	      /* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
+	      (void)fprintf(stderr,"%s: WARNING %s trimming user-specified fixed dimension %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
+	      /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
+	      cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
+	    } /* endif */
+	  } /* !rcd_dmn_id */
+	} /* !flg_ovr */
+	/* Dimension matched this chunk name, no need to search other chunk names */
+	break;
       } /* cnk_nm != dmn_nm */
     } /* end loop over dimensions */
   } /* end loop over cnk */

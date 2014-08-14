@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.500 2014-07-09 06:50:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.501 2014-08-14 22:44:39 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -278,7 +278,7 @@ print "\n";
 
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncap2 -v -C -O -s 'n2=three_dmn_var_int\@nw1;' %tmp_fl_00% %tmp_fl_01%";
-	$tst_cmd[2]="ncks -O -C -H -s '%i'  -v n2 %tmp_fl_01%";
+	$tst_cmd[2]="ncks -O -C -H -s '%i' -v n2 %tmp_fl_01%";
 	$dsc_sng="Variable wildcarding (requires regex)";
 	$tst_cmd[3]="999";
 	$tst_cmd[4]="SS_OK";
@@ -388,7 +388,7 @@ print "\n";
     $#tst_cmd=0; # Reset array - ok
 
 # ncbo #3    
-# ncbo -h -O --op_typ='-' -v mss_val_scl  in.nc in.nc out.nc
+# ncbo -h -O --op_typ='-' -v mss_val_scl in.nc in.nc out.nc
     
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
@@ -634,7 +634,7 @@ print "\n";
 
 
 # ncbo #22
-# ncbo -O -v var1  in_grp_1.nc  in_grp_2.nc out.nc
+# ncbo -O -v var1 in_grp_1.nc in_grp_2.nc out.nc
 
     $dsc_sng="(Groups) Process absolute match variables -v var1 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var1 $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
@@ -904,9 +904,9 @@ print "\n";
 	
 #nces #12
 # 2 groups, each one with a record (part 1)
-# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
+# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 in_grp_3.nc in_grp_3.nc out.nc
 	
-    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="(Groups) 2 groups ensemble mean of int across two files (part 1)";
     $tst_cmd[2]="5";
@@ -916,9 +916,9 @@ print "\n";
 
 #nces #13
 # 2 groups, each one with a record (part 2)
-# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
+# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 in_grp_3.nc in_grp_3.nc out.nc
 	
-    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="(Groups) 2 groups ensemble mean of int across two files (part 2)";
     $tst_cmd[2]="5";
@@ -1135,7 +1135,7 @@ print "\n";
     
 #ncecat #8 part1
 #ncecat  -h -O -v two_dmn_rec_var in_grp.nc in_grp.nc out.nc
-#ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1  -v two_dmn_rec_var  out.nc
+#ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var  out.nc
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: 2D -v two_dmn_rec_var";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -v two_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
@@ -1148,12 +1148,12 @@ print "\n";
 	   
 #ncecat #9 
 #Check that "time" is eliminated as record
-#ncecat -O  in_grp_3.nc in_grp_3.nc out.nc
-#ncks -m -C -g g25g1  -v one_dmn_rec_var out.nc
+#ncecat -O in_grp_3.nc in_grp_3.nc out.nc
+#ncks -m -C -g g25g1 -v one_dmn_rec_var out.nc
 
     $dsc_sng="(Groups) Concatenate variables/groups";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -C -g g25g1  -v one_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -C -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="one_dmn_rec_var dimension 1: time, size = 10 NC_DOUBLE, chunksize = 10 (Coordinate is time)";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
@@ -1173,10 +1173,10 @@ print "\n";
 
 #ncecat #11
 #Chunking 
-#ncecat -O -C -4  -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 in.nc in.nc out.nc
+#ncecat -O -C -4 -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 in.nc in.nc out.nc
 
     $dsc_sng="Chunking -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4";
-    $tst_cmd[0]="ncecat -O -C -4 $nco_D_flg  -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4  $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncecat -O -C -4 $nco_D_flg -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4  $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'four_dmn_rec_var dimension 2'";
     $tst_cmd[2]="four_dmn_rec_var dimension 2: lat, size = 2, chunksize = 2 (Non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
@@ -2062,7 +2062,7 @@ print "\n";
 #
 
 #ncks #56:
-# ncks -H -C --dmn time,1,3,2 --dmn lev,1,1,1  -v two_dmn_rec_var  ~/nco/data/in_grp.nc
+# ncks -H -C --dmn time,1,3,2 --dmn lev,1,1,1 -v two_dmn_rec_var  ~/nco/data/in_grp.nc
 # /g10/two_dmn_rec_var
 # time[1]=2 lev[1]=500 two_dmn_rec_var[4]=2.1 
 # time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3 
@@ -2077,7 +2077,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
 
 #ncks #57:
-#  ncks -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1   -v two_dmn_rec_var  ~/nco/data/in_grp.nc
+#  ncks -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1  -v two_dmn_rec_var  ~/nco/data/in_grp.nc
 #/g10/two_dmn_rec_var
 #time[1]=2 lev[0]=100 two_dmn_rec_var[3]=1 
 #time[1]=2 lev[2]=1000 two_dmn_rec_var[5]=3 
@@ -2094,7 +2094,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			  
 
 #ncks #58 This test uses limits to print a dimension "lon2(4)" that does NOT have a coordinate variable
-#  ncks -H -d lon2,1,3,2  -v lon2_var  in_grp.nc
+#  ncks -H -d lon2,1,3,2 -v lon2_var in_grp.nc
 #/g16/lon2_var
 #lon2[1] lon2_var[1]=1 
 #lon2[3] lon2_var[3]=3 
@@ -2109,7 +2109,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			  
     
 #ncks #59 same as #58 but with 2 limits with the same result
-# ncks -H -d lon2,1,1,1 -d lon2,3,3,1  -v lon2_var  in_grp.nc 
+# ncks -H -d lon2,1,1,1 -d lon2,3,3,1 -v lon2_var in_grp.nc 
 #/g16/lon2_var
 #lon2[1] lon2_var[1]=1 
 #lon2[3] lon2_var[3]=3 
@@ -2146,7 +2146,7 @@ print "\n";
   
 #ncks #61
 # This test tests both limits printing of coordinates that are in ancestor groups
-# ncks -H  -v gds_var -d gds_crd,1,1,1  in_grp.nc   
+# ncks -H -v gds_var -d gds_crd,1,1,1 in_grp.nc   
 # ncks -H -C -g g7g1 -v gds_var -d gds_crd,1,1,1 -d gds_crd,3,3,1 in_grp.nc 
 #/g7/g7g1/gds_var
 # gds_crd[1]=1 gds_var[1]=273.2 
@@ -2164,7 +2164,7 @@ print "\n";
 #ncks #62
 # Test "parallel" scope 
 #ncks: INFO nco_bld_var_dmn() reports variable </g16/g16g1/lon1> with dimension coordinate [0]/g16/g16g1/lon1
-# ncks -H -g g16g1 -v lon1 -d lon1,3,3,1  in_grp.nc
+# ncks -H -g g16g1 -v lon1 -d lon1,3,3,1 in_grp.nc
 #/g16/g16g1/lon1
 #lon1[3]=3 
 
@@ -2205,7 +2205,7 @@ print "\n";
     
 #ncks #65
 # Test creation of variables with ancestor group dimensions
-#ncks -O -g g6g1 -v area  in_grp.nc out.nc
+#ncks -O -g g6g1 -v area in_grp.nc out.nc
 #/g6/g6g1/area
 #lat[1]=90 area[1]=50
 
@@ -2221,7 +2221,7 @@ print "\n";
 
 #ncks #66
 # Test creation of variables with ancestor group dimensions, with GPE
-#ncks -O -G o1 -g g6g1 -v area  in_grp.nc out.nc
+#ncks -O -G o1 -g g6g1 -v area in_grp.nc out.nc
 #/o1/g6/g6g1/area
 #lat[0]=-90 area[0]=40 
 #lat[1]=90 area[1]=50 
@@ -2238,7 +2238,7 @@ print "\n";
          
 #ncks #67
 # Test "out of scope" coordinate
-# ncks  -H  -v lon3_var  in_grp.nc
+# ncks  -H -v lon3_var in_grp.nc
 
     $dsc_sng="(Groups) Out of scope coordinate -v lon3_var";
     $tst_cmd[0]="ncks $nco_D_flg -H -v lon3_var $in_pth_arg in_grp_3.nc";
@@ -2251,7 +2251,7 @@ print "\n";
     
 #ncks #68
 # Test 2 "intermediate scope " coordinates
-# ncks  -H  -v lon4_var  in_grp.nc
+# ncks  -H -v lon4_var in_grp.nc
 
     $dsc_sng="(Groups) Order coordinates by group depth -v lon4_var";
     $tst_cmd[0]="ncks $nco_D_flg -C -H -v lon4_var $in_pth_arg in_grp_3.nc";
@@ -2301,7 +2301,7 @@ print "\n";
 
 #ncks #72
 #same as #70, with group
-# ncks -h -O  -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc
+# ncks -h -O -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc
 
     $dsc_sng="(Groups) Limits -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -g g19g3 -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 $in_pth_arg in_grp_3.nc";
@@ -2387,7 +2387,7 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 
 #ncks #79
-#ncks -O -3 -G : -g g28 -v delta_time_stop  in_grp_3.nc out.nc	
+#ncks -O -3 -G : -g g28 -v delta_time_stop in_grp_3.nc out.nc	
 # simpler case of ncks -O -D 2 -3 -G : -g /altimetry/${DATA}/hdf/mabel_l2_20130927t201800_008_1.h5 ~/foo_mabel.nc
     
     $dsc_sng="(Groups) Test CF extraction with flattening (-3 -G : -g)";
@@ -2401,7 +2401,7 @@ print "\n";
 	if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){	
 	
 #ncks #80
-#ncks -O -4 -L 0 --cnk_dmn lev,1  -v two_dmn_var in_grp_7.nc out.nc
+#ncks -O -4 -L 0 --cnk_dmn lev,1 -v two_dmn_var in_grp_7.nc out.nc
 #ncks -C -g g19g1g1 --hdn --cdl out.nc | grep _DeflateLevel
     
     $dsc_sng="(Groups) Chunking and uncompression -L 0 --cnk_dmn lev,1 -v two_dmn_var";
@@ -2453,7 +2453,7 @@ print "\n";
 	
 #ncks #84 (part 2)
 # there are 2 'two_dmn_var' beneath /g19/g19g1, chunking the 2 , one with absolute other with relative
-# ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3  -v two_dmn_var in_grp_7.nc out.nc
+# ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3 -v two_dmn_var in_grp_7.nc out.nc
 # ncks -m -C -v /g19/g19g1/two_dmn_var  --hdn out.nc | grep _ChunkSizes
     
     $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
@@ -2503,10 +2503,10 @@ print "\n";
 
 #ncks #88
 # Test -X writing (apply limits to all standard 'lat' 'lon')
-# ncks -O  -X 0.,1.,-30.,-29. -g g18g1  -v gds_3dvar  in_grp_3.nc out.nc
+# ncks -O  -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar in_grp_3.nc out.nc
 
-    $dsc_sng="(Groups) Auxiliary coordinates writing -X 0.,1.,-30.,-29. -g g18g1  -v gds_3dvar";
-    $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18g1  -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $dsc_sng="(Groups) Auxiliary coordinates writing -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar";
+    $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks $nco_D_flg -v lon_gds_1 %tmp_fl_00%";
     $tst_cmd[2]="gds_crd[0]=1 lon_gds_1[0]=0 degree";
     $tst_cmd[3]="SS_OK";   
@@ -2530,7 +2530,7 @@ print "\n";
    
 #ncks #90
 # Test -X writing
-# ncks -O -X 0.,1.,-30.,-29. -v gds_3dvar  in.nc out.nc
+# ncks -O -X 0.,1.,-30.,-29. -v gds_3dvar in.nc out.nc
 
     $dsc_sng="Auxiliary coordinates writing -X 0.,1.,-30.,-29. -v gds_3dvar";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -v gds_3dvar $in_pth_arg in.nc %tmp_fl_00%";
@@ -2628,7 +2628,7 @@ print "\n";
     
 #NEW NCO 4.3.2 
 #ncpdq #7 MSA stride
-#ncpdq -h -O -a lat,lon,time  -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl  in.nc out.nc 
+#ncpdq -h -O -a lat,lon,time  -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl in.nc out.nc 
 #ncks -C -H -v three_dmn_var_dbl -d lat,0,0 -d lon,1,1 -d time,0  out.nc
 #lat[0]=90 lon[1]=270 time[0]=2 three_dmn_var_dbl[2]=16 
 
@@ -3324,7 +3324,7 @@ print "\n";
 	
 #ncrcat #05	
 
-    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v four_dmn_rec_var $in_pth_arg -d time,0,,4 -d lat,0,0 -d lon,0,1 -d lon,3,3  in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
+    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v four_dmn_rec_var $in_pth_arg -d time,0,,4 -d lat,0,0 -d lon,0,1 -d lon,3,3 in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -y max -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01%"; 
     $tst_cmd[2]="ncks -C -H -s '%f' -v four_dmn_rec_var %tmp_fl_01%";
     $dsc_sng="Concatenate float 4D variable with multislabs across two files";
@@ -3997,8 +3997,8 @@ print "\n";
 
 # ncra #29 Generate a file with 2 records
 # ncecat -O  -g g25g1 in_grp_3.nc in1.nc -> generate "record"
-# ncpdq -O -a time,record  in1.nc in2.nc -> switch "record" and "time"
-# ncra -O  in2.nc out.nc
+# ncpdq -O -a time,record in1.nc in2.nc -> switch "record" and "time"
+# ncra -O in2.nc out.nc
     
     $tst_cmd[0]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a time,record %tmp_fl_00% %tmp_fl_01%";
@@ -4611,11 +4611,11 @@ if (0){
 #ncwa #47
 #NEW NCO 4.3.3
 #same as #ncwa #33
-# ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy  in_grp_3.nc out.nc
-# ncks -C -H -s '%f' -g g20g1  -v lat_cpy out.nc
+# ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy in_grp_3.nc out.nc
+# ncks -C -H -s '%f' -g g20g1 -v lat_cpy out.nc
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -g g20g1 -v lat_cpy $in_pth_arg in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
-    $tst_cmd[1]="ncks -C -H -s '%f' -g g20g1  -v lat_cpy %tmp_fl_00%";;
+    $tst_cmd[1]="ncks -C -H -s '%f' -g g20g1 -v lat_cpy %tmp_fl_00%";;
     $dsc_sng="(Groups) rms with weights";
     $tst_cmd[2]="90";
     $tst_cmd[3]="SS_OK";
@@ -4662,7 +4662,7 @@ if (0){
 	
 #NEW 4.3.7	
 #ncwa #51
-# ncwa  -h -O -a time -b  -v time  in_grp.nc out.nc
+# ncwa  -h -O -a time -b -v time in_grp.nc out.nc
 # ncks out.nc | grep 'time dimension 0'
 
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -b -v time $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -4742,7 +4742,7 @@ if (0){
 
 #NEW 4.4.0	
 #ncwa #57	
-#ncwa -O -C -4 -D 12 --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4  in.nc out.nc	
+#ncwa -O -C -4 -D 12 --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 in.nc out.nc	
 #ncks --hdn --cdl -v four_dmn_rec_var out.nc
 
     $dsc_sng="Chunking with --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 ";
