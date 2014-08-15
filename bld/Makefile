@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.728 2014-08-14 01:23:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.729 2014-08-15 19:13:35 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1700,7 +1700,7 @@ ${MY_DAT_DIR}/buggy.nc: ${MY_DAT_DIR}/buggy.cdl
 dap:	data
 	-cd ~/nco/data; scp in.nc in.cdl dust.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/data/dodsdata
 data:	dat
-dat:	${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/dsm.nc ${MY_DAT_DIR}/hdn.nc ${MY_DAT_DIR}/hdf.hdf ${MY_DAT_DIR}/mdl_1.nc ${MY_DAT_DIR}/mdl_2.nc ${MY_DAT_DIR}/mdl_3.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_grp_4.nc ${MY_DAT_DIR}/in_grp_5.nc ${MY_DAT_DIR}/in_grp_6.nc ${MY_DAT_DIR}/in_grp_7.nc ${MY_DAT_DIR}/in_rec_zero.nc
+dat:	${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/dsm.nc ${MY_DAT_DIR}/hdn.nc ${MY_DAT_DIR}/hdf.hdf ${MY_DAT_DIR}/mdl_1.nc ${MY_DAT_DIR}/mdl_2.nc ${MY_DAT_DIR}/mdl_3.nc ${MY_DAT_DIR}/mrd.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_grp_4.nc ${MY_DAT_DIR}/in_grp_5.nc ${MY_DAT_DIR}/in_grp_6.nc ${MY_DAT_DIR}/in_grp_7.nc ${MY_DAT_DIR}/in_rec_zero.nc
 	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	ncgen -b -o $@ $<
@@ -1731,6 +1731,8 @@ ${MY_DAT_DIR}/in_grp_7.nc: ${MY_DAT_DIR}/in_grp_7.cdl
 ${MY_DAT_DIR}/cmip5.nc: ${MY_DAT_DIR}/cmip5.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/hdn.nc: ${MY_DAT_DIR}/hdn.cdl
+	-ncgen -k netCDF-4 -b -o $@ $<
+${MY_DAT_DIR}/mrd.nc: ${MY_DAT_DIR}/mrd.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/dsm.nc: ${MY_DAT_DIR}/dsm.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.725 2014-08-03 23:49:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.726 2014-08-15 19:13:35 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -59,6 +59,15 @@ A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
    flattening, or dismembering files.
    ncks --grp_xtr_var_xcl -g g1 -v v1 # Extract all of group g1 except v1
    http://nco.sf.net/nco.html#gxvx
+
+A. r1d fxm
+    Policy r1d changes chunksize of 1-D record variables (and no other
+    variables) to specified (with --cnk_dmn) chunksize for record
+    dimension(s). 
+    Without r1d, time chunksizes change in all variables. 
+    With r1d time chunksizes change only in 1-D record variables.
+    Note difference in chunksizes below between default
+    (first) and when cnk_plc=r1d (second). 
 
 BUG FIXES:
 
