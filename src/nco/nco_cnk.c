@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.126 2014-08-21 18:22:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.127 2014-08-21 20:39:01 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -184,9 +184,18 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   /* Make uniform list of user-specified per-dimension chunksizes */
   if(cnk->cnk_nbr > 0) cnk->cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);
 
-  /* Set actual chunk policy and map to defaults as necessary */
-  if(cnk_map == nco_cnk_map_nil) cnk->cnk_map=nco_cnk_map_get((char *)NULL);
-  if(cnk_plc == nco_cnk_plc_nil) cnk->cnk_plc=nco_cnk_plc_get((char *)NULL);
+  /* Set actual chunk policy and map to defaults as necessary
+     20140821: Until today, defaults for map and policy were set independently
+     Now we consider four distinct cases: 
+     1. Neither map nor policy was explicitly set, and something else, e.g., size, was
+     2. User set map not policy
+     3. User set policy not map */
+  if(cnk->flg_usr_rqs && (cnk_map == nco_cnk_map_nil) && (cnk_plc == nco_cnk_plc_nil)){
+    cnk->cnk_map=nco_cnk_map_rd1;
+    cnk->cnk_plc=nco_cnk_plc_g2d;
+  } /* endif */
+  if(cnk_map == nco_cnk_map_nil && cnk_plc != nco_cnk_plc_nil) cnk->cnk_map=nco_cnk_map_rd1;
+  if(cnk_plc == nco_cnk_plc_nil && cnk_map != nco_cnk_map_nil) cnk->cnk_plc=nco_cnk_plc_g2d;
 
   return rcd;
 } /* end nco_cnk_ini() */

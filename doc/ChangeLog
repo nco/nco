@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.5 release"
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
 
-	* Fixing false negative regressions due to new chunking defaults...fxm
+	* Fix false negative regressions due to new chunking defaults
 
 	* Fix ncpdq mis-handling of dimension reversal arguments (introduced in 4.3.x)
 

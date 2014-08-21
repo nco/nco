@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.188 2014-07-09 01:11:56 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.189 2014-08-21 20:39:01 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -1001,7 +1001,6 @@ variables:
 	float txyz(time,lon,lat,lev);
 	txyz:long_name = "four dimensional record variable stored in txyz (time,lon,lat,lev) order";
 
-
 	float four_dmn_rec_var(time,lat,lev,lon);
 	four_dmn_rec_var:long_name = "four dimensional record variable";
 	four_dmn_rec_var:units = "watt meter-2";
@@ -1036,6 +1035,13 @@ variables:
 	float var_nm-dash;
 	var_nm-dash:long_name = "Variable and attribute names include dash characters";
 	var_nm-dash:att_nm-dash = 1.0e36f;
+
+	float vld_rng(time);
+	vld_rng:long_name = "Temperature";
+	vld_rng:purpose = "Array containing _FillValue at some locations, out-of-range values at other locations, and valid data in the remainder";
+	vld_rng:_FillValue = -999.0f;
+	vld_rng:valid_min = 180.f;
+	vld_rng:valid_max = 360.f;
 
 //	float var_nm.dot;
 //	var_nm.dot:long_name = "Variable and attribute names include dot characters";
@@ -1578,6 +1584,9 @@ data:
 //				-99.5,74.5,75.5,76.5,77.5,78.5,79.5,-99.5;
 				
 	time_udunits = 876012, 876018, 876024;
+
+	vld_rng=		273.,-999.,180.,179.,273.,360.,361.,1.0e36,-1.0e36,273.;
+
 	wnd_spd=		-999,0.5,1.5,0.5,1.5,0.5,1.5,0.5,
 				0.5,-999,0.5,0.5,0.5,0.5,0.5,0.5,
 				0.5,1.5,-999,1.5,0.5,1.5,0.5,1.5,
