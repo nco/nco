@@ -8,7 +8,7 @@
 
 	* Fix false negative regressions due to new chunking defaults
 
-	* Fix ncpdq mis-handling of dimension reversal arguments (introduced in 4.3.x)
+	* Fix ncpdq mis-handling of dimension reversal arguments (introduced between 4.3.2--4.3.6)
 
 	* Fix inadvertent omission of --cnk_map switch in ncecat
 
