@@ -1,0 +1,30 @@
+// -*-C++-*-
+
+// Purpose: Test Multiple Record Dimensions
+
+// Generate netCDF file with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/mrd.nc ~/nco/data/mrd.cdl
+
+// Reproduce bug 20140815: ncrcat (not ncks) fails on variables with multiple record dimensions reported by rmla 20140619
+// ncrcat -O -d parameter,0,0 -d time,1,1 -d run,0,1 -d step,0,1 -d number,0,1 -d ngr,0,1 ${DATA}/hdf/71355.ecmf.1.nc ~/mrd.nc
+// ncrcat -O -h -d time,0 ~/nco/data/mrd.nc ~/foo.nc
+// ncdump ~/foo.nc
+
+netcdf mrd {
+dimensions:
+	time = UNLIMITED ; // (2 currently)
+	step = UNLIMITED ; // (2 currently)
+variables:
+	int var_mrd(time, step) ;
+	int time(time) ;
+
+data:
+
+ var_mrd =
+  {1,
+  2},
+  {3,
+   4} ;
+
+ time = 1, 2 ;
+}

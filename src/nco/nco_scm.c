@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.56 2014-06-17 13:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.57 2014-08-21 18:22:44 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -125,7 +125,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
     (void)sprintf(cvs_vrs_sng,"%li.%li",cvs_mjr_vrs,cvs_mnr_vrs);
   }/* end else */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+  if(nco_dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stderr,"NCO version %s\n",cvs_vrs_sng);
     (void)fprintf(stderr,"cvs_nm_sng %s\n",cvs_nm_sng);
     (void)fprintf(stderr,"cvs_mjr_vrs_sng %s\n",cvs_mjr_vrs_sng);

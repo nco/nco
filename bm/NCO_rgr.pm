@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.501 2014-08-14 22:44:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.502 2014-08-21 18:22:44 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -287,7 +287,7 @@ print "\n";
 	
 #4.3.8	
 #ncatted #6
-#ncatted -O -a purpose,rlev,m,c,new_value in_grp_3.nc out.nc
+#ncatted -O -a purpose,rlev,m,c,new_value in_grp_3.nc ~/foo.nc
 
     #######################################
     #### Group tests (requires netCDF4) ###
@@ -388,7 +388,7 @@ print "\n";
     $#tst_cmd=0; # Reset array - ok
 
 # ncbo #3    
-# ncbo -h -O --op_typ='-' -v mss_val_scl in.nc in.nc out.nc
+# ncbo -h -O --op_typ='-' -v mss_val_scl -p ~/nco/data in.nc in.nc ~/foo.nc
     
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
@@ -550,8 +550,8 @@ print "\n";
 # NCO 4.3.0: added support for groups; ncbo -g
 #   
 #ncbo #16
-# ncbo -O -y add -g g4 -v one_dmn_rec_var in_grp.nc in_grp.nc out.nc
-# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
+# ncbo -O -y add -g g4 -v one_dmn_rec_var in_grp.nc in_grp.nc ~/foo.nc
+# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var ~/foo.nc
 # /g4/one_dmn_rec_var
 # time[0]=1 one_dmn_rec_var[0]=2 
 
@@ -564,8 +564,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
     
 #ncbo #17
-# ncbo -O -y add -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
-# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
+# ncbo -O -y add -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
+# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var ~/foo.nc
 # /g4/one_dmn_rec_var
 
     $dsc_sng="(Groups) Addition with limits -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var";
@@ -577,8 +577,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
     
 #ncbo #18
-# ncbo -O -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
-# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
+# ncbo -O -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
+# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var ~/foo.nc
 # /g4/one_dmn_rec_var
 
     $dsc_sng="(Groups) Subtraction -v one_dmn_rec_var";
@@ -590,8 +590,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
 
 #ncbo #19
-# ncbo -O -y mlt -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
-# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
+# ncbo -O -y mlt -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
+# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var ~/foo.nc
 # /g4/one_dmn_rec_var
 
     $dsc_sng="(Groups) Multiplication with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
@@ -603,8 +603,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 			  
 
 #ncbo #20
-# ncbo -O -y mlt -g g4 -v one_dmn_rec_var in_grp.nc in_grp.nc out.nc
-# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
+# ncbo -O -y mlt -g g4 -v one_dmn_rec_var in_grp.nc in_grp.nc ~/foo.nc
+# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var ~/foo.nc
 # /g4/one_dmn_rec_var
 
 
@@ -622,7 +622,7 @@ print "\n";
 
 # Absolute match test
 # ncbo #21
-# ncbo -O in_grp_1.nc in_grp_2.nc out.nc
+# ncbo -O in_grp_1.nc in_grp_2.nc ~/foo.nc
 
     $dsc_sng="(Groups) Process absolute match variables -v var1 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
@@ -634,7 +634,7 @@ print "\n";
 
 
 # ncbo #22
-# ncbo -O -v var1 in_grp_1.nc in_grp_2.nc out.nc
+# ncbo -O -v var1 in_grp_1.nc in_grp_2.nc ~/foo.nc
 
     $dsc_sng="(Groups) Process absolute match variables -v var1 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var1 $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
@@ -646,8 +646,8 @@ print "\n";
 
 	
 # ncbo #23
-#ncbo -O --op_typ=add  mdl_1.nc mdl_2.nc out.nc
-#ncks -C -g cesm_01 -v tas1 out.nc
+#ncbo -O --op_typ=add  mdl_1.nc mdl_2.nc ~/foo.nc
+#ncks -C -g cesm_01 -v tas1 ~/foo.nc
 # 544.4 = (file 1 tas1) 272.1 + (file 2 tas1) 272.3
 
     $dsc_sng="(Groups) Process ensembles in both files mdl_1.nc mdl_2.nc";
@@ -659,8 +659,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 
 
 # ncbo #24
-#ncbo -O mdl_1.nc mdl_2.nc out.nc
-#ncks -g cesm_01 -v time out.nc
+#ncbo -O mdl_1.nc mdl_2.nc ~/foo.nc
+#ncks -g cesm_01 -v time ~/foo.nc
 
     $dsc_sng="(Groups) Process ensembles in both files mdl_1.nc mdl_2.nc (check fixed variables)";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc mdl_2.nc %tmp_fl_00%";
@@ -671,8 +671,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 
 	
 # ncbo #25
-#ncbo -O --op_typ=add  mdl_1.nc obs.nc out.nc
-#ncks -C -g cesm_01 -v tas1 out.nc
+#ncbo -O --op_typ=add  mdl_1.nc obs.nc ~/foo.nc
+#ncks -C -g cesm_01 -v tas1 ~/foo.nc
 # 544.1 = (file 1 tas1) 272.1 + (file 2 tas1) 273.0
 
     $dsc_sng="(Groups) Process ensembles in file 1 with common variable at root in file 2";
@@ -684,7 +684,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 	
 
 # ncbo #26
-#ncbo -O mdl_1.nc obs.nc out.nc
+#ncbo -O mdl_1.nc obs.nc ~/foo.nc
 #ncks -g ecmwf_01 -v time
 
     $dsc_sng="(Groups) Process ensembles in file 1 with common variable at root in file 2 (check fixed variables)";
@@ -697,8 +697,8 @@ print "\n";
 
 	
 # ncbo 
-#ncbo -O --op_typ=add  obs.nc mdl_1.nc  out.nc
-#ncks -C -g cesm_01 -v tas1 out.nc
+#ncbo -O --op_typ=add  obs.nc mdl_1.nc ~/foo.nc
+#ncks -C -g cesm_01 -v tas1 ~/foo.nc
 # 544.1 =  (file 1 tas1) 273.0 + (file 2 tas1) 272.1 
 
 #FXM ncbo group broadcasting, "time" dimension is created at root because conflicting logic in nco_prc_cmn() uses 
@@ -716,8 +716,8 @@ print "\n";
 	}  
 	
 # ncbo #27
-#ncbo -O cmip5.nc obs.nc out.nc
-#ncks -C -g ecmwf -v tas1 out.nc
+#ncbo -O cmip5.nc obs.nc ~/foo.nc
+#ncks -C -g ecmwf -v tas1 ~/foo.nc
 # obs.nc tas1=273, cmip5.nc giss tas1=274
 
     $dsc_sng="(Groups) Process relative matches, first file greater (cmip5.nc obs.nc)";
@@ -729,8 +729,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 	
 	
 # ncbo #28
-#ncbo -O  obs.nc cmip5.nc out.nc
-#ncks -C -g ecmwf -v tas1 out.nc
+#ncbo -O  obs.nc cmip5.nc ~/foo.nc
+#ncks -C -g ecmwf -v tas1 ~/foo.nc
 # obs.nc tas1=273, cmip5.nc giss tas1=274
 
     $dsc_sng="(Groups) Process relative matches, second file greater (obs.nc cmip5.nc)";
@@ -744,8 +744,8 @@ print "\n";
 # ncbo #29
 #ncbo ensemble with 1 member 
 #ncra -Y ncge -O mdl_3.nc ncge_out.nc
-#ncbo -O --op_typ=add ncge_out.nc mdl_3.nc out.nc
-#ncks -H -C -g cesm_01 -v tas1 out.nc
+#ncbo -O --op_typ=add ncge_out.nc mdl_3.nc ~/foo.nc
+#ncks -H -C -g cesm_01 -v tas1 ~/foo.nc
 #ncge_out.nc =
 #/cesm/tas1
 #time[0]=1 tas1[0]=272.15 
@@ -904,7 +904,7 @@ print "\n";
 	
 #nces #12
 # 2 groups, each one with a record (part 1)
-# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 in_grp_3.nc in_grp_3.nc out.nc
+# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 in_grp_3.nc in_grp_3.nc ~/foo.nc
 	
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
@@ -916,7 +916,7 @@ print "\n";
 
 #nces #13
 # 2 groups, each one with a record (part 2)
-# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 in_grp_3.nc in_grp_3.nc out.nc
+# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 in_grp_3.nc in_grp_3.nc ~/foo.nc
 	
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
@@ -947,8 +947,8 @@ print "\n";
     if($RUN_NETCDF4_TESTS == 1){
 
 #nces #15
-# ncra -Y ncge -h -O  mdl_1.nc out.nc
-# ncks -g cesm -v tas1 out.nc
+# ncra -Y ncge -h -O  mdl_1.nc ~/foo.nc
+# ncks -g cesm -v tas1 ~/foo.nc
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g cesm -v tas1 %tmp_fl_00%";
@@ -969,7 +969,7 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 	
 #nces #17
-# ncra -Y ncge -h -O -G /gpe_grp mdl_1.nc out.nc
+# ncra -Y ncge -h -O -G /gpe_grp mdl_1.nc ~/foo.nc
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g /gpe_grp/ecmwf -v tas1 %tmp_fl_00%";
@@ -980,7 +980,7 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 #nces #18
-#ncra -Y ncge -O mdl_1.nc mdl_2.nc out.nc
+#ncra -Y ncge -O mdl_1.nc mdl_2.nc ~/foo.nc
  
     $dsc_sng="(Groups) Two-file ensembles";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc mdl_2.nc %tmp_fl_00%";
@@ -992,8 +992,8 @@ print "\n";
 
 # NEW NCO 4.4.2
 #nces #19 (check coordinate variables)
-# ncra -Y ncge -h -O mdl_1.nc out.nc
-# ncks -g cesm -v time out.nc
+# ncra -Y ncge -h -O mdl_1.nc ~/foo.nc
+# ncks -g cesm -v time ~/foo.nc
 # NB: This test succeeds when it fails, i.e., the NCO command fails as it should because the input files do not conform
 	
     $dsc_sng="(Groups) Ensemble record coordinate variables";
@@ -1006,7 +1006,7 @@ print "\n";
 
 # NEW NCO 4.4.3
 #nces #20 (error checking of ensemble variable dimensions)
-#  ncra -Y ncge -O in_grp_4.nc in_grp_5.nc out.nc
+#  ncra -Y ncge -O in_grp_4.nc in_grp_5.nc ~/foo.nc
 	
     $dsc_sng="(Groups) Invalid input, expect ERROR because dimensions do not conform between ensemble variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_4.nc in_grp_5.nc %tmp_fl_00%";
@@ -1017,7 +1017,7 @@ print "\n";
 
 # NEW NCO 4.4.3
 #nces #21 
-# ncra -Y ncge -h -O mdl_1.nc out.nc
+# ncra -Y ncge -h -O mdl_1.nc ~/foo.nc
 	
     $dsc_sng="(Groups) Test CCM/CAM/CCSM special fixed variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
@@ -1085,8 +1085,8 @@ print "\n";
 # NCO 4.3.1 - ncecat for groups 
 #
 #ncecat #4 part1
-#ncecat -h -O -g g1g1 -v v1 in_grp.nc in_grp.nc out.nc
-#ncks -d record,1,1,1 out.nc
+#ncecat -h -O -g g1g1 -v v1 in_grp.nc in_grp.nc ~/foo.nc
+#ncks -d record,1,1,1 ~/foo.nc
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
@@ -1097,8 +1097,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 			     
 
 #ncecat #5 same as #4 but look metadata
-#ncecat -h -O -g g1g1 -v v1 in_grp.nc in_grp.nc out.nc
-#ncks -d record,1,1,1 out.nc    
+#ncecat -h -O -g g1g1 -v v1 in_grp.nc in_grp.nc ~/foo.nc
+#ncks -d record,1,1,1 ~/foo.nc    
     
     $dsc_sng="(Groups) Concatenate variables/groups 2: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
@@ -1109,8 +1109,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
 
 #ncecat #6 part1
-#ncecat  -h -O -g g6g1 -v area in_grp.nc in_grp.nc out.nc
-#ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area  out.nc
+#ncecat  -h -O -g g6g1 -v area in_grp.nc in_grp.nc ~/foo.nc
+#ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area ~/foo.nc
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
@@ -1121,8 +1121,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 			     
 
 #ncecat #7 same as #6 but look metadata
-#ncecat  -h -O -g g6g1 -v area in_grp.nc in_grp.nc out.nc
-#ncks -C -g g6g1 -v area  out.nc
+#ncecat  -h -O -g g6g1 -v area in_grp.nc in_grp.nc ~/foo.nc
+#ncks -C -g g6g1 -v area ~/foo.nc
 #area dimension 0: record, size = 2 (Record non-coordinate dimension)
     
     $dsc_sng="(Groups) Concatenate variables/groups 2: 1D -g g6g1 -v area";
@@ -1134,8 +1134,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
     
 #ncecat #8 part1
-#ncecat  -h -O -v two_dmn_rec_var in_grp.nc in_grp.nc out.nc
-#ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var  out.nc
+#ncecat  -h -O -v two_dmn_rec_var in_grp.nc in_grp.nc ~/foo.nc
+#ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var ~/foo.nc
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: 2D -v two_dmn_rec_var";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -v two_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
@@ -1148,8 +1148,8 @@ print "\n";
 	   
 #ncecat #9 
 #Check that "time" is eliminated as record
-#ncecat -O in_grp_3.nc in_grp_3.nc out.nc
-#ncks -m -C -g g25g1 -v one_dmn_rec_var out.nc
+#ncecat -O in_grp_3.nc in_grp_3.nc ~/foo.nc
+#ncks -m -C -g g25g1 -v one_dmn_rec_var ~/foo.nc
 
     $dsc_sng="(Groups) Concatenate variables/groups";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
@@ -1161,10 +1161,10 @@ print "\n";
 
 #ncecat #10
 #Chunking 
-# ncecat -O -4 -D 5 -C --cnk_plc=all -v date_int in.nc in.nc out.nc
+# ncecat -O -4 -D 5 -C --cnk_plc=all --cnk_map=rd1 -v date_int -p ~/nco/data in.nc in.nc ~/foo.nc
 
-    $dsc_sng="Chunking --cnk_plc=all -v date_int";
-    $tst_cmd[0]="ncecat -O -4 $nco_D_flg --cnk_plc=all -v date_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $dsc_sng="Chunking --cnk_plc=all --cnk_map=rd1 -v date_int";
+    $tst_cmd[0]="ncecat -O -C -4 $nco_D_flg --cnk_plc=all --cnk_map=rd1 -v date_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'date_int dimension 0'";
     $tst_cmd[2]="date_int dimension 0: record, size = 2, chunksize = 1 (Record non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
@@ -1173,7 +1173,7 @@ print "\n";
 
 #ncecat #11
 #Chunking 
-#ncecat -O -C -4 -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 in.nc in.nc out.nc
+#ncecat -O -C -4 -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 -p ~/nco/data in.nc in.nc ~/foo.nc
 
     $dsc_sng="Chunking -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4";
     $tst_cmd[0]="ncecat -O -C -4 $nco_D_flg -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4  $in_pth_arg in.nc in.nc %tmp_fl_00%";
@@ -1294,8 +1294,8 @@ print "\n";
 
 		
 #ncflint #6 
-# ncflint -4 -O -w 0.8,0.0 in.nc in.nc out.nc
-# ncks -H -C -v time  -d time,9,9,1 out.nc
+# ncflint -4 -O -w 0.8,0.0 -p ~/nco/data in.nc in.nc ~/foo.nc
+# ncks -H -C -v time  -d time,9,9,1 ~/foo.nc
 
     $dsc_sng="-w 0.8,0.0 in.nc in.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -4 -O -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
@@ -1306,8 +1306,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 
 #ncflint #7  
-# ncflint -4 -O -w 0.8,0.0 in.nc in.nc out.nc
-# ncks -H -C -v time  -d time,9,9,1 out.nc
+# ncflint -4 -O -w 0.8,0.0 -p ~/nco/data in.nc in.nc ~/foo.nc
+# ncks -H -C -v time  -d time,9,9,1 ~/foo.nc
 # --fix_rec_crd prevents ncflint from multiplying or interpolating any coordinate variables, including record coordinate variables
 
     $dsc_sng="--fix_rec_crd -w 0.8,0.0 in.nc in.nc";
@@ -1321,8 +1321,8 @@ print "\n";
 # NCO 4.3.2 ncflint -- groups   
  
 #ncflint #8
-# ncflint -h -O -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc out.nc
-# ncks  -H -C -O -g g4  -d time,9 -v one_dmn_rec_var  out.nc
+# ncflint -h -O -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc ~/foo.nc
+# ncks  -H -C -O -g g4  -d time,9 -v one_dmn_rec_var ~/foo.nc
 
     $dsc_sng="(Groups) Weight 1D -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -h -O -v one_dmn_rec_var -w 1,1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
@@ -2029,7 +2029,7 @@ print "\n";
 # The test greps chunksize = 2 for lat
 # Policy: Chunk All Variables [default]
 # Map:Chunksize Equals Dimension Size [default]
-#ncks -O -4 -v lat_lon --cnk_plc=all in_grp.nc out.nc"
+#ncks -O -4 -v lat_lon --cnk_plc=all in_grp.nc ~/foo.nc"
 
     $dsc_sng="(Groups) Chunking --cnk_plc=all --v lat_lon";
     $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -2062,7 +2062,7 @@ print "\n";
 #
 
 #ncks #56:
-# ncks -H -C --dmn time,1,3,2 --dmn lev,1,1,1 -v two_dmn_rec_var  ~/nco/data/in_grp.nc
+# ncks -H -C --dmn time,1,3,2 --dmn lev,1,1,1 -v two_dmn_rec_var ~/nco/data/in_grp.nc
 # /g10/two_dmn_rec_var
 # time[1]=2 lev[1]=500 two_dmn_rec_var[4]=2.1 
 # time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3 
@@ -2077,7 +2077,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
 
 #ncks #57:
-#  ncks -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1  -v two_dmn_rec_var  ~/nco/data/in_grp.nc
+#  ncks -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1  -v two_dmn_rec_var ~/nco/data/in_grp.nc
 #/g10/two_dmn_rec_var
 #time[1]=2 lev[0]=100 two_dmn_rec_var[3]=1 
 #time[1]=2 lev[2]=1000 two_dmn_rec_var[5]=3 
@@ -2205,7 +2205,7 @@ print "\n";
     
 #ncks #65
 # Test creation of variables with ancestor group dimensions
-#ncks -O -g g6g1 -v area in_grp.nc out.nc
+#ncks -O -g g6g1 -v area in_grp.nc ~/foo.nc
 #/g6/g6g1/area
 #lat[1]=90 area[1]=50
 
@@ -2221,7 +2221,7 @@ print "\n";
 
 #ncks #66
 # Test creation of variables with ancestor group dimensions, with GPE
-#ncks -O -G o1 -g g6g1 -v area in_grp.nc out.nc
+#ncks -O -G o1 -g g6g1 -v area in_grp.nc ~/foo.nc
 #/o1/g6/g6g1/area
 #lat[0]=-90 area[0]=40 
 #lat[1]=90 area[1]=50 
@@ -2339,7 +2339,7 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 #ncks #75
-# ncks -O -c in_grp.nc out.nc
+# ncks -O -c in_grp.nc ~/foo.nc
 
     if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
 
@@ -2354,7 +2354,7 @@ print "\n";
 	} #RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #ncks #76
-# ncks -O in_grp.nc out.nc
+# ncks -O in_grp.nc ~/foo.nc
 
     $dsc_sng="(Groups) Default input dataset";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -2365,7 +2365,7 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 	
 #ncks #77
-# ncks -O in.nc out.nc
+# ncks -O in.nc ~/foo.nc
 
     $dsc_sng="Default input dataset";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg in.nc %tmp_fl_00%";
@@ -2376,7 +2376,7 @@ print "\n";
     $#tst_cmd=0; # Reset array		
 
 #ncks #78
-#ncks -O -3 -G : -g /g27g1/ in_grp_3.nc out.nc
+#ncks -O -3 -G : -g /g27g1/ in_grp_3.nc ~/foo.nc
     
     $dsc_sng="(Groups) Test flatenning with parallel variables (-3 -G : -g)";
     $tst_cmd[0]="ncks -O -3 -G : -g /g27g1/  $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -2387,7 +2387,7 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 
 #ncks #79
-#ncks -O -3 -G : -g g28 -v delta_time_stop in_grp_3.nc out.nc	
+#ncks -O -3 -G : -g g28 -v delta_time_stop in_grp_3.nc ~/foo.nc	
 # simpler case of ncks -O -D 2 -3 -G : -g /altimetry/${DATA}/hdf/mabel_l2_20130927t201800_008_1.h5 ~/foo_mabel.nc
     
     $dsc_sng="(Groups) Test CF extraction with flattening (-3 -G : -g)";
@@ -2401,8 +2401,8 @@ print "\n";
 	if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){	
 	
 #ncks #80
-#ncks -O -4 -L 0 --cnk_dmn lev,1 -v two_dmn_var in_grp_7.nc out.nc
-#ncks -C -g g19g1g1 --hdn --cdl out.nc | grep _DeflateLevel
+#ncks -O -4 -L 0 --cnk_dmn lev,1 -v two_dmn_var in_grp_7.nc ~/foo.nc
+#ncks -C -g g19g1g1 --hdn --cdl ~/foo.nc | grep _DeflateLevel
     
     $dsc_sng="(Groups) Chunking and uncompression -L 0 --cnk_dmn lev,1 -v two_dmn_var";
     $tst_cmd[0]="ncks -O -L 0 -4 --cnk_dmn lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
@@ -2414,8 +2414,8 @@ print "\n";
 
 #ncks #81
 # there are 2 'two_dmn_var' beneath /g19/g19g1, chunking only 1
-#ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var in_grp_7.nc out.nc
-#ncks -m -C -v /g19/g19g1/two_dmn_var --hdn out.nc
+#ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var in_grp_7.nc ~/foo.nc
+#ncks -m -C -v /g19/g19g1/two_dmn_var --hdn ~/foo.nc
     
     $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
@@ -2427,8 +2427,8 @@ print "\n";
 	
 #ncks #82
 # there are 2 'two_dmn_var' beneath /g19/g19g1, chunking only 1
-#ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var in_grp_7.nc out.nc
-#ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var --hdn out.nc
+#ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var in_grp_7.nc ~/foo.nc
+#ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var --hdn ~/foo.nc
     
     $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
@@ -2440,8 +2440,8 @@ print "\n";
 	
 #ncks #83 (part 1)
 # there are 2 'two_dmn_var' beneath /g19/g19g1, chunking both, one with absolute other with relative
-# ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3 -v two_dmn_var in_grp_7.nc out.nc
-# ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var --hdn out.nc | grep _ChunkSizes
+# ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3 -v two_dmn_var in_grp_7.nc ~/foo.nc
+# ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var --hdn ~/foo.nc | grep _ChunkSizes
     
     $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
@@ -2453,8 +2453,8 @@ print "\n";
 	
 #ncks #84 (part 2)
 # there are 2 'two_dmn_var' beneath /g19/g19g1, chunking the 2 , one with absolute other with relative
-# ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3 -v two_dmn_var in_grp_7.nc out.nc
-# ncks -m -C -v /g19/g19g1/two_dmn_var  --hdn out.nc | grep _ChunkSizes
+# ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3 -v two_dmn_var in_grp_7.nc ~/foo.nc
+# ncks -m -C -v /g19/g19g1/two_dmn_var  --hdn ~/foo.nc | grep _ChunkSizes
     
     $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
@@ -2465,8 +2465,8 @@ print "\n";
     $#tst_cmd=0; # Reset array		
 
 #ncks #85
-#ncks -O -L 0 --cnk_dmn lat,2 -v one in_grp.nc out.nc
-#ncks -C -m --hdn -v one -g g13  out.nc | grep  _Storage
+#ncks -O -L 0 --cnk_dmn lat,2 -v one in_grp.nc ~/foo.nc
+#ncks -C -m --hdn -v one -g g13 ~/foo.nc | grep  _Storage
     
     $dsc_sng="(Groups) Chunking and shuffle filter -L 0 --cnk_dmn lat,2 -v one (expect failuse with netCDF 4.1.1-)";
     $tst_cmd[0]="ncks -O -4 -L 0 --cnk_dmn lat,2 -v one $nco_D_flg $in_pth_arg hdn.nc %tmp_fl_00%";
@@ -2479,8 +2479,8 @@ print "\n";
 	} # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #ncks #86
-#ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var in_grp.nc out.nc
-#ncks -v time52 -m  out.nc
+#ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var in_grp.nc ~/foo.nc
+#ncks -v time52 -m ~/foo.nc
     
     $dsc_sng="(Groups) Change record dimension to fixed dimension --fix_rec_dmn time52 -v one_dmn_rec_var";
     $tst_cmd[0]="ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -2491,7 +2491,7 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 
 #ncks #87
-#ncks -O -v lat29 in_grp_3.nc out.nc
+#ncks -O -v lat29 in_grp_3.nc ~/foo.nc
     
     $dsc_sng="(Groups) Test ";
     $tst_cmd[0]="ncks -O -v lat29  $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -2503,7 +2503,7 @@ print "\n";
 
 #ncks #88
 # Test -X writing (apply limits to all standard 'lat' 'lon')
-# ncks -O  -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar in_grp_3.nc out.nc
+# ncks -O  -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar in_grp_3.nc ~/foo.nc
 
     $dsc_sng="(Groups) Auxiliary coordinates writing -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -2515,8 +2515,8 @@ print "\n";
 
 #ncks #89
 # Test -X (writing associated coordinates) 
-# ncks -O  -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc out.nc
-# ncks  -g g18g2 -v lat_gds_2 out.nc 
+# ncks -O  -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc ~/foo.nc
+# ncks  -g g18g2 -v lat_gds_2 ~/foo.nc 
 
     $dsc_sng="(Groups) Auxiliary coordinates (writing associated coordinates) -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -2530,7 +2530,7 @@ print "\n";
    
 #ncks #90
 # Test -X writing
-# ncks -O -X 0.,1.,-30.,-29. -v gds_3dvar in.nc out.nc
+# ncks -O -X 0.,1.,-30.,-29. -v gds_3dvar in.nc ~/foo.nc
 
     $dsc_sng="Auxiliary coordinates writing -X 0.,1.,-30.,-29. -v gds_3dvar";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -v gds_3dvar $in_pth_arg in.nc %tmp_fl_00%";
@@ -2628,8 +2628,8 @@ print "\n";
     
 #NEW NCO 4.3.2 
 #ncpdq #7 MSA stride
-#ncpdq -h -O -a lat,lon,time  -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl in.nc out.nc 
-#ncks -C -H -v three_dmn_var_dbl -d lat,0,0 -d lon,1,1 -d time,0  out.nc
+#ncpdq -h -O -a lat,lon,time  -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl in.nc ~/foo.nc 
+#ncks -C -H -v three_dmn_var_dbl -d lat,0,0 -d lon,1,1 -d time,0 ~/foo.nc
 #lat[0]=90 lon[1]=270 time[0]=2 three_dmn_var_dbl[2]=16 
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon,time -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl  $in_pth_arg in.nc %tmp_fl_00%";
@@ -2663,8 +2663,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #10
 # two_dmn_var (lat,lev) no change
-# ncpdq -O -C -a lat,lev -v two_dmn_var in.nc out.nc
-# ncks  -d lat,1,1 -d lev,1,1 out.nc
+# ncpdq -O -C -a lat,lev -v two_dmn_var in.nc ~/foo.nc
+# ncks  -d lat,1,1 -d lev,1,1 ~/foo.nc
 
   $tst_cmd[0]="ncpdq $omp_flg -O -C $fl_fmt $nco_D_flg -a lat,lev -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
@@ -2677,8 +2677,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #11
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
-# ncpdq -O -C -a lev,lat -v two_dmn_var in.nc out.nc
-# ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
+# ncpdq -O -C -a lev,lat -v two_dmn_var in.nc ~/foo.nc
+# ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 ~/foo.nc
 
   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -a lev,lat -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
@@ -2691,8 +2691,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #12
 # two_dmn_var (lat,lev) no MSA (associated coordinates)
-# ncpdq -O -a lev,lat -v two_dmn_var in.nc out.nc
-# ncks  -C -d lat,1,1 -d lev,1,1 out.nc
+# ncpdq -O -a lev,lat -v two_dmn_var in.nc ~/foo.nc
+# ncks  -C -d lat,1,1 -d lev,1,1 ~/foo.nc
 #$tst_cmd[2]="lev[1]=500 lat[1]=90 two_dmn_var[3]=17.5 fraction";
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,lat -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
@@ -2707,8 +2707,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #13
 # two_dmn_var (lat,lev) -C, MSA (no associated coordinates)
-# ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc out.nc
-# ncks out.nc
+# ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc ~/foo.nc
+# ncks ~/foo.nc
 
   $tst_cmd[0]="ncpdq $omp_flg -O -C $fl_fmt $nco_D_flg -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var %tmp_fl_00%";
@@ -2721,8 +2721,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #14
 # two_dmn_var (lat,lev) MSA (associated coordinates)
-# ncpdq -O -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc out.nc
-# ncks out.nc
+# ncpdq -O -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc ~/foo.nc
+# ncks ~/foo.nc
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var %tmp_fl_00%";
@@ -2735,8 +2735,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #15
 # two_dmn_rec_var(time,lev) 2D variable with record  (-C , no MSA)
-# ncpdq -O -C -a lev,time -v two_dmn_rec_var in.nc out.nc
-# ncks  -d time,1,1 -d lev,1,1 out.nc
+# ncpdq -O -C -a lev,time -v two_dmn_rec_var in.nc ~/foo.nc
+# ncks  -d time,1,1 -d lev,1,1 ~/foo.nc
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -C -a lev,time -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var  -d time,1,1 -d lev,1,1 %tmp_fl_00%";
@@ -2750,8 +2750,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #16
 # two_dmn_rec_var(time,lev) 2D variable with record  (no MSA)
-# ncpdq -O -a lev,time -v two_dmn_rec_var in.nc out.nc
-# ncks  -d time,1,1 -d lev,1,1 out.nc
+# ncpdq -O -a lev,time -v two_dmn_rec_var in.nc ~/foo.nc
+# ncks  -d time,1,1 -d lev,1,1 ~/foo.nc
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,time -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var -d time,1,1 -d lev,1,1 %tmp_fl_00%";
@@ -2764,8 +2764,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #17
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
-# ncpdq -O -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in.nc out.nc
-# ncks  out.nc
+# ncpdq -O -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in.nc ~/foo.nc
+# ncks ~/foo.nc
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var %tmp_fl_00%";
@@ -2778,8 +2778,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #18
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
-# ncpdq -O -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in.nc out.nc
-# ncks  out.nc
+# ncpdq -O -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in.nc ~/foo.nc
+# ncks ~/foo.nc
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var %tmp_fl_00%";
@@ -2792,7 +2792,7 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #19
 #three_dmn_var_dbl(time,lat,lon);
-#ncpdq -h -O -a lat,time -v three_dmn_var -d time,1,1 -d lat,1,1 -d lon,1,1 in.nc out.nc
+#ncpdq -h -O -a lat,time -v three_dmn_var -d time,1,1 -d lat,1,1 -d lon,1,1 in.nc ~/foo.nc
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a -lat,-time -v three_dmn_var_dbl -d time,1,6,2 -d lat,0,1 -d lon,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  -H -C -v three_dmn_var_dbl -d lat,1,1 -d time,2,2 %tmp_fl_00%";
@@ -2806,7 +2806,7 @@ print "\n";
 #ncpdq #20
 #three_dmn_rec_var(time,lat,lon);
 #ty(time,lat);
-#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc out.nc
+#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc ~/foo.nc
     
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v ty -d time,1,1 -d lat,1,1 %tmp_fl_00%";
@@ -2820,7 +2820,7 @@ print "\n";
 #ncpdq #21 (same run as #20)
 #three_dmn_rec_var(time,lat,lon);
 #ty(time,lat);
-#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc out.nc
+#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc ~/foo.nc
     
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v three_dmn_rec_var -d time,1,1 -d lat,1,1 -d lon,1,1 %tmp_fl_00%";
@@ -2834,7 +2834,7 @@ print "\n";
 #ncpdq #22
 #three_dmn_rec_var(time,lat,lon); MSA
 #ty(time,lat);
-#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 in.nc out.nc
+#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 in.nc ~/foo.nc
     
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v ty -d time,2,2 %tmp_fl_00%";
@@ -2848,7 +2848,7 @@ print "\n";
 #ncpdq #23 (same run as #22)
 #three_dmn_rec_var(time,lat,lon); MSA
 #ty(time,lat);
-#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 in.nc out.nc
+#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 in.nc ~/foo.nc
     
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  -C -H -v three_dmn_rec_var -d lat,0,0 -d time,1,1 -d lon,1,1 %tmp_fl_00%";
@@ -2862,7 +2862,7 @@ print "\n";
 #ncpdq #24 (same run as #22) check if output is the right record
 #three_dmn_rec_var(time,lat,lon); 
 #ty(time,lat);
-#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc out.nc
+#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc ~/foo.nc
     
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v three_dmn_rec_var %tmp_fl_00% | grep 'three_dmn_rec_var dimension 0: lat, size = 2 NC_FLOAT (Record coordinate is lat)'";
@@ -2876,7 +2876,7 @@ print "\n";
 #ncpdq #25 (same run as #22) check if output is the right record
 #three_dmn_rec_var(time,lat,lon); 
 #ty(time,lat);
-#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc out.nc
+#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc ~/foo.nc
     
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v three_dmn_rec_var %tmp_fl_00% | grep 'three_dmn_rec_var dimension 1: time, size = 10 NC_DOUBLE (Coordinate is time)'";
@@ -2889,8 +2889,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #26
 #four_dmn_rec_var(time,lat,lev,lon); MSA
-#ncpdq -h -O -a lev,time,-lon,-lat -v four_dmn_rec_var -d time,1,6,2 -d lat,1,1 -d lon,1,1 -d lev,1,1 in.nc out.nc
-#ncks  -C -H -v four_dmn_rec_var -d time,2,2 out.nc
+#ncpdq -h -O -a lev,time,-lon,-lat -v four_dmn_rec_var -d time,1,6,2 -d lat,1,1 -d lon,1,1 -d lev,1,1 in.nc ~/foo.nc
+#ncks  -C -H -v four_dmn_rec_var -d time,2,2 ~/foo.nc
 
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lev,time,-lon,-lat -v four_dmn_rec_var -d time,1,6,2 -d lat,1,1 -d lon,1,1 -d lev,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  -C -H -v four_dmn_rec_var -d time,2,2 %tmp_fl_00%";
@@ -2904,8 +2904,8 @@ print "\n";
 #ncpdq #27 : reorder 2 variables with -a lat,time and check a variable that only has 1 (lat)
 #PS(time,lat,lon)
 #three_dmn_var_crd(lev,lat,lon);
-#ncpdq -h -O -a lat,time -v PS,three_dmn_var_crd -d lev,1,1 -d lat,1,1 -d lon,1,1 -d lev,1,1 in.nc out.nc
-#ncks  -C -H -v three_dmn_var_crd out.nc
+#ncpdq -h -O -a lat,time -v PS,three_dmn_var_crd -d lev,1,1 -d lat,1,1 -d lon,1,1 -d lev,1,1 in.nc ~/foo.nc
+#ncks  -C -H -v three_dmn_var_crd ~/foo.nc
 
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v PS,three_dmn_var_crd -d lev,1,1 -d lat,1,1 -d lon,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -C -v three_dmn_var_crd %tmp_fl_00%";
@@ -2917,8 +2917,8 @@ print "\n";
  
 #NEW NCO 4.3.2
 #ncpdq #28 
-#ncpdq -h -O -a lat,time -d time,1,6,2 -d lat,1,1 in.nc out.nc
-#ncks  -C -H -v -d time,2,2 four_dmn_rec_var out.nc
+#ncpdq -h -O -a lat,time -d time,1,6,2 -d lat,1,1 in.nc ~/foo.nc
+#ncks  -C -H -v -d time,2,2 four_dmn_rec_var ~/foo.nc
 
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -d time,1,1 -d lat,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v four_dmn_rec_var -d lon,2,2 -d lev,2,2 %tmp_fl_00%";
@@ -2978,8 +2978,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #11
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
-# ncpdq -O -C -a lev,lat -v two_dmn_var in.nc out.nc
-# ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
+# ncpdq -O -C -a lev,lat -v two_dmn_var in.nc ~/foo.nc
+# ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 ~/foo.nc
 
 
 # same as previous but with group
@@ -2990,8 +2990,8 @@ print "\n";
 # dimensions:lat=2;lev=3;lon=4;time=unlimited;
 #ncpdq #11
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
-# ncpdq -O -C -g g19g1 -a lev,lat -v two_dmn_var in_grp_3.nc out.nc
-# ncks -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
+# ncpdq -O -C -g g19g1 -a lev,lat -v two_dmn_var in_grp_3.nc ~/foo.nc
+# ncks -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 ~/foo.nc
 
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g1 -a lev,lat -v two_dmn_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -3006,8 +3006,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #12
 # two_dmn_var (lat,lev) no -C, no MSA
-# ncpdq -O -a lev,lat -v two_dmn_var in.nc out.nc
-# ncks  -C -d lat,1,1 -d lev,1,1 out.nc
+# ncpdq -O -a lev,lat -v two_dmn_var in.nc ~/foo.nc
+# ncks  -C -d lat,1,1 -d lev,1,1 ~/foo.nc
 
 
 # same as previous but with group
@@ -3018,8 +3018,8 @@ print "\n";
 # dimensions:lat=2;lev=3;lon=4;time=unlimited;
 #ncpdq #12
 # two_dmn_var (lat,lev) no -C, no MSA 
-# ncpdq -O -g g19g1 -a lev,lat -v two_dmn_var in_grp_3.nc out.nc
-# ncks -C -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
+# ncpdq -O -g g19g1 -a lev,lat -v two_dmn_var in_grp_3.nc ~/foo.nc
+# ncks -C -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 ~/foo.nc
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -a lev,lat -v two_dmn_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
@@ -3032,8 +3032,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #13
 # two_dmn_var (lat,lev) -C, MSA (no associated coordinates)
-# ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc out.nc
-# ncks out.nc
+# ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc ~/foo.nc
+# ncks ~/foo.nc
 
 
 # same as previous but with group
@@ -3044,8 +3044,8 @@ print "\n";
 # dimensions:lat=2;lev=3;lon=4;time=unlimited;
 #ncpdq #13
 # two_dmn_var (lat,lev) -C, MSA (no associated coordinates)
-# ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in_grp_3.nc out.nc
-# ncks out.nc
+# ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in_grp_3.nc ~/foo.nc
+# ncks ~/foo.nc
 
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -C -a lev,lat -v two_dmn_var -d lat,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -3059,8 +3059,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #14
 # two_dmn_var (lat,lev) MSA (associated coordinates)
-# ncpdq -O -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc out.nc
-# ncks out.nc
+# ncpdq -O -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc ~/foo.nc
+# ncks ~/foo.nc
 #$tst_cmd[2]="lev[0]=500 lat[0]=90 two_dmn_var[0]=17.5 fraction";
 
 # same as previous but with group
@@ -3070,8 +3070,8 @@ print "\n";
 # group: g19 { 
 # dimensions:lat=2;lev=3;lon=4;time=unlimited;
 # two_dmn_var (lat,lev) MSA (associated coordinates)
-# ncpdq -O -g g19g1 -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in_grp_3.nc out.nc
-# ncks -C -g g19g1 -v two_dmn_var out.nc
+# ncpdq -O -g g19g1 -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in_grp_3.nc ~/foo.nc
+# ncks -C -g g19g1 -v two_dmn_var ~/foo.nc
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -a lev,lat -v two_dmn_var -d lat,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g1 -v two_dmn_var %tmp_fl_00%";
@@ -3084,8 +3084,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #15
 # two_dmn_rec_var(time,lev) 2D variable with record  (-C , no MSA)
-# ncpdq -O -C -a lev,time -v two_dmn_rec_var in.nc out.nc
-# ncks  -d time,1,1 -d lev,1,1 out.nc
+# ncpdq -O -C -a lev,time -v two_dmn_rec_var in.nc ~/foo.nc
+# ncks  -d time,1,1 -d lev,1,1 ~/foo.nc
 
 # same as previous but with group
     
@@ -3093,8 +3093,8 @@ print "\n";
 #ncpdq #36
 # group: g19 { 
 # dimensions:lat=2;lev=3;lon=4;time=unlimited;
-# ncpdq -O -g g19g2 -C -a lev,time -v two_dmn_rec_var in_grp_3.nc out.nc
-# ncks  -d time,1,1 -d lev,1,1 out.nc
+# ncpdq -O -g g19g2 -C -a lev,time -v two_dmn_rec_var in_grp_3.nc ~/foo.nc
+# ncks  -d time,1,1 -d lev,1,1 ~/foo.nc
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -C -a lev,time -v two_dmn_rec_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g2 -v two_dmn_rec_var -d time,1,1 -d lev,1,1 %tmp_fl_00%";
@@ -3107,8 +3107,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #37
 # two_dmn_rec_var(time,lev) 2D variable with record  (no -C, no MSA)
-# ncpdq -O -g g19g2 -a lev,time -v two_dmn_rec_var in_grp_3.nc out.nc
-# ncks -C -g g19g2 -d time,1,1 -d lev,1,1 out.nc
+# ncpdq -O -g g19g2 -a lev,time -v two_dmn_rec_var in_grp_3.nc ~/foo.nc
+# ncks -C -g g19g2 -d time,1,1 -d lev,1,1 ~/foo.nc
 
 # same #16 as previous but with group
 
@@ -3123,8 +3123,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #38
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
-# ncpdq -O -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in_grp_3.nc out.nc
-# ncks -g g19g2 -v two_dmn_rec_var out.nc
+# ncpdq -O -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in_grp_3.nc ~/foo.nc
+# ncks -g g19g2 -v two_dmn_rec_var ~/foo.nc
 
 # same as #17 but with group
 
@@ -3139,8 +3139,8 @@ print "\n";
 #NEW NCO 4.3.2
 #ncpdq #39
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
-# ncpdq -O -g g19g2 -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in_grp_3.nc out.nc
-# ncks  -C -g g19g2 -v two_dmn_rec_var out.nc
+# ncpdq -O -g g19g2 -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in_grp_3.nc ~/foo.nc
+# ncks  -C -g g19g2 -v two_dmn_rec_var ~/foo.nc
 # $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
 
 # same as #18 but with group
@@ -3154,7 +3154,7 @@ print "\n";
    $#tst_cmd=0; # Reset array  
 
 #NEW NCO 4.3.5
-#ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc  out.nc
+#ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc ~/foo.nc
   
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat -g g23,g24 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -v lat -g g23 %tmp_fl_00%";
@@ -3165,7 +3165,7 @@ print "\n";
    $#tst_cmd=0; # Reset array  
 
 #NEW NCO 4.3.5
-#ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc  out.nc
+#ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc ~/foo.nc
   
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat -g g23,g24 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -v lat -g g24 %tmp_fl_00%";
@@ -3181,9 +3181,9 @@ print "\n";
 
 #NEW NCO 4.3.2patch
 #ncpdq #40
-#ncpdq -h -O -P all_new -v upk in.nc out.nc
-#ncpdq -h -O -P upk -v upk out.nc out.nc
-#ncks -C -H -s '%g' -v upk out.nc
+#ncpdq -h -O -P all_new -v upk in.nc ~/foo.nc
+#ncpdq -h -O -P upk -v upk ~/foo.nc ~/foo.nc
+#ncks -C -H -s '%g' -v upk ~/foo.nc
 
 # same as #29 but with group
 
@@ -3199,8 +3199,8 @@ print "\n";
 #NEW NCO 4.3.2patch
 #ncpdq #41
 # same as ncpdq #30
-#ncpdq -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 in_grp_3.nc out.nc
-#ncks -g g19g4 -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 out.nc
+#ncpdq -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 in_grp_3.nc ~/foo.nc
+#ncks -g g19g4 -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 ~/foo.nc
 #$tst_cmd[2]="7";
 
 # same as #30 but with group
@@ -3216,7 +3216,7 @@ print "\n";
    	
 #NEW NCO 4.4.0
 #ncpdq #46
-# ncpdq -O -4  -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct in.nc out.nc
+# ncpdq -O -4  -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct in.nc ~/foo.nc
 
    $dsc_sng="Chunking -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
    $tst_cmd[0]="ncpdq $omp_flg -4 $nco_D_flg -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct $in_pth_arg in.nc %tmp_fl_00%";
@@ -3566,7 +3566,7 @@ print "\n";
 	
 #ncrcat #23	
 # 2 groups each one with a record (part 1)
-# ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var in_grp_3.nc in_grp_3.nc -d time,2.,3. out.nc
+# ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var in_grp_3.nc in_grp_3.nc -d time,2.,3. ~/foo.nc
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 -v one_dmn_rec_var $in_pth_arg in_grp_3.nc in_grp_3.nc -d time,2.,3. %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d ' -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
@@ -3578,7 +3578,7 @@ print "\n";
 
 #ncrcat #24
 # 2 groups each one with a record (part 2)
-# ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var in_grp_3.nc in_grp_3.nc -d time,2.,3. out.nc
+# ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var in_grp_3.nc in_grp_3.nc -d time,2.,3. ~/foo.nc
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 -v one_dmn_rec_var $in_pth_arg in_grp_3.nc in_grp_3.nc -d time,2.,3. %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d ' -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
@@ -3665,8 +3665,8 @@ print "\n";
 #ncrcat #30
 #ncks -h -O -g g5 -v one_dmn_rec_var,time51,time52 in_grp.nc in_grp1.nc 
 #ncks -h -O -g g5 -v one_dmn_rec_var,time51,time52 in_grp.nc in_grp2.nc 
-#ncrcat -O -h -g g5 -v one_dmn_rec_var in_grp1.nc in_grp2.nc out.nc
-#ncks -C -g g5 -v one_dmn_rec_var  out.nc
+#ncrcat -O -h -g g5 -v one_dmn_rec_var in_grp1.nc in_grp2.nc ~/foo.nc
+#ncks -C -g g5 -v one_dmn_rec_var ~/foo.nc
 
 	$tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_01%";
@@ -3973,7 +3973,7 @@ print "\n";
 
 # ncra #27
 # (Groups) 1D var 2 records to process in 2 groups (part 1)
-#  ncra -h -O  -g g25g1,g25g2 in_grp_3.nc in_grp_3.nc out.nc
+#  ncra -h -O  -g g25g1,g25g2 in_grp_3.nc in_grp_3.nc ~/foo.nc
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
@@ -3985,7 +3985,7 @@ print "\n";
 	
 # ncra #28 same as #27
 # (Groups) 1D var 2 records to process in 2 groups (part 2)
-#  ncra -h -O  -g g25g1,g25g2 in_grp_3.nc in_grp_3.nc out.nc
+#  ncra -h -O  -g g25g1,g25g2 in_grp_3.nc in_grp_3.nc ~/foo.nc
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
@@ -3998,7 +3998,7 @@ print "\n";
 # ncra #29 Generate a file with 2 records
 # ncecat -O  -g g25g1 in_grp_3.nc in1.nc -> generate "record"
 # ncpdq -O -a time,record in1.nc in2.nc -> switch "record" and "time"
-# ncra -O in2.nc out.nc
+# ncra -O in2.nc ~/foo.nc
     
     $tst_cmd[0]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a time,record %tmp_fl_00% %tmp_fl_01%";
@@ -4049,7 +4049,7 @@ print "\n";
 	
 #NEW 4.4.2	
 #ncra #32
-#ncra -O -v time301 -C in_grp_3.nc out.nc
+#ncra -O -v time301 -C in_grp_3.nc ~/foo.nc
 if (0){
     $dsc_sng="(Groups) Cell methods (Create) -v time301";
     $tst_cmd[0]="ncra $omp_flg $nco_D_flg -O -v time301 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -4370,7 +4370,7 @@ if (0){
     @tst_cmd=(); # Reset array
 
 #ncwa #28
-# ncwa -h -O -y max -v three_dmn_var_dbl -a lat,lon in.nc out.nc
+# ncwa -h -O -y max -v three_dmn_var_dbl -a lat,lon in.nc ~/foo.nc
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -4560,8 +4560,8 @@ if (0){
 #ncwa #44
 #NEW NCO 4.3.3
 #same as #ncwa #25
-#ncwa -h -O -y min -g g10 -v three_dmn_rec_var in_grp.nc out.nc
-#ncks -C -H -s '%f' -g g10 -v three_dmn_rec_var out.nc
+#ncwa -h -O -y min -g g10 -v three_dmn_rec_var in_grp.nc ~/foo.nc
+#ncks -C -H -s '%f' -g g10 -v three_dmn_rec_var ~/foo.nc
 #$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
 #$tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var %tmp_fl_00%";
 #$dsc_sng="Dimension reduction with min flag on type float variable";
@@ -4578,8 +4578,8 @@ if (0){
 #ncwa #45
 #NEW NCO 4.3.3
 #same as #ncwa #27
-# ncwa -h -O -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc out.nc
-# ncks -C -H --no_blank -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,3 out.nc
+# ncwa -h -O -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc ~/foo.nc
+# ncks -C -H --no_blank -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,3 ~/foo.nc
 
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon $in_pth_arg in_grp_3.nc %tmp_fl_00%");
@@ -4594,8 +4594,8 @@ if (0){
 #ncwa #46
 #NEW NCO 4.3.3
 #same as #ncwa #28
-# ncwa -h -O  -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc out.nc
-# ncks -C -H -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,4 out.nc 
+# ncwa -h -O  -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc ~/foo.nc
+# ncks -C -H -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,4 ~/foo.nc 
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon $in_pth_arg in_grp_3.nc %tmp_fl_00%");
@@ -4611,8 +4611,8 @@ if (0){
 #ncwa #47
 #NEW NCO 4.3.3
 #same as #ncwa #33
-# ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy in_grp_3.nc out.nc
-# ncks -C -H -s '%f' -g g20g1 -v lat_cpy out.nc
+# ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy in_grp_3.nc ~/foo.nc
+# ncks -C -H -s '%f' -g g20g1 -v lat_cpy ~/foo.nc
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -g g20g1 -v lat_cpy $in_pth_arg in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -g g20g1 -v lat_cpy %tmp_fl_00%";;
@@ -4624,7 +4624,7 @@ if (0){
 
 #ncwa #48
 #NEW NCO 4.3.6
-#ncwa -O -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 in_grp_3.nc out.nc
+#ncwa -O -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 in_grp_3.nc ~/foo.nc
     
     $tst_cmd[0]="ncwa $omp_flg -O $fl_fmt $nco_D_flg -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v a %tmp_fl_00%";;
@@ -4635,7 +4635,7 @@ if (0){
     $#tst_cmd=0; # Reset array
 	
 #ncwa #49
-# ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc out.nc
+# ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
     
@@ -4648,7 +4648,7 @@ if (0){
     $#tst_cmd=0; # Reset array	
 	
 #ncwa #50
-# ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc out.nc
+# ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
 
@@ -4662,8 +4662,8 @@ if (0){
 	
 #NEW 4.3.7	
 #ncwa #51
-# ncwa  -h -O -a time -b -v time in_grp.nc out.nc
-# ncks out.nc | grep 'time dimension 0'
+# ncwa  -h -O -a time -b -v time in_grp.nc ~/foo.nc
+# ncks ~/foo.nc | grep 'time dimension 0'
 
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -b -v time $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -v /g2/time %tmp_fl_00% | grep '=5.5'";
@@ -4675,7 +4675,7 @@ if (0){
 	
 #NEW 4.4.0	
 #ncwa #52 Use -w /g8/lev_wgt
-# ncwa -h -O -v lev -a lev -w /g8/lev_wgt in_grp_3.nc out.nc
+# ncwa -h -O -v lev -a lev -w /g8/lev_wgt in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
     
@@ -4689,7 +4689,7 @@ if (0){
 
 #NEW 4.4.0		
 #ncwa #53 Use -w /g8/lev_wgt
-# ncwa -h -O -v lev -a lev -w /g19/lev_wgt in_grp_3.nc out.nc
+# ncwa -h -O -v lev -a lev -w /g19/lev_wgt in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
     
@@ -4704,7 +4704,7 @@ if (0){
 #NEW 4.4.0	
 #ncwa #54 
 #Use -a /g8/lev, -w /g8/lev_wgt
-# ncwa -h -O -v lev -a /g8/lev -w /g8/lev_wgt in_grp_3.nc out.nc
+# ncwa -h -O -v lev -a /g8/lev -w /g8/lev_wgt in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
     
@@ -4718,7 +4718,7 @@ if (0){
 	
 #NEW 4.4.0	
 #ncwa #55
-#ncwa -O -4  -a time --cnk_dmn lon,4 -v byt_3D_rec in.nc out.nc
+#ncwa -O -4  -a time --cnk_dmn lon,4 -v byt_3D_rec in.nc ~/foo.nc
     
     $dsc_sng="Chunking -a time --cnk_dmn lon,4 -v byt_3D_rec";
     $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a time --cnk_dmn lon,4 -v byt_3D_rec $in_pth_arg in.nc %tmp_fl_00%";
@@ -4730,7 +4730,7 @@ if (0){
 	
 #NEW 4.4.0	
 #ncwa #56
-#ncwa -O -4 -a /time --cnk_dmn /time,1 -v time in.nc out.nc
+#ncwa -O -4 -a /time --cnk_dmn /time,1 -v time in.nc ~/foo.nc
     
     $dsc_sng="Chunking -a /time --cnk_dmn /time,1 -v time";
     $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a /time --cnk_dmn /time,1 -v time $in_pth_arg in.nc %tmp_fl_00%";
@@ -4742,8 +4742,8 @@ if (0){
 
 #NEW 4.4.0	
 #ncwa #57	
-#ncwa -O -C -4 -D 12 --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 in.nc out.nc	
-#ncks --hdn --cdl -v four_dmn_rec_var out.nc
+#ncwa -O -C -4 -D 12 --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 in.nc ~/foo.nc	
+#ncks --hdn --cdl -v four_dmn_rec_var ~/foo.nc
 
     $dsc_sng="Chunking with --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 ";
     $tst_cmd[0]="ncwa $omp_flg -O -C -4 $nco_D_flg --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 $in_pth_arg in.nc %tmp_fl_00%";
@@ -4755,8 +4755,8 @@ if (0){
 	
 #NEW 4.4.2	
 #ncwa #58
-#ncwa -O -y avg -a time301 -v time301 -C in_grp_3.nc out.nc
-#ncks -m out.nc
+#ncwa -O -y avg -a time301 -v time301 -C in_grp_3.nc ~/foo.nc
+#ncks -m ~/foo.nc
 
     $dsc_sng="Groups (Cell methods) (Create, average) -y avg -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y avg -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -4768,8 +4768,8 @@ if (0){
 	
 #NEW 4.4.2	
 #ncwa #59
-#ncwa -O -y max -a time301 -v time301 -C in_grp_3.nc out.nc	  
-#ncks -m out.nc	
+#ncwa -O -y max -a time301 -v time301 -C in_grp_3.nc ~/foo.nc	  
+#ncks -m ~/foo.nc	
 
     $dsc_sng="Groups (Cell methods) (Create, maximum) -y max -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y max -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -4783,8 +4783,8 @@ if (0){
 
 #NEW 4.4.2	
 #ncwa #60 (part 1)
-#ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc out.nc	
-#ncks -m -C -v three_dmn_rec_var out.nc
+#ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc ~/foo.nc	
+#ncks -m -C -v three_dmn_rec_var ~/foo.nc
 
     $dsc_sng="Cell methods (Create, average) -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon $in_pth_arg in.nc %tmp_fl_00%";
@@ -4796,8 +4796,8 @@ if (0){
 
 #NEW 4.4.2	
 #ncwa #61 (part 2)
-#ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc out.nc	
-#ncks -m -C -v one_dmn_rec_var out.nc
+#ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc ~/foo.nc	
+#ncks -m -C -v one_dmn_rec_var ~/foo.nc
 	
     $dsc_sng="Cell methods (Create, average) -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon $in_pth_arg in.nc %tmp_fl_00%";
@@ -4809,8 +4809,8 @@ if (0){
 
 #NEW 4.4.2	
 #ncwa #62 max
-#ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc out.nc	
-#ncks -m -C -v one_dmn_rec_var out.nc
+#ncwa  --op_typ=avg -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon in.nc ~/foo.nc	
+#ncks -m -C -v one_dmn_rec_var ~/foo.nc
 	
     $dsc_sng="Cell methods (Create, maximum) -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg --op_typ=max -O -v one,one_dmn_rec_var,three_dmn_rec_var -a time,lon $in_pth_arg in.nc %tmp_fl_00%";
@@ -4825,8 +4825,8 @@ if (0){
 
 #NEW 4.4.3	
 #ncwa #63 
-#ncwa -g cesm,ecmwf -v time -a time -O  cmip5.nc out.nc	
-#ncks -m  out.nc
+#ncwa -g cesm,ecmwf -v time -a time -O  cmip5.nc ~/foo.nc	
+#ncks -m ~/foo.nc
     $dsc_sng="Groups (Cell methods, repeated dimension names) -g cesm,ecmwf -v time -a time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -g cesm,ecmwf -v time -a time $in_pth_arg cmip5.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -g ecmwf -v time %tmp_fl_00%";
@@ -4863,7 +4863,7 @@ if (0){
 #################### Attributes
 
 #ncrename #1
-#ncrename -O -a .nothing,new_nothing in_grp.nc out.nc 
+#ncrename -O -a .nothing,new_nothing in_grp.nc ~/foo.nc 
 #optional relative rename nothing to new_nothing (print warning)
     
     $dsc_sng="Attributes: Optional relative rename '.nothing' to 'new_nothing'";
@@ -4874,7 +4874,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 	
 #ncrename #2
-#ncrename -O -a history,new_history in_grp.nc out.nc  
+#ncrename -O -a history,new_history in_grp.nc ~/foo.nc  
 #relative rename history to new_history
     
     $dsc_sng="Attributes: Relative rename 'history' to 'new_history'";
@@ -4886,8 +4886,8 @@ if (0){
     @tst_cmd=(); # really reset array.	
 
 #ncrename #3
-#ncrename -D 1 -O -a /g1@history,new_history in_grp.nc out.nc
-#ncks -g g1 out.nc | grep 'History group attribute'  
+#ncrename -D 1 -O -a /g1@history,new_history in_grp.nc ~/foo.nc
+#ncks -g g1 ~/foo.nc | grep 'History group attribute'  
 # absolute rename /g1/history group/global att to /g1/new_history
 # NB: use escape in '/g1\@history,new_history'
     
@@ -4901,7 +4901,7 @@ if (0){
 	
 	
 #ncrename #4	
-#ncrename -O -a global@history,new_history in_grp.nc out.nc 
+#ncrename -O -a global@history,new_history in_grp.nc ~/foo.nc 
 # relative rename history group/global att to new_history
 
     $dsc_sng="Attributes: Relative rename 'global\@history' to 'new_history'";
@@ -4913,7 +4913,7 @@ if (0){
     @tst_cmd=(); # really reset array.		
 
 #ncrename #5
-#ncrename -O -a /g1/lon@units,new_units in_grp.nc out.nc 
+#ncrename -O -a /g1/lon@units,new_units in_grp.nc ~/foo.nc 
 # absolute rename /g1/lon@units att to /g1/lon@new_units
 
     $dsc_sng="Attributes: Absolute rename '/g1/lon\@units' to 'new_units'";
@@ -4925,7 +4925,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 	
 #ncrename #6	
-#ncrename -D 1 -O -a /g1/lon@units,/g1/lon@new_units in_grp.nc out.nc 
+#ncrename -D 1 -O -a /g1/lon@units,/g1/lon@new_units in_grp.nc ~/foo.nc 
 #absolute rename /g1/lon@units att to /g1/lon@new_units
 
     $dsc_sng="Attributes: Absolute rename '/g1/lon\@units' to '/g1/lon\@new_units'";
@@ -4937,7 +4937,7 @@ if (0){
     @tst_cmd=(); # really reset array.		
 	
 #ncrename #7	
-#ncrename -O -a /g1/lon@.units,new_units in_grp.nc out.nc 
+#ncrename -O -a /g1/lon@.units,new_units in_grp.nc ~/foo.nc 
 # optional absolute rename /g1/lon@.units att to new_units
 
     $dsc_sng="Attributes: Optional absolute rename '/g1/lon\@.units' to '/g1/lon\@new_units'";
@@ -4953,7 +4953,7 @@ if (0){
    if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
 
 #ncrename #8	
-#ncrename -O -d lat,new_lat in_grp.nc out.nc
+#ncrename -O -d lat,new_lat in_grp.nc ~/foo.nc
 # relative rename lat to new_lat
 
     $dsc_sng="Dimensions: Relative rename 'lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
@@ -4965,7 +4965,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 	
 #ncrename #9	
-#ncrename -O -d /lat,new_lat in_grp.nc out.nc
+#ncrename -O -d /lat,new_lat in_grp.nc ~/foo.nc
 # Absolute rename /lat to new_lat
 
     $dsc_sng="Dimensions: Absolute rename '/lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
@@ -4977,7 +4977,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 
 #ncrename #10	
-#ncrename -O -d .lat,new_lat in_grp.nc out.nc
+#ncrename -O -d .lat,new_lat in_grp.nc ~/foo.nc
 # optional relative rename lat to new_lat
 
     $dsc_sng="Dimensions: Optional existing relative rename '.lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
@@ -4989,7 +4989,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 	
 #ncrename #11	
-#ncrename -O -d /lat,new_lat in_grp.nc out.nc
+#ncrename -O -d /lat,new_lat in_grp.nc ~/foo.nc
 # Absolute rename /lat to new_lat
 
     $dsc_sng="Dimensions: Optional existing absolute rename './lat' to 'new_lat' (expect failure with netCDF < 4.3.1)";
@@ -5003,7 +5003,7 @@ if (0){
 	} # RUN_NETCDF4_TESTS_VERSION_GE_431 
 
 #ncrename #12
-#ncrename -O -d ./lat_non_existing,new_lat in_grp.nc out.nc
+#ncrename -O -d ./lat_non_existing,new_lat in_grp.nc ~/foo.nc
 # Absolute non existing absolute rename
 
     $dsc_sng="Dimensions: Optional non-existing absolute rename './lat_non_existing,new_lat' to 'new_lat'";
@@ -5016,7 +5016,7 @@ if (0){
 #################### Variables	
 
 #ncrename #13
-#ncrename  -D 1 -O -v /g1/v1,new_v1 in_grp.nc out.nc
+#ncrename  -D 1 -O -v /g1/v1,new_v1 in_grp.nc ~/foo.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
     $dsc_sng="Variables: Absolute rename '/g1/v1' to '/g1/new_v1'";
@@ -5029,7 +5029,7 @@ if (0){
 	
 
 #ncrename #14	
-#ncrename  -D 1 -O -v v1,new_v1 in_grp.nc out.nc
+#ncrename  -D 1 -O -v v1,new_v1 in_grp.nc ~/foo.nc
 #Relative rename v1 to new_v1 
 
     $dsc_sng="Variables: Relative rename 'v1' to 'new_v1'";
@@ -5041,7 +5041,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 	
 #ncrename #15	
-#ncrename  -D 1 -O -v ./g1/v1,new_v1 in_grp.nc out.nc
+#ncrename  -D 1 -O -v ./g1/v1,new_v1 in_grp.nc ~/foo.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
     $dsc_sng="Variables: Optional absolute rename '/g1/v1' to '/g1/new_v1'";
@@ -5053,7 +5053,7 @@ if (0){
     @tst_cmd=(); # really reset array.			
 
 #ncrename #16
-#ncrename  -D 1 -O -v .v1,new_v1 in_grp.nc out.nc
+#ncrename  -D 1 -O -v .v1,new_v1 in_grp.nc ~/foo.nc
 #Optional Relative rename v1 to new_v1 
 
     $dsc_sng="Variables: Optional relative rename 'v1' to 'new_v1'";
@@ -5065,7 +5065,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 	
 #ncrename #17
-#ncrename  -D 1 -O -v ./g1/v1_not,new_v1 in_grp.nc out.nc
+#ncrename  -D 1 -O -v ./g1/v1_not,new_v1 in_grp.nc ~/foo.nc
 #Optional non-existing absolute rename '/g1/v1_not'
 
     $dsc_sng="Variables: Optional non-existing absolute rename './g1/v1_not' to '/g1/new_v1'";
@@ -5078,7 +5078,7 @@ if (0){
 #################### Groups
 
 #ncrename #18
-#ncrename -O -g g1,new_g1 in_grp.nc out.nc 
+#ncrename -O -g g1,new_g1 in_grp.nc ~/foo.nc 
 # relative rename g1 to new_g1
 
    if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
@@ -5092,7 +5092,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 
 #ncrename #19
-#ncrename -O -g g1g1,new_g1g1 in_grp.nc out.nc  
+#ncrename -O -g g1g1,new_g1g1 in_grp.nc ~/foo.nc  
 #relative rename g1g1 to new_g1g1
 
     $dsc_sng="Groups: Relative rename 'g1g1' to 'new_g1g1' (expect failure with netCDF < 4.3.1)";
@@ -5104,7 +5104,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 
 #ncrename #20
-#ncrename  -D 1 -O -g /g1/g1g1,new_g1g1 in_grp.nc out.nc
+#ncrename  -D 1 -O -g /g1/g1g1,new_g1g1 in_grp.nc ~/foo.nc
 #Absolute rename -g /g1/g1g1,new_g1g1 
 
     $dsc_sng="Groups: Absolute rename '/g1/g1g1' to '/g1/new_g1g1' (expect failure with netCDF < 4.3.1)";
@@ -5118,7 +5118,7 @@ if (0){
 	} # RUN_NETCDF4_TESTS_VERSION_GE_431
 
 #ncrename #21	
-#ncrename -O -g .gfoo,new_g1 in_grp.nc out.nc 
+#ncrename -O -g .gfoo,new_g1 in_grp.nc ~/foo.nc 
 # optional relative rename gfoo to new_g1 (print warning)
 
     $dsc_sng="Groups: Optional relative rename '.gfoo' to 'new_g1'";
@@ -5131,7 +5131,7 @@ if (0){
 	#################### Variables
 	
 #ncrename #22 (same as #13)
-#ncrename  -D 1 -O -v /g1/v1,/g1/new_v1 in_grp.nc out.nc
+#ncrename  -D 1 -O -v /g1/v1,/g1/new_v1 in_grp.nc ~/foo.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
     $dsc_sng="Variables: Absolute rename '/g1/v1' to '/g1/new_v1' (input absolute name)";

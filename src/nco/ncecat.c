@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.371 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.372 2014-08-21 18:22:44 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.371 2014-07-15 18:48:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.371 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.372 2014-08-21 18:22:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.372 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -257,6 +257,7 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
     {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
     {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
     {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */

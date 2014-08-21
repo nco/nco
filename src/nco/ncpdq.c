@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.400 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.401 2014-08-21 18:22:44 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.400 2014-07-15 18:48:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.400 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.401 2014-08-21 18:22:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.401 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -588,49 +588,41 @@ main(int argc,char **argv)
     /* Loop table */
     for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct var_trv=trv_tbl->lst[idx_tbl];
-      /* Is variable to extract  */
+
+      /* Is variable to extract */
       if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+
         /* Loop variable dimensions */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-
-          nco_bool flg_is_rvr=False;
-          optarg_lcl=NULL;
 
           /* Loop input -a names */
           for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
 
-            /* Does it have a '-' ? */    
+            /* Is dimension to be reversed? i.e., does it have a '-'? */
             if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
-              optarg_lcl=(char *)strdup(dmn_rdr_lst_in[idx_rdr]+1);         
-              flg_is_rvr=True;
-            } /* !flg_is_rvr */  
-
-            /* Compare with dimension name */
-            if(optarg_lcl && !strcmp(optarg_lcl,var_trv.var_dmn[idx_dmn].dmn_nm)) dmn_rdr_nbr_trv++;
-
-            if(flg_is_rvr){
-              assert(optarg_lcl);
-              dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=True;
+              optarg_lcl=(char *)strdup(dmn_rdr_lst_in[idx_rdr]+1L);
+	      if(!strcmp(optarg_lcl,var_trv.var_dmn[idx_dmn].dmn_nm)) dmn_rdr_nbr_trv++;
               optarg_lcl=(char *)nco_free(optarg_lcl); 
-            }else{
+              dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=True;
+	    }else{
               dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=False;
-            } /* !flg_is_rvr */
+            } /* !flg_is_rvr */  
             idx_dmn_rdr_nbr_trv++;
 
           } /* Loop input -a names */
         } /* Loop variable dimensions */
-      } /* Is variable to extract  */
+      } /* Is variable to extract */
     } /* Loop table */
 
-    /* Strip all '-'  */
+    /* Strip all '-' */
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
       if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
         /* Copy string to new memory one past negative sign to avoid losing byte */
         optarg_lcl=dmn_rdr_lst_in[idx_rdr];
-        dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
+        dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1L);
         optarg_lcl=(char *)nco_free(optarg_lcl);
       } /* endif */
-    } /* Strip all '-'  */
+    } /* Strip all '-' */
   } /* Create reversed dimension list */
 
   /* Get number of variables, dimensions, and global attributes in file, file format */

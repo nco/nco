@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1014 2014-08-14 01:12:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1015 2014-08-21 18:22:44 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -16927,11 +16927,12 @@ Large work-load testing
 @cindex Martin Schmidt
 @cindex Lori Sentman
 @cindex Michael Schulz
+@cindex Rich Signell
 @cindex Gary Strand
 @cindex Andrew Wittenberg
 @cindex George White
 @cindex Remik Ziemlinski
-@item Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Gary Strand, George White Andrew Wittenberg, Remik Ziemlinski
+@item Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Gary Strand, George White Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Daniel Baumann
 @cindex Nick Bower

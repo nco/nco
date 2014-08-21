@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.37 2014-08-15 19:13:35 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.38 2014-08-21 18:22:44 zender Exp $ -*-makefile-*-
 
 test_data = big.nc in.nc in_rec_zero.nc
 
@@ -26,21 +26,17 @@ in_2.nc : in_2.cdl
 in_grp_3.nc : in_grp_3.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
-
 in_grp_4.nc : in_grp_4.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 in_grp_5.nc : in_grp_5.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
-
 in_grp_6.nc : in_grp_6.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
-
 in_grp_7.nc : in_grp_7.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
-
 
 cmip5.nc : cmip5.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
@@ -65,7 +61,6 @@ mdl_2.nc : mdl_2.cdl
 
 mdl_3.nc : mdl_3.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
-
 
 all: ${test_data} ${test_data_netCDF4}
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.125 2014-08-14 22:44:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.126 2014-08-21 18:22:44 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -297,14 +297,15 @@ nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
 (const char *nco_cnk_map_sng) /* [sng] User-specified chunking map */
 {
   /* Purpose: Convert user-specified string to chunking map
-     Return nco_cnk_map_rd1 by default */
+     Return nco_cnk_map_xst by default */
   const char fnc_nm[]="nco_cnk_map_get()"; /* [sng] Function name */
   char *nco_prg_nm; /* [sng] Program name */
   nco_prg_nm=nco_prg_nm_get(); /* [sng] Program name */
 
   if(nco_cnk_map_sng == NULL){
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit chunking map. Defaulting to chunking map \"rd1\".\n",nco_prg_nm,fnc_nm,nco_prg_nm);
-    return nco_cnk_map_rd1;
+    /* 20140815: Change default from rd1 to xst */
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit chunking map. Defaulting to chunking map \"xst\".\n",nco_prg_nm,fnc_nm,nco_prg_nm);
+    return nco_cnk_map_xst;
   } /* endif */
 
   if(!strcmp(nco_cnk_map_sng,"nil")) return nco_cnk_map_nil;
@@ -334,14 +335,15 @@ nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
 (const char *nco_cnk_plc_sng) /* [sng] User-specified chunking policy */
 {
   /* Purpose: Convert user-specified string to chunking operation type 
-     Return nco_cnk_plc_g2d by default */
+     Return nco_cnk_plc_xst by default */
   const char fnc_nm[]="nco_cnk_plc_get()"; /* [sng] Function name */
   char *nco_prg_nm; /* [sng] Program name */
   nco_prg_nm=nco_prg_nm_get(); /* [sng] Program name */
 
   if(nco_cnk_plc_sng == NULL){
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit chunking policy. Defaulting to chunking policy \"g2d\".\n",nco_prg_nm,fnc_nm,nco_prg_nm);
-    return nco_cnk_plc_g2d;
+    /* 20140815: Change default from g2d to xst */
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit chunking policy. Defaulting to chunking policy \"xst\".\n",nco_prg_nm,fnc_nm,nco_prg_nm);
+    return nco_cnk_plc_xst;
   } /* endif */
 
   if(!strcmp(nco_cnk_plc_sng,"nil")) return nco_cnk_plc_nil;
@@ -916,7 +918,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     /* Some variables simply must be chunked */
     if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s %s must be chunked (record, compressed, or check-summed variable)\n",nco_prg_nm_get(),fnc_nm,var_nm);
   }else{
-    /* Explicitly turn-off chunking for arrays that are... */
+    /* Explicitly exit this chunking function now (and thus implement netCDF4-default chunking behavior) for variables that are... */
     if((cnk_plc == nco_cnk_plc_xpl && !is_xpl_cnk) || /* ...not explicitly chunked... */
        (cnk_plc == nco_cnk_plc_xst && !is_chunked) || /* ...not already chunked... */
        (cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
