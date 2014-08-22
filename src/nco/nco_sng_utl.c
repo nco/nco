@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.76 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.77 2014-08-22 20:27:48 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -173,14 +173,14 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   
   if(nm_sng == NULL) return NULL;
 
-  /* Otherwise name contains special character(s)... */
+  /* Otherwise name may contain special character(s)... */
   nm_lng=strlen(nm_sng);
   /* Maximum conceivable length of CDL-ized name */
   chr_out_ptr=nm_cdl=(char *)nco_malloc(4*nm_lng+1L);
   /* Copy to preserve const-ness */
   chr_in_ptr=nm_cpy=(char *)strdup(nm_sng);
   /* NUL-terminate in case input string is empty so will be output string */
-  chr_out_ptr[0]='0';
+  chr_out_ptr[0]='\0';
 
   /* Search and replace special characters */
 
@@ -242,13 +242,105 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
     chr_in_ptr++;
   } /* end while loop */
   /* NUL-terminate */
-  *chr_out_ptr=0;
+  *chr_out_ptr='\0';
 
   /* Free memory */
   nm_cpy=(char *)nco_free(nm_cpy);
 
   return nm_cdl;
 } /* end nm2sng_cdl() */
+
+char * /* O [sng] CDL-compatible name */
+nm2sng_fl /* [fnc] Turn file name into legal string for shell commands */
+(const char * const nm_sng) /* I [sng] Name to sanitize */
+{
+  /* Purpose: Turn file name into legal string for shell commands
+     Currently this means protecting special characters with backslash so shell is not confused
+     Based on nm2sng_cdl()
+     NB: Calling function must free() memory containing sanitized string */
+
+  char *chr_in_ptr; /* [sng] Pointer to current character in input name */
+  char *chr_out_ptr; /* [sng] Pointer to current character in output name */
+  char *nm_fl; /* [sng] CDL-compatible name */
+  char *nm_cpy; /* [sng] Copy of input */
+
+  int nm_lng; /* [nbr] Length of original name */
+  
+  if(nm_sng == NULL) return NULL;
+
+  /* Otherwise name may contain special character(s)... */
+  nm_lng=strlen(nm_sng);
+  /* Maximum conceivable length of sanitized name */
+  chr_out_ptr=nm_fl=(char *)nco_malloc(4*nm_lng+1L);
+  /* Copy to preserve const-ness */
+  chr_in_ptr=nm_cpy=(char *)strdup(nm_sng);
+  /* NUL-terminate in case input string is empty so will be output string */
+  chr_out_ptr[0]='\0';
+
+  /* Search and replace special characters */
+
+  /* This block stolen from: ncdump/utils.c/escaped_name() */ 
+
+  if((*chr_in_ptr >= 0x01 && *chr_in_ptr <= 0x20) || (*chr_in_ptr == 0x7f)){
+    (void)fprintf(stderr,"%s: ERROR name begins with space or control-character: %c\n",nco_prg_nm_get(),*chr_in_ptr);
+    nco_exit(EXIT_FAILURE);
+  } /* endif error */
+
+  while(*chr_in_ptr){
+    if(isascii(*chr_in_ptr)){
+      if(iscntrl(*chr_in_ptr)){	/* Render control chars as two hex digits, \%xx */
+	snprintf(chr_out_ptr,4,"\\%%%.2x",*chr_in_ptr);
+	chr_out_ptr+=4;
+      }else{
+	switch(*chr_in_ptr){
+	case ' ':
+	case '!':
+	case '"':
+	case '#':
+	case '$':
+	case '&':
+	case '\'':
+	case '(':
+	case ')':
+	case '*':
+	case ',':
+	  // case ':': /* 20140822: Protecting colon with backslash causes Windows error parsing volume names, e.g., "C:\foo" */
+	case ';':
+	case '<':
+	case '=':
+	case '>':
+	case '?':
+	case '[':
+	case ']':
+	case '\\':
+	case '^':
+	case '`':
+	case '{':
+	case '|':
+	case '}':
+	case '~':
+	  *chr_out_ptr++='\\';
+	  *chr_out_ptr++=*chr_in_ptr;
+	  break;
+	default: /* NB: includes '/' */
+	  *chr_out_ptr++=*chr_in_ptr;
+	  break;
+	} /* end switch */
+      } /* not a control character */
+    }else{ /* not ascii, assume just UTF-8 byte */
+      *chr_out_ptr++=*chr_in_ptr;
+    } /* end else not ascii */
+    /* Advance character */
+    chr_in_ptr++;
+  } /* end while loop */
+  /* NUL-terminate */
+  *chr_out_ptr='\0';
+
+  /* Free memory */
+  nm_cpy=(char *)nco_free(nm_cpy);
+
+  return nm_fl;
+} /* end nm2sng_fl() */
 
 char * /* O [sng] String containing printable result */
 chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII bytes */

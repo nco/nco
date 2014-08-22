@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.248 2014-07-12 04:16:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.249 2014-08-22 20:27:48 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -242,8 +242,8 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
   /* 20131227 Allow for whitespace characters in fl_dst 
      Assume CDL translation results in acceptable name for shell commands */
-  fl_src_cdl=nm2sng_cdl(fl_src);
-  fl_dst_cdl=nm2sng_cdl(fl_dst);
+  fl_src_cdl=nm2sng_fl(fl_src);
+  fl_dst_cdl=nm2sng_fl(fl_dst);
 
   /* Construct and execute copy command */
   cmd_cp=(char *)nco_malloc((strlen(cmd_cp_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
@@ -1172,8 +1172,8 @@ nco_fl_mv /* [fnc] Move first file to second */
 
   /* 20131227 Allow for whitespace characters in fl_dst 
      Assume CDL translation results in acceptable name for shell commands */
-  fl_src_cdl=nm2sng_cdl(fl_src);
-  fl_dst_cdl=nm2sng_cdl(fl_dst);
+  fl_src_cdl=nm2sng_fl(fl_src);
+  fl_dst_cdl=nm2sng_fl(fl_dst);
 
   /* Construct and execute move command */
   cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.47 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.48 2014-08-22 20:27:48 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -81,6 +81,10 @@ nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 char * /* O [sng] CDL-compatible name */
 nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
 (const char * const nm_sng); /* I [sng] Name to CDL-ize */
+
+char * /* O [sng] CDL-compatible name */
+nm2sng_fl /* [fnc] Turn file name into legal string for shell commands */
+(const char * const nm_sng); /* I [sng] Name to sanitize */
 
 char * /* O [sng] String containing printable result */
 chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII bytes */

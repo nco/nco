@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1448 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1449 2014-08-22 20:27:48 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4272,21 +4272,18 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Get enm_prc_typ from GTT */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     if(!strcmp(var->nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
-      if(trv_tbl->lst[idx_tbl].enm_prc_typ == prc_typ){
-        var->is_fix_var=0;
-      }else if(trv_tbl->lst[idx_tbl].enm_prc_typ == fix_typ){
-        var->is_fix_var=1;
-      } 
+      if(trv_tbl->lst[idx_tbl].enm_prc_typ == prc_typ) var->is_fix_var=False; 
+      else if(trv_tbl->lst[idx_tbl].enm_prc_typ == fix_typ) var->is_fix_var=True;
       break;
-    }
-  }
+    } /* endif */
+  } 
 
   var->undefined=False; /* [flg] Used by ncap parser */
 
   dmn_in_id_var=(int *)nco_free(dmn_in_id_var);
+
   return var;
 } /* nco_var_fll_trv() */
-
 
 int                                 /* O [id] Output file variable ID */
 nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output file */
@@ -4861,10 +4858,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         nbr_dmn_out_tmp++;
         *nbr_dmn_cmn_out=nbr_dmn_out_tmp;
 
-        if(nco_dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: DEBUG %s Inserted dimension #%d to output list\n",nco_prg_nm_get(),fnc_nm,
-            dmn_cmn[idx_dmn].id);
-        } 
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s Inserted dimension #%d to output list\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[idx_dmn].id);
 
       }  /* If this dimension is not in output array */
     } /* Loop over each dimension in variable */
@@ -5904,12 +5898,8 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
   /* If variable has a re-defined record dimension. NOTE: this implies passing NULL as User-specified record dimension parameter  */
   if(var_trv->rec_dmn_nm_out){
-
-    /* Must be ncpdq */
     assert(nco_prg_id == ncpdq);
-
     rec_dmn_nm=(char *)strdup(var_trv->rec_dmn_nm_out);
-
   } /* If variable has a re-defined record dimension */
 
   /* Is requested record dimension in input file? */
