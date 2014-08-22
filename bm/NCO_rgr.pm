@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.502 2014-08-21 18:22:44 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.503 2014-08-22 01:01:20 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1160,7 +1160,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 		
 
 #ncecat #10
-#Chunking 
+#Chunking
 # ncecat -O -4 -D 5 -C --cnk_plc=all --cnk_map=rd1 -v date_int -p ~/nco/data in.nc in.nc ~/foo.nc
 
     $dsc_sng="Chunking --cnk_plc=all --cnk_map=rd1 -v date_int";

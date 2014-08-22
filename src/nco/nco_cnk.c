@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.127 2014-08-21 20:39:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.128 2014-08-22 01:01:21 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1113,11 +1113,13 @@ cnk_xpl_override: /* end goto */
 
   /* Override "reasonable" defaults with explicitly set per-dimension sizes, if any */
   flg_mch=(nco_bool *)nco_malloc(dmn_nbr*sizeof(nco_bool));
+  /* Loop over all dimensions in this variable */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
     /* Initialize to false then override */
     flg_mch[dmn_idx]=False;
 
+    /* Loop over all user-specified chunk-sizes */
     for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
 
       if(cnk_dmn[cnk_idx]->nm_fll){
@@ -1126,10 +1128,10 @@ cnk_xpl_override: /* end goto */
         if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)) flg_mch[dmn_idx]=True;
       } /* end else */
 
-      /* Name match found */
+      /* User-specified name matches current dimension name */
       if(flg_mch[dmn_idx]){
-
 	flg_ovr=False;
+
 	/* Override default chunking with user-specified chunking for this dimension if... */
 	if(
 	   /* ... Policy is anything but r1d or ...*/
