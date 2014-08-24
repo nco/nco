@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.726 2014-08-15 19:13:35 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.727 2014-08-24 19:38:23 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -60,18 +60,25 @@ A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
    ncks --grp_xtr_var_xcl -g g1 -v v1 # Extract all of group g1 except v1
    http://nco.sf.net/nco.html#gxvx
 
-A. r1d fxm
-    Policy r1d changes chunksize of 1-D record variables (and no other
-    variables) to specified (with --cnk_dmn) chunksize for record
-    dimension(s). 
-    Without r1d, time chunksizes change in all variables. 
-    With r1d time chunksizes change only in 1-D record variables.
-    Note difference in chunksizes below between default
-    (first) and when cnk_plc=r1d (second). 
+A. New chunking policy r1d changes chunksize of 1-D record variables
+   (and no other variables) to specified (with --cnk_dmn) chunksize.
+   Any specified record dimension chunksizes will be applied to 1-D
+   record variables only. Other dimensions may be chunked with their
+   own --cnk_dmn options that will apply to all variables.
+   For example, ncks --cnk_plc=r1d --cnk_dmn=time,1000.
+   This sets time chunks to 1000 only in 1-D record variables.
+   Without the r1d policy, time chunks would change in all variables.  
+   Thanks to James Adams for suggesting this.
+   http://nco.sf.net/nco.html#r1d
 
 BUG FIXES:
 
 A. ncrename: fix unsafe pointer de-reference and improve diagnostics
+
+A. Fix problem introduced in 4.4.0 where sanitizing of filenames with
+   colons confused MS Windows interpretation of volume names, e.g.,
+   "C:\foo" became "C\:\foo" and caused write error. Workaround is to
+   use --no_tmp_fl or upgrade to 4.4.5.
 
 KNOWN PROBLEMS:
 

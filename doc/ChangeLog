@@ -7,6 +7,7 @@
 	cvs tag -c nco-4_4_5;cvs tag -c nco-4_4_5-1
 
 	* Sanitize filenames prior to shell use with nm2sng_fl() instead of nm2sng_cdl()
+	Fixes bug in MS Windows handling volume names like "C:\foo"
 
 2014-08-21  Charlie Zender  <zender@uci.edu>
 

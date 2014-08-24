@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1015 2014-08-21 18:22:44 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1016 2014-08-24 19:38:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6363,30 +6363,33 @@ performance.
 The user specifies the desired chunking policy with the @samp{-P} switch 
 (or its long option equivalents, @samp{--cnk_plc} and
 @samp{--chunk_policy}) and its @var{cnk_plc} argument.
-Five chunking policies are currently implemented:@*   
+As of August, 2014, six chunking policies are implemented:@*
 @cindex @samp{all}
 @cindex @samp{g2d}
 @cindex @samp{g3d}
+@cindex @samp{r1d}
 @cindex @samp{xpl}
 @cindex @samp{xst}
 @cindex @samp{cnk_all}
 @cindex @samp{cnk_g2d}
 @cindex @samp{cnk_g3d}
+@cindex @samp{cnk_r1d}
 @cindex @samp{cnk_xpl}
 @cindex @samp{cnk_xst}
 @cindex @samp{plc_all}
 @cindex @samp{plc_g2d}
 @cindex @samp{plc_g3d}
+@cindex @samp{plc_r1d}
 @cindex @samp{plc_xpl}
 @cindex @samp{plc_xst}
 @table @dfn
-@item Chunk All Variables [@emph{default}]
+@item Chunk All Variables
 Definition: Chunk all variables possible.
 For obvious reasons, scalar variables cannot be chunked.@*
 Alternate invocation: @code{ncchunk}@*
 @var{cnk_plc} key values: @samp{all}, @samp{cnk_all}, @samp{plc_all}@*
 Mnemonic: All@*
-@item Chunk Variables with at least Two Dimensions
+@item Chunk Variables with at least Two Dimensions [@emph{default}]
 Definition: Chunk all variables possible with at least two dimensions@*
 Alternate invocation: none@*
 @var{cnk_plc} key values: @samp{g2d}, @samp{cnk_g2d}, @samp{plc_g2d}@*
@@ -6396,6 +6399,15 @@ Definition: Chunk all variables possible with at least three dimensions@*
 Alternate invocation: none@*
 @var{cnk_plc} key values: @samp{g3d}, @samp{cnk_g3d}, @samp{plc_g3d}@*
 Mnemonic: @emph{G}reater than or equal to @emph{3} @emph{D}imensions@*
+@item Chunk One-Dimensional Record Variables
+Definition: Chunk all 1-D record variables@*
+Alternate invocation: none@*
+Any specified (with @samp{--cnk_dmn}) record dimension chunksizes will
+be applied to 1-D record variables (and to no other variables).
+Other dimensions may be chunked with their own @samp{--cnk_dmn} options 
+that will apply to all variables. 
+@var{cnk_plc} key values: @samp{r1d}, @samp{cnk_r1d}, @samp{plc_r1d}@*
+Mnemonic: @emph{R}ecord @emph{1}-@emph{D} variables@*
 @item Chunk Variables Containing Explicitly Chunked Dimensions
 Definition: Chunk all variables possible that contain at least one
 dimension whose chunksize was explicitly set with the @samp{--cnk_dmn} option.
@@ -6531,6 +6543,14 @@ The option takes two comma-separated arguments,
 chunksize, respectively. 
 The @samp{--cnk_dmn} option may be used as many times as necessary.
 
+The default behavior of chunking depends on several factors.
+When no chunking options are explicitly specified by the user, then
+output netCDF4 files are chunked with the default behavior of the 
+netCDF4 library.
+When any chunking option @emph{except} @samp{cnk_plc} or @samp{cnk_map}
+is specified, then @samp{cnk_plc} and @samp{cnk_map} are set to
+@samp{g2d} and @samp{rd1}, respectively.
+
 @html
 <a name="xmp_cnk"></a> <!-- http://nco.sf.net/nco.html#xmp_cnk -->
 <a name="xmp_chunk"></a> <!-- http://nco.sf.net/nco.html#xmp_chunk -->
@@ -6569,6 +6589,24 @@ ncrcat -O -4 -D 4 -n 12,2,1 --cnk_dmn lat,32 \
 ncwa -O -4 -D 4 -a time --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,32 \ 
  --cnk_dmn lon,128 dstmch90_clm_0112.nc ~/foo.nc
 @end example
+
+@html
+<a name="r1d"></a> <!-- http://nco.sf.net/nco.html#r1d -->
+@end html
+Chunking policy @samp{r1d} changes the chunksize of 1-D record variables
+(and no other variables) to the specified (with @samp{--cnk_dmn})
+chunksize. 
+Any specified record dimension chunksizes will be applied to 1-D
+record variables only. 
+Other dimensions may be chunked with their own @samp{--cnk_dmn} options
+that will apply to all variables. 
+For example, 
+@example
+ncks --cnk_plc=r1d --cnk_dmn=time,1000. in.nc out.nc
+@end example
+This sets @code{time} chunks to 1000 only in 1-D record variables. 
+Without the @samp{r1d} policy, @code{time} chunks would change in all 
+variables.   
 
 @cindex record dimension
 It is appropriate to conclude by informing users about an aspect of

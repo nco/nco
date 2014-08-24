@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.914 2014-08-21 18:22:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.915 2014-08-24 19:38:23 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -639,7 +639,8 @@ DAP on <a href="http://nco.sf.net/nco.html#dap">HTTPS</a>;
 <tt>ancillary_variables</tt> for <a href="http://nco.sf.net/nco.html#ncl">CF</a>;
 <tt>ncks --grp_xtr_var_xcl</tt> <a href="http://nco.sf.net/nco.html#gxvx">subsetting</a>
 Chunking <tt>cnk_plc=r1d</tt>;
-Default chunking policy/map to <tt>xst/xst</tt>;
+Default chunking policy/map is <tt>xst/xst</tt>;
+Correctly parse MS Windows volume names like <tt>C:\foo</tt>;
 <li><b>NCO 4.4.4</b>: (<i>Current Stable Release</i>) 
 netCDF'ize non-compliant element names;
 <tt>-x var</tt> tolerates non-existence;
