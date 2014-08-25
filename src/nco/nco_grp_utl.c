@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1450 2014-08-25 05:56:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1451 2014-08-25 07:06:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4708,6 +4708,19 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } /* !DEFINE_DIM */
 
     } /* end if dimension is not yet defined */
+
+
+    /* pvn 20140824 Always redefine output dimension array */
+    /* Redefine output dimension array for this dimension */
+    if(nco_prg_id == ncks){
+      if(var_trv->var_dmn[idx_dmn].is_crd_var){
+        dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+      }else{ /* !is_crd_var */
+        dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+      } /* !is_crd_var */
+      (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
+    } /* ncks */
+
 
     /* Die informatively if record dimension is not first dimension in netCDF3 output */
     if(idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4 && DEFINE_DIM[idx_dmn]){

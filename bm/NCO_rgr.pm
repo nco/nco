@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.503 2014-08-22 01:01:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.504 2014-08-25 07:06:32 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2549,7 +2549,22 @@ print "\n";
     $tst_cmd[2]="time[0]=6 cnv_CF_ncl_var_2[0]=36";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			
+    $#tst_cmd=0; # Reset array 		
+
+#ncks #92
+#ncks -O -D 12 -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst hdn.nc out.nc
+
+    if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
+
+    $dsc_sng="Chunk dimensions not being redefined";
+    $tst_cmd[0]="ncks -O $nco_D_flg -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst $in_pth_arg hdn.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks $nco_D_flg %tmp_fl_00%";
+    $tst_cmd[2]="lat[0] one[0]=1";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
+    } # RUN_NETCDF4_TESTS_VERSION_GE_431	
 	
 #####################
 #### ncpdq tests #### -OK !
