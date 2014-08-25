@@ -1,3 +1,7 @@
+2014-08-25  Charlie Zender  <zender@uci.edu>
+
+	* Specify correct dmn_cmn[] information to nco_cnk_sz_set_trv()
+
 2014-08-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.5 release procedure:

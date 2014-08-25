@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.504 2014-08-25 07:06:32 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.505 2014-08-25 21:29:17 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2468,7 +2468,7 @@ print "\n";
 #ncks -O -L 0 --cnk_dmn lat,2 -v one in_grp.nc ~/foo.nc
 #ncks -C -m --hdn -v one -g g13 ~/foo.nc | grep  _Storage
     
-    $dsc_sng="(Groups) Chunking and shuffle filter -L 0 --cnk_dmn lat,2 -v one (expect failuse with netCDF 4.1.1-)";
+    $dsc_sng="(Groups) Chunking and shuffle filter -L 0 --cnk_dmn lat,2 -v one (expect failure with netCDF 4.1.1-)";
     $tst_cmd[0]="ncks -O -4 -L 0 --cnk_dmn lat,2 -v one $nco_D_flg $in_pth_arg hdn.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m --hdn -v one -g g13 %tmp_fl_00% | grep _Storage";
     $tst_cmd[2]="one attribute 1: _Storage, size = 10 NC_CHAR, value = contiguous";
@@ -2552,7 +2552,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 		
 
 #ncks #92
-#ncks -O -D 12 -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst hdn.nc out.nc
+#ncks -O -D 12 -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst ~/nco/data/hdn.nc ~/foo.nc
 
     if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
 
@@ -2562,9 +2562,9 @@ print "\n";
     $tst_cmd[2]="lat[0] one[0]=1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	
+    $#tst_cmd=0; # Reset array
 
-    } # RUN_NETCDF4_TESTS_VERSION_GE_431	
+    } # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #####################
 #### ncpdq tests #### -OK !
