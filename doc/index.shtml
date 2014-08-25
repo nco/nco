@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.915 2014-08-24 19:38:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.916 2014-08-25 22:00:19 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -640,6 +640,7 @@ DAP on <a href="http://nco.sf.net/nco.html#dap">HTTPS</a>;
 <tt>ncks --grp_xtr_var_xcl</tt> <a href="http://nco.sf.net/nco.html#gxvx">subsetting</a>
 Chunking <tt>cnk_plc=r1d</tt>;
 Default chunking policy/map is <tt>xst/xst</tt>;
+Chunking while hyperslabbing <a href="#bug_cnk_hyp">bugfix</a></li>
 Correctly parse MS Windows volume names like <tt>C:\foo</tt>;
 <li><b>NCO 4.4.4</b>: (<i>Current Stable Release</i>) 
 netCDF'ize non-compliant element names;
@@ -1229,6 +1230,15 @@ No known generic run-time problems with recent releases.
 </ul>
 
 <ul><b>Recent Operator-specific Run-time Problems:</b>
+
+<!-- http://nco.sf.net#bug_cnk_hyp -->
+<a name="bug_cnk_hyp"></a>
+<li><i>Chunking while hyperslabbing bug:</i>
+Versions 4.3.X&mdash;4.4.4 of most operators could send incorrect
+chunking requests to the netCDF library, resulting in failures.
+This occurred only while simultaneously hyperslabbing.
+The solution is to upgrade to NCO&nbsp;4.4.5.
+</li>
 
 <!-- http://nco.sf.net#bug_ncwa_mask_condition -->
 <a name="bug_ncwa_mask_condition"></a>

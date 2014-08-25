@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.727 2014-08-24 19:38:23 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.728 2014-08-25 22:00:19 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -79,6 +79,10 @@ A. Fix problem introduced in 4.4.0 where sanitizing of filenames with
    colons confused MS Windows interpretation of volume names, e.g.,
    "C:\foo" became "C\:\foo" and caused write error. Workaround is to
    use --no_tmp_fl or upgrade to 4.4.5.
+
+A. Always send correct dimension sizes to chunker when hyperslabbing.
+   Fixes a bug reported by Parker Norton where chunking and
+   hyperslabbing did not play nicely together.
 
 KNOWN PROBLEMS:
 
