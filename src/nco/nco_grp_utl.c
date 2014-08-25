@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1449 2014-08-22 20:27:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1450 2014-08-25 05:56:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4811,15 +4811,15 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var_out,dmn_out_id,&var_out_id);
 
-    if(nco_dbg_lvl_get() == nco_dbg_old){
-      (void)fprintf(stdout,"%s: DEBUG %s Defined variable <%s><%s> : ",nco_prg_nm_get(),fnc_nm,grp_out_fll,var_nm);
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-        (void)fprintf(stdout,"<%s>#%d : ",dmn_cmn[idx_dmn].nm_fll,dmn_out_id[idx_dmn]);
-      }
-      (void)fprintf(stdout,"\n");
-    } 
-
   } /* !ncwa */
+
+  if(nco_dbg_lvl_get() == nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s Defined variable <%s><%s>\n",nco_prg_nm_get(),fnc_nm,grp_out_fll,var_nm);
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+      (void)fprintf(stderr,"<%s>#%d SIZE=%ld : ",dmn_cmn[idx_dmn].nm_fll,dmn_out_id[idx_dmn],dmn_cmn[idx_dmn].sz);
+    }
+    (void)fprintf(stderr,"\n");
+  } 
 
   /* If output dimensions array exists */
   if (dmn_cmn_out!=NULL && nco_prg_id == ncks){
