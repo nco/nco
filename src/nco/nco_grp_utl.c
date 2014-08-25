@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1452 2014-08-25 21:29:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1453 2014-08-25 22:36:00 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4710,7 +4710,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Redefine output dimension array for this dimension */
     //    if(nco_prg_id == ncks){ // Does not work on other operators
     //    if(!((nco_prg_id == ncwa) && !DEFINE_DIM[idx_dmn])){ // Leads to ncwa regression
-    // if(True){ // Leads to ncwa regression
+    // if(True){ // Leads to multiple regressions
     if(nco_prg_id != ncwa){
       if(var_trv->var_dmn[idx_dmn].is_crd_var){
         dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
@@ -4718,7 +4718,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
       } /* !is_crd_var */
       (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
-    } /* ncks */
+    } /* !ncwa */
 
     /* Die informatively if record dimension is not first dimension in netCDF3 output */
     if(idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4 && DEFINE_DIM[idx_dmn]){

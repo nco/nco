@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.505 2014-08-25 21:29:17 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.506 2014-08-25 22:36:00 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2552,14 +2552,14 @@ print "\n";
     $#tst_cmd=0; # Reset array 		
 
 #ncks #92
-#ncks -O -D 12 -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst ~/nco/data/hdn.nc ~/foo.nc
+#ncks -O -D 5 -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst ~/nco/data/hdn.nc ~/foo.nc
 
     if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
 
-    $dsc_sng="Chunk dimensions not being redefined";
+    $dsc_sng="Chunking multiple variables while hyperslabbing";
     $tst_cmd[0]="ncks -O $nco_D_flg -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst $in_pth_arg hdn.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks $nco_D_flg %tmp_fl_00%";
-    $tst_cmd[2]="lat[0] one[0]=1";
+    $tst_cmd[1]="ncks -v one %tmp_fl_00% | grep 'chunksize'";
+    $tst_cmd[2]="one dimension 0: /lat, size = 1, chunksize = 1 (Non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -4733,7 +4733,7 @@ if (0){
 	
 #NEW 4.4.0	
 #ncwa #55
-#ncwa -O -4  -a time --cnk_dmn lon,4 -v byt_3D_rec in.nc ~/foo.nc
+#ncwa -O -4 -a time --cnk_dmn lon,4 -v byt_3D_rec ~/nco/data/in.nc ~/foo.nc
     
     $dsc_sng="Chunking -a time --cnk_dmn lon,4 -v byt_3D_rec";
     $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a time --cnk_dmn lon,4 -v byt_3D_rec $in_pth_arg in.nc %tmp_fl_00%";
@@ -4757,7 +4757,7 @@ if (0){
 
 #NEW 4.4.0	
 #ncwa #57	
-#ncwa -O -C -4 -D 12 --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 in.nc ~/foo.nc	
+#ncwa -O -C -4 -D 12 --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 ~/nco/data/in.nc ~/foo.nc	
 #ncks --hdn --cdl -v four_dmn_rec_var ~/foo.nc
 
     $dsc_sng="Chunking with --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 ";
