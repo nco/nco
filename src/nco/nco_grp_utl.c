@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1454 2014-08-26 17:13:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1455 2014-08-26 17:47:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4315,6 +4315,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   char *rec_dmn_nm=NULL;                 /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL;             /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
   char *grp_dmn_out_fll=NULL;            /* [sng] Group name of dimension in output */
+  char *dmn_nm_fll_out=NULL;             /* [sng] Full name of dimension in output */
   char dmn_nm[NC_MAX_NAME+1];            /* [sng] Dimension name  */
   char dmn_nm_grp[NC_MAX_NAME+1];        /* [sng] Dimension name for group */  
 
@@ -4696,10 +4697,10 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         /* Define dimension and obtain dimension ID */
         (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_cnt,&dmn_id_out);
 
-        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_nm,dmn_id_out);
+        if(nco_dbg_lvl_get() == nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_nm,dmn_id_out);
+        }
 
-        /* Redefine output dimension array for this dimension */
-        (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
         /* Assign defined ID to dimension ID array for the variable */
         dmn_out_id[idx_dmn]=dmn_id_out; 
       } /* !DEFINE_DIM */
@@ -4731,8 +4732,14 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } 
     } /* !ncwa */
 
-    (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
+    /* Construct full dimension name using the full group name */
+    dmn_nm_fll_out=(char *)nco_malloc(strlen(grp_dmn_out_fll)+strlen(dmn_nm)+2L);
+    strcpy(dmn_nm_fll_out,grp_dmn_out_fll);
+    if(strcmp(grp_dmn_out_fll,"/")) strcat(dmn_nm_fll_out,"/");
+    strcat(dmn_nm_fll_out,dmn_nm);
 
+    /* Redefine output dimension array for this dimension */
+    (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
 
     /* Die informatively if record dimension is not first dimension in netCDF3 output */
     if(idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4 && DEFINE_DIM[idx_dmn]){
@@ -4742,6 +4749,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Memory management after defining current output dimension */
     if(grp_dmn_out_fll) grp_dmn_out_fll=(char *)nco_free(grp_dmn_out_fll); 
+    if(dmn_nm_fll_out) dmn_nm_fll_out=(char *)nco_free(dmn_nm_fll_out); 
 
   } /* End of the very important dimension loop */
 
