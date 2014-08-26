@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1455 2014-08-26 17:47:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1456 2014-08-26 17:53:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4739,7 +4739,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     strcat(dmn_nm_fll_out,dmn_nm);
 
     /* Redefine output dimension array for this dimension */
-    (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
+    (void)nco_dfn_dmn(dmn_nm_fll_out,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
 
     /* Die informatively if record dimension is not first dimension in netCDF3 output */
     if(idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4 && DEFINE_DIM[idx_dmn]){
@@ -5012,18 +5012,18 @@ nco_dmn_swap                           /* [fnc] Swap dimensions */
 
 void
 nco_dfn_dmn                            /* [fnc] Define dimension size and ID in array */
-(const char * const dmn_nm,            /* I [sng] Name of dimension */
+(const char * const dmn_nm_fll_out,    /* I [sng] Full name of dimension in output */
  const long dmn_sz,                    /* I [nbr] Size of dimension */
- const int dmn_id,                     /* I [id] ID of dimension */
+ const int dmn_id_out,                 /* I [id] ID of dimension in output */
  dmn_cmn_sct *dmn_cmn,                 /* I/O [sct] Dimension structure array */
  const int nbr_dmn)                    /* I [nbr] Number of dimensions (size of above array) */
 {
   /* Loop dimensions */
   for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
     /* Find dimension */
-    if(!strcmp(dmn_nm,dmn_cmn[idx_dmn].nm)){
+    if(!strcmp(dmn_nm_fll_out,dmn_cmn[idx_dmn].nm_fll)){
       dmn_cmn[idx_dmn].sz=dmn_sz;
-      dmn_cmn[idx_dmn].id=dmn_id;
+      dmn_cmn[idx_dmn].id=dmn_id_out;
       return;
     } /* Find dimension */
   } /* Loop dimensions */
