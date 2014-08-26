@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.248 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.249 2014-08-26 20:10:16 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1142,11 +1142,7 @@ nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new
       /* Update current index of dimension limits for this table dimension  */
       lmt_lst->lmt_crr++;
 
-      if(nco_dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",
-          nco_prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end,
-          lmt_lst->lmt_dmn[lmt_new_idx]->srt,lmt_lst->lmt_dmn[lmt_new_idx]->end);
-      }
+      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",nco_prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end,lmt_lst->lmt_dmn[lmt_new_idx]->srt,lmt_lst->lmt_dmn[lmt_new_idx]->end);
 
     } /* endif srt > end */
   } /* end loop over size */
@@ -1166,7 +1162,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
      Routine truncates dimensions in variable definition in output file according to user-specified limits
-     Routine copies variable-by-variable, old-style, used only by ncks 
+     Routine copies variable-by-variable, old-style, used only by ncks
+     Routine does not handle strides (srd)
 
      "GTT" changes from the original nco_cpy_var_val_mlt_lmt():
      Object to write (variable) is passed as parameter */
@@ -1383,9 +1380,9 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
         (void)nco_lmt_init((*lmt_msa)[dmn_idx_var]->lmt_dmn[0]);
 
         /* And set start,count,stride to read everything ...major success */
-        (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srt=0;
+        (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srt=0L;
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->cnt=(*lmt_msa)[dmn_idx_var]->dmn_sz_org;
-        (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srd=1;
+        (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srd=1L;
 
       } /* Make a limit to read all */
     } /* If there are limits for this variable dimension, get MSA from table */
@@ -1437,9 +1434,9 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
         (void)nco_lmt_init((*lmt_msa)[dmn_idx_var]->lmt_dmn[0]);
 
         /* And set start,count,stride to read everything ...major success */
-        (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srt=0;
+        (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srt=0L;
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->cnt=(*lmt_msa)[dmn_idx_var]->dmn_sz_org;
-        (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srd=1;
+        (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srd=1L;
 
       } /* Make a limit to read all */
     } /* If there are limits for this variable dimension, get MSA from table */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.728 2014-08-25 22:00:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.729 2014-08-26 20:10:16 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -7,8 +7,8 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release is mainly a bugfix and stability release. 
 A few new features improve some corner-cases:
-NCO now accesses DAP files on HTTPS servers, and it supports the CF
-ancillary_variables convention.
+NCO now supports longer lists of input files, DAP files on HTTPS
+servers, and the CF ancillary_variables convention.
 
 Work on NCO 4.4.6 is underway, still focused on stability and speed.   
 This includes more netCDF4 mop-up, improved group broadcasting
@@ -78,18 +78,18 @@ A. ncrename: fix unsafe pointer de-reference and improve diagnostics
 A. Fix problem introduced in 4.4.0 where sanitizing of filenames with
    colons confused MS Windows interpretation of volume names, e.g.,
    "C:\foo" became "C\:\foo" and caused write error. Workaround is to
-   use --no_tmp_fl or upgrade to 4.4.5.
+   use --no_tmp_fl or upgrade to 4.4.5. 
 
 A. Always send correct dimension sizes to chunker when hyperslabbing.
    Fixes a bug reported by Parker Norton where chunking and
-   hyperslabbing did not play nicely together.
+   hyperslabbing played cruelly together.
 
 KNOWN PROBLEMS:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.4.5 built/tested with netCDF
-   4.3.3-rc1 on top of HDF5 hdf5-1.8.12 with these methods: 
+   4.3.3-rc1 on top of HDF5 hdf5-1.8.13 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism

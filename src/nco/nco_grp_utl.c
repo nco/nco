@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1456 2014-08-26 17:53:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1457 2014-08-26 20:10:16 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4156,12 +4156,12 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     assert(strcmp(dmn_nm,dmn_trv->nm) == 0);
 
     /* Get hyperslabbed count */
-    dmn_cnt=-1;
+    dmn_cnt=-1L;
     if(var_trv->var_dmn[idx_dmn].crd) dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
     else if(var_trv->var_dmn[idx_dmn].ncd) dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
 
     var->cnt[idx_dmn]=dmn_cnt;
-    var->end[idx_dmn]=dmn_cnt-1;
+    var->end[idx_dmn]=dmn_cnt-1L;
     var->srt[idx_dmn]=0L;
     var->srd[idx_dmn]=1L;
     var->sz*=dmn_cnt;
@@ -4662,7 +4662,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         In other words, there is no good way to "fix" a record dimension for a variable with no records/data
         Workaround is to arbitrarily assign such dimensions a size of 1 so they are fixed output, and still have no data
         This ugly hack seems to work and is only invoked in this extreme corner case so may be OK */
-        if(dmn_cnt == 0) dmn_cnt=1;
+        if(dmn_cnt == 0) dmn_cnt=1L;
         /* Update GTT dimension */
         (void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl);  
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
@@ -4853,7 +4853,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   } /* endif dbg */ 
 
   /* If output dimensions array exists */
-  if(dmn_cmn_out!=NULL && nco_prg_id == ncks){
+  if(dmn_cmn_out != NULL && nco_prg_id == ncks){
 
     nco_bool dmn_flg=False;
 
@@ -4864,7 +4864,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       for(int idx_dmn_out=0;idx_dmn_out<*nbr_dmn_cmn_out;idx_dmn_out++){
 
         /* Match by ID */
-        if( (*dmn_cmn_out)[idx_dmn_out].id==dmn_cmn[idx_dmn].id){
+        if((*dmn_cmn_out)[idx_dmn_out].id == dmn_cmn[idx_dmn].id){
           dmn_flg=True;
           break;
         }  /* Match by ID */
@@ -4891,7 +4891,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
         if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s Inserted dimension #%d to output list\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[idx_dmn].id);
 
-      }  /* If this dimension is not in output array */
+      } /* If this dimension is not in output array */
     } /* Loop over each dimension in variable */
   } /* If output dimensions array exists */
 
@@ -5302,24 +5302,20 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                 nco_var_prc_idx_trv(var_trv_mrk.nm_fll,var_prc_out,nbr_var_prc,&idx_var_prc_out);        
 
                 /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
-                for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
+                for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++)
                   dmn_idx_out_in[idx_dmn]=var_trv_mrk.dmn_idx_out_in[idx_dmn];
-                } 
 
                 int dmn_out_idx;
                 /* Search all dimensions in variable for new record dimension */
-                for(dmn_out_idx=0;dmn_out_idx<var_prc_out[idx_var_prc_out]->nbr_dim;dmn_out_idx++){
-                  if(!strcmp(var_prc_out[idx_var_prc_out]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
-                    break;
-                  }
-                }
+                for(dmn_out_idx=0;dmn_out_idx<var_prc_out[idx_var_prc_out]->nbr_dim;dmn_out_idx++)
+                  if(!strcmp(var_prc_out[idx_var_prc_out]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)) break;
+
                 /* ...Will variable be record variable in output file?... */
                 if(dmn_out_idx == var_prc_out[idx_var_prc_out]->nbr_dim){
                   /* ...No. Variable will be non-record---does this change its status?... */
-                  if(nco_dbg_lvl_get() >= nco_dbg_var){
-                    if(var_prc_out[idx_var_prc_out]->is_rec_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",
-                      nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
-                  }
+                  if(nco_dbg_lvl_get() >= nco_dbg_var)
+		    if(var_prc_out[idx_var_prc_out]->is_rec_var) 
+		      (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
                   /* Assign record flag dictated by re-order */
                   var_prc_out[idx_var_prc_out]->is_rec_var=False; 
                 }else{ /* ...otherwise variable will be record variable... */
@@ -5329,16 +5325,14 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                     int dmn_dpl_idx;
                     for(dmn_dpl_idx=1;dmn_dpl_idx<var_prc_out[idx_var_prc_out]->nbr_dim;dmn_dpl_idx++){ /* NB: loop starts from 1 */
                       if(var_prc_out[idx_var_prc_out]->dmn_id[0] == var_prc_out[idx_var_prc_out]->dmn_id[dmn_dpl_idx]){
-                        (void)fprintf(stdout,"%s: ERROR Requested re-order turns duplicate non-record dimension %s in variable %s into output record dimension. netCDF does not support duplicate record dimensions in a single variable.\n%s: HINT: Exclude variable %s from extraction list with \"-x -v %s\".\n",
-                          nco_prg_nm_get(),rec_dmn_nm_out,var_prc_out[idx_var_prc_out]->nm,nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm,var_prc_out[idx_var_prc_out]->nm);
+                        (void)fprintf(stdout,"%s: ERROR Requested re-order turns duplicate non-record dimension %s in variable %s into output record dimension. netCDF does not support duplicate record dimensions in a single variable.\n%s: HINT: Exclude variable %s from extraction list with \"-x -v %s\".\n",nco_prg_nm_get(),rec_dmn_nm_out,var_prc_out[idx_var_prc_out]->nm,nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm,var_prc_out[idx_var_prc_out]->nm);
                         nco_exit(EXIT_FAILURE);
                       } /* endif err */
                     } /* end loop over dmn_out */
                   } /* endif has_dpl_dmn */
                   /* ...Will becoming record variable change its status?... */
                   if(!var_prc_out[idx_var_prc_out]->is_rec_var){
-                    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",
-                      nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
+                    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
                     /* Change record flag to status dictated by re-order */
                     var_prc_out[idx_var_prc_out]->is_rec_var=True;
                     /* ...Swap dimension information for multi-dimensional variables... */
@@ -5361,9 +5355,8 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                       dmn_idx_out_in[dmn_idx_rec_in]=dmn_idx_swp;
 
                       /* Transfer dimension structures (re-ordered again) into GTT */
-                      for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
+                      for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++)
                         trv_tbl->lst[ idx_var_mrk ].dmn_idx_out_in[idx_dmn]=dmn_idx_out_in[idx_dmn];
-                      } 
 
                       /* Swap dimensions in list */
                       dmn_swp=var_prc_out[idx_var_prc_out]->dim[dmn_idx_rec_out];
@@ -7227,8 +7220,8 @@ nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
             /* And set start,count,stride to match current record ...Jesuzz */
             var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->srt=idx_rec_crr_in;
             var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->end=idx_rec_crr_in;
-            var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1;
-            var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->srd=1;
+            var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1L;
+            var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->srd=1L;
           } /* Loop limits */
 
           /* ! Case of previously existing limits */
@@ -7243,8 +7236,8 @@ nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
           /* And set start, count, stride to match current record ... */
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
-          var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->cnt=1;
-          var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srd=1;
+          var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->cnt=1L;
+          var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srd=1L;
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
         } /* ! Case of previously existing limits */
       } /* Case of dimension being coordinate variable */
@@ -7263,8 +7256,8 @@ nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
             /* And set start,count,stride to match current record ...Jesuzz */
             var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->srt=idx_rec_crr_in;
             var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->end=idx_rec_crr_in;
-            var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1;
-            var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->srd=1;
+            var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1L;
+            var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->srd=1L;
           } /* Loop limits */
 
           /* ! Case of previously existing limits */
@@ -7279,8 +7272,8 @@ nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
           /* And set start,count,stride to match current record ...Jesuzz */
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
-          var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->cnt=1;
-          var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srd=1;
+          var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->cnt=1L;
+          var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srd=1L;
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
         } /* ! Case of previously existing limits */
       } /* Case of dimension not being coordinate variable */
@@ -8537,13 +8530,13 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
     (*dmn)[idx]->xrf=NULL;
     (*dmn)[idx]->val.vp=NULL;
     (*dmn)[idx]->is_rec_dmn=lmt[idx]->is_rec_dmn;
-    (*dmn)[idx]->cnt=-1;
-    (*dmn)[idx]->sz=-1;
-    (*dmn)[idx]->srt=-1;
-    (*dmn)[idx]->end=-1;
-    (*dmn)[idx]->srd=-1;
+    (*dmn)[idx]->cnt=-1L;
+    (*dmn)[idx]->sz=-1L;
+    (*dmn)[idx]->srt=-1L;
+    (*dmn)[idx]->end=-1L;
+    (*dmn)[idx]->srd=-1L;
     (*dmn)[idx]->cid=-1;
-    (*dmn)[idx]->cnk_sz=-1;
+    (*dmn)[idx]->cnk_sz=-1L;
     (*dmn)[idx]->type=(nc_type)-1;
   }  
 
@@ -8866,7 +8859,6 @@ nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed var
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
 
     /* Get output group */
-
     if(trv_tbl->nsm_sfx){
       /* Define new name by appending suffix (e.g., /cesm + _avg) */
       char *nm_fll_sfx=nco_bld_nsm_sfx(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,trv_tbl);
@@ -8877,27 +8869,23 @@ nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed var
       if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn); else grp_out_fll=(char *)strdup(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     } /* !trv_tbl->nsm_sfx */
 
-
-    /* List of fixed templates  */
+    /* List of fixed templates */
     for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
 
       /* Get variable  */
       trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
 
       /* Define variable  */
-      if (flg_def == True) (void)nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,NULL,0,trv_tbl);
+      if(flg_def) (void)nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,NULL,0,trv_tbl);
 
       /* Obtain group IDs */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id_in);
       (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_id_out);
 
-      /* Copy variable data  */
-      if (flg_def == False) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,NULL,var_trv);
+      /* Copy variable data */
+      if(!flg_def) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,NULL,var_trv);
 
-      if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO creating fixed variables <%s> in ensemble parent group <%s>\n",nco_prg_nm_get(),
-          trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],grp_out_fll);
-      }  
+      if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO creating fixed variables <%s> in ensemble parent group <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],grp_out_fll);
 
     } /* List of fixed templates  */
 
@@ -9886,7 +9874,6 @@ nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (nc
 
   }else{ /* !flg_dfn */
     /* Write mode */
-
     md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
     /* Get group ID */
