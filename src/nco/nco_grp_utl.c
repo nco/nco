@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1453 2014-08-25 22:36:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1454 2014-08-26 17:13:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4706,19 +4706,33 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     } /* end if dimension is not yet defined */
 
-    /* pvn 20140824 Always redefine output dimension array */
-    /* Redefine output dimension array for this dimension */
-    //    if(nco_prg_id == ncks){ // Does not work on other operators
-    //    if(!((nco_prg_id == ncwa) && !DEFINE_DIM[idx_dmn])){ // Leads to ncwa regression
-    // if(True){ // Leads to multiple regressions
+    /* pvn 20140824 Always redefine output dimension array; repeat logic above regarding value of "dmn_cnt"
+    for both non ncwa and ncwa cases */
     if(nco_prg_id != ncwa){
       if(var_trv->var_dmn[idx_dmn].is_crd_var){
         dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
       }else{ /* !is_crd_var */
         dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
       } /* !is_crd_var */
-      (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
+    } else if(nco_prg_id == ncwa){
+      /* Degenerate dimensions */
+      for(int idx_dmn_dgn=0;idx_dmn_dgn<trv_tbl->nbr_dmn_dgn;idx_dmn_dgn++){
+        /* Compare ID */
+        if(trv_tbl->dmn_dgn[idx_dmn_dgn].id == var_dim_id){
+          dmn_cnt=trv_tbl->dmn_dgn[idx_dmn_dgn].cnt;
+          /* If dimension is record keep it that way */
+          if(dmn_trv->is_rec_dmn) dmn_cnt=NC_UNLIMITED;
+          break;
+        } /* Compare ID */
+      } /* !Degenerate */
+      if(var_trv->var_dmn[idx_dmn].flg_rdd){
+        /* If dimension was to be record keep it that way, otherwise define degenerate size of 1 */
+        if(DFN_CRR_DMN_AS_REC_IN_OUTPUT) dmn_cnt=NC_UNLIMITED; else dmn_cnt=1L;
+      } 
     } /* !ncwa */
+
+    (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
+
 
     /* Die informatively if record dimension is not first dimension in netCDF3 output */
     if(idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4 && DEFINE_DIM[idx_dmn]){
@@ -4825,9 +4839,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   } /* !ncwa */
 
   if(nco_dbg_lvl_get() == nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s Defined variable <%s><%s>\n",nco_prg_nm_get(),fnc_nm,grp_out_fll,var_nm);
-    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) (void)fprintf(stderr,"<%s>#%d SIZE=%ld : ",dmn_cmn[idx_dmn].nm_fll,dmn_out_id[idx_dmn],dmn_cmn[idx_dmn].sz);
-    (void)fprintf(stderr,"\n");
+    (void)fprintf(stdout,"%s: DEBUG %s Defined variable <%s><%s> : ",nco_prg_nm_get(),fnc_nm,grp_out_fll,var_nm);
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) (void)fprintf(stdout,"<%s>#%d SIZE=%ld : ",dmn_cmn[idx_dmn].nm_fll,dmn_out_id[idx_dmn],dmn_cmn[idx_dmn].sz);
+    (void)fprintf(stdout,"\n");
   } /* endif dbg */ 
 
   /* If output dimensions array exists */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.424 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.425 2014-08-26 17:13:41 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.424 2014-07-15 18:48:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.424 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.425 2014-08-26 17:13:41 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.425 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -716,7 +716,7 @@ main(int argc,char **argv)
   (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc,nbr_var_fix,var_fix,trv_tbl);
 
   /* We now have final list of variables to extract. Phew. */
-  if(nco_dbg_lvl >= nco_dbg_var){
+  if(nco_dbg_lvl >= nco_dbg_var && nco_dbg_lvl != nco_dbg_dev){
     for(idx=0;idx<xtr_nbr;idx++) (void)fprintf(stderr,"var[%d]->nm = %s, ->id=[%d]\n",idx,var[idx]->nm,var[idx]->id);
     for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stderr,"var_fix[%d]->nm = %s, ->id=[%d]\n",idx,var_fix[idx]->nm,var_fix[idx]->id);
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
