@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.249 2014-08-26 20:10:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.250 2014-08-27 04:44:01 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -781,10 +781,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 
     if(dmn_trv->lmt_msa.lmt_dmn[idx]->srt > dmn_trv->lmt_msa.lmt_dmn[idx]->end){
 
-      if(nco_dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%li->%li):\n",
-          nco_prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end);
-      }
+      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%li->%li):\n",nco_prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end);
 
       lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
 
@@ -832,7 +829,6 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
         (void)fprintf(stdout,"%d:\n",dmn_trv->lmt_msa.lmt_dmn_nbr);
       }
 
-
       /* "trv": Insert 2 non-wrapped limits */ 
 
       /* Current number of dimension limits for this table dimension  */
@@ -860,19 +856,13 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
       /* Update current index of dimension limits for this table dimension  */
       dmn_trv->lmt_msa.lmt_crr++;
 
-      if(nco_dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",
-          nco_prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end,
-          dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->srt,dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->end);
-      }
+      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",nco_prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end,dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->srt,dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->end);
 
     } /* endif srt > end */
   } /* end loop over size */
 
   /* Check if genuine wrapped co-ordinate */
-  if(size==1 && dmn_trv->lmt_msa.lmt_dmn_nbr==2){
-    dmn_trv->lmt_msa.WRP=True;
-  }
+  if(size == 1 && dmn_trv->lmt_msa.lmt_dmn_nbr == 2) dmn_trv->lmt_msa.WRP=True;
 
 } /* End nco_msa_wrp_splt_trv() */
 
@@ -922,7 +912,6 @@ nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (GTT vers
   } /* end else */
 
   return; 
-
 } /* End nco_msa_clc_cnt_trv() */
 
 void             
@@ -942,8 +931,6 @@ nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (GTT version) */
   (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct *),nco_cmp_lmt_srt);
 
 } /* End nco_msa_qsort_srt_trv() */
-
-
 
 nco_bool                /* O [flg] Return true if limits overlap (GTT version) */
 nco_msa_ovl_trv         /* [fnc] See if limits overlap */ 
@@ -1031,7 +1018,6 @@ nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
   if(size==1 && lmt_lst->lmt_dmn_nbr==2) lmt_lst->WRP=True;
 } /* end nco_msa_wrp_splt() */
 
-
 void
 nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new wrapped limits) */
 (lmt_msa_sct *lmt_lst)  /* [sct] MSA */
@@ -1113,7 +1099,6 @@ nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new
         (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",nco_prg_nm_get(),fnc_nm,lmt_lst->dmn_nm);
         (void)fprintf(stdout,"current limits=%d:\n",lmt_lst->lmt_dmn_nbr);
       }
-
 
       /* "trv": Insert 2 non-wrapped limits */ 
 
@@ -1365,9 +1350,8 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
 
       } /* End Loop needed limits */
 
-
       /* No limits? ...Make a limit to read all */
-      if ( (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr == 0){
+      if ((*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr == 0){
 
         if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
 

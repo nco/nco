@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.729 2014-08-26 20:10:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.730 2014-08-27 04:44:00 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -11,9 +11,7 @@ NCO now supports longer lists of input files, DAP files on HTTPS
 servers, and the CF ancillary_variables convention.
 
 Work on NCO 4.4.6 is underway, still focused on stability and speed.   
-This includes more netCDF4 mop-up, improved group broadcasting
-algorithms, and, possibly, improved HDF4 support, and new chunking 
-features.
+This includes more netCDF4 mop-up and new chunking features.
 
 Enjoy,
 Charlie
@@ -28,7 +26,7 @@ A. NCO now supports stdin input file lists up to ~50 MB long.
    Who will be the first user to break the million file barrier?
    http://nco.sf.net/nco.html#stdin
 
-A. NCO now supports the CF ancillary_variables convention described at
+B. NCO now supports the CF ancillary_variables convention described at
    http://cfconventions.org/1.6.html#ancillary-data
    This convention allows ancillary variables to be associated with
    one or more primary variables. NCO attaches any such variables to
@@ -36,14 +34,14 @@ A. NCO now supports the CF ancillary_variables convention described at
    coordinates and bounds, if any. 
    http://nco.sf.net/nco.html#ncl
 
-A. NCO now accesses DAP files on HTTPS servers. Previously NCO would
+C. NCO now accesses DAP files on HTTPS servers. Previously NCO would
    only test filenames beginning with "http://" for DAP access. 
    Now NCO also tests filenames beginning with "https://" for DAP.
    If you use DAP servers with a protocol besides HTTP or HTTPS please
    tell us so we can enable NCO for those services too.
    http://nco.sf.net/nco.html#dap
 
-A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
+D. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
    This new switch helps control variable and group extraction.
    Normally NCO works in "intersection mode" where the objects
    extracted are the intersection of arguments to -g and -v.
@@ -60,7 +58,7 @@ A. ncks --grp_xtr_var_xcl: Group Extraction Variable Exclusion
    ncks --grp_xtr_var_xcl -g g1 -v v1 # Extract all of group g1 except v1
    http://nco.sf.net/nco.html#gxvx
 
-A. New chunking policy r1d changes chunksize of 1-D record variables
+E. New chunking policy r1d changes chunksize of 1-D record variables
    (and no other variables) to specified (with --cnk_dmn) chunksize.
    Any specified record dimension chunksizes will be applied to 1-D
    record variables only. Other dimensions may be chunked with their
@@ -68,6 +66,7 @@ A. New chunking policy r1d changes chunksize of 1-D record variables
    For example, ncks --cnk_plc=r1d --cnk_dmn=time,1000.
    This sets time chunks to 1000 only in 1-D record variables.
    Without the r1d policy, time chunks would change in all variables.  
+   Not to be confused with chunking map rd1.
    Thanks to James Adams for suggesting this.
    http://nco.sf.net/nco.html#r1d
 
@@ -75,16 +74,24 @@ BUG FIXES:
 
 A. ncrename: fix unsafe pointer de-reference and improve diagnostics
 
-A. Fix problem introduced in 4.4.0 where sanitizing of filenames with
+B. Fix problem introduced in 4.4.0 where sanitizing of filenames with
    colons confused MS Windows interpretation of volume names, e.g.,
    "C:\foo" became "C\:\foo" and caused write error. Workaround is to
-   use --no_tmp_fl or upgrade to 4.4.5. 
+   use --no_tmp_fl or upgrade to 4.4.5. Thanks to James Adams for
+   reporting. 
 
-A. Always send correct dimension sizes to chunker when hyperslabbing.
-   Fixes a bug reported by Parker Norton where chunking and
-   hyperslabbing played cruelly together.
+C. Always send correct dimension sizes to chunker when hyperslabbing.
+   Fixes a bug reported where chunking and hyperslabbing played
+   cruelly together. Thanks to Parker Norton for reporting.
+   http://nco.sf.net#bug_cnk_hyp
 
-KNOWN PROBLEMS:
+D. ncpdq: fix mishandling of dimension reversal arguments
+   Versions 4.3.2-4.4.4 of ncpdq could fail to correctly parse some
+   valid forms of the dimension reversal syntax. Failure resulted,
+   so no bad data was written. Solution is to upgrade to 4.4.5.
+   Thanks to Fan Fang for reporting.
+
+KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
@@ -106,7 +113,33 @@ A. NOT YET FIXED (NCO problem)
    Cause: NCO parsing of ncatted arguments is not sophisticated
    enough to handle arrays of NC_STRINGS with embedded delimiters.
 
-B. NOT YET FIXED (netCDF library problem)
+B. NOT YET FIXED (NCO problem?)
+   ncra/ncrcat (not ncks) hyperslabbing can fail on variables with multiple record dimensions
+
+   Demonstration:
+   ncrcat -O -d time,0 ~/nco/data/mrd.nc ~/foo.nc
+
+   20140826: Verified problem still exists
+   20140619: Problem reported by rmla
+   Cause: Unsure. Maybe ncra.c loop structure not amenable to MRD?
+   Workaround: Convert to fixed dimensions then hyperslab
+
+C. NOT YET FIXED (NCO problem?)
+   Correctly handle stride argument on netCDF4 datasets
+   Specifying strided hyperslab on netCDF4 datasets leads
+   to enormous slowdown or failure with recent NCO versions.
+
+   Demonstration:
+   ncks -O -d time,0,,12 ~/ET_2000-01_2001-12.nc ~/foo.nc
+
+   20140826: Verified problem still exists
+   20140718: Problem reported by Parker Norton
+   Cause: Unclear. Interaction of stride and MSA?
+   Workaround: Convert file to netCDF3 first, then use stride
+
+KNOWN PROBLEMS DUE TO BASE LIBRARIES/PROTOCOLS:
+
+A. NOT YET FIXED (netCDF library problem)
    Probe hidden attributes (chunking, compression) of HDF4 files
 
    Demonstration:
@@ -119,7 +152,7 @@ B. NOT YET FIXED (netCDF library problem)
    Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file
    Tracking tickets NCF-272, NCF-273
 
-C. NOT YET FIXED (would require DAP protocol change?)
+B. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
    Metadata are returned successfully, data are not.
@@ -134,7 +167,7 @@ C. NOT YET FIXED (would require DAP protocol change?)
 
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-D. NOT YET FIXED (would require DAP protocol change)
+C. NOT YET FIXED (would require DAP protocol change)
    Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol
