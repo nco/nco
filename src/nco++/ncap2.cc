@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.194 2014-08-11 11:41:26 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.195 2014-09-02 11:00:01 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.194 2014-08-11 11:41:26 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.194 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.195 2014-09-02 11:00:01 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.195 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -750,28 +750,28 @@ main(int argc,char **argv)
     xtr_lst_a=nco_nm_id_lst_free(xtr_lst_a,nbr_xtr);
   } /* !FORCE_APPEND */
 
-  if(fl_spt_usr == NULL_CEWI){
-    /* No script file specified, look for command-line scripts */
-    if(nbr_spt == 0) err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
-
+  // execute in ANTLR command-line script(s)
+  if(nbr_spt >0){
+    char *fl_cmd_usr=(char *)strdup("Command-line script");
     /* Print all command-line scripts */
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       for(idx=0;idx<nbr_spt;idx++) 
         (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
     } /* endif debug */
-
-    /* Parse command line scripts */
-    fl_spt_usr=(char *)strdup("Command-line script");
-  }else{ /* ...endif command-line scripts, begin script file... */
-    /* Open script file for reading */
+     /* Invoke ANTLR parser */
+    rcd=parse_antlr(prs_vtr,fl_cmd_usr,spt_arg_cat);
+  }
+  
+  // execute in ANTLR user specified script 
+  if(fl_spt_usr){
     if((yyin=fopen(fl_spt_usr,"r")) == NULL_CEWI)
       err_prn(fnc_nm,"Unable to open script file "+std::string(fl_spt_usr));
     fclose(yyin); 
-  } /* end else script file */
-  
-  /* Invoke ANTLR parser */
-  rcd=parse_antlr(prs_vtr,fl_spt_usr,spt_arg_cat);
-  
+    /* Invoke ANTLR parser */
+    rcd=parse_antlr(prs_vtr,fl_spt_usr,(char *)NULL);
+  }
+
+
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
