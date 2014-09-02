@@ -1,7 +1,18 @@
-2013-09-02  Henry Butowsky  <henryb@hush.com>
-	* ncap2 command-line args and a script arg can now both be specified AND
-	executed. command-line args are executed before script
-	  ncap2 -v -s "lon=longitude"  -S in_4.nc out.nc
+2014-09-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.4.6 release procedure:
+ 	Changes since nco-4_4_5: fxm
+	cd ~/nco;cvs tag -d nco-4_4_6;cvs tag -d nco-4_4_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
+	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
+
+	* Clarify WARNING when record dimension size changes
+
+2014-09-02  Henry Butowsky  <henryb@hush.com>
+
+	* ncap2 command-line and script arguments can now both be specified AND executed
+	Command-line args are executed before script:
+	ncap2 -v -s "lon=longitude" -S in_4.nc out.nc
 
 2014-08-26  Charlie Zender  <zender@uci.edu>
 

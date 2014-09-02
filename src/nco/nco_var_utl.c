@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.359 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.360 2014-09-02 18:27:50 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -110,10 +110,10 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
         if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
           (void)nco_inq_dimlen(out_id,rec_dmn_id,&rec_dmn_sz);
           /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
-          if(rec_dmn_sz > 0){
+          if(rec_dmn_sz > 0L){
             /* ... then check input vs. output record dimension sizes ... */
             if(rec_dmn_sz != dmn_cnt[0]){
-              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",nco_prg_nm_get(),var_nm,dmn_cnt[0],rec_dmn_sz,var_nm);
+              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. This is expected only when user manually changes record dimensions. Otherwise, output variable %s may be corrupt.\n",nco_prg_nm_get(),var_nm,dmn_cnt[0],rec_dmn_sz,var_nm);
             } /* endif sizes are incommensurate */
           } /* endif records exist in output file */
         } /* endif output file has record dimension */
@@ -365,23 +365,23 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       } /* end if var_sz */
 
       /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record)
-      One check of this condition, per variable, is enough
-      In regular (non-MM3 workaround) case, we check this condition after reading/writing whole variable
-      In MM3 workaround-case, check condition after writing last record
-      20130127: fxm bug here when user eliminates record variables using --fix_rec_dmn
-      In that case output netCDF3 file does not have record variable so nco_inq_unlimdim() and nco_inq_dimlen() fail
-      Since following code is purely diagnostic, assume that these failures are due to using --fix_rec_dmn 
-      And therefore, well, ignore them :) */
-      if(rec_idx == rec_sz-1){ 
+	 One check of this condition, per variable, is enough
+	 In regular (non-MM3 workaround) case, we check this condition after reading/writing whole variable
+	 In MM3 workaround-case, check condition after writing last record
+	 20130127: fxm bug here when user eliminates record variables using --fix_rec_dmn
+	 In that case output netCDF3 file does not have record variable so nco_inq_unlimdim() and nco_inq_dimlen() fail
+	 Since following code is purely diagnostic, assume that these failures are due to using --fix_rec_dmn 
+	 And therefore, well, ignore them :) */
+      if(rec_idx == rec_sz-1L){ 
         rcd=nco_inq_unlimdim(var_lst[var_idx]->grp_id_out,&rec_dmn_out_id); 
         if(rec_dmn_out_id != NCO_REC_DMN_UNDEFINED){
           /* ... and if output file has record dimension ... */
           (void)nco_inq_dimlen(var_lst[var_idx]->grp_id_out,rec_dmn_out_id,&rec_out_sz);
           /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
-          if(rec_out_sz > 0){
+          if(rec_out_sz > 0L){
             /* ... then check input vs. output record dimension sizes ... */
             if(rec_sz != rec_out_sz){
-              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",nco_prg_nm_get(),var_lst[var_idx]->nm,rec_sz,rec_out_sz,var_lst[var_idx]->nm);
+              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. This is expected only when user manually changes record dimensions. Otherwise, output variable %s may be corrupt.\n",nco_prg_nm_get(),var_lst[var_idx]->nm,rec_sz,rec_out_sz,var_lst[var_idx]->nm);
             } /* endif sizes are incommensurate */
           } /* endif records have already been written to output file */
         } /* endif record dimension exists in output file */
