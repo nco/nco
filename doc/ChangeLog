@@ -1,3 +1,8 @@
+2013-09-02  Henry Butowsky  <henryb@hush.com>
+	* ncap2 command-line args and a script arg can now both be specified AND
+	executed. command-line args are executed before script
+	  ncap2 -v -s "lon=longitude"  -S in_4.nc out.nc
+
 2014-08-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.5 release procedure:
