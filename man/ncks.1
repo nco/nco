@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.47 2014-06-11 17:28:22 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.48 2014-09-12 04:16:51 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncks
 .\" Usage:
 .\" nroff -man ~/nco/man/ncks.1 | less
@@ -48,7 +48,7 @@ dbg_lvl]
 [-Q] [\-q]
 [\-R] [\-r] [\-\-rad] [\-\-ram_all] [\-s 
 .IR format ]
-[\-u] [\--unn] [\-v 
+[\-u] [\--unn] [\-V] [\-v 
 .IR var [,...]] 
 [\-X 
 .IR box ] 
@@ -90,10 +90,12 @@ Options
 .BR \-H ,
 .BR \-M ,
 .BR \-m ,
+.BR \-Q ,
 .BR \-q ,
 .BR \-s ,
+.BR \-u ,
 and 
-.B \-u
+.B \-V
 control the formatted appearance of 
 the data.  
 .PP
@@ -361,7 +363,7 @@ This displays all metadata pertaining to each variable, one variable
 at a time.
 .PP
 .TP
-.B \-q 
+.B \-Q 
 Toggle printing of dimension indices and coordinate values when printing
 arrays. 
 The name of each variable will appear flush left in the output.
@@ -591,7 +593,7 @@ ncks \-d lon,260.,45. in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.47 2014-06-11 17:28:22 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.48 2014-09-12 04:16:51 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.174 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.175 2014-09-12 04:16:51 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -27,15 +27,15 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   /* Purpose: Process single attribute edit for single variable */
   
   /* If var_id == NC_GLOBAL ( = -1) then global attribute will be edited */
-
+  
   const char fnc_nm[]="nco_aed_prc()"; /* [sng] Function name */
-
+  
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   char att_nm_tmp[]="eulaVlliF_"; /* String of same length as "_FillValue" for netCDF4 name hack */
   nco_bool flg_fmt_netCDF4=False; /* [flg] File format is netCDF4 */
   nco_bool flg_netCDF4_rename_trick=False; /* [flg] Re-name _FillValue in order to create/modify/overwrite it */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
-
+  
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
   
@@ -44,11 +44,11 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_inq_att=NC_NOERR; /* [rcd] Return code from nco_inq_att() */
   long att_sz;
-     
+  
   nc_type att_typ;
   
   void *att_val_new=NULL;
-
+  
   if(var_id == NC_GLOBAL){
     /* Get number of global attributes in file */
     (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
@@ -57,7 +57,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     /* Get name and number of attributes for variable */
     (void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
-
+  
   if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s examining variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 
   /* Query attribute metadata when attribute name was specified */
@@ -649,67 +649,67 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
  X_CST_PTR_CST_PTR_Y(char,aed_arg)) /* I/O [sng] List of user-specified attribute edits (delimiters are changed to NULL on output */
 {
   /* Purpose: Parse name, type, size, and value elements of comma-separated list of attribute edit information
-  Routine merely evaluates syntax of input expressions
-  Routine does not validate attributes or variables against those present in input netCDF file */
-
+     Routine merely evaluates syntax of input expressions
+     Routine does not validate attributes or variables against those present in input netCDF file */
+  
   /* Options are:
-  -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
-
-  -a att_nm,,mode,att_typ,att_val (modifies attribute att_nm for every variable in file)
-  If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in file
-  Thus attribute editing operation is performed on every variable in file.
-
-  mode,att_nm,att_typ,att_val (modifies global attribute att_nm for file)
-  This option may be combined with modes -a, -c, -d, or -o to specify 
-  appending to, changing, deleting, or overwriting, any existing global attribute named att_nm
-
-  One mode must be set for each edited attribute: append (a), create (c), delete (d), modify (m), or overwrite (o).
-  -a: Attribute append mode
-  Append value att_val to current var_nm attribute att_nm value att_val, if any. 
-  If var_nm does not have an attribute att_nm, there is no effect.
-
-  -c: Attribute create mode
-  Create variable var_nm attribute att_nm with att_val if att_nm does not yet exist. 
-  If var_nm already has an attribute att_nm, there is no effect.
-
-  -d: Attribute delete mode
-  Delete current var_nm attribute att_nm.
-  If var_nm does not have an attribute att_nm, there is no effect.
-
-  -m: Attribute modify mode
-  Change value of current var_nm attribute att_nm to value att_val.
-  If var_nm does not have an attribute att_nm, there is no effect.
-
-  -o: Attribute overwrite mode
-  Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
-  This is default mode. */
-
+     -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
+     
+     -a att_nm,,mode,att_typ,att_val (modifies attribute att_nm for every variable in file)
+     If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in file
+     Thus attribute editing operation is performed on every variable in file.
+     
+     mode,att_nm,att_typ,att_val (modifies global attribute att_nm for file)
+     This option may be combined with modes -a, -c, -d, or -o to specify 
+     appending to, changing, deleting, or overwriting, any existing global attribute named att_nm
+     
+     One mode must be set for each edited attribute: append (a), create (c), delete (d), modify (m), or overwrite (o).
+     -a: Attribute append mode
+     Append value att_val to current var_nm attribute att_nm value att_val, if any. 
+     If var_nm does not have an attribute att_nm, there is no effect.
+     
+     -c: Attribute create mode
+     Create variable var_nm attribute att_nm with att_val if att_nm does not yet exist. 
+     If var_nm already has an attribute att_nm, there is no effect.
+     
+     -d: Attribute delete mode
+     Delete current var_nm attribute att_nm.
+     If var_nm does not have an attribute att_nm, there is no effect.
+     
+     -m: Attribute modify mode
+     Change value of current var_nm attribute att_nm to value att_val.
+     If var_nm does not have an attribute att_nm, there is no effect.
+     
+     -o: Attribute overwrite mode
+     Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
+     This is default mode. */
+  
   aed_sct *aed_lst;
-
+  
   char **arg_lst;
-
+  
   char *msg_sng=NULL_CEWI; /* [sng] Error message */
-
+  
   const char * const dlm_sng=",";
-
+  
   const long idx_att_val_arg=4L; /* Number of required delimiters preceding attribute values in -a argument list */
-
+  
   int idx;
   int arg_nbr;
-
+  
   long lmn;
-
+  
   nco_bool ATT_TYP_INHERIT; /* [flg] Inherit attribute type from pre-existing attribute */
   nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in attribute-edit specification */
-
+  
   aed_lst=(aed_sct *)nco_malloc(nbr_aed*sizeof(aed_sct));
-
+  
   for(idx=0;idx<nbr_aed;idx++){
     ATT_TYP_INHERIT=False; /* [flg] Inherit attribute type from pre-existing attribute */
-
+    
     /* Process attribute edit specifications as normal text list */
     arg_lst=nco_lst_prs_2D(aed_arg[idx],dlm_sng,&arg_nbr);
-
+    
     /* Check syntax */
     if(arg_nbr < 5){ /* Need more info */
       msg_sng=strdup("Specification has fewer than five arguments---need more information");
@@ -722,7 +722,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       NCO_SYNTAX_ERROR=True;
     }else if(arg_lst[idx_att_val_arg] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[3]) == 'c'){
       /* ... value is not specified except that att_val = "" is valid for character type */
-      msg_sng=strdup("Value must be explicitly specified for all modes except delete (although an empty string value is permissible for attributes of type NC_NCAR and NC_STRING)");
+      msg_sng=strdup("Value must be explicitly specified for all modes except delete (although an empty string value is permissible for attributes of type NC_CHAR and NC_STRING)");
       NCO_SYNTAX_ERROR=True;
     } /* end else */
 
@@ -734,10 +734,10 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
     /* Initialize structure */
     /* aed strings not explicitly set by user remain NULL,
-    i.e., specifying default setting appears as if nothing was set.
-    Hopefully, in routines that follow, the branch followed by an aed for which
-    all default settings were specified (e.g.,"-a foo,,,,") will yield same result
-    as branch for which all defaults were set. */
+       i.e., specifying default setting appears as if nothing was set.
+       Hopefully, in routines that follow, the branch followed by an aed for which
+       all default settings were specified (e.g.,"-a foo,,,,") will yield same result
+       as branch for which all defaults were set. */
     aed_lst[idx].att_nm=NULL;
     aed_lst[idx].var_nm=NULL;
     aed_lst[idx].val.vp=NULL;
@@ -754,10 +754,10 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     /* Set mode of current aed structure */
     /* Convert single letter code to mode enum */
     /*    if(!strcmp("append",arg_lst[2])){aed_lst[idx].mode=aed_append;
-    }else if(!strcmp("create",arg_lst[2])){aed_lst[idx].mode=aed_create;
-    }else if(!strcmp("delete",arg_lst[2])){aed_lst[idx].mode=aed_delete;
-    }else if(!strcmp("modify",arg_lst[2])){aed_lst[idx].mode=aed_modify;
-    }else if(!strcmp("overwrite",arg_lst[2])){aed_lst[idx].mode=aed_overwrite;} */
+	  }else if(!strcmp("create",arg_lst[2])){aed_lst[idx].mode=aed_create;
+	  }else if(!strcmp("delete",arg_lst[2])){aed_lst[idx].mode=aed_delete;
+	  }else if(!strcmp("modify",arg_lst[2])){aed_lst[idx].mode=aed_modify;
+	  }else if(!strcmp("overwrite",arg_lst[2])){aed_lst[idx].mode=aed_overwrite;} */
     switch(*(arg_lst[2])){
     case 'a': aed_lst[idx].mode=aed_append; break;
     case 'c': aed_lst[idx].mode=aed_create; break;
@@ -840,25 +840,25 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       /* Set size of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
         /* 20100409 Remove extra space formerly allocated for NUL-terminator 
-        This caused each append to insert a NUL at end of NC_CHAR attributes
-        Multiple appends would then result in attributes pockmarked with NULs
-        Solves TODO nco985
-        Not yet sure there are no ill effects though...
-        20120902 Apparently this fixed some of append mode and broke other modes
-        Dave Allured reports on NCO Discussion forum that create, modify, and overwrite 
-        modes have not added NUL to NC_CHAR attributes since 4.0.2.
-        strdup() below attaches trailing NUL to user-specified string 
-        Retaining this NUL is obliquely discussed in netCDF Best Practices document:
-        http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char
-        Two behaviors are possible:
-        1. Terminate user-specified strings with NUL before saving as attributes
-        This behavior was used in 4.0.2-4.2.2 (201007-201210)
-        2. Do not NUL-terminate user-specified strings
-        This behavior was re-instituted in 4.3.0 (201204)
-        Between 201210 and 201304 the behavior was unclear to me...
-        ncgen may be interpreted as utilizing Behavior 2, since attributes in CDL are not NUL-terminated after conversion to netCDF binary format
-        As of 20130327, NCO chooses Behavior 2 (like ncgen)
-        To revert to Behavior 1, uncomment next line to create space for NUL-terminator */
+	   This caused each append to insert a NUL at end of NC_CHAR attributes
+	   Multiple appends would then result in attributes pockmarked with NULs
+	   Solves TODO nco985
+	   Not yet sure there are no ill effects though...
+	   20120902 Apparently this fixed some of append mode and broke other modes
+	   Dave Allured reports on NCO Discussion forum that create, modify, and overwrite 
+	   modes have not added NUL to NC_CHAR attributes since 4.0.2.
+	   strdup() below attaches trailing NUL to user-specified string 
+	   Retaining this NUL is obliquely discussed in netCDF Best Practices document:
+	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char
+	   Two behaviors are possible:
+	   1. Terminate user-specified strings with NUL before saving as attributes
+	   This behavior was used in 4.0.2-4.2.2 (201007-201210)
+	   2. Do not NUL-terminate user-specified strings
+	   This behavior was re-instituted in 4.3.0 (201204)
+	   Between 201210 and 201304 the behavior was unclear to me...
+	   ncgen may be interpreted as utilizing Behavior 2, since attributes in CDL are not NUL-terminated after conversion to netCDF binary format
+	   As of 20130327, NCO chooses Behavior 2 (like ncgen)
+	   To revert to Behavior 1, uncomment next line to create space for NUL-terminator */
         /* aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 1L : strlen(arg_lst[idx_att_val_arg])+1L; */ /* Behavior 1 */
         aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg])+0L; /* Behavior 2 (like ncgen) */
       }else{
@@ -869,8 +869,8 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       /* Set value of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
         /* strdup() attaches a trailing NUL to the user-specified string 
-        Retaining is obliquely discussed in netCDF Best Practices document:
-        http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char */
+	   Retaining is obliquely discussed in netCDF Best Practices document:
+	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char */
         aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
       }else if(aed_lst[idx].type == NC_STRING){
         aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
@@ -954,7 +954,6 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
   } /* end loop over aed */
 
-
   if(nco_dbg_lvl_get() >= nco_dbg_io){
     for(idx=0;idx<nbr_aed;idx++){
       (void)fprintf(stderr,"aed_lst[%d].att_nm = %s\n",idx,aed_lst[idx].att_nm);
@@ -966,7 +965,6 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       (void)fprintf(stderr,"aed_lst[%d].mode = %i\n",idx,aed_lst[idx].mode);
     } /* end loop over idx */
   } /* end debug */
-
 
   return aed_lst;
 

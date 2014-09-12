@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.731 2014-09-02 18:27:46 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.732 2014-09-12 04:16:50 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -17,8 +17,12 @@ NEW FEATURES (full details always in ChangeLog):
 
 A. ncap2 command-line and script arguments can now both be specified
    AND executed. Command-line args are executed before script:
-   ncap2 -v -s "lon=longitude" -S in_4.nc out.nc
+   ncap2 -v -s "lon=${longitude}" -S in_4.nc out.nc
+   This is useful for passing shell variables into NCO scripts.
+   Pass the shell variables with -s and the -S scripts will use them.
    http://nco.sf.net/nco.html#ncap2
+
+A. ncks -V is a new switch that prints only variable values.
 
 BUG FIXES:
 

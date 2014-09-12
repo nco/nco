@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1018 2014-09-02 18:27:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1019 2014-09-12 04:16:50 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.5
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 1 September 2014
+@set update-date 11 September 2014
 @set update-month September 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -5222,9 +5222,8 @@ temporary output file is copied (sometimes a quick re-link suffices) to
 the final output file (@pxref{Temporary Output Files}).
 All this copying is expensive for large files. 
 
-The new @samp{--record_append} switch causes all records in
-@file{fl_2.nc} to be appended to the end of the corresponding records in
-@file{fl_1.nc}: 
+The @samp{--record_append} switch appends all records in @file{fl_2.nc} 
+to the end (after the last record) of @file{fl_1.nc}: 
 @example
 ncrcat --rec_apn fl_2.nc fl_1.nc
 @end example
@@ -12766,7 +12765,7 @@ EXAMPLES
 Append the string "Data version 2.0.\n" to the global attribute
 @code{history}: 
 @example
-ncatted -a history,global,a,c,"Data version 2.0\n" in.nc 
+ncatted -a history,global,a,c,'Data version 2.0\n' in.nc 
 @end example
 Note the use of embedded @w{C language} @code{printf()}-style escape 
 sequences. 
@@ -12835,20 +12834,20 @@ To delete all global attributes, simply replace @code{tpt} with
 @cindex @code{units}
 Modify all existing @code{units} attributes to "meter second-1":
 @example
-ncatted -a units,,m,c,"meter second-1" in.nc
+ncatted -a units,,m,c,'meter second-1' in.nc
 @end example
 
 @cindex @code{units}
 Add a @code{units} attribute of "kilogram kilogram-1" to all variables 
 whose first three characters are @samp{H2O}:
 @example
-ncatted -a units,'^H2O',c,c,"kilogram kilogram-1" in.nc
+ncatted -a units,'^H2O',c,c,'kilogram kilogram-1' in.nc
 @end example
 
 Overwrite the @code{quanta} attribute of variable
 @code{energy} to an array of four integers. 
 @example
-ncatted -O -a quanta,energy,o,s,"010,101,111,121" in.nc
+ncatted -O -a quanta,energy,o,s,'010,101,111,121' in.nc
 @end example
 
 @cindex extended regular expressions
@@ -12860,7 +12859,7 @@ As of @acronym{NCO} 3.9.6 (January, 2009), @command{ncatted} accepts
 Create @code{isotope} attributes for all variables containing @samp{H2O} 
 in their names.
 @example
-ncatted -O -a isotope,'^H2O*',c,s,"18" in.nc
+ncatted -O -a isotope,'^H2O*',c,s,'18' in.nc
 @end example
 See @ref{Subsetting Files} for more details.
 
@@ -12871,21 +12870,21 @@ variables, dimensions, and groups.
 @c ncks -m -v lon ~/in_grp.nc
 @example
 # Overwrite units attribute of specific 'lon' variable
-ncatted -O -a units,/g1/lon,o,c,"degrees_west" in_grp.nc
+ncatted -O -a units,/g1/lon,o,c,'degrees_west' in_grp.nc
 # Overwrite units attribute of all 'lon' variables
-ncatted -O -a units,lon,o,c,"degrees_west" in_grp.nc
+ncatted -O -a units,lon,o,c,'degrees_west' in_grp.nc
 # Delete units attribute of all 'lon' variables
 ncatted -O -a units,lon,d,, in_grp.nc
 # Overwrite units attribute with new type for specific 'lon' variable
-ncatted -O -a units,/g1/lon,o,sng,"degrees_west" in_grp.nc
+ncatted -O -a units,/g1/lon,o,sng,'degrees_west' in_grp.nc
 # Add new_att attribute to all variables
-ncatted -O -a new_att,,c,sng,"new variable attribute" in_grp.nc
+ncatted -O -a new_att,,c,sng,'new variable attribute' in_grp.nc
 # Add new_grp_att group attribute to all groups
-ncatted -O -a new_grp_att,group,c,sng,"new group attribute" in_grp.nc
+ncatted -O -a new_grp_att,group,c,sng,'new group attribute' in_grp.nc
 # Add new_grp_att group attribute to single group
-ncatted -O -a g1_grp_att,g1,c,sng,"new group attribute" in_grp.nc
+ncatted -O -a g1_grp_att,g1,c,sng,'new group attribute' in_grp.nc
 # Add new_glb_att global attribute to root group
-ncatted -O -a new_glb_att,global,c,sng,"new global attribute" in_grp.nc
+ncatted -O -a new_glb_att,global,c,sng,'new global attribute' in_grp.nc
 @end example
 
 Demonstrate input of C-language escape sequences (e.g., @code{\n}) and
@@ -14235,8 +14234,7 @@ existing files and variables, respectively.
 
 @unnumberedsubsec Options specific to @command{ncks}
 
-The following list provides a short summary of the features unique to
-@command{ncks}.  
+The following summarizes features unique to @command{ncks}.  
 Features common to many operators are described in 
 @ref{Common features}. 
 
@@ -14635,31 +14633,43 @@ This set of switches is useful for exploring file contents.
 
 @html
 <a name="Q"></a> <!-- http://nco.sf.net/nco.html#Q -->
+<a name="quiet"></a> <!-- http://nco.sf.net/nco.html#quiet -->
 @end html
 @cindex @code{-Q}
-@item -Q 
-Toggle printing of dimension indices and coordinate values when printing
-arrays. 
-Each variable's name appears flush left in the output.
+@cindex @code{--quiet}
+@item -Q
+Print quietly, meaning omit dimension names, indices, and coordinate
+values when printing arrays. 
+Variable (not dimension) indices are printed.
+Variable names appear flush left in the output:
+@example
+@verbatim
+zender@roulee:~$ ncks -Q -v three_dmn_rec_var -C -H ~/nco/data/in.nc              
+three_dmn_rec_var[0]=1 
+...
+@end verbatim
+@end example
 This helps locate specific variables in lists with many variables and 
 different dimensions. 
+See also the @samp{-V} option, which omits all names and indices and
+prints only variable values. 
 
 @html
 <a name="q"></a> <!-- http://nco.sf.net/nco.html#q -->
-<a name="quiet"></a> <!-- http://nco.sf.net/nco.html#quiet -->
+<a name="quench"></a> <!-- http://nco.sf.net/nco.html#quench -->
 @end html
 @cindex @code{-q}
-@cindex @code{--quiet}
-@cindex quiet
+@cindex @code{--quench}
+@cindex quench
 @item -q 
-Turn off all printing to screen.
+Quench (turn-off) all printing to screen.
 This overrides the setting of all print-related switches, equivalent to
 @kbd{-H -M -m} when in single-file printing mode. 
 When invoked with @code{-R} (@pxref{Retaining Retrieved Files}), @command{ncks}
 automatically sets @code{-q}. 
 This allows @command{ncks} to retrieve remote files without
 automatically trying to print them.
-Also @samp{--quiet}.
+Also @samp{--quench}.
 
 @html
 <a name="rad"></a> <!-- http://nco.sf.net/nco.html#rad -->
@@ -14700,6 +14710,22 @@ Accepts @w{C language} escape sequences and @code{printf()} formats.
 Also @samp{--string}  and @samp{--sng_fmt}. 
 
 @html
+<a name="ssh"></a> <!-- http://nco.sf.net/nco.html#ssh -->
+<a name="scr"></a> <!-- http://nco.sf.net/nco.html#scr -->
+<a name="secret"></a> <!-- http://nco.sf.net/nco.html#secret -->
+@end html
+@cindex @code{--ssh}
+@cindex @code{--scr}
+@cindex @code{--secret}
+@cindex hidden features
+@item --secret
+Print summary of @command{ncks} hidden features.
+These hidden or secret features are used mainly by developers.
+They are not supported for general use and may change at any time.
+This demonstrates conclusively that I cannot keep a secret.
+Also @samp{--ssh} and @samp{--scr}. 
+
+@html
 <a name="units"></a> <!-- http://nco.sf.net/nco.html#units -->
 <a name="u"></a> <!-- http://nco.sf.net/nco.html#u -->
 @end html
@@ -14709,6 +14735,29 @@ Also @samp{--string}  and @samp{--sng_fmt}.
 Toggle the printing of a variable's @code{units} attribute, if any, 
 with its values.
 Also @samp{--units}.
+
+@html
+<a name="V"></a> <!-- http://nco.sf.net/nco.html#V -->
+<a name="var_val"></a> <!-- http://nco.sf.net/nco.html#var_val -->
+@end html
+@cindex @code{-V}
+@cindex @code{--var_val}
+@cindex @code{--no_dmn_var_nm}
+@item -V
+Print variable values only.
+Do not print variable and dimension names, indices, and coordinate
+values when printing arrays. 
+@example
+@verbatim
+zender@roulee:~$ ncks -V -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+1
+...
+@end verbatim
+@end example
+See also the @samp{-Q} option, which prints variable names and indices,
+but not dimension names, indices, or coordinate values when printing
+arrays. 
+Using @samp{-V} is the same as specifying @samp{-Q --no_nm_prn}.
 
 @html
 <a name="xml"></a> <!-- http://nco.sf.net/nco.html#xml -->
@@ -15092,6 +15141,27 @@ lon[2]=180 mss_val[2]=73
 lon[3]=270 mss_val[3]=_ 
 % ncks -s '%+5.1f, ' -H -C -v mss_val in.nc
 +73.0, _, +73.0, _, 
+@end example
+To print the numeric value of the missing value instead of a blank,
+use the @samp{--no_blank} option.
+
+@command{ncks} prints in a verbose fashion by default and supplies a
+number of switches to pare-down (or even spruce-up) the output.
+The interplay of the @samp{-Q}, @samp{-V}, and (otherwise undocumented) 
+@samp{--no_var_nm} switches can yield most desired verbosities:
+@example
+@verbatim
+% ncks -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+time[0]=1 lat[0]=-90 lon[0]=0 three_dmn_rec_var[0]=1 
+% ncks --no_var_nm -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+1 -90 0 1
+% ncks -Q -v three_dmn_rec_var -C -H ~/nco/data/in.nc              
+three_dmn_rec_var[0]=1 
+% ncks -Q --no_var_nm -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+1
+% ncks -V -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+1
+@end verbatim
 @end example
 
 One dimensional arrays of characters stored as netCDF variables are 
@@ -16889,7 +16959,7 @@ All concept, design and implementation from 1995--2000.
 Since then autotools, bug-squashing, @acronym{CDL}, chunking,
 documentation, anchoring, recursion, @acronym{GPE}, packing,
 @acronym{NCO} library redesign, @command{ncap2} features,
-@command{ncbo}, @command{ncpdq}, SMP threading and MPI parallelization,
+@command{ncbo}, @command{ncpdq}, @acronym{SMP} threading and @acronym{MPI} parallelization,
 netCDF4 integration, external funding, project management, science
 research, releases. 
 @cindex Henry Butowsky

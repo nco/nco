@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.737 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.738 2014-09-12 04:16:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -140,7 +140,7 @@ main(int argc,char **argv)
   nco_bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
   nco_bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
   nco_bool PRN_MSS_VAL_BLANK=True; /* [flg] Print missing values as blanks */
-  nco_bool PRN_QUIET=False; /* [flg] Turn off all printing to screen */
+  nco_bool PRN_QUENCH=False; /* [flg] Quench (turn-off) all printing to screen */
   nco_bool PRN_VAR_DATA=False; /* [flg] Print variable data */
   nco_bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
   nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
@@ -183,9 +183,9 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.737 2014-07-15 18:48:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.737 $";
-  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.738 2014-09-12 04:16:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.738 $";
+  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -285,8 +285,8 @@ main(int argc,char **argv)
       {"noclobber",no_argument,0,0},
       {"no-clobber",no_argument,0,0},
       {"no_clobber",no_argument,0,0},
-      {"no_dmn_var_nm",no_argument,0,0}, /* [flg] Print dimension/variable names */
-      {"no_nm_prn",no_argument,0,0}, /* [flg] Print dimension/variable names */
+      {"no_dmn_var_nm",no_argument,0,0}, /* [flg] Omit variable and dimension names and indices but print all values */
+      {"no_nm_prn",no_argument,0,0}, /* [flg] Omit variable and dimension names and indices but print all values */
       {"rad",no_argument,0,0}, /* [flg] Retain all dimensions */
       {"retain_all_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
       {"orphan_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
@@ -390,7 +390,8 @@ main(int argc,char **argv)
       {"print",required_argument,0,'P'},
       {"prn",required_argument,0,'P'},
       {"path",required_argument,0,'p'},
-      {"quiet",no_argument,0,'q'},
+      {"quench",no_argument,0,'q'},
+      {"quiet",no_argument,0,'Q'},
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
@@ -398,6 +399,7 @@ main(int argc,char **argv)
       {"sng_fmt",required_argument,0,'s'},
       {"string",required_argument,0,'s'},
       {"units",no_argument,0,'u'},
+      {"var_val",no_argument,0,'V'}, /* [flg] Print variable values only */
       {"variable",required_argument,0,'v'},
       {"auxiliary",required_argument,0,'X'},
       {"exclude",no_argument,0,'x'},
@@ -530,12 +532,12 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
-      if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")) PRN_DMN_VAR_NM=False;
+      if(!strcmp(opt_crr,"no_nm_prn") || !strcmp(opt_crr,"no_dmn_var_nm")) PRN_DMN_VAR_NM=False; /* endif "no_nm_prn" */
       if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */
@@ -675,8 +677,8 @@ main(int argc,char **argv)
     case 'p': /* Common file path */
       fl_pth=(char *)strdup(optarg);
       break;
-    case 'q': /* [flg] Turn off all printing to screen */
-      PRN_QUIET=True; /* [flg] Turn off all printing to screen */
+    case 'q': /* [flg] Quench (turn-off) all printing to screen */
+      PRN_QUENCH=True; /* [flg] Quench (turn-off) all printing to screen */
       break;
     case 'Q': /* Turn off printing of dimension indices and coordinate values */
       PRN_DMN_IDX_CRD_VAL=!PRN_DMN_IDX_CRD_VAL;
@@ -702,6 +704,10 @@ main(int argc,char **argv)
       break;
     case 'u': /* Toggle printing dimensional units */
       PRN_DMN_UNITS_TGL=True;
+      break;
+    case 'V': /* Print variable values only (same as -Q --no_nm_prn) */
+      PRN_DMN_IDX_CRD_VAL=False;
+      PRN_DMN_VAR_NM=False;
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -848,8 +854,8 @@ main(int argc,char **argv)
       if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=True; else PRN_VAR_METADATA=False;
       if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=True; else PRN_GLB_METADATA=False;
     } /* !PRN_VRB */  
-    /* PRN_QUIET turns off all printing to screen */
-    if(PRN_QUIET) PRN_VAR_DATA=PRN_VAR_METADATA=PRN_GLB_METADATA=False;
+    /* PRN_QUENCH turns off all printing to screen */
+    if(PRN_QUENCH) PRN_VAR_DATA=PRN_VAR_METADATA=PRN_GLB_METADATA=False;
   } /* !fl_out */  
 
   if(fl_bnr && !fl_out){
