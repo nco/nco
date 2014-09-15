@@ -1,10 +1,16 @@
-2014-09-11  Charlie Zender  <zender@uci.edu>
+2014-09-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.6 release procedure:
  	Changes since nco-4_4_5: ncks -V, ncap2 -s -S,
 	cd ~/nco;cvs tag -d nco-4_4_6;cvs tag -d nco-4_4_6-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
 	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
+
+	* ./configure now checks for daperror() instead of nc__opendap()
+
+	* Add NC_EIO error clarifications
+
+2014-09-11  Charlie Zender  <zender@uci.edu>
 
 	* Create -V = --var_val = -Q --no_nm_prn for ncks to print only	variable values
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.120 2014-07-10 23:36:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.121 2014-09-15 19:43:27 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -125,6 +125,12 @@
 #endif
 #ifndef NC_FORMAT_64BIT_DATA
 # define NC_FORMAT_64BIT_DATA	NC_FORMAT_CDF5
+#endif
+
+/* netcdf.h added tokens specifically for DAP in 2012?
+   Started annotating these error codes in nco_err_exit() in NCO 4.4.6 in 201409 */
+#ifndef NC_EIO
+# define NC_EIO          (-68)      /**< Generic IO error */
 #endif
 
 /* Some netCDF3 stubs for netCDF4 routines need netCDF4-only return codes

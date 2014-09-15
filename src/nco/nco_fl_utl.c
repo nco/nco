@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.249 2014-08-22 20:27:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.250 2014-09-15 19:43:27 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -643,7 +643,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
 	 ncks -O -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc # DAP
 	 ncks -O -v one -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc ~/foo.nc # DAP */
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find file on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",nco_prg_nm_get());
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will attempt to find file on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",nco_prg_nm_get());
 
       /* DAP cannot open file so leave DAP_URL=FALSE and set HTTP_URL=True
 	 Later we will attempt to wget file to local system */
