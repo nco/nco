@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.190 2014-09-16 17:26:24 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.191 2014-09-16 20:50:20 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -793,16 +793,17 @@ variables:
         
 	float one_dmn_rec_var_flt(time);
 	one_dmn_rec_var_flt:long_name = "one dimensional record variable, single precision";
-	one_dmn_rec_var_flt:units = "second";
+        
+	float one_dmn_rec_var_flt_mss(time);
+	one_dmn_rec_var_flt_mss:long_name = "one dimensional record variable, single precision, missing values";
+	one_dmn_rec_var_flt_mss:_FillValue = 1.0e36f;
         
 	float one_dmn_rec_var_flt_scl(time);
 	one_dmn_rec_var_flt_scl:long_name = "one dimensional record variable, single precision, scaled";
-	one_dmn_rec_var_flt_scl:units = "second";
 	one_dmn_rec_var_flt_scl:scale_factor = 1.0f;
         
 	float one_dmn_rec_var_flt_mss_scl(time);
 	one_dmn_rec_var_flt_mss_scl:long_name = "one dimensional record variable, single precision, missing values, scaled";
-	one_dmn_rec_var_flt_mss_scl:units = "second";
 	one_dmn_rec_var_flt_mss_scl:scale_factor = 1.0f;
 	one_dmn_rec_var_flt_mss_scl:_FillValue = 1.0e36f;
         
@@ -1199,8 +1200,10 @@ data:
 	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
 	one_dmn_rec_var_unsorted=10,4,6,2,8,1,9,7,3,5;
 	one_dmn_rec_var_flt=1,2,3,4,5,6,7,8,9,10;
+	one_dmn_rec_var_flt_mss=_,2,3,4,5,6,7,8,9,_;
 	one_dmn_rec_var_flt_scl=1,2,3,4,5,6,7,8,9,10;
-	one_dmn_rec_var_flt_mss_scl=1.0e36,2,3,4,5,6,7,8,9,1.0e36;
+// First use of underscore to indicate _FillValue in in.cdl is here in one_dmn_rec_var_flt_mss_scl on 20140916
+	one_dmn_rec_var_flt_mss_scl=_,2,3,4,5,6,7,8,9,_;
 	one_dmn_rec_var_dbl=1,2,3,4,5,6,7,8,9,10;
 	one_dmn_rec_var_missing_value=1,2,3,4,5,6,7,8,9,1.0e36;
 	one_dmn_rec_var_mss_val=1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36;

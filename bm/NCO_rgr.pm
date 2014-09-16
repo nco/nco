@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.506 2014-08-25 22:36:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.507 2014-09-16 20:50:20 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4077,7 +4077,18 @@ if (0){
 
 	} #### Group tests		
 
-	
+# ncra #33
+# Handle scale factor and missing value with rth_dbl
+# ncra --dbl -O -d time,0,9 -v time,one_dmn_rec_var,one_dmn_rec_var_flt,one_dmn_rec_var_flt_mss,one_dmn_rec_var_flt_scl,one_dmn_rec_var_flt_mss_scl ~/nco/data/in.nc ~/foo.nc
+# ncra --dbl -O -C -v one_dmn_rec_var_flt_mss_scl ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H -s '%g' ~/foo.nc
+    $dsc_sng="Handle scale factor and missing value with rth_dbl";
+    $tst_cmd[0]="ncra --dbl -h -O $fl_fmt $nco_D_flg -C -v one_dmn_rec_var_flt_mss_scl $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
+    $tst_cmd[2]="5.5";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
 #print "<<<STOP>>>- hit return to continue"; my $wait=<STDIN>;

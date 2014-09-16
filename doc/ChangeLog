@@ -6,6 +6,10 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
 	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
 
+	* Add regression test to demonstrate bug with ncra --dbl on
+	variables with both scale_factor and missing values. Bug bites
+	only when entire file is processed. Probably not normalizing at end.
+
 	* Implement missing getopt() line for file_format switch
 
 2014-09-15  Charlie Zender  <zender@uci.edu>
