@@ -1097,7 +1097,7 @@
 	This should considerably reduce chances of namespace pollution
 	Other changes include prg_prs()->nco_prg_prs()
 	Remaining namespace violators will be changed in the course of time
-	This partially addresses external symbol conflicts with NCO 4.3.7 on yellowstone.ucar.ed
+	This partially addresses external symbol conflicts with NCO 4.3.7 on yellowstone.ucar.edu
 
 2013-10-20  Charlie Zender  <zender@uci.edu>
 
@@ -1298,7 +1298,7 @@
 
 	* Releasing late on Friday actually worked well because we found
 	and fixed the problem Saturday. Able to re-release on Sunday
-	before people got back to work Monday. 	Sourceforge reported no
+	before people got back to work Monday. Sourceforge reported no
 	downloads from Friday-Sunday.
 
 2013-09-20  Charlie Zender  <zender@uci.edu>

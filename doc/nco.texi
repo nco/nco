@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1020 2014-09-15 14:49:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1021 2014-09-16 17:26:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7993,7 +7993,7 @@ They enforce the traditional @acronym{NCO} and Fortran convention of
 keeping single-precision arithmetic in single-precision unless a
 double-precision number is explicitly involved.
 
-As has been seen, forced promotion of single- to double-precision
+We have shown that forced promotion of single- to double-precision
 prior to arithmetic has advantages and disadvantages. 
 The primary disadvantages are speed and size. 
 Double-precision arithmetic is 10--60% slower than, and requires
@@ -8182,8 +8182,8 @@ float-promotion preferences as desired.
 No other language allows this with a simple switch.
 
 To summarize, until version 4.3.6 (September, 2013), the default
-arithmetic convention of @acronym{NCO} followed the behavior of Fortran,
-and automatically promoted single-precision to double-precision in all
+arithmetic convention of @acronym{NCO} adhered to Fortran behavior,
+and automatically promoted single-precision to double-precision in all 
 mixed-precision expressions, and left-alone pure single-precision
 expressions.  
 This is faster and more memory efficient than other conventions.
@@ -8208,10 +8208,10 @@ result.
 Providing the @samp{--dbl} option for such trivial operations makes 
 little sense, so the option is not currently made available.
 
-At the time of this writing (September 2013), we are interested in
-users' opinions on these matters. 
-Currently the default behavior is @samp{--flt}.
-We are willing to change the default to @samp{--dbl} if users prefer.
+We are interested in users' opinions on these matters. 
+The default behavior was changed from @samp{--flt} to @samp{--dbl}
+with the release of @acronym{NCO} version 4.3.6 (October 2013).
+We will change the default back to @samp{--flt} if users prefer.
 Or we could set a threshold (e.g., @math{n \ge 10000}) after which
 single- to double-precision promotion is automatically invoked.
 Or we could make the default promotion convention settable via an

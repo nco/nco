@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.920 2014-09-15 20:32:27 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.921 2014-09-16 17:26:24 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -620,8 +620,9 @@ San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
 </ul>
 <hr></p>
 
+<!-- http://nco.sf.net#Highlights -->
 <!-- http://nco.sf.net#hgh -->
-<dt><a name="Version"></a><a name="hgh"></a></dt>
+<dt><a name="Highlights"></a><a name="hgh"></a></dt>
 <h2>Release Highlights</h2>
 Releases receive unique CVS tags and their tarballs are stored  
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
