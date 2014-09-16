@@ -1,7 +1,7 @@
 2014-09-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.6 release procedure:
- 	Changes since nco-4_4_5: ncks -V, ncap2 -s -S, DAP
+ 	Changes since nco-4_4_5: ncks -V, ncap2 -s -S, DAP cnf
 	cd ~/nco;cvs tag -d nco-4_4_6;cvs tag -d nco-4_4_6-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
 	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
