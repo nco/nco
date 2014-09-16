@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.734 2014-09-16 04:02:05 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.735 2014-09-16 14:14:55 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.5 are ready. 
 
@@ -44,6 +44,9 @@ A. NCO now checks correct function to enable DAP with configure.
    NCO has been checking the wrong function to see if netCDF was
    enabled with DAP support since about NCO 4.3.1 (May 2013).
    Thanks to Parker Norton and Filipe Fernandes for reporting this. 
+
+A. Fix --file_format switch as synonym for --fl_fmt
+   Thanks to Dave Allured for reporting this.
 
 KNOWN PROBLEMS DUE TO NCO:
 

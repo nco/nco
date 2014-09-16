@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.287 2014-07-09 20:47:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.288 2014-09-16 14:14:55 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.287 2014-07-09 20:47:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.287 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.288 2014-09-16 14:14:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.288 $";
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -282,6 +282,7 @@ main(int argc,char **argv)
       {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
       {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
       {"fl_fmt",required_argument,0,0},
+    {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
       /* Long options with short counterparts */

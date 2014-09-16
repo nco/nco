@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.401 2014-08-21 18:22:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.402 2014-09-16 14:14:55 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.401 2014-08-21 18:22:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.401 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.402 2014-09-16 14:14:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.402 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -268,6 +268,7 @@ main(int argc,char **argv)
     {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
     {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
     {"fl_fmt",required_argument,0,0},
+    {"file_format",required_argument,0,0},
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
     /* Long options with short counterparts */
