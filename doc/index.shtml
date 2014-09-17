@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.922 2014-09-17 02:53:32 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.923 2014-09-17 20:31:22 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -868,7 +868,7 @@ To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_
 <ul>
 <li><a href="src/nco-4.4.4.win32.cygwin.tar.gz">nco-4.4.4.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.4.4.win32.cygwin.tar.gz"-->): Executables Cygwin-compatible (last updated <!--#flastmod file="src/nco-4.4.4.win32.cygwin.tar.gz"-->). Maintained by NCO Project.</li>
 </ul>
-First install <tt>curl</tt> (in the "Web" category of Cygwin setup), and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the <tt>udunits2.xml</tt> file, e.g., with <tt>export UDUNITS2_XML_PATH='/usr/local/share/udunits/udunits2.xml'</tt>. 
+Before using, first install <tt>curl</tt> (in the "Web" category of Cygwin Setup), and set <tt>export UDUNITS2_XML_PATH='/usr/local/share/udunits/udunits2.xml'</tt> (or wherever <tt>udunits2.xml</tt> is installed).
 Thanks to Mark Hadfield and Pedro Vicente for creating Cygwin tarballs.
 Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin over the years. 
 
@@ -1134,7 +1134,21 @@ For Mac OS X with MacPorts:
 <dt>sudo port install netcdf # netCDF</dt>
 <dt>sudo port install udunits2 # UDUnits</dt>
 </tt>
+
+<dt><a name="bld_cygwin"></a></dt> <!-- http://nco.sf.net#bld_cygwin -->
+For Windows with Cygwin, select and install the following packages with Cygwin Setup:
+<tt>
+<dt>curl # DAP and wget pre-req</dt>
+<dt>expat # expat XML parser for UDUnits</dt>
+<dt>gsl # GSL</dt>
+<dt>hdf5 # HDF</dt>
+<dt>netcdf # netCDF</dt>
+<dt>udunits2 # UDUnits</dt>
+</tt>
+As of 20131101 there is no Cygwin package for Antlr, and the netcdf package does not yet support DAP. 
+Users should instead first download and install the Antlr found <a href="http://nco.sourceforge.net/nco_qt_msvc.shtml">here</a>.
 </li>
+
 <li>Once you have installed the pre-requisites as shown above, you may
   then build the latest stable NCO and install it in,
   e.g., <tt>/usr/local</tt> with: 
