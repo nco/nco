@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1023 2014-09-17 02:53:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1024 2014-09-17 23:36:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12498,7 +12498,7 @@ Example: @code{pressure}, @code{'^H2O'}.
 @cindex pattern matching
 @cindex wildcards
 Regular expressions (@pxref{Subsetting Files}) are accepted and will 
-select any matching variable names.
+select any matching variable (@emph{not} attribute) names.
 The names @code{global} and @code{group} have special meaning.
 @item mode
 Edit mode abbreviation. 
@@ -12521,8 +12521,8 @@ appearance.
 The value of @var{att_nm} is the name of the attribute you want to
 edit. 
 This meaning of this should be clear to all @command{ncatted} users.
-Recall, as mentioned above, that @var{var_nm} may be specified as a
-regular expression. 
+Recall, as mentioned above, that @var{var_nm} (but not @var{att_nm}) may
+be specified as a regular expression. 
 If @var{att_nm} is omitted (i.e., left blank) and @dfn{Delete} mode is 
 selected, then all attributes associated with the specified variable
 will be deleted. 
@@ -12847,7 +12847,7 @@ ncatted -a units,'^H2O',c,c,'kilogram kilogram-1' in.nc
 Overwrite the @code{quanta} attribute of variable
 @code{energy} to an array of four integers. 
 @example
-ncatted -O -a quanta,energy,o,s,'010,101,111,121' in.nc
+ncatted -a quanta,energy,o,s,'010,101,111,121' in.nc
 @end example
 
 @cindex extended regular expressions
@@ -12855,11 +12855,12 @@ ncatted -O -a quanta,energy,o,s,'010,101,111,121' in.nc
 @cindex pattern matching
 @cindex wildcards
 As of @acronym{NCO} 3.9.6 (January, 2009), @command{ncatted} accepts
-@dfn{extended regular expressions} as arguments for variable names.
+@dfn{extended regular expressions} as arguments for variable names,
+though not for attribute names.
 Create @code{isotope} attributes for all variables containing @samp{H2O} 
 in their names.
 @example
-ncatted -O -a isotope,'^H2O*',c,s,'18' in.nc
+ncatted -a isotope,'^H2O*',c,s,'18' in.nc
 @end example
 See @ref{Subsetting Files} for more details.
 

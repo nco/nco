@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.546 2014-09-16 04:02:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.547 2014-09-17 23:36:37 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.546 2014-09-16 04:02:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.546 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.547 2014-09-17 23:36:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.547 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -168,30 +168,35 @@ main(int argc,char **argv)
 
   int *in_id_arr;
 
+  const int rec_dmn_idx=0; /* [idx] Assumed index of current record dimension where zero assumes record is leading dimension */
+
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
+  int dmn_rec_fl;
   int fl_idx;
   int fl_in_fmt; /* [enm] Input file format */
   int fl_nbr=0;
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int flg_input_complete_nbr=0; /* [nbr] Number of record dimensions completed */
   int fll_md_old; /* [enm] Old fill mode */
+  int grp_id;        /* [ID] Group ID */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
+  int grp_out_id;    /* [ID] Group ID (output) */
   int idx=int_CEWI;
+  int idx_rec=0; /* [idx] Index that iterates over number of record dimensions */
   int in_id;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
   int nbr_dmn_xtr=0;
+  int nbr_rec; /* [nbr] (ncra) Number of record dimensions  */
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int nbr_rec; /* [nbr] (ncra) Number of record dimensions  */
-  int dmn_rec_fl;
   int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
   int nco_pck_plc=nco_pck_plc_nil; /* [enm] Default packing is none */
   int opt;
@@ -200,11 +205,8 @@ main(int argc,char **argv)
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
-  int xtr_nbr=0; /* xtr_nbr won't otherwise be set for -c with no -v */
-  int idx_rec=0;
-  int grp_id;        /* [ID] Group ID */
-  int grp_out_id;    /* [ID] Group ID (output) */
   int var_out_id;    /* [ID] Variable ID (output) */
+  int xtr_nbr=0; /* xtr_nbr won't otherwise be set for -c with no -v */
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
   long *idx_rec_out=NULL; /* [idx] Index of current record in output file (0 is first, ...) */
@@ -985,8 +987,8 @@ main(int argc,char **argv)
             } /* end if ncra */
 
             /* All processed variables contain record dimension and both ncrcat and ncra write records singly */
-            var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out[idx_rec];
-            var_prc_out[idx]->cnt[0]=1L;
+            var_prc_out[idx]->srt[rec_dmn_idx]=var_prc_out[idx]->end[rec_dmn_idx]=idx_rec_out[idx_rec];
+            var_prc_out[idx]->cnt[rec_dmn_idx]=1L;
 
             /* Append current record to output file */
             if(nco_prg_id == ncrcat){
