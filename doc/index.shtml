@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.921 2014-09-16 17:26:24 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.922 2014-09-17 02:53:32 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -633,12 +633,13 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO 4.4.7</b>: (<i>Future</i>) 
 extensive hashing?;
 netCDF4 compound types?;
-Optimize diskless files?;</li>
+Chunking <tt>cnk_map=rew</tt>;
+<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
+Optimize diskless files?</li>
 <li><b>NCO 4.4.6</b>: (<i>In Progress, features completed or being worked on include</i>)
 <tt>ncap2</tt> command line args with scripts;
-Chunking <tt>cnk_map=rew</tt>;
-<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching</li>;
-DAP with <tt>configure</tt>
+<tt>ncra</tt> averaging scaled variables with missing values <a href="#bug_ncra_dbl_scl">bugfix</a>;
+<tt>configure</tt> DAP correctly</li>
 <li><b>NCO 4.4.5</b>: (<i>Current Stable Release</i>) 
 DAP on <a href="http://nco.sf.net/nco.html#dap">HTTPS</a>;
 <tt>ancillary_variables</tt> for <a href="http://nco.sf.net/nco.html#ncl">CF</a>;
@@ -648,7 +649,7 @@ Default chunking policy/map is <tt>xst/xst</tt>;
 Fix <tt>ncpdq</tt> dimension-reversal parsing;
 Chunking while hyperslabbing <a href="#bug_cnk_hyp">bugfix</a>;
 Correctly parse MS Windows volume names like <tt>C:\foo</tt></li>
-<li><b>NCO 4.4.4</b>: (<i>Current Stable Release</i>) 
+<li><b>NCO 4.4.4</b>:
 netCDF'ize non-compliant element names;
 <tt>-x var</tt> tolerates non-existence;
 <tt>--rad</tt> <a href="http://nso.sf.net/nco.html#rad">orphan dimensions</a>;
@@ -1235,6 +1236,18 @@ No known generic run-time problems with recent releases.
 </ul>
 
 <ul><b>Recent Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncra_dbl_scl -->
+<a name="bug_ncra_dbl_scl"></a>
+<li><i>Averaging scaled records bug:</i>
+Versions 4.3.X&mdash;4.4.5 of <tt>ncra</tt> could produce (wildly)
+inaccurate statistics on single-precision variables that are scaled
+and that have missing values and that must be promoted and that 
+are not hyperslabbed.
+The workaround is to remove the scaling or to perform the statistics
+in single precision with the <tt>--flt</tt> option.
+The solution is to upgrade to NCO&nbsp;4.4.6.
+</li>
+
 <!-- http://nco.sf.net#bug_cnk_hyp -->
 <a name="bug_cnk_hyp"></a>
 <li><i>Chunking while hyperslabbing bug:</i>
