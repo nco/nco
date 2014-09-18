@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.360 2014-09-02 18:27:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.361 2014-09-18 20:33:00 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -837,10 +837,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
     for(idx=0;idx<var->nbr_dim;idx++) srd_prd*=var->srd[idx];
 
     if(srd_prd == 1L){ 
-      if(var->sz > 1L)
-        (void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
-      else
-        (void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
+      if(var->sz > 1L) (void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk); else (void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
     }else{ 
       (void)nco_get_vars(nc_id,var->id,var->srt,var->cnt,var->srd,var->val.vp,var->typ_dsk);
     } /* endif non-unity stride  */

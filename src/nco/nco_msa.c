@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.250 2014-08-27 04:44:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.251 2014-09-18 20:33:00 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1481,59 +1481,50 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   /* Copy from table to local MSA */
   (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
 
-
   if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s reading <%s>\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
-    /* Loop dimensions */
     for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s> elements %ld",nco_prg_nm_get(),fnc_nm,
-        lmt_msa[idx_dmn]->dmn_nm,lmt_msa[idx_dmn]->dmn_cnt);
-      for(int idx_lmt=0;idx_lmt<lmt_msa[idx_dmn]->lmt_dmn_nbr;idx_lmt++){
-        (void)fprintf(stdout," : %ld (%ld->%ld)",lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->cnt,
-          lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->srt,
-          lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->end);
-      }
+      (void)fprintf(stdout,"%s: DEBUG %s <%s> elements %ld",nco_prg_nm_get(),fnc_nm,lmt_msa[idx_dmn]->dmn_nm,lmt_msa[idx_dmn]->dmn_cnt);
+      for(int idx_lmt=0;idx_lmt<lmt_msa[idx_dmn]->lmt_dmn_nbr;idx_lmt++) (void)fprintf(stdout," : %ld (%ld->%ld)",lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->cnt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->srt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->end);
       (void)fprintf(stdout,"\n");
-    } /* Loop dimensions */
-  }
-
+    } /* end loop over dimensions */
+  } /* endif dbg */
 
   /* Call super-dooper recursive routine */
   typ_tmp=var_in->type;
   var_in->type=var_in->typ_dsk; 
   void_ptr=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,var_in);
 
+  /* 20140918 TODO nco1115: do not reset var_typ to previous value. set it to typ_dsk, since values were just retrived to disk. this will hopefully keep mss_val in sync with val for both packing and auto-promotion???. Commenting-out next line fixes ncra #32 but breaks ncra #09. */
   var_in->type=typ_tmp;
   var_in->val.vp=void_ptr;
 
-  /* Free  */
+  /* Free */
   (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
   lmt=(lmt_sct **)nco_free(lmt);
 
 do_upk:
   /* Following code copied from nco_var_get() */
-
   if(var_in->pck_dsk) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);
 
   /* Type of variable and missing value in memory are now same as type on disk */
   var_in->type=var_in->typ_dsk; /* [enm] Type of variable in RAM */
 
   /* Packing in RAM is now same as packing on disk pck_dbg 
-  fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
+     fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
   (void)nco_pck_dsk_inq(grp_id,var_in);
 
   /* Packing/Unpacking */
   if(nco_is_rth_opr(nco_prg_id_get())){
     /* Arithmetic operators must unpack variables before performing arithmetic
-    Otherwise arithmetic will produce garbage results */
+       Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
-    20050629: Making this region multi-threaded causes no problems */
+       20050629: Making this region multi-threaded causes no problems */
     if(var_in->pck_dsk) var_in=nco_var_upk(var_in);
   } /* endif arithmetic operator */
 
   return;
-} /* nco_msa_var_get_trv() */
-
+} /* end nco_msa_var_get_trv() */
 
 void
 nco_lmt_msa_free                    /* [fnc] Free MSA */
@@ -1541,14 +1532,12 @@ nco_lmt_msa_free                    /* [fnc] Free MSA */
  lmt_msa_sct **lmt_msa)             /* I [sct] MSA */
 {
   /* Free  */
-  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++) {
+  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
     lmt_msa[idx_dmn]->dmn_nm=(char *)nco_free(lmt_msa[idx_dmn]->dmn_nm);
-    for(int lmt_idx=0;lmt_idx<lmt_msa[idx_dmn]->lmt_dmn_nbr;lmt_idx++){
-      lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]);
-    }
+    for(int lmt_idx=0;lmt_idx<lmt_msa[idx_dmn]->lmt_dmn_nbr;lmt_idx++) lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]);
     lmt_msa[idx_dmn]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[idx_dmn]->lmt_dmn);
     lmt_msa[idx_dmn]=(lmt_msa_sct *)nco_free(lmt_msa[idx_dmn]);
   }
   lmt_msa=(lmt_msa_sct **)nco_free(lmt_msa);
-}
+} /* end nco_lmt_msa_free() */
 
