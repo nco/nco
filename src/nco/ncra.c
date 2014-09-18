@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.547 2014-09-17 23:36:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.548 2014-09-18 16:27:57 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.547 2014-09-17 23:36:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.547 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.548 2014-09-18 16:27:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.548 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -944,8 +944,8 @@ main(int argc,char **argv)
             /* Store the output variable ID */
             var_prc_out[idx]->id=var_out_id;
 
-            /* Retrieve variable from disk into memory. NB: Using version that updates hyperslab start indices with idx_rec_crr_in */
-            (void)nco_msa_var_get_lmn_trv(in_id,var_prc[idx],lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
+            /* Retrieve this record of this variable. NB: This updates hyperslab start indices with idx_rec_crr_in */
+            (void)nco_msa_var_get_rec_trv(in_id,var_prc[idx],lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
 
             if(nco_prg_id == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 

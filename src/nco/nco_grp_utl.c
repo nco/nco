@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1457 2014-08-26 20:10:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1458 2014-09-18 16:27:57 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7183,14 +7183,14 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 } /* nco_bld_lmt() */
 
 void 
-nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
+nco_msa_var_get_rec_trv             /* [fnc] Read a user-defined limit */
 (const int nc_id,                   /* I [ID] netCDF file ID */
  var_sct *var_prc,                  /* I/O [sct] Variable */
- const char * const rec_nm_fll,     /* I [sng] Full name of record being done in loop ((*lmt_rec)[idx_rec]->nm_fll ) */
+ const char * const rec_nm_fll,     /* I [sng] Record dimension name */
  const long idx_rec_crr_in,         /* [idx] Index of current record in current input file */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Define artificial MSA limit that corresponds to one record to read, since nco_msa_var_get_trv() reads all elements */ 
+  /* Define artificial MSA limit that corresponds to one record, since nco_msa_var_get_trv() reads all elements */ 
 
   int lmt_dmn_nbr;
 
@@ -7205,9 +7205,9 @@ nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
   for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
 
     /* NB: Match current record must be done by name, since ID may differ for records across files */
-    if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm_fll,rec_nm_fll) == 0){
+    if(!strcmp(var_trv->var_dmn[idx_dmn].dmn_nm_fll,rec_nm_fll)){
 
-      /* Case of dimension being coordinate variable */
+      /* Dimension is a coordinate */
       if(var_trv->var_dmn[idx_dmn].crd){
 
         lmt_dmn_nbr=var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr;
@@ -7227,25 +7227,23 @@ nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
           /* ! Case of previously existing limits */
         }else{
           flg_lmt=True;
-          /* Alloc 1 dummy limit */
+          /* Alloc one dummy limit */
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=1;
-          var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
+          var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
+	  /* fxm: 20140918 TODO nco1114 subscript [0] fails unless record is first dimension, generalize with [rec_dmn_idx] */
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
           /* Initialize NULL/invalid */
           (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
           /* And set start, count, stride to match current record ... */
+	  /* fxm: 20140918 TODO nco1114 subscript [0] fails unless record is first dimension, generalize with [rec_dmn_idx] */
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->cnt=1L;
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srd=1L;
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
         } /* ! Case of previously existing limits */
-      } /* Case of dimension being coordinate variable */
-
-      else{
-
+      }else{  /* Dimension is not a coordinate */
         assert(!var_trv->var_dmn[idx_dmn].is_crd_var);
-
         lmt_dmn_nbr=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr;
 
         /* Case of previously existing limits */
@@ -7266,10 +7264,12 @@ nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
           /* Alloc 1 dummy limit */
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr=1;
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
+	  /* fxm: 20140918 TODO nco1114 subscript [0] fails unless record is first dimension, generalize with [rec_dmn_idx] */
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
           /* Initialize NULL/invalid */
           (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
           /* And set start,count,stride to match current record ...Jesuzz */
+	  /* fxm: 20140918 TODO nco1114 subscript [0] fails unless record is first dimension, generalize with [rec_dmn_idx] */
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->cnt=1L;
@@ -7277,7 +7277,6 @@ nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
         } /* ! Case of previously existing limits */
       } /* Case of dimension not being coordinate variable */
-
       break;
     } /* Match current record by name */
   } /* Loop dimensions */
@@ -7291,23 +7290,25 @@ nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
     if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm_fll,rec_nm_fll) == 0){
       /* Custom limit */
       if(flg_lmt){
-        /* Case of dimension being coordinate variable */
         if(var_trv->var_dmn[idx_dmn].is_crd_var){
+	  /* Dimension is coordinate */
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=0;
+	  /* fxm: 20140918 TODO nco1114 subscript [0] fails unless record is first dimension, generalize with [rec_dmn_idx] */
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
-          var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn);         
-        } /* Case of dimension being coordinate variable */
-        else if(!var_trv->var_dmn[idx_dmn].is_crd_var){
+          var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn);
+        }else if(!var_trv->var_dmn[idx_dmn].is_crd_var){
+	  /* Dimension is not a coordinate */
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr=0;
+	  /* fxm: 20140918 TODO nco1114 subscript [0] fails unless record is first dimension, generalize with [rec_dmn_idx] */
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
-          var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn);    
-        } /* Case of dimension not being coordinate variable */
+          var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn);
+        } /* Dimension is not a coordinate */
         break;
       } /* Custom limit */
     } /* Match current record  */
   } /* Loop dimensions */
 
-} /* nco_msa_var_get_lmn_trv() */
+} /* nco_msa_var_get_rec_trv() */
 
 nco_bool                             /* O [flg] Skip variable  */
 nco_skp_var                          /* [fnc] Skip variable while doing record   */
@@ -7461,57 +7462,36 @@ nco_dmn_usr_sng                       /* [fnc] Parse input string and return tab
 
   *is_opt=False;
 
-  /* Try absolute match */
+  /* Match absolute name */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++)
+    if(!strcmp(usr_sng,trv_tbl->lst_dmn[tbl_idx].nm_fll)) return &trv_tbl->lst_dmn[tbl_idx];
 
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++){
-    /* Match absolute name */
-    if(strcmp(usr_sng,trv_tbl->lst_dmn[tbl_idx].nm_fll) == 0){
-      return &trv_tbl->lst_dmn[tbl_idx];
-    } /* Match name */
-  } /* Loop table */ 
-
-  /* Try relative match */
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++){
-    /* Match absolute name */
-    if(strcmp(usr_sng,trv_tbl->lst_dmn[tbl_idx].nm) == 0){
-      return &trv_tbl->lst_dmn[tbl_idx];
-    } /* Match name */
-  } /* Loop table */ 
-
-  /* Try optional absolute match */
+  /* Match short name */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++)
+    if(!strcmp(usr_sng,trv_tbl->lst_dmn[tbl_idx].nm)) return &trv_tbl->lst_dmn[tbl_idx];
 
   /* Optional absolute match */
   if(usr_sng[0] == opt_chr){
-    /* Loop table */
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++){
-      /* Match absolute name */
-      if(strcmp(usr_sng+1,trv_tbl->lst_dmn[tbl_idx].nm_fll) == 0){
+    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++)
+      if(!strcmp(usr_sng+1L,trv_tbl->lst_dmn[tbl_idx].nm_fll)){
         *is_opt=True;
         return &trv_tbl->lst_dmn[tbl_idx];
-      } /* Match name */
-    } /* Loop table */ 
-  } /* Optional absolute match */
+      }
+  }
 
   /* Optional relative match */
   if(usr_sng[0] == opt_chr){
-    /* Loop table */
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++){
-      /* Match absolute name */
-      if(strcmp(usr_sng+1,trv_tbl->lst_dmn[tbl_idx].nm) == 0){
+    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++)
+      if(!strcmp(usr_sng+1L,trv_tbl->lst_dmn[tbl_idx].nm)){
         *is_opt=True;
         return &trv_tbl->lst_dmn[tbl_idx];
-      } /* Match name */
-    } /* Loop table */ 
-  } /* Optional relative match */
+      }
+  }
 
   /* Cases of not found and optional */
   if(usr_sng[0] == opt_chr) *is_opt=True;
 
   return NULL;
-
 } /* nco_dmn_usr_sng() */
 
 trv_sct *                             /* O [sct] Table object */
