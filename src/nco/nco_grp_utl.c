@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1458 2014-09-18 16:27:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1459 2014-09-18 17:24:32 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7287,7 +7287,7 @@ nco_msa_var_get_rec_trv             /* [fnc] Read a user-defined limit */
   /* Free artificial limit and reset number of limits */
   for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
     /* NB: Match current record must be done by name, since ID may differ for records across files */
-    if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm_fll,rec_nm_fll) == 0){
+    if(!strcmp(var_trv->var_dmn[idx_dmn].dmn_nm_fll,rec_nm_fll)){
       /* Custom limit */
       if(flg_lmt){
         if(var_trv->var_dmn[idx_dmn].is_crd_var){

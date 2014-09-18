@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.548 2014-09-18 16:27:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.549 2014-09-18 17:24:33 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.548 2014-09-18 16:27:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.548 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.549 2014-09-18 17:24:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.549 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -826,7 +826,7 @@ main(int argc,char **argv)
       /* Refresh ensembles */
       if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl);
    
-      /* Check if ensembles are valid  */       
+      /* Check if ensembles are valid */
       (void)nco_chk_nsm(in_id,fl_idx,trv_tbl); 
 
     }else{ /* ! ncge */
@@ -944,7 +944,7 @@ main(int argc,char **argv)
             /* Store the output variable ID */
             var_prc_out[idx]->id=var_out_id;
 
-            /* Retrieve this record of this variable. NB: This updates hyperslab start indices with idx_rec_crr_in */
+            /* Retrieve this record of this variable. NB: Updates hyperslab start indices to idx_rec_crr_in */
             (void)nco_msa_var_get_rec_trv(in_id,var_prc[idx],lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
 
             if(nco_prg_id == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
@@ -1136,7 +1136,7 @@ main(int argc,char **argv)
         (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 
         /* Convert char, short, long, int types to doubles before arithmetic
-        Output variable type is "sticky" so only convert on first record */
+	   Output variable type is "sticky" so only convert on first record */
         if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
         var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
         /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
@@ -1188,7 +1188,7 @@ main(int argc,char **argv)
 
             var_prc[idx_prc]->nm_fll=(char *)nco_free(var_prc[idx_prc]->nm_fll);
             var_prc[idx_prc]->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);
-            if(nco_dbg_lvl > nco_dbg_std) (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_prc[idx_prc]->nm_fll); 
+            if(nco_dbg_lvl > nco_dbg_std) (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_prc[idx_prc]->nm_fll);
 
             /* Obtain group ID */
             (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);
