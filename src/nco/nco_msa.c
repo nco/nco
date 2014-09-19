@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.253 2014-09-19 18:30:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.254 2014-09-19 18:35:54 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -20,7 +20,7 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
   /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
   /* Purpose: Multi-slab algorithm (recursive routine, returns a single slab pointer) */
 
-  const char fnc_nm[]="nco_prc_nsm()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_msa_rcr_clc()"; /* [sng] Function name */
 
   int idx;
   int nbr_slb;
