@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.251 2014-09-18 20:33:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.252 2014-09-19 00:03:30 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -92,7 +92,7 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
         } /* end while */
         cp_fst+=slb_sz;      
       } /* end loop over two slabs */
-    } else { 
+    }else{ 
       /* Multiple hyper-slabs */
       while(nco_msa_clc_idx(True,lmt_lst[dpt_crr],&indices[0],&lmt_ret,&slb_idx)){
         cp_stp=(char *)vp+cp_fst;
@@ -143,13 +143,18 @@ read_lbl:
     /* Block is critical/thread-safe for identical/distinct in_id's */
     { /* begin potential OpenMP critical */
       /* Check for stride */
-      if(var_sz > 0){ /* Allow for zero-size record variables TODO nco711 */
+      if(var_sz > 0L){ /* Allow for zero-size record variables TODO nco711 */
 	/* 20140304: User reported extreme slowdown accessing 3-D data with strides across DAP connection
 	   Info from R. Signell and J. Whitaker suggests using nco_get_vars() instead of nco_get_varm() may be crucial
 	   Tests bear this out: get_varm() is tortuously slow across DAP 
 	   Always use get_vars() for strides unless using full get_varm() mapping vector */
 	/*          (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type); */
-        if(srd_prd == 1L) (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type); else (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
+        if(srd_prd == 1L){
+	  (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type); 
+	}else{
+	  if(nco_dbg_lvl_get() == 9) (void)fprintf(stderr,"%s: INFO nco_msa_rcr_clc() reports calling nco_get_vars()\n",nco_prg_nm_get());
+	  (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
+	} /* srd_prd != 1L */
       } /* end if var_sz */
     } /* end potential OpenMP critical */
 
@@ -160,7 +165,7 @@ read_lbl:
     /* Put size into vara */
     vara->sz=var_sz;
     return vp;
-  }/* end read_lbl */
+  } /* end read_lbl */
 
 } /* end nco_msa_rcr_clc() */
 
@@ -191,18 +196,19 @@ nco_msa_clc_idx
  int *slb) /* slab which above limit refers to */ 
 {
   /* A messy, unclear, inefficient routine that needs re-writing
-  if NORMALIZE then return the slab number and the hyperslab in lmt
-  NB: This is the slab _WITHIN_ the slab so stride is ALWAYS 1 */
+     if NORMALIZE then return the slab number and the hyperslab in lmt
+     NB: This is the slab _WITHIN_ the slab so stride is ALWAYS 1 */
   int sz_idx;
   int size=lmt_a->lmt_dmn_nbr;
-  nco_bool *mnm;
-  nco_bool rcd;
-
   int prv_slb=0;
   int crr_slb=0;
+
   long crr_idx;
   long prv_idx=long_CEWI;
   long cnt=0L;
+
+  nco_bool *mnm;
+  nco_bool rcd;
 
   mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
 
@@ -218,7 +224,7 @@ nco_msa_clc_idx
       if(mnm[sz_idx]){crr_slb=sz_idx;break;}
 
       if(crr_slb == -1){
-        if(lmt->srt == -1){
+        if(lmt->srt == -1L){
           rcd=False;
           goto cln_and_xit;
         }else break;
@@ -226,7 +232,7 @@ nco_msa_clc_idx
 
       if(mnm[prv_slb]) crr_slb=prv_slb;
 
-      if(lmt->srt > -1 && crr_slb != prv_slb) break;
+      if(lmt->srt > -1L && crr_slb != prv_slb) break;
 
       if(lmt->cnt > 1L){
         (lmt->cnt)++;
@@ -249,7 +255,7 @@ nco_msa_clc_idx
       for(sz_idx=0;sz_idx<size;sz_idx++){
         if(mnm[sz_idx]){
           indices[sz_idx]+=lmt_a->lmt_dmn[sz_idx]->srd;
-          if(indices[sz_idx] > lmt_a->lmt_dmn[sz_idx]->end) indices[sz_idx]=-1;
+          if(indices[sz_idx] > lmt_a->lmt_dmn[sz_idx]->end) indices[sz_idx]=-1L;
         }
       } /* end loop over sz_idx */
       prv_idx=crr_idx;

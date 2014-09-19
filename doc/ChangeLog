@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
 	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
 
+	* Add debugging statements to track netCDF4 stride slowdown
+
 	* Note locations which assume record dimension is in first position
 
 2014-09-17  Charlie Zender  <zender@uci.edu>
