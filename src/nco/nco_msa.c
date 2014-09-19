@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.252 2014-09-19 00:03:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.253 2014-09-19 18:30:57 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -19,6 +19,9 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 {
   /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
   /* Purpose: Multi-slab algorithm (recursive routine, returns a single slab pointer) */
+
+  const char fnc_nm[]="nco_prc_nsm()"; /* [sng] Function name */
+
   int idx;
   int nbr_slb;
   void *vp;
@@ -137,6 +140,15 @@ read_lbl:
       var_sz*=dmn_cnt[idx];
       srd_prd*=lmt[idx]->srd;
     } /* end loop over idx */
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s , <%s> var_sz=%ld\n",
+        nco_prg_nm_get(),fnc_nm,vara->nm,var_sz);
+      for(idx=0;idx<dpt_crr_max;idx++){
+        (void)fprintf(stdout," srt[%d]=%ld cnt[%d]=%ld srd[%d]=%ld\n",
+          idx,dmn_srt[idx],idx,dmn_cnt[idx],idx,dmn_srd[idx]);
+      }
+    }
 
     vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
 
