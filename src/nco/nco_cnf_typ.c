@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.77 2014-06-15 21:06:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.78 2014-09-19 20:38:28 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -104,7 +104,7 @@ cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type ty
 } /* end cast_nctype_void() */
 
 var_sct * /* O [var] Variable after (possible) conversion */
-nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
+nco_typ_cnv_rth /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
 (var_sct *var, /* I/O [var] Variable to be considered for conversion */
  const int nco_op_typ) /* I [enm] Operation type */
 {
@@ -131,7 +131,7 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
      Implementing --dbl switch on ncwa, ncra, nces (ncap2?) to force implicit conversion */
   if(nco_rth_cnv_get() == nco_rth_flt_flt){
 
-    /* Traditional NCO convention: promote, where necessary, anything but floats and doubles */
+    /* NCO default until 201309: promote, where necessary, anything but floats and doubles */
     if(var->typ_upk == NC_FLOAT){
       var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
     }else{ /* Conversion only for appropriate operation types */ 
@@ -140,7 +140,7 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
 
   }else{ /* !nco_rth_flt_flt */
 
-    /* User-specified new convention: promote, where necessary, anything but doubles */
+    /* NCO default after 201309: promote, where necessary, anything but doubles */
     /* Conversion only for appropriate operation types */ 
     if(var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
     

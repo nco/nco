@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1268 2014-09-18 16:27:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1269 2014-09-19 20:38:28 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -520,7 +520,6 @@ nco941. ncra (now? when was regression?) tries to average NC_CHAR record variabl
 	Would that break ncpdq packing to NC_CHAR?
 nco943. rgr: Add regression test for 
 	ncks -m -v cnv_CF_crd ~/nco/data/in.nc
-nco945. ncra problem with netCDF4 record mean of packed double with double missing values
 nco949. Make --no-clobber option for all operators
 nco953. ncatted: Add -v -C -c infrastructure to allow easy modification of attributes of variable lists, rather than all-or-nothing selections
 nco954. ncinsert functionality request posted to help forum 20081116

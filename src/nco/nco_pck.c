@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.99 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.100 2014-09-19 20:38:28 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -21,9 +21,9 @@
    add_offset: If present for a variable, this number is added to the data after the data are read by the application. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
    When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. Attribute's scale_factor and add_offset should both be of type intended for the unpacked data, e.g., float or double.
 
-   20101007 Dave Allured says that Unidata says this in NetCDF Best Practices: 
-   "The _FillValue attribute should have the same data type as the variable it describes. If the variable is packed using scale_factor and add_offset attributes, the _FillValue attribute should have the data type of the packed data." 
+   20101007 Dave Allured points out that Unidata covers this in NetCDF Best Practices: 
    http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Missing%20Data%20Values 
+   "The _FillValue attribute should have the same data type as the variable it describes. If the variable is packed using scale_factor and add_offset attributes, the _FillValue attribute should have the data type of the packed data." 
 
    CF conventions say about the same thing. If there is a mismatch between the attribute type and the data type, or if an incorrect value was stored in the _FillValue attribute, then manual intervention is needed. However note that storing -999 in an attribute of type short vs. integer is not much of a problem, because the two are are numerically identical. The important question in this case is whether ncra has an automatic method to exclude missing values from being transformed by averaging, in the face of a packed variable. If so, how is it done, or where in the documentation is it described. */
 

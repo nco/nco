@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.507 2014-09-16 20:50:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.508 2014-09-19 20:38:28 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3792,7 +3792,7 @@ print "\n";
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck %tmp_fl_00%";
-    $dsc_sng="record mean of packed double with double missing values (FAILURE with netCDF4 nco945) ";
+    $dsc_sng="record mean of packed double with double missing values";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);

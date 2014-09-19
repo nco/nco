@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.191 2014-09-16 20:50:20 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.192 2014-09-19 20:38:28 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -960,6 +960,12 @@ variables:
         rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_dbl_pck_lng:add_offset = 5.;
 
+	short rec_var_dbl_mss_val_sht_pck_sht(time);
+	rec_var_dbl_mss_val_sht_pck_sht:long_name = "record variable, double packed as short, with short missing values";
+	rec_var_dbl_mss_val_sht_pck_sht:_FillValue = -999s;
+        rec_var_dbl_mss_val_sht_pck_sht:scale_factor = -9.15541313801785e-05;
+	rec_var_dbl_mss_val_sht_pck_sht:add_offset = 5.;
+
 	char one_dmn_rec_var_sng(time);
 	one_dmn_rec_var_sng:long_name = "one dimensional record variable of string";
         one_dmn_rec_var_sng:NB = "20131222: HDF4 ncgen fails on this variable: /usr/bin/hncgen -b -o ~/in.hdf ~/nco/data/in.cdl produces error message that \"string won't fit in this variable\"";
@@ -1341,6 +1347,7 @@ data:
 	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_dbl_mss_val_dbl_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 	rec_var_dbl_mss_val_dbl_pck_lng=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
+	rec_var_dbl_mss_val_sht_pck_sht=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 	rec_var_dbl_mss_val_dbl_upk=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;
 	rec_var_dbl_mss_val_sht_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 	rec_var_dbl_mss_val_sht_upk=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;
