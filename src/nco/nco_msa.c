@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.255 2014-09-19 20:38:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.256 2014-09-21 05:42:28 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -142,12 +142,8 @@ read_lbl:
     } /* end loop over idx */
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG %s , <%s> var_sz=%ld\n",
-        nco_prg_nm_get(),fnc_nm,vara->nm,var_sz);
-      for(idx=0;idx<dpt_crr_max;idx++){
-        (void)fprintf(stdout," srt[%d]=%ld cnt[%d]=%ld srd[%d]=%ld\n",
-          idx,dmn_srt[idx],idx,dmn_cnt[idx],idx,dmn_srd[idx]);
-      }
+      (void)fprintf(stdout,"%s: DEBUG %s , <%s> var_sz=%ld\n",nco_prg_nm_get(),fnc_nm,vara->nm,var_sz);
+      for(idx=0;idx<dpt_crr_max;idx++) (void)fprintf(stdout," srt[%d]=%ld cnt[%d]=%ld srd[%d]=%ld\n",idx,dmn_srt[idx],idx,dmn_cnt[idx],idx,dmn_srd[idx]);
     }
 
     vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
@@ -164,7 +160,7 @@ read_lbl:
         if(srd_prd == 1L){
 	  (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type); 
 	}else{
-	  if(nco_dbg_lvl_get() == 9) (void)fprintf(stderr,"%s: INFO nco_msa_rcr_clc() reports calling nco_get_vars()\n",nco_prg_nm_get());
+	  if(nco_dbg_lvl_get() == 9) (void)fprintf(stderr,"%s: INFO %s reports calling nco_get_vars()\n",nco_prg_nm_get(),fnc_nm);
 	  (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
 	} /* srd_prd != 1L */
       } /* end if var_sz */
@@ -192,11 +188,11 @@ nco_msa_prn_idx(lmt_msa_sct *lmt_i)
 
   indices=(long *)nco_malloc(size *sizeof(long));
 
-  printf("name=%s total size=%ld\n",lmt_i->dmn_nm,lmt_i->dmn_cnt);
+  (void)fprintf(stdout,"name=%s total size=%ld\n",lmt_i->dmn_nm,lmt_i->dmn_cnt);
 
   for(idx=0;idx<size;idx++) indices[idx]=lmt_i->lmt_dmn[idx]->srt;
 
-  while(nco_msa_clc_idx(False,lmt_i,&indices[0],&lmt,&slb_nbr)) printf("slb_nbr=%d, srt=%ld, end=%ld, cnt=%ld, srd=%ld\n",slb_nbr,lmt.srt,lmt.end,lmt.cnt,lmt.srd);
+  while(nco_msa_clc_idx(False,lmt_i,&indices[0],&lmt,&slb_nbr)) (void)fprintf(stdout,"slb_nbr=%d, srt=%ld, end=%ld, cnt=%ld, srd=%ld\n",slb_nbr,lmt.srt,lmt.end,lmt.cnt,lmt.srd);
 } /* end nco_msa_prn_idx() */
 
 nco_bool /* [flg] There are more limits to process in the slab */
@@ -300,9 +296,8 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
  long *dmn_sbs_dsk,
  nco_bool flg_free)
 {
-  /*  It does not really convert RAM indices to disk indices, but given a set 
-  of RAM indices, it finds the next set of disk incdices. 
-  So it only works if the indices fed to it are continuous */
+  /* Given a set of RAM indices, routine finds next set of disk indices
+     Only works if the indices fed to it are continuous */
   int idx;
   int jdx;
   int size;
@@ -320,7 +315,7 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
         dmn_indices[idx][jdx]=lmt_msa[idx]->lmt_dmn[jdx]->srt;
       dmn_sbs_prv[idx]=-1L;
     }
-    initialize=1;
+    initialize=True;
   }
   for(idx=0;idx <nbr_dim;idx ++){
     size=lmt_msa[idx]->lmt_dmn_nbr;
@@ -353,7 +348,7 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
     for(jdx=0;jdx<size;jdx++){
       if(mnm[jdx]){
         dmn_indices[idx][jdx]+=lmt_msa[idx]->lmt_dmn[jdx]->srd;
-        if(dmn_indices[idx][jdx] > lmt_msa[idx]->lmt_dmn[jdx]->end) dmn_indices[idx][jdx]=-1;
+        if(dmn_indices[idx][jdx] > lmt_msa[idx]->lmt_dmn[jdx]->end) dmn_indices[idx][jdx]=-1L;
       }
     } /* end for  jdx */
   } /* end for idx */ 
@@ -363,10 +358,9 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
   /* Free static space on last call */
   if(flg_free){
     (void)nco_free(dmn_sbs_prv);
-    for(idx=0;idx <nbr_dim;idx++)
-      (void)nco_free(dmn_indices[idx]);
+    for(idx=0;idx<nbr_dim;idx++) (void)nco_free(dmn_indices[idx]);
     (void)nco_free(dmn_indices);
-    initialize=0;
+    initialize=False;
   }
 } /* end nco_msa_ram_2_dsk() */
 
@@ -401,7 +395,7 @@ nco_msa_clc_cnt
       for(idx=0;idx<size;idx++){
         if(mnm[idx]){
           indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
-          if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
+          if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1L;
         } /* end if */
       } /* end loop over idx */
       cnt++;
@@ -420,7 +414,7 @@ nco_msa_ovl
 (lmt_msa_sct *lmt_lst)
 {
   /* Purpose: Return true if limits overlap
-  NB: Assumes that limits have been sorted */
+     NB: Assumes that limits have been sorted */
 
   long idx;
   long jdx;
@@ -430,9 +424,9 @@ nco_msa_ovl
   /* defererence */
   lmt=lmt_lst->lmt_dmn;
 
-  for(idx=0; idx<sz; idx++)
-    for(jdx=idx+1; jdx<sz ;jdx++)
-      if( lmt[jdx]->srt <= lmt[idx]->end) return True;  
+  for(idx=0L;idx<sz;idx++)
+    for(jdx=idx+1L;jdx<sz;jdx++)
+      if(lmt[jdx]->srt <= lmt[idx]->end) return True;  
 
   return False;
 } /* end nco_msa_ovl() */
@@ -475,10 +469,10 @@ nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value
   long min_val=LONG_MAX;
 
   for(sz_idx=0;sz_idx<size;sz_idx++)
-    if(current[sz_idx] != -1 && current[sz_idx] < min_val) min_val=current[sz_idx];
+    if(current[sz_idx] != -1L && current[sz_idx] < min_val) min_val=current[sz_idx];
 
   for(sz_idx=0;sz_idx<size;sz_idx++)
-    mnm[sz_idx]=((current[sz_idx] != -1 && current[sz_idx] == min_val) ? True : False);
+    mnm[sz_idx]=((current[sz_idx] != -1L && current[sz_idx] == min_val) ? True : False);
 
   return min_val;
 } /* end nco_msa_min_idx() */
@@ -498,11 +492,11 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   lmt_msa_sct **lmt_msa;
   lmt_sct **lmt;
 
-  nbr_dim=var_in->nbr_dim;	
+  nbr_dim=var_in->nbr_dim;
 
   /* Refresh nc_id with in_id, NB: makes OpenMP threading work
-  Should have been included in release 3.9.5
-  Fixes TODO nco956 */
+     Should have been included in release 3.9.5
+     Fixes TODO nco956 */
   var_in->nc_id=in_id; 
 
   /* Scalars */
@@ -539,9 +533,7 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
 
 do_upk:
   /* Following code copied from nco_var_get() */
-
   if(var_in->pck_dsk) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);
-  /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
 
   /* Type of variable and missing value in memory are now same as type on disk */
   var_in->type=var_in->typ_dsk; /* [enm] Type of variable in RAM */
@@ -787,8 +779,8 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 
   int idx;
   int jdx;
-  int size=dmn_trv->lmt_msa.lmt_dmn_nbr;  /* [nbr] Number of limit structures */
-  long dmn_sz_org=dmn_trv->sz;    /* [nbr] Size of dimension */
+  int size=dmn_trv->lmt_msa.lmt_dmn_nbr; /* [nbr] Number of limit structures */
+  long dmn_sz_org=dmn_trv->sz; /* [nbr] Size of dimension */
   long srt;
   long cnt;
   long srd;
@@ -803,7 +795,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 
       lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
 
-      /* "trv": Initialize  */
+      /* "trv": Initialize */
       (void)nco_lmt_init(&lmt_wrp[0]);
       (void)nco_lmt_init(&lmt_wrp[1]);
 
@@ -1444,10 +1436,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
     } /* If there are limits for this variable dimension, get MSA from table */
 
     /* This dimension must have either a coordinate or a dimension pointer */
-    else
-    {
-      assert(0);
-    }
+    else assert(False);
 
   } /* Loop dimensions for object (variable)  */
 
@@ -1468,9 +1457,7 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   lmt_sct **lmt;
   trv_sct *var_trv;
 
-  nc_type typ_tmp;
-
-  void *void_ptr;
+  nc_type mss_typ_tmp;
 
   /* Obtain variable GTT object using full variable name */
   var_trv=trv_tbl_var_nm_fll(var_in->nm_fll,trv_tbl);
@@ -1483,7 +1470,7 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   var_in->nc_id=grp_id; 
 
   assert(nbr_dim == var_trv->nbr_dmn);
-  assert(strcmp(var_in->nm_fll,var_trv->nm_fll) == 0);
+  assert(!strcmp(var_in->nm_fll,var_trv->nm_fll));
 
   /* Scalars */
   if(nbr_dim == 0){
@@ -1508,25 +1495,30 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
     } /* end loop over dimensions */
   } /* endif dbg */
 
-  /* Call super-dooper recursive routine */
-  typ_tmp=var_in->type;
-  var_in->type=var_in->typ_dsk; 
-  void_ptr=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,var_in);
+  /* Call super-dooper recursive routine
+     nco_msa_rcr_clc requires that var_in->type be on-disk type
+     Could replace var->type by var->typ_dsk in nco_msa_rcr_clc() but that seems inelegant 
+     Instead, risk putting val and mss_val types briefly out-of-sync by pretending var->type is typ_dsk
+     Save current type of missing value in RAM in temporary variable and conform new variable to that below */
+  mss_typ_tmp=var_in->type;
+  var_in->type=var_in->typ_dsk;
+  var_in->val.vp=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,var_in);
 
   /* 20140918 TODO nco1115: do not reset var_typ to previous value. set it to typ_dsk, since values were just retrieved to disk. this will hopefully keep mss_val in sync with val for both packing and auto-promotion???. Commenting-out next line fixes ncra #32 but breaks ncra #09. */
-  /*  var_in->type=typ_tmp;*/
-  var_in->val.vp=void_ptr;
+  var_in->type=mss_typ_tmp;
 
   /* Free */
   (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
   lmt=(lmt_sct **)nco_free(lmt);
 
 do_upk:
-  /* Following code copied from nco_var_get() */
-  if(var_in->pck_dsk) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);
+  /* Missing value type synchronization:
+     Avoid re-reading missing value every ncra record by converting input value to disk type
+     var_in->type still reflects missing value type, not variable value type */
+  if(var_in->pck_dsk && (mss_typ_tmp != var_in->typ_dsk)) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);
+  var_in->type=var_in->typ_dsk;
 
   /* Type of variable and missing value in memory are now same as type on disk */
-  var_in->type=var_in->typ_dsk; /* [enm] Type of variable in RAM */
 
   /* Packing in RAM is now same as packing on disk pck_dbg 
      fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */

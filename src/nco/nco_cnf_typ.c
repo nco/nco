@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.78 2014-09-19 20:38:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.79 2014-09-21 05:42:28 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -131,7 +131,8 @@ nco_typ_cnv_rth /* [fnc] Convert char, short, long, int types to doubles before 
      Implementing --dbl switch on ncwa, ncra, nces (ncap2?) to force implicit conversion */
   if(nco_rth_cnv_get() == nco_rth_flt_flt){
 
-    /* NCO default until 201309: promote, where necessary, anything but floats and doubles */
+    /* NCO default until 201309: promote, where necessary, anything but floats and doubles
+       Now non-default and activated only by --flt switch */
     if(var->typ_upk == NC_FLOAT){
       var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
     }else{ /* Conversion only for appropriate operation types */ 
@@ -140,7 +141,8 @@ nco_typ_cnv_rth /* [fnc] Convert char, short, long, int types to doubles before 
 
   }else{ /* !nco_rth_flt_flt */
 
-    /* NCO default after 201309: promote, where necessary, anything but doubles */
+    /* NCO default after 201309: promote, where necessary, anything but doubles
+       Now default and activated redundantly --dbl switch */
     /* Conversion only for appropriate operation types */ 
     if(var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
     
@@ -173,7 +175,7 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to mss_val_out_typ 
      ncra refreshes variable metadata (including missing_value, if any) 
      once per file (naturally), but refreshes variable values once per record.
      Current type of missing_value is not stored separately in variable structure
-     (maybe this is a mistake), so type of missing value may remain as promoted
+     (this is probably a mistake), so type of missing value may remain as promoted
      type for arithmetic.
      When next record is read and nco_typ_cnf_rth() promotion of new input 
      to arithmetic type (double, if necessary) will fail when it tries to

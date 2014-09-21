@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.549 2014-09-18 17:24:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.550 2014-09-21 05:42:28 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.549 2014-09-18 17:24:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.549 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.550 2014-09-21 05:42:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.550 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -251,6 +251,8 @@ main(int argc,char **argv)
 
   nco_int base_time_srt=nco_int_CEWI;
   nco_int base_time_crr=nco_int_CEWI;
+
+  nc_type var_prc_typ_pre_prm=NC_NAT; /* [enm] Type of variable before promotion */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
@@ -980,6 +982,7 @@ main(int argc,char **argv)
                 /* Convert char, short, long, int types to doubles before arithmetic
 		   Output variable type is "sticky" so only convert on first record */
                 if(flg_rth_ntl) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+		var_prc_typ_pre_prm=var_prc[idx]->type; /* [enm] Type of variable before promotion */
                 var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
                 /* Perform arithmetic operations: avg, min, max, ttl, ... */
                 if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,var_prc[idx],var_prc_out[idx]); else nco_opr_drv((long)1L,nco_op_typ,var_prc[idx],var_prc_out[idx]);
@@ -1004,11 +1007,16 @@ main(int argc,char **argv)
 
             /* Warn if record coordinate, if any, is not monotonic */
             if(nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
-            /* Convert missing_value, if any, back to unpacked type
-	       Otherwise missing_value will be double-promoted when next record read
+            /* Convert missing_value, if any, back to unpacked or unpromoted type
+	       Otherwise missing_value will be double-promoted when next record read in nco_msa_var_get_trv()
 	       Do not convert after last record otherwise normalization fails
 	       due to wrong missing_value type (needs promoted type, not unpacked type) */
-            if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !REC_LST_DSR[idx_rec]) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
+            if(var_prc[idx]->has_mss_val && /* If there is a missing value and... */
+	       !REC_LST_DSR[idx_rec] && /* ...no more records will be read (thus no more calls to nco_msa_var_get_trv()) and... */
+	       !(var_prc[idx]->pck_dsk && var_prc_typ_pre_prm != var_prc_out[idx]->type) && /* grasping at straws */
+	       var_prc[idx]->type != var_prc[idx]->typ_upk) /* ...the variable was auto-promoted (e.g., --dbl) then */
+	      var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk); /* Demote missing value */
+
             /* Free current input buffer */
             var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
           } /* end (OpenMP parallel for) loop over variables */
@@ -1321,7 +1329,6 @@ main(int argc,char **argv)
 
     } /* end loop over idx */
   } /* end if ncfe and ncge */
-
 
   /* Free averaging and tally buffers */
   if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){

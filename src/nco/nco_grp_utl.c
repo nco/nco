@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1460 2014-09-18 20:32:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1461 2014-09-21 05:42:28 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -284,11 +284,9 @@ nco_grp_dfn                          /* [fnc] Define groups in output file */
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_grp_dfn() reports file level = 0 parent group = / (root group) will have %d sub-group%s\n",nco_prg_nm_get(),grp_nbr,(grp_nbr == 1) ? "" : "s");
 
-  /* For each (possibly user-specified) top-level group ... */
-  for(idx=0;idx<grp_nbr;idx++){
-    /* Define group and all subgroups */
+  /* For each (possibly user-specified) top-level group, define group and all subgroups */
+  for(idx=0;idx<grp_nbr;idx++) 
     rcd+=nco_def_grp_rcr(grp_xtr_lst[idx].id,out_id,grp_xtr_lst[idx].nm,rcr_lvl);
-  } /* end loop over top-level groups */
 
   return rcd;
 } /* end nco_grp_dfn() */
