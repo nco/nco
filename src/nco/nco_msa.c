@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.256 2014-09-21 05:42:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.257 2014-09-21 05:50:57 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1503,8 +1503,6 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   mss_typ_tmp=var_in->type;
   var_in->type=var_in->typ_dsk;
   var_in->val.vp=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,var_in);
-
-  /* 20140918 TODO nco1115: do not reset var_typ to previous value. set it to typ_dsk, since values were just retrieved to disk. this will hopefully keep mss_val in sync with val for both packing and auto-promotion???. Commenting-out next line fixes ncra #32 but breaks ncra #09. */
   var_in->type=mss_typ_tmp;
 
   /* Free */

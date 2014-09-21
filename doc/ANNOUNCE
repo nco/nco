@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.736 2014-09-16 23:31:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.737 2014-09-21 05:50:57 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -47,6 +47,9 @@ A. NCO now checks correct function to enable DAP with configure.
 
 A. Fix --file_format switch as synonym for --fl_fmt
    Thanks to Dave Allured for reporting this.
+
+A. Fix bug with ncra --dbl on packed variables with missing values. 
+   http://nco.sf.net#bug_ncra_dbl_pck_mss
 
 KNOWN PROBLEMS DUE TO NCO:
 

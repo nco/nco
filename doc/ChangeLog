@@ -1,10 +1,14 @@
-2014-09-18  Charlie Zender  <zender@uci.edu>
+2014-09-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.6 release procedure:
  	Changes since nco-4_4_5: ncks -V, ncap2 -s -S, DAP cnf
 	cd ~/nco;cvs tag -d nco-4_4_6;cvs tag -d nco-4_4_6-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
 	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
+
+	* Fix bug with ncra --dbl on packed variables with missing values
+
+2014-09-18  Charlie Zender  <zender@uci.edu>
 
 	* Add debugging statements to track netCDF4 stride slowdown
 
@@ -17,8 +21,7 @@
 2014-09-16  Charlie Zender  <zender@uci.edu>
 
 	* Add regression test to demonstrate bug with ncra --dbl on
-	variables with both scale_factor and missing values. Bug bites
-	only when entire file is processed. Probably not normalizing at end.
+	packed float variables with missing values.
 
 	* Implement missing getopt() line for file_format switch
 

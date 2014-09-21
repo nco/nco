@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.550 2014-09-21 05:42:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.551 2014-09-21 05:50:57 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.550 2014-09-21 05:42:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.550 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.551 2014-09-21 05:50:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.551 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1013,7 +1013,7 @@ main(int argc,char **argv)
 	       due to wrong missing_value type (needs promoted type, not unpacked type) */
             if(var_prc[idx]->has_mss_val && /* If there is a missing value and... */
 	       !REC_LST_DSR[idx_rec] && /* ...no more records will be read (thus no more calls to nco_msa_var_get_trv()) and... */
-	       !(var_prc[idx]->pck_dsk && var_prc_typ_pre_prm != var_prc_out[idx]->type) && /* grasping at straws */
+	       !(var_prc[idx]->pck_dsk && var_prc_typ_pre_prm != var_prc_out[idx]->type) && /* Exclude conversion on situations like regression test ncra #32 */
 	       var_prc[idx]->type != var_prc[idx]->typ_upk) /* ...the variable was auto-promoted (e.g., --dbl) then */
 	      var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk); /* Demote missing value */
 
