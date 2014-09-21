@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1024 2014-09-17 23:36:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1025 2014-09-21 17:19:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.6
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 16 September 2014
+@set update-date 21 September 2014
 @set update-month September 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2151,7 +2151,7 @@ date.
 @node Large Datasets, Memory Requirements, Large Numbers of Files, Strategies
 @section Large Datasets
 @cindex large datasets
-@cindex LFS
+@cindex @acronym{LFS}
 @cindex Large File Support
 
 @dfn{Large datasets} are those files that are comparable in size to the
@@ -2176,22 +2176,32 @@ memory requirements.
 With this knowledge you may re-design your data reduction approach to
 divide the problem into pieces solvable in memory-limited situations.   
 
+@html
+<a name="ulimit"></a> <!-- http://nco.sf.net/nco.html#ulimit -->
+@end html
 @cindex server
 @cindex @acronym{UNICOS}
 @cindex Cray
+@cindex @acronym{GNU}/Linux
+@cindex @code{ulimit}
+@cindex @code{core dump}
 If your local machine has problems working with large files, try running
 @acronym{NCO} from a more powerful machine, such as a network server.  
+If you get a memory-related core dump 
+(e.g., @samp{Error exit (core dumped)}) on a @acronym{GNU}/Linux system,
+or the operation ends before the entire output file is written,
+try increasing the process-available memory with @code{ulimit}:
+@example
+ulimit -f unlimited
+@end example
+This may solve constraints on clusters where sufficient hardware
+resources exist yet where system administrators felt it wise to prevent 
+any individual user from consuming too much of resource. 
 Certain machine architectures, e.g., Cray @acronym{UNICOS}, have special 
 commands which allow one to increase the amount of interactive memory.
 @cindex @code{ilimit}
 On Cray systems, try to increase the available memory with the
 @code{ilimit} command.    
-@cindex @acronym{GNU}/Linux
-@cindex @code{ulimit}
-@cindex @code{core dump}
-If you get a memory-related core dump 
-(e.g., @samp{Error exit (core dumped)}) on a @acronym{GNU}/Linux system,
-try increasing the process-available memory with @code{ulimit}.
 
 @cindex speed
 The speed of the @acronym{NCO} operators also depends on file size.
@@ -3855,7 +3865,7 @@ If this feature would interest you, please let us know.
 @end html
 @node Large File Support, Subsetting Files, File Formats and Conversion, Common features
 @section Large File Support
-@cindex LFS
+@cindex @acronym{LFS}
 @cindex Large File Support
 @cartouche
 Availability: All operators@*
@@ -3865,31 +3875,31 @@ Long options: none@*
 @acronym{NCO} has Large File Support (@acronym{LFS}), meaning that 
 @acronym{NCO} can write files larger than @w{2 GB} on some 32-bit
 operating systems with netCDF libraries earlier than @w{version 3.6}. 
-If desired, LFS support must be configured when both netCDF and
+If desired, @acronym{LFS} support must be configured when both netCDF and
 @acronym{NCO} are installed.
 netCDF @w{versions 3.6} and higher support 64-bit file addresses as part
 of the netCDF standard.
-We recommend that users ignore LFS support which is difficult to
+We recommend that users ignore @acronym{LFS} support which is difficult to
 configure and is implemented in @acronym{NCO} only to support netCDF
 versions prior @w{to 3.6}.  
-This obviates the need for configuring explicit LFS support in
+This obviates the need for configuring explicit @acronym{LFS} support in
 applications (such as @acronym{NCO}) that now support 64-bit files   
 directly through the netCDF interface.
 See @ref{File Formats and Conversion} for instructions on accessing 
 the different file formats, including 64-bit files, supported by the
 modern netCDF interface. 
 
-If you are still interested in explicit LFS support for netCDF versions
-prior @w{to 3.6}, know that LFS support depends on a complex,
+If you are still interested in explicit @acronym{LFS} support for netCDF versions
+prior @w{to 3.6}, know that @acronym{LFS} support depends on a complex,
 interlocking set of operating system  
 @footnote{
 Linux and @acronym{AIX} do support @acronym{LFS}.}
 and netCDF support issues.
-The netCDF LFS 
+The netCDF @acronym{LFS} 
 @uref{http://my.unidata.ucar.edu/content/software/netcdf/faq-lfs.html,FAQ}
 describes the various file size limitations imposed by different
 versions of the netCDF standard.
-@acronym{NCO} and netCDF automatically attempt to configure LFS at
+@acronym{NCO} and netCDF automatically attempt to configure @acronym{LFS} at
 build time. 
 
 @html

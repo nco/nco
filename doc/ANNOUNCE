@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.737 2014-09-21 05:50:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.738 2014-09-21 17:19:51 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -6,6 +6,9 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release is mainly a bugfix and stability release. 
+It fixes the promotion of packed records with missing values.
+It is likely that affected users would have noticed the incorrect
+values caused by this bug.
 
 Work on NCO 4.4.7 is underway, still focused on stability and speed.   
 This includes more netCDF4 mop-up and new chunking features.
@@ -22,21 +25,19 @@ A. ncap2 command-line and script arguments can now both be specified
    Pass the shell variables with -s and the -S scripts will use them.
    http://nco.sf.net/nco.html#ncap2
 
-A. ncks -V = --var_val are new switches to print only variable values.
-   Compare and contrast -Q, -V, and --no_nm_prn
-   % ncks -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+A. ncks -V = --var_val is new switch to print only variable values.
+   Compare and contrast -Q, -V, and --no_nm_prn:
+   % ncks -v three_dmn_rec_var -C -H in.nc
    time[0]=1 lat[0]=-90 lon[0]=0 three_dmn_rec_var[0]=1 
-   % ncks --no_nm_prn -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+   % ncks --no_nm_prn -v three_dmn_rec_var -C -H in.nc
    1 -90 0 1
-   % ncks -Q -v three_dmn_rec_var -C -H ~/nco/data/in.nc              
+   % ncks -Q -v three_dmn_rec_var -C -H in.nc              
    three_dmn_rec_var[0]=1 
-   % ncks -Q --no_nm_prn -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+   % ncks -Q --no_nm_prn -v three_dmn_rec_var -C -H in.nc
    1
-   % ncks -V -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+   % ncks -V -v three_dmn_rec_var -C -H in.nc
    1
    More details at http://nco.sf.net/nco.html#var_val
-
-A. fxm
 
 BUG FIXES:
 
@@ -48,7 +49,13 @@ A. NCO now checks correct function to enable DAP with configure.
 A. Fix --file_format switch as synonym for --fl_fmt
    Thanks to Dave Allured for reporting this.
 
-A. Fix bug with ncra --dbl on packed variables with missing values. 
+A. Fix promotion of packed variables with missing values. 
+   Versions 4.3.X-4.4.5 of ncra could produce (wildly) inaccurate
+   statistics when promoting (e.g., to double- from single-precision)
+   variables that are packed and that have missing values.
+   The two workarounds are to remove the scaling or to perform the
+   statistics in single precision with the --flt option.
+   The solution is to upgrade to NCO 4.4.6.
    http://nco.sf.net#bug_ncra_dbl_pck_mss
 
 KNOWN PROBLEMS DUE TO NCO:
@@ -84,7 +91,7 @@ B. NOT YET FIXED (NCO problem?)
    Cause: Unsure. Maybe ncra.c loop structure not amenable to MRD?
    Workaround: Convert to fixed dimensions then hyperslab
 
-C. NOT YET FIXED (NCO problem?)
+C. NOT YET FIXED (NCO or netCDF problem? Unsure)
    Correctly handle stride argument on netCDF4 datasets
    Specifying strided hyperslab on netCDF4 datasets leads
    to enormous slowdown or failure with recent NCO versions.

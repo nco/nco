@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.924 2014-09-21 05:50:57 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.925 2014-09-21 17:19:51 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1252,12 +1252,13 @@ No known generic run-time problems with recent releases.
 <ul><b>Recent Operator-specific Run-time Problems:</b>
 <!-- http://nco.sf.net#bug_ncra_dbl_pck_mss -->
 <a name="bug_ncra_dbl_pck_mss"></a>
-<li><i>Averaging packed records with missing values bug:</i>
+<li><i>Promoting packed records with missing values bug:</i>
 Versions 4.3.X&mdash;4.4.5 of <tt>ncra</tt> could produce (wildly)
-inaccurate statistics on single-precision variables that are packed 
-and that have missing values and that must be promoted.
-The workarounds are to remove the scaling or to perform the statistics 
-in single precision with the <tt>--flt</tt> option.
+inaccurate statistics when promoting (e.g., to double- from
+single-precision) variables that are packed and that have missing
+values.
+The two workarounds are to remove the scaling or to perform the
+statistics in single precision with the <tt>--flt</tt> option.
 The solution is to upgrade to NCO&nbsp;4.4.6.
 </li>
 
