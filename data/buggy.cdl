@@ -23,6 +23,7 @@ netcdf buggy {
   lon=4;
   tm2=unlimited;
   tm3=unlimited;
+  time=unlimited;
 
  variables:
   float att_var;
@@ -64,6 +65,10 @@ netcdf buggy {
  nan_scl:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
  nan_scl:_FillValue = nan;
 
+ int lat_time(lat,time);
+ lat_time:purpose = "record variable where record dimension is not first dimension"; 
+ lat_time:bug = "ncgen until 4.3.3-rc2 20140922 fails to parse this because of Jira NCF-315. Some variables with non-leading record dimensions (like lat_tm2, lat_tm3) did work before today in \"standalone\" files like buggy.cdl, but lat_time did not.";
+  
   float lat_tm2(lat,tm2);
   float lat_tm3(lat,tm3);
   float tm2_lat(tm2,lat);
@@ -96,6 +101,8 @@ netcdf buggy {
 
   string_var2="20131121: This NC_STRING contains NCO's default XML string separator, *. And it contains multiple sequential copies of that separator, ***. Be sure ncks automatically switches to a different separator, aka the backup separator, the string obtained by removing the two spaces from this:\"* | *\". As of 20131121, ncks handles this correctly, yet toolsui breaks when trying to input the ncks-generated NcML. Appears to be a toolsui bug.";
 
+  lat_time={1,2,3,4,5,6,7,8,9,10},{11,12,13,14,15,16,17,18,19,20};
+
   nan_arr=0,nan;
   nan_scl=nan;
 
@@ -104,9 +111,8 @@ netcdf buggy {
 
    uint64_var=18446744073709551615; // 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maxium ubyte, ushort, and uint values)
 
-   // group: \1g { 
- group: oneg { 
-    // Bug netCDF #TLO-836022 reported 20131118: ncgen fails on group names that begin with numeric characters. Response:
+ group: \1g { 
+    // Non-bug netCDF #TLO-836022 reported 20131118: ncgen fails on group names that begin with numeric characters. Response:
     // "An identifier with a leading digit is allowed, but the leading digit must be escaped. So in your example change 1g -> \1g"
  :att=1;
  } // 1g
@@ -250,10 +256,8 @@ netcdf buggy {
     compound_var={{3,4,5},Stratus};
   } // end g15
 
-  //
   //g17 
   //ncks -O -v ts -d time,0,1 -d Latitude,40.0 -d Longitude,-105.0 http://hydro1.sci.gsfc.nasa.gov/opendap/hyrax/ncml/LPRM_AMSRE_D_SOILM3_timeSeries.ncml ~/amsre.nc
-  //
   group: g17 { 
     dimensions:
     time3 = 2; 

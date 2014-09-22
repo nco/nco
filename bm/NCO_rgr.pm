@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.508 2014-09-19 20:38:28 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.509 2014-09-22 21:37:13 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -5170,6 +5170,50 @@ if (0){
 	
 } #### Group tests	
     
+#ncrename #23
+#ncrename -O -v xyz,abc ~/nco/data/in.nc ~/foo.nc
+#Fail when required variable not present
+
+    $dsc_sng="Variables: Fail when required variable not present";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrename: fxm";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
+
+#ncrename #24
+#ncrename -O -d xyz,abc ~/nco/data/in.nc ~/foo.nc
+#Fail when required dimension not present
+
+    $dsc_sng="Dimensions: Fail when required dimension not present";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrename: fxm";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
+
+#ncrename #25
+#ncrename -O -a xyz,abc ~/nco/data/in.nc ~/foo.nc
+#Fail when required attribute not present
+
+    $dsc_sng="Attributes: Fail when required attribute not present";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrename: fxm";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
+
+#ncrename #26
+#ncrename -O -g xyz,abc ~/nco/data/in.nc ~/foo.nc
+#Fail when required group not present
+
+    $dsc_sng="Groups: Fail when required group not present";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrename: fxm";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
+
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
 ####################
