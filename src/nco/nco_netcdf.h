@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.121 2014-09-15 19:43:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.122 2014-09-22 23:14:26 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -48,6 +48,9 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
+#ifdef NC_HAVE_META_H
+# include <netcdf_meta.h> /* netCDF meta-information */	 
+#endif /* !NC_HAVE_META_H */
 #ifdef ENABLE_MPI
 # include <mpi.h> /* MPI definitions */
 # include <netcdf_par.h> /* Parallel netCDF definitions */

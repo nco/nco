@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.739 2014-09-22 04:11:52 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.740 2014-09-22 23:14:25 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -56,7 +56,16 @@ A. Fix promotion of packed variables with missing values.
    The two workarounds are to remove the scaling or to perform the
    statistics in single precision with the --flt option.
    The solution is to upgrade to NCO 4.4.6.
+   Thanks to user John for reporting this.
    http://nco.sf.net#bug_ncra_dbl_pck_mss
+
+A. ncrename now fails (as intended) when required objects not present. 
+   Since version 4.3.x, ncrename incorrectly ignores missing objects.
+   Now missing objects are ignored only when prefixed with a period.
+   A missing object (variable, attribute, dimension, group) not
+   prefixed with period now causes an error as intended. 
+   Thanks to user John for reporting this.
+   http://nco.sf.net/nco.html#ncrename
 
 KNOWN PROBLEMS DUE TO NCO:
 
@@ -91,7 +100,7 @@ B. NOT YET FIXED (NCO problem?)
    Cause: Unsure. Maybe ncra.c loop structure not amenable to MRD?
    Workaround: Convert to fixed dimensions then hyperslab
 
-C. NOT YET FIXED (NCO or netCDF problem? Unsure)
+C. NOT YET FIXED (NCO or netCDF problem? Unsure fxm)
    Specifying strided hyperslab on netCDF4 datasets leads
    to enormous slowdown or failure with recent NCO versions.
 

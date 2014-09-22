@@ -1,5 +1,7 @@
 2014-09-22  Charlie Zender  <zender@uci.edu>
 
+	* Support netCDF 4.3.3 netcdf_meta.h in nco_netcdf.c so NC_HAVE_RENAME_GRP is found
+
 	* Add regression tests to make ncrename die when required entities not present
 
 2014-09-20  Charlie Zender  <zender@uci.edu>
