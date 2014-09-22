@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1026 2014-09-22 04:11:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1027 2014-09-22 21:37:13 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -16162,8 +16162,9 @@ All the new names must be unique.
 Every old name must exist in the input file, unless the old name is
 preceded by the period (or ``dot'') character @samp{.}. 
 The validity of @var{old_name} is not checked prior to the renaming. 
-Thus, if @var{old_name} is specified without the the @samp{.} prefix and
-is not present in @var{input-file}, @command{ncrename} will abort. 
+Thus, if @var{old_name} is specified without the @samp{.} prefix that
+indicates the presence of @var{old_name} is optional, and @var{old_name}  
+is not present in @var{input-file}, then @command{ncrename} will abort.  
 The @var{new_name} should never be prefixed by a @samp{.} (or else the
 period will be included as part of the new name).
 The OPTIONS and EXAMPLES show how to select specific variables

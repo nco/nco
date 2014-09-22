@@ -1,4 +1,4 @@
-; $Id: ncl.ncl,v 1.2 2014-09-22 21:37:13 zender Exp $
+; $Header: /data/zender/nco_20150216/nco/data/ncl.ncl,v 1.3 2014-09-22 21:38:34 zender Exp $
 
 ; Purpose: NCL script to compare to NCO scripts for speed
 
