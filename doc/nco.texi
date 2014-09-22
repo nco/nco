@@ -7,9 +7,9 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1025 2014-09-21 17:19:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1026 2014-09-22 04:11:52 zender Exp $
 
-Purpose: TeXInfo documentation for NCO suite
+Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
 URL: http://nco.sf.net/nco.texi
 
@@ -586,7 +586,7 @@ nco.tar}.
 with @samp{tar -xvzf nco.tar.gz}. 
 
 @cindex documentation 
-@cindex WWW documentation
+@cindex @acronym{WWW} documentation
 @cindex on-line documentation
 @cindex @acronym{HTML}
 @cindex @TeX{}info
@@ -857,7 +857,7 @@ by invoking the compiler with @samp{-Drestrict=''}.}.
 @cindex @acronym{GSL}
 @findex ncap2
 In January 2009, @acronym{NCO} version 3.9.6 was the first to link
-to the GNU Scientific Library (@acronym{GSL}).
+to the @acronym{GNU} Scientific Library (@acronym{GSL}).
 @acronym{GSL} must be @w{version 1.4} or later. 
 @acronym{NCO}, in particular @command{ncap2}, uses the @acronym{GSL}
 special function library to evaluate geoscience-relevant mathematics
@@ -925,24 +925,24 @@ platform, and the change in the wallclock time for execution.}.
 @subsection Compiling @acronym{NCO} for Microsoft Windows @acronym{OS}
 @cindex Windows
 @cindex Microsoft
-@cindex XP (Microsoft operating system)
-@cindex NT (Microsoft operating system)
+@cindex @acronym{XP} (Microsoft operating system)
+@cindex @acronym{NT} (Microsoft operating system)
 @cindex Vista (Microsoft operating system)
 @cindex @acronym{MVS}
 @cindex Microsoft Visual Studio
 
 @acronym{NCO} has been successfully ported and tested on most Microsoft  
-Windows operating systems including: XP SP2/Vista/7.
+Windows operating systems including: @acronym{XP} SP2/Vista/7.
 Support is provided for compiling either native Windows executables,
 using the Microsoft Visual Studio 2010 Compiler, or with Cygwin, the
-UNIX-emulating compatibility layer with the GNU toolchain.
+@acronym{UNIX}-emulating compatibility layer with the @acronym{GNU} toolchain.
 The switches necessary to accomplish both are included in the standard
 distribution of @acronym{NCO}.
 
 @cindex Qt
 @cindex C99
 Using Microsoft Visual Studio (@acronym{MVS}), one must build
-@acronym{NCO} with the C++ compiler since MVS does not support C99.
+@acronym{NCO} with the C++ compiler since @acronym{MVS} does not support C99.
 Qt, a convenient integrated development environment, was used to convert
 the project files to @acronym{MVS} format.
 The Qt files themselves are distributed in the @file{nco/qt} directory.
@@ -1631,7 +1631,7 @@ existing @var{output-file}).
 Also, note this feature increases the execution time of the operator
 by approximately the time it takes to copy the @var{output-file}
 @footnote{The OS-specific system move command is used.
-This is @command{mv} for UNIX, and @command{move} for Windows.}.
+This is @command{mv} for @acronym{UNIX}, and @command{move} for Windows.}.
 Finally, note this fault-tolerant feature allows the @var{output-file}
 to be the same as the @var{input-file} without any danger of
 ``overlap''. 
@@ -4705,7 +4705,7 @@ NCO dismembering file /home/zender/nco/data/mdl_1.nc
 A (potentially more portable) binary executable could be written to
 dismember all groups with a single invocation, yet dismembering without
 loss of information is possible now with this simple script on all 
-platforms with UNIXy utilities.
+platforms with @acronym{UNIX}y utilities.
 Note that all dimensions inherited by groups in the input file are
 correctly placed by @command{ncdismember} into the flat files.
 Moreover, each output file preserves the group metadata of all ancestor
@@ -10832,7 +10832,7 @@ print(T_out);
 @subsection GSL special functions
 @cindex @acronym{GSL}
 @noindent As of version 3.9.6 (released January, 2009), @acronym{NCO} 
-can link to the GNU Scientific Library (@acronym{GSL}). 
+can link to the @acronym{GNU} Scientific Library (@acronym{GSL}). 
 @command{ncap2} can access most @acronym{GSL} special functions including
 Airy, Bessel, error, gamma, beta, hypergeometric, and Legendre functions
 and elliptical integrals. 

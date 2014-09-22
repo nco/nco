@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.738 2014-09-21 17:19:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.739 2014-09-22 04:11:52 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -92,7 +92,6 @@ B. NOT YET FIXED (NCO problem?)
    Workaround: Convert to fixed dimensions then hyperslab
 
 C. NOT YET FIXED (NCO or netCDF problem? Unsure)
-   Correctly handle stride argument on netCDF4 datasets
    Specifying strided hyperslab on netCDF4 datasets leads
    to enormous slowdown or failure with recent NCO versions.
 
