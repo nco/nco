@@ -1,6 +1,16 @@
+2014-09-23  Charlie Zender  <zender@uci.edu>
+
+	* Remove nco_dmn_usr_sng() and nco_obj_usr_sng() due to flawed algorithms
+
+	* Finish ncrename re-write for variables, groups, and dimensions
+	NCO versions 4.3.3-4.4.5 broke "." support and did not fully support groups
+	Those versions renamed first and ignored subsequent instances of old_nm
+	Now ncrename fails as intended when required objects are not present
+	Attributes are more complex and are still broken
+
 2014-09-22  Charlie Zender  <zender@uci.edu>
 
-	* Support netCDF 4.3.3 netcdf_meta.h in nco_netcdf.c so NC_HAVE_RENAME_GRP is found
+	* Support netCDF 4.3.3 netcdf_meta.h in nco_netcdf.h so NC_HAVE_RENAME_GRP is found
 
 	* Add regression tests to make ncrename die when required entities not present
 

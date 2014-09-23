@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.925 2014-09-21 17:19:51 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.926 2014-09-23 18:43:06 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -86,6 +86,7 @@ Current NCO version is 4.4.5 last updated on <!--#flastmod file="VERSION"-->
 <li><a href="#Binaries">Binaries</a></li>
 <li><a href="#RTFM">Documentation</a></li>
 <li><a href="#FAQ">FAQ</a></li>
+<li><a href="#Support">Help/Support/Contacts</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#Source">Source Code</a></li>
 <li><a href="#bld">Compiling</a></li>
@@ -93,7 +94,6 @@ Current NCO version is 4.4.5 last updated on <!--#flastmod file="VERSION"-->
 <!-- <li><a href="#BM">Benchmarks</a></li> -->
 <li><a href="#bug">Known Problems</a></li>
 <li><a href="#People">People</a></li>
-<li><a href="#Contact">Contact us</a></li>
 </ul>
 </td>
 
@@ -942,7 +942,7 @@ But they are more predictable:
 <ul>
 <li><i>I still have questions, how do I contact the NCO project?</i>
 The NCO project has various Q&amp;A and discussion forums described
-<a href="#Contact">below</a>.  
+<a href="#Support">below</a>.  
 </li>
 <li><i>Where can I find prebuilt NCO executables?</i>
 Pre-built executables of some versions of NCO for the operating
@@ -972,6 +972,38 @@ This list is for NCO-related announcements, not for questions.
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#FAQ -->
+
+<!-- Begin Support -->
+<!-- http://nco.sf.net#Help -->
+<a name="hlp"></a> <!-- http://nco.sf.net#hlp -->
+<a name="help"></a> <!-- http://nco.sf.net#help -->
+<a name="Help"></a> <!-- http://nco.sf.net#Help -->
+<a name="support"></a> <!-- http://nco.sf.net#support -->
+<a name="Support"></a> <!-- http://nco.sf.net#Support -->
+<a name="contact"></a> <!-- http://nco.sf.net#contact -->
+<dt><a name="Contact"></a></dt> <!-- http://nco.sf.net#Contact -->
+<h2>Help/Support/Contacts:</h2>
+<p>If you have support questions or comments please contact us via the 
+Project Forums (rather than personal e-mail) so other users can
+benefit from and contribute to our exchange. 
+Let us know how NCO is working for you&mdash;we'd like to hear.
+Have you read the <a href="#RTFM">documentation</a> and browsed the
+forums to see if your question/comment has been reported before?
+Please read the Guide's suggestions for productive
+<a href="./nco.html#help">Help Requests and Bug Reports</a>.
+<ul>
+<li><i>Where should I ask my questions on how to use NCO?</i>
+On the <a href="http://sf.net/projects/nco/forums/forum/9830">Help</a> site.
+</li>
+<li><i>Where should I post suggestions/comments on NCO features and usage?</i>
+On the <a href="http://sf.net/projects/nco/forums/forum/9829">Discussion</a> site.
+</li>
+<li><i>Where are NCO development and bug-squashing discussed?</i>
+At the <a href="http://sf.net/projects/nco/forums/forum/9831">Developer</a>
+site.</li>
+</ul>
+<hr></p>
+<!-- End Support -->
 
 <!-- http://nco.sf.net#README -->
 <dt><a name="README/ChangeLog/TODO"></a></dt>
@@ -1484,35 +1516,6 @@ community.
 </ul>
 <hr></p>
 <!-- End People -->
-
-<!-- Begin Contacts -->
-<!-- http://nco.sf.net#Help -->
-<a name="hlp"></a> <!-- http://nco.sf.net#hlp -->
-<a name="help"></a> <!-- http://nco.sf.net#help -->
-<a name="Help"></a> <!-- http://nco.sf.net#Help -->
-<a name="contact"></a> <!-- http://nco.sf.net#contact -->
-<dt><a name="Contact"></a></dt> <!-- http://nco.sf.net#Contact -->
-<h2>Contacting the Project:</h2>
-<p>Contact us via the Project Forums (rather than personal e-mail)
-so other users can benefit from and contribute to our exchange.
-Let us know how NCO is working for you&mdash;we'd like to hear.
-Have you read the <a href="#RTFM">documentation</a> and browsed the
-forums to see if your question/comment has been reported before?
-Please read the Guide's suggestions for productive
-<a href="./nco.html#help">Help Requests and Bug Reports</a>.
-<ul>
-<li><i>Where should I ask my questions on how to use NCO?</i>
-On the <a href="http://sf.net/projects/nco/forums/forum/9830">Help</a> site.
-</li>
-<li><i>Where should I post suggestions/comments on NCO features and usage?</i>
-On the <a href="http://sf.net/projects/nco/forums/forum/9829">Discussion</a> site.
-</li>
-<li><i>Where are NCO development and bug-squashing discussed?</i>
-At the <a href="http://sf.net/projects/nco/forums/forum/9831">Developer</a>
-site.</li>
-</ul>
-<hr></p>
-<!-- End Contacts -->
 
 <a href="http://sf.net/projects/nco"><img src="http://sflogo.sf.net/sflogo.php?group_id=3331&amp;type=12" width="120" height="30" alt="Get NCO netCDF Operators at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
 

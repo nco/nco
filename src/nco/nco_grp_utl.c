@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1461 2014-09-21 05:42:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1462 2014-09-23 18:43:06 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -132,7 +132,7 @@ nco_def_grp_full                      /* [fnc] Ensure all components of group pa
 
   grp_pth_dpl=(char *)nco_free(grp_pth_dpl);
   return rcd;
-}  /* end nco_def_grp_full() */
+} /* end nco_def_grp_full() */
 
 void
 nco_grp_itr_free                      /* [fnc] Free group iterator */
@@ -837,7 +837,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                   trv_tbl->lst[tbl_idx].flg_mch=True;
                   trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
                 } /* end flags */
-              }  /* !nco_obj_typ_var */
+              } /* !nco_obj_typ_var */
 
               /* Set function return condition */
               if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
@@ -1378,7 +1378,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
             if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
           } /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
-        }  /* Loop dimensions visible to group  */    
+        } /* Loop dimensions visible to group  */    
       } /* Loop over dimensions of variable */
       /* Free dimension IDs array */
       dmn_id_var=(int *)nco_free(dmn_id_var);
@@ -4865,7 +4865,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         if((*dmn_cmn_out)[idx_dmn_out].id == dmn_cmn[idx_dmn].id){
           dmn_flg=True;
           break;
-        }  /* Match by ID */
+        } /* Match by ID */
       } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
       /* If this dimension is not in output array */
@@ -5451,7 +5451,7 @@ nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable 
       return True;
 
     } /* Match by full variable name  */
-  }  /* Loop processed variables  */
+  } /* Loop processed variables  */
 
   assert(0);
   return False;
@@ -6118,7 +6118,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
           if(var_trv.var_dmn[idx_dmn_var].dmn_id==(*dmn)[idx_dmn_out]->id){
             dmn_flg=True;
             break;
-          }  /* Match by ID */
+          } /* Match by ID */
         } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
         /* If this dimension is not in output array */
@@ -6156,7 +6156,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
           (*dmn)[nbr_dmn]->type=(nc_type)-1;
 
           nbr_dmn++;
-        }  /* If this dimension is not in output array */
+        } /* If this dimension is not in output array */
       } /* Loop variable dimensions  */
     } /* Filter variables  */
   } /* Loop table */
@@ -6281,7 +6281,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
               if(dmn_id == (*dmn_avg)[idx_dmn_out]->id){
                 flg_dmn_ins=True;
                 break;
-              }  /* Match by ID */
+              } /* Match by ID */
             } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
             /* If this dimension is not in output array */
@@ -6328,12 +6328,12 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
               /* Increment number of dimensions found */
               nbr_avg_dmn++;
 
-            }  /* If this dimension is not in output array */
+            } /* If this dimension is not in output array */
           } /* Must meet necessary flags */
         } /* Loop variable dimensions */ 
       } /* Variable to extract */
     } /* Loop table */
-  }  /* Loop input dimension name list */
+  } /* Loop input dimension name list */
 
   /* Export */
   *nbr_dmn_avg=nbr_avg_dmn;
@@ -6404,7 +6404,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
                   /* Mark as inserted in array */
                   flg_dmn_ins=True;
                   break;
-                }  /* Match by ID */
+                } /* Match by ID */
               } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
               /* If this dimension is not in output array */
@@ -6413,7 +6413,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
                 (*dmn_out)[nbr_out_dmn]=nco_dmn_dpl(dmn_xtr[idx_xtr_dmn]);
                 (void)nco_dmn_xrf(dmn_xtr[idx_xtr_dmn],(*dmn_out)[nbr_out_dmn]);
                 nbr_out_dmn++;
-              }  /* If this dimension is not in output array */
+              } /* If this dimension is not in output array */
             } /* Match by ID */
           } /* Search dimensions to be extracted  */
         } /* This dimension is not to be averaged, it is to be kept on output */ 
@@ -6535,7 +6535,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               /* Mark as inserted in array */
               flg_dmn_ins=True;
               break;
-            }  /* Match by ID */
+            } /* Match by ID */
           } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
           /* If this dimension is not in output array */
@@ -6604,7 +6604,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
             /* Increase array size */
             rec_nbr++;
 
-          }  /* If this dimension is not in output array */
+          } /* If this dimension is not in output array */
 
         } /* Is record */
       } /* Loop variable dimensions */ 
@@ -7428,7 +7428,7 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
 
               return wgt_var;
 
-            }  /* Same group  */ 
+            } /* Same group  */ 
           } /* Loop over weights */
       } /* Filter variables  */
     } /* Loop table */
@@ -7437,108 +7437,6 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   return NULL;
 
 } /* nco_var_get_wgt_trv() */
-
-dmn_trv_sct *                         /* O [sct] Table dimension object */
-nco_dmn_usr_sng                       /* [fnc] Parse input string and return table dimension object */
-(const char * const usr_sng,          /* I [sng] Object name */
- const trv_tbl_sct * const trv_tbl,   /* I [lst] Traversal table */ 
- nco_bool *is_opt)                    /* O [flg] Dimension presence is optional (input string has '.') */
-{
-  /* Purpose: Parse input string and return table dimension object */
-
-  const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
-
-  *is_opt=False;
-
-  /* Match absolute name */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++)
-    if(!strcmp(usr_sng,trv_tbl->lst_dmn[tbl_idx].nm_fll)) return &trv_tbl->lst_dmn[tbl_idx];
-
-  /* Match short name */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++)
-    if(!strcmp(usr_sng,trv_tbl->lst_dmn[tbl_idx].nm)) return &trv_tbl->lst_dmn[tbl_idx];
-
-  /* Optional absolute match */
-  if(usr_sng[0] == opt_chr){
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++)
-      if(!strcmp(usr_sng+1L,trv_tbl->lst_dmn[tbl_idx].nm_fll)){
-        *is_opt=True;
-        return &trv_tbl->lst_dmn[tbl_idx];
-      }
-  }
-
-  /* Optional relative match */
-  if(usr_sng[0] == opt_chr){
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++)
-      if(!strcmp(usr_sng+1L,trv_tbl->lst_dmn[tbl_idx].nm)){
-        *is_opt=True;
-        return &trv_tbl->lst_dmn[tbl_idx];
-      }
-  }
-
-  /* Cases of not found and optional */
-  if(usr_sng[0] == opt_chr) *is_opt=True;
-
-  return NULL;
-} /* nco_dmn_usr_sng() */
-
-trv_sct *                             /* O [sct] Table object */
-nco_obj_usr_sng                       /* [fnc] Parse input string and return table object */
-(const char * const usr_sng,          /* I [sng] Object name */
- const trv_tbl_sct * const trv_tbl,   /* I [lst] Traversal table */ 
- nco_bool *is_opt)                    /* O [flg] Dimension presence is optional (input string has '.') */
-{
-  /* Purpose: Parse input string and return table object */
-
-  const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
-
-  /* Only used by ncrename */
-  assert(nco_prg_id_get() == ncrename);
-
-  *is_opt=False;
-
-  /* Try absolute match */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
-    if(!strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm_fll)) 
-      return &trv_tbl->lst[tbl_idx];
-
-  /* Try relative match */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
-    if(!strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm))
-       return &trv_tbl->lst[tbl_idx];
-
-  /* Try optional absolute match */
-
-  /* Optional absolute match */
-  if(usr_sng[0] == opt_chr){
-    /* Loop table */
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-      /* Match absolute name */
-      if(strcmp(usr_sng+1,trv_tbl->lst[tbl_idx].nm_fll) == 0){
-        *is_opt=True;
-        return &trv_tbl->lst[tbl_idx];
-      } /* Match name */
-    } /* Loop table */ 
-  } /* Optional absolute match */
-
-  /* Optional relative match */
-  if(usr_sng[0] == opt_chr){
-    /* Loop table */
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-      /* Match relative name */
-      if(strcmp(usr_sng+1,trv_tbl->lst[tbl_idx].nm) == 0){
-        *is_opt=True;
-        return &trv_tbl->lst[tbl_idx];
-      } /* Match name */
-    } /* Loop table */ 
-  } /* Optional relative match */
-
-  /* Cases of not found and optional */
-  if(usr_sng[0] == opt_chr) *is_opt=True;
-
-  return NULL;
-
-} /* nco_obj_usr_sng() */
 
 void                                  
 nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
@@ -7555,20 +7453,18 @@ nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
   /* Only used by ncatted */
   assert(nco_prg_id_get() == ncatted);
 
-  /* Loop table */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Is group */
     if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp){
       /* Get group ID */
       (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
       /* Process attribute */
       (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
       var_fnd=True;
-    } /* Is group */
-  } /* Loop table */ 
+    } /* !group */
+  } /* end loop over tables */ 
 
   if(!var_fnd){
-    (void)fprintf(stderr,"%s: No attributes were found\n",nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR No attributes were found\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } 
 
@@ -7604,12 +7500,11 @@ nco_aed_prc_glb                       /* [fnc] Process attributes in root group 
   } /* Loop table */ 
 
   if(!var_fnd){
-    (void)fprintf(stderr,"%s: Attribute was not found\n",nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR Attribute was not found\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } 
 
   return;
-
 } /* nco_aed_prc_grp() */
 
 void                                  
@@ -8037,7 +7932,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
         } /* Auxiliary coordinates found */
       } /* Filter variables with auxiliary coordinates */ 
-    }  /* Filter variables to extract */ 
+    } /* Filter variables to extract */ 
   } /* Loop table  */
 
   return;
@@ -8071,9 +7966,9 @@ nco_lmt_aux_tbl                       /* [fnc] Apply limits to variable in table
           (void)nco_lmt_aux(nc_id,lmt,nbr_lmt,FORTRAN_IDX_CNV,MSA_USR_RDR,idx_tbl,idx_dmn,trv_tbl);    
 
         } /* Match index  */
-      }  /* Loop dimensions  */
+      } /* Loop dimensions  */
 
-    }  /* Match variable  */
+    } /* Match variable  */
   } /* Loop table  */
 
   return;
@@ -8106,9 +8001,9 @@ nco_lmt_std_att_lat_lon               /* [fnc] Apply limits to variable in table
             (void)nco_lmt_aux(nc_id,lmt,nbr_nbr,FORTRAN_IDX_CNV,MSA_USR_RDR,idx_tbl,idx_dmn,trv_tbl);    
 
           } /* Match index  */
-        }  /* Loop dimensions  */
+        } /* Loop dimensions  */
 
-    }  /* Match variable  */
+    } /* Match variable  */
   } /* Loop table  */
 
   return;
@@ -8417,9 +8312,7 @@ nco_var_scp                            /* [fnc] Is variable 1 is in scope of var
 {
 
   /* Same group */
-  if (strcmp(var_trv_1->grp_nm_fll,var_trv_2->grp_nm_fll) == 0){
-    return True;
-  }
+  if(!strcmp(var_trv_1->grp_nm_fll,var_trv_2->grp_nm_fll)) return True;
 
   /* Different groups: traverse down the higher and look for a group match name */  
   if(var_trv_2->grp_dpt > var_trv_1->grp_dpt){
@@ -8429,34 +8322,27 @@ nco_var_scp                            /* [fnc] Is variable 1 is in scope of var
 
     grp_prn_2=trv_tbl_grp_nm_fll(grp_nm_fll_prn_2,trv_tbl);
 
-    /* Look for same group name in  hierarchy */
+    /* Look for same group name in hierarchy */
     while (grp_nm_fll_prn_2){
-
       /* Same group in hierarchy */
-      if (strcmp(grp_prn_2->grp_nm,var_trv_1->grp_nm) == 0){
-        return True;
-      } /* Same group in hierarchy */
+      if(!strcmp(grp_prn_2->grp_nm,var_trv_1->grp_nm)) return True;
 
       /* Exit loop when root reached */
-      if (grp_prn_2->grp_dpt == 0){
-        break; 
-      }
+      if(grp_prn_2->grp_dpt == 0) break; 
 
       grp_nm_fll_prn_2=grp_prn_2->grp_nm_fll_prn;
       grp_prn_2=trv_tbl_grp_nm_fll(grp_nm_fll_prn_2,trv_tbl);
-    }  /* Look for same group name in  hierarchy */
-
-  }
+    } /* end while */
+  } /* end if */
 
   return False;
-} /* nco_var_scp() */
+} /* end nco_var_scp() */
 
 int *
 nco_dmn_malloc                        /* [fnc] Inquire about number of dimensions in group and return dynamic array of dimension IDs */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const char * const grp_nm_fll,       /* I [sng] Group full name */
  int *dmn_nbr)                        /* I/O [nbr] Number of dimensions in group */
-
 {
   const int flg_prn=0;   /* [flg] Retrieve all dimensions in parent groups */        
 
@@ -8476,12 +8362,11 @@ nco_dmn_malloc                        /* [fnc] Inquire about number of dimension
   /* Obtain dimensions IDs for group */
   (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
 
-
   /* Export number of dimensions */
   *dmn_nbr=nbr_dmn;
 
   return dmn_ids;
-}
+} /* end nco_dmn_malloc() */
 
 void
 nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_sct (name only) */
@@ -8507,37 +8392,28 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
     (*dmn)[idx]->cnk_sz=-1L;
     (*dmn)[idx]->type=(nc_type)-1;
   }  
-
   return;
-
 } /* end nco_dmn_lmt() */
 
 void
 nco_prn_nsm                                 /* [fnc] Print ensembles  */                                
 (const trv_tbl_sct * const trv_tbl)         /* I [sct] Traversal table */
 {
-
   if (!trv_tbl->nsm_nbr) return;
 
   (void)fprintf(stdout,"%s: list of ensembles\n",nco_prg_nm_get()); 
-  for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
-    (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
-  } 
+  for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++) (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
 
   (void)fprintf(stdout,"%s: list of fixed templates\n",nco_prg_nm_get()); 
-  for(int idx_skp=0;idx_skp<trv_tbl->nsm->skp_nbr;idx_skp++){
-    (void)fprintf(stdout,"%s: <template> %d <%s>\n",nco_prg_nm_get(),idx_skp,trv_tbl->nsm->skp_nm_fll[idx_skp]); 
-  }
-
+  for(int idx_skp=0;idx_skp<trv_tbl->nsm->skp_nbr;idx_skp++) (void)fprintf(stdout,"%s: <template> %d <%s>\n",nco_prg_nm_get(),idx_skp,trv_tbl->nsm->skp_nm_fll[idx_skp]); 
 
   (void)fprintf(stdout,"%s: list of templates\n",nco_prg_nm_get()); 
   int idx_tpl=0;
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
     if(trv_tbl->lst[idx_tbl].flg_nsm_tpl){
       (void)fprintf(stdout,"%s: <template> %d <%s>\n",nco_prg_nm_get(),idx_tpl,trv_tbl->lst[idx_tbl].nm_fll); 
       idx_tpl++;
     }
-  }
 
   (void)fprintf(stdout,"%s: list of ensemble members\n",nco_prg_nm_get()); 
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
@@ -8610,7 +8486,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                 /* Mark as inserted in array */
                 flg_ins=True;
                 break;
-              }  /* Match */
+              } /* Match */
             } /* Loop constructed array to see if already inserted  */
 
             /* Export list of variable names for group */
@@ -8665,9 +8541,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll,skp_nbr*sizeof(char *));
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]=(char *)strdup(var_trv->nm_fll);
 
-                  if(nco_dbg_lvl_get() >= nco_dbg_dev) 
-                    (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),
-                    fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]);
+                  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]);
 
                 } else {
 
@@ -8676,9 +8550,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm,tpl_nbr*sizeof(char *));
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm[tpl_nbr-1]=(char *)strdup(var_trv->nm);
 
-                  if(nco_dbg_lvl_get() == nco_dbg_old) 
-                    (void)fprintf(stdout,"%s: DEBUG %s inserted template <%s>\n",nco_prg_nm_get(),
-                    fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm[tpl_nbr-1]=(char *)strdup(var_trv->nm));
+                  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s inserted template <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm[tpl_nbr-1]=(char *)strdup(var_trv->nm));
 
                 } /* Define as either fixed template or template  */
               } /* Loop common names, insert template and fixed template variables */
@@ -8695,14 +8567,12 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       for(int idx_nm=0;idx_nm<nm_lst_1_nbr;idx_nm++) nm_lst_1[idx_nm]=(char *)nco_free(nm_lst_1[idx_nm]);
       nm_lst_1=(char **)nco_free(nm_lst_1);
 
-    }  /* Group (not root) */
+    } /* Group (not root) */
   } /* Loop table */
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
-    for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
-    } 
+    for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
   }
 
   if(trv_tbl->nsm_nbr == 0) return;
@@ -8744,7 +8614,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             /* Inquire if variable exists */
             trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
 
-            if (!var_trv){
+            if(!var_trv){
               (void)fprintf(stderr,"%s: ERROR expected member ensemble <%s> does not exist\n",nco_prg_nm_get(),var_nm_fll);
               nco_exit(EXIT_FAILURE);
             }
@@ -8762,10 +8632,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr*sizeof(char *));
             trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]=(char *)strdup(var_nm_fll);
 
-            if(nco_dbg_lvl_get() == nco_dbg_old){
-              (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,
-                trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]);             
-            }
+            if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]);             
 
             /* Free */
             var_nm_fll=(char *)nco_free(var_nm_fll);
@@ -8773,7 +8640,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
           } /* Insert members by building name from group and template */
 
           /* Mark fixed templates as non extracted */
-          if (flg_fix_xtr == True){
+          if(flg_fix_xtr){
 
             /* List of fixed templates  */
             for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
@@ -8967,10 +8834,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
             trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr*sizeof(char *));
             trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]=(char *)strdup(var_nm_fll);
 
-            if(nco_dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,
-                trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]);             
-            }
+            if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]);             
 
             var_nm_fll=(char *)nco_free(var_nm_fll);
 
@@ -10309,7 +10173,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 
             attr_sng=(char *)nco_free(attr_sng);
           } /* Check retrun code */
-      }  /* Filter groups */
+      } /* Filter groups */
   } /* Loop table  */
 } /* nco_nsm_att() */
 

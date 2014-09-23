@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.515 2014-09-16 17:26:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.516 2014-09-23 18:43:06 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -13,6 +13,7 @@
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
 
+/* Token added by Pedro to help debugging in nco_grp_*.c */
 #define DEBUG_LEAKS
 
 /* Standard header files */

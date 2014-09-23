@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1027 2014-09-22 21:37:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1028 2014-09-23 18:43:06 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -92,7 +92,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
 @uref{}: URL with optional alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
 @url{}: URL, synonym for @uref
-@var{}: Metasyntactic variable, e.g., @var{}
+@var{}: Metasyntactic variable, e.g., @var{input}
 @verbatim: Anything goes inside environment (no @'s needed to protect special characters like braces)
 @verbatiminclude: Insert contents of file here, e.g., @verbatiminclude{nco.sh}
 @example: Quoted environment (@'s needed to protect special characters like braces)
@@ -1399,9 +1399,9 @@ operators.
 @cindex features, requesting
 We generally receive three categories of mail from users: help requests,
 bug reports, and feature requests.
-Notes saying the equivalent of "Hey, @acronym{NCO} continues to work
+Notes saying the equivalent of ``Hey, @acronym{NCO} continues to work
 great and it saves me more time everyday than it took to write this
-note" are a distant fourth.
+note'' are a distant fourth.
 
 There is a different protocol for each type of request.
 The preferred etiquette for all communications is via @acronym{NCO}
@@ -1418,8 +1418,8 @@ project.
 Before posting to the @acronym{NCO} forums described below, you might
 first @uref{https://sf.net/account/register.php, register}
 your name and email address with SourceForge.net or else all of your
-postings will be attributed to "nobody".
-Once registered you may choose to "monitor" any forum and to receive
+postings will be attributed to @emph{nobody}.
+Once registered you may choose to @emph{monitor} any forum and to receive
 (or not) email when there are any postings including responses to your
 questions.
 We usually reply to the forum message, not to the original poster.
@@ -1502,7 +1502,7 @@ are the three files output by @acronym{GNU} build tools,
 @file{nco.configure.$@{GNU_TRP@}.foo}, 
 and @file{nco.make.$@{GNU_TRP@}.foo}.
 The file @file{configure.eg} shows how to produce these files.
-Here @code{$@{GNU_TRP@}} is the "@acronym{GNU} architecture triplet",
+Here @code{$@{GNU_TRP@}} is the ``@acronym{GNU} architecture triplet'',
 the @var{chip-vendor-OS} string returned by @file{config.guess}.
 Please send us your improvements to the examples supplied in
 @file{configure.eg}.
@@ -3324,7 +3324,7 @@ network-transparent data access.
 @acronym{OPeNDAP} has many other features, including sophisticated
 hyperslabbing and server-side processing via @dfn{constraint expressions}.
 If you know more about this, please consider writing a section
-on "@acronym{OPeNDAP} Capabilities of Interest to @acronym{NCO} Users"
+on ``@acronym{OPeNDAP} Capabilities of Interest to @acronym{NCO} Users''
 for incorporation in the @cite{NCO User Guide}.}.
 
 Once @acronym{NCO} is @acronym{DAP}-enabled the operators are
@@ -8318,7 +8318,7 @@ Thus attributes named @code{History} or @code{HISTORY} (which are
 non-standard and not recommended) will be treated as valid history
 attributes. 
 When more than one global attribute fits the case-insensitive search
-for "history", the first one found will be used.
+for ``history'', the first one found will be used.
 @code{history} attribute
 @cindex @command{ncatted}
 To avoid information overkill, all operators have an optional switch
@@ -9059,8 +9059,8 @@ z1=four+=one*=10 // z1=14 four=14 one=10;
 time-=2          // time= -1,0,1,2,3,4,5,6,7,8
 @end example
 
-@noindent @strong{Increment/ Decrement Operators @* } 
-These work in a similar fashion to their regular C counterparts. If say the variable "four" is input only then the statement "++four" effectively means -read four from input increment each element by one , then write the new values to Output;
+@noindent @strong{Increment/Decrement Operators @*} 
+These work in a similar fashion to their regular C counterparts. If say the variable @code{four} is input only then the statement @code{++four} effectively means read @code{four} from input increment each element by one, then write the new values to Output;
 
 Example:
 @example
@@ -9309,9 +9309,9 @@ start:end:stride
 @end example
 and the arguments for different dimensions are separated by commas.
 @noindent 
-If "start" is omitted, it defaults to 0.
-If "end" is omitted, it defaults to dimension size minus one.
-If "stride" is omitted, it defaults to 1.
+If @var{start} is omitted, it defaults to zero.
+If @var{end} is omitted, it defaults to dimension size minus one.
+If @var{stride} is omitted, it defaults to one.
 @sp 1
 @noindent If a single value is present then it is assumed that that
 dimension collapses to a single value (i.e., a cross-section). 
@@ -9504,7 +9504,7 @@ To stop the attribute being written use the ram_delete() method or use a bogus v
 @cindex attribute inheritance
 @itemize @bullet
   @item Attribute propagation occurs in a regular assign statement. The variable being defined on the LHS gets copies of the attributes from the leftermost variable on the RHS.
-  @item Attribute Inheritance: The LHS variable "inherits" attributes from an Input variable with the same name
+  @item Attribute Inheritance: The LHS variable ``inherits'' attributes from an Input variable with the same name
   @item It is possible to have a regular assign statement for which both propagation and inheritance occur.
 @end itemize
 
@@ -10622,7 +10622,7 @@ The Weather and Research Forecast (@acronym{WRF}) model uses @var{R}=3:
 and so supports grids that change with time.
 
 Grids with @var{R} > 1 often use missing values to indicated empty points.
-For example, so-called "staggered grids" will use fewer east_west
+For example, so-called ``staggered grids'' will use fewer east_west
 points near the poles and more near the equator. netCDF only accepts
 rectangular arrays so space must be allocated for the maximum number
 of east_west points at all latitudes. Then the application writes
@@ -12735,7 +12735,7 @@ The other valid @acronym{ASCII} codes are @code{\a}, @code{\b}, @code{\f},
 @cindex special characters
 @cindex @acronym{ASCII}
 Analogous to @code{printf}, other special characters are also allowed by 
-@command{ncatted} if they are "protected" by a backslash.
+@command{ncatted} if they are ``protected'' by a backslash.
 The characters @code{"}, @code{'}, @code{?}, and @code{\} may be 
 input to the shell as @code{\"}, @code{\'}, @code{\?}, and @code{\\}.
 @acronym{NCO} simply strips away the leading backslash from these
@@ -12772,7 +12772,7 @@ Note that @command{ncatted} interprets character attributes
 @end html
 EXAMPLES
 
-Append the string "Data version 2.0.\n" to the global attribute
+Append the string @code{Data version 2.0.\n} to the global attribute
 @code{history}: 
 @example
 ncatted -a history,global,a,c,'Data version 2.0\n' in.nc 
@@ -12781,7 +12781,7 @@ Note the use of embedded @w{C language} @code{printf()}-style escape
 sequences. 
 
 Change the value of the @code{long_name} attribute for variable @code{T}
-from whatever it currently is to "temperature":
+from whatever it currently is to ``temperature'':
 @example
 ncatted -a long_name,T,o,c,temperature in.nc
 @end example
@@ -12842,14 +12842,14 @@ To delete all global attributes, simply replace @code{tpt} with
 @code{global} in the above.
 
 @cindex @code{units}
-Modify all existing @code{units} attributes to "meter second-1":
+Modify all existing @code{units} attributes to @code{meter second-1}:
 @example
 ncatted -a units,,m,c,'meter second-1' in.nc
 @end example
 
 @cindex @code{units}
-Add a @code{units} attribute of "kilogram kilogram-1" to all variables 
-whose first three characters are @samp{H2O}:
+Add a @code{units} attribute of @code{kilogram kilogram-1} to all
+variables whose first three characters are @samp{H2O}:
 @example
 ncatted -a units,'^H2O',c,c,'kilogram kilogram-1' in.nc
 @end example
@@ -13633,7 +13633,7 @@ input file into a single record of the same variable in the output file.
 Coordinate variables are not concatenated, they are instead simply
 copied from the first input file to the @var{output-file}.
 All @var{input-files} must contain all extracted variables (or else
-there would be "gaps" in the output file).
+there would be ``gaps'' in the output file).
 
 A new record dimension is the glue which binds together the input file
 data.
@@ -14836,7 +14836,7 @@ location of the input dataset, e.g.,
 The @samp{--xml_spr_chr} and @samp{--xml_spr_nmr} options customize
 the strings used as @acronym{NcML} separators for attributes and
 variables of character-type and numeric-type, respectively.
-Their default separators are "*" and " ":
+Their default separators are @code{*} and ``@code{ }'' (a space):
 @example
 @verbatim
 zender@roulee:~$ ncks --xml -d time,0,3 -v two_dmn_rec_var_sng in.nc
@@ -15567,7 +15567,7 @@ I will upload updates to documentation linked to by the NCO homepage.
 ncpdq is a powerful operator, and 
 I am unfamiliar with the terminology needed to describe what ncpdq does.
 Sequences, sets, sheesh!
-I just know that it does "The right thing" according to my gut feelings.
+I just know that it does ``The right thing'' according to my gut feelings.
 Now do you feel more comfortable using it?
 
 Let $\dmnvct(\xxx)$ represent the dimensionality of the variable $\xxx$. 

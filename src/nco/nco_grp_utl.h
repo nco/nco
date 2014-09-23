@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.515 2014-09-18 16:27:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.516 2014-09-23 18:43:06 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -587,18 +587,6 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
  const char * const wgt_nm,           /* I [sng] Weight variable name (relative) */
  const var_sct * const var,           /* I [sct] Variable that needs the weight/mask variable */
  const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */
-
-dmn_trv_sct *                         /* O [sct] Table dimension object */
-nco_dmn_usr_sng                       /* [fnc] Parse input string and return table dimension object */
-(const char * const usr_sng,          /* I [sng] Object name */
- const trv_tbl_sct * const trv_tbl,   /* I [lst] Traversal table */ 
- nco_bool *is_opt);                   /* O [flg] Dimension presence is optional (name has '.') */       
-    
-trv_sct *                             /* O [sct] Table object */
-nco_obj_usr_sng                       /* [fnc] Parse input string and return table object */
-(const char * const usr_sng,          /* I [sng] Object name */
- const trv_tbl_sct * const trv_tbl,   /* I [lst] Traversal table */ 
- nco_bool *is_opt);                   /* O [flg] Dimension presence is optional (input string has '.') */
 
 void                                  
 nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
