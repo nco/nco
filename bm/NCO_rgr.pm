@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.509 2014-09-22 21:37:13 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.510 2014-09-23 18:52:56 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -5034,7 +5034,7 @@ if (0){
 
     $dsc_sng="Dimensions: Optional non-existing absolute rename './lat_non_existing,new_lat' to 'new_lat'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat_non_existing,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: WARNING Dimension '/lat_non_existing' not present in ../data/in_grp.nc, skipping it.";
+    $tst_cmd[1]="ncrename: INFO Optional dimension '/lat_non_existing' not present in ../data/in_grp.nc, skipping it.";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
@@ -5096,7 +5096,7 @@ if (0){
 
     $dsc_sng="Variables: Optional non-existing absolute rename './g1/v1_not' to '/g1/new_v1'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v ./g1/v1_not,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: WARNING Variable '/g1/v1_not' not present in ../data/in_grp.nc, skipping it.";
+    $tst_cmd[1]="ncrename: INFO Optional variable '/g1/v1_not' not present in ../data/in_grp.nc, skipping it.";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
@@ -5149,7 +5149,7 @@ if (0){
 
     $dsc_sng="Groups: Optional relative rename '.gfoo' to 'new_g1'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g .gfoo,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: WARNING Group 'gfoo' not present in ../data/in_grp.nc, skipping it.";
+    $tst_cmd[1]="ncrename: INFO Optional group 'gfoo' not present in ../data/in_grp.nc, skipping it.";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5176,7 +5176,7 @@ if (0){
 
     $dsc_sng="Variables: Fail when required variable not present";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: fxm";
+    $tst_cmd[1]="ncrename: ERROR Required variable 'xyz' is not present in input file";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
@@ -5187,7 +5187,7 @@ if (0){
 
     $dsc_sng="Dimensions: Fail when required dimension not present";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: fxm";
+    $tst_cmd[1]="ncrename: ERROR Required dimension 'xyz' is not present in input file";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
@@ -5198,7 +5198,7 @@ if (0){
 
     $dsc_sng="Attributes: Fail when required attribute not present";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: fxm";
+    $tst_cmd[1]="ncrename: ERROR Required attribute 'xyz' is not present in input file";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
@@ -5209,7 +5209,7 @@ if (0){
 
     $dsc_sng="Groups: Fail when required group not present";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: fxm";
+    $tst_cmd[1]="ncrename: ERROR Required group 'xyz' is not present in input file";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
