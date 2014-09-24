@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1028 2014-09-23 18:43:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1029 2014-09-24 06:11:03 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.6
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 21 September 2014
+@set update-date 23 September 2014
 @set update-month September 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1295,9 +1295,11 @@ netCDF3 may be desirable.
 Obtaining a netCDF3 file from an @acronym{HDF4} is now easy:
 @example
 ncks -3 fl.hdf fl.nc      # HDF4->netCDF3 (NCO 4.4.0+, netCDF 4.3.1+)
+ncks -4 fl.hdf fl.nc      # HDF4->netCDF4 (NCO 4.4.0+, netCDF 4.3.1+)
 ncks -6 fl.hdf fl.nc      # HDF4->netCDF3 64-bit  (NCO 4.4.0+, ...)
 ncks -7 -L 1 fl.hdf fl.nc # HDF4->netCDF4 classic (NCO 4.4.0+, ...)
 ncks --hdf4 -3 fl.hdf fl.nc # HDF4->netCDF3 (netCDF 4.3.0-)
+ncks --hdf4 -4 fl.hdf fl.nc # HDF4->netCDF4 (netCDF 4.3.0-)
 ncks --hdf4 -6 fl.hdf fl.nc # HDF4->netCDF3 64-bit  (netCDF 4.3.0-)
 ncks --hdf4 -7 fl.hdf fl.nc # HDF4->netCDF4 classic (netCDF 4.3.0-)
 @end example
@@ -3518,9 +3520,11 @@ when your other preferred methods are not available locally.
 @cindex @code{--3}
 @cindex @code{-3}
 @cindex @code{-4}
+@cindex @code{-5}
 @cindex @code{-6}
 @cindex @code{-7}
 @cindex @code{--4}
+@cindex @code{--5}
 @cindex @code{--6}
 @cindex @code{--7}
 @cindex @code{--netcdf4}
@@ -3741,6 +3745,8 @@ Here the input file @file{in.nc} may be in any of these formats:
 netCDF3 (classic and 64bit), netCDF4 (classic and extended), HDF4, HDF5,
 HDF-EOS (version 2 or 5), and DAP. 
 The switch determines the output format written in the comment:
+@footnote{The switches @samp{-5}, @samp{--5}, and @samp{pnetcdf} are
+reserved for PnetCDF files, i.e., @code{NC_FORMAT_PNETCDF}.}
 @example
 ncks --fl_fmt=classic in.nc foo_3c.nc # netCDF3 classic
 ncks --fl_fmt=64bit in.nc foo_364.nc # netCDF3 64bit
@@ -16317,20 +16323,21 @@ the variable:
 @example
 ncrename -d lon,longitude -v lon,longitude in.nc
 @end example
-Unfortunately, the netCDF4 library has a longstanding bug (all versions
-until 4.3.1-rc5 released in December, 2013) that causes @acronym{NCO} to
+Unfortunately, the netCDF4 library had a longstanding bug (all versions
+until 4.3.1-rc5 released in December, 2013) that caused @acronym{NCO} to
 crash when performing this operation. 
 Simultaneously renaming variables and dimensions in netCDF4 files with
-earlier versions of netCDF is impossible; it must instead be done in two
+earlier versions of netCDF is impossible; it must instead be done in two 
 separate @command{ncrename} invocations (e.g., first rename the
-variable, then the dimension) to avoid triggering the libary bug.
+variable, then rename the dimension) to avoid triggering the libary
+bug. 
 
 A related bug causes unintended side-effects with @command{ncrename} 
 also built with all versions of the netCDF4 library until 4.3.1-rc5
 released in December, 2013):
-Renaming @emph{either} a dimension @emph{or} its assosiated
-coordinate variable (not both, which would fail as above) in a netCDF4 
-file inadvertently @emph{does} rename both:
+This bug caused renaming @emph{either} a dimension @emph{or} its
+assosiated coordinate variable (not both, which would fail as above) in
+a netCDF4 file to inadvertently rename both:
 @example
 # Demonstate bug in netCDF4/HDF5 library prior to netCDF-4.3.1-rc5
 ncks -O -h -m -M -4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc

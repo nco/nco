@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.222 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.223 2014-09-24 06:11:03 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -49,6 +49,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   int att_nbr_vsb;
   int dmn_nbr=0;
   int fl_fmt; /* I [enm] File format */
+  int fl_fmt_xtn; /* I [enm] Extended file format */
   int grp_id_prn;
   int idx;
   int prn_ndn=0; /* [nbr] Indentation for printing */
@@ -98,6 +99,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   if(att_nbr_ttl > 0) att=(att_sct *)nco_malloc(att_nbr_ttl*sizeof(att_sct));
     
   rcd=nco_inq_format(grp_id,&fl_fmt);
+  rcd=nco_inq_format_extended(grp_id,&fl_fmt_xtn,(int *)NULL);
 
   if(prn_flg->hdn && ((fl_fmt == NC_FORMAT_NETCDF4) || (fl_fmt == NC_FORMAT_NETCDF4_CLASSIC))){
     char *val_hdn_sng=NULL;
@@ -120,6 +122,16 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  att[idx].nm=(char *)strdup("_Format");
 	  att[idx].type=NC_CHAR;
 	  val_hdn_sng=strdup(nco_fmt_hdn_sng(fl_fmt));
+	  att_sz=att[idx].sz=strlen(val_hdn_sng);
+	  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	  strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
+	  if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+	  /* _SOURCE_FORMAT only and always printed for root group */
+	  idx=att_nbr_ttl++;
+	  att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	  att[idx].nm=(char *)strdup("_SOURCE_FORMAT");
+	  att[idx].type=NC_CHAR;
+	  val_hdn_sng=strdup(nco_fmt_xtn_sng(fl_fmt_xtn));
 	  att_sz=att[idx].sz=strlen(val_hdn_sng);
 	  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 	  strncpy(att[idx].val.cp,val_hdn_sng,att_sz);

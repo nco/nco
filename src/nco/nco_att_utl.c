@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.175 2014-09-12 04:16:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.176 2014-09-24 06:11:03 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -972,7 +972,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
 int /* [flg] Variable and attribute names are conjoined */
 nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
-(rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable:]Attribute name on input, Attribute name on output */
+(rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable@]Attribute name on input, Attribute name on output */
  char * const var_nm, /* O [sng] Variable name, if any */
  nco_bool * const IS_GLB_GRP_ATT) /* O [flg] Attribute is Global or Group attribute */
 {
@@ -1000,7 +1000,7 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   att_nm_lng=strlen(rnm_att->old_nm);
   
   /* Return if delimiter appears to be part of attribute name */
-  if(att_nm_lng < 3 || dlm_ptr == rnm_att->old_nm+att_nm_lng-1) return NCO_ERR;
+  if(att_nm_lng < 3 || dlm_ptr == rnm_att->old_nm+att_nm_lng-1L) return NCO_ERR;
 
   if(dlm_ptr == rnm_att->old_nm || !strncmp(rnm_att->old_nm,".@",2) || !strcasecmp(rnm_att->old_nm,"global")){
     *IS_GLB_GRP_ATT=True;
@@ -1021,19 +1021,18 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   } /* *IS_GLB_GRP_ATT */
 
   /* Point old var_nm@att_nm name to attribute name att_nm alone */
-  rnm_att->old_nm=dlm_ptr+1; 
+  rnm_att->old_nm=dlm_ptr+1L; 
     
   dlm_ptr=strchr(rnm_att->new_nm,dlm_chr);	
   if(dlm_ptr){
     att_nm_lng=strlen(rnm_att->new_nm);
-    if((dlm_ptr-rnm_att->new_nm) < (long int)att_nm_lng) rnm_att->new_nm=dlm_ptr+1; else return NCO_ERR;
+    if((dlm_ptr-rnm_att->new_nm) < (long int)att_nm_lng) rnm_att->new_nm=dlm_ptr+1L; else return NCO_ERR;
   } /* endif */
 
   /* 20131016 */
-  if(strcmp(var_nm,"global") == 0){
-    *IS_GLB_GRP_ATT=True;
-  } /* endif global */
-
+  if(!strcmp(var_nm,"global")) *IS_GLB_GRP_ATT=True;
+  /* 20140923 */
+  if(!strcmp(var_nm,"group")) *IS_GLB_GRP_ATT=True;
 
   return NCO_NOERR;
 } /* end nco_prs_att() */
