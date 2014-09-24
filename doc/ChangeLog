@@ -1,7 +1,8 @@
-2014-09-23  Charlie Zender  <zender@uci.edu>
+2014-09-24  Charlie Zender  <zender@uci.edu>
 
-	* Committing broken version of ncrename so I can work on my Mac
-	while traveling---you have been warned.
+	* ncrename now builds and works again for all but attributes
+
+2014-09-23  Charlie Zender  <zender@uci.edu>
 
 	* Print extended file format as _SOURCE_FORMAT with ncks --hdn
 

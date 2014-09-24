@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.253 2014-09-15 19:43:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.254 2014-09-24 18:14:51 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -105,7 +105,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
      Only attempt to print netCDF error messages when rcd != 0 */
   (void)fprintf(stderr,"%s: ERROR Error code is %d. ",fnc_nm,rcd);
   if(rcd == NC_NOERR){
-    (void)fprintf(stderr,"This indicates an error occurred outside of the netCDF layer, i.e., in NCO code or in a system call.\n");
+    (void)fprintf(stderr,"This indicates an error occurred in NCO code or in a system call, not in the netCDF layer.\n");
   }else{
     (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
   } /* !NC_NOERR */
