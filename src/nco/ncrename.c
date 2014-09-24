@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.202 2014-09-24 18:14:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.203 2014-09-24 23:07:42 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -113,11 +113,10 @@ main(int argc,char **argv)
   char *var_rnm_arg[NC_MAX_VARS];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  char obj_nm[NC_MAX_NAME+1];
-  char var_nm[NC_MAX_NAME+1];
+  char obj_nm[NC_MAX_NAME+1L];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.202 2014-09-24 18:14:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.202 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.203 2014-09-24 23:07:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.203 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute/group in file is optional */
@@ -401,7 +400,7 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"%s: ERROR Required variable \'%s\' is not present in input file. HINT: If presence is intended to be optional, then prefix old variable name with the period character \'%c\', i.e., \'%s -v %c%s,%s\'. With this syntax %s would succeed even if no such variable is in the file.\n",nco_prg_nm_get(),var_rnm_lst[idx_var].old_nm,opt_chr,nco_prg_nm_get(),opt_chr,var_rnm_lst[idx_var].old_nm,var_rnm_lst[idx_var].new_nm,nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     }else if(mch_nbr == 0 && is_opt){
-      (void)fprintf(stdout,"%s: INFO Optional variable \'%s\' not present in %s, skipping it.\n",nco_prg_nm,var_rnm_lst[idx_var].old_nm+1L,fl_in);
+      (void)fprintf(stdout,"%s: INFO Optional variable \'%s\' not present in %s, skipping it\n",nco_prg_nm,var_rnm_lst[idx_var].old_nm+1L,fl_in);
     }else{
       if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed %d variable%s from \'%s\' to \'%s\'\n",nco_prg_nm,mch_nbr,mch_nbr > 1 ? "s" : "",var_rnm_lst[idx_var].old_nm,var_rnm_lst[idx_var].new_nm);
     } /* end else */
@@ -436,7 +435,7 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"%s: ERROR Required group \'%s\' is not present in input file. HINT: If presence is intended to be optional, then prefix old group name with the period character \'%c\', i.e., \'%s -g %c%s,%s\'. With this syntax %s would succeed even if no such group is in the file.\n",nco_prg_nm_get(),grp_rnm_lst[idx_grp].old_nm,opt_chr,nco_prg_nm_get(),opt_chr,grp_rnm_lst[idx_grp].old_nm,grp_rnm_lst[idx_grp].new_nm,nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     }else if(mch_nbr == 0 && is_opt){
-      (void)fprintf(stdout,"%s: INFO Optional group \'%s\' not present in %s, skipping it.\n",nco_prg_nm,grp_rnm_lst[idx_grp].old_nm+1L,fl_in);
+      (void)fprintf(stdout,"%s: INFO Optional group \'%s\' not present in %s, skipping it\n",nco_prg_nm,grp_rnm_lst[idx_grp].old_nm+1L,fl_in);
     }else{
       if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed %d group%s from \'%s\' to \'%s\'\n",nco_prg_nm,mch_nbr,mch_nbr > 1 ? "s" : "",grp_rnm_lst[idx_grp].old_nm,grp_rnm_lst[idx_grp].new_nm);
     } /* end else */
@@ -471,7 +470,7 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"%s: ERROR Required dimension \'%s\' is not present in input file. HINT: If presence is intended to be optional, then prefix old dimension name with the period character \'%c\', i.e., \'%s -d %c%s,%s\'. With this syntax %s would succeed even if no such dimension is in the file.\n",nco_prg_nm_get(),dmn_rnm_lst[idx_dmn].old_nm,opt_chr,nco_prg_nm_get(),opt_chr,dmn_rnm_lst[idx_dmn].old_nm,dmn_rnm_lst[idx_dmn].new_nm,nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     }else if(mch_nbr == 0 && is_opt){
-      (void)fprintf(stdout,"%s: INFO Optional dimension \'%s\' not present in %s, skipping it.\n",nco_prg_nm,dmn_rnm_lst[idx_dmn].old_nm+1L,fl_in);
+      (void)fprintf(stdout,"%s: INFO Optional dimension \'%s\' not present in %s, skipping it\n",nco_prg_nm,dmn_rnm_lst[idx_dmn].old_nm+1L,fl_in);
     }else{
       if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed %d dimension%s from \'%s\' to \'%s\'\n",nco_prg_nm,mch_nbr,mch_nbr > 1 ? "s" : "",dmn_rnm_lst[idx_dmn].old_nm,dmn_rnm_lst[idx_dmn].new_nm);
     } /* end else */
@@ -483,18 +482,24 @@ main(int argc,char **argv)
   /* Rename attributes */
   for(int idx_att=0;idx_att<nbr_att_rnm;idx_att++){
     int mch_nbr=0; /* [nbr] Number of matching objects */
+    int rcd_att=0;
     int var_id;
     nco_bool IS_GLB_GRP_ATT=False; /* [flg] Attribute is Global or Group attribute */
+    nco_bool att_is_opt=False; /* [flg] Presence of attribute is optional (name has '.') */
     nco_bool has_obj_nm=False; /* [flg] User supplied object name (old_name contains '@') */
+    nco_bool mch_obj=False; /* [flg] User-specified object matches current object */
     nco_bool obj_is_opt=False; /* [flg] Presence of object is optional (name has '.') */
     nco_bool obj_is_grp=False; /* [flg] Object with attribute is group */
     nco_bool obj_is_var=False; /* [flg] Object with attribute is variable */
-    nco_bool att_is_opt=False; /* [flg] Presence of attribute is optional (name has '.') */
-    nco_bool mch_obj=False; /* [flg] User-specified object matches current object */
-    int rcd_att=0;
-    size_t obj_mch_fst=0L; /* [nbr] Number of characters by which to offset object string comparison */
     size_t att_mch_fst=0L; /* [nbr] Number of characters by which to offset attribute string comparison */
+    size_t obj_mch_fst=0L; /* [nbr] Number of characters by which to offset object string comparison */
 
+    /* Initialize */
+    grp_id=0;
+    mch_obj=False;
+    obj_is_grp=False;
+    obj_is_var=False;
+    
     if(strchr(att_rnm_lst[idx_att].old_nm,dlm_chr)){
       has_obj_nm=True; /* [flg] User supplied variable name (old_name contains '@') */
 
@@ -505,22 +510,33 @@ main(int argc,char **argv)
 	nco_exit(EXIT_FAILURE);
       } /* end if */ 
 
-      /* Initialize */
-      if(att_rnm_lst[idx_att].old_nm[0] == opt_chr){
+      if(obj_nm[0] == opt_chr){
 	obj_is_opt=True;
 	obj_mch_fst=1L;
       } /* end if */
     } /* !strchr() */
 
-    obj_is_var=False;
-    obj_is_grp=False;
-    mch_obj=False;
-    
+    if(att_rnm_lst[idx_att].old_nm[0] == opt_chr){
+      att_is_opt=True;
+      att_mch_fst=1L;
+    } /* end if */
+
+    /* Were "global" and "group" inserted by nco_prs_att() into otherwise empty object name? */
+    if(!strcmp(obj_nm+obj_mch_fst,"global") || !strcmp(obj_nm+obj_mch_fst,"group")){
+      obj_is_grp=True;
+      /* Forgive omission of period for global/group attributes. Users aren't perfect :) */
+      obj_is_opt=True; 
+      grp_id=nc_id;
+    } /* endif  */
+
+    (void)fprintf(stdout,"%s: att_rnm_lst[].old_nm = \"%s\", obj_nm = \"%s\", att_is_opt = %d, obj_is_opt = %d, obj_mch_fst = %ld\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm,obj_nm,att_is_opt,obj_is_opt,obj_mch_fst);
+
     /* Compare each attribute in user list to each attribute name in file */
     for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-      if(has_obj_nm){
-	/* Object name is provided so only consider matching objects */
+      if(!grp_id && has_obj_nm){
+	/* Object name is provided so test each object for match */
 	if(!strcmp(obj_nm+obj_mch_fst,trv_tbl->lst[tbl_idx].nm_fll) || !strcmp(obj_nm+obj_mch_fst,trv_tbl->lst[tbl_idx].nm)){
+	  /* Objects in traversal table have top priority */
 	  (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
 	  mch_obj=True;
 	  if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
@@ -528,50 +544,51 @@ main(int argc,char **argv)
 	    rcd=nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
 	  }else{
 	    obj_is_grp=True;
+	    /* nco_prs_att() does not check whether obj_nm could be a group */
 	    IS_GLB_GRP_ATT=True;
 	  } /* endif matches entry in traversal table */
-	} /* strcmp() */
-	  if(!strcmp(obj_nm+obj_mch_fst,"global") || !strcmp(obj_nm+obj_mch_fst,"group")){
-	    obj_is_grp=True;
-	    /* Forgive omission of period for global/group attributes. Users aren't perfect :) */
-	    obj_is_opt=True; 
-	    IS_GLB_GRP_ATT=True;
-	    grp_id=nc_id;
-	  } /* endif  */
-	  if(IS_GLB_GRP_ATT){
-	    (void)fprintf(stdout,"%s: INFO Assuming \"%s\" refers to a Global or Group attribute\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm);
-	    var_id=NC_GLOBAL;
-	  } /* !IS_GLB_GRP_ATT */
+	} /* endif strcmp() */
 
-	  if(!obj_is_grp && !obj_is_var){
-	    /* Object is not in traversal table */
-	    if(obj_is_opt){
-	      (void)fprintf(stdout,"%s: INFO Optional object \'%s\' not present in %s, skipping it.\n",nco_prg_nm,obj_nm+obj_mch_fst,fl_in);
-	      /* Optional variable not found, continue to next attribute in list */
-	      continue;
-	    }else{
-	      (void)fprintf(stdout,"%s: ERROR Required object \'%s\' not present in %s.\n",nco_prg_nm,obj_nm,fl_in);
-              nco_err_exit(rcd,"main");
-	    } /* !obj_is_opt */
-	  } /* endif specified object not found */
-	} /* !has_obj_nm */
+	if(obj_is_grp){
+	  (void)fprintf(stdout,"%s: INFO Assuming \"%s\" refers to a Global or Group attribute\n",nco_prg_nm,obj_nm+obj_mch_fst);
+	  var_id=NC_GLOBAL;
+	} /* !IS_GLB_GRP_ATT */
+
+      } /* !has_obj_nm */
+      
+      /* Need block here to fill-in info for when writing every group/variable */
+
+      if(obj_is_grp || obj_is_var || True){
 
 	if(att_is_opt) rcd=nco_inq_attid_flg(grp_id,var_id,att_rnm_lst[idx_att].old_nm+att_mch_fst,&att_rnm_lst[idx_att].id); else rcd=nco_inq_attid(grp_id,var_id,att_rnm_lst[idx_att].old_nm,&att_rnm_lst[idx_att].id);
 	if(att_is_opt && rcd != NC_NOERR){
-	  (void)fprintf(stdout,"%s: INFO Optional attribute \'%s\' not present in object \'%s\', skipping it.\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm+att_mch_fst,obj_nm+obj_mch_fst);
+	  (void)fprintf(stdout,"%s: INFO Optional attribute \'%s\' not present in object \'%s\', skipping it\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm+att_mch_fst,obj_nm+obj_mch_fst);
 	  continue;
 	} /* endif optional attribute */
 	if(!att_is_opt && rcd != NC_NOERR){
-	  (void)fprintf(stdout,"%s: ERROR Required attribute \'%s\' not present in object \'%s\'\n",nco_prg_nm,att_rnm_lst
-[idx_att].old_nm+att_mch_fst,obj_nm+obj_mch_fst);
 	  (void)fprintf(stdout,"%s: ERROR Required attribute \'%s\' not present in %s \'%s\'. HINT: If attribute presence is intended to be optional, then prefix attribute name with the period character \'%c\', e.g., %c%s. With this syntax %s would succeed even if no variables or groups contained the attribute. If attribute is intended to be renamed only in a specific variable, then prepend the variable name plus an at-sign \'%c\' to the attribute name, e.g., var_nm%catt_nm. If attribute presence is required only for global or group attributes, then prefix attribute name with \"global\" and an at-sign, e.g., global%catt_nm.\n",nco_prg_nm_get(),att_rnm_lst[idx_att].old_nm,obj_is_var ? "variable " : "group",obj_nm+obj_mch_fst,opt_chr,opt_chr,att_rnm_lst[idx_att].old_nm,nco_prg_nm_get(),dlm_chr,dlm_chr,dlm_chr);
-	    nco_err_exit(rcd,"main");
+	  nco_err_exit(rcd,"main");
 	} /* endif required attribute */
 
 	(void)nco_rename_att(grp_id,var_id,att_rnm_lst[idx_att].old_nm+obj_mch_fst,att_rnm_lst[idx_att].new_nm);
 	mch_nbr++;
 	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed attribute \'%s\' to \'%s\' for %s \'%s\'\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm,obj_is_var ? "variable" : "group",obj_nm+obj_mch_fst);
+
+      } /* endif found object */
+
     } /* end loop over traversal table */
+    
+    if(mch_nbr == 0 && !obj_is_grp && !obj_is_var){
+      /* Object was not found in traversal table */
+      if(obj_is_opt){
+	(void)fprintf(stdout,"%s: INFO Optional object \'%s\' not present in %s, skipping it\n",nco_prg_nm,obj_nm+obj_mch_fst,fl_in);
+	/* Optional object not found, continue to next attribute in list */
+	continue;
+      }else{
+	(void)fprintf(stdout,"%s: ERROR Required object \'%s\' not present in %s\n",nco_prg_nm,obj_nm+obj_mch_fst,fl_in);
+	nco_err_exit(rcd,"main");
+      } /* !obj_is_opt */
+    } /* endif specified object not found */
 
     if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed %d attribute%s from \'%s\' to \'%s\'\n",nco_prg_nm,mch_nbr,mch_nbr > 1 ? "s" : "",att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
 
