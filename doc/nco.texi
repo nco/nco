@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1030 2014-09-25 04:41:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1031 2014-09-25 20:39:25 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -1276,7 +1276,7 @@ When compiled with netCDF version 4.3.2 (20140423) or earlier,
 @acronym{NCO} will report that chunking and deflation properties of
 @acronym{HDF4} files as @code{HDF4_UNKNOWN}, because determining 
 those properties was impossible.
-When compiled with netCDF version 4.3.3-rc1 (20140825) or later, 
+When compiled with netCDF version 4.3.3-rc2 (20140925) or later, 
 @acronym{NCO} versions 4.4.6 (October, 2014) and later fully support  
 chunking and deflation features of @acronym{HDF4} files.
 The @samp{--hdf4} switch is supported (for backwards compatibility) yet

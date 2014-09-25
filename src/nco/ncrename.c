@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.203 2014-09-24 23:07:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.204 2014-09-25 20:39:25 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
 
   char obj_nm[NC_MAX_NAME+1L];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.203 2014-09-24 23:07:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.203 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.204 2014-09-25 20:39:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.204 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute/group in file is optional */
@@ -487,7 +487,10 @@ main(int argc,char **argv)
     nco_bool IS_GLB_GRP_ATT=False; /* [flg] Attribute is Global or Group attribute */
     nco_bool att_is_opt=False; /* [flg] Presence of attribute is optional (name has '.') */
     nco_bool has_obj_nm=False; /* [flg] User supplied object name (old_name contains '@') */
-    nco_bool mch_obj=False; /* [flg] User-specified object matches current object */
+    nco_bool mch_obj_crr=False; /* [flg] User-specified object matches current object */
+    nco_bool mch_grp_glb=False; /* [flg] Rename only global attributes */
+    nco_bool mch_grp_all=False; /* [flg] Rename all group attributes */
+    nco_bool mch_obj_all=False; /* [flg] Rename all group and variable attributes */
     nco_bool obj_is_opt=False; /* [flg] Presence of object is optional (name has '.') */
     nco_bool obj_is_grp=False; /* [flg] Object with attribute is group */
     nco_bool obj_is_var=False; /* [flg] Object with attribute is variable */
@@ -496,12 +499,20 @@ main(int argc,char **argv)
 
     /* Initialize */
     grp_id=0;
-    mch_obj=False;
+    mch_obj_crr=False;
     obj_is_grp=False;
     obj_is_var=False;
     
     if(strchr(att_rnm_lst[idx_att].old_nm,dlm_chr)){
-      has_obj_nm=True; /* [flg] User supplied variable name (old_name contains '@') */
+
+      if(att_rnm_lst[idx_att].old_nm[0] == '@')	mch_grp_all=True;
+
+      if(!strncmp(att_rnm_lst[idx_att].old_nm,".@",2)){
+	mch_grp_all=True;
+	obj_is_opt=True;
+      } /* strncmp() */
+
+      has_obj_nm=True; /* [flg] User supplied object name (old_name contains '@') */
 
       /* Extract variable name from old name */
       rcd_att=nco_prs_att((att_rnm_lst+idx_att),obj_nm,&IS_GLB_GRP_ATT);
@@ -514,6 +525,10 @@ main(int argc,char **argv)
 	obj_is_opt=True;
 	obj_mch_fst=1L;
       } /* end if */
+
+      if(!strncmp(obj_nm+obj_mch_fst,"global",2)){
+
+
     } /* !strchr() */
 
     if(att_rnm_lst[idx_att].old_nm[0] == opt_chr){
@@ -521,44 +536,61 @@ main(int argc,char **argv)
       att_mch_fst=1L;
     } /* end if */
 
-    /* Were "global" and "group" inserted by nco_prs_att() into otherwise empty object name? */
-    if(!strcmp(obj_nm+obj_mch_fst,"global") || !strcmp(obj_nm+obj_mch_fst,"group")){
+    /* Was "global" inserted by nco_prs_att() into otherwise empty object name? */
+    if(!strcmp(obj_nm+obj_mch_fst,"global")){
       obj_is_grp=True;
-      /* Forgive omission of period for global/group attributes. Users aren't perfect :) */
-      obj_is_opt=True; 
       grp_id=nc_id;
+      mch_grp_glb=True; 
+    } /* endif  */
+
+    /* Was "group" inserted by nco_prs_att() into otherwise empty object name? */
+    if(!strcmp(obj_nm+obj_mch_fst,"group")){
+      obj_is_grp=True;
+      /* Forgive omission of period for generic group attributes. Users aren't perfect :) */
+      obj_is_opt=True; 
+      mch_grp_all=True; 
     } /* endif  */
 
     (void)fprintf(stdout,"%s: att_rnm_lst[].old_nm = \"%s\", obj_nm = \"%s\", att_is_opt = %d, obj_is_opt = %d, obj_mch_fst = %ld\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm,obj_nm,att_is_opt,obj_is_opt,obj_mch_fst);
 
     /* Compare each attribute in user list to each attribute name in file */
     for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-      if(!grp_id && has_obj_nm){
-	/* Object name is provided so test each object for match */
-	if(!strcmp(obj_nm+obj_mch_fst,trv_tbl->lst[tbl_idx].nm_fll) || !strcmp(obj_nm+obj_mch_fst,trv_tbl->lst[tbl_idx].nm)){
-	  /* Objects in traversal table have top priority */
-	  (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
-	  mch_obj=True;
-	  if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
-	    obj_is_var=True;
-	    rcd=nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
-	  }else{
-	    obj_is_grp=True;
-	    /* nco_prs_att() does not check whether obj_nm could be a group */
-	    IS_GLB_GRP_ATT=True;
-	  } /* endif matches entry in traversal table */
-	} /* endif strcmp() */
-
-	if(obj_is_grp){
-	  (void)fprintf(stdout,"%s: INFO Assuming \"%s\" refers to a Global or Group attribute\n",nco_prg_nm,obj_nm+obj_mch_fst);
-	  var_id=NC_GLOBAL;
-	} /* !IS_GLB_GRP_ATT */
-
-      } /* !has_obj_nm */
       
-      /* Need block here to fill-in info for when writing every group/variable */
+      /* Global group only */
+      if(mch_grp_glb && trv_tbl->lst[tbl_idx].nm_fll_lng == 1L){
+	mch_obj_crr=True;
+	mch_fll_nm=True;
+      } /* endif */
 
-      if(obj_is_grp || obj_is_var || True){
+      /* Match all groups */
+      if(!mch_obj_crr && trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && mch_grp_all) mch_obj_crr=True;
+
+      /* Match all objects */
+      if(!mch_obj_crr && mch_obj_all) mch_obj_crr=True;
+
+      /* Specific object name is provided so test for match */
+      if(!mch_obj_crr && has_obj_nm){
+	if(!strcmp(obj_nm+obj_mch_fst,trv_tbl->lst[tbl_idx].nm_fll)){
+	  mch_obj_crr=True;
+	  mch_fll_nm=True;
+	}else if(!strcmp(obj_nm+obj_mch_fst,trv_tbl->lst[tbl_idx].nm)){
+	  mch_obj_crr=True;
+	} /* endif strcmp() */
+	if(mch_obj_crr && trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp) (void)fprintf(stdout,"%s: INFO Assuming \"%s\" refers to a Global or Group attribute\n",nco_prg_nm,obj_nm+obj_mch_fst);
+      } /* end else */
+
+      if(mch_obj_crr){
+	(void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
+	if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
+	  obj_is_var=True;
+	  rcd=nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
+	}else{
+	  obj_is_grp=True;
+	  var_id=NC_GLOBAL;
+	} /* endelse */
+      } /* !mch_obj_crr */
+
+      if(mch_obj_crr){
 
 	if(att_is_opt) rcd=nco_inq_attid_flg(grp_id,var_id,att_rnm_lst[idx_att].old_nm+att_mch_fst,&att_rnm_lst[idx_att].id); else rcd=nco_inq_attid(grp_id,var_id,att_rnm_lst[idx_att].old_nm,&att_rnm_lst[idx_att].id);
 	if(att_is_opt && rcd != NC_NOERR){
@@ -575,6 +607,10 @@ main(int argc,char **argv)
 	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed attribute \'%s\' to \'%s\' for %s \'%s\'\n",nco_prg_nm,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm,obj_is_var ? "variable" : "group",obj_nm+obj_mch_fst);
 
       } /* endif found object */
+
+      /* Matched full name for uniquely specified attribute, move-on to next rename request, i.e.,
+	 do not bother examining remainder of traversal table for another match */
+      if(mch_fll_nm) break;
 
     } /* end loop over traversal table */
     
