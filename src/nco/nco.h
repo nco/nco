@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.517 2014-09-25 04:41:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.518 2014-09-25 05:12:09 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -22,7 +22,7 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #ifdef NC_HAVE_META_H
-# include <netcdf_meta.h> /* netCDF meta-information */	 
+# include <netcdf_meta.h> /* NC_VERSION_..., NC_HAVE_RENAME_GRP */
 #endif /* !NC_HAVE_META_H */
 
 /* Personal headers */
@@ -111,11 +111,6 @@ extern "C" {
 #define short_CEWI 0
 #define size_t_CEWI 0UL
   
-  /* 20140924: netCDF meta-information available in library versions 4.3.3-rc2 */
-#ifndef NCO_NC_LIB_VERSION
-# define NCO_NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH )
-#endif /* !NCO_NC_LIB_VERSION */
-
   /* Numeric constants to simplify arithmetic */
 #define NCO_BYT_PER_KB 1024UL
 #define NCO_BYT_PER_MB 1048576UL
@@ -250,6 +245,22 @@ extern "C" {
 /* Compatibility tokens for when NCO compiled with older netcdf.h
    It is hard to track where/when many tokens defined
    Easiest to individually check for pre-definition of each */
+
+  /* 20140924: netCDF meta-information available in library versions 4.3.3-rc2 
+     Define compatibility tokens for earlier libraries equivalent to 3.6.0 */
+#ifndef NC_VERSION_MAJOR
+ #define NC_VERSION_MAJOR 3
+#endif /* !NC_VERSION_MAJOR */
+#ifndef NC_VERSION_MINOR
+ #define NC_VERSION_MINOR 6
+#endif /* !NC_VERSION_MINOR */
+#ifndef NC_VERSION_PATCH
+ #define NC_VERSION_PATCH 0
+#endif /* !NC_VERSION_PATCH */
+#ifndef NCO_NC_LIB_VERSION
+# define NCO_NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH )
+#endif /* !NCO_NC_LIB_VERSION */
+
 /* Compatibility tokens new to netCDF4 netcdf.h: */
 #ifndef NC_NETCDF4
 # define NC_NETCDF4  0x1000 /* Use netCDF-4/HDF5 format. Mode flag for nc_create(). */
