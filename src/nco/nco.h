@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.516 2014-09-23 18:43:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.517 2014-09-25 04:41:15 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -21,6 +21,9 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
+#ifdef NC_HAVE_META_H
+# include <netcdf_meta.h> /* netCDF meta-information */	 
+#endif /* !NC_HAVE_META_H */
 
 /* Personal headers */
 #include "nco_typ.h" /* Type definitions, opaque types */
@@ -108,6 +111,11 @@ extern "C" {
 #define short_CEWI 0
 #define size_t_CEWI 0UL
   
+  /* 20140924: netCDF meta-information available in library versions 4.3.3-rc2 */
+#ifndef NCO_NC_LIB_VERSION
+# define NCO_NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH )
+#endif /* !NCO_NC_LIB_VERSION */
+
   /* Numeric constants to simplify arithmetic */
 #define NCO_BYT_PER_KB 1024UL
 #define NCO_BYT_PER_MB 1048576UL

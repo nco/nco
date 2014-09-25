@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.926 2014-09-23 18:43:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.927 2014-09-25 04:41:15 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -639,6 +639,9 @@ Optimize diskless files?</li>
 <li><b>NCO 4.4.6</b>: (<i>In Progress, features completed or being worked on include</i>)
 <tt>ncap2</tt> command line args with scripts;
 <tt>ncra --dbl</tt> averaging packed variables with missing values <a href="#bug_ncra_dbl_pck_mss">bugfix</a>;
+HDF4 chunking and deflation;
+<tt>ncks _SOURCE_FORMAT</tt>;
+<tt>ncrename</tt> re-write/improvements;
 <tt>configure</tt> DAP correctly</li>
 <li><b>NCO 4.4.5</b>: (<i>Current Stable Release</i>) 
 DAP on <a href="http://nco.sf.net/nco.html#dap">HTTPS</a>;

@@ -1,5 +1,13 @@
 2014-09-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.6 release procedure:
+ 	Changes since nco-4_4_5: ncks -V, ncap2 -s -S, DAP cnf, ncra pck/mss/prm, HDF4, ncrename
+	cd ~/nco;cvs tag -d nco-4_4_6;cvs tag -d nco-4_4_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
+	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
+
+	* Use netcdf_meta.h in nco.h to enable chunking/deflation calls	for HDF4
+
 	* ncrename now builds and works again for all but attributes
 
 2014-09-23  Charlie Zender  <zender@uci.edu>
@@ -21,12 +29,6 @@
 	* Add regression tests to make ncrename die when required entities not present
 
 2014-09-20  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.6 release procedure:
- 	Changes since nco-4_4_5: ncks -V, ncap2 -s -S, DAP cnf, ncra pck/mss/prm
-	cd ~/nco;cvs tag -d nco-4_4_6;cvs tag -d nco-4_4_6-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
-	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
 
 	* Fix bug with ncra --dbl on packed variables with missing values
 

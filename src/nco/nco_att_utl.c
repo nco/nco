@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.176 2014-09-24 06:11:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.177 2014-09-25 04:41:15 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -971,28 +971,28 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 } /* end nco_prs_aed_lst() */
 
 int /* [flg] Variable and attribute names are conjoined */
-nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
-(rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable@]Attribute name on input, Attribute name on output */
- char * const var_nm, /* O [sng] Variable name, if any */
+nco_prs_att /* [fnc] Parse conjoined object and attribute names */
+(rnm_sct * const rnm_att, /* I/O [sct] Structure [Object@]Attribute name on input, Attribute name on output */
+ char * const obj_nm, /* O [sng] Object name, if any */
  nco_bool * const IS_GLB_GRP_ATT) /* O [flg] Attribute is Global or Group attribute */
 {
-  /* Purpose: Check if attribute name space contains variable name before attribute name in form var_nm@att_nm
-     Variable name is then extracted from from old_nm and new_nm as necessary
-     Valid syntax of combined string is actually [.][var_nm]@att_nm
-     Preceding period means (to ncrename) that variable need not be present
-     var_nm is optional and, if omitted, the attribute is assumed to be a global (or group) attribute
-     In this case the var_nm string is set to "global" for (unused) compatibility with ncatted
-     Also, the case-independent var_nm "global" on input, is assumed to mean a global attribute
+  /* Purpose: Check if attribute name space contains object name before attribute name in form obj_nm@att_nm
+     Object name is then extracted from from old_nm and new_nm as necessary
+     Valid syntax of combined string is actually [.][obj_nm]@att_nm
+     Preceding period means (to ncrename) that object need not be present
+     obj_nm is optional and, if omitted, the attribute is assumed to be a global (or group) attribute
+     In this case the obj_nm string is set to "global" for (unused) compatibility with ncatted
+     Also, the case-independent obj_nm "global" on input, is assumed to mean a global attribute
      NB: Function replaces delimiter character in input by NUL so that, on output, rnm_att is just attribute name */
   
-  const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
+  const char dlm_chr='@'; /* Character delimiting object from attribute name  */
   char *dlm_ptr; /* Delimiter pointer */
 
   size_t att_nm_lng;
-  size_t var_nm_lng;
+  size_t obj_nm_lng;
 
-  /* Initialize var_nm to NUL */
-  var_nm[0]='\0';
+  /* Initialize obj_nm to NUL */
+  obj_nm[0]='\0';
 
   dlm_ptr=strchr(rnm_att->old_nm,dlm_chr);	
   if(dlm_ptr == NULL) return NCO_ERR;
@@ -1000,27 +1000,36 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   att_nm_lng=strlen(rnm_att->old_nm);
   
   /* Return if delimiter appears to be part of attribute name */
-  if(att_nm_lng < 3 || dlm_ptr == rnm_att->old_nm+att_nm_lng-1L) return NCO_ERR;
+  if(att_nm_lng < 3L || dlm_ptr == rnm_att->old_nm+att_nm_lng-1L) return NCO_ERR;
 
-  if(dlm_ptr == rnm_att->old_nm || !strncmp(rnm_att->old_nm,".@",2) || !strcasecmp(rnm_att->old_nm,"global")){
+  if(dlm_ptr == rnm_att->old_nm || !strcasecmp(rnm_att->old_nm,"global")){
     *IS_GLB_GRP_ATT=True;
-    strcpy(var_nm,"global");
-  } /* endif global */
+    strcpy(obj_nm,"global");
+  }else if(!strcasecmp(rnm_att->old_nm,"group")){
+    *IS_GLB_GRP_ATT=True;
+    strcpy(obj_nm,"group");
+  }else if(!strncmp(rnm_att->old_nm,".@",2L) || !strcasecmp(rnm_att->old_nm,".global")){
+    *IS_GLB_GRP_ATT=True;
+    strcpy(obj_nm,".global");
+  }else if(!strcasecmp(rnm_att->old_nm,".group")){
+    *IS_GLB_GRP_ATT=True;
+    strcpy(obj_nm,".group");
+  } /* endif inferring global/group */
 
-  /* NUL-terminate variable name */
+  /* NUL-terminate object name */
   *dlm_ptr='\0';
 
   if(!*IS_GLB_GRP_ATT){
-    var_nm_lng=strlen(rnm_att->old_nm);
-    if(var_nm_lng > NC_MAX_NAME){
-      (void)fprintf(stdout,"%s: ERROR Derived variable name \"%s\" too long\n",nco_prg_nm_get(),rnm_att->old_nm);
+    obj_nm_lng=strlen(rnm_att->old_nm);
+    if(obj_nm_lng > NC_MAX_NAME){
+      (void)fprintf(stdout,"%s: ERROR Derived object name \"%s\" too long\n",nco_prg_nm_get(),rnm_att->old_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */ 
-    /* Copy variable name only */
-    strcpy(var_nm,rnm_att->old_nm);
+    /* Copy object name only */
+    strcpy(obj_nm,rnm_att->old_nm);
   } /* *IS_GLB_GRP_ATT */
 
-  /* Point old var_nm@att_nm name to attribute name att_nm alone */
+  /* Point old obj_nm@att_nm name to attribute name att_nm alone */
   rnm_att->old_nm=dlm_ptr+1L; 
     
   dlm_ptr=strchr(rnm_att->new_nm,dlm_chr);	
@@ -1030,9 +1039,9 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   } /* endif */
 
   /* 20131016 */
-  if(!strcmp(var_nm,"global")) *IS_GLB_GRP_ATT=True;
+  if(!strcmp(obj_nm,"global")) *IS_GLB_GRP_ATT=True;
   /* 20140923 */
-  if(!strcmp(var_nm,"group")) *IS_GLB_GRP_ATT=True;
+  if(!strcmp(obj_nm,"group")) *IS_GLB_GRP_ATT=True;
 
   return NCO_NOERR;
 } /* end nco_prs_att() */

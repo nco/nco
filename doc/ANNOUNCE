@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.740 2014-09-22 23:14:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.741 2014-09-25 04:41:15 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -38,6 +38,23 @@ A. ncks -V = --var_val is new switch to print only variable values.
    % ncks -V -v three_dmn_rec_var -C -H in.nc
    1
    More details at http://nco.sf.net/nco.html#var_val
+
+A. ncks --cdl --hdn now prints extended file format (i.e., the format
+   of the file or server supplying the data)as _SOURCE_FORMAT:
+   % ncks --hdn --cdl ~/nco/data/cmip5.nc
+   ...
+    :_Format = "netCDF-4" ;
+    :_SOURCE_FORMAT = "NC_FORMAT_HDF5" ;
+   ...
+   http://nco.sf.net/nco.html#hdn
+
+A. NCO now supports chunking and deflation features of HDF4 datasets
+   when compiled with netCDF library 4.3.3-rc1 or later. 
+   Earlier versions of netCDF do not support these features for HDF4.
+   Thanks to Unidata for continuing to improve HDF4 interoperability.
+   http://nco.sf.net/nco.html#hdf4
+
+A. fxm
 
 BUG FIXES:
 
