@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.177 2014-09-25 04:41:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.178 2014-09-26 23:03:48 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -970,11 +970,13 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
 } /* end nco_prs_aed_lst() */
 
-int /* [flg] Variable and attribute names are conjoined */
+int /* [flg] Error code */
 nco_prs_att /* [fnc] Parse conjoined object and attribute names */
 (rnm_sct * const rnm_att, /* I/O [sct] Structure [Object@]Attribute name on input, Attribute name on output */
  char * const obj_nm, /* O [sng] Object name, if any */
- nco_bool * const IS_GLB_GRP_ATT) /* O [flg] Attribute is Global or Group attribute */
+ nco_bool *mch_grp_all, /* O [flg] Rename all group attributes */
+ nco_bool *mch_grp_glb, /* O [flg] Rename only global attributes */
+ nco_bool *mch_obj_all) /* O [flg] Rename all group and variable attributes */
 {
   /* Purpose: Check if attribute name space contains object name before attribute name in form obj_nm@att_nm
      Object name is then extracted from from old_nm and new_nm as necessary
@@ -988,60 +990,64 @@ nco_prs_att /* [fnc] Parse conjoined object and attribute names */
   const char dlm_chr='@'; /* Character delimiting object from attribute name  */
   char *dlm_ptr; /* Delimiter pointer */
 
+  nco_bool obj_nm_abb=False; /* [flg] Object name is an abbreviation */
+
   size_t att_nm_lng;
   size_t obj_nm_lng;
 
   /* Initialize obj_nm to NUL */
-  obj_nm[0]='\0';
+  *obj_nm='\0';
 
   dlm_ptr=strchr(rnm_att->old_nm,dlm_chr);	
-  if(dlm_ptr == NULL) return NCO_ERR;
+  if(!dlm_ptr) *mch_obj_all=True;
   
   att_nm_lng=strlen(rnm_att->old_nm);
   
   /* Return if delimiter appears to be part of attribute name */
   if(att_nm_lng < 3L || dlm_ptr == rnm_att->old_nm+att_nm_lng-1L) return NCO_ERR;
 
-  if(dlm_ptr == rnm_att->old_nm || !strcasecmp(rnm_att->old_nm,"global")){
-    *IS_GLB_GRP_ATT=True;
-    strcpy(obj_nm,"global");
-  }else if(!strcasecmp(rnm_att->old_nm,"group")){
-    *IS_GLB_GRP_ATT=True;
-    strcpy(obj_nm,"group");
-  }else if(!strncmp(rnm_att->old_nm,".@",2L) || !strcasecmp(rnm_att->old_nm,".global")){
-    *IS_GLB_GRP_ATT=True;
-    strcpy(obj_nm,".global");
-  }else if(!strcasecmp(rnm_att->old_nm,".group")){
-    *IS_GLB_GRP_ATT=True;
-    strcpy(obj_nm,".group");
-  } /* endif inferring global/group */
+  if(dlm_ptr){
+    /* Handle cases where object string makes use of abbreviations */
+    if(dlm_ptr == rnm_att->old_nm){
+      /* Strings that start with '@' imply all groups (and no variables) */
+      strcpy(obj_nm,"group");
+    }else if(!strncasecmp(rnm_att->old_nm,".@",2L)){
+      /* Strings that start with '.@' imply all groups are optional (and no variables) */
+      strcpy(obj_nm,".group");
+    } /* end else abbreviations */
 
-  /* NUL-terminate object name */
-  *dlm_ptr='\0';
-
-  if(!*IS_GLB_GRP_ATT){
-    obj_nm_lng=strlen(rnm_att->old_nm);
-    if(obj_nm_lng > NC_MAX_NAME){
-      (void)fprintf(stdout,"%s: ERROR Derived object name \"%s\" too long\n",nco_prg_nm_get(),rnm_att->old_nm);
-      nco_exit(EXIT_FAILURE);
-    } /* end if */ 
-    /* Copy object name only */
-    strcpy(obj_nm,rnm_att->old_nm);
-  } /* *IS_GLB_GRP_ATT */
-
-  /* Point old obj_nm@att_nm name to attribute name att_nm alone */
-  rnm_att->old_nm=dlm_ptr+1L; 
+    /* NUL-terminate object name in user-supplied string */
+    *dlm_ptr='\0';
     
+    if(!obj_nm_abb){
+      /* If input object name was not abbreviated, copy it to output object name */
+      obj_nm_lng=strlen(rnm_att->old_nm);
+      if(obj_nm_lng > NC_MAX_NAME){
+	(void)fprintf(stdout,"%s: ERROR Derived object name \"%s\" too long\n",nco_prg_nm_get(),rnm_att->old_nm);
+	nco_exit(EXIT_FAILURE);
+      } /* end if */ 
+      /* Copy object name only */
+      strcpy(obj_nm,rnm_att->old_nm);
+    } /* obj_nm_abb */
+
+    /* Output object name now searchable for standard hints */
+    if(!strncasecmp(obj_nm,"global",6L)) *mch_grp_glb=True;
+    else if(!strncasecmp(obj_nm,".global",7L)) *mch_grp_glb=True;
+    else if(!strncasecmp(obj_nm,"group",5L)) *mch_grp_all=True;
+    else if(!strncasecmp(obj_nm,".group",6L)) *mch_grp_all=True;
+
+    /* Point old obj_nm@att_nm name to attribute name att_nm alone */
+    rnm_att->old_nm=dlm_ptr+1L; 
+    
+  } /* endif contains '@' */
+  
+  /* Delimiter '@' is optional in new name */
   dlm_ptr=strchr(rnm_att->new_nm,dlm_chr);	
   if(dlm_ptr){
+    /* When found in new name, point the user string to next character */
     att_nm_lng=strlen(rnm_att->new_nm);
     if((dlm_ptr-rnm_att->new_nm) < (long int)att_nm_lng) rnm_att->new_nm=dlm_ptr+1L; else return NCO_ERR;
   } /* endif */
-
-  /* 20131016 */
-  if(!strcmp(obj_nm,"global")) *IS_GLB_GRP_ATT=True;
-  /* 20140923 */
-  if(!strcmp(obj_nm,"group")) *IS_GLB_GRP_ATT=True;
 
   return NCO_NOERR;
 } /* end nco_prs_att() */

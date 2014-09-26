@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.510 2014-09-23 18:52:56 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.511 2014-09-26 23:03:48 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4894,7 +4894,7 @@ if (0){
     
     $dsc_sng="Attributes: Optional relative rename '.nothing' to 'new_nothing'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a .nothing,new_nothing $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: WARNING Attribute 'nothing' not renamed because not found in searched variable(s)";
+    $tst_cmd[1]="ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -4904,7 +4904,7 @@ if (0){
 #relative rename history to new_history
     
     $dsc_sng="Attributes: Relative rename 'history' to 'new_history'";
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a history,new_history $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a global\@history,new_history $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
     $tst_cmd[2]="Global attribute 3: new_history, size = 26 NC_CHAR, value = History global attribute.";
     $tst_cmd[3]="SS_OK";
@@ -5034,7 +5034,7 @@ if (0){
 
     $dsc_sng="Dimensions: Optional non-existing absolute rename './lat_non_existing,new_lat' to 'new_lat'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat_non_existing,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: INFO Optional dimension '/lat_non_existing' not present in ../data/in_grp.nc, skipping it.";
+    $tst_cmd[1]="ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
@@ -5042,7 +5042,7 @@ if (0){
 #################### Variables	
 
 #ncrename #13
-#ncrename  -D 1 -O -v /g1/v1,new_v1 in_grp.nc ~/foo.nc
+#ncrename -D 1 -O -v /g1/v1,new_v1 in_grp.nc ~/foo.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
     $dsc_sng="Variables: Absolute rename '/g1/v1' to '/g1/new_v1'";
@@ -5055,7 +5055,7 @@ if (0){
 	
 
 #ncrename #14	
-#ncrename  -D 1 -O -v v1,new_v1 in_grp.nc ~/foo.nc
+#ncrename -D 1 -O -v v1,new_v1 in_grp.nc ~/foo.nc
 #Relative rename v1 to new_v1 
 
     $dsc_sng="Variables: Relative rename 'v1' to 'new_v1'";
@@ -5067,7 +5067,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 	
 #ncrename #15	
-#ncrename  -D 1 -O -v ./g1/v1,new_v1 in_grp.nc ~/foo.nc
+#ncrename -D 1 -O -v ./g1/v1,new_v1 in_grp.nc ~/foo.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
     $dsc_sng="Variables: Optional absolute rename '/g1/v1' to '/g1/new_v1'";
@@ -5079,7 +5079,7 @@ if (0){
     @tst_cmd=(); # really reset array.			
 
 #ncrename #16
-#ncrename  -D 1 -O -v .v1,new_v1 in_grp.nc ~/foo.nc
+#ncrename -D 1 -O -v .v1,new_v1 in_grp.nc ~/foo.nc
 #Optional Relative rename v1 to new_v1 
 
     $dsc_sng="Variables: Optional relative rename 'v1' to 'new_v1'";
@@ -5091,12 +5091,12 @@ if (0){
     @tst_cmd=(); # really reset array.	
 	
 #ncrename #17
-#ncrename  -D 1 -O -v ./g1/v1_not,new_v1 in_grp.nc ~/foo.nc
+#ncrename -D 1 -O -v ./g1/v1_not,new_v1 ~/nco/data/in_grp.nc ~/foo.nc
 #Optional non-existing absolute rename '/g1/v1_not'
 
     $dsc_sng="Variables: Optional non-existing absolute rename './g1/v1_not' to '/g1/new_v1'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v ./g1/v1_not,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: INFO Optional variable '/g1/v1_not' not present in ../data/in_grp.nc, skipping it.";
+    $tst_cmd[1]="ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
@@ -5130,7 +5130,7 @@ if (0){
     @tst_cmd=(); # really reset array.	
 
 #ncrename #20
-#ncrename  -D 1 -O -g /g1/g1g1,new_g1g1 in_grp.nc ~/foo.nc
+#ncrename -D 1 -O -g /g1/g1g1,new_g1g1 in_grp.nc ~/foo.nc
 #Absolute rename -g /g1/g1g1,new_g1g1 
 
     $dsc_sng="Groups: Absolute rename '/g1/g1g1' to '/g1/new_g1g1' (expect failure with netCDF < 4.3.1)";
@@ -5149,7 +5149,7 @@ if (0){
 
     $dsc_sng="Groups: Optional relative rename '.gfoo' to 'new_g1'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g .gfoo,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: INFO Optional group 'gfoo' not present in ../data/in_grp.nc, skipping it.";
+    $tst_cmd[1]="ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -5157,7 +5157,7 @@ if (0){
 	#################### Variables
 	
 #ncrename #22 (same as #13)
-#ncrename  -D 1 -O -v /g1/v1,/g1/new_v1 in_grp.nc ~/foo.nc
+#ncrename -D 1 -O -v /g1/v1,/g1/new_v1 in_grp.nc ~/foo.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
     $dsc_sng="Variables: Absolute rename '/g1/v1' to '/g1/new_v1' (input absolute name)";
@@ -5170,6 +5170,7 @@ if (0){
 	
 } #### Group tests	
     
+    if(0){ # Next four tests all test for failure and so work but look messy. Revisit test harness for failures.
 #ncrename #23
 #ncrename -O -v xyz,abc ~/nco/data/in.nc ~/foo.nc
 #Fail when required variable not present
@@ -5198,7 +5199,7 @@ if (0){
 
     $dsc_sng="Attributes: Fail when required attribute not present";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrename: ERROR Required attribute 'xyz' is not present in input file";
+    $tst_cmd[1]="In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
@@ -5213,6 +5214,7 @@ if (0){
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
+    } # endif
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.257 2014-09-21 05:50:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.258 2014-09-26 23:03:48 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -142,9 +142,9 @@ read_lbl:
     } /* end loop over idx */
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG %s , <%s> var_sz=%ld\n",nco_prg_nm_get(),fnc_nm,vara->nm,var_sz);
-      for(idx=0;idx<dpt_crr_max;idx++) (void)fprintf(stdout," srt[%d]=%ld cnt[%d]=%ld srd[%d]=%ld\n",idx,dmn_srt[idx],idx,dmn_cnt[idx],idx,dmn_srd[idx]);
-    }
+      (void)fprintf(stdout,"%s: DEBUG %s, <%s> var_sz=%ld\n",nco_prg_nm_get(),fnc_nm,vara->nm,var_sz);
+      for(idx=0;idx<dpt_crr_max;idx++) (void)fprintf(stdout,"srt[%d]=%ld cnt[%d]=%ld srd[%d]=%ld\n",idx,dmn_srt[idx],idx,dmn_cnt[idx],idx,dmn_srd[idx]);
+    } /* endif dbg */
 
     vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
 
@@ -161,6 +161,11 @@ read_lbl:
 	  (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type); 
 	}else{
 	  if(nco_dbg_lvl_get() == 9) (void)fprintf(stderr,"%s: INFO %s reports calling nco_get_vars()\n",nco_prg_nm_get(),fnc_nm);
+	  /* 20140926: nc_get_vars() performs poorly on netCDF4 files
+	     Long investigation sparked by Parker Norton on 20140718 revealed nc_get_vars() calls nc_get_vara() once 
+	     per element in the strided hyperslab. This quickly become unusable for large hyperslabs.
+	     Ultimate fix may be using HDF5 algorithm H5S_set_hyperslab() as described in Jira NCF-301
+	     Until then, should decompose a single-stride request into a loop over contiguous non-stride requests */
 	  (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
 	} /* srd_prd != 1L */
       } /* end if var_sz */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.49 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.50 2014-09-26 23:03:48 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -81,11 +81,13 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 (const int nbr_aed, /* I [nbr] Number of attributes in list */
  X_CST_PTR_CST_PTR_Y(char,aed_arg)); /* I/O [sng] List of user-specified attribute edits (delimiters are changed to NULL on output */
 
-int /* [flg] Variable and attribute names are conjoined */
-nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
-(rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable:]Attribute name on input, Attribute name on output */
- char * const var_nm, /* O [sng] Variable name, if any */
- nco_bool * const IS_GLB_GRP_ATT); /* O [flg] Attribute is Global or Group attribute */
+int /* [flg] Error code */
+nco_prs_att /* [fnc] Parse conjoined object and attribute names */
+(rnm_sct * const rnm_att, /* I/O [sct] Structure [Object@]Attribute name on input, Attribute name on output */
+ char * const obj_nm, /* O [sng] Object name, if any */
+ nco_bool *mch_grp_all, /* O [flg] Rename all group attributes */
+ nco_bool *mch_grp_glb, /* O [flg] Rename only global attributes */
+ nco_bool *mch_obj_all); /* O [flg] Rename all group and variable attributes */
 
 gpe_sct * /* O [sng] GPE structure */
 nco_gpe_prs_arg /* [fnc] Parse Group Path Editing (GPE) argument */
