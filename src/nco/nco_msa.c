@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.258 2014-09-26 23:03:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.259 2014-09-27 00:24:37 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -160,13 +160,44 @@ read_lbl:
         if(srd_prd == 1L){
 	  (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type); 
 	}else{
-	  if(nco_dbg_lvl_get() == 9) (void)fprintf(stderr,"%s: INFO %s reports calling nco_get_vars()\n",nco_prg_nm_get(),fnc_nm);
+	  if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports calling nco_get_vars()\n",nco_prg_nm_get(),fnc_nm);
 	  /* 20140926: nc_get_vars() performs poorly on netCDF4 files
 	     Long investigation sparked by Parker Norton on 20140718 revealed nc_get_vars() calls nc_get_vara() once 
 	     per element in the strided hyperslab. This quickly become unusable for large hyperslabs.
 	     Ultimate fix may be using HDF5 algorithm H5S_set_hyperslab() as described in Jira NCF-301
 	     Until then, should decompose a single-stride request into a loop over contiguous non-stride requests */
-	  (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
+	  if(nco_dbg_lvl_get() != nco_dbg_crr){
+	    (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
+	  }else{
+	    int srd_nbr; /* [nbr] Number of strides */
+	    int srd_idx; /* [idx] Counter for how many times to call nco_get_var() */
+	    int idx_srd; /* [idx] Index of strided dimension */
+	    int dmn_idx; /* [idx] Index for dimensions */
+	    long srd_sz=1L; /* [nbr] Size of hyperslab of one stride */
+	    void *vp_srd;
+
+	    /* Find strided dimension */
+	    for(dmn_idx=0;dmn_idx<dpt_crr_max;dmn_idx++){
+	      if(dmn_srd[dmn_idx] != 1L) break;
+	    } /* end loop over dimensions */
+	    assert(dmn_idx != dpt_crr_max);
+	    idx_srd=dmn_idx;
+
+	    /* Find size of hyperslab of each stride */
+	    for(dmn_idx=0;dmn_idx<dpt_crr_max;dmn_idx++){
+	      if(dmn_idx != idx_srd) srd_sz*=dmn_cnt[dmn_idx];
+	    } /* end loop over dimensions */
+
+	    /* Number of strides within memory */
+	    srd_nbr=var_sz/srd_sz;
+
+	    vp_srd=vp;
+	    for(srd_idx=0;srd_idx<srd_nbr;srd_idx++){
+	      if(srd_idx != 0) dmn_srt[idx_srd]+=dmn_srd[idx_srd];
+	      if(srd_idx != 0) vp_srd+=srd_sz*nco_typ_lng(vara->type);
+	      (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp_srd,vara->type);
+	    } /* end loop over srd */
+	  } /* endif True */
 	} /* srd_prd != 1L */
       } /* end if var_sz */
     } /* end potential OpenMP critical */

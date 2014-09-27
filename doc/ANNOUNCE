@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.741 2014-09-25 04:41:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.742 2014-09-27 00:24:37 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -6,9 +6,9 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release is mainly a bugfix and stability release. 
-It fixes the promotion of packed records with missing values.
-It is likely that affected users would have noticed the incorrect
-values caused by this bug.
+It fixes a bug with promoting packed records with missing values.
+Affected users would likely have noticed being bit by this bug
+the incorrect values generated were, well, noticeable.
 
 Work on NCO 4.4.7 is underway, still focused on stability and speed.   
 This includes more netCDF4 mop-up and new chunking features.
@@ -54,7 +54,7 @@ A. NCO now supports chunking and deflation features of HDF4 datasets
    Thanks to Unidata for continuing to improve HDF4 interoperability.
    http://nco.sf.net/nco.html#hdf4
 
-A. fxm
+A. ncrename fxm
 
 BUG FIXES:
 
