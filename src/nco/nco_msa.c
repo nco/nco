@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.259 2014-09-27 00:24:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.260 2014-09-27 00:31:42 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -169,6 +169,8 @@ read_lbl:
 	  if(nco_dbg_lvl_get() != nco_dbg_crr){
 	    (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
 	  }else{
+	    /* Workaround
+	       fxm: Avoid for multi-strided variables */
 	    int srd_nbr; /* [nbr] Number of strides */
 	    int srd_idx; /* [idx] Counter for how many times to call nco_get_var() */
 	    int idx_srd; /* [idx] Index of strided dimension */
@@ -177,16 +179,14 @@ read_lbl:
 	    void *vp_srd;
 
 	    /* Find strided dimension */
-	    for(dmn_idx=0;dmn_idx<dpt_crr_max;dmn_idx++){
+	    for(dmn_idx=0;dmn_idx<dpt_crr_max;dmn_idx++)
 	      if(dmn_srd[dmn_idx] != 1L) break;
-	    } /* end loop over dimensions */
 	    assert(dmn_idx != dpt_crr_max);
 	    idx_srd=dmn_idx;
 
 	    /* Find size of hyperslab of each stride */
-	    for(dmn_idx=0;dmn_idx<dpt_crr_max;dmn_idx++){
+	    for(dmn_idx=0;dmn_idx<dpt_crr_max;dmn_idx++)
 	      if(dmn_idx != idx_srd) srd_sz*=dmn_cnt[dmn_idx];
-	    } /* end loop over dimensions */
 
 	    /* Number of strides within memory */
 	    srd_nbr=var_sz/srd_sz;
@@ -197,7 +197,7 @@ read_lbl:
 	      if(srd_idx != 0) vp_srd+=srd_sz*nco_typ_lng(vara->type);
 	      (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp_srd,vara->type);
 	    } /* end loop over srd */
-	  } /* endif True */
+	  } /* endif workaround */
 	} /* srd_prd != 1L */
       } /* end if var_sz */
     } /* end potential OpenMP critical */
