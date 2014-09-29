@@ -1,3 +1,8 @@
+2014-09-29  Charlie Zender  <zender@uci.edu>
+
+	* Implement USE_NC4_SRD_WORKAROUND by default in all applicable	cases, i.e.,
+	for singly strided hyperslab access to netCDF4 files.
+
 2014-09-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.6 release procedure:
