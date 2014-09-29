@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.361 2014-09-18 20:33:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.362 2014-09-29 19:55:27 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1282,8 +1282,6 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
   } /* end loop over idx */
     
 } /* end nco_var_val_cpy() */
-
-
 
 nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
 nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */

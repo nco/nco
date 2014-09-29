@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.260 2014-09-27 00:31:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.261 2014-09-29 19:55:27 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -123,6 +123,7 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 
 read_lbl:
   { 
+    int dmn_srd_nbr=0;
     long var_sz=1L;
     long srd_prd=1L; /* Product of strides */
     long *dmn_srt;
@@ -139,6 +140,7 @@ read_lbl:
       dmn_srd[idx]=lmt[idx]->srd;
       var_sz*=dmn_cnt[idx];
       srd_prd*=lmt[idx]->srd;
+      if(lmt[idx]->srd > 1L) dmn_srd_nbr++;
     } /* end loop over idx */
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev){
@@ -160,27 +162,40 @@ read_lbl:
         if(srd_prd == 1L){
 	  (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type); 
 	}else{
-	  if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports calling nco_get_vars()\n",nco_prg_nm_get(),fnc_nm);
 	  /* 20140926: nc_get_vars() performs poorly on netCDF4 files
 	     Long investigation sparked by Parker Norton on 20140718 revealed nc_get_vars() calls nc_get_vara() once 
 	     per element in the strided hyperslab. This quickly become unusable for large hyperslabs.
 	     Ultimate fix may be using HDF5 algorithm H5S_set_hyperslab() as described in Jira NCF-301
 	     Until then, should decompose a single-stride request into a loop over contiguous non-stride requests */
-	  if(nco_dbg_lvl_get() != nco_dbg_crr){
+
+	  int fl_in_fmt; /* [enm] Input file format */
+
+	  nco_bool USE_NC4_SRD_WORKAROUND=False; /* [flg] Use faster access for strided hyperslabs in netCDF4 files */
+
+	  (void)nco_inq_format(vara->nc_id,&fl_in_fmt);
+
+	  if((fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC) && (dmn_srd_nbr == 1))
+	    USE_NC4_SRD_WORKAROUND=True;
+
+	  if(!USE_NC4_SRD_WORKAROUND){
+	    if(nco_dbg_lvl_get() >= nco_dbg_var && srd_prd > 1L) (void)fprintf(stderr,"%s: INFO %s reports calling nco_get_vars() for strided hyperslab access. In case of slow response, please ask NCO developers to extend USE_NC4_SRD_WORKAROUND to handle your use-case.\n",nco_prg_nm_get(),fnc_nm);
 	    (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
 	  }else{
-	    /* Workaround
-	       fxm: Avoid for multi-strided variables */
-	    int srd_nbr; /* [nbr] Number of strides */
+	    int srd_nbr; /* [nbr] Number of strides requested in the single strided dimension (not number of strided dimensions) */
 	    int srd_idx; /* [idx] Counter for how many times to call nco_get_var() */
 	    int idx_srd; /* [idx] Index of strided dimension */
 	    int dmn_idx; /* [idx] Index for dimensions */
 	    long srd_sz=1L; /* [nbr] Size of hyperslab of one stride */
 	    void *vp_srd;
 
+	    (void)fprintf(stderr,"%s: INFO %s using USE_NC4_SRD_WORKAROUND for faster access to strided hyperslabs in netCDF4 datasets\n",nco_prg_nm_get(),fnc_nm);
+
 	    /* Find strided dimension */
 	    for(dmn_idx=0;dmn_idx<dpt_crr_max;dmn_idx++)
 	      if(dmn_srd[dmn_idx] != 1L) break;
+
+	    if(nco_dbg_lvl_get() >= nco_dbg_io)(void)fprintf(stderr,"%s: INFO %s USE_NC4_SRD_WORKAROUND reports variable %s has dmn_idx = %d, dmn_nbr = %d, dpt_crr_max = %d\n",nco_prg_nm_get(),fnc_nm,vara->nm,dmn_idx,vara->nbr_dim,dpt_crr_max);
+
 	    assert(dmn_idx != dpt_crr_max);
 	    idx_srd=dmn_idx;
 

@@ -1,15 +1,15 @@
 2014-09-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.6 release procedure:
+ 	Changes since nco-4_4_5: ncks -V, ncap2 -s -S, DAP cnf, ncra pck/mss/prm, HDF4, ncrename, NC4_SRD
+	cd ~/nco;cvs tag -d nco-4_4_6;cvs tag -d nco-4_4_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
+	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
+
 	* Implement USE_NC4_SRD_WORKAROUND by default in all applicable	cases, i.e.,
 	for singly strided hyperslab access to netCDF4 files.
 
 2014-09-26  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.6 release procedure:
- 	Changes since nco-4_4_5: ncks -V, ncap2 -s -S, DAP cnf, ncra pck/mss/prm, HDF4, ncrename
-	cd ~/nco;cvs tag -d nco-4_4_6;cvs tag -d nco-4_4_6-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
-	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
 
 	* Implement workaround to nc_get_vars() slowdown for netCDF4 in netCDF library
 	Workaround avoids nc_get_vars() and instead loops through calls to nc_get_vara()
