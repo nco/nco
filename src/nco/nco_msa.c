@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.264 2014-09-30 23:33:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.265 2014-09-30 23:40:29 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -68,7 +68,9 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 
     for(idx=0;idx<dpt_crr_max;idx++) var_sz*=(idx<dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt);
 
-    vp=(void *)nco_calloc((size_t)var_sz,nco_typ_lng(vara->type));
+    /* Used nco_callloc() for unknown reasons until 20140930 */
+    /*    vp=(void *)nco_calloc((size_t)var_sz,nco_typ_lng(vara->type));*/
+    vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
 
     lcnt=nco_typ_lng(vara->type);
     for(idx=dpt_crr+1;idx<dpt_crr_max;idx++) lcnt*=lmt_lst[idx]->dmn_cnt;
