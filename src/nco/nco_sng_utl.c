@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.77 2014-08-22 20:27:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.78 2014-09-30 02:15:34 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -27,17 +27,40 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
   while(1){
     chr_1=tolower(*sng_1_c++);
     chr_2=tolower(*sng_2_c++);
-    if(chr_1 < chr_2){
-      return -1;
-    } /* end if */
-    if(chr_1 > chr_2){
-      return 1;
-    } /* end if */
-    if(chr_1 == 0){
-      return 0;
-    } /* end if */
+    if(chr_1 < chr_2) return -1;
+    if(chr_1 > chr_2) return 1;
+    if(chr_1 == 0)    return 0;
   } /* end while */
 } /* end strcasecmp() */
+
+int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
+strncasecmp /* [fnc] Lexicographical case-insensitive string comparison */
+(const char * const sng_1, /* I [sng] First string */
+ const char * const sng_2, /* I [sng] Second string */
+ const size_t const chr_nbr); /* I [nbr] Compare at most chr_nbr characters */
+{
+  /* Copy of (const) input strings */
+  char *sng_1_c;
+  char *sng_2_c;
+  char chr_1;
+  char chr_2;
+  size_t chr_nbr_cpy;
+
+  if(chr_nbr == 0L) return 0;
+
+  sng_1_c=(char *)sng_1;
+  sng_2_c=(char *)sng_2;
+  chr_nbr_cpy=chr_nbr;
+
+  while(chr_nbr_cpy-- > 0L){
+    chr_1=tolower(*sng_1_c++);
+    chr_2=tolower(*sng_2_c++);
+    if(chr_1 < chr_2) return -1;
+    if(chr_1 > chr_2) return 1;
+    if(chr_1 == 0)    return 0;
+  } /* end while */
+  return 0;
+} /* end strncasecmp() */
 #endif /* !NEED_STRCASECMP */
 
 /* 20130827 GNU g++ always provides strcasestr(), MSVC never does */

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.512 2014-09-29 21:53:31 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.513 2014-09-30 02:15:34 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4878,7 +4878,7 @@ if (0){
 #ncwa #65
 # ncwa --dbl -O -C -y min -a lon -v non_rec_var_flt_pck ~/nco/data/in.nc ~/foo.nc
 # ncks ~/foo.nc
-    $dsc_sng="Arithmetic on packed single-precision float";
+    $dsc_sng="Minimization on packed single-precision float";
     $tst_cmd[0]="ncwa --dbl $omp_flg $nco_D_flg -O -C -y min -a lon -v non_rec_var_flt_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -v non_rec_var_flt_pck %tmp_fl_00%";
     $tst_cmd[2]="non_rec_var_flt_pck = 100.1";

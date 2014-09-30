@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.48 2014-08-22 20:27:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.49 2014-09-30 02:15:34 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -46,6 +46,12 @@ int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
 strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 (const char * const sng_1, /* I [sng] First string */
  const char * const sng_2); /* I [sng] Second string */
+
+int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
+strncasecmp /* [fnc] Lexicographical case-insensitive string comparison */
+(const char * const sng_1, /* I [sng] First string */
+ const char * const sng_2, /* I [sng] Second string */
+ const size_t const chr_nbr); /* I [nbr] Compare at most chr_nbr characters */
 #endif /* !NEED_STRCASECMP */
 
 /* 20130827 GNU g++ always provides strcasestr(), MSVC never does */
