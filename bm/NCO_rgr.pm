@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.513 2014-09-30 02:15:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.514 2014-09-30 04:05:46 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2077,7 +2077,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
 
 #ncks #57:
-#  ncks -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1  -v two_dmn_rec_var ~/nco/data/in_grp.nc
+# ncks -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1  -v two_dmn_rec_var ~/nco/data/in_grp.nc
 #/g10/two_dmn_rec_var
 #time[1]=2 lev[0]=100 two_dmn_rec_var[3]=1 
 #time[1]=2 lev[2]=1000 two_dmn_rec_var[5]=3 
@@ -2093,8 +2093,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
 
-#ncks #58 This test uses limits to print a dimension "lon2(4)" that does NOT have a coordinate variable
-#  ncks -H -d lon2,1,3,2 -v lon2_var in_grp.nc
+#ncks #58 Use limits to print a dimension "lon2(4)" that does NOT have a coordinate variable
+# ncks -H -d lon2,1,3,2 -v lon2_var in_grp.nc
 #/g16/lon2_var
 #lon2[1] lon2_var[1]=1 
 #lon2[3] lon2_var[3]=3 

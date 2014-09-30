@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.261 2014-09-29 19:55:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.262 2014-09-30 04:05:46 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -143,11 +143,6 @@ read_lbl:
       if(lmt[idx]->srd > 1L) dmn_srd_nbr++;
     } /* end loop over idx */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG %s, <%s> var_sz=%ld\n",nco_prg_nm_get(),fnc_nm,vara->nm,var_sz);
-      for(idx=0;idx<dpt_crr_max;idx++) (void)fprintf(stdout,"srt[%d]=%ld cnt[%d]=%ld srd[%d]=%ld\n",idx,dmn_srt[idx],idx,dmn_cnt[idx],idx,dmn_srd[idx]);
-    } /* endif dbg */
-
     vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
 
     /* Block is critical/thread-safe for identical/distinct in_id's */
@@ -194,8 +189,6 @@ read_lbl:
 	    for(dmn_idx=0;dmn_idx<dpt_crr_max;dmn_idx++)
 	      if(dmn_srd[dmn_idx] != 1L) break;
 
-	    if(nco_dbg_lvl_get() >= nco_dbg_io)(void)fprintf(stderr,"%s: INFO %s USE_NC4_SRD_WORKAROUND reports variable %s has dmn_idx = %d, dmn_nbr = %d, dpt_crr_max = %d\n",nco_prg_nm_get(),fnc_nm,vara->nm,dmn_idx,vara->nbr_dim,dpt_crr_max);
-
 	    assert(dmn_idx != dpt_crr_max);
 	    idx_srd=dmn_idx;
 
@@ -205,6 +198,12 @@ read_lbl:
 
 	    /* Number of strides within memory */
 	    srd_nbr=var_sz/srd_sz;
+
+	    if(nco_dbg_lvl_get() >= nco_dbg_io){
+	      (void)fprintf(stderr,"%s: INFO %s USE_NC4_SRD_WORKAROUND reports variable %s has dmn_nbr = %d, dpt_crr_max = %d, idx_srd = %d, srd_nbr = %d, srd_sz = %ld\n",nco_prg_nm_get(),fnc_nm,vara->nm,vara->nbr_dim,dpt_crr_max,idx_srd,srd_nbr,srd_sz);
+	      (void)fprintf(stdout,"%s: %s hyperslabbing variable %s, var_sz=%ld\n",nco_prg_nm_get(),fnc_nm,vara->nm,var_sz);
+	      for(idx=0;idx<dpt_crr_max;idx++) (void)fprintf(stdout,"dmn_idx=%d srt=%ld, cnt=%ld, srd=%ld\n",idx,dmn_srt[idx],dmn_cnt[idx],dmn_srd[idx]);
+	    } /* endif dbg */
 
 	    vp_srd=vp;
 	    for(srd_idx=0;srd_idx<srd_nbr;srd_idx++){
