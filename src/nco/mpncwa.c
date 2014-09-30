@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.147 2014-09-16 14:14:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.148 2014-09-30 23:03:29 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.147 2014-09-16 14:14:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.147 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.148 2014-09-30 23:03:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.148 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -998,7 +998,7 @@ main(int argc,char **argv)
 	    (void)nco_var_get(in_id,var_prc[idx]);
 	    if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",nco_prg_nm,var_prc[idx]->nm);
 	    
-	    /* Convert char, short, long, int types to doubles before arithmetic */
+	    /* Convert char, short, long, int, and float types to doubles before arithmetic */
 	    var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
 	    var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	    

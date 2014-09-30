@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.159 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.160 2014-09-30 23:03:29 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -453,7 +453,7 @@ ncap_var_abs /* Purpose: Find absolute value of each element of var */
   if(var->undefined) return var;
   
   /* deal with initial scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
   return var;
@@ -565,7 +565,7 @@ ncap_var_fnc
   if(nco_rth_prc_rnk(var_in->type) < nco_rth_prc_rnk_float) var_in=nco_var_cnf_typ(NC_FLOAT,var_in);
   
   /* Deal with initial scan */
-  if(var_in->val.vp==NULL) return var_in; 
+  if(var_in->val.vp == NULL) return var_in; 
   
   op1=var_in->val;
   sz=var_in->sz;

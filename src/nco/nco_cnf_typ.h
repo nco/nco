@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.43 2014-06-15 21:06:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.44 2014-09-30 23:03:29 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -44,7 +44,7 @@ cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type ty
  ptr_unn * const ptr); /* I/O pointer to pointer union which to cast from type type to type void */
 
 var_sct * /* O [var] Variable after (possible) conversion */
-nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
+nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int, and float types to doubles before arithmetic */
 (var_sct *var, /* I/O [var] Variable to be considered for conversion */
  const int nco_op_typ); /* I [enm] Operation type */
 

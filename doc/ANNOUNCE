@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.742 2014-09-27 00:24:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.743 2014-09-30 23:03:29 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -66,7 +66,7 @@ A. NCO now checks correct function to enable DAP with configure.
 A. Fix --file_format switch as synonym for --fl_fmt
    Thanks to Dave Allured for reporting this.
 
-A. Fix promotion of packed variables with missing values. 
+A. Fix promotion of packed variables with missing values in ncra.
    Versions 4.3.X-4.4.5 of ncra could produce (wildly) inaccurate
    statistics when promoting (e.g., to double- from single-precision)
    variables that are packed and that have missing values.
@@ -75,6 +75,15 @@ A. Fix promotion of packed variables with missing values.
    The solution is to upgrade to NCO 4.4.6.
    Thanks to user John for reporting this.
    http://nco.sf.net#bug_ncra_dbl_pck_mss
+
+A. Fix promotion of packed variables subject to minimization and
+   maximization operations in ncwa. Versions 4.3.7-4.4.5 of ncwa 
+   incorrectly handled packed variables during these operations.
+   The two workarounds are to remove the scaling or to perform the
+   statistics in single precision with the --flt option.
+   The solution is to upgrade to NCO 4.4.6.
+   Thanks to user Frederic Laliberte for reporting this.
+   http://nco.sf.net#bug_ncwa_pck_min_max
 
 A. ncrename now fails (as intended) when required objects not present. 
    Since version 4.3.x, ncrename incorrectly ignores missing objects.

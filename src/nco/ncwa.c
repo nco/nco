@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.426 2014-09-16 14:14:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.427 2014-09-30 23:03:29 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -49,7 +49,7 @@
 #include <time.h> /* machine time */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */
-#endif
+#endif /* _MSC_VER */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* HAVE_GETOPT_LONG */ 
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.426 2014-09-16 14:14:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.426 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.427 2014-09-30 23:03:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.427 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -236,7 +236,7 @@ main(int argc,char **argv)
 
 #ifndef _MSC_VER
   prs_sct prs_arg;  /* I/O [sct] Global information required in ncwa parser */
-#endif
+#endif /* _MSC_VER */
 
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
@@ -880,8 +880,12 @@ main(int argc,char **argv)
 
       /* Retrieve variable from disk into memory */
       (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
+      /* var_prc_out still has type = packed type for packed variables
+	 nco_typ_cnv_rth() fixes that for most operations, though not for minimization or maximization
+	 Following line is necessary only for packed variables subject to minimization or maximization */
+      if(var_prc[idx]->typ_dsk != var_prc[idx]->type && var_prc[idx]->typ_upk == var_prc[idx]->type) var_prc_out[idx]=nco_var_cnf_typ(var_prc[idx]->type,var_prc_out[idx]);
 
-      /* Convert char, short, long, int types to doubles before arithmetic */
+      /* Convert char, short, long, int, and float types to doubles before arithmetic */
       var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
       var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 

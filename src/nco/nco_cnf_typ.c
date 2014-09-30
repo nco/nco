@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.79 2014-09-21 05:42:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.80 2014-09-30 23:03:29 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -104,7 +104,7 @@ cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type ty
 } /* end cast_nctype_void() */
 
 var_sct * /* O [var] Variable after (possible) conversion */
-nco_typ_cnv_rth /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
+nco_typ_cnv_rth /* [fnc] Convert char, short, long, int, and float types to doubles before arithmetic */
 (var_sct *var, /* I/O [var] Variable to be considered for conversion */
  const int nco_op_typ) /* I [enm] Operation type */
 {
@@ -246,7 +246,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
      This routine assumes missing_value, if any, to be same type as variable */
   if(var_in->type == var_out_typ) return var_in;
 
-  if(var_in->val.vp==NULL){
+  if(var_in->val.vp == NULL){
     /* Variable has no data when var_in.val.vp==NULL
        In this case function should only convert missing values 
        Accomplish this by temporarily masking off val_in by setting var_in->sz=0
@@ -515,7 +515,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   (void)cast_nctype_void(var_out_typ,&val_out);
 
   /* If var_in.vp empty then unmask sz */
-  if(val_in.vp==NULL) var_out->sz=sz_msk;
+  if(val_in.vp == NULL) var_out->sz=sz_msk;
 
   /* Free input variable data */
   val_in.vp=nco_free(val_in.vp);
@@ -555,7 +555,7 @@ nco_var_cnf_typ_tst /* [fnc] Return copy of input variable typecast to desired t
      This routine assumes missing_value, if any, to be same type as variable */
   if(var_in->type == var_out_typ) return var_in;
 
-  if(var_in->val.vp==NULL){
+  if(var_in->val.vp == NULL){
     /* Variable has no data when var_in.val.vp==NULL
        In this case function should only convert missing values 
        Accomplish this by temporarily masking off val_in by setting var_in->sz=0
@@ -824,7 +824,7 @@ nco_var_cnf_typ_tst /* [fnc] Return copy of input variable typecast to desired t
   (void)cast_nctype_void(var_out_typ,&val_out);
 
   /* If var_in.vp empty then unmask sz */
-  if(val_in.vp==NULL) var_out->sz=sz_msk;
+  if(val_in.vp == NULL) var_out->sz=sz_msk;
 
   /* Free input variable data */
   val_in.vp=nco_free(val_in.vp);

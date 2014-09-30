@@ -1,10 +1,18 @@
-2014-09-29  Charlie Zender  <zender@uci.edu>
+2014-09-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.6 release procedure:
  	Changes since nco-4_4_5: ncks -V, ncap2 -s -S, DAP cnf, ncra pck/mss/prm, HDF4, ncrename, NC4_SRD
 	cd ~/nco;cvs tag -d nco-4_4_6;cvs tag -d nco-4_4_6-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
 	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
+
+	* Fix ncwa handling of packed variables for minimization/maximization
+
+	* Implement strncasecmp() for Windows and MSVC compilers
+
+	* Discover bug in USE_NC4_SRD_WORKAROUND
+
+2014-09-29  Charlie Zender  <zender@uci.edu>
 
 	* Implement USE_NC4_SRD_WORKAROUND by default in all applicable	cases, i.e.,
 	for singly strided hyperslab access to netCDF4 files.

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.927 2014-09-25 04:41:15 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.928 2014-09-30 23:03:29 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -639,6 +639,7 @@ Optimize diskless files?</li>
 <li><b>NCO 4.4.6</b>: (<i>In Progress, features completed or being worked on include</i>)
 <tt>ncap2</tt> command line args with scripts;
 <tt>ncra --dbl</tt> averaging packed variables with missing values <a href="#bug_ncra_dbl_pck_mss">bugfix</a>;
+<tt>ncwa --dbl</tt> minimization/maximization of packed variables <a href="#bug_ncwa_pck_min_max">bugfix</a>;
 HDF4 chunking and deflation;
 <tt>ncks _SOURCE_FORMAT</tt>;
 <tt>ncrename</tt> re-write/improvements;
@@ -1285,6 +1286,16 @@ No known generic run-time problems with recent releases.
 </ul>
 
 <ul><b>Recent Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncwa_pck_min_max -->
+<a name="bug_ncwa_pck_min_max"></a>
+<li><i>Minimization/maximization of packed variables bug:</i>
+Versions 4.3.y&mdash;4.4.5 of <tt>ncwa</tt> 
+incorrectly handled packed variables during these operations.
+The two workarounds are to unpack first or to perform the
+statistics in single precision with the <tt>--flt</tt> option.
+The solution is to upgrade to NCO&nbsp;4.4.6.
+</li>
+
 <!-- http://nco.sf.net#bug_ncra_dbl_pck_mss -->
 <a name="bug_ncra_dbl_pck_mss"></a>
 <li><i>Promoting packed records with missing values bug:</i>
@@ -1292,7 +1303,7 @@ Versions 4.3.X&mdash;4.4.5 of <tt>ncra</tt> could produce (wildly)
 inaccurate statistics when promoting (e.g., to double- from
 single-precision) variables that are packed and that have missing
 values.
-The two workarounds are to remove the scaling or to perform the
+The two workarounds are to unpack first or to perform the
 statistics in single precision with the <tt>--flt</tt> option.
 The solution is to upgrade to NCO&nbsp;4.4.6.
 </li>

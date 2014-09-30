@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.552 2014-09-25 05:16:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.553 2014-09-30 23:03:29 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.552 2014-09-25 05:16:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.552 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.553 2014-09-30 23:03:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.553 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -979,7 +979,7 @@ main(int argc,char **argv)
 		   Temporarily fixes TODO nco941 */
                 if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
-                /* Convert char, short, long, int types to doubles before arithmetic
+                /* Convert char, short, long, int, and float types to doubles before arithmetic
 		   Output variable type is "sticky" so only convert on first record */
                 if(flg_rth_ntl) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 		var_prc_typ_pre_prm=var_prc[idx]->type; /* [enm] Type of variable before promotion */
@@ -1010,7 +1010,9 @@ main(int argc,char **argv)
             /* Convert missing_value, if any, back to unpacked or unpromoted type
 	       Otherwise missing_value will be double-promoted when next record read in nco_msa_var_get_trv()
 	       Do not convert after last record otherwise normalization fails
-	       due to wrong missing_value type (needs promoted type, not unpacked type) */
+	       due to wrong missing_value type (needs promoted type, not unpacked type)
+	       20140930: This is (too?) confusing and hard-to-follow, a better solution is to add a field mss_val_typ 
+	       to var_sct and then separately and explicitly track types of both val and mss_val members. */
             if(var_prc[idx]->has_mss_val && /* If there is a missing value and... */
 	       !REC_LST_DSR[idx_rec] && /* ...no more records will be read (thus no more calls to nco_msa_var_get_trv()) and... */
 	       !(var_prc[idx]->pck_dsk && var_prc_typ_pre_prm != var_prc_out[idx]->type) && /* Exclude conversion on situations like regression test ncra #32 */
@@ -1143,7 +1145,7 @@ main(int argc,char **argv)
         /* Retrieve variable from disk into memory */
         (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 
-        /* Convert char, short, long, int types to doubles before arithmetic
+        /* Convert char, short, long, int, and float types to doubles before arithmetic
 	   Output variable type is "sticky" so only convert on first record */
         if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
         var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
@@ -1205,7 +1207,7 @@ main(int argc,char **argv)
             /* Retrieve variable from disk into memory. NB: Using table in file loop */
             (void)nco_msa_var_get_trv(in_id,var_prc[idx_prc],trv_tbl1);
 
-            /* Convert char, short, long, int types to doubles before arithmetic
+            /* Convert char, short, long, int, and float types to doubles before arithmetic
             Output variable type is "sticky" so only convert on first member */
             if(fl_idx == 0 && idx_mbr == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
             var_prc[idx_prc]=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_prc[idx_prc]);

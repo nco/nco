@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.262 2014-09-30 04:05:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.263 2014-09-30 23:03:29 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1505,9 +1505,10 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
 
   lmt_msa_sct **lmt_msa;
   lmt_sct **lmt;
-  trv_sct *var_trv;
 
   nc_type mss_typ_tmp;
+
+  trv_sct *var_trv;
 
   /* Obtain variable GTT object using full variable name */
   var_trv=trv_tbl_var_nm_fll(var_in->nm_fll,trv_tbl);
@@ -1549,7 +1550,9 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
      nco_msa_rcr_clc requires that var_in->type be on-disk type
      Could replace var->type by var->typ_dsk in nco_msa_rcr_clc() but that seems inelegant 
      Instead, risk putting val and mss_val types briefly out-of-sync by pretending var->type is typ_dsk
-     Save current type of missing value in RAM in temporary variable and conform new variable to that below */
+     Save current type of missing value in RAM in temporary variable and conform new variable to that below
+     20140930: This is (too?) confusing and hard-to-follow, a better solution is to add a field mss_val_typ 
+     to var_sct and then separately and explicitly track types of both val and mss_val members. */
   mss_typ_tmp=var_in->type;
   var_in->type=var_in->typ_dsk;
   var_in->val.vp=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,var_in);

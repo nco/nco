@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.154 2014-09-16 14:14:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.155 2014-09-30 23:03:29 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF record averager
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.154 2014-09-16 14:14:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.154 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.155 2014-09-30 23:03:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.155 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -891,7 +891,7 @@ main(int argc,char **argv)
 	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	  (void)nco_var_get(in_id,var_prc[idx]);
 	  if(nco_prg_id == ncra){
-	    /* Convert char, short, long, int types to doubles before arithmetic */
+	    /* Convert char, short, long, int, and float types to doubles before arithmetic */
 	    /* Output variable type is "sticky" so only convert on first record */
 	    if(rec_usd_cml == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	    /* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
@@ -1005,7 +1005,7 @@ main(int argc,char **argv)
 	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	  (void)nco_var_get(in_id,var_prc[idx]);
 	  
-	  /* Convert char, short, long, int types to doubles before arithmetic */
+	  /* Convert char, short, long, int, and float types to doubles before arithmetic */
 	  /* var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ); */
 	  /* Output variable type is "sticky" so only convert on first record */
 	  if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
@@ -1145,7 +1145,7 @@ main(int argc,char **argv)
 	      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	      (void)nco_var_get(in_id,var_prc[idx]);
 	      if(nco_prg_id == ncra){
-		/* Convert char, short, long, int types to doubles before arithmetic */
+		/* Convert char, short, long, int, and float types to doubles before arithmetic */
 		var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
 		/* Output variable type is "sticky" so only convert on first record */
 		if(rec_usd_cml == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
@@ -1257,7 +1257,7 @@ main(int argc,char **argv)
 	      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	      (void)nco_var_get(in_id,var_prc[idx]);
 	      
-	      /* Convert char, short, long, int types to doubles before arithmetic */
+	      /* Convert char, short, long, int, and float types to doubles before arithmetic */
 	      /* var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ); */
 	      /* Output variable type is "sticky" so only convert on first record */
 	      if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.159 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.160 2014-09-30 23:03:29 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -556,7 +556,7 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
   if(nco_rth_prc_rnk(var_in->type) < nco_rth_prc_rnk_float) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
   
   /* Handle initial scan differently */
-  if(var_in->val.vp==NULL) return var_in; 
+  if(var_in->val.vp == NULL) return var_in; 
   
   op1=var_in->val;
   sz=var_in->sz;
@@ -603,7 +603,7 @@ ncap_var_scv_add(var_sct *var,scv_sct scv)
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
   /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   
   (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
@@ -618,7 +618,7 @@ ncap_var_scv_sub(var_sct *var,scv_sct scv)
   
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   (void)ncap_scv_minus(&scv);
   (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
@@ -634,7 +634,7 @@ ncap_var_scv_mlt(var_sct *var,scv_sct scv)
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
   /* deal with inital scan */
-  if(var->val.vp==NULL) 
+  if(var->val.vp == NULL) 
     return var; 
   
   
@@ -649,7 +649,7 @@ ncap_var_scv_dvd(var_sct *var,scv_sct scv)
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
   /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
@@ -664,7 +664,7 @@ ncap_scv_var_dvd(scv_sct scv,var_sct *var)
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
   /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   
   (void)scv_var_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
@@ -680,7 +680,7 @@ ncap_var_scv_mod(var_sct *var,scv_sct scv)
   
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   (void)var_scv_mod(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
@@ -695,7 +695,7 @@ ncap_scv_var_mod(scv_sct scv,var_sct *var)
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
   /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   (void)scv_var_mod(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
   return var;
@@ -711,7 +711,7 @@ ncap_var_scv_pwr(var_sct *var,scv_sct scv)
   (void)nco_scv_cnf_typ(var->type,&scv);
   
   /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   (void)var_scv_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
@@ -729,7 +729,7 @@ ncap_scv_var_pwr(scv_sct scv,var_sct *var)
   (void)nco_scv_cnf_typ(var->type,&scv);
   
   /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   (void)scv_var_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
   return var;
@@ -742,7 +742,7 @@ ncap_var_abs(var_sct *var)
   if(var->undefined) return var;
   
   /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
+  if(var->val.vp == NULL) return var; 
   
   (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
   return var;
