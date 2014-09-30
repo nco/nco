@@ -10,7 +10,7 @@
 
 	* Implement strncasecmp() for Windows and MSVC compilers
 
-	* Discover bug in USE_NC4_SRD_WORKAROUND
+	* Fix count bug in USE_NC4_SRD_WORKAROUND
 
 2014-09-29  Charlie Zender  <zender@uci.edu>
 

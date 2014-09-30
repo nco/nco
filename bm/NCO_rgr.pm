@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.514 2014-09-30 04:05:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.515 2014-09-30 23:33:09 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2094,7 +2094,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			  
 
 #ncks #58 Use limits to print a dimension "lon2(4)" that does NOT have a coordinate variable
-# ncks -H -d lon2,1,3,2 -v lon2_var in_grp.nc
+# ncks -H -d lon2,1,3,2 -v lon2_var in_grp_3.nc
 #/g16/lon2_var
 #lon2[1] lon2_var[1]=1 
 #lon2[3] lon2_var[3]=3 
