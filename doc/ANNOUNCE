@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.745 2014-10-01 16:05:12 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.746 2014-10-01 17:22:49 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -13,12 +13,11 @@ noticed being bit by these bugs since the answers generated were,
 well, noticeable. For these reasons alone, we recommend that users of
 packed datasets upgrade to 4.4.6. 
 
-We also rewrote ncrename to enhance its group-oriented features. 
-And, perhaps most interestinlgly, we implemented a performance
-optimization that dramatically improves access times to strided
-hyperslabs in netCDF4 datasets. Minor improvements include new ncks
-printing and hyperslab options, support for HDF4 chunking/compression,
-and ncap2 argument passing.
+We rewrote ncrename to enhance its group-oriented features. 
+We also implemented a performance optimization that dramatically
+improves access times to strided hyperslabs in netCDF4 datasets. 
+Minor improvements include new ncks printing and hyperslab options,
+support for HDF4 chunking/compression, and ncap2 argument passing.
 
 Work on NCO 4.4.7 is underway, still focused on stability and speed.   
 This includes more netCDF4 mop-up and new chunking features.
@@ -28,7 +27,7 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncrename rewrite expands functionality on group-oriented files:
+A. ncrename expanded functionality on group-oriented files:
    ncrename now supports group attributes and variable attributes with 
    the same syntax, provides distinct options to change only global
    metatdata or metadata in every group, and works with multiple
@@ -39,15 +38,17 @@ A. ncrename rewrite expands functionality on group-oriented files:
    ncrename -a global@old_att,new_att in.nc # Rename in root only
    http://nco.sf.net/nco.html#ncrename
 
-B. Optimization of strided hyperslab access to netCDF4 data
-   Multiple users complained that access to strided hyperslabs of
-   netCDF4 datasets was orders of magnitude slower than expected.
-   We verified that this issue is caused by the lower-level libraries,
-   and developed and implemented a transparent workaround that fixes
-   the issue for the common case where strides are taken in only one
-   dimension, e.g., -d time,0,,12. Strided hyperslabs like this
+B. Optimization of strided hyperslab access to netCDF4 data:
+   Multiple users complain that access to strided hyperslabs of
+   netCDF4 datasets is orders of magnitude slower than expected.
+   This occurs with other languages (like NCL) and appears to be
+   caused by lower-level libraries. Until the problem is solved at the
+   root, we have developed and implemented a transparent workaround
+   that fixes the issue for the common case where strides are taken in
+   only one dimension, e.g., -d time,0,,12. Strided hyperslabs like this 
    ncks -O -d time,0,,12 ~/in.nc4 ~/foo.nc
    now complete in nearly the same amount of time as non-strided.
+   This workaround works transparently with any version of netCDF. 
    http://nco.sf.net#bug_nc4_srd
 
 C. ncap2 command-line and script arguments can now both be specified
@@ -70,7 +71,7 @@ D. ncks -V = --var_val is new switch to print only variable values.
    1
    % ncks -V -v three_dmn_rec_var -C -H in.nc
    1
-   More details at http://nco.sf.net/nco.html#var_val
+   http://nco.sf.net/nco.html#var_val
 
 E. ncks --cdl --hdn now prints extended file format (i.e., the format
    of the file or server supplying the data)as _SOURCE_FORMAT:
@@ -82,8 +83,9 @@ E. ncks --cdl --hdn now prints extended file format (i.e., the format
    http://nco.sf.net/nco.html#hdn
 
 F. Hyperslabs specifications now accept -0 (negative zero) to indicate
-   the last element of a dimension. This is consistent with the syntax
-   where negative integers indicate the elements from the last.
+   the last element of a dimension. This is consistent with existing
+   (Python) syntax where negative integers indicate the number of
+   elements from the last (-1 is penultimate, -0 is ultimate): 
    ncks -d lon,1,-0 in.nc out.nc # Second through last longitude
    http://nco.sf.net/nco.html#hyp
 
