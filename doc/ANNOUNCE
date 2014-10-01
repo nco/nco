@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.744 2014-10-01 03:38:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.745 2014-10-01 16:05:12 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -17,8 +17,8 @@ We also rewrote ncrename to enhance its group-oriented features.
 And, perhaps most interestinlgly, we implemented a performance
 optimization that dramatically improves access times to strided
 hyperslabs in netCDF4 datasets. Minor improvements include new ncks
-printing options, support for HDF4 chunking/compression, and ncap2
-argument passing.
+printing and hyperslab options, support for HDF4 chunking/compression,
+and ncap2 argument passing.
 
 Work on NCO 4.4.7 is underway, still focused on stability and speed.   
 This includes more netCDF4 mop-up and new chunking features.
@@ -81,7 +81,13 @@ E. ncks --cdl --hdn now prints extended file format (i.e., the format
    ...
    http://nco.sf.net/nco.html#hdn
 
-F. NCO now supports chunking and deflation features of HDF4 datasets
+F. Hyperslabs specifications now accept -0 (negative zero) to indicate
+   the last element of a dimension. This is consistent with the syntax
+   where negative integers indicate the elements from the last.
+   ncks -d lon,1,-0 in.nc out.nc # Second through last longitude
+   http://nco.sf.net/nco.html#hyp
+
+G. NCO now supports chunking and deflation features of HDF4 datasets
    when compiled with netCDF library 4.3.3-rc1 or later. 
    Earlier versions of netCDF do not support these features for HDF4.
    Thanks to Unidata for continuing to improve HDF4 interoperability.

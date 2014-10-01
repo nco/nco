@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1031 2014-09-25 20:39:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1032 2014-10-01 16:05:12 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.6
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 23 September 2014
-@set update-month September 2014
+@set update-date 1 October 2014
+@set update-month October 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -4970,6 +4970,7 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 
 @html
 <a name="-d"></a> <!-- http://nco.sf.net/nco.html#-d -->
+<a name="-0"></a> <!-- http://nco.sf.net/nco.html#-0 -->
 <a name="dmn"></a> <!-- http://nco.sf.net/nco.html#dmn -->
 <a name="hyp"></a> <!-- http://nco.sf.net/nco.html#hyp -->
 <a name="hyperslab"></a> <!-- http://nco.sf.net/nco.html#hyperslab -->
@@ -4979,6 +4980,7 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 @cindex hyperslab
 @cindex dimension limits
 @cindex coordinate limits
+@cindex @code{-0}
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
@@ -5012,10 +5014,48 @@ Dimensions not mentioned are passed with no reduction in range.
 The dimensionality of variables is not reduced (in the case of a
 cross-section, the size of the constant dimension will be one). 
 @example
-# First and second indices of lon dimension
+# First and second longitudes
 ncks -F -d lon,1,2 in.nc out.nc
-# Second and third indices of lon dimension
+# Second and third longitudes
 ncks -d lon,1,2 in.nc out.nc
+@end example
+
+As of version 4.2.1 (August, 2012), @acronym{NCO} allows one to extract
+the last @var{N} elements of a hyperslab.
+Negative integers as @var{min} or @var{max} elements of a hyperslab
+specification indicate offsets from the end (Python also uses this
+convention). 
+Consistent with this convention, the value @samp{-0} (negative zero)
+indicates the last element of a dimension, even though negative zero
+is algebraically equivalent to zero.
+Previously, for example, @samp{-d time,-2,-1} caused a domain error. 
+Now it means select the second-to-last and penultimate timesteps.
+Whereas @samp{-d time,0} and @samp{-d time,-0} refer to the first and
+last timesteps, respectively.
+Negative integers work for @var{min} and @var{max} indices, though not
+for @var{stride}. 
+@example
+# Second through second-to-last longitudes
+ncks -d lon,1,-2 in.nc out.nc
+# Second through last longitude
+ncks -d lon,1,-0 in.nc out.nc
+# Third-to-last to penultimate longitude
+ncks -d lon,-3,-1 in.nc out.nc
+# Third-to-last to last longitude 
+ncks -d lon,-3, in.nc out.nc
+@end example
+@noindent
+The @samp{-F} argument, if any, applies the Fortran index convention
+only to indices specified as positive integers (including zero).
+@example
+# First through second-to-last longitudes
+ncks -F -d lon,1,-2 in.nc out.nc (-F affects only start index)
+# First through last longitude
+ncks -F -d lon,1,-0 in.nc out.nc
+# Third-to-last to penultimate longitude (-F has no effect)
+ncks -F -d lon,-3,-1 in.nc out.nc
+# Third-to-last to last longitude (-F has no effect)
+ncks -F -d lon,-3, in.nc out.nc
 @end example
 
 @cindex stride
@@ -5050,27 +5090,6 @@ ncks -F -d lon,1.0,2.0 in.nc out.nc
 # Every other longitude value between 0 and 90 degrees
 ncks -F -d lon,0.0,90.0,2 in.nc out.nc
 @end example
-
-As of version 4.2.1 (August, 2012), @acronym{NCO} allows one to extract
-the last @var{N} elements of a hyperslab.
-Negative integers as @var{min} or @var{max} elements of a hyperslab
-specification indicate offsets from the end (Python also uses this
-convention). 
-Previously, for example, @samp{-d time,-2,-1} caused a domain error. 
-Now it means select the second-to-last and penultimate timesteps.
-Negative integers work for @var{min} and @var{max} indices, though not
-for @var{stride}. 
-@example
-# Last two indices of lon dimension
-ncks -F -d lon,1,-2 in.nc out.nc
-# First to penultimate indices of lon dimension
-ncks -F -d lon,1,-2 in.nc out.nc
-# Third-to-last to last index of lon dimension
-ncks -F -d lon,-3,-1 in.nc out.nc
-# Third-to-last to last index of lon dimension
-ncks -F -d lon,-3, in.nc out.nc
-@end example
-@noindent
 As shown, we recommend using a full floating point suffix of @code{.0}
 instead of simply @code{.} in order to make obvious the selection of
 hyperslab elements based on coordinate value rather than index.

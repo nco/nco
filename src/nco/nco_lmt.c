@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.210 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.211 2014-10-01 16:05:12 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -556,7 +556,7 @@ nco_prn_lmt                    /* [fnc] Print limit information */
   (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
   (void)fprintf(stderr,"SSC = %s\n",lmt.ssc != 1L ? "YES" : "NO");
   (void)fprintf(stderr,"MRO = %s\n\n",lmt.flg_mro ? "YES" : "NO");
-}
+} /* nco_prn_lmt() */
 
 void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
@@ -1822,6 +1822,10 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     } /* end if */
 
     /* 20120709 Negative integer as min or max element of hyperslab specification indicates offset from end */
+    if(lmt.min_idx == 0L && lmt.min_sng)
+      if(lmt.min_sng[0] == '-') lmt.min_idx=dmn_sz-1L;
+    if(lmt.max_idx == 0L && lmt.max_sng)
+      if(lmt.max_sng[0] == '-') lmt.max_idx=dmn_sz-1L;
     if(lmt.min_idx < 0L) lmt.min_idx+=dmn_sz-1L;
     if(lmt.max_idx < 0L) lmt.max_idx+=dmn_sz-1L;
 

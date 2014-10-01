@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.929 2014-10-01 03:38:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.930 2014-10-01 16:05:12 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -637,14 +637,15 @@ Chunking <tt>cnk_map=rew</tt>;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 Optimize diskless files?</li>
 <li><b>NCO 4.4.6</b>: (<i>In Progress, features completed or being worked on include</i>)
+<tt>configure</tt> DAP correctly</li>;
+HDF4 chunking and deflation;
+<tt>netCDF4 stride (NC4_SRD) <a href="#bug_nc4_srd">bugfix</a>;
 <tt>ncap2</tt> command line args with scripts;
 <tt>ncra --dbl</tt> averaging packed variables with missing values <a href="#bug_ncra_dbl_pck_mss">bugfix</a>;
 <tt>ncwa --dbl</tt> minimization/maximization of packed variables <a href="#bug_ncwa_pck_min_max">bugfix</a>;
-<tt>netCDF4 stride (NC4_SRD) <a href="#bug_nc4_srd">bugfix</a>;
-HDF4 chunking and deflation;
 <tt>ncks _SOURCE_FORMAT</tt>;
 <tt>ncrename</tt> re-write/improvements;
-<tt>configure</tt> DAP correctly</li>
+<tt>-0</tt> hyperslabs
 <li><b>NCO 4.4.5</b>: (<i>Current Stable Release</i>) 
 DAP on <a href="http://nco.sf.net/nco.html#dap">HTTPS</a>;
 <tt>ancillary_variables</tt> for <a href="http://nco.sf.net/nco.html#ncl">CF</a>;
