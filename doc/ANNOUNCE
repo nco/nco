@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.746 2014-10-01 17:22:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.747 2014-10-01 17:47:39 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -165,32 +165,22 @@ B. NOT YET FIXED (NCO problem?)
    Cause: Unsure. Maybe ncra.c loop structure not amenable to MRD?
    Workaround: Convert to fixed dimensions then hyperslab
 
-C. NOT YET FIXED (NCO or netCDF problem? Unsure fxm)
-   Specifying strided hyperslab on netCDF4 datasets leads
-   to enormous slowdown or failure with recent NCO versions.
-
-   Demonstration:
-   ncks -O -d time,0,,12 ~/ET_2000-01_2001-12.nc ~/foo.nc
-
-   20140826: Verified problem still exists
-   20140718: Problem reported by Parker Norton
-   Cause: Unclear. Interaction of stride and MSA?
-   Workaround: Convert file to netCDF3 first, then use stride
-
 KNOWN PROBLEMS DUE TO BASE LIBRARIES/PROTOCOLS:
 
-A. NOT YET FIXED (netCDF library problem)
-   Probe hidden attributes (chunking, compression) of HDF4 files
+A. NOT YET FIXED (netCDF4 or HDF5 problem?)
+   Specifying strided hyperslab on netCDF4 datasets leads
+   to enormous slowdown or failure with recent netCDF versions.
 
-   Demonstration:
-   ncdump -h -s ~/nco/data/hdf.hdf # (dies)
-   ncks -m ~/nco/data/hdf.hdf # (works by avoiding fatal calls)
-
-   20131230: Verified problem still exists
-
-   Cause: some libnetCDF library functions fail on HDF4 file inquiries.
-   Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file
-   Tracking tickets NCF-272, NCF-273
+   Demonstration with NCO <= 4.4.5:
+   time ncks -O -d time,0,,12 ~/ET_2000-01_2001-12.nc ~/foo.nc
+   Demonstration with NCL:
+   time ncl < ~/nco/data/ncl.ncl   
+   20140718: Problem reported by Parker Norton
+   20140826: Verified problem still exists
+   20140930: Finish NCO workaround for problem
+   Cause: Slow algorithm in nc_var_gets()?
+   Workaround #1: Use NCO 4.4.6 or later (avoids nc_var_gets())
+   Workaround #2: Convert file to netCDF3 first, then use stride
 
 B. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name

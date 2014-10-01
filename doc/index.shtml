@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.931 2014-10-01 17:22:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.932 2014-10-01 17:47:40 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1287,14 +1287,12 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 <h2>Known Problems from 2013 (version 4.2.4) Onwards</h2>
 
 <ul><b>Recent Generic Run-time Problems:</b>
-No known generic run-time problems with recent releases.
 <!-- http://nco.sf.net#bug_nc4_srd -->
 <a name="bug_nc4_srd"></a>
 <li><i>netCDF4 Strided Hyperslab bug:</i>
 Multiple users complain that access to strided hyperslabs of
 netCDF4 datasets is orders of magnitude slower than expected. 
-This is true not only with NCO, but also with related software like
-NCL.  
+This occurs with NCO and also with related software like NCL.  
 The cause appears to be that all recent versions of netCDF up
 to&nbsp;4.3.3 access strided hyperslabs via an algorithm
 (in <tt>nc_get_vars()</tt>) that becomes unwieldy and error-prone
