@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.928 2014-09-30 23:03:29 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.929 2014-10-01 03:38:31 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -640,6 +640,7 @@ Optimize diskless files?</li>
 <tt>ncap2</tt> command line args with scripts;
 <tt>ncra --dbl</tt> averaging packed variables with missing values <a href="#bug_ncra_dbl_pck_mss">bugfix</a>;
 <tt>ncwa --dbl</tt> minimization/maximization of packed variables <a href="#bug_ncwa_pck_min_max">bugfix</a>;
+<tt>netCDF4 stride (NC4_SRD) <a href="#bug_nc4_srd">bugfix</a>;
 HDF4 chunking and deflation;
 <tt>ncks _SOURCE_FORMAT</tt>;
 <tt>ncrename</tt> re-write/improvements;
@@ -1283,6 +1284,24 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 
 <ul><b>Recent Generic Run-time Problems:</b>
 No known generic run-time problems with recent releases.
+<!-- http://nco.sf.net#bug_nc4_srd -->
+<a name="bug_nc4_srd"></a>
+<li><i>netCDF4 Strided Hyperslab bug:</i>
+Multiple users complained that access to strided hyperslabs of
+netCDF4 datasets was orders of magnitude slower than expected. 
+We verified that this was true not only with NCO, but also with
+related software like NCL. 
+Further investigation revealed the cause: all recent versions of
+netCDF up to&nbsp;4.3.3 access strided hyperslabs via an algorithm
+(in <tt>nc_get_vars()</tt>) that becomes unwieldy and error-prone for
+large datasets. 
+We developed and implemented a transparent workaround (that avoids
+the troublesome algorithm) for the most common case which is where
+strides are taken in only one dimension, e.g., <tt>-d time,0,,12</tt>.  
+With the workaround introduced in NCO&nbsp;4.4.6, strided access to
+netCDF4 datasets now complete in nearly the same amount of time as
+non-strided. 
+</li>
 </ul>
 
 <ul><b>Recent Operator-specific Run-time Problems:</b>
