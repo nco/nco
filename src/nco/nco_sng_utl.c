@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.79 2014-09-30 23:10:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.80 2014-10-01 03:50:42 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -39,7 +39,7 @@ int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
 strncasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 (const char * const sng_1, /* I [sng] First string */
  const char * const sng_2, /* I [sng] Second string */
- const size_t const chr_nbr); /* I [nbr] Compare at most chr_nbr characters */
+ const size_t chr_nbr) /* I [nbr] Compare at most chr_nbr characters */
 {
   /* NB: Written by CSZ for clarity and type safety, not speed nor POSIX conformance
      POSIX may require conversion to unsigned char before comparison
