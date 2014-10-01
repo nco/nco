@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.265 2014-09-30 23:40:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.266 2014-10-01 00:08:18 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -183,7 +183,7 @@ read_lbl:
 	    int idx_srd; /* [idx] Index of strided dimension */
 	    int dmn_idx; /* [idx] Index for dimensions */
 	    long srd_sz=1L; /* [nbr] Size of hyperslab of one stride */
-	    void *vp_srd;
+	    char *cp_srd; /* [ptr] Use char pointer because arithmetic with void pointer is non-standard */
 
 	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s using USE_NC4_SRD_WORKAROUND for faster access to strided hyperslabs in netCDF4 datasets\n",nco_prg_nm_get(),fnc_nm);
 
@@ -208,16 +208,15 @@ read_lbl:
 	      for(idx=0;idx<dpt_crr_max;idx++) (void)fprintf(stdout,"dmn_idx=%d srt=%ld, cnt=%ld, srd=%ld\n",idx,dmn_srt[idx],dmn_cnt[idx],dmn_srd[idx]);
 	    } /* endif dbg */
 
-	    /* Ugly, non-standard void arithmetic */
-	    vp_srd=vp;
+	    cp_srd=(char *)vp;
 	    /* Replace multiple strides by loop over single strides */
 	    dmn_cnt[idx_srd]=1L;
 	    for(srd_idx=0;srd_idx<srd_nbr;srd_idx++){
 	      /* Point next stride on disk */
 	      if(srd_idx != 0) dmn_srt[idx_srd]+=dmn_srd[idx_srd];
 	      /* Place results in next portion of RAM */
-	      if(srd_idx != 0) vp_srd+=srd_sz*nco_typ_lng(vara->type);
-	      (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp_srd,vara->type);
+	      if(srd_idx != 0) cp_srd+=srd_sz*nco_typ_lng(vara->type);
+	      (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,(void *)cp_srd,vara->type);
 	    } /* end loop over srd */
 	  } /* endif workaround */
 	} /* srd_prd != 1L */

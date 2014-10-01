@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.6 release"
 	cvs tag -c nco-4_4_6;cvs tag -c nco-4_4_6-1
 
+	* Avoid void arithmetic in USE_NC4_SRD_WORKAROUND
+
 	* Change important nco_calloc() to nco_malloc() for speed
 
 	* Fix ncwa handling of packed variables for minimization/maximization
