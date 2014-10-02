@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.747 2014-10-01 17:47:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.748 2014-10-02 01:47:40 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -137,7 +137,7 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.4.6 built/tested with netCDF
-   4.3.3-rc2 on top of HDF5 hdf5-1.8.13 with these methods: 
+   4.3.3-rc2 (20141001) on top of HDF5 hdf5-1.8.13 with:
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
@@ -168,8 +168,8 @@ B. NOT YET FIXED (NCO problem?)
 KNOWN PROBLEMS DUE TO BASE LIBRARIES/PROTOCOLS:
 
 A. NOT YET FIXED (netCDF4 or HDF5 problem?)
-   Specifying strided hyperslab on netCDF4 datasets leads
-   to enormous slowdown or failure with recent netCDF versions.
+   Specifying strided hyperslab on large netCDF4 datasets leads
+   to slowdown or failure with recent netCDF versions.
 
    Demonstration with NCO <= 4.4.5:
    time ncks -O -d time,0,,12 ~/ET_2000-01_2001-12.nc ~/foo.nc
@@ -225,7 +225,7 @@ C. Pre-built Mac binaries:
 D. Pre-built Windows (native) and Cygwin binaries:
    http://nco.sf.net#windows
 
-F. Reminder that NCO works on most HDF4 and HDF5 datasets, e.g., 
+E. Reminder that NCO works on most HDF4 and HDF5 datasets, e.g., 
    HDF4: AMSR MERRA MODIS ...
    HDF5: GLAS ICESat Mabel SBUV ...
    HDF-EOS5: AURA HIRDLS OMI ...
