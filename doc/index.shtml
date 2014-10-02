@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.933 2014-10-01 21:21:18 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.934 2014-10-02 01:04:31 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -150,8 +150,8 @@ and
 
 <ul>
 <li>2014 Nov&nbsp;??: 4.4.7 (<i>In progress</i>)
-<li>2014 Oct&nbsp;01: 4.4.6
-<li>2014 Aug&nbsp;26: 4.4.5
+<li>2014 Oct&nbsp;01: 4.4.6 (<tt>ncra, ncwa</tt> packing bugfixes, stride optimization)
+<li>2014 Aug&nbsp;26: 4.4.5 (Stability)
 <li>2014 Jul&nbsp;01: NASA ACCESS 2013 <a href="#prp_axs">project</a> commences</li>
 <li>2014 May&nbsp;29: 4.4.4 (Stability)
 <li>2014 Apr&nbsp;02: 4.4.3 (Stability)
@@ -638,17 +638,17 @@ Chunking <tt>cnk_map=rew</tt>;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 Optimize diskless files?</li>
 <li><b>NCO 4.4.7</b>: (<i>In Progress, features completed or being worked on include</i>)
-Optimize diskless files?</li>
+Smarter chunking defaults</li>
 <li><b>NCO 4.4.6</b>: (<i>Current Stable Release</i>)
 <tt>-0</tt> hyperslabs;
-<tt>configure</tt> DAP correctly</li>;
+<tt>configure</tt> DAP correctly;
 HDF4 chunking and deflation;
-<tt>netCDF4 stride (NC4_SRD) <a href="#bug_nc4_srd">bugfix</a>;
+netCDF4 stride (NC4_SRD) <a href="#bug_nc4_srd">bugfix</a>;
 <tt>ncap2</tt> command line args with scripts;
 <tt>ncra --dbl</tt> averaging packed variables with missing values <a href="#bug_ncra_dbl_pck_mss">bugfix</a>;
 <tt>ncwa --dbl</tt> minimization/maximization of packed variables <a href="#bug_ncwa_pck_min_max">bugfix</a>;
 <tt>ncks _SOURCE_FORMAT</tt> and <tt>-V</tt>;
-<tt>ncrename</tt> re-write
+<tt>ncrename</tt> re-write</li>
 <li><b>NCO 4.4.5</b>:
 DAP on <a href="http://nco.sf.net/nco.html#dap">HTTPS</a>;
 <tt>ancillary_variables</tt> for <a href="http://nco.sf.net/nco.html#ncl">CF</a>;
@@ -661,7 +661,7 @@ Correctly parse MS Windows volume names like <tt>C:\foo</tt></li>
 <li><b>NCO 4.4.4</b>:
 netCDF'ize non-compliant element names;
 <tt>-x var</tt> tolerates non-existence;
-<tt>--rad</tt> <a href="http://nso.sf.net/nco.html#rad">orphan dimensions</a>;
+<tt>--rad</tt> <a href="http://nco.sf.net/nco.html#rad">orphan dimensions</a>;
 <tt>ncwa --mask_condition</tt> <a href="#bug_ncwa_mask_condition">bugfix</a></li>
 <li><b>NCO 4.4.3</b>:
 Faster DAP access to strided data;
@@ -735,7 +735,7 @@ Record appending with <tt>ncra/ncrcat --rec_apn</tt>;
 <tt>ncflint --fix_rec_crd</tt>;
 RX's in full paths;
 Correct dimension/coordinate scopes;
-<tt>ncks</tt> MM3 bugfix;</li>
+<tt>ncks</tt> MM3 workaround;</li>
 <li><b>NCO 4.2.5</b>: 
 <tt>ncks --mk_rec_dmn</tt> <a href="#bug_ncks_mk_rec_dmn">bugfix</a>;
 <tt>ncks</tt> subsetting <a href="#bug_ncks_sbs">bugfix</a></li>

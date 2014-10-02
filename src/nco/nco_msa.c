@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.266 2014-10-01 00:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.267 2014-10-02 01:04:32 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -212,7 +212,7 @@ read_lbl:
 	    /* Replace multiple strides by loop over single strides */
 	    dmn_cnt[idx_srd]=1L;
 	    for(srd_idx=0;srd_idx<srd_nbr;srd_idx++){
-	      /* Point next stride on disk */
+	      /* Point start vector to next stride on disk */
 	      if(srd_idx != 0) dmn_srt[idx_srd]+=dmn_srd[idx_srd];
 	      /* Place results in next portion of RAM */
 	      if(srd_idx != 0) cp_srd+=srd_sz*nco_typ_lng(vara->type);
