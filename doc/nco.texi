@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1033 2014-10-02 01:04:31 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1034 2014-10-02 21:53:01 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.6
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 1 October 2014
+@set update-date 2 October 2014
 @set update-month October 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -5025,36 +5025,38 @@ the last @var{N} elements of a hyperslab.
 Negative integers as @var{min} or @var{max} elements of a hyperslab
 specification indicate offsets from the end (Python also uses this
 convention). 
-Consistent with this convention, the value @samp{-0} (negative zero)
-indicates the last element of a dimension, even though negative zero
-is algebraically equivalent to zero.
+Consistent with this convention, the value @samp{-1} (negative one)
+indicates the last element of a dimension, and negative zero is
+algebraically equivalent to zero and so indicates the first element of a
+dimension. 
 Previously, for example, @samp{-d time,-2,-1} caused a domain error. 
-Now it means select the second-to-last and penultimate timesteps.
-Whereas @samp{-d time,0} and @samp{-d time,-0} refer to the first and
-last timesteps, respectively.
+Now it means select the penultimate and last timesteps, independent of
+the size of the @code{time} dimension.
+Select only the first and last timesteps, respectively, with 
+@samp{-d time,0} and @samp{-d time,-1}.
 Negative integers work for @var{min} and @var{max} indices, though not
 for @var{stride}. 
 @example
-# Second through second-to-last longitudes
+# Second through penultimate longitudes
 ncks -d lon,1,-2 in.nc out.nc
 # Second through last longitude
-ncks -d lon,1,-0 in.nc out.nc
-# Third-to-last to penultimate longitude
+ncks -d lon,1,-1 in.nc out.nc
+# Second-to-last to last longitude
 ncks -d lon,-3,-1 in.nc out.nc
-# Third-to-last to last longitude 
+# Second-to-last to last longitude 
 ncks -d lon,-3, in.nc out.nc
 @end example
 @noindent
 The @samp{-F} argument, if any, applies the Fortran index convention
-only to indices specified as positive integers (including zero).
+only to indices specified as positive integers:
 @example
-# First through second-to-last longitudes
+# First through penultimate longitudes
 ncks -F -d lon,1,-2 in.nc out.nc (-F affects only start index)
 # First through last longitude
-ncks -F -d lon,1,-0 in.nc out.nc
-# Third-to-last to penultimate longitude (-F has no effect)
+ncks -F -d lon,1,-1 in.nc out.nc
+# Second-to-last to penultimate longitude (-F has no effect)
 ncks -F -d lon,-3,-1 in.nc out.nc
-# Third-to-last to last longitude (-F has no effect)
+# Second-to-last to last longitude (-F has no effect)
 ncks -F -d lon,-3, in.nc out.nc
 @end example
 

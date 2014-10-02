@@ -1,10 +1,14 @@
-2014-10-01  Charlie Zender  <zender@uci.edu>
+2014-10-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.7 release procedure:
- 	Changes since nco-4_4_6: fxm
+ 	Changes since nco-4_4_6: -0->-1,
 	cd ~/nco;cvs tag -d nco-4_4_7;cvs tag -d nco-4_4_7-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
+
+	* Change to real Python convention where -1 is last element, e.g., -2 is penultimate element, -N is first element
+
+2014-10-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.6 release procedure:
  	Changes since nco-4_4_5: ncks -V, ncap2 -s -S, DAP cnf, ncra pck/mss/prm, HDF4, ncrename, NC4_SRD, -0

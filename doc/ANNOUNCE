@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.748 2014-10-02 01:47:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.749 2014-10-02 21:53:01 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.6 are ready. 
 
@@ -27,73 +27,15 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncrename expanded functionality on group-oriented files:
-   ncrename now supports group attributes and variable attributes with 
-   the same syntax, provides distinct options to change only global
-   metatdata or metadata in every group, and works with multiple
-   instances of the same object, e.g., multiple instances of the same
-   variable name in different groups.
-   ncrename -a g1@old_att,new_att     in.nc # Rename in g1 only
-   ncrename -a group@old_att,new_att  in.nc # Rename in all groups
-   ncrename -a global@old_att,new_att in.nc # Rename in root only
-   http://nco.sf.net/nco.html#ncrename
-
-B. Optimization of strided hyperslab access to netCDF4 data:
-   Multiple users complain that access to strided hyperslabs of
-   netCDF4 datasets is orders of magnitude slower than expected.
-   This occurs with other languages (like NCL) and appears to be
-   caused by lower-level libraries. Until the problem is solved at the
-   root, we have developed and implemented a transparent workaround
-   that fixes the issue for the common case where strides are taken in
-   only one dimension, e.g., -d time,0,,12. Strided hyperslabs like this 
-   ncks -O -d time,0,,12 ~/in.nc4 ~/foo.nc
-   now complete in nearly the same amount of time as non-strided.
-   This workaround works transparently with any version of netCDF. 
-   http://nco.sf.net#bug_nc4_srd
-
-C. ncap2 command-line and script arguments can now both be specified
-   AND executed. Command-line args are executed before script:
-   ncap2 -v -s "lon=${longitude}" -S in_4.nc out.nc
-   This is useful for passing shell variables into NCO scripts.
-   Pass the shell variables with -s and the -S scripts will use them.
-   Thanks to Henry Butowsky for this.
-   http://nco.sf.net/nco.html#ncap2
-
-D. ncks -V = --var_val is new switch to print only variable values.
-   Compare and contrast -Q, -V, and --no_nm_prn:
-   % ncks -v three_dmn_rec_var -C -H in.nc
-   time[0]=1 lat[0]=-90 lon[0]=0 three_dmn_rec_var[0]=1 
-   % ncks --no_nm_prn -v three_dmn_rec_var -C -H in.nc
-   1 -90 0 1
-   % ncks -Q -v three_dmn_rec_var -C -H in.nc              
-   three_dmn_rec_var[0]=1 
-   % ncks -Q --no_nm_prn -v three_dmn_rec_var -C -H in.nc
-   1
-   % ncks -V -v three_dmn_rec_var -C -H in.nc
-   1
-   http://nco.sf.net/nco.html#var_val
-
-E. ncks --cdl --hdn now prints extended file format (i.e., the format
-   of the file or server supplying the data)as _SOURCE_FORMAT:
-   % ncks --hdn --cdl ~/nco/data/cmip5.nc
-   ...
-    :_Format = "netCDF-4" ;
-    :_SOURCE_FORMAT = "NC_FORMAT_HDF5" ;
-   ...
-   http://nco.sf.net/nco.html#hdn
-
-F. Hyperslabs specifications now accept -0 (negative zero) to indicate
-   the last element of a dimension. This is consistent with existing
-   (Python) syntax where negative integers indicate the number of
-   elements from the last (-1 is penultimate, -0 is ultimate): 
-   ncks -d lon,1,-0 in.nc out.nc # Second through last longitude
+A. Hyperslabs specifications now accept -1 (negative one) to indicate
+   the last element of a dimension. This is consistent with Python
+   syntax, unless NCO's previous behavior (from 20120709--20141001)
+   where negative integers indicated the number of  elements from the
+   last (-1 is penultimate, -0 is ultimate). Now -1 is last element,
+   -2 is penultimate element, -N is first element. NCO prints a
+   warning to alert users who may expect the old behavior.
+   ncks -d lon,1,-1 in.nc out.nc # Second through last longitude
    http://nco.sf.net/nco.html#hyp
-
-G. NCO now supports chunking and deflation features of HDF4 datasets
-   when compiled with netCDF library 4.3.3-rc1 or later. 
-   Earlier versions of netCDF do not support these features for HDF4.
-   Thanks to Unidata for continuing to improve HDF4 interoperability.
-   http://nco.sf.net/nco.html#hdf4
 
 BUG FIXES:
 

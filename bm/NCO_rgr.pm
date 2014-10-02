@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.516 2014-10-01 16:05:11 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.517 2014-10-02 21:53:01 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2567,10 +2567,10 @@ print "\n";
     } # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #ncks #93
-#ncks -O -C -H -d lon,-0 -v lon ~/nco/data/in.nc
+#ncks -O -C -H -d lon,-1 -v lon ~/nco/data/in.nc
 
-    $dsc_sng="Select last element using negative zero index";
-    $tst_cmd[0]="ncks -O $nco_D_flg -C -H -d lon,-0 -v lon $in_pth_arg in.nc";
+    $dsc_sng="Select last element using negative one index";
+    $tst_cmd[0]="ncks -O $nco_D_flg -C -H -d lon,-1 -v lon $in_pth_arg in.nc";
     $tst_cmd[1]="lon[3]=270";
     $tst_cmd[2]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
