@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.212 2014-10-02 21:53:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.213 2014-10-03 22:03:22 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1832,7 +1832,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     if(lmt.max_idx == 0L && lmt.max_sng)
       if(lmt.max_sng[0] == '-')
 	flg_old_usg=True;
-    if(flg_old_usg) (void)fprintf(stdout,"%s: WARNING Only NCO 4.4.6 treats negative zero as the last element of a dimension. Beginning 20141002, NCO uses the Python convention where negative one is the last element of a dimension, and negative zero is the same as zero and selects the first element of a dimension AND prints this warning in case the 4.4.6 behavior was intended.\n",nco_prg_nm_get());
+    if(flg_old_usg) (void)fprintf(stdout,"%s: WARNING Only NCO 4.4.6 treats negative zero as the last element of a dimension. Beginning 20141002, NCO uses the Python convention where negative one is the last element of a dimension, and negative zero is the same as zero and so selects the first element of a dimension. Negative zero also causes this warning to be printed in case the 4.4.6 behavior was intended.\n",nco_prg_nm_get());
     if(lmt.min_idx < 0L) lmt.min_idx+=dmn_sz;
     if(lmt.max_idx < 0L) lmt.max_idx+=dmn_sz;
 
