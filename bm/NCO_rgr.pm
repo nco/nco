@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.517 2014-10-02 21:53:01 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.518 2014-10-07 19:55:10 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -5236,7 +5236,33 @@ if (0){
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
-    } # endif
+    } # endif 0
+
+#ncrename #27
+#ncrename -O -d time,newrec -v time,newrec ~/nco/data/in.nc ~/foo.nc
+#ncks -s %g -H -g // -v newrec -d newrec,0 -C ~/foo.nc
+# Check for valid values in renamed coordinate in netCDF3 file
+
+    $dsc_sng="netCDF3: Valid values in renamed coordinates in netCDF3 file";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec -v time,newrec $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -s %g -H -g // -v newrec -d newrec,0 -C %tmp_fl_00%";
+    $tst_cmd[2]="1";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
+
+#ncrename #28
+#ncrename -O -d time,newrec -v time,newrec ~/nco/data/in_grp.nc ~/foo.nc
+#ncks -s %g -H -g // -v newrec -d newrec,0 -C ~/foo.nc
+# Check for valid values in renamed coordinate in netCDF4 file
+
+    $dsc_sng="netCDF4: Valid values in renamed coordinates in netCDF4 file";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec -v time,newrec $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -s %g -H -g // -v newrec -d newrec,0 -C %tmp_fl_00%";
+    $tst_cmd[2]="1";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
