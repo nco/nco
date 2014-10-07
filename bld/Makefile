@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.730 2014-09-16 23:31:37 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.731 2014-10-07 05:19:48 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -97,15 +97,15 @@
 # /ncar/opt/hpss/hsi # Starts HPSS session
 # export PATH=${PATH}\:/ncar/opt/hpss
 # GNU (works):
-# module swap intel gnu;module add gsl;module add netcdf/4.3.0-rc4;
+# module swap intel gnu;module add gsl;module add netcdf/4.3.0;
 # export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}\:/glade/apps/opt/udunits/2.1.24/gnu/default/lib
-# cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0-rc4/gnu/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/gnu/default/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/gnu/default/lib' OPTS=D allinone;cd -
+# cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/gnu/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/gnu/default/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/gnu/default/lib' OPTS=D allinone;cd -
 # Intel (works as of 20140129):
 # module add intel;module add gsl;module add netcdf/4.3.0;
 # https://www2.cisl.ucar.edu/sites/default/files/Yellowstone_Started_Nov30-2.pdf
 # module add pnetcdf/1.4.1
 # export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}\:/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib
-# cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
+# cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.5/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.5/lib' OPTS=D allinone;cd -
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS=Y allinone;cd -
 # cd ~/bin/WIN32;tar cvzf ~/nco-4.4.6.win32.cygwin.tar.gz nc* ; scp ~/nco-4.4.6.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
