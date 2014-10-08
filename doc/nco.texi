@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1034 2014-10-02 21:53:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1035 2014-10-08 17:37:38 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.6
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 2 October 2014
+@set update-date 8 October 2014
 @set update-month October 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16343,6 +16343,22 @@ ncrename -v /g1/lon,/g1/longitude in_grp.nc # Alternate
 @end example
  
 @html
+<a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
+@end html
+@cartouche
+Caveat lector: Unforunately from 2007--present (October, 2014) the
+netCDF library (versions 4.0.0--4.3.2) contained bugs or limitations
+which prevent @acronym{NCO} from correctly renaming variables,
+dimensions, and groups in netCDF4 files. 
+(To our knowledge the netCDF library calls for renaiming always work
+well on netCDF3 files so one workaround to netCDF4 bugs is convert to
+netCDF3, rename, then convert back). 
+To understand the limitations of renaming associated with particular
+versions of netCDF, read the @command{ncrename} documentation below in
+its entirety. 
+@end cartouche
+
+@html
 <a name="ncrename_crd"></a> <!-- http://nco.sf.net/nco.html#ncrename_crd -->
 @end html
 @cindex coordinate variables
@@ -16357,8 +16373,8 @@ the variable:
 ncrename -d lon,longitude -v lon,longitude in.nc
 @end example
 Unfortunately, the netCDF4 library had a longstanding bug (all versions
-until 4.3.1-rc5 released in December, 2013) that caused @acronym{NCO} to
-crash when performing this operation. 
+until 4.3.1-rc5 released in December, 2013) that crashed @acronym{NCO}
+when performing this operation. 
 Simultaneously renaming variables and dimensions in netCDF4 files with
 earlier versions of netCDF is impossible; it must instead be done in two 
 separate @command{ncrename} invocations (e.g., first rename the
@@ -16369,7 +16385,7 @@ A related bug causes unintended side-effects with @command{ncrename}
 also built with all versions of the netCDF4 library until 4.3.1-rc5
 released in December, 2013):
 This bug caused renaming @emph{either} a dimension @emph{or} its
-assosiated coordinate variable (not both, which would fail as above) in
+associated coordinate variable (not both, which would fail as above) in
 a netCDF4 file to inadvertently rename both:
 @example
 # Demonstate bug in netCDF4/HDF5 library prior to netCDF-4.3.1-rc5
@@ -16380,6 +16396,31 @@ ncrename -O -d lat_T42,lat ~/foo.nc ~/foo2.nc # Also renames variable
 To avoid this faulty behavior, either build @acronym{NCO} with netCDF
 version 4.3.1-rc5 or later, or convert the file to netCDF3 first,
 then rename as intended, then convert back.
+Unforunately while this bug and the related coordinate renaming bug 
+were fixed in 4.3.1-rc5 (released in December, 2013), a new and related
+bug was discovered in October 2014.
+
+The final known netCDF bug that causes unintended side-effects with 
+@command{ncrename} affects (at least) versions 4.3.1--4.3.2 of the
+netCDF4 library (and snapshots at least until October, 2014):
+This bug corrupts values contained in netCDF4 arrays (not scalars)
+that are renamed or that utilize dimensions that are renamed. 
+In other words, @emph{renaming} variables and dimensions succeeds
+yet it corrupts the values contained by the affected array variables.
+This bug corrupts affected variables by replacing their values with the 
+default @code{_FillValue} for that variable's type: 
+@example
+# Demonstate bug in netCDF4/HDF5 library prior to netCDF-4.3.3
+ncks -O -4 -C -M -v lat ~/nco/data/in.nc ~/bug.nc
+ncrename -O -v lat,tal ~/bug.nc ~/foo.nc # Broken until netCDF-4.3.3
+ncrename -O -d lat,tal ~/bug.nc ~/foo.nc # Broken until netCDF-4.3.3
+ncrename -O -d lat,tal -v lat,tal ~/bug.nc ~/foo.nc # Broken too
+ncks --cdl ~/foo.nc
+@end example
+To avoid this faulty behavior, either build @acronym{NCO} with netCDF 
+version 4.3.3 (TBD) or later, or convert the file to netCDF3 first, then 
+rename as intended, then convert back. 
+This bug does not affect renaming of groups or of attributes.
 
 @cindex global attributes
 @cindex attributes, global

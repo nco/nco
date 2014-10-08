@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.205 2014-09-26 23:03:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.206 2014-10-08 17:37:38 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
 
   char *obj_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.205 2014-09-26 23:03:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.205 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.206 2014-10-08 17:37:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.206 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute/group in file is optional */
@@ -361,7 +361,7 @@ main(int argc,char **argv)
   /* Open file enabled for writing. Place file in define mode for renaming. */
   if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
   rcd+=nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&nc_id);
-  (void)nco_redef(nc_id);
+  rcd+=nco_redef(nc_id);
 
   /* Timestamp end of metadata setup and disk layout */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
@@ -390,9 +390,9 @@ main(int argc,char **argv)
       if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var)
 	if(!strcmp(var_rnm_lst[idx_var].old_nm+mch_fst,trv_tbl->lst[tbl_idx].nm_fll) || !strcmp(var_rnm_lst[idx_var].old_nm+mch_fst,trv_tbl->lst[tbl_idx].nm)){
 	    mch_nbr++;
-	    (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
-	    rcd=nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_rnm_lst[idx_var].id);
-	    (void)nco_rename_var(grp_id,var_rnm_lst[idx_var].id,var_rnm_lst[idx_var].new_nm);
+	    rcd+=nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
+	    rcd+=nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_rnm_lst[idx_var].id);
+	    rcd+=nco_rename_var(grp_id,var_rnm_lst[idx_var].id,var_rnm_lst[idx_var].new_nm);
 	    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stdout,"%s: Renamed variable \'%s\' to \'%s\'\n",nco_prg_nm,trv_tbl->lst[tbl_idx].nm_fll,var_rnm_lst[idx_var].new_nm);
 	} /* endif */
 
@@ -616,14 +616,14 @@ main(int argc,char **argv)
 
   /* Take output file out of define mode */
   if(hdr_pad == 0UL){
-    (void)nco_enddef(nc_id);
+    rcd+=nco_enddef(nc_id);
   }else{
-    (void)nco__enddef(nc_id,hdr_pad);
+    rcd+=nco__enddef(nc_id,hdr_pad);
     if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
   /* Close the open netCDF file */
-  nco_close(nc_id);
+  rcd+=nco_close(nc_id);
 
   /* Remove local copy of file */
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
