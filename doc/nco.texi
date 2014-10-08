@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1036 2014-10-08 18:38:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1037 2014-10-08 21:00:45 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -114,8 +114,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.4.6
-@set doc-edition 4.4.6
+@set nco-edition 4.4.7
+@set doc-edition 4.4.7
 @set copyright-years 1995--2014
 @set update-year 2014
 @set update-date 8 October 2014

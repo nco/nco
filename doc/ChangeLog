@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
 
+	* Add NCO_VERSION for consistency with NC_VERSION
+
 	* Document newly discovered ncrename problems due to netCDF4 bugs http://nco.sf.net/nco.html#bug_nc4_rename
 
 	* Check more error return codes in ncrename.c. Verifies NCO does not ignore any netCDF errors.
