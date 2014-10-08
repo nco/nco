@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1035 2014-10-08 17:37:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1036 2014-10-08 18:38:25 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -16206,8 +16206,27 @@ indicates the presence of @var{old_name} is optional, and @var{old_name}
 is not present in @var{input-file}, then @command{ncrename} will abort.  
 The @var{new_name} should never be prefixed by a @samp{.} (or else the
 period will be included as part of the new name).
+As of @acronym{NCO} version 4.4.6 (released October, 2014), the
+@var{old_name} and @var{new_name} arguments may include (or be, for
+groups) partial or full group paths. 
 The OPTIONS and EXAMPLES show how to select specific variables
 whose attributes are to be renamed.
+
+@html
+<a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
+@end html
+@cartouche
+Caveat lector: Unforunately from 2007--present (October, 2014) the
+netCDF library (versions 4.0.0--4.3.2) contained bugs or limitations
+that sometimes prevent @acronym{NCO} from correctly renaming coordinate
+variables, dimensions, and groups in netCDF4 files. 
+(To our knowledge the netCDF library calls for renaiming always work
+well on netCDF3 files so one workaround to netCDF4 bugs is convert to
+netCDF3, rename, then convert back). 
+To understand the renaming limitations associated with particular
+netCDF versions, read the @command{ncrename} documentation below in 
+its entirety. 
+@end cartouche
 
 Although @command{ncrename} supports full pathnames for both
 @var{old_name} and @var{new_name}, this is really ``window dressing''.
@@ -16230,8 +16249,8 @@ the user will be interactively prompted before an existing file is
 changed, and that a temporary copy of an output file is constructed
 during the operation. 
 If only @var{input-file} is specified, then @command{ncrename} changes
-the names of the @var{input-file} in place without prompting and without
-creating a temporary copy of @code{input-file}.
+object names in the @var{input-file} in place without prompting and
+without creating a temporary copy of @code{input-file}.
 This is because the renaming operation is considered reversible if the
 user makes a mistake.
 The @var{new_name} can easily be changed back to @var{old_name} by using 
@@ -16274,11 +16293,12 @@ The @samp{@@} symbol delimits the variable from the attribute name.
 If the attribute is uniquely named (no other variables contain the
 attribute) then the @var{old_var_name@@old_att_name} syntax is
 redundant. 
-The @var{var_nm} @code{global} has special significance---it indicates
-that @var{att_nm} refers to a global or group attribute, and not to a
-variable named @code{global}.
-In other words, a @var{var_nm} of @code{global} is syntactically
-equivalent to a @var{var_nm} that is empty.
+The @var{old_var_name} variable names @code{global} and @code{group}
+have special significance.
+They indicate that @var{old_att_nm} should only be renamed where it
+occurs as a global (i.e., root group) metadata attribute (for
+@code{global}), or (for @code{group}) as @emph{any} group attribute, and
+not where it occurs as a variable attribute.
 The @var{var_name@@att_name} syntax is accepted, though not required,
 for the @var{new_name}.
 
@@ -16343,22 +16363,6 @@ ncrename -v /g1/lon,/g1/longitude in_grp.nc # Alternate
 @end example
  
 @html
-<a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
-@end html
-@cartouche
-Caveat lector: Unforunately from 2007--present (October, 2014) the
-netCDF library (versions 4.0.0--4.3.2) contained bugs or limitations
-which prevent @acronym{NCO} from correctly renaming variables,
-dimensions, and groups in netCDF4 files. 
-(To our knowledge the netCDF library calls for renaiming always work
-well on netCDF3 files so one workaround to netCDF4 bugs is convert to
-netCDF3, rename, then convert back). 
-To understand the limitations of renaming associated with particular
-versions of netCDF, read the @command{ncrename} documentation below in
-its entirety. 
-@end cartouche
-
-@html
 <a name="ncrename_crd"></a> <!-- http://nco.sf.net/nco.html#ncrename_crd -->
 @end html
 @cindex coordinate variables
@@ -16403,11 +16407,14 @@ bug was discovered in October 2014.
 The final known netCDF bug that causes unintended side-effects with 
 @command{ncrename} affects (at least) versions 4.3.1--4.3.2 of the
 netCDF4 library (and snapshots at least until October, 2014):
-This bug corrupts values contained in netCDF4 arrays (not scalars)
-that are renamed or that utilize dimensions that are renamed. 
-In other words, @emph{renaming} variables and dimensions succeeds
-yet it corrupts the values contained by the affected array variables.
-This bug corrupts affected variables by replacing their values with the 
+This bug corrupts values or renamed netCDF4 coordinate variables
+(i.e., variables with underlying dimensions of the same name) and
+other (non-coordinate) variables that include an underlying dimension
+that was renamed. 
+In other words, @emph{renaming} coordinate variables and dimensions
+succeeds yet it corrupts the values contained by the affected array
+variables. 
+This bug corrupts affected variables by replacing their values with the
 default @code{_FillValue} for that variable's type: 
 @example
 # Demonstate bug in netCDF4/HDF5 library prior to netCDF-4.3.3
@@ -16423,6 +16430,7 @@ rename as intended, then convert back.
 This bug does not affect renaming of groups or of attributes.
 
 @cindex global attributes
+@cindex group attributes
 @cindex attributes, global
 @cindex @code{_FillValue}
 @cindex @code{missing_value}
@@ -16454,10 +16462,12 @@ Rename the global or group attribute @code{Convention} to
 @code{Conventions}
 @example
 @verbatim
-ncrename -a Convention,Conventions  in.nc # Variable and global atts.
-ncrename -a .Convention,Conventions in.nc # Variable and global atts.
-ncrename -a @Convention,Conventions  in.nc # Global atts. only
-ncrename -a @.Convention,Conventions in.nc # Global atts. only
+ncrename -a Convention,Conventions  in.nc # Variable and group atts.
+ncrename -a .Convention,Conventions in.nc # Variable and group atts.
+ncrename -a @Convention,Conventions  in.nc # Group atts. only
+ncrename -a @.Convention,Conventions in.nc # Group atts. only
+ncrename -a global@Convention,Conventions   in.nc # Group atts. only
+ncrename -a .global@.Convention,Conventions in.nc # Group atts. only
 ncrename -a global@Convention,Conventions   in.nc # Global atts. only
 ncrename -a .global@.Convention,Conventions in.nc # Global atts. only
 @end verbatim

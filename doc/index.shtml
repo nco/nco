@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.935 2014-10-08 17:37:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.936 2014-10-08 18:38:25 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1315,15 +1315,15 @@ Comments welcome. Updates will be posted right here.
 Unforunately from 2007&ndash;present (October, 2014) the netCDF
 library (versions 4.0.0&ndash;4.3.2) contained bugs or limitations  
 that prevent <tt>ncrename</tt> (and other netCDF4-based software) 
-from correctly renaming variables, dimensions, and groups in netCDF4 
-files.  
+from correctly renaming coordinate variables, dimensions, and groups
+in netCDF4  files.  
 (To our knowledge the netCDF library calls for renaming always work
 well on netCDF3 files so one workaround to netCDF4 bugs is convert to 
 netCDF3, rename, then convert back). 
-An extensive list of renaming limitations associated with particular
-versions of netCDF4 is maintained in the online manual  
+A summary of renaming limitations associated with particular versions
+of netCDF4 is maintained in the online manual   
 <a href="http://nco.sf.net/nco.html#bug_nc4_rename">here</a>.
-Important updates will be posted on the homepage here.
+Important updates will also be posted here on the homepage.
 </li>
 </ul>
 
