@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.58 2014-10-08 21:00:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.59 2014-10-09 15:00:35 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -166,6 +166,7 @@ nco_vrs_prn /* [fnc] Print NCO version */
   int vrs_cvs_lng;
   
   const char date_cpp[]=__DATE__; /* [sng] Date from C pre-processor */
+  const char time_cpp[]=__TIME__; /* [sng] Time from C pre-processor */
   /*  const char time_cpp[]=__TIME__; *//* [sng] Time from C pre-processor */
   const char vrs_cpp[]=TKN2SNG(VERSION); /* [sng] Version from C pre-processor */
   const char hst_cpp[]=TKN2SNG(HOSTNAME); /* [sng] Hostname from C pre-processor */
@@ -200,7 +201,7 @@ nco_vrs_prn /* [fnc] Print NCO version */
   }else{
     /* 20141008: Try new nco.h-based versioning */
     /*    (void)fprintf(stderr,"NCO netCDF Operators version %s built %s on %s by %s\n",vrs_cpp,date_cpp,hst_cpp,usr_cpp);*/
-    (void)fprintf(stderr,"NCO netCDF Operators version %s built %s on %s by %s\n",NCO_VERSION,date_cpp,hst_cpp,usr_cpp);
+    (void)fprintf(stderr,"NCO netCDF Operators version %s built by %s on %s at %s %s\n",NCO_VERSION,usr_cpp,hst_cpp,date_cpp,time_cpp);
   } /* endif */
   if(strlen(CVS_Id) > strlen("*Id*")){
     (void)fprintf(stderr,"%s version %s\n",nco_prg_nm_get(),vrs_cvs);
