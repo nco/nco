@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.68 2014-06-17 00:10:32 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.69 2014-10-10 02:41:34 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -61,7 +61,7 @@
 /* Get YYSTYPE prior to prototyping scanner */
 #include "ncap_yacc.h" /* ncap_yacc.h (ncap.tab.h) is produced from ncap_yacc.y by parser generator */
 
-  #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
+#define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
   YY_DECL;
 
 /* Turn on parser debugging option (Bison manual p. 85) */

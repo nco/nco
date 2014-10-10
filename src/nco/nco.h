@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.519 2014-10-08 21:00:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.520 2014-10-10 02:41:34 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -249,16 +249,16 @@ extern "C" {
   /* 20140924: netCDF meta-information available in library versions 4.3.3-rc2 
      Define compatibility tokens for earlier libraries equivalent to 3.6.0 */
 #ifndef NC_VERSION_MAJOR
- #define NC_VERSION_MAJOR 3
+# define NC_VERSION_MAJOR 3
 #endif /* !NC_VERSION_MAJOR */
 #ifndef NC_VERSION_MINOR
- #define NC_VERSION_MINOR 6
+# define NC_VERSION_MINOR 6
 #endif /* !NC_VERSION_MINOR */
 #ifndef NC_VERSION_PATCH
- #define NC_VERSION_PATCH 0
+# define NC_VERSION_PATCH 0
 #endif /* !NC_VERSION_PATCH */
 #ifndef NC_VERSION_NOTE
-#define NC_VERSION_NOTE  "" /* My be blank */
+# define NC_VERSION_NOTE  "" /* My be blank */
 #endif /* !NC_VERSION_NOTE */
 #ifndef NC_VERSION
 # define NC_VERSION "3.6.0"
@@ -271,16 +271,16 @@ extern "C" {
   /* NCO meta-information available in VERSION token since forever
      20141008: Define NCO tokens consistent with new netcdf_meta.h tokens */
 #ifndef NCO_VERSION_MAJOR
- #define NCO_VERSION_MAJOR 4
+# define NCO_VERSION_MAJOR 4
 #endif /* !NCO_VERSION_MAJOR */
 #ifndef NCO_VERSION_MINOR
- #define NCO_VERSION_MINOR 4
+# define NCO_VERSION_MINOR 4
 #endif /* !NCO_VERSION_MINOR */
 #ifndef NCO_VERSION_PATCH
- #define NCO_VERSION_PATCH 7
+# define NCO_VERSION_PATCH 7
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-#define NCO_VERSION_NOTE  "" /* My be blank */
+# define NCO_VERSION_NOTE  "" /* My be blank */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
