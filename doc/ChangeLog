@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
 
-	* Add numerous regression tests to evaluate nc_rename_var/dim() behavior
+	* Add numerous regression tests to evaluate nc_rename_var/dim()	behavior. No dice.
 
 	* Avoid nc_rename_var/dim() bug in netCDF4 files by avoiding nc_redef()/nc_enddef()
 
