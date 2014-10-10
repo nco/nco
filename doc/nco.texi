@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1037 2014-10-08 21:00:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1038 2014-10-10 00:33:30 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -2589,6 +2589,9 @@ penalty of copying the entire output file unless the expansion exceeds
 the amount of header padding exceeded.
 This can be beneficial when it is known that some metadata will be added
 at a future date.
+The operators which benefit most from judicious use of header padding
+are @command{ncatted} and @command{ncrename}, since they only alter
+metadata. 
 
 This optimization exploits the netCDF library @code{nc__enddef()}
 function, which behaves differently with different versions of netCDF.
@@ -12508,6 +12511,20 @@ of the @code{history} global attribute (@pxref{History Attribute}), the
 @samp{-h} switch is provided to override automatically appending the
 command to the @code{history} global attribute in the @var{output-file}.
 
+@cindex performance
+@cindex operator speed
+@cindex speed
+@cindex execution time
+According to the @cite{netCDF User Guide}, altering metadata in
+netCDF files does not incur the penalty of recopying the entire file
+when the new metadata occupies less space than the old metadata.
+Thus @command{ncatted} may run much faster (at least on netCDF3 files)
+if judicious use of header padding (@pxref{Metadata Optimization}) was
+made when producing the @var{input-file}.
+Similarly, using the @samp{--hdr_pad} option with @command{ncatted}
+helps ensure that future metadata changes to @var{output-file} occur
+as swifly as possible.
+
 @cindex missing values
 @cindex data, missing 
 @cindex @code{_FillValue}
@@ -16220,9 +16237,9 @@ Caveat lector: Unforunately from 2007--present (October, 2014) the
 netCDF library (versions 4.0.0--4.3.2) contained bugs or limitations
 that sometimes prevent @acronym{NCO} from correctly renaming coordinate
 variables, dimensions, and groups in netCDF4 files. 
-(To our knowledge the netCDF library calls for renaiming always work
-well on netCDF3 files so one workaround to netCDF4 bugs is convert to
-netCDF3, rename, then convert back). 
+(To our knowledge the netCDF library calls for renaming always work
+well on netCDF3 files so one workaround to some netCDF4 issues is
+convert to netCDF3, rename, then convert back). 
 To understand the renaming limitations associated with particular
 netCDF versions, read the @command{ncrename} documentation below in 
 its entirety. 
@@ -16267,9 +16284,15 @@ Such a variable will become a coordinate variable.
 @cindex operator speed
 @cindex speed
 @cindex execution time
-According to the @cite{netCDF User Guide}, renaming properties in
-netCDF files does not incur the penalty of recopying the entire file
-when the @var{new_name} is shorter than the @var{old_name}.
+According to the @cite{netCDF User Guide}, renaming objects in netCDF
+files does not incur the penalty of recopying the entire file when the
+@var{new_name} is shorter than the @var{old_name}. 
+Thus @command{ncrename} may run much faster (at least on netCDF3 files)
+if judicious use of header padding (@pxref{Metadata Optimization}) was
+made when producing the @var{input-file}.
+Similarly, using the @samp{--hdr_pad} option with @command{ncrename}
+helps ensure that future metadata changes to @var{output-file} occur
+as swifly as possible.
 
 @noindent
 OPTIONS

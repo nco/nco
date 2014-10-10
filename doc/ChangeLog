@@ -1,10 +1,14 @@
-2014-10-08  Charlie Zender  <zender@uci.edu>
+2014-10-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.7 release procedure:
- 	Changes since nco-4_4_6: -0->-1,
+ 	Changes since nco-4_4_6: -0->-1, rename bug
 	cd ~/nco;cvs tag -d nco-4_4_7;cvs tag -d nco-4_4_7-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
+
+	* Improve hdr_pad, ncrename documentation
+
+2014-10-08  Charlie Zender  <zender@uci.edu>
 
 	* Add NCO_VERSION for consistency with NC_VERSION
 
