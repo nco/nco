@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.206 2014-10-08 17:37:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.207 2014-10-10 14:38:42 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
 
   char *obj_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.206 2014-10-08 17:37:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.206 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.207 2014-10-10 14:38:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.207 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute/group in file is optional */
@@ -131,6 +131,7 @@ main(int argc,char **argv)
   extern int optind;
 
   int abb_arg_nbr=0;
+  int fl_fmt; /* [enm] Output (and input) file format */
   int fl_nbr=0;
   int mch_nbr_att=0; /* [nbr] Number of renamed attributes */
   int mch_nbr_var=0; /* [nbr] Number of renamed variables */
@@ -361,7 +362,10 @@ main(int argc,char **argv)
   /* Open file enabled for writing. Place file in define mode for renaming. */
   if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
   rcd+=nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&nc_id);
-  rcd+=nco_redef(nc_id);
+
+  /* 20141010: Avoid nc_rename_var/dim() bug */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt != NC_FORMAT_NETCDF4) rcd+=nco_redef(nc_id);
 
   /* Timestamp end of metadata setup and disk layout */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
@@ -614,13 +618,16 @@ main(int argc,char **argv)
   (void)omp_in_parallel();
 #endif /* !_OPENMP */
 
-  /* Take output file out of define mode */
-  if(hdr_pad == 0UL){
-    rcd+=nco_enddef(nc_id);
-  }else{
-    rcd+=nco__enddef(nc_id,hdr_pad);
-    if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
-  } /* hdr_pad */
+  /* 20141010: Avoid nc_rename_var/dim() bug */
+  if(fl_fmt != NC_FORMAT_NETCDF4){
+    /* Take output file out of define mode */
+    if(hdr_pad == 0UL){
+      rcd+=nco_enddef(nc_id);
+    }else{
+      rcd+=nco__enddef(nc_id,hdr_pad);
+      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
+    } /* hdr_pad */
+  } /* NC_FORMAT_NETCDF4 */
 
   /* Close the open netCDF file */
   rcd+=nco_close(nc_id);
