@@ -8,6 +8,8 @@
 // "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
 // /usr/local/bin/ncgen -k netCDF-4 -b -o in_4.nc in.cdl
 // /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in.cdl
+// /usr/local/bin/ncgen -k hdf5-nc3 -b -o in_4c.nc in.cdl
+// /usr/local/bin/ncgen -k hdf5-nc3 -b -o ${HOME}/nco/data/in_4c.nc ${HOME}/nco/data/in.cdl
 
 // URL: 
 // http://dust.ess.uci.edu/nco/in.nc
@@ -60,7 +62,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.192 2014-09-19 20:38:28 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.193 2014-10-10 15:15:35 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";

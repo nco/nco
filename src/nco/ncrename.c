@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.207 2014-10-10 14:38:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.208 2014-10-10 15:15:35 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
 
   char *obj_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.207 2014-10-10 14:38:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.207 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.208 2014-10-10 15:15:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.208 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute/group in file is optional */
@@ -375,7 +375,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
-  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,False,True,nco_pck_plc_nil,NULL,trv_tbl);
+  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int)0,False,False,False,False,True,nco_pck_plc_nil,NULL,trv_tbl);
 
   /* Rename variables */
   for(int idx_var=0;idx_var<nbr_var_rnm;idx_var++){
