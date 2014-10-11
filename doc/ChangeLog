@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
 
-	* Play with chunking defaults
+	* Break chunking regressions while fiddling with default behavior to get xst,xst to do something sane
 
 	* Fix ncrename regression tests
 
