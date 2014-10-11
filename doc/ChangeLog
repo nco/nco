@@ -8,6 +8,8 @@
 
 	* Play with chunking defaults
 
+	* Fix ncrename regression tests
+
 	* Build in_4.nc from in.nc (not in.cdl due to ncgen chunksize problems and bugs) for regression tests
 
 	* Add numerous regression tests to evaluate nc_rename_var/dim()	behavior.

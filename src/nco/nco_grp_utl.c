@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1464 2014-10-08 21:00:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1465 2014-10-11 04:26:59 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3741,11 +3741,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
     /* Define variable in output file */
-    if (RNK_1_GTR){
-      var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,NULL,0,trv_tbl_1);
-    }else{
-      var_out_id=nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,NULL,0,trv_tbl_2);
-    }
+    if(RNK_1_GTR) var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,NULL,0,trv_tbl_1); else var_out_id=nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,NULL,0,trv_tbl_2);
 
     /* Copy variable's attributes */
     if(RNK_1_GTR) (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); else (void)nco_att_cpy(grp_id_2,grp_out_id,var_id_2,var_out_id,PCK_ATT_CPY);
@@ -4956,11 +4952,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         /* Loop dimensions */
         for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
           (void)nco_inq_dim(grp_out_id,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
-          /* If output dimension name differs from input there was a swap */
-          if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm)){
-            /* Swap array for these 2 names */
-            (void)nco_dmn_swap(dmn_nm,dmn_cmn[idx_dmn].nm,dmn_cmn,nbr_dmn_var);
-          } /* endif */
+          /* If output dimension name differs from input there was a swap, so swap array for these 2 names */
+          if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm)) (void)nco_dmn_swap(dmn_nm,dmn_cmn[idx_dmn].nm,dmn_cmn,nbr_dmn_var);
         } /* idx_dmn */
       } /* !ncpdq */
 
@@ -9658,7 +9651,6 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
 
 } /* nco_prc_nsm() */
 
-
 void                          
 nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (ncbo) */
 (const int nc_id,                      /* I [id] netCDF input-file ID */
@@ -9699,7 +9691,7 @@ nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (nc
     if(gpe) (void)nco_gpe_chk(grp_out_fll,trv->nm,&gpe_nm,&nbr_gpe_nm);  
 
     /* Define variable in output file */
-    var_out_id= nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv,NULL,0,trv_tbl);
+    var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv,NULL,0,trv_tbl);
 
     /* Copy variable's attributes */
     (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,True); 

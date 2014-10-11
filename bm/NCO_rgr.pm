@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.520 2014-10-10 15:15:35 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.521 2014-10-11 04:26:59 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4922,13 +4922,13 @@ if (0){
     @tst_cmd=(); # really reset array.	
 	
 #ncrename #2
-#ncrename -O -a history,new_history in_grp.nc ~/foo.nc  
+#ncrename -O -h -a .history,new_history in_grp.nc ~/foo.nc  
 #relative rename history to new_history
     
     $dsc_sng="Attributes: Relative rename 'history' to 'new_history'";
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a global\@history,new_history $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
-    $tst_cmd[2]="Global attribute 3: new_history, size = 26 NC_CHAR, value = History global attribute.";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -h -a .history,new_history $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep new_history | cut -d ' ' -f 4";
+    $tst_cmd[2]="new_history,";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
@@ -4949,13 +4949,13 @@ if (0){
 	
 	
 #ncrename #4	
-#ncrename -O -a global@history,new_history in_grp.nc ~/foo.nc 
+#ncrename -O -h -a global@history,new_history in_grp.nc ~/foo.nc 
 # relative rename history group/global att to new_history
 
     $dsc_sng="Attributes: Relative rename 'global\@history' to 'new_history'";
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a 'global\@history,new_history' $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
-    $tst_cmd[2]="Global attribute 3: new_history, size = 26 NC_CHAR, value = History global attribute.";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -h -a 'global\@history,new_history' $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep new_history | cut -d ' ' -f 4";
+    $tst_cmd[2]="new_history,";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		

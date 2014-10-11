@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.131 2014-10-11 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.132 2014-10-11 04:26:59 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -864,8 +864,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       (void)fprintf(stdout,"cnk_sz_scl, cnk_sz_byt: %lu, %lu\n",(unsigned long)cnk_sz_scl,(unsigned long)cnk_sz_byt);
       if(cnk_nbr > 0){
         (void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
-        for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++)
-	  (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
+        for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
       } /* cnk_nbr == 0 */
     } /* endif dbg */
   } /* endif dbg */
