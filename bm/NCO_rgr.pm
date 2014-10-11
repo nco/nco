@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.522 2014-10-11 05:29:50 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.523 2014-10-11 05:34:56 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2462,7 +2462,7 @@ print "\n";
 
 #ncks #85
 #ncks -O -L 0 --cnk_dmn lat,2 -v one ~/nco/data/in_grp.nc ~/foo.nc
-#ncks -C -m --hdn -v one -g g13 ~/foo.nc | grep  _Storage
+#ncks -C -m --hdn -v one -g g13 ~/foo.nc | grep _Storage
     
     $dsc_sng="(Groups) Chunking and shuffle filter -L 0 --cnk_dmn lat,2 -v one (expect failure with netCDF 4.1.1-)";
     $tst_cmd[0]="ncks -O -4 -L 0 --cnk_dmn lat,2 -v one $nco_D_flg $in_pth_arg hdn.nc %tmp_fl_00%";
