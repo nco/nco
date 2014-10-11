@@ -6,9 +6,13 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
 
-	* Add numerous regression tests to evaluate nc_rename_var/dim()	behavior. No dice.
+	* Play with chunking defaults
 
-	* Avoid nc_rename_var/dim() bug in netCDF4 files by avoiding nc_redef()/nc_enddef()
+	* Build in_4.nc from in.nc (not in.cdl due to ncgen chunksize problems and bugs) for regression tests
+
+	* Add numerous regression tests to evaluate nc_rename_var/dim()	behavior.
+
+	* Avoid nc_rename_var/dim() bug in netCDF4 files by avoiding nc_redef()/nc_enddef(). No dice.
 
 2014-10-09  Charlie Zender  <zender@uci.edu>
 

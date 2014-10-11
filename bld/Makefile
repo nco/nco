@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.733 2014-10-10 15:15:35 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.734 2014-10-11 00:03:58 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1704,14 +1704,16 @@ dat:	${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/dsm.nc ${MY_DAT_D
 	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	ncgen -b -o $@ $<
+${MY_DAT_DIR}/in_4c.nc: ${MY_DAT_DIR}/in.nc
+	-ncks -O -7 --cnk_dmn time,10 $< $@
+# ncgen default chunksize for time = 4 MB produces ~200 MB in_4c.nc file. Avoid that!
+#	-ncgen -k hdf5-nc3 -b -o $@ $<
 ${MY_DAT_DIR}/in_rec_zero.nc: ${MY_DAT_DIR}/in_rec_zero.cdl
 	ncgen -b -o $@ $<
 ${MY_DAT_DIR}/in_grp.nc: ${MY_DAT_DIR}/in_grp.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/in_4.nc: ${MY_DAT_DIR}/in_4.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
-${MY_DAT_DIR}/in_4c.nc: ${MY_DAT_DIR}/in.cdl
-	-ncgen -k hdf5-nc3 -b -o $@ $<
 ${MY_DAT_DIR}/in_1.nc: ${MY_DAT_DIR}/in_1.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/in_2.nc: ${MY_DAT_DIR}/in_2.cdl

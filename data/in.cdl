@@ -39,12 +39,17 @@
 // In particular, do not change number of elements in record coordinate, time, without simultaneously changing number of data in all record variables
 // My (and NCO's) convention is that the _FillValue, if any, of any packed variable should be of the same type as the expanded variable. Hence _FillValue, add_offset, and scale_factor should all be of the same type. Variables that do not adhere to this convention are not supported.
 
+// Bugs:
+// Some triggering bugs were moved to buggy.cdl to prevent non-builds
+// ncgen 4.0.0--4.3.2 crashes on 'l' or 'L' syntax when generating netCDF4-classic (but not netCDF3 or netCDF4) files until 20141010 (NCF-318)
+
 // CDL Data constants:
 // http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/CDL-Syntax.html
 // byte: 'a'
 // char: "a"
 // short: 1s
 // int: 1 (no decimal point)
+// long: 1 (_not_ 1l;) (long is synonym for int in netCDF3)
 // float: 1.f (decimal point is required, f is required to distinguish from double)
 // double: 1.0, 1.d, 1.0e-20 (decimal point is required, d is not required)
 // CDL complex types:
@@ -62,7 +67,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.193 2014-10-10 15:15:35 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.194 2014-10-11 00:03:58 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";

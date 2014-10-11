@@ -9,7 +9,19 @@ netcdf hdn {
 
  dimensions:
   lat=2;
+  // ncgen in netCDF 4.3.2+ assigns unlimited dimensions a default chunksize of 4 MB (1 million 4-byte integers)
+  // This increases filesize of hdn.nc from 25 kB to 42 MB!
+  //  time=2;
+  time=UNLIMITED;
   
+ variables:
+
+  int time(time);
+
+ data:
+
+  time=1,2;
+
  group: g13 { // Level 1
     // Purpose: Test hidden attributes
     // NB: Hidden attributes not supported by ncgen at least through netCDF 4.1.1 (201111)

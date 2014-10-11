@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.130 2014-10-08 21:00:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.131 2014-10-11 00:03:58 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -191,8 +191,8 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
      2. User set map not policy
      3. User set policy not map */
   if(cnk->flg_usr_rqs && (cnk_map == nco_cnk_map_nil) && (cnk_plc == nco_cnk_plc_nil)){
-    cnk->cnk_map=nco_cnk_map_rd1;
-    cnk->cnk_plc=nco_cnk_plc_g2d;
+    cnk->cnk_map=nco_cnk_map_xst;
+    cnk->cnk_plc=nco_cnk_plc_xst;
   } /* endif */
   if(cnk_map == nco_cnk_map_nil && cnk_plc != nco_cnk_plc_nil) cnk->cnk_map=nco_cnk_map_rd1;
   if(cnk_plc == nco_cnk_plc_nil && cnk_map != nco_cnk_map_nil) cnk->cnk_plc=nco_cnk_plc_g2d;

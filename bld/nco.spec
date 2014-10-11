@@ -111,7 +111,7 @@ fi
 * Tue Nov 01 2014 Charlie Zender <zender@uci.edu> - 4.4.7-1
 - new upstream 4.4.7
 
-* Tue Oct 01 2014 Charlie Zender <zender@uci.edu> - 4.4.6-1
+* Wed Oct 01 2014 Charlie Zender <zender@uci.edu> - 4.4.6-1
 - new upstream 4.4.6
 
 * Tue Aug 26 2014 Charlie Zender <zender@uci.edu> - 4.4.5-1
