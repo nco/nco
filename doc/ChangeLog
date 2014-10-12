@@ -1,10 +1,18 @@
-2014-10-10  Charlie Zender  <zender@uci.edu>
+2014-10-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.7 release procedure:
  	Changes since nco-4_4_6: -0->-1, rename bug
 	cd ~/nco;cvs tag -d nco-4_4_7;cvs tag -d nco-4_4_7-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
+
+	* Rationalize regression tests with new chunking defaults (xpl, xpl)
+
+	* Ensure user-specified full chunking paths take precedence over relative paths
+
+	* Simplify nco_cnk_sz_set_trv()
+
+2014-10-10  Charlie Zender  <zender@uci.edu>
 
 	* Break chunking regressions while fiddling with default behavior to get xst,xst to do something sane
 

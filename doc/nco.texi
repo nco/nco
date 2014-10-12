@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1038 2014-10-10 00:33:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1039 2014-10-12 23:50:29 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6461,14 +6461,14 @@ dimension whose chunksize was explicitly set with the @samp{--cnk_dmn} option.
 Alternate invocation: none@*
 @var{cnk_plc} key values: @samp{xpl}, @samp{cnk_xpl}, @samp{plc_xpl}@*
 Mnemonic: E@emph{XPL}icitly specified dimensions@*
-@item Chunk Variables with Existing Chunk Sizes
-Definition: Chunk all variables possible that are already chunked in the
-input file.
+@item Chunk Variables that are already Chunked
+Definition: Chunk only variables that are already chunked in the input
+file. 
 When used in conjunction with @samp{cnk_map=xst} this option preserves
 and copies the chunking parameters from the input to the output file.
 Alternate invocation: none@*
 @var{cnk_plc} key values: @samp{xst}, @samp{cnk_xst}, @samp{plc_xst}@*
-Mnemonic: E@emph{X}i@emph{ST}ing chunk sizes@*
+Mnemonic: E@emph{X}i@emph{ST}ing chunked variables@*
 @item Unchunking
 Definition: Unchunk all variables possible. 
 The @acronym{HDF5} storge layer requires that record variables (i.e.,

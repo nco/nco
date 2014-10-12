@@ -36,6 +36,12 @@ netcdf hdn {
   one:_Fletcher32=1;
   one:_NOFILL=1;
 
+    int one(lat);
+  one:_DeflateLevel=1;
+  one:_Shuffle=1;
+  one:_Fletcher32=1;
+  one:_NOFILL=1;
+
     int two(lat);
 
     int three(lat);
