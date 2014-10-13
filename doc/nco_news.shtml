@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.23 2014-06-13 19:43:51 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.24 2014-10-13 15:35:04 zender Exp $
 
 Purpose: NCO news archive
 
@@ -177,7 +177,7 @@ future directions for NCO.</li>
 <li><a href="http://sf.net/forum/forum.php?forum_id=9830">Help
 Forum</a>: Installation problems, user's questions (e.g., "How do I
 average x and y...?")</li>
-<li><a href="https://sf.net/projects/nco/forums/forum/9831">Developers
+<li><a href="https://sf.net/p/nco/discussion/9831">Developers
 forum</a>: Discussion of patches, technical questions related to
 modifying NCO, and discussion of specific items on the 
 <a href="./TODO">TODO list</a> and how best to address them</li>  

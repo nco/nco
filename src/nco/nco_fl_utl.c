@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.250 2014-09-15 19:43:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.251 2014-10-13 15:35:04 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -467,7 +467,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	bfr_in=(char *)nco_free(bfr_in);
 
 	if(fl_lst_in_lng >= FL_LST_IN_MAX_LNG){
-	  (void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, post request to developer's forum (http://sf.net/projects/nco/forums/forum/9831) to expand FL_LST_IN_MAX_LNG\n",nco_prg_nm_get(),FL_LST_IN_MAX_LNG);
+	  (void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, post request to developer's forum (http://sf.net/p/nco/discussion/9831) to expand FL_LST_IN_MAX_LNG\n",nco_prg_nm_get(),FL_LST_IN_MAX_LNG);
 	  nco_exit(EXIT_FAILURE);
 	} /* endif err */
 

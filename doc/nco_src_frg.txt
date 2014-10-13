@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.66 2012-06-14 20:20:14 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.67 2014-10-13 15:35:04 zender Exp $ -*-text-*-
 
 # Purpose: Potpurri of Sourceforge information for NCO netCDF Operators project
 
@@ -170,7 +170,7 @@ since they were released. Eventually, therefore, you must learn to
 use CVS so that you can make serious code changes and keep up with the
 development branch. NCO-specific instructions on how to check out the
 code with CVS are posted to the Developer's forum on Sourceforge 
-http://sf.net/projects/nco/forums/forum/9831 
+http://sf.net/p/nco/discussion/9831 
 in the message dated June 21, 2000.
 
 Once you have NCO, build it! If you must make non-trivial
