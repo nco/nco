@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1465 2014-10-11 04:26:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1466 2014-10-13 18:38:01 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4920,9 +4920,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         dmn_cmn[0].NON_HYP_DMN=True;
         dmn_cmn[0].dmn_cnt=NC_UNLIMITED;
         strcpy(dmn_cmn[0].nm,rec_dmn_nm);
-        /* Define full name */ 
+        /* Define full name */
         dmn_cmn[0].nm_fll=nco_bld_nm_fll(var_trv->grp_nm_fll,rec_dmn_nm);
-        /* Move up to make room for inserted dimension at 0 index */
+        /* Make room for inserted dimension at 0 index */
         for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++) dmn_cmn[idx_dmn+1]=dmn_cmn_tmp[idx_dmn];
       } /* !ncecat */
 

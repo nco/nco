@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1040 2014-10-13 15:35:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1041 2014-10-13 18:38:01 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6498,7 +6498,7 @@ is called the @dfn{chunking map}.
 The user specifies the desired chunking map with the @samp{-M} switch
 (or its long option equivalents, @samp{--cnk_map} and
 @samp{--chunk_map}) and its @var{cnk_map} argument.
-Four chunking maps are currently implemented:@*
+Eight chunking maps are currently implemented:@*
 @cindex @samp{dmn}
 @cindex @samp{scl}
 @cindex @samp{prd}
@@ -6506,18 +6506,23 @@ Four chunking maps are currently implemented:@*
 @cindex @samp{rd1}
 @cindex @samp{xst}
 @cindex @samp{rew}
+@cindex @samp{nc4}
 @cindex @samp{cnk_dmn}
 @cindex @samp{cnk_scl}
 @cindex @samp{cnk_prd}
 @cindex @samp{cnk_lfp}
 @cindex @samp{cnk_rd1}
 @cindex @samp{cnk_xst}
+@cindex @samp{cnk_rew}
+@cindex @samp{cnk_nc4}
 @cindex @samp{map_dmn}
 @cindex @samp{map_scl}
 @cindex @samp{map_prd}
 @cindex @samp{map_lfp}
 @cindex @samp{map_rd1}
 @cindex @samp{map_xst}
+@cindex @samp{map_rew}
+@cindex @samp{map_nc4}
 @cindex Chris Barker
 @table @dfn
 @item Chunksize Equals Dimension Size [@emph{default}]
@@ -6578,6 +6583,14 @@ Russ Rew explains the motivation and derivation for this strategy
 here}.@*
 @var{cnk_map} key values: @samp{rew}, @samp{cnk_rew}, @samp{map_rew}@*
 Mnemonic: Russ @emph{REW}@*
+@item Chunksizes use netCDF4 defaults
+Definition: Chunksizes are determined by the underlying netCDF library.
+All variables selected by the current chunking policy will have their
+chunksizes determined by netCDF library defaults.
+This map can be used to reset (portions of) previously chunked files to
+default chunking values.@*
+@var{cnk_map} key values: @samp{nc4}, @samp{cnk_nc4}, @samp{map_nc4}@*
+Mnemonic: @emph{N}et@emph{C}DF@emph{4}@*
 @end table
 @noindent
 It is possible to combine the above chunking map algorithms with
