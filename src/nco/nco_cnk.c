@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.134 2014-10-14 04:04:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.135 2014-10-14 04:56:13 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -66,6 +66,8 @@ nco_cnk_map_sng_get /* [fnc] Convert chunking map enum to string */
     return "xst";
   case nco_cnk_map_rew:
     return "rew";
+  case nco_cnk_map_nc4:
+    return "nc4";
   default: nco_dfl_case_cnk_map_err(); break;
   } /* end switch */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
@@ -334,6 +336,8 @@ nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
   if(!strcmp(nco_cnk_map_sng,"cnk_map_xst")) return nco_cnk_map_xst;
   if(!strcmp(nco_cnk_map_sng,"rew")) return nco_cnk_map_rew;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_rew")) return nco_cnk_map_rew;
+  if(!strcmp(nco_cnk_map_sng,"nc4")) return nco_cnk_map_nc4;
+  if(!strcmp(nco_cnk_map_sng,"cnk_map_nc4")) return nco_cnk_map_nc4;
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified chunking map %s\n",nco_prg_nm_get(),fnc_nm,nco_cnk_map_sng);
   nco_exit(EXIT_FAILURE);
@@ -920,6 +924,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     if(cnk_idx != cnk_nbr) break;
   } /* end loop over dmn_idx */
   if(dmn_idx != dmn_nbr) is_xpl_cnk=True;
+
+  /* Let netCDF layer determine chunking */
+  if(cnk_map == nco_cnk_map_nc4) return;
 
   if(must_be_chunked){
     /* Some variables simply must be chunked */
