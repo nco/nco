@@ -6,7 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
 
-	* Add stubs for cnk_map = nc4 for default netCDF4 chunking
+	* Always call chunking
+
+	* Stubs for cnk_map = nc4 for default netCDF4 chunking
 
 	* Change links to online discussion forums from, e.g., https://sf.net/projects/nco/forums/forum/9830 to
 	https://sf.net/p/nco/discussion/9830 to eliminate new circular reference errors from sf webserver

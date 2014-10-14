@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.133 2014-10-12 23:50:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.134 2014-10-14 04:04:18 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -186,11 +186,12 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
 
   /* Set actual chunk policy and map to defaults as necessary
      20140821: Until today, defaults for map and policy were set independently
-     Now we consider four distinct cases: 
+     20141013: Tweak defaults so chunking always called (required to preserve input chunking)
+     Now we consider three distinct cases: 
      1. Neither map nor policy was explicitly set, and something else, e.g., size, was
      2. User set map not policy
      3. User set policy not map */
-  if(cnk->flg_usr_rqs && (cnk_map == nco_cnk_map_nil) && (cnk_plc == nco_cnk_plc_nil)){
+  if(cnk_map == nco_cnk_map_nil && cnk_plc == nco_cnk_plc_nil){
     cnk->cnk_map=nco_cnk_map_xst;
     cnk->cnk_plc=nco_cnk_plc_xst;
   } /* endif */

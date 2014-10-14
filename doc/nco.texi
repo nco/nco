@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1041 2014-10-13 18:38:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1042 2014-10-14 04:04:18 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6391,23 +6391,38 @@ and
 @cindex chunksize
 The @acronym{NCO} chunking implementation is designed to be flexible. 
 Users control three aspects of the chunking implementation.
-These are known as the @dfn{chunking policy}, @dfn{chunking map},
-and @dfn{chunksize}.
-The first two are high-level mechanisms that apply to an entire file
-and all variables and dimensions, while the third allows per-dimension
-specification of parameters. 
+These are the @dfn{chunking policy}, @dfn{chunking map}, and @dfn{chunksize}.
+The chunking policy determines @emph{which} variables to chunk, and
+the chunking map determines how (with what exact sizes) to chunk
+those variables.
+These are high-level mechanisms that apply to an entire file and all
+variables and dimensions.
+The chunksize option allows per-dimension specification of sizes that 
+will override the selected (or default) chunking map.
+
 @cindex hyperslab
 @findex ncpdq
 @cindex packing
-The implementation is a hybrid of the @command{ncpdq} packing policies  
-(@pxref{ncpdq netCDF Permute Dimensions Quickly}), and the hyperslab
-specifications (@pxref{Hyperslabs}).
-Each aspect is intended to have a sensible default, so that most users
-will only need to set one switch to obtain sensible chunking.
-Power users can tune the three switches in tandem to obtain optimal
-performance. 
+The chunking implementation is similar to a hybrid of the
+@command{ncpdq} packing policies 
+(@pxref{ncpdq netCDF Permute Dimensions Quickly}) and hyperslab
+specifications (@pxref{Hyperslabs}).  
+Each aspect is intended to have a sensible default, so that many users 
+only need to set one switch to obtain sensible chunking. 
+Power users can tune chunking with the three switches in tandem to
+obtain optimal performance. 
 
-The user specifies the desired chunking policy with the @samp{-P} switch 
+By default, @acronym{NCO} preserves the chunking characteristics
+of the input file in the output file
+@footnote{This behavior became the default in October 2014 with
+@acronym{NCO} version 4.4.7.
+Prior versions would always use netCDF default chunking in the output
+file when no @acronym{NCO} chunking switches were activated, regardless
+of the chunking in the input file.}.
+In other words, preserving chunking requires no switches or user
+intervention.
+
+Users specify the desired chunking policy with the @samp{-P} switch 
 (or its long option equivalents, @samp{--cnk_plc} and
 @samp{--chunk_policy}) and its @var{cnk_plc} argument.
 As of August, 2014, six chunking policies are implemented:@*
@@ -6585,8 +6600,10 @@ here}.@*
 Mnemonic: Russ @emph{REW}@*
 @item Chunksizes use netCDF4 defaults
 Definition: Chunksizes are determined by the underlying netCDF library.
-All variables selected by the current chunking policy will have their
-chunksizes determined by netCDF library defaults.
+All variables selected by the current chunking policy have their
+chunksizes determined by netCDF library defaults. 
+The default algorithm netCDF uses to determine chunksizes has changed
+through the years, and thus depends on the netCDF library version.
 This map can be used to reset (portions of) previously chunked files to
 default chunking values.@*
 @var{cnk_map} key values: @samp{nc4}, @samp{cnk_nc4}, @samp{map_nc4}@*
@@ -6604,12 +6621,29 @@ chunksize, respectively.
 The @samp{--cnk_dmn} option may be used as many times as necessary.
 
 The default behavior of chunking depends on several factors.
-When no chunking options are explicitly specified by the user, then
+As mentioned above, when no chunking options are explicitly specified by
+the user, then @acronym{NCO} preserves the chunking characteristics of
+the input file in the output file.
+This is equivalent to specifying both @var{cnk_plc} and @var{cnk_map} 
+as ``existing'', i.e., @samp{--cnk_plc=xst --cnk_map=xst}.
+If 
 output netCDF4 files are chunked with the default behavior of the 
 netCDF4 library.
-When any chunking option @emph{except} @samp{cnk_plc} or @samp{cnk_map}
-is specified, then @samp{cnk_plc} and @samp{cnk_map} are set to
-@samp{g2d} and @samp{rd1}, respectively.
+
+When any chunking parameter @emph{except} @samp{cnk_plc} or
+@samp{cnk_map} is specified (such as @samp{cnk_dmn} or
+@samp{cnk_sz_scl}), then the ``existing'' policy and map are
+retained and the output chunksizes are modified where necessary in
+accord with the user-specified parameter.
+When @samp{cnk_map} is specified and @samp{cnk_plc} is not, then
+@acronym{NCO} picks (what it thinks is) the optimal chunking policy. 
+This has always been policy @samp{map_g2d}.
+When @samp{cnk_plc} is specified and @samp{cnk_map} is not, then
+@acronym{NCO} picks (what it thinks is) the optimal chunking map.
+This has always been map @samp{map_rd1}.
+
+To start afresh and return to netCDF4 chunking defaults, select
+@samp{cnk_map=nc4}. 
 
 @html
 <a name="xmp_cnk"></a> <!-- http://nco.sf.net/nco.html#xmp_cnk -->

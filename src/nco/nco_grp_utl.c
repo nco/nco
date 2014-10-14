@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1466 2014-10-13 18:38:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1467 2014-10-14 04:04:18 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4305,35 +4305,40 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   const char fnc_nm[]="nco_cpy_var_dfn_trv()"; /* [sng] Function name */
 
-  char var_nm[NC_MAX_NAME+1];            /* [sng] Variable name (local copy of object name) */ 
+  char *dmn_nm_fll_out=NULL;             /* [sng] Full name of dimension in output */
+  char *grp_dmn_out_fll=NULL;            /* [sng] Group name of dimension in output */
   char *rec_dmn_nm=NULL;                 /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL;             /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
-  char *grp_dmn_out_fll=NULL;            /* [sng] Group name of dimension in output */
-  char *dmn_nm_fll_out=NULL;             /* [sng] Full name of dimension in output */
   char dmn_nm[NC_MAX_NAME+1];            /* [sng] Dimension name  */
   char dmn_nm_grp[NC_MAX_NAME+1];        /* [sng] Dimension name for group */  
+  char var_nm[NC_MAX_NAME+1];            /* [sng] Variable name (local copy of object name) */ 
 
-  int *dmn_in_id_var;                    /* [id] Dimension IDs array for input variable */
-  int dmn_out_id[NC_MAX_DIMS];           /* [id] Dimension IDs array for output variable */
-  int *dmn_out_id_grp;                   /* [id] Dimension IDs array in output group */ 
+  dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];      /* [sct] Dimension information on output (for a variable) */
+
+  dmn_trv_sct *dmn_trv;                  /* [sct] Unique dimension object */
+  
   int *dmn_idx_in_out;                   /* [idx] Dimension correspondence, input->output (ncpdq) */
+  int *dmn_in_id_var;                    /* [id] Dimension IDs array for input variable */
+  int *dmn_out_id_grp;                   /* [id] Dimension IDs array in output group */ 
   int *dmn_out_id_tmp;                   /* [idx] Copy of dmn_out_id (ncpdq) */
-  int rec_dmn_out_id;                    /* [id] Record dimension for output variable */
-  int var_in_id;                         /* [id] Variable ID */
-  int var_out_id;                        /* [id] Variable ID */
-  int fl_fmt;                            /* [enm] Output file format */
-  int nbr_dmn_var;                       /* [nbr] Number of dimensions for variable */
-  int nbr_dmn_var_out;                   /* [nbr] Number of dimensions for variable on output ( can change for ncwa) */
-  int rcd=NC_NOERR;                      /* [rcd] Return code */
-  int nco_prg_id;                        /* [enm] Program ID */
-  int rec_id_out;                        /* [id] Dimension ID for ncecat "record" dimension */  
-  int grp_dmn_out_id;                    /* [id] Group ID where dimension visible to specified group is defined */
-  int rcd_lcl;                           /* [rcd] Return code */
-  int var_dim_id;                        /* [id] Variable dimension ID */   
   int dmn_id_out;                        /* [id] Dimension ID defined in outout group */  
-  int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */
+  int dmn_out_id[NC_MAX_DIMS];           /* [id] Dimension IDs array for output variable */
+  int fl_fmt;                            /* [enm] Output file format */
+  int grp_dmn_out_id;                    /* [id] Group ID where dimension visible to specified group is defined */
   int grp_in_id;                         /* [id] Group ID */
   int grp_out_id;                        /* [id] Group ID */
+  int idx_dmn_out; /* [idx] Index for output dimensions */
+  int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */
+  int nbr_dmn_var;                       /* [nbr] Number of dimensions for variable */
+  int nbr_dmn_var_out;                   /* [nbr] Number of dimensions for variable on output ( can change for ncwa) */
+  int nco_prg_id;                        /* [enm] Program ID */
+  int rcd=NC_NOERR;                      /* [rcd] Return code */
+  int rcd_lcl;                           /* [rcd] Return code */
+  int rec_dmn_out_id;                    /* [id] Record dimension for output variable */
+  int rec_id_out;                        /* [id] Dimension ID for ncecat "record" dimension */  
+  int var_dim_id;                        /* [id] Variable dimension ID */   
+  int var_in_id;                         /* [id] Variable ID */
+  int var_out_id;                        /* [id] Variable ID */
 
   long dmn_cnt;                          /* [nbr] Hyperslabbed size of dimension */  
   long dmn_sz;                           /* [nbr] Size of dimension (on input)  */  
@@ -4348,10 +4353,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   nco_bool FIX_REC_DMN=False;            /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
   nco_bool NEED_TO_DEFINE_DIM;           /* [flg] Dimension needs to be defined in *this* group */  
   nco_bool DEFINE_DIM[NC_MAX_DIMS];      /* [flg] Defined dimension (always True, except for ncwa)  */  
-
-  dmn_trv_sct *dmn_trv;                  /* [sct] Unique dimension object */
-  
-  dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];      /* [sct] Dimension information on output (for a variable) */
 
   rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
@@ -4523,7 +4524,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       grp_dmn_out_fll=(char *)strdup(grp_out_fll);
     }else{
       if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll); else grp_dmn_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
-    }
+    } /* !ncge */
 
     /* Test existence of group and create if not existent */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id)) nco_def_grp_full(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id);
@@ -4570,9 +4571,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } /* endif dbg */
 
       /* Here begins a complex tree to decide a simple, binary output:
-      Will current input dimension be defined as an output record dimension or as a fixed dimension?
-      Decision tree outputs flag DFN_CRR_DMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
-      Otherwise would repeat netCDF action code too many times */
+	 Will current input dimension be defined as an output record dimension or as a fixed dimension?
+	 Decision tree outputs flag DFN_CRR_DMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
+	 Otherwise would repeat netCDF action code too many times */
 
       /* Is dimension unlimited in input file? Handy unique dimension has all this info */
       CRR_DMN_IS_REC_IN_INPUT=dmn_trv->is_rec_dmn;
@@ -4701,15 +4702,14 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     } /* end if dimension is not yet defined */
 
-    /* pvn 20140824 Always redefine output dimension array; repeat logic above regarding value of "dmn_cnt"
-    for both non ncwa and ncwa cases */
+    /* pvn 20140824 Always redefine output dimension array; repeat logic above regarding value of "dmn_cnt" for both non ncwa and ncwa cases */
     if(nco_prg_id != ncwa){
       if(var_trv->var_dmn[idx_dmn].is_crd_var){
         dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
       }else{ /* !is_crd_var */
         dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
       } /* !is_crd_var */
-    } else if(nco_prg_id == ncwa){
+    }else if(nco_prg_id == ncwa){
       /* Degenerate dimensions */
       for(int idx_dmn_dgn=0;idx_dmn_dgn<trv_tbl->nbr_dmn_dgn;idx_dmn_dgn++){
         /* Compare ID */
@@ -4723,7 +4723,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(var_trv->var_dmn[idx_dmn].flg_rdd){
         /* If dimension was to be record keep it that way, otherwise define degenerate size of 1 */
         if(DFN_CRR_DMN_AS_REC_IN_OUTPUT) dmn_cnt=NC_UNLIMITED; else dmn_cnt=1L;
-      } 
+      } /* endif */
     } /* !ncwa */
 
     /* Construct full dimension name using the full group name */
@@ -4849,23 +4849,16 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* If output dimensions array exists */
   if(dmn_cmn_out != NULL && nco_prg_id == ncks){
 
-    nco_bool dmn_flg=False;
-
     /* Loop over each dimension in variable */
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
-      /* Loop constructed array of output dimensions to see if already inserted  */
-      for(int idx_dmn_out=0;idx_dmn_out<*nbr_dmn_cmn_out;idx_dmn_out++){
+      /* Is output dimension already in output file?
+	 Match by dimension ID since dimension IDs are unique */
+      for(idx_dmn_out=0;idx_dmn_out<*nbr_dmn_cmn_out;idx_dmn_out++)
+        if((*dmn_cmn_out)[idx_dmn_out].id == dmn_cmn[idx_dmn].id) break;
 
-        /* Match by ID */
-        if((*dmn_cmn_out)[idx_dmn_out].id == dmn_cmn[idx_dmn].id){
-          dmn_flg=True;
-          break;
-        } /* Match by ID */
-      } /* Loop constructed array of output dimensions to see if already inserted  */ 
-
-      /* If this dimension is not in output array */
-      if(!dmn_flg){
+      /* If this dimension is not yet in output array */
+      if(idx_dmn_out == *nbr_dmn_cmn_out){
 
         int nbr_dmn_out_tmp = *nbr_dmn_cmn_out;  
 
@@ -4891,6 +4884,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+
     /* Deflation */
     if(nbr_dmn_var > 0){
       int deflate; /* [flg] Turn on deflate filter */
@@ -4906,69 +4900,67 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl);
     } /* endif */
 
-    /* Chunking routine called only when user explicitly sets a chunking option */
-    if(cnk && cnk->flg_usr_rqs){
+    /* 20141013 Previously called chunking only when user selected a chunking switch
+       Now always call chunking because default is to preserve input chunking 
+       This requires explicitly overriding netCDF defaults */
 
-      /* Define extra dimension on output (e.g., ncecat adds "record" dimension) */
-      if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
-        /* Temporary store for old dimensions */
-        dmn_cmn_sct dmn_cmn_tmp[NC_MAX_DIMS];
-        for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++) dmn_cmn_tmp[idx_dmn]=dmn_cmn[idx_dmn];
-        /* Define record dimension made for ncecat */
-        dmn_cmn[0].sz=NC_UNLIMITED;
-        dmn_cmn[0].is_rec_dmn=True;
-        dmn_cmn[0].NON_HYP_DMN=True;
-        dmn_cmn[0].dmn_cnt=NC_UNLIMITED;
-        strcpy(dmn_cmn[0].nm,rec_dmn_nm);
-        /* Define full name */
-        dmn_cmn[0].nm_fll=nco_bld_nm_fll(var_trv->grp_nm_fll,rec_dmn_nm);
-        /* Make room for inserted dimension at 0 index */
-        for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++) dmn_cmn[idx_dmn+1]=dmn_cmn_tmp[idx_dmn];
-      } /* !ncecat */
-
-      /* Special case for ncwa */
-      if(nco_prg_id == ncwa){
-        int idx_dmn_def=0;
-        /* Loop dimensions. NB use original input dimensions for this loop */
-        for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-          if(DEFINE_DIM[idx_dmn]){
-            /* Redefine the array */
-            dmn_cmn[idx_dmn_def]=dmn_cmn[idx_dmn];
-            idx_dmn_def++;
-          } /* DEFINE_DIM[idx_dmn]) */
-        } /* Loop dimensions */
-      } /* !ncwa */
-
-      /* Special case for ncpdq */
-      if(nco_prg_id == ncpdq && nbr_dmn_var > 1){
-        int var_id_out; /* [id] Variable ID */
-        int var_dmn_nbr; /* [nbr] Number of dimensions */
-        int var_dimid[NC_MAX_VAR_DIMS]; /* [lst] Dimension IDs */
-        (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_id_out);
-        (void)nco_inq_var(grp_out_id,var_id_out,var_nm,&var_typ,&var_dmn_nbr,var_dimid,NULL);
-        /* Sanity check */
-        assert(nbr_dmn_var == var_trv->nbr_dmn);
-        assert(nbr_dmn_var == var_dmn_nbr);
-        /* Loop dimensions */
-        for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-          (void)nco_inq_dim(grp_out_id,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
-          /* If output dimension name differs from input there was a swap, so swap array for these 2 names */
-          if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm)) (void)nco_dmn_swap(dmn_nm,dmn_cmn[idx_dmn].nm,dmn_cmn,nbr_dmn_var);
-        } /* idx_dmn */
-      } /* !ncpdq */
-
-      /* Set chunksize parameters */
-      (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn);
-
-      if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ) dmn_cmn[0].nm_fll=(char *)nco_free(dmn_cmn[0].nm_fll);
-
-    } /* !flg_usr_rqs */
-
+    /* Define extra dimension on output (e.g., ncecat adds "record" dimension) */
+    if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
+      /* Temporary store for old dimensions */
+      dmn_cmn_sct dmn_cmn_tmp[NC_MAX_DIMS];
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++) dmn_cmn_tmp[idx_dmn]=dmn_cmn[idx_dmn];
+      /* Define record dimension made for ncecat */
+      dmn_cmn[0].sz=NC_UNLIMITED;
+      dmn_cmn[0].is_rec_dmn=True;
+      dmn_cmn[0].NON_HYP_DMN=True;
+      dmn_cmn[0].dmn_cnt=NC_UNLIMITED;
+      strcpy(dmn_cmn[0].nm,rec_dmn_nm);
+      /* Define full name */
+      dmn_cmn[0].nm_fll=nco_bld_nm_fll(var_trv->grp_nm_fll,rec_dmn_nm);
+      /* Make room for inserted dimension at 0 index */
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++) dmn_cmn[idx_dmn+1]=dmn_cmn_tmp[idx_dmn];
+    } /* !ncecat */
+    
+    /* Special case for ncwa */
+    if(nco_prg_id == ncwa){
+      int idx_dmn_def=0;
+      /* Loop over input dimensions */
+      for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+	if(DEFINE_DIM[idx_dmn]){
+	  /* Redefine the array */
+	  dmn_cmn[idx_dmn_def]=dmn_cmn[idx_dmn];
+	  idx_dmn_def++;
+	} /* DEFINE_DIM[idx_dmn]) */
+      } /* Loop dimensions */
+    } /* !ncwa */
+    
+    /* Special case for ncpdq */
+    if(nco_prg_id == ncpdq && nbr_dmn_var > 1){
+      int var_id_out; /* [id] Variable ID */
+      int var_dmn_nbr; /* [nbr] Number of dimensions */
+      int var_dimid[NC_MAX_VAR_DIMS]; /* [lst] Dimension IDs */
+      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_id_out);
+      (void)nco_inq_var(grp_out_id,var_id_out,var_nm,&var_typ,&var_dmn_nbr,var_dimid,NULL);
+      /* Sanity check */
+      assert(nbr_dmn_var == var_trv->nbr_dmn);
+      assert(nbr_dmn_var == var_dmn_nbr);
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+	(void)nco_inq_dim(grp_out_id,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
+	/* If output dimension name differs from input there was a swap, so swap array for these two names */
+	if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm)) (void)nco_dmn_swap(dmn_nm,dmn_cmn[idx_dmn].nm,dmn_cmn,nbr_dmn_var);
+      } /* idx_dmn */
+    } /* !ncpdq */
+    
+    /* Set chunksize parameters */
+    (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn);
+    
+    if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ) dmn_cmn[0].nm_fll=(char *)nco_free(dmn_cmn[0].nm_fll);
+    
   } /* !NC_FORMAT_NETCDF4 */ 
-
+  
   /* Free locally allocated space */
   if(rec_dmn_nm_mlc) rec_dmn_nm_mlc=(char *)nco_free(rec_dmn_nm_mlc);
-
+  
   dmn_in_id_var=(int *)nco_free(dmn_in_id_var);
   dmn_idx_in_out=(int *)nco_free(dmn_idx_in_out);                 
   dmn_out_id_tmp=(int *)nco_free(dmn_out_id_tmp); 
@@ -6196,8 +6188,6 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   
   char *usr_sng;            /* [sng] User-supplied object name */
 
-  nco_bool flg_dmn_ins;     /* [flg] Is dimension already inserted in output array  */  
-
   int obj_nbr;              /* [nbr] Number of objects in list */
   int nbr_avg_dmn;          /* [nbr] Number of dimensions to average (output) */
 
@@ -6263,82 +6253,77 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
 
           /* Must meet necessary flags */
           nco_bool pth_mth=nco_pth_mch(dmn_nm_fll,dmn_nm,usr_sng); 
+
           if(pth_mth){
+	    int idx_dmn_out; /* [idx] Index for output dimensions */
 
-            flg_dmn_ins=False;
-
-            /* Loop constructed array of averaged output dimensions to see if already inserted  */
-            for(int idx_dmn_out=0;idx_dmn_out<nbr_avg_dmn;idx_dmn_out++){
-
-              /* Match by ID */
-              if(dmn_id == (*dmn_avg)[idx_dmn_out]->id){
-                flg_dmn_ins=True;
-                break;
-              } /* Match by ID */
-            } /* Loop constructed array of output dimensions to see if already inserted  */ 
-
-            /* If this dimension is not in output array */
-            if(!flg_dmn_ins){
-
-              /* Change flag to mark that dimension is to be averaged instead of to keep on output */
-              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg=True;
-
-              /* Add one more element to array  */
-              (*dmn_avg)=(dmn_sct **)nco_realloc((*dmn_avg),(nbr_avg_dmn+1)*sizeof(dmn_sct *));
-              (*dmn_avg)[nbr_avg_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
-
-              /* Get size from GTT. NOTE use index idx_var_dmn */
-              if(trv_obj.var_dmn[idx_var_dmn].is_crd_var){
-                dmn_cnt=trv_obj.var_dmn[idx_var_dmn].crd->lmt_msa.dmn_cnt;
-                dmn_sz=trv_obj.var_dmn[idx_var_dmn].crd->sz;
-                (*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=True;
-              }else{
-                dmn_cnt=trv_obj.var_dmn[idx_var_dmn].ncd->lmt_msa.dmn_cnt;
-                dmn_sz=trv_obj.var_dmn[idx_var_dmn].ncd->sz;
-                (*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=False;
-              }
-
-              (*dmn_avg)[nbr_avg_dmn]->nm=(char *)strdup(trv_obj.var_dmn[idx_var_dmn].dmn_nm);
-              (*dmn_avg)[nbr_avg_dmn]->nm_fll=(char *)strdup(trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll);
-              (*dmn_avg)[nbr_avg_dmn]->id=trv_obj.var_dmn[idx_var_dmn].dmn_id;
-              (*dmn_avg)[nbr_avg_dmn]->nc_id=nc_id;
-              (*dmn_avg)[nbr_avg_dmn]->xrf=NULL;
-              (*dmn_avg)[nbr_avg_dmn]->val.vp=NULL;
-              (*dmn_avg)[nbr_avg_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
-              (*dmn_avg)[nbr_avg_dmn]->cnt=dmn_cnt;
-              (*dmn_avg)[nbr_avg_dmn]->sz=dmn_sz;
-              (*dmn_avg)[nbr_avg_dmn]->srt=0L;
-              (*dmn_avg)[nbr_avg_dmn]->end=dmn_cnt-1L;
-              (*dmn_avg)[nbr_avg_dmn]->srd=1L;
-
-              (*dmn_avg)[nbr_avg_dmn]->cid=-1;
-              (*dmn_avg)[nbr_avg_dmn]->cnk_sz=0L;
-              (*dmn_avg)[nbr_avg_dmn]->type=(nc_type)-1;
-
-              /* Broadcast flag average/keep using dimension ID; variables share dimensions */
-              (void)nco_dmn_id_mk(dmn_id,flg_rdd,trv_tbl);
-
-              /* Increment number of dimensions found */
-              nbr_avg_dmn++;
-
-            } /* If this dimension is not in output array */
-          } /* Must meet necessary flags */
-        } /* Loop variable dimensions */ 
+	    /* Is dimension already in output array?
+	       Match by dimension ID since dimension IDs are unique */
+            for(idx_dmn_out=0;idx_dmn_out<nbr_avg_dmn;idx_dmn_out++)
+              if(dmn_id == (*dmn_avg)[idx_dmn_out]->id) break;
+	    
+	    /* If this dimension is not yet in output array */
+	    if(idx_dmn_out == nbr_avg_dmn){
+	      
+	      /* Change flag to mark that dimension is to be averaged instead of to keep on output */
+	      trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg=True;
+	      
+	      /* Add one more element to array  */
+	      (*dmn_avg)=(dmn_sct **)nco_realloc((*dmn_avg),(nbr_avg_dmn+1)*sizeof(dmn_sct *));
+	      (*dmn_avg)[nbr_avg_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+	      
+	      /* Get size from GTT. NOTE use index idx_var_dmn */
+	      if(trv_obj.var_dmn[idx_var_dmn].is_crd_var){
+		dmn_cnt=trv_obj.var_dmn[idx_var_dmn].crd->lmt_msa.dmn_cnt;
+		dmn_sz=trv_obj.var_dmn[idx_var_dmn].crd->sz;
+		(*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=True;
+	      }else{
+		dmn_cnt=trv_obj.var_dmn[idx_var_dmn].ncd->lmt_msa.dmn_cnt;
+		dmn_sz=trv_obj.var_dmn[idx_var_dmn].ncd->sz;
+		(*dmn_avg)[nbr_avg_dmn]->is_crd_dmn=False;
+	      } /* end else */
+	      
+	      (*dmn_avg)[nbr_avg_dmn]->nm=(char *)strdup(trv_obj.var_dmn[idx_var_dmn].dmn_nm);
+	      (*dmn_avg)[nbr_avg_dmn]->nm_fll=(char *)strdup(trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll);
+	      (*dmn_avg)[nbr_avg_dmn]->id=trv_obj.var_dmn[idx_var_dmn].dmn_id;
+	      (*dmn_avg)[nbr_avg_dmn]->nc_id=nc_id;
+	      (*dmn_avg)[nbr_avg_dmn]->xrf=NULL;
+	      (*dmn_avg)[nbr_avg_dmn]->val.vp=NULL;
+	      (*dmn_avg)[nbr_avg_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
+	      (*dmn_avg)[nbr_avg_dmn]->cnt=dmn_cnt;
+	      (*dmn_avg)[nbr_avg_dmn]->sz=dmn_sz;
+	      (*dmn_avg)[nbr_avg_dmn]->srt=0L;
+	      (*dmn_avg)[nbr_avg_dmn]->end=dmn_cnt-1L;
+	      (*dmn_avg)[nbr_avg_dmn]->srd=1L;
+	      
+	      (*dmn_avg)[nbr_avg_dmn]->cid=-1;
+	      (*dmn_avg)[nbr_avg_dmn]->cnk_sz=0L;
+	      (*dmn_avg)[nbr_avg_dmn]->type=(nc_type)-1;
+	      
+	      /* Broadcast flag average/keep using dimension ID; variables share dimensions */
+	      (void)nco_dmn_id_mk(dmn_id,flg_rdd,trv_tbl);
+	      
+	      /* Increment number of dimensions found */
+	      nbr_avg_dmn++;
+	      
+	    } /* If this dimension is not in output array */
+	  } /* Must meet necessary flags */
+	} /* Loop variable dimensions */ 
       } /* Variable to extract */
     } /* Loop table */
   } /* Loop input dimension name list */
-
-  /* Export */
+  
+    /* Export */
   *nbr_dmn_avg=nbr_avg_dmn;
-
+  
   if(nco_dbg_lvl_get() >= nco_dbg_var){ 
     (void)fprintf(stdout,"%s: INFO dimensions to average: ",nco_prg_nm_get());        
     for(int idx_dmn=0;idx_dmn<nbr_avg_dmn;idx_dmn++) (void)fprintf(stdout,"<%s>",(*dmn_avg)[idx_dmn]->nm);
     (void)fprintf(stdout,"\n");    
   } /* endif dbg */
-
+  
   return;
-
+  
 } /* nco_dmn_avg_mk() */
 
 void
@@ -8440,14 +8425,13 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   int nm_lst_2_nbr;                    /* [nbr] Number of items in list */
   int nbr_cmn_nm;                      /* [nbr] Number of common entries */
   int nbr_nm;                          /* [nbr] Number of total entries */
-
   int nco_prg_id=nco_prg_id_get();     /* [enm] Program key */
 
   nco_bool flg_nsm_tpl;                /* [flg] Variable is template */       
 
   nco_cmn_t *cmn_lst=NULL;             /* [sct] A list of common names */ 
 
-  /* Insert ensembles (parent group name is key), template variables aand fixed template variables */
+  /* Insert ensembles (parent group name is key), template variables and fixed template variables */
 
   /* Loop table  */
   for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl->nbr;idx_tbl_1++){
@@ -8457,77 +8441,66 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       /* Export list of variable names for group */
       (void)nco_grp_var_lst(nc_id,trv_1.grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
-      /* Loop table  */
       for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl->nbr;idx_tbl_2++){
+	int idx_nsm; /* [idx] Ensemble index */
+	nco_bool flg_ins;
         trv_sct trv_2=trv_tbl->lst[idx_tbl_2];
 
         /* Same depth, same number of variables, same parent group, lower group depth */
         if(trv_1.nco_typ == nco_obj_typ_grp && 
-          trv_2.nco_typ == nco_obj_typ_grp && 
-          trv_1.grp_dpt == trv_2.grp_dpt && 
-          trv_1.nbr_var == trv_2.nbr_var &&
-          trv_1.grp_dpt > 1 &&
-          strcmp(trv_1.grp_nm_fll,trv_2.grp_nm_fll) != 0 &&
-          strcmp(trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll_prn) == 0){
+	   trv_2.nco_typ == nco_obj_typ_grp && 
+	   trv_1.grp_dpt == trv_2.grp_dpt && 
+	   trv_1.nbr_var == trv_2.nbr_var &&
+	   trv_1.grp_dpt > 1 &&
+	   strcmp(trv_1.grp_nm_fll,trv_2.grp_nm_fll) && /* Yes, test that comparison fails (operands are unequal) */
+	   !strcmp(trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll_prn)){
+	  
+	  /* Is member group already inserted into ensemble array? */
+	  for(idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++)
+	    if(!strcmp(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,trv_2.grp_nm_fll_prn)) break;
 
-            /* Assume not yet inserted in array */
-            nco_bool flg_ins=False;
-            /* Loop constructed array to see if already inserted  */
-            for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){        
-              /* Match */
-              if(strcmp(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,trv_2.grp_nm_fll_prn) == 0){
-                /* Mark as inserted in array */
-                flg_ins=True;
-                break;
-              } /* Match */
-            } /* Loop constructed array to see if already inserted  */
+	  if(idx_nsm < trv_tbl->nsm_nbr) flg_ins=True; else flg_ins=False;
 
-            /* Export list of variable names for group */
-            (void)nco_grp_var_lst(nc_id,trv_2.grp_nm_fll,&nm_lst_2,&nm_lst_2_nbr);
-            /* Match 2 lists of variable names and export common names */
-            (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_nm,&nbr_cmn_nm);
-            /* Found common names */
-            if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm && !flg_ins){
+	  /* Export list of variable names for group */
+	  (void)nco_grp_var_lst(nc_id,trv_2.grp_nm_fll,&nm_lst_2,&nm_lst_2_nbr);
+	  /* Match two lists of variable names and export common names */
+	  (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_nm,&nbr_cmn_nm);
+	  /* Found common names */
+	  if(nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm && !flg_ins){
+	    trv_tbl->nsm_nbr++;
+	    trv_tbl->nsm=(nsm_sct *)nco_realloc(trv_tbl->nsm,trv_tbl->nsm_nbr*sizeof(nsm_sct));
+	    
+	    trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_nm_fll_prn=(char *)strdup(trv_2.grp_nm_fll_prn);
+	    trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_nbr=0;
+	    trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr=NULL;
+	    
+	    trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm=NULL;
+	    trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr=0;
+	    trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=NULL;
+	    trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr=0;
+	    
+	    trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_srt=0;
+	    trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_end=0;
+	    
+	    /* Group (NB: outer loop) is ensemble parent group */
+	    trv_tbl->lst[idx_tbl_1].flg_nsm_prn=True;
 
-              trv_tbl->nsm_nbr++;
-              trv_tbl->nsm=(nsm_sct *)nco_realloc(trv_tbl->nsm,trv_tbl->nsm_nbr*sizeof(nsm_sct));
+	    if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll_prn);
 
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_nm_fll_prn=(char *)strdup(trv_2.grp_nm_fll_prn);
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_nbr=0;
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr=NULL;
-
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm=NULL;
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr=0;
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=NULL;
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr=0;
-
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_srt=0;
-              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_end=0;
-
-              /* Group (NB: outer loop) is ensemble parent group */
-              trv_tbl->lst[idx_tbl_1].flg_nsm_prn=True;
-
-              if(nco_dbg_lvl_get() == nco_dbg_old){
-                (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll_prn);             
-              }
-
-              /* Loop common names, insert template and fixed template variables */
-              for(int idx_nm=0;idx_nm<nbr_cmn_nm;idx_nm++){
+	    /* Loop common names, insert template and fixed template variables */
+	    for(int idx_nm=0;idx_nm<nbr_cmn_nm;idx_nm++){
 
                 /* Define variable full name (use trv_1) */
                 char *var_nm_fll=nco_bld_nm_fll(trv_1.grp_nm_fll,cmn_lst[idx_nm].nm);
 
-                /* Get GTT object  */
                 trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
 
                 nco_bool var_is_fix=False;  /* [fnc] Variable should be treated as a fixed variable */
 
-                if(CNV_CCM_CCSM_CF){
-                  var_is_fix=nco_var_is_fix(var_trv->nm,nco_prg_id,nco_pck_plc);  
-                } 
+                if(CNV_CCM_CCSM_CF) var_is_fix=nco_var_is_fix(var_trv->nm,nco_prg_id,nco_pck_plc);  
 
                 /* Define as either fixed template or template  */
-                if (var_trv->is_crd_var || var_trv->is_rec_var || var_is_fix){
+                if(var_trv->is_crd_var || var_trv->is_rec_var || var_is_fix){
 
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr++;
                   int skp_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr;
@@ -8536,7 +8509,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
                   if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]);
 
-                } else {
+                }else{
 
                   trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr++;
                   int tpl_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr;
@@ -8566,7 +8539,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
-  }
+  } /* endif dbg */
 
   if(trv_tbl->nsm_nbr == 0) return;
 
@@ -8581,9 +8554,9 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
       /* Match group parent name with ensemble name */
       if(trv.nco_typ == nco_obj_typ_grp && 
-        trv.grp_dpt > 1 && 
-        trv.nbr_var > 0 && 
-        strcmp(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,trv.grp_nm_fll_prn) == 0){
+	 trv.grp_dpt > 1 && 
+	 trv.nbr_var > 0 && 
+	 strcmp(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,trv.grp_nm_fll_prn) == 0){
 
           int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
           trv_tbl->nsm[idx_nsm].mbr_nbr++;
