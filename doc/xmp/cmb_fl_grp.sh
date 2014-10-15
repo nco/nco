@@ -66,15 +66,13 @@ mv ${drc_out}${var[0]}_${rlm}_${mdl[0]}_${xpt[0]}_all-nsm_${tms}.${flt} \
 # Remove temporary files
 rm ${drc_out}sn?_${rlm}*.nc
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# Coming soon!
-#- Group names: 
+#- Rename Group:
 #   E.g., file snc_LImon_CESM1-CAM5_historical_r1i1p1_199001-200512.nc
-#   will be group /historical/CESM1-CAM5/00
-#- You can rename groups on the last level to be more meaningful by
-#ncrename -g ${xpt}/${mdl}/02,${xpt}/${mdl}/r3i1p1 \
-#  ${drc_out}${var}_${rlm}_${mdl}_all-nsm_${tms}.${flt}
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#   is now group /historical/CESM1-CAM5/CESM1-CAM5_00.
+#   You can rename it to /historical/CESM1-CAM5/r1i1p1 to make more sense.
+#  Note: You don't need to write the full path of the new name.
+ncrename -g ${xpt}/${mdl}/${mdl}_00,r1i1p1 \
+  ${drc_out}${var}_${rlm}_${mdl}_all-nsm_${tms}.${flt}
 
 #------------------------------------------------------------
 # Output file structure
@@ -114,7 +112,7 @@ rm ${drc_out}sn?_${rlm}*.nc
 #    }
 #    CESM1-CAM5
 #    {
-#      CESM1-CAM5_00 { ... }
+#      r1i1p1 { ... }
 #      CESM1-CAM5_01 { ... }
 #      CESM1-CAM5_02 { ... }
 #    }
