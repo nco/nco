@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1042 2014-10-14 04:04:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1043 2014-10-15 05:40:14 woodllan Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -12570,7 +12570,7 @@ if judicious use of header padding (@pxref{Metadata Optimization}) was
 made when producing the @var{input-file}.
 Similarly, using the @samp{--hdr_pad} option with @command{ncatted}
 helps ensure that future metadata changes to @var{output-file} occur
-as swifly as possible.
+as swiftly as possible.
 
 @cindex missing values
 @cindex data, missing 
