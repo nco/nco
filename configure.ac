@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.50 2014-10-08 21:00:45 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.51 2014-10-15 18:58:42 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -320,7 +320,7 @@ fi
 echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
-AC_ARG_ENABLE(dap-netcdf,AS_HELP_STRING([--enable-dap],[Build DAP-enabled NCO with netCDF-provided DAP [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)
+AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build DAP-enabled NCO with netCDF-provided DAP [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)
 # Check for DAP in netCDF library unless told not to
 if test "${enable_dap}" != 'no'; then
     echo "Testing for DAP-netCDF support (is DAP in libnetcdf.a?)..."

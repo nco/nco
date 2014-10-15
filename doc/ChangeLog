@@ -1,5 +1,7 @@
 2014-10-15  Charlie Zender  <zender@uci.edu>
 
+	* Change configure.ac --enable-dap-netcdf to --enable-dap
+
 	* Add cnk.cdl to test chunking algorithms
 
 	* NCO 4.4.7 release procedure:

@@ -809,7 +809,7 @@ enable_largefile
 enable_netcdf4
 enable_netcdf_4
 enable_openmp
-enable_dap_netcdf
+enable_dap
 enable_ncoxx
 enable_ncap2
 enable_mpi
@@ -17823,9 +17823,9 @@ fi
 echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
-# Check whether --enable-dap-netcdf was given.
-if test "${enable_dap_netcdf+set}" = set; then :
-  enableval=$enable_dap_netcdf; enable_dap=${enableval}
+# Check whether --enable-dap was given.
+if test "${enable_dap+set}" = set; then :
+  enableval=$enable_dap; enable_dap=${enableval}
 else
   enable_dap=yes
 fi
