@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.135 2014-10-14 04:56:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.136 2014-10-15 17:20:30 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -68,6 +68,8 @@ nco_cnk_map_sng_get /* [fnc] Convert chunking map enum to string */
     return "rew";
   case nco_cnk_map_nc4:
     return "nc4";
+  case nco_cnk_map_nco:
+    return "nco";
   default: nco_dfl_case_cnk_map_err(); break;
   } /* end switch */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
@@ -199,6 +201,10 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   } /* endif */
   if(cnk_map == nco_cnk_map_nil && cnk_plc != nco_cnk_plc_nil) cnk->cnk_map=nco_cnk_map_rd1;
   if(cnk_plc == nco_cnk_plc_nil && cnk_map != nco_cnk_map_nil) cnk->cnk_plc=nco_cnk_plc_g2d;
+
+  /* NCO-recommended chunking map is expected to change over time
+     cnk_map=nco assigns current NCO-recommended map */
+  if(cnk_map == nco_cnk_map_nco) cnk->cnk_map=nco_cnk_map_rd1;
 
   return rcd;
 } /* end nco_cnk_ini() */
@@ -338,6 +344,8 @@ nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
   if(!strcmp(nco_cnk_map_sng,"cnk_map_rew")) return nco_cnk_map_rew;
   if(!strcmp(nco_cnk_map_sng,"nc4")) return nco_cnk_map_nc4;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_nc4")) return nco_cnk_map_nc4;
+  if(!strcmp(nco_cnk_map_sng,"nco")) return nco_cnk_map_nco;
+  if(!strcmp(nco_cnk_map_sng,"cnk_map_nco")) return nco_cnk_map_nco;
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified chunking map %s\n",nco_prg_nm_get(),fnc_nm,nco_cnk_map_sng);
   nco_exit(EXIT_FAILURE);
@@ -1047,6 +1055,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   if(cnk_map == nco_cnk_map_rew){
     /* Described by Russ Rew at http://www.unidata.ucar.edu/staff/russ/public/chunk_shape_3D.py
+       Test case is (time,lat,lon) = 98128 x 277 x 349
        ncks -O -C -4 -D 6 -v four_dmn_rec_var --cnk_map=rew -p ~/nco/data in.nc ~/foo.nc */
     double cnk_val_nbr;
     double dmn_sz_prd=1.0; /* [nbr] Number of elements in output variable */

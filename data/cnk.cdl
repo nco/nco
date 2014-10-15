@@ -1,0 +1,43 @@
+// -*-C++-*-
+
+// Purpose: Test chunking algorithms
+// Test case is (time,lat,lon) = 98128 x 277 x 349
+// Described by Russ Rew at http://www.unidata.ucar.edu/staff/russ/public/chunk_shape_3D.py
+// http://www.unidata.ucar.edu/blogs/developer/entry/chunking_data_choosing_shapes
+
+// Generate netCDF file with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/cnk.nc ~/nco/data/cnk.cdl
+
+// Create file with one variable containing random numbers in [0.0,1.0)
+// ncap2 -D 3 -O -s "var(:,:,:)=1.0f;var=gsl_rng_uniform(var);" ~/nco/data/cnk.nc ${DATA}/nco_bm/cnk.nc
+// ls -l ${DATA}/nco_bm/cnk.nc
+// ncks -m --hdn --cdl $DATA/nco_bm/cnk.nc
+
+// Chunking and re-chunking benchmarks
+// time ncks -O --cnk_plc=all --cnk_map=rew ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_rew.nc
+// ncks -m --hdn --cdl $DATA/nco_bm/cnk_rew.nc
+
+netcdf cnk {
+
+ dimensions:
+  lat=277;
+  lon=349;
+  time=UNLIMITED;
+  time_98128=98128;
+  
+ variables:
+
+  float var(time,lat,lon);
+     var:purpose="Test variable with initial dimensions (time,lat,lon)=1,277,349 and chunking=1,277,349";
+     var:note="Type should be float or int since Rew assumes test variable size is 4-bytes";
+     var:_ChunkSizes=1,277,349;
+
+  double time(time);
+     time:long_name = "time";
+     time:units = "days since 1964-03-12 12:09:00 -9:00"; 
+     time:calendar = "gregorian";
+
+  data:
+     time=0.0;
+
+} // end root group

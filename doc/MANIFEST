@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.72 2014-09-22 21:38:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.73 2014-10-15 17:20:28 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -73,13 +73,17 @@ Data Directory:
 nco/data/Makefile(v)	Autotools-generated Makefile
 nco/data/Makefile.am	Automake instructions
 nco/data/Makefile.in(v)	Autotools-generated Makefile
-nco/data/big.cdl 	CDL file to huge netCDF test files
-nco/data/big.cdl 	CDL file to huge netCDF test files
+nco/data/big.cdl 	CDL file to test huge netCDF files
 nco/data/bin_cnt.nco 	ncap2 sample script that bins wind speeds
+nco/data/cmip5.cdl 	CDL file to test ncbo functionality on groups
+nco/data/cnk.cdl 	CDL file to test chunking
 nco/data/ddra.nco	Sample ncap2 script that computes DDRA statistics
-nco/data/hdr_pad.sh	Utility to check size of metadata header
+nco/data/dsm.cdl 	CDL file to test ncdismember
 nco/data/hdn.cdl 	CDL file to test hidden attributes
+nco/data/hdr_pad.sh	Utility to check size of metadata header
 nco/data/in.cdl 	CDL file to generate netCDF test file in.nc
+nco/data/in_1.cdl 	CDL file to test 2 input file operators
+nco/data/in_2.cdl 	CDL file to test 2 input file operators
 nco/data/in_4.cdl 	CDL file to generate netCDF4 test file in_4.nc
 nco/data/in_grp.cdl 	CDL file to test netCDF4 group functionality
 nco/data/in_grp_1.cdl 	CDL file to test ncbo functionality on groups
@@ -89,22 +93,18 @@ nco/data/in_grp_4.cdl 	CDL file to test ncbo functionality on groups
 nco/data/in_grp_5.cdl 	CDL file to test ncbo functionality on groups
 nco/data/in_grp_6.cdl 	CDL file to test ncbo functionality on groups
 nco/data/in_grp_7.cdl 	CDL file to test ncbo functionality on groups
-nco/data/in_1.cdl 	CDL file to test 2 input file operators
-nco/data/in_2.cdl 	CDL file to test 2 input file operators
-nco/data/cmip5.cdl 	CDL file to test ncbo functionality on groups
-nco/data/dsm.cdl 	CDL file to test ncdismember
+nco/data/in_rec_zero.cdl 	CDL file to test zero-record files
 nco/data/mdl_1.cdl 	CDL file to test ensemble operations
 nco/data/mdl_2.cdl 	CDL file to test ensemble operations
 nco/data/mrd.cdl 	CDL file to test multiple record dimensions
-nco/data/obs.cdl 	CDL file to test group broadcasting
-nco/data/in_rec_zero.cdl 	CDL file to test zero-record files
 nco/data/ncap.in	Sample ncap input script
-nco/data/ncl.ncl	NCL script to compare to NCO scripts for speed
-nco/data/netcdf4.nco	Sample input script for netCDF4-enabled ncap2
 nco/data/ncap.in2	ncap script to demonstrate #include capabilities
-nco/data/nco_bnch.sh	Old (deprecated) NCO benchmark script
 nco/data/ncap2.in	Sample ncap2 input script
 nco/data/ncap2_tst.nco  ncap2 self-printing test script
+nco/data/ncl.ncl	NCL script to compare to NCO scripts for speed
+nco/data/nco_bnch.sh	Old (deprecated) NCO benchmark script
+nco/data/netcdf4.nco	Sample input script for netCDF4-enabled ncap2
+nco/data/obs.cdl 	CDL file to test group broadcasting
 nco/data/psd.nco	Sample ncap2 script that computes particle size distributions
 nco/data/psd_wrf.nco	Sample ncap2 script that computes WRF particle size distributions
 nco/data/swamp.sh	Demonstrate SWAMP usage
