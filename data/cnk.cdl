@@ -16,6 +16,8 @@
 // Chunking and re-chunking benchmarks
 // time ncks -O --cnk_plc=all --cnk_map=rew ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_rew.nc
 // ncks -m --hdn --cdl $DATA/nco_bm/cnk_rew.nc
+// time ncks -O --cnk_byt=4096 --cnk_plc=all --cnk_map=rew ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_rew.nc
+// time ncks -O --cnk_byt=8192 --cnk_plc=all --cnk_map=rew ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_rew.nc
 
 netcdf cnk {
 
