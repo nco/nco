@@ -15,9 +15,18 @@
 
 // Chunking and re-chunking benchmarks
 // ncks -O --cnk_plc=all --cnk_map=rew ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_rew.nc
-// ncks -O -D 3 --cnk_byt=4096 --cnk_plc=all --cnk_map=rew ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_rew.nc
-// ncks -O -D 3 --cnk_byt=8192 --cnk_plc=all --cnk_map=rew ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_rew.nc
+// ncks -O -D 5 --cnk_byt=4096 --cnk_plc=all --cnk_map=rew ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_rew.nc
+// ncks -O -D 5 --cnk_byt=8192 --cnk_plc=all --cnk_map=rew ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_rew.nc
 // ncks -m --hdn --cdl $DATA/nco_bm/cnk_rew.nc
+
+// Chunk-off:
+// Produce input dataset chunked as 1x29x35:
+// ncks -O -D 5 -h --cnk_byt=4096 --cnk_dmn=lat,29 --cnk_dmn=lon,35 ${DATA}/nco_bm/cnk.nc ${DATA}/nco_bm/cnk_in.nc
+// Contest to re-pack to 1x20x25
+// time h5repack -v -l var:CHUNK=20x25 -i ${DATA}/nco_bm/cnk_in.nc -o ${DATA}/nco_bm/cnk_out_h5repack.nc
+// time nccopy -c lat/20,lon/25 ${DATA}/nco_bm/cnk_in.nc ${DATA}/nco_bm/cnk_out_nccopy.nc
+// time ncks -h --no_tmp_fl --cnk_byt=4096 --cnk_dmn=lat,20 --cnk_dmn=lon,25 ${DATA}/nco_bm/cnk_in.nc ${DATA}/nco_bm/cnk_out_ncks.nc
+// ncks -m --hdn --cdl $DATA/nco_bm/cnk_out.nc
 
 netcdf cnk {
 
@@ -26,6 +35,7 @@ netcdf cnk {
   lon=349;
   time=UNLIMITED;
   time_98128=98128;
+  time_128=128;
   
  variables:
 

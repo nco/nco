@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.137 2014-10-15 18:58:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.138 2014-10-16 14:39:38 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1059,7 +1059,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
        >>> cnk.chunk_shape_3D(varShape=(98128,277,349),valSize=4,chunkSize=4096)
        [33, 5, 6]
        Test case is (time,lat,lon) = 98128 x 277 x 349
-       ncks -O -C -4 -D 6 -v four_dmn_rec_var --cnk_map=rew -p ~/nco/data in.nc ~/foo.nc */
+       ncks -O -C -4 -D 5 -v three_dmn_rec_var --cnk_byt=128 --cnk_map=rew -p ~/nco/data in.nc ~/foo.nc
+       ncks -O -C -4 -D 5 -v var --cnk_byt=4096 --cnk_map=rew -p ~/nco/data cnk.nc ${DATA}/nco_bm/cnk_rew.nc */
     double cnk_val_nbr;
     double dmn_sz_prd=1.0; /* [nbr] Number of elements in output variable */
     double cnk_nbr_xct; /* [nbr] Exact number of ideal chunks needed to store variable */
