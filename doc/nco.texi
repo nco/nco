@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1043 2014-10-15 05:40:14 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1044 2014-10-16 22:46:59 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.7
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 8 October 2014
+@set update-date 16 October 2014
 @set update-month October 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6465,7 +6465,7 @@ Mnemonic: @emph{G}reater than or equal to @emph{3} @emph{D}imensions@*
 Definition: Chunk all 1-D record variables@*
 Alternate invocation: none@*
 Any specified (with @samp{--cnk_dmn}) record dimension chunksizes will
-be applied to 1-D record variables (and to no other variables).
+be applied only to 1-D record variables (and to no other variables).
 Other dimensions may be chunked with their own @samp{--cnk_dmn} options 
 that will apply to all variables. 
 @var{cnk_plc} key values: @samp{r1d}, @samp{cnk_r1d}, @samp{plc_r1d}@*
