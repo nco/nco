@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.520 2014-10-10 02:41:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.521 2014-10-17 15:42:40 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -877,8 +877,9 @@ extern "C" {
     cnk_dmn_sct **cnk_dmn; /* [sct] User-specified per-dimension chunking information */
     int cnk_map; /* [enm] Chunking map */
     int cnk_plc; /* [enm] Chunking policy */
-    size_t cnk_sz_scl; /* [nbr] Chunk size scalar */
+    size_t cnk_min_byt; /* [B] Minimize size of variable to chunk */
     size_t cnk_sz_byt; /* [B] Chunk size in Bytes */
+    size_t cnk_sz_scl; /* [nbr] Chunk size scalar */
   } cnk_sct;
   
   /* GTT structure to break full path name into components */

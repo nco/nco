@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.41 2014-10-15 17:20:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.42 2014-10-17 15:42:40 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -80,6 +80,7 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
  const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  const int cnk_map, /* I [enm] Chunking map */
  const int cnk_plc, /* I [enm] Chunking policy */
+ const size_t cnk_min_byt, /* I [B] Minimize size of variable to chunk */
  const size_t cnk_sz_byt, /* I [B] Chunk size in bytes */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
  cnk_sct * const cnk); /* O [sct] Chunking structure */

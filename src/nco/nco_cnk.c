@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.138 2014-10-16 14:39:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.139 2014-10-17 15:42:40 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -137,6 +137,7 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
  const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  const int cnk_map, /* I [enm] Chunking map */
  const int cnk_plc, /* I [enm] Chunking policy */
+ const size_t cnk_min_byt, /* I [B] Minimize size of variable to chunk */
  const size_t cnk_sz_byt, /* I [B] Chunk size in bytes */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
  cnk_sct * const cnk) /* O [sct] Chunking structure */
@@ -152,11 +153,12 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   cnk->cnk_nbr=cnk_nbr;
   cnk->cnk_map=cnk_map;
   cnk->cnk_plc=cnk_plc;
+  cnk->cnk_min_byt=cnk_min_byt;
+  cnk->cnk_sz_byt=cnk_sz_byt;
   cnk->cnk_sz_scl=cnk_sz_scl;
-  cnk->cnk_sz_byt=cnk_sz_byt; /* For now, let cnk_sz_scl play double duty */
 
   /* Did user explicitly request chunking? */
-  if(cnk_nbr > 0 || cnk_sz_byt > 0UL || cnk_sz_scl > 0UL || cnk_map != nco_cnk_map_nil || cnk_plc != nco_cnk_plc_nil) cnk->flg_usr_rqs=True;
+  if(cnk_nbr > 0 || cnk_min_byt > 0UL || cnk_sz_byt > 0UL || cnk_sz_scl > 0UL || cnk_map != nco_cnk_map_nil || cnk_plc != nco_cnk_plc_nil) cnk->flg_usr_rqs=True;
 
   /* Chunks are atomic unit of HDF5 read/write
      Variables are compressed and check-summed one chunk at-a-time

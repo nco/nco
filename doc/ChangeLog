@@ -1,3 +1,7 @@
+2014-10-17  Charlie Zender  <zender@uci.edu>
+
+	* Add --cnk_min to specify minimum size in bytes of variable to chunk
+
 2014-10-15  Charlie Zender  <zender@uci.edu>
 
 	* Change configure.ac --enable-dap-netcdf to --enable-dap

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.288 2014-09-16 14:14:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.289 2014-10-17 15:42:38 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.288 2014-09-16 14:14:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.288 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.289 2014-10-17 15:42:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.289 $";
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -229,6 +229,7 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst_a=NULL; /* Initialize to ALL variables in OUTPUT file */
   
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t cnk_min_byt=0UL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
@@ -271,18 +272,20 @@ main(int argc,char **argv)
       /* Long options with argument, no short option counterpart */
       {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
       {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
-      {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
-      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
-      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
-      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
       {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
       {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
-      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
-      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
       {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
+      {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"cnk_min",required_argument,0,0}, /* [B] Minimize size of variable to chunk */
+      {"chunk_min",required_argument,0,0}, /* [B] Minimize size of variable to chunk */
+      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"fl_fmt",required_argument,0,0},
-    {"file_format",required_argument,0,0},
+      {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
       /* Long options with short counterparts */
@@ -358,6 +361,10 @@ main(int argc,char **argv)
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk_byt */
+      if(!strcmp(opt_crr,"cnk_min") || !strcmp(opt_crr,"chunk_min")){
+        cnk_min_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* endif cnk_min */
       if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
 	/* Copy limit argument for later processing */
 	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
