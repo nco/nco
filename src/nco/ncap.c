@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.289 2014-10-17 15:42:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.290 2014-10-17 17:28:37 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.289 2014-10-17 15:42:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.289 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.290 2014-10-17 17:28:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.290 $";
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -229,7 +229,7 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst_a=NULL; /* Initialize to ALL variables in OUTPUT file */
   
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-  size_t cnk_min_byt=0UL; /* [B] Minimize size of variable to chunk */
+  size_t cnk_min_byt=8192UL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */

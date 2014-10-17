@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.403 2014-10-17 15:42:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.404 2014-10-17 17:28:37 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.403 2014-10-17 15:42:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.403 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.404 2014-10-17 17:28:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.404 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -203,7 +203,7 @@ main(int argc,char **argv)
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-  size_t cnk_min_byt=0UL; /* [B] Minimize size of variable to chunk */
+  size_t cnk_min_byt=8192UL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */

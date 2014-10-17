@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.554 2014-10-17 15:42:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.555 2014-10-17 17:28:37 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.554 2014-10-17 15:42:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.554 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.555 2014-10-17 17:28:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.555 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -255,7 +255,7 @@ main(int argc,char **argv)
   nc_type var_prc_typ_pre_prm=NC_NAT; /* [enm] Type of variable before promotion */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-  size_t cnk_min_byt=0UL; /* [B] Minimize size of variable to chunk */
+  size_t cnk_min_byt=8192UL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */

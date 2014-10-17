@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.309 2014-10-17 15:42:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.310 2014-10-17 17:28:37 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.309 2014-10-17 15:42:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.309 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.310 2014-10-17 17:28:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.310 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -213,7 +213,7 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-  size_t cnk_min_byt=0UL; /* [B] Minimize size of variable to chunk */
+  size_t cnk_min_byt=8192UL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */

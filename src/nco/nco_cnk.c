@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.139 2014-10-17 15:42:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.140 2014-10-17 17:28:37 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -831,9 +831,11 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   nco_bool must_be_chunked; /* [flg] Variable must be chunked */
 
   size_t *cnk_sz=NULL; /* [nbr] Chunksize list */
+  size_t cnk_min_byt; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_dfl; /* [nbr] Chunksize default */
   size_t cnk_sz_scl; /* [nbr] Chunk size scalar */
   size_t typ_sz; /* [B] Bytes per value */
+  size_t var_sz_byt; /* [B] Size of variable in output file */
 
   static short FIRST_CALL=True;
 
@@ -844,8 +846,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   cnk_nbr=cnk->cnk_nbr;
   cnk_map=cnk->cnk_map;
   cnk_plc=cnk->cnk_plc;
-  cnk_sz_scl=cnk->cnk_sz_scl;
+  cnk_min_byt=cnk->cnk_min_byt;
   cnk_sz_byt=cnk->cnk_sz_byt;
+  cnk_sz_scl=cnk->cnk_sz_scl;
   cnk_dmn=cnk->cnk_dmn;
 
   /* Only use NCO chunking when user explicitly sets a chunking option */
@@ -908,6 +911,11 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
     if(dmn_cmn[dmn_idx].is_rec_dmn) is_rec_var=True;
 
+  /* How big is variable? */
+  var_sz_byt=typ_sz;
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
+    var_sz_byt*= dmn_cmn[dmn_idx].NON_HYP_DMN ? dmn_cmn[dmn_idx].sz : dmn_cmn[dmn_idx].dmn_cnt;
+
   /* Is variable compressed? */
   (void)nco_inq_var_deflate(grp_id_out,var_id_out,&shuffle,&deflate,(int *)NULL);
   if(deflate) is_cmp_var=True; 
@@ -943,10 +951,11 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s %s must be chunked (record, compressed, or check-summed variable)\n",nco_prg_nm_get(),fnc_nm,var_nm);
   }else{
     /* Exit chunking function now (and thus implement netCDF4-default chunking behavior) for variables that are... */
-    if((cnk_plc == nco_cnk_plc_xpl && !is_xpl_cnk) || /* ...not explicitly chunked... */
+    if((var_sz_byt < cnk_min_byt) || /* ...too small in size... */
+       (cnk_plc == nco_cnk_plc_xpl && !is_xpl_cnk) || /* ...not explicitly chunked... */
        (cnk_plc == nco_cnk_plc_xst && !is_chunked) || /* ...not already chunked... */
-       (cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
-       (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
+       (cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small in rank... */
+       (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small in rank... */
        (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
        False){
       /* If variable is chunked */
