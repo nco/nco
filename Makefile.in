@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.145 2014-04-02 05:40:21 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.146 2014-10-22 18:47:06 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -262,9 +262,9 @@ MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
 NCOXX = @NCOXX@
 NCO_CXX = @NCO_CXX@
-NETCDF4_ROOT = @NETCDF4_ROOT@
 NETCDF_INC = @NETCDF_INC@
 NETCDF_LIB = @NETCDF_LIB@
+NETCDF_ROOT = @NETCDF_ROOT@
 NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@

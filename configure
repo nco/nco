@@ -654,7 +654,7 @@ ANTLR_ROOT
 NCO_NEED_GETOPT_LONG_FALSE
 NCO_NEED_GETOPT_LONG_TRUE
 OPENMP_CFLAGS
-NETCDF4_ROOT
+NETCDF_ROOT
 NETCDF_LIB
 NETCDF_INC
 POW_LIB
@@ -841,7 +841,7 @@ YACC
 YFLAGS
 NETCDF_INC
 NETCDF_LIB
-NETCDF4_ROOT
+NETCDF_ROOT
 ANTLR_ROOT
 I18N_SHARE
 UDUNITS2_PATH'
@@ -1542,8 +1542,7 @@ Some influential environment variables:
               default value of `-d' given by some make applications.
   NETCDF_INC  Location of netCDF headers (compile-time)
   NETCDF_LIB  Location of netCDF library (compile-time)
-  NETCDF4_ROOT
-              Root of netCDF4 installation (compile-time)
+  NETCDF_ROOT Root of netCDF4 installation (compile-time)
   ANTLR_ROOT  Location of ANTLR version 2.7.x installation (compile-time)
   I18N_SHARE  Root of internationalization (i18n) locale directories
               (run-time)
@@ -17652,7 +17651,7 @@ fi
 fi # !netCDF4
 
 
-# Test if user set NETCDF4_ROOT and it exists
+# Test if user set NETCDF_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
@@ -23090,22 +23089,22 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
-echo "OPENMP_CFLAGS........ ${OPENMP_CFLAGS}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
-echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
-echo "NETCDF4_ROOT......... ${NETCDF4_ROOT}"
 echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HAVE_ANTLR........... ${HAVE_ANTLR}"
 echo "HAVE_MAKEINFO........ ${HAVE_MAKEINFO}"
+echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
 echo "HOST................. ${HOST}"
-echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
+echo "NETCDF_ROOT.......... ${NETCDF_ROOT}"
+echo "OPENMP_CFLAGS........ ${OPENMP_CFLAGS}"
+echo "host................. ${host}"
 echo "install prefix ...... ${prefix}"
 # Inform users of the very useful configure.eg
 echo "*******************************************************************"

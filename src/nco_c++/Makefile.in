@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.113 2014-04-02 05:40:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.114 2014-10-22 18:47:07 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -445,9 +445,9 @@ MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
 NCOXX = @NCOXX@
 NCO_CXX = @NCO_CXX@
-NETCDF4_ROOT = @NETCDF4_ROOT@
 NETCDF_INC = @NETCDF_INC@
 NETCDF_LIB = @NETCDF_LIB@
+NETCDF_ROOT = @NETCDF_ROOT@
 NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@

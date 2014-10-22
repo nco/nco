@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.51 2014-10-15 18:58:42 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.52 2014-10-22 18:47:06 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -273,9 +273,9 @@ AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4
 if test "x${enable_netcdf4}" = 'xno' ; then
     AC_ARG_ENABLE(netcdf-4,AS_HELP_STRING([--enable-netcdf-4],[Enable netCDF Version 4 features (same as enable-netcdf4) [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=yes)  
 fi # !netCDF4
-AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation] (compile-time))
+AC_ARG_VAR([NETCDF_ROOT],[Root of netCDF4 installation] (compile-time))
 
-# Test if user set NETCDF4_ROOT and it exists
+# Test if user set NETCDF_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
@@ -1151,22 +1151,22 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
-echo "OPENMP_CFLAGS........ ${OPENMP_CFLAGS}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
-echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
-echo "NETCDF4_ROOT......... ${NETCDF4_ROOT}"
 echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HAVE_ANTLR........... ${HAVE_ANTLR}"  
 echo "HAVE_MAKEINFO........ ${HAVE_MAKEINFO}"  
+echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
 echo "HOST................. ${HOST}"
-echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
+echo "NETCDF_ROOT.......... ${NETCDF_ROOT}"
+echo "OPENMP_CFLAGS........ ${OPENMP_CFLAGS}"
+echo "host................. ${host}"
 echo "install prefix ...... ${prefix}"
 # Inform users of the very useful configure.eg
 echo "*******************************************************************"
