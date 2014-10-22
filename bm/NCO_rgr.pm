@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.524 2014-10-12 23:50:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.525 2014-10-22 00:14:23 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2021,35 +2021,25 @@ print "\n";
 # Chunking tests
 #
  
-#ncks #54: This test applies chunking all policy to -v lat_lon(lat,lon); lat(2) and lon(4) are by default chunked with a size == dimension
+#ncks #54: Apply chunking all policy to -v lat_lon(lat,lon); lat(2) and lon(4) are by default chunked with a size == dimension
 # The test greps chunksize = 2 for lat
-# Policy: Chunk All Variables [default]
-# Map:Chunksize Equals Dimension Size [default]
-#ncks -O -4 -v lat_lon --cnk_plc=all ~/nco/data/in_grp.nc ~/foo.nc"
+#ncks -O -4 -v lat_lon --cnk_plc=all ~/nco/data/in_grp.nc ~/foo.nc
+#ncks -C -m -v lat_lon %tmp_fl_00% | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'
 
     $dsc_sng="(Groups) Chunking --cnk_plc=all --v lat_lon";
     $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -C -m -v lat_lon %tmp_fl_00% | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'";
     $tst_cmd[2]="lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2";
     $tst_cmd[3]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
     
-#ncks #55: This test applies: time chunk is explicitely set to 2 instead of the default 1 for record dimension
-# Policy: Chunk Variables with at least Three Dimensions Definition: Chunk all variables possible with at least three dimensions
-# Alternate invocation: none cnk plc key values: ‘g3d’, ‘cnk_g3d’, ‘plc_g3d’
-# Definition: Chunksize defaults to dimension size. Explicitly specify chunksizes for particular dimensions with ‘--cnk_dmn’ option.
-# Map:Chunksize Equals Dimension Size [default] Explicitly specify chunksizes for particular dimensions with ‘--cnk_dmn’ option.
-
+#ncks #55: Explicitly chunk time to 2 instead of the default 1 for record dimension
     $dsc_sng="(Groups) Chunking --cnk_plc=cnk_g3d --cnk_dmn time,2";
     $tst_cmd[0]="ncks $nco_D_flg -O -4 --cnk_plc=cnk_g3d --cnk_dmn time,2 -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -C -m -v three_dmn_rec_var %tmp_fl_00% | grep 'three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate is /time)'";
     $tst_cmd[2]="three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate is /time)";
     $tst_cmd[3]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			 
     
