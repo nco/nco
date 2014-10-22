@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1044 2014-10-16 22:46:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1045 2014-10-22 04:10:55 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -3757,7 +3757,9 @@ netCDF3 (classic and 64bit), netCDF4 (classic and extended), HDF4, HDF5,
 HDF-EOS (version 2 or 5), and DAP. 
 The switch determines the output format written in the comment:
 @footnote{The switches @samp{-5}, @samp{--5}, and @samp{pnetcdf} are
-reserved for PnetCDF files, i.e., @code{NC_FORMAT_PNETCDF}.}
+reserved for PnetCDF files, i.e., @code{NC_FORMAT_PNETCDF}.
+Such files are similar to netCDF3 classic files, yet also support
+64-bit offsets and the additional netCDF4 atomic types.}
 @example
 ncks --fl_fmt=classic in.nc foo_3c.nc # netCDF3 classic
 ncks --fl_fmt=64bit in.nc foo_364.nc # netCDF3 64bit
