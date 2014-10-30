@@ -1,3 +1,7 @@
+2014-10-30  Henry Butowsky  <henryb@hush.com>
+	* added hidden feature to defdim - so that when dim_sz <0 then 
+	dim is defined as unlimited
+	
 2014-10-22  Charlie Zender  <zender@uci.edu>
 
 	* Replace NETCDF4_ROOT by NETCDF_ROOT in configure
