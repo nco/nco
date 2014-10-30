@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.160 2014-09-30 23:03:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.161 2014-10-30 11:36:29 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -266,6 +266,21 @@ ncap_att_gnrl
   return sz;
   
 } /* end ncap_att_gnrl() */
+
+int 
+ncap_att_cpy_sct
+(var_sct *var1,
+ var_sct *var2,
+ prs_cls  *prs_arg){
+
+ NcapVar *Nvar=prs_arg->var_vtr.find(var1->nm);
+ // Do attribute propagation only if
+ // var doesn't already exist 
+
+ if(!Nvar ||  Nvar->flg_stt==1)
+    (void)ncap_att_cpy(var1->nm,var2->nm,prs_arg);
+ 
+} 	
 
 int
 ncap_att_cpy
@@ -1203,7 +1218,8 @@ ncap_def_dim(
 	     long sz,
 	     prs_cls *prs_arg){
   const char fnc_nm[]="ncap_def_dim"; 
-  
+
+  int is_rec_dmn=False;
   dmn_sct *dmn_nw;             
   dmn_sct *dmn_in_e;
   dmn_sct *dmn_out_e;
@@ -1216,13 +1232,22 @@ ncap_def_dim(
     wrn_prn(fnc_nm,"dim \""+ dmn_nm + "\" - already exists in input/output."); 
     return False;
   }
-  
+
+  /** hidden feature if size negative then this indicates a record dimension */  
+  if( sz < 0 ){
+     sz=-sz; 
+     is_rec_dmn=True;
+  }      
+
+  /*   
   if( sz < 0  ){
     std::ostringstream os;
     os<<"dim " << dmn_nm << "(size=" <<sz <<") dimension can't be negative.";
     wrn_prn(fnc_nm,os.str()); 
     return False;
   }
+  */
+
   
   dmn_nw=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
   
@@ -1232,7 +1257,7 @@ ncap_def_dim(
   dmn_nw->xrf=NULL_CEWI;
   dmn_nw->val.vp=NULL_CEWI;
   dmn_nw->is_crd_dmn=False;
-  dmn_nw->is_rec_dmn=False;
+  dmn_nw->is_rec_dmn=is_rec_dmn;
   dmn_nw->sz=sz;
   dmn_nw->cnt=sz;
   dmn_nw->srt=0L;
@@ -1288,7 +1313,7 @@ nco_shp_chk(
   /* check sizes again */
   if( nbr_rdmn1-srt1 != nbr_rdmn2-srt2 )
     return False;
-  
+ 
   nbr_cmp=nbr_rdmn1-srt1;
   /* Now compare  values */
   for(idx=0 ; idx < nbr_cmp ;idx++)
