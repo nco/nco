@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.70 2014-08-11 11:44:24 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.71 2014-10-31 11:19:38 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1065,13 +1065,16 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
               err_prn(sfnm,os.str());
                 }
 
-              // Check location of record dimension
-              for(idx=0 ; idx<nbr_dim ; idx++)
-		if( idx>0 && dmn_vtr[idx]->is_rec_dmn){
-                  ostringstream os; 
-		  os<<"The record dimension \""<< dmn_vtr[idx]->nm <<"\" must be the first dimension in the list."; 
-                  err_prn(fnc_nm,os.str());  
-	        }
+              // Check location of record dimension if not a netcdf4 file
+              if( walker.prs_arg->fl_out_fmt != NC_FORMAT_NETCDF4){
+                for(idx=0 ; idx<nbr_dim ; idx++){
+		  if( idx>0 && dmn_vtr[idx]->is_rec_dmn){
+                    ostringstream os; 
+		    os<<"The record dimension \""<< dmn_vtr[idx]->nm <<"\" must be the first dimension in the list."; 
+                    err_prn(fnc_nm,os.str());  
+	          }
+                }
+              } 
 
 	    }
             
