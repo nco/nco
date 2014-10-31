@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.198 2014-10-17 17:28:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.199 2014-10-31 11:20:50 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.198 2014-10-17 17:28:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.198 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.199 2014-10-31 11:20:50 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.199 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -654,7 +654,6 @@ main(int argc,char **argv)
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-  
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   /* Take output file out of define mode */
@@ -672,6 +671,8 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
   prs_arg.out_id=out_id; /* [id] Output data file ID */
+  prs_arg.fl_out_fmt=fl_out_fmt; /* [sng] Output data file format */
+
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt,&prs_arg.out_id_readonly);
   
