@@ -25,6 +25,7 @@ class fmc_cls;
   char *fl_in; /* [sng] Input data file */
   int in_id; /* [id] Input data file ID */
   char *fl_out; /* [sng] Output data file */
+  int fl_out_fmt; /* format of output file */
   int out_id;   /* [id] Output data file ID -Handle for reading & writing */
   int out_id_readonly; /* [id] Output data file ID -Handle for reading only */
   NcapVector<dmn_sct*> &dmn_in_vtr;        //Vector of dimensions in input file nb doesn't change
@@ -53,7 +54,8 @@ class fmc_cls;
                 dmn_out_vtr(p_dmn_out_vtr) ,
 		fmc_vtr(p_fmc_vtr)         ,
                 var_vtr(p_var_vtr)         ,
-		int_vtr(p_int_vtr) {; }
+		int_vtr(p_int_vtr) { ; }
+    
 
    // Copy Constructor 
    prs_cls( const prs_cls &prs_cpy) : 
@@ -67,6 +69,7 @@ class fmc_cls;
      fl_in=prs_cpy.fl_in;
      in_id=prs_cpy.in_id;
      fl_out=prs_cpy.fl_out;
+     fl_out_fmt=prs_cpy.fl_out_fmt;
      out_id=prs_cpy.out_id;         
      out_id_readonly=prs_cpy.out_id_readonly;         
 
@@ -101,6 +104,7 @@ class fmc_cls;
      fl_in=prs_cpy.fl_in;
      in_id=prs_cpy.in_id;
      fl_out=prs_cpy.fl_out;
+     fl_out_fmt=prs_cpy.fl_out_fmt;
      out_id=prs_cpy.out_id;         
      out_id_readonly=prs_cpy.out_id_readonly;     
 
