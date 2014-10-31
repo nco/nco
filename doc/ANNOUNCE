@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.750 2014-10-08 21:00:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.751 2014-10-31 17:55:55 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.7 are ready. 
 
@@ -26,6 +26,8 @@ A. Hyperslabs specifications now accept -1 (negative one) to indicate
    warning to alert users who may expect the old behavior.
    ncks -d lon,1,-1 in.nc out.nc # Second through last longitude
    http://nco.sf.net/nco.html#hyp
+
+A. cnk_min fxm
 
 BUG FIXES:
 

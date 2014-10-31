@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.937 2014-10-13 15:35:04 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.938 2014-10-31 17:55:55 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -639,6 +639,7 @@ Chunking <tt>cnk_map=rew</tt>;
 Optimize diskless files?</li>
 <li><b>NCO 4.4.7</b>: (<i>In Progress, features completed or being worked on include</i>)
 Smarter chunking defaults</li>
+<tt>cnk_min</tt> minimum chunksize;
 <li><b>NCO 4.4.6</b>: (<i>Current Stable Release</i>)
 <tt>-0</tt> hyperslabs;
 <tt>configure</tt> DAP correctly;

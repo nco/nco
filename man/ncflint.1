@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncflint.1,v 1.25 2014-05-29 18:00:26 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncflint.1,v 1.26 2014-10-31 17:55:56 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncflint
 .\" Usage:
 .\" nroff -man ~/nco/man/ncflint.1
@@ -7,7 +7,17 @@
 ncflint \- netCDF File Interpolator
 .SH SYNTAX
 ncflint [\-3] [\-4] [\-6] [\-7] [\-A] [\-\-bfr
-.IR sz ] [\-C] [\-c] [\-D 
+.IR sz ] [\-C] [\-c] [\-\-cnk_byt
+.IR sz ] [\-\-cnk_dmn 
+.IR nm,sz ]
+[\-\-cnk_map 
+.IR map ]
+[\-\-cnk_min
+.IR sz ]
+[\-\-cnk_plc 
+.IR plc ]
+[\-\-cnk_scl 
+.IR sz ] [\-D 
 .IR dbg_lvl ]
 [\-d 
 .IR dim ,[
@@ -160,7 +170,7 @@ and
 This behavior is hardcoded.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncflint.1,v 1.25 2014-05-29 18:00:26 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncflint.1,v 1.26 2014-10-31 17:55:56 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.83 2014-07-15 18:48:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.84 2014-10-31 17:55:56 zender Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -53,11 +53,9 @@ nco_find_lat_lon
 
   nc_type var_typ; /* [enm] variable type */
 
-  /* Make sure CF tag exists. Currently require CF-1.0 value */
-  if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",att_val) || !strstr(att_val,"CF-1.")){
-    if(nco_dbg_lvl_get() >= nco_dbg_dev)
-    (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or is present but not of the form \"CF-1.X\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.X metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
-  } /* !CF */
+  /* Make sure CF tag exists. Currently require CF-1.X value */
+  if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",att_val) || !strstr(att_val,"CF-1."))
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or is present but not of the form \"CF-1.X\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.X metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
 
   /* Get number of variables */
   rcd=nco_inq_nvars(nc_id,&nvars);
@@ -93,17 +91,14 @@ nco_find_lat_lon
         crd_nbr++;
       } /* endif longitude */
 
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",nco_prg_nm_get(),fnc_nm,
-          var_nm); 
-      }
+      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",nco_prg_nm_get(),fnc_nm,var_nm); 
 
     } /* endif standard_name */
 
   } /* end loop over vars */
 
   if(crd_nbr != 2){
-    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"nco_find_lat_lon() unable to identify lat/lon auxiliary coordinate variables.\n");
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: %s unable to identify lat/lon auxiliary coordinate variables.\n",nco_prg_nm_get(),fnc_nm);
     return False;
   }else return True;
 
@@ -244,7 +239,7 @@ nco_aux_evl
   lmt_tpl.ssc=1L;
 
   /* malloc() lmt structure to return
-  No way to know exact size in advance though maximum is about dim_sz/2 */
+     No way to know exact size in advance though maximum is about dim_sz/2 */
   int MAX_LMT_NBR=dmn_sz/2;
 
   if(aux_nbr > 0) lmt=(lmt_sct **)nco_malloc(MAX_LMT_NBR*sizeof(lmt_sct *));
@@ -311,8 +306,8 @@ nco_aux_evl
   if(vp_lon) vp_lon=nco_free(vp_lon);
 
   /* With some loss of generality, we assume cell-based coordinates are not 
-  record coordinates spanning multiple files. Thus finding no cells within
-  any bounding box constitutes a domain error. */
+     record coordinates spanning multiple files. Thus finding no cells within
+     any bounding box constitutes a domain error. */
   if(*lmt_nbr == 0){
     (void)fprintf(stdout,"%s: ERROR %s reports that none of the %d specified auxiliary-coordinate bounding-box(es) contain any latitude/longitude coordinate pairs. This condition was not flagged as an error until 20110221. Prior to that, when no coordinates were in any of the user-specified auxiliary-coordinate hyperslab(s), NCO mistakenly returned the entire coordinate range as being within the hyperslab(s).\n",nco_prg_nm_get(),fnc_nm,aux_nbr);
     nco_exit(EXIT_FAILURE);
@@ -379,11 +374,11 @@ nco_aux_evl_trv
  int *aux_lmt_nbr)                   /* I/O [nbr] Number of coordinate limits */
 {
   /* Purpose: Create lmt structure of slabs of continguous cells that
-  match rectangular region specified by -X arguments.
-  Intended for use with non-monotonic grids
-  Requires CF-1.0 conventions
-  Uses latitude/longitude centers rather than cell_bounds to detect matches
-  Code assumes units are degrees if they are not radians */
+     match rectangular region specified by -X arguments.
+     Intended for use with non-monotonic grids
+     Requires CF-1.0 conventions
+     Uses latitude/longitude centers rather than cell_bounds to detect matches
+     Code assumes units are degrees if they are not radians */
 
   const char fnc_nm[]="nco_aux_evl_trv()";
 
@@ -472,7 +467,7 @@ nco_aux_evl_trv
   lmt_tpl.ssc=1L;
 
   /* malloc() lmt structure to return
-  No way to know exact size in advance though maximum is about dim_sz/2 */
+     No way to know exact size in advance though maximum is about dim_sz/2 */
   int MAX_LMT_NBR=dmn_sz/2;
 
   if(aux_nbr > 0) lmt=(lmt_sct **)nco_malloc(MAX_LMT_NBR*sizeof(lmt_sct *));
@@ -528,9 +523,7 @@ nco_aux_evl_trv
         cll_idx_min=-1;
       } /* end if one or more consecutive matching cells */
     } /* end loop over cells */
-    if(nco_dbg_lvl_get() > nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev){
-      (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",nco_prg_nm_get(),fnc_nm,lon_min,var_nm_lon,lon_max,lat_min,var_nm_lat,lat_max,cll_grp_nbr,cll_nbr_ttl); 
-    }
+    if(nco_dbg_lvl_get() > nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",nco_prg_nm_get(),fnc_nm,lon_min,var_nm_lon,lon_max,lat_min,var_nm_lat,lat_max,cll_grp_nbr,cll_nbr_ttl); 
   } /* end loop over user supplied -X options */
 
   /* Free allocated memory */
@@ -538,9 +531,7 @@ nco_aux_evl_trv
   if(vp_lon) vp_lon=nco_free(vp_lon);
 
   /* No limits found */
-  if(*aux_lmt_nbr == 0){
-    return NULL;
-  } /* No limits found */
+  if(*aux_lmt_nbr == 0) return NULL;
 
   lmt=(lmt_sct **)nco_realloc(lmt,(*aux_lmt_nbr)*sizeof(lmt_sct *));
 
@@ -610,8 +601,8 @@ nco_find_lat_lon_trv
     NCO_GET_ATT_CHAR(grp_id,var_id,"standard_name",att_val);
     att_val[att_lng]='\0';
 
-    /* Match parameter name to find ( "latitude" or "longitude" ) */
-    if(strcmp(att_val,att_val_trg) == 0){
+    /* Match parameter name to find ("latitude" or "longitude") */
+    if(!strcmp(att_val,att_val_trg)){
 
       /* Export full name  */
       *var_nm_fll=(char *)strdup(var_trv->nm_fll);
@@ -619,11 +610,9 @@ nco_find_lat_lon_trv
       /* Get units; assume same for both lat and lon */
       int rcd=nco_inq_attlen_flg(grp_id,var_id,"units",&att_lng);
       if(rcd != NC_NOERR){
-        if(nco_dbg_lvl_get() >= nco_dbg_var){
-        (void)fprintf(stdout,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
-        }
+        if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: %s reports CF convention requires \"latitude\" to have units attribute\n",nco_prg_nm_get(),fnc_nm);
         return False;
-      }
+      } /* endif */
       NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
       units[att_lng]='\0';
 
@@ -643,4 +632,3 @@ nco_find_lat_lon_trv
   return False;
 
 } /* end nco_find_lat_lon_trv() */
-
