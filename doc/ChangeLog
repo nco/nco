@@ -1,3 +1,8 @@
+2014-10-31  Henry Butowsky  <henryb@hush.com> 
+	* mods to ncap_cst_mk() in ncap2_utl.cc -
+	  code checks that record dim is the first dim in list ONLY if nc3 file 
+	  and nc4 file. This also allows users to define vars with multiple record dims
+	
 2014-10-30  Henry Butowsky  <henryb@hush.com>
 	* added hidden feature to defdim - so that when dim_sz <0 then 
 	dim is defined as unlimited
