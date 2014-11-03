@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.526 2014-10-31 17:55:54 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.527 2014-11-03 00:21:53 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1109,7 +1109,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
 
 #ncecat #6 part1
-#ncecat  -h -O -g g6g1 -v area ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
+#ncecat -h -O -g g6g1 -v area ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area ~/foo.nc
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: 1D -g g6g1 -v area";
@@ -1120,8 +1120,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			     
 
-#ncecat #7 same as #6 but look metadata
-#ncecat  -h -O -g g6g1 -v area ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
+#ncecat #7 same as #6 but look at metadata
+#ncecat -h -O -g g6g1 -v area ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -g g6g1 -v area ~/foo.nc
 #area dimension 0: record, size = 2 (Record non-coordinate dimension)
     
@@ -1134,7 +1134,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
     
 #ncecat #8 part1
-#ncecat  -h -O -v two_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
+#ncecat -h -O -v two_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var ~/foo.nc
 
     $dsc_sng="(Groups) Concatenate variables/groups 1: 2D -v two_dmn_rec_var";
@@ -1142,7 +1142,6 @@ print "\n";
     $tst_cmd[1]="ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="record[1] time[9]=10 lev[2]=1000 two_dmn_rec_var[59]=3";
     $tst_cmd[3]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	   
@@ -1299,7 +1298,7 @@ print "\n";
 
     $dsc_sng="-w 0.8,0.0 in.nc in.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -4 -O -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks  -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
     $tst_cmd[2]="time[9]=8";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
@@ -1312,7 +1311,7 @@ print "\n";
 
     $dsc_sng="--fix_rec_crd -w 0.8,0.0 in.nc in.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -4 -O --fix_rec_crd -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks  -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
     $tst_cmd[2]="time[9]=10";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
@@ -1322,12 +1321,12 @@ print "\n";
  
 #ncflint #8
 # ncflint -h -O -g g4 -v one_dmn_rec_var -w 1,1 ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
-# ncks  -H -C -O -g g4  -d time,9 -v one_dmn_rec_var ~/foo.nc
+# ncks -H -C -O -g g4  -d time,9 -v one_dmn_rec_var ~/foo.nc
 
     $dsc_sng="(Groups) Weight 1D -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -h -O -v one_dmn_rec_var -w 1,1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
 
-    $tst_cmd[1]="ncks  -H -C -O -g g4 -d time,9 -v one_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -C -O -g g4 -d time,9 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="time[9]=20 one_dmn_rec_var[9]=20";
     $tst_cmd[3]="SS_OK";   
 
@@ -2014,17 +2013,14 @@ print "\n";
 #	Distribute these to variables when writing with nco_prn_var_val_trv().
 #	nco_bld_lmt_trv() assigns user specified dimension limits to traversal table dimensions.   
 
-# 
 # Chunking tests
-#
  
 #ncks #54: Apply chunking all policy to -v lat_lon(lat,lon); lat(2) and lon(4) are by default chunked with a size == dimension
-# The test greps chunksize = 2 for lat
-#ncks -O -4 -v lat_lon --cnk_plc=all ~/nco/data/in_grp.nc ~/foo.nc
-#ncks -C -m -v lat_lon %tmp_fl_00% | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'
+#ncks -O -4 -v lat_lon --cnk_min=0 --cnk_plc=all ~/nco/data/in_grp.nc ~/foo.nc
+#ncks -C -m -v lat_lon ~/foo.nc | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'
 
     $dsc_sng="(Groups) Chunking --cnk_plc=all --v lat_lon";
-    $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_min=0 --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m -v lat_lon %tmp_fl_00% | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'";
     $tst_cmd[2]="lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2";
     $tst_cmd[3]="SS_OK";   
@@ -2218,7 +2214,7 @@ print "\n";
          
 #ncks #67
 # Test "out of scope" coordinate
-# ncks  -H -v lon3_var ~/nco/data/in_grp.nc
+# ncks -H -v lon3_var ~/nco/data/in_grp.nc
     $dsc_sng="(Groups) Out of scope coordinate -v lon3_var";
     $tst_cmd[0]="ncks $nco_D_flg -H -v lon3_var $in_pth_arg in_grp_3.nc";
     $tst_cmd[1]="lon3[3] lon3_var[3]=3";
@@ -2228,7 +2224,7 @@ print "\n";
     
 #ncks #68
 # Test 2 "intermediate scope " coordinates
-# ncks  -H -v lon4_var ~/nco/data/in_grp.nc
+# ncks -H -v lon4_var ~/nco/data/in_grp.nc
     $dsc_sng="(Groups) Order coordinates by group depth -v lon4_var";
     $tst_cmd[0]="ncks $nco_D_flg -C -H -v lon4_var $in_pth_arg in_grp_3.nc";
     $tst_cmd[1]="lon4[1]=4 lon4_var[1]=1";
@@ -2257,7 +2253,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 
 #ncks #71
-# ncks  -h -O  -C -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc
+# ncks -h -O  -C -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc
 
     $dsc_sng="Limits -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc";
@@ -2511,7 +2507,7 @@ print "\n";
 #ncks #90
 # Test -X (writing associated coordinates) 
 # ncks -O  -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar ~/nco/data/in_grp_3.nc ~/foo.nc
-# ncks  -g g18g2 -v lat_gds_2 ~/foo.nc 
+# ncks -g g18g2 -v lat_gds_2 ~/foo.nc 
     $dsc_sng="(Groups) Auxiliary coordinates (writing associated coordinates) -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks $nco_D_flg -g g18g2 -C -v lat_gds_2 %tmp_fl_00%";
@@ -2685,7 +2681,7 @@ print "\n";
 
   $tst_cmd[0]="ncpdq $omp_flg -O -C $fl_fmt $nco_D_flg -a lat,lev -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
-  $dsc_sng="Re-order 2D variable (-C , no MSA, no-reorder) -v two_dmn_var -a lat,lev";
+  $dsc_sng="Re-order 2D variable (-C, no MSA, no-reorder) -v two_dmn_var -a lat,lev";
   $tst_cmd[2]="lat[1] lev[1] two_dmn_var[4]=17.5 fraction";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -2699,7 +2695,7 @@ print "\n";
 
   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -a lev,lat -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
-  $dsc_sng="Re-order 2D variable (-C , no MSA) -v two_dmn_var -a lev,lat";
+  $dsc_sng="Re-order 2D variable (-C, no MSA) -v two_dmn_var -a lev,lat";
   $tst_cmd[2]="lev[1] lat[1] two_dmn_var[3]=17.5 fraction";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -2714,7 +2710,7 @@ print "\n";
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,lat -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -C -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
-  $dsc_sng="Re-order 2D variable (no -C , no MSA) -v two_dmn_var -a lev,lat";
+  $dsc_sng="Re-order 2D variable (no -C, no MSA) -v two_dmn_var -a lev,lat";
   $tst_cmd[2]="lev[1]=500 lat[1]=90 two_dmn_var[3]=17.5 fraction";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -2729,7 +2725,7 @@ print "\n";
 
   $tst_cmd[0]="ncpdq $omp_flg -O -C $fl_fmt $nco_D_flg -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var %tmp_fl_00%";
-  $dsc_sng="Re-order 2D variable (-C , MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1";
+  $dsc_sng="Re-order 2D variable (-C, MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1";
   $tst_cmd[2]="lev[0] lat[0] two_dmn_var[0]=17.5 fraction";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -2743,7 +2739,7 @@ print "\n";
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var %tmp_fl_00%";
-  $dsc_sng="Re-order 2D variable (no -C , MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1";
+  $dsc_sng="Re-order 2D variable (no -C, MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1";
   $tst_cmd[2]="lev[0]=500 lat[0]=90 two_dmn_var[0]=17.5 fraction";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -2751,13 +2747,13 @@ print "\n";
 
 #NEW NCO 4.3.2
 #ncpdq #15
-# two_dmn_rec_var(time,lev) 2D variable with record  (-C , no MSA)
+# two_dmn_rec_var(time,lev) 2D variable with record  (-C, no MSA)
 # ncpdq -O -C -a lev,time -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
 # ncks  -d time,1,1 -d lev,1,1 ~/foo.nc
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -C -a lev,time -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var  -d time,1,1 -d lev,1,1 %tmp_fl_00%";
-  $dsc_sng="Re-order 2D variable with record (-C , no MSA) -v two_dmn_rec_var -C -a lev,time";
+  $dsc_sng="Re-order 2D variable with record (-C, no MSA) -v two_dmn_rec_var -C -a lev,time";
   $tst_cmd[2]="lev[1] time[1] two_dmn_rec_var[11]=2.1 watt meter-2";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -2772,7 +2768,7 @@ print "\n";
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,time -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var -d time,1,1 -d lev,1,1 %tmp_fl_00%";
-  $dsc_sng="Re-order 2D variable with record (no -C , no MSA) -v two_dmn_rec_var -a lev,time";
+  $dsc_sng="Re-order 2D variable with record (no -C, no MSA) -v two_dmn_rec_var -a lev,time";
   $tst_cmd[2]="lev[1]=500 time[1]=2 two_dmn_rec_var[11]=2.1 watt meter-2";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -2786,7 +2782,7 @@ print "\n";
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var %tmp_fl_00%";
-  $dsc_sng="Re-order 2D variable with record (-C , MSA) -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var";
+  $dsc_sng="Re-order 2D variable with record (-C, MSA) -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var";
   $tst_cmd[2]="lev[0] time[0] two_dmn_rec_var[0]=2.1 watt meter-2";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -2800,7 +2796,7 @@ print "\n";
 
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var %tmp_fl_00%";
-  $dsc_sng="Re-order 2D variable with record (no -C , MSA) -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var";
+  $dsc_sng="Re-order 2D variable with record (no -C, MSA) -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var";
   $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -2812,7 +2808,7 @@ print "\n";
 #ncpdq -h -O -a lat,time -v three_dmn_var -d time,1,1 -d lat,1,1 -d lon,1,1 in.nc ~/foo.nc
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a -lat,-time -v three_dmn_var_dbl -d time,1,6,2 -d lat,0,1 -d lon,1,1 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks  -H -C -v three_dmn_var_dbl -d lat,1,1 -d time,2,2 %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -C -v three_dmn_var_dbl -d lat,1,1 -d time,2,2 %tmp_fl_00%";
     $dsc_sng="Reverse/Re-order 3D variable -a -lat,-time -v three_dmn_var_dbl -d time,1,1 -d lat,1,1 -d lon,1,1";
     $tst_cmd[2]="lat[1]=-90 time[2]=2 lon[0]=90 three_dmn_var_dbl[5]=10";
     $tst_cmd[3]="SS_OK";
@@ -3013,7 +3009,7 @@ print "\n";
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g1 -a lev,lat -v two_dmn_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
-   $dsc_sng="(Groups) Re-order 2D variable (-C , no MSA) -v two_dmn_var -a lev,lat";
+   $dsc_sng="(Groups) Re-order 2D variable (-C, no MSA) -v two_dmn_var -a lev,lat";
    $tst_cmd[2]="lev[1] lat[1] two_dmn_var[3]=17.5 fraction";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -3040,7 +3036,7 @@ print "\n";
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -a lev,lat -v two_dmn_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
-   $dsc_sng="(Groups) Re-order 2D variable (no -C , no MSA) -v two_dmn_var -a lev,lat";
+   $dsc_sng="(Groups) Re-order 2D variable (no -C, no MSA) -v two_dmn_var -a lev,lat";
    $tst_cmd[2]="lev[1]=500 lat[1]=90 two_dmn_var[3]=17.5 fraction";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -3067,7 +3063,7 @@ print "\n";
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -C -a lev,lat -v two_dmn_var -d lat,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g1 -v two_dmn_var %tmp_fl_00%";
-   $dsc_sng="(Groups) Re-order 2D variable (-C , MSA) -v two_dmn_var -a lev,lat";
+   $dsc_sng="(Groups) Re-order 2D variable (-C, MSA) -v two_dmn_var -a lev,lat";
    $tst_cmd[2]="lev[0] lat[0] two_dmn_var[0]=17.5 fraction";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -3092,7 +3088,7 @@ print "\n";
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -a lev,lat -v two_dmn_var -d lat,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g1 -v two_dmn_var %tmp_fl_00%";
-   $dsc_sng="(Groups) Re-order 2D variable (no -C , MSA) -v two_dmn_var -a lev,lat";
+   $dsc_sng="(Groups) Re-order 2D variable (no -C, MSA) -v two_dmn_var -a lev,lat";
    $tst_cmd[2]="lev[0]=500 lat[0]=90 two_dmn_var[0]=17.5 fraction";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -3100,7 +3096,7 @@ print "\n";
 
 #NEW NCO 4.3.2
 #ncpdq #15
-# two_dmn_rec_var(time,lev) 2D variable with record  (-C , no MSA)
+# two_dmn_rec_var(time,lev) 2D variable with record  (-C, no MSA)
 # ncpdq -O -C -a lev,time -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
 # ncks  -d time,1,1 -d lev,1,1 ~/foo.nc
 
@@ -3115,7 +3111,7 @@ print "\n";
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -C -a lev,time -v two_dmn_rec_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g2 -v two_dmn_rec_var -d time,1,1 -d lev,1,1 %tmp_fl_00%";
-   $dsc_sng="(Groups) Re-order 2D variable with record (-C , no MSA) -v two_dmn_rec_var -C -a lev,time";
+   $dsc_sng="(Groups) Re-order 2D variable with record (-C, no MSA) -v two_dmn_rec_var -C -a lev,time";
    $tst_cmd[2]="lev[1] time[1] two_dmn_rec_var[11]=2.1 watt meter-2";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -3131,7 +3127,7 @@ print "\n";
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -a lev,time -v two_dmn_rec_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g2 -d time,1,1 -d lev,1,1 %tmp_fl_00%";
-   $dsc_sng="(Groups) Re-order 2D variable with record (no -C , no MSA) -v two_dmn_rec_var -C -a lev,time";
+   $dsc_sng="(Groups) Re-order 2D variable with record (no -C, no MSA) -v two_dmn_rec_var -C -a lev,time";
    $tst_cmd[2]="lev[1]=500 time[1]=2 two_dmn_rec_var[11]=2.1 watt meter-2";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -3147,7 +3143,7 @@ print "\n";
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g2 -a lev,time -v two_dmn_rec_var -d time,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g2 -v two_dmn_rec_var %tmp_fl_00%";
-   $dsc_sng="(Groups) Re-order 2D variable with record (-C , MSA) -v two_dmn_rec_var -C -a lev,time";
+   $dsc_sng="(Groups) Re-order 2D variable with record (-C, MSA) -v two_dmn_rec_var -C -a lev,time";
    $tst_cmd[2]="lev[0] time[0] two_dmn_rec_var[0]=2.1 watt meter-2";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -3157,14 +3153,13 @@ print "\n";
 #ncpdq #39
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
 # ncpdq -O -g g19g2 -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var ~/nco/data/in_grp_3.nc ~/foo.nc
-# ncks  -C -g g19g2 -v two_dmn_rec_var ~/foo.nc
+# ncks -C -g g19g2 -v two_dmn_rec_var ~/foo.nc
 # $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
-
 # same as #18 but with group
   
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -a lev,time -v two_dmn_rec_var -d time,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g2 -v two_dmn_rec_var %tmp_fl_00%";
-   $dsc_sng="(Groups) Re-order 2D variable with record (no -C , MSA) -v two_dmn_rec_var";
+   $dsc_sng="(Groups) Re-order 2D variable with record (no -C, MSA) -v two_dmn_rec_var";
    $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
@@ -3201,9 +3196,7 @@ print "\n";
 #ncpdq -h -O -P all_new -v upk in.nc ~/foo.nc
 #ncpdq -h -O -P upk -v upk ~/foo.nc ~/foo.nc
 #ncks -C -H -s '%g' -v upk ~/foo.nc
-
 # same as #29 but with group
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -g g19g4 -P all_new -v upk $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P upk -v upk %tmp_fl_00% %tmp_fl_00%";
    $dsc_sng="(Groups) Pack and then unpack scalar (uses only add_offset) -P all_new -v upk";
@@ -3219,7 +3212,6 @@ print "\n";
 #ncpdq -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 in_grp_3.nc ~/foo.nc
 #ncks -g g19g4 -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 ~/foo.nc
 #$tst_cmd[2]="7";
-
 # same as #30 but with group
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -3229,21 +3221,21 @@ print "\n";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array  
-   
    	
 #NEW NCO 4.4.0
 #ncpdq #46
-# ncpdq -O -4 -a lon,lat --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct in.nc ~/foo.nc
+# ncpdq -O -4 -a lon,lat --cnk_min=0 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct ~/nco/data/in.nc ~/foo.nc
+# ncks -m ~/foo.nc | grep 'lat_2D_rct dimension 0'
 
-   $dsc_sng="Chunking -a lon,lat --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
-   $tst_cmd[0]="ncpdq $omp_flg -4 $nco_D_flg -a lon,lat --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct $in_pth_arg in.nc %tmp_fl_00%";
+   $dsc_sng="Chunking -a lon,lat --cnk_min=0 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
+   $tst_cmd[0]="ncpdq $omp_flg -4 $nco_D_flg -a lon,lat --cnk_min=0 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct $in_pth_arg in.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'lat_2D_rct dimension 0'";
    $tst_cmd[2]="lat_2D_rct dimension 0: lon, size = 4 NC_FLOAT, chunksize = 2 (Coordinate is lon)";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array  	
 	
-	} ##### Group tests	
+} ##### Group tests	
 	
 #ncpdq #42
 
@@ -3943,9 +3935,9 @@ print "\n";
 # ncra #23
 # same as ncra #02, for groups
     
+    $dsc_sng="(Groups) 1 group -g g4 -v one_dmn_rec_var record mean of int across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g g4 -v one_dmn_rec_var %tmp_fl_00%";
-    $dsc_sng="(Groups) 1 group -g g4 -v one_dmn_rec_var record mean of int across two files";
     $tst_cmd[2]="time[0]=5.5 one_dmn_rec_var[0]=6 kelvin";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -3955,21 +3947,20 @@ print "\n";
 # ncra #24
 # (Groups) 1 record to process in 1 group
     
-    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H  -g g23 -v time %tmp_fl_00%";
     $dsc_sng="(Groups) 1 record to process in 1 group -g g23 (do variable and record in group) ";
+    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -g g23 -v time %tmp_fl_00%";
     $tst_cmd[2]="time[0]=1.5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
-
 		
 # ncra #25
 # (Groups) 2 records to process in 2 groups (part 1)
     
-    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23,g24 -v time $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H  -g g23 -v time %tmp_fl_00%";
     $dsc_sng="(Groups) 2 records to process in 2 groups (part 1) (do record in group only)";
+    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23,g24 -v time $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -g g23 -v time %tmp_fl_00%";
     $tst_cmd[2]="time[0]=1.5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -3978,22 +3969,21 @@ print "\n";
 # ncra #26
 # (Groups) 2 records to process in 2 groups (part 2)
     
-    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23,g24 -v time $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H  -g g24 -v time %tmp_fl_00%";
     $dsc_sng="(Groups) 2 records to process in 2 groups (part 2) (do record in group only)";
+    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23,g24 -v time $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -g g24 -v time %tmp_fl_00%";
     $tst_cmd[2]="time[0]=4";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-
 # ncra #27
 # (Groups) 1D var 2 records to process in 2 groups (part 1)
-#  ncra -h -O  -g g25g1,g25g2 in_grp_3.nc in_grp_3.nc ~/foo.nc
+# ncra -h -O -g g25g1,g25g2 -p ~/nco/data in_grp_3.nc in_grp_3.nc ~/foo.nc
     
+    $dsc_sng="(Groups) 2 records to process in 2 groups (part 1) (1D variable and record in group)";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
-    $dsc_sng="(Groups) 2 records to process in 2 groups (part 1) (1D variable and record in group)";
     $tst_cmd[2]="time[0]=5.5 one_dmn_rec_var[0]=6";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4001,26 +3991,27 @@ print "\n";
 	
 # ncra #28 same as #27
 # (Groups) 1D var 2 records to process in 2 groups (part 2)
-#  ncra -h -O  -g g25g1,g25g2 in_grp_3.nc in_grp_3.nc ~/foo.nc
+# ncra -h -O -g g25g1,g25g2 -p ~/nco/data in_grp_3.nc in_grp_3.nc ~/foo.nc
     
+    $dsc_sng="(Groups) 2 records to process in 2 groups (part 2) (1D variable and record in group)";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
-    $dsc_sng="(Groups) 2 records to process in 2 groups (part 2) (1D variable and record in group)";
     $tst_cmd[2]="time[0]=5.5 one_dmn_rec_var[0]=6";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 
 # ncra #29 Generate a file with 2 records
-# ncecat -O  -g g25g1 in_grp_3.nc in1.nc -> generate "record"
-# ncpdq -O -a time,record in1.nc in2.nc -> switch "record" and "time"
-# ncra -O in2.nc ~/foo.nc
+# ncecat -O -g g25g1 ~/nco/data/in_grp_3.nc ~/foo1.nc # generate "record"
+# ncpdq -O -a time,record ~/foo1.nc ~/foo2.nc # switch "record" and "time"
+# ncra -O ~/foo2.nc ~/foo.nc
+# ncks -C -g g25g1 -v one_dmn_rec_var ~/foo.nc
     
-    $tst_cmd[0]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a time,record %tmp_fl_00% %tmp_fl_01%";
-	$tst_cmd[2]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_01% %tmp_fl_02%";
-    $tst_cmd[3]="ncks -C -g g25g1 -v one_dmn_rec_var %tmp_fl_02%";
     $dsc_sng="(Groups) 2 records in 1 group ('time' same as record, 1st record)";
+    $tst_cmd[0]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a time,record %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -g g25g1 -v one_dmn_rec_var %tmp_fl_02%";
     $tst_cmd[4]="time[0]=5.5 record[0] one_dmn_rec_var[0]=6";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4304,7 +4295,7 @@ if (0){
     
 # will fail SS - ncks not the last cmd
     @tst_cmd=(); # really reset array. $#tst_cmd=0; sets last index=0 --> list has one element.
-    push(@tst_cmd, "ncwa $omp_flg  -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tmp_fl_00%");
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -v three_dmn_var_dbl -d time,3 -d lat,0 %tmp_fl_00%");
     # used to cut for field 7. (1 + 3x2 + 0x1=7)
     $dsc_sng="Dimension reduction with min switch and missing values";
@@ -4316,7 +4307,7 @@ if (0){
 #ncwa #21
     
 # will fail SS - ncks not the last cmd
-    push(@tst_cmd, "ncwa $omp_flg  -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tmp_fl_00%");
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,9 -d lat,1 %tmp_fl_00%");
     # used to cut for field 20. (1 + 9x2 + 1x1 = 20)
     $dsc_sng="Dimension reduction with min switch";
@@ -4689,7 +4680,7 @@ if (0){
 	
 #NEW 4.3.7	
 #ncwa #51
-# ncwa  -h -O -a time -b -v time ~/nco/data/in_grp.nc ~/foo.nc
+# ncwa -h -O -a time -b -v time ~/nco/data/in_grp.nc ~/foo.nc
 # ncks ~/foo.nc | grep 'time dimension 0'
 
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -b -v time $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -4745,10 +4736,10 @@ if (0){
 	
 #NEW 4.4.0	
 #ncwa #55
-#ncwa -O -4 -a time --cnk_plc=xpl --cnk_dmn lon,4 -v byt_3D_rec ~/nco/data/in.nc ~/foo.nc
-    
+#ncwa -O -4 -a time --cnk_min=0 --cnk_plc=xpl --cnk_dmn lon,4 -v byt_3D_rec ~/nco/data/in.nc ~/foo.nc
+#ncks -m ~/foo.nc | grep 'byt_3D_rec dimension 1'
     $dsc_sng="Chunking -a time --cnk_dmn lon,4 -v byt_3D_rec";
-    $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a time --cnk_plc=xpl --cnk_dmn lon,4 -v byt_3D_rec $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a time --cnk_min=0 --cnk_plc=xpl --cnk_dmn lon,4 -v byt_3D_rec $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'byt_3D_rec dimension 1'";
     $tst_cmd[2]="byt_3D_rec dimension 1: lon, size = 4 NC_FLOAT, chunksize = 4 (Coordinate is lon)";
     $tst_cmd[3]="SS_OK";
