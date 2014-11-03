@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.521 2014-10-17 15:42:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.522 2014-11-03 21:44:57 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -496,20 +496,20 @@ extern "C" {
 #define TRV_MAP_SIZE NC_MAX_DIMS
 
   enum nco_prg_id{ /* [enm] Key value for all netCDF operators */
-    ncap,
-    ncatted,
-    ncbo,
-    ncfe, 
-    ncecat,
-    ncflint,
-    ncks,
-    ncpdq,
-    ncra,
-    ncrcat,
-    ncrename,
-    ncwa,
-    ncge, /* 20131018: New operator */
-    ncmv /* 20131018: Potential new operator */
+    ncap, /* 0 [enm] */
+    ncatted, /* 1 [enm] */
+    ncbo, /* 2 [enm] */
+    ncfe,  /* 3 [enm] */
+    ncecat, /* 4 [enm] */
+    ncflint, /* 5 [enm] */
+    ncks, /* 6 [enm] */
+    ncpdq, /* 7 [enm] */
+    ncra, /* 8 [enm] */
+    ncrcat, /* 9 [enm] */
+    ncrename, /* 10 [enm] */
+    ncwa, /* 11 [enm] */
+    ncge,  /* 12 [enm] */ /* 20131018: New operator */
+    ncmv  /* 13 [enm] */ /* 20131018: Potential new operator */
   }; /* end nco_prg_id enum */
   
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
