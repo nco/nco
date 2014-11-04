@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.735 2014-10-31 17:55:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.736 2014-11-04 20:32:54 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -893,6 +893,8 @@ ifeq (${GCC_OR_CLANG},Y)
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall -Wuninitialized
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
+# Greenplanet has old compiler that lacks -Werror=format-security
+# CFLAGS += -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g
  CFLAGS += -Werror=format-security -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g
 # Compilation flags recommended by GSL and others that I like and use:
 # -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
@@ -903,7 +905,7 @@ ifeq (${GCC_OR_CLANG},Y)
 # -Wcast-align: Warn if casting pointer to type of different size
 # -Wcast-qual: Warn if const qualifier removed from pointer
 # -Werror: Consider warnings as errors
-# -Werror=format-security: Consider this specific warning as errors
+# -Werror=format-security: Consider this specific warning as errors (requires gcc > 4.1.2)
 # -Wmaybe-uninitialized: Warn on uninitialized variables. GCC has many false negatives, clang is better? Available on GCC 4.8.2+. Not available on GCC 4.6.3-.
 # -Wmissing-prototypes: Warn if missing prototypes
 # -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
