@@ -1,6 +1,14 @@
 2014-11-03  Charlie Zender  <zender@uci.edu>
 
-	* First regression-free version in three weeks.
+	* NCO 4.4.7 release procedure:
+ 	Changes since nco-4_4_6: -0->-1, rename bug, cnk xst, fxm
+	cd ~/nco;cvs tag -d nco-4_4_7;cvs tag -d nco-4_4_7-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
+	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
+
+	* Add broken regress for auxiliary coordinates
+
+	* First regression-free version in three weeks
 
 	* Now that nco_cnk_sz_set_trv() always called, allow it to work when ncecat creates new record dimension
 
@@ -32,12 +40,6 @@
 	* Change configure.ac --enable-dap-netcdf to --enable-dap
 
 	* Add cnk.cdl to test chunking algorithms
-
-	* NCO 4.4.7 release procedure:
- 	Changes since nco-4_4_6: -0->-1, rename bug, cnk xst, fxm
-	cd ~/nco;cvs tag -d nco-4_4_7;cvs tag -d nco-4_4_7-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
-	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
 
 	* Add cnk_map=nco to assign to current NCO-recommended map
 
