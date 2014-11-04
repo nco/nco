@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.161 2014-10-30 11:36:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.162 2014-11-04 19:40:22 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -279,6 +279,8 @@ ncap_att_cpy_sct
 
  if(!Nvar ||  Nvar->flg_stt==1)
     (void)ncap_att_cpy(var1->nm,var2->nm,prs_arg);
+
+ return 0;
  
 } 	
 
