@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.141 2014-11-03 21:44:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.142 2014-11-04 00:26:07 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -964,6 +964,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s unchunking %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	if(shuffle) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has shuffle flag set before unchunking. Expect the worst.",nco_prg_nm_get(),fnc_nm,var_nm);
 
+	// fxm: delete this?
 	/* Corner-cases that must have sizes adjusted before unchunking:
 	   --fix_rec_dmn causes record in input to be fixed in output so input must-be-chunked and output may be unchunked,
 	   e.g., if size shrinks beneath cnk_min. Then former (record) chunk size may be much too large.
@@ -972,6 +973,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	  /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
 	//	  if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz) cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
 
+	// Redundant since srg_typ = NC_CONTIGUOUS (which is netCDF default for variable that do not require chunking)
 	//	(void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
       }else{ /* !chunked */
 	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);
@@ -1024,9 +1026,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       /* Record dimension size in output file is zero until first write
 	 Obtain record dimension size from lmt_all structure (for nco_cnk_sz_set()) */
       if(dmn_cmn[dmn_idx].NON_HYP_DMN){
-        /* When not hyperslabbed, use input record dimension size ... */
-        cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
-	/* 20140518: As of netCDF 4.3.2, employ smarter defaults for record dimension */
+        /* When not hyperslabbed, use input record dimension size, except workaround zero size
+	   reported for new record dimensions before anything is written */
+	if(dmn_cmn[dmn_idx].sz == 0) cnk_sz[dmn_idx]=1UL; else cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
+	/* 20140518: As of netCDF 4.3.2, employ smarter defaults for record dimension in 1-D variables */
 	if(dmn_nbr == 1) cnk_sz[dmn_idx]=NCO_CNK_SZ_BYT_R1D_DFL/typ_sz;
       }else{ /* !NON_HYP_DMN */
         /* ... and when hyperslabbed, use user-specified count */

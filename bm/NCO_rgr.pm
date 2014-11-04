@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.527 2014-11-03 00:21:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.528 2014-11-04 00:26:07 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1147,7 +1147,7 @@ print "\n";
 	   
 #ncecat #9 
 #Check that "time" is eliminated as record
-#ncecat -O in_grp_3.nc in_grp_3.nc ~/foo.nc
+#ncecat -O ~/nco/data/in_grp_3.nc ~/nco/data/in_grp_3.nc ~/foo.nc
 #ncks -m -C -g g25g1 -v one_dmn_rec_var ~/foo.nc
 
     $dsc_sng="(Groups) Concatenate variables/groups";

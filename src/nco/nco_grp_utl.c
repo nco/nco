@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1468 2014-11-03 21:44:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1469 2014-11-04 00:26:07 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4743,10 +4743,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* If variable needs dimension re-ordering */
   if(var_trv->flg_rdr){
-
     /* Must be ncpdq */
     assert(nco_prg_id == ncpdq);
-
     for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
       dmn_idx_in_out[var_trv->dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
 
@@ -4755,14 +4753,13 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
       dmn_out_id[dmn_idx_in_out[dmn_out_idx]]=dmn_out_id_tmp[dmn_out_idx];
-
   } /* !var_trv->rdr */
 
   if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
     /* Insert extra "record" dimension in dimension array if...  
-    ...is ncecat and
-    ...user requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially and
-    ...variable is processing type */
+       ...is ncecat and
+       ...user requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially and
+       ...variable is processing type */
 
     /* Temporary store for old IDs */
     int dmn_tmp_id[NC_MAX_DIMS];
@@ -4843,20 +4840,17 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* If output dimensions array exists */
   if(dmn_cmn_out != NULL && nco_prg_id == ncks){
 
-    /* Loop over each dimension in variable */
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
-      /* Is output dimension already in output file?
-	 Match by dimension ID since dimension IDs are unique */
+      /* Is output dimension already in output file? Match by dimension ID since dimension IDs are unique */
       for(idx_dmn_out=0;idx_dmn_out<*nbr_dmn_cmn_out;idx_dmn_out++)
         if((*dmn_cmn_out)[idx_dmn_out].id == dmn_cmn[idx_dmn].id) break;
 
       /* If this dimension is not yet in output array */
       if(idx_dmn_out == *nbr_dmn_cmn_out){
+        int nbr_dmn_out_tmp=*nbr_dmn_cmn_out;
 
-        int nbr_dmn_out_tmp = *nbr_dmn_cmn_out;  
-
-        /* Add one more element to array  */
+        /* Add one more element to array */
         (*dmn_cmn_out)=(dmn_cmn_sct *)nco_realloc((*dmn_cmn_out),(nbr_dmn_out_tmp+1)*sizeof(dmn_cmn_sct));
         (*dmn_cmn_out)[nbr_dmn_out_tmp].id=dmn_cmn[idx_dmn].id;
         (*dmn_cmn_out)[nbr_dmn_out_tmp].nm_fll=(char *)strdup(dmn_cmn[idx_dmn].nm_fll);
@@ -4870,9 +4864,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
         if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s Inserted dimension #%d to output list\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[idx_dmn].id);
 
-      } /* If this dimension is not in output array */
-    } /* Loop over each dimension in variable */
-  } /* If output dimensions array exists */
+      } /* endif */
+    } /* end loop over dimensions */
+  } /* endif dmn_cmn_out */
 
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){

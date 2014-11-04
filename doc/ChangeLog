@@ -1,5 +1,7 @@
 2014-11-03  Charlie Zender  <zender@uci.edu>
 
+	* Now that nco_cnk_sz_set_trv() always called, allow it to work when ncecat creates new record dimension
+
 	* Fix long-time bug where nco_cpy_var_dfn_trv() sets dmn_cmn[].is_rec_var incorrectly for record dimension affected by
 	--fix_rec_dmn or --mk_rec_dmn invocation (always set incorrectly except on first variable affected)
 
