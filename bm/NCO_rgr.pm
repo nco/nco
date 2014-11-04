@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.528 2014-11-04 00:26:07 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.529 2014-11-04 05:00:22 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2244,7 +2244,7 @@ print "\n";
 	
 #ncks #70
 # Test -X with variables anywhere in file (g18g1 has variable)
-# ncks -O -C -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar ~/nco/data/in_grp_3.nc 
+# ncks -O -C -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar ~/nco/data/in_grp_3.nc
     $dsc_sng="(Groups) Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar $in_pth_arg in_grp_3.nc";
     $tst_cmd[1]="time[9] gds_crd[1]=1 gds_3dvar[73]=282.2 meter";
@@ -2484,7 +2484,6 @@ print "\n";
 
 #ncks #88
 #ncks -O -v lat29 in_grp_3.nc ~/foo.nc
-    
     $dsc_sng="(Groups) Test";
     $tst_cmd[0]="ncks -O -v lat29  $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v lat29 %tmp_fl_00%  | grep 'standard_name'";
@@ -2495,7 +2494,7 @@ print "\n";
 
 #ncks #89
 # Test -X writing (apply limits to all standard 'lat' 'lon')
-# ncks -O  -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar ~/nco/data/in_grp_3.nc ~/foo.nc
+# ncks -O -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar ~/nco/data/in_grp_3.nc ~/foo.nc
     $dsc_sng="(Groups) Auxiliary coordinates writing -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks $nco_D_flg -v lon_gds_1 %tmp_fl_00%";
@@ -2506,7 +2505,7 @@ print "\n";
 
 #ncks #90
 # Test -X (writing associated coordinates) 
-# ncks -O  -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar ~/nco/data/in_grp_3.nc ~/foo.nc
+# ncks -O -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -g g18g2 -v lat_gds_2 ~/foo.nc 
     $dsc_sng="(Groups) Auxiliary coordinates (writing associated coordinates) -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -2556,7 +2555,6 @@ print "\n";
 	
 #ncks #94
 #ncks -O -C -H -d lon,-1 -v lon ~/nco/data/in.nc
-
     $dsc_sng="Select last element using negative one index";
     $tst_cmd[0]="ncks -O $nco_D_flg -C -H -d lon,-1 -v lon $in_pth_arg in.nc";
     $tst_cmd[1]="lon[3]=270";
@@ -2564,6 +2562,18 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+#ncks #95
+# Test -X writing two variables
+# ncks -O -X 150.,210.,-15.,45. -v gds_var,gds_3dvar ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H -d gds_crd,-1 -v gds_var ~/foo.nc
+    $dsc_sng="Auxiliary coordinate writing two variables";
+    $tst_cmd[0]="ncks $nco_D_flg -X 150.,210.,-15.,45. -v gds_var,gds_3dvar $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -C -H -d gds_crd,-1 -v gds_var %tmp_fl_00";
+    $tst_cmd[2]="gds_crd[6]=6 gds_var[6]=273.7";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
 #####################
 #### ncpdq tests #### -OK !
 #####################

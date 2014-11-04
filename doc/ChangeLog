@@ -1,6 +1,6 @@
 2014-11-03  Charlie Zender  <zender@uci.edu>
 
-	* First regression-free version in three weeks. Unfortunately, learned that some -X tests give false negatives.
+	* First regression-free version in three weeks.
 
 	* Now that nco_cnk_sz_set_trv() always called, allow it to work when ncecat creates new record dimension
 

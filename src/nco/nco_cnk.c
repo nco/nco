@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.142 2014-11-04 00:26:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.143 2014-11-04 05:00:22 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -963,18 +963,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	/* Turn-off chunking for this variable */
 	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s unchunking %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	if(shuffle) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has shuffle flag set before unchunking. Expect the worst.",nco_prg_nm_get(),fnc_nm,var_nm);
-
-	// fxm: delete this?
-	/* Corner-cases that must have sizes adjusted before unchunking:
-	   --fix_rec_dmn causes record in input to be fixed in output so input must-be-chunked and output may be unchunked,
-	   e.g., if size shrinks beneath cnk_min. Then former (record) chunk size may be much too large.
-	   Unsure why this matters when srg_typ is NC_CONTIGUOUS in call to nc_def_var_chunking(). But it does. */
-	//	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
-	  /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
-	//	  if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz) cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
-
-	// Redundant since srg_typ = NC_CONTIGUOUS (which is netCDF default for variable that do not require chunking)
-	//	(void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
+	/* Redundant since default netCDF srg_typ = NC_CONTIGUOUS for variables that need not be chunked */
+	(void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
       }else{ /* !chunked */
 	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);
       } /* !chunked */
