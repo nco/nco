@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.529 2014-11-04 05:00:22 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.530 2014-11-05 07:09:13 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2567,7 +2567,7 @@ print "\n";
 # ncks -O -X 150.,210.,-15.,45. -v gds_var,gds_3dvar ~/nco/data/in.nc ~/foo.nc
 # ncks -C -H -d gds_crd,-1 -v gds_var ~/foo.nc
     $dsc_sng="Auxiliary coordinate writing two variables";
-    $tst_cmd[0]="ncks $nco_D_flg -X 150.,210.,-15.,45. -v gds_var,gds_3dvar $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[0]="ncks -O $nco_D_flg -X 150.,210.,-15.,45. -v gds_var,gds_3dvar $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -C -H -d gds_crd,-1 -v gds_var %tmp_fl_00";
     $tst_cmd[2]="gds_crd[6]=6 gds_var[6]=273.7";
     $tst_cmd[3]="SS_OK";   
