@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1471 2014-11-05 03:54:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1472 2014-11-05 04:21:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8115,8 +8115,22 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
         /* Loop table 2 */
         for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
           /* Filter */
+
+
+          /* Detect the 'standard_name' attribute 'latitude' in the compared variable, to avoid inserting it */
+          nco_bool has_lat_=0;
+          nco_bool has_lon_=0;
+          char *var_nm_fll_=NULL;
+
+          if (trv_tbl->lst[idx_crd].nco_typ == nco_obj_typ_var)
+          {
+            has_lat_=nco_find_lat_lon_trv(nc_id,&trv_tbl->lst[idx_crd],"latitude",&var_nm_fll_,&dmn_id,&crd_typ,units_lat);
+            has_lon_=nco_find_lat_lon_trv(nc_id,&trv_tbl->lst[idx_crd],"longitude",&var_nm_fll_,&dmn_id,&crd_typ,units_lat);
+          }
+
+
           if(trv_tbl->lst[idx_crd].nco_typ == nco_obj_typ_var &&
-            trv_tbl->lst[idx_crd].nbr_dmn >=2 &&
+            (has_lat_ == 0 && has_lon_ == 0 ) && /* avoid inserting 'lat_gds' or 'lon_gds' */
             trv_tbl->lst[idx_crd].is_crd_var == False){
               /* Loop dimensions  */
               for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_crd].nbr_dmn;idx_dmn++){
@@ -8150,7 +8164,7 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
                 } /* Match dimension */
               } /* Loop dimensions  */
           } /* Filter */
-        } /* Loop table  */
+        } /* Loop table 2 */
 
       } /* !has_lat */
 
@@ -8167,11 +8181,23 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
             var_trv.nm_fll); 
         } 
 
-        /* Loop table  */
+        /* Loop table 2  */
         for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
+
+           /* Detect the 'standard_name' attribute 'latitude' in the compared variable, to avoid inserting it */
+          nco_bool has_lat_=0;
+          nco_bool has_lon_=0;
+          char *var_nm_fll_=NULL;
+
+          if (trv_tbl->lst[idx_crd].nco_typ == nco_obj_typ_var)
+          {
+            has_lat_=nco_find_lat_lon_trv(nc_id,&trv_tbl->lst[idx_crd],"latitude",&var_nm_fll_,&dmn_id,&crd_typ,units_lat);
+            has_lon_=nco_find_lat_lon_trv(nc_id,&trv_tbl->lst[idx_crd],"longitude",&var_nm_fll_,&dmn_id,&crd_typ,units_lat);
+          }
+
           /* Filter */
           if(trv_tbl->lst[idx_crd].nco_typ == nco_obj_typ_var &&
-            trv_tbl->lst[idx_crd].nbr_dmn >=2 &&
+            (has_lat_ == 0 && has_lon_ == 0 ) && /* avoid inserting 'lat_gds' or 'lon_gds' */
             trv_tbl->lst[idx_crd].is_crd_var == False){
               /* Loop dimensions  */
               for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_crd].nbr_dmn;idx_dmn++){
