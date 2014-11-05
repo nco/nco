@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1472 2014-11-05 04:21:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1473 2014-11-05 17:35:15 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6746,6 +6746,10 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(nc_id);
+  if(!CNV_CCM_CCSM_CF && aux_nbr){
+    (void)fprintf(stderr,"%s: WARNING -X option selected on input lacking global \"Conventions=CF-1.X\" attribute. Assuming CF-compliance intended in order to exploit -X. HINT: To fix this warning, add conformant Conventions attribute with, e.g., \"ncatted -a Conventions,global,c,c,CF-1.0 in.nc\"\n",nco_prg_nm_get());
+    CNV_CCM_CCSM_CF=True;
+  } /* endif */
   if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
     /* Implement CF "ancillary_variables", "bounds", and "coordinates" */
     (void)nco_xtr_cf_add(nc_id,"ancillary_variables",trv_tbl);

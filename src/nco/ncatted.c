@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.194 2014-09-23 18:43:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.195 2014-11-05 17:35:15 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -174,8 +174,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.194 2014-09-23 18:43:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.194 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.195 2014-11-05 17:35:15 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.195 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -382,8 +382,8 @@ main(int argc,char **argv)
     if(!FORCE_OVERWRITE) nco_fl_overwrite_prm(fl_out);
 
     /* Copy input file to output file and then search through output, 
-    changing names on the fly. This avoids possible XDR translation
-    performance penalty of copying each variable with netCDF. */
+       changing names on the fly. This avoids possible XDR translation
+       performance penalty of copying each variable with netCDF. */
     (void)nco_fl_cp(fl_in,fl_out);
 
     /* Ensure output file is user/owner-writable */
@@ -409,7 +409,6 @@ main(int argc,char **argv)
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_rgl;
 
-  /* Loop input names */
   for(int idx_aed=0;idx_aed<nbr_aed;idx_aed++){
     if(aed_lst[idx_aed].var_nm == NULL){
       /* Variable name is blank so edit same attribute for all variables ... */
@@ -438,7 +437,7 @@ main(int argc,char **argv)
       /* Inquire if any variable matches (absolute, relative)  */
       (void)nco_aed_prc_var_nm(nc_id,aed_lst[idx_aed],trv_tbl);
     } /* end var_nm */
-  } /* Loop input names */
+  } /* end loop over aed structures */
 
   /* Catenate the time-stamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);

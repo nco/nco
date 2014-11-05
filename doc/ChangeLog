@@ -1,6 +1,6 @@
 2014-11-05  Charlie Zender  <zender@uci.edu>
 
-	* Using -X imposes CNV_CCM_CCSM_CF=True regardless of Conventions attribute
+	* Using -X now imposes CNV_CCM_CCSM_CF=True regardless of Conventions attribute
 
 2014-11-03  Charlie Zender  <zender@uci.edu>
 
