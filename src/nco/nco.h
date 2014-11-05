@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.522 2014-11-03 21:44:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.523 2014-11-05 23:39:04 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -149,6 +149,9 @@ extern "C" {
      NCO uses NCO token    NCO_CNK_SZ_BYT_DFL and default algorithm when user specifies any chunking option
      NCO uses netCDF token DEFAULT_CHUNK_SIZE and default algorithm when user specifies no  chunking option */
 #define NCO_CNK_SZ_BYT_DFL 4194304
+
+  /* 20141105 Minimum size of a variable to chunk */
+#define NCO_CNK_SZ_MIN_BYT_DFL 8192
 
   /* Linux default blocksize is 4096 B---a good chunk size for 1-D record dimension variables */
 #define NCO_CNK_SZ_BYT_R1D_DFL 4096

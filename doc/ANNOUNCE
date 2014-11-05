@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.751 2014-10-31 17:55:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.752 2014-11-05 23:39:04 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.7 are ready. 
 
@@ -27,13 +27,36 @@ A. Hyperslabs specifications now accept -1 (negative one) to indicate
    ncks -d lon,1,-1 in.nc out.nc # Second through last longitude
    http://nco.sf.net/nco.html#hyp
 
-A. cnk_min fxm
+A. The minimum size of variables to chunk may now be specified with
+   --cnk_min=var_sz, where var_sz is the minimum size in bytes (not
+   elements) of variables to chunk. This threshold is intended to
+   restrict use of chunking to variables for which it is efficient. 
+   By default this minimum variable size for chunking is 8192 B.
+   To obtain a system-dependent minimum size, set cnk_min=0 and then
+   NCO will compute the minimum size as twice the system blocksize
+   (when available) and 8192 bytes otherwise.
+   ncks in.nc out.nc # Minimum variable size to chunk is 8192 B
+   ncks --cnk_min=1 in.nc out.nc # Minimum size is 1 B
+   ncks --cnk_min=0 in.nc out.nc # Minimum size is twice blocksize
+   http://nco.sf.net/nco.html#cnk
+
+A. ncap2 creates record dimension when dimension size is negative: 
+   ncap2 -s 'defdim("time",10)'  in.nc out.nc # Fixed-size dimension
+   ncap2 -s 'defdim("time",-10)' in.nc out.nc # Record dimension
+   Formerly ncap2 had no way to create new record dimensions.
+   http://nco.sf.net/nco.html#ncap2
 
 BUG FIXES:
 
 A. ncrename fxm
    Thanks to Parker Allen for reporting this.
    http://nco.sf.net#bug_nc4_rename
+
+A. Auxiliary coordinate hyperslabbing (with -X) was inadvertly
+   turned-off for 1-D variables. Now it works fine with 1-D vars.
+   Moreover, files without a "Conventions=CF-1.X" attribute are now
+   treated as if they had the attribute to exploit -X functionality. 
+   Thanks to romzie04 for alerting us to these -X issues.
 
 KNOWN PROBLEMS DUE TO NCO:
 

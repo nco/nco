@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.149 2014-10-17 17:28:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.150 2014-11-05 23:39:04 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.149 2014-10-17 17:28:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.149 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.150 2014-11-05 23:39:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.150 $";
   const char * const opt_sht_lst="3467ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -203,7 +203,7 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst_2=NULL; /* xtr_lst_2 may be alloc()'d from NULL with -c option */
   
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-  size_t cnk_min_byt=8192UL; /* [B] Minimize size of variable to chunk */
+  size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1046 2014-10-31 17:55:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1047 2014-11-05 23:39:04 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.7
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 31 October 2014
-@set update-month October 2014
+@set update-date 5 November 2014
+@set update-month November 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -6376,7 +6376,7 @@ Long options:
 @samp{--cnk_dmn @var{dmn_nm},@var{cnk_sz}},
 @samp{--chunk_dimension @var{dmn_nm},@var{cnk_sz}}@*,
 @samp{--cnk_map @var{cnk_map}}, @samp{--chunk_map @var{cnk_map}},@*
-@samp{--cnk_min @var{cnk_sz}}, @samp{--chunk_min @var{cnk_sz}},@*
+@samp{--cnk_min @var{var_sz}}, @samp{--chunk_min @var{var_sz}},@*
 @samp{--cnk_plc @var{cnk_plc}}, @samp{--chunk_policy @var{cnk_plc}},@*
 @samp{--cnk_scl @var{cnk_sz}}, @samp{--chunk_scalar @var{cnk_sz}}@*
 @end cartouche
@@ -6394,9 +6394,11 @@ and
 @cindex chunking policy
 @cindex chunking map
 @cindex chunksize
+@cindex blocksize
 The @acronym{NCO} chunking implementation is designed to be flexible. 
-Users control three aspects of the chunking implementation.
-These are the @dfn{chunking policy}, @dfn{chunking map}, and @dfn{chunksize}.
+Users control four aspects of the chunking implementation.
+These are the @dfn{chunking policy}, @dfn{chunking map},
+@dfn{chunksize}, and @dfn{minimum chunksize}.
 The chunking policy determines @emph{which} variables to chunk, and
 the chunking map determines how (with what exact sizes) to chunk
 those variables.
@@ -6404,6 +6406,14 @@ These are high-level mechanisms that apply to an entire file and all
 variables and dimensions.
 The chunksize option allows per-dimension specification of sizes that 
 will override the selected (or default) chunking map.
+
+The @var{var_sz} parameter is the minimum size in bytes (not elements)
+of variables to chunk.  
+This threshold is intended to restrict use of chunking to variables
+for which it is efficient. 
+By default this minimum variable size for chunking is twice the system 
+blocksize (when available) and is 8192 bytes otherwise. 
+Users may set this to any value with the @samp{--cnk_min} switch.
 
 @cindex hyperslab
 @findex ncpdq

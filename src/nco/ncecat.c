@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.375 2014-10-17 17:28:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.376 2014-11-05 23:39:04 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.375 2014-10-17 17:28:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.375 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.376 2014-11-05 23:39:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.376 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -200,7 +200,7 @@ main(int argc,char **argv)
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-  size_t cnk_min_byt=8192UL; /* [B] Minimize size of variable to chunk */
+  size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */

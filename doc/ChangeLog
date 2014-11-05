@@ -1,16 +1,18 @@
 2014-11-05  Charlie Zender  <zender@uci.edu>
 
-	* Using -X now imposes CNV_CCM_CCSM_CF=True regardless of Conventions attribute
-
-2014-11-03  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.4.7 release procedure:
- 	Changes since nco-4_4_6: -0->-1, rename bug, cnk xst, fxm
+ 	Changes since nco-4_4_6: -0->-1, rename bug, cnk xst, cnk_min, -X,
 	cd ~/nco;cvs tag -d nco-4_4_7;cvs tag -d nco-4_4_7-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
 
-	* Add broken regress for auxiliary coordinates
+	* cnk_min=0 sets minimum size of variables to chunk as twice blocksize
+
+	* Using -X now imposes CNV_CCM_CCSM_CF=True regardless of Conventions attribute
+
+2014-11-03  Charlie Zender  <zender@uci.edu>
+
+	* Add regression for auxiliary coordinates
 
 	* First regression-free version in three weeks
 

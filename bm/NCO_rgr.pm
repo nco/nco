@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.533 2014-11-05 17:36:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.534 2014-11-05 23:39:03 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2016,11 +2016,10 @@ print "\n";
 # Chunking tests
  
 #ncks #54: Apply chunking all policy to -v lat_lon(lat,lon); lat(2) and lon(4) are by default chunked with a size == dimension
-#ncks -O -4 -v lat_lon --cnk_min=0 --cnk_plc=all ~/nco/data/in_grp.nc ~/foo.nc
+#ncks -O -4 -v lat_lon --cnk_min=1 --cnk_plc=all ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -m -v lat_lon ~/foo.nc | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'
-
     $dsc_sng="(Groups) Chunking --cnk_plc=all --v lat_lon";
-    $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_min=0 --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_min=1 --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m -v lat_lon %tmp_fl_00% | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'";
     $tst_cmd[2]="lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2";
     $tst_cmd[3]="SS_OK";   
@@ -2364,11 +2363,10 @@ print "\n";
 	if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){	
 	
 #ncks #80
-#ncks -O -4 -L 0 --cnk_min=0 --cnk_dmn lev,1 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
+#ncks -O -4 -L 0 --cnk_min=1 --cnk_dmn lev,1 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
 #ncks -C -m -g /g19/g19g1/g19g1g1 -v two_dmn_var ~/foo.nc
-    
-    $dsc_sng="(Groups) Chunking and uncompression -L 0 --cnk_dmn lev,1 -v two_dmn_var";
-    $tst_cmd[0]="ncks -O -L 0 -4 --cnk_min=0 --cnk_dmn lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
+    $dsc_sng="(Groups) Chunking and decompression -L 0 --cnk_dmn lev,1 -v two_dmn_var";
+    $tst_cmd[0]="ncks -O -L 0 -4 --cnk_min=1 --cnk_dmn lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g /g19/g19g1/g19g1g1 -v two_dmn_var -m %tmp_fl_00%";
     $tst_cmd[2]="two_dmn_var dimension 1: lev, size = 3, chunksize = 1 (Non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";     
@@ -2416,11 +2414,11 @@ print "\n";
 	
 #ncks #84 (part 2)
 # There are two 'two_dmn_var' beneath /g19/g19g1, chunk both, deeper with absolute shallower with relative, check shallower
-# ncks -O -4 --cnk_min=0 --cnk_plc=xpl --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,2 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
+# ncks -O -4 --cnk_min=1 --cnk_plc=xpl --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,2 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
 # ncks -m -C -v /g19/g19g1/two_dmn_var --hdn ~/foo.nc | grep _ChunkSizes
     
     $dsc_sng="(Groups) Chunking matches in-scope partial dimension name not out-of-scope full name";
-    $tst_cmd[0]="ncks -O -4 --cnk_min=0 --cnk_plc=xpl --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,2 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O -4 --cnk_min=1 --cnk_plc=xpl --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,2 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var --hdn %tmp_fl_00% | grep _ChunkSizes";
     $tst_cmd[2]="two_dmn_var attribute 3: _ChunkSizes, size = 2 NC_INT, value = 2, 2";
     $tst_cmd[3]="SS_OK";     
@@ -2428,11 +2426,11 @@ print "\n";
     $#tst_cmd=0; # Reset array		
 
 #ncks #85
-#ncks -O -L 0 --cnk_min=0 --cnk_dmn lat,1 -v one ~/nco/data/hdn.nc ~/foo.nc
+#ncks -O -L 0 --cnk_min=1 --cnk_dmn lat,1 -v one ~/nco/data/hdn.nc ~/foo.nc
 #ncks -C -m --hdn -v one -g g13 ~/foo.nc | grep _ChunkSizes
     
     $dsc_sng="(Groups) Imposing zero deflation (-L 0) on already-chunked variable keeps uses specified not netCDF-default chunksizes (expect failure with netCDF 4.1.1-)";
-    $tst_cmd[0]="ncks -O -4 -L 0 --cnk_min=0 --cnk_dmn lat,1 -v one $nco_D_flg $in_pth_arg hdn.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O -4 -L 0 --cnk_min=1 --cnk_dmn lat,1 -v one $nco_D_flg $in_pth_arg hdn.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m --hdn -v one -g g13 %tmp_fl_00% | grep _ChunkSizes";
     $tst_cmd[2]="one attribute 2: _ChunkSizes, size = 1 NC_INT, value = 1";
     $tst_cmd[3]="SS_OK";     
@@ -3246,11 +3244,11 @@ print "\n";
    	
 #NEW NCO 4.4.0
 #ncpdq #46
-# ncpdq -O -4 -a lon,lat --cnk_min=0 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct ~/nco/data/in.nc ~/foo.nc
+# ncpdq -O -4 -a lon,lat --cnk_min=1 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct ~/nco/data/in.nc ~/foo.nc
 # ncks -m ~/foo.nc | grep 'lat_2D_rct dimension 0'
 
-   $dsc_sng="Chunking -a lon,lat --cnk_min=0 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
-   $tst_cmd[0]="ncpdq $omp_flg -4 $nco_D_flg -a lon,lat --cnk_min=0 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct $in_pth_arg in.nc %tmp_fl_00%";
+   $dsc_sng="Chunking -a lon,lat --cnk_min=1 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
+   $tst_cmd[0]="ncpdq $omp_flg -4 $nco_D_flg -a lon,lat --cnk_min=1 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct $in_pth_arg in.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'lat_2D_rct dimension 0'";
    $tst_cmd[2]="lat_2D_rct dimension 0: lon, size = 4 NC_FLOAT, chunksize = 2 (Coordinate is lon)";
    $tst_cmd[3]="SS_OK";
@@ -4758,10 +4756,10 @@ if (0){
 	
 #NEW 4.4.0	
 #ncwa #55
-#ncwa -O -4 -a time --cnk_min=0 --cnk_plc=xpl --cnk_dmn lon,4 -v byt_3D_rec ~/nco/data/in.nc ~/foo.nc
+#ncwa -O -4 -a time --cnk_min=1 --cnk_plc=xpl --cnk_dmn lon,4 -v byt_3D_rec ~/nco/data/in.nc ~/foo.nc
 #ncks -m ~/foo.nc | grep 'byt_3D_rec dimension 1'
     $dsc_sng="Chunking -a time --cnk_dmn lon,4 -v byt_3D_rec";
-    $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a time --cnk_min=0 --cnk_plc=xpl --cnk_dmn lon,4 -v byt_3D_rec $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a time --cnk_min=1 --cnk_plc=xpl --cnk_dmn lon,4 -v byt_3D_rec $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'byt_3D_rec dimension 1'";
     $tst_cmd[2]="byt_3D_rec dimension 1: lon, size = 4 NC_FLOAT, chunksize = 4 (Coordinate is lon)";
     $tst_cmd[3]="SS_OK";

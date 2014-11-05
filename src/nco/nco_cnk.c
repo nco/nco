@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.143 2014-11-04 05:00:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.144 2014-11-05 23:39:04 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -185,6 +185,10 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
     cnk->cnk_sz_byt= (fl_sys_blk_sz > 0ULL) ? fl_sys_blk_sz : NCO_CNK_SZ_BYT_DFL;
   } /* end else */
     
+  /* Java chunking defaults:
+     http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/netcdf4Clibrary.html */
+  if(cnk_min_byt == 0ULL) cnk->cnk_min_byt= (fl_sys_blk_sz > 0ULL) ? 2*fl_sys_blk_sz : NCO_CNK_SZ_MIN_BYT_DFL;
+
   if(cnk_sz_byt <= 0ULL) cnk->cnk_sz_byt=NCO_CNK_SZ_BYT_DFL;
 
   /* Make uniform list of user-specified per-dimension chunksizes */
@@ -877,7 +881,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     (void)fprintf(stdout,"%s: INFO User requested chunking or unchunking\n",nco_prg_nm_get());
     if(nco_dbg_lvl_get() >= nco_dbg_scl  && nco_dbg_lvl_get() != nco_dbg_dev){
       (void)fprintf(stdout,"cnk_plc, cnk_map: %s, %s\n",nco_cnk_plc_sng_get(cnk_plc),nco_cnk_map_sng_get(cnk_map));
-      (void)fprintf(stdout,"cnk_sz_scl, cnk_sz_byt: %lu, %lu\n",(unsigned long)cnk_sz_scl,(unsigned long)cnk_sz_byt);
+      (void)fprintf(stdout,"cnk_sz_scl, cnk_sz_byt,cnk_min_byt: %lu, %lu, %lu\n",(unsigned long)cnk_sz_scl,(unsigned long)cnk_sz_byt,(unsigned long)cnk_min_byt);
       if(cnk_nbr > 0){
         (void)fprintf(stdout,"idx cnk_nm\tcnk_sz:\n");
         for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm ? cnk_dmn[cnk_idx]->nm : cnk_dmn[cnk_idx]->nm_fll,(unsigned long)cnk_dmn[cnk_idx]->sz);
