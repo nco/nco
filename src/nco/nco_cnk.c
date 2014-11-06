@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.144 2014-11-05 23:39:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.145 2014-11-06 05:21:56 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -881,7 +881,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     (void)fprintf(stdout,"%s: INFO User requested chunking or unchunking\n",nco_prg_nm_get());
     if(nco_dbg_lvl_get() >= nco_dbg_scl  && nco_dbg_lvl_get() != nco_dbg_dev){
       (void)fprintf(stdout,"cnk_plc, cnk_map: %s, %s\n",nco_cnk_plc_sng_get(cnk_plc),nco_cnk_map_sng_get(cnk_map));
-      (void)fprintf(stdout,"cnk_sz_scl, cnk_sz_byt,cnk_min_byt: %lu, %lu, %lu\n",(unsigned long)cnk_sz_scl,(unsigned long)cnk_sz_byt,(unsigned long)cnk_min_byt);
+      (void)fprintf(stdout,"cnk_sz_scl, cnk_sz_byt, cnk_min_byt: %lu, %lu, %lu\n",(unsigned long)cnk_sz_scl,(unsigned long)cnk_sz_byt,(unsigned long)cnk_min_byt);
       if(cnk_nbr > 0){
         (void)fprintf(stdout,"idx cnk_nm\tcnk_sz:\n");
         for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm ? cnk_dmn[cnk_idx]->nm : cnk_dmn[cnk_idx]->nm_fll,(unsigned long)cnk_dmn[cnk_idx]->sz);
@@ -1083,17 +1083,21 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     double cnk_nbr_xct; /* [nbr] Exact number of ideal chunks needed to store variable */
     double cnk_nbr_2D_axs; /* [nbr] Exact number of ideal chunks along each 2D axis */
     double fct_ncr=1.0; /* [frc] Factor by which to increase chunk size */
+    size_t *cnk_prt; /* [nbr] Perturbed chunk size */
+    size_t *prt_cff; /* [nbr] Partial sum coefficient */
+    size_t *two_pwr_idx; /* [nbr] Two-to-the-power-of-the-array-index */
     size_t *var_shp; /* [nbr] Shape of variable */
 
     /* Allocate space to hold variable shape */
+    cnk_prt=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));    
+    prt_cff=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));    
+    two_pwr_idx=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));    
     var_shp=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));    
 
     cnk_val_nbr=cnk_sz_byt/(double)typ_sz;
     for(dmn_idx=0;dmn_idx<=dmn_nbr-1;dmn_idx++){
       /* Store shape for future use */
-      /* 20140131: fxm this gets wrong value for input record dimension size unless hyperslabbed. Why? */
-      if(dmn_cmn[dmn_idx].is_rec_dmn) var_shp[dmn_idx]= (dmn_cmn[dmn_idx].NON_HYP_DMN) ? dmn_cmn[dmn_idx].dmn_cnt : dmn_cmn[dmn_idx].sz; else var_shp[dmn_idx]= (dmn_cmn[dmn_idx].NON_HYP_DMN) ? dmn_cmn[dmn_idx].sz : dmn_cmn[dmn_idx].dmn_cnt;
-      assert(var_shp[dmn_idx] > 0L);
+      var_shp[dmn_idx]= (dmn_cmn[dmn_idx].NON_HYP_DMN) ? dmn_cmn[dmn_idx].sz : dmn_cmn[dmn_idx].dmn_cnt;
       /* Determine hyperslab size */
       dmn_sz_prd*=var_shp[dmn_idx];
     } /* end loop over dmn_idx */
@@ -1103,9 +1107,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
     if(var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs) < 1.0){
       cnk_sz[0]=1L;
-      cnk_nbr_2D_axs=1.0/sqrt((double)var_shp[0]);
+      cnk_nbr_2D_axs/=sqrt((double)var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs));
     }else{
-      cnk_sz[0]=var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs);
+      cnk_sz[0]=var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs); // Rew13 uses // for integer arithmetic here
     } /* endif */
 
     for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) /* NB: Start at 1 */
@@ -1113,15 +1117,66 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) /* NB: Start at 1 */
       if(var_shp[dmn_idx]/cnk_nbr_2D_axs < 1.0) cnk_sz[dmn_idx]=1L; else cnk_sz[dmn_idx]=fct_ncr*var_shp[dmn_idx]/cnk_nbr_2D_axs;
 
+    /* First-guess estimate of chunk size */
+    size_t cnk_sz_prd=1L;
+    for(dmn_idx=0;dmn_idx<=dmn_nbr-1;dmn_idx++) cnk_sz_prd*=cnk_sz[dmn_idx];
+    assert(cnk_sz_prd*typ_sz <= cnk_sz_byt);
+
+    two_pwr_idx[0]=1L;
+    for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) two_pwr_idx[dmn_idx]=2L*two_pwr_idx[dmn_idx-1];
+    size_t two_pwr_rnk=2L*two_pwr_idx[dmn_nbr-1];
+
+    size_t prm_idx; /* [idx] Permutation index */
+    int sum_idx; /* [idx] Counting index for partial sums */
+    long cnk_gap; /* [B] Difference between actual and requested chunksize */
+    long cnk_gap_prt; /* [B] Difference between perturbed and requested chunksize */
+    size_t prt_sum; /* [nbr] Partial sum  */
+    /* Score initial guess */
+    cnk_gap=cnk_sz_byt-cnk_sz_prd*typ_sz;
+    /* Loop through all permutations of adjusting first-estimate chunk size by plus one */
+    for(prm_idx=0;prm_idx<two_pwr_rnk;prm_idx++){
+      if(cnk_gap == 0L) break;
+      cnk_sz_prd=1L;
+      /* Fill-in coefficient from MSB to LSB */
+      for(dmn_idx=dmn_nbr-1;dmn_idx>=0;dmn_idx--){ /* NB: descending loop */
+	prt_sum=0L;
+	/* Partial sum of higher powers */
+	for(sum_idx=dmn_idx+1;sum_idx<=dmn_nbr-1;sum_idx++) prt_sum+=prt_cff[sum_idx]*two_pwr_idx[sum_idx];
+	prt_cff[dmn_idx]=(prm_idx-prt_sum)/two_pwr_idx[dmn_idx];
+	cnk_prt[dmn_idx]+=prt_cff[dmn_idx];
+	cnk_sz_prd*=cnk_prt[dmn_idx];
+      } /* dmn_idx */
+      /* Test gap narrowness */
+      cnk_gap_prt=cnk_sz_byt-cnk_sz_prd*typ_sz;
+
+      if(nco_dbg_lvl_get() >= nco_dbg_var){
+	(void)fprintf(stdout,"prm_idx = %lu, cnk_gap = %li, cnk_sz_prd = %lu, cnk_gap_prt = %li, prt_sum = %lu\n",(unsigned long)prm_idx,cnk_gap,(unsigned long)cnk_sz_prd,cnk_gap_prt,(unsigned long)prt_sum);
+	(void)fprintf(stdout,"idx dmn_nm\tdmn_sz\tvar_shp\tcnk_sz\tcnk_prt\tprt_cff\ttwo_pwr:\n");
+	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)var_shp[dmn_idx],(unsigned long)cnk_sz[dmn_idx],(unsigned long)cnk_prt[dmn_idx],(unsigned long)prt_cff[dmn_idx],(unsigned long)two_pwr_idx[dmn_idx]);
+      } /* endif dbg */
+
+      if(cnk_gap_prt >= 0L && cnk_gap_prt < cnk_gap){
+	/* Candidate improves best previous guess */
+	for(dmn_idx=0;dmn_idx<=dmn_nbr-1;dmn_idx++){
+	  cnk_sz[dmn_idx]=cnk_prt[dmn_idx];
+	  cnk_gap=cnk_gap_prt;
+	} /* end loop over dimensions */
+      } /* endif gap */
+    } /* end loop over permutations */
+
     if(nco_dbg_lvl_get() >= nco_dbg_var){
       (void)fprintf(stdout,"map rew debugging:\n");
-      (void)fprintf(stdout,"cnk_nbr_xct = %g, cnk_val_nbr = %g, dmn_sz_prd = %g\n",cnk_nbr_xct,cnk_val_nbr,dmn_sz_prd);
+      (void)fprintf(stdout,"cnk_nbr_xct = %g, cnk_val_nbr = %g, dmn_sz_prd = %g, cnk_sz_prd = %lu\n",cnk_nbr_xct,cnk_val_nbr,dmn_sz_prd,(unsigned long)cnk_sz_prd);
       (void)fprintf(stdout,"idx dmn_nm\tdmn_sz\tvar_shp\tcnk_sz:\n");
       for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t\t%lu\t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)var_shp[dmn_idx],(unsigned long)cnk_sz[dmn_idx]);
     } /* endif dbg */
 
     /* Free shape space */
-    if(var_shp) var_shp=(size_t *)nco_free(var_shp);    
+    if(cnk_prt) cnk_prt=(size_t *)nco_free(cnk_prt);
+    if(prt_cff) prt_cff=(size_t *)nco_free(prt_cff);
+    if(two_pwr_idx) two_pwr_idx=(size_t *)nco_free(two_pwr_idx); 
+    if(var_shp) var_shp=(size_t *)nco_free(var_shp); 
+
   } /* !nco_cnk_map_rew */
 
   /* Override "reasonable" defaults with explicitly set uniform scalar chunksize, if any */
