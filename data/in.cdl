@@ -63,12 +63,12 @@
 
 netcdf in {
 dimensions:
-  dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,Lon=4,Lat=2,time=unlimited;
+  dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,Lon=4,Lat=2,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.195 2014-10-13 15:35:03 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.196 2014-11-10 20:58:52 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -316,6 +316,24 @@ variables:
 	gds_3dvar:units = "meter";
 	gds_3dvar:coordinates = "lat_gds lon_gds";
 	gds_3dvar:purpose = "Test auxiliary coordinates like those that define geodesic grids";
+
+	float gds_var_ncd(gds_ncd);
+	gds_var:long_name = "Geodesic variable on non-coordinate grid";
+	gds_var:units = "meter";
+	gds_var:purpose = "Test auxiliary coordinates like those that define geodesic grids but where underlying dimension is a non-coordinate dimension";
+	gds_var:coordinates = "lat_gds_ncd lon_gds_ncd";
+
+	double lat_gds_ncd(gds_ncd);
+	lat_gds_ncd:long_name = "Latitude";  
+	lat_gds_ncd:standard_name = "latitude";
+	lat_gds_ncd:units="degree";
+	lat_gds_ncd:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
+
+	double lon_gds_ncd(gds_ncd);
+	lon_gds_ncd:long_name = "Longitude";
+	lon_gds_ncd:standard_name = "longitude";
+	lon_gds_ncd:units="degree";
+	lon_gds_ncd:purpose = "1-D longitude coordinate referred to by \"non-coordinate\" gds_crd_ncd geodesic grid variables";
 
 	int nbdate;
 	nbdate:long_name = "base date as 6- or 8-digit integer (YYMMDD or YYYYMMDD)";
@@ -1138,6 +1156,7 @@ data:
 	P0=100000;
 	gds_crd=0,1,2,3,4,5,6,7;
 	gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
+	gds_var_ncd=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
 	gds_3dvar=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,
 	          274.1,274.2,274.3,274.4,274.5,274.6,274.7,274.8,
 	          275.1,275.2,275.3,275.4,275.5,274.5,275.7,275.8,
@@ -1150,6 +1169,8 @@ data:
 	          282.1,282.2,282.3,282.4,282.5,282.9,282.7,282.8;
 	lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
 	lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
+	lat_gds_ncd=-90, -30,  -30,    0,   0, 30,  30,  90;
+	lon_gds_ncd=  0,   0,  180,    0, 180,  0, 180,   0;
 	lat=-90,90;
 	lat_bnd=-90,0,0,90;
         lat_cal=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;

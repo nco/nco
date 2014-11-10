@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.534 2014-11-05 23:39:03 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.535 2014-11-10 20:58:50 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2574,12 +2574,12 @@ print "\n";
 	
 #ncks #96
 # Test -X problem encountered in wavewatch.nc once that problem is isolated
-# ncks -O -X 150.,210.,-15.,45. -v lat_gds ~/nco/data/in.nc ~/foo.nc
-# ncks -C -H -d gds_crd,-1 -v gds_var ~/foo.nc
-    $dsc_sng="Test -X problem encountered in wavewatch.nc once that problem is isolated. fxm.";
-    $tst_cmd[0]="ncks -O $nco_D_flg -X 150.,210.,-15.,45. -v gds_var,gds_3dvar $in_pth_arg in.nc %tmp_fl_00";
-    $tst_cmd[1]="ncks -C -H -d gds_crd,-1 -v gds_var %tmp_fl_00";
-    $tst_cmd[2]="correct behavior goes here";
+# ncks -O -X 150.,210.,-15.,45. -v gds_var_ncd ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H -d gds_ncd,-1 -v gds_var_ncd ~/foo.nc
+    $dsc_sng="Test -X auxiliary coordinates where underlying dimension is a non-coordinate dimension";
+    $tst_cmd[0]="ncks -O $nco_D_flg -X 150.,210.,-15.,45. -v gds_var_ncd $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -C -H -d gds_ncd,-1 -v gds_var_ncd %tmp_fl_00";
+    $tst_cmd[2]="gds_ncd[1] gds_var_ncd[1]=273.7";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
