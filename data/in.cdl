@@ -68,7 +68,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.196 2014-11-10 20:58:52 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.197 2014-11-11 05:25:42 pvicente Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -318,10 +318,10 @@ variables:
 	gds_3dvar:purpose = "Test auxiliary coordinates like those that define geodesic grids";
 
 	float gds_var_ncd(gds_ncd);
-	gds_var:long_name = "Geodesic variable on non-coordinate grid";
-	gds_var:units = "meter";
-	gds_var:purpose = "Test auxiliary coordinates like those that define geodesic grids but where underlying dimension is a non-coordinate dimension";
-	gds_var:coordinates = "lat_gds_ncd lon_gds_ncd";
+	gds_var_ncd:long_name = "Geodesic variable on non-coordinate grid";
+	gds_var_ncd:units = "meter";
+	gds_var_ncd:purpose = "Test auxiliary coordinates like those that define geodesic grids but where underlying dimension is a non-coordinate dimension";
+	gds_var_ncd:coordinates = "lat_gds_ncd lon_gds_ncd";
 
 	double lat_gds_ncd(gds_ncd);
 	lat_gds_ncd:long_name = "Latitude";  

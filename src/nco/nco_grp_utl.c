@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1475 2014-11-07 00:58:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1476 2014-11-11 05:25:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1063,7 +1063,9 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
   /* Search for and add CF-compliant bounds and coordinates to extraction list */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv_obj=trv_tbl->lst[idx_tbl];
-    if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr) (void)nco_xtr_cf_prv_add(nc_id,&trv_obj,cf_nm,trv_tbl);
+    if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
+      (void)nco_xtr_cf_prv_add(nc_id,&trv_obj,cf_nm,trv_tbl);
+    }
   } /* end loop over table */
 
   /* Print extraction list in debug mode */
