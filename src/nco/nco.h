@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.523 2014-11-05 23:39:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.524 2014-11-11 21:20:17 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -502,7 +502,7 @@ extern "C" {
     ncap, /* 0 [enm] */
     ncatted, /* 1 [enm] */
     ncbo, /* 2 [enm] */
-    ncfe,  /* 3 [enm] */
+    ncfe, /* 3 [enm] */
     ncecat, /* 4 [enm] */
     ncflint, /* 5 [enm] */
     ncks, /* 6 [enm] */
@@ -511,8 +511,8 @@ extern "C" {
     ncrcat, /* 9 [enm] */
     ncrename, /* 10 [enm] */
     ncwa, /* 11 [enm] */
-    ncge,  /* 12 [enm] */ /* 20131018: New operator */
-    ncmv  /* 13 [enm] */ /* 20131018: Potential new operator */
+    ncge, /* 12 [enm] */ /* 20131018: New operator */
+    ncmv /* 13 [enm] */ /* 20131018: Potential new operator */
   }; /* end nco_prg_id enum */
   
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
@@ -520,7 +520,7 @@ extern "C" {
     nco_dbg_quiet, /* 0 [enm] Quiet all non-error messages */
     nco_dbg_std,   /* 1 [enm] Standard mode. Minimal, but some, messages */
     nco_dbg_fl,    /* 2 [enm] Filenames */
-    nco_dbg_scl,   /* 3 [enm] Scalars, other per-file information  */
+    nco_dbg_scl,   /* 3 [enm] Scalars, other per-file information */
     nco_dbg_grp,   /* 4 [enm] Groups, highest level per-file loop information */
     nco_dbg_var,   /* 5 [enm] Variables, highest level per-group loop information */
     nco_dbg_crr,   /* 6 [enm] Current task */

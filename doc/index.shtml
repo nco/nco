@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.938 2014-10-31 17:55:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.939 2014-11-11 21:20:17 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1116,7 +1116,7 @@ If pre-built executables do not satisfy you (e.g., are out-of-date)
 and you want the latest, greatest features, then the first steps to
 build (i.e., compile, for the most part) NCO from source code are to
 install the prerequisites:
-<a href="http://www.antlr.org">ANTLR 2.7.x</a> (not version 3.x or 4.x!) (required for <tt>ncap2</tt>), 
+<a href="http://www.antlr.org">ANTLR</a> version 2.7.7 (like <a href="http://glace.ess.uci.edu/libs/antlr-2.7.7.tar.gz">this one</a> <i>not</i> version 3.x or 4.x!) (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and

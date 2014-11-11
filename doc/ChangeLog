@@ -1,10 +1,18 @@
-2014-11-05  Charlie Zender  <zender@uci.edu>
+2014-11-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.7 release procedure:
  	Changes since nco-4_4_6: -0->-1, rename bug, cnk xst, cnk_min, -X,
 	cd ~/nco;cvs tag -d nco-4_4_7;cvs tag -d nco-4_4_7-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
+
+	* Tidy nco_bld_crd_aux()
+
+2014-11-10  Charlie Zender  <zender@uci.edu>
+
+	* Add regression test for non-coordinate dimension auxiliary coordinate variables
+
+2014-11-05  Charlie Zender  <zender@uci.edu>
 
 	* Almost finished implementing cnk_rew
 
@@ -28,6 +36,7 @@
 	* Adjust regression tests to work with --cnk_min. Document --cnk_min.
 
 2014-10-31  Henry Butowsky  <henryb@hush.com>
+
 	* ncap_cst_mk() in ncap2_utl.cc checks that record dim is the first dim in list ONLY if nc3 file
 	  and nc4 file. This also allows users to define vars with multiple record dims.
 

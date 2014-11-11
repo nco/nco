@@ -68,7 +68,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.197 2014-11-11 05:25:42 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.198 2014-11-11 21:20:17 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -327,13 +327,13 @@ variables:
 	lat_gds_ncd:long_name = "Latitude";  
 	lat_gds_ncd:standard_name = "latitude";
 	lat_gds_ncd:units="degree";
-	lat_gds_ncd:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
+	lat_gds_ncd:purpose = "1-D latitude coordinate referred to by \"non-coordinate\" (ncd) geodesic grid variables";
 
 	double lon_gds_ncd(gds_ncd);
 	lon_gds_ncd:long_name = "Longitude";
 	lon_gds_ncd:standard_name = "longitude";
 	lon_gds_ncd:units="degree";
-	lon_gds_ncd:purpose = "1-D longitude coordinate referred to by \"non-coordinate\" gds_crd_ncd geodesic grid variables";
+	lon_gds_ncd:purpose = "1-D longitude coordinate referred to by \"non-coordinate\" (ncd) geodesic grid variables";
 
 	int nbdate;
 	nbdate:long_name = "base date as 6- or 8-digit integer (YYMMDD or YYYYMMDD)";

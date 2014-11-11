@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.145 2014-11-06 05:21:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.146 2014-11-11 21:20:18 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1269,7 +1269,7 @@ cnk_xpl_override: /* end goto */
     if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
       if(!dmn_cmn[dmn_idx].is_rec_dmn){
         /* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
-        (void)fprintf(stderr,"%s: WARNING %s final check trimming %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_sz[dmn_idx],(unsigned long)dmn_cmn[dmn_idx].sz);
+        if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s final check trimming chunksize of \"%s\" dimension from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_sz[dmn_idx],(unsigned long)dmn_cmn[dmn_idx].sz);
         /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
         cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
       } /* rcd_dmn_id */
