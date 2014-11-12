@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1047 2014-11-05 23:39:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1048 2014-11-12 19:33:55 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.7
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 5 November 2014
+@set update-date 12 November 2014
 @set update-month November 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6385,11 +6385,13 @@ All netCDF4-enabled @acronym{NCO} operators that define variables
 support a plethora of chunksize options.
 Chunking can significantly accelerate or degrade read/write access
 to large datasets.
-Dataset chunking issues are described in detail
+Dataset chunking issues are described by @acronym{THG} and Unidata 
 @uref{http://www.hdfgroup.org/HDF5/doc/H5.user/Chunking.html,here},
 @uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_why_it_matters,here},
 and
 @uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes,here}.
+@acronym{NCO} authors are working on generalized algorithms and
+applications of chunking strategies (stay tuned for more in 2015).    
 
 @cindex chunking policy
 @cindex chunking map
@@ -6412,7 +6414,7 @@ of variables to chunk.
 This threshold is intended to restrict use of chunking to variables
 for which it is efficient. 
 By default this minimum variable size for chunking is twice the system 
-blocksize (when available) and is 8192 bytes otherwise. 
+blocksize (when available) and is @w{8192 bytes} otherwise. 
 Users may set this to any value with the @samp{--cnk_min} switch.
 
 @cindex hyperslab
@@ -6429,7 +6431,7 @@ obtain optimal performance.
 
 By default, @acronym{NCO} preserves the chunking characteristics
 of the input file in the output file
-@footnote{This behavior became the default in October 2014 with
+@footnote{This behavior became the default in November 2014 with
 @acronym{NCO} version 4.4.7.
 Prior versions would always use netCDF default chunking in the output
 file when no @acronym{NCO} chunking switches were activated, regardless

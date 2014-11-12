@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.148 2014-11-12 05:06:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.149 2014-11-12 19:34:04 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1071,6 +1071,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   } /* !nco_cnk_map_lfp */
 
   if(cnk_map == nco_cnk_map_rew){
+
+    /* Apply only to 3-D variables */
+    if(dmn_nbr != 3) goto cnk_xpl_override;
+
     /* Implementation by Russ Rew at http://www.unidata.ucar.edu/staff/russ/public/chunk_shape_3D.py
        >>> import cnk
        >>> cnk.chunk_shape_3D(varShape=(98128,277,349),valSize=4,chunkSize=4096)

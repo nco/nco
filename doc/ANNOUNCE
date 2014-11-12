@@ -1,15 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.752 2014-11-05 23:39:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.753 2014-11-12 19:33:49 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This is a bugfix release. 
-For these reasons alone, we recommend that users of
-ncrename upgrade to 4.4.7. 
+This stabilization release also contains useful new features that
+assist users with chunking policies, hyperslabbing, and creating
+record variables. First, hyperslab specifications now use
+Python-consistent indexing (negative indices) to indicate the last 
+elements of a dimension. Second, chunking behavior has been revamped.
+Overall the chunking algorithms are much more robust and optimized,
+yet there are some user-visible changes to be aware of. See below.
+Finally, ncap2 can create record variables.
 
-Work on NCO 4.4.7 is underway, still focused on stability and speed.   
+Work on NCO 4.4.8 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
 
 Enjoy,
@@ -17,28 +22,16 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Hyperslabs specifications now accept -1 (negative one) to indicate
+A. Hyperslab specifications now accept -1 (negative one) to indicate
    the last element of a dimension. This is consistent with Python
-   syntax, unless NCO's previous behavior (from 20120709--20141001)
-   where negative integers indicated the number of  elements from the
-   last (-1 is penultimate, -0 is ultimate). Now -1 is last element,
-   -2 is penultimate element, -N is first element. NCO prints a
-   warning to alert users who may expect the old behavior.
-   ncks -d lon,1,-1 in.nc out.nc # Second through last longitude
+   syntax, unlike NCO's previous behavior (from 20120709--20141001)
+   where negative integers indicated the number of elements from the
+   last (-1 was penultimate, -0 was ultimate). Now -1 is last element,
+   -2 is penultimate element, and -N is the first element. NCO warns
+   users who may expect the old behavior.
+   ncks -d lon,-1 in.nc out.nc # last longitude
+   ncks -d lon,-3,-1 in.nc out.nc # last three longitudes
    http://nco.sf.net/nco.html#hyp
-
-A. The minimum size of variables to chunk may now be specified with
-   --cnk_min=var_sz, where var_sz is the minimum size in bytes (not
-   elements) of variables to chunk. This threshold is intended to
-   restrict use of chunking to variables for which it is efficient. 
-   By default this minimum variable size for chunking is 8192 B.
-   To obtain a system-dependent minimum size, set cnk_min=0 and then
-   NCO will compute the minimum size as twice the system blocksize
-   (when available) and 8192 bytes otherwise.
-   ncks in.nc out.nc # Minimum variable size to chunk is 8192 B
-   ncks --cnk_min=1 in.nc out.nc # Minimum size is 1 B
-   ncks --cnk_min=0 in.nc out.nc # Minimum size is twice blocksize
-   http://nco.sf.net/nco.html#cnk
 
 A. ncap2 creates record dimension when dimension size is negative: 
    ncap2 -s 'defdim("time",10)'  in.nc out.nc # Fixed-size dimension
@@ -46,16 +39,68 @@ A. ncap2 creates record dimension when dimension size is negative:
    Formerly ncap2 had no way to create new record dimensions.
    http://nco.sf.net/nco.html#ncap2
 
+A. A new chunking map, --cnk_map=rew, implements a chunking strategy 
+   that balances common 1-D (e.g., timeseries) and 2-D (e.g.,
+   geographic slices) access patterns to 3-D (time, lat, lon) data.
+   Developed by Russ Rew, this strategy is fully described here:
+   http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes
+   http://nco.sf.net/nco.html#cnk
+
+A. A new chunking map, --cnk_map=nc4, implements the netCDF4 default
+   chunking map as implemented in the netCDF library used to build NCO. 
+   Formerly, NCO had no way to explicitly resort to netCDF4 defaults.
+   (netCDF4 and NCO chunking defaults differ).
+   This option allows users to change the chunking of a dataset to
+   what it would be if it were created from scratch by ncgen without
+   any specific chunking options.
+   ncks --cnk_map=nc4 in.nc out.nc # Use netCDF4 default chunking
+   http://nco.sf.net/nco.html#cnk
+
+A. NCO's default chunking policy now preserves existing chunking.
+   Previously NCO would use its favorite chunking policy (which
+   variables to chunk) and map (how to chunk those variables) on all 
+   input files unless the user explicitly specified other chunking
+   options. Thus a chain of processing commands had to explicitly
+   specify chunking parameters in each command otherwise the 
+   chunksizes could be reset to a shape not optimal for the
+   anticipated access patterns. Now once a file is optimally chunked,
+   no further NCO operations on that file need specify chunking
+   options (since they are preserved by default).
+   ncks in.nc out.nc # Defaults to --cnk_plc=xst, --cnk_map=xst
+   ncks --cnk_map=xst --cnk_plc=xst in.nc out.nc # Same effect
+   http://nco.sf.net/nco.html#cnk
+
+A. The minimum size of variables to chunk may now be specified with
+   --cnk_min=var_sz, where var_sz is the minimum size in bytes (not
+   elements) of variables to chunk. This threshold is intended to
+   restrict use of chunking to variables for which it is efficient. 
+   By default this minimum variable size for chunking is 8192 B.
+   Formerly, NCO would chunk all arrays of any size.
+   To obtain that behavior now users must specifiy --cnk_min=1, so
+   that arrays of any size will be chunked. 
+   To obtain a system-dependent minimum size, set cnk_min=0 and then
+   NCO will compute the minimum size as twice the system blocksize
+   (when available) and 8192 B otherwise.
+   ncks in.nc out.nc # Minimum variable size to chunk is 8192 B
+   ncks --cnk_min=1 in.nc out.nc # Minimum size is 1 B
+   ncks --cnk_min=0 in.nc out.nc # Minimum size is twice blocksize
+   http://nco.sf.net/nco.html#cnk
+
 BUG FIXES:
 
-A. ncrename fxm
-   Thanks to Parker Allen for reporting this.
+A. ncrename has known problems when renaming netCDF4 coordinates.
+   These problems will go away when Unidata issues a fix to the
+   underlying netCDF library. Thanks to Parker Allen for reporting.
    http://nco.sf.net#bug_nc4_rename
 
-A. Auxiliary coordinate hyperslabbing (with -X) was inadvertly
+A. Auxiliary coordinate hyperslabbing (with -X) was inadvertently 
    turned-off for 1-D variables. Now it works fine with 1-D vars.
+   Fixed by Pedro Vicente.
    Moreover, files without a "Conventions=CF-1.X" attribute are now
    treated as if they had the attribute to exploit -X functionality. 
+
+A. Auxiliary coordinate hyperslabbing (with -X) was broken for 
+   variables with non-coordinate dimensions. Fixed by Pedro Vicente. 
    Thanks to romzie04 for alerting us to these -X issues.
 
 KNOWN PROBLEMS DUE TO NCO:
@@ -93,10 +138,23 @@ B. NOT YET FIXED (NCO problem?)
 
 KNOWN PROBLEMS DUE TO BASE LIBRARIES/PROTOCOLS:
 
-A. NOT YET FIXED (netCDF4 problem? ncrename)
-   http://nco.sf.net#bug_nc4_rename
+A. NOT YET FIXED (netCDF4 problem)
+   Renaming netCDF4 coordinate variables or dimensions "succeeds" but  
+   corrupts (set to _FillValue) values in the output dataset.
+   Full description here http://nco.sf.net#bug_nc4_rename
 
-A. NOT YET FIXED (netCDF4 or HDF5 problem?)
+   Demonstration with netCDF <= 4.3.2:
+   ncrename -O -v time,newrec ~/nco/data/in_grp.nc ~/foo.nc
+   ncks --cdl -g // -v newrec -d time,0 -C ~/foo.nc
+
+   20141007: Problem reported by Parker Norton
+   20141008: Problem reported to Unidata
+   20141010: Verified by Unidata.
+   20141112: Verified problem still exists
+   Bug tracking: https://www.unidata.ucar.edu/jira/browse/NCF-177
+   Workaround: Convert to netCDF3, rename, convert back to netCDF4
+
+B. NOT YET FIXED (netCDF4 or HDF5 problem?)
    Specifying strided hyperslab on large netCDF4 datasets leads
    to slowdown or failure with recent netCDF versions.
 
@@ -111,7 +169,7 @@ A. NOT YET FIXED (netCDF4 or HDF5 problem?)
    Workaround #1: Use NCO 4.4.6 or later (avoids nc_var_gets())
    Workaround #2: Convert file to netCDF3 first, then use stride
 
-B. NOT YET FIXED (would require DAP protocol change?)
+C. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
    Metadata are returned successfully, data are not.
@@ -124,9 +182,9 @@ B. NOT YET FIXED (would require DAP protocol change?)
    Stopped testing because inclusion of var_nm.dot broke all test scripts.
    NB: Hard to fix since DAP interprets '.' as structure delimiter in HTTP query string.
 
-   Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
+   Bug tracking: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-C. NOT YET FIXED (would require DAP protocol change)
+D. NOT YET FIXED (would require DAP protocol change)
    Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol
