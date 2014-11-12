@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.147 2014-11-12 01:46:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.148 2014-11-12 05:06:36 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1139,8 +1139,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     /* In case initial guess is lucky and permutation loop breaks before completing */
     for(dmn_idx=0;dmn_idx<=dmn_nbr-1;dmn_idx++) cnk_sz[dmn_idx]=cnk_sz_rgn[dmn_idx];
 
-    /* Loop through all permutations of adjusting first-estimate chunk size by plus one */
-    for(prm_idx=0;prm_idx<two_pwr_rnk;prm_idx++){
+    /* Loop through permutations of adjusting first-estimate chunk size by plus one
+       NB: Skip permutation prm_idx=0 since it is degenerate and does not change first-guess chunk sizes */
+    for(prm_idx=1;prm_idx<two_pwr_rnk;prm_idx++){ /* NB: Loop starts at 1 to skip degenerate perumutation */
       if(cnk_gap == 0L) break;
       cnk_sz_prd=1L;
       /* Fill-in coefficient from MSB to LSB */
