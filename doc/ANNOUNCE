@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.753 2014-11-12 19:33:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.754 2014-11-13 04:57:55 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.7 are ready. 
 
@@ -44,6 +44,7 @@ A. A new chunking map, --cnk_map=rew, implements a chunking strategy
    geographic slices) access patterns to 3-D (time, lat, lon) data.
    Developed by Russ Rew, this strategy is fully described here:
    http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes
+   For now, this map only applies to 3-D variables.
    http://nco.sf.net/nco.html#cnk
 
 A. A new chunking map, --cnk_map=nc4, implements the netCDF4 default
