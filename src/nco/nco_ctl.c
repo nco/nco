@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.500 2014-11-16 01:51:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.501 2014-11-20 23:20:34 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -803,7 +803,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always Include terminal \n so mnemonic does not dangle */
-  return "Reserved black-on-dark-gray Outback\n";
+  return "Dream car\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
