@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.110 2014-07-07 06:04:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.111 2014-11-24 19:16:22 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -251,8 +251,8 @@ ifdef LIB_NCAR
  NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
 endif
 
-OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC} ${UDUNITS_INC}
-OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB} ${UDUNITS_LIB}
+OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${UDUNITS_LIB_FLG}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -1285,8 +1285,8 @@ dbg:
 	@printf "TMP_LDFLAGS = ${TMP_LDFLAGS}\n"
 	@printf "TMP_LIBS = ${TMP_LIBS}\n"
 	@printf "UDUNITS = $(UDUNITS)\n"
-	@printf "UDUNITS_INC = $(UDUNITS_INC)\n"
-	@printf "UDUNITS_LIB = $(UDUNITS_LIB)\n"
+	@printf "UDUNITS_INC_FLG = $(UDUNITS_INC_FLG)\n"
+	@printf "UDUNITS_LIB_FLG = $(UDUNITS_LIB_FLG)\n"
 	@printf "UNAMES = ${UNAMES}\n"
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
