@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.739 2014-11-24 18:56:58 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.740 2014-11-24 19:01:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -373,14 +373,14 @@ ifeq (${GSL},Y)
 # Build GSL-enabled NCO 
 # Place GSL block after DAP blocks for both to work together
 ifdef GSL_INC
- GSL_INC := -I${GSL_INC}
+ GSL_INC_FLG := -I${GSL_INC}
 else
- GSL_INC := $(shell gsl-config --cflags)
+ GSL_INC_FLG := $(shell gsl-config --cflags)
 endif # endif GSL_INC
 ifdef GSL_LIB
- GSL_LIB := -L${GSL_LIB} -lgsl
+ GSL_LIB_FLG := -L${GSL_LIB} -lgsl
 else
- GSL_LIB := $(shell gsl-config --libs)
+ GSL_LIB_FLG := $(shell gsl-config --libs)
 endif # endif GSL_LIB
 endif # end if GSL
 
@@ -415,8 +415,8 @@ ifdef LIB_NCAR
  NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
 endif
 
-OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC} ${UDUNITS_INC_FLG}
-OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB} ${UDUNITS_LIB_FLG}
+OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${UDUNITS_LIB_FLG}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -1918,8 +1918,8 @@ dbg:
 	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "GSL = ${GSL}\n"
-	@printf "GSL_INC = ${GSL_INC}\n"
-	@printf "GSL_LIB = ${GSL_LIB}\n"
+	@printf "GSL_INC_FLG = ${GSL_INC_FLG}\n"
+	@printf "GSL_LIB_FLG = ${GSL_LIB_FLG}\n"
 	@printf "HDF5_ROOT = ${HDF5_ROOT}\n"
 	@printf "HDF5_INC = ${HDF5_INC}\n"
 	@printf "HDF5_LIB = ${HDF5_LIB}\n"
