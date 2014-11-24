@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
 
+	* Support passing (int *)NULL to nc_inq_format_extended() stub
+
 	* Fix GSL and UDUnits flags in Makefile (fixes yellowstone builds)
 
 2014-11-15  Charlie Zender  <zender@uci.edu>
