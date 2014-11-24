@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.741 2014-11-24 19:42:59 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.742 2014-11-24 23:18:36 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -383,12 +383,12 @@ endif # end if GSL
 
 ifeq (${UDUNITS},Y)
 # 20130607: -lexpat needed on .deb systems, not on RPM systems
-ifdef ${UDUNITS_INC}
+ifdef UDUNITS_INC
  UDUNITS_INC_FLG := -I${UDUNITS_INC}
 else
  UDUNITS_INC_FLG := -I/usr/include/udunits2
 endif # endif UDUNITS_INC
-ifdef ${UDUNITS_LIB}
+ifdef UDUNITS_LIB
  UDUNITS_LIB_FLG := -L${UDUNITS_LIB} -ludunits2
 else
  UDUNITS_LIB_FLG := -ludunits2
@@ -1984,6 +1984,8 @@ dbg:
 	@printf "THR_NBR = ${THR_NBR}\n"
 	@printf "THR_NBR_SNG = ${THR_NBR_SNG}\n"
 	@printf "UDUNITS = ${UDUNITS}\n"
+	@printf "UDUNITS_INC = ${UDUNITS_INC}\n"
+	@printf "UDUNITS_LIB = ${UDUNITS_LIB}\n"
 	@printf "UDUNITS_INC_FLG = ${UDUNITS_INC_FLG}\n"
 	@printf "UDUNITS_LIB_FLG = ${UDUNITS_LIB_FLG}\n"
 	@printf "VPATH = ${VPATH}\n"
