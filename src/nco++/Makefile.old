@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.132 2014-07-07 06:04:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.133 2014-11-24 19:08:34 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -295,14 +295,14 @@ ifeq (${GSL},Y)
 # Build GSL-enabled NCO 
 # Place GSL block after DAP blocks for both to work together
 ifdef GSL_INC
- GSL_INC := -I${GSL_INC}
+ GSL_INC_FLG := -I${GSL_INC}
 else
- GSL_INC := $(shell gsl-config --cflags)
+ GSL_INC_FLG := $(shell gsl-config --cflags)
 endif # endif GSL_INC
 ifdef GSL_LIB
- GSL_LIB := -L${GSL_LIB} -lgsl
+ GSL_LIB_LIB := -L${GSL_LIB} -lgsl
 else
- GSL_LIB := $(shell gsl-config --libs)
+ GSL_LIB_FLG := $(shell gsl-config --libs)
 endif # endif GSL_LIB
  ifndef GSL_MINOR_VERSION
   GSL_MINOR_VERSION := $(shell gsl-config --version | sed s/^[1-9]\.// )
@@ -343,8 +343,8 @@ ifdef LIB_NCAR
  NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
 endif
 
-OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC} ${UDUNITS_INC} ${ANTLR_INC}
-OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB} ${UDUNITS_LIB} ${ANTLR_LIB}
+OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG} ${ANTLR_INC}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${UDUNITS_LIB_FLG} ${ANTLR_LIB}
 
 # sort removes duplicates but unfortunately changes precedence too
 # fxm: use uniq instead
