@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.111 2014-11-24 19:16:22 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.112 2014-11-24 19:24:19 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -237,7 +237,7 @@ CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNA
 # At this point we change NETCDF_INC from a directory to a flag
 NC_CFLAGS := $(shell nc-config --cflags)
 NC_LDFLAGS := $(shell nc-config --libs)
-NCO_LDFLAGS := -L${MY_LIB_DIR} -lnco -lnco++
+NCO_LDFLAGS := -L${MY_LIB_DIR} -lnco -lnco_c++
 
 ifeq (${PNETCDF},Y)
 # Enable pnetCDF functionality
