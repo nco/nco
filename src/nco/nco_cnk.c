@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.149 2014-11-12 19:34:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.150 2014-11-25 05:20:27 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -989,6 +989,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     /* Set chunksizes to existing sizes for this variable */
     if(is_chunked){
       (void)nco_inq_var_chunking(grp_id_in,var_id_in,(int *)NULL,cnk_sz);
+      /* 20141124: However, operators like ncecat and ncwa change variable dimensionality, and ncpdq changes order
+	 With these operators, re-arrange input chunksizes for output fxm */
+
       /* Allow existing chunksizes to be over-ridden by explicitly specified chunksizes */
       goto cnk_xpl_override;
     } /* !is_chunked */
