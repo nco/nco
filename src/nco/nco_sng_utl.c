@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.80 2014-10-01 03:50:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.81 2014-11-25 00:22:02 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -570,8 +570,17 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing decimal point and preceding exponen
       /* Trim all remaining consecutive zeros leftward */
       while(*trl_zro_ptr == '0') *trl_zro_ptr--='\0';
 
-      /* Copy allowed zeros and/or exponent, if any, to current location */
-      strncpy(trl_zro_ptr+1UL,vld_ptr,strlen(vld_ptr)+1UL);
+      /* Copy allowed zeros and/or exponent, if any, to current location
+	 20141124: This algorithm has worked fine for ~1 year
+	 Learned today, though, that valgrind does not like, and Mac OS X disallows, 
+	 source and destination to overlap in strcpy() and friends
+	 http://www.network-theory.co.uk/docs/valgrind/valgrind_49.html
+	 Use explicit loop (instead of strncpy()) to copy src to dst
+	 This avoids triggering warnings in valgrind and crashes in Mac OS X */
+      /*strncpy(trl_zro_ptr+1UL,vld_ptr,strlen(vld_ptr)+1UL);*/
+      char *end=vld_ptr+strlen(vld_ptr)+1UL;
+      char *dst=trl_zro_ptr+1UL;
+      for(char *src=vld_ptr;src<=end;src++) *dst++=*src;
     } /* end if trl_zro_ptr */
   } /* end if dcm_ptr */
 

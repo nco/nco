@@ -6,6 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
 
+	* Replace strncpy() in sng_trm_trl_zro(0 with explicit loop toprevent valgrind complaining about,
+	and Mac OS X crashing on, overlapping source and destination buffers
+
 	* Support passing (int *)NULL to nc_inq_format_extended() stub
 
 	* Fix GSL and UDUnits flags in Makefile (fixes yellowstone builds)
