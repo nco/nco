@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.940 2014-11-26 21:11:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.941 2014-11-26 21:43:36 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -867,10 +867,10 @@ To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.6.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.7.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.4.5.win32.cygwin.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.4.6.windows.mvs.exe">nco-4.4.6.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.4.6.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.4.6.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+<li><a href="src/nco-4.4.7.windows.mvs.exe">nco-4.4.7.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.4.7.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.4.7.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
