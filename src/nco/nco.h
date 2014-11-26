@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.524 2014-11-11 21:20:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.525 2014-11-26 04:15:26 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -1189,13 +1189,13 @@ extern "C" {
 
    /* Dimension utility structure to share common fields; used in nco_cnk_sz_set_trv() */
   typedef struct{ 
-    char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension/coordinate */
     char *nm_fll; /* [sng] Full dimension name */
-    nco_bool is_rec_dmn; /* [flg] Is a record dimension/coordinate? */
-    size_t sz; /* [nbr] Size of dimension/coordinate */
+    char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension/coordinate */
+    int id; /* [id] Dimension ID */
     nco_bool NON_HYP_DMN; /* [flg] Limit is same as dimension in input file */
-    size_t dmn_cnt; /* [nbr] Hyperslabbed size of dimension */ 
-    int id; /* [id] Dimension ID */ 
+    nco_bool is_rec_dmn; /* [flg] Dimension is unlimited/record dimension */
+    size_t dmn_cnt; /* [nbr] Hyperslabbed size of dimension (= sz iff !NON_HYP_DMN) */
+    size_t sz; /* [nbr] Size (non-hyperslabbed) of dimension */
   } dmn_cmn_sct; 
 
 #ifdef __cplusplus

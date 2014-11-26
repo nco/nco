@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1479 2014-11-16 01:51:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1480 2014-11-26 04:15:26 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5805,10 +5805,10 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
   const char fnc_nm[]="nco_dmn_msa_tbl()"; /* [sng] Function name */
 
-  char var_nm[NC_MAX_NAME+1];          /* [sng] Variable name (local copy of object name) */ 
+  char var_nm[NC_MAX_NAME+1L];          /* [sng] Variable name (local copy of object name) */ 
   char *rec_dmn_nm=NULL;                 /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL;             /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
-  char dmn_nm[NC_MAX_NAME+1];            /* [sng] Dimension names  */
+  char dmn_nm[NC_MAX_NAME+1L];            /* [sng] Dimension names  */
 
   int *dmn_in_id_var;                    /* [id] Dimension IDs array for input variable */
   int var_in_id;                         /* [id] Variable ID */
@@ -7653,7 +7653,7 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
 {
   /* Purpose: Export list of variable names for group */
 
-  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name */ 
+  char var_nm[NC_MAX_NAME+1L];      /* [sng] Variable name */ 
 
   int nbr_var;                     /* [nbr] Number of variables */
   int grp_id;                      /* [id] Group ID */
@@ -7694,7 +7694,7 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant attribu
   const char dlm_sng[]=" ";     /* [sng] Delimiter string */
 
   char **cf_lst;                /* [sng] 1D array of list elements */
-  char att_nm[NC_MAX_NAME+1];     /* [sng] Attribute name */
+  char att_nm[NC_MAX_NAME+1L];     /* [sng] Attribute name */
 
   int grp_id;                   /* [id] Group ID */
   int nbr_att;                  /* [nbr] Number of attributes */
@@ -7847,7 +7847,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
           lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
           int aux_lmt_nbr;           /* Number of auxiliary coordinate limits */
           nc_type crd_typ;           /* [enm] netCDF type of both "latitude" and "longitude" */
-          char units[NC_MAX_NAME+1];
+          char units[NC_MAX_NAME+1L];
 
           aux_lmt_nbr=0;
           crd_typ=trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].lat_crd[0].crd_typ;
@@ -8228,8 +8228,8 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
     if(var_trv.nco_typ == nco_obj_typ_var){
-      char units_lat[NC_MAX_NAME+1];
-      char units_lon[NC_MAX_NAME+1];
+      char units_lat[NC_MAX_NAME+1L];
+      char units_lon[NC_MAX_NAME+1L];
 
       has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&dmn_id,&crd_typ,units_lat);
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.150 2014-11-25 05:20:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.151 2014-11-26 04:15:26 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -817,7 +817,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   int cnk_plc; /* [enm] Chunking policy */
   int deflate; /* [enm] Deflate filter is on */
   int dmn_idx; /* [idx] Dimension index */
-  int dmn_nbr; /* [nbr] Number of dimensions for variable */
+  int dmn_nbr; /* [nbr] Number of dimensions for variable in output file */
   int fl_fmt; /* [enm] Input file format */
   int shuffle; /* [enm] Shuffle filter is on */
   int srg_typ; /* [enm] Storage type */
@@ -834,7 +834,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   nco_bool is_xpl_cnk; /* [flg] Explicitly chunked variable */
   nco_bool must_be_chunked; /* [flg] Variable must be chunked */
 
-  size_t *cnk_sz=NULL; /* [nbr] Chunksize list */
+  size_t *cnk_sz=NULL; /* [nbr] Chunksize list in output file */
   size_t cnk_min_byt; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_dfl; /* [nbr] Chunksize default */
   size_t cnk_sz_scl; /* [nbr] Chunk size scalar */
@@ -987,10 +987,55 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   if(cnk_map == nco_cnk_map_xst){
     /* Set chunksizes to existing sizes for this variable */
+
     if(is_chunked){
-      (void)nco_inq_var_chunking(grp_id_in,var_id_in,(int *)NULL,cnk_sz);
-      /* 20141124: However, operators like ncecat and ncwa change variable dimensionality, and ncpdq changes order
-	 With these operators, re-arrange input chunksizes for output fxm */
+      char **dmn_nm_in; /* [sng] Dimension names for this variable in input file */
+      int *dmn_id_in; /* [id] Dimension IDs for this variable in input file */
+      int dmn_idx_in; /* [idx] Counter for input dimensions */
+      int dmn_nbr_in; /* [nbr] Number of dimensions for variable in input file */
+      size_t *cnk_in=NULL; /* [nbr] Chunksize list in input file */
+
+      (void)nco_inq_varndims(grp_id_in,var_id_in,&dmn_nbr_in);
+      cnk_in=(size_t *)nco_malloc(dmn_nbr_in*sizeof(size_t));    
+      dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));    
+      dmn_nm_in=(char **)nco_malloc(dmn_nbr_in*sizeof(char *));    
+      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++) 
+	dmn_nm_in[dmn_idx]=(char *)nco_calloc(NC_MAX_NAME+1L,sizeof(char));
+
+      (void)nco_inq_var_chunking(grp_id_in,var_id_in,(int *)NULL,cnk_in);
+      (void)nco_inq_vardimid(grp_id_in,var_id_in,dmn_id_in);
+      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++) 
+	(void)nco_inq_dimname(grp_id_in,dmn_id_in[dmn_idx],dmn_nm_in[dmn_idx]);
+
+      /* 20141124: 
+	 In most cases cnk_in may be safely assigned to cnk_sz
+	 However, operators like ncecat and ncwa change variable dimensionality, and ncpdq changes order
+	 With these operators, re-arrange input chunksizes for output */
+      for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in;dmn_idx_in++){
+	  if(!strcmp(dmn_cmn[dmn_idx].nm,dmn_nm_in[dmn_idx_in])){
+	      cnk_sz[dmn_idx]=cnk_in[dmn_idx_in];
+	      break;
+	  } /* endif */
+	} /* end loop over dmn_idx_in */
+	if(dmn_idx_in == dmn_nbr_in){
+	  /* Output file dimension not found in input file */
+	  assert(nco_prg_id_get() == ncecat);
+	  if(dmn_cmn[dmn_idx].NON_HYP_DMN){
+	    if(dmn_cmn[dmn_idx].sz == 0) cnk_sz[dmn_idx]=1UL; else cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
+	  }else{ /* !NON_HYP_DMN */
+	    cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].dmn_cnt;
+	  } /* !NON_HYP_DMN */
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s output dimension %s not found in input file. Setting default chunksize for this dimension to = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_sz[dmn_idx]);
+	} /* endif dimension not in input file */
+      } /* end loop over dmn_idx */
+
+      /* Memory management */
+      if(cnk_in) cnk_in=(size_t *)nco_free(cnk_in);
+      if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
+      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++) 
+	if(dmn_nm_in[dmn_idx]) dmn_nm_in[dmn_idx]=(char *)nco_free(dmn_nm_in[dmn_idx]);
+      if(dmn_nm_in) dmn_nm_in=(char **)nco_free(dmn_nm_in);
 
       /* Allow existing chunksizes to be over-ridden by explicitly specified chunksizes */
       goto cnk_xpl_override;
