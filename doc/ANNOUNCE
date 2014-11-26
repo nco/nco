@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.756 2014-11-26 05:18:52 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.757 2014-11-26 21:11:28 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.7 are ready. 
 
@@ -10,9 +10,10 @@ assist users with chunking policies, hyperslabbing, and creating
 record variables. First, hyperslab specifications now use
 Python-consistent indexing (negative indices) to indicate the last 
 elements of a dimension. Second, chunking behavior has been revamped.
-Overall the chunking algorithms are much more robust and optimized,
-yet there are some user-visible changes to be aware of. See below.
-Finally, ncap2 can create record variables.
+Overall the chunking algorithms are much more robust and optimized.
+See below for the user-visible changes. Of note is the new balanced
+chunking map named for Russ Rew. Finally, ncap2 can create record
+variables.  
 
 Work on NCO 4.4.8 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
@@ -33,21 +34,23 @@ A. Hyperslab specifications now accept -1 (negative one) to indicate
    ncks -d lon,-3,-1 in.nc out.nc # last three longitudes
    http://nco.sf.net/nco.html#hyp
 
-A. ncap2 creates record dimension when dimension size is negative: 
+B. ncap2 creates record dimension when dimension size is negative: 
    ncap2 -s 'defdim("time",10)'  in.nc out.nc # Fixed-size dimension
    ncap2 -s 'defdim("time",-10)' in.nc out.nc # Record dimension
    Formerly ncap2 had no way to create new record dimensions.
    http://nco.sf.net/nco.html#ncap2
 
-A. A new chunking map, --cnk_map=rew, implements a chunking strategy 
+C. A new chunking map, --cnk_map=rew, implements a chunking strategy 
    that balances common 1-D (e.g., timeseries) and 2-D (e.g.,
    geographic slices) access patterns to 3-D (time, lat, lon) data.
-   Developed by Russ Rew, this strategy is fully described here:
+   Name in honor of its (and netCDF's) developer Russ Rew:
    http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes
-   For now, this map only applies to 3-D variables.
+   For now, this map only applies to 3-D variables. We hope to include 
+   a version generalized to N-D variables in the next release.
+   ncks --cnk_map=rew in.nc out.nc # Use Rew's balanced chunking
    http://nco.sf.net/nco.html#cnk
 
-A. A new chunking map, --cnk_map=nc4, implements the netCDF4 default
+D. A new chunking map, --cnk_map=nc4, implements the netCDF4 default
    chunking map as implemented in the netCDF library used to build NCO. 
    Formerly, NCO had no way to explicitly resort to netCDF4 defaults.
    (netCDF4 and NCO chunking defaults differ).
@@ -57,7 +60,7 @@ A. A new chunking map, --cnk_map=nc4, implements the netCDF4 default
    ncks --cnk_map=nc4 in.nc out.nc # Use netCDF4 default chunking
    http://nco.sf.net/nco.html#cnk
 
-A. NCO's default chunking policy now preserves existing chunking.
+E. NCO's default chunking policy now preserves existing chunking.
    Previously NCO would use its favorite chunking policy (which
    variables to chunk) and map (how to chunk those variables) on all 
    input files unless the user explicitly specified other chunking
@@ -71,7 +74,7 @@ A. NCO's default chunking policy now preserves existing chunking.
    ncks --cnk_map=xst --cnk_plc=xst in.nc out.nc # Same effect
    http://nco.sf.net/nco.html#cnk
 
-A. The minimum size of variables to chunk may now be specified with
+F. The minimum size of variables to chunk may now be specified with
    --cnk_min=var_sz, where var_sz is the minimum size in bytes (not
    elements) of variables to chunk. This threshold is intended to
    restrict use of chunking to variables for which it is efficient. 
@@ -94,17 +97,17 @@ A. ncrename has known problems when renaming netCDF4 coordinates.
    underlying netCDF library. Thanks to Parker Allen for reporting.
    http://nco.sf.net#bug_nc4_rename
 
-A. Auxiliary coordinate hyperslabbing (with -X) was inadvertently 
+B. Auxiliary coordinate hyperslabbing (with -X) was inadvertently 
    turned-off for 1-D variables. Now it works fine with 1-D vars.
    Fixed by Pedro Vicente.
    Moreover, files without a "Conventions=CF-1.X" attribute are now
    treated as if they had the attribute to exploit -X functionality. 
 
-A. Auxiliary coordinate hyperslabbing (with -X) was broken for 
+C. Auxiliary coordinate hyperslabbing (with -X) was broken for 
    variables with non-coordinate dimensions. Fixed by Pedro Vicente. 
    Thanks to romzie04 for alerting us to these -X issues.
 
-A. Fixed ncks bug when built on netCDF < 4.3.1 due to error in
+D. Fixed ncks bug when built on netCDF < 4.3.1 due to error in
    handling NULL arguments to nco_inq_format_extended() stub.
    Also fix printing problem with strncpy().
    Only known to affect with strict initialization like clang.
@@ -114,7 +117,7 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.4.7 built/tested with netCDF
-   4.3.3-rc2 (20141001) on top of HDF5 hdf5-1.8.13 with:
+   4.3.3-rc2 (20141112) on top of HDF5 hdf5-1.8.13 with:
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
@@ -146,7 +149,7 @@ KNOWN PROBLEMS DUE TO BASE LIBRARIES/PROTOCOLS:
 
 A. NOT YET FIXED (netCDF4 problem)
    Renaming netCDF4 coordinate variables or dimensions "succeeds" but  
-   corrupts (set to _FillValue) values in the output dataset.
+   corrupts (sets to _FillValue) values in the output dataset.
    Full description here http://nco.sf.net#bug_nc4_rename
 
    Demonstration with netCDF <= 4.3.2:
