@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.535 2014-11-10 20:58:50 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.536 2014-11-26 05:18:52 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1038,7 +1038,6 @@ print "\n";
 ####################
 
 #ncecat #1
-
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v one $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -v one $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
@@ -1050,7 +1049,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 
 #ncecat #2    
-    
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v three_dmn_var_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -C -v -O $fl_fmt $nco_D_flg -s 'three_dmn_var_int+=100;' $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -d time,0,3 -d time,8,9 -d lon,0,1 -d lon,3,3 -v three_dmn_var_int %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
@@ -1061,7 +1059,6 @@ print "\n";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-	
 	
     #######################################
     #### Group tests (requires netCDF4) ###
@@ -1079,8 +1076,6 @@ print "\n";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
-   
-    
 #    
 # NCO 4.3.1 - ncecat for groups 
 #

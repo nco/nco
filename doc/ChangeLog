@@ -1,16 +1,20 @@
 2014-11-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.7 release procedure:
- 	Changes since nco-4_4_6: -0->-1, rename bug, cnk xst, cnk_min, -X,
+ 	Changes since nco-4_4_6: -0->-1, rename bug, cnk xst, cnk_min, -X, rew, cnk_in
 	cd ~/nco;cvs tag -d nco-4_4_7;cvs tag -d nco-4_4_7-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.7 release"
 	cvs tag -c nco-4_4_7;cvs tag -c nco-4_4_7-1
+
+	* Regression tests show no failures on gcc and clang Linux and MacOS
+	One non-fatal failure on icc Linux (yellowstone) ncecat#9
+	Output file is chunked differently than expected. Mysterious.
 
 	* Initialize input chunksize defaults correctly for ncwa, ncecat, ncpdq
 
 2014-11-24  Charlie Zender  <zender@uci.edu>
 
-	* Replace strncpy() in sng_trm_trl_zro() with explicit loop toprevent valgrind complaining about,
+	* Replace strncpy() in sng_trm_trl_zro() with explicit loop to prevent valgrind complaining about,
 	and Mac OS X crashing on, overlapping source and destination buffers
 
 	* Support passing (int *)NULL to nc_inq_format_extended() stub

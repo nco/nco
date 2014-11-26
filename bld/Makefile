@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.742 2014-11-24 23:18:36 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.743 2014-11-26 05:18:52 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -104,7 +104,7 @@
 # module add intel;module add gsl;module add netcdf/4.3.0;
 # https://www2.cisl.ucar.edu/sites/default/files/Yellowstone_Started_Nov30-2.pdf
 # module add pnetcdf/1.4.1
-# cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd - # original
+# cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS=Y allinone;cd -
 # cd ~/bin/WIN32;tar cvzf ~/nco-4.4.7.win32.cygwin.tar.gz nc* ; scp ~/nco-4.4.7.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src

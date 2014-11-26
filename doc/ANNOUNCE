@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.755 2014-11-25 00:22:02 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.756 2014-11-26 05:18:52 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.7 are ready. 
 
@@ -106,6 +106,8 @@ A. Auxiliary coordinate hyperslabbing (with -X) was broken for
 
 A. Fixed ncks bug when built on netCDF < 4.3.1 due to error in
    handling NULL arguments to nco_inq_format_extended() stub.
+   Also fix printing problem with strncpy().
+   Only known to affect with strict initialization like clang.
 
 KNOWN PROBLEMS DUE TO NCO:
 
