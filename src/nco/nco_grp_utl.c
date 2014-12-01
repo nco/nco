@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1480 2014-11-26 04:15:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1481 2014-12-01 20:51:41 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4400,9 +4400,16 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* Get output group ID */
   (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
-  /* Is requested variable already in output file? */
+  /* Is requested variable already in output file? 
+     This situation legally occurs with appends, i.e., when -A = FORCE_APPEND is used */
   rcd=nco_inq_varid_flg(grp_out_id,var_nm,&var_out_id);
-  if(rcd == NC_NOERR) return var_out_id;
+  if(rcd == NC_NOERR){
+    /* 20141201: Due diligence to warn user when output type does not match input type
+       Again, this can happen when appending, e.g., from lower-to-higher precision */
+    (void)nco_inq_vartype(grp_out_id,var_out_id,&var_typ_out);
+    if(var_typ_out != var_trv->var_typ) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" output type = %s does not equal input type = %s. This is legal yet usually ill-advised when appending. Writing values into slots created for a different type is begging for trouble (e.g., data corruption, truncation, gingivitis).\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_typ_sng(var_typ_out),nco_typ_sng(var_trv->var_typ));
+    return var_out_id;
+  } /* endif */
 
   /* Get input group ID */
   (void)nco_inq_grp_full_ncid(nc_in_id,var_trv->grp_nm_fll,&grp_in_id);

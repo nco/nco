@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.743 2014-11-26 05:18:52 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.744 2014-12-01 20:51:39 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -107,7 +107,7 @@
 # cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS=Y allinone;cd -
-# cd ~/bin/WIN32;tar cvzf ~/nco-4.4.7.win32.cygwin.tar.gz nc* ; scp ~/nco-4.4.7.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+# cd ~/bin/WIN32;tar cvzf ~/nco-4.4.8.win32.cygwin.tar.gz nc* ; scp ~/nco-4.4.8.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # Data files to dust
 # cd ~/nco/data;scp cmip5.nc obs.nc mdl_1.nc mdl_2.nc in_grp*.nc in.nc in_4c.nc dust.ess.uci.edu:/var/www/html/nco
 
@@ -1646,7 +1646,7 @@ libnco_c++_tst:   ${MY_BLD_DIR}/libnco_c++_tst
 ${MY_BLD_DIR}/libnco_c++_tst:	${MY_BLD_DIR}/libnco_c++_tst.o lib
 	${CXX} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
-rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=4.4.7 rpm
+rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=4.4.8 rpm
 # 	Building NCO RPM requires following packages
 #       rpm -q bison flex netcdf-devel libtool automake autoconf udunits udunits-devel curl-devel libxml2 libxml2-devel librx-devel 
 #       sudo yum install bison flex netcdf-devel libtool automake autoconf udunits udunits-devel curl-devel libxml2 libxml2-devel librx-devel

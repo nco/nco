@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.757 2014-11-26 21:11:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.758 2014-12-01 20:51:40 zender Exp $ -*-text-*-
 
-The netCDF Operators NCO version 4.4.7 are ready. 
+The netCDF Operators NCO version 4.4.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -23,100 +23,21 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Hyperslab specifications now accept -1 (negative one) to indicate
-   the last element of a dimension. This is consistent with Python
-   syntax, unlike NCO's previous behavior (from 20120709--20141001)
-   where negative integers indicated the number of elements from the
-   last (-1 was penultimate, -0 was ultimate). Now -1 is last element,
-   -2 is penultimate element, and -N is the first element. NCO warns
-   users who may expect the old behavior.
-   ncks -d lon,-1 in.nc out.nc # last longitude
-   ncks -d lon,-3,-1 in.nc out.nc # last three longitudes
-   http://nco.sf.net/nco.html#hyp
-
-B. ncap2 creates record dimension when dimension size is negative: 
-   ncap2 -s 'defdim("time",10)'  in.nc out.nc # Fixed-size dimension
-   ncap2 -s 'defdim("time",-10)' in.nc out.nc # Record dimension
-   Formerly ncap2 had no way to create new record dimensions.
-   http://nco.sf.net/nco.html#ncap2
-
-C. A new chunking map, --cnk_map=rew, implements a chunking strategy 
-   that balances common 1-D (e.g., timeseries) and 2-D (e.g.,
-   geographic slices) access patterns to 3-D (time, lat, lon) data.
-   Name in honor of its (and netCDF's) developer Russ Rew:
-   http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes
-   For now, this map only applies to 3-D variables. We hope to include 
-   a version generalized to N-D variables in the next release.
-   ncks --cnk_map=rew in.nc out.nc # Use Rew's balanced chunking
-   http://nco.sf.net/nco.html#cnk
-
-D. A new chunking map, --cnk_map=nc4, implements the netCDF4 default
-   chunking map as implemented in the netCDF library used to build NCO. 
-   Formerly, NCO had no way to explicitly resort to netCDF4 defaults.
-   (netCDF4 and NCO chunking defaults differ).
-   This option allows users to change the chunking of a dataset to
-   what it would be if it were created from scratch by ncgen without
-   any specific chunking options.
-   ncks --cnk_map=nc4 in.nc out.nc # Use netCDF4 default chunking
-   http://nco.sf.net/nco.html#cnk
-
-E. NCO's default chunking policy now preserves existing chunking.
-   Previously NCO would use its favorite chunking policy (which
-   variables to chunk) and map (how to chunk those variables) on all 
-   input files unless the user explicitly specified other chunking
-   options. Thus a chain of processing commands had to explicitly
-   specify chunking parameters in each command otherwise the 
-   chunksizes could be reset to a shape not optimal for the
-   anticipated access patterns. Now once a file is optimally chunked,
-   no further NCO operations on that file need specify chunking
-   options (since they are preserved by default).
-   ncks in.nc out.nc # Defaults to --cnk_plc=xst, --cnk_map=xst
-   ncks --cnk_map=xst --cnk_plc=xst in.nc out.nc # Same effect
-   http://nco.sf.net/nco.html#cnk
-
-F. The minimum size of variables to chunk may now be specified with
-   --cnk_min=var_sz, where var_sz is the minimum size in bytes (not
-   elements) of variables to chunk. This threshold is intended to
-   restrict use of chunking to variables for which it is efficient. 
-   By default this minimum variable size for chunking is 8192 B.
-   Formerly, NCO would chunk all arrays of any size.
-   To obtain that behavior now users must specifiy --cnk_min=1, so
-   that arrays of any size will be chunked. 
-   To obtain a system-dependent minimum size, set cnk_min=0 and then
-   NCO will compute the minimum size as twice the system blocksize
-   (when available) and 8192 B otherwise.
-   ncks in.nc out.nc # Minimum variable size to chunk is 8192 B
-   ncks --cnk_min=1 in.nc out.nc # Minimum size is 1 B
-   ncks --cnk_min=0 in.nc out.nc # Minimum size is twice blocksize
-   http://nco.sf.net/nco.html#cnk
+A. Warn when appended output type differs from input type
 
 BUG FIXES:
 
-A. ncrename has known problems when renaming netCDF4 coordinates.
+A. Hi
+   ncrename has known problems when renaming netCDF4 coordinates.
    These problems will go away when Unidata issues a fix to the
    underlying netCDF library. Thanks to Parker Allen for reporting.
    http://nco.sf.net#bug_nc4_rename
-
-B. Auxiliary coordinate hyperslabbing (with -X) was inadvertently 
-   turned-off for 1-D variables. Now it works fine with 1-D vars.
-   Fixed by Pedro Vicente.
-   Moreover, files without a "Conventions=CF-1.X" attribute are now
-   treated as if they had the attribute to exploit -X functionality. 
-
-C. Auxiliary coordinate hyperslabbing (with -X) was broken for 
-   variables with non-coordinate dimensions. Fixed by Pedro Vicente. 
-   Thanks to romzie04 for alerting us to these -X issues.
-
-D. Fixed ncks bug when built on netCDF < 4.3.1 due to error in
-   handling NULL arguments to nco_inq_format_extended() stub.
-   Also fix printing problem with strncpy().
-   Only known to affect with strict initialization like clang.
 
 KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.4.7 built/tested with netCDF
+   These problems occur with NCO 4.4.8 built/tested with netCDF
    4.3.3-rc2 (20141112) on top of HDF5 hdf5-1.8.13 with:
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-

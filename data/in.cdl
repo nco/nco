@@ -68,7 +68,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.198 2014-11-11 21:20:17 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.199 2014-12-01 20:51:39 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -461,7 +461,7 @@ variables:
         val_eminusten:att_eminusten = 1.1e-10f;
 
 	int val_one_int;
-	val_one_int:long_name = "scalar equal to 1";
+	val_one_int:long_name = "scalar integer equal to 1";
 	val_one_int:_FillValue = -99l;
 
 	int val_one_one_int(lat);
