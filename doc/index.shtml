@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.941 2014-11-26 21:43:36 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.942 2014-12-01 05:27:13 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -149,7 +149,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2014 Nov&nbsp;??: 4.4.7 (<i>In progress</i>)
+<li>2014 Dec&nbsp;??: 4.4.8 (<i>In progress</i>)
+<li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
 <li>2014 Oct&nbsp;01: 4.4.6 (<tt>ncra, ncwa</tt> packing bugfixes, stride optimization)
 <li>2014 Aug&nbsp;26: 4.4.5 (Stability)
 <li>2014 Jul&nbsp;01: NASA ACCESS 2013 <a href="#prp_axs">project</a> commences</li>
@@ -319,7 +320,7 @@ This may incentivize us to tackle your favorite <a href="./TODO"><tt>TODO</tt></
 Inspired by President Obama's plan to bring more transparency to
 government investment, these homepage donation counters track the
 influence of your monetary donations on NCO development: 
-<dt>Donations received between 20030624 and 20140615: US$144.55. Thank you, donors!</dt>
+<dt>Donations received between 20030624 and 20141126: US$144.55. Thank you, donors!</dt>
 <dt>NCO features &ldquo;incentivized&rdquo; by these donations: More emoticons in the documentation :)</dt>
 <hr></p>
 
@@ -631,16 +632,17 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.4.8</b>: (<i>Future</i>) 
+<li><b>NCO 4.4.9</b>: (<i>Future</i>) 
+<li><b>NCO 4.4.8</b>: (<i>In Progress, features completed or being worked on include</i>)
 extensive hashing?;
 netCDF4 compound types?;
-Chunking <tt>cnk_map=rew</tt>;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 Optimize diskless files?</li>
-<li><b>NCO 4.4.7</b>: (<i>In Progress, features completed or being worked on include</i>)
-Smarter chunking defaults</li>
+<li><b>NCO 4.4.7</b>: (<i>Current Stable Release</i>)
 <tt>cnk_min</tt> minimum chunksize;
-<li><b>NCO 4.4.6</b>: (<i>Current Stable Release</i>)
+Chunking <tt>cnk_map=rew</tt>;
+Smarter chunking defaults</li>;
+<li><b>NCO 4.4.6</b>: 
 <tt>-0</tt> hyperslabs;
 <tt>configure</tt> DAP correctly;
 HDF4 chunking and deflation;
