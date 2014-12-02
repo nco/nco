@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release"
 	cvs tag -c nco-4_4_8;cvs tag -c nco-4_4_8-1
 
-	* Warn when appended output type differs from input type
+	* Warn when appended output type differs from input type (legal	yet sketchy with -A)
 
 2014-11-26  Charlie Zender  <zender@uci.edu>
 
