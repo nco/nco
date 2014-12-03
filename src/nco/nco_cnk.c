@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.151 2014-11-26 04:15:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.152 2014-12-03 22:36:37 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1135,6 +1135,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     double cnk_nbr_xct; /* [nbr] Exact number of ideal chunks needed to store variable */
     double cnk_nbr_2D_axs; /* [nbr] Exact number of ideal chunks along each 2D axis */
     double fct_ncr=1.0; /* [frc] Factor by which to increase chunk size */
+    double cnk_sz_rgn_zro_dfl; /* [nbr] Default chunk size for dimension zero (time) */
     size_t *cnk_sz_prt; /* [nbr] Perturbed chunk size (base chunk size plus zero or one) */
     size_t *cnk_sz_rgn; /* [nbr] Original (first-guess) chunk size (no adjustments) */
     size_t *prt_cff; /* [nbr] Rerturbation to base chunk size for each dimension, also [0,1] multiplier for each power of two in this permutation index */
@@ -1158,12 +1159,18 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     
     cnk_nbr_xct=dmn_sz_prd/cnk_val_nbr;
     cnk_nbr_2D_axs=pow(cnk_nbr_xct,0.25);
+    /* Default chunk size for dimension zero (time) */
+    cnk_sz_rgn_zro_dfl=var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs);
 
-    if(var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs) < 1.0){
-      cnk_sz_rgn[0]=1L;
-      cnk_nbr_2D_axs/=sqrt((double)var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs));
+    if(var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs) >= 1.0){
+      cnk_sz_rgn[0]=cnk_sz_rgn_zro_dfl; // Rew13 uses // for integer arithmetic here
     }else{
-      cnk_sz_rgn[0]=var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs); // Rew13 uses // for integer arithmetic here
+      /* Adjust chunk shape because time-series length incommensurate with lateral dimensions:
+	 If default chunk shape would give time chunk size smaller than one, then set time chunk size equal to one
+	 (larger than default) and compensate for effect of this in overall chunk volume by shrinking 
+	 lateral size by same factor such that product of adjusted chunk sizes equals product of default chunk sizes */
+      cnk_sz_rgn[0]=1L;
+      cnk_nbr_2D_axs/=sqrt(cnk_sz_rgn_zro_dfl);
     } /* endif */
 
     for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) /* NB: Start at 1 */
