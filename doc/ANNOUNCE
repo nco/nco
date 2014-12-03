@@ -1,19 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.758 2014-12-01 20:51:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.759 2014-12-03 00:24:57 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This stabilization release also contains useful new features that
-assist users with chunking policies, hyperslabbing, and creating
-record variables. First, hyperslab specifications now use
-Python-consistent indexing (negative indices) to indicate the last 
-elements of a dimension. Second, chunking behavior has been revamped.
-Overall the chunking algorithms are much more robust and optimized.
-See below for the user-visible changes. Of note is the new balanced
-chunking map named for Russ Rew. Finally, ncap2 can create record
-variables.  
+This stabilization release also contains useful new features ...
 
 Work on NCO 4.4.8 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
@@ -23,7 +15,16 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Warn when appended output type differs from input type
+A. NCO warns when appended output type differs from input type. 
+   Previously NCO would not warn or die when the user (usually
+   inadvertently) wrote data of one type into a destination meant
+   for a different type. These commands would therefore complete
+   without warning:
+   ncks -C -O -v double_var ~/nco/data/in.nc ~/foo.nc
+   ncrename -O -v double_var,float_var ~/foo.nc
+   ncks -C -A -v float_var ~/nco/data/in.nc ~/foo.nc
+   Now the user is warned but the operations is still permitted.
+   http://nco.sf.net/nco.html#-A
 
 BUG FIXES:
 
