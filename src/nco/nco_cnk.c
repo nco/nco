@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.152 2014-12-03 22:36:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.153 2014-12-04 06:55:28 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1157,13 +1157,15 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       dmn_sz_prd*=var_shp[dmn_idx];
     } /* end loop over dmn_idx */
     
+    /* [nbr] Exact number of ideal chunks needed to store variable */
     cnk_nbr_xct=dmn_sz_prd/cnk_val_nbr;
+    /* [nbr] Exact number of ideal chunks along each 2D axis */
     cnk_nbr_2D_axs=pow(cnk_nbr_xct,0.25);
     /* Default chunk size for dimension zero (time) */
     cnk_sz_rgn_zro_dfl=var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs);
 
     if(var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs) >= 1.0){
-      cnk_sz_rgn[0]=cnk_sz_rgn_zro_dfl; // Rew13 uses // for integer arithmetic here
+      cnk_sz_rgn[0]=cnk_sz_rgn_zro_dfl; // Here Rew13 uses Python // operator for integer arithmetic
     }else{
       /* Adjust chunk shape because time-series length incommensurate with lateral dimensions:
 	 If default chunk shape would give time chunk size smaller than one, then set time chunk size equal to one
@@ -1173,9 +1175,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       cnk_nbr_2D_axs/=sqrt(cnk_sz_rgn_zro_dfl);
     } /* endif */
 
-    for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) /* NB: Start at 1 */
+    for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) /* NB: Start at index 1 */
       if(var_shp[dmn_idx]/cnk_nbr_2D_axs < 1.0) fct_ncr*=cnk_nbr_2D_axs/var_shp[dmn_idx];
-    for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) /* NB: Start at 1 */
+    for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) /* NB: Start at index 1 */
       if(var_shp[dmn_idx]/cnk_nbr_2D_axs < 1.0) cnk_sz_rgn[dmn_idx]=1L; else cnk_sz_rgn[dmn_idx]=fct_ncr*var_shp[dmn_idx]/cnk_nbr_2D_axs;
 
     /* First-guess estimate of chunk size */
@@ -1200,7 +1202,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
     /* Loop through permutations of adjusting first-estimate chunk size by plus one
        NB: Skip permutation prm_idx=0 since it is degenerate and does not change first-guess chunk sizes */
-    for(prm_idx=1;prm_idx<two_pwr_rnk;prm_idx++){ /* NB: Loop starts at 1 to skip degenerate perumutation */
+    for(prm_idx=1;prm_idx<two_pwr_rnk;prm_idx++){ /* NB: Loop starts at 1 to skip degenerate permutation */
       if(cnk_gap == 0L) break;
       cnk_sz_prd=1L;
       /* Fill-in coefficient from MSB to LSB */
