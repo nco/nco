@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.162 2014-11-04 19:40:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.163 2014-12-08 16:04:31 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -984,7 +984,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
       /* Decide whether var_lsr and var_gtr dimensions conform, are mutually exclusive, or are partially exclusive */ 
       if(var_lsr_var_gtr_dmn_shr_nbr == var_lsr->nbr_dim){
 	/* var_lsr and var_gtr conform */
-	/* fxm: Variables do not conform when dimension list of one is subset of other if order of dimensions differs, i.e., a(lat,lev,lon) !~ b(lon,lev) */
+	/* fxm: Variables do not conform when dimen<_cstsion list of one is subset of other if order of dimensions differs, i.e., a(lat,lev,lon) !~ b(lon,lev) */
 	CONFORMABLE=True;
       }else if(var_lsr_var_gtr_dmn_shr_nbr == 0){
 	/* Dimensions in var_lsr and var_gtr are mutually exclusive */
@@ -1218,6 +1218,7 @@ nco_bool
 ncap_def_dim(
 	     std::string dmn_nm,
 	     long sz,
+             bool bunlimited,   /* true unlimited, false limited */
 	     prs_cls *prs_arg){
   const char fnc_nm[]="ncap_def_dim"; 
 
@@ -1235,11 +1236,15 @@ ncap_def_dim(
     return False;
   }
 
+  is_rec_dmn= ( bunlimited==true ? True : False);
+
   /** hidden feature if size negative then this indicates a record dimension */  
   if( sz < 0 ){
      sz=-sz; 
      is_rec_dmn=True;
   }      
+ 
+    
 
   /*   
   if( sz < 0  ){
@@ -2010,13 +2015,14 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
   if(bdef)
     (void)nco_enddef(prs_arg->out_id);
   
-  /* Check that un-limited dimension is first dimension */
-  for(idx=1;idx<dmn_nbr;idx++)
-    if(dmn[idx]->is_rec_dmn){
-      wrn_prn(fnc_nm,"\""+std::string(dmn[idx]->nm)+"\" is the record dimension. It must be the first dimension in a list");
-      goto end_LHS_sbs;                     
-    } /* endif */
-  
+  /* Check that un-limited dimension is first dimension for netcdf3 files only */
+  if( prs_arg->fl_out_fmt != NC_FORMAT_NETCDF4 ){
+    for(idx=1;idx<dmn_nbr;idx++)
+      if(dmn[idx]->is_rec_dmn){
+        wrn_prn(fnc_nm,"\""+std::string(dmn[idx]->nm)+"\" is the record dimension. It must be the first dimension in a list***");
+        goto end_LHS_sbs;                     
+      } /* endif */
+  }
   /* Create template variable to cast all RHS expressions */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
   
