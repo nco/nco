@@ -1,3 +1,12 @@
+2014-10-31  Henry Butowsky  <henryb@hush.com>
+	* defdim() -new accepts an additional optional arg that
+	  specifies weather the dim is to be "limited" or "unlimited"
+	  If the arg is omited then it defaults to "limited"
+	* usage:
+	  defdim("time,10,UNLIMITED);
+	  defdim("cent",100,LIMITED);
+	  defdim("odds",3);
+	
 2014-12-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.8 release procedure:
