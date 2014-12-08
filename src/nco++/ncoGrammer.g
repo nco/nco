@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.207 2014-06-15 21:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.208 2014-12-08 16:07:31 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -99,7 +99,8 @@ statement:
         }
         
         //Define Dim statement
-        | DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI!
+        | DEFDIM^ LPAREN! NSTRING COMMA! expr (COMMA! VAR_ID)?  RPAREN! SEMI!
+        // | DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI!
         // while loop
         | WHILE^ LPAREN! expr RPAREN! statement 
         // for statement
@@ -309,10 +310,13 @@ tokens {
     CONTINUE="continue";
     WHILE="while";    
     FOR="for";
-
+   
     PRINT="print";  
  
     /*
+    LIMITED="LIMITED";
+    UNLIMITED="UNLIMITED";
+
     RAM_DELETE="ram_delete";
     RAM_WRITE="ram_write";
     SET_MISS="set_miss";
@@ -1173,16 +1177,30 @@ static std::vector<std::string> lpp_vtr;
     | CONTINUE {iret=CONTINUE;} 
     | NULL_NODE { iret=NULL_NODE; }
    
-    |#(DEFDIM def:NSTRING  var=out){
-            
-        long sz;
-        var=nco_var_cnf_typ((nc_type)NC_INT64,var);
-        iret=DEFDIM;
+    |#(DEFDIM def:NSTRING  var=out (lim_type:.)?){
 
+        bool bunlimited=false;  
+        long sz;
+         
+        iret=DEFDIM;
+ 
+        var=nco_var_cnf_typ((nc_type)NC_INT64,var);
         (void)cast_void_nctype((nc_type)NC_INT64,&var->val);
         sz=var->val.i64p[0];
         var=(var_sct*)nco_var_free(var);
-        (void)ncap_def_dim(def->getText(),sz,prs_arg);
+
+
+        if( lim_type != ANTLR_USE_NAMESPACE(antlr)nullAST ){
+           if( lim_type->getText() == "LIMITED")
+              bunlimited=false;
+           else if( lim_type->getText() == "UNLIMITED" )  
+              bunlimited=true;
+           else    
+              err_prn(fnc_nm,"defdim for "+ def->getText() + ". Third argument argument must be \"LIMITED\" or \"UNLIMITED\" or void"); 
+
+        } 
+
+        (void)ncap_def_dim(def->getText(),sz,bunlimited,prs_arg);
      }
 
     // All the following functions have iret=0
@@ -1191,6 +1209,7 @@ static std::vector<std::string> lpp_vtr;
           int var_id;
           int fl_id=-1;
           char *fmt_sng;
+         
           std::string va_nm(pvid->getText());
           NcapVar *Nvar;
           
@@ -1573,11 +1592,14 @@ var=NULL_CEWI;
                if(!Nvar || ( Nvar && Nvar->flg_stt==1)){              
                   // if var isn't in ouptut then copy it there
                  //rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
+                 
                  var_lhs=prs_arg->ncap_var_init(var_nm,true);
 
                  // copy atts to output
                  (void)ncap_att_cpy(var_nm,var_nm,prs_arg);
                  (void)prs_arg->ncap_var_write(var_lhs,false);
+
+                 wrn_prn(fnc_nm,"Var being read and written in ASSIGN "+ var_nm); 
                }
  
                // Get "new" var_id   
@@ -2206,6 +2228,9 @@ out_asn returns [var_sct *var]
 {
 const std::string fnc_nm("assign_asn");
 var=NULL_CEWI; 
+string var_nm_s; 
+NcapVar *Nvar;
+   
 }
 
    : #(UTIMES vid1:VAR_ID)
@@ -2213,7 +2238,14 @@ var=NULL_CEWI;
           if(vid1->getFirstChild())
                err_prn(fnc_nm,"Invalid Lvalue " +vid1->getText() );
 
-          var=prs_arg->ncap_var_init(vid1->getText(),true);
+          //do attribute inheritance 
+          var_nm_s=vid1->getText(); 
+ 
+          Nvar=prs_arg->var_vtr.find(var_nm_s);
+          if( !Nvar || Nvar->flg_stt==1 ) 
+               ncap_att_cpy(var_nm_s,var_nm_s,prs_arg);
+  
+          var=prs_arg->ncap_var_init(var_nm_s,true);
           if(var== NULL_CEWI){
                nco_exit(EXIT_FAILURE);
           }
@@ -2221,10 +2253,19 @@ var=NULL_CEWI;
         }
 	|   vid:VAR_ID       
         { 
+          var_nm_s=vid->getText();  
+          wrn_prn(fnc_nm,"Entered out_asn: var_nm="+var_nm_s+"\n" );   
           if(vid->getFirstChild())
                err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
 
-          var=prs_arg->ncap_var_init(vid->getText(),true);
+          //do attribute inheritance
+
+          Nvar=prs_arg->var_vtr.find(var_nm_s);
+
+          if( !Nvar || Nvar->flg_stt==1 ) 
+               ncap_att_cpy(var_nm_s,var_nm_s,prs_arg);
+
+          var=prs_arg->ncap_var_init(var_nm_s,true);
           if(var== NULL_CEWI){
                nco_exit(EXIT_FAILURE);
           }
@@ -2418,7 +2459,7 @@ var=NULL_CEWI;
 ;
 
 //where calculate 
-where_assign [var_sct *var_msk] returns [bool bret]
+where_assign [var_sct *var_msk] returns [bool bret=false]
 {
 const std::string fnc_nm("where_assign");
 var_sct *var_rhs;
