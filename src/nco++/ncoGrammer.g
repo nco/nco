@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.208 2014-12-08 16:07:31 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.209 2014-12-08 18:50:43 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1190,7 +1190,8 @@ static std::vector<std::string> lpp_vtr;
         var=(var_sct*)nco_var_free(var);
 
 
-        if( lim_type != ANTLR_USE_NAMESPACE(antlr)nullAST ){
+        // if( lim_type != ANTLR_USE_NAMESPACE(antlr)nullAST ){
+        if( lim_type != nullAST ){
            if( lim_type->getText() == "LIMITED")
               bunlimited=false;
            else if( lim_type->getText() == "UNLIMITED" )  
