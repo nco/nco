@@ -1,5 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.21 2014-06-15 21:06:24 zender Exp $ */
-
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.22 2014-12-08 16:05:06 hmb Exp $ */
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
 /* Copyright (C) 1995--2014 Charlie Zender
@@ -107,6 +106,13 @@ var_sct *      /* initialize var to defaults & undefined to true */
 ncap_var_udf
 (const char *var_nm);
  
+
+int 
+ncap_att_cpy_sct
+(var_sct *var1,
+ var_sct *var2,
+ prs_cls  *prs_arg);
+
 int             
 ncap_att_cpy
 (const std::string s_dst,
@@ -183,6 +189,7 @@ nco_bool
 ncap_def_dim(
 std::string dmn_nm,
 long sz,
+bool ltype,
 prs_cls *prs_arg);
 
 nco_bool /* O [flg] Variables now conform */
