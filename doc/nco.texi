@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1050 2014-12-01 20:51:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1051 2014-12-09 00:00:52 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -9226,7 +9226,9 @@ RDM2=RDM <<  90s  // 1, 9, 36, 84, 90, 90, 84, 36, 9, 1 int
 @cindex @code{defdim()}
 Dimensions are defined in Output using the @code{defdim()} function.
 @example
-defdim("cnt",10);
+defdim("cnt",10); # Dimension is fixed by default
+defdim("cnt",10,LIMITED); # Dimension is fixed
+defdim("cnt",10,UNLIMITED); # Dimension is unlimited (record dimension)
 @end example
 
 This dimension name must then be prefixed with a dollar-sign @samp{$}
