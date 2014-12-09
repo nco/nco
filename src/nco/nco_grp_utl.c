@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1482 2014-12-03 00:24:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1483 2014-12-09 05:47:37 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -266,7 +266,7 @@ nco_prn_grp_nm_fll                    /* [fnc] Debug function to print group ful
   (void)nco_inq_grpname_full(grp_id,&grp_nm_lng,NULL);
   grp_nm_fll=(char*)nco_malloc(grp_nm_lng+1L);
   (void)nco_inq_grpname_full(grp_id,&grp_nm_lng,grp_nm_fll);
-  (void)fprintf(stdout,"<%s>",grp_nm_fll);
+  (void)fprintf(stdout,"%s",grp_nm_fll);
   grp_nm_fll=(char*)nco_free(grp_nm_fll);
 #endif
 } /* nco_prn_grp_nm_fll() */
@@ -1909,13 +1909,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
         /* Get output group ID */
         (void)nco_inq_grp_full_ncid(nc_id_out,grp_out_fll,&grp_id_out);
 
-        if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s writing variable <%s> from ",nco_prg_nm_get(),fnc_nm,trv.nm_fll);        
-          (void)nco_prn_grp_nm_fll(grp_id_in);
-          (void)fprintf(stdout," to ");   
-          (void)nco_prn_grp_nm_fll(grp_id_out);
-          (void)fprintf(stdout,"\n");
-        } /* endif dbg */
+        //if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s writing variable %s from %s to %s\n",nco_prg_nm_get(),fnc_nm,trv.nm_fll,nco_prn_grp_nm_fll(grp_id_in),nco_prn_grp_nm_fll(grp_id_out));
 
         /* Copy variable data from input netCDF file to output netCDF file */
         (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,fp_bnr,md5,&trv); 
@@ -3541,7 +3535,7 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy fixed variables from input t
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.enm_prc_typ == fix_typ){
      
       /* If variable is an ensemble member, do not create it in the same location as input */
-      if (var_trv.flg_nsm_mbr == True){
+      if(var_trv.flg_nsm_mbr == True){
         assert(nco_prg_id_get() == ncge);
         continue;
       }
@@ -3758,9 +3752,9 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   }else{ /* !flg_dfn */
     /* Write mode */
 
-    md5_sct *md5=NULL; /* [sct] MD5 configuration */
-
     int has_mss_val; /* [flg] Variable has missing value */
+
+    md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
     ptr_unn mss_val; /* [sct] Missing value */
 
@@ -9927,13 +9921,10 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
         has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,flg_tbl_1,flg_grp_1,trv_tbl_1,trv_tbl_2,flg_dfn);
 
         /* Match not found in file 2, copy instead object from file 1 as fixed to output */
-        if(!has_mch){
-          (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
-        }
+        if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
       } /* Object exists and is flagged for extraction only in file 1 */
     }/* Process objects in list */
-
 
     /* File 2 "larger" (typically model file) (e.g ncbo -O obs.nc cmip5.nc out.nc ) */
   } else if (flg_grt_1 == False) { 
@@ -9969,16 +9960,13 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
         has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,flg_tbl_1,flg_grp_1,trv_tbl_1,trv_tbl_2,flg_dfn);
 
         /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-        if(!has_mch){
-          (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
-        }
+        if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
       } /* Object exists and is flagged for extraction only in file 2 */
     } /* Process objects in list */
   } /* File 2 "larger" (typically model file) (e.g ncbo -O obs.nc cmip5.nc out.nc ) */
 
 } /* nco_prc_rel_cmn_nm() */
-
 
 void                  
 nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */                                

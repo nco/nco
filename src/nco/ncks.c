@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.741 2014-11-05 23:39:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.742 2014-12-09 05:47:37 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -183,8 +183,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.741 2014-11-05 23:39:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.741 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.742 2014-12-09 05:47:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.742 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -224,6 +224,7 @@ main(int argc,char **argv)
   int idx;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int lsd=0; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -339,6 +340,8 @@ main(int argc,char **argv)
       {"no_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
+      {"lsd",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+      {"least_significant_digit",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"tst_udunits",required_argument,0,0},
@@ -521,6 +524,11 @@ main(int argc,char **argv)
         (void)nco_lbr_vrs_prn();
         nco_exit(EXIT_SUCCESS);
       } /* endif "lbr" */
+      if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
+        lsd=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	lsd+=0; /* CEWI */
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      } /* endif "hdr_pad" */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"mpi_implementation")){
         (void)fprintf(stdout,"%s\n",nco_mpi_get());

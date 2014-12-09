@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.70 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.71 2014-12-09 05:47:38 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -103,6 +103,122 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
      because we have only operated on local copies of them. */
   
 } /* end nco_var_abs() */
+
+void
+nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal precision prc */
+(const int lsd, /* I [nbr] Least significant digit, aka negative log_10 of desired precision */
+ const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] Size (in elements) of operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ ptr_unn op1) /* I [val] Values of first operand */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+
+  /* Purpose: Replace op1 values by their values rounded to decimal precision lsd
+     Similar to numpy.around() function, hence the name around()
+     Based on implementation by Jeff Whitaker for netcdf4-python described here:
+     http://netcdf4-python.googlecode.com/svn/trunk/docs/netCDF4-module.html
+     
+     Test routine:
+     ncap2 -O -v -s 'lsd=2;lsd_abs=abs(lsd);bit_nbr_xct=lsd_abs*ln(10.)/ln(2.);bit_nbr_int=ceil(bit_nbr_xct);scale=pow(2.0,bit_nbr_int);' ~/nco/data/in.nc ~/foo.nc 
+     ncks -H ~/foo.nc */
+  
+  /* Rounding is currently defined as op1:=around(op1,lsd) */  
+  
+  double scale; /* [frc] Number by which to scale data to achieve rounding */
+
+  int bit_nbr; /* [nbr] Number of bits required to exceed pow(10,-lsd) */
+  int lsd_abs; /* [nbr] Absolute value of precision */
+
+  long idx;
+  
+  if(lsd == 0) return;
+  lsd_abs=abs(lsd);
+  switch(lsd_abs){
+  case 0:
+    bit_nbr=0;
+    scale=1.0;
+    break;
+  case 1:
+    bit_nbr=4;
+    scale=16.0;
+    break;
+  case 2:
+    bit_nbr=7;
+    scale=128.0;
+    break;
+  case 3:
+    bit_nbr=10;
+    scale=1024.0;
+    break;
+  case 4:
+    bit_nbr=14;
+    scale=16384.0;
+    break;
+  case 5:
+    bit_nbr=17;
+    scale=131072.0;
+    break;
+  case 6:
+    bit_nbr=20;
+    scale=1048576.0;
+    break;
+  default:
+    /* Use constants defined in math.h */
+    assert(lsd_abs < 15);
+    const double ln10_dvd_ln2=M_LN10/M_LN2;
+    bit_nbr=ceil(lsd_abs*ln10_dvd_ln2);
+    scale=pow(2.0,bit_nbr);
+    break;
+  } /* end switch */   
+  if(lsd < 0) scale=1.0/scale;
+
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT: 
+    /* Do float arithmetic in double precision before converting back to float (fxm: unless --flt?) */
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) op1.fp[idx]=(float)lrint(scale*op1.fp[idx])/scale; /* Coerce to avoid implicit conversions warning */
+    }else{
+      const float mss_val_flt=*mss_val.fp;
+      for(idx=0;idx<sz;idx++){
+	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(float)lrint(scale*op1.fp[idx])/scale; /* Coerce to avoid implicit conversions warning */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_DOUBLE: 
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) op1.dp[idx]=lrint(scale*op1.dp[idx])/scale;
+    }else{
+      const float mss_val_dbl=*mss_val.dp;
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=lrint(scale*op1.dp[idx])/scale;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT: /* Do nothing for non-floating point types ...*/
+  case NC_SHORT:
+  case NC_CHAR:
+  case NC_BYTE:
+  case NC_UBYTE:
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_INT64:
+  case NC_UINT64:
+  case NC_STRING: break;
+  default: 
+    nco_dfl_case_nc_type_err();
+    break;
+  } /* end switch */
+
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end nco_var_around() */
 
 void
 nco_var_add /* [fnc] Add first operand to second operand */

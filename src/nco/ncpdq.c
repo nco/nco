@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.406 2014-11-05 23:39:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.407 2014-12-09 05:47:38 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.406 2014-11-05 23:39:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.406 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.407 2014-12-09 05:47:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.407 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -183,6 +183,7 @@ main(int argc,char **argv)
   int idx_rdr=int_CEWI;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int lsd=0; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
   int nbr_dmn_xtr;
@@ -274,6 +275,8 @@ main(int argc,char **argv)
       {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
+      {"lsd",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+      {"least_significant_digit",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -400,6 +403,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* endif "hdr_pad" */
+      if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
+        lsd=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
       } /* endif "hdr_pad" */
       if(!strcmp(opt_crr,"mrd") || !strcmp(opt_crr,"multiple_record_dimension")) nco_mrd_cnv=nco_mrd_allow; /* [enm] Multiple Record Dimension convention */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -651,13 +658,8 @@ main(int argc,char **argv)
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   } /* end loop over extracted dimensions */
 
-  /* If re-ordering */
-  if(IS_REORDER){
-
-    /* Create list of dimensions to average(ncwa)/re-order(ncpdq) */
-    (void)nco_dmn_avg_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr_in,flg_dmn_prc_usr_spc,False,trv_tbl,&dmn_rdr,&dmn_rdr_nbr);
-
-  } /* If re-ordering */
+  /* Create list of dimensions to average(ncwa)/re-order(ncpdq) */
+  if(IS_REORDER) (void)nco_dmn_avg_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr_in,flg_dmn_prc_usr_spc,False,trv_tbl,&dmn_rdr,&dmn_rdr_nbr);
 
   /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
@@ -723,7 +725,7 @@ main(int argc,char **argv)
     (void)nco_var_typ_trv(nbr_var_prc,var_prc_out,trv_tbl);    
   } /* nco_pck_plc == nco_pck_plc_nil */
 
-  /* Define dimensions, extracted groups, variables, and attributes in output file. NOTE. record name is NULL */
+  /* Define dimensions, extracted groups, variables, and attributes in output file. NB: record name is NULL */
   (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,False,nco_pck_plc,(char *)NULL,trv_tbl);
 
   /* Catenate time-stamped command line to "history" global attribute */
@@ -833,6 +835,8 @@ main(int argc,char **argv)
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif nco_pck_plc != nco_pck_plc_nil */
 
+      if(lsd != 0 && (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)nco_var_around(lsd,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
+
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
@@ -924,10 +928,10 @@ main(int argc,char **argv)
   if(flg_cln){
     /* ncpdq-specific memory cleanup */
     if(dmn_rdr_nbr > 0){
-      if(dmn_rdr_nbr_in > 0) {
+      if(dmn_rdr_nbr_in > 0){
         dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
         dmn_rdr_lst_in_rvr=nco_sng_lst_free(dmn_rdr_lst_in_rvr,dmn_rdr_nbr_in);
-      }
+      } /* endif */
       /* Free dimension list pointers */
       dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
       /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */

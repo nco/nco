@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.267 2014-10-02 01:04:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.268 2014-12-09 05:47:38 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1328,8 +1328,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 	  dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
 	  dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
 	} /* nbr_dim != 1 */
-	// Following line would be correct were an adequately sized phony dimension declared and ready to accept this many characters
-	// dmn_map_cnt[0]=var_out.sz;
+	/* Following line would be correct were an adequately sized phony dimension declared and ready to accept this many characters */
+	/* dmn_map_cnt[0]=var_out.sz; */
 	dmn_map_cnt[0]=1L;
 	dmn_map_srt[0]=0L;
 	(void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.sngp[0],var_typ_out);
@@ -1345,6 +1345,18 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   /* Write */
   if(flg_write){
+    /* 20141208 LSD fxm */
+    int lsd=0; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+    /* File format needed to enable netCDF4 features */
+    (void)nco_inq_format(out_id,&fl_fmt);
+    if(lsd != 0 && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
+      /* fxm: first get correct values for has_mss_val and mss_val */
+      var_out.type=var_typ_out;
+      var_out.id=var_out_id;
+      nco_mss_val_get(out_id,&var_out);
+      (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+    } /* endif */
+
     if(nbr_dim == 0) (void)nco_put_var1(out_id,var_out_id,0L,var_out.val.vp,var_typ_out); else (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp,var_typ_out);
   } /* !flg_write */
 
@@ -1422,7 +1434,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
 
         if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
 
-        /* Alloc 1 dummy limit */
+        /* Allocate one dummy limit */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=1;
         (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
@@ -1438,8 +1450,8 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       } /* Make a limit to read all */
     } /* If there are limits for this variable dimension, get MSA from table */
 
-    /* This dimension does not has a coordinate variable, it must have a unique dimension pointer */
-    else if (var_trv->var_dmn[dmn_idx_var].is_crd_var == False){
+    /* This dimension does not have a coordinate variable, it must have a unique dimension pointer */
+    else if(var_trv->var_dmn[dmn_idx_var].is_crd_var == False){
 
       /* Get number of limits */
       int lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.lmt_dmn_nbr;
