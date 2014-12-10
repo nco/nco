@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.209 2014-12-08 18:50:43 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.210 2014-12-10 13:51:04 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -98,8 +98,8 @@ statement:
             #statement = #(#[EXPR,"EXPR"],#statement); 
         }
         
-        //Define Dim statement
-        | DEFDIM^ LPAREN! NSTRING COMMA! expr (COMMA! VAR_ID)?  RPAREN! SEMI!
+        //Define Dim statement -first expr size, second expr dim type 0 or 1
+        | DEFDIM^ LPAREN! NSTRING COMMA! expr (COMMA! expr)?  RPAREN! SEMI!
         // | DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI!
         // while loop
         | WHILE^ LPAREN! expr RPAREN! statement 
@@ -973,7 +973,8 @@ lmt_peek returns [int nbr_dmn=0]
 
 statements returns [int iret=0] 
 {
-var_sct *var;
+var_sct *var=NULL;
+var_sct *var2=NULL;
 const std::string fnc_nm("statements");
 // list of while/for loops entered n.b depth is lpp_vtr.size()
 // Temporary fix so call run_exe only does a single parse in the
@@ -1177,7 +1178,8 @@ static std::vector<std::string> lpp_vtr;
     | CONTINUE {iret=CONTINUE;} 
     | NULL_NODE { iret=NULL_NODE; }
    
-    |#(DEFDIM def:NSTRING  var=out (lim_type:.)?){
+
+    |#(DEFDIM def:NSTRING  var=out (var2=out)? ){
 
         bool bunlimited=false;  
         long sz;
@@ -1189,15 +1191,21 @@ static std::vector<std::string> lpp_vtr;
         sz=var->val.i64p[0];
         var=(var_sct*)nco_var_free(var);
 
+        if(var2){
+           int ityp;
+           // nb var2 is in upper scope - defined at statment action start
+           var2=nco_var_cnf_typ(NC_INT,var2);
+           (void)cast_void_nctype(NC_INT,&var2->val);
+           ityp=var2->val.ip[0]; 
+           (void)cast_nctype_void(NC_INT,&var2->val);
+           var2=nco_var_free(var2);
 
-        // if( lim_type != ANTLR_USE_NAMESPACE(antlr)nullAST ){
-        if( lim_type != nullAST ){
-           if( lim_type->getText() == "LIMITED")
-              bunlimited=false;
-           else if( lim_type->getText() == "UNLIMITED" )  
+           if( ityp==0)
               bunlimited=true;
+           else if( ityp==1 )  
+              bunlimited=false;
            else    
-              err_prn(fnc_nm,"defdim for "+ def->getText() + ". Third argument argument must be \"LIMITED\" or \"UNLIMITED\" or void"); 
+              err_prn(fnc_nm,"defdim for "+ def->getText() + ". Third argument must be 0 for \"UNLIMITED\" or 1 for \"LIMITED\" or void"); 
 
         } 
 
@@ -2255,7 +2263,6 @@ NcapVar *Nvar;
 	|   vid:VAR_ID       
         { 
           var_nm_s=vid->getText();  
-          wrn_prn(fnc_nm,"Entered out_asn: var_nm="+var_nm_s+"\n" );   
           if(vid->getFirstChild())
                err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
 
