@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.210 2014-12-10 13:51:04 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.211 2014-12-11 14:36:22 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -78,6 +78,7 @@ tokens {
     VRSORT;     // reverse sort only used outside of grammer to sort in VarOp 
     VABS;      // imaginary token used in VarOp to return absolute value 
     VSQR2;     // imaginary token used in VarOp to return square of number 
+    DEFDIM;
 }
 {
 
@@ -98,9 +99,14 @@ statement:
             #statement = #(#[EXPR,"EXPR"],#statement); 
         }
         
-        //Define Dim statement -first expr size, second expr dim type 0 or 1
-        | DEFDIM^ LPAREN! NSTRING COMMA! expr (COMMA! expr)?  RPAREN! SEMI!
-        // | DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI!
+        // Define DEFDIM statment 
+        // DEFDIMA (regular call - limited or unlimited ) DEFDIM(1)
+        // DEFDIMU (explicitly unlimited)                 DEFDIM(0)
+        | (def1:DEFDIMA^ |def2:DEFDIMU^  ) LPAREN! NSTRING COMMA! expr (COMMA! expr)?  RPAREN! SEMI! { 
+             if( #def1 ){  #def1->setType(DEFDIM);#def1->setText("1");}
+             if( #def2 ){  #def2->setType(DEFDIM);#def2->setText("0");}
+ 
+        }
         // while loop
         | WHILE^ LPAREN! expr RPAREN! statement 
         // for statement
@@ -302,7 +308,6 @@ tokens {
     ELSE="else";
     WHERE="where";
     ELSEWHERE="elsewhere";
-    DEFDIM="defdim";
     SHIFTL="<<";
     SHIFTR=">>";
 
@@ -312,8 +317,12 @@ tokens {
     FOR="for";
    
     PRINT="print";  
+    DEFDIMA="defdim";
+    DEFDIMU="defdimunlim";
  
     /*
+
+
     LIMITED="LIMITED";
     UNLIMITED="UNLIMITED";
 
@@ -515,6 +524,7 @@ NUMBER:
     )?        
 ;
 
+
 // Return var or att (var_nm@att_nm)
 VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribute identifier"; } 
      :  (LPH)(LPH|DGT)*   
@@ -552,6 +562,7 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribut
            }  
            ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
 ;
+
 
 // Return a quoted var or att (var_nm@att_nm)
 VAR_ATT_QT :( '\''!)
@@ -1177,13 +1188,17 @@ static std::vector<std::string> lpp_vtr;
     | BREAK { iret=BREAK;}
     | CONTINUE {iret=CONTINUE;} 
     | NULL_NODE { iret=NULL_NODE; }
-   
 
-    |#(DEFDIM def:NSTRING  var=out (var2=out)? ){
+    |#(dtyp:DEFDIM def:NSTRING  var=out (var2=out)? ){
 
-        bool bunlimited=false;  
+        bool bunlimited=false;      
+        int ityp;  
+        int dCall;  
         long sz;
          
+        // 0 - specific - UNLIMITED    
+        // 1 - regular LIMITED or UNLIMITED
+        dCall=atoi(dtyp->getText().c_str());    
         iret=DEFDIM;
  
         var=nco_var_cnf_typ((nc_type)NC_INT64,var);
@@ -1191,7 +1206,10 @@ static std::vector<std::string> lpp_vtr;
         sz=var->val.i64p[0];
         var=(var_sct*)nco_var_free(var);
 
-        if(var2){
+        if( dCall==0 ){ 
+          bunlimited =true;
+        } else    
+        if(dCall==1 && var2){
            int ityp;
            // nb var2 is in upper scope - defined at statment action start
            var2=nco_var_cnf_typ(NC_INT,var2);
