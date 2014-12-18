@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.376 2014-11-05 23:39:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.377 2014-12-18 18:56:46 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.376 2014-11-05 23:39:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.376 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.377 2014-12-18 18:56:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.377 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -949,7 +949,7 @@ main(int argc,char **argv)
       /* Free traversal table */
       trv_tbl_free(trv_tbl);
       for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
-      if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
+      if(flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     } /* RECORD_AGGREGATE */
   } /* !flg_cln */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.407 2014-12-09 05:47:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.408 2014-12-18 18:56:47 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.407 2014-12-09 05:47:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.407 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.408 2014-12-18 18:56:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.408 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -981,7 +981,7 @@ main(int argc,char **argv)
     var_fix_out=(var_sct **)nco_free(var_fix_out);
     trv_tbl_free(trv_tbl); 
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
-    if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
+    if(flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
   } /* !flg_cln */
 

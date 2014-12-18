@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.744 2014-12-01 20:51:39 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.745 2014-12-18 18:56:34 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -21,7 +21,7 @@
 # glace.ess.uci.edu  : NCO          Configure All else GCC
 # grele.ess.uci.edu  : NCO          Makefile  All else GCC
 # tephra.ess.uci.edu : NCO          Makefile  All else
-# yellowstone.ucar.e : NCO          Makefile  All else Intel
+# yellowstone.ucar.e : -            Makefile  All else Intel
 # rhea.ccs.ornl.gov  : NCO          Makefile  All else 
 
 # Usage (testing):

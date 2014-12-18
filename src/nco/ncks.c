@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.742 2014-12-09 05:47:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.743 2014-12-18 18:56:46 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -183,8 +183,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.742 2014-12-09 05:47:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.742 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.743 2014-12-18 18:56:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.743 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1112,7 +1112,7 @@ close_and_free:
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     trv_tbl_free(trv_tbl);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
-    if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
+    if(flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
     if(smr_sng) smr_sng=(char *)nco_free(smr_sng);

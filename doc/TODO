@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1270 2014-12-09 00:00:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1271 2014-12-18 18:56:45 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -653,7 +653,7 @@ nco1109. broadcast degenerate dimensions in nco_var_cnf_dmn()/ncap_var_cnf_dmn()
 nco1110. ncap2: allow type specification as per christine smit (GSFC) request 20140407
 nco1111. ncrcat/ncecat check consistency of packing attributes across files (requested by ocehugo 20140522)
 nco1112. nco: nintap double iterator rqs by dave allured 20140813
-nco1113. nco: rsp parker norton help srd slowdown issue help 20140718
+nco1113. nco: rsp parker norton help srd slowdown issue help 20140718 completely fixed 201411
       Slowdown occurs only when using srd
       time ncks -O ~/ET_2000-01_2001-12.nc ~/foo.nc # works 1m38s
       time ncks -O -d time,0 ~/ET_2000-01_2001-12.nc ~/foo.nc # works 0m03s
@@ -661,8 +661,9 @@ nco1113. nco: rsp parker norton help srd slowdown issue help 20140718
       time ncks -O -L 0 -d time,0,0,12 ~/ET_2000-01_2001-12.nc ~/foo.nc # borken after 6m13s, numerous HDF Errors
       time ncks -O -d time,0,,12 ~/ET_2000-01_2001-12.nc ~/foo.nc # borken after 6m13s, numerous HDF Errors
 nco1114. ncrcat fails when single record dimension is not first dimension
-nco1115. nco --lsd least significant digit rich signell 
-nco1116. 
+nco1115. --lsd least significant digit rich signell 
+nco1116. --add_bnds for creating bounds variables
+nco1117. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

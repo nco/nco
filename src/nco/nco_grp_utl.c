@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1483 2014-12-09 05:47:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1484 2014-12-18 18:56:47 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9244,7 +9244,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   (void)nco_nsm_att(nc_id_2,trv_tbl_2,&flg_nsm_att_2,&nsm_grp_nm_fll_prn_2);
 
   /* There is a variable with same absolute path in both files. Do them and return */
-  if (flg_cmn_abs){
+  if(flg_cmn_abs){
 
     /* Process common variables (same path in both files) */
     (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
@@ -9258,7 +9258,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   if(trv_tbl_2->nsm_nbr) flg_nsm_fl_2=True; else flg_nsm_fl_2=False;
 
   /* There are ensembles somewhere */
-  if (flg_nsm_fl_1 == True || flg_nsm_fl_2 == True){
+  if(flg_nsm_fl_1 == True || flg_nsm_fl_2 == True){
 
     /* File 1 has ensembles */
     if(flg_nsm_fl_1 == True){
@@ -9277,7 +9277,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         }
 
         /* File 2 has ensembles in "special" places , defined in attributes */
-        if (flg_nsm_att_2){
+        if(flg_nsm_att_2){
 
           if(nco_dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s ensemble names read from attributes from file 2\n",nco_prg_nm_get(),fnc_nm);
@@ -9314,7 +9314,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         (void)nco_cmn_nsm_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_1,trv_tbl_2);
 
         /* Common variables at root */
-        if (flg_var_cmn_rth){
+        if(flg_var_cmn_rth){
 
           /* file 2 has a common object at root  */
           /* ncbo -O mdl_1.nc obs.nc out.nc */
@@ -9326,7 +9326,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
 
           /* Common variables not at root */
-        } else if (flg_var_cmn){
+        } else if(flg_var_cmn){
 
           /* Use table 1 as template for group creation */
           flg_grp_1=True;
@@ -9359,7 +9359,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         (void)nco_cmn_nsm_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_2,trv_tbl_1);
 
          /* Common variables at root */
-        if (flg_var_cmn_rth){
+        if(flg_var_cmn_rth){
 
           /* file 1 has a common object at root  */
           /* ncbo -O obs.nc mdl_1.nc  out.nc */
@@ -9371,7 +9371,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
 
           /* Common variables not at root */
-        } else if (flg_var_cmn){
+        } else if(flg_var_cmn){
 
           /* file 1 has a common object not at root  */
           /* ncra  -Y ncge -O mdl_3.nc ncge_out.nc 
@@ -9395,7 +9395,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   } /* There are ensembles somewhere */
 
   /* There are NOT ensembles anywhere, but there are relative matches */
-  if (flg_nsm_fl_1 == False && flg_nsm_fl_2 == False && flg_cmn_rel == True){
+  if(flg_nsm_fl_1 == False && flg_nsm_fl_2 == False && flg_cmn_rel == True){
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Processing relative matches\n",nco_prg_nm_get(),fnc_nm);
 
@@ -9456,7 +9456,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
   trv_sct *trv_1;    /* [sct] Table object */
   trv_sct *trv_2;    /* [sct] Table object */
 
-  if (flg_grp_1 == True){
+  if(flg_grp_1 == True){
 
     if(nco_dbg_lvl_get() >= nco_dbg_var){
       (void)fprintf(stdout,"%s: Processing ensembles from file 1\n",nco_prg_nm_get());
@@ -9537,7 +9537,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
       } /* Loop group members */
     } /* Loop ensembles */
 
-  } else if (flg_grp_1 == False) {
+  } else if(flg_grp_1 == False) {
 
 
 
@@ -9570,7 +9570,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
   trv_sct *trv_2;    /* [sct] Table object */
 
   /* Using table 1 as template */
-  if (flg_grp_1 == True){
+  if(flg_grp_1 == True){
 
     if(nco_dbg_lvl_get() >= nco_dbg_var){
       (void)fprintf(stdout,"%s: Processing ensembles from table 1\n",nco_prg_nm_get());
@@ -9658,7 +9658,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
 
     /* Using table 2 as template; same logic looping table 2 */
 
-  } else if (flg_grp_1 == False){
+  } else if(flg_grp_1 == False){
 
     if(nco_dbg_lvl_get() >= nco_dbg_var){
       (void)fprintf(stdout,"%s: Processing ensembles from table 2\n",nco_prg_nm_get());
@@ -9927,7 +9927,7 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
     }/* Process objects in list */
 
     /* File 2 "larger" (typically model file) (e.g ncbo -O obs.nc cmip5.nc out.nc ) */
-  } else if (flg_grt_1 == False) { 
+  } else if(flg_grt_1 == False) { 
 
     /* Process objects in list */
     for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++){
@@ -10127,7 +10127,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
               }
 
               /* No hyperslab, compare dimension */
-              if (flg_has_lmt == False){
+              if(flg_has_lmt == False){
                 lmn_cnt*=dmn_sz;
                 /* Compare sizes */
                 if (dmn_sz != (long)tpl_sz){
