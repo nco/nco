@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.100 2014-09-19 20:38:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.101 2014-12-18 18:58:38 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -990,9 +990,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
   /* Packing attributes now exist and are same type as variable in memory */
 
   /* Apply scale_factor and add_offset to reduce variable size
-     add_offset and scale_factor are always scalars so use var_scv_* functions
-     var_scv_[sub,multiply] functions avoid cost of broadcasting attributes and doing element-by-element operations 
-     Using var_scv_[sub,multiply] instead of ncap_var_scv_[sub,multiply] avoids cost of deep copies
+     add_offset and scale_factor are always scalars so use nco_var_scv_* functions
+     nco_var_scv_[sub,multiply] functions avoid cost of broadcasting attributes and doing element-by-element operations 
+     Using nco_var_scv_[sub,multiply] instead of ncap_var_scv_[sub,multiply] avoids cost of deep copies
      Moreover, this keeps variable structure from changing (because ncap_var_scv_* functions all do deep copies before operations) and thus complicating memory management */
   if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
     nco_bool has_mss_val_tmp; /* [flg] Temporary missing_value flag */
@@ -1004,12 +1004,12 @@ nco_var_pck /* [fnc] Pack variable in memory */
     (void)nco_scv_cnf_typ(var->type,&add_fst_scv);
     /* Pass temporary missing_value flag to accomodate pure missing_value fields */
     has_mss_val_tmp=var->has_mss_val;
-    /* Dupe var_scv_sub() into subtracting missing values when all values are missing */
+    /* Dupe nco_var_scv_sub() into subtracting missing values when all values are missing */
     if(PURE_MSS_VAL_FLD){
       has_mss_val_tmp=False;
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports variable %s is filled completely with %s = %g. Why do you store variables with no valid values?\n",nco_prg_nm_get(),fnc_nm,var->nm,nco_mss_val_sng_get(),add_fst_dbl);
     } /* !PURE_MSS_VAL_FLD */
-    (void)var_scv_sub(var->type,var->sz,has_mss_val_tmp,var->mss_val,var->val,&add_fst_scv);
+    (void)nco_var_scv_sub(var->type,var->sz,has_mss_val_tmp,var->mss_val,var->val,&add_fst_scv);
   } /* endif */
 
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
@@ -1018,7 +1018,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     scl_fct_scv.type=NC_DOUBLE;
     scl_fct_scv.val.d=scl_fct_dbl;
     (void)nco_scv_cnf_typ(var->type,&scl_fct_scv);
-    if(scl_fct_dbl != 0.0) (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
+    if(scl_fct_dbl != 0.0) (void)nco_var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
   } /* endif */
 
   if(!var->has_scl_fct && !var->has_add_fst){
@@ -1097,7 +1097,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
       /* Convert var to type of scale_factor for expansion */
       var=nco_var_cnf_typ(scl_fct_scv.type,var);
       /* Multiply var by scale_factor */
-      (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
+      (void)nco_var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
     } /* endif has_scl_fct */
     
     if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
@@ -1108,7 +1108,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
       /* Convert var to type of scale_factor for expansion */
       var=nco_var_cnf_typ(add_fst_scv.type,var);
       /* Add add_offset to var */
-      (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
+      (void)nco_var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
     } /* endif has_add_fst */
 
   }else{ /* !netCDF_unpack_convention */
@@ -1122,7 +1122,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
       /* Convert var to type of scale_factor for expansion */
       var=nco_var_cnf_typ(add_fst_scv.type,var);
       /* Subtract add_offset from var */
-      (void)var_scv_sub(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
+      (void)nco_var_scv_sub(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
     } /* endif has_add_fst */
 
     if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
@@ -1133,7 +1133,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
       /* Convert var to type of scale_factor for expansion */
       var=nco_var_cnf_typ(scl_fct_scv.type,var);
       /* Multiply var by scale_factor */
-      (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
+      (void)nco_var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
     } /* endif has_scl_fct */
     
   } /* !netCDF_unpack_convention */

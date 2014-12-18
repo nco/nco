@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.160 2014-09-30 23:03:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.161 2014-12-18 18:58:38 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -602,11 +602,10 @@ ncap_var_scv_add(var_sct *var,scv_sct scv)
   
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var->val.vp == NULL) return var; 
   
-  
-  (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  (void)nco_var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_add() */
 
@@ -617,11 +616,11 @@ ncap_var_scv_sub(var_sct *var,scv_sct scv)
   if(var->undefined) return var;
   
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var->val.vp == NULL) return var; 
   
   (void)ncap_scv_minus(&scv);
-  (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  (void)nco_var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   
   return var;
 } /* end ncap_var_scv_sub() */
@@ -633,12 +632,10 @@ ncap_var_scv_mlt(var_sct *var,scv_sct scv)
   if(var->undefined) return var;
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
-  /* deal with inital scan */
-  if(var->val.vp == NULL) 
-    return var; 
-  
-  
-  (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  /* Deal with inital scan */
+  if(var->val.vp == NULL) return var; 
+    
+  (void)nco_var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_mlt */
 
@@ -648,10 +645,10 @@ ncap_var_scv_dvd(var_sct *var,scv_sct scv)
   /* Purpose: Divide each element of var by value in scv */
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var->val.vp == NULL) return var; 
   
-  (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  (void)nco_var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_dvd */
 
@@ -663,11 +660,10 @@ ncap_scv_var_dvd(scv_sct scv,var_sct *var)
   
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var->val.vp == NULL) return var; 
   
-  
-  (void)scv_var_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
+  (void)nco_scv_var_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
   return var;
 } /* end ncap_scv_var_dvd */
 
@@ -677,12 +673,11 @@ ncap_var_scv_mod(var_sct *var,scv_sct scv)
   /* Purpose: Modulus of each element of var with scv */
   if(var->undefined) return var;
   
-  
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var->val.vp == NULL) return var; 
   
-  (void)var_scv_mod(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  (void)nco_var_scv_mod(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* ncap_var_scv_mod */
 
@@ -694,10 +689,10 @@ ncap_scv_var_mod(scv_sct scv,var_sct *var)
   
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var->val.vp == NULL) return var; 
   
-  (void)scv_var_mod(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
+  (void)nco_scv_var_mod(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
   return var;
 } /* ncap_var_scv_mod */
 
@@ -710,10 +705,10 @@ ncap_var_scv_pwr(var_sct *var,scv_sct scv)
   if(nco_rth_prc_rnk(var->type) < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   (void)nco_scv_cnf_typ(var->type,&scv);
   
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var->val.vp == NULL) return var; 
   
-  (void)var_scv_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  (void)nco_var_scv_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_pwr */
 
@@ -728,10 +723,10 @@ ncap_scv_var_pwr(scv_sct scv,var_sct *var)
   if(nco_rth_prc_rnk(var->type) < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   (void)nco_scv_cnf_typ(var->type,&scv);
   
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var->val.vp == NULL) return var; 
   
-  (void)scv_var_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
+  (void)nco_scv_var_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
   return var;
 } /* end ncap_var_scv_pwr */
 
@@ -741,7 +736,7 @@ ncap_var_abs(var_sct *var)
   /* Purpose: Find absolute value of each element of var */
   if(var->undefined) return var;
   
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var->val.vp == NULL) return var; 
   
   (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);

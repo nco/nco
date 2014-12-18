@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.100 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.101 2014-12-18 18:58:38 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -66,8 +66,6 @@ typedef union nod_typ_tag{ /* Nie02 nodeTypeTag */
   opr_nod_sct opr; /* [sct] Operator structure */
 } nodeType;
 
-
-
 /* Parse structure 
    prs_sct is easy to confuse with yylval since both are passed to lexer
    yylval is union of all possible data types for semantic values
@@ -134,16 +132,13 @@ ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribut
  prs_sct * const prs_arg,  /* I/O [sct] contains attribute list  */
  const nco_bool update); /* I [flg] Delete existing value or add new attribute to list */
 
-
 var_sct *                      /*I [sct] varibale in list */
 ncap_var_lookup
 (var_sct *var,   /* I  [sct] variable  */
  prs_sct *prs_arg,             /* I/O [sct] contains var list */
  const nco_bool add);              /* I if not in list then add to list */          
 
-
 void nco_var_free_wrp(var_sct **);
-
 
 nodeType * /* O [unn] Syntax tree node */
 opr_ctl /* [fnc] Operation controller function Nie02 opr() */
@@ -232,7 +227,3 @@ void nco_lbr_vrs_prn(void);
 #endif /* __cplusplus */
 
 #endif /* NCAP_H */
-
-
-
-

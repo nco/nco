@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.29 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.30 2014-12-18 18:58:38 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -31,7 +31,7 @@ extern "C" {
 #endif /* __cplusplus */
 
   void
-  var_scv_add /* [fnc] Add scalar to variable */
+  nco_var_scv_add /* [fnc] Add scalar to variable */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz,/* I [nbr] Size (in elements) of array operand */
    const int has_mss_val, /* I [flg] Flag for missing values */
@@ -40,7 +40,7 @@ extern "C" {
    scv_sct *scv); /* I [val] Pointer to scalar value (second operand) */
   
   void
-  var_scv_mlt /* [fnc] Multiply variable by scalar */
+  nco_var_scv_mlt /* [fnc] Multiply variable by scalar */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of array operand */
    const int has_mss_val, /* I [flg] Flag for missing values */
@@ -49,7 +49,7 @@ extern "C" {
    scv_sct *scv); /* I [val] Pointer to scalar value (second operand) */
   
   void
-  var_scv_mod /* [fnc] Modulo variable by scalar */
+  nco_var_scv_mod /* [fnc] Modulo variable by scalar */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of array operands */
    const int has_mss_val, /* I [flg] Flag for missing values */
@@ -58,7 +58,7 @@ extern "C" {
    scv_sct *scv); /* I [val] Pointer to scalar value (second operand) */
   
   void
-  scv_var_mod /* [fnc] Modulo scalar by variable */
+  nco_scv_var_mod /* [fnc] Modulo scalar by variable */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of array operands */
    const int has_mss_val, /* I [flg] Flag for missing values */
@@ -67,7 +67,7 @@ extern "C" {
    ptr_unn op2); /* I/O [val] Values of second operand */
   
   void
-  var_scv_dvd /* [fnc] Divide variable by scalar */
+  nco_var_scv_dvd /* [fnc] Divide variable by scalar */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of array operands */
    const int has_mss_val, /* I [flg] Flag for missing values */
@@ -76,7 +76,7 @@ extern "C" {
    scv_sct *scv); /* I [val] Pointer to scalar value (second operand) */
   
   void
-  scv_var_dvd /* [fnc] Divide scalar by variable */
+  nco_scv_var_dvd /* [fnc] Divide scalar by variable */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of array operands */
    const int has_mss_val, /* I [flg] Flag for missing values */
@@ -85,7 +85,7 @@ extern "C" {
    ptr_unn op2); /* I/O [val] Values of second operand */
   
   void
-  var_scv_pwr /* [fnc] Empower variable by scalar */
+  nco_var_scv_pwr /* [fnc] Empower variable by scalar */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of array operands */
    const int has_mss_val, /* I [flg] Flag for missing values */
@@ -94,7 +94,7 @@ extern "C" {
    scv_sct *scv); /* I [val] Pointer to scalar value (second operand) */
   
   void
-  scv_var_pwr /* [fnc] Empower scalar by variable */
+  nco_scv_var_pwr /* [fnc] Empower scalar by variable */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of array operands */
    const int has_mss_val, /* I [flg] Flag for missing values */
@@ -103,7 +103,7 @@ extern "C" {
    ptr_unn op2); /* I/O [val] Values of second operand */
   
   void
-  var_scv_sub /* [fnc] Subtract scalar from variable */
+  nco_var_scv_sub /* [fnc] Subtract scalar from variable */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of array operand */
    const int has_mss_val, /* I [flg] Flag for missing values */

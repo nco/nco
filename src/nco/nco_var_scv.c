@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.40 2014-06-15 21:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.41 2014-12-18 18:58:38 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -10,7 +10,7 @@
 #include "nco_var_scv.h" /* Arithmetic between variables and scalar values */
 
 void
-var_scv_add /* [fnc] Add scalar to variable */
+nco_var_scv_add /* [fnc] Add scalar to variable */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz,/* I [nbr] Size (in elements) of array operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -159,10 +159,10 @@ var_scv_add /* [fnc] Add scalar to variable */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_scv_add() */
+} /* end nco_var_scv_add() */
 
 void
-var_scv_sub /* [fnc] Subtract scalar from variable */
+nco_var_scv_sub /* [fnc] Subtract scalar from variable */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -311,10 +311,10 @@ var_scv_sub /* [fnc] Subtract scalar from variable */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_scv_sub() */
+} /* end nco_var_scv_sub() */
 
 void
-var_scv_mlt /* [fnc] Multiply variable by scalar */
+nco_var_scv_mlt /* [fnc] Multiply variable by scalar */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -463,10 +463,10 @@ var_scv_mlt /* [fnc] Multiply variable by scalar */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_scv_mlt() */
+} /* end nco_var_scv_mlt() */
 
 void
-var_scv_dvd /* [fnc] Divide variable by scalar */
+nco_var_scv_dvd /* [fnc] Divide variable by scalar */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -615,10 +615,10 @@ var_scv_dvd /* [fnc] Divide variable by scalar */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_scv_dvd() */
+} /* end nco_var_scv_dvd() */
 
 void
-scv_var_dvd /* [fnc] Divide scalar by variable */
+nco_scv_var_dvd /* [fnc] Divide scalar by variable */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -767,10 +767,10 @@ scv_var_dvd /* [fnc] Divide scalar by variable */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end scv_var_dvd() */
+} /* end nco_scv_var_dvd() */
 
 void
-var_scv_mod /* [fnc] Modulo variable by scalar */
+nco_var_scv_mod /* [fnc] Modulo variable by scalar */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -930,10 +930,10 @@ var_scv_mod /* [fnc] Modulo variable by scalar */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
-} /* end var_scv_mod */
+} /* end nco_var_scv_mod */
 
 void
-scv_var_mod /* [fnc] Modulo scalar by variable */
+nco_scv_var_mod /* [fnc] Modulo scalar by variable */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -1093,10 +1093,10 @@ scv_var_mod /* [fnc] Modulo scalar by variable */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
-} /* end scv_var_mod */
+} /* end nco_scv_var_mod */
 
 void
-var_scv_pwr /* [fnc] Empower variable by scalar */
+nco_var_scv_pwr /* [fnc] Empower variable by scalar */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -1156,10 +1156,10 @@ var_scv_pwr /* [fnc] Empower variable by scalar */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_scv_pwr */
+} /* end nco_var_scv_pwr */
 
 void
-scv_var_pwr /* [fnc] Empower scalar by variable */
+nco_scv_var_pwr /* [fnc] Empower scalar by variable */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -1219,4 +1219,4 @@ scv_var_pwr /* [fnc] Empower scalar by variable */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_scv_pwr */
+} /* end nco_var_scv_pwr */

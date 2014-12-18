@@ -1,3 +1,7 @@
+2014-12-18  Charlie Zender  <zender@uci.edu>
+
+	* Impose nco_*() namespace convention on var_scv_*() and scv_var_*() routines
+
 2014-12-08  Charlie Zender  <zender@uci.edu>
 
 	* --lsd ready-to-go except needs per-variable option and needs to avoid coordinates

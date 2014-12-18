@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.557 2014-12-18 18:56:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.558 2014-12-18 18:58:38 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.557 2014-12-18 18:56:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.557 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.558 2014-12-18 18:58:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.558 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -968,7 +968,7 @@ main(int argc,char **argv)
               scv.type=NC_DOUBLE;  
               /* Convert scalar to variable type */
               nco_scv_cnf_typ(var_crd->type,&scv);
-              (void)var_scv_add(var_crd->type,var_crd->sz,var_crd->has_mss_val,var_crd->mss_val,var_crd->val,&scv);
+              (void)nco_var_scv_add(var_crd->type,var_crd->sz,var_crd->has_mss_val,var_crd->mss_val,var_crd->val,&scv);
             } /* end re-basing */
 
             if(nco_prg_id == ncra){
