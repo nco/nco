@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.36 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.37 2014-12-30 23:13:51 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -73,53 +73,57 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
  const nco_int day_srt); /* I [day] Days ahead of input date */
 
 int               /* [flg] NCO_NOERR or NCO_ERR */ 
-nco_cln_clc_dff(  /* [fnc] difference between two co-ordinate units */      
-const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
-const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-double crr_val,         /* I [dbl] input units value */
-double *og_val);         /* O difference between two units string */
+nco_cln_clc_dff( /* [fnc] difference between two co-ordinate units */
+const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
+const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
+double crr_val, /* I [dbl] input units value */
+double *rgn_val); /* O difference between two units string */
 
-int                  /* [flg] NCO_NOERR or NCO_ERR */ 
-nco_cln_prs_tm(      /* Extract time stamp from a parsed udunits string */
-const char *unt_sng, /* I [ptr] units attribute string   */            
-tm_cln_sct *tm_in); /*  O [sct] struct to be populated   */             
+int /* [flg] NCO_NOERR or NCO_ERR */
+nco_cln_prs_tm( /* Extract time stamp from a parsed udunits string */
+const char *unt_sng, /* I [ptr] units attribute string */  
+tm_cln_sct *tm_in); /*  O [sct] struct to be populated */
 
-tm_typ              /* [enum] Units type */    
+tm_typ /* [enum] Units type */
 nco_cln_get_tm_typ( /* returns time unit type or tm_void if not found */
-const char *ud_sng); /* I [ptr] units string  */      
+const char *ud_sng); /* I [ptr] units string */
 
-nco_cln_typ               /* [enum] Calendar type */    
+nco_cln_typ /* [enum] Calendar type */    
 nco_cln_get_cln_typ( /* [fnc] Calendar type or cln_nil if not found */
-const char *ud_sng); /* I [ptr] units string  */      
+const char *ud_sng); /* I [ptr] units string */
 
-int                /* O [int] number of days */
+int /* O [int] number of days */
 nco_cln_days_in_year_prior_to_given_month( /* [fnc] Number of days in year prior to month */
-nco_cln_typ lmt_cln,   /* [enum] calendar type */
+nco_cln_typ lmt_cln, /* [enum] calendar type */
 int mth_idx); /* I [idx] Month (1-based counting, December == 12) */
 
 void
-nco_cln_pop_val(     /* [fnc] Calculate value in cln_sct */ 
-tm_cln_sct *cln_sct);/* I/O [ptr] structure */
+nco_cln_pop_val( /* [fnc] Calculate value in cln_sct */ 
+tm_cln_sct *cln_sct);/* I/O [ptr] Calendar structure */
 
-double               /* O [dbl] relative time */
-nco_cln_rel_val(     /* [fnc] */   
-double offset,          /* I [dbl] time in base units */
-nco_cln_typ lmt_cln,        /* I [enum] Calendar type */ 
-tm_typ bs_tm_typ);      /* I [enum] Time units */
+double /* O [dbl] Relative time */
+nco_cln_rel_val( /* [fnc] */
+double offset, /* I [dbl] time in base units */
+nco_cln_typ lmt_cln, /* I [enum] Calendar type */
+tm_typ bs_tm_typ); /* I [enum] Time units */
 
-int               /* O [flg] NCO_NOERR or NCO_ERR */ 
-nco_cln_clc_tm(    /* [fnc] Difference between two time coordinate units */
-const char *fl_unt_sng, /* I [ptr] user units attribute string   */     
-const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-nco_cln_typ lmt_cln,        /* [enum] Calendar type of coordinate var */ 
-double *og_val);        /* O [ptr] time diff in units based on fl_bs_sng */ 
+int /* O [flg] NCO_NOERR or NCO_ERR */ 
+nco_cln_clc_tm( /* [fnc] Difference between two time coordinate units */
+const char *fl_unt_sng, /* I [ptr] user units attribute string */
+const char *fl_bs_sng, /* I [ptr] units attribute string from disk  */     
+nco_cln_typ lmt_cln, /* [enm] Calendar type of coordinate var */ 
+double *rgn_val); /* O [ptr] time diff in units based on fl_bs_sng */ 
 
-int               /* O [flg] NCO_NOERR or NCO_ERR */ 
-nco_cln_clc_org(    /* [fnc] Difference between two generic coordinate units */      
-const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
-const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-nco_cln_typ lmt_cln,        /* I [enum] Calendar type of coordinate var */ 
-double *og_val);        /* O [ptr]                                   */
+int /* O [flg] NCO_NOERR or NCO_ERR */ 
+nco_cln_clc_org( /* [fnc] Difference between two generic coordinate units */      
+const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
+const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
+nco_cln_typ lmt_cln, /* I [enum] Calendar type of coordinate var */ 
+double *og_val); /* O [ptr] */
+
+int /* O [flg] String is calendar date */
+nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
+(const char *unit_sng); /* I [sng] Units string */
 
 #ifdef __cplusplus
 } /* end extern "C" */

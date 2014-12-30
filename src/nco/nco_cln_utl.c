@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.48 2014-06-15 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.49 2014-12-30 23:13:51 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -237,12 +237,12 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
     return NCO_ERR; /* Failure */
   } /* end if err */ 
 
-  /* units string to convert from */
+  /* Units string to convert from */
   ut_sct_in=ut_parse(ut_sys,unt_sng,UT_ASCII); 
   if(ut_sct_in == NULL){ /* Problem with 'units' attribute */
     ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
     if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: empty units attribute string\n");
-    if(ut_rcd == UT_SYNTAX) (void)fprintf(stderr,"ERROR:  units attribute \"%s\" has a syntax error\n",unt_sng);
+    if(ut_rcd == UT_SYNTAX)  (void)fprintf(stderr,"ERROR: units attribute \"%s\" has a syntax error\n",unt_sng);
     if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is not listed in UDUnits2 SI system database\n",unt_sng);
 
     return NCO_ERR; /* Failure */
@@ -364,7 +364,7 @@ tm_cln_sct *tm_in) /*  O [sct] struct to be populated   */
     return NCO_ERR;
   } /* end if err */ 
 
-  /* units string to convert from */
+  /* Units string to convert from */
   rcd=utScan(unt_sng,&udu_sct_in); 
   if(rcd != UDUNITS_NOERR){
     if(rcd == UT_EINVALID) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",unt_sng);
@@ -677,7 +677,7 @@ nco_cln_clc_org /* [fnc] Difference between two generic co-ordinate units */
   double crr_val;
   
   /* If units contain date or timestamp call special time-conversion routine */
-  if(strstr(fl_bs_sng," from ") || strstr(fl_bs_sng," since ") || strstr(fl_bs_sng," after ")){
+  if(strcasestr(fl_bs_sng," from ") || strcasestr(fl_bs_sng," since ") || strcasestr(fl_bs_sng," after ")){
     rcd=nco_cln_clc_tm(fl_unt_sng,fl_bs_sng,lmt_cln,og_val);   
     return rcd;
   } /* endif */
@@ -689,3 +689,15 @@ nco_cln_clc_org /* [fnc] Difference between two generic co-ordinate units */
   usr_unt_sng=(char *)nco_free(usr_unt_sng);
   return rcd;  
 } /* end nco_cln_clc_org() */
+
+int /* O [flg] String is calendar date */
+nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
+(const char *unit_sng) /* I [sng] Units string */
+{
+  /* Purpose:
+     Determine whether the string is a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
+
+  /* Does string contain date keyword? */
+  if(strcasestr(unit_sng," from ") || strcasestr(unit_sng," since ") || strcasestr(unit_sng," after ")) return True; else return False;
+
+} /* end nco_cln_chk_tm() */

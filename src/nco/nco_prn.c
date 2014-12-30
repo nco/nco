@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.225 2014-10-08 21:00:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.226 2014-12-30 23:13:51 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1353,42 +1353,43 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
   char nul_chr='\0'; /* [sng] Character to end string */ 
 
-  char *dlm_sng=NULL;                        /* [sng] User-specified delimiter string, if any */
+  char *dlm_sng=NULL; /* [sng] User-specified delimiter string, if any */
   char *nm_cdl;
-  char *sng_val_sng;                         /* [sng] String of NC_CHAR */
+  char *sng_val_sng; /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
   char *spr_sng=NULL; /* [sng] Output separator string */
-  char *unit_sng;                            /* [sng] Units string */ 
+  char *unit_sng_var; /* [sng] Units string for variable */ 
+  char *unit_sng_crd; /* [sng] Units string for coordinate */ 
 
-  char chr_val;                              /* [sng] Current character */
+  char chr_val; /* [sng] Current character */
 
   char val_sng[NCO_ATM_SNG_LNG];
-  char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (used for validation only) */ 
-  char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
+  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name (used for validation only) */ 
+  char var_sng[NCO_MAX_LEN_FMT_SNG]; /* [sng] Variable string */
 
-  dmn_sct dim[NC_MAX_DIMS];                  /* [sct] Dimension structure  */
+  dmn_sct dim[NC_MAX_DIMS]; /* [sct] Dimension structure  */
 
   double val_dbl;
 
   float val_flt;
 
-  int dmn_idx;                              /* [idx] Counter over dimensions */
-  int grp_id;                                 /* [ID] Group ID where variable resides (passed to MSA) */
+  int dmn_idx; /* [idx] Counter over dimensions */
+  int grp_id; /* [ID] Group ID where variable resides (passed to MSA) */
   int rcd_prn;
-  int prn_ndn=0;                             /* [nbr] Indentation for printing */
-  int val_sz_byt=int_CEWI;                   /* [nbr] Type size */
+  int prn_ndn=0; /* [nbr] Indentation for printing */
+  int val_sz_byt=int_CEWI; /* [nbr] Type size */
 
-  lmt_msa_sct **lmt_msa=NULL_CEWI;           /* [sct] MSA Limits for only for variable dimensions  */          
-  lmt_sct **lmt=NULL_CEWI;                   /* [sct] Auxiliary Limit used in MSA */
+  lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
+  lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
 
-  long dmn_sbs_dsk[NC_MAX_DIMS];             /* [nbr] Indices of hyperslab relative to original on disk */
-  long dmn_sbs_ram[NC_MAX_DIMS];             /* [nbr] Indices in hyperslab */
-  long lmn;                                  /* [nbr] Index to print variable data */
-  long mod_map_cnt[NC_MAX_DIMS];             /* [nbr] MSA modulo array */
-  long mod_map_in[NC_MAX_DIMS];              /* [nbr] MSA modulo array */
-  long sng_lng;                              /* [nbr] Length of NC_CHAR string */
-  long sng_lngm1;                            /* [nbr] Length minus one of NC_CHAR string */
-  long var_dsk;                              /* [nbr] Variable index relative to disk */
+  long dmn_sbs_dsk[NC_MAX_DIMS]; /* [nbr] Indices of hyperslab relative to original on disk */
+  long dmn_sbs_ram[NC_MAX_DIMS]; /* [nbr] Indices in hyperslab */
+  long lmn; /* [nbr] Index to print variable data */
+  long mod_map_cnt[NC_MAX_DIMS]; /* [nbr] MSA modulo array */
+  long mod_map_in[NC_MAX_DIMS]; /* [nbr] MSA modulo array */
+  long sng_lng; /* [nbr] Length of NC_CHAR string */
+  long sng_lngm1; /* [nbr] Length minus one of NC_CHAR string */
+  long var_dsk; /* [nbr] Variable index relative to disk */
   long var_szm1;
 
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
@@ -1399,13 +1400,16 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
   const nco_bool CDL_OR_JSN_OR_XML=prn_flg->cdl || prn_flg->jsn || prn_flg->xml; /* [flg] CDL or JSON or XML output */
 
-  nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
-  nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
+  nco_bool is_mss_val=False; /* [flg] Current value is missing value */
+  nco_bool flg_malloc_unit_crd=False; /* [flg] Allocated memory for coordinate units string */
+  nco_bool flg_malloc_unit_var=False; /* [flg] Allocated memory for variable units string */
+  nco_bool unit_cln_crd=False; /* [flg] Coordinate has calendar units */
+  nco_bool unit_cln_var=False; /* [flg] Variable has calendar units */
 
-  nco_string sng_val;                        /* [sng] Current string */
+  nco_string sng_val; /* [sng] Current string */
 
-  var_sct var;                               /* [sct] Variable structure */
-  var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
+  var_sct var; /* [sct] Variable structure */
+  var_sct var_crd; /* [sct] Variable structure for associated coordinate variable */
 
   if(prn_flg->new_fmt && CDL_OR_TRD) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
   if(XML) prn_ndn=prn_flg->ndn;
@@ -1417,7 +1421,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   (void)var_dfl_set(&var); 
 
   /* Initialize units string, overwrite later if necessary */
-  unit_sng=&nul_chr;
+  unit_sng_var=&nul_chr;
 
   /* Get ID for requested variable */
   var.nm=(char *)strdup(var_trv->nm);
@@ -1698,10 +1702,21 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(rcd_lcl == NC_NOERR){
       (void)nco_inq_att(grp_id,var.id,units_nm,&att_typ,&att_sz);
       if(att_typ == NC_CHAR){
-        unit_sng=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-        (void)nco_get_att(grp_id,var.id,units_nm,unit_sng,att_typ);
-        unit_sng[(att_sz+1L)*nco_typ_lng(att_typ)-1L]='\0';
-        MALLOC_UNITS_SNG=True; /* [flg] Allocated memory for units string */
+        unit_sng_var=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+        (void)nco_get_att(grp_id,var.id,units_nm,unit_sng_var,att_typ);
+        unit_sng_var[(att_sz+1L)*nco_typ_lng(att_typ)-1L]='\0';
+        flg_malloc_unit_var=True;
+
+	/* CDM documentation on time coordinates:
+	   http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/CalendarDateTime.html
+	   "As of CDM version 4.3, dates are no longer handled by the UDUnits library. This allows handling non-standard Calendars. This change only affects datetime coordinate handling, called time coordinates in CF. For all other dimensional units, the UDUnits package is still used.
+	   The UDUnit date grammar is difficult to understand. Heres an approximate regular expression:"
+	   period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]] */
+
+	/* Are units those of a calendar? */
+	unit_cln_var=nco_cln_chk_tm(unit_sng_var);
+        if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports units string \"%s\" is %sa calendar string\n",nco_prg_nm_get(),fnc_nm,unit_sng_var,unit_cln_var ? "" : "not " );
+
       } /* end if */
     } /* end if */
   } /* end if PRN_DMN_UNITS */
@@ -1712,29 +1727,29 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byt) : False; 
     if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s = %s %%s\n",prn_ndn,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%*s%s\n",prn_ndn,spc_sng,nco_typ_fmt_sng(var.type));
     if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
-      if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s = %s %s\n",prn_ndn,spc_sng,var_nm,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%*s%s\n",prn_ndn,spc_sng,mss_val_sng); 
+      if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s = %s %s\n",prn_ndn,spc_sng,var_nm,mss_val_sng,unit_sng_var); else (void)fprintf(stdout,"%*s%s\n",prn_ndn,spc_sng,mss_val_sng);
     }else{ /* !is_mss_val */
       if(prn_flg->PRN_DMN_VAR_NM){
         switch(var.type){
-        case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
-        case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
-        case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
-        case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.ip[lmn],unit_sng); break;
+        case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng_var); break;
+        case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng_var); break;
+        case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng_var); break;
+        case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.ip[lmn],unit_sng_var); break;
         case NC_CHAR:
           if(var.val.cp[lmn] != '\0'){
             (void)sprintf(var_sng,"%*s%%s = '%s' %%s\n",prn_ndn,spc_sng,nco_typ_fmt_sng(var.type));
-            (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
+            (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng_var);
           }else{ /* Deal with NUL character here */
-            (void)fprintf(stdout,"%*s%s = \"\" %s\n",prn_ndn,spc_sng,var_nm,unit_sng);
+            (void)fprintf(stdout,"%*s%s = \"\" %s\n",prn_ndn,spc_sng,var_nm,unit_sng_var);
           } /* end if */
           break;
-        case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
-        case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.ubp[lmn],unit_sng); break;
-        case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.usp[lmn],unit_sng); break;
-        case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng); break;
-        case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng); break;
-        case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng); break;
-        case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
+        case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng_var); break;
+        case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.ubp[lmn],unit_sng_var); break;
+        case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.usp[lmn],unit_sng_var); break;
+        case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng_var); break;
+        case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng_var); break;
+        case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng_var); break;
+        case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng_var); break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       }else{ /* !PRN_DMN_VAR_NM */
@@ -1785,7 +1800,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
         assert(!strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn[idx].dmn_nm));
 
-        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s <%s>: reading dimension[%d]:%s: ",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s reading %s dimension %d: %s",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
 
         dim[idx].val.vp=NULL;
         dim[idx].nm=lmt_msa[idx]->dmn_nm;
@@ -1819,8 +1834,33 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           dim[idx].type=crd->var_typ;
           dim[idx].cid=var_crd.id;
 
-          /* Ooopssy */ 
-        }else assert(0);
+	  /* Always check to see if coordinate is calendar date */
+	  if(True){
+	    const char units_nm[]="units"; /* [sng] Name of units attribute */
+	    int rcd_lcl; /* [rcd] Return code */
+	    int att_id; /* [id] Attribute ID */
+	    long att_sz;
+	    nc_type att_typ;
+	    
+	    /* Does coordinate have character attribute named units_nm? */
+	    rcd_lcl=nco_inq_attid_flg(grp_id,var.id,units_nm,&att_id);
+	    if(rcd_lcl == NC_NOERR){
+	      (void)nco_inq_att(grp_id,var.id,units_nm,&att_typ,&att_sz);
+	      if(att_typ == NC_CHAR){
+		unit_sng_crd=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+		(void)nco_get_att(grp_id,var.id,units_nm,unit_sng_crd,att_typ);
+		unit_sng_crd[(att_sz+1L)*nco_typ_lng(att_typ)-1L]='\0';
+		flg_malloc_unit_crd=True;
+		
+		/* Are units those of a calendar? */
+		unit_cln_crd=nco_cln_chk_tm(unit_sng_crd);
+		if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports units string \"%s\" is %sa calendar string\n",nco_prg_nm_get(),fnc_nm,unit_sng_crd,unit_cln_crd ? "" : "not " );
+
+	      } /* end if att_typ */
+	    } /* end if rcd_lcl */
+	  } /* end if True */
+	  
+        } /* end if is_crd_var */
 
         /* Typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
@@ -1886,7 +1926,13 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
             case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
             case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ip[crd_idx_crr]); break;
-            case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
+            case NC_CHAR:
+	      if(unit_cln_crd){
+		(void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]);
+	      }else{
+		(void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]);
+	      } /* !unit_cln_crd */
+	      break;
             case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
             case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
             case NC_USHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.usp[crd_idx_crr]); break;
@@ -1958,7 +2004,7 @@ lbl_chr_prn:
             var_dsk_srt++; 
             var_dsk_end++; 
           } /* end if */
-          (void)fprintf(stdout,var_sng,var_nm,var_dsk_srt,var_dsk_end,prn_sng,unit_sng);
+          (void)fprintf(stdout,var_sng,var_nm,var_dsk_srt,var_dsk_end,prn_sng,unit_sng_var);
           (void)fprintf(stdout,"\n");
           (void)fflush(stdout);
           (void)nco_free(prn_sng);
@@ -1974,38 +2020,38 @@ lbl_chr_prn:
       } /* end if FORTRAN_IDX_CNV */
 
       if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
-        if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s[%ld]=%s %s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,var_nm,var_dsk,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%*s%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,mss_val_sng); 
+        if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s[%ld]=%s %s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,var_nm,var_dsk,mss_val_sng,unit_sng_var); else (void)fprintf(stdout,"%*s%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,mss_val_sng); 
       }else{ /* !is_mss_val */
         if(prn_flg->PRN_DMN_VAR_NM){
           switch(var.type){
-          case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
-          case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.dp[lmn],unit_sng); break;
-          case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sp[lmn],unit_sng); break;
-          case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ip[lmn],unit_sng); break;
-          case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.cp[lmn],unit_sng); break;
-          case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,(unsigned char)var.val.bp[lmn],unit_sng); break;
-          case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ubp[lmn],unit_sng); break;
-          case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.usp[lmn],unit_sng); break;
-          case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.uip[lmn],unit_sng); break;
-          case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.i64p[lmn],unit_sng); break;
-          case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ui64p[lmn],unit_sng); break;
-          case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sngp[lmn],unit_sng); break;
+          case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng_var); break;
+          case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.dp[lmn],unit_sng_var); break;
+          case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sp[lmn],unit_sng_var); break;
+          case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ip[lmn],unit_sng_var); break;
+          case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.cp[lmn],unit_sng_var); break;
+          case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,(unsigned char)var.val.bp[lmn],unit_sng_var); break;
+          case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ubp[lmn],unit_sng_var); break;
+          case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.usp[lmn],unit_sng_var); break;
+          case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.uip[lmn],unit_sng_var); break;
+          case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.i64p[lmn],unit_sng_var); break;
+          case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ui64p[lmn],unit_sng_var); break;
+          case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sngp[lmn],unit_sng_var); break;
           default: nco_dfl_case_nc_type_err(); break;
           } /* end switch */
         }else{ /* !PRN_DMN_VAR_NM */
           switch(var.type){
-          case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn],unit_sng); break;
-          case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn],unit_sng); break;
-          case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn],unit_sng); break;
-          case NC_INT: (void)fprintf(stdout,var_sng,var.val.ip[lmn],unit_sng); break;
-          case NC_CHAR: (void)fprintf(stdout,var_sng,var.val.cp[lmn],unit_sng); break;
-          case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn],unit_sng); break;
-          case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn],unit_sng); break;
-          case NC_USHORT: (void)fprintf(stdout,var_sng,var.val.usp[lmn],unit_sng); break;
-          case NC_UINT: (void)fprintf(stdout,var_sng,var.val.uip[lmn],unit_sng); break;
-          case NC_INT64: (void)fprintf(stdout,var_sng,var.val.i64p[lmn],unit_sng); break;
-          case NC_UINT64: (void)fprintf(stdout,var_sng,var.val.ui64p[lmn],unit_sng); break;
-          case NC_STRING: (void)fprintf(stdout,var_sng,var.val.sngp[lmn],unit_sng); break;
+          case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn],unit_sng_var); break;
+          case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn],unit_sng_var); break;
+          case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn],unit_sng_var); break;
+          case NC_INT: (void)fprintf(stdout,var_sng,var.val.ip[lmn],unit_sng_var); break;
+          case NC_CHAR: (void)fprintf(stdout,var_sng,var.val.cp[lmn],unit_sng_var); break;
+          case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn],unit_sng_var); break;
+          case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn],unit_sng_var); break;
+          case NC_USHORT: (void)fprintf(stdout,var_sng,var.val.usp[lmn],unit_sng_var); break;
+          case NC_UINT: (void)fprintf(stdout,var_sng,var.val.uip[lmn],unit_sng_var); break;
+          case NC_INT64: (void)fprintf(stdout,var_sng,var.val.i64p[lmn],unit_sng_var); break;
+          case NC_UINT64: (void)fprintf(stdout,var_sng,var.val.ui64p[lmn],unit_sng_var); break;
+          case NC_STRING: (void)fprintf(stdout,var_sng,var.val.sngp[lmn],unit_sng_var); break;
           default: nco_dfl_case_nc_type_err(); break;
           } /* end switch */
         } /* !PRN_DMN_VAR_NM */
@@ -2022,7 +2068,8 @@ lbl_chr_prn:
   var.mss_val.vp=nco_free(var.mss_val.vp);
   var.nm=(char *)nco_free(var.nm);
 
-  if(MALLOC_UNITS_SNG) unit_sng=(char *)nco_free(unit_sng);
+  if(flg_malloc_unit_crd) unit_sng_crd=(char *)nco_free(unit_sng_crd);
+  if(flg_malloc_unit_var) unit_sng_var=(char *)nco_free(unit_sng_var);
 
   if(dlm_sng) dlm_sng=(char *)nco_free(dlm_sng);
 

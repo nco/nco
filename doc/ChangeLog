@@ -1,3 +1,7 @@
+2014-12-30  Charlie Zender  <zender@uci.edu>
+
+	* Introduce stubs to print calendar "time since"dates in more human-readable format
+
 2014-12-18  Charlie Zender  <zender@uci.edu>
 
 	* Impose nco_*() namespace convention on var_scv_*() and scv_var_*() routines
