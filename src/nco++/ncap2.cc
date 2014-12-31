@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.200 2014-11-05 23:39:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.201 2014-12-31 01:50:08 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3.
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.200 2014-11-05 23:39:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.200 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.201 2014-12-31 01:50:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.201 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   

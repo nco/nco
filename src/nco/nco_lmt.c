@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.213 2014-10-03 22:03:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.214 2014-12-31 01:50:07 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "nco_lmt.h" /* Hyperslab limits */
@@ -1823,7 +1823,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
     /* Negative integer as min or max element of hyperslab specification indicates offset from end
        pharoahs--20120708 Negative integers produce domain error
-       20120709--20141001 Negative integer is elements away from last element, e.g., -1 is penultimate element
+       20120709--20151001 Negative integer is elements away from last element, e.g., -1 is penultimate element
        20141002--forever  -1 is last element, e.g., -2 is penultimate element, -N is first element (Python convention) */
     nco_bool flg_old_usg=False;
     if(lmt.min_idx == 0L && lmt.min_sng)

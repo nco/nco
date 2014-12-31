@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.503 2014-12-01 20:51:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.504 2014-12-31 01:50:07 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "nco_ctl.h" /* Program flow control functions */

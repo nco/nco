@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.59 2014-10-09 15:00:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.60 2014-12-31 01:50:07 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "nco_scm.h" /* Software configuration management */
@@ -148,8 +148,8 @@ void
 nco_cpy_prn(void) /* [fnc] Print copyright notice */
 {
   /* Purpose: Print copyright notice */
-  (void)fprintf(stderr,"Copyright (C) 1995--2014 Charlie Zender\n");
-  (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABOLUTELY NO WARRANTY\nYou can redistribute and/or modify NCO under the terms of the\nGNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\nGPL: http://www.gnu.org/copyleft/gpl.html\nLICENSE: http://nco.cvs.sf.net/nco/nco/LICENSE\n");
+  (void)fprintf(stderr,"Copyright (C) 1995--2015 Charlie Zender\n");
+  (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABOLUTELY NO WARRANTY\nYou may redistribute and/or modify NCO under the terms of the\nGNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\nGPL: http://www.gnu.org/copyleft/gpl.html\nLICENSE: http://nco.cvs.sf.net/nco/nco/LICENSE\n");
 } /* end copyright_prn() */
 
 void

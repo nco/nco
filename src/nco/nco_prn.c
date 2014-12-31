@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.226 2014-12-30 23:13:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.227 2014-12-31 01:50:07 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "nco_prn.h" /* Print variables, attributes, metadata */
@@ -1367,7 +1367,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name (used for validation only) */ 
   char var_sng[NCO_MAX_LEN_FMT_SNG]; /* [sng] Variable string */
 
-  dmn_sct dim[NC_MAX_DIMS]; /* [sct] Dimension structure  */
+  dmn_sct *dim=NULL_CEWI; /* [sct] Dimension structure */
 
   double val_dbl;
 
@@ -1382,11 +1382,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
 
-  long dmn_sbs_dsk[NC_MAX_DIMS]; /* [nbr] Indices of hyperslab relative to original on disk */
-  long dmn_sbs_ram[NC_MAX_DIMS]; /* [nbr] Indices in hyperslab */
+  long *dmn_sbs_dsk=NULL_CEWI; /* [nbr] Indices of hyperslab relative to original on disk */
+  long *dmn_sbs_ram=NULL_CEWI; /* [nbr] Indices in hyperslab */
+  long *mod_map_cnt=NULL_CEWI; /* [nbr] MSA modulo array */
+  long *mod_map_in=NULL_CEWI; /* [nbr] MSA modulo array */
   long lmn; /* [nbr] Index to print variable data */
-  long mod_map_cnt[NC_MAX_DIMS]; /* [nbr] MSA modulo array */
-  long mod_map_in[NC_MAX_DIMS]; /* [nbr] MSA modulo array */
   long sng_lng; /* [nbr] Length of NC_CHAR string */
   long sng_lngm1; /* [nbr] Length minus one of NC_CHAR string */
   long var_dsk; /* [nbr] Variable index relative to disk */
@@ -1781,6 +1781,13 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   if(var.nbr_dim > 0 && !dlm_sng && TRD){
 
+    /* Allocate space for dimension information */
+    dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
+    dmn_sbs_ram=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+    dmn_sbs_dsk=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+    mod_map_cnt=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+    mod_map_in=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+
     /* Create mod_map_in */
     for(int idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
     for(int idx=0;idx<var.nbr_dim;idx++)
@@ -1800,9 +1807,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
         assert(!strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn[idx].dmn_nm));
 
-        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s reading %s dimension %d: %s",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s reading %s dimension %d, %s",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
 
-        dim[idx].val.vp=NULL;
+	dim[idx].val.vp=NULL;
         dim[idx].nm=lmt_msa[idx]->dmn_nm;
 
         /* Dimension does not have coordinate variable, do not read... */
@@ -1920,6 +1927,12 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
           /* Account for hyperslab offset in coordinate values*/
           crd_idx_crr=dmn_sbs_ram[dmn_idx];
+	  char crd_sng[NCO_MAX_LEN_FMT_SNG];
+	  if(unit_cln_crd){
+	    crd_sng[0]='\0';
+	    (void)nco_cln_sng_rbs(dim[dmn_idx].val,crd_idx_crr,dim[dmn_idx].type,unit_sng_crd,crd_sng);
+	    dim[dmn_idx].type=NC_CHAR;
+	  } /* !unit_cln_crd */
           if(prn_flg->PRN_DMN_VAR_NM){
             switch(dim[dmn_idx].type){
             case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
@@ -1927,13 +1940,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
             case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ip[crd_idx_crr]); break;
             case NC_CHAR:
-	      if(unit_cln_crd){
-		(void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]);
-	      }else{
-		(void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]);
-	      } /* !unit_cln_crd */
+	      if(unit_cln_crd) (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,crd_sng); else (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]);
 	      break;
-            case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
+	    case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
             case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
             case NC_USHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.usp[crd_idx_crr]); break;
             case NC_UINT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.uip[crd_idx_crr]); break;
@@ -1948,7 +1957,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.dp[crd_idx_crr]); break;
             case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.sp[crd_idx_crr]); break;
             case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.ip[crd_idx_crr]); break;
-            case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.cp[crd_idx_crr]); break;
+            case NC_CHAR:
+	      if(unit_cln_crd) (void)fprintf(stdout,dmn_sng,crd_sng); else (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.cp[crd_idx_crr]);
+	      break;
             case NC_BYTE: (void)fprintf(stdout,dmn_sng,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
             case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
             case NC_USHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.usp[crd_idx_crr]); break;
@@ -2060,7 +2071,14 @@ lbl_chr_prn:
 
     (void)fflush(stdout);
 
+    /* Clean-up information for multi-dimensional arrays */
     for(int idx=0;idx<var.nbr_dim;idx++) if(dim[idx].val.vp) dim[idx].val.vp=nco_free(dim[idx].val.vp);
+    if(dim) dim=(dmn_sct *)nco_free(dim);
+    if(dmn_sbs_ram) dmn_sbs_ram=(long *)nco_free(dmn_sbs_ram);
+    if(dmn_sbs_dsk) dmn_sbs_dsk=(long *)nco_free(dmn_sbs_dsk);
+    if(mod_map_cnt) mod_map_cnt=(long *)nco_free(mod_map_cnt);
+    if(mod_map_in) mod_map_in=(long *)nco_free(mod_map_in);
+
   } /* end if variable has more than one dimension */
 
   /* Free value buffer */

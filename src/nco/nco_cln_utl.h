@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.37 2014-12-30 23:13:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.38 2014-12-31 01:50:07 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* Usage:
@@ -124,6 +124,14 @@ double *og_val); /* O [ptr] */
 int /* O [flg] String is calendar date */
 nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
 (const char *unit_sng); /* I [sng] Units string */
+
+void
+nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
+(const ptr_unn val, /* I [sct] Value to rebase */
+ const long val_idx, /* I [idx] Index into 1-D array of values */
+ const nc_type val_typ, /* I [enm] Value type */
+ const char *unit_sng, /* I [sng] Units string */
+ char *lgb_sng); /* O [sng] Legible version of input string */
 
 #ifdef __cplusplus
 } /* end extern "C" */

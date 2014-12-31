@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.158 2014-11-05 23:39:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.159 2014-12-31 01:50:07 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF record averager
@@ -9,9 +9,9 @@
    specfied variables of multiple input netCDF files and output them 
    to a single file. */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3.
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.158 2014-11-05 23:39:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.158 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.159 2014-12-31 01:50:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.159 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;

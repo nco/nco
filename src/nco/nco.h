@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.527 2014-12-01 20:51:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.528 2014-12-31 01:50:07 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* Usage:
@@ -1053,7 +1053,7 @@ extern "C" {
     long srt; /* [idx] Index to start of hyperslab */
     long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
     nc_type type; /* [enm] Type of coordinate, if applicable */
-    ptr_unn val; /* [sct] Buffer to hold hyperslab fxm: is this ever used? */
+    ptr_unn val; /* [sct] Buffer to hold hyperslab (used by nco_prn to hold coordinate values) */
     short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
     short is_rec_dmn; /* [flg] Is this the record dimension? */
     size_t cnk_sz; /* [nbr] Chunk size */

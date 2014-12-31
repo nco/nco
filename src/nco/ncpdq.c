@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.408 2014-12-18 18:56:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.409 2014-12-31 01:50:08 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
 /* Purpose: Pack, re-dimension, query single netCDF file and output to a single file */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3.
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.408 2014-12-18 18:56:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.408 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.409 2014-12-31 01:50:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.409 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

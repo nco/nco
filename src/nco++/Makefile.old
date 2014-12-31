@@ -1,9 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.134 2014-11-24 19:24:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.135 2014-12-31 01:50:08 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
 
-# Copyright (C) 1994--2014 Charlie Zender
+# Copyright (C) 1994--2015 Charlie Zender
 # License: GNU General Public License (GPL) Version 3
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 

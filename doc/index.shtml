@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.942 2014-12-01 05:27:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.943 2014-12-31 01:50:06 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -629,7 +629,7 @@ San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
 Releases receive unique CVS tags and their tarballs are stored  
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
 <a href="http://dust.ess.uci.edu/nco/src">here</a> on our server at UCI.
-You can also retrieve the source of tagged versions directly
+You may also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO 4.4.9</b>: (<i>Future</i>) 

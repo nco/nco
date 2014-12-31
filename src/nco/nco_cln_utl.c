@@ -1,16 +1,16 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.49 2014-12-30 23:13:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.50 2014-12-31 01:50:07 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "nco_cln_utl.h" /* Calendar utilities */
 
 /* Arrays to hold calendar type units */
-/* Format: year,month,day,hour,min,sec,origin,offset */   
+/* Format: year, month, day, hour, minute, second, origin, offset */
 double DATA_360[8]={31104000.0,2592000.0,86400.0,3600.0,60.0,1,0.0,0.0};
 double DATA_365[8]={31536000.0,2628000.0,86400.0,3600.0,60.0,1,0.0,0.0};
 
@@ -155,7 +155,7 @@ nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two coordinate unit
   ut_unit *ut_sct_out; /* UDUnits structure, output units */
   
   /* Quick return if units identical */
-  if(!strcmp(fl_unt_sng,fl_bs_sng)){
+  if(!strcasecmp(fl_unt_sng,fl_bs_sng)){
     *og_val=crr_val;  
     return NCO_NOERR;
   } /* end if */
@@ -219,6 +219,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 {
   const char fnc_nm[]="nco_cln_prs_tm()"; /* [sng] Function name */
 
+  /* 20141230: fxm figure out a better length */
   char bfr[200];
 
   char *dt_sng;
@@ -249,7 +250,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   } /* endif coordinate on disk has no units attribute */
 
   /* Print timestamp to buffer in standard, dependable format */
-  ut_format(ut_sct_in,bfr,sizeof(bfr), UT_ASCII|UT_NAMES);
+  ut_format(ut_sct_in,bfr,sizeof(bfr),UT_ASCII|UT_NAMES);
 
   /* Extract parsed time units from print string (kludgy) */
   dt_sng=strstr(bfr,"since");  
@@ -512,6 +513,7 @@ void
 nco_cln_pop_val /* [fnc] Calculate value in cln_sct */ 
 (tm_cln_sct *cln_sct) /* I/O [ptr] structure */
 {
+  /* Purpose: Populate values in calendar structure */
   double *data;
   
   switch(cln_sct->sc_cln){
@@ -540,7 +542,7 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
   case cln_jul:
   case cln_nil:
     break;
-  }
+  } /* end switch */
   
   return;
 } /* end nco_cln_pop_val() */
@@ -598,15 +600,16 @@ nco_cln_rel_val
 
 int /* [rcd] Successful conversion returns NCO_NOERR */
 nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
-(const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
- const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
- nco_cln_typ lmt_cln, /* [enum] Calendar type of coordinate var */ 
+(const char *fl_unt_sng, /* I [ptr] Units attribute string from disk */
+ const char *fl_bs_sng, /* I [ptr] Units attribute string from disk */
+ nco_cln_typ lmt_cln, /* [enum] Calendar type of coordinate variable */ 
  double *og_val){ /* O [ptr] */
   
   int rcd;
   int year;
   int month;
   char *lcl_unt_sng;
+  /* 20141230 figure out better length */
   char tmp_sng[100];
   double crr_val;
   
@@ -639,7 +642,6 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   
   /* Assume non-standard calendar */ 
   if(nco_cln_prs_tm(lcl_unt_sng,&unt_cln_sct) == NCO_ERR) return NCO_ERR;
-  
   if(nco_cln_prs_tm(fl_bs_sng,&bs_cln_sct) == NCO_ERR) return NCO_ERR;
   
   unt_cln_sct.sc_typ=bs_tm_typ;
@@ -701,3 +703,17 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
   if(strcasestr(unit_sng," from ") || strcasestr(unit_sng," since ") || strcasestr(unit_sng," after ")) return True; else return False;
 
 } /* end nco_cln_chk_tm() */
+
+void
+nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
+(const ptr_unn val, /* I [sct] Value to rebase */
+ const long val_idx, /* I [idx] Index into 1-D array of values */
+ const nc_type val_typ, /* I [enm] Value type */
+ const char *unit_sng, /* I [sng] Units string */
+ char *lgb_sng) /* O [sng] Legible version of input string */
+{
+  /* Purpose: Rebase calendar string for legibility
+     Assumptions: Input units string is a calendar date, i.e., contains "from", "since", or "after" */
+  ;
+
+} /* end nco_cln_sng_rbs() */

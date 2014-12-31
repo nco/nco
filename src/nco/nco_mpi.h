@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.24 2014-07-11 02:13:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.25 2014-12-31 01:50:07 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -13,9 +13,9 @@
    Should _any_ MPI dependencies be in libnco.a?
    Cross-platform link weirdness (e.g., AIX) makes MPI dependencies in libnco.a fragile */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* Usage:

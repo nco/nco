@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.53 2014-06-15 21:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.54 2014-12-31 01:50:07 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* Usage:
@@ -37,7 +37,7 @@
 #include "nco_sng_utl.h" /* String utilities */
 
 /* fxm: strings statically allocated with NCO_MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
-/* Length should be computed at run time but is a pain */
+/* Length should be computed at run-time but is a pain */
 #define NCO_MAX_LEN_FMT_SNG 100ul
 
 /* Maximum length of single formatted value of atomic value type */
@@ -81,11 +81,11 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
  const nco_bool PRN_DMN_IDX_CRD_VAL); /* I [flg] Print dimension/coordinate indices/values */
 
 void
-nco_prn_var_val_trv             /* [fnc] Print variable data */
-(const int nc_id,                   /* I [ID] netCDF file ID */
+nco_prn_var_val_trv /* [fnc] Print variable data */
+(const int nc_id, /* I [ID] netCDF file ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
- const trv_sct * const var_trv,    /* I [sct] Object to print (variable) */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+ const trv_sct * const var_trv, /* I [sct] Object to print (variable) */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */

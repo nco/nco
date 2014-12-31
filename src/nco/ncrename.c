@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.208 2014-10-10 15:15:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.209 2014-12-31 01:50:08 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
 /* Purpose: Rename dimensions, variables, and attributes of a netCDF file */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3.
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
@@ -115,8 +115,8 @@ main(int argc,char **argv)
 
   char *obj_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.208 2014-10-10 15:15:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.208 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.209 2014-12-31 01:50:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.209 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute/group in file is optional */

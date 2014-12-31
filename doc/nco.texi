@@ -7,13 +7,13 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1052 2014-12-10 18:44:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1053 2014-12-31 01:50:06 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2014 Charlie Zender
+Copyright (C) 1995--2015 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
@@ -116,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 4.4.8
 @set doc-edition 4.4.8
-@set copyright-years 1995--2014
+@set copyright-years 1995--2015
 @set update-year 2014
 @set update-date 1 December 2014
 @set update-month December 2014
@@ -510,7 +510,7 @@ Irvine, California@*
 @ignore
 @sp 2
 The @acronym{NASA} @acronym{ACCESS} 2011 program generously supported 
-(Cooperative Agreement NNX12AF48A) @acronym{NCO} from 2012--2014.
+(Cooperative Agreement NNX12AF48A) @acronym{NCO} from 2012--2015.
 We accomplished our goals and produced the first iteration of a
 Group-oriented Data Analysis and Distribution (@acronym{GODAD}) software 
 ecosystem. 
@@ -676,7 +676,7 @@ see all the available options, or type, e.g., @samp{man ncks} to see
 a help man-page.
 
 @acronym{NCO} is a command-line language.
-You can either use an operator after the prompt (e.g., @samp{$} here),
+You may either use an operator after the prompt (e.g., @samp{$} here),
 like, 
 @example
 $ @command{operator} @option{[options]} @file{input} @file{[output]}
@@ -10053,7 +10053,7 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 
 @sp 1
 @noindent @strong{Type Conversion Methods @*}
-@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You can only use the new netCDF4 types if you have compiled/links @acronym{NCO} with the netCDF4 library and the Output file is HDF5.
+@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You may only use the new netCDF4 types if you have compiled/links @acronym{NCO} with the netCDF4 library and the Output file is HDF5.
 
 @table @code
 @item @strong{netCDF3/4 Types}

@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.195 2014-11-05 17:35:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.196 2014-12-31 01:50:07 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
 /* Purpose: Add, create, delete, or overwrite attributes in a netCDF file */
 
-/* Copyright (C) 1995--2014 Charlie Zender
+/* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
-   You can redistribute and/or modify NCO under the terms of the 
+   You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3.
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
@@ -174,8 +174,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.195 2014-11-05 17:35:15 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.195 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.196 2014-12-31 01:50:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.196 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
