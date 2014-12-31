@@ -1,5 +1,7 @@
 2014-12-30  Charlie Zender  <zender@uci.edu>
 
+	* Change copyright year to 2015 and tweak LICENSE from "can" to "may"
+
 	* Introduce stubs to print calendar "time since"dates in more human-readable format
 
 2014-12-18  Charlie Zender  <zender@uci.edu>

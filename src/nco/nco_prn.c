@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.227 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.228 2014-12-31 05:30:27 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1710,8 +1710,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	/* CDM documentation on time coordinates:
 	   http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/CalendarDateTime.html
 	   "As of CDM version 4.3, dates are no longer handled by the UDUnits library. This allows handling non-standard Calendars. This change only affects datetime coordinate handling, called time coordinates in CF. For all other dimensional units, the UDUnits package is still used.
-	   The UDUnit date grammar is difficult to understand. Heres an approximate regular expression:"
-	   period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]] */
+	   The UDUnit date grammar is difficult to understand. Heres an approximate regular expression:
+	   period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]
+	   The CDM uses the W3C profile of ISO 8601 formatting for reading and writing calendar dates" */
 
 	/* Are units those of a calendar? */
 	unit_cln_var=nco_cln_chk_tm(unit_sng_var);

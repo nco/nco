@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.50 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.51 2014-12-31 05:30:27 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -52,8 +52,8 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
   
   /* Local */
   const long mth_day_nbr[]= /* Number of days in each month */
-    { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
-      31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
+     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   
   long day_nbr_2_eom; /* Days to end of month */
   long day_crr; /* Day of date */
@@ -215,7 +215,7 @@ nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two coordinate unit
 int /* [rcd] Successful conversion returns NCO_NOERR */
 nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 (const char *unt_sng, /* I [ptr] units attribute string */
- tm_cln_sct *tm_in) /*  O [sct] struct to be populated */             
+ tm_cln_sct *tm_in) /* O [sct] Time structure to be populated */
 {
   const char fnc_nm[]="nco_cln_prs_tm()"; /* [sng] Function name */
 
@@ -252,7 +252,8 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   /* Print timestamp to buffer in standard, dependable format */
   ut_format(ut_sct_in,bfr,sizeof(bfr),UT_ASCII|UT_NAMES);
 
-  /* Extract parsed time units from print string (kludgy) */
+  /* Extract parsed time units from print string (kludgy)
+     20141230 change to using ut_decode_time() instead? */
   dt_sng=strstr(bfr,"since");  
   sscanf(dt_sng,"%*s %d-%d-%d %d:%d:%f",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
 
@@ -340,10 +341,10 @@ nco_cln_clc_dff /* [fnc] UDUnits1 Difference between two co-ordinate units */
   return NCO_NOERR;   
 }  /* end UDUnits1 nco_cln_clc_dff() */
 
-int /* [rcd] Successful conversion returns NCO_NOERR */     
+int /* [rcd] Successful conversion returns NCO_NOERR */
 nco_cln_prs_tm /* UDUnits1 Extract time stamp from a parsed udunits string */
-(const char *unt_sng, /* I [ptr] units attribute string   */            
-tm_cln_sct *tm_in) /*  O [sct] struct to be populated   */             
+(const char *unt_sng, /* I [ptr] units attribute string */
+ tm_cln_sct *tm_in) /* O [sct] Time structure to be populated */
 {
   const char fnc_nm[]="nco_cln_prs_tm()"; /* [sng] Function name */
 
@@ -402,23 +403,23 @@ const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */
 const char *fl_bs_sng, /* I [ptr] units attribute string from disk  */     
 double crr_val,
 double *og_val){ /* O [ptr] */
-return NCO_NOERR;
+  return NCO_NOERR;
 }
 
 int /* [rcd] Successful conversion returns NCO_NOERR */     
 nco_cln_prs_tm( /* Extract time stamp from a parsed UDUnits string */
 const char *unt_sng, /* I [ptr] units attribute string */
 tm_cln_sct *tm_in){ /* O [sct] struct to be populated */             
-return NCO_NOERR;
+  return NCO_NOERR;
 }
 
 #endif /* !ENABLE_UDUNITS */
 
 /* End UDUnits-related routines*/
  
-tm_typ /* [enum] Units type */    
+tm_typ /* O [enm] Units type */
 nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
-(const char *ud_sng){ /* I [ptr] units string  */      
+(const char *ud_sng){ /* I [ptr] Units string  */
   int idx;
   int len; 
   char *lcl_sng;  
@@ -426,7 +427,7 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
   
   lcl_sng=strdup(ud_sng);
   
-  /* Initially set ret type to void */
+  /* Set initial return type to void and overwrite */
   rcd_typ=tm_void;   
   
   /* Convert to lower case */
@@ -444,9 +445,9 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
   return rcd_typ;
 } /* end nco_cln_get_tm_typ() */
 
-nco_cln_typ /* [enum] Calendar type */    
-nco_cln_get_cln_typ /*  [fnc]  Calendar type or cln_nil if not found */
-(const char *ud_sng) /* I [ptr] units string  */      
+nco_cln_typ /* [enm] Calendar type */
+nco_cln_get_cln_typ /* [fnc] Determine calendar type or cln_nil if not found */
+(const char *ud_sng) /* I [ptr] units string  */
 {
   int idx;
   int len; 
@@ -457,7 +458,7 @@ nco_cln_get_cln_typ /*  [fnc]  Calendar type or cln_nil if not found */
   
   lcl_sng=strdup(ud_sng);
   
-  /* Initially set return type to void */
+  /* Set initial return type to void then overwrite */
   rcd_typ=cln_nil;
   
   /* Convert to lower case */
