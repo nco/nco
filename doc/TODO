@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1271 2014-12-18 18:56:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1272 2015-01-06 21:22:45 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -663,7 +663,7 @@ nco1113. nco: rsp parker norton help srd slowdown issue help 20140718 completely
 nco1114. ncrcat fails when single record dimension is not first dimension
 nco1115. --lsd least significant digit rich signell 
 nco1116. --add_bnds for creating bounds variables
-nco1117. 
+nco1117. ncks human-readable times
 qrk
 ************************************************************************
 End ncoXXX TODOs
