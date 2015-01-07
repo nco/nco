@@ -1,5 +1,7 @@
 2015-01-07  Charlie Zender  <zender@uci.edu>
 
+	* Add autobld/compile: Wrapper for compilers which do not understand '-c -o'. Required by autoconf/configure on FC21.
+
 	* NCO_CHECK_FUNCS() for nc_rename_grp() and nc_inq_format() in configure
  	Oversight---configure builds have only used stub versions of these functions so far!
 
