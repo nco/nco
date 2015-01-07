@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.40 2014-10-11 00:03:58 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.41 2015-01-07 17:28:43 zender Exp $ -*-makefile-*-
 
 test_data = big.nc in.nc in_rec_zero.nc
 
@@ -9,7 +9,7 @@ test_data_netCDF4 = in_4c.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_gr
 	-@PATH_TO_NCGEN@ -o $@ $< 
 
 in_4c.nc : in.cdl
-	-ncks -O -7 --cnk_dmn time,10 $< $@
+	-ncks -O -7 --cnk_dmn time,10 $@ $<
 # ncgen default chunksize for time = 4 MB produces ~200 MB in_4c.nc file. Avoid that!
 #	-@PATH_TO_NCGEN@ -k hdf5-nc3 -o $@ $< 
 
