@@ -1,3 +1,8 @@
+2015-01-07  Charlie Zender  <zender@uci.edu>
+
+	* NCO_CHECK_FUNCS() for nc_rename_grp() and nc_inq_format() in configure
+ 	Oversight---configure builds have only used stub versions of these functions so far!
+
 2014-12-30  Charlie Zender  <zender@uci.edu>
 
 	* Change copyright year to 2015 and tweak LICENSE from "can" to "may"
