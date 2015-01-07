@@ -3836,6 +3836,7 @@ ac_config_headers="$ac_config_headers config.h"
 # 20061120: Require alternative compilers be passed to configure as environment variables
 #AC_PROG_CC( xlc_r xlc acc cc     pathcc pgcc icc  gcc     como c89)
 #AC_PROG_CXX(xlC_r xlC aCC CC cxx pathCC pgCC icpc g++ c++ como)
+# 20150107: Autotools on FC21 complain that next command requires autobld/compile
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'

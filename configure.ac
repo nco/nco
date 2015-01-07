@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.55 2015-01-07 17:53:00 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.56 2015-01-07 19:59:17 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -164,6 +164,7 @@ AM_CONFIG_HEADER(config.h)
 # 20061120: Require alternative compilers be passed to configure as environment variables
 #AC_PROG_CC( xlc_r xlc acc cc     pathcc pgcc icc  gcc     como c89)
 #AC_PROG_CXX(xlC_r xlC aCC CC cxx pathCC pgCC icpc g++ c++ como)
+# 20150107: Autotools on FC21 complain that next command requires autobld/compile
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_CPP
