@@ -210,6 +210,12 @@
 /* Define to 1 if compiler finds external `nc_inq_format' function */
 #undef HAVE_NC_INQ_FORMAT
 
+/* Define to 1 if compiler finds external `nc_inq_format_extended' function */
+#undef HAVE_NC_INQ_FORMAT_EXTENDED
+
+/* Define to 1 if compiler finds external `nc_rename_grp' function */
+#undef HAVE_NC_RENAME_GRP
+
 /* Define to 1 if compiler finds external `nearbyint' function */
 #undef HAVE_NEARBYINT
 
@@ -464,6 +470,12 @@
 
 /* Define to 1 if compiler needs external `nc_inq_format' function */
 #undef NEED_NC_INQ_FORMAT
+
+/* Define to 1 if compiler needs external `nc_inq_format_extended' function */
+#undef NEED_NC_INQ_FORMAT_EXTENDED
+
+/* Define to 1 if compiler needs external `nc_rename_grp' function */
+#undef NEED_NC_RENAME_GRP
 
 /* Define to 1 if compiler needs external `nearbyint' function */
 #undef NEED_NEARBYINT
