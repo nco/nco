@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.536 2014-11-26 05:18:52 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.537 2015-01-08 20:37:08 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -76,8 +76,8 @@ sub tst_rgr {
     
     if($dodap ne "FALSE"){
 	print "DEBUG: in tst_rgr(), \$dodap = $dodap \n";
-	if ($dodap ne "" && $fl_pth =~ /http/) { $in_pth_arg = "-p $fl_pth"; }
-	if ($dodap eq "") { $in_pth_arg = "-p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata"; }
+	if($dodap ne "" && $fl_pth =~ /http/) { $in_pth_arg = "-p $fl_pth"; }
+	if($dodap eq "") { $in_pth_arg = "-p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata"; }
     }
     NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from tst_rgr()  -------------");
     
@@ -223,7 +223,7 @@ print "\n";
 
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait=<STDIN>;
     
-    if ($dodap eq "FALSE") {
+    if($dodap eq "FALSE") {
 ####################
 #### ncatted tests #
 ####################
@@ -705,7 +705,7 @@ print "\n";
 # both RNK_1_GTR and table flag of file 1 or 2
 # result is time[3] instead of time[3]=4
 
-    if (0) {
+    if(0) {
     $dsc_sng="(Groups) Process ensembles in file 2 with common variable at root in file 1";
     $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg obs.nc mdl_1.nc  %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -g cesm_01 -v tas1 %tmp_fl_00%";
@@ -1079,10 +1079,10 @@ print "\n";
 #    
 # NCO 4.3.1 - ncecat for groups 
 #
+
 #ncecat #4 part1
 #ncecat -h -O -g g1g1 -v v1 ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -d record,1,1,1 ~/foo.nc
-
     $dsc_sng="(Groups) Concatenate variables/groups 1: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -d record,1,1,1 %tmp_fl_00%";
@@ -1091,10 +1091,9 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			     
 
-#ncecat #5 same as #4 but look metadata
+#ncecat #5 same as #4 but look at metadata
 #ncecat -h -O -g g1g1 -v v1 ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -d record,1,1,1 ~/foo.nc    
-    
     $dsc_sng="(Groups) Concatenate variables/groups 2: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --cdl %tmp_fl_00% | grep 'v1 ='";
@@ -1106,7 +1105,6 @@ print "\n";
 #ncecat #6 part1
 #ncecat -h -O -g g6g1 -v area ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area ~/foo.nc
-
     $dsc_sng="(Groups) Concatenate variables/groups 1: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area %tmp_fl_00%";
@@ -1119,7 +1117,6 @@ print "\n";
 #ncecat -h -O -g g6g1 -v area ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -g g6g1 -v area ~/foo.nc
 #area dimension 0: record, size = 2 (Record non-coordinate dimension)
-    
     $dsc_sng="(Groups) Concatenate variables/groups 2: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g g6g1 -v area %tmp_fl_00% | grep 'area dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)'";
@@ -1131,7 +1128,6 @@ print "\n";
 #ncecat #8 part1
 #ncecat -h -O -v two_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var ~/foo.nc
-
     $dsc_sng="(Groups) Concatenate variables/groups 1: 2D -v two_dmn_rec_var";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -v two_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var %tmp_fl_00%";
@@ -1144,7 +1140,6 @@ print "\n";
 #Check that "time" is eliminated as record
 #ncecat -O ~/nco/data/in_grp_3.nc ~/nco/data/in_grp_3.nc ~/foo.nc
 #ncks -m -C -g g25g1 -v one_dmn_rec_var ~/foo.nc
-
     $dsc_sng="(Groups) Concatenate variables/groups";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
@@ -1156,7 +1151,6 @@ print "\n";
 #ncecat #10
 #Chunking
 # ncecat -O -4 -D 5 -C --cnk_plc=all --cnk_map=rd1 -v date_int -p ~/nco/data in.nc in.nc ~/foo.nc
-
     $dsc_sng="Chunking --cnk_plc=all --cnk_map=rd1 -v date_int";
     $tst_cmd[0]="ncecat -O -C -4 $nco_D_flg --cnk_plc=all --cnk_map=rd1 -v date_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'date_int dimension 0'";
@@ -1168,7 +1162,6 @@ print "\n";
 #ncecat #11
 #Chunking 
 #ncecat -O -C -4 -v four_dmn_rec_var --cnk_plc=xpl --cnk_dmn lat,2 --cnk_dmn lon,4 -p ~/nco/data in.nc in.nc ~/foo.nc
-
     $dsc_sng="Chunking -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4";
     $tst_cmd[0]="ncecat -O -C -4 $nco_D_flg -v four_dmn_rec_var --cnk_plc=xpl --cnk_dmn lat,2 --cnk_dmn lon,4  $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'four_dmn_rec_var dimension 2'";
@@ -1185,7 +1178,6 @@ print "\n";
 # ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
 # ncecat -O -p ~ foo1.nc foo2.nc ~/foo3.nc
 # ncks -C -H -v one -d record,1 -s '%g' ~/foo3.nc
-
     $dsc_sng="Concatenate variables with different ID ordering";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
@@ -1196,8 +1188,18 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
-	
-
+#ncecat #13
+# Copy coordinates from first file as is, do not add record dimension to them
+# ncecat -O -v time,one,lat,lon,three_dmn_rec_var -p ~/nco/data in.nc in.nc in.nc ~/foo.nc
+# ncks -C -H -v lat -d lat,1 ~/foo.nc
+    $dsc_sng="Verify concatentated coordinates do not gain new record dimension";
+    $tst_cmd[0]="ncecat -h -O $fl_fmt $nco_D_flg -v time,one,lat,lon,three_dmn_rec_var $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat -d lat,1 $in_pth_arg %tmp_fl_00%";
+    $tst_cmd[2]="lat[1]=90";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+    
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
 #####################
@@ -1207,8 +1209,6 @@ print "\n";
 ####################
 
 #ncflint #1
-
-
     $tst_cmd[0]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 3,-2 -v one $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v one %tmp_fl_00%";
     $dsc_sng="identity weighting";
@@ -1219,8 +1219,7 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncflint #2    
-    
-    if ($dodap eq "FALSE"){
+    if($dodap eq "FALSE"){
 	$tst_cmd[0]="ncrename -h -O $nco_D_flg -v zero,foo $in_pth_arg in.nc %tmp_fl_01%";
 	$tst_cmd[1]="ncrename -h -O $nco_D_flg -v one,foo $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[2]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -i foo,0.5 -v two %tmp_fl_01% %tmp_fl_00% %tmp_fl_02%";
@@ -1234,7 +1233,6 @@ print "\n";
     }
     
 #ncflint #3
-    
     $dsc_sng="switch order of occurrence to test for commutivity";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,1 -v mss_val $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,0 -v mss_val $in_pth_arg in.nc %tmp_fl_02%";
@@ -4072,7 +4070,7 @@ print "\n";
 #NEW 4.4.2	
 #ncra #32
 #ncra -O -v time301 -C in_grp_3.nc ~/foo.nc
-if (0){
+if(0){
     $dsc_sng="(Groups) Cell methods (Create) -v time301";
     $tst_cmd[0]="ncra $omp_flg $nco_D_flg -O -v time301 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";

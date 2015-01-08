@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.168 2014-02-07 18:08:12 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.169 2015-01-08 20:37:07 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -228,6 +228,7 @@ End HPPA
 ************************************************************************
 Start LINUX
 Status: Works
+Commands for LINUX are the only ones "regularly" used after ~2010
 ************************************************************************
 zender@dust:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUX

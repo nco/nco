@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.256 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.257 2015-01-08 20:37:08 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -982,10 +982,9 @@ int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id
 int
 nc_rename_grp(int grp_id,const char * const grp_nm)
 {
-  /* Purpose: Pseudo-library function to rename groups.
+  /* Purpose: Pseudo-library stub function to rename groups.
      This particular stub routine is only called by netCDF4-enabled code
-     when built against a netCDF library that it too old to have
-     the nc_rename_grp() function.
+     when built against a netCDF library that it too old to have the nc_rename_grp() function.
      Test by running something like this:
      ncrename -O -g g1,obama ~/nco/data/in_grp.nc ~/foo.nc */
   const char fnc_nm[]="nc_rename_grp()";

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1053 2014-12-31 01:50:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1054 2015-01-08 20:37:08 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -13736,7 +13736,7 @@ single output file using using one of two methods.
 @dfn{Group AGgregation} (@acronym{GAG}) stores @var{input-files} as top-level
 groups in the netCDF4 @var{output-file}.
 Record Aggregation (@acronym{RAG}) makes numerous assumptions about the
-structure of input files and Group Aggregation (@acronym{GAG}) makes
+structure of input files whereas Group Aggregation (@acronym{GAG}) makes
 none. 
 Both methods are described in detail below.
 Since @command{ncecat} aggregates all the contents of the input files,

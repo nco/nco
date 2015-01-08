@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.56 2015-01-07 19:59:17 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.57 2015-01-08 20:37:07 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -221,13 +221,14 @@ echo "#  Test for netCDF             #"
 echo "################################"
 
 #Mac OSX MacPorts packages
-#sudo port install netcdf
-#installs to /opt/local/include, /opt/local/lib
-#add this path to CPPFLAGS if it exists, otherwise do nothing
+# sudo port install netcdf
+# installs to /opt/local/include, /opt/local/lib
+# Add this path to CPPFLAGS if it exists, otherwise do nothing
 AC_CHECK_FILE([/opt/local/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include"], [])
 AC_CHECK_FILE([/opt/local/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib -lnetcdf"], [])
 
 # Greenplanet
+# fxm: 20150107 this is an embarassing kludge that needs to be changed
 AC_CHECK_FILE([/sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/sopt/netcdf/netcdf411-gcc-serial/include"], [])
 AC_CHECK_FILE([/sopt/netcdf/netcdf411-gcc-serial/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/sopt/netcdf/netcdf411-gcc-serial/lib -lnetcdf"], [])
 
@@ -366,7 +367,6 @@ esac
 # "#define HAVE_XXX 1" and "#undef NEED_XXX" when function xxx() is found and
 # "#undef HAVE_XXX" and "#define NEED_XXX 1" when function xxx() is not found
 # Purpose: CPP macros like "if(NEED_XXX)" are simpler to read than "if(!HAVE_xxx)"
-NCO_CHECK_FUNCS([nc_rename_grp nc_inq_format_extended])
 NCO_CHECK_FUNCS([nc_inq_format])
 NCO_CHECK_FUNCS([getopt getopt_long])
 NCO_CHECK_FUNCS([atan2])

@@ -17551,9 +17551,9 @@ echo "#  Test for netCDF             #"
 echo "################################"
 
 #Mac OSX MacPorts packages
-#sudo port install netcdf
-#installs to /opt/local/include, /opt/local/lib
-#add this path to CPPFLAGS if it exists, otherwise do nothing
+# sudo port install netcdf
+# installs to /opt/local/include, /opt/local/lib
+# Add this path to CPPFLAGS if it exists, otherwise do nothing
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/netcdf.h" >&5
 $as_echo_n "checking for /opt/local/include/netcdf.h... " >&6; }
 if ${ac_cv_file__opt_local_include_netcdf_h+:} false; then :
@@ -17594,6 +17594,7 @@ fi
 
 
 # Greenplanet
+# fxm: 20150107 this is an embarassing kludge that needs to be changed
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h" >&5
 $as_echo_n "checking for /sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h... " >&6; }
 if ${ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_include_netcdf_h+:} false; then :
@@ -18410,35 +18411,6 @@ esac
 # "#define HAVE_XXX 1" and "#undef NEED_XXX" when function xxx() is found and
 # "#undef HAVE_XXX" and "#define NEED_XXX 1" when function xxx() is not found
 # Purpose: CPP macros like "if(NEED_XXX)" are simpler to read than "if(!HAVE_xxx)"
-ac_fn_c_check_func "$LINENO" "nc_rename_grp" "ac_cv_func_nc_rename_grp"
-if test "x$ac_cv_func_nc_rename_grp" = xyes; then :
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_NC_RENAME_GRP 1
-_ACEOF
-
-else
-
-cat >>confdefs.h <<_ACEOF
-#define NEED_NC_RENAME_GRP 1
-_ACEOF
-
-fi
-ac_fn_c_check_func "$LINENO" "nc_inq_format_extended" "ac_cv_func_nc_inq_format_extended"
-if test "x$ac_cv_func_nc_inq_format_extended" = xyes; then :
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_NC_INQ_FORMAT_EXTENDED 1
-_ACEOF
-
-else
-
-cat >>confdefs.h <<_ACEOF
-#define NEED_NC_INQ_FORMAT_EXTENDED 1
-_ACEOF
-
-fi
-
 ac_fn_c_check_func "$LINENO" "nc_inq_format" "ac_cv_func_nc_inq_format"
 if test "x$ac_cv_func_nc_inq_format" = xyes; then :
 

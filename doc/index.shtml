@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.943 2014-12-31 01:50:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.944 2015-01-08 20:37:08 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -149,7 +149,7 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2014 Dec&nbsp;??: 4.4.8 (<i>In progress</i>)
+<li>2015 Jan&nbsp;??: 4.4.8 (<i>In progress</i>)
 <li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
 <li>2014 Oct&nbsp;01: 4.4.6 (<tt>ncra, ncwa</tt> packing bugfixes, stride optimization)
 <li>2014 Aug&nbsp;26: 4.4.5 (Stability)
@@ -633,15 +633,17 @@ You may also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO 4.4.9</b>: (<i>Future</i>) 
-<li><b>NCO 4.4.8</b>: (<i>In Progress, features completed or being worked on include</i>)
 extensive hashing?;
 netCDF4 compound types?;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 Optimize diskless files?</li>
+<li><b>NCO 4.4.8</b>: (<i>In Progress, features completed or being worked on include</i>)
+Specify lossy compression with <tt>--lsd</tt>;
+<tt>ncks</tt> prints human-legible ISO8601 dates;</li>
 <li><b>NCO 4.4.7</b>: (<i>Current Stable Release</i>)
 <tt>cnk_min</tt> minimum chunksize;
 Chunking <tt>cnk_map=rew</tt>;
-Smarter chunking defaults</li>;
+Smarter chunking defaults;</li>
 <li><b>NCO 4.4.6</b>: 
 <tt>-0</tt> hyperslabs;
 <tt>configure</tt> DAP correctly;

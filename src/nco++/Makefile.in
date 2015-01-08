@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.101 2015-01-07 18:07:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.102 2015-01-08 20:37:08 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -109,7 +109,7 @@ am_ncap2_OBJECTS = Invoke.$(OBJEXT) ncap2.$(OBJEXT) \
 	ncoLexer.$(OBJEXT) ncoParser.$(OBJEXT) ncoTree.$(OBJEXT) \
 	nco_gsl.$(OBJEXT)
 ncap2_OBJECTS = $(am_ncap2_OBJECTS)
-ncap2_DEPENDENCIES =
+ncap2_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -367,7 +367,12 @@ ncoParser.cpp \
 ncoTree.cpp \
 nco_gsl.c
 
-ncap2_LDADD = -lnco -lantlr
+
+# 20150108 Be sure that netCDF in /usr/local takes precedence over GSL libraries in /usr
+# AKA be sure GSL in /usr does not cause ncap2 linker to search /usr before /usr/local
+NCO_AND_ANTLR_STUFF = -L../nco -lnco -lantlr
+#ncap2_LDADD = -lnco -lantlr
+
 # fxm: 20080515 Takeshi Enomoto reports that MACOSX needs
 # ncap2_LDADD = ../nco/.libs/libnco.dylib -lantlr
 
@@ -376,10 +381,12 @@ ncap2_LDADD = -lnco -lantlr
 # ncap2_LDFLAGS = -Xcompiler -shared
 @ENABLE_GSL_TRUE@GSL_LIB_ARG = $(shell gsl-config --libs)
 @ENABLE_GSL_TRUE@GSL_INC_ARG = $(shell gsl-config --cflags)
-@ENABLE_GSL_FALSE@ncap2_LDFLAGS = -L../nco
-@ENABLE_GSL_TRUE@ncap2_LDFLAGS = -L../nco ${GSL_LIB_ARG}
-@ENABLE_GSL_FALSE@AM_CPPFLAGS = -I./ -I../nco
-@ENABLE_GSL_TRUE@AM_CPPFLAGS = -I./ -I../nco ${GSL_INC_ARG}
+#AM_CPPFLAGS = -I./ -I../nco ${GSL_INC_ARG}
+#ncap2_LDFLAGS = -L../nco
+@ENABLE_GSL_FALSE@ncap2_LDFLAGS = ${NCO_AND_ANTLR_STUFF}
+#ncap2_LDFLAGS = -L../nco ${GSL_LIB_ARG}
+@ENABLE_GSL_TRUE@ncap2_LDFLAGS = ${NCO_AND_ANTLR_STUFF} ${GSL_LIB_ARG}
+#AM_CPPFLAGS = -I./ -I../nco
 
 # 20060824: *.hpp and *.cpp files are now part of source tree
 # DISTCLEANFILES=ncoLexer.hpp ncoParser.hpp ncoParserTokenTypes.hpp ncoParserTokenTypes.txt ncoTree.hpp

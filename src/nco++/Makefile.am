@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.28 2014-07-30 22:47:02 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.29 2015-01-08 20:37:08 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -33,7 +33,11 @@ ncoParser.cpp \
 ncoTree.cpp \
 nco_gsl.c
 
-ncap2_LDADD = -lnco -lantlr
+# 20150108 Be sure that netCDF in /usr/local takes precedence over GSL libraries in /usr
+# AKA be sure GSL in /usr does not cause ncap2 linker to search /usr before /usr/local
+NCO_AND_ANTLR_STUFF = -L../nco -lnco -lantlr
+#ncap2_LDADD = -lnco -lantlr
+
 # fxm: 20080515 Takeshi Enomoto reports that MACOSX needs
 # ncap2_LDADD = ../nco/.libs/libnco.dylib -lantlr
 
@@ -44,11 +48,13 @@ ncap2_LDADD = -lnco -lantlr
 if ENABLE_GSL
 GSL_LIB_ARG = $(shell gsl-config --libs)
 GSL_INC_ARG = $(shell gsl-config --cflags)
-ncap2_LDFLAGS = -L../nco ${GSL_LIB_ARG}
-AM_CPPFLAGS = -I./ -I../nco ${GSL_INC_ARG}
+#ncap2_LDFLAGS = -L../nco ${GSL_LIB_ARG}
+ncap2_LDFLAGS = ${NCO_AND_ANTLR_STUFF} ${GSL_LIB_ARG}
+#AM_CPPFLAGS = -I./ -I../nco ${GSL_INC_ARG}
 else
-ncap2_LDFLAGS = -L../nco
-AM_CPPFLAGS = -I./ -I../nco
+#ncap2_LDFLAGS = -L../nco
+ncap2_LDFLAGS = ${NCO_AND_ANTLR_STUFF}
+#AM_CPPFLAGS = -I./ -I../nco
 endif
 
 # 20060824: *.hpp and *.cpp files are now part of source tree
