@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.537 2015-01-08 20:37:08 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.538 2015-01-08 20:53:23 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1194,7 +1194,7 @@ print "\n";
 # ncks -C -H -v lat -d lat,1 ~/foo.nc
     $dsc_sng="Verify concatentated coordinates do not gain new record dimension";
     $tst_cmd[0]="ncecat -h -O $fl_fmt $nco_D_flg -v time,one,lat,lon,three_dmn_rec_var $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat -d lat,1 $in_pth_arg %tmp_fl_00%";
+    $tst_cmd[1]="ncks $fl_fmt $nco_D_flg -C -H -v lat -d lat,1 %tmp_fl_00%";
     $tst_cmd[2]="lat[1]=90";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
@@ -1209,9 +1209,9 @@ print "\n";
 ####################
 
 #ncflint #1
+    $dsc_sng="identity weighting";
     $tst_cmd[0]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 3,-2 -v one $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v one %tmp_fl_00%";
-    $dsc_sng="identity weighting";
     $tst_cmd[2]="1.0";
     $tst_cmd[3]="NO_SS";
     $tst_cmd[3]="SS_OK";
@@ -1220,11 +1220,11 @@ print "\n";
     
 #ncflint #2    
     if($dodap eq "FALSE"){
+	$dsc_sng="identity interpolation";
 	$tst_cmd[0]="ncrename -h -O $nco_D_flg -v zero,foo $in_pth_arg in.nc %tmp_fl_01%";
 	$tst_cmd[1]="ncrename -h -O $nco_D_flg -v one,foo $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[2]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -i foo,0.5 -v two %tmp_fl_01% %tmp_fl_00% %tmp_fl_02%";
 	$tst_cmd[3]="ncks -C -H -s '%e' -v two %tmp_fl_02%";
-	$dsc_sng="identity interpolation";
 	$tst_cmd[4]="2.0";
 	$tst_cmd[5]="NO_SS";
 	$tst_cmd[5]="SS_OK";

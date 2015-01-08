@@ -1,3 +1,14 @@
+2015-01-08  Charlie Zender  <zender@uci.edu>
+
+	* New ncecat regression test to verify concatentated coordinates do not gain new record dimension
+
+	* Implement temporary fix for autoconf issues
+
+	* Discovered that NCO autotools do not follow autoconf guidelines
+	This only matters in practice for ncap2 which uses multiple additional libraries
+	Incorrect usage of CPPFLAGS and friends can lead to wrong precedence in ncap2 linking
+	Will be hard to fix correctly---thorough rewrite of configure.ac *.am required
+
 2015-01-07  Charlie Zender  <zender@uci.edu>
 
 	* Add autobld/compile: Wrapper for compilers which do not understand '-c -o'. Required by autoconf/configure on FC21.
