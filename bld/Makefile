@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.747 2015-01-06 21:22:45 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.748 2015-01-08 00:28:04 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -227,7 +227,7 @@ else # endelse LIB_NCAR
 endif # endif LIB_NCAR
 endif # endif NETCDF_LIB
 ifndef ${OMP} # OpenMP
- OMP := Y
+ OMP := N
 endif # endif OMP
 ifndef OPTS
  OPTS := D
