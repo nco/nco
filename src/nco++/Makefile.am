@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.29 2015-01-08 20:37:08 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.30 2015-01-08 20:41:52 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -51,10 +51,11 @@ GSL_INC_ARG = $(shell gsl-config --cflags)
 #ncap2_LDFLAGS = -L../nco ${GSL_LIB_ARG}
 ncap2_LDFLAGS = ${NCO_AND_ANTLR_STUFF} ${GSL_LIB_ARG}
 #AM_CPPFLAGS = -I./ -I../nco ${GSL_INC_ARG}
+AM_CPPFLAGS = -I./ -I../nco
 else
 #ncap2_LDFLAGS = -L../nco
 ncap2_LDFLAGS = ${NCO_AND_ANTLR_STUFF}
-#AM_CPPFLAGS = -I./ -I../nco
+AM_CPPFLAGS = -I./ -I../nco
 endif
 
 # 20060824: *.hpp and *.cpp files are now part of source tree
