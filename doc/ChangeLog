@@ -1,5 +1,7 @@
 2015-01-09  Charlie Zender  <zender@uci.edu>
 
+	* Verify recent (20150109+) netCDF library snapshots fix coordinate renaming problems yet break attribute renaming
+
 	* Introduce -D_DEFAULT_SOURCE in place of deprecated (as of gcc 4.9.2) -D_BSD_SOURCE -D_POSIX_SOURCE
 	Include -O optimization when OPTS=X to quiet warning messages
 	Whether these Makefile changes introduce compile problems on older GCCs is TBD

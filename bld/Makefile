@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.749 2015-01-09 22:30:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.750 2015-01-09 22:33:21 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -323,10 +323,10 @@ ifndef LINUX_CXX
 endif # endif LINUX_CXX
 ifndef LINUX_CC
 # C compiler for Linux
- LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+ LINUX_CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
  #LINUX_CC := clang
  #LINUX_CC := como --c99
- #LINUX_CC := icc -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE
+ #LINUX_CC := icc -std=c99 -D_DEFAULT_SOURCE
  #LINUX_CC := insure
  #LINUX_CC := nvcc
  #LINUX_CC := pathcc -std=c99
@@ -623,7 +623,7 @@ CPP_TKN_OS +=
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
  CC := xlc_r -qlanglvl=extc99
-#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+#CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
  CXX := xlC_r
 # CXX := g++
  CPP := xlc -c -qlanglvl=extc99 -qsuppress=1501-245 -I/usr/lpp/ppe.poe/include
@@ -820,7 +820,7 @@ endif
 
 ifeq (${PVM_ARCH},HPPA)
 CXX := g++
-CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS}
 FC := f77
 LD := ld
@@ -1250,7 +1250,7 @@ endif
 
 ifeq (${PVM_ARCH},RS6K)
 CXX := g++
-CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
 CPP := /lib/cpp -P
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS}
 FC := xlf
@@ -1288,7 +1288,7 @@ CXX := CC -LANG:std
 CC := cc -c99
 # 20000302: -w suppresses warnings which will swamp linker
 #CXX := g++ -w
-#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+#CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS}
 ifdef $(MIPSPRO_SGI)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
@@ -1373,7 +1373,7 @@ CC:= c99 -D_BSD_SOURCE
 CFLAGS := 
 CPP := cc -E
 #CXX := g++
-#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+#CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
 #CFLAGS := -Wall
 #CPP := cpp
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS}
@@ -1407,7 +1407,7 @@ endif
 
 ifeq (${PVM_ARCH},WIN32)
 CXX := g++
-CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
 # NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
 #CPP_TKN_OS += -Di386 -DNEED_STRCASECMP -DNEED_STRDUP -I/usr/include
 CPP_TKN_OS += -Di386 -DNEED_STRDUP -I/usr/include
