@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.748 2015-01-08 00:28:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.749 2015-01-09 22:30:18 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -953,7 +953,7 @@ ifeq (${OPTS},X)
 # -Wformat-security : Warn about misuse of format strings
 # -Wl,-z,relro : Read-only relocation table area in final ELF
  CPPFLAGS += -D_FORTIFY_SOURCE=2
- CFLAGS += -g -fstack-protector -Wformat-security
+ CFLAGS += -g -O -fstack-protector -Wformat-security
 ifneq (clang,$(firstword ${CC}))
 # 20150106 clang does not recognize/utilize -z
  CFLAGS += -Wl,-z,relro
