@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.538 2015-01-08 20:53:23 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.539 2015-01-09 22:19:00 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4956,8 +4956,9 @@ if(0){
     @tst_cmd=(); # really reset array.		
 
 #ncrename #5
+# Absolute rename /g1/lon@units att to /g1/lon@new_units
 #ncrename -O -a /g1/lon@units,new_units ~/nco/data/in_grp.nc ~/foo.nc 
-# absolute rename /g1/lon@units att to /g1/lon@new_units
+#ncks -v /g1/lon ~/foo.nc | grep 'new_units'
 
     $dsc_sng="Attributes: Absolute rename '/g1/lon\@units' to 'new_units'";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -5237,7 +5238,6 @@ if(0){
 #ncrename -O -d time,newrec ~/nco/data/in.nc ~/foo.nc
 #ncks -s %g -H -g // -v time -d newrec,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate dimension in netCDF3 file
-
     $dsc_sng="netCDF3: Valid values after renaming coordinate dimension in netCDF3 file";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H -g // -v time -d newrec,0 -C %tmp_fl_00%";
@@ -5250,7 +5250,6 @@ if(0){
 #ncrename -O -v time,newrec ~/nco/data/in.nc ~/foo.nc
 #ncks -s %g -H -g // -v newrec -d time,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate variable in netCDF3 file
-
     $dsc_sng="netCDF3: Valid values after renaming coordinate variable in netCDF3 file";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v time,newrec $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H -g // -v newrec -d time,0 -C %tmp_fl_00%";
@@ -5263,7 +5262,6 @@ if(0){
 #ncrename -O -d time,newrec -v time,newrec ~/nco/data/in.nc ~/foo.nc
 #ncks -s %g -H -g // -v newrec -d newrec,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate dimension and variable in netCDF3 file
-
     $dsc_sng="netCDF3: Valid values after renaming coordinate dimension and variable in netCDF3 file";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec -v time,newrec $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H -g // -v newrec -d newrec,0 -C %tmp_fl_00%";
@@ -5276,7 +5274,6 @@ if(0){
 #ncrename -O -d time,newrec ~/nco/data/in_4c.nc ~/foo.nc
 #ncks -s %g -H -g // -v time -d newrec,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate dimension in netCDF4-classic file
-
     $dsc_sng="netCDF4-classic: Valid values after renaming coordinate dimension in netCDF4-classic file";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec $in_pth_arg in_4c.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H -g // -v time -d newrec,0 -C %tmp_fl_00%";
@@ -5289,7 +5286,6 @@ if(0){
 #ncrename -O -v time,newrec ~/nco/data/in_4c.nc ~/foo.nc
 #ncks -s %g -H -g // -v newrec -d time,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate variable in netCDF4-classic file
-
     $dsc_sng="netCDF4-classic: Valid values after renaming coordinate variable in netCDF4-classic file";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v time,newrec $in_pth_arg in_4c.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H -g // -v newrec -d time,0 -C %tmp_fl_00%";
@@ -5302,7 +5298,6 @@ if(0){
 #ncrename -O -d time,newrec -v time,newrec ~/nco/data/in_4c.nc ~/foo.nc
 #ncks -s %g -H -g // -v newrec -d newrec,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate dimension and variable in netCDF4-classic file
-
     $dsc_sng="netCDF4-classic: Valid values after renaming coordinate dimension and variable in netCDF4-classic file";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec -v time,newrec $in_pth_arg in_4c.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H -g // -v newrec -d newrec,0 -C %tmp_fl_00%";
@@ -5315,7 +5310,6 @@ if(0){
 #ncrename -O -d time,newrec ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -s %g -H -g // -v time -d newrec,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate dimension in netCDF4 file
-
     $dsc_sng="netCDF4: Valid values after renaming coordinate dimension in netCDF4 file";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H -g // -v time -d newrec,0 -C %tmp_fl_00%";
@@ -5328,7 +5322,6 @@ if(0){
 #ncrename -O -v time,newrec ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -s %g -H -g // -v newrec -d time,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate variable in netCDF4 file
-
     $dsc_sng="netCDF4: Valid values after renaming coordinate variable in netCDF4 file";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v time,newrec $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H -g // -v newrec -d time,0 -C %tmp_fl_00%";
@@ -5341,7 +5334,6 @@ if(0){
 #ncrename -O -d time,newrec -v time,newrec ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -s %g -H -g // -v newrec -d newrec,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate dimension and variable in netCDF4 file
-
     $dsc_sng="netCDF4: Valid values after renaming coordinate dimension and variable in netCDF4 file";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec -v time,newrec $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H -g // -v newrec -d newrec,0 -C %tmp_fl_00%";

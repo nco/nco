@@ -1,3 +1,7 @@
+2015-01-09  Charlie Zender  <zender@uci.edu>
+
+	* Add --lbr, --library to ncap2 to facilitate link-path debugging
+
 2015-01-08  Charlie Zender  <zender@uci.edu>
 
 	* New ncecat regression test to verify concatentated coordinates do not gain new record dimension
