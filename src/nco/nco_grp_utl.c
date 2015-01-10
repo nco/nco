@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1485 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1486 2015-01-10 02:52:21 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -898,6 +898,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       if(var_obj.nco_typ == nco_obj_typ_var){
         /* Cancel (non-full-path) variable intersection match unless variable is also in user-specified group */
         if(var_obj.flg_mch && !var_obj.flg_vfp){
+	  grp_obj=trv_tbl->lst[0]; /* CEWI */
           for(unsigned int obj2_idx=0;obj2_idx<trv_tbl->nbr;obj2_idx++){
             grp_obj=trv_tbl->lst[obj2_idx];
             if(grp_obj.nco_typ == nco_obj_typ_grp && !strcmp(var_obj.grp_nm_fll,grp_obj.grp_nm_fll)) break;
@@ -4335,7 +4336,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int var_in_id;                         /* [id] Variable ID */
   int var_out_id;                        /* [id] Variable ID */
 
-  long dmn_cnt;                          /* [nbr] Hyperslabbed size of dimension */  
+  long dmn_cnt=NC_UNLIMITED;             /* [nbr] Hyperslabbed size of dimension */  
   long dmn_sz;                           /* [nbr] Size of dimension (on input)  */  
   long dmn_sz_grp;                       /* [sng] Dimension size for group  */  
 
@@ -4343,7 +4344,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   nc_type var_typ_out;                   /* [enm] netCDF type in output variable (usually same as input) */ 
 
   nco_bool CRR_DMN_IS_REC_IN_INPUT;      /* [flg] Current dimension of variable is record dimension of variable in input file/group */
-  nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
+  nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; /* [flg] Define current dimension as record dimension in output file */
   nco_bool FIX_ALL_REC_DMN=False;        /* [flg] Fix all record dimensions */
   nco_bool FIX_REC_DMN=False;            /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
   nco_bool NEED_TO_DEFINE_DIM;           /* [flg] Dimension needs to be defined in *this* group */  
@@ -4960,8 +4961,8 @@ nco_dmn_swap                           /* [fnc] Swap dimensions */
  dmn_cmn_sct *dmn_cmn,                 /* I/O [sct] Dimension structure array */
  const int nbr_dmn)                    /* I [nbr] Number of dimensions (size of above array) */
 {
-  int dmn_nm_1_idx;
-  int dmn_nm_2_idx;
+  int dmn_nm_1_idx=int_CEWI;
+  int dmn_nm_2_idx=int_CEWI;
 
   dmn_cmn_sct dmn_cmn_tmp;
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.228 2014-12-31 05:30:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.229 2015-01-10 02:52:21 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -25,7 +25,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *nm_cdl;
-  char *sng_val_sng; /* [sng] String of NC_CHAR */
+  char *sng_val_sng=NULL_CEWI; /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
   char *spr_sng=NULL; /* [sng] Output separator string */
 
@@ -60,8 +60,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   long att_szm1;
   long chr_idx;
   long lmn;
-  long sng_lng; /* [nbr] Length of NC_CHAR string */
-  long sng_lngm1; /* [nbr] Length minus one of NC_CHAR string */
+  long sng_lng=long_CEWI; /* [nbr] Length of NC_CHAR string */
+  long sng_lngm1=long_CEWI; /* [nbr] Length minus one of NC_CHAR string */
   
   nc_type var_typ;
 
@@ -1355,7 +1355,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   char *dlm_sng=NULL; /* [sng] User-specified delimiter string, if any */
   char *nm_cdl;
-  char *sng_val_sng; /* [sng] String of NC_CHAR */
+  char *sng_val_sng=NULL_CEWI; /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
   char *spr_sng=NULL; /* [sng] Output separator string */
   char *unit_sng_var; /* [sng] Units string for variable */ 
@@ -1387,8 +1387,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   long *mod_map_cnt=NULL_CEWI; /* [nbr] MSA modulo array */
   long *mod_map_in=NULL_CEWI; /* [nbr] MSA modulo array */
   long lmn; /* [nbr] Index to print variable data */
-  long sng_lng; /* [nbr] Length of NC_CHAR string */
-  long sng_lngm1; /* [nbr] Length minus one of NC_CHAR string */
+  long sng_lng=long_CEWI; /* [nbr] Length of NC_CHAR string */
+  long sng_lngm1=long_CEWI; /* [nbr] Length minus one of NC_CHAR string */
   long var_dsk; /* [nbr] Variable index relative to disk */
   long var_szm1;
 

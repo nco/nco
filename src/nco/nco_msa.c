@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.269 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.270 2015-01-10 02:52:21 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1525,7 +1525,7 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   lmt_msa_sct **lmt_msa;
   lmt_sct **lmt;
 
-  nc_type mss_typ_tmp;
+  nc_type mss_typ_tmp=NC_NAT; /* CEWI */
 
   trv_sct *var_trv;
 
