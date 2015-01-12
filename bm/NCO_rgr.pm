@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.539 2015-01-09 22:19:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.540 2015-01-12 23:28:08 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1283,12 +1283,10 @@ print "\n";
     #######################################
 
     if($RUN_NETCDF4_TESTS == 1){
-
 		
 #ncflint #6 
 # ncflint -4 -O -w 0.8,0.0 -p ~/nco/data in.nc in.nc ~/foo.nc
-# ncks -H -C -v time  -d time,9,9,1 ~/foo.nc
-
+# ncks -H -C -v time -d time,9,9,1 ~/foo.nc
     $dsc_sng="-w 0.8,0.0 in.nc in.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -4 -O -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -C -v time  -d time,9,9,1 %tmp_fl_00%";

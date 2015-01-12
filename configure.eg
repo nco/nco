@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.169 2015-01-08 20:37:07 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.170 2015-01-12 23:28:08 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -559,7 +559,7 @@ End LINUXSPARC64
 
 ************************************************************************
 Start MACOSX
-Status: works.  rorik Thu Oct 30 12:09:15 AKST 2003
+Status: works. rorik Thu Oct 30 12:09:15 AKST 2003
 MACOSX requires netCDF3.x be built with CFLAGS=-fno-common to link with NCO 
 This may also be the case for netCDF4.
 NCO's configure detects MACOSX adds '-fno-common' automatically to CFLAGS
