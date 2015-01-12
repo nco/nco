@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.300 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.301 2015-01-12 23:21:52 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -194,6 +194,32 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 #endif
 
 } /* end trv_tbl_free() */
+
+/* DYW */
+void
+trv_tbl_init_lsd /* Set default value for no compression */ 
+(const int lsd, /* I [nbr] Least significant digit */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+{
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var) trv_tbl->lst[idx_tbl].lsd=lsd;
+} /* end trv_tbl_init_lsd() */
+
+void
+trv_tbl_set_lsd
+(const char * const var_nm_fll, /* I [sng] Variable name to find */
+ const int lsd, /* I [nbr] Least significant digit */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+{
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(!strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
+      trv_tbl->lst[idx_tbl].lsd=lsd;
+      return;
+    } /* endif */
+  } /* endfor */
+  (void)fprintf(stdout,"%s: INFO: cannot find variable with full name, %s, so lsd-value is not set for it\n",nco_prg_nm_get(),var_nm_fll);
+} /* end trv_tbl_set_lsd() */
+/* DYW end*/
 
 void                       
 trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */

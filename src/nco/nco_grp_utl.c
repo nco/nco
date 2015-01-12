@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1486 2015-01-10 02:52:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1487 2015-01-12 23:21:53 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2198,6 +2198,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].nbr_grp=nbr_grp;              /* [nbr] Number of sub-groups (for group) */
   trv_tbl->lst[idx].nbr_rec=nbr_rec;              /* [nbr] Number of record dimensions */
   trv_tbl->lst[idx].nbr_var=nbr_var;              /* [nbr] Number of variables (for group) */
+  trv_tbl->lst[idx].lsd=NC_MAX_INT;               /* [nbr] Least significant digit, aka negative log_10 of desired precision */
 
   trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;   /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.528 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.529 2015-01-12 23:21:52 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -1000,6 +1000,7 @@ extern "C" {
     int nbr_rec;                      /* [nbr] Number of record dimensions */
     int nbr_grp;                      /* [nbr] (For groups only) Number of sub-groups */   
     int nbr_var;                      /* [nbr] (For groups only) Number of variables */
+    int lsd;                          /* [nbr] Least significant digit, aka negative log_10 of desired precision */
 
     nco_bool flg_cf;                  /* [flg] Object matches CF-metadata extraction criteria */
     nco_bool flg_crd;                 /* [flg] Object matches coordinate extraction criteria */

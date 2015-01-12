@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.744 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.745 2015-01-12 23:21:52 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -55,7 +55,9 @@
    ncks --cdl -v one_dmn_rec_var ~/nco/data/in.nc
    ncks --jsn -C -v one_dmn_rec_var ~/nco/data/in.nc
    ncks --jsn -C -m -v one_dmn_rec_var ~/nco/data/in_grp.nc
+   ncks -O -4 --lsd var1,var2=1 --lsd var3=4 ~/nco/nco-4.4.7/data/in.nc /data/dywei/foo.nc
    ncks -O -m -M -v Snow_Cover_Monthly_CMG ${DATA}/hdf/MOD10CM.A2007001.005.2007108111758.hdf */
+
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -104,6 +106,19 @@
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
+
+/* DYW stuct and function */
+typedef struct
+{
+  char *key;
+  char *value;
+} kvmap;
+int hdlscrip(char *scripflnm, kvmap *smps); 
+kvmap str2map(char *str,  kvmap sm); /* parse a line return a name-value pair kvmap */
+int str2array(const char *delim, const char *str, char **sarray); /* split str by delim to sarray returns size of sarray */
+char * strip(char *str); /* remove heading and trailing blanks */
+void prtkvmap (kvmap sm);  /* print kvmap contents */
+/* DYW end */
 
 int 
 main(int argc,char **argv)
@@ -174,17 +189,25 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
+  char *scripfn=NULL; /* scrip file name */
   char *rec_dmn_nm_fix=NULL; /* [sng] Record dimension name (Original input name without _fix prefix) */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *spr_chr=NULL; /* [sng] Separator for XML character types */
   char *spr_nmr=NULL; /* [sng] Separator for XML numeric types */
+/* DYW */
+  kvmap *sms;  /* container to hold scrip info */
+  sms = (kvmap *)malloc(BUFSIZ*sizeof(kvmap));
+  kvmap *lsds;  /* container to hold lsd info */
+  lsds = (kvmap *)malloc(NC_MAX_VARS*sizeof(kvmap));
+  int ilsd=0; /* counter for lsd vars */
+/* DYW end */
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.744 2014-12-31 01:50:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.744 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.745 2015-01-12 23:21:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.745 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -224,7 +247,6 @@ main(int argc,char **argv)
   int idx;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int lsd=0; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -347,6 +369,9 @@ main(int argc,char **argv)
       {"tst_udunits",required_argument,0,0},
       {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
       {"xml_spr_nmr",required_argument,0,0}, /* [flg] Separator for XML numeric types */
+/* DYW */
+      {"scrip",required_argument,0,0}, /* SCRIP file */
+/* DYW end */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -510,6 +535,27 @@ main(int argc,char **argv)
         rec_dmn_nm=strcat(rec_dmn_nm,optarg);
         rec_dmn_nm_fix=strdup(optarg);
       } /* endif fix_rec_dmn */
+      if(!strcmp(opt_crr,"scrip")){
+        scripfn=strdup(optarg);
+        hdlscrip(scripfn, sms);
+      } /* endif scrip */
+      if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
+        char * arg = strdup(optarg);
+        kvmap sm;
+        sm=str2map(arg, sm);
+        if (sm.key != NULL)
+        {
+          char *items[BUFSIZ];
+          int i;
+          int rc=str2array(",", sm.key, items);
+          for (i=0; i<rc; i++)
+          {
+            lsds[ilsd].key=strdup(items[i]);
+            lsds[ilsd].value=strdup(sm.value);
+            ilsd++;
+          }
+        }
+      } /* endif lsd */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
       if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
@@ -524,11 +570,13 @@ main(int argc,char **argv)
         (void)nco_lbr_vrs_prn();
         nco_exit(EXIT_SUCCESS);
       } /* endif "lbr" */
+/* DYW
       if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
         lsd=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	lsd+=0; /* CEWI */
+	lsd+=0; *//* CEWI */
+/* DYW
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
-      } /* endif "hdr_pad" */
+      } *//* endif "hdr_pad" */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"mpi_implementation")){
         (void)fprintf(stdout,"%s\n",nco_mpi_get());
@@ -783,6 +831,7 @@ main(int argc,char **argv)
 #endif /* !_LANGINFO_H */
 
   /* Initialize traversal table */
+
   (void)trv_tbl_init(&trv_tbl);
  
   /* Get program info for regressions tests */
@@ -801,6 +850,18 @@ main(int argc,char **argv)
 
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
+
+  /* DYW */
+  trv_tbl_init_lsd(NC_MAX_INT,trv_tbl); /* set NC_MAX_INT for no compression */
+  if(ilsd > 0){
+    printf("DYW +++++++%d++++++lsd args:\n", ilsd);
+    for(int i=0;i<ilsd;i++){
+      prtkvmap(lsds[i]);
+      trv_tbl_set_lsd(lsds[i].key,atoi(lsds[i].value),trv_tbl);
+    } /* end for */
+    printf("DYW +++++++++++++end of lsd args\n");
+  }
+/* DYW end */
 
   /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);    
@@ -1086,6 +1147,24 @@ close_and_free:
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
+    if(scripfn){
+      //scripfn=(char *)nco_free(scripfn);
+      if(nco_dbg_lvl > nco_dbg_fl){
+	idx=0;
+	while(sms[idx].key){
+	  prtkvmap(sms[idx]);
+	  idx++;
+	} /* end while */
+      } /* endif dbg */
+      if(sms) free(sms);
+    }
+    if (ilsd > 0){
+      printf("DYW +++++++%d++++++lsd args:\n", ilsd);
+      for(int i=0; i<ilsd;i++) prtkvmap(lsds[i]);
+      printf("DYW +++++++++++++end of lsd args\n");
+      if(lsds) free(lsds);
+    }
+
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -1132,3 +1211,97 @@ close_and_free:
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
+
+kvmap str2map(char *str, kvmap sm)
+{
+  int icnt=0;
+  char * prt;
+  prt=strtok(str, "=");
+  while(prt != NULL) {
+    icnt++;
+    strip(prt);
+    switch(icnt) {
+    case 1:
+      sm.key=strdup(prt);
+      break;
+    case 2:
+      sm.value=strdup(prt);
+      break;
+    default:
+      printf("invalid line in scrip file: %s\n", str);
+      break;
+    }
+    prt=strtok(NULL, "=");
+  }
+  return sm;
+}
+
+char * strip(char *str) /* strip off heading and tailing white spaces.  seems not working for \n??? */
+{
+  char *start = str;
+  while(isspace(*start)) start++;
+  int end = strlen(start);
+  if(start != str) {
+    memmove(str, start, end);
+    str[end] = '\0';
+  }
+  while(isblank(*(str+end-1))) end--;
+  str[end] = '\0';
+  return str;
+}
+
+int str2array(const char *delim, const char *str, char **sarray)
+{
+  int idx=0;
+  char *tstr;
+  tstr=strdup(str);
+  sarray[idx]=strtok(tstr, delim);
+  while(sarray[idx]!=NULL)
+  {
+    sarray[++idx] = strtok(NULL, delim);
+  }
+  return idx;
+}
+
+void prtkvmap (kvmap vm)
+{
+  if(vm.key == NULL) return;
+  printf("%s=", vm.key);
+  printf("%s\n", vm.value);
+}
+
+int hdlscrip(char *scripflnm, kvmap *smps) /* return 0 invalid scrip file or rcd, 1 success */
+{
+  char line[BUFSIZ];
+  FILE *sfile=fopen(scripflnm, "r");
+  if (!sfile) {
+    printf("Cannot open scrip file %s\n", scripflnm);
+    return 0;
+  }
+  int icnt, idx=0;
+  while (fgets(line, sizeof(line), sfile)) {
+    if(strstr(line, "=") == NULL) {
+      printf("invalid line in scrip file: %s\n", line);
+      fclose(sfile);
+      return 0;
+    }
+    smps[idx]=str2map(line, smps[idx]);
+    if(smps[idx].key == NULL)
+    {
+      fclose(sfile);
+      return 0;
+    }
+    else
+    {
+      idx++;
+      //if(idx%10 == 0) realloc(smps, 10*sizeof(scripmap));
+    }
+  } /* finish parsing scrip file */
+  fclose(sfile);
+  printf("scrip file in structure of name=value:\n");
+  for(icnt=0; icnt<idx; icnt++){
+    prtkvmap(smps[icnt]);
+  }
+  return 1;
+}
+
