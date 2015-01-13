@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.271 2015-01-12 23:21:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.272 2015-01-13 03:26:01 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1350,8 +1350,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     lsd=var_trv->lsd; /* DYW */
     /* File format needed to enable netCDF4 features */
     (void)nco_inq_format(out_id,&fl_fmt);
-    //DYW if(lsd != 0 && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
-    if(lsd != NC_MAX_INT && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
+    if(lsd != NC_MAX_INT && lsd != 0 && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
       /* fxm: first get correct values for has_mss_val and mss_val */
       var_out.type=var_typ_out;
       var_out.id=var_out_id;

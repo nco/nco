@@ -1,6 +1,8 @@
 2015-01-12  Charlie Zender  <zender@uci.edu>
 
-	* Implement multiple LSD options by Dingying Wei (DYW)
+	* Do not call nco_var_around when lsd == 0
+
+	* Implement multiple LSD options by Dingying Wei (DYW). Currently broken.
 
 	* Improve ISO8601 functionality with nco_cln_sng_rbs()
 
