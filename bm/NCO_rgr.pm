@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.541 2015-01-13 03:26:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.542 2015-01-13 06:04:22 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1063,7 +1063,7 @@ print "\n";
 
 #ncecat #4 part1
 #ncecat -h -O -g g1g1 -v v1 ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
-#ncks -d record,1,1,1 ~/foo.nc
+#ncks -H -d record,1,1,1 ~/foo.nc
     $dsc_sng="(Groups) Concatenate variables/groups 1: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -d record,1,1,1 %tmp_fl_00%";
@@ -1074,7 +1074,7 @@ print "\n";
 
 #ncecat #5 same as #4 but look at metadata
 #ncecat -h -O -g g1g1 -v v1 ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
-#ncks -d record,1,1,1 ~/foo.nc    
+#ncks --cdl ~/foo.nc | grep 'v1 ='
     $dsc_sng="(Groups) Concatenate variables/groups 2: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --cdl %tmp_fl_00% | grep 'v1 ='";
@@ -2221,7 +2221,6 @@ print "\n";
 
 #ncks #71
 # ncks -h -O  -C -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc
-
     $dsc_sng="Limits -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc";
     $tst_cmd[1]="time[2]=3 lat[0]=-90 lon[3]=270 three_dmn_var_dbl[19]=20 watt meter-2";
@@ -2232,10 +2231,8 @@ print "\n";
 #ncks #72
 #same as #70, with group
 # ncks -h -O -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc
-
     $dsc_sng="(Groups) Limits -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -g g19g3 -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 $in_pth_arg in_grp_3.nc";
-
     $tst_cmd[1]="time[2]=3 lat[0]=-90 lon[3]=270 three_dmn_var_dbl[19]=20 watt meter-2";
     $tst_cmd[2]="SS_OK";   
 
@@ -2244,35 +2241,28 @@ print "\n";
 
 #ncks #73
 # ncks -v lat -d latitude,0,1,1 ~/nco/data/in_grp.nc
-
     $dsc_sng="(Groups) Invalid input, expect ERROR because user-specified dimension \"latitude\" DNE";
     $tst_cmd[0]="ncks $nco_D_flg -v lat -d latitude,0,1,1 $in_pth_arg in_grp.nc";
-
     $tst_cmd[1]="ncks: ERROR dimension latitude is not in input file";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
 #ncks #74
 # ncks -O -p ~/nco/data in_grp.nc ~/foo.nc
 # ncks --cdl -g g8g1g1g1 ~/foo.nc | grep answer
-
     $dsc_sng="(Groups) Copy/print metadata-only leaf group";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --cdl -g g8g1g1g1 %tmp_fl_00% | grep answer";
-
     $tst_cmd[2]="            :answer = \"Twerking\" ;";
     $tst_cmd[3]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncks #75
-# ncks -O -c ~/nco/data/in_grp.nc ~/foo.nc
-
     if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
 
+#ncks #75
+# ncks -O -c ~/nco/data/in_grp.nc ~/foo.nc
     $dsc_sng="(Groups) -c Extract all coordinate variables";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg -c in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v lat %tmp_fl_00% | grep 'lat size'";
@@ -2285,7 +2275,6 @@ print "\n";
 	
 #ncks #76
 # ncks -O ~/nco/data/in_grp.nc ~/foo.nc
-
     $dsc_sng="(Groups) Default input dataset";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'lat size'";
