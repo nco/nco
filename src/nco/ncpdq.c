@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.411 2015-01-06 22:39:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.412 2015-01-13 04:00:18 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.411 2015-01-06 22:39:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.411 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.412 2015-01-13 04:00:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.412 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -835,7 +835,7 @@ main(int argc,char **argv)
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif nco_pck_plc != nco_pck_plc_nil */
 
-      if(lsd != 0 && (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)nco_var_around(lsd,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
+      if(lsd != NC_MAX_INT && lsd != 0 && (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)nco_var_around(lsd,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
 
 #ifdef _OPENMP
 #pragma omp critical

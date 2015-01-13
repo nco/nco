@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.272 2015-01-13 03:26:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.273 2015-01-13 04:00:18 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1355,7 +1355,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
       var_out.type=var_typ_out;
       var_out.id=var_out_id;
       nco_mss_val_get(out_id,&var_out);
-      (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+      //      (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
     } /* endif */
 
     if(nbr_dim == 0) (void)nco_put_var1(out_id,var_out_id,0L,var_out.val.vp,var_typ_out); else (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp,var_typ_out);
