@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1488 2015-01-13 04:00:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1489 2015-01-13 04:33:03 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2210,7 +2210,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_nsm_prn=False;            /* [flg] (ncge) Group is, or variable is in, ensemble parent group */
   trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] (ncge) Group is, or variable is in, ensemble member group */  
   trv_tbl->lst[idx].flg_nsm_tpl=False;            /* [flg] Group is, or variable is in, template member group */
-  trv_tbl->lst[idx].nsm_nm=NULL;                  /* [sng] (ncge) Ensemble parent group name i.e., full path to ensemble parent */ 
+  trv_tbl->lst[idx].nsm_nm=NULL;                  /* [sng] (ncge) Ensemble parent group name i.e., full path to ensemble parent */
 
   /* Variable dimensions. For groups there are no variable dimensions  */
   trv_tbl->lst[idx].var_dmn=NULL;
@@ -2232,7 +2232,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
     /* Get dimension IDs for variable */
     (void)nco_inq_vardimid(grp_id,idx_var,dmn_id_var);
-
 
     /* Allocate path buffer and include space for trailing NUL */ 
     var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2L);
