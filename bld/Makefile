@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.750 2015-01-09 22:33:21 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.751 2015-01-13 03:10:54 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1175,6 +1175,7 @@ endif # endif OMP
 endif
 # endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD, MACOSX
 
+# NB: Deprecated as of 201403. Now MACOSX is subsumed in LINUX
 ifeq (${PVM_ARCH},MACOSXOLD)
 CXX := ${LINUX_CXX}
 # NB: -D_POSIX_SOURCE breaks MACOSX build in nco_fl_utl.c, nco_mmr.c

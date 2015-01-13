@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.229 2015-01-10 02:52:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.230 2015-01-13 03:10:55 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1928,10 +1928,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
           /* Account for hyperslab offset in coordinate values*/
           crd_idx_crr=dmn_sbs_ram[dmn_idx];
-	  char crd_sng[NCO_MAX_LEN_FMT_SNG];
+	  char crd_sng_lgb[NCO_MAX_LEN_FMT_SNG];
 	  if(unit_cln_crd){
-	    crd_sng[0]='\0';
-	    (void)nco_cln_sng_rbs(dim[dmn_idx].val,crd_idx_crr,dim[dmn_idx].type,unit_sng_crd,crd_sng);
+	    crd_sng_lgb[0]='\0';
+	    (void)nco_cln_sng_rbs(dim[dmn_idx].val,crd_idx_crr,dim[dmn_idx].type,unit_sng_crd,crd_sng_lgb);
 	    dim[dmn_idx].type=NC_CHAR;
 	  } /* !unit_cln_crd */
           if(prn_flg->PRN_DMN_VAR_NM){
@@ -1941,7 +1941,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
             case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ip[crd_idx_crr]); break;
             case NC_CHAR:
-	      if(unit_cln_crd) (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,crd_sng); else (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]);
+	      if(unit_cln_crd) (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,crd_sng_lgb); else (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]);
 	      break;
 	    case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
             case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
@@ -1959,7 +1959,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.sp[crd_idx_crr]); break;
             case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.ip[crd_idx_crr]); break;
             case NC_CHAR:
-	      if(unit_cln_crd) (void)fprintf(stdout,dmn_sng,crd_sng); else (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.cp[crd_idx_crr]);
+	      if(unit_cln_crd) (void)fprintf(stdout,dmn_sng,crd_sng_lgb); else (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.cp[crd_idx_crr]);
 	      break;
             case NC_BYTE: (void)fprintf(stdout,dmn_sng,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
             case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.ubp[crd_idx_crr]); break;

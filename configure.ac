@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.57 2015-01-08 20:37:07 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.58 2015-01-13 03:10:54 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -721,9 +721,10 @@ case ${host} in
     i*86-*-linux-gnu | x86_64*-linux* )
 	case ${CC} in
 	    como* ) CFLAGS="${CFLAGS} --c99" ; ;;
-		icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
-		pathcc* ) CFLAGS="${CFLAGS} -std=c99" ; ;;
-		pgcc* ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
+# 20150109: fxm Introduce -D_DEFAULT_SOURCE in place of deprecated (as of gcc 4.9.2) -D_BSD_SOURCE -D_POSIX_SOURCE 
+	    icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
+	    pathcc* ) CFLAGS="${CFLAGS} -std=c99" ; ;;
+	    pgcc* ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
 	esac
 	case ${CXX} in
 #	    icpc* ) CXXFLAGS="${CXXFLAGS} -cxxlib-icc" ; ;;

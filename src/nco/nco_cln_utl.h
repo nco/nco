@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.38 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.39 2015-01-13 03:10:55 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -125,7 +125,7 @@ int /* O [flg] String is calendar date */
 nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
 (const char *unit_sng); /* I [sng] Units string */
 
-void
+int /* [rcd] Return code */
 nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
 (const ptr_unn val, /* I [sct] Value to rebase */
  const long val_idx, /* I [idx] Index into 1-D array of values */

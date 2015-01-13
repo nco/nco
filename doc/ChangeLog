@@ -1,6 +1,8 @@
 2015-01-12  Charlie Zender  <zender@uci.edu>
 
-	* Implement multiple LSD options by DYW
+	* Implement multiple LSD options by Dingying Wei (DYW)
+
+	* Improve ISO8601 functionality with nco_cln_sng_rbs()
 
 2015-01-09  Charlie Zender  <zender@uci.edu>
 
