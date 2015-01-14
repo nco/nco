@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.73 2015-01-14 19:58:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.74 2015-01-14 21:49:30 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -119,8 +119,14 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
      Similar to numpy.around() function, hence the name around()
      Based on implementation by Jeff Whitaker for netcdf4-python described here:
      http://netcdf4-python.googlecode.com/svn/trunk/docs/netCDF4-module.html
-     
-     Manually determine scale to use:
+     which invokes the numpy.around() function documented here:
+     http://docs.scipy.org/doc/numpy/reference/generated/numpy.around.html#numpy.around
+     A practical discussion of rounding is at
+     http://stackoverflow.com/questions/20388071/what-are-the-under-the-hood-differences-between-round-and-numpy-round
+     This mentions the () NumPy source code:
+     https://github.com/numpy/numpy/blob/7b2f20b406d27364c812f7a81a9c901afbd3600c/numpy/core/src/multiarray/calculation.c#L588
+
+     Manually determine scale:
      ncap2 -O -v -s 'lsd=2;lsd_abs=abs(lsd);bit_nbr_xct=lsd_abs*ln(10.)/ln(2.);bit_nbr_int=ceil(bit_nbr_xct);scale=pow(2.0,bit_nbr_int);' ~/nco/data/in.nc ~/foo.nc 
      ncks -H ~/foo.nc
 
@@ -137,7 +143,6 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 
   long idx;
   
-  if(lsd == 0) return;
   lsd_abs=abs(lsd);
   switch(lsd_abs){
   case 0:
@@ -182,6 +187,8 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
   
+  if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stdout,"%s: INFO nco_var_around() reports lsd = %d, bit_nbr= %d, scale = %g\n",nco_prg_nm_get(),lsd,bit_nbr,scale);
+
   switch(type){
   case NC_FLOAT: 
     /* Do float arithmetic in double precision before converting back to float (fxm: unless --flt?) */
