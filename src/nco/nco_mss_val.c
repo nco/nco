@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.57 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.58 2015-01-14 19:58:25 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -284,8 +284,10 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
   size_t att_lng;
 
   /* Refresh netCDF "mss_val" attribute for this variable */
+  if(var->has_mss_val)
+     if(var->mss_val.vp)
+       var->mss_val.vp=(void *)nco_free(var->mss_val.vp);
   var->has_mss_val=False;
-  var->mss_val.vp=nco_free(var->mss_val.vp);
 
   /* Refresh number of attributes for variable */
   (void)nco_inq_varnatts(nc_id,var->id,&var->nbr_att);

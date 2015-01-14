@@ -1,5 +1,7 @@
 2015-01-14  Charlie Zender  <zender@uci.edu>
 
+	* Patch nco_mss_val_get() to avoid invalid free()---now nco_var_around() can work
+
 	* Regressions now fixed. Failures may have been due to excessive .tmp files in regression directory.
 
 2015-01-12  Charlie Zender  <zender@uci.edu>

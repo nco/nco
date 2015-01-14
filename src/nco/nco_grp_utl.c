@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1490 2015-01-14 14:58:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1491 2015-01-14 19:58:25 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -770,10 +770,10 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
             /* Look for partial match, not necessarily on path boundaries */
             /* 20130829: Variables and group names may be proper subsets of ancestor group names
-            e.g., variable named g9 in group named g90 is /g90/g9
-            e.g., group named g1 in group named g10 is g10/g1
-            Search algorithm must test same full name multiple times in such cases
-            For variables, only final match (closest to end full name) need be fully tested */
+	       e.g., variable named g9 in group named g90 is /g90/g9
+	       e.g., group named g1 in group named g10 is g10/g1
+	       Search algorithm must test same full name multiple times in such cases
+	       For variables, only final match (closest to end full name) need be fully tested */
             sbs_srt=NULL;
             sbs_srt_nxt=trv_obj.nm_fll;
             while((sbs_srt_nxt=strstr(sbs_srt_nxt,usr_sng))){
@@ -789,7 +789,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
             /* Does object name contain usr_sng? */
             if(sbs_srt){
               /* Ensure match spans (begins and ends on) whole path-component boundaries
-              Full path-check starts at current substring */
+		 Full path-check starts at current substring */
 
               /* Does match begin at path component boundary ... directly on a slash? */
               if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
@@ -844,9 +844,9 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
               if(nco_dbg_lvl_get() == nco_dbg_old){
                 /* Redundant call to nco_flg_set_grp_var_ass() here in debugging mode only to set flags for following print statements 
-                Essential call to nco_flg_set_grp_var_ass() occurs after itr loop
-                Most debugging info is available in debugging section at routine end
-                However, group boundary/anchoring/recursion info is only available here */
+		   Essential call to nco_flg_set_grp_var_ass() occurs after itr loop
+		   Most debugging info is available in debugging section at routine end
+		   However, group boundary/anchoring/recursion info is only available here */
                 if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
                 (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");

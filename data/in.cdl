@@ -68,7 +68,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.200 2015-01-13 06:04:22 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.201 2015-01-14 19:58:24 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -344,6 +344,11 @@ variables:
 	float lon_wgt(lon);
 	lon_wgt:long_name = "Gaussian weights";
 	lon_wgt:purpose = "Gaussian weights which sum to two for n = 4. These weights are all have floor of 0.0 so should cause SIGFPE when applied to integer types in weighted average.";
+
+	double lsd_dbl(time);
+        lsd_dbl:long_name = "Least Significant Digit";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
 
 	double lsd_dbl(time);
         lsd_dbl:long_name = "Least Significant Digit";

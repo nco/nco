@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.72 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.73 2015-01-14 19:58:25 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -120,9 +120,13 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
      Based on implementation by Jeff Whitaker for netcdf4-python described here:
      http://netcdf4-python.googlecode.com/svn/trunk/docs/netCDF4-module.html
      
-     Test routine:
+     Manually determine scale to use:
      ncap2 -O -v -s 'lsd=2;lsd_abs=abs(lsd);bit_nbr_xct=lsd_abs*ln(10.)/ln(2.);bit_nbr_int=ceil(bit_nbr_xct);scale=pow(2.0,bit_nbr_int);' ~/nco/data/in.nc ~/foo.nc 
-     ncks -H ~/foo.nc */
+     ncks -H ~/foo.nc
+
+     Test full algorithm:
+     ncks -4 -O -C -v lsd_dbl --lsd /lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc
+     ncks -v lsd_dbl ~/foo.nc */
   
   /* Rounding is currently defined as op1:=around(op1,lsd) */  
   
