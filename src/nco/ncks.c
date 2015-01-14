@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.745 2015-01-12 23:21:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.746 2015-01-14 14:58:09 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -189,25 +189,25 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
-  char *scripfn=NULL; /* scrip file name */
+  char *fl_nm_scrip=NULL; /* [sng] SCRIP file name */
   char *rec_dmn_nm_fix=NULL; /* [sng] Record dimension name (Original input name without _fix prefix) */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *spr_chr=NULL; /* [sng] Separator for XML character types */
   char *spr_nmr=NULL; /* [sng] Separator for XML numeric types */
-/* DYW */
-  kvmap *sms;  /* container to hold scrip info */
-  sms = (kvmap *)malloc(BUFSIZ*sizeof(kvmap));
+
+  /* DYW */
+  kvmap *sms; /* [sct] Container to hold SCRIP info */
   kvmap *lsds;  /* container to hold lsd info */
-  lsds = (kvmap *)malloc(NC_MAX_VARS*sizeof(kvmap));
   int ilsd=0; /* counter for lsd vars */
-/* DYW end */
+  sms=(kvmap *)nco_malloc(BUFSIZ*sizeof(kvmap));
+  lsds=(kvmap *)nco_malloc(NC_MAX_VARS*sizeof(kvmap));
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.745 2015-01-12 23:21:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.745 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.746 2015-01-14 14:58:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.746 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -536,8 +536,8 @@ main(int argc,char **argv)
         rec_dmn_nm_fix=strdup(optarg);
       } /* endif fix_rec_dmn */
       if(!strcmp(opt_crr,"scrip")){
-        scripfn=strdup(optarg);
-        hdlscrip(scripfn, sms);
+        fl_nm_scrip=strdup(optarg);
+        hdlscrip(fl_nm_scrip, sms);
       } /* endif scrip */
       if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
         char * arg = strdup(optarg);
@@ -852,16 +852,13 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* DYW */
-  trv_tbl_init_lsd(NC_MAX_INT,trv_tbl); /* set NC_MAX_INT for no compression */
   if(ilsd > 0){
-    printf("DYW +++++++%d++++++lsd args:\n", ilsd);
+    (void)fprintf(stderr,"DYW There are %d lsd arguments:\n",ilsd);
     for(int i=0;i<ilsd;i++){
       prtkvmap(lsds[i]);
       trv_tbl_set_lsd(lsds[i].key,atoi(lsds[i].value),trv_tbl);
     } /* end for */
-    printf("DYW +++++++++++++end of lsd args\n");
-  }
-/* DYW end */
+  } /* end if */
 
   /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);    
@@ -1113,7 +1110,6 @@ main(int argc,char **argv)
     }else{ 
 
       /* New file dump format(s) developed 201307 for CDL, JSN, SRM, TRD, XML */
-
       if(PRN_SRM){
 	/* Stream printing is pre-alpha. Great project for volunteers! */
         nco_srm_hdr();
@@ -1147,23 +1143,10 @@ close_and_free:
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
-    if(scripfn){
-      //scripfn=(char *)nco_free(scripfn);
-      if(nco_dbg_lvl > nco_dbg_fl){
-	idx=0;
-	while(sms[idx].key){
-	  prtkvmap(sms[idx]);
-	  idx++;
-	} /* end while */
-      } /* endif dbg */
-      if(sms) free(sms);
-    }
-    if (ilsd > 0){
-      printf("DYW +++++++%d++++++lsd args:\n", ilsd);
-      for(int i=0; i<ilsd;i++) prtkvmap(lsds[i]);
-      printf("DYW +++++++++++++end of lsd args\n");
-      if(lsds) free(lsds);
-    }
+    if(fl_nm_scrip) fl_nm_scrip=(char *)nco_free(fl_nm_scrip);
+    /* DYW fxm: free array values first */
+    if(sms) sms=(kvmap *)nco_free(sms);
+    if(lsds) lsds=(kvmap *)nco_free(lsds);
 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
@@ -1270,7 +1253,7 @@ void prtkvmap (kvmap vm)
   printf("%s\n", vm.value);
 }
 
-int hdlscrip(char *scripflnm, kvmap *smps) /* return 0 invalid scrip file or rcd, 1 success */
+int hdlscrip(char *scripflnm, kvmap *smps) /* return 0 invalid SCRIP file or rcd, 1 success */
 {
   char line[BUFSIZ];
   FILE *sfile=fopen(scripflnm, "r");
@@ -1296,9 +1279,9 @@ int hdlscrip(char *scripflnm, kvmap *smps) /* return 0 invalid scrip file or rcd
       idx++;
       //if(idx%10 == 0) realloc(smps, 10*sizeof(scripmap));
     }
-  } /* finish parsing scrip file */
+  } /* finish parsing SCRIP file */
   fclose(sfile);
-  printf("scrip file in structure of name=value:\n");
+  printf("SCRIP file in structure of name=value:\n");
   for(icnt=0; icnt<idx; icnt++){
     prtkvmap(smps[icnt]);
   }

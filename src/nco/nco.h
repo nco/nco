@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.529 2015-01-12 23:21:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.530 2015-01-14 14:58:09 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -934,7 +934,6 @@ extern "C" {
     nco_bool has_crd_scp;    /* [flg] Does variable with same name exist in dimension's scope? */
     nco_bool flg_xtr;        /* [flg] Extract dimension */
   } dmn_trv_sct; 
-
 
   /* Build a list of 'standard_name' 'latitude' and 'longitude' coordinates (Auxiliary Coordinates) */
   typedef struct{

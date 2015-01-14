@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1489 2015-01-13 04:33:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1490 2015-01-14 14:58:09 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -919,7 +919,6 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
   /* Combine previous flags into initial extraction flag */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
-
     /* Extract object if ... */
     if(
        /* No subsetting */
@@ -934,7 +933,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       trv_tbl->lst[obj_idx].flg_xtr=True;
   } /* end loop over obj_idx */
 
-  if(nco_dbg_lvl_get() == nco_dbg_old){
+  if(nco_dbg_lvl_get() == nco_dbg_vrb){
     for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
       /* Create shallow copy to avoid indirection */
       trv_obj=trv_tbl->lst[obj_idx];
@@ -1555,13 +1554,13 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
     /* For each group ... */
     if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp){
       /* Metadata-only containing groups already have flg_mtd set in nco_xtr_mk()
-      Variable ancestry may not affect such groups, especially if they are leaf groups
-      Set extraction flag to True (then continue) iff matching groups contain only metadata
-      Otherwise set initialize extraction flag to False and overwrite later based on descendent variables */
+	 Variable ancestry may not affect such groups, especially if they are leaf groups
+	 Set extraction flag to True (then continue) iff matching groups contain only metadata
+	 Otherwise set initialize extraction flag to False and overwrite later based on descendent variables */
       if((trv_tbl->lst[grp_idx].flg_xtr=(!trv_tbl->lst[grp_idx].flg_xcl && trv_tbl->lst[grp_idx].flg_mtd))) continue;
       if(!strcmp(trv_tbl->lst[grp_idx].grp_nm_fll,sls_sng)){
         /* Manually mark root group as extracted because matching algorithm below fails for root group 
-        (it looks for "//" in variable names) */
+	   (it looks for "//" in variable names) */
         trv_tbl->lst[grp_idx].flg_xtr=True;
         continue;
       } /* endif root group */
@@ -1651,7 +1650,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
  trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Define groups, variables, and attributes in output file
-  rec_dmn_nm, if any, is name requested for (netCDF3) sole record dimension */
+     rec_dmn_nm, if any, is name requested for (netCDF3) sole record dimension */
 
   const char fnc_nm[]="nco_xtr_dfn()"; /* [sng] Function name */
 
@@ -3379,9 +3378,6 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 
 } /* nco_get_rec_dmn_nm() */
 
-
-
-
 var_sct **                            /* O [sct] Variable list */  
 nco_fll_var_trv                       /* [fnc] Fill-in variable structure list for all extracted variables */
 (const int nc_id,                     /* I [id] netCDF file ID */
@@ -3431,12 +3427,10 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
     } /* Filter variables  */
   } /* Loop table */
 
-
   *xtr_nbr=nbr_xtr;
   return var;
 
 } /* nco_fll_var_trv() */
-
 
 var_sct **                            /* O [sct] Variable list */  
 nco_var_trv                           /* [fnc] Fill-in variable structure list for all variables named "var_nm" */
@@ -6762,7 +6756,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Free limits */
   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
 
-  if(nco_dbg_lvl_get() == nco_dbg_old) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
+  if(nco_dbg_lvl_get() == nco_dbg_vrb) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
 
   return;
 

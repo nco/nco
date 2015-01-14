@@ -1,6 +1,10 @@
+2015-01-14  Charlie Zender  <zender@uci.edu>
+
+	* Regressions now fixed. Failures may have been due to excessive .tmp files in regression directory.
+
 2015-01-12  Charlie Zender  <zender@uci.edu>
 
-	* Do not call nco_var_around when lsd == 0 or NC_MAX_INT, ensure lsd always initialized
+	* Do not call nco_var_around when lsd == NC_MAX_INT, ensure lsd always initialized
 
 	* Implement multiple LSD options by Dingying Wei (DYW). Currently broken.
 
