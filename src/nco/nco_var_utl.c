@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.363 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.364 2015-01-15 07:23:42 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -15,18 +15,21 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const md5_sct * const md5, /* I [flg] MD5 Configuration */
- const char *var_nm) /* I [sng] Variable name */
+ const char *var_nm, /* I [sng] Variable name */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* NB: nco_cpy_var_val() contains OpenMP critical region */
   /* Purpose: Copy single variable from input netCDF file to output netCDF file
      Routine does not account for user-specified limits, it just copies what it finds
-     Routine copies variable-by-variable, old-style, called only by ncks */
+     Routine copies variable-by-variable, old-style
+     As of 2013, routine used only in USE_MM3_WORKAROUND copying in nco_xtr_wrt() */
 
   const char fnc_nm[]="nco_cpy_var_val()"; /* [sng] Function name */
 
   int *dmn_id;
 
   int dmn_nbr;
+  int fl_fmt; /* [enm] Output file format */
   int idx;
   int nbr_dmn_in;
   int nbr_dmn_out;
@@ -68,8 +71,8 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx<dmn_nbr;idx++){
     /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
-    Until record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
-    Thus we read input file for dimension sizes */
+       Until record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
+       Thus we read input file for dimension sizes */
     (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
 
     /* Initialize indicial offset and stride arrays */
@@ -80,13 +83,44 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Allocate enough space to hold variable */
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
+  /* 20150114: Keep LSD code in single block for easier reuse */
+  int lsd; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+  nco_bool flg_lsd=False; /* [sct] Activate LSD with this variable and output file */
+  var_sct var_out; /* [sct] Variable structure */
+  /* File format needed to enable netCDF4 features */
+  (void)nco_inq_format(out_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    /* This ugliness backs-out the lsd element from the traversal table for this variable */
+    char *var_nm_fll;
+    trv_sct *var_trv;
+    var_nm_fll=nco_gid_var_nm_2_var_nm_fll(in_id,var_nm);
+    var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
+    assert(var_trv);
+    lsd=var_trv->lsd;
+    if(var_nm_fll) var_nm_fll=(char *)nco_free(var_nm_fll);
+    if(lsd != NC_MAX_INT){
+      /* Initialize variable structure with minimal information for nco_mss_val_get() */
+      flg_lsd=True;
+      var_out.nm=(char *)strdup(var_nm);
+      var_out.type=var_typ;
+      var_out.id=var_out_id;
+      var_out.sz=var_sz;
+      var_out.has_mss_val=False;
+      var_out.val.vp=void_ptr;
+      nco_mss_val_get(out_id,&var_out);
+      if(var_out.nm) var_out.nm=(char *)nco_free(var_out.nm);
+    } /* endif lsd */
+  } /* endif fl_fmt*/
+    
   /* Get variable */
   if(dmn_nbr == 0){
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
+    if(flg_lsd) (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
   }else{ /* end if variable is scalar */
     if(var_sz > 0){ /* Allow for zero-size record variables */
       nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+      if(flg_lsd) (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
       nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
     } /* end if var_sz */
   } /* end if variable is an array */
@@ -272,12 +306,13 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const md5_sct * const md5, /* I [flg] MD5 Configuration */
  CST_X_PTR_CST_PTR_CST_Y(nm_id_sct,var_lst), /* I [sct] Record variables to be extracted */
- const int var_nbr) /* I [nbr] Number of record variables */
+ const int var_nbr, /* I [nbr] Number of record variables */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Copy all record variables from input netCDF file to output netCDF file
      Routine does not account for user-specified limits, it just copies what it finds
      Routine copies record-by-record, for all variables, old-style, called only by ncks
-     Used only by MM3 workaround and therefore routine assumes:
+     Used only by MM3 workaround in nco_xtr_wrt() and therefore routine assumes:
      1. Input file is netCDF3
      2. All variables in var_lst are record variables
      NB: Rationale for MM3 workaround is kept in header to routine nco_use_mm3_workaround() */
@@ -288,6 +323,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 
   int dmn_idx;
   int dmn_nbr;
+  int fl_fmt; /* [enm] Output file format */
   int nbr_dmn_in;
   int nbr_dmn_out;
   int rec_dmn_id;
@@ -314,6 +350,9 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
   rcd+=nco_inq_unlimdim(in_id,&rec_dmn_id);
   assert(rec_dmn_id != NCO_REC_DMN_UNDEFINED);
   rcd+=nco_inq_dimlen(in_id,rec_dmn_id,&rec_sz);
+
+  /* File format needed to enable netCDF4 features */
+  (void)nco_inq_format(var_lst[0]->grp_id_out,&fl_fmt);
 
   for(rec_idx=0;rec_idx<rec_sz;rec_idx++){
     for(var_idx=0;var_idx<var_nbr;var_idx++){
@@ -358,9 +397,39 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Allocate enough space to hold one record of this variable */
       void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
+      /* 20150114: Keep LSD code in single block for easier reuse */
+      int lsd; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+      nco_bool flg_lsd=False; /* [sct] Activate LSD with this variable and output file */
+      var_sct var_out; /* [sct] Variable structure */
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+	/* This ugliness backs-out the lsd element from the traversal table for this variable */
+	char *var_nm_fll;
+	trv_sct *var_trv;
+	var_nm_fll=nco_gid_var_nm_2_var_nm_fll(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm);
+	var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
+	//	(void)fprintf(stderr,"nco_cpy_rec_var_val reports var_nm_fll = %s\n",var_nm_fll);
+	//trv_tbl_prn(trv_tbl);
+	assert(var_trv != NULL);
+	lsd=var_trv->lsd;
+	if(var_nm_fll) var_nm_fll=(char *)nco_free(var_nm_fll);
+	if(lsd != NC_MAX_INT){
+	  /* Initialize variable structure with minimal information for nco_mss_val_get() */
+	  flg_lsd=True;
+	  var_out.nm=(char *)strdup(var_lst[var_idx]->nm);
+	  var_out.type=var_typ;
+	  var_out.id=var_out_id;
+	  var_out.sz=var_sz;
+	  var_out.has_mss_val=False;
+	  var_out.val.vp=void_ptr;
+	  nco_mss_val_get(var_lst[var_idx]->grp_id_out,&var_out);
+	  if(var_out.nm) var_out.nm=(char *)nco_free(var_out.nm);
+	} /* endif lsd */
+      } /* endif fl_fmt*/
+      
       /* Get and put one record of variable */
       if(var_sz > 0){ /* Allow for zero-size record variables */
         nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+	if(flg_lsd) (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
         nco_put_vara(var_lst[var_idx]->grp_id_out,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       } /* end if var_sz */
 

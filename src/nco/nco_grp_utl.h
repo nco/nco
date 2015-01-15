@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.517 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.518 2015-01-15 07:23:42 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -193,7 +193,7 @@ nco_xtr_lst_prn                        /* [fnc] Print name-ID structure list */
  const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
 
 void                          
-nco_prn_dmn                           /* [fnc] Print dimensions for a group  */
+nco_prn_dmn_grp                       /* [fnc] Print dimensions for a group  */
 (const int nc_id,                     /* I [ID] File ID */
  const char * const grp_nm_fll);      /* I [sng] Full name of group */
 
@@ -288,9 +288,9 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 crd_sct *                             /* O [sct] Coordinate object */
-nco_scp_var_crd                       /* [fnc] Is coordinate in scope of variable?  */
-(trv_sct *var_trv,                    /* I [sct] Variable object */
- dmn_trv_sct *dmn_trv);               /* I [sct] Dimension object */
+nco_scp_var_crd                       /* [fnc] Return in scope coordinate for variable  */
+(const trv_sct * const var_trv,       /* I [sct] Variable object */
+ dmn_trv_sct * const dmn_trv);         /* I [sct] Dimension object */
 
 int                                  /* O [nbr] Comparison result */
 nco_cmp_crd_dpt                      /* [fnc] Compare two crd_sct's by group depth */
@@ -402,7 +402,7 @@ nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variab
 void
 nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT */
 (const int xtr_nbr,                    /* I [nbr] Number of extracted variables */
- var_sct **var,                        /* I [sct] Array of extracted variables */
+ const var_sct * const * const var,    /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 var_sct *                              /* O [sct] Variable structure */
@@ -444,7 +444,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
  const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
  const nco_bool *dmn_rvr_rdr);        /* I [flg] Reverse dimension */
-
 
 void
 nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of variable values */
@@ -700,7 +699,7 @@ nco_lmt_std_att_lat_lon               /* [fnc] Apply limits to variable in table
  const int dmn_id,                    /* I [id] ID of dimension to apply the limits */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- trv_tbl_sct * const trv_tbl);       /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 void
 nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxiliary function called by different functions ) */
@@ -720,7 +719,8 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
  dmn_sct ***dmn);                      /* O [sct] dmn_sct array  */
 
 void
-nco_prn_nsm                           /* [fnc] Print ensembles  */                       (const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+nco_prn_nsm                           /* [fnc] Print ensembles  */
+(const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
@@ -865,7 +865,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nm_lst_sct * const var_lst,     /* I [sct] Array of common variable names from file not having ensembles */ 
  const nco_bool flg_grp_1,             /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
- const nco_bool flg_dfn);               /* I [flg] Action type (True for define variables, False for write variables ) */
+ const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
 
 void                          
 nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (ncbo) */
@@ -921,7 +921,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
 (const int nc_out_id,                  /* I [ID] netCDF output file ID */
- int nbr_dmn_var_out,                  /* I [nbr] Number of dimensions for variable on output  */
+ const int nbr_dmn_var_out,            /* I [nbr] Number of dimensions for variable on output  */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure in output file */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
@@ -944,7 +944,7 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
  nm_lst_sct *nsm_grp_nm_fll_prn);      /* I/O [sct] Array of ensemble paths read in the attributes */ 
 
 void
-nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
+nco_prn_dmn                            /* [fnc] Print dimensions (debug) */
 (const int nc_id,                      /* I [ID] netCDF file ID */
  const char * const grp_nm_fll,        /* I [sng] Group name full */
  const char * const var_nm,            /* I [sng] Variable name relative */
@@ -952,7 +952,7 @@ nco_prt_dmn                            /* [fnc] Print dimensions (debug) */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 void
-nco_nsm_wrt_att                  /* [fnc] Save ncge metadata attribute */
+nco_nsm_wrt_att                      /* [fnc] Save ncge metadata attribute */
 (const int nc_id,                    /* I [ID] netCDF input file ID */
  const int out_id,                   /* I [ID] netCDF output file ID */
  const gpe_sct * const gpe,          /* I [sct] GPE structure */

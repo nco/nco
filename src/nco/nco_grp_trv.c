@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.301 2015-01-12 23:21:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.302 2015-01-15 07:23:42 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -320,6 +320,26 @@ trv_tbl_prn                          /* [fnc] Print table with -z */
     (void)fprintf(stdout,"%s\n",trv_tbl->lst[idx_tbl].nm_fll); 
   } /* end idx_tbl */
 } /* end trv_tbl_prn() */
+
+char *                                /* O [flg] Full variable name */
+nco_gid_var_nm_2_var_nm_fll           /* [fnc] Construct full variable name from group ID and variable name */
+(const int grp_id,                    /* I [ID] netCDF input group ID */
+ const char * const var_nm)           /* I [sng] Variable name */
+{
+  char *var_nm_fll;
+  size_t grp_nm_lng;
+  size_t var_nm_fll_lng;
+  (void)nco_inq_grpname_full(grp_id,&grp_nm_lng,NULL);
+  /* Groups except root need a slash character to separate their name from variable name */
+  var_nm_fll_lng=grp_nm_lng+strlen(var_nm);
+  if(grp_nm_lng != 1L) var_nm_fll_lng++;
+  /* One extra space for NUL-terminator */
+  var_nm_fll=(char *)nco_malloc(var_nm_fll_lng+1L);
+  (void)nco_inq_grpname_full(grp_id,NULL,var_nm_fll);
+  if(grp_nm_lng != 1L) strcat(var_nm_fll,"/");
+  strcat(var_nm_fll,var_nm);
+  return var_nm_fll;
+} /* end nco_gid_var_nm_2_var_nm_fll() */
 
 nco_bool                              /* O [flg] Item found or not */
 trv_tbl_fnd_var_nm_fll                /* [fnc] Check if "var_nm_fll" is in table */
@@ -963,7 +983,6 @@ nco_is_fll_pth                         /* [fnc] Utility function to inquire if a
 
 } /* nco_is_fll_pth() */
 
-
 char *
 nco_strrstr                            /* [fnc] Searches a substring starting from the end */
 (const char *str,                      /* [fnc] String */
@@ -972,30 +991,25 @@ nco_strrstr                            /* [fnc] Searches a substring starting fr
   char *ptr;
   char *lst=NULL;
 
-  ptr = (char*)str;
-  while((ptr = strstr(ptr, str_fnd))){
-    lst = ptr++;
-  }
+  ptr=(char *)str;
+  while((ptr=strstr(ptr,str_fnd))) lst=ptr++;
+
   return lst;
 } /* nco_strrstr() */
-
 
 trv_sct *                             /* O [sct] Table object */
 trv_tbl_var_nm                        /* [fnc] Return variable object (relative name) */
 (const char * const var_nm,           /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
-  /* Purpose: Return variable object with given relative name (returns 1st name found ) */
-
+  /* Purpose: Return variable object with given relative name (returns 1st name found) 
+     NB: Calling this function is almost certainly a mistake */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && (strcmp(var_nm,trv_tbl->lst[idx_tbl].nm) == 0)){
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && (!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)))
       return &trv_tbl->lst[idx_tbl];
-    }
 
-    return NULL;
-
+  return NULL;
 } /* trv_tbl_var_nm() */
-
 
 trv_sct *                              /* O [sct] Table object */
 trv_tbl_nsm_nm                         /* [fnc] Return variable object  */
@@ -1007,19 +1021,13 @@ trv_tbl_nsm_nm                         /* [fnc] Return variable object  */
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct var_trv=trv_tbl->lst[idx_tbl];  
-    if(var_trv.nco_typ == nco_obj_typ_var && strcmp(var_nm,var_trv.nm) == 0){
-
-      if (strcmp(grp_nm_fll_prn,var_trv.grp_nm_fll_prn) == 0){
-        return &trv_tbl->lst[idx_tbl];
-      }
-
-    }
+    if(var_trv.nco_typ == nco_obj_typ_var && !strcmp(var_nm,var_trv.nm))
+      if(!strcmp(grp_nm_fll_prn,var_trv.grp_nm_fll_prn))
+	return &trv_tbl->lst[idx_tbl];
   }
 
   return NULL;
-
 } /* trv_tbl_nsm_nm() */
-
 
 trv_sct *                              /* O [sct] Table object */
 trv_tbl_nsm_nm_att                     /* [fnc] Return variable object  */
@@ -1032,15 +1040,10 @@ trv_tbl_nsm_nm_att                     /* [fnc] Return variable object  */
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct var_trv=trv_tbl->lst[idx_tbl];  
-    if(var_trv.nco_typ == nco_obj_typ_var && strcmp(var_nm,var_trv.nm) == 0){
-
-      if (strcmp(grp_nm_fll_prn,var_trv.grp_nm_fll) == 0){
+    if(var_trv.nco_typ == nco_obj_typ_var && !strcmp(var_nm,var_trv.nm))
+      if(!strcmp(grp_nm_fll_prn,var_trv.grp_nm_fll))
         return &trv_tbl->lst[idx_tbl];
-      }
-
-    }
   }
 
   return NULL;
-
 } /* trv_tbl_nsm_nm_att() */

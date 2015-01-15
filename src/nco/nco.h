@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.530 2015-01-14 14:58:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.531 2015-01-15 07:23:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -1067,7 +1067,6 @@ extern "C" {
     int var_nbr;            /* [nbr] Number of variable for this group (size of above array) */ 
   } nsm_grp_sct; 
 
-
   /* Ensemble (ncge) */
   typedef struct{
     char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) (e.g., /cesm) */
@@ -1080,7 +1079,6 @@ extern "C" {
     int mbr_srt;            /* [nbr] Member offsets, start (multi files, keep track of new added members) */ 
     int mbr_end;            /* [nbr] Member offsets, end (multi files, keep track of new added members) */ 
   } nsm_sct; 
-
   
   /* Name structure */
   typedef struct{ /* nm_sct */
@@ -1113,7 +1111,6 @@ extern "C" {
   typedef struct{ /* gpe_nm_sct */
     char *var_nm_fll; /* [sng] Fully qualified variable name */
   } gpe_nm_sct;
-
 
   /* Common variable names; common defined as same absolute path in 2 files */
   typedef struct{		
