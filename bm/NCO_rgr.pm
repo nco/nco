@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.542 2015-01-13 06:04:22 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.543 2015-01-15 07:37:40 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1312,12 +1312,11 @@ print "\n";
 ####################
 
 #ncks #01   
-
+    $dsc_sng="Create T42 variable named one, uniformly 1.0 over globe in %tmp_fl_03%. (FAILURE with netCDF4 ncrename nco821)";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc %tmp_fl_03%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tmp_fl_03%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 %tmp_fl_04% ";
-    $dsc_sng="Create T42 variable named one, uniformly 1.0 over globe in %tmp_fl_03%. (FAILURE with netCDF4 ncrename nco821)";
     $tst_cmd[4]=1;
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -1325,26 +1324,23 @@ print "\n";
 
 #ncks #02   
 #passes, but returned string includes tailing NULLS (<nul> in nedit)
-
-    $tst_cmd[0]="ncks -C -H -s '%c' -v fl_nm $in_pth_arg in.nc";
     $dsc_sng="extract filename string";
+    $tst_cmd[0]="ncks -C -H -s '%c' -v fl_nm $in_pth_arg in.nc";
     $tst_cmd[1]="/home/zender/nco/data/in.cdl";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
 #ncks #03
-    
+    $dsc_sng="extract a dimension";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lev $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f,' -v lev %tmp_fl_00%";
-    $dsc_sng="extract a dimension";
     $tst_cmd[2]="100.000000,500.000000,1000.000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
 #ncks #04
-    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,3,3 %tmp_fl_00%";
     $dsc_sng="extract a variable with limits";
