@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1492 2015-01-15 07:23:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1493 2015-01-15 23:18:24 dywei2 Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1852,7 +1852,9 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
   USE_MM3_WORKAROUND=nco_use_mm3_workaround(nc_id_in,fl_out_fmt);
   if(HAVE_LIMITS) USE_MM3_WORKAROUND=False; 
 
+printf("DYW nco_xtr_wrt 1\n");
   if(USE_MM3_WORKAROUND){  
+printf("DYW nco_xtr_wrt 2\n");
 
     int fix_nbr; /* [nbr] Number of fixed-length variables */
     int rec_nbr; /* [nbr] Number of record variables */
@@ -1888,6 +1890,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
   }else{ /* !USE_MM3_WORKAROUND */
 
+printf("DYW nco_xtr_wrt 3\n");
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct trv=trv_tbl->lst[idx_tbl];
 
@@ -1904,7 +1907,9 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
         (void)nco_inq_grp_full_ncid(nc_id_out,grp_out_fll,&grp_id_out);
 
         /* Copy variable data from input netCDF file to output netCDF file */
+printf("DYW cpy1\n");
         (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,fp_bnr,md5,&trv); 
+printf("DYW cpy2\n");
 
         /* Memory management */
         if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);

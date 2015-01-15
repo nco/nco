@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.74 2015-01-14 21:49:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.75 2015-01-15 23:18:24 dywei2 Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -113,6 +113,8 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
  ptr_unn mss_val, /* I [val] Value of missing value */
  ptr_unn op1) /* I [val] Values of first operand */
 {
+  printf("DYW nco_var_around 0\n");
+  printf("DYW nco_var_around %d  %d  %d\n", lsd, sz, has_mss_val);
   /* Threads: Routine is thread safe and calls no unsafe routines */
 
   /* Purpose: Replace op1 values by their values rounded to decimal precision lsd
@@ -143,6 +145,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 
   long idx;
   
+  //DYW if(lsd == 0) return;
   lsd_abs=abs(lsd);
   switch(lsd_abs){
   case 0:
@@ -187,10 +190,12 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
   
+  printf("DYW nco_var_around 1\n");
   if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stdout,"%s: INFO nco_var_around() reports lsd = %d, bit_nbr= %d, scale = %g\n",nco_prg_nm_get(),lsd,bit_nbr,scale);
 
   switch(type){
   case NC_FLOAT: 
+  printf("DYW nco_var_around 11\n");
     /* Do float arithmetic in double precision before converting back to float (fxm: unless --flt?) */
     if(!has_mss_val){
       for(idx=0L;idx<sz;idx++) op1.fp[idx]=(float)lrint(scale*op1.fp[idx])/scale; /* Coerce to avoid implicit conversions warning */
@@ -203,15 +208,24 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     break;
   case NC_DOUBLE: 
     if(!has_mss_val){
-      for(idx=0L;idx<sz;idx++) op1.dp[idx]=lrint(scale*op1.dp[idx])/scale;
+  printf("DYW nco_var_around 12A\n");
+      for(idx=0L;idx<sz;idx++) {
+  printf("DYW nco_var_around 12A idx=%d, scale=%20.9f\n", idx, scale);
+  printf("DYW nco_var_around 12A op1.dp[idx]=%12.10f",op1.dp[idx]);
+op1.dp[idx]=lrint(scale*op1.dp[idx])/scale;
+  printf(" DYW %12.10f lrint=%12.10f\n",op1.dp[idx], lrint(scale*op1.dp[idx])/scale);
+}
     }else{
+  printf("DYW nco_var_around 12B\n");
       const float mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=lrint(scale*op1.dp[idx])/scale;
+  printf("DYW nco_var_around 12C\n");
       } /* end for */
     } /* end else */
     break;
   case NC_INT: /* Do nothing for non-floating point types ...*/
+  printf("DYW nco_var_around 13\n");
   case NC_SHORT:
   case NC_CHAR:
   case NC_BYTE:
@@ -226,6 +240,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     break;
   } /* end switch */
 
+  printf("DYW nco_var_around 2\n");
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.747 2015-01-14 19:58:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.748 2015-01-15 23:18:24 dywei2 Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ typedef struct
   char *value;
 } kvmap;
 int hdlscrip(char *scripflnm, kvmap *smps); 
-kvmap str2map(char *str,  kvmap sm); /* parse a line return a name-value pair kvmap */
-int str2array(const char *delim, const char *str, char **sarray); /* split str by delim to sarray returns size of sarray */
+kvmap sng2map(char *str,  kvmap sm); /* parse a line return a name-value pair kvmap */
+int sng2array(const char *delim, const char *str, char **sarray); /* split str by delim to sarray returns size of sarray */
 char * strip(char *str); /* remove heading and trailing blanks */
 void prtkvmap (kvmap sm);  /* print kvmap contents */
 /* DYW end */
@@ -181,6 +181,7 @@ main(int argc,char **argv)
   char *dlm_sng=NULL;
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
   char *fl_in=NULL;
+  char *fl_nm_scrip=NULL; /* scrip file name */
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
@@ -206,8 +207,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.747 2015-01-14 19:58:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.747 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.748 2015-01-15 23:18:24 dywei2 Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.748 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -556,12 +557,12 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
         char * arg = strdup(optarg);
         kvmap sm;
-        sm=str2map(arg, sm);
+        sm=sng2map(arg, sm);
         if (sm.key != NULL)
         {
           char *items[BUFSIZ];
           int i;
-          int rc=str2array(",", sm.key, items);
+          int rc=sng2array(",", sm.key, items);
           for (i=0; i<rc; i++)
           {
             lsds[ilsd].key=strdup(items[i]);
@@ -845,13 +846,14 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* DYW */
+  //trv_tbl_init_lsd(NC_MAX_INT,trv_tbl); /* set NC_MAX_INT for no compression */
   if(ilsd > 0){
-    (void)fprintf(stderr,"DYW There are %d lsd arguments:\n",ilsd);
     for(int i=0;i<ilsd;i++){
       prtkvmap(lsds[i]);
       trv_tbl_set_lsd(lsds[i].key,atoi(lsds[i].value),trv_tbl);
     } /* end for */
   } /* end if */
+/* DYW end */
 
   /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);    
@@ -868,6 +870,11 @@ main(int argc,char **argv)
   /* Roll call */
   (void)fprintf(stdout,"%s: MPI process rank %d reports %d process%s\n",nco_prg_nm,prc_rnk,prc_nbr,(prc_nbr == 1) ? "" : "es");
 #endif /* !ENABLE_MPI */
+
+  /* DYW */
+  /* Process lsd */
+  if(ilsd > 0) trv_tbl_around(in_id,trv_tbl);
+  /* end DYW */
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
@@ -935,6 +942,7 @@ main(int argc,char **argv)
     if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups, non-atomic types, or multiple record dimensions. However, it _will_ autoconvert netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE...) to netCDF3 atomic types (e.g., NC_CHAR, NC_SHORT...).\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
+printf("DYW fl_out\n");
   if(fl_out){
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
     int out_id;
@@ -979,9 +987,12 @@ main(int argc,char **argv)
     /* Timestamp end of metadata setup and disk layout */
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
-
+//DYW todo
     /* Write extracted data to output file */
-    if(PRN_VAR_DATA) (void)nco_xtr_wrt(in_id,out_id,gpe,fp_bnr,md5,HAVE_LIMITS,trv_tbl);
+    if(PRN_VAR_DATA) {
+      (void)nco_xtr_wrt(in_id,out_id,gpe,fp_bnr,md5,HAVE_LIMITS,trv_tbl);
+      printf("DYW nco_xtr_wrt\n");
+    }
 
     /* [fnc] Close unformatted binary data file */
     if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
@@ -1136,6 +1147,17 @@ close_and_free:
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
+    if(fl_nm_scrip){
+      if(nco_dbg_lvl > nco_dbg_fl){
+	      idx=0;
+	      while(sms[idx].key) prtkvmap(sms[idx++]);
+      } /* endif dbg */
+    }
+    if (ilsd > 0){
+      if(nco_dbg_lvl > nco_dbg_fl){
+        for(int i=0; i<ilsd;i++) prtkvmap(lsds[i]);
+      } /* endif dbg */
+    }
     if(fl_nm_scrip) fl_nm_scrip=(char *)nco_free(fl_nm_scrip);
     /* DYW fxm: free array values first */
     if(sms) sms=(kvmap *)nco_free(sms);
@@ -1188,15 +1210,14 @@ close_and_free:
   return EXIT_SUCCESS;
 } /* end main() */
 
-kvmap str2map(char *str, kvmap sm)
-{
+kvmap sng2map(char *str, kvmap sm){
   int icnt=0;
   char * prt;
   prt=strtok(str, "=");
-  while(prt != NULL) {
+  while(prt != NULL){
     icnt++;
     strip(prt);
-    switch(icnt) {
+    switch(icnt){
     case 1:
       sm.key=strdup(prt);
       break;
@@ -1204,13 +1225,13 @@ kvmap str2map(char *str, kvmap sm)
       sm.value=strdup(prt);
       break;
     default:
-      printf("invalid line in scrip file: %s\n", str);
+      fprintf(stderr,"invalid line in scrip file: %s\n", str);
       break;
-    }
+    }/* end switch */
     prt=strtok(NULL, "=");
-  }
+  }/* end while */
   return sm;
-}
+}/* end sng2map */
 
 char * strip(char *str) /* strip off heading and tailing white spaces.  seems not working for \n??? */
 {
@@ -1224,9 +1245,9 @@ char * strip(char *str) /* strip off heading and tailing white spaces.  seems no
   while(isblank(*(str+end-1))) end--;
   str[end] = '\0';
   return str;
-}
+}/* end strip */
 
-int str2array(const char *delim, const char *str, char **sarray)
+int sng2array(const char *delim, const char *str, char **sarray)
 {
   int idx=0;
   char *tstr;
@@ -1237,7 +1258,7 @@ int str2array(const char *delim, const char *str, char **sarray)
     sarray[++idx] = strtok(NULL, delim);
   }
   return idx;
-}
+}/* end sng2array */
 
 void prtkvmap (kvmap vm)
 {
@@ -1246,7 +1267,10 @@ void prtkvmap (kvmap vm)
   printf("%s\n", vm.value);
 }
 
-int hdlscrip(char *scripflnm, kvmap *smps) /* return 0 invalid SCRIP file or rcd, 1 success */
+int 
+hdlscrip( /* return 0 invalid scrip file or rcd, 1 success */ 
+char *scripflnm, /* scrip file name with proper path */
+kvmap *smps)/* structure to hold contents of scrip file */ 
 {
   char line[BUFSIZ];
   FILE *sfile=fopen(scripflnm, "r");
@@ -1255,29 +1279,25 @@ int hdlscrip(char *scripflnm, kvmap *smps) /* return 0 invalid SCRIP file or rcd
     return 0;
   }
   int icnt, idx=0;
-  while (fgets(line, sizeof(line), sfile)) {
-    if(strstr(line, "=") == NULL) {
+  while (fgets(line, sizeof(line), sfile)){
+    if(strstr(line, "=") == NULL){
       printf("invalid line in scrip file: %s\n", line);
       fclose(sfile);
       return 0;
     }
-    smps[idx]=str2map(line, smps[idx]);
-    if(smps[idx].key == NULL)
-    {
+    smps[idx]=sng2map(line, smps[idx]);
+    if(smps[idx].key == NULL){
       fclose(sfile);
       return 0;
     }
-    else
-    {
+    else{
       idx++;
-      //if(idx%10 == 0) realloc(smps, 10*sizeof(scripmap));
     }
   } /* finish parsing SCRIP file */
   fclose(sfile);
-  printf("SCRIP file in structure of name=value:\n");
   for(icnt=0; icnt<idx; icnt++){
     prtkvmap(smps[icnt]);
   }
   return 1;
-}
+}/* end hdlscrip */
 
