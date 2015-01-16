@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.749 2015-01-16 01:32:26 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.750 2015-01-16 15:36:34 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -181,7 +181,6 @@ main(int argc,char **argv)
   char *dlm_sng=NULL;
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
   char *fl_in=NULL;
-  char *fl_nm_scrip=NULL; /* scrip file name */
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
@@ -207,8 +206,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.749 2015-01-16 01:32:26 dywei2 Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.749 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.750 2015-01-16 15:36:34 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.750 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
