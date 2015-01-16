@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.748 2015-01-15 23:18:24 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.749 2015-01-16 01:32:26 dywei2 Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -207,8 +207,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.748 2015-01-15 23:18:24 dywei2 Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.748 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.749 2015-01-16 01:32:26 dywei2 Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.749 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -850,7 +850,8 @@ main(int argc,char **argv)
   if(ilsd > 0){
     for(int i=0;i<ilsd;i++){
       prtkvmap(lsds[i]);
-      trv_tbl_set_lsd(lsds[i].key,atoi(lsds[i].value),trv_tbl);
+      trv_tbl_set_lsd(lsds[i].key,(int)strtol(lsds[i].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[i].value,"strtol",sng_cnv_rcd);
     } /* end for */
   } /* end if */
 /* DYW end */
