@@ -1,3 +1,7 @@
+2015-01-16  Charlie Zender  <zender@uci.edu>
+
+	* Fix nco_var_typ_trv() prototype
+
 2015-01-14  Charlie Zender  <zender@uci.edu>
 
 	* LSD implementation in MM3 code compiles cleanly yet has problem finding traversal objects

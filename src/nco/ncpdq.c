@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.412 2015-01-13 04:00:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.413 2015-01-17 00:49:35 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.412 2015-01-13 04:00:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.412 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.413 2015-01-17 00:49:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.413 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -721,7 +721,7 @@ main(int argc,char **argv)
       } /* endif packing */
     } /* end loop over var_prc */
 
-    /* Transfer variable type to table. NOTE: Using processed variables set with new type. MUST be done before definition */
+    /* Transfer variable type to table. NB: Use processed variables set with new type. MUST be done before definition */
     (void)nco_var_typ_trv(nbr_var_prc,var_prc_out,trv_tbl);    
   } /* nco_pck_plc == nco_pck_plc_nil */
 

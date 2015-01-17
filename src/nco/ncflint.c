@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.300 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.301 2015-01-17 00:49:34 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.300 2014-12-31 01:50:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.300 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.301 2015-01-17 00:49:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.301 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -662,7 +662,6 @@ main(int argc,char **argv)
 
   /* Copy variable data for non-processed variables */
   (void)nco_cpy_fix_var_trv(in_id_1,out_id,gpe,trv_tbl);  
-
 
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
