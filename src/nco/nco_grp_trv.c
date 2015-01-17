@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.303 2015-01-15 23:18:24 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.304 2015-01-17 01:30:18 dywei2 Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -12,62 +12,6 @@
    It does not include any netCDF API calls */
 
 #include "nco_grp_trv.h" /* Group traversal */
-
-/* DYW */
-void 
-trv_tbl_around                            /* [fnc] lsd around traversal table */
-(const int nc_id,                     /* I [ID] netCDF file ID */
-trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
-{
-  const char fnc_nm[]="trv_tbl_around()"; /* [sng] Function name */
-  int lsd; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
-  int grp_id; /* [ID] Group ID */
-  int var_id; /* [ID] Variable ID */
-  var_sct var_out; /* [sct] Variable structure */
-  var_sct *var_out_ptr; /* [sct] Variable structure ptr */
-  trv_sct var_trv;
-  void *void_ptr;
-  long *dmn_srt;
-  long *dmn_cnt;
-  //var_out_ptr=(var_sct *)nco_malloc(sizeof(var_sct *));
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    if(trv_tbl->lst[idx_tbl].lsd != NC_MAX_INT){
-      var_trv=trv_tbl->lst[idx_tbl];
-      lsd=var_trv.lsd;
-      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id); /* get group ID */
-      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id); /* get variable ID or(void)nco_inq_varid(nc_id,var_trv.nm,&var_id);*/
-      var_out_ptr=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl); /* get the variable */
-      var_out=*var_out_ptr;
-      if(var_out_ptr->val.dp == NULL) printf("DYW val is NULL\n");
-      if(var_out_ptr->dim!=NULL){
-        printf("DYW dim srt is %d\n", var_out_ptr->dim[0]->srt);
-        printf("DYW dim cnt is %d\n",var_out_ptr->dim[0]->cnt);
-      }
-      else printf("DYW dim is NULL\n");
-      void_ptr=((void *)nco_malloc_dbg(var_out.sz*nco_typ_lng(var_out.type), "Unable to malloc() for var_out.val\n",fnc_nm));
-      dmn_cnt=(long *)nco_malloc(var_out.nbr_dim*sizeof(long));
-      dmn_srt=(long *)nco_malloc(var_out.nbr_dim*sizeof(long));
-      for(int idx=0;idx<var_out.nbr_dim;idx++){
-        dmn_srt[idx]=var_out.dim[idx]->srt;
-        dmn_cnt[idx]=var_out.dim[idx]->cnt;
-      }
-      if(var_out.sz>0){
-        nco_get_vara(nc_id,var_id,dmn_srt,dmn_cnt,void_ptr,var_out.type);
-        var_out.val=(ptr_unn)void_ptr;
-        //nco_get_vara(nc_id,var_id,dmn_srt,dmn_cnt,var_out.val,var_out.type);
-      } /* end if var_out.sz */
-      (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
-      //(void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,void_ptr);
-      //(void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out_ptr->val);
-      void_ptr=nco_free(void_ptr);
-      dmn_cnt=nco_free(dmn_cnt);
-      dmn_srt=nco_free(dmn_srt);
-    } /* endif */
-  } /* endfor */
-  //if(var_out_ptr) var_out_ptr=(var_sct *)nco_free(var_out_ptr);
-//  (void)fprintf(stdout,"%s: INFO: cannot find variable with full name, %s, so lsd-value is not set for it\n",nco_prg_nm_get(),var_nm_fll);
-} /* end trv_tbl_around() */
-/* end DYW */
 
 void                          
 trv_tbl_init                           /* [fnc] GTT initialize */

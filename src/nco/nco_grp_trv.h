@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.122 2015-01-15 23:18:24 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.123 2015-01-17 01:30:18 dywei2 Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -27,13 +27,6 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_mmr.h" /* Memory management */
-
-/* DYW */
-void 
-trv_tbl_around                            /* [fnc] lsd around traversal table */
-(const int nc_id,                     /* I [ID] netCDF file ID */
-trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
-/* end DYW */
 
 void                         
 trv_tbl_init                          /* [fnc] GTT initialize */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.277 2015-01-15 23:18:24 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.278 2015-01-17 01:30:19 dywei2 Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1246,13 +1246,10 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   nco_bool flg_write=True;
 
-printf("DYW, assert1");
   assert(nco_obj_typ_var == var_trv->nco_typ);
-printf("DYW, assert2");
 
   /* Local copy of object name */
   strcpy(var_nm,var_trv->nm);                
-printf("DYW, nco_cpy_var_val_mlt_lmt_trv, var=%s\n", var_nm);
 
   /* Get ID for requested variable from both files */
   (void)nco_inq_varid(in_id,var_nm,&var_in_id);
