@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.58 2015-01-13 03:10:54 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.59 2015-01-17 00:53:13 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -768,8 +768,9 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
 # 20070310: Change to no-shadow so ncoLexer.cpp compiles
+# 20150115: Deprecate GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
 
-    GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
+    GCC_CMD_ARGS='-std=c99 -pedantic -D_DEFAULT_SOURCE'
     GCC_BASE_FLAGS='-Wall -Wuninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
     GCC_BASE_FLAGS="${GCC_BASE_FLAGS} ${OPENMP_CFLAGS}"
     GCC_CFLAGS="${GCC_BASE_FLAGS} -Wmissing-prototypes"

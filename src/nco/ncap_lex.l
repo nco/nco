@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.86 2014-05-28 20:05:30 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.87 2015-01-17 00:53:13 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -82,7 +82,7 @@
 #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
   YY_DECL;
 
-#if (defined(__GNUC__) || defined(__INTEL_COMPILER)) && !defined(__PATHCC__)  && !defined(PGI_CC) && (defined(ENABLE_DEBUG_CUSTOM) || defined(ENABLE_OPTIMIZE_CUSTOM))
+#if (defined(__GNUC__) || defined(__INTEL_COMPILER)) && !defined(__PATHCC__) && !defined(PGI_CC) && (defined(ENABLE_DEBUG_CUSTOM) || defined(ENABLE_OPTIMIZE_CUSTOM))
   /* CEWI fxm 20040110 Prototype functions that cause warnings with pedantic GCC compiling
      Portability of this entire section is questionable, so enclose in ifdef GCC
      We already assume lexer is flex since AT&T lex does not understand <EOF> rules
@@ -98,7 +98,10 @@
   FILE *yyget_out(void); /* fixes: warning: no previous prototype for `yyget_out' */
   char *yyget_text(void); /* fixes: warning: no previous prototype for `yyget_text' */
   int yyget_debug(void); /* fixes: warning: no previous prototype for `yyget_debug' */
-  int yyget_leng(void); /* fixes: warning: no previous prototype for `yyget_leng' */
+  /* 20150115: MacOSX with clang and --enable-debug-custom fails on yyget_leng() prototype
+     Change return type of yyget_leng() from int to yy_size_t */
+  /* int yyget_leng(void); *//* fixes: warning: no previous prototype for `yyget_leng' */
+  yy_size_t yyget_leng(void); /* fixes: warning: no previous prototype for `yyget_leng' */
   int yyget_lineno(void); /* fixes: warning: no previous prototype for `yyget_lineno' */
   int yylex_destroy(void); /* fixes: warning: no previous prototype for `yylex_destroy' */
   void yyset_debug(int bdebug); /* fixes: warning: no previous prototype for `yyset_debug' */

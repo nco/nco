@@ -19912,9 +19912,10 @@ case ${host} in
     i*86-*-linux-gnu | x86_64*-linux* )
 	case ${CC} in
 	    como* ) CFLAGS="${CFLAGS} --c99" ; ;;
-		icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
-		pathcc* ) CFLAGS="${CFLAGS} -std=c99" ; ;;
-		pgcc* ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
+# 20150109: fxm Introduce -D_DEFAULT_SOURCE in place of deprecated (as of gcc 4.9.2) -D_BSD_SOURCE -D_POSIX_SOURCE
+	    icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
+	    pathcc* ) CFLAGS="${CFLAGS} -std=c99" ; ;;
+	    pgcc* ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
 	esac
 	case ${CXX} in
 #	    icpc* ) CXXFLAGS="${CXXFLAGS} -cxxlib-icc" ; ;;
@@ -19958,8 +19959,9 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
 # 20070310: Change to no-shadow so ncoLexer.cpp compiles
+# 20150115: Deprecate GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
 
-    GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
+    GCC_CMD_ARGS='-std=c99 -pedantic -D_DEFAULT_SOURCE'
     GCC_BASE_FLAGS='-Wall -Wuninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
     GCC_BASE_FLAGS="${GCC_BASE_FLAGS} ${OPENMP_CFLAGS}"
     GCC_CFLAGS="${GCC_BASE_FLAGS} -Wmissing-prototypes"

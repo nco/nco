@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.505 2015-01-09 22:19:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.506 2015-01-17 00:53:13 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -1027,7 +1027,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-i var,val]")) (void)fprintf(stdout,"-i, --ntp, --interpolate var,val\tInterpolant and value\n");
   if(strstr(opt_sng,"[-I]")) (void)fprintf(stdout,"-I, --wgt_msk_crd_var\tDo not weight or mask coordinate variables\n");
 #ifdef ENABLE_NETCDF4
-  if(strstr(opt_sng,"[-L")) (void)fprintf(stdout,"-L, --dfl_lvl, --deflate lvl\tLempel-Ziv deflation (lvl=0..9) for netCDF4 output\n");
+  if(strstr(opt_sng,"[-L")) (void)fprintf(stdout,"-L, --dfl_lvl, --deflate lvl\tLempel-Ziv deflation/compression (lvl=0..9) for netCDF4 output\n");
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-l")) (void)fprintf(stdout,"-l, --lcl, --local path\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"[-M")){
