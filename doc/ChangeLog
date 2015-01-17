@@ -1,6 +1,8 @@
 2015-01-16  Charlie Zender  <zender@uci.edu>
 
-	* Fix nco_var_typ_trv() prototype
+	* Deprecate -D_BSD_SOURCE -D_POSIX_SOURCE in favor of -D_DEFAULT_SOURCE in configure
+
+	* Fix nco_var_typ_trv() prototype for C++ compilers
 
 2015-01-14  Charlie Zender  <zender@uci.edu>
 
