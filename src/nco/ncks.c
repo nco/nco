@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.751 2015-01-17 01:30:18 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.752 2015-01-18 19:44:15 dywei2 Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -206,8 +206,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.751 2015-01-17 01:30:18 dywei2 Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.751 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.752 2015-01-18 19:44:15 dywei2 Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.752 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -555,6 +555,10 @@ main(int argc,char **argv)
       } /* endif scrip */
       if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
         char * arg = strdup(optarg);
+        if(!strstr(arg,"=")){
+          (void)fprintf(stdout,"%s: invalid --lsd specification: \n",nco_prg_nm_get(), arg);
+          nco_exit(EXIT_FAILURE);
+        }
         kvmap sm;
         sm=sng2map(arg, sm);
         if (sm.key != NULL)
@@ -845,7 +849,7 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* DYW */
-  //trv_tbl_init_lsd(NC_MAX_INT,trv_tbl); /* set NC_MAX_INT for no compression */
+  trv_tbl_init_lsd(NC_MAX_INT,trv_tbl); /* set NC_MAX_INT for no compression */
   if(ilsd > 0){
     for(int i=0;i<ilsd;i++){
       /*DYW prtkvmap(lsds[i]); */
@@ -1217,7 +1221,7 @@ kvmap sng2map(char *str, kvmap sm){
       sm.value=strdup(prt);
       break;
     default:
-      fprintf(stderr,"invalid line in scrip file: %s\n", str);
+      fprintf(stderr,"cannot get key-value pair from this imput: %s\n", str);
       break;
     }/* end switch */
     prt=strtok(NULL, "=");

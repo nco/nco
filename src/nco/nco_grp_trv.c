@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.304 2015-01-17 01:30:18 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.305 2015-01-18 19:44:15 dywei2 Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -207,17 +207,85 @@ trv_tbl_init_lsd /* Set default value for no compression */
 
 void
 trv_tbl_set_lsd
-(const char * const var_nm_fll, /* I [sng] Variable name to find */
+(const char * const var_nm, /* I [sng] Variable name to find */
  const int lsd, /* I [nbr] Least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    if(!strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
-      trv_tbl->lst[idx_tbl].lsd=lsd;
-      return;
-    } /* endif */
-  } /* endfor */
-  (void)fprintf(stdout,"%s: INFO: cannot find variable with full name, %s, so lsd-value is not set for it\n",nco_prg_nm_get(),var_nm_fll);
+  const char sls_chr='/'; /* [chr] Slash character */
+  char *usr_var_sng; /* [sng] User-supplied var name */
+  char *tbl_var_sng; /* [sng] tbl var name to match */
+  int my_mch;
+  my_mch=lsd; /* get rid of warning msg */
+
+  usr_var_sng=strdup(var_nm);
+  my_mch=0;
+  if(strpbrk(usr_var_sng,".*^$\\[]()<>+?|{}")){ /* it is a regular expression ... */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+    int rx_mch_nbr;
+/* DYW nco_trv_rx_search ? when usr_var_sng starts with fwd sls */
+    rx_mch_nbr=nco_trv_rx_search(usr_var_sng,nco_obj_typ_var,trv_tbl);
+    if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",nco_prg_nm_get(),usr_var_sng);
+*/
+    regmatch_t *result;
+    regex_t *rx;
+    size_t rx_prn_sub_xpr_nbr;
+    rx=(regex_t *)nco_malloc(sizeof(regex_t));
+    rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
+    result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
+    if(strchr(usr_var_sng,sls_chr)){ /* full name is used */
+      char sng2mch[BUFSIZ]="^";
+      strcat(sng2mch,usr_var_sng);
+      if(regcomp(rx,sng2mch,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
+        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),usr_var_sng);
+        nco_exit(EXIT_FAILURE);
+      }
+      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+        tbl_var_sng=trv_tbl->lst[idx_tbl].nm_fll;
+        if(!regexec(rx,tbl_var_sng,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
+          trv_tbl->lst[idx_tbl].lsd=lsd;
+          my_mch++;
+        } /* endif */
+      } /* endfor */
+    }else{ /* relative name is used */
+    if(regcomp(rx,usr_var_sng,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
+      (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),usr_var_sng);
+      nco_exit(EXIT_FAILURE);
+    }
+      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+          tbl_var_sng=trv_tbl->lst[idx_tbl].nm;
+        if(!regexec(rx,tbl_var_sng,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
+          trv_tbl->lst[idx_tbl].lsd=lsd;
+          my_mch++;
+        } /* endif */
+      } /* endfor */
+    }
+
+    regfree(rx); /* Free regular expression data structure */
+    rx=(regex_t *)nco_free(rx);
+    result=(regmatch_t *)nco_free(result);
+#else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
+  nco_exit(EXIT_FAILURE);
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+  }else if (strchr(usr_var_sng,sls_chr)) { /* it is full name */
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      if(!strcmp(usr_var_sng,trv_tbl->lst[idx_tbl].nm_fll)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
+        trv_tbl->lst[idx_tbl].lsd=lsd;
+fprintf(stderr, "CCC fullName tbl=%s usr=%s name=%s\n", trv_tbl->lst[idx_tbl].nm_fll, usr_var_sng,trv_tbl->lst[idx_tbl].nm);
+        my_mch++;
+        return; /* only one should match with full name */
+      } /* endif */
+    } /* endfor */
+  }else{ /* not full name then set all matching vars */
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      if(!strcmp(usr_var_sng,trv_tbl->lst[idx_tbl].nm)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
+        trv_tbl->lst[idx_tbl].lsd=lsd;
+fprintf(stderr, "CCC Name tbl=%s usr=%s fullName=%s\n", trv_tbl->lst[idx_tbl].nm, usr_var_sng,trv_tbl->lst[idx_tbl].nm_fll);
+        my_mch++;
+      } /* endif */
+    } /* endfor */
+  }
+  //fprintf("DYW find %d matches\N", my_mch);
 } /* end trv_tbl_set_lsd() */
 /* DYW end*/
 
