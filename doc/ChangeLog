@@ -1,3 +1,7 @@
+2015-01-18  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up rx code for LSD by DYW
+
 2015-01-16  Charlie Zender  <zender@uci.edu>
 
 	* Deprecate -D_BSD_SOURCE -D_POSIX_SOURCE in favor of -D_DEFAULT_SOURCE in configure

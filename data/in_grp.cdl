@@ -47,6 +47,21 @@ netcdf in_grp {
   gds_crd=8;
   
  variables:
+  double lsd_dbl(time);
+        lsd_dbl:long_name = "Least Significant Digit, double precision";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  float lsd_flt(time);
+        lsd_flt:long_name = "Least Significant Digit, single precision";
+        lsd_flt:purpose = "test --lsd switches";
+        lsd_flt:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  double lsd_big(time);
+        lsd_dbl:long_name = "Least Significant Digit, big numbers";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
+
   double time(time);
   
   float lat(lat);
@@ -78,9 +93,12 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.123 2014-09-22 21:37:13 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.124 2015-01-19 04:49:41 zender Exp $";
   
  data:
+  lsd_dbl=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_flt=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_big=123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1;
   area=10.,10.;
   lat=-90,90;
   lat_lon=1.,2.,3.,4.,5.,6.,7.,8;
@@ -91,12 +109,27 @@ netcdf in_grp {
   scl=1.0;
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   unique=73;
+
   //
   //g1
   //
  group: g1 { 
   :history = "History group attribute.\n";
   variables:
+  double lsd_dbl(time);
+        lsd_dbl:long_name = "Least Significant Digit, double precision";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  float lsd_flt(time);
+        lsd_flt:long_name = "Least Significant Digit, single precision";
+        lsd_flt:purpose = "test --lsd switches";
+        lsd_flt:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  double lsd_big(time);
+        lsd_dbl:long_name = "Least Significant Digit, big numbers";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
   
     //coordinate variable (/lon)
     float lon(lon);
@@ -106,16 +139,38 @@ netcdf in_grp {
     int g1v2;
     int v1;
   data:
+  lsd_dbl=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_flt=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_big=123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1;
     lon=0,90,180,270;
     scl=1.1;
     g1v1=1;
     g1v2=2;
     v1=1;  
+
   group: g1g1 { 
     variables:
+  double lsd_dbl(time);
+        lsd_dbl:long_name = "Least Significant Digit, double precision";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  float lsd_flt(time);
+        lsd_flt:long_name = "Least Significant Digit, single precision";
+        lsd_flt:purpose = "test --lsd switches";
+        lsd_flt:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  double lsd_big(time);
+        lsd_dbl:long_name = "Least Significant Digit, big numbers";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
+
       float scl;
       int v1;
     data:
+  lsd_dbl=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_flt=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_big=123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1;
       scl=1.11;
       v1=11;
     } // end g1g1
@@ -145,10 +200,29 @@ netcdf in_grp {
   //
  group: g4 { 
   variables:
+  double lsd_dbl(time);
+        lsd_dbl:long_name = "Least Significant Digit, double precision";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  float lsd_flt(time);
+        lsd_flt:long_name = "Least Significant Digit, single precision";
+        lsd_flt:purpose = "test --lsd switches";
+        lsd_flt:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  double lsd_big(time);
+        lsd_dbl:long_name = "Least Significant Digit, big numbers";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
+
     int one_dmn_rec_var(time);
 	one_dmn_rec_var:long_name = "one dimensional record variable";
 	one_dmn_rec_var:units = "kelvin";
   data:
+  lsd_dbl=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_flt=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_big=123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1;
+
     one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;  
   } // end g4
   
@@ -195,6 +269,22 @@ netcdf in_grp {
  group: g7 { 
   variables:
   
+  double lsd_dbl(time);
+        lsd_dbl:long_name = "Least Significant Digit, double precision";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  float lsd_flt(time);
+        lsd_flt:long_name = "Least Significant Digit, single precision";
+        lsd_flt:purpose = "test --lsd switches";
+        lsd_flt:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  double lsd_big(time);
+        lsd_dbl:long_name = "Least Significant Digit, big numbers";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
+
+  
     //coordinate variable (/g7/gds_crd)
     float gds_crd(gds_crd);
     gds_crd:long_name = "Geodesic coordinate";
@@ -216,6 +306,10 @@ netcdf in_grp {
     lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
     
   data:
+  lsd_dbl=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_flt=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_big=123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1;
+
     gds_crd=0,1,2,3,4,5,6,7;
     lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
     lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
@@ -260,8 +354,27 @@ netcdf in_grp {
 	  group: g9g1g1g1g1g1 { // Level 6
 	    group: g9g1g1g1g1g1g1 { // Level 7
 	      variables:
+  double lsd_dbl(time);
+        lsd_dbl:long_name = "Least Significant Digit, double precision";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  float lsd_flt(time);
+        lsd_flt:long_name = "Least Significant Digit, single precision";
+        lsd_flt:purpose = "test --lsd switches";
+        lsd_flt:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
+
+  double lsd_big(time);
+        lsd_dbl:long_name = "Least Significant Digit, big numbers";
+        lsd_dbl:purpose = "test --lsd switches";
+        lsd_dbl:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
+
 		int v7;
 	      data:
+  lsd_dbl=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_flt=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
+  lsd_big=123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1;
+
 		v7=73;
 	      } // end g9g1g1g1g1g1g1
 	    } // end g9g1g1g1g1g1

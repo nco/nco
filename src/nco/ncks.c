@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.752 2015-01-18 19:44:15 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.753 2015-01-19 04:49:41 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -55,9 +55,9 @@
    ncks --cdl -v one_dmn_rec_var ~/nco/data/in.nc
    ncks --jsn -C -v one_dmn_rec_var ~/nco/data/in.nc
    ncks --jsn -C -m -v one_dmn_rec_var ~/nco/data/in_grp.nc
-   ncks -O -4 --lsd var1,var2=1 --lsd var3=4 ~/nco/nco-4.4.7/data/in.nc /data/dywei/foo.nc
+   ncks -O -4 --lsd lsd_dbl=1 --lsd lsd_flt,lsd_bir=4 ~/nco/data/in.nc ~/foo.nc
+   ncks -O --lsd lsd_dbl=1 --lsd '/g1/lsd.?',/g1/g1g1/lsd_dbl=4 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -m -M -v Snow_Cover_Monthly_CMG ${DATA}/hdf/MOD10CM.A2007001.005.2007108111758.hdf */
-
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -108,8 +108,7 @@
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 /* DYW stuct and function */
-typedef struct
-{
+typedef struct {
   char *key;
   char *value;
 } kvmap;
@@ -206,8 +205,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.752 2015-01-18 19:44:15 dywei2 Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.752 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.753 2015-01-19 04:49:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.753 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -556,18 +555,16 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
         char * arg = strdup(optarg);
         if(!strstr(arg,"=")){
-          (void)fprintf(stdout,"%s: invalid --lsd specification: \n",nco_prg_nm_get(), arg);
+          (void)fprintf(stdout,"%s: invalid --lsd specification: %s\n",nco_prg_nm_get(),arg);
           nco_exit(EXIT_FAILURE);
-        }
+        } /* endif */
         kvmap sm;
-        sm=sng2map(arg, sm);
-        if (sm.key != NULL)
-        {
+        sm=sng2map(arg,sm);
+        if(sm.key){
           char *items[BUFSIZ];
           int i;
           int rc=sng2array(",", sm.key, items);
-          for (i=0; i<rc; i++)
-          {
+          for(i=0;i<rc;i++){
             lsds[ilsd].key=strdup(items[i]);
             lsds[ilsd].value=strdup(sm.value);
             ilsd++;
@@ -849,7 +846,8 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* DYW */
-  trv_tbl_init_lsd(NC_MAX_INT,trv_tbl); /* set NC_MAX_INT for no compression */
+  /* Initialize lsd to NC_MAX_INT for no compression */
+  trv_tbl_init_lsd(NC_MAX_INT,trv_tbl);
   if(ilsd > 0){
     for(int i=0;i<ilsd;i++){
       /*DYW prtkvmap(lsds[i]); */

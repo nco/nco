@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1495 2015-01-17 01:30:18 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1496 2015-01-19 04:49:41 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -470,7 +470,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
   (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),rx_sng);
   nco_exit(EXIT_FAILURE);
   /* Avoid compiler warning of unused variables by using obj_typ and trv_tbl */
-  if (trv_tbl->lst) trv_tbl->lst[0].nco_typ = obj_typ;
+  if(trv_tbl->lst) trv_tbl->lst[0].nco_typ = obj_typ;
 #else /* NCO_HAVE_REGEX_FUNCTIONALITY */
   char *sng2mch; /* [sng] String to match to regular expression */
   const char sls_chr='/'; /* [chr] Slash character */
