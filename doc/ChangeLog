@@ -1,3 +1,7 @@
+2015-01-19  Charlie Zender  <zender@uci.edu>
+
+	* Fix LSD on MM3 codepath by using brute force instead of hash table in trv_tbl_var_nm_fll()
+
 2015-01-18  Charlie Zender  <zender@uci.edu>
 
 	* Clean-up rx code for LSD by DYW

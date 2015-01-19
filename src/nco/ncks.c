@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.753 2015-01-19 04:49:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.754 2015-01-19 19:49:14 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -205,8 +205,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.753 2015-01-19 04:49:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.753 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.754 2015-01-19 19:49:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.754 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -846,16 +846,13 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* DYW */
-  /* Initialize lsd to NC_MAX_INT for no compression */
-  trv_tbl_init_lsd(NC_MAX_INT,trv_tbl);
   if(ilsd > 0){
     for(int i=0;i<ilsd;i++){
-      /*DYW prtkvmap(lsds[i]); */
+      /* prtkvmap(lsds[i]); */
       trv_tbl_set_lsd(lsds[i].key,(int)strtol(lsds[i].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
       if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[i].value,"strtol",sng_cnv_rcd);
     } /* end for */
   } /* end if */
-/* DYW end */
 
   /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);    

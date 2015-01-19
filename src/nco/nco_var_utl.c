@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.366 2015-01-17 01:06:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.367 2015-01-19 19:49:14 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -94,11 +94,11 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     char *var_nm_fll;
     trv_sct *var_trv;
     var_nm_fll=nco_gid_var_nm_2_var_nm_fll(in_id,var_nm);
+    // 20150115 fxm: hash table broken---use brute force
     var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
-    // 20150115 fxm: borken
-    //	(void)fprintf(stderr,"nco_cpy_rec_var_val reports var_nm_fll = %s\n",var_nm_fll);
-    //assert(var_trv);
-    //lsd=var_trv->lsd;
+    //(void)fprintf(stderr,"nco_cpy_rec_var_val reports var_nm_fll = %s, var_trv->var_nm_fll = %s\n",var_nm_fll,var_trv->nm_fll);
+    assert(var_trv != NULL);
+    if(var_trv) lsd=var_trv->lsd;
     if(var_nm_fll) var_nm_fll=(char *)nco_free(var_nm_fll);
     if(lsd != NC_MAX_INT){
       /* Initialize variable structure with minimal information for nco_mss_val_get() */
@@ -406,13 +406,13 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 	/* This ugliness backs-out the lsd element from the traversal table for this variable */
 	char *var_nm_fll;
-	trv_sct *var_trv;
+	trv_sct *var_trv=NULL;
 	var_nm_fll=nco_gid_var_nm_2_var_nm_fll(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm);
+	// 20150115 fxm: hash table broken---use brute force
 	var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
-	// 20150115 fxm: borken
-	//	(void)fprintf(stderr,"nco_cpy_rec_var_val reports var_nm_fll = %s\n",var_nm_fll);
-	//assert(var_trv != NULL);
-	//if(var_trv) lsd=var_trv->lsd;
+	//(void)fprintf(stderr,"nco_cpy_rec_var_val reports var_nm_fll = %s, var_trv->var_nm_fll = %s\n",var_nm_fll,var_trv->nm_fll);
+	assert(var_trv != NULL);
+	if(var_trv) lsd=var_trv->lsd;
 	if(var_nm_fll) var_nm_fll=(char *)nco_free(var_nm_fll);
 	if(lsd != NC_MAX_INT){
 	  /* Initialize variable structure with minimal information for nco_mss_val_get() */

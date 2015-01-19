@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.531 2015-01-15 07:23:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.532 2015-01-19 19:49:14 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -159,7 +159,7 @@ extern "C" {
   /* netCDF provides no guidance on maximum nesting of groups */
 #define NCO_MAX_GRP_DEPTH 10
 
-  /* Flag that iterator found no more groups in container */
+  /* Signifier that iterator found no more groups in container */
 #define NCO_LST_GRP 0
 
   /* Debugging level that quiets all non-requested informational messages
@@ -168,7 +168,8 @@ extern "C" {
 #define NCO_DBG_QUIET 0
 
   /* Find traversal table objects via hash table rather than brute-force strcmp() search */
-#define NCO_HSH_TRV_OBJ 1
+  /*#define NCO_HSH_TRV_OBJ */
+#undef NCO_HSH_TRV_OBJ
 
   /* NCO_MSS_VAL_SNG names attribute whose value is "skipped" by arithmetic, aka the missing value attribute
      Attribute name should be either "missing_value" or "_FillValue" */

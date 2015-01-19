@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.306 2015-01-19 04:49:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.307 2015-01-19 19:49:14 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -192,7 +192,6 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 #ifdef DEBUG_LEAKS
   if(nco_dbg_lvl_get() >= nco_dbg_sup)(void)fprintf(stdout,"%s: DEBUG %s %d crd",nco_prg_nm_get(),fnc_nm,crt_counter);
 #endif
-
 } /* end trv_tbl_free() */
 
 /* DYW */
@@ -201,6 +200,8 @@ trv_tbl_init_lsd /* Set default value for no compression */
 (const int lsd, /* I [nbr] Least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
+  /* Purpose: Initialize LSD member to default value for no compression
+     Function is currently obsolete becasuse LSD member is initialize in nco_grp_itr() */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var) trv_tbl->lst[idx_tbl].lsd=lsd;
 } /* end trv_tbl_init_lsd() */
@@ -959,7 +960,7 @@ trv_tbl_mrk_nsm_mbr                    /* [fnc] Mark ensemble member flag in tab
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll) == 0){
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
       trv_tbl->lst[idx_tbl].flg_nsm_mbr=True;
       trv_tbl->lst[idx_tbl].nsm_nm=strdup(grp_nm_fll_prn);
       if(flg_nsm_tpl) trv_tbl->lst[idx_tbl].flg_nsm_tpl=True;
@@ -984,9 +985,7 @@ nco_bld_nm_fll                         /* [fnc] Utility function to build a full
   strcat(var_nm_fll,var_nm);
 
   return var_nm_fll;
-
 } /* nco_bld_nm_fll() */
-
 
 nco_bool                              
 nco_lst_ins                            /* [fnc] Utility function to detect inserted names in a name list */
@@ -994,19 +993,12 @@ nco_lst_ins                            /* [fnc] Utility function to detect inser
  const nco_cmn_t *cmn_lst,             /* I [sct] List of names   */
  const int nbr_nm)                     /* I [nbr] Number of names (size of above array) */
 {
-  /* Loop constructed array to see if already inserted */
-  for(int idx_nm=0;idx_nm<nbr_nm;idx_nm++){
-      /* Match */
-      if(strcmp(cmn_lst[idx_nm].nm,nm) == 0){
-        /* Mark as inserted in array */
-        return True;
-      }  /* Match */
-  } /* Loop constructed array to see if already inserted  */
+  /* If match then mark as inserted in array */
+  for(int idx_nm=0;idx_nm<nbr_nm;idx_nm++)
+    if(!strcmp(cmn_lst[idx_nm].nm,nm)) return True;
 
   return False;
-
 } /* nco_lst_ins() */
-
 
 char *                                 /* O [sng] Full path with suffix */
 nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
@@ -1017,8 +1009,7 @@ nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
 
   /* Loop table */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Match */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && strcmp(grp_nm_fll_prn,trv_tbl->lst[tbl_idx].nm_fll) == 0){
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && !strcmp(grp_nm_fll_prn,trv_tbl->lst[tbl_idx].nm_fll)){
 
       /* Define (append) a new name */
       char *nm_fll_sfx=(char*)nco_malloc(strlen(grp_nm_fll_prn)+strlen(trv_tbl->lst[tbl_idx].nm)+strlen(trv_tbl->nsm_sfx)+2L);
@@ -1031,10 +1022,8 @@ nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
     } /* Match */
   } /* Loop table*/
 
-
   assert(0);
   return NULL;
-
 } /* nco_bld_nsm_sfx() */
 
 nco_bool                              
@@ -1043,11 +1032,10 @@ nco_is_fll_pth                         /* [fnc] Utility function to inquire if a
 {
   const char *sbs_srt; /* [sng] Location of string match start in parameter string */
 
-  /* If parameter string contains any slash character '/' , assume it's a full path */
+  /* If parameter string contains any slash character '/' , assume it is a full path */
   sbs_srt=strstr(str,"/");
-  if (sbs_srt) return True;
+  if(sbs_srt) return True;
   return False;
-
 } /* nco_is_fll_pth() */
 
 char *
@@ -1072,7 +1060,7 @@ trv_tbl_var_nm                        /* [fnc] Return variable object (relative 
   /* Purpose: Return variable object with given relative name (returns 1st name found) 
      NB: Calling this function is almost certainly a mistake */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && (!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)))
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_nm,trv_tbl->lst[idx_tbl].nm))
       return &trv_tbl->lst[idx_tbl];
 
   return NULL;
