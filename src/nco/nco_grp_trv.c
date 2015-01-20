@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.307 2015-01-19 19:49:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.308 2015-01-20 04:11:25 dywei2 Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -214,48 +214,44 @@ trv_tbl_set_lsd
 {
   const char sls_chr='/'; /* [chr] Slash character */
   int mch_nbr=0;
+  
+  char * usr_var_sng=strdup(var_nm);
 
   if(strpbrk(var_nm,".*^$\\[]()<>+?|{}")){ /* regular expression ... */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-    int flg_cmp; /* Comparison flags */
-    int flg_exe; /* Execution flages */
-    int rx_mch_nbr;
-
-    /* DYW nco_trv_rx_search ? when var_nm starts with forward slash */
-    rx_mch_nbr=nco_trv_rx_search(var_nm,nco_obj_typ_var,trv_tbl);
-    if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",nco_prg_nm_get(),var_nm);
-
-    /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
-    flg_cmp=(REG_EXTENDED | REG_NEWLINE);
-    /* Set execution flags */
-    flg_exe=0;
-
     regmatch_t *result;
     regex_t *rx;
     size_t rx_prn_sub_xpr_nbr;
     rx=(regex_t *)nco_malloc(sizeof(regex_t));
-    rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
-    result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
-    char *sng2mch; /* [sng] String to match to regular expression */
-    char *rx_sng; /* [sng] Regular expression pattern */
-    rx_sng=(char *)nco_malloc(sizeof(char)*(strlen(var_nm)+2L));
-    if(strchr(var_nm,sls_chr)) strcpy(rx_sng,"^");
-    strcat(rx_sng,var_nm);
-    if(regcomp(rx,rx_sng,flg_cmp)){ /* Compile regular expression */
-      (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),rx_sng);
-      nco_exit(EXIT_FAILURE);
-    } /* endif */
-    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-      if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
-	if(strchr(var_nm,sls_chr)) sng2mch=trv_tbl->lst[idx_tbl].nm_fll; else sng2mch=trv_tbl->lst[idx_tbl].nm; 
-	if(!regexec(rx,sng2mch,rx_prn_sub_xpr_nbr,result,flg_exe)){
-	  trv_tbl->lst[idx_tbl].lsd=lsd;
-	  mch_nbr++;
-	} /* endif */
-      } /* endif */
-    } /* endfor */
-    if(rx_sng) rx_sng=(char *)nco_free(rx_sng);
-    
+    if(strchr(usr_var_sng,sls_chr)){ /* full name is used */
+      char sng2mch[BUFSIZ]="^";
+      strcat(sng2mch,usr_var_sng);
+      if(regcomp(rx,sng2mch,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
+        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),usr_var_sng);
+        nco_exit(EXIT_FAILURE);
+      }
+      rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
+      result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
+      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+        if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
+          trv_tbl->lst[idx_tbl].lsd=lsd;
+	        mch_nbr++;
+        } /* endif */
+      } /* endfor */
+    }else{ /* relative name is used */
+      if(regcomp(rx,usr_var_sng,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
+        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),usr_var_sng);
+        nco_exit(EXIT_FAILURE);
+      }
+      rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
+      result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
+      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+        if(!regexec(rx,trv_tbl->lst[idx_tbl].nm,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
+          trv_tbl->lst[idx_tbl].lsd=lsd;
+	        mch_nbr++;
+        } /* endif */
+      } /* endfor */
+    }
     regfree(rx); /* Free regular expression data structure */
     rx=(regex_t *)nco_free(rx);
     result=(regmatch_t *)nco_free(result);
@@ -266,26 +262,23 @@ trv_tbl_set_lsd
   }else if(strchr(var_nm,sls_chr)){ /* Full name */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
-	if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm_fll)){
-	  trv_tbl->lst[idx_tbl].lsd=lsd;
-	  if(nco_dbg_lvl_get() == nco_dbg_vrb) (void)fprintf(stderr, "CCC fullName tbl=%s usr=%s name=%s\n", trv_tbl->lst[idx_tbl].nm_fll,var_nm,trv_tbl->lst[idx_tbl].nm);
-	  mch_nbr++;
-	  return; /* Only one match with full name */
-	} /* endif */
+	      if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm_fll)){
+	        trv_tbl->lst[idx_tbl].lsd=lsd;
+	        mch_nbr++;
+	        return; /* Only one match with full name */
+	      } /* endif */
       } /* endif */
     } /* endfor */
   }else{ /* not full name then set all matching vars */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
-	if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)){
-	  trv_tbl->lst[idx_tbl].lsd=lsd;
-	  if(nco_dbg_lvl_get() == nco_dbg_vrb) (void) fprintf(stderr, "CCC Name tbl=%s usr=%s fullName=%s\n", trv_tbl->lst[idx_tbl].nm,var_nm,trv_tbl->lst[idx_tbl].nm_fll);
-	  mch_nbr++;
-	} /* endif */
+	      if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)){
+	        trv_tbl->lst[idx_tbl].lsd=lsd;
+	        mch_nbr++;
+	      } /* endif */
       } /* endif */
     } /* endfor */
   }
-  //fprintf("DYW find %d matches\N",mch_nbr);
 } /* end trv_tbl_set_lsd() */
 /* DYW end*/
 

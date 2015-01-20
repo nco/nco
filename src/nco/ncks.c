@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.754 2015-01-19 19:49:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.755 2015-01-20 04:11:25 dywei2 Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -116,6 +116,7 @@ int hdlscrip(char *scripflnm, kvmap *smps);
 kvmap sng2map(char *str,  kvmap sm); /* parse a line return a name-value pair kvmap */
 int sng2array(const char *delim, const char *str, char **sarray); /* split str by delim to sarray returns size of sarray */
 char * strip(char *str); /* remove heading and trailing blanks */
+void freekvmaps(kvmap *kvmaps); /* release memory */
 void prtkvmap (kvmap sm);  /* print kvmap contents */
 /* DYW end */
 
@@ -205,8 +206,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.754 2015-01-19 19:49:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.754 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.755 2015-01-20 04:11:25 dywei2 Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.755 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -571,6 +572,7 @@ main(int argc,char **argv)
           }
         }
       } /* endif lsd */
+
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"mpi_implementation")){
         (void)fprintf(stdout,"%s\n",nco_mpi_get());
@@ -846,6 +848,7 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* DYW */
+  //trv_tbl_init_lsd(NC_MAX_INT,trv_tbl); /* set NC_MAX_INT for no compression */
   if(ilsd > 0){
     for(int i=0;i<ilsd;i++){
       /* prtkvmap(lsds[i]); */
@@ -1151,8 +1154,8 @@ close_and_free:
     }
     if(fl_nm_scrip) fl_nm_scrip=(char *)nco_free(fl_nm_scrip);
     /* DYW fxm: free array values first */
-    if(sms) sms=(kvmap *)nco_free(sms);
-    if(lsds) lsds=(kvmap *)nco_free(lsds);
+    if(sms) freekvmaps(sms);
+    if(lsds) freekvmaps(lsds);
 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
@@ -1250,6 +1253,16 @@ int sng2array(const char *delim, const char *str, char **sarray)
   }
   return idx;
 }/* end sng2array */
+
+void freekvmaps(kvmap *kvmaps)
+{
+  int idx=0;
+  while(kvmaps[idx].key){
+    kvmaps[idx].key=nco_free(kvmaps[idx].key);
+    kvmaps[idx].value=nco_free(kvmaps[idx].value);
+  }
+  kvmaps=nco_free(kvmaps);
+}
 
 void prtkvmap (kvmap vm)
 {
