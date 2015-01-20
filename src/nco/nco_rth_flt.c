@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.40 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.41 2015-01-20 18:20:15 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic, MSVC macros */
 
@@ -82,7 +82,7 @@ float fabsf(float x){return (float)(fabs((double)x));}
 float floorf(float x){return (float)(floor((double)x));}
 #endif /* !NEED_FLOORF */ 
 #ifdef NEED_GAMMAF
-float gammaf(float x){return (float)(gamma((double)x));}
+float gammaf(float x){return (float)(tgamma((double)x));}
 #endif /* !NEED_GAMMAF */ 
 #ifdef NEED_LOG10F
 float log10f(float x){return (float)(log10((double)x));}

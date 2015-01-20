@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.293 2015-01-10 02:52:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.294 2015-01-20 18:20:15 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.293 2015-01-10 02:52:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.293 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.294 2015-01-20 18:20:15 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.294 $";
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -167,6 +167,9 @@ main(int argc,char **argv)
   /* Advanced math: erf, erfc, gamma */
   extern float erff(float);
   extern float erfcf(float);
+  /* There is no function named gamma in the ISO C standard library.
+     There are standard functions called lgamma() = log(gamma()) and tgamma() = gamma()
+     These functions do not appear in the 1990 ISO C standard; they were introduced by C99 */
   extern float gammaf(float);
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
