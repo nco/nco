@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.76 2015-01-17 01:30:19 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.77 2015-01-20 20:46:09 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -132,7 +132,10 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 
      Test full algorithm:
      ncks -4 -O -C -v lsd_dbl --lsd /lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc
-     ncks -v lsd_dbl ~/foo.nc */
+
+     Compare to Jeff Whitaker's nc3tonc4 results:
+     /opt/local/bin/nc3tonc4-2.7 -o --quantize=lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc
+     ncks -C -v lsd_dbl ~/foo.nc */
   
   /* Rounding is currently defined as op1:=around(op1,lsd) */  
   
@@ -160,8 +163,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     break;
   case 3:
     bit_nbr=10;
-    //scale=1024.0;
-    scale=1000.0;
+    scale=1024.0;
     break;
   case 4:
     bit_nbr=14;

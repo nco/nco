@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1054 2015-01-08 20:37:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1055 2015-01-20 20:46:09 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -1298,9 +1298,10 @@ Conversion of @acronym{HDF4} to netCDF4 as above suffices when the data
 will only be processed by @acronym{NCO} and other netCDF4-aware tools.  
 
 @cindex @command{ncl_convert2nc}
+@cindex @command{nc3tonc4}
 However, many tools are not fully netCDF4-aware, and so conversion to
 netCDF3 may be desirable.
-Obtaining a netCDF3 file from an @acronym{HDF4} is now easy:
+Obtaining any netCDF file from an @acronym{HDF4} is easy:
 @example
 ncks -3 fl.hdf fl.nc      # HDF4->netCDF3 (NCO 4.4.0+, netCDF 4.3.1+)
 ncks -4 fl.hdf fl.nc      # HDF4->netCDF4 (NCO 4.4.0+, netCDF 4.3.1+)
@@ -1320,9 +1321,10 @@ Prior to @acronym{NCO} version 4.4.0 (January, 2014), we recommended the
 @command{ncl_convert2nc} tool to convert @acronym{HDF} to netCDF3 when
 both these are true: @w{1. You} must have netCDF3 and @w{2. the}
 @acronym{HDF} file contains netCDF4 atomic types. 
-More recent versions of @acronym{NCO} handle this problem fine, so we
-no longer recommend @command{ncl_convert2nc} because @command{ncks}
-is faster and more space-efficient.
+More recent versions of @acronym{NCO} handle this problem fine, and
+include other advantages so we no longer recommend
+@command{ncl_convert2nc} because @command{ncks} is faster and more
+space-efficient. 
 Both automatically convert netCDF4 types to netCDF3 types, yet
 @command{ncl_convert2nc} cannot produce full netCDF4 files.
 In contrast, @command{ncks} will happily convert @acronym{HDF} straight
@@ -1332,7 +1334,9 @@ Unsigned bytes stay unsigned bytes.
 64-bit integers stay 64-bit integers. 
 Strings stay strings. 
 Hence, @command{ncks} conversions often result in smaller files than
-@command{ncl_convert2nc} conversions.}. 
+@command{ncl_convert2nc} conversions.
+A tool useful for converting netCDF3 to netCDF4 files is the Python
+script @command{nc3tonc4} by Jeff Whitaker.}. 
 
 @cindex @code{hdf_name}
 @cindex illegal names

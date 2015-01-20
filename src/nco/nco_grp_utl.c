@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1496 2015-01-19 04:49:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1497 2015-01-20 20:46:09 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3498,10 +3498,10 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy fixed variables from input t
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.enm_prc_typ == fix_typ){
      
       /* If variable is an ensemble member, do not create it in the same location as input */
-      if(var_trv.flg_nsm_mbr == True){
+      if(var_trv.flg_nsm_mbr){
         assert(nco_prg_id_get() == ncge);
         continue;
-      }
+      } /* endif */
 
       /* Obtain group IDs */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id_in);
@@ -3740,10 +3740,10 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       var_prc_out->id=var_out_id;
 
       /* fxm: gtr or lsr? */
-      for(int idx_dmn=0;idx_dmn<var_prc_out->nbr_dim;idx_dmn++) {
+      for(int idx_dmn=0;idx_dmn<var_prc_out->nbr_dim;idx_dmn++){
         var_prc_out->srt[idx_dmn]=var_prc_gtr->srt[idx_dmn];
         var_prc_out->cnt[idx_dmn]=var_prc_gtr->cnt[idx_dmn];
-      }
+      } /* endfor */
 
       /* Set missing value */
       has_mss_val=var_prc_gtr->has_mss_val;
@@ -3788,7 +3788,6 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
   /* Free output path name */
   grp_out_fll=(char *)nco_free(grp_out_fll);
-
 } /* nco_prc_cmn() */
 
 void                          
@@ -3893,7 +3892,6 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 
   /* Free output path name */
   grp_out_fll=(char *)nco_free(grp_out_fll);
-
 } /* nco_cpy_fix() */
 
 nco_bool                               /* O [flg] Copy packing attributes */
@@ -3933,9 +3931,7 @@ nco_pck_cpy_att                        /* [fnc] Inquire about copying packing at
     PCK_ATT_CPY=False;  
 
   return PCK_ATT_CPY;
-
 } /* nco_pck_cpy_att() */
-
 
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
@@ -3976,7 +3972,6 @@ nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variab
   } /* Store fixed variables info into table */
 
   return;
-
 } /* end nco_var_prc_fix_trv() */
 
 void
@@ -4937,7 +4932,6 @@ nco_dmn_swap                           /* [fnc] Swap dimensions */
   dmn_cmn_tmp=dmn_cmn[dmn_nm_1_idx];
   dmn_cmn[dmn_nm_1_idx]=dmn_cmn[dmn_nm_2_idx];
   dmn_cmn[dmn_nm_2_idx]=dmn_cmn_tmp;
-
 } /* nco_dmn_swap */
 
 void
@@ -5128,14 +5122,14 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
     /* Changing record dimension may invalidate is_rec_var flag
-    Updating is_rec_var flag to correct value, even if value is ignored,
-    helps keep user appraised of unexpected dimension re-orders.
-    is_rec_var may change both for "fixed" and "processed" variables
-    When is_rec_var changes for processed variables, may also need to change
-    ancillary information and to check for duplicate dimensions.
-    Ancillary information (dmn_idx_out_in) is available only for var_prc!
-    Hence must update is_rec_var flag for var_fix and var_prc separately */
-
+       Updating is_rec_var flag to correct value, even if value is ignored,
+       helps keep user appraised of unexpected dimension re-orders.
+       is_rec_var may change both for "fixed" and "processed" variables
+       When is_rec_var changes for processed variables, may also need to change
+       ancillary information and to check for duplicate dimensions.
+       Ancillary information (dmn_idx_out_in) is available only for var_prc!
+       Hence must update is_rec_var flag for var_fix and var_prc separately */
+    
     /*  Update is_rec_var flag for var_fix */
     for(int idx_var_fix=0;idx_var_fix<nbr_var_fix;idx_var_fix++){
 
@@ -5224,11 +5218,11 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               /* NEEDS_REORDER */
               if(NEEDS_REORDER){
 
-                /* NOTE: Bellow:
-                --- using the found index of processed idx_var_prc_out
-                --- using the search index of GTT idx_var_mrk */
+                /* NB:
+		   --- use found index of processed idx_var_prc_out
+		   --- use search index of GTT idx_var_mrk */
 
-                /* Find the index of processed variables that corresponds to the found GTT variable */
+                /* Find index of processed variables that corresponds to found GTT variable */
                 nco_var_prc_idx_trv(var_trv_mrk.nm_fll,var_prc_out,nbr_var_prc,&idx_var_prc_out);        
 
                 /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
@@ -5309,7 +5303,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                     } /* endif multi-dimensional */
                   } /* endif status changing from non-record to record */
                 } /* endif variable will be record variable */
-              } /* Loop table, search for other variables that share the same dimension name */
+              } /* Loop table, search for other variables that share same dimension name */
           } /* NEEDS_REORDER */
         } /* ...look if there is a record name to find  */
       } /* Match by full variable name  */
@@ -5327,7 +5321,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
       rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;
 
-      /* Loop table, search for other variables that share the same dimension name */
+      /* Loop table, search for other variables that share same dimension name */
       for(unsigned idx_var_mrk=0;idx_var_mrk<trv_tbl->nbr;idx_var_mrk++){
 
         /* Looking for this variable */
@@ -5399,7 +5393,7 @@ nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
 
   if(var_trv.rec_dmn_nm_out == NULL) return False;
 
-  /* Loop table, search for other variables that share the same dimension name */
+  /* Loop table, search for other variables that share same dimension name */
   for(unsigned idx_var_mrk=0;idx_var_mrk<trv_tbl->nbr;idx_var_mrk++){
 
     /* Looking for this variable */
@@ -5518,11 +5512,11 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
       var_sz=var_in->sz;
 
       /* As explained in nco_var_dmn_rdr_mtd(),
-      "Hence, we must re-update dmn_out->id after nco_dmn_dfn() in nco_cnf_dmn_rdr_val()
-      Structures should be completely consistent at that point
-      Not updating these structures (at least dmn_out->id) is equivalent to assuming that
-      dmn_out->id does not depend on record dimension identity, which is an ASSUMPTION
-      that may currently be true, but is not guaranteed by the netCDF API to always be true." */
+	 "Hence, we must re-update dmn_out->id after nco_dmn_dfn() in nco_cnf_dmn_rdr_val()
+	 Structures should be completely consistent at that point
+	 Not updating these structures (at least dmn_out->id) is equivalent to assuming that
+	 dmn_out->id does not depend on record dimension identity, which is an ASSUMPTION
+	 that may currently be true, but is not guaranteed by the netCDF API to always be true." */
       for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
         /* NB: Change dmn_id,cnt,srt,end,srd together to minimize chances of forgetting one */
         var_out->dmn_id[dmn_out_idx]=dmn_out[dmn_out_idx]->id;
