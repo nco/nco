@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.543 2015-01-15 07:37:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.544 2015-01-20 18:44:39 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -133,9 +133,9 @@ print "\n";
     
 # printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
     
+    $dsc_sng="Testing float modulo float";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'tpt_mod=tpt%273.0f' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v tpt_mod -s '%.1f ' %tmp_fl_00%";
-    $dsc_sng="Testing float modulo float";
     $tst_cmd[2]="0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -143,9 +143,9 @@ print "\n";
     
 #printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
 
+    $dsc_sng="Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_flt)^1' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.6f\\n' %tmp_fl_00%";
-    $dsc_sng="Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)";
     $tst_cmd[2]="1.000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -153,17 +153,17 @@ print "\n";
 #print "paused - hit return to continue"; my $wait = <STDIN>;
     
 # where did e_dbl tst_run??  it's in in.cdl but gets lost thru the rgrs...?
+    $dsc_sng="Testing foo=log(e_dbl)^1";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_dbl)^1' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tmp_fl_00%";
-    $dsc_sng="Testing foo=log(e_dbl)^1";
     $tst_cmd[2]="1.000000000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
+    $dsc_sng="Testing foo=4*atan(1)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=4*atan(1)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tmp_fl_00%";
-    $dsc_sng="Testing foo=4*atan(1)";
     $tst_cmd[2]="3.141592741013";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -178,9 +178,9 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
     #fails - wrong result ???
+    $dsc_sng="Testing foo=gamma(0.5) (fails on AIX TODO ncap57)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=gamma(0.5)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tmp_fl_00%";
-    $dsc_sng="Testing foo=gamma(0.5) (fails on AIX TODO ncap57)";
     $tst_cmd[2]="1.772453851";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -202,20 +202,20 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array\
     
+    ##TODO ncap81
+    $dsc_sng="Casting variable with same name as dimension (failure expected on netCDF4 ncap81)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",3);defdim(\"b\",4); a[\$a,\$b]=10;c=a(1,1);' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v c -s '%i' %tmp_fl_00%";
-    $dsc_sng="Casting variable with same name as dimension (failure expected on netCDF4 ncap81)";
-    ##TODO ncap81
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+    ##TODO ncap81
+    $dsc_sng="Casting variable with a single dim of sz=1";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",1); b[\$a]=10;c=b(0:0);' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncwa -h -O $fl_fmt $nco_D_flg -C -a a %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -H -v b -s '%i' %tmp_fl_01%";
-    $dsc_sng="Casting variable with a single dim of sz=1";
-    ##TODO ncap81
     $tst_cmd[3]="10";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
