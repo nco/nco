@@ -1,5 +1,7 @@
 2015-01-20  Charlie Zender  <zender@uci.edu>
 
+	* Move DYW functions to new nco_sld.[ch] files
+
 	* Use tgamma() instead of gamma() on MacOSX
 
 	* Tidy --enable-custom warnings on clang

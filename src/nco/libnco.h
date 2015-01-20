@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.61 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.62 2015-01-20 21:56:46 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) library */
 
@@ -51,6 +51,7 @@
 #include "nco_scm.h" /* Software configuration management */
 #include "nco_sng_utl.h" /* String utilities */
 #include "nco_srm.h" /* Streams */
+#include "nco_sld.h" /* Swath-Like Data */
 #include "nco_var_avg.h" /* Average variables */
 #include "nco_uthash.h" /* Hash table functionality */
 #include "nco_var_lst.h" /* Variable list utilities */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.755 2015-01-20 04:11:25 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.756 2015-01-20 21:56:46 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -107,19 +107,6 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-/* DYW stuct and function */
-typedef struct {
-  char *key;
-  char *value;
-} kvmap;
-int hdlscrip(char *scripflnm, kvmap *smps); 
-kvmap sng2map(char *str,  kvmap sm); /* parse a line return a name-value pair kvmap */
-int sng2array(const char *delim, const char *str, char **sarray); /* split str by delim to sarray returns size of sarray */
-char * strip(char *str); /* remove heading and trailing blanks */
-void freekvmaps(kvmap *kvmaps); /* release memory */
-void prtkvmap (kvmap sm);  /* print kvmap contents */
-/* DYW end */
-
 int 
 main(int argc,char **argv)
 {
@@ -206,8 +193,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.755 2015-01-20 04:11:25 dywei2 Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.755 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.756 2015-01-20 21:56:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.756 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -848,7 +835,6 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* DYW */
-  //trv_tbl_init_lsd(NC_MAX_INT,trv_tbl); /* set NC_MAX_INT for no compression */
   if(ilsd > 0){
     for(int i=0;i<ilsd;i++){
       /* prtkvmap(lsds[i]); */
@@ -1153,7 +1139,7 @@ close_and_free:
       } /* endif dbg */
     }
     if(fl_nm_scrip) fl_nm_scrip=(char *)nco_free(fl_nm_scrip);
-    /* DYW fxm: free array values first */
+    /* DYW */
     if(sms) freekvmaps(sms);
     if(lsds) freekvmaps(lsds);
 
@@ -1203,105 +1189,4 @@ close_and_free:
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
-kvmap sng2map(char *str, kvmap sm){
-  int icnt=0;
-  char * prt;
-  prt=strtok(str, "=");
-  while(prt != NULL){
-    icnt++;
-    strip(prt);
-    switch(icnt){
-    case 1:
-      sm.key=strdup(prt);
-      break;
-    case 2:
-      sm.value=strdup(prt);
-      break;
-    default:
-      fprintf(stderr,"cannot get key-value pair from this imput: %s\n", str);
-      break;
-    }/* end switch */
-    prt=strtok(NULL, "=");
-  }/* end while */
-  return sm;
-}/* end sng2map */
-
-char * strip(char *str) /* strip off heading and tailing white spaces.  seems not working for \n??? */
-{
-  char *start = str;
-  while(isspace(*start)) start++;
-  int end = strlen(start);
-  if(start != str) {
-    memmove(str, start, end);
-    str[end] = '\0';
-  }
-  while(isblank(*(str+end-1))) end--;
-  str[end] = '\0';
-  return str;
-}/* end strip */
-
-int sng2array(const char *delim, const char *str, char **sarray)
-{
-  int idx=0;
-  char *tstr;
-  tstr=strdup(str);
-  sarray[idx]=strtok(tstr, delim);
-  while(sarray[idx]!=NULL)
-  {
-    sarray[++idx] = strtok(NULL, delim);
-  }
-  return idx;
-}/* end sng2array */
-
-void freekvmaps(kvmap *kvmaps)
-{
-  int idx=0;
-  while(kvmaps[idx].key){
-    kvmaps[idx].key=nco_free(kvmaps[idx].key);
-    kvmaps[idx].value=nco_free(kvmaps[idx].value);
-  }
-  kvmaps=nco_free(kvmaps);
-}
-
-void prtkvmap (kvmap vm)
-{
-  if(vm.key == NULL) return;
-  printf("%s=", vm.key);
-  printf("%s\n", vm.value);
-}
-
-int 
-hdlscrip( /* return 0 invalid scrip file or rcd, 1 success */ 
-char *scripflnm, /* scrip file name with proper path */
-kvmap *smps)/* structure to hold contents of scrip file */ 
-{
-  char line[BUFSIZ];
-  FILE *sfile=fopen(scripflnm, "r");
-  if (!sfile) {
-    printf("Cannot open scrip file %s\n", scripflnm);
-    return 0;
-  }
-  int icnt, idx=0;
-  while (fgets(line, sizeof(line), sfile)){
-    if(strstr(line, "=") == NULL){
-      printf("invalid line in scrip file: %s\n", line);
-      fclose(sfile);
-      return 0;
-    }
-    smps[idx]=sng2map(line, smps[idx]);
-    if(smps[idx].key == NULL){
-      fclose(sfile);
-      return 0;
-    }
-    else{
-      idx++;
-    }
-  } /* finish parsing SCRIP file */
-  fclose(sfile);
-  for(icnt=0; icnt<idx; icnt++){
-    prtkvmap(smps[icnt]);
-  }
-  return 1;
-}/* end hdlscrip */
 
