@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.2 2015-01-21 20:06:40 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.3 2015-01-21 21:36:36 dywei2 Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -55,12 +55,12 @@ nco_lsd_set(/* set lsd based user specifications */
   /* parsing lsds */
   for(idx=0;idx<lsd_nbr;idx++){
     arg=(char *)strdup(lsd_arg[idx]);
-    sm=nco_sng2map(arg,sm);
     if(!strstr(arg,"=")){
       (void)fprintf(stdout,"%s: invalid --lsd specification: %s\n",nco_prg_nm_get(),arg);
       if(lsds) nco_kvmaps_free(lsds);
       nco_exit(EXIT_FAILURE);
     } /* endif */
+    sm=nco_sng2map(arg,sm);
     if(sm.key){
       char *items[BUFSIZ];
       int idxi;
