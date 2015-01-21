@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.308 2015-01-20 04:11:25 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.309 2015-01-21 01:09:52 dywei2 Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -196,15 +196,17 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
 /* DYW */
 void
-trv_tbl_init_lsd /* Set default value for no compression */ 
+trv_tbl_set_lsd_dflt /* Set the lsd value for all non-coordinate vars */ 
 (const int lsd, /* I [nbr] Least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Initialize LSD member to default value for no compression
      Function is currently obsolete becasuse LSD member is initialize in nco_grp_itr() */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var) trv_tbl->lst[idx_tbl].lsd=lsd;
-} /* end trv_tbl_init_lsd() */
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var){
+      trv_tbl->lst[idx_tbl].lsd=lsd;
+    }
+} /* end trv_tbl_set_lsd_dflt() */
 
 void
 trv_tbl_set_lsd
@@ -215,19 +217,17 @@ trv_tbl_set_lsd
   const char sls_chr='/'; /* [chr] Slash character */
   int mch_nbr=0;
   
-  char * usr_var_sng=strdup(var_nm);
-
   if(strpbrk(var_nm,".*^$\\[]()<>+?|{}")){ /* regular expression ... */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
     regmatch_t *result;
     regex_t *rx;
     size_t rx_prn_sub_xpr_nbr;
     rx=(regex_t *)nco_malloc(sizeof(regex_t));
-    if(strchr(usr_var_sng,sls_chr)){ /* full name is used */
+    if(strchr(var_nm,sls_chr)){ /* full name is used */
       char sng2mch[BUFSIZ]="^";
-      strcat(sng2mch,usr_var_sng);
+      strcat(sng2mch,var_nm);
       if(regcomp(rx,sng2mch,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
-        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),usr_var_sng);
+        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
         nco_exit(EXIT_FAILURE);
       }
       rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
@@ -239,8 +239,8 @@ trv_tbl_set_lsd
         } /* endif */
       } /* endfor */
     }else{ /* relative name is used */
-      if(regcomp(rx,usr_var_sng,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
-        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),usr_var_sng);
+      if(regcomp(rx,var_nm,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
+        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
         nco_exit(EXIT_FAILURE);
       }
       rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */

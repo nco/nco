@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.756 2015-01-20 21:56:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.757 2015-01-21 01:09:52 dywei2 Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -193,8 +193,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.756 2015-01-20 21:56:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.756 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.757 2015-01-21 01:09:52 dywei2 Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.757 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -836,10 +836,17 @@ main(int argc,char **argv)
 
   /* DYW */
   if(ilsd > 0){
-    for(int i=0;i<ilsd;i++){
-      /* prtkvmap(lsds[i]); */
-      trv_tbl_set_lsd(lsds[i].key,(int)strtol(lsds[i].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[i].value,"strtol",sng_cnv_rcd);
+    for(idx=0;idx<ilsd;idx++){ /* if lsd default exists, set it first */
+      if(!strcasecmp(lsds[idx].key, "default")){
+        trv_tbl_set_lsd_dflt((int)strtol(lsds[idx].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[idx].value,"strtol",sng_cnv_rcd);
+        break;
+      }
+    } /* end for */
+    for(idx=0;idx<ilsd;idx++){ /* set non-default lsds */
+      if(!strcasecmp(lsds[idx].key, "default")) continue;
+      trv_tbl_set_lsd(lsds[idx].key,(int)strtol(lsds[idx].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[idx].value,"strtol",sng_cnv_rcd);
     } /* end for */
   } /* end if */
 
@@ -1135,7 +1142,7 @@ close_and_free:
     }
     if (ilsd > 0){
       if(nco_dbg_lvl > nco_dbg_fl){
-        for(int i=0; i<ilsd;i++) prtkvmap(lsds[i]);
+        for(idx=0; idx<ilsd;idx++) prtkvmap(lsds[idx]);
       } /* endif dbg */
     }
     if(fl_nm_scrip) fl_nm_scrip=(char *)nco_free(fl_nm_scrip);

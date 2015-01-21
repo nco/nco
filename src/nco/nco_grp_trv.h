@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.123 2015-01-17 01:30:18 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.124 2015-01-21 01:09:52 dywei2 Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -212,7 +212,7 @@ trv_tbl_nsm_nm_att                     /* [fnc] Return variable object  */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 void
-trv_tbl_init_lsd   /* set default value for no compression */ 
+trv_tbl_set_lsd_dflt /* Set the lsd value for all non-coordinate vars */
 (const int lsd,                  
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
