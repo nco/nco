@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.757 2015-01-21 01:09:52 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.758 2015-01-21 20:06:40 dywei2 Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -173,6 +173,7 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
+  char *lsd_arg[NC_MAX_VARS]; /* [sng] lsd arguments */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
@@ -184,17 +185,14 @@ main(int argc,char **argv)
   char *spr_chr=NULL; /* [sng] Separator for XML character types */
   char *spr_nmr=NULL; /* [sng] Separator for XML numeric types */
 
-  /* DYW */
-  kvmap *sms; /* [sct] Container to hold SCRIP info */
-  kvmap *lsds;  /* container to hold lsd info */
-  int ilsd=0; /* counter for lsd vars */
-  sms=(kvmap *)nco_malloc(BUFSIZ*sizeof(kvmap));
-  lsds=(kvmap *)nco_malloc(NC_MAX_VARS*sizeof(kvmap));
+/* DYW */
+  kvmap_sct *sms; /* [sct] Container to hold SCRIP info */
+  sms=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.757 2015-01-21 01:09:52 dywei2 Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.757 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.758 2015-01-21 20:06:40 dywei2 Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.758 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -234,6 +232,7 @@ main(int argc,char **argv)
   int idx;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int lsd_nbr=0; /* counter for lsd vars */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -541,25 +540,9 @@ main(int argc,char **argv)
         hdlscrip(fl_nm_scrip, sms);
       } /* endif scrip */
       if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
-        char * arg = strdup(optarg);
-        if(!strstr(arg,"=")){
-          (void)fprintf(stdout,"%s: invalid --lsd specification: %s\n",nco_prg_nm_get(),arg);
-          nco_exit(EXIT_FAILURE);
-        } /* endif */
-        kvmap sm;
-        sm=sng2map(arg,sm);
-        if(sm.key){
-          char *items[BUFSIZ];
-          int i;
-          int rc=sng2array(",", sm.key, items);
-          for(i=0;i<rc;i++){
-            lsds[ilsd].key=strdup(items[i]);
-            lsds[ilsd].value=strdup(sm.value);
-            ilsd++;
-          }
-        }
+        lsd_arg[lsd_nbr]=(char *)strdup(optarg);
+        lsd_nbr++;
       } /* endif lsd */
-
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"mpi_implementation")){
         (void)fprintf(stdout,"%s\n",nco_mpi_get());
@@ -835,20 +818,7 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* DYW */
-  if(ilsd > 0){
-    for(idx=0;idx<ilsd;idx++){ /* if lsd default exists, set it first */
-      if(!strcasecmp(lsds[idx].key, "default")){
-        trv_tbl_set_lsd_dflt((int)strtol(lsds[idx].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
-        if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[idx].value,"strtol",sng_cnv_rcd);
-        break;
-      }
-    } /* end for */
-    for(idx=0;idx<ilsd;idx++){ /* set non-default lsds */
-      if(!strcasecmp(lsds[idx].key, "default")) continue;
-      trv_tbl_set_lsd(lsds[idx].key,(int)strtol(lsds[idx].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[idx].value,"strtol",sng_cnv_rcd);
-    } /* end for */
-  } /* end if */
+  if(lsd_nbr > 0) nco_lsd_set(lsd_arg,lsd_nbr,trv_tbl); /* set lsd in trv_tbl */
 
   /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);    
@@ -1137,18 +1107,12 @@ close_and_free:
     if(fl_nm_scrip){
       if(nco_dbg_lvl > nco_dbg_fl){
 	      idx=0;
-	      while(sms[idx].key) prtkvmap(sms[idx++]);
-      } /* endif dbg */
-    }
-    if (ilsd > 0){
-      if(nco_dbg_lvl > nco_dbg_fl){
-        for(idx=0; idx<ilsd;idx++) prtkvmap(lsds[idx]);
+	      while(sms[idx].key) nco_kvmap_prn(sms[idx++]);
       } /* endif dbg */
     }
     if(fl_nm_scrip) fl_nm_scrip=(char *)nco_free(fl_nm_scrip);
     /* DYW */
-    if(sms) freekvmaps(sms);
-    if(lsds) freekvmaps(lsds);
+    if(sms) nco_kvmaps_free(sms);
 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
@@ -1173,6 +1137,7 @@ close_and_free:
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+    for(idx=0;idx<lsd_nbr;idx++) lsd_arg[idx]=(char *)nco_free(lsd_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     trv_tbl_free(trv_tbl);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);

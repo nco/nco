@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.124 2015-01-21 01:09:52 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.125 2015-01-21 20:06:40 dywei2 Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -210,16 +210,5 @@ trv_tbl_nsm_nm_att                     /* [fnc] Return variable object  */
 (const char * const var_nm,            /* I [sng] Variable name (relative) to find */
  const char * const grp_nm_fll_prn,    /* I [sng] Ensemble parent group */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
-void
-trv_tbl_set_lsd_dflt /* Set the lsd value for all non-coordinate vars */
-(const int lsd,                  
- trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
-
-void
-trv_tbl_set_lsd
-(const char * const var_nm_fll,        /* I [sng] Variable name to find */
- const int lsd,                        /* I [nbr] Least significant digit */
- trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 #endif /* NCO_GRP_TRV_H */
