@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.5 2015-01-22 22:42:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.6 2015-01-22 22:45:38 dywei2 Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -74,6 +74,7 @@ nco_lsd_att_prc /* [fnc] create lsd att from trv_tbl */
     if(rcd==NC_NOERR && aed.sz==att_sz && aed.type==att_typ) {
       (void)nco_get_att(nc_id,var_id,aed.att_nm,att_val2.vp,att_typ);
       if(lsd<*(att_val2.ip))aed.mode=aed_overwrite;
+      else continue; /* no changes needed */
     }
     (void)nco_aed_prc(nc_id,var_id,aed); /* Edit attribute */
   }
