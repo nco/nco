@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.4 2015-01-22 21:44:57 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.5 2015-01-22 22:42:46 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -16,8 +16,8 @@ kvmap_sct nco_sng2map /* [fnc] parsing string to key-value pair */
 (char *str, /* I [sng] string to parse with a = */
 kvmap_sct sm) /* O [sct] key-value pair */
 {
+  char *prt;
   int icnt=0;
-  char * prt;
   prt=strtok(str, "=");
   while(prt != NULL){
     icnt++;
@@ -88,10 +88,10 @@ nco_lsd_set(/* set lsd based user specifications */
  const int lsd_nbr, /* I [nbr] Number of lsd specified */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
-  int idx;
-  int ilsd=0;
   char *arg;
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  int idx;
+  int ilsd=0;
   kvmap_sct *lsds;  /* container to hold lsd info */
   kvmap_sct sm;
 
@@ -142,11 +142,9 @@ trv_tbl_lsd_set_dflt /* Set the lsd value for all non-coordinate vars */
   /* Purpose: Initialize LSD member to default value for no compression
      Function is currently obsolete becasuse LSD member is initialize in nco_grp_itr() */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var){
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var)
       trv_tbl->lst[idx_tbl].lsd=lsd;
-    }
 } /* end trv_tbl_lsd_set_dflt() */
-
 
 void
 trv_tbl_lsd_set_var
@@ -220,8 +218,6 @@ trv_tbl_lsd_set_var
     } /* endfor */
   }
 } /* end trv_tbl_lsd_set_var() */
-/* DYW end*/
-
 
 char * nco_sng_strip(/* strip off heading and tailing white spaces.  seems not working for \n??? */
 char *str) 

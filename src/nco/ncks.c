@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.759 2015-01-22 21:44:57 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.760 2015-01-22 22:42:46 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -185,14 +185,14 @@ main(int argc,char **argv)
   char *spr_chr=NULL; /* [sng] Separator for XML character types */
   char *spr_nmr=NULL; /* [sng] Separator for XML numeric types */
 
-/* DYW */
+  /* DYW */
   kvmap_sct *sms; /* [sct] Container to hold SCRIP info */
   sms=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.759 2015-01-22 21:44:57 dywei2 Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.759 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.760 2015-01-22 22:42:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.760 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -818,7 +818,8 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   /* DYW */
-  if(lsd_nbr > 0) nco_lsd_set(lsd_arg,lsd_nbr,trv_tbl); /* set lsd in trv_tbl */
+  /* Decode and set LSD information */
+  if(lsd_nbr > 0) nco_lsd_set(lsd_arg,lsd_nbr,trv_tbl);
 
   /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);    
