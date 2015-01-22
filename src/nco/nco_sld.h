@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.2 2015-01-21 20:06:40 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.3 2015-01-22 21:44:57 dywei2 Exp $ */
 
 /* Purpose: Description (definition) of Swath-Like Data (SLD) functions */
 
@@ -47,6 +47,11 @@ void nco_lsd_set(/* set lsd based user specifications */
  char *const lsd_arg[], /* I [sng] List of user-specified lsd */
  const int cnk_nbr, /* I [nbr] Number of lsd specified */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+
+void
+nco_lsd_att_prc /* [fnc] create lsd att from trv_tbl */
+(const int nc_id,                     /* I [id] Input netCDF file ID */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 void
 trv_tbl_lsd_set_dflt /* Set the lsd value for all non-coordinate vars */

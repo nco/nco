@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.3 2015-01-21 21:36:36 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.4 2015-01-22 21:44:57 dywei2 Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -37,6 +37,50 @@ kvmap_sct sm) /* O [sct] key-value pair */
   }/* end while */
   return sm;
 }/* end nco_sng2map */
+
+// check lsd_att exist to change mode?
+void
+nco_lsd_att_prc /* [fnc] create lsd att from trv_tbl */
+(const int nc_id,                     /* I [id] Input netCDF file ID */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+{
+  int grp_id; /* [id] Group ID */
+  int var_id; /* [id] Variable ID */
+  int lsd;
+  int rcd=NC_NOERR;
+  ptr_unn att_val;
+  ptr_unn att_val2;
+  aed_sct aed;
+  nc_type att_typ;
+  long att_sz;
+
+  att_val.vp=(void *)nco_malloc(NC_INT);
+  att_val2.vp=(void *)nco_malloc(NC_INT);
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    lsd=trv_tbl->lst[idx_tbl].lsd;
+    if(lsd==NC_MAX_INT) continue;
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];
+    aed.var_nm=strdup(var_trv.nm);
+    (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id); /* Obtain group ID */
+    (void)nco_inq_varid(grp_id,var_trv.nm,&var_id); /* Obtain variable ID */
+    att_val.ip=&lsd;
+    aed.id=var_id;
+    aed.val=att_val;
+    aed.type=NC_INT; /* the value changes if it's assigned outside the for loop */
+    aed.att_nm="least_significant_digit";
+    aed.sz=1L;
+    aed.mode=aed_create; //aed_overwrite; aed_modify;
+    rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
+    if(rcd==NC_NOERR && aed.sz==att_sz && aed.type==att_typ) {
+      (void)nco_get_att(nc_id,var_id,aed.att_nm,att_val2.vp,att_typ);
+      if(lsd<*(att_val2.ip))aed.mode=aed_overwrite;
+    }
+    (void)nco_aed_prc(nc_id,var_id,aed); /* Edit attribute */
+  }
+/* invalid pointer: 0x00007fffe7a795c8 ??
+  if(att_val.vp != NULL) att_val.vp=(void *)nco_free(att_val.vp);
+*/
+}
 
 void
 nco_lsd_set(/* set lsd based user specifications */

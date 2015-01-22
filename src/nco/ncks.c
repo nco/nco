@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.758 2015-01-21 20:06:40 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.759 2015-01-22 21:44:57 dywei2 Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -191,8 +191,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.758 2015-01-21 20:06:40 dywei2 Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.758 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.759 2015-01-22 21:44:57 dywei2 Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.759 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -849,6 +849,7 @@ main(int argc,char **argv)
     goto close_and_free; 
   } /* end GET_GRP_INFO */
 
+
   /* Process --get_file_info option if requested */ 
   if(GET_FILE_INFO){ 
     (void)fprintf(stderr,"%s: INFO reports file information\n",nco_prg_nm_get());
@@ -919,7 +920,11 @@ main(int argc,char **argv)
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
     /* Define extracted groups, variables, and attributes in output file */
+//DYW todo
     (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
+
+    /* Process lsd attribute */
+    if(lsd_nbr > 0) nco_lsd_att_prc(out_id,trv_tbl); /* create least_significant_digit=lsd */
 
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);

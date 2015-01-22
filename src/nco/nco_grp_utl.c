@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1497 2015-01-20 20:46:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1498 2015-01-22 21:44:57 dywei2 Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1782,6 +1782,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
         PCK_ATT_CPY=nco_pck_cpy_att(nco_prg_id,nco_pck_plc,var_prc);
 
+//printf("DYW, BBB %s\n", var_prc->nm);
         (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,PCK_ATT_CPY);
 
         for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
@@ -5626,7 +5627,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
   return;
 
 } /* nco_var_dmn_rdr_val_trv() */
-
+  
 void
 nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
 (const int nc_id,                     /* I [id] Input netCDF file ID */
