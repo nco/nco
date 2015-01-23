@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.77 2015-01-20 20:46:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.78 2015-01-23 02:05:23 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -131,11 +131,11 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
      ncks -H ~/foo.nc
 
      Test full algorithm:
-     ncks -4 -O -C -v lsd_dbl --lsd /lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc
+     ncks -4 -O -C -v lsd_dbl,lsd_big --lsd lsd_dbl=3 --lsd lsd_big=-2 ~/nco/data/in.nc ~/foo.nc
 
      Compare to Jeff Whitaker's nc3tonc4 results:
-     /opt/local/bin/nc3tonc4-2.7 -o --quantize=lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc
-     ncks -C -v lsd_dbl ~/foo.nc */
+     nc3tonc4 -o --quantize=lsd_dbl=3,lsd_big=-2 ~/nco/data/in.nc ~/foo.nc
+     ncks -H -C -v lsd_dbl,lsd_big ~/foo.nc */
   
   /* Rounding is currently defined as op1:=around(op1,lsd) */  
   
@@ -146,7 +146,6 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 
   long idx;
   
-  //DYW if(lsd == 0) return;
   lsd_abs=abs(lsd);
   switch(lsd_abs){
   case 0:
@@ -200,9 +199,8 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
       for(idx=0L;idx<sz;idx++) op1.fp[idx]=(float)lrint(scale*op1.fp[idx])/scale; /* Coerce to avoid implicit conversions warning */
     }else{
       const float mss_val_flt=*mss_val.fp;
-      for(idx=0;idx<sz;idx++){
+      for(idx=0;idx<sz;idx++)
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(float)lrint(scale*op1.fp[idx])/scale; /* Coerce to avoid implicit conversions warning */
-      } /* end for */
     } /* end else */
     break;
   case NC_DOUBLE: 
@@ -210,9 +208,8 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
       for(idx=0L;idx<sz;idx++) op1.dp[idx]=lrint(scale*op1.dp[idx])/scale;
     }else{
       const float mss_val_dbl=*mss_val.dp;
-      for(idx=0;idx<sz;idx++){
+      for(idx=0;idx<sz;idx++)
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=lrint(scale*op1.dp[idx])/scale;
-      } /* end for */
     } /* end else */
     break;
   case NC_INT: /* Do nothing for non-floating point types ...*/

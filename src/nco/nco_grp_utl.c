@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1498 2015-01-22 21:44:57 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1499 2015-01-23 02:05:23 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6651,9 +6651,9 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
      nco_lmt_prs()
      nco_prs_aux_crd()
      nco_chk_dmn_in()
-     Two functions called for specific operators are:
+     Functions called for specific operators include:
      ncbo: trv_tbl_srt()
-     nces nco_bld_nsm() */
+     nces: nco_bld_nsm() */
   
   const char fnc_nm[]="nco_bld_trv_tbl()"; /* [sng] Function name  */
 
@@ -6741,7 +6741,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(nco_dbg_lvl_get() == nco_dbg_vrb) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
 
   return;
-
 } /* nco_bld_trv_tbl() */
 
 void

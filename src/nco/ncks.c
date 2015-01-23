@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.760 2015-01-22 22:42:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.761 2015-01-23 02:05:23 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -185,14 +185,10 @@ main(int argc,char **argv)
   char *spr_chr=NULL; /* [sng] Separator for XML character types */
   char *spr_nmr=NULL; /* [sng] Separator for XML numeric types */
 
-  /* DYW */
-  kvmap_sct *sms; /* [sct] Container to hold SCRIP info */
-  sms=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
-
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.760 2015-01-22 22:42:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.760 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.761 2015-01-23 02:05:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.761 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -240,6 +236,9 @@ main(int argc,char **argv)
   int var_nbr_fl;
   int var_ntm_fl;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
+
+/* DYW */
+  kvmap_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
@@ -537,7 +536,8 @@ main(int argc,char **argv)
       } /* endif "lbr" */
       if(!strcmp(opt_crr,"scrip")){
         fl_nm_scrip=strdup(optarg);
-        hdlscrip(fl_nm_scrip, sms);
+	sld_nfo=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
+        hdlscrip(fl_nm_scrip,sld_nfo);
       } /* endif scrip */
       if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
         lsd_arg[lsd_nbr]=(char *)strdup(optarg);
@@ -1110,16 +1110,13 @@ close_and_free:
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
-    if(fl_nm_scrip){
-      if(nco_dbg_lvl > nco_dbg_fl){
-	      idx=0;
-	      while(sms[idx].key) nco_kvmap_prn(sms[idx++]);
-      } /* endif dbg */
-    }
-    if(fl_nm_scrip) fl_nm_scrip=(char *)nco_free(fl_nm_scrip);
     /* DYW */
-    if(sms) nco_kvmaps_free(sms);
-
+    if(fl_nm_scrip){
+      fl_nm_scrip=(char *)nco_free(fl_nm_scrip);
+      idx=0;
+      if(nco_dbg_lvl > nco_dbg_fl) while(sld_nfo[idx].key) nco_kvmap_prn(sld_nfo[idx++]);
+      if(sld_nfo) nco_kvmaps_free(sld_nfo);
+    } /* endif fl_nm_scrip */
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
