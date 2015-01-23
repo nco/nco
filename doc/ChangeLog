@@ -2,6 +2,8 @@
 
 	* Add SLD regression test?
 
+	* DYW added least_significant_digit attribute
+
 2015-01-20  Charlie Zender  <zender@uci.edu>
 
 	* Move DYW functions to new nco_sld.[ch] files
