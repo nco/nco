@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.759 2014-12-03 00:24:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.760 2015-01-24 00:37:29 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -25,6 +25,29 @@ A. NCO warns when appended output type differs from input type.
    ncks -C -A -v float_var ~/nco/data/in.nc ~/foo.nc
    Now the user is warned but the operations is still permitted.
    http://nco.sf.net/nco.html#-A
+
+A. NCO will now store data at a specifiable level of precision.
+   The Least Significant Digit (LSD) functionality rounds data.
+   Specifying LSD=3 or LSD=-2 causes NCO to store only enough
+   bits to preserve the number rounded to the nearest thousandth
+   or hundred, respectively. In other words, LSD is the negative
+   base 10 logarithm of the desired precision. Under the hood,
+   this feature uses a rounding algorithm and so (intentionally)
+   loses information (aka unwanted precision). The rounding is
+   performed by zeroing the greatest number of mantissa bits
+   consistent with the desired precision. This results in consecutive 
+   zeros occupying signicant portions least siginificant bit in
+   the on-disk IEEE storage of floating point numbers. Byte-stream
+   compression techniques, such as the gzip compression used
+   by HDF5, can compress these strings of zeros more efficiently than
+   unrounded numbers. The net result is that netCDF4 files that
+   utilize compression (i.e., ncks -L 1) can be significantly
+   reduced in size. There is no benefit to rounding numbers and
+   storing them in netCDF3 files because netCDF3 does not support
+   compression and thus one may as well maintain the precision.
+   This feature only works when the output dataset is netCDF4.
+   ncks -4 --lsd temperature=3 --lsd pressure,speed=-2 in.nc out.nc
+   http://nco.sf.net/nco.htlm#lsd
 
 BUG FIXES:
 

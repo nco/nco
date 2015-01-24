@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.507 2015-01-23 21:57:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.508 2015-01-24 00:37:29 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -1030,7 +1030,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-L")) (void)fprintf(stdout,"-L, --dfl_lvl, --deflate lvl\tLempel-Ziv deflation/compression (lvl=0..9) for netCDF4 output\n");
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-l")) (void)fprintf(stdout,"-l, --lcl, --local path\tLocal storage path for remotely-retrieved files\n");
-  if(strstr(opt_sng,"--lsd")) (void)fprintf(stdout,"    --lsd \t\tLeast Significant Digit: negative log_10 of desired precision\n");
+  if(strstr(opt_sng,"--lsd")) (void)fprintf(stdout,"    --lsd, --quantize v1[,v2[,...]=lsd\t\tLeast Significant Digit: negative log_10 of desired precision\n");
   if(strstr(opt_sng,"[-M")){
     if(prg_lcl == ncecat) (void)fprintf(stdout,"-M, --glb_mtd_spp\tDo not copy global metadata\n");
     if(prg_lcl == ncks) (void)fprintf(stdout,"-M, --Mtd, --Metadata\tToggle printing global metadata\n");
