@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1499 2015-01-23 02:05:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1500 2015-01-25 22:21:13 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1768,7 +1768,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
         int var_id;        /* [id] Variable ID */
-
         var_sct *var_prc;  /* [sct] Variable to process */
 
         /* Obtain group ID */
@@ -1782,7 +1781,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
         PCK_ATT_CPY=nco_pck_cpy_att(nco_prg_id,nco_pck_plc,var_prc);
 
-//printf("DYW, BBB %s\n", var_prc->nm);
         (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,PCK_ATT_CPY);
 
         for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
@@ -1809,6 +1807,37 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
           (void)nco_aed_prc(grp_out_id,var_out_id,aed_md5);
         } /* !wrt */
       } /* !md5 */
+
+      /* Write LSD attribute */
+      if(var_trv.lsd != NC_MAX_INT){
+	aed_sct aed_lsd;
+	char att_nm[]="least_significant_digit";
+	int lsd_old;
+	int rcd;
+	aed_lsd.att_nm=att_nm;
+	aed_lsd.var_nm=var_trv.nm;
+	aed_lsd.id=var_out_id;
+	aed_lsd.val.ip=&var_trv.lsd;
+	rcd=nco_inq_att_flg(grp_out_id,aed_lsd.id,aed_lsd.att_nm,&aed_lsd.type,&aed_lsd.sz);
+	if(rcd != NC_NOERR){
+	  /* No LSD attribute yet exists */
+	  aed_lsd.sz=1L;
+	  aed_lsd.type=NC_INT;
+	  aed_lsd.mode=aed_create;
+	  (void)nco_aed_prc(grp_out_id,var_out_id,aed_lsd);
+	}else{
+	  if(aed_lsd.sz == 1L && aed_lsd.type == NC_INT){
+	    /* Conforming LSD attribute already exists, only replace with new value if rounder */
+	    (void)nco_get_att(grp_out_id,aed_lsd.id,aed_lsd.att_nm,&lsd_old,NC_INT);
+	    if(var_trv.lsd < lsd_old){
+	      aed_lsd.mode=aed_modify;
+	      (void)nco_aed_prc(grp_out_id,var_out_id,aed_lsd);
+	    } /* endif */
+	  }else{ /* !conforming */
+	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),att_nm,var_trv.nm_fll);
+	  }  /* !conforming */
+	} /* !rcd */
+      } /* !LSD */
 
       /* Memory management after current extracted variable */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);

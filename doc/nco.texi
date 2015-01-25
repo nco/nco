@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1055 2015-01-20 20:46:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1056 2015-01-25 22:21:13 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -117,9 +117,9 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set nco-edition 4.4.8
 @set doc-edition 4.4.8
 @set copyright-years 1995--2015
-@set update-year 2014
-@set update-date 1 December 2014
-@set update-month December 2014
+@set update-year 2015
+@set update-date 25 January 2015
+@set update-month January 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -12708,7 +12708,7 @@ effect.
 Create variable @var{var_nm} attribute @var{att_nm} with @var{att_val}
 if @var{att_nm} does not yet exist.  
 If @var{var_nm} already has an attribute @var{att_nm}, there is no
-effect. 
+effect, so the existing attribute is preserved without change.
 @item d
 @dfn{Delete}.
 Delete current @var{var_nm} attribute @var{att_nm}.

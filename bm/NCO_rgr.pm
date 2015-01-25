@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.544 2015-01-20 18:44:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.545 2015-01-25 22:21:12 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1521,7 +1521,6 @@ print "\n";
 # 
 
 #ncks #19 groups: add associated variable "lat" of "area" to extraction list
-
     $dsc_sng="(Groups) Extract associated coordinate variable";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
@@ -1531,50 +1530,38 @@ print "\n";
     $#tst_cmd=0; # Reset array    
     
 #ncks #20 groups: Add to extraction list all coordinates associated with CF convention
-
     $dsc_sng="(Groups) Add CF convention variables";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g7 -v gds_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_gds %tmp_fl_00%";  
     $tst_cmd[2]="-90-30-3000303090";
     $tst_cmd[3]="SS_OK";
-   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
 #ncks #21 groups: Extract variables in groups (test -g with -v)
-
     $dsc_sng="(Groups) Extract variables in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="1.11";
     $tst_cmd[3]="SS_OK";
-   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncks #22 groups: Create variables in groups (test -G with -v and -g)
-
     $dsc_sng="(Groups) Create variables in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g8 -g g3 -v scl $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%"; 
     $tst_cmd[2]="1.3";
     $tst_cmd[3]="SS_OK";
-   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
 #ncks #23 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var)
-
     $dsc_sng="(Groups) Hyperslabs in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -H -s '%d' %tmp_fl_00%"; 
     $tst_cmd[2]="2";
     $tst_cmd[3]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
@@ -1583,62 +1570,47 @@ print "\n";
 # 
 
 #ncks #24 groups: Extract group attributes
-
     $dsc_sng="(Groups) Extract group attributes";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
     $tst_cmd[3]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
 #ncks #25 groups: Extract global attributes
-
     $dsc_sng="Extract global attributes";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks %tmp_fl_00% | grep Conventions";
     $tst_cmd[2]="Global attribute 0: Conventions, size = 6 NC_CHAR, value = CF-1.0";
     $tst_cmd[3]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
 #ncks #26 groups: Extract "bounds" variables (extract /g8/ilev)
-
     $dsc_sng="(Groups) Extract 'bounds' variables";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -a -O -H  -s '%g' %tmp_fl_00% ";    
     $tst_cmd[2]="1005001000";
     $tst_cmd[3]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
 #ncks #27 groups: Extract group attributes with GPE
-
     $dsc_sng="(Groups) GPE group attribute extraction";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g9 -g g3 -v scl $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
     $tst_cmd[3]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
 #ncks #28 groups: Group dimension hyperslabs
-
     $dsc_sng="(Groups) Group dimension hyperslabs";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -C -H -v lat_gds -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="-30";
     $tst_cmd[3]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
@@ -1647,19 +1619,14 @@ print "\n";
 # 
     
 #ncks #29 groups: Sort output alphabetically
-
     $dsc_sng="(Groups) Sort output alphabetically";
     $tst_cmd[0]="ncks -z $in_pth_arg in_grp.nc | tail -1";
-
     $tst_cmd[1]="var: /unique";
     $tst_cmd[2]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-
     
 #ncks #30 2D variable definition
-
     $dsc_sng="2D variable definition";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v ilev $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00%";
@@ -1670,56 +1637,42 @@ print "\n";
 
 #ncks #31 Variable/Group extraction test 1 (netCDF4 file)
 #extract all variables in g6 = area,area1, refine to area1 only
-
     $dsc_sng="(Groups) Variable/Group extraction test 1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6 $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -v area1 %tmp_fl_00%";
     $tst_cmd[2]="lat[1] area1[1]=31";
     $tst_cmd[3]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 
 #ncks #32 Variable/Group extraction test 2 (netCDF4 file)
 #extract all variables in g6 = area,area1, refine to area1 only
 #use -d 
-
     $dsc_sng="(Groups) Variable/Group extraction test 2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6 $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -v area1 -d lat,0,0 %tmp_fl_00%";
     $tst_cmd[2]="lat[0] area1[0]=21";
     $tst_cmd[3]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
  
 #ncks #33 Variable/Group extraction test 3 (netCDF4 file)
 #extract all variables in g6g1 (second level group) = area
-
-
     $dsc_sng="(Groups) Variable/Group extraction test 3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6g1 $in_pth_arg in_grp.nc";
-
     $tst_cmd[1]="lat[1]=90 area[1]=50";
     $tst_cmd[2]="SS_OK";  
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-  
-	
+
 #ncks #34 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
 #NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
-
     $dsc_sng="(Groups) Variable/Group extraction test 4-1 (netCDF4 file)";
-   $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
-
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
     $tst_cmd[1]="/g6/g6g1/area";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
@@ -1727,13 +1680,10 @@ print "\n";
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
 #NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
-
     $dsc_sng="(Groups) Variable/Group extraction test 4-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /g6/area";
-
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK"; 
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	
@@ -1741,71 +1691,53 @@ print "\n";
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
 #NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
-
     $dsc_sng="(Groups) Variable/Group extraction test 4-3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -o -w area";
-
     $tst_cmd[1]="area";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 	
 #ncks #37 Variable/Group extraction test 5 (netCDF4 file)
 # Extract all variables "area" in g6g1
-
     $dsc_sng="(Groups) Variable/Group extraction test 5 (netCDF4 file)";
     $tst_cmd[0]="ncks -H $fl_fmt $nco_D_flg -C -s '%g' -v area -g g6g1 -d lat,0 $in_pth_arg in_grp.nc";
-
     $tst_cmd[1]="40";
     $tst_cmd[2]="SS_OK";    
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array			
 	
 #ncks #38 Variable/Group extraction test 6 (netCDF4 file)
 #extract all variables "area" in g6g1 = g6/g6g1/area 
-
-
     $dsc_sng="(Groups) Variable/Group extraction test 6 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6g1 $in_pth_arg in_grp.nc";
-
     $tst_cmd[1]="lat[1]=90 area[1]=50";
     $tst_cmd[2]="SS_OK";  
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-
 	
 #ncks #39 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1 = g6/g6g1/area, g6/area
 #NOTE: test repeated for 2 strings, for non-netcDF4 case, output is empty string 
-
     $dsc_sng="(Groups) Variable/Group extraction test 7-1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1 $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
-
     $tst_cmd[1]="/g6/g6g1/area";
     $tst_cmd[2]="SS_OK";     
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 							
 	
 #ncks #40 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1 = g6/g6g1/area, g6/area
 #NOTE: test repeated for 2 strings, for non-netcDF4 case, output is empty string 
-
     $dsc_sng="(Groups) Variable/Group extraction test 7-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1 $in_pth_arg in_grp.nc | grep -w /g6/area";
-
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
 #ncks #41 Variable/Group extraction test 8 (netCDF3 file)
 #extract all variables "area" = /area 
-
     $dsc_sng="(Groups) Variable/Group extraction test 8 (netCDF3 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area $in_pth_arg in.nc";
     $tst_cmd[1]="lat[1]=90 area[1]=10 meter2";
@@ -1814,7 +1746,6 @@ print "\n";
     $#tst_cmd=0; # Reset array 							
 	
 #ncks #42 Extract associated coordinates test 1 (netCDF3 file) 
-
     $dsc_sng="Extract associated coordinates test 1 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v rz $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -o -w rlev";
@@ -1824,7 +1755,6 @@ print "\n";
     $#tst_cmd=0; # Reset array 
 	
 #ncks #43 Extract associated coordinates test 2 (netCDF3 file) 
-
     $dsc_sng="Extract associated coordinates test 2 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v rz $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /rlev";
@@ -1840,33 +1770,26 @@ print "\n";
 # /g5/g1/rz
 # /g5/rlev
 # output must not contain /g3
-
     $dsc_sng="(Groups) Extract associated coordinates test 3 (netCDF4 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g5g1 -v rz $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-
-	$tst_cmd[1]="ncks -H %tmp_fl_00%";
-	$tst_cmd[2]="rlev[2]=1"; # data for /g3/rlev differs from /g5/rlev
+    $tst_cmd[1]="ncks -H %tmp_fl_00%";
+    $tst_cmd[2]="rlev[2]=1"; # data for /g3/rlev differs from /g5/rlev
     $tst_cmd[3]="SS_OK";
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
 #ncks #45 Extract CF 'coordinates' variables(netCDF4 file)
 #gds_crd:coordinates = "lat_gds lon_gds";
 #ncks -v gds_crd ~/nco/data/in_grp.nc 
-
     $dsc_sng="(Groups) Extract CF 'coordinates' variables(netCDF4 file)";
     $tst_cmd[0]="ncks $nco_D_flg -v gds_crd $in_pth_arg in_grp.nc | grep -w /g7/lat_gds";
-
     $tst_cmd[1]="/g7/lat_gds";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 	
 #ncks #46 Extract CF 'coordinates' variables (netCDF3 file)
 #gds_crd:coordinates = "lat_gds lon_gds";
-
     $dsc_sng="Extract CF 'coordinates' variables (netCDF3 file)";
     $tst_cmd[0]="ncks $nco_D_flg -v gds_crd $in_pth_arg in.nc | grep -o -w lat_gds";
     $tst_cmd[1]="lat_gds";
@@ -1876,19 +1799,15 @@ print "\n";
 	
 #ncks #47 Extract CF 'bounds' variables (netCDF4 file)
 #lev:bounds = "ilev";
-
     $dsc_sng="(Groups) Extract CF 'bounds' variables (netCDF4 file)";
     $tst_cmd[0]="ncks $nco_D_flg -g g8 -v lev $in_pth_arg in_grp_3.nc | grep -w /g8/ilev";
-
     $tst_cmd[1]="/g8/ilev";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	
 #ncks #48 Extract CF 'bounds' variables (netCDF3 file)
 #lev:bounds = "ilev";
-
     $dsc_sng="Extract CF 'bounds' variables (netCDF3 file)";
     $tst_cmd[0]="ncks $nco_D_flg -v lev $in_pth_arg in.nc | grep -o -w ilev";
     $tst_cmd[1]="ilev";
@@ -1897,7 +1816,6 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
     
 #ncks #49
-
     $dsc_sng="Check --mk_rec_dmn (netCDF3 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --mk_rec_dmn lat -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m -v lat %tmp_fl_00% | egrep -o -w 'Record coordinate is lat'";
@@ -1907,7 +1825,6 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 
 #ncks #50    
-    
     $dsc_sng="(Groups) Check --mk_rec_dmn (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --mk_rec_dmn lat -v lat_lon $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m -v lat %tmp_fl_00% | egrep -o -w 'Record coordinate is lat'";
@@ -1917,7 +1834,6 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 
 #ncks #51
-    
     $dsc_sng="Check --fix_rec_dmn (netCDF3 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --fix_rec_dmn time -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate is time'";
@@ -1928,7 +1844,6 @@ print "\n";
     
 #ncks #52    
 # ncks -O --fix_rec_dmn time -v three_dmn_rec_var -p ~/nco/data in_grp.nc ~/foo.nc
-
     $dsc_sng="(Groups) Check --fix_rec_dmn (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --fix_rec_dmn time -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate is time'";
@@ -1938,7 +1853,6 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 
 #ncks #53    
-    
     $dsc_sng="--fix_rec_dmn with MM3 workaround (netCDF3->netCDF3 file)";
     $tst_cmd[0]="ncks -O $nco_D_flg --fix_rec_dmn time -v one,two,one_dmn_rec_var,two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate is time'";
@@ -1954,11 +1868,9 @@ print "\n";
 	$tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate dimension'";
 	$tst_cmd[2]="Record coordinate dimension";
 	$tst_cmd[3]="SS_OK";   
-
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array 			
     } # endif false
-    
     
 # NCO 4.2.6 tests
 # This version has a major change in the way dimensions are handled; the global array lmt_all was eliminated and replaced
@@ -2008,13 +1920,10 @@ print "\n";
 # /g10/two_dmn_rec_var
 # time[1]=2 lev[1]=500 two_dmn_rec_var[4]=2.1 
 # time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3 
-#
     $dsc_sng="(Groups) MSA --dmn time,1,3,2 --dmn lev,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -C --dmn time,1,3,2 --dmn lev,1,1,1 -v two_dmn_rec_var $in_pth_arg in_grp.nc";
-
     $tst_cmd[1]="time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
 
@@ -2025,13 +1934,10 @@ print "\n";
 #time[1]=2 lev[2]=1000 two_dmn_rec_var[5]=3 
 #time[3]=4 lev[0]=100 two_dmn_rec_var[9]=1 
 #time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3 
-
     $dsc_sng="(Groups) MSA --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1 -v two_dmn_rec_var $in_pth_arg in_grp.nc";
-
     $tst_cmd[1]="time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
 
@@ -2040,13 +1946,10 @@ print "\n";
 #/g16/lon2_var
 #lon2[1] lon2_var[1]=1 
 #lon2[3] lon2_var[3]=3 
-
     $dsc_sng="(Groups) MSA -d lon2,1,3,2 -v lon2_var";
     $tst_cmd[0]="ncks $nco_D_flg -H -d lon2,1,3,2 -v lon2_var $in_pth_arg in_grp_3.nc";
-
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -2055,13 +1958,10 @@ print "\n";
 #/g16/lon2_var
 #lon2[1] lon2_var[1]=1 
 #lon2[3] lon2_var[3]=3 
-
     $dsc_sng="(Groups) MSA -d lon2,1,3,2 -v lon2_var";
     $tst_cmd[0]="ncks $nco_D_flg -d lon2,1,1,1 -d lon2,3,3,1 -v lon2_var $in_pth_arg in_grp_3.nc";
-
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -2076,13 +1976,10 @@ print "\n";
 #gds_crd[1]=1 lat_gds[1]=-30 
 #/g7/lon_gds
 #gds_crd[1]=1 lon_gds[1]=0 
-
     $dsc_sng="(Groups) CF MSA -v gds_var -d gds_crd,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -v gds_var -d gds_crd,1,1,1 $in_pth_arg in_grp.nc";
-
     $tst_cmd[1]="gds_crd[1]=1 lon_gds[1]=0";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
   
@@ -2093,13 +1990,10 @@ print "\n";
 #/g7/g7g1/gds_var
 # gds_crd[1]=1 gds_var[1]=273.2 
 # gds_crd[3]=3 gds_var[3]=273.4 
-
     $dsc_sng="(Groups) MSA -H -C -g g7g1 -v gds_var -d gds_crd,1,1,1 -d gds_crd,3,3,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -C -g g7g1 -v gds_var -d gds_crd,1,1,1 -d gds_crd,3,3,1 $in_pth_arg in_grp.nc";
-
     $tst_cmd[1]="gds_crd[3]=3 gds_var[3]=273.4";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -2109,39 +2003,30 @@ print "\n";
 # ncks -H -g g16g1 -v lon1 -d lon1,3,3,1 ~/nco/data/in_grp.nc
 #/g16/g16g1/lon1
 #lon1[3]=3 
-
     $dsc_sng="(Groups) Parallel scope MSA -g g16g1 -v lon1 -d lon1,3,3,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1 -d lon1,3,3,1  $in_pth_arg in_grp_3.nc";
-
     $tst_cmd[1]="lon1[3]=3";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			 
 
 #ncks #63
 # Test "parallel" scope 
 #ncks: INFO nco_bld_var_dmn() reports variable </g16/g16g1/lon1_var> with dimension coordinate [0]/g16/g16g1/lon1
-
     $dsc_sng="(Groups) Parallel scope MSA -g g16g1 -v lon1_var -d lon1,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
-
     $tst_cmd[1]="lon1[1]=1 lon1_var[1]=1";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
 
 #ncks #64
 # Test "parallel" scope 
 #ncks: INFO nco_bld_var_dmn() reports variable </g16/g16g2/lon1_var> with dimension coordinate [0]/g16/g16g2/lon1
-
     $dsc_sng="(Groups) Parallel scope MSA -g g16g2 -v lon1_var -d lon1,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g2 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
-
     $tst_cmd[1]="lon1[1]=4 lon1_var[1]=1";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
@@ -2150,14 +2035,11 @@ print "\n";
 #ncks -O -g g6g1 -v area ~/nco/data/in_grp.nc ~/foo.nc
 #/g6/g6g1/area
 #lat[1]=90 area[1]=50
-
     $dsc_sng="(Groups) Dimensions in ancestor groups -g g6g1 -v area";
     $tst_cmd[0]="ncks $nco_D_flg -O -g g6g1 -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncks -H -C -v area -d lat,1,1 %tmp_fl_00%";
     $tst_cmd[2]="lat[1]=90 area[1]=50";
     $tst_cmd[3]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 
@@ -2231,7 +2113,6 @@ print "\n";
     $tst_cmd[0]="ncks $nco_D_flg -C -g g19g3 -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 $in_pth_arg in_grp_3.nc";
     $tst_cmd[1]="time[2]=3 lat[0]=-90 lon[3]=270 three_dmn_var_dbl[19]=20 watt meter-2";
     $tst_cmd[2]="SS_OK";   
-
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
@@ -2281,7 +2162,6 @@ print "\n";
 	
 #ncks #77
 # ncks -O in.nc ~/foo.nc
-
     $dsc_sng="Default input dataset";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v lat %tmp_fl_00% | grep 'lat size'";
@@ -2292,7 +2172,6 @@ print "\n";
 
 #ncks #78
 #ncks -O -3 -G : -g /g27g1/ in_grp_3.nc ~/foo.nc
-    
     $dsc_sng="(Groups) Test flatenning with parallel variables (-3 -G : -g)";
     $tst_cmd[0]="ncks -O -3 -G : -g /g27g1/  $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v delta_time_start %tmp_fl_00%";
@@ -2304,7 +2183,6 @@ print "\n";
 #ncks #79
 #ncks -O -3 -G : -g g28 -v delta_time_stop in_grp_3.nc ~/foo.nc	
 # simpler case of ncks -O -D 2 -3 -G : -g /altimetry/${DATA}/hdf/mabel_l2_20130927t201800_008_1.h5 ~/foo_mabel.nc
-    
     $dsc_sng="(Groups) Test CF extraction with flattening (-3 -G : -g)";
     $tst_cmd[0]="ncks -O -3 -G : -g g28 -v delta_time_stop  $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v delta_time_start %tmp_fl_00%";
@@ -2330,7 +2208,6 @@ print "\n";
 # There are two 'two_dmn_var' beneath /g19/g19g1, chunk the deeper and check the shallower was not chunked
 #ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
 #ncks -m -C -v /g19/g19g1/two_dmn_var --hdn ~/foo.nc | grep chunked | cut -d ' ' -f 8-9
-    
     $dsc_sng="(Groups) Chunking full dimension name does not chunk variables in parent group";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var --hdn %tmp_fl_00% | grep chunked | cut -d ' ' -f 8-9";
@@ -2343,7 +2220,6 @@ print "\n";
 # There are two 'two_dmn_var' beneath /g19/g19g1, chunk the deeper and check the deeper was chunked as requested
 #ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
 #ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var --hdn ~/foo.nc
-    
     $dsc_sng="(Groups) Chunking full dimension name works on in-scope variable";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var --hdn %tmp_fl_00% | grep _ChunkSizes";
@@ -2356,7 +2232,6 @@ print "\n";
 # There are two 'two_dmn_var' beneath /g19/g19g1, chunk both, deeper with absolute shallower with relative, check deeper
 # ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
 # ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var --hdn ~/foo.nc | grep _ChunkSizes
-    
     $dsc_sng="(Groups) Chunking full dimension name takes precedence over partial name ";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var --hdn %tmp_fl_00% | grep _ChunkSizes";
@@ -2369,7 +2244,6 @@ print "\n";
 # There are two 'two_dmn_var' beneath /g19/g19g1, chunk both, deeper with absolute shallower with relative, check shallower
 # ncks -O -4 --cnk_min=1 --cnk_plc=xpl --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,2 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
 # ncks -m -C -v /g19/g19g1/two_dmn_var --hdn ~/foo.nc | grep _ChunkSizes
-    
     $dsc_sng="(Groups) Chunking matches in-scope partial dimension name not out-of-scope full name";
     $tst_cmd[0]="ncks -O -4 --cnk_min=1 --cnk_plc=xpl --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,2 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var --hdn %tmp_fl_00% | grep _ChunkSizes";
@@ -2381,7 +2255,6 @@ print "\n";
 #ncks #85
 #ncks -O -L 0 --cnk_min=1 --cnk_dmn lat,1 -v one ~/nco/data/hdn.nc ~/foo.nc
 #ncks -C -m --hdn -v one -g g13 ~/foo.nc | grep _ChunkSizes
-    
     $dsc_sng="(Groups) Imposing zero deflation (-L 0) on already-chunked variable keeps uses specified not netCDF-default chunksizes (expect failure with netCDF 4.1.1-)";
     $tst_cmd[0]="ncks -O -4 -L 0 --cnk_min=1 --cnk_dmn lat,1 -v one $nco_D_flg $in_pth_arg hdn.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m --hdn -v one -g g13 %tmp_fl_00% | grep _ChunkSizes";
@@ -2397,7 +2270,6 @@ print "\n";
 #Since input variable is contiguous and default mode is (xst, xst), NCO determines that input has no existing chunksizes and so lets netCDF determine chunksizes
 #ncks -O -4 -L 0 --cnk_dmn lat,1 -v /lat ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -m --hdn -v /lat ~/foo.nc | grep _ChunkSizes
-    
     $dsc_sng="(Groups) Imposing deflation (-L 1) on contiguous variable uses netCDF-default (not user-specified) sizes";
     $tst_cmd[0]="ncks -O -4 -L 0 --cnk_dmn lat,1 -v /lat $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m --hdn -v /lat %tmp_fl_00% | grep _ChunkSizes";
@@ -2412,7 +2284,6 @@ print "\n";
 #NCO determines that variable must be chunked (because compressed) and uses user-specified explicit overrides for chunksizes
 #ncks -O -4 -L 0 --cnk_dmn lat,1 -v /lat ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -m --hdn -v /lat ~/foo.nc | grep _ChunkSizes
-    
     $dsc_sng="(Groups) Imposing deflation (-L 1) on contiguous variable uses netCDF-default (not user-specified) sizes";
     $tst_cmd[0]="ncks -O -4 -L 1 --cnk_dmn lat,1 -v /lat $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m --hdn -v /lat %tmp_fl_00% | grep _ChunkSizes";
@@ -2424,7 +2295,6 @@ print "\n";
 #ncks #87
 #ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -v time52 -m ~/foo.nc
-    
     $dsc_sng="(Groups) Change record dimension to fixed dimension --fix_rec_dmn time52 -v one_dmn_rec_var";
     $tst_cmd[0]="ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v time52 -m %tmp_fl_00%";
@@ -2435,8 +2305,8 @@ print "\n";
 
 #ncks #88
 #ncks -O -v lat29 in_grp_3.nc ~/foo.nc
-    $dsc_sng="(Groups) Test";
-    $tst_cmd[0]="ncks -O -v lat29  $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $dsc_sng="(Groups) Test attribute copying withing groups";
+    $tst_cmd[0]="ncks -O -v lat29 $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -v lat29 %tmp_fl_00% | grep 'standard_name'";
     $tst_cmd[2]="lat29 attribute 0: standard_name, size = 8 NC_CHAR, value = latitude";
     $tst_cmd[3]="SS_OK";     
@@ -2534,6 +2404,58 @@ print "\n";
     $tst_cmd[1]="ncks -C -H -d gds_ncd,-1 -v gds_var_ncd %tmp_fl_00";
     $tst_cmd[2]="gds_ncd[1] gds_var_ncd[1]=273.7";
     $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
+#ncks #97
+# Test --lsd attribute writing for new compression 
+# ncks -4 -O -C -v lsd_dbl --lsd lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc
+# ncks -m -v lsd_dbl ~/foo.nc
+    $dsc_sng="Test --lsd attribute writing for new compression";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl --lsd lsd_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -m -v lsd_dbl %tmp_fl_00 | grep 'least_significant_digit'";
+    $tst_cmd[2]="lsd_dbl attribute 3: least_significant_digit, size = 1 NC_INT, value = 3";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
+#ncks #98
+# Test --lsd compression rounding to hundreds
+# ncks -4 -O -C -v lsd_big,lsd_dbl --lsd lsd_big,lsd_dbl=-2 ~/nco/data/in.nc ~/foo.nc
+# ncks -H -d time,5 -s %g -v lsd_big ~/foo.nc
+    $dsc_sng="Test --lsd compression rounding to hundreds";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_big,lsd_dbl --lsd lsd_big,lsd_dbl=-2 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -H -d time,5 -s %g -v lsd_big %tmp_fl_00";
+    $tst_cmd[2]="1280";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
+#ncks #99
+# Test --lsd attribute does not overwrite pre-existing rounder values
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=-2 ~/nco/data/in.nc ~/foo.nc
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=3 ~/foo.nc ~/foo2.nc
+# ncks -m -v lsd_big ~/foo2.nc
+    $dsc_sng="Test --lsd attribute does not overwrite pre-existing rounder values";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=-2 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=3 %tmp_fl_00 %tmp_fl_01";
+    $tst_cmd[2]="ncks -m -v lsd_big %tmp_fl_01 | grep 'least_significant_digit'";
+    $tst_cmd[3]="lsd_big attribute 3: least_significant_digit, size = 1 NC_INT, value = -2";
+    $tst_cmd[4]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
+#ncks #100
+# Test --lsd attribute does overwrite pre-existing sharper values
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=-2 ~/nco/data/in.nc ~/foo.nc
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=3 ~/foo.nc ~/foo2.nc
+# ncks -m -v lsd_big ~/foo2.nc
+    $dsc_sng="Test --lsd attribute does overwrite pre-existing sharper values";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=-2 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=3 %tmp_fl_00 %tmp_fl_01";
+    $tst_cmd[2]="ncks -m -v lsd_dbl %tmp_fl_01 | grep 'least_significant_digit'";
+    $tst_cmd[3]="lsd_dbl attribute 3: least_significant_digit, size = 1 NC_INT, value = 3";
+    $tst_cmd[4]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 	

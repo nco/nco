@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.6 2015-01-22 22:45:38 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.7 2015-01-25 22:21:13 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -18,8 +18,8 @@ kvmap_sct sm) /* O [sct] key-value pair */
 {
   char *prt;
   int icnt=0;
-  prt=strtok(str, "=");
-  while(prt != NULL){
+  prt=strtok(str,"=");
+  while(prt){
     icnt++;
     nco_sng_strip(prt);
     switch(icnt){
@@ -33,32 +33,33 @@ kvmap_sct sm) /* O [sct] key-value pair */
       fprintf(stderr,"cannot get key-value pair from this imput: %s\n", str);
       break;
     }/* end switch */
-    prt=strtok(NULL, "=");
+    prt=strtok(NULL,"=");
   }/* end while */
   return sm;
 }/* end nco_sng2map */
 
 // check lsd_att exist to change mode?
 void
-nco_lsd_att_prc /* [fnc] create lsd att from trv_tbl */
-(const int nc_id,                     /* I [id] Input netCDF file ID */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+nco_lsd_att_prc /* [fnc] Create LSD attribute */
+(const int nc_id, /* I [id] Input netCDF file ID */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
+  /* NB: can fail when output file has fewer variables than input file (i.e., was subsetted)
+     functionality moved to nco_xtr_dfn() */
+  aed_sct aed;
+  char att_nm[]="least_significant_digit";
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
   int lsd;
   int rcd=NC_NOERR;
-  ptr_unn att_val;
-  ptr_unn att_val2;
-  aed_sct aed;
-  nc_type att_typ;
   long att_sz;
+  nc_type att_typ;
+  ptr_unn att_val;
+  int lsd_xst;
 
-  att_val.vp=(void *)nco_malloc(NC_INT);
-  att_val2.vp=(void *)nco_malloc(NC_INT);
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     lsd=trv_tbl->lst[idx_tbl].lsd;
-    if(lsd==NC_MAX_INT) continue;
+    if(lsd == NC_MAX_INT) continue;
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
     aed.var_nm=strdup(var_trv.nm);
     (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id); /* Obtain group ID */
@@ -66,22 +67,19 @@ nco_lsd_att_prc /* [fnc] create lsd att from trv_tbl */
     att_val.ip=&lsd;
     aed.id=var_id;
     aed.val=att_val;
-    aed.type=NC_INT; /* the value changes if it's assigned outside the for loop */
-    aed.att_nm="least_significant_digit";
+    aed.type=NC_INT; /* NB: value changes if it is assigned outside for loop */
+    aed.att_nm=att_nm;
     aed.sz=1L;
     aed.mode=aed_create; //aed_overwrite; aed_modify;
     rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
-    if(rcd==NC_NOERR && aed.sz==att_sz && aed.type==att_typ) {
-      (void)nco_get_att(nc_id,var_id,aed.att_nm,att_val2.vp,att_typ);
-      if(lsd<*(att_val2.ip))aed.mode=aed_overwrite;
+    if(rcd == NC_NOERR && aed.sz == att_sz && aed.type == att_typ){
+      (void)nco_get_att(nc_id,var_id,aed.att_nm,&lsd_xst,att_typ);
+      if(lsd < lsd_xst) aed.mode=aed_overwrite;
       else continue; /* no changes needed */
-    }
-    (void)nco_aed_prc(nc_id,var_id,aed); /* Edit attribute */
-  }
-/* invalid pointer: 0x00007fffe7a795c8 ??
-  if(att_val.vp != NULL) att_val.vp=(void *)nco_free(att_val.vp);
-*/
-}
+    } /* endif */
+    (void)nco_aed_prc(nc_id,var_id,aed);
+  } /* end loop */
+} /* end nco_lsd_att_prc() */
 
 void
 nco_lsd_set(/* set lsd based user specifications */
@@ -93,15 +91,16 @@ nco_lsd_set(/* set lsd based user specifications */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   int idx;
   int ilsd=0;
-  kvmap_sct *lsds;  /* container to hold lsd info */
+  kvmap_sct *lsds;  /* [sct] LSD container */
   kvmap_sct sm;
 
   lsds=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
-  /* parsing lsds */
+
+  /* Parse lsds */
   for(idx=0;idx<lsd_nbr;idx++){
     arg=(char *)strdup(lsd_arg[idx]);
     if(!strstr(arg,"=")){
-      (void)fprintf(stdout,"%s: invalid --lsd specification: %s\n",nco_prg_nm_get(),arg);
+      (void)fprintf(stdout,"%s: Invalid --lsd specification: %s\n",nco_prg_nm_get(),arg);
       if(lsds) nco_kvmaps_free(lsds);
       nco_exit(EXIT_FAILURE);
     } /* endif */
@@ -118,13 +117,13 @@ nco_lsd_set(/* set lsd based user specifications */
     } /* end if */
   } /* end for */
 
-  /* setting lsds */
+  /* Set lsds */
   for(idx=0;idx<ilsd;idx++){ /* if lsd default exists, set all non-coordinate vars first */
     if(!strcasecmp(lsds[idx].key, "default")){
       trv_tbl_lsd_set_dflt((int)strtol(lsds[idx].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
       if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[idx].value,"strtol",sng_cnv_rcd);
       break;
-    }
+    } /* endif */
   } /* end for */
   for(idx=0;idx<ilsd;idx++){ /* set non-default lsds that can overwrite dflt */
     if(!strcasecmp(lsds[idx].key, "default")) continue;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.414 2015-01-20 19:59:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.415 2015-01-25 22:21:13 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -128,6 +128,7 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
+  char *lsd_arg[NC_MAX_VARS]; /* [sng] LSD arguments */
   char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
   char *nco_pck_map_sng=NULL_CEWI; /* [sng] Packing map Option M */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
@@ -137,8 +138,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.414 2015-01-20 19:59:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.414 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.415 2015-01-25 22:21:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.415 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -183,6 +184,7 @@ main(int argc,char **argv)
   int idx_rdr=int_CEWI;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int lsd_nbr=0; /* [nbr] Number of LSD arguments */
   int lsd=0; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
@@ -277,6 +279,7 @@ main(int argc,char **argv)
       {"header_pad",required_argument,0,0},
       {"lsd",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
       {"least_significant_digit",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+      {"quantize",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -404,10 +407,10 @@ main(int argc,char **argv)
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
-      if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
-        lsd=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
-      } /* endif "hdr_pad" */
+      if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit") || !strcmp(opt_crr,"quantize")){
+        lsd_arg[lsd_nbr]=(char *)strdup(optarg);
+        lsd_nbr++;
+      } /* endif "lsd" */
       if(!strcmp(opt_crr,"mrd") || !strcmp(opt_crr,"multiple_record_dimension")) nco_mrd_cnv=nco_mrd_allow; /* [enm] Multiple Record Dimension convention */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
@@ -588,6 +591,9 @@ main(int argc,char **argv)
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,False,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
+
+  /* Decode and set LSD information */
+  if(lsd_nbr > 0) nco_lsd_set(lsd_arg,lsd_nbr,trv_tbl);
 
   /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);     
@@ -964,8 +970,9 @@ main(int argc,char **argv)
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
-    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    for(idx=0;idx<lsd_nbr;idx++) lsd_arg[idx]=(char *)nco_free(lsd_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.761 2015-01-23 02:05:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.762 2015-01-25 22:21:13 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -55,7 +55,7 @@
    ncks --cdl -v one_dmn_rec_var ~/nco/data/in.nc
    ncks --jsn -C -v one_dmn_rec_var ~/nco/data/in.nc
    ncks --jsn -C -m -v one_dmn_rec_var ~/nco/data/in_grp.nc
-   ncks -O -4 --lsd lsd_dbl=1 --lsd lsd_flt,lsd_bir=4 ~/nco/data/in.nc ~/foo.nc
+   ncks -O -4 --lsd lsd_dbl=1 --lsd lsd_flt,lsd_big=4 ~/nco/data/in.nc ~/foo.nc
    ncks -O --lsd lsd_dbl=1 --lsd '/g1/lsd.?',/g1/g1g1/lsd_dbl=4 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -m -M -v Snow_Cover_Monthly_CMG ${DATA}/hdf/MOD10CM.A2007001.005.2007108111758.hdf */
 
@@ -173,7 +173,7 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *lsd_arg[NC_MAX_VARS]; /* [sng] lsd arguments */
+  char *lsd_arg[NC_MAX_VARS]; /* [sng] LSD arguments */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
@@ -187,8 +187,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.761 2015-01-23 02:05:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.761 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.762 2015-01-25 22:21:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.762 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -228,7 +228,7 @@ main(int argc,char **argv)
   int idx;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int lsd_nbr=0; /* counter for lsd vars */
+  int lsd_nbr=0; /* [nbr] Number of LSD arguments */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -349,6 +349,7 @@ main(int argc,char **argv)
       {"header_pad",required_argument,0,0},
       {"lsd",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
       {"least_significant_digit",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+      {"quantize",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"tst_udunits",required_argument,0,0},
@@ -538,11 +539,11 @@ main(int argc,char **argv)
         fl_nm_scrip=strdup(optarg);
 	sld_nfo=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
         hdlscrip(fl_nm_scrip,sld_nfo);
-      } /* endif scrip */
-      if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit")){
+      } /* endif "scrip" */
+      if(!strcmp(opt_crr,"lsd") || !strcmp(opt_crr,"least_significant_digit") || !strcmp(opt_crr,"quantize")){
         lsd_arg[lsd_nbr]=(char *)strdup(optarg);
         lsd_nbr++;
-      } /* endif lsd */
+      } /* endif "lsd" */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"mpi_implementation")){
         (void)fprintf(stdout,"%s\n",nco_mpi_get());
@@ -817,7 +818,6 @@ main(int argc,char **argv)
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
-  /* DYW */
   /* Decode and set LSD information */
   if(lsd_nbr > 0) nco_lsd_set(lsd_arg,lsd_nbr,trv_tbl);
 
@@ -921,11 +921,7 @@ main(int argc,char **argv)
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
     /* Define extracted groups, variables, and attributes in output file */
-//DYW todo
     (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
-
-    /* Process lsd attribute */
-    if(lsd_nbr > 0) nco_lsd_att_prc(out_id,trv_tbl); /* create least_significant_digit=lsd */
 
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -1136,11 +1132,11 @@ close_and_free:
     if(grp_lst_in_nbr > 0) grp_lst_in=nco_sng_lst_free(grp_lst_in,grp_lst_in_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
-    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    for(idx=0;idx<lsd_nbr;idx++) lsd_arg[idx]=(char *)nco_free(lsd_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    for(idx=0;idx<lsd_nbr;idx++) lsd_arg[idx]=(char *)nco_free(lsd_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     trv_tbl_free(trv_tbl);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
