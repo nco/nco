@@ -1,12 +1,10 @@
 2015-01-25  Charlie Zender  <zender@uci.edu>
 
-	* Add LSD to ncpdq
+	* Add LSD to ncpdq, document in nco.texi, regression tests
 
 	* Move nco_lsd_att_prc() from main.c into nco_xtr_dfn() for maintainability
 
 2015-01-22  Charlie Zender  <zender@uci.edu>
-
-	* Add SLD regression test?
 
 	* DYW added least_significant_digit attribute
 

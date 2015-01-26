@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.760 2015-01-24 00:37:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.761 2015-01-26 00:31:12 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -39,9 +39,9 @@ A. NCO will now store data at a specifiable level of precision.
    zeros occupying signicant portions least siginificant bit in
    the on-disk IEEE storage of floating point numbers. Byte-stream
    compression techniques, such as the gzip compression used
-   by HDF5, can compress these strings of zeros more efficiently than
+   by HDF5, will compress these strings of zeros more efficiently than 
    unrounded numbers. The net result is that netCDF4 files that
-   utilize compression (i.e., ncks -L 1) can be significantly
+   utilize compression (e.g., ncks -L 1) can be significantly
    reduced in size. There is no benefit to rounding numbers and
    storing them in netCDF3 files because netCDF3 does not support
    compression and thus one may as well maintain the precision.

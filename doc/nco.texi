@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1056 2015-01-25 22:21:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1057 2015-01-26 00:31:12 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -2530,6 +2530,7 @@ feature is automatic and cannot be controlled by the user.
 * Missing Values::
 * Chunking::
 * Deflation::
+* Compression::
 * MD5 digests::
 * Buffer sizes::
 * RAM disks::
@@ -6746,7 +6747,7 @@ variables.
 <a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
 <a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
 @end html
-@node Deflation, MD5 digests, Chunking, Common features
+@node Deflation, Compression, Chunking, Common features
 @section Deflation
 @cindex @code{-L}
 @cindex @code{--deflate}
@@ -6802,13 +6803,100 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 (@pxref{ncks netCDF Kitchen Sink}).
 
 @html
+<a name="lsd"></a> <!-- http://nco.sf.net/nco.html#lsd -->
+<a name="LSD"></a> <!-- http://nco.sf.net/nco.html#LSD -->
+@end html
+@node Compression, MD5 digests, Deflation, Common features
+@section Compression
+@cindex @code{--lsd}
+@cindex @code{--least_significant_digit}
+@cindex @code{--quantize}
+@cindex lossy compression
+@cindex quantization
+@cindex rounding
+@cartouche
+Availability: @command{ncks}, @command{ncpdq}@*
+Short options: None@*
+Long options: @samp{--lsd}, @samp{--least_significant_digit}, @samp{--quantize}@*  
+@end cartouche
+
+@acronym{NCO} implements three types of compression algorithms
+which are all independent of one another, and may be combined.
+All three algorithms are intended to reduce the on-disk size of the
+dataset while sacrificing no (lossless) or a tolerable amount (lossy) 
+of precision.
+The time penalty for compressing and uncompressing data varies according 
+to the algorithm.
+@acronym{NCO} can access the lossless Lempel-Ziv deflation algorithm 
+on any netCDF4 dataset (@pxref{Deflation}).
+Because it is lossless, this algorithm can inflate deflated data to
+their full original precision. 
+
+As of version 4.4.8 (February, 2015), @acronym{NCO} @acronym{NCO} will 
+store data at a specifiable level of precision.  
+The Least Significant Digit (@acronym{LSD}) functionality accomplishes
+this through a rounding algorithm.
+Invoke @acronym{LSD} rounding with the long option 
+@samp{--lsd var=prc}, or give the same arguments to the synonyms
+@samp{--least_significant_digit}, or @samp{--quantize}.
+Here @var{var} is the variable to round, and @var{lsd} is the least
+significant digit to preserve, specified as the negative @w{base 10}
+logarithm of the desired precision, in accord with common usage.
+For example, specifying @math{@var{lsd}=3} or @math{@var{lsd}=-2} tells
+the @acronym{LSD} algorithm to store only enough bits to preserve the
+value rounded to the nearest thousandth or hundred, respectively.
+
+Under the hood, @acronym{LSD} uses a rounding algorithm and so
+(intentionally) loses information (aka false precision). 
+@cindex @command{rint()}
+@cindex C99
+@cindex @command{gzip}
+@cindex @acronym{IEEE}
+@cindex significand
+The rounding algorithm
+@footnote{
+Rounding is performed by the internal math library @command{rint()} 
+family of functions which were standardized in @acronym{C99}.
+The exact alorithm employed is
+@math{val := lrint(@var{scale}*@var{val})/@var{scale}} where @var{scale}
+is the nearest power @w{of 2} that exceeds @var{lsd}, and the inverse
+of @var{scale} is used when @math{@var{lsd} < 0}.
+For @math{@var{lsd} = 3} or @math{@var{lsd} = -2}, for example, we have
+@math{@var{scale} = 1024} and @math{@var{scale} = 1/128}.}
+zeroes the greatest number of mantissa bits consistent with
+the desired precision.
+This rounding places consecutive zeros in the least siginificant bits
+of the @dfn{significant} of the @acronym{IEEE} floating point values.
+Byte-stream compression techniques, such as the @command{gzip}
+compression used by @acronym{HDF5}, will compress these strings of zeros  
+more efficiently than unrounded numbers. 
+
+The net result is that netCDF4 files that utilize compression (e.g.,
+with @samp{ncks -L 1}) can be significantly reduced in size. 
+This feature only works when the output dataset is netCDF4.
+There is no benefit to rounding numbers and storing them in netCDF3
+files because netCDF3 does not support compression and thus one may as
+well maintain the precision. 
+@example
+ncks -4 --lsd temperature=3 --lsd pressure,speed=-2 in.nc out.nc
+@end example
+Although @acronym{LSD}-rounding instantly reduces data precision,
+on-disk storage reduction only occurs if the data are compressed.  
+Therefore @acronym{NCO} will automatically invoke the Lempel-Ziv
+deflation algorithm (@pxref{Deflation}) with a deflation level of
+one (i.e., equivalent to @samp{-L 1}) or any higher deflation level
+already specified, whichever is greater.
+Unscientific testing shows that @acronym{LSD} rounding compresses
+typical climate datasets by fxm.
+
+@html
 <a name="md5"></a> <!-- http://nco.sf.net/nco.html#md5 -->
 <a name="digest"></a> <!-- http://nco.sf.net/nco.html#digest -->
 <a name="hash"></a> <!-- http://nco.sf.net/nco.html#hash -->
 <a name="integrity"></a> <!-- http://nco.sf.net/nco.html#integrity -->
 <a name="security"></a> <!-- http://nco.sf.net/nco.html#security -->
 @end html
-@node MD5 digests, Buffer sizes, Deflation, Common features
+@node MD5 digests, Buffer sizes, Compression, Common features
 @section MD5 digests
 @cindex @code{--md5_digest}
 @cindex @code{--md5_dgs}
@@ -12613,8 +12701,12 @@ concatenated, e.g., by @command{ncrcat}, without losing information.
 To master @command{ncatted} one must understand the meaning of the
 structure that describes the attribute modification, @var{att_dsc} 
 specified by the required option @samp{-a} or @samp{--attribute}. 
-Each @var{att_dsc} contains five elements, which makes using
-@command{ncatted} somewhat complicated, yet powerful.
+This option is repeatable and may be used multiple time in a single
+@command{ncatted} invocation to increase the efficiency of altering
+multiple attributes.
+Each @var{att_dsc} contains five elements.
+This makes using @command{ncatted} somewhat complicated, though
+powerful. 
 The @var{att_dsc} fields are in the following order:@* 
 
 @var{att_dsc} = @var{att_nm}, @var{var_nm}, @var{mode}, @var{att_type},
@@ -12652,8 +12744,7 @@ arguments.
 The description of these arguments follows in their order of
 appearance. 
 
-The value of @var{att_nm} is the name of the attribute you want to
-edit. 
+The value of @var{att_nm} is the name of the attribute to edit. 
 This meaning of this should be clear to all @command{ncatted} users.
 Recall, as mentioned above, that @var{var_nm} (but not @var{att_nm}) may
 be specified as a regular expression. 
