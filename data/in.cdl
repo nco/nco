@@ -68,7 +68,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.205 2015-01-20 19:59:25 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.206 2015-01-26 00:48:32 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -359,6 +359,11 @@ variables:
         lsd_big:long_name = "Least Significant Digit, big numbers";
         lsd_big:purpose = "test --lsd switches";
         lsd_big:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
+
+	float lsd_bgr(time);
+        lsd_bgr:long_name = "Least Significant Digit, bigger numbers";
+        lsd_bgr:purpose = "test --lsd switches";
+        lsd_bgr:original_values="1234567890e20,1234567890e19,1234567890e18,1234567890e17,1234567890e16,1234567890e15,1234567890e14,1234567890e13,1234567890e12,1234567890e11";
 
 	char md5_a;
 	md5_a:long_name = "the letter a";
@@ -1225,6 +1230,7 @@ data:
 	lsd_dbl=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
 	lsd_flt=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
 	lsd_big=123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1;
+	lsd_bgr=1234567890e20,1234567890e19,1234567890e18,1234567890e17,1234567890e16,1234567890e15,1234567890e14,1234567890e13,1234567890e12,1234567890e11;
 	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
 	ORO=0.,1.,0.,0.,1.,1.,0.,2.;
 	mask=0.,1.,0.,0.,1.,1.,0.,2.;
