@@ -1,3 +1,7 @@
+2015-01-26  Charlie Zender  <zender@uci.edu>
+
+	* Prototype NSD algorithm compiles
+
 2015-01-25  Charlie Zender  <zender@uci.edu>
 
 	* Demonstrate LSD failure on lsd_bgr, need real precision algorithm

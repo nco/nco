@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1057 2015-01-26 00:31:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1058 2015-01-26 20:52:09 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -396,8 +396,8 @@ Charlie Zender
 * Summary::
 * Introduction::
 * Strategies::
-* Common features::
-* Operator Reference Manual::
+* Shared features::
+* Reference Manual::
 * Contributing::
 * Quick Start::
 * CMIP5 Example::
@@ -664,11 +664,11 @@ are on our homepage
 (@uref{http://nco.sf.net/}).
 
 There are twelve operators in the current version (@value{nco-edition}).
-The function of each is explained in @ref{Operator Reference Manual, Operator Reference Manual}.
+The function of each is explained in @ref{Reference Manual, Reference Manual}.
 Many of the tasks that @acronym{NCO} can accomplish are described during
-the explanation of common @acronym{NCO} Features (@pxref{Common features}).
+the explanation of common @acronym{NCO} Features (@pxref{Shared features}).
 More specific use examples for each operator can be seen by visiting the
-operator-specific examples in the @ref{Operator Reference Manual}.
+operator-specific examples in the @ref{Reference Manual}.
 These can be found directly by prepending the operator name with the
 @code{xmp_} tag, e.g., @uref{http://nco.sf.net/nco.html#xmp_ncks}.
 Also, users can type the operator name on the shell command line to 
@@ -1529,7 +1529,7 @@ differences between these files and your own.
 @html
 <a name="str"></a> <!-- http://nco.sf.net/nco.html#str -->
 @end html
-@node Strategies, Common features, Introduction, Top
+@node Strategies, Shared features, Introduction, Top
 @chapter Operator Strategies
 
 @menu
@@ -2489,8 +2489,8 @@ been reduced or eliminated.
 @html
 <a name="ftr"></a> <!-- http://nco.sf.net/nco.html#ftr -->
 @end html
-@node Common features, Operator Reference Manual, Strategies, Top
-@chapter NCO Features
+@node Shared features, Reference Manual, Strategies, Top
+@chapter Shared Features
 
 Many features have been implemented in more than one operator and are
 described here for brevity. 
@@ -2548,7 +2548,7 @@ feature is automatic and cannot be controlled by the user.
 @html
 <a name="i18n"></a> <!-- http://nco.sf.net/nco.html#i18n -->
 @end html
-@node Internationalization, Metadata Optimization, Common features, Common features
+@node Internationalization, Metadata Optimization, Shared features, Shared features
 @section Internationalization
 @cindex Internationalization
 @cindex I18N
@@ -2569,7 +2569,7 @@ favorite languages.
 <a name="hdr"></a> <!-- http://nco.sf.net/nco.html#hdr -->
 <a name="hdr_pad"></a> <!-- http://nco.sf.net/nco.html#hdr_pad -->
 @end html
-@node Metadata Optimization, OpenMP Threading, Internationalization, Common features
+@node Metadata Optimization, OpenMP Threading, Internationalization, Shared features
 @section Metadata Optimization
 @cindex metadata optimization
 @cindex performance
@@ -2609,7 +2609,7 @@ library (@pxref{File Formats and Conversion}).
 <a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
 <a name="openmp"></a> <!-- http://nco.sf.net/nco.html#openmp -->
 @end html
-@node OpenMP Threading, Command Line Options, Metadata Optimization, Common features
+@node OpenMP Threading, Command Line Options, Metadata Optimization, Shared features
 @section OpenMP Threading
 @cindex OpenMP
 @cindex threads
@@ -2717,7 +2717,7 @@ This information is also useful for benchmarking.
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
-@node Command Line Options, Specifying Input Files, OpenMP Threading, Common features
+@node Command Line Options, Specifying Input Files, OpenMP Threading, Shared features
 @section Command Line Options
 @cindex command line options
 @cartouche
@@ -2827,7 +2827,7 @@ name that most suits their taste.
 <a name="in"></a> <!-- http://nco.sf.net/nco.html#in -->
 <a name="input"></a> <!-- http://nco.sf.net/nco.html#input -->
 @end html
-@node Specifying Input Files, Specifying Output Files, Command Line Options, Common features
+@node Specifying Input Files, Specifying Output Files, Command Line Options, Shared features
 @section Specifying Input Files
 @cindex input files
 @cindex globbing
@@ -2984,7 +2984,7 @@ automatically generate, in order, the filenames @file{85_12.nc},
 <a name="out"></a> <!-- http://nco.sf.net/nco.html#out -->
 <a name="output"></a> <!-- http://nco.sf.net/nco.html#output -->
 @end html
-@node Specifying Output Files, Remote storage, Specifying Input Files, Common features
+@node Specifying Output Files, Remote storage, Specifying Input Files, Shared features
 @section Specifying Output Files
 @cindex output file
 @cindex input files
@@ -3022,7 +3022,7 @@ Second, specification of a long list of input files may be difficult
 (@pxref{Large Numbers of Files}).
 Making the input file list the final argument to an operator facilitates 
 using @command{xargs} for this purpose.
-Some alternatives to @command{xargs} are very ugly and undesirable.
+Some alternatives to @command{xargs} are heinous and undesirable.
 Finally, many users are more comfortable specifying output files 
 with @samp{-o @var{fl_out}} near the beginning of an argument list.
 @cindex compilers
@@ -3037,7 +3037,7 @@ precedence.
 @html
 <a name="rmt"></a> <!-- http://nco.sf.net/nco.html#rmt -->
 @end html
-@node Remote storage, Retaining Retrieved Files, Specifying Output Files, Common features
+@node Remote storage, Retaining Retrieved Files, Specifying Output Files, Shared features
 @section Accessing Remote Files
 @cindex @code{rcp}
 @cindex @code{scp}
@@ -3449,7 +3449,7 @@ which to test @acronym{NCO} are welcome.
 @html
 <a name="rtn"></a> <!-- http://nco.sf.net/nco.html#rtn -->
 @end html
-@node Retaining Retrieved Files, File Formats and Conversion, Remote storage, Common features
+@node Retaining Retrieved Files, File Formats and Conversion, Remote storage, Shared features
 @section Retaining Retrieved Files
 @cindex file deletion
 @cindex file removal
@@ -3523,7 +3523,7 @@ when your other preferred methods are not available locally.
 <a name="64bit"></a> <!-- http://nco.sf.net/nco.html#64bit -->
 <a name="netcdf4"></a> <!-- http://nco.sf.net/nco.html#netcdf4 -->
 @end html
-@node File Formats and Conversion, Large File Support, Retaining Retrieved Files, Common features
+@node File Formats and Conversion, Large File Support, Retaining Retrieved Files, Shared features
 @section File Formats and Conversion
 @cindex @acronym{HDF}
 @cindex netCDF2
@@ -3887,7 +3887,7 @@ If this feature would interest you, please let us know.
 @html
 <a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
 @end html
-@node Large File Support, Subsetting Files, File Formats and Conversion, Common features
+@node Large File Support, Subsetting Files, File Formats and Conversion, Shared features
 @section Large File Support
 @cindex @acronym{LFS}
 @cindex Large File Support
@@ -3934,7 +3934,7 @@ build time.
 <a name="sbs"></a> <!-- http://nco.sf.net/nco.html#sbs -->
 <a name="subset"></a> <!-- http://nco.sf.net/nco.html#subset -->
 @end html
-@node Subsetting Files, Subsetting Coordinate Variables, Large File Support, Common features
+@node Subsetting Files, Subsetting Coordinate Variables, Large File Support, Shared features
 @section Subsetting Files
 @cindex subsetting
 @cindex union
@@ -4341,7 +4341,7 @@ filename expansion (globbing).
 <a name="-C"></a> <!-- http://nco.sf.net/nco.html#-C -->
 <a name="-c"></a> <!-- http://nco.sf.net/nco.html#-c -->
 @end html
-@node Subsetting Coordinate Variables, Group Path Editing, Subsetting Files, Common features
+@node Subsetting Coordinate Variables, Group Path Editing, Subsetting Files, Shared features
 @section Subsetting Coordinate Variables
 @cindex subsetting
 @cindex @code{-C}
@@ -4387,7 +4387,7 @@ convention described in @ref{CF Conventions}.
 @html
 <a name="gpe"></a> <!-- http://nco.sf.net/nco.html#gpe -->
 @end html
-@node Group Path Editing, C and Fortran Index Conventions, Subsetting Coordinate Variables, Common features
+@node Group Path Editing, C and Fortran Index Conventions, Subsetting Coordinate Variables, Shared features
 @section Group Path Editing
 @cindex @code{-G @var{gpe_dsc}}
 @cindex @code{--gpe @var{gpe_dsc}}
@@ -4922,7 +4922,7 @@ A @acronym{PDF} version of these instructions is available
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
 <a name="-F"></a> <!-- http://nco.sf.net/nco.html#-F -->
 @end html
-@node C and Fortran Index Conventions, Hyperslabs, Group Path Editing, Common features
+@node C and Fortran Index Conventions, Hyperslabs, Group Path Editing, Shared features
 @section C and Fortran Index conventions
 @cindex index convention
 @cindex Fortran index convention
@@ -4985,7 +4985,7 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 <a name="hyp"></a> <!-- http://nco.sf.net/nco.html#hyp -->
 <a name="hyperslab"></a> <!-- http://nco.sf.net/nco.html#hyperslab -->
 @end html
-@node Hyperslabs, Stride, C and Fortran Index Conventions, Common features
+@node Hyperslabs, Stride, C and Fortran Index Conventions, Shared features
 @section Hyperslabs 
 @cindex hyperslab
 @cindex dimension limits
@@ -5147,7 +5147,7 @@ This option may be specified more than once in a single command
 <a name="srd"></a> <!-- http://nco.sf.net/nco.html#srd -->
 <a name="stride"></a> <!-- http://nco.sf.net/nco.html#stride -->
 @end html
-@node Stride, Record Appending, Hyperslabs, Common features
+@node Stride, Record Appending, Hyperslabs, Shared features
 @section Stride 
 @cindex stride
 @cindex @code{-d @var{dim},[@var{min}],[@var{max}],@var{stride}}
@@ -5239,7 +5239,7 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 <a name="rec_apn"></a> <!-- http://nco.sf.net/nco.html#rec_apn -->
 <a name="record_append"></a> <!-- http://nco.sf.net/nco.html#record_append -->
 @end html
-@node Record Appending, Subcycle, Stride, Common features
+@node Record Appending, Subcycle, Stride, Shared features
 @section Record Appending
 @cindex record append
 @cindex @code{--rec_apn}
@@ -5315,7 +5315,7 @@ We recommend users try to understand the safety trade-offs involved.
 <a name="drn"></a> <!-- http://nco.sf.net/nco.html#drn -->
 <a name="mro"></a> <!-- http://nco.sf.net/nco.html#mro -->
 @end html
-@node Subcycle, Multislabs, Record Appending, Common features
+@node Subcycle, Multislabs, Record Appending, Shared features
 @section Subcycle
 @cindex duration
 @cindex sub-cycle
@@ -5422,7 +5422,7 @@ records.
 <a name="msa"></a> <!-- http://nco.sf.net/nco.html#msa -->
 <a name="mlt"></a> <!-- http://nco.sf.net/nco.html#mlt -->
 @end html
-@node Multislabs, Wrapped Coordinates, Subcycle, Common features
+@node Multislabs, Wrapped Coordinates, Subcycle, Shared features
 @section Multislabs 
 @cindex multislab
 @cindex multi-hyperslab
@@ -5619,7 +5619,7 @@ hyperslabs makes this clearer.
 @html
 <a name="wrp"></a> <!-- http://nco.sf.net/nco.html#wrp -->
 @end html
-@node Wrapped Coordinates, Auxiliary Coordinates, Multislabs, Common features
+@node Wrapped Coordinates, Auxiliary Coordinates, Multislabs, Shared features
 @section Wrapped Coordinates
 @cindex wrapped coordinates
 @cindex longitude
@@ -5695,7 +5695,7 @@ values (@pxref{Hyperslabs}).
 <a name="std_nm"></a> <!-- http://nco.sf.net/nco.html#std_nm -->
 <a name="standard_name"></a> <!-- http://nco.sf.net/nco.html#standard_name -->
 @end html
-@node Auxiliary Coordinates, UDUnits Support, Wrapped Coordinates, Common features
+@node Auxiliary Coordinates, UDUnits Support, Wrapped Coordinates, Shared features
 @section Auxiliary Coordinates
 @cindex @code{-X}
 @cindex @code{--auxiliary}
@@ -5838,7 +5838,7 @@ to avoid confusion.
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
 <a name="UDUnits2"></a> <!-- http://nco.sf.net/nco.html#UDUnits2 -->
 @end html
-@node UDUnits Support, Rebasing Time Coordinate, Auxiliary Coordinates, Common features
+@node UDUnits Support, Rebasing Time Coordinate, Auxiliary Coordinates, Shared features
 @section UDUnits Support 
 @cindex UDUnits
 @cindex Unidata
@@ -6066,7 +6066,7 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 <a name="time_rebase"></a> <!-- http://nco.sf.net/nco.html#time_rebase -->
 <a name="rbs"></a> <!-- http://nco.sf.net/nco.html#rbs -->
 @end html
-@node Rebasing Time Coordinate, Multiple Record Dimensions, UDUnits Support, Common features
+@node Rebasing Time Coordinate, Multiple Record Dimensions, UDUnits Support, Shared features
 @section Rebasing Time Coordinate
 @cartouche
 Availability: 
@@ -6129,7 +6129,7 @@ but also any bounds associated with the record coordinate (e.g.,
 @html
 <a name="mrd"></a> <!-- http://nco.sf.net/nco.html#mrd -->
 @end html
-@node Multiple Record Dimensions, Missing Values, Rebasing Time Coordinate, Common features
+@node Multiple Record Dimensions, Missing Values, Rebasing Time Coordinate, Shared features
 @section Multiple Record Dimensions
 @cindex netCDF4
 @cindex @code{--mrd}
@@ -6187,7 +6187,7 @@ Use @samp{--mrd} to override this.
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
 <a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
 @end html
-@node Missing Values, Chunking, Multiple Record Dimensions, Common features
+@node Missing Values, Chunking, Multiple Record Dimensions, Shared features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
@@ -6356,7 +6356,7 @@ important information from being lost.
 <a name="cnk_sz"></a> <!-- http://nco.sf.net/nco.html#cnk_sz -->
 <a name="chunk_size"></a> <!-- http://nco.sf.net/nco.html#chunk_size -->
 @end html
-@node Chunking, Deflation, Missing Values, Common features
+@node Chunking, Deflation, Missing Values, Shared features
 @section Chunking
 @cindex @code{--cnk_byt}
 @cindex @code{--cnk_dmn}
@@ -6747,7 +6747,7 @@ variables.
 <a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
 <a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
 @end html
-@node Deflation, Compression, Chunking, Common features
+@node Deflation, Compression, Chunking, Shared features
 @section Deflation
 @cindex @code{-L}
 @cindex @code{--deflate}
@@ -6806,7 +6806,7 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 <a name="lsd"></a> <!-- http://nco.sf.net/nco.html#lsd -->
 <a name="LSD"></a> <!-- http://nco.sf.net/nco.html#LSD -->
 @end html
-@node Compression, MD5 digests, Deflation, Common features
+@node Compression, MD5 digests, Deflation, Shared features
 @section Compression
 @cindex @code{--lsd}
 @cindex @code{--least_significant_digit}
@@ -6896,7 +6896,7 @@ typical climate datasets by fxm.
 <a name="integrity"></a> <!-- http://nco.sf.net/nco.html#integrity -->
 <a name="security"></a> <!-- http://nco.sf.net/nco.html#security -->
 @end html
-@node MD5 digests, Buffer sizes, Compression, Common features
+@node MD5 digests, Buffer sizes, Compression, Shared features
 @section MD5 digests
 @cindex @code{--md5_digest}
 @cindex @code{--md5_dgs}
@@ -6998,7 +6998,7 @@ We welcome feedback and suggestions from users.
 <a name="bfr"></a> <!-- http://nco.sf.net/nco.html#bfr -->
 <a name="buffer"></a> <!-- http://nco.sf.net/nco.html#buffer -->
 @end html
-@node Buffer sizes, RAM disks, MD5 digests, Common features
+@node Buffer sizes, RAM disks, MD5 digests, Shared features
 @section Buffer sizes
 @cindex @code{--bfr_sz_hnt}
 @cindex Buffer sizes
@@ -7043,7 +7043,7 @@ ncks: INFO nc__open() opened file with buffer size = 2097152 bytes
 <a name="ram"></a> <!-- http://nco.sf.net/nco.html#ram -->
 <a name="diskless"></a> <!-- http://nco.sf.net/nco.html#diskless -->
 @end html
-@node RAM disks, Packed data, Buffer sizes, Common features
+@node RAM disks, Packed data, Buffer sizes, Shared features
 @section RAM disks
 @cindex @code{--ram_all}
 @cindex @code{--create_ram}
@@ -7171,7 +7171,7 @@ This is accomplished with the @samp{--no_tmp_fl} switch
 <a name="pck"></a> <!-- http://nco.sf.net/nco.html#pck -->
 <a name="pack"></a> <!-- http://nco.sf.net/nco.html#pack -->
 @end html
-@node Packed data, Operation Types, RAM disks, Common features
+@node Packed data, Operation Types, RAM disks, Shared features
 @section Packed data
 @cindex packing
 @cindex unpacking
@@ -7389,7 +7389,7 @@ Pack and unpack individual variables with @command{ncpdq} and the
 @html
 <a name="op_typ"></a> <!-- http://nco.sf.net/nco.html#op_typ -->
 @end html
-@node Operation Types, Type Conversion, Packed data, Common features
+@node Operation Types, Type Conversion, Packed data, Shared features
 @section Operation Types
 @cindex operation types
 @cindex @code{avg}
@@ -7805,7 +7805,7 @@ less required by the @command{ncbo} operation in the third step.
 @html
 <a name="typ_cnv"></a> <!-- http://nco.sf.net/nco.html#typ_cnv -->
 @end html
-@node Type Conversion, Batch Mode, Operation Types, Common features
+@node Type Conversion, Batch Mode, Operation Types, Shared features
 @section Type Conversion
 @cindex type conversion
 @cartouche
@@ -8439,7 +8439,7 @@ ncap2 -s 'tpt=short(tpt);prs=double(prs)' in.nc out.nc
 <a name="ovr"></a> <!-- http://nco.sf.net/nco.html#ovr -->
 <a name="-O"></a> <!-- http://nco.sf.net/nco.html#-O -->
 @end html
-@node Batch Mode, History Attribute, Type Conversion, Common features
+@node Batch Mode, History Attribute, Type Conversion, Shared features
 @section Batch Mode
 @cindex batch mode
 @cindex overwriting files
@@ -8479,7 +8479,7 @@ already contain the appended dimensions.
 <a name="history"></a> <!-- http://nco.sf.net/nco.html#history -->
 <a name="-h"></a> <!-- http://nco.sf.net/nco.html#-h -->
 @end html
-@node History Attribute, File List Attributes, Batch Mode, Common features
+@node History Attribute, File List Attributes, Batch Mode, Shared features
 @section History Attribute
 @cindex @code{history}
 @cindex timestamp
@@ -8526,7 +8526,7 @@ Note that the @samp{-h} switch also turns off writing the
 @html
 <a name="fl_lst_in_att"></a> <!-- http://nco.sf.net/nco.html#fl_lst_in_att -->
 @end html
-@node File List Attributes, CF Conventions, History Attribute, Common features
+@node File List Attributes, CF Conventions, History Attribute, Shared features
 @section File List Attributes
 @cindex @code{nco_input_file_list}
 @cindex @code{nco_input_file_number}
@@ -8577,7 +8577,7 @@ may amount to many thousands of filenames in a metadata attribute.
 <a name="cnv_CF"></a> <!-- http://nco.sf.net/nco.html#cnv_CF -->
 <a name="cnv_CCSM"></a> <!-- http://nco.sf.net/nco.html#cnv_CCSM -->
 @end html
-@node CF Conventions, ARM Conventions, File List Attributes, Common features
+@node CF Conventions, ARM Conventions, File List Attributes, Shared features
 @section @acronym{CF} Conventions
 @cindex @acronym{CF} conventions
 @cindex @acronym{CCSM} conventions
@@ -8811,7 +8811,7 @@ These options are only available in the operators @command{ncwa} and
 @html
 <a name="cnv_ARM"></a> <!-- http://nco.sf.net/nco.html#cnv_ARM -->
 @end html
-@node ARM Conventions, Operator Version, CF Conventions, Common features
+@node ARM Conventions, Operator Version, CF Conventions, Shared features
 @section @acronym{ARM} Conventions
 @cindex @acronym{ARM} conventions
 @cindex @code{time_offset}
@@ -8862,7 +8862,7 @@ whenever these @acronym{ARM}-specific procedures are executed.
 <a name="vrs"></a> <!-- http://nco.sf.net/nco.html#vrs -->
 <a name="version"></a> <!-- http://nco.sf.net/nco.html#version -->
 @end html
-@node Operator Version,  , ARM Conventions, Common features
+@node Operator Version,  , ARM Conventions, Shared features
 @section Operator Version
 @cindex version
 @cindex @acronym{RCS}
@@ -8895,8 +8895,8 @@ This tells you that @command{ncks} contains all patches up to version
 @html
 <a name="rfr"></a> <!-- http://nco.sf.net/nco.html#rfr -->
 @end html
-@node Operator Reference Manual, Contributing, Common features, Top
-@chapter Operator Reference Manual
+@node Reference Manual, Contributing, Shared features, Top
+@chapter Reference Manual
 
 This chapter presents reference pages for each of the operators
 individually. 
@@ -8904,7 +8904,7 @@ The operators are presented in alphabetical order.
 @cindex command line switches
 All valid command line switches are included in the syntax statement.
 Recall that descriptions of many of these command line switches are
-provided only in @ref{Common features}, to avoid redundancy.
+provided only in @ref{Shared features}, to avoid redundancy.
 Only options specific to, or most useful with, a particular operator are 
 described in any detail in the sections below.  
 
@@ -8928,7 +8928,7 @@ described in any detail in the sections below.
 <a name="ncap"></a> <!-- http://nco.sf.net/nco.html#ncap -->
 <a name="ncap2"></a> <!-- http://nco.sf.net/nco.html#ncap2 -->
 @end html
-@node ncap2 netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Operator Reference Manual, Operator Reference Manual
+@node ncap2 netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Reference Manual, Reference Manual
 @section @command{ncap2} netCDF Arithmetic Processor
 @cindex parser
 @cindex lexer
@@ -12631,7 +12631,7 @@ netcdf-4.0 Final  2008/08/28@*
 @html
 <a name="ncatted"></a> <!-- http://nco.sf.net/nco.html#ncatted -->
 @end html
-@node ncatted netCDF Attribute Editor, ncbo netCDF Binary Operator, ncap2 netCDF Arithmetic Processor, Operator Reference Manual
+@node ncatted netCDF Attribute Editor, ncbo netCDF Binary Operator, ncap2 netCDF Arithmetic Processor, Reference Manual
 @section @command{ncatted} netCDF Attribute Editor
 @cindex attributes
 @cindex attribute names
@@ -13137,7 +13137,7 @@ omitted in batch scripts.
 <a name="ncmultiply"></a> <!-- http://nco.sf.net/nco.html#ncmultiply -->
 <a name="ncdivide"></a> <!-- http://nco.sf.net/nco.html#ncdivide -->
 @end html
-@node ncbo netCDF Binary Operator, nces netCDF Ensemble Statistics, ncatted netCDF Attribute Editor, Operator Reference Manual
+@node ncbo netCDF Binary Operator, nces netCDF Ensemble Statistics, ncatted netCDF Attribute Editor, Reference Manual
 @section @command{ncbo} netCDF Binary Operator
 @findex ncbo
 @findex ncdiff
@@ -13577,7 +13577,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 <a name="nces"></a> <!-- http://nco.sf.net/nco.html#nces -->
 <a name="ncea"></a> <!-- http://nco.sf.net/nco.html#ncea -->
 @end html
-@node nces netCDF Ensemble Statistics, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Operator Reference Manual
+@node nces netCDF Ensemble Statistics, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Reference Manual
 @section @command{nces} netCDF Ensemble Statistics
 @cindex averaging data
 @cindex ensemble average
@@ -13801,7 +13801,7 @@ member in the first file.
 @html
 <a name="ncecat"></a> <!-- http://nco.sf.net/nco.html#ncecat -->
 @end html
-@node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, nces netCDF Ensemble Statistics, Operator Reference Manual
+@node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, nces netCDF Ensemble Statistics, Reference Manual
 @section @command{ncecat} netCDF Ensemble Concatenator
 @cindex concatenation
 @cindex ensemble concatenation
@@ -14057,7 +14057,7 @@ of changing variable dimensionality, including the record dimension.
 @html
 <a name="ncflint"></a> <!-- http://nco.sf.net/nco.html#ncflint -->
 @end html
-@node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, ncecat netCDF Ensemble Concatenator, Operator Reference Manual
+@node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, ncecat netCDF Ensemble Concatenator, Reference Manual
 @section @command{ncflint} netCDF File Interpolator
 @cindex interpolation
 @cindex adding data
@@ -14320,7 +14320,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 @html
 <a name="ncks"></a> <!-- http://nco.sf.net/nco.html#ncks -->
 @end html
-@node ncks netCDF Kitchen Sink, ncpdq netCDF Permute Dimensions Quickly, ncflint netCDF File Interpolator, Operator Reference Manual
+@node ncks netCDF Kitchen Sink, ncpdq netCDF Permute Dimensions Quickly, ncflint netCDF File Interpolator, Reference Manual
 @section @command{ncks} netCDF Kitchen Sink
 @cindex kitchen sink
 @cindex printing files contents
@@ -14462,7 +14462,7 @@ existing files and variables, respectively.
 
 The following summarizes features unique to @command{ncks}.  
 Features common to many operators are described in 
-@ref{Common features}. 
+@ref{Shared features}. 
 
 @table @samp
 
@@ -15501,7 +15501,7 @@ For more details @xref{Wrapped Coordinates}.
 <a name="ncpack"></a> <!-- http://nco.sf.net/nco.html#ncpack -->
 <a name="ncunpack"></a> <!-- http://nco.sf.net/nco.html#ncunpack -->
 @end html
-@node ncpdq netCDF Permute Dimensions Quickly, ncra netCDF Record Averager, ncks netCDF Kitchen Sink, Operator Reference Manual
+@node ncpdq netCDF Permute Dimensions Quickly, ncra netCDF Record Averager, ncks netCDF Kitchen Sink, Reference Manual
 @section @command{ncpdq} netCDF Permute Dimensions Quickly
 @findex ncpdq
 @findex ncpack
@@ -16097,7 +16097,7 @@ changing variable dimensionality, including the record dimension.
 @html
 <a name="ncra"></a> <!-- http://nco.sf.net/nco.html#ncra -->
 @end html
-@node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncpdq netCDF Permute Dimensions Quickly, Operator Reference Manual
+@node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncpdq netCDF Permute Dimensions Quickly, Reference Manual
 @section @command{ncra} netCDF Record Averager
 @cindex averaging data
 @cindex record average
@@ -16213,7 +16213,7 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 @html
 <a name="ncrcat"></a> <!-- http://nco.sf.net/nco.html#ncrcat -->
 @end html
-@node ncrcat netCDF Record Concatenator, ncrename netCDF Renamer, ncra netCDF Record Averager, Operator Reference Manual
+@node ncrcat netCDF Record Concatenator, ncrename netCDF Renamer, ncra netCDF Record Averager, Reference Manual
 @section @command{ncrcat} netCDF Record Concatenator
 @cindex concatenation
 @cindex record concatenation
@@ -16347,7 +16347,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @html
 <a name="ncrename"></a> <!-- http://nco.sf.net/nco.html#ncrename -->
 @end html
-@node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncrcat netCDF Record Concatenator, Operator Reference Manual
+@node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncrcat netCDF Record Concatenator, Reference Manual
 @section @command{ncrename} netCDF Renamer
 @cindex renaming variables
 @cindex renaming groups
@@ -16675,7 +16675,7 @@ Variables not prefixed with a period (@code{global}) must be present.
 @html
 <a name="ncwa"></a> <!-- http://nco.sf.net/nco.html#ncwa -->
 @end html
-@node ncwa netCDF Weighted Averager,  , ncrename netCDF Renamer, Operator Reference Manual
+@node ncwa netCDF Weighted Averager,  , ncrename netCDF Renamer, Reference Manual
 @section @command{ncwa} netCDF Weighted Averager
 @cindex averaging data
 @cindex weighted average
@@ -17189,7 +17189,7 @@ where @math{@var{thr_min} <= @var{msk_var} <= @var{thr_max}}.
 @html
 <a name="ctr"></a> <!-- http://nco.sf.net/nco.html#ctr -->
 @end html
-@node Contributing, Quick Start, Operator Reference Manual, Top
+@node Contributing, Quick Start, Reference Manual, Top
 @chapter Contributing
 @cindex contributing
 We welcome contributions from anyone.

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.78 2015-01-23 02:05:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.79 2015-01-26 20:52:09 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -185,6 +185,81 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     break;
   } /* end switch */   
   if(lsd < 0) scale=1.0/scale;
+
+  /* NSD algorithm */
+  if(False){
+    /* IEEE single- and double-precision significands have 24 and 53 bits of precision (prc_bnr)
+       Decimal digits of precision (prc_dcm) obtained via prc_dcm=prc_bnr*ln(2)/ln(10) = 7.22 and 15.95, respectively
+       Binary digits of precision (prc_bnr) obtained via prc_bnr=prc_dcm*ln(10)/ln(2) */
+    assert(lsd_abs < 15);
+
+    const double ln10_dvd_ln2=M_LN10/M_LN2;
+    const int bit_nbr_sgn_flt=23; /* NB: Bits 0-22 of SP significands are explicit. Bit 23 is implicit. */
+    const int bit_nbr_sgn_dbl=53; /* NB: Bits 0-52 of DP significands are explicit. Bit 53 is implicit. */
+    double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
+    //    f32_u32_unn val_f32_u32;
+    //    f64_u64_unn val_f64_u64;
+    int bit_nbr_sgn=int_CEWI; /* [nbr] Number of explicit bits in significand */
+    int bit_nbr_zro; /* [nbr] Number of explicit bits to zero */
+    unsigned int *u32_ptr;
+    unsigned int msk_f32_u32;
+    unsigned long int *u64_ptr;
+    unsigned long int msk_f64_u64;
+    unsigned short prc_bnr_ceil; /* [nbr] Binary digits of precision */
+    
+    prc_bnr_xct=lsd_abs*ln10_dvd_ln2;
+    prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
+
+    switch(type){
+    case NC_FLOAT: 
+      bit_nbr_sgn=bit_nbr_sgn_flt;
+      bit_nbr_zro=bit_nbr_sgn-prc_bnr_ceil;
+      u32_ptr=op1.uip;
+      /* Create mask */
+      msk_f32_u32=0u; /* Zero all bits */
+      msk_f32_u32=~msk_f32_u32; /* Turn all bits to ones */
+      /* Left shift zeros into all rounded bits */
+      msk_f32_u32 <<= bit_nbr_zro;
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx++) u32_ptr[idx]&=msk_f32_u32;
+      }else{
+	const float mss_val_flt=*mss_val.fp;
+	for(idx=0;idx<sz;idx++)
+	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32;
+      } /* end else */
+      break;
+    case NC_DOUBLE: 
+      bit_nbr_sgn=bit_nbr_sgn_dbl;
+      bit_nbr_zro=bit_nbr_sgn-prc_bnr_ceil;
+      u64_ptr=(unsigned long int *)op1.ui64p;
+      /* Create mask */
+      msk_f64_u64=0ul; /* Zero all bits */
+      msk_f64_u64=~msk_f64_u64; /* Turn all bits to ones */
+      /* Left shift zeros into all rounded bits */
+      msk_f64_u64 <<= bit_nbr_zro;
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx++) u64_ptr[idx]&=msk_f64_u64;
+      }else{
+	const float mss_val_flt=*mss_val.fp;
+	for(idx=0;idx<sz;idx++)
+	  if(op1.fp[idx] != mss_val_flt) u64_ptr[idx]&=msk_f64_u64;
+      } /* end else */
+      break;
+      case NC_INT: /* Do nothing for non-floating point types ...*/
+      case NC_SHORT:
+      case NC_CHAR:
+      case NC_BYTE:
+      case NC_UBYTE:
+      case NC_USHORT:
+      case NC_UINT:
+      case NC_INT64:
+      case NC_UINT64:
+      case NC_STRING: break;
+      default: 
+	nco_dfl_case_nc_type_err();
+	break;
+    } /* end switch */
+  } /* !NSD */
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);

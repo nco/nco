@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.41 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.42 2015-01-26 20:52:09 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -31,6 +31,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+  
+  typedef union{ /* f32_u32_unn */
+    float f32;
+    unsigned int u32;
+  } f32_u32_unn;
+  typedef union{ /* f64_u64_unn */
+    double f64;
+    unsigned long u64;
+  } f64_u64_unn;
   
   void
   nco_var_abs /* [fnc] Replace op1 values by their absolute values */
