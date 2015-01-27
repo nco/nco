@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.7 2015-01-25 22:21:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.8 2015-01-27 20:30:06 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -17,7 +17,9 @@ kvmap_sct nco_sng2map /* [fnc] parsing string to key-value pair */
 kvmap_sct sm) /* O [sct] key-value pair */
 {
   char *prt;
+
   int icnt=0;
+
   prt=strtok(str,"=");
   while(prt){
     icnt++;
@@ -36,16 +38,15 @@ kvmap_sct sm) /* O [sct] key-value pair */
     prt=strtok(NULL,"=");
   }/* end while */
   return sm;
-}/* end nco_sng2map */
+} /* end nco_sng2map() */
 
-// check lsd_att exist to change mode?
 void
 nco_lsd_att_prc /* [fnc] Create LSD attribute */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  /* NB: can fail when output file has fewer variables than input file (i.e., was subsetted)
-     functionality moved to nco_xtr_dfn() */
+  /* NB: Can fail when output file has fewer variables than input file (i.e., was subsetted)
+     20150126: functionality moved to nco_xtr_dfn() */
   aed_sct aed;
   char att_nm[]="least_significant_digit";
   int grp_id; /* [id] Group ID */
@@ -82,9 +83,9 @@ nco_lsd_att_prc /* [fnc] Create LSD attribute */
 } /* end nco_lsd_att_prc() */
 
 void
-nco_lsd_set(/* set lsd based user specifications */
- char *const lsd_arg[], /* I [sng] List of user-specified lsd */
- const int lsd_nbr, /* I [nbr] Number of lsd specified */
+nco_lsd_set( /* Set LSD based on user specifications */
+ char *const lsd_arg[], /* I [sng] List of user-specified LSD */
+ const int lsd_nbr, /* I [nbr] Number of LSD specified */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   char *arg;
@@ -108,7 +109,7 @@ nco_lsd_set(/* set lsd based user specifications */
     if(sm.key){
       char *items[BUFSIZ];
       int idxi;
-      int item_nbr=nco_sng2array(",", sm.key, items); /* multi-var specification */
+      int item_nbr=nco_sng2array(",",sm.key,items); /* multi-var specification */
       for(idxi=0;idxi<item_nbr;idxi++){ /* expand multi-var specification */
         lsds[ilsd].key=strdup(items[idxi]);
         lsds[ilsd].value=strdup(sm.value);
@@ -118,15 +119,15 @@ nco_lsd_set(/* set lsd based user specifications */
   } /* end for */
 
   /* Set lsds */
-  for(idx=0;idx<ilsd;idx++){ /* if lsd default exists, set all non-coordinate vars first */
-    if(!strcasecmp(lsds[idx].key, "default")){
+  for(idx=0;idx<ilsd;idx++){ /* if LSD default exists, set all non-coordinate vars first */
+    if(!strcasecmp(lsds[idx].key,"default")){
       trv_tbl_lsd_set_dflt((int)strtol(lsds[idx].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
       if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[idx].value,"strtol",sng_cnv_rcd);
       break;
     } /* endif */
   } /* end for */
-  for(idx=0;idx<ilsd;idx++){ /* set non-default lsds that can overwrite dflt */
-    if(!strcasecmp(lsds[idx].key, "default")) continue;
+  for(idx=0;idx<ilsd;idx++){ /* set non-default LSDs that can overwrite dflt */
+    if(!strcasecmp(lsds[idx].key,"default")) continue;
     trv_tbl_lsd_set_var(lsds[idx].key,(int)strtol(lsds[idx].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
     if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[idx].value,"strtol",sng_cnv_rcd);
   } /* end for */
@@ -135,7 +136,7 @@ nco_lsd_set(/* set lsd based user specifications */
 } /* end nco_lsd_set() */
 
 void
-trv_tbl_lsd_set_dflt /* Set the lsd value for all non-coordinate vars */
+trv_tbl_lsd_set_dflt /* Set the LSD value for all non-coordinate vars */
 (const int lsd, /* I [nbr] Least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
@@ -161,13 +162,13 @@ trv_tbl_lsd_set_var
     regex_t *rx;
     size_t rx_prn_sub_xpr_nbr;
     rx=(regex_t *)nco_malloc(sizeof(regex_t));
-    if(strchr(var_nm,sls_chr)){ /* full name is used */
+    if(strchr(var_nm,sls_chr)){ /* Full name is used */
       char sng2mch[BUFSIZ]="^";
       strcat(sng2mch,var_nm);
       if(regcomp(rx,sng2mch,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
         (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
         nco_exit(EXIT_FAILURE);
-      }
+      } /* endif */
       rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
       result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -176,7 +177,7 @@ trv_tbl_lsd_set_var
           mch_nbr++;
         } /* endif */
       } /* endfor */
-    }else{ /* relative name is used */
+    }else{ /* Relative name is used */
       if(regcomp(rx,var_nm,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
         (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
         nco_exit(EXIT_FAILURE);
@@ -189,7 +190,7 @@ trv_tbl_lsd_set_var
           mch_nbr++;
         } /* endif */
       } /* endfor */
-    }
+    } /* end Full name */
     regfree(rx); /* Free regular expression data structure */
     rx=(regex_t *)nco_free(rx);
     result=(regmatch_t *)nco_free(result);
@@ -207,7 +208,7 @@ trv_tbl_lsd_set_var
         } /* endif */
       } /* endif */
     } /* endfor */
-  }else{ /* not full name then set all matching vars */
+  }else{ /* Not full name so set all matching vars */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
         if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)){
@@ -216,7 +217,7 @@ trv_tbl_lsd_set_var
         } /* endif */
       } /* endif */
     } /* endfor */
-  }
+  } /* end Full name */
 } /* end trv_tbl_lsd_set_var() */
 
 char * nco_sng_strip(/* strip off heading and tailing white spaces.  seems not working for \n??? */
@@ -260,41 +261,47 @@ void nco_kvmaps_free(kvmap_sct *kvmaps)
 // nco_kvmap_prn
 void nco_kvmap_prn(kvmap_sct vm)
 {
-  if(vm.key == NULL) return;
-  (void)fprintf(stdout,"%s=", vm.key);
-  (void)fprintf(stdout,"%s\n", vm.value);
+  if(!vm.key) return;
+  (void)fprintf(stdout,"%s=",vm.key);
+  (void)fprintf(stdout,"%s\n",vm.value);
 } /* end nco_kvmap_prn */
 
 int 
-hdlscrip( /* return 0 invalid scrip file or rcd, 1 success */ 
-char *scripflnm, /* scrip file name with proper path */
-kvmap_sct *smps)/* structure to hold contents of scrip file */ 
+hdlscrip( /* return 0 invalid SCRIP file or rcd, 1 success */ 
+char *fl_nm_scrip, /* SCRIP file name with proper path */
+kvmap_sct *smps)/* structure to hold contents of SCRIP file */ 
 {
   char line[BUFSIZ];
-  FILE *sfile=fopen(scripflnm, "r");
-  if (!sfile) {
-    fprintf(stderr,"Cannot open scrip file %s\n", scripflnm);
+
+  int icnt;
+  int idx=0;
+
+  FILE *fl_scrip;
+
+  fl_scrip=fopen(fl_nm_scrip,"r");
+
+  if(!fl_scrip){
+    fprintf(stderr,"Cannot open SCRIP file %s\n",fl_nm_scrip);
     return NCO_ERR;
   }
-  int icnt, idx=0;
-  while (fgets(line, sizeof(line), sfile)){
-    if(strstr(line, "=") == NULL){
-      fprintf(stderr,"invalid line in scrip file: %s\n", line);
-      fclose(sfile);
+
+  while(fgets(line,sizeof(line),fl_scrip)){
+    if(!strstr(line,"=")){
+      fprintf(stderr,"invalid line in SCRIP file: %s\n", line);
+      fclose(fl_scrip);
       return NCO_ERR;
     }
-    smps[idx]=nco_sng2map(line, smps[idx]);
-    if(smps[idx].key == NULL){
-      fclose(sfile);
+    smps[idx]=nco_sng2map(line,smps[idx]);
+    if(!smps[idx].key){
+      fclose(fl_scrip);
       return NCO_ERR;
-    }
-    else{
+    }else{
       idx++;
     }
   } /* finish parsing SCRIP file */
-  fclose(sfile);
-  for(icnt=0; icnt<idx; icnt++){
-    nco_kvmap_prn(smps[icnt]);
-  }
+  fclose(fl_scrip);
+
+  for(icnt=0;icnt<idx;icnt++) nco_kvmap_prn(smps[icnt]);
+
   return NCO_NOERR;
 } /* end hdlscrip */

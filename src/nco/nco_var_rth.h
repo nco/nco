@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.43 2015-01-27 00:58:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.44 2015-01-27 20:30:06 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -47,7 +47,7 @@ extern "C" {
    const long sz, /* I [nbr] Size (in elements) of operand */
    const int has_mss_val, /* I [flg] Flag for missing values */
    ptr_unn mss_val, /* I [val] Value of missing value */
-   ptr_unn op1); /* I [val] Values of first operand */
+   ptr_unn op1); /* I/O [val] Values of first operand */
   
   void
   nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal precision prc */
@@ -56,7 +56,7 @@ extern "C" {
    const long sz, /* I [nbr] Size (in elements) of operand */
    const int has_mss_val, /* I [flg] Flag for missing values */
    ptr_unn mss_val, /* I [val] Value of missing value */
-   ptr_unn op1); /* I [val] Values of first operand */
+   ptr_unn op1); /* I/O [val] Values of first operand */
 
   void
   nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
@@ -65,7 +65,7 @@ extern "C" {
    const long sz, /* I [nbr] Size (in elements) of operand */
    const int has_mss_val, /* I [flg] Flag for missing values */
    ptr_unn mss_val, /* I [val] Value of missing value */
-   ptr_unn op1); /* I [val] Values of first operand */
+   ptr_unn op1); /* I/O [val] Values of first operand */
   
   void
   nco_var_add /* [fnc] Add first operand to second operand */

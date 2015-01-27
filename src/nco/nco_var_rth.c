@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.80 2015-01-27 00:58:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.81 2015-01-27 20:30:06 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -15,7 +15,7 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
  const long sz, /* I [nbr] Size (in elements) of operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [val] Value of missing value */
- ptr_unn op1) /* I [val] Values of first operand */
+ ptr_unn op1) /* I/O [val] Values of first operand */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Replace op1 values by their absolute values */
@@ -111,7 +111,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
  const long sz, /* I [nbr] Size (in elements) of operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [val] Value of missing value */
- ptr_unn op1) /* I [val] Values of first operand */
+ ptr_unn op1) /* I/O [val] Values of first operand */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
 
@@ -240,7 +240,7 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
  const long sz, /* I [nbr] Size (in elements) of operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [val] Value of missing value */
- ptr_unn op1) /* I [val] Values of first operand */
+ ptr_unn op1) /* I/O [val] Values of first operand */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
 
