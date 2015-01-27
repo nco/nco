@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.79 2015-01-26 20:52:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.80 2015-01-27 00:58:32 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -106,7 +106,7 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
 
 void
 nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal precision prc */
-(const int lsd, /* I [nbr] Least significant digit, aka negative log_10 of desired precision */
+(const int lsd, /* I [nbr] Least significant digit, i.e., number of significant digits following decimal point */
  const nc_type type, /* I [enm] netCDF type of operand */
  const long sz, /* I [nbr] Size (in elements) of operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -139,6 +139,9 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   
   /* Rounding is currently defined as op1:=around(op1,lsd) */  
   
+  /* Use constants defined in math.h */
+  const double ln10_dvd_ln2=M_LN10/M_LN2;
+
   double scale; /* [frc] Number by which to scale data to achieve rounding */
 
   int bit_nbr; /* [nbr] Number of bits required to exceed pow(10,-lsd) */
@@ -147,6 +150,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   long idx;
   
   lsd_abs=abs(lsd);
+  assert(lsd_abs <= 16);
   switch(lsd_abs){
   case 0:
     bit_nbr=0;
@@ -177,96 +181,18 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     scale=1048576.0;
     break;
   default:
-    /* Use constants defined in math.h */
-    assert(lsd_abs < 15);
-    const double ln10_dvd_ln2=M_LN10/M_LN2;
     bit_nbr=ceil(lsd_abs*ln10_dvd_ln2);
     scale=pow(2.0,bit_nbr);
     break;
   } /* end switch */   
   if(lsd < 0) scale=1.0/scale;
 
-  /* NSD algorithm */
-  if(False){
-    /* IEEE single- and double-precision significands have 24 and 53 bits of precision (prc_bnr)
-       Decimal digits of precision (prc_dcm) obtained via prc_dcm=prc_bnr*ln(2)/ln(10) = 7.22 and 15.95, respectively
-       Binary digits of precision (prc_bnr) obtained via prc_bnr=prc_dcm*ln(10)/ln(2) */
-    assert(lsd_abs < 15);
-
-    const double ln10_dvd_ln2=M_LN10/M_LN2;
-    const int bit_nbr_sgn_flt=23; /* NB: Bits 0-22 of SP significands are explicit. Bit 23 is implicit. */
-    const int bit_nbr_sgn_dbl=53; /* NB: Bits 0-52 of DP significands are explicit. Bit 53 is implicit. */
-    double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
-    //    f32_u32_unn val_f32_u32;
-    //    f64_u64_unn val_f64_u64;
-    int bit_nbr_sgn=int_CEWI; /* [nbr] Number of explicit bits in significand */
-    int bit_nbr_zro; /* [nbr] Number of explicit bits to zero */
-    unsigned int *u32_ptr;
-    unsigned int msk_f32_u32;
-    unsigned long int *u64_ptr;
-    unsigned long int msk_f64_u64;
-    unsigned short prc_bnr_ceil; /* [nbr] Binary digits of precision */
-    
-    prc_bnr_xct=lsd_abs*ln10_dvd_ln2;
-    prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
-
-    switch(type){
-    case NC_FLOAT: 
-      bit_nbr_sgn=bit_nbr_sgn_flt;
-      bit_nbr_zro=bit_nbr_sgn-prc_bnr_ceil;
-      u32_ptr=op1.uip;
-      /* Create mask */
-      msk_f32_u32=0u; /* Zero all bits */
-      msk_f32_u32=~msk_f32_u32; /* Turn all bits to ones */
-      /* Left shift zeros into all rounded bits */
-      msk_f32_u32 <<= bit_nbr_zro;
-      if(!has_mss_val){
-	for(idx=0L;idx<sz;idx++) u32_ptr[idx]&=msk_f32_u32;
-      }else{
-	const float mss_val_flt=*mss_val.fp;
-	for(idx=0;idx<sz;idx++)
-	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32;
-      } /* end else */
-      break;
-    case NC_DOUBLE: 
-      bit_nbr_sgn=bit_nbr_sgn_dbl;
-      bit_nbr_zro=bit_nbr_sgn-prc_bnr_ceil;
-      u64_ptr=(unsigned long int *)op1.ui64p;
-      /* Create mask */
-      msk_f64_u64=0ul; /* Zero all bits */
-      msk_f64_u64=~msk_f64_u64; /* Turn all bits to ones */
-      /* Left shift zeros into all rounded bits */
-      msk_f64_u64 <<= bit_nbr_zro;
-      if(!has_mss_val){
-	for(idx=0L;idx<sz;idx++) u64_ptr[idx]&=msk_f64_u64;
-      }else{
-	const float mss_val_flt=*mss_val.fp;
-	for(idx=0;idx<sz;idx++)
-	  if(op1.fp[idx] != mss_val_flt) u64_ptr[idx]&=msk_f64_u64;
-      } /* end else */
-      break;
-      case NC_INT: /* Do nothing for non-floating point types ...*/
-      case NC_SHORT:
-      case NC_CHAR:
-      case NC_BYTE:
-      case NC_UBYTE:
-      case NC_USHORT:
-      case NC_UINT:
-      case NC_INT64:
-      case NC_UINT64:
-      case NC_STRING: break;
-      default: 
-	nco_dfl_case_nc_type_err();
-	break;
-    } /* end switch */
-  } /* !NSD */
+  if(nco_dbg_lvl_get() == nco_dbg_sbr) (void)fprintf(stdout,"%s: INFO nco_var_around() reports lsd = %d, bit_nbr= %d, scale = %g\n",nco_prg_nm_get(),lsd,bit_nbr,scale);
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
   
-  if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stdout,"%s: INFO nco_var_around() reports lsd = %d, bit_nbr= %d, scale = %g\n",nco_prg_nm_get(),lsd,bit_nbr,scale);
-
   switch(type){
   case NC_FLOAT: 
     /* Do float arithmetic in double precision before converting back to float (fxm: unless --flt?) */
@@ -306,6 +232,141 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
      because we have only operated on local copies of them. */
   
 } /* end nco_var_around() */
+
+void
+nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
+(const int nsd, /* I [nbr] Number of significant digits, i.e., arithmetic precision */
+ const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] Size (in elements) of operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ ptr_unn op1) /* I [val] Values of first operand */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+
+  /* Purpose: Mask-out insignificant bits of op1 values */
+  
+  /* Rounding is currently defined as op1:=bitmask(op1,lsd) */  
+  
+  /* Number of Significant Digits (NSD) algorithm
+     NSD based on absolute precision, i.e., number of digits in significand and in decimal scientific notation
+     LSD based on precision relative to decimal point, i.e., number of digits before/after decimal point
+     LSD is more often used colloquially, e.g., "thermometers measure temperature accurate to 1 degree C" 
+     NSD is more often used scientifically, e.g., "thermometers measure temperature to three significant digits"
+     These statements are both equivalent and describe the same instrument and data
+     If data are stored in C or K then optimal specifications for each algorithm would be LSD=0 and NSD=3
+     However, if data are stored in mK (milli-Kelvin) then optimal specifications would be LSD=-3 and NSD=3
+     In other words, the number of significant digits (NSD) does not depend on the units of storage, but LSD does
+     Hence NSD is more instrinsic and portable than LSD
+     NSD requires only bit-shifting and bit-masking, no floating point math
+     LSD is implemented with rounding techniques that rely on floating point math
+     This makes LSD subject to accompanying overflow and underflow problems
+     Thus NSD is faster, more accurate, and less ambiguous than LSD
+     Nevertheless many users think in terms of LSD not NSD
+     
+     Terminology: 
+     Decimal Precision is number of significant digits following decimal point (LSD)
+     Arithmetic Precision is number of significant digits (NSD)
+     "Arithmetic precision can also be defined with reference to a fixed number of decimal places (the number of digits following the decimal point). This second definition is useful in applications where the number of digits in the fractional part has particular importance, but it does not follow the rules of significance arithmetic." -- Wikipedia
+     "A common convention in science and engineering is to express accuracy and/or precision implicitly by means of significant figures. Here, when not explicitly stated, the margin of error is understood to be one-half the value of the last significant place. For instance, a recording of 843.6 m, or 843.0 m, or 800.0 m would imply a margin of 0.05 m (the last significant place is the tenths place), while a recording of 8,436 m would imply a margin of error of 0.5 m (the last significant digits are the units)." -- Wikipedia
+     
+     Test NSD:
+     nc3tonc4 -o --quantize=lsd_big=3,lsd_bgr=3,lsd_flt=3 --quiet=1 ~/nco/data/in.nc ~/foo_n34.nc
+     ncks -D 1 -4 -O -C -v lsd_big,lsd_bgr,lsd_flt --lsd .?=3 ~/nco/data/in.nc ~/foo.nc
+     ncks -C -v lsd_big,lsd_bgr ~/foo.nc
+     ncks -s '%16.12e\n' -C -H -v lsd_big,lsd_bgr ~/foo_n34.nc */
+  
+  /* IEEE single- and double-precision significands have 24 and 53 bits of precision (prc_bnr)
+     Decimal digits of precision (prc_dcm) obtained via prc_dcm=prc_bnr*ln(2)/ln(10) = 7.22 and 15.95, respectively
+     Binary digits of precision (prc_bnr) obtained via prc_bnr=prc_dcm*ln(10)/ln(2) */
+  
+  /* Use constants defined in math.h */
+  const double ln10_dvd_ln2=M_LN10/M_LN2;
+  
+  const int bit_nbr_sgn_flt=23; /* NB: Bits 0-22 of SP significands are explicit. Bit 23 is implicit. */
+  const int bit_nbr_sgn_dbl=53; /* NB: Bits 0-52 of DP significands are explicit. Bit 53 is implicit. */
+  
+  double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
+  
+  int bit_nbr_sgn=int_CEWI; /* [nbr] Number of explicit bits in significand */
+  int bit_nbr_zro; /* [nbr] Number of explicit bits to zero */
+
+  long idx;
+
+  unsigned int *u32_ptr;
+  unsigned int msk_f32_u32;
+  unsigned long int *u64_ptr;
+  unsigned long int msk_f64_u64;
+  unsigned short prc_bnr_ceil; /* [nbr] Binary digits of precision */
+  
+  assert(nsd > 0);
+  assert(nsd <= 16);
+
+  prc_bnr_xct=nsd*ln10_dvd_ln2;
+  prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
+
+  /* 20150126: fxm casting pointers is tricky with this routine. Avoid for now. */
+  /* Typecast pointer to values before access */
+  //(void)cast_void_nctype(type,&op1);
+  //if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  switch(type){
+  case NC_FLOAT:
+    bit_nbr_sgn=bit_nbr_sgn_flt;
+    bit_nbr_zro=bit_nbr_sgn-prc_bnr_ceil;
+    assert(bit_nbr_zro <= bit_nbr_sgn+3);
+    u32_ptr=op1.uip;
+    /* Create mask */
+    msk_f32_u32=0u; /* Zero all bits */
+    msk_f32_u32=~msk_f32_u32; /* Turn all bits to ones */
+    /* Left shift zeros into all rounded bits */
+    msk_f32_u32 <<= bit_nbr_zro;
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) u32_ptr[idx]&=msk_f32_u32;
+    }else{
+      const float mss_val_flt=*mss_val.fp;
+      for(idx=0;idx<sz;idx++)
+	if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32;
+    } /* end else */
+    break;
+  case NC_DOUBLE:
+    bit_nbr_sgn=bit_nbr_sgn_dbl;
+    bit_nbr_zro=bit_nbr_sgn-prc_bnr_ceil;
+    assert(bit_nbr_zro <= bit_nbr_sgn+3);
+    u64_ptr=(unsigned long int *)op1.ui64p;
+    /* Create mask */
+    msk_f64_u64=0ul; /* Zero all bits */
+    msk_f64_u64=~msk_f64_u64; /* Turn all bits to ones */
+    /* Left shift zeros into all rounded bits */
+    msk_f64_u64 <<= bit_nbr_zro;
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) u64_ptr[idx]&=msk_f64_u64;
+    }else{
+      const float mss_val_flt=*mss_val.fp;
+      for(idx=0;idx<sz;idx++)
+	if(op1.fp[idx] != mss_val_flt) u64_ptr[idx]&=msk_f64_u64;
+    } /* end else */
+    break;
+  case NC_INT: /* Do nothing for non-floating point types ...*/
+  case NC_SHORT:
+  case NC_CHAR:
+  case NC_BYTE:
+  case NC_UBYTE:
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_INT64:
+  case NC_UINT64:
+  case NC_STRING: break;
+  default: 
+    nco_dfl_case_nc_type_err();
+    break;
+  } /* end switch */
+  
+  /* 20150126: fxm casting pointers is tricky with this routine. Avoid for now. */
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+
+} /* end nco_var_bitmask() */
 
 void
 nco_var_add /* [fnc] Add first operand to second operand */

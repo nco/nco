@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.278 2015-01-17 01:30:19 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.279 2015-01-27 00:58:32 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1346,7 +1346,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   /* Write */
   if(flg_write){
     /* 20141208 LSD fxm */
-    int lsd; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+    int lsd; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
     lsd=var_trv->lsd; /* DYW */
     /* File format needed to enable netCDF4 features */
     (void)nco_inq_format(out_id,&fl_fmt);

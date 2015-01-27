@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.415 2015-01-25 22:21:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.416 2015-01-27 00:58:33 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -138,8 +138,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.415 2015-01-25 22:21:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.415 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.416 2015-01-27 00:58:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.416 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -185,7 +185,7 @@ main(int argc,char **argv)
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int lsd_nbr=0; /* [nbr] Number of LSD arguments */
-  int lsd=0; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+  int lsd=0; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
   int nbr_dmn_xtr;
@@ -277,9 +277,9 @@ main(int argc,char **argv)
       {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
-      {"lsd",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
-      {"least_significant_digit",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
-      {"quantize",required_argument,0,0}, /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+      {"lsd",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+      {"least_significant_digit",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+      {"quantize",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},

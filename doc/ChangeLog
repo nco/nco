@@ -1,6 +1,8 @@
 2015-01-26  Charlie Zender  <zender@uci.edu>
 
-	* Prototype NSD algorithm compiles
+	* Functionalize NSD algorithm into nco_var_bitmask()
+
+	* Prototype NSD algorithm compiles, runs, and appears to work as expected
 
 2015-01-25  Charlie Zender  <zender@uci.edu>
 

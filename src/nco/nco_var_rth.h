@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.42 2015-01-26 20:52:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.43 2015-01-27 00:58:32 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -51,13 +51,22 @@ extern "C" {
   
   void
   nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal precision prc */
-  (const int prc, /* I [nbr] Least significant digit, aka negative log_10 of desired precision */
+  (const int prc, /* I [nbr] Least significant digit, i.e., number of significant digits following decimal point */
    const nc_type type, /* I [enm] netCDF type of operand */
    const long sz, /* I [nbr] Size (in elements) of operand */
    const int has_mss_val, /* I [flg] Flag for missing values */
    ptr_unn mss_val, /* I [val] Value of missing value */
    ptr_unn op1); /* I [val] Values of first operand */
 
+  void
+  nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
+  (const int nsd, /* I [nbr] Number of significant digits, i.e., arithmetic precision */
+   const nc_type type, /* I [enm] netCDF type of operand */
+   const long sz, /* I [nbr] Size (in elements) of operand */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [val] Value of missing value */
+   ptr_unn op1); /* I [val] Values of first operand */
+  
   void
   nco_var_add /* [fnc] Add first operand to second operand */
   (const nc_type type, /* I [type] netCDF type of operands */

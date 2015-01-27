@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.367 2015-01-19 19:49:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.368 2015-01-27 00:58:32 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -84,7 +84,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* 20150114: Keep LSD code in single block for easier reuse */
-  int lsd=NC_MAX_INT; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+  int lsd=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
   nco_bool flg_lsd=False; /* [sct] Activate LSD with this variable and output file */
   var_sct var_out; /* [sct] Variable structure */
   /* File format needed to enable netCDF4 features */
@@ -400,7 +400,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
       /* 20150114: Keep LSD code in single block for easier reuse */
-      int lsd=NC_MAX_INT; /* [nbr] Least significant digit, aka negative log_10 of desired precision */
+      int lsd=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
       nco_bool flg_lsd=False; /* [sct] Activate LSD with this variable and output file */
       var_sct var_out; /* [sct] Variable structure */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
