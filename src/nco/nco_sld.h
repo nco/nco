@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.4 2015-01-27 20:30:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.5 2015-01-28 21:53:21 dywei2 Exp $ */
 
 /* Purpose: Description (definition) of Swath-Like Data (SLD) functions */
 
@@ -30,44 +30,44 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  typedef struct {
-    char *key;
-    char *value;
-  } kvmap_sct;
+typedef struct {
+  char *key;
+  char *value;
+} kvmap_sct;
+ 
+int hdlscrip(char *fl_nm_scrip, kvmap_sct *smps); 
   
-  int hdlscrip(char *fl_nm_scrip, kvmap_sct *smps); 
+kvmap_sct nco_sng2map(char *str,  kvmap_sct sm); /* parse a line return a name-value pair kvmap */
   
-  kvmap_sct nco_sng2map(char *str,  kvmap_sct sm); /* parse a line return a name-value pair kvmap */
-  
-  int nco_sng2array(const char *delim, const char *str, char **sarray); /* split str by delim to sarray returns size of sarray */
+int nco_sng2array(const char *delim, const char *str, char **sarray); /* split str by delim to sarray returns size of sarray */
 
-  char * nco_sng_strip(char *str); /* remove heading and trailing blanks */
+char * nco_sng_strip(char *str); /* remove heading and trailing blanks */
 
-  void nco_kvmaps_free(kvmap_sct *kvmaps); /* release memory */
+void nco_kvmaps_free(kvmap_sct *kvmaps); /* release memory */
 
-  void nco_kvmap_prn(kvmap_sct sm);  /* print kvmap contents */
+void nco_kvmap_prn(kvmap_sct sm);  /* print kvmap contents */
 
-  void nco_lsd_set(/* set lsd based user specifications */
- char *const lsd_arg[], /* I [sng] List of user-specified lsd */
- const int cnk_nbr, /* I [nbr] Number of lsd specified */
- trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
-  
-  void
-  nco_lsd_att_prc /* [fnc] Create lsd att from trv_tbl */
-  (const int nc_id, /* I [id] Input netCDF file ID */
-   const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
-  
-  void
-  trv_tbl_lsd_set_dflt /* Set the lsd value for all non-coordinate vars */
-  (const int lsd,
-   trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
-  
-  void
-  trv_tbl_lsd_set_var
-  (const char * const var_nm_fll, /* I [sng] Variable name to find */
-   const int lsd, /* I [nbr] Least significant digit */
-   trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
-  
+void nco_lsd_set(/* set lsd based user specifications */
+char *const lsd_arg[], /* I [sng] List of user-specified lsd */
+const int cnk_nbr, /* I [nbr] Number of lsd specified */
+trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+
+void
+nco_lsd_att_prc /* [fnc] create lsd att from trv_tbl */
+(const int nc_id,                     /* I [id] Input netCDF file ID */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+
+void
+trv_tbl_lsd_set_dflt /* Set the lsd value for all non-coordinate vars */
+(const char * const slsd, /* I [sng] user input for least significant digit */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+
+void
+trv_tbl_lsd_set_var
+(const char * const var_nm_fll,        /* I [sng] Variable name to find */
+ const char * const slsd, /* I [sng] user input for least significant digit */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

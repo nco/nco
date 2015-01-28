@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1502 2015-01-28 19:28:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1503 2015-01-28 21:53:20 dywei2 Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2199,6 +2199,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_mch=False;                /* [flg] Object matches user-specified strings */
   trv_tbl->lst[idx].flg_mtd=False;                /* [flg] Group contains only metadata */
   trv_tbl->lst[idx].flg_ncs=False;                /* [flg] Group is ancestor of specified group or variable */
+  trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] LSD is NSD when it's true */
   trv_tbl->lst[idx].flg_nsx=False;                /* [flg] Object matches intersection criteria */
   trv_tbl->lst[idx].flg_rcr=False;                /* [flg] Extract group recursively */
   trv_tbl->lst[idx].flg_unn=False;                /* [flg] Object matches union criteria */
@@ -2303,6 +2304,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_rcr=False; 
     trv_tbl->lst[idx].flg_unn=False; 
     trv_tbl->lst[idx].flg_vfp=False; 
+    trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] LSD is NSD when it's true */
     trv_tbl->lst[idx].flg_vsg=False; 
     trv_tbl->lst[idx].flg_xcl=False; 
     trv_tbl->lst[idx].flg_xtr=False;
