@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.8 2015-01-27 20:30:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.9 2015-01-28 23:03:53 dywei2 Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -68,10 +68,12 @@ nco_lsd_att_prc /* [fnc] Create LSD attribute */
     att_val.ip=&lsd;
     aed.id=var_id;
     aed.val=att_val;
+    if(var_trv.flg_nsd) aed.att_nm="number_of_significant_digits";
+    else aed.att_nm="least_significant_digit";
     aed.type=NC_INT; /* NB: value changes if it is assigned outside for loop */
     aed.att_nm=att_nm;
     aed.sz=1L;
-    aed.mode=aed_create; //aed_overwrite; aed_modify;
+    aed.mode=aed_create; 
     rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
     if(rcd == NC_NOERR && aed.sz == att_sz && aed.type == att_typ){
       (void)nco_get_att(nc_id,var_id,aed.att_nm,&lsd_xst,att_typ);
@@ -89,7 +91,6 @@ nco_lsd_set( /* Set LSD based on user specifications */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   char *arg;
-  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   int idx;
   int ilsd=0;
   kvmap_sct *lsds;  /* [sct] LSD container */
@@ -120,41 +121,64 @@ nco_lsd_set( /* Set LSD based on user specifications */
 
   /* Set lsds */
   for(idx=0;idx<ilsd;idx++){ /* if LSD default exists, set all non-coordinate vars first */
-    if(!strcasecmp(lsds[idx].key,"default")){
-      trv_tbl_lsd_set_dflt((int)strtol(lsds[idx].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[idx].value,"strtol",sng_cnv_rcd);
-      break;
-    } /* endif */
+    if(!strcasecmp(lsds[idx].key, "default")){
+      trv_tbl_lsd_set_dflt(lsds[idx].value,trv_tbl);
+      break; /* only one default is needed */
+    }
   } /* end for */
   for(idx=0;idx<ilsd;idx++){ /* set non-default LSDs that can overwrite dflt */
-    if(!strcasecmp(lsds[idx].key,"default")) continue;
-    trv_tbl_lsd_set_var(lsds[idx].key,(int)strtol(lsds[idx].value,&sng_cnv_rcd,NCO_SNG_CNV_BASE10),trv_tbl);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(lsds[idx].value,"strtol",sng_cnv_rcd);
+    if(!strcasecmp(lsds[idx].key, "default")) continue;
+    trv_tbl_lsd_set_var(lsds[idx].key,lsds[idx].value,trv_tbl);
   } /* end for */
 
   if(lsds) nco_kvmaps_free(lsds);
 } /* end nco_lsd_set() */
 
 void
-trv_tbl_lsd_set_dflt /* Set the LSD value for all non-coordinate vars */
-(const int lsd, /* I [nbr] Least significant digit */
+trv_tbl_lsd_set_dflt /* Set the lsd value for all non-coordinate vars for --lsd default  */
+(const char * const slsd, /* I [sng] user input for least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
-  /* Purpose: Initialize LSD member to default value for no compression
-     Function is currently obsolete becasuse LSD member is initialize in nco_grp_itr() */
+  int lsd;
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  nco_bool flg_nsd=True;                 /* [flg] LSD is NSD when it's true */
+
+  if(slsd[0]=='.'){
+    flg_nsd=False; /* DSD */
+    lsd=(int)strtol(slsd+1,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd+1,"strtol",sng_cnv_rcd);
+  }else{ /* NSD */
+    lsd=(int)strtol(slsd,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd,"strtol",sng_cnv_rcd);
+  } /* end if */
+
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var)
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var){
       trv_tbl->lst[idx_tbl].lsd=lsd;
+      trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+    }
 } /* end trv_tbl_lsd_set_dflt() */
 
 void
 trv_tbl_lsd_set_var
 (const char * const var_nm, /* I [sng] Variable name to find */
- const int lsd, /* I [nbr] Least significant digit */
+ const char * const slsd, /* I [sng] user input for least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   const char sls_chr='/'; /* [chr] Slash character */
   int mch_nbr=0;
+  int lsd;
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  nco_bool flg_nsd=True;                 /* [flg] LSD is NSD when it's true */
+
+  if(slsd[0]=='.'){ /* DSD */
+    flg_nsd=False;
+    lsd=(int)strtol(slsd+1,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd+1,"strtol",sng_cnv_rcd);
+  }else{ /* NSD */
+    lsd=(int)strtol(slsd,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd,"strtol",sng_cnv_rcd);
+  }
 
   if(strpbrk(var_nm,".*^$\\[]()<>+?|{}")){ /* regular expression ... */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
@@ -174,6 +198,7 @@ trv_tbl_lsd_set_var
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
         if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
           trv_tbl->lst[idx_tbl].lsd=lsd;
+          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
           mch_nbr++;
         } /* endif */
       } /* endfor */
@@ -187,6 +212,7 @@ trv_tbl_lsd_set_var
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
         if(!regexec(rx,trv_tbl->lst[idx_tbl].nm,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
           trv_tbl->lst[idx_tbl].lsd=lsd;
+          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
           mch_nbr++;
         } /* endif */
       } /* endfor */
@@ -203,6 +229,7 @@ trv_tbl_lsd_set_var
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
         if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm_fll)){
           trv_tbl->lst[idx_tbl].lsd=lsd;
+          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
           mch_nbr++;
           return; /* Only one match with full name */
         } /* endif */
@@ -213,6 +240,7 @@ trv_tbl_lsd_set_var
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
         if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)){
           trv_tbl->lst[idx_tbl].lsd=lsd;
+          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
           mch_nbr++;
         } /* endif */
       } /* endif */
