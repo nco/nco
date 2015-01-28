@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.230 2015-01-13 03:10:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.231 2015-01-28 19:28:07 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1145,11 +1145,11 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   /* Purpose: Print variable metadata */
   const char spc_sng[]=""; /* [sng] Space string */
 
-  char sz_sng[100];
-  char dmn_sng[200];
-  char sng_foo[200];
-
+  char *dmn_sng=NULL;
   char *nm_cdl;
+
+  char sng_foo[NC_MAX_NAME+10]; /* Add 10 for extra formatting characters */
+  char sz_sng[100];
 
   int deflate; /* [flg] Deflation is on */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
@@ -1226,6 +1226,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   if(prn_flg->xml) (void)fprintf(stdout,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,xml_typ_nm(var_typ));
 
   /* Print type, shape, and total size of variable */
+  /* Use nbr_dmn+1 in malloc() to handle case when nbr_dim == 0 and allow for formatting characters */
+  dmn_sng=(char *)nco_malloc((nbr_dim+1)*NC_MAX_NAME*sizeof(char));
   dmn_sng[0]='\0';
   if(nbr_dim == 0){
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
@@ -1269,6 +1271,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   if(prn_flg->xml){
     if(prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA) (void)fprintf(stdout,"%s>\n",dmn_sng); else (void)fprintf(stdout,"%s />\n",dmn_sng);
   } /* !xml */
+  if(dmn_sng) dmn_sng=(char *)nco_free(dmn_sng);
 
   /* Print dimension sizes and names */
 

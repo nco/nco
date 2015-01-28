@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1501 2015-01-27 00:58:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1502 2015-01-28 19:28:07 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4219,7 +4219,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     if(idx_dmn != var->nbr_dim) break;
   } /* Check variable for duplicate dimensions */
 
-  /* Variables associated with "bounds" and "coordinates" attributes should, in most cases, be treated as coordinates */
+  /* Treat variables associated with "bounds" and "coordinates" attributes as coordinates */
   if(nco_is_spc_in_bnd_att(var->nc_id,var->id)) var->is_crd_var=True;
   if(nco_is_spc_in_crd_att(var->nc_id,var->id)) var->is_crd_var=True;
 
@@ -4247,7 +4247,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
       else if(trv_tbl->lst[idx_tbl].enm_prc_typ == fix_typ) var->is_fix_var=True;
       break;
     } /* endif */
-  } 
+  } /* endfor */
 
   var->undefined=False; /* [flg] Used by ncap parser */
 
@@ -8966,10 +8966,7 @@ nco_prc_rel_mch                        /* [fnc] Relative match of object in tabl
         trv_sct *trv_2=&trv_tbl_2->lst[idx_tbl];
         rel_mch=True;
      
-        if(nco_dbg_lvl_get() >= nco_dbg_var){
-          (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
-            var_trv->nm_fll,trv_2->nm_fll);
-        }
+        if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),var_trv->nm_fll,trv_2->nm_fll);
 
         (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
@@ -8982,11 +8979,7 @@ nco_prc_rel_mch                        /* [fnc] Relative match of object in tabl
         trv_sct *trv_1=&trv_tbl_1->lst[idx_tbl];
         rel_mch=True;
 
-        if(nco_dbg_lvl_get() >= nco_dbg_var){
-          (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),
-            trv_1->nm_fll,var_trv->nm_fll);
-        }
-
+        if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),trv_1->nm_fll,var_trv->nm_fll);
 
         (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
@@ -9229,12 +9222,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   (void)nco_nsm_att(nc_id_2,trv_tbl_2,&flg_nsm_att_2,&nsm_grp_nm_fll_prn_2);
 
   /* There is a variable with same absolute path in both files. Do them and return */
-  if(flg_cmn_abs){
-
-    /* Process common variables (same path in both files) */
-    (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
-
-  } /* There is a variable with same absolute path in both files */
+  if(flg_cmn_abs) (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
 
   /* Inquire about group broadcasting (ensembles and not ensembles) */
 
@@ -9266,10 +9254,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
           if(nco_dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s ensemble names read from attributes from file 2\n",nco_prg_nm_get(),fnc_nm);
-            for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++){
-              (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,
-                nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);          
-            }
+            for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);          
           }
 
           /* Use table 1 as template for group creation */
@@ -9481,7 +9466,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
 
           /* If match object in table 2 does not exist, that's an error  */
         
-          if (!trv_2){
+          if(!trv_2){
             (void)fprintf(stdout,"%s: ERROR No match variable found for <%s>\n",nco_prg_nm_get(),trv_1->nm_fll);
             nco_exit(EXIT_FAILURE);
           }
@@ -9510,12 +9495,8 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
           /* Get variable  */
           trv_sct *skp_trv=trv_tbl_var_nm_fll(skp_nm_fll,trv_tbl_1);
 
-          if (skp_trv){
-
-            /* Define/write fixed variables (ncbo) */
-            (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);   
-
-          }
+	  /* Define/write fixed variables (ncbo) */
+          if(skp_trv) (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);
 
         } /* List of fixed templates  */
 
@@ -9523,8 +9504,6 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
     } /* Loop ensembles */
 
   } else if(flg_grp_1 == False) {
-
-
 
   } /* ! flg_grp_1 */
 
@@ -9605,12 +9584,8 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
             /* Get variable  */
             trv_sct *skp_trv=trv_tbl_var_nm_fll(skp_nm_fll,trv_tbl_1);
 
-            if (skp_trv){
-
-              /* Define/write fixed variables (ncbo) */
-              (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);   
-
-            }
+	    /* Define/write fixed variables (ncbo) */
+            if(skp_trv) (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);
 
           } /* List of fixed templates  */
 
@@ -9693,12 +9668,9 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
             /* Get variable  */
             trv_sct *skp_trv=trv_tbl_var_nm_fll(skp_nm_fll,trv_tbl_2);
 
-            if (skp_trv){
+	    /* Define/write fixed variables (ncbo) */
+            if(skp_trv) (void)nco_fix_dfn_wrt(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_2,flg_dfn);
 
-              /* Define/write fixed variables (ncbo) */
-              (void)nco_fix_dfn_wrt(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_2,flg_dfn);   
-
-            }
           } /* List of fixed templates  */
 
           /* Loop list of variables from other file */
