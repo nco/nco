@@ -1,5 +1,9 @@
 2015-01-28  Charlie Zender  <zender@uci.edu>
 
+	* Fix missing value treatment in nco_var_bitmask()
+
+	* Change nco_var_around() from lrint() to rint() (duh!)
+
 	* Dynamically allocate dimension string info in nco_prn_var_dfn() so NCO works on AIRS files with loooong dimension names
 
 2015-01-26  Charlie Zender  <zender@uci.edu>

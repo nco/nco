@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1058 2015-01-26 20:52:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1059 2015-01-28 20:48:29 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6858,7 +6858,7 @@ The rounding algorithm
 Rounding is performed by the internal math library @command{rint()} 
 family of functions which were standardized in @acronym{C99}.
 The exact alorithm employed is
-@math{val := lrint(@var{scale}*@var{val})/@var{scale}} where @var{scale}
+@math{val := rint(@var{scale}*@var{val})/@var{scale}} where @var{scale}
 is the nearest power @w{of 2} that exceeds @var{lsd}, and the inverse
 of @var{scale} is used when @math{@var{lsd} < 0}.
 For @math{@var{lsd} = 3} or @math{@var{lsd} = -2}, for example, we have

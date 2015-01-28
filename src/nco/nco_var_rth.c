@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.81 2015-01-27 20:30:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.82 2015-01-28 20:48:29 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -195,22 +195,27 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   
   switch(type){
   case NC_FLOAT: 
-    /* Do float arithmetic in double precision before converting back to float (fxm: unless --flt?) */
+    /* Do float arithmetic in double precision before converting back to float
+       20150128: fxm Implement pure float algorithm with rintf() when --flt specified?
+       NB: Use rint() not lrint()
+       If ignoring this advice, be sure to bound calls to lrint(), e.g., 
+       rint_arg=scale*op1.fp[idx];
+       if(rint_arg > LONG_MIN && rint_arg < LONG_MAX) op1.fp[idx]=(float)lrint(scale*op1.fp[idx])/scale; */
     if(!has_mss_val){
-      for(idx=0L;idx<sz;idx++) op1.fp[idx]=(float)lrint(scale*op1.fp[idx])/scale; /* Coerce to avoid implicit conversions warning */
+      for(idx=0L;idx<sz;idx++) op1.fp[idx]=(float)(rint(scale*op1.fp[idx])/scale);
     }else{
       const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++)
-	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(float)lrint(scale*op1.fp[idx])/scale; /* Coerce to avoid implicit conversions warning */
+	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(float)(rint(scale*op1.fp[idx])/scale); /* Coerce to avoid implicit conversions warning */
     } /* end else */
     break;
   case NC_DOUBLE: 
     if(!has_mss_val){
-      for(idx=0L;idx<sz;idx++) op1.dp[idx]=lrint(scale*op1.dp[idx])/scale;
+      for(idx=0L;idx<sz;idx++) op1.dp[idx]=rint(scale*op1.dp[idx])/scale;
     }else{
       const float mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++)
-	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=lrint(scale*op1.dp[idx])/scale;
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=rint(scale*op1.dp[idx])/scale;
     } /* end else */
     break;
   case NC_INT: /* Do nothing for non-floating point types ...*/
@@ -319,7 +324,7 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
     /* Create mask */
     msk_f32_u32=0u; /* Zero all bits */
     msk_f32_u32=~msk_f32_u32; /* Turn all bits to ones */
-    /* Left shift zeros into all rounded bits */
+    /* Left shift zeros into bits to be rounded */
     msk_f32_u32 <<= bit_nbr_zro;
     if(!has_mss_val){
       for(idx=0L;idx<sz;idx++) u32_ptr[idx]&=msk_f32_u32;
@@ -337,14 +342,14 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
     /* Create mask */
     msk_f64_u64=0ul; /* Zero all bits */
     msk_f64_u64=~msk_f64_u64; /* Turn all bits to ones */
-    /* Left shift zeros into all rounded bits */
+    /* Left shift zeros into bits to be rounded */
     msk_f64_u64 <<= bit_nbr_zro;
     if(!has_mss_val){
       for(idx=0L;idx<sz;idx++) u64_ptr[idx]&=msk_f64_u64;
     }else{
-      const float mss_val_flt=*mss_val.fp;
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++)
-	if(op1.fp[idx] != mss_val_flt) u64_ptr[idx]&=msk_f64_u64;
+	if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64;
     } /* end else */
     break;
   case NC_INT: /* Do nothing for non-floating point types ...*/

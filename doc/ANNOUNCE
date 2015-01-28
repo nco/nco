@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.761 2015-01-26 00:31:12 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.762 2015-01-28 20:48:28 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -56,6 +56,9 @@ A. Hi
    These problems will go away when Unidata issues a fix to the
    underlying netCDF library. Thanks to Parker Allen for reporting.
    http://nco.sf.net#bug_nc4_rename
+
+B. Fix ncks bug dumping files with multiple long dimension names.
+   This means you, NASA AIRS :)
 
 KNOWN PROBLEMS DUE TO NCO:
 

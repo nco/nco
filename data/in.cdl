@@ -68,7 +68,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.207 2015-01-27 00:58:32 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.208 2015-01-28 20:48:20 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -364,6 +364,11 @@ variables:
         lsd_bgr:long_name = "Least Significant Digit, bigger numbers";
         lsd_bgr:purpose = "test --lsd switches";
         lsd_bgr:original_values="1234567890e20,1234567890e19,1234567890e18,1234567890e17,1234567890e16,1234567890e15,1234567890e14,1234567890e13,1234567890e12,1234567890e11";
+
+	float lsd_bgr_scl;
+        lsd_bgr:long_name = "Least Significant Digit, bigger numbers, scalar";
+        lsd_bgr:purpose = "test --lsd switches";
+        lsd_bgr:original_value="1234567890e11";
 
 	double lsd_hgh(time);
         lsd_hgh:long_name = "Least Significant Digit, high precision";
@@ -1239,6 +1244,7 @@ data:
 	lsd_flt=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;
 	lsd_big=123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1;
 	lsd_bgr=1234567890e20,1234567890e19,1234567890e18,1234567890e17,1234567890e16,1234567890e15,1234567890e14,1234567890e13,1234567890e12,1234567890e11;
+	lsd_bgr_scl=1234567890e11;
 	lsd_hgh=0.00000000000000000000,0.10000000000000000000,0.12000000000000000000,0.123000000000000000000,0.1234000000000000000,0.12345000000000000000,0.123456000000000000000000,0.12345670000000000000000000,0.123456780000000000000,0.123456789000000000000;
 	lsd_hgr=0.123456789000000000000,0.1234567890100000000000,0.1234567890120000000000,0.12345678901230000000000,0.123456789012340000000,0.12345678901234500000,0.12345678901234560000,0.12345678901234567000,0.12345678901234567800,0.12345678901234567890;
 	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
