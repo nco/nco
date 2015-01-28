@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.9 2015-01-28 23:03:53 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.10 2015-01-28 23:33:08 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -48,7 +48,8 @@ nco_lsd_att_prc /* [fnc] Create LSD attribute */
   /* NB: Can fail when output file has fewer variables than input file (i.e., was subsetted)
      20150126: functionality moved to nco_xtr_dfn() */
   aed_sct aed;
-  char att_nm[]="least_significant_digit";
+  char att_nm_dsd[]="least_significant_digit";
+  char att_nm_nsd[]="number_of_significant_digits";
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
   int lsd;
@@ -68,10 +69,8 @@ nco_lsd_att_prc /* [fnc] Create LSD attribute */
     att_val.ip=&lsd;
     aed.id=var_id;
     aed.val=att_val;
-    if(var_trv.flg_nsd) aed.att_nm="number_of_significant_digits";
-    else aed.att_nm="least_significant_digit";
+    if(var_trv.flg_nsd) aed.att_nm=att_nm_nsd; else aed.att_nm=att_nm_dsd;
     aed.type=NC_INT; /* NB: value changes if it is assigned outside for loop */
-    aed.att_nm=att_nm;
     aed.sz=1L;
     aed.mode=aed_create; 
     rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);

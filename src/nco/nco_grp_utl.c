@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1503 2015-01-28 21:53:20 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1504 2015-01-28 23:33:08 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1811,10 +1811,11 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Write LSD attribute */
       if(var_trv.lsd != NC_MAX_INT){
 	aed_sct aed_lsd;
-	char att_nm[]="least_significant_digit";
+	char att_nm_dsd[]="least_significant_digit";
+	char att_nm_nsd[]="number_of_significant_digits";
 	int lsd_old;
 	int rcd;
-	aed_lsd.att_nm=att_nm;
+	if(var_trv.flg_nsd) aed_lsd.att_nm=att_nm_nsd; else aed_lsd.att_nm=att_nm_dsd;
 	aed_lsd.var_nm=var_trv.nm;
 	aed_lsd.id=var_out_id;
 	aed_lsd.val.ip=&var_trv.lsd;
@@ -1834,7 +1835,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	      (void)nco_aed_prc(grp_out_id,var_out_id,aed_lsd);
 	    } /* endif */
 	  }else{ /* !conforming */
-	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),att_nm,var_trv.nm_fll);
+	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),aed_lsd.att_nm,var_trv.nm_fll);
 	  }  /* !conforming */
 	} /* !rcd */
       } /* !LSD */
@@ -2199,7 +2200,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_mch=False;                /* [flg] Object matches user-specified strings */
   trv_tbl->lst[idx].flg_mtd=False;                /* [flg] Group contains only metadata */
   trv_tbl->lst[idx].flg_ncs=False;                /* [flg] Group is ancestor of specified group or variable */
-  trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] LSD is NSD when it's true */
   trv_tbl->lst[idx].flg_nsx=False;                /* [flg] Object matches intersection criteria */
   trv_tbl->lst[idx].flg_rcr=False;                /* [flg] Extract group recursively */
   trv_tbl->lst[idx].flg_unn=False;                /* [flg] Object matches union criteria */
@@ -2220,6 +2220,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].nbr_rec=nbr_rec;              /* [nbr] Number of record dimensions */
   trv_tbl->lst[idx].nbr_var=nbr_var;              /* [nbr] Number of variables (for group) */
   trv_tbl->lst[idx].lsd=NC_MAX_INT;               /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+  trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] LSD is NSD */
 
   trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;   /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
@@ -2304,7 +2305,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_rcr=False; 
     trv_tbl->lst[idx].flg_unn=False; 
     trv_tbl->lst[idx].flg_vfp=False; 
-    trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] LSD is NSD when it's true */
     trv_tbl->lst[idx].flg_vsg=False; 
     trv_tbl->lst[idx].flg_xcl=False; 
     trv_tbl->lst[idx].flg_xtr=False;
@@ -2321,6 +2321,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
     trv_tbl->lst[idx].nbr_var=nco_obj_typ_err;
     trv_tbl->lst[idx].lsd=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+    trv_tbl->lst[idx].flg_nsd=True; /* [flg] LSD is NSD */
     
     trv_tbl->lst[idx].is_crd_var=False;             
     trv_tbl->lst[idx].is_rec_var=False; 

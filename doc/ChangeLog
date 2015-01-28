@@ -1,5 +1,9 @@
 2015-01-28  Charlie Zender  <zender@uci.edu>
 
+	* DSD and NSD compression both appear to work and pass all regressions
+
+	* Zero two additional bits from significand in nco_var_bitmask()
+
 	* Fix missing value treatment in nco_var_bitmask()
 
 	* Change nco_var_around() from lrint() to rint() (duh!)

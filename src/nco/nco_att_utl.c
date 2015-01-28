@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.180 2015-01-22 21:44:57 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.181 2015-01-28 23:33:08 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -139,7 +139,6 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
-printf("DYW, nco_aed_prc 0 %d %d %s\n", nc_id, var_id, var_nm);
     /* Shortcuts to avoid indirection */
     var_val=var->val;
     var_sz=var->sz;
@@ -156,7 +155,6 @@ printf("DYW, nco_aed_prc 0 %d %d %s\n", nc_id, var_id, var_nm);
     (void)cast_void_nctype(var->type,&mss_val_crr);
     (void)cast_void_nctype(var->type,&mss_val_new);
 
-printf("DYW, nco_aed_prc 1 %d %d %s\n", nc_id, var_id, var_nm);
     switch(var->type){
       /*    case NC_FLOAT: for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;} break;*/
       /*    case NC_DOUBLE: for(idx=0L;idx<var_sz;idx++) {if(var_val.dp[idx] == *mss_val_crr.dp) var_val.dp[idx]=*mss_val_new.dp;} break;*/
@@ -186,7 +184,6 @@ printf("DYW, nco_aed_prc 1 %d %d %s\n", nc_id, var_id, var_nm);
     case NC_STRING: for(idx=0L;idx<var_sz;idx++) {if(var_val.sngp[idx] == *mss_val_crr.sngp) var_val.sngp[idx]=*mss_val_new.sngp;} break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
-printf("DYW, nco_aed_prc2 %d %d %s\n", nc_id, var_id, var_nm);
 
     /* Un-typecast the pointer to values after access */
     (void)cast_nctype_void(var->type,&var_val);

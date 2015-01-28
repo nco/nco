@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.368 2015-01-27 00:58:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.369 2015-01-28 23:33:08 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -85,7 +85,8 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
 
   /* 20150114: Keep LSD code in single block for easier reuse */
   int lsd=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-  nco_bool flg_lsd=False; /* [sct] Activate LSD with this variable and output file */
+  nco_bool flg_lsd=False; /* [flg] Activate LSD with this variable and output file */
+  nco_bool flg_nsd; /* [flg] LSD algorithm is NSD */
   var_sct var_out; /* [sct] Variable structure */
   /* File format needed to enable netCDF4 features */
   (void)nco_inq_format(out_id,&fl_fmt);
@@ -99,6 +100,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     //(void)fprintf(stderr,"nco_cpy_rec_var_val reports var_nm_fll = %s, var_trv->var_nm_fll = %s\n",var_nm_fll,var_trv->nm_fll);
     assert(var_trv != NULL);
     if(var_trv) lsd=var_trv->lsd;
+    if(var_trv) flg_nsd=var_trv->flg_nsd;
     if(var_nm_fll) var_nm_fll=(char *)nco_free(var_nm_fll);
     if(lsd != NC_MAX_INT){
       /* Initialize variable structure with minimal information for nco_mss_val_get() */
@@ -117,12 +119,16 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Get variable */
   if(dmn_nbr == 0){
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
-    if(flg_lsd) (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+    if(flg_lsd){
+      if(flg_nsd) (void)nco_var_bitmask(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+    } /* !LSD */
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
   }else{ /* end if variable is scalar */
     if(var_sz > 0){ /* Allow for zero-size record variables */
       nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
-      if(flg_lsd) (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+      if(flg_lsd){
+	if(flg_nsd) (void)nco_var_bitmask(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+      } /* !LSD */
       nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
     } /* end if var_sz */
   } /* end if variable is an array */
@@ -402,6 +408,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* 20150114: Keep LSD code in single block for easier reuse */
       int lsd=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
       nco_bool flg_lsd=False; /* [sct] Activate LSD with this variable and output file */
+      nco_bool flg_nsd; /* [flg] LSD algorithm is NSD */
       var_sct var_out; /* [sct] Variable structure */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 	/* This ugliness backs-out the lsd element from the traversal table for this variable */
@@ -413,6 +420,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 	//(void)fprintf(stderr,"nco_cpy_rec_var_val reports var_nm_fll = %s, var_trv->var_nm_fll = %s\n",var_nm_fll,var_trv->nm_fll);
 	assert(var_trv != NULL);
 	if(var_trv) lsd=var_trv->lsd;
+	if(var_trv) flg_nsd=var_trv->flg_nsd;
 	if(var_nm_fll) var_nm_fll=(char *)nco_free(var_nm_fll);
 	if(lsd != NC_MAX_INT){
 	  /* Initialize variable structure with minimal information for nco_mss_val_get() */
@@ -431,7 +439,9 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Get and put one record of variable */
       if(var_sz > 0){ /* Allow for zero-size record variables */
         nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
-	if(flg_lsd) (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+	if(flg_lsd){
+	  if(flg_nsd) (void)nco_var_bitmask(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+	} /* !LSD */
         nco_put_vara(var_lst[var_idx]->grp_id_out,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       } /* end if var_sz */
 

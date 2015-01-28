@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.545 2015-01-25 22:21:12 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.546 2015-01-28 23:33:07 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2408,11 +2408,11 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 	
 #ncks #97
-# Test --lsd attribute writing for new compression 
-# ncks -4 -O -C -v lsd_dbl --lsd lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc
+# Test attribute writing for DSD compression 
+# ncks -4 -O -C -v lsd_dbl --lsd lsd_dbl=.3 ~/nco/data/in.nc ~/foo.nc
 # ncks -m -v lsd_dbl ~/foo.nc
-    $dsc_sng="Test --lsd attribute writing for new compression";
-    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl --lsd lsd_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
+    $dsc_sng="Test attribute writing for DSD compression";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl --lsd lsd_dbl=.3 $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -m -v lsd_dbl %tmp_fl_00 | grep 'least_significant_digit'";
     $tst_cmd[2]="lsd_dbl attribute 3: least_significant_digit, size = 1 NC_INT, value = 3";
     $tst_cmd[3]="SS_OK";   
@@ -2420,11 +2420,11 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 	
 #ncks #98
-# Test --lsd compression rounding to hundreds
-# ncks -4 -O -C -v lsd_big,lsd_dbl --lsd lsd_big,lsd_dbl=-2 ~/nco/data/in.nc ~/foo.nc
+# Test DSD compression rounding to hundreds
+# ncks -4 -O -C -v lsd_big,lsd_dbl --lsd lsd_big,lsd_dbl=.-2 ~/nco/data/in.nc ~/foo.nc
 # ncks -H -d time,5 -s %g -v lsd_big ~/foo.nc
-    $dsc_sng="Test --lsd compression rounding to hundreds";
-    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_big,lsd_dbl --lsd lsd_big,lsd_dbl=-2 $in_pth_arg in.nc %tmp_fl_00";
+    $dsc_sng="Test DSD compression rounding to hundreds";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_big,lsd_dbl --lsd lsd_big,lsd_dbl=.-2 $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -H -d time,5 -s %g -v lsd_big %tmp_fl_00";
     $tst_cmd[2]="1280";
     $tst_cmd[3]="SS_OK";   
@@ -2432,13 +2432,13 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 	
 #ncks #99
-# Test --lsd attribute does not overwrite pre-existing rounder values
+# Test DSD attribute does not overwrite pre-existing rounder values
 # ncks -4 -O -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=-2 ~/nco/data/in.nc ~/foo.nc
 # ncks -4 -O -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=3 ~/foo.nc ~/foo2.nc
 # ncks -m -v lsd_big ~/foo2.nc
-    $dsc_sng="Test --lsd attribute does not overwrite pre-existing rounder values";
-    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=-2 $in_pth_arg in.nc %tmp_fl_00";
-    $tst_cmd[1]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=3 %tmp_fl_00 %tmp_fl_01";
+    $dsc_sng="Test DSD attribute does not overwrite pre-existing rounder values";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd .?=.4 --lsd lsd_big=.-2 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=.3 %tmp_fl_00 %tmp_fl_01";
     $tst_cmd[2]="ncks -m -v lsd_big %tmp_fl_01 | grep 'least_significant_digit'";
     $tst_cmd[3]="lsd_big attribute 3: least_significant_digit, size = 1 NC_INT, value = -2";
     $tst_cmd[4]="SS_OK";   
@@ -2446,15 +2446,67 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 	
 #ncks #100
-# Test --lsd attribute does overwrite pre-existing sharper values
-# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=-2 ~/nco/data/in.nc ~/foo.nc
-# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=3 ~/foo.nc ~/foo2.nc
+# Test DSD attribute does overwrite pre-existing sharper values
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd .?=.4 --lsd lsd_big=.-2 ~/nco/data/in.nc ~/foo.nc
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=.3 ~/foo.nc ~/foo2.nc
 # ncks -m -v lsd_big ~/foo2.nc
-    $dsc_sng="Test --lsd attribute does overwrite pre-existing sharper values";
-    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=-2 $in_pth_arg in.nc %tmp_fl_00";
-    $tst_cmd[1]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=3 %tmp_fl_00 %tmp_fl_01";
+    $dsc_sng="Test DSD attribute does overwrite pre-existing sharper values";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd .?=.4 --lsd lsd_big=.-2 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=.3 %tmp_fl_00 %tmp_fl_01";
     $tst_cmd[2]="ncks -m -v lsd_dbl %tmp_fl_01 | grep 'least_significant_digit'";
     $tst_cmd[3]="lsd_dbl attribute 3: least_significant_digit, size = 1 NC_INT, value = 3";
+    $tst_cmd[4]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
+#ncks #101
+# Test attribute writing for NSD compression 
+# ncks -4 -O -C -v lsd_dbl --lsd lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc
+# ncks -m -v lsd_dbl ~/foo.nc
+    $dsc_sng="Test attribute writing for NSD compression";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl --lsd lsd_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -m -v lsd_dbl %tmp_fl_00 | grep 'number_of_significant_digits'";
+    $tst_cmd[2]="lsd_dbl attribute 3: number_of_significant_digits, size = 1 NC_INT, value = 3";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
+#ncks #102
+# Test NSD compression rounding to three significant digits
+# ncks -4 -O -C -v lsd_big,lsd_dbl --lsd lsd_big,lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc
+# ncks -H -d time,5 -s %g -v lsd_big ~/foo.nc
+    $dsc_sng="Test NSD compression rounding to three significant digits";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_big,lsd_dbl --lsd lsd_big,lsd_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -H -d time,5 -s %g -v lsd_big %tmp_fl_00";
+    $tst_cmd[2]="1232";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
+#ncks #103
+# Test NSD attribute does not overwrite pre-existing rounder values
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=3 ~/nco/data/in.nc ~/foo.nc
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=4 ~/foo.nc ~/foo2.nc
+# ncks -m -v lsd_big ~/foo2.nc
+    $dsc_sng="Test NSD attribute does not overwrite pre-existing rounder values";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=3 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=4 %tmp_fl_00 %tmp_fl_01";
+    $tst_cmd[2]="ncks -m -v lsd_big %tmp_fl_01 | grep 'number_of_significant_digits'";
+    $tst_cmd[3]="lsd_big attribute 3: number_of_significant_digits, size = 1 NC_INT, value = 3";
+    $tst_cmd[4]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
+#ncks #104
+# Test NSD attribute does overwrite pre-existing sharper values
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=3 ~/nco/data/in.nc ~/foo.nc
+# ncks -4 -O -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=4 ~/foo.nc ~/foo2.nc
+# ncks -m -v lsd_big ~/foo2.nc
+    $dsc_sng="Test NSD attribute does overwrite pre-existing sharper values";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd .?=4 --lsd lsd_big=4 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -O $nco_D_flg -4 -C -v lsd_dbl,lsd_big --lsd lsd_big,lsd_dbl=3 %tmp_fl_00 %tmp_fl_01";
+    $tst_cmd[2]="ncks -m -v lsd_dbl %tmp_fl_01 | grep 'number_of_significant_digits'";
+    $tst_cmd[3]="lsd_dbl attribute 3: number_of_significant_digits, size = 1 NC_INT, value = 3";
     $tst_cmd[4]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
