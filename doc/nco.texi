@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1059 2015-01-28 20:48:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1060 2015-01-29 21:14:56 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6814,26 +6814,48 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @cindex lossy compression
 @cindex quantization
 @cindex rounding
+@cindex Huffman coding
+@cindex @command{gzip}
 @cartouche
 Availability: @command{ncks}, @command{ncpdq}@*
 Short options: None@*
 Long options: @samp{--lsd}, @samp{--least_significant_digit}, @samp{--quantize}@*  
 @end cartouche
 
-@acronym{NCO} implements three types of compression algorithms
-which are all independent of one another, and may be combined.
-All three algorithms are intended to reduce the on-disk size of the
-dataset while sacrificing no (lossless) or a tolerable amount (lossy) 
-of precision.
-The time penalty for compressing and uncompressing data varies according 
-to the algorithm.
-@acronym{NCO} can access the lossless Lempel-Ziv deflation algorithm 
-on any netCDF4 dataset (@pxref{Deflation}).
+@acronym{NCO} implements or accesses four different compression
+algorithms, the standard lossless @acronym{DEFLATE} algorithm
+and three lossy compression algorithms.
+All four algorithms reduce the on-disk size of a dataset while
+sacrificing no (lossless) or a tolerable amount (lossy) of precision. 
+First, @acronym{NCO} can access the lossless @acronym{DEFLATE} algorithm,
+a combination of Lempel-Ziv deflation and Huffman encoding, algorithm on
+any netCDF4 dataset (@pxref{Deflation}). 
 Because it is lossless, this algorithm can inflate deflated data to
 their full original precision. 
+This algorithm is accessed via the @acronym{HDF5} library layer
+(which itself uses @command{gzip}), and is unavailable with netCDF3. 
 
-As of version 4.4.8 (February, 2015), @acronym{NCO} @acronym{NCO} will 
-store data at a specifiable level of precision.  
+The three lossy compression algorithms are Packing 
+(@pxref{Packed data}), and two precision-preserving algorithms.
+Packing quantizes data of a higher precision type into a lower precision 
+type (often @code{NC_SHORT}) and thus stores a fewer (though constant)
+number of bytes per value. 
+As shown in the examples, packed data can (and should) be deflated for 
+additional space savings.
+
+@acronym{NCO} implemented the final two lossy compression algorithms
+in version 4.4.8 (February, 2015).
+These are both precision-preserving algorithms and standard terminology
+for precision is remarkably ambiguous, and our nomenclature reflects
+that.
+Least Significant Digit (LSD) functionality.
+
+Decimal Significant Digits (@acronym{DSD}) and 
+These are mostly independent of one another, and may be combined. 
+
+The time penalty for compressing and uncompressing data varies according 
+to the algorithm.
+
 The Least Significant Digit (@acronym{LSD}) functionality accomplishes
 this through a rounding algorithm.
 Invoke @acronym{LSD} rounding with the long option 

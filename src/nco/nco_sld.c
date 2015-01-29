@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.10 2015-01-28 23:33:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.11 2015-01-29 21:14:56 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -97,7 +97,7 @@ nco_lsd_set( /* Set LSD based on user specifications */
 
   lsds=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
 
-  /* Parse lsds */
+  /* Parse LSDs */
   for(idx=0;idx<lsd_nbr;idx++){
     arg=(char *)strdup(lsd_arg[idx]);
     if(!strstr(arg,"=")){
@@ -118,34 +118,46 @@ nco_lsd_set( /* Set LSD based on user specifications */
     } /* end if */
   } /* end for */
 
-  /* Set lsds */
-  for(idx=0;idx<ilsd;idx++){ /* if LSD default exists, set all non-coordinate vars first */
-    if(!strcasecmp(lsds[idx].key, "default")){
+  /* LSD default exists, set all non-coordinate variables to default first */
+  for(idx=0;idx<ilsd;idx++){
+    if(!strcasecmp(lsds[idx].key,"default")){
       trv_tbl_lsd_set_dflt(lsds[idx].value,trv_tbl);
       break; /* only one default is needed */
-    }
+    } /* endif */
   } /* end for */
-  for(idx=0;idx<ilsd;idx++){ /* set non-default LSDs that can overwrite dflt */
-    if(!strcasecmp(lsds[idx].key, "default")) continue;
+
+  /* Set explicit, non-default LSDs that can overwrite default */
+  for(idx=0;idx<ilsd;idx++){
+    if(!strcasecmp(lsds[idx].key,"default")) continue;
     trv_tbl_lsd_set_var(lsds[idx].key,lsds[idx].value,trv_tbl);
   } /* end for */
+
+  /* Unset LSD and flag for all variables with excessive LSD
+     Operational definition of maximum LSD is maximum decimal precision of double = DBL_DIG = 15 */
+  const int nco_max_lsd=15;
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(trv_tbl->lst[idx_tbl].lsd != NC_MAX_INT)
+      if(trv_tbl->lst[idx_tbl].lsd >= nco_max_lsd){
+	trv_tbl->lst[idx_tbl].lsd=NC_MAX_INT;
+	trv_tbl->lst[idx_tbl].flg_nsd=True;
+      } /* endif */
 
   if(lsds) nco_kvmaps_free(lsds);
 } /* end nco_lsd_set() */
 
 void
-trv_tbl_lsd_set_dflt /* Set the lsd value for all non-coordinate vars for --lsd default  */
-(const char * const slsd, /* I [sng] user input for least significant digit */
+trv_tbl_lsd_set_dflt /* Set LSD value for all non-coordinate variables for --lsd default  */
+(const char * const slsd, /* I [sng] User input for least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   int lsd;
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  nco_bool flg_nsd=True;                 /* [flg] LSD is NSD when it's true */
+  nco_bool flg_nsd=True; /* [flg] LSD is NSD */
 
-  if(slsd[0]=='.'){
+  if(slsd[0] == '.'){
     flg_nsd=False; /* DSD */
-    lsd=(int)strtol(slsd+1,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd+1,"strtol",sng_cnv_rcd);
+    lsd=(int)strtol(slsd+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd+1L,"strtol",sng_cnv_rcd);
   }else{ /* NSD */
     lsd=(int)strtol(slsd,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(slsd,"strtol",sng_cnv_rcd);
@@ -155,29 +167,29 @@ trv_tbl_lsd_set_dflt /* Set the lsd value for all non-coordinate vars for --lsd 
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var){
       trv_tbl->lst[idx_tbl].lsd=lsd;
       trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
-    }
+    } /* endif */
 } /* end trv_tbl_lsd_set_dflt() */
 
 void
 trv_tbl_lsd_set_var
 (const char * const var_nm, /* I [sng] Variable name to find */
- const char * const slsd, /* I [sng] user input for least significant digit */
+ const char * const slsd, /* I [sng] User input for least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   const char sls_chr='/'; /* [chr] Slash character */
   int mch_nbr=0;
   int lsd;
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  nco_bool flg_nsd=True;                 /* [flg] LSD is NSD when it's true */
+  nco_bool flg_nsd=True; /* [flg] LSD is NSD */
 
-  if(slsd[0]=='.'){ /* DSD */
+  if(slsd[0] == '.'){ /* DSD */
     flg_nsd=False;
-    lsd=(int)strtol(slsd+1,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd+1,"strtol",sng_cnv_rcd);
+    lsd=(int)strtol(slsd+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd+1L,"strtol",sng_cnv_rcd);
   }else{ /* NSD */
     lsd=(int)strtol(slsd,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(slsd,"strtol",sng_cnv_rcd);
-  }
+  } /* end else */
 
   if(strpbrk(var_nm,".*^$\\[]()<>+?|{}")){ /* regular expression ... */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
@@ -247,19 +259,21 @@ trv_tbl_lsd_set_var
   } /* end Full name */
 } /* end trv_tbl_lsd_set_var() */
 
-char * nco_sng_strip(/* strip off heading and tailing white spaces.  seems not working for \n??? */
-char *str) 
+char *
+nco_sng_strip( /* [fnc] Strip leading and trailing white space */
+char *sng)
 {
-  char *start = str;
+  /* fxm: seems not working for \n??? */
+  char *start=sng;
   while(isspace(*start)) start++;
-  int end = strlen(start);
-  if(start != str) {
-    memmove(str, start, end);
-    str[end] = '\0';
+  int end=strlen(start);
+  if(start != sng){
+    memmove(sng, start, end);
+    sng[end]='\0';
   }
-  while(isblank(*(str+end-1))) end--;
-  str[end] = '\0';
-  return str;
+  while(isblank(*(sng+end-1))) end--;
+  sng[end]='\0';
+  return sng;
 }/* end nco_sng_strip */
 
 int nco_sng2array(const char *delim, const char *str, char **sarray)
@@ -267,11 +281,8 @@ int nco_sng2array(const char *delim, const char *str, char **sarray)
   int idx=0;
   char *tstr;
   tstr=strdup(str);
-  sarray[idx]=strtok(tstr, delim);
-  while(sarray[idx]!=NULL)
-  {
-    sarray[++idx] = strtok(NULL, delim);
-  }
+  sarray[idx]=strtok(tstr,delim);
+  while(sarray[idx]!=NULL) sarray[++idx]=strtok(NULL,delim);
   return idx;
 }/* end nco_sng2array */
 

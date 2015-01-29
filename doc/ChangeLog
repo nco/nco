@@ -1,3 +1,7 @@
+2015-01-29  Charlie Zender  <zender@uci.edu>
+
+	* Implement threshold precision that turns-off LSD on per-variable basis
+
 2015-01-28  Charlie Zender  <zender@uci.edu>
 
 	* DSD and NSD compression both appear to work and pass all regressions

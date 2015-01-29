@@ -1,13 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.762 2015-01-28 20:48:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.763 2015-01-29 21:14:56 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This stabilization release also contains useful new features ...
+NCO now provides a major new feature: lossy compression.
+This is distinct from the packing (scale_factor+add_offset) that
+NCO has long supported. The new lossy compression feature is
+activated by specifying desired level of precision in terms of
+either the total number of significant digits or the number of
+significant digits after (or before) the decimal point.
+These precision features are lumped together under the generic
+name Least Significant Digit (LSD). More details below.
 
-Work on NCO 4.4.8 is underway, still focused on stability and speed.
+Work on NCO 4.4.9 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
 
 Enjoy,
@@ -27,13 +34,22 @@ A. NCO warns when appended output type differs from input type.
    http://nco.sf.net/nco.html#-A
 
 A. NCO will now store data at a specifiable level of precision.
-   The Least Significant Digit (LSD) functionality rounds data.
-   Specifying LSD=3 or LSD=-2 causes NCO to store only enough
-   bits to preserve the number rounded to the nearest thousandth
-   or hundred, respectively. In other words, LSD is the negative
-   base 10 logarithm of the desired precision. Under the hood,
-   this feature uses a rounding algorithm and so (intentionally)
-   loses information (aka unwanted precision). The rounding is
+   Standard terminology for precision is remarkably ambiguous, and 
+   we call this Least Significant Digit (LSD) functionality.
+   NCO's LSD implementation currently accepts two types of precision
+   specification implemented with completely different algorithms.
+   Users can specify either the total Number of Significant Digits
+   (NSD) or the Decimal Significant Digits (DSD), mean the number of
+   significant digits after (or before) the decimal point. 
+   For example, NSD=5 tells NCO to retain 5 significant digits in the
+   specified variables. Specifying DSD=3 or DSD=-2 causes NCO to
+   preserve the number rounded to the nearest thousandth or hundred,
+   respectively. In other words, DSD is the negative base 10 logarithm
+   of the desired decimal precision. Under the hood, NSD uses
+   bitmasking to eliminate unnecessary (false) precision, while
+   DSD utilizes rounding. LSD (both NSD and DSD) intentionally
+   loses information (aka unwanted precision).
+   The rounding is
    performed by zeroing the greatest number of mantissa bits
    consistent with the desired precision. This results in consecutive 
    zeros occupying signicant portions least siginificant bit in
