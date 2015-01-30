@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1061 2015-01-30 04:16:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1062 2015-01-30 04:25:58 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6809,6 +6809,7 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @node Compression, MD5 digests, Deflation, Shared features
 @section Compression
 @cindex @code{--ppc}
+@cindex @code{--precision_preserving_compression}
 @cindex @code{--least_significant_digit}
 @cindex @code{--quantize}
 @cindex lossy compression
@@ -6819,7 +6820,8 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @cartouche
 Availability: @command{ncks}, @command{ncpdq}@*
 Short options: None@*
-Long options: @samp{--ppc}, @samp{--least_significant_digit}, @samp{--quantize}@*  
+Long options: @samp{--ppc}, @samp{--precision_preserving_compression},
+@samp{--least_significant_digit}, @samp{--quantize}@*   
 @end cartouche
 
 @acronym{NCO} implements or accesses four different compression
@@ -6860,7 +6862,7 @@ The Least Significant Digit (@acronym{PPC}) functionality accomplishes
 this through a rounding algorithm.
 Invoke @acronym{PPC} rounding with the long option 
 @samp{--ppc var=prc}, or give the same arguments to the synonyms
-@samp{--least_significant_digit}, or @samp{--quantize}.
+@samp{--precision_preserving_compression}, or @samp{--quantize}.
 Here @var{var} is the variable to round, and @var{ppc} is the least
 significant digit to preserve, specified as the negative @w{base 10}
 logarithm of the desired precision, in accord with common usage.

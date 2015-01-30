@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.764 2015-01-30 04:16:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.765 2015-01-30 04:25:58 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -173,9 +173,9 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
+  char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *fl_nm_scrip=NULL; /* [sng] SCRIP file name */
   char *rec_dmn_nm_fix=NULL; /* [sng] Record dimension name (Original input name without _fix prefix) */
@@ -187,8 +187,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.764 2015-01-30 04:16:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.764 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.765 2015-01-30 04:25:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.765 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -228,9 +228,9 @@ main(int argc,char **argv)
   int idx;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int ppc_nbr=0; /* [nbr] Number of PPC arguments */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
+  int ppc_nbr=0; /* [nbr] Number of PPC arguments */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_lst_in_nbr=0;
   int var_nbr_fl;
@@ -347,11 +347,11 @@ main(int argc,char **argv)
       {"no_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
-      {"ppc",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-      {"least_significant_digit",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-      {"quantize",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
+      {"ppc",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+      {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+      {"quantize",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
       {"tst_udunits",required_argument,0,0},
       {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
       {"xml_spr_nmr",required_argument,0,0}, /* [flg] Separator for XML numeric types */
@@ -540,10 +540,6 @@ main(int argc,char **argv)
 	sld_nfo=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
         hdlscrip(fl_nm_scrip,sld_nfo);
       } /* endif "scrip" */
-      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"least_significant_digit") || !strcmp(opt_crr,"quantize")){
-        ppc_arg[ppc_nbr]=(char *)strdup(optarg);
-        ppc_nbr++;
-      } /* endif "ppc" */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"mpi_implementation")){
         (void)fprintf(stdout,"%s\n",nco_mpi_get());
@@ -563,6 +559,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_nm_prn") || !strcmp(opt_crr,"no_dmn_var_nm")) PRN_DMN_VAR_NM=False; /* endif "no_nm_prn" */
+      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
+        ppc_arg[ppc_nbr]=(char *)strdup(optarg);
+        ppc_nbr++;
+      } /* endif "ppc" */
       if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */

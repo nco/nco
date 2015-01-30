@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.417 2015-01-30 04:16:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.418 2015-01-30 04:25:58 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -128,18 +128,18 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
   char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
   char *nco_pck_map_sng=NULL_CEWI; /* [sng] Packing map Option M */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl; /* [sng] Local copy of system optarg */
+  char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.417 2015-01-30 04:16:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.417 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.418 2015-01-30 04:25:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.418 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -184,22 +184,22 @@ main(int argc,char **argv)
   int idx_rdr=int_CEWI;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int ppc_nbr=0; /* [nbr] Number of PPC arguments */
-  int ppc=0; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int xtr_nbr=0; /* xtr_nbr won't otherwise be set for -c with no -v */
   int nco_pck_map=nco_pck_map_flt_sht; /* [enm] Packing map */
   int nco_pck_plc=nco_pck_plc_nil; /* [enm] Packing policy */
   int opt;
   int out_id;  
+  int ppc_nbr=0; /* [nbr] Number of PPC arguments */
+  int ppc=0; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
+  int xtr_nbr=0; /* xtr_nbr won't otherwise be set for -c with no -v */
   int var_lst_in_nbr=0;
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
 
@@ -278,7 +278,7 @@ main(int argc,char **argv)
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
       {"ppc",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-      {"least_significant_digit",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+      {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
       {"quantize",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
@@ -407,7 +407,7 @@ main(int argc,char **argv)
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
-      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"least_significant_digit") || !strcmp(opt_crr,"quantize")){
+      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
         ppc_arg[ppc_nbr]=(char *)strdup(optarg);
         ppc_nbr++;
       } /* endif "ppc" */
@@ -841,8 +841,10 @@ main(int argc,char **argv)
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif nco_pck_plc != nco_pck_plc_nil */
 
-      if(ppc != NC_MAX_INT && ppc != 0 && (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)nco_var_around(ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
-
+      if(var_trv->ppc != NC_MAX_INT && (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
+	if(var_trv->flg_nsd) (void)nco_var_bitmask(ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val); else (void)nco_var_around(ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
+      } /* endif ppc */
+	
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
