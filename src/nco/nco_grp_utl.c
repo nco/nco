@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1504 2015-01-28 23:33:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1505 2015-01-30 04:16:48 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1808,37 +1808,37 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         } /* !wrt */
       } /* !md5 */
 
-      /* Write LSD attribute */
-      if(var_trv.lsd != NC_MAX_INT){
-	aed_sct aed_lsd;
+      /* Write PPC attribute */
+      if(var_trv.ppc != NC_MAX_INT){
+	aed_sct aed_ppc;
 	char att_nm_dsd[]="least_significant_digit";
 	char att_nm_nsd[]="number_of_significant_digits";
-	int lsd_old;
+	int ppc_old;
 	int rcd;
-	if(var_trv.flg_nsd) aed_lsd.att_nm=att_nm_nsd; else aed_lsd.att_nm=att_nm_dsd;
-	aed_lsd.var_nm=var_trv.nm;
-	aed_lsd.id=var_out_id;
-	aed_lsd.val.ip=&var_trv.lsd;
-	rcd=nco_inq_att_flg(grp_out_id,aed_lsd.id,aed_lsd.att_nm,&aed_lsd.type,&aed_lsd.sz);
+	if(var_trv.flg_nsd) aed_ppc.att_nm=att_nm_nsd; else aed_ppc.att_nm=att_nm_dsd;
+	aed_ppc.var_nm=var_trv.nm;
+	aed_ppc.id=var_out_id;
+	aed_ppc.val.ip=&var_trv.ppc;
+	rcd=nco_inq_att_flg(grp_out_id,aed_ppc.id,aed_ppc.att_nm,&aed_ppc.type,&aed_ppc.sz);
 	if(rcd != NC_NOERR){
-	  /* No LSD attribute yet exists */
-	  aed_lsd.sz=1L;
-	  aed_lsd.type=NC_INT;
-	  aed_lsd.mode=aed_create;
-	  (void)nco_aed_prc(grp_out_id,var_out_id,aed_lsd);
+	  /* No PPC attribute yet exists */
+	  aed_ppc.sz=1L;
+	  aed_ppc.type=NC_INT;
+	  aed_ppc.mode=aed_create;
+	  (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc);
 	}else{
-	  if(aed_lsd.sz == 1L && aed_lsd.type == NC_INT){
-	    /* Conforming LSD attribute already exists, only replace with new value if rounder */
-	    (void)nco_get_att(grp_out_id,aed_lsd.id,aed_lsd.att_nm,&lsd_old,NC_INT);
-	    if(var_trv.lsd < lsd_old){
-	      aed_lsd.mode=aed_modify;
-	      (void)nco_aed_prc(grp_out_id,var_out_id,aed_lsd);
+	  if(aed_ppc.sz == 1L && aed_ppc.type == NC_INT){
+	    /* Conforming PPC attribute already exists, only replace with new value if rounder */
+	    (void)nco_get_att(grp_out_id,aed_ppc.id,aed_ppc.att_nm,&ppc_old,NC_INT);
+	    if(var_trv.ppc < ppc_old){
+	      aed_ppc.mode=aed_modify;
+	      (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc);
 	    } /* endif */
 	  }else{ /* !conforming */
-	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),aed_lsd.att_nm,var_trv.nm_fll);
+	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),aed_ppc.att_nm,var_trv.nm_fll);
 	  }  /* !conforming */
 	} /* !rcd */
-      } /* !LSD */
+      } /* !PPC */
 
       /* Memory management after current extracted variable */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
@@ -2219,8 +2219,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].nbr_grp=nbr_grp;              /* [nbr] Number of sub-groups (for group) */
   trv_tbl->lst[idx].nbr_rec=nbr_rec;              /* [nbr] Number of record dimensions */
   trv_tbl->lst[idx].nbr_var=nbr_var;              /* [nbr] Number of variables (for group) */
-  trv_tbl->lst[idx].lsd=NC_MAX_INT;               /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-  trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] LSD is NSD */
+  trv_tbl->lst[idx].ppc=NC_MAX_INT;               /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+  trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] PPC is NSD */
 
   trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;   /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
@@ -2320,8 +2320,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nbr_grp=nco_obj_typ_err;
     trv_tbl->lst[idx].nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
     trv_tbl->lst[idx].nbr_var=nco_obj_typ_err;
-    trv_tbl->lst[idx].lsd=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-    trv_tbl->lst[idx].flg_nsd=True; /* [flg] LSD is NSD */
+    trv_tbl->lst[idx].ppc=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+    trv_tbl->lst[idx].flg_nsd=True; /* [flg] PPC is NSD */
     
     trv_tbl->lst[idx].is_crd_var=False;             
     trv_tbl->lst[idx].is_rec_var=False; 

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1060 2015-01-29 21:14:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1061 2015-01-30 04:16:46 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6803,12 +6803,12 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 (@pxref{ncks netCDF Kitchen Sink}).
 
 @html
-<a name="lsd"></a> <!-- http://nco.sf.net/nco.html#lsd -->
-<a name="LSD"></a> <!-- http://nco.sf.net/nco.html#LSD -->
+<a name="ppc"></a> <!-- http://nco.sf.net/nco.html#ppc -->
+<a name="PPC"></a> <!-- http://nco.sf.net/nco.html#PPC -->
 @end html
 @node Compression, MD5 digests, Deflation, Shared features
 @section Compression
-@cindex @code{--lsd}
+@cindex @code{--ppc}
 @cindex @code{--least_significant_digit}
 @cindex @code{--quantize}
 @cindex lossy compression
@@ -6819,7 +6819,7 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @cartouche
 Availability: @command{ncks}, @command{ncpdq}@*
 Short options: None@*
-Long options: @samp{--lsd}, @samp{--least_significant_digit}, @samp{--quantize}@*  
+Long options: @samp{--ppc}, @samp{--least_significant_digit}, @samp{--quantize}@*  
 @end cartouche
 
 @acronym{NCO} implements or accesses four different compression
@@ -6848,7 +6848,7 @@ in version 4.4.8 (February, 2015).
 These are both precision-preserving algorithms and standard terminology
 for precision is remarkably ambiguous, and our nomenclature reflects
 that.
-Least Significant Digit (LSD) functionality.
+Least Significant Digit (PPC) functionality.
 
 Decimal Significant Digits (@acronym{DSD}) and 
 These are mostly independent of one another, and may be combined. 
@@ -6856,19 +6856,19 @@ These are mostly independent of one another, and may be combined.
 The time penalty for compressing and uncompressing data varies according 
 to the algorithm.
 
-The Least Significant Digit (@acronym{LSD}) functionality accomplishes
+The Least Significant Digit (@acronym{PPC}) functionality accomplishes
 this through a rounding algorithm.
-Invoke @acronym{LSD} rounding with the long option 
-@samp{--lsd var=prc}, or give the same arguments to the synonyms
+Invoke @acronym{PPC} rounding with the long option 
+@samp{--ppc var=prc}, or give the same arguments to the synonyms
 @samp{--least_significant_digit}, or @samp{--quantize}.
-Here @var{var} is the variable to round, and @var{lsd} is the least
+Here @var{var} is the variable to round, and @var{ppc} is the least
 significant digit to preserve, specified as the negative @w{base 10}
 logarithm of the desired precision, in accord with common usage.
-For example, specifying @math{@var{lsd}=3} or @math{@var{lsd}=-2} tells
-the @acronym{LSD} algorithm to store only enough bits to preserve the
+For example, specifying @math{@var{ppc}=3} or @math{@var{ppc}=-2} tells
+the @acronym{PPC} algorithm to store only enough bits to preserve the
 value rounded to the nearest thousandth or hundred, respectively.
 
-Under the hood, @acronym{LSD} uses a rounding algorithm and so
+Under the hood, @acronym{PPC} uses a rounding algorithm and so
 (intentionally) loses information (aka false precision). 
 @cindex @command{rint()}
 @cindex C99
@@ -6881,9 +6881,9 @@ Rounding is performed by the internal math library @command{rint()}
 family of functions which were standardized in @acronym{C99}.
 The exact alorithm employed is
 @math{val := rint(@var{scale}*@var{val})/@var{scale}} where @var{scale}
-is the nearest power @w{of 2} that exceeds @var{lsd}, and the inverse
-of @var{scale} is used when @math{@var{lsd} < 0}.
-For @math{@var{lsd} = 3} or @math{@var{lsd} = -2}, for example, we have
+is the nearest power @w{of 2} that exceeds @var{ppc}, and the inverse
+of @var{scale} is used when @math{@var{ppc} < 0}.
+For @math{@var{ppc} = 3} or @math{@var{ppc} = -2}, for example, we have
 @math{@var{scale} = 1024} and @math{@var{scale} = 1/128}.}
 zeroes the greatest number of mantissa bits consistent with
 the desired precision.
@@ -6900,15 +6900,15 @@ There is no benefit to rounding numbers and storing them in netCDF3
 files because netCDF3 does not support compression and thus one may as
 well maintain the precision. 
 @example
-ncks -4 --lsd temperature=3 --lsd pressure,speed=-2 in.nc out.nc
+ncks -4 --ppc temperature=3 --ppc pressure,speed=-2 in.nc out.nc
 @end example
-Although @acronym{LSD}-rounding instantly reduces data precision,
+Although @acronym{PPC}-rounding instantly reduces data precision,
 on-disk storage reduction only occurs if the data are compressed.  
 Therefore @acronym{NCO} will automatically invoke the Lempel-Ziv
 deflation algorithm (@pxref{Deflation}) with a deflation level of
 one (i.e., equivalent to @samp{-L 1}) or any higher deflation level
 already specified, whichever is greater.
-Unscientific testing shows that @acronym{LSD} rounding compresses
+Unscientific testing shows that @acronym{PPC} rounding compresses
 typical climate datasets by fxm.
 
 @html

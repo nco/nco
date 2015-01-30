@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.763 2015-01-29 21:14:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.764 2015-01-30 04:16:46 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -12,7 +12,7 @@ activated by specifying desired level of precision in terms of
 either the total number of significant digits or the number of
 significant digits after (or before) the decimal point.
 These precision features are lumped together under the generic
-name Least Significant Digit (LSD). More details below.
+name Least Significant Digit (PPC). More details below.
 
 Work on NCO 4.4.9 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
@@ -35,8 +35,8 @@ A. NCO warns when appended output type differs from input type.
 
 A. NCO will now store data at a specifiable level of precision.
    Standard terminology for precision is remarkably ambiguous, and 
-   we call this Least Significant Digit (LSD) functionality.
-   NCO's LSD implementation currently accepts two types of precision
+   we call this Least Significant Digit (PPC) functionality.
+   NCO's PPC implementation currently accepts two types of precision
    specification implemented with completely different algorithms.
    Users can specify either the total Number of Significant Digits
    (NSD) or the Decimal Significant Digits (DSD), mean the number of
@@ -47,7 +47,7 @@ A. NCO will now store data at a specifiable level of precision.
    respectively. In other words, DSD is the negative base 10 logarithm
    of the desired decimal precision. Under the hood, NSD uses
    bitmasking to eliminate unnecessary (false) precision, while
-   DSD utilizes rounding. LSD (both NSD and DSD) intentionally
+   DSD utilizes rounding. PPC (both NSD and DSD) intentionally
    loses information (aka unwanted precision).
    The rounding is
    performed by zeroing the greatest number of mantissa bits
@@ -62,8 +62,8 @@ A. NCO will now store data at a specifiable level of precision.
    storing them in netCDF3 files because netCDF3 does not support
    compression and thus one may as well maintain the precision.
    This feature only works when the output dataset is netCDF4.
-   ncks -4 --lsd temperature=3 --lsd pressure,speed=-2 in.nc out.nc
-   http://nco.sf.net/nco.htlm#lsd
+   ncks -4 --ppc temperature=3 --ppc pressure,speed=-2 in.nc out.nc
+   http://nco.sf.net/nco.htlm#ppc
 
 BUG FIXES:
 

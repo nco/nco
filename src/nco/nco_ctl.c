@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.509 2015-01-26 00:31:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.510 2015-01-30 04:16:48 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -926,10 +926,10 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min min] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fix_rec_crd] [--fl_fmt fmt] [-h] [--hdf] [--hdr_pad nbr] [-i var,val] [-L lvl] [-l path] [--msa] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [-v ...] [-X box] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
     break;
   case ncks:
-    opt_sng=(char *)strdup("[-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cdl] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min min] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fix_rec_dmn dim] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [--grp_xtr_var_xcl] [-H] [-h] [--hdn] [--hdr_pad nbr] [-L lvl] [-l path] [--lsd ...] [-M] [-m] [--md5_dgs] [--md5_wrt] [--mk_rec_dmn dim] [--msa] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [-s format] [-u] [--unn] [-V] [-v ...] [-X box] [-x] [--xml] [--xml_no_loc] [--xml_spr_chr sng] [--xml_spr_nmr sng] in.nc [[out.nc]]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cdl] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min min] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fix_rec_dmn dim] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [--grp_xtr_var_xcl] [-H] [-h] [--hdn] [--hdr_pad nbr] [-L lvl] [-l path] [--ppc ...] [-M] [-m] [--md5_dgs] [--md5_wrt] [--mk_rec_dmn dim] [--msa] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [-s format] [-u] [--unn] [-V] [-v ...] [-X box] [-x] [--xml] [--xml_no_loc] [--xml_spr_chr sng] [--xml_spr_nmr sng] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [-a ...] [--bfr sz] [-C] [-c] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min min] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--lsd ...] [-M pck_map] [--mrd] [--msa] [--no_tmp_fl] [-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-U] [-v ...] [-X box] [-x] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [-a ...] [--bfr sz] [-C] [-c] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min min] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--ppc ...] [-M pck_map] [--mrd] [--msa] [--no_tmp_fl] [-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-U] [-v ...] [-X box] [-x] in.nc [out.nc]\n");
     break;
   case ncra:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min min] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--mro] [--msa] [-n ...] [--no_cll_mth] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [--rec_apn] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
@@ -1030,7 +1030,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-L")) (void)fprintf(stdout,"-L, --dfl_lvl, --deflate lvl\tLempel-Ziv deflation/compression (lvl=0..9) for netCDF4 output\n");
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-l")) (void)fprintf(stdout,"-l, --lcl, --local path\tLocal storage path for remotely-retrieved files\n");
-  if(strstr(opt_sng,"--lsd")) (void)fprintf(stdout,"    --lsd, --quantize v1[,v2[,...]=lsd\t\tLeast Significant Digit: negative log_10 of desired precision\n");
+  if(strstr(opt_sng,"--ppc")) (void)fprintf(stdout,"    --ppc, --quantize v1[,v2[,...]=ppc\t\tLeast Significant Digit: negative log_10 of desired precision\n");
   if(strstr(opt_sng,"[-M")){
     if(prg_lcl == ncecat) (void)fprintf(stdout,"-M, --glb_mtd_spp\tDo not copy global metadata\n");
     if(prg_lcl == ncks) (void)fprintf(stdout,"-M, --Mtd, --Metadata\tToggle printing global metadata\n");

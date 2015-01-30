@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.280 2015-01-28 23:33:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.281 2015-01-30 04:16:48 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1345,17 +1345,17 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   /* Write */
   if(flg_write){
-    int lsd; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-    nco_bool flg_nsd; /* [flg] LSD algorithm is NSD */
-    lsd=var_trv->lsd;
+    int ppc; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+    nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
+    ppc=var_trv->ppc;
     flg_nsd=var_trv->flg_nsd;
     /* File format needed to enable netCDF4 features */
     (void)nco_inq_format(out_id,&fl_fmt);
-    if(lsd != NC_MAX_INT && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
+    if(ppc != NC_MAX_INT && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
       var_out.type=var_typ_out;
       var_out.id=var_out_id;
       nco_mss_val_get(out_id,&var_out);
-      if(flg_nsd) (void)nco_var_bitmask(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_var_around(lsd,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+      if(flg_nsd) (void)nco_var_bitmask(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_var_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
     } /* endif */
 
     if(nbr_dim == 0) (void)nco_put_var1(out_id,var_out_id,0L,var_out.val.vp,var_typ_out); else (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp,var_typ_out);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.11 2015-01-29 21:14:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.12 2015-01-30 04:16:48 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -8,7 +8,7 @@
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 /* Usage:
-   ncks -4 -O -C -v lsd_dbl --lsd /lsd_dbl=3 ~/nco/data/in.nc ~/foo.nc */
+   ncks -4 -O -C -v ppc_dbl --ppc /ppc_dbl=3 ~/nco/data/in.nc ~/foo.nc */
 
 #include "nco_sld.h" /* Swath-Like Data */
 
@@ -41,7 +41,7 @@ kvmap_sct sm) /* O [sct] key-value pair */
 } /* end nco_sng2map() */
 
 void
-nco_lsd_att_prc /* [fnc] Create LSD attribute */
+nco_ppc_att_prc /* [fnc] Create PPC attribute */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
@@ -52,21 +52,21 @@ nco_lsd_att_prc /* [fnc] Create LSD attribute */
   char att_nm_nsd[]="number_of_significant_digits";
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
-  int lsd;
+  int ppc;
   int rcd=NC_NOERR;
   long att_sz;
   nc_type att_typ;
   ptr_unn att_val;
-  int lsd_xst;
+  int ppc_xst;
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    lsd=trv_tbl->lst[idx_tbl].lsd;
-    if(lsd == NC_MAX_INT) continue;
+    ppc=trv_tbl->lst[idx_tbl].ppc;
+    if(ppc == NC_MAX_INT) continue;
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
     aed.var_nm=strdup(var_trv.nm);
     (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id); /* Obtain group ID */
     (void)nco_inq_varid(grp_id,var_trv.nm,&var_id); /* Obtain variable ID */
-    att_val.ip=&lsd;
+    att_val.ip=&ppc;
     aed.id=var_id;
     aed.val=att_val;
     if(var_trv.flg_nsd) aed.att_nm=att_nm_nsd; else aed.att_nm=att_nm_dsd;
@@ -75,34 +75,34 @@ nco_lsd_att_prc /* [fnc] Create LSD attribute */
     aed.mode=aed_create; 
     rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
     if(rcd == NC_NOERR && aed.sz == att_sz && aed.type == att_typ){
-      (void)nco_get_att(nc_id,var_id,aed.att_nm,&lsd_xst,att_typ);
-      if(lsd < lsd_xst) aed.mode=aed_overwrite;
+      (void)nco_get_att(nc_id,var_id,aed.att_nm,&ppc_xst,att_typ);
+      if(ppc < ppc_xst) aed.mode=aed_overwrite;
       else continue; /* no changes needed */
     } /* endif */
     (void)nco_aed_prc(nc_id,var_id,aed);
   } /* end loop */
-} /* end nco_lsd_att_prc() */
+} /* end nco_ppc_att_prc() */
 
 void
-nco_lsd_set( /* Set LSD based on user specifications */
- char *const lsd_arg[], /* I [sng] List of user-specified LSD */
- const int lsd_nbr, /* I [nbr] Number of LSD specified */
+nco_ppc_set( /* Set PPC based on user specifications */
+ char *const ppc_arg[], /* I [sng] List of user-specified PPC */
+ const int ppc_nbr, /* I [nbr] Number of PPC specified */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   char *arg;
   int idx;
-  int ilsd=0;
-  kvmap_sct *lsds;  /* [sct] LSD container */
+  int ippc=0;
+  kvmap_sct *ppcs;  /* [sct] PPC container */
   kvmap_sct sm;
 
-  lsds=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
+  ppcs=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
 
-  /* Parse LSDs */
-  for(idx=0;idx<lsd_nbr;idx++){
-    arg=(char *)strdup(lsd_arg[idx]);
+  /* Parse PPCs */
+  for(idx=0;idx<ppc_nbr;idx++){
+    arg=(char *)strdup(ppc_arg[idx]);
     if(!strstr(arg,"=")){
-      (void)fprintf(stdout,"%s: Invalid --lsd specification: %s\n",nco_prg_nm_get(),arg);
-      if(lsds) nco_kvmaps_free(lsds);
+      (void)fprintf(stdout,"%s: Invalid --ppc specification: %s\n",nco_prg_nm_get(),arg);
+      if(ppcs) nco_kvmaps_free(ppcs);
       nco_exit(EXIT_FAILURE);
     } /* endif */
     sm=nco_sng2map(arg,sm);
@@ -111,84 +111,84 @@ nco_lsd_set( /* Set LSD based on user specifications */
       int idxi;
       int item_nbr=nco_sng2array(",",sm.key,items); /* multi-var specification */
       for(idxi=0;idxi<item_nbr;idxi++){ /* expand multi-var specification */
-        lsds[ilsd].key=strdup(items[idxi]);
-        lsds[ilsd].value=strdup(sm.value);
-        ilsd++;
+        ppcs[ippc].key=strdup(items[idxi]);
+        ppcs[ippc].value=strdup(sm.value);
+        ippc++;
       } /* end for */
     } /* end if */
   } /* end for */
 
-  /* LSD default exists, set all non-coordinate variables to default first */
-  for(idx=0;idx<ilsd;idx++){
-    if(!strcasecmp(lsds[idx].key,"default")){
-      trv_tbl_lsd_set_dflt(lsds[idx].value,trv_tbl);
+  /* PPC default exists, set all non-coordinate variables to default first */
+  for(idx=0;idx<ippc;idx++){
+    if(!strcasecmp(ppcs[idx].key,"default")){
+      trv_tbl_ppc_set_dflt(ppcs[idx].value,trv_tbl);
       break; /* only one default is needed */
     } /* endif */
   } /* end for */
 
-  /* Set explicit, non-default LSDs that can overwrite default */
-  for(idx=0;idx<ilsd;idx++){
-    if(!strcasecmp(lsds[idx].key,"default")) continue;
-    trv_tbl_lsd_set_var(lsds[idx].key,lsds[idx].value,trv_tbl);
+  /* Set explicit, non-default PPCs that can overwrite default */
+  for(idx=0;idx<ippc;idx++){
+    if(!strcasecmp(ppcs[idx].key,"default")) continue;
+    trv_tbl_ppc_set_var(ppcs[idx].key,ppcs[idx].value,trv_tbl);
   } /* end for */
 
-  /* Unset LSD and flag for all variables with excessive LSD
-     Operational definition of maximum LSD is maximum decimal precision of double = DBL_DIG = 15 */
-  const int nco_max_lsd=15;
+  /* Unset PPC and flag for all variables with excessive PPC
+     Operational definition of maximum PPC is maximum decimal precision of double = DBL_DIG = 15 */
+  const int nco_max_ppc=15;
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(trv_tbl->lst[idx_tbl].lsd != NC_MAX_INT)
-      if(trv_tbl->lst[idx_tbl].lsd >= nco_max_lsd){
-	trv_tbl->lst[idx_tbl].lsd=NC_MAX_INT;
+    if(trv_tbl->lst[idx_tbl].ppc != NC_MAX_INT)
+      if(trv_tbl->lst[idx_tbl].ppc >= nco_max_ppc){
+	trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
 	trv_tbl->lst[idx_tbl].flg_nsd=True;
       } /* endif */
 
-  if(lsds) nco_kvmaps_free(lsds);
-} /* end nco_lsd_set() */
+  if(ppcs) nco_kvmaps_free(ppcs);
+} /* end nco_ppc_set() */
 
 void
-trv_tbl_lsd_set_dflt /* Set LSD value for all non-coordinate variables for --lsd default  */
-(const char * const slsd, /* I [sng] User input for least significant digit */
+trv_tbl_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc default  */
+(const char * const sppc, /* I [sng] User input for least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
-  int lsd;
+  int ppc;
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  nco_bool flg_nsd=True; /* [flg] LSD is NSD */
+  nco_bool flg_nsd=True; /* [flg] PPC is NSD */
 
-  if(slsd[0] == '.'){
+  if(sppc[0] == '.'){
     flg_nsd=False; /* DSD */
-    lsd=(int)strtol(slsd+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd+1L,"strtol",sng_cnv_rcd);
+    ppc=(int)strtol(sppc+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(sppc+1L,"strtol",sng_cnv_rcd);
   }else{ /* NSD */
-    lsd=(int)strtol(slsd,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd,"strtol",sng_cnv_rcd);
+    ppc=(int)strtol(sppc,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(sppc,"strtol",sng_cnv_rcd);
   } /* end if */
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var){
-      trv_tbl->lst[idx_tbl].lsd=lsd;
+      trv_tbl->lst[idx_tbl].ppc=ppc;
       trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
     } /* endif */
-} /* end trv_tbl_lsd_set_dflt() */
+} /* end trv_tbl_ppc_set_dflt() */
 
 void
-trv_tbl_lsd_set_var
+trv_tbl_ppc_set_var
 (const char * const var_nm, /* I [sng] Variable name to find */
- const char * const slsd, /* I [sng] User input for least significant digit */
+ const char * const sppc, /* I [sng] User input for least significant digit */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   const char sls_chr='/'; /* [chr] Slash character */
   int mch_nbr=0;
-  int lsd;
+  int ppc;
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  nco_bool flg_nsd=True; /* [flg] LSD is NSD */
+  nco_bool flg_nsd=True; /* [flg] PPC is NSD */
 
-  if(slsd[0] == '.'){ /* DSD */
+  if(sppc[0] == '.'){ /* DSD */
     flg_nsd=False;
-    lsd=(int)strtol(slsd+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd+1L,"strtol",sng_cnv_rcd);
+    ppc=(int)strtol(sppc+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(sppc+1L,"strtol",sng_cnv_rcd);
   }else{ /* NSD */
-    lsd=(int)strtol(slsd,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(slsd,"strtol",sng_cnv_rcd);
+    ppc=(int)strtol(sppc,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(sppc,"strtol",sng_cnv_rcd);
   } /* end else */
 
   if(strpbrk(var_nm,".*^$\\[]()<>+?|{}")){ /* regular expression ... */
@@ -201,28 +201,28 @@ trv_tbl_lsd_set_var
       char sng2mch[BUFSIZ]="^";
       strcat(sng2mch,var_nm);
       if(regcomp(rx,sng2mch,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
-        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
+        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_ppc() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
         nco_exit(EXIT_FAILURE);
       } /* endif */
       rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
       result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
         if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
-          trv_tbl->lst[idx_tbl].lsd=lsd;
+          trv_tbl->lst[idx_tbl].ppc=ppc;
           trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
           mch_nbr++;
         } /* endif */
       } /* endfor */
     }else{ /* Relative name is used */
       if(regcomp(rx,var_nm,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
-        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_lsd() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
+        (void)fprintf(stdout,"%s: ERROR trv_tbl_set_ppc() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
         nco_exit(EXIT_FAILURE);
       }
       rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
       result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
         if(!regexec(rx,trv_tbl->lst[idx_tbl].nm,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
-          trv_tbl->lst[idx_tbl].lsd=lsd;
+          trv_tbl->lst[idx_tbl].ppc=ppc;
           trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
           mch_nbr++;
         } /* endif */
@@ -239,7 +239,7 @@ trv_tbl_lsd_set_var
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
         if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm_fll)){
-          trv_tbl->lst[idx_tbl].lsd=lsd;
+          trv_tbl->lst[idx_tbl].ppc=ppc;
           trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
           mch_nbr++;
           return; /* Only one match with full name */
@@ -250,14 +250,14 @@ trv_tbl_lsd_set_var
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
         if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)){
-          trv_tbl->lst[idx_tbl].lsd=lsd;
+          trv_tbl->lst[idx_tbl].ppc=ppc;
           trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
           mch_nbr++;
         } /* endif */
       } /* endif */
     } /* endfor */
   } /* end Full name */
-} /* end trv_tbl_lsd_set_var() */
+} /* end trv_tbl_ppc_set_var() */
 
 char *
 nco_sng_strip( /* [fnc] Strip leading and trailing white space */

@@ -1,5 +1,7 @@
 2015-01-29  Charlie Zender  <zender@uci.edu>
 
+	* Change generic name from LSD to PPC (precision-preserving compression)
+
 	* Implement threshold precision that turns-off LSD on per-variable basis
 
 2015-01-28  Charlie Zender  <zender@uci.edu>

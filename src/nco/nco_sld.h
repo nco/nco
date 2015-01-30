@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.5 2015-01-28 21:53:21 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.6 2015-01-30 04:16:48 zender Exp $ */
 
 /* Purpose: Description (definition) of Swath-Like Data (SLD) functions */
 
@@ -47,25 +47,25 @@ void nco_kvmaps_free(kvmap_sct *kvmaps); /* release memory */
 
 void nco_kvmap_prn(kvmap_sct sm);  /* print kvmap contents */
 
-void nco_lsd_set(/* set lsd based user specifications */
-char *const lsd_arg[], /* I [sng] List of user-specified lsd */
-const int cnk_nbr, /* I [nbr] Number of lsd specified */
+void nco_ppc_set(/* set ppc based user specifications */
+char *const ppc_arg[], /* I [sng] List of user-specified ppc */
+const int cnk_nbr, /* I [nbr] Number of ppc specified */
 trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
-nco_lsd_att_prc /* [fnc] create lsd att from trv_tbl */
+nco_ppc_att_prc /* [fnc] create ppc att from trv_tbl */
 (const int nc_id,                     /* I [id] Input netCDF file ID */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 void
-trv_tbl_lsd_set_dflt /* Set the lsd value for all non-coordinate vars */
-(const char * const slsd, /* I [sng] user input for least significant digit */
+trv_tbl_ppc_set_dflt /* Set the ppc value for all non-coordinate vars */
+(const char * const sppc, /* I [sng] user input for least significant digit */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 void
-trv_tbl_lsd_set_var
+trv_tbl_ppc_set_var
 (const char * const var_nm_fll,        /* I [sng] Variable name to find */
- const char * const slsd, /* I [sng] user input for least significant digit */
+ const char * const sppc, /* I [sng] user input for least significant digit */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus

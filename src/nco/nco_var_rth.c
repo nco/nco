@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.83 2015-01-28 23:33:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.84 2015-01-30 04:16:48 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -106,7 +106,7 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
 
 void
 nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal precision prc */
-(const int lsd, /* I [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+(const int ppc, /* I [nbr] Least significant digit, i.e., number of significant digits following decimal point */
  const nc_type type, /* I [enm] netCDF type of operand */
  const long sz, /* I [nbr] Size (in elements) of operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -115,7 +115,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
 
-  /* Purpose: Replace op1 values by their values rounded to decimal precision lsd
+  /* Purpose: Replace op1 values by their values rounded to decimal precision ppc
      Similar to numpy.around() function, hence the name around()
      Based on implementation by Jeff Whitaker for netcdf4-python described here:
      http://netcdf4-python.googlecode.com/svn/trunk/docs/netCDF4-module.html
@@ -127,31 +127,31 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
      https://github.com/numpy/numpy/blob/7b2f20b406d27364c812f7a81a9c901afbd3600c/numpy/core/src/multiarray/calculation.c#L588
 
      Manually determine scale:
-     ncap2 -O -v -s 'lsd=2;lsd_abs=abs(lsd);bit_nbr_xct=lsd_abs*ln(10.)/ln(2.);bit_nbr_int=ceil(bit_nbr_xct);scale=pow(2.0,bit_nbr_int);' ~/nco/data/in.nc ~/foo.nc 
+     ncap2 -O -v -s 'ppc=2;ppc_abs=abs(ppc);bit_nbr_xct=ppc_abs*ln(10.)/ln(2.);bit_nbr_int=ceil(bit_nbr_xct);scale=pow(2.0,bit_nbr_int);' ~/nco/data/in.nc ~/foo.nc 
      ncks -H ~/foo.nc
 
      Test full algorithm:
-     ncks -4 -O -C -v lsd_dbl,lsd_big --lsd lsd_dbl=3 --lsd lsd_big=-2 ~/nco/data/in.nc ~/foo.nc
+     ncks -4 -O -C -v ppc_dbl,ppc_big --ppc ppc_dbl=3 --ppc ppc_big=-2 ~/nco/data/in.nc ~/foo.nc
 
      Compare to Jeff Whitaker's nc3tonc4 results:
-     nc3tonc4 -o --quantize=lsd_dbl=3,lsd_big=-2 ~/nco/data/in.nc ~/foo.nc
-     ncks -H -C -v lsd_dbl,lsd_big ~/foo.nc */
+     nc3tonc4 -o --quantize=ppc_dbl=3,ppc_big=-2 ~/nco/data/in.nc ~/foo.nc
+     ncks -H -C -v ppc_dbl,ppc_big ~/foo.nc */
   
-  /* Rounding is currently defined as op1:=around(op1,lsd) */  
+  /* Rounding is currently defined as op1:=around(op1,ppc) */  
   
   /* Use constants defined in math.h */
   const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* [frc] Bits per decimal digit of precision */
 
   double scale; /* [frc] Number by which to scale data to achieve rounding */
 
-  int bit_nbr; /* [nbr] Number of bits required to exceed pow(10,-lsd) */
-  int lsd_abs; /* [nbr] Absolute value of precision */
+  int bit_nbr; /* [nbr] Number of bits required to exceed pow(10,-ppc) */
+  int ppc_abs; /* [nbr] Absolute value of precision */
 
   long idx;
   
-  lsd_abs=abs(lsd);
-  assert(lsd_abs <= 16);
-  switch(lsd_abs){
+  ppc_abs=abs(ppc);
+  assert(ppc_abs <= 16);
+  switch(ppc_abs){
   case 0:
     bit_nbr=0;
     scale=1.0;
@@ -181,13 +181,13 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     scale=1048576.0;
     break;
   default:
-    bit_nbr=ceil(lsd_abs*bit_per_dcm_dgt_prc);
+    bit_nbr=ceil(ppc_abs*bit_per_dcm_dgt_prc);
     scale=pow(2.0,bit_nbr);
     break;
   } /* end switch */   
-  if(lsd < 0) scale=1.0/scale;
+  if(ppc < 0) scale=1.0/scale;
 
-  if(nco_dbg_lvl_get() == nco_dbg_sbr) (void)fprintf(stdout,"%s: INFO nco_var_around() reports lsd = %d, bit_nbr= %d, scale = %g\n",nco_prg_nm_get(),lsd,bit_nbr,scale);
+  if(nco_dbg_lvl_get() == nco_dbg_sbr) (void)fprintf(stdout,"%s: INFO nco_var_around() reports ppc = %d, bit_nbr= %d, scale = %g\n",nco_prg_nm_get(),ppc,bit_nbr,scale);
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
@@ -251,35 +251,35 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
 
   /* Purpose: Mask-out insignificant bits of op1 values */
   
-  /* Rounding is currently defined as op1:=bitmask(op1,lsd) */  
+  /* Rounding is currently defined as op1:=bitmask(op1,ppc) */  
   
   /* Number of Significant Digits (NSD) algorithm
      NSD based on absolute precision, i.e., number of digits in significand and in decimal scientific notation
-     LSD based on precision relative to decimal point, i.e., number of digits before/after decimal point
-     LSD is more often used colloquially, e.g., "thermometers measure temperature accurate to 1 degree C" 
+     PPC based on precision relative to decimal point, i.e., number of digits before/after decimal point
+     PPC is more often used colloquially, e.g., "thermometers measure temperature accurate to 1 degree C" 
      NSD is more often used scientifically, e.g., "thermometers measure temperature to three significant digits"
      These statements are both equivalent and describe the same instrument and data
-     If data are stored in C or K then optimal specifications for each algorithm would be LSD=0 and NSD=3
-     However, if data are stored in mK (milli-Kelvin) then optimal specifications would be LSD=-3 and NSD=3
-     In other words, the number of significant digits (NSD) does not depend on the units of storage, but LSD does
-     Hence NSD is more instrinsic and portable than LSD
+     If data are stored in C or K then optimal specifications for each algorithm would be PPC=0 and NSD=3
+     However, if data are stored in mK (milli-Kelvin) then optimal specifications would be PPC=-3 and NSD=3
+     In other words, the number of significant digits (NSD) does not depend on the units of storage, but PPC does
+     Hence NSD is more instrinsic and portable than PPC
      NSD requires only bit-shifting and bit-masking, no floating point math
-     LSD is implemented with rounding techniques that rely on floating point math
-     This makes LSD subject to accompanying overflow and underflow problems
-     Thus NSD is faster, more accurate, and less ambiguous than LSD
-     Nevertheless many users think in terms of LSD not NSD
+     PPC is implemented with rounding techniques that rely on floating point math
+     This makes PPC subject to accompanying overflow and underflow problems
+     Thus NSD is faster, more accurate, and less ambiguous than PPC
+     Nevertheless many users think in terms of PPC not NSD
      
      Terminology: 
-     Decimal Precision is number of significant digits following decimal point (LSD)
+     Decimal Precision is number of significant digits following decimal point (PPC)
      Arithmetic Precision is number of significant digits (NSD)
      "Arithmetic precision can also be defined with reference to a fixed number of decimal places (the number of digits following the decimal point). This second definition is useful in applications where the number of digits in the fractional part has particular importance, but it does not follow the rules of significance arithmetic." -- Wikipedia
      "A common convention in science and engineering is to express accuracy and/or precision implicitly by means of significant figures. Here, when not explicitly stated, the margin of error is understood to be one-half the value of the last significant place. For instance, a recording of 843.6 m, or 843.0 m, or 800.0 m would imply a margin of 0.05 m (the last significant place is the tenths place), while a recording of 8,436 m would imply a margin of error of 0.5 m (the last significant digits are the units)." -- Wikipedia
      
      Test NSD:
-     nc3tonc4 -o --quantize=lsd_big=3,lsd_bgr=3,lsd_flt=3 --quiet=1 ~/nco/data/in.nc ~/foo_n34.nc
-     ncks -D 1 -4 -O -C -v lsd_big,lsd_bgr,lsd_flt --lsd .?=3 ~/nco/data/in.nc ~/foo.nc
-     ncks -C -v lsd_big,lsd_bgr ~/foo.nc
-     ncks -s '%16.12e\n' -C -H -v lsd_big,lsd_bgr ~/foo_n34.nc */
+     nc3tonc4 -o --quantize=ppc_big=3,ppc_bgr=3,ppc_flt=3 --quiet=1 ~/nco/data/in.nc ~/foo_n34.nc
+     ncks -D 1 -4 -O -C -v ppc_big,ppc_bgr,ppc_flt --ppc .?=3 ~/nco/data/in.nc ~/foo.nc
+     ncks -C -v ppc_big,ppc_bgr ~/foo.nc
+     ncks -s '%16.12e\n' -C -H -v ppc_big,ppc_bgr ~/foo_n34.nc */
   
   /* IEEE single- and double-precision significands have 24 and 53 bits of precision (prc_bnr)
      Decimal digits of precision (prc_dcm) obtained via prc_dcm=prc_bnr*ln(2)/ln(10) = 7.22 and 15.95, respectively
