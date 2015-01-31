@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.6 2015-01-30 04:16:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.7 2015-01-31 00:34:42 zender Exp $ */
 
 /* Purpose: Description (definition) of Swath-Like Data (SLD) functions */
 
@@ -35,17 +35,17 @@ typedef struct {
   char *value;
 } kvmap_sct;
  
-int hdlscrip(char *fl_nm_scrip, kvmap_sct *smps); 
+int hdlscrip(char *fl_nm_scrip, kvmap_sct *kvm_scrip); 
   
-kvmap_sct nco_sng2map(char *str,  kvmap_sct sm); /* parse a line return a name-value pair kvmap */
+kvmap_sct nco_sng2map(char *str,  kvmap_sct kvm); /* parse a line return a name-value pair kvmap */
   
 int nco_sng2array(const char *delim, const char *str, char **sarray); /* split str by delim to sarray returns size of sarray */
 
-char * nco_sng_strip(char *str); /* remove heading and trailing blanks */
+char *nco_sng_strip(char *str); /* remove heading and trailing blanks */
 
 void nco_kvmaps_free(kvmap_sct *kvmaps); /* release memory */
 
-void nco_kvmap_prn(kvmap_sct sm);  /* print kvmap contents */
+void nco_kvmap_prn(kvmap_sct kvm);  /* print kvmap contents */
 
 void nco_ppc_set(/* set ppc based user specifications */
 char *const ppc_arg[], /* I [sng] List of user-specified ppc */
@@ -59,13 +59,13 @@ nco_ppc_att_prc /* [fnc] create ppc att from trv_tbl */
 
 void
 trv_tbl_ppc_set_dflt /* Set the ppc value for all non-coordinate vars */
-(const char * const sppc, /* I [sng] user input for least significant digit */
+(const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 void
 trv_tbl_ppc_set_var
 (const char * const var_nm_fll,        /* I [sng] Variable name to find */
- const char * const sppc, /* I [sng] user input for least significant digit */
+ const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus

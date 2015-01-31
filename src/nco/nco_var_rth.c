@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.84 2015-01-30 04:16:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.85 2015-01-31 00:34:42 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -106,7 +106,7 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
 
 void
 nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal precision prc */
-(const int ppc, /* I [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+(const int ppc, /* I [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
  const nc_type type, /* I [enm] netCDF type of operand */
  const long sz, /* I [nbr] Size (in elements) of operand */
  const int has_mss_val, /* I [flg] Flag for missing values */

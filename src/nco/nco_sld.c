@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.12 2015-01-30 04:16:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.13 2015-01-31 00:34:42 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -13,31 +13,31 @@
 #include "nco_sld.h" /* Swath-Like Data */
 
 kvmap_sct nco_sng2map /* [fnc] parsing string to key-value pair */
-(char *str, /* I [sng] string to parse with a = */
-kvmap_sct sm) /* O [sct] key-value pair */
+(char *sng, /* I [sng] string to parse with a = */
+ kvmap_sct kvm) /* O [sct] key-value pair */
 {
   char *prt;
 
   int icnt=0;
 
-  prt=strtok(str,"=");
+  prt=strtok(sng,"=");
   while(prt){
     icnt++;
     nco_sng_strip(prt);
     switch(icnt){
     case 1:
-      sm.key=strdup(prt);
+      kvm.key=strdup(prt);
       break;
     case 2:
-      sm.value=strdup(prt);
+      kvm.value=strdup(prt);
       break;
     default:
-      fprintf(stderr,"cannot get key-value pair from this imput: %s\n", str);
+      (void)fprintf(stderr,"Cannot get key-value pair from this input: %s\n",sng);
       break;
     }/* end switch */
     prt=strtok(NULL,"=");
   }/* end while */
-  return sm;
+  return kvm;
 } /* end nco_sng2map() */
 
 void
@@ -92,27 +92,27 @@ nco_ppc_set( /* Set PPC based on user specifications */
   char *arg;
   int idx;
   int ippc=0;
-  kvmap_sct *ppcs;  /* [sct] PPC container */
-  kvmap_sct sm;
+  kvmap_sct *ppc_lst;  /* [sct] PPC container */
+  kvmap_sct kvm;
 
-  ppcs=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
+  ppc_lst=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
 
   /* Parse PPCs */
   for(idx=0;idx<ppc_nbr;idx++){
     arg=(char *)strdup(ppc_arg[idx]);
     if(!strstr(arg,"=")){
       (void)fprintf(stdout,"%s: Invalid --ppc specification: %s\n",nco_prg_nm_get(),arg);
-      if(ppcs) nco_kvmaps_free(ppcs);
+      if(ppc_lst) nco_kvmaps_free(ppc_lst);
       nco_exit(EXIT_FAILURE);
     } /* endif */
-    sm=nco_sng2map(arg,sm);
-    if(sm.key){
+    kvm=nco_sng2map(arg,kvm);
+    if(kvm.key){
       char *items[BUFSIZ];
       int idxi;
-      int item_nbr=nco_sng2array(",",sm.key,items); /* multi-var specification */
+      int item_nbr=nco_sng2array(",",kvm.key,items); /* multi-var specification */
       for(idxi=0;idxi<item_nbr;idxi++){ /* expand multi-var specification */
-        ppcs[ippc].key=strdup(items[idxi]);
-        ppcs[ippc].value=strdup(sm.value);
+        ppc_lst[ippc].key=strdup(items[idxi]);
+        ppc_lst[ippc].value=strdup(kvm.value);
         ippc++;
       } /* end for */
     } /* end if */
@@ -120,16 +120,16 @@ nco_ppc_set( /* Set PPC based on user specifications */
 
   /* PPC default exists, set all non-coordinate variables to default first */
   for(idx=0;idx<ippc;idx++){
-    if(!strcasecmp(ppcs[idx].key,"default")){
-      trv_tbl_ppc_set_dflt(ppcs[idx].value,trv_tbl);
+    if(!strcasecmp(ppc_lst[idx].key,"default")){
+      trv_tbl_ppc_set_dflt(ppc_lst[idx].value,trv_tbl);
       break; /* only one default is needed */
     } /* endif */
   } /* end for */
 
   /* Set explicit, non-default PPCs that can overwrite default */
   for(idx=0;idx<ippc;idx++){
-    if(!strcasecmp(ppcs[idx].key,"default")) continue;
-    trv_tbl_ppc_set_var(ppcs[idx].key,ppcs[idx].value,trv_tbl);
+    if(!strcasecmp(ppc_lst[idx].key,"default")) continue;
+    trv_tbl_ppc_set_var(ppc_lst[idx].key,ppc_lst[idx].value,trv_tbl);
   } /* end for */
 
   /* Unset PPC and flag for all variables with excessive PPC
@@ -142,25 +142,29 @@ nco_ppc_set( /* Set PPC based on user specifications */
 	trv_tbl->lst[idx_tbl].flg_nsd=True;
       } /* endif */
 
-  if(ppcs) nco_kvmaps_free(ppcs);
+  if(ppc_lst) nco_kvmaps_free(ppc_lst);
 } /* end nco_ppc_set() */
 
 void
 trv_tbl_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc default  */
-(const char * const sppc, /* I [sng] User input for least significant digit */
+(const char * const ppc_arg, /* I [sng] User input for precision-preserving compression */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   int ppc;
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   nco_bool flg_nsd=True; /* [flg] PPC is NSD */
 
-  if(sppc[0] == '.'){
+  if(ppc_arg[0] == '.'){
     flg_nsd=False; /* DSD */
-    ppc=(int)strtol(sppc+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(sppc+1L,"strtol",sng_cnv_rcd);
+    ppc=(int)strtol(ppc_arg+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg+1L,"strtol",sng_cnv_rcd);
   }else{ /* NSD */
-    ppc=(int)strtol(sppc,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(sppc,"strtol",sng_cnv_rcd);
+    ppc=(int)strtol(ppc_arg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg,"strtol",sng_cnv_rcd);
+    if(ppc <= 0){
+      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be postive. Default was specified as %d.\n",nco_prg_nm_get(),ppc);
+      nco_exit(EXIT_FAILURE);
+    } /* endif */    
   } /* end if */
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
@@ -173,7 +177,7 @@ trv_tbl_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc
 void
 trv_tbl_ppc_set_var
 (const char * const var_nm, /* I [sng] Variable name to find */
- const char * const sppc, /* I [sng] User input for least significant digit */
+ const char * const ppc_arg, /* I [sng] User input for precision-preserving compression */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   const char sls_chr='/'; /* [chr] Slash character */
@@ -182,13 +186,17 @@ trv_tbl_ppc_set_var
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   nco_bool flg_nsd=True; /* [flg] PPC is NSD */
 
-  if(sppc[0] == '.'){ /* DSD */
+  if(ppc_arg[0] == '.'){ /* DSD */
     flg_nsd=False;
-    ppc=(int)strtol(sppc+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(sppc+1L,"strtol",sng_cnv_rcd);
+    ppc=(int)strtol(ppc_arg+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg+1L,"strtol",sng_cnv_rcd);
   }else{ /* NSD */
-    ppc=(int)strtol(sppc,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(sppc,"strtol",sng_cnv_rcd);
+    ppc=(int)strtol(ppc_arg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg,"strtol",sng_cnv_rcd);
+    if(ppc <= 0){
+      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be positive. Specified value for %s was %d.\n",nco_prg_nm_get(),var_nm,ppc);
+      nco_exit(EXIT_FAILURE);
+    } /* endif */    
   } /* end else */
 
   if(strpbrk(var_nm,".*^$\\[]()<>+?|{}")){ /* regular expression ... */
@@ -292,7 +300,7 @@ void nco_kvmaps_free(kvmap_sct *kvmaps)
   while(kvmaps[idx].key){
     kvmaps[idx].key=nco_free(kvmaps[idx].key);
     kvmaps[idx].value=nco_free(kvmaps[idx].value);
-  }
+  } /* end while */
   kvmaps=nco_free(kvmaps);
 }/* end nco_kvmaps_free */
 
@@ -307,7 +315,7 @@ void nco_kvmap_prn(kvmap_sct vm)
 int 
 hdlscrip( /* return 0 invalid SCRIP file or rcd, 1 success */ 
 char *fl_nm_scrip, /* SCRIP file name with proper path */
-kvmap_sct *smps)/* structure to hold contents of SCRIP file */ 
+kvmap_sct *kvm_scrip)/* structure to hold contents of SCRIP file */ 
 {
   char line[BUFSIZ];
 
@@ -321,25 +329,25 @@ kvmap_sct *smps)/* structure to hold contents of SCRIP file */
   if(!fl_scrip){
     fprintf(stderr,"Cannot open SCRIP file %s\n",fl_nm_scrip);
     return NCO_ERR;
-  }
+  } /* endif */
 
   while(fgets(line,sizeof(line),fl_scrip)){
     if(!strstr(line,"=")){
       fprintf(stderr,"invalid line in SCRIP file: %s\n", line);
       fclose(fl_scrip);
       return NCO_ERR;
-    }
-    smps[idx]=nco_sng2map(line,smps[idx]);
-    if(!smps[idx].key){
+    } /* endif */
+    kvm_scrip[idx]=nco_sng2map(line,kvm_scrip[idx]);
+    if(!kvm_scrip[idx].key){
       fclose(fl_scrip);
       return NCO_ERR;
     }else{
       idx++;
-    }
+    } /* end else */
   } /* finish parsing SCRIP file */
   fclose(fl_scrip);
 
-  for(icnt=0;icnt<idx;icnt++) nco_kvmap_prn(smps[icnt]);
+  for(icnt=0;icnt<idx;icnt++) nco_kvmap_prn(kvm_scrip[icnt]);
 
   return NCO_NOERR;
 } /* end hdlscrip */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.370 2015-01-30 04:16:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.371 2015-01-31 00:34:42 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -84,7 +84,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* 20150114: Keep PPC code in single block for easier reuse */
-  int ppc=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+  int ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
   nco_bool flg_ppc=False; /* [flg] Activate PPC with this variable and output file */
   nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
   var_sct var_out; /* [sct] Variable structure */
@@ -406,7 +406,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
       /* 20150114: Keep PPC code in single block for easier reuse */
-      int ppc=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+      int ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
       nco_bool flg_ppc=False; /* [sct] Activate PPC with this variable and output file */
       nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
       var_sct var_out; /* [sct] Variable structure */

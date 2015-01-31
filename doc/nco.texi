@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1062 2015-01-30 04:25:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1063 2015-01-31 00:34:41 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.8
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 25 January 2015
+@set update-date 30 January 2015
 @set update-month January 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6810,7 +6810,6 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @section Compression
 @cindex @code{--ppc}
 @cindex @code{--precision_preserving_compression}
-@cindex @code{--least_significant_digit}
 @cindex @code{--quantize}
 @cindex lossy compression
 @cindex quantization
@@ -6821,7 +6820,7 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 Availability: @command{ncks}, @command{ncpdq}@*
 Short options: None@*
 Long options: @samp{--ppc}, @samp{--precision_preserving_compression},
-@samp{--least_significant_digit}, @samp{--quantize}@*   
+@samp{--quantize}@*   
 @end cartouche
 
 @acronym{NCO} implements or accesses four different compression
@@ -6847,37 +6846,94 @@ additional space savings.
 
 @acronym{NCO} implemented the final two lossy compression algorithms
 in version 4.4.8 (February, 2015).
-These are both precision-preserving algorithms and standard terminology
-for precision is remarkably ambiguous, and our nomenclature reflects
-that.
-Least Significant Digit (PPC) functionality.
+These are both precision-preserving compression (@acronym{PPC})
+algorithms and since standard terminology for precision is remarkably 
+imprecise, so is our nomenclature. 
+One @acronym{PPC} algorithm preserves the total Number of Signifcant
+Digits (@acronym{NSD}) in the value.
+For example there is only one significant digit in the weight of
+most ``eight-hundred pound gorillas'' that you will encounter, 
+i.e., so @math{@var{nsd=1}}.
+This is the most straightforward measure of precision, and thus
+@acronym{NSD} is the default @acronym{PPC} algorithm.
 
-Decimal Significant Digits (@acronym{DSD}) and 
-These are mostly independent of one another, and may be combined. 
+The other @acronym{PPC} algorithm preserves the number of Decimal
+Significant Digits (@acronym{DSD}), i.e., the number of significant 
+digits following the decimal point. 
+For example, ``0.008'' and ``800'' have, respectively, three and
+negative two digits digits following the decimal point, corresponding 
+@math{@var{dsd=3}} and @math{@var{dsd=-2}}. 
 
+The only justifiable @acronym{NSD} for a given value depends on 
+intrinsic accuracy and error characteristics of the model or
+measurements, and not on the units with which the value is stored.
+The appropriate @acronym{DSD} for a given value depends on these
+intrinsic characteristics and, in addition, the units of storage.
+This is the fundamental difference between the @acronym{NSD} and 
+@acronym{DSD} approaches. 
+The eight-hundred pound gorilla always has @math{@var{nsd=1}} regardless
+of whether the value is store in pounds or in some other unit.
+@acronym{DSD} corresponding to this weight is @math{@var{dsd=-2}} if the
+value is store in pounds, @math{@var{dsd=4}} if stored in megapounds.
+
+Users may wish to express the precision to be preserved as either
+@acronym{NSD} or @acronym{DSD}.
+Invoke @acronym{PPC} with the long option @samp{--ppc var=prc}, or give
+the same arguments to the synonyms
+@samp{--precision_preserving_compression}, or to @samp{--quantize}. 
+Here @var{var} is the variable to round, and @var{prc} is the 
+precision.
+The default algorithm assumes @var{prc} specifies @acronym{NSD}
+precision, e.g., @samp{T=2} means @math{@var{nsd=2}}.
+Prepend @var{prc} with a decimal point to specify @acronym{DSD}
+precision, e.g., @samp{T=.2} means @math{@var{dsd=2}}.
+@acronym{NSD} precision must be specified as a positive integer.
+@acronym{DSD} precision may be a positive or negative integer;
+and is specified as the negative @w{base 10} logarithm of the desired 
+precision, in accord with common usage. 
+For example, specifying @samp{T=.3} or @samp{T=.-2} tells the
+@acronym{DSD} algorithm to store only enough bits to preserve the  
+value of @var{T} rounded to the nearest thousandth or hundred,
+respectively. 
+
+Setting @var{var} to @code{default} has the special meaning of applying
+the associated @acronym{NSD} or @acronym{DSD} algorithm to all
+variables except coordinate variables.
+@acronym{NCO} applies @acronym{PPC} to coordinate variables only if 
+those variables are explicitly specified (i.e., not with the
+@samp{default=@var{prc}} mechanism. 
+To prevent @acronym{PPC} from applying to certain non-coordinate
+variables (e.g., @code{area} or @code{gaussian_weight}), explicitly
+specify a precision exceeding 16 for those variables.
+Since the maximum representable precision of @code{NC_DOUBLE} is 16
+decimal digits, @acronym{NCO} turns-off @acronym{PPC} whenever
+@math{@var{prc} > 16}.
+
+@cindex bitmask
+@cindex significand
+@cindex @acronym{IEEE}754
 The time penalty for compressing and uncompressing data varies according 
 to the algorithm.
-
-The Least Significant Digit (@acronym{PPC}) functionality accomplishes
-this through a rounding algorithm.
-Invoke @acronym{PPC} rounding with the long option 
-@samp{--ppc var=prc}, or give the same arguments to the synonyms
-@samp{--precision_preserving_compression}, or @samp{--quantize}.
-Here @var{var} is the variable to round, and @var{ppc} is the least
-significant digit to preserve, specified as the negative @w{base 10}
-logarithm of the desired precision, in accord with common usage.
-For example, specifying @math{@var{ppc}=3} or @math{@var{ppc}=-2} tells
-the @acronym{PPC} algorithm to store only enough bits to preserve the
-value rounded to the nearest thousandth or hundred, respectively.
-
-Under the hood, @acronym{PPC} uses a rounding algorithm and so
-(intentionally) loses information (aka false precision). 
+The Number of Significant Digit (@acronym{NSD}) algorithm works by
+bitmasking, and employs no floating point math.
+The Decimal Significant Digit (@acronym{DSD}) algorithm works by
+rounding, which does require floating point math.
+Hence @acronym{NSD} is likely faster than @acronym{DSD}, though
+the difference has not been measured.
+@acronym{NSD} creates a bitmask to alter the @dfn{significand} of
+@acronym{IEEE} floating point data.
+The bitmask is one for all bits to be retained and zero for all bits
+to be zeroed.
+The algorithm assumes that the number of binary digits (i.e., bits)
+necessary to represent a single base-10 digit is 
+@math{ln(10)/ln(2) = 3.32}.
+By contrast, the @acronym{DSD} algorithm uses rounding to remove 
+undesired precision. 
 @cindex @command{rint()}
 @cindex C99
-@cindex @command{gzip}
 @cindex @acronym{IEEE}
 @cindex significand
-The rounding algorithm
+The rounding 
 @footnote{
 Rounding is performed by the internal math library @command{rint()} 
 family of functions which were standardized in @acronym{C99}.
@@ -6887,22 +6943,59 @@ is the nearest power @w{of 2} that exceeds @var{ppc}, and the inverse
 of @var{scale} is used when @math{@var{ppc} < 0}.
 For @math{@var{ppc} = 3} or @math{@var{ppc} = -2}, for example, we have
 @math{@var{scale} = 1024} and @math{@var{scale} = 1/128}.}
-zeroes the greatest number of mantissa bits consistent with
+zeroes the greatest number of significand bits consistent with
 the desired precision.
-This rounding places consecutive zeros in the least siginificant bits
-of the @dfn{significant} of the @acronym{IEEE} floating point values.
-Byte-stream compression techniques, such as the @command{gzip}
-compression used by @acronym{HDF5}, will compress these strings of zeros  
-more efficiently than unrounded numbers. 
 
-The net result is that netCDF4 files that utilize compression (e.g.,
+@cindex @acronym{DEFLATE}
+@cindex @acronym{HDF5}
+@cindex @command{gzip}
+@cindex @command{gunzip}
+Although @acronym{NSD} or @acronym{DSD} are different algorithms under
+the hood, they both replace the (unwanted) least siginificant bits of
+the @acronym{IEEE} significand with a string of consecutive zeroes.  
+Byte-stream compression techniques, such as the @command{gzip}
+@acronym{DEFLATE} algorithm compression used by @acronym{HDF5}, 
+always compress zero-strings more efficiently than random digits. 
+The net result is netCDF4 files that utilize compression (e.g.,
 with @samp{ncks -L 1}) can be significantly reduced in size. 
-This feature only works when the output dataset is netCDF4.
-There is no benefit to rounding numbers and storing them in netCDF3
-files because netCDF3 does not support compression and thus one may as
-well maintain the precision. 
+This feature only works when the output dataset is compressed.
+It is most straightfoward to accomplish this using the built-in
+compression and decompression supported by netCDF4.
+However, netCDF3 files compressed by an external utility such as
+@command{gzip} will accrue the same benefits, although it is up
+to the user or provider to uncompress (e.g., @command{gunzip})
+the file before accessing the data.
+There is no benefit to rounding numbers and storing them in netCDF3  
+files unless such custom compression/decompression is employed.
+Without that, one may as well maintain the undesired precision. 
+
+Since @acronym{NCO} supports both types of @acronym{PPC}, the user can
+request say, five significant digits (@math{@var{nsd=5}}) for all
+fields, except say, wind speeds which are only known to integer values  
+(@math{@var{dsd=0}}) in the supplied units. 
 @example
-ncks -4 --ppc temperature=3 --ppc pressure,speed=-2 in.nc out.nc
+ncks -4 -L 1 --ppc default=5 --ppc u,v=.0 in.nc out.nc
+@end example
+The options @samp{-4} or @samp{-7} ensure a netCDF4-format output 
+to support internal compression, and @samp{-L 1} activates the
+compression. 
+These are recommended but will be omitted in subsequent examples.
+To preserve five digits in all variables except coordinate variables
+and @var{u} and @var{v}, use the @samp{default} option and separately
+specify the exceptions:
+@example
+ncks --ppc default=5 --ppc u,v=20 in.nc out.nc
+@end example
+The @samp{--ppc} option may be specified any number of times to
+support varying precision types and levels, and each option may
+aggregate all the variables with the same precision
+@example
+ncks --ppc p,w,z=5 --ppc q,RH=4 --ppc T,u,v=3 in.nc out.nc
+@end example
+The @var{var} argument may be a regular expression.
+This simplifies generating lists of related variables
+@example
+ncks --ppc Q.?=5 --ppc FS.?,FL.?=4 --ppc RH=.3 in.nc out.nc
 @end example
 Although @acronym{PPC}-rounding instantly reduces data precision,
 on-disk storage reduction only occurs if the data are compressed.  

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.418 2015-01-30 04:25:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.419 2015-01-31 00:34:42 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -138,8 +138,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.418 2015-01-30 04:25:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.418 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.419 2015-01-31 00:34:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.419 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -195,7 +195,7 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int ppc_nbr=0; /* [nbr] Number of PPC arguments */
-  int ppc=0; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+  int ppc=0; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
@@ -277,9 +277,9 @@ main(int argc,char **argv)
       {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
-      {"ppc",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-      {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-      {"quantize",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+      {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},

@@ -1,3 +1,7 @@
+2015-01-30  Charlie Zender  <zender@uci.edu>
+
+	* Warn on incorrect NSD input
+
 2015-01-29  Charlie Zender  <zender@uci.edu>
 
 	* Change generic name from LSD to PPC (precision-preserving compression)

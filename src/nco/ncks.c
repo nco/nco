@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.765 2015-01-30 04:25:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.766 2015-01-31 00:34:41 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -187,8 +187,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.765 2015-01-30 04:25:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.765 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.766 2015-01-31 00:34:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.766 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -349,9 +349,9 @@ main(int argc,char **argv)
       {"header_pad",required_argument,0,0},
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
-      {"ppc",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-      {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
-      {"quantize",required_argument,0,0}, /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+      {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
       {"tst_udunits",required_argument,0,0},
       {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
       {"xml_spr_nmr",required_argument,0,0}, /* [flg] Separator for XML numeric types */

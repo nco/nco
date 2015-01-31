@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.764 2015-01-30 04:16:46 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.765 2015-01-31 00:34:41 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -12,7 +12,7 @@ activated by specifying desired level of precision in terms of
 either the total number of significant digits or the number of
 significant digits after (or before) the decimal point.
 These precision features are lumped together under the generic
-name Least Significant Digit (PPC). More details below.
+name Precision-Preserving Compression (PPC). More details below.
 
 Work on NCO 4.4.9 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
@@ -35,7 +35,7 @@ A. NCO warns when appended output type differs from input type.
 
 A. NCO will now store data at a specifiable level of precision.
    Standard terminology for precision is remarkably ambiguous, and 
-   we call this Least Significant Digit (PPC) functionality.
+   we call this Precision-Preserving Compression (PPC) functionality.
    NCO's PPC implementation currently accepts two types of precision
    specification implemented with completely different algorithms.
    Users can specify either the total Number of Significant Digits
@@ -44,7 +44,7 @@ A. NCO will now store data at a specifiable level of precision.
    For example, NSD=5 tells NCO to retain 5 significant digits in the
    specified variables. Specifying DSD=3 or DSD=-2 causes NCO to
    preserve the number rounded to the nearest thousandth or hundred,
-   respectively. In other words, DSD is the negative base 10 logarithm
+   respectively. In other words, DSD is the negative base-10 logarithm
    of the desired decimal precision. Under the hood, NSD uses
    bitmasking to eliminate unnecessary (false) precision, while
    DSD utilizes rounding. PPC (both NSD and DSD) intentionally

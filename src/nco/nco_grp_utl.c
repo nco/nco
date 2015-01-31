@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1505 2015-01-30 04:16:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1506 2015-01-31 00:34:42 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2219,7 +2219,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].nbr_grp=nbr_grp;              /* [nbr] Number of sub-groups (for group) */
   trv_tbl->lst[idx].nbr_rec=nbr_rec;              /* [nbr] Number of record dimensions */
   trv_tbl->lst[idx].nbr_var=nbr_var;              /* [nbr] Number of variables (for group) */
-  trv_tbl->lst[idx].ppc=NC_MAX_INT;               /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+  trv_tbl->lst[idx].ppc=NC_MAX_INT;               /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
   trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] PPC is NSD */
 
   trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;   /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
@@ -2320,7 +2320,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nbr_grp=nco_obj_typ_err;
     trv_tbl->lst[idx].nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
     trv_tbl->lst[idx].nbr_var=nco_obj_typ_err;
-    trv_tbl->lst[idx].ppc=NC_MAX_INT; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+    trv_tbl->lst[idx].ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
     trv_tbl->lst[idx].flg_nsd=True; /* [flg] PPC is NSD */
     
     trv_tbl->lst[idx].is_crd_var=False;             

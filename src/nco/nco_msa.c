@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.281 2015-01-30 04:16:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.282 2015-01-31 00:34:42 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1345,7 +1345,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   /* Write */
   if(flg_write){
-    int ppc; /* [nbr] Least significant digit, i.e., number of significant digits following decimal point */
+    int ppc; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
     nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
     ppc=var_trv->ppc;
     flg_nsd=var_trv->flg_nsd;
