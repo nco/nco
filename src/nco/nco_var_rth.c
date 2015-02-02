@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.85 2015-01-31 00:34:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.86 2015-02-02 17:08:13 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -140,7 +140,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   /* Rounding is currently defined as op1:=around(op1,ppc) */  
   
   /* Use constants defined in math.h */
-  const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* [frc] Bits per decimal digit of precision */
+  const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
 
   double scale; /* [frc] Number by which to scale data to achieve rounding */
 
@@ -286,10 +286,11 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
      Binary digits of precision (prc_bnr) obtained via prc_bnr=prc_dcm*ln(10)/ln(2) */
   
   /* Use constants defined in math.h */
-  const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* [frc] Bits per decimal digit of precision */
+  const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
   
   /* Preserve at least two explicit bits, plus one implicit bit means three total bits */
-  const int bit_xpl_nbr_min=2; /* [nbr] Minimum number of explicit significand bits to preserve */
+  /* [nbr] Minimum number of explicit significand bits to preserve */
+#define BIT_XPL_NBR_MIN 2
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicit. */
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicit. */
   
@@ -328,7 +329,7 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
   case NC_FLOAT:
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_flt;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
-    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-bit_xpl_nbr_min);
+    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-BIT_XPL_NBR_MIN);
     u32_ptr=op1.uip;
     /* Create mask */
     msk_f32_u32=0u; /* Zero all bits */
@@ -346,7 +347,7 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
   case NC_DOUBLE:
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
-    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-bit_xpl_nbr_min);
+    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-BIT_XPL_NBR_MIN);
     u64_ptr=(unsigned long int *)op1.ui64p;
     /* Create mask */
     msk_f64_u64=0ul; /* Zero all bits */

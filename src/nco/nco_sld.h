@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.7 2015-01-31 00:34:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.8 2015-02-02 17:08:13 zender Exp $ */
 
 /* Purpose: Description (definition) of Swath-Like Data (SLD) functions */
 
@@ -47,10 +47,13 @@ void nco_kvmaps_free(kvmap_sct *kvmaps); /* release memory */
 
 void nco_kvmap_prn(kvmap_sct kvm);  /* print kvmap contents */
 
-void nco_ppc_set(/* set ppc based user specifications */
-char *const ppc_arg[], /* I [sng] List of user-specified ppc */
-const int cnk_nbr, /* I [nbr] Number of ppc specified */
-trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+void 
+nco_ppc_set /* [fnc] Set PPC based on user specifications */
+(int *dfl_lvl, /* O [enm] Deflate level */
+ const int fl_out_fmt,  /* I [enm] Output file format */
+ char *const ppc_arg[], /* I [sng] List of user-specified ppc */
+ const int cnk_nbr, /* I [nbr] Number of ppc specified */
+ trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
 nco_ppc_att_prc /* [fnc] create ppc att from trv_tbl */

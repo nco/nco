@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1063 2015-01-31 00:34:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1064 2015-02-02 17:08:13 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -31,7 +31,7 @@ Irvine, CA 92697-3100
 
 After editing any hyperlink locations, Emacs users update indices with
 C-c C-u C-a	texinfo-all-menus-update
-C-c C-u C-e	texinfo-every-node-updatexb
+C-c C-u C-e	texinfo-every-node-update
 
 Multiple files:
 M-x texinfo-multiple-files-update
@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.8
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 30 January 2015
-@set update-month January 2015
+@set update-date 1 February 2015
+@set update-month February 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -6896,7 +6896,7 @@ For example, specifying @samp{T=.3} or @samp{T=.-2} tells the
 value of @var{T} rounded to the nearest thousandth or hundred,
 respectively. 
 
-Setting @var{var} to @code{default} has the special meaning of applying
+Setting @var{var} to @code{default} has the special meaning of applying 
 the associated @acronym{NSD} or @acronym{DSD} algorithm to all
 variables except coordinate variables.
 @acronym{NCO} applies @acronym{PPC} to coordinate variables only if 
@@ -6956,30 +6956,62 @@ the @acronym{IEEE} significand with a string of consecutive zeroes.
 Byte-stream compression techniques, such as the @command{gzip}
 @acronym{DEFLATE} algorithm compression used by @acronym{HDF5}, 
 always compress zero-strings more efficiently than random digits. 
-The net result is netCDF4 files that utilize compression (e.g.,
-with @samp{ncks -L 1}) can be significantly reduced in size. 
+The net result is netCDF4 files that utilize compression can be
+significantly reduced in size.  
 This feature only works when the output dataset is compressed.
 It is most straightfoward to accomplish this using the built-in
 compression and decompression supported by netCDF4.
-However, netCDF3 files compressed by an external utility such as
-@command{gzip} will accrue the same benefits, although it is up
-to the user or provider to uncompress (e.g., @command{gunzip})
-the file before accessing the data.
+For convenience, @acronym{NCO} automatically activates file-wide
+Lempel-Ziv deflation (@pxref{Deflation}) level one (i.e., @samp{-L 1})
+when @acronym{PPC} is invoked on any variable in a netCDF4 output file. 
+This makes @acronym{PPC} easier to use effectively, since the user
+need not explicitly specify deflation.
+Any explicitly specified deflation (including no deflation, @samp{-L 0}) 
+will override the @acronym{PPC} deflation default.
+When the output file is netCDF3, @acronym{NCO} emits a message
+suggesting internal netCDF4 or external netCDF3 compression.
+netCDF3 files compressed by an external utility such as
+@command{gzip} accrue the same benefits (shrinkage) as netCDF4,
+although with netCDF3 the user or provider must uncompress (e.g.,
+@command{gunzip}) the file before accessing the data.
 There is no benefit to rounding numbers and storing them in netCDF3  
 files unless such custom compression/decompression is employed.
 Without that, one may as well maintain the undesired precision. 
 
-Since @acronym{NCO} supports both types of @acronym{PPC}, the user can
-request say, five significant digits (@math{@var{nsd=5}}) for all
-fields, except say, wind speeds which are only known to integer values  
-(@math{@var{dsd=0}}) in the supplied units. 
+The user accesses @acronym{PPC} through a single switch, @samp{--ppc},
+repeated as many times as necessary.
+To apply the @acronym{NSD} algorithm to @var{u} use, e.g.,
 @example
-ncks -4 -L 1 --ppc default=5 --ppc u,v=.0 in.nc out.nc
+ncks -4 --ppc u=2 in.nc out.nc
 @end example
 The options @samp{-4} or @samp{-7} ensure a netCDF4-format output 
-to support internal compression, and @samp{-L 1} activates the
-compression. 
-These are recommended but will be omitted in subsequent examples.
+to support internal compression.
+It is recommended though not required to write netCDF4 files after
+@acronym{PPC}.
+For clarity the @samp{-4/-7} switches are omitted in subsequent
+examples. 
+@cindex @code{number_of_significant_digits}
+@cindex @code{least_significant_digit}
+@acronym{NCO} attaches attributes that indicate the algorithm used and
+degree of precision retained for each variable affected by
+@acronym{PPC}. 
+The @acronym{NSD} and @acronym{DSD} algorithms store the attributes
+@code{number_of_significant_digits} and @code{least_significant_digit}
+@footnote{The @command{nc3tonc4} by Jeff Whitaker inspired @acronym{NCO}
+to implement the @acronym{DSD} algorithm.
+@command{nc3tonc4} implements @acronym{DSD} differently than
+@acronym{NCO}, and produces different results in many cases.
+@command{nc3tonc4} records the usage of this algorithm with the same 
+attribute, @code{least_significant_digit}.
+@acronym{NCO} adopted this nomenclature to keep the two tools
+consistent.}, respectively.
+
+To request, say, five significant digits (@math{@var{nsd=5}}) for all
+fields, except, say, wind speeds which are only known to integer values
+(@math{@var{dsd=0}}) in the supplied units, requires @samp{--ppc} twice: 
+@example
+ncks -4 --ppc default=5 --ppc u,v=.0 in.nc out.nc
+@end example
 To preserve five digits in all variables except coordinate variables
 and @var{u} and @var{v}, use the @samp{default} option and separately
 specify the exceptions:
@@ -6992,19 +7024,27 @@ aggregate all the variables with the same precision
 @example
 ncks --ppc p,w,z=5 --ppc q,RH=4 --ppc T,u,v=3 in.nc out.nc
 @end example
-The @var{var} argument may be a regular expression.
-This simplifies generating lists of related variables
+Any @var{var} argument may be a regular expression.
+This simplifies generating lists of related variables:
 @example
 ncks --ppc Q.?=5 --ppc FS.?,FL.?=4 --ppc RH=.3 in.nc out.nc
 @end example
 Although @acronym{PPC}-rounding instantly reduces data precision,
-on-disk storage reduction only occurs if the data are compressed.  
-Therefore @acronym{NCO} will automatically invoke the Lempel-Ziv
-deflation algorithm (@pxref{Deflation}) with a deflation level of
-one (i.e., equivalent to @samp{-L 1}) or any higher deflation level
-already specified, whichever is greater.
-Unscientific testing shows that @acronym{PPC} rounding compresses
-typical climate datasets by fxm.
+on-disk storage reduction only occurs once the data are compressed.  
+
+Unscientific testing shows that @acronym{PPC} rounding enhances
+compression of typical climate datasets.
+The degree of enhancement depends, of course, on the required
+precision. 
+@example
+ncks dstmch90_clm.nc ~/foo.nc # 
+ncks -O -4 dstmch90_clm.nc ~/foo.nc # 
+ncks -O -4 --ppc default=7 dstmch90_clm.nc ~/foo.nc # 
+ncks -O -4 --ppc default=6 dstmch90_clm.nc ~/foo.nc #
+ncks -O -4 --ppc default=5 dstmch90_clm.nc ~/foo.nc #
+ncks -O -4 --ppc default=4 dstmch90_clm.nc ~/foo.nc #
+ncks -O -4 --ppc default=3 dstmch90_clm.nc ~/foo.nc #
+@end example
 
 @html
 <a name="md5"></a> <!-- http://nco.sf.net/nco.html#md5 -->

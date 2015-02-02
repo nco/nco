@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.282 2015-01-31 00:34:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.283 2015-02-02 17:08:13 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1349,9 +1349,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
     ppc=var_trv->ppc;
     flg_nsd=var_trv->flg_nsd;
-    /* File format needed to enable netCDF4 features */
-    (void)nco_inq_format(out_id,&fl_fmt);
-    if(ppc != NC_MAX_INT && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
+    if(ppc != NC_MAX_INT){
       var_out.type=var_typ_out;
       var_out.id=var_out_id;
       nco_mss_val_get(out_id,&var_out);
@@ -1558,9 +1556,9 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
 
   if(nco_dbg_lvl_get() == nco_dbg_old){
-    (void)fprintf(stdout,"%s: DEBUG %s reading <%s>\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
+    (void)fprintf(stdout,"%s: DEBUG %s reports reading %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s> elements %ld",nco_prg_nm_get(),fnc_nm,lmt_msa[idx_dmn]->dmn_nm,lmt_msa[idx_dmn]->dmn_cnt);
+      (void)fprintf(stdout,"%s: DEBUG %s reports dimension %s has dmn_cnt = %ld",nco_prg_nm_get(),fnc_nm,lmt_msa[idx_dmn]->dmn_nm,lmt_msa[idx_dmn]->dmn_cnt);
       for(int idx_lmt=0;idx_lmt<lmt_msa[idx_dmn]->lmt_dmn_nbr;idx_lmt++) (void)fprintf(stdout," : %ld (%ld->%ld)",lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->cnt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->srt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->end);
       (void)fprintf(stdout,"\n");
     } /* end loop over dimensions */

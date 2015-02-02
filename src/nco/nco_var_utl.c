@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.371 2015-01-31 00:34:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.372 2015-02-02 17:08:14 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -29,7 +29,6 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   int *dmn_id;
 
   int dmn_nbr;
-  int fl_fmt; /* [enm] Output file format */
   int idx;
   int nbr_dmn_in;
   int nbr_dmn_out;
@@ -88,9 +87,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   nco_bool flg_ppc=False; /* [flg] Activate PPC with this variable and output file */
   nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
   var_sct var_out; /* [sct] Variable structure */
-  /* File format needed to enable netCDF4 features */
-  (void)nco_inq_format(out_id,&fl_fmt);
-  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+  if(True){
     /* This ugliness backs-out the ppc element from the traversal table for this variable */
     char *var_nm_fll;
     trv_sct *var_trv;
@@ -114,7 +111,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
       nco_mss_val_get(out_id,&var_out);
       if(var_out.nm) var_out.nm=(char *)nco_free(var_out.nm);
     } /* endif ppc */
-  } /* endif fl_fmt*/
+  } /* endif True */
     
   /* Get variable */
   if(dmn_nbr == 0){
@@ -410,7 +407,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       nco_bool flg_ppc=False; /* [sct] Activate PPC with this variable and output file */
       nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
       var_sct var_out; /* [sct] Variable structure */
-      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+      if(True){
 	/* This ugliness backs-out the ppc element from the traversal table for this variable */
 	char *var_nm_fll;
 	trv_sct *var_trv=NULL;
@@ -434,7 +431,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 	  nco_mss_val_get(var_lst[var_idx]->grp_id_out,&var_out);
 	  if(var_out.nm) var_out.nm=(char *)nco_free(var_out.nm);
 	} /* endif ppc */
-      } /* endif fl_fmt*/
+      } /* endif True */
       
       /* Get and put one record of variable */
       if(var_sz > 0){ /* Allow for zero-size record variables */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.13 2015-01-31 00:34:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.14 2015-02-02 17:08:13 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -84,8 +84,10 @@ nco_ppc_att_prc /* [fnc] Create PPC attribute */
 } /* end nco_ppc_att_prc() */
 
 void
-nco_ppc_set( /* Set PPC based on user specifications */
- char *const ppc_arg[], /* I [sng] List of user-specified PPC */
+nco_ppc_set /* Set PPC based on user specifications */
+(int *dfl_lvl, /* O [enm] Deflate level */
+ const int fl_out_fmt,  /* I [enm] Output file format */
+ char * const ppc_arg[], /* I [sng] List of user-specified PPC */
  const int ppc_nbr, /* I [nbr] Number of PPC specified */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
@@ -94,6 +96,18 @@ nco_ppc_set( /* Set PPC based on user specifications */
   int ippc=0;
   kvmap_sct *ppc_lst;  /* [sct] PPC container */
   kvmap_sct kvm;
+
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    /* If user did not explicitly set deflate level for this file .. */
+    if(*dfl_lvl == NCO_DFL_LVL_UNDEFINED){
+      *dfl_lvl=1;
+      (void)fprintf(stderr,"%s: INFO Precision-Preserving Compression (PPC) automatically activating file-wide deflation level = %d\n",nco_prg_nm_get(),*dfl_lvl);
+    } /* endif */
+  } /* endif */
+
+  if(fl_out_fmt != NC_FORMAT_NETCDF4 && fl_out_fmt != NC_FORMAT_NETCDF4_CLASSIC){
+    (void)fprintf(stderr,"%s: INFO Requested Precision-Preserving Compression (PPC) on netCDF3 output dataset. Unlike netCDF4, netCDF3 does not support internal compression. To take full advantage of PPC consider writing file as netCDF4 enhanced (e.g., %s -4 ...) or classic (e.g., %s -7). Or consider compressing the netCDF3 file afterwards with, e.g., gzip or bzip2. File must then be uncompressed with, e.g., gunzip or bunzip2 before netCDF readers will recognize it. See http://nco.sf.net/nco.html#ppc for more information on PPC strategies.\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
+  } /* endif */
 
   ppc_lst=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
 
