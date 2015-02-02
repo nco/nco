@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1064 2015-02-02 17:08:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1065 2015-02-02 23:39:32 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -284,8 +284,6 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 <body text="#000000" link="#0000EF" vlink="#008080" alink="#FF0000">
 <font face="Arial">
 @end html
-@ignore
-@end ignore
 @title NCO User Guide
 @subtitle A suite of netCDF operators
 @subtitle Edition @value{doc-edition}, for @acronym{NCO} Version @value{nco-edition}
@@ -6844,22 +6842,41 @@ number of bytes per value.
 As shown in the examples, packed data can (and should) be deflated for 
 additional space savings.
 
+@cindex @acronym{PPC}
+@cindex @acronym{LSD}
+@cindex Least Significant Digit
 @acronym{NCO} implemented the final two lossy compression algorithms
 in version 4.4.8 (February, 2015).
-These are both precision-preserving compression (@acronym{PPC})
+These are both @dfn{Precision-Preserving Compression} (@acronym{PPC})
 algorithms and since standard terminology for precision is remarkably 
 imprecise, so is our nomenclature. 
-One @acronym{PPC} algorithm preserves the total Number of Signifcant
-Digits (@acronym{NSD}) in the value.
+The operational definition of ``significant digit'' in our precision
+preserving algorithms is that exact value, before rounding, is within
+one-half the value of the decimal place occupied by the 
+@dfn{Least Significant Digit} (@acronym{LSD}) of the rounded value.
+For example, the value @math{pi = 3.14} correctly represents the exact
+mathematical constant @var{pi} to three significant digits because the
+@acronym{LSD} of the rounded value @w{(i.e., 4)} is in the one-hundredths 
+digit place, and the difference between the exact value and the rounded
+value is less than one-half of one one-hundredth, i.e., 
+(@math{3.14159265358979323844 - 3.14 = 0.00159 < 0.005}).
+
+@cindex Number of Significant Digits
+@cindex @acronym{NSD}
+One @acronym{PPC} algorithm preserves the specified total 
+@dfn{Number of Signifcant Digits} (@acronym{NSD}) of the value.
 For example there is only one significant digit in the weight of
 most ``eight-hundred pound gorillas'' that you will encounter, 
 i.e., so @math{@var{nsd=1}}.
 This is the most straightforward measure of precision, and thus
 @acronym{NSD} is the default @acronym{PPC} algorithm.
 
-The other @acronym{PPC} algorithm preserves the number of Decimal
-Significant Digits (@acronym{DSD}), i.e., the number of significant 
-digits following the decimal point. 
+@cindex Decimal Significant Digits
+@cindex @acronym{DSD}
+The other @acronym{PPC} algorithm preserves the number of 
+@dfn{Decimal Significant Digits} (@acronym{DSD}), i.e., the number of
+significant digits following (positive, by convention) or preceding
+(negative) the decimal point.  
 For example, ``0.008'' and ``800'' have, respectively, three and
 negative two digits digits following the decimal point, corresponding 
 @math{@var{dsd=3}} and @math{@var{dsd=-2}}. 
@@ -6871,7 +6888,7 @@ The appropriate @acronym{DSD} for a given value depends on these
 intrinsic characteristics and, in addition, the units of storage.
 This is the fundamental difference between the @acronym{NSD} and 
 @acronym{DSD} approaches. 
-The eight-hundred pound gorilla always has @math{@var{nsd=1}} regardless
+The eight-hundred pound gorilla always has @math{@var{nsd=1}} regardless 
 of whether the value is store in pounds or in some other unit.
 @acronym{DSD} corresponding to this weight is @math{@var{dsd=-2}} if the
 value is store in pounds, @math{@var{dsd=4}} if stored in megapounds.
@@ -6903,15 +6920,15 @@ variables except coordinate variables.
 those variables are explicitly specified (i.e., not with the
 @samp{default=@var{prc}} mechanism. 
 To prevent @acronym{PPC} from applying to certain non-coordinate
-variables (e.g., @code{area} or @code{gaussian_weight}), explicitly
-specify a precision exceeding 16 for those variables.
-Since the maximum representable precision of @code{NC_DOUBLE} is 16
-decimal digits, @acronym{NCO} turns-off @acronym{PPC} whenever
-@math{@var{prc} > 16}.
+variables (e.g., @code{gridcell_area} or @code{gaussian_weight}),
+explicitly specify a precision @w{exceeding 16} for those variables. 
+Since the maximum representable precision of @code{NC_DOUBLE} @w{is 15} 
+decimal digits, @acronym{NCO} @emph{turns-off} @acronym{PPC} if
+@math{@var{prc} > 15}.
 
 @cindex bitmask
 @cindex significand
-@cindex @acronym{IEEE}754
+@cindex @w{@acronym{IEEE} 754}
 The time penalty for compressing and uncompressing data varies according 
 to the algorithm.
 The Number of Significant Digit (@acronym{NSD}) algorithm works by
@@ -6921,8 +6938,8 @@ rounding, which does require floating point math.
 Hence @acronym{NSD} is likely faster than @acronym{DSD}, though
 the difference has not been measured.
 @acronym{NSD} creates a bitmask to alter the @dfn{significand} of
-@acronym{IEEE} floating point data.
-The bitmask is one for all bits to be retained and zero for all bits
+@w{@acronym{IEEE} 754} floating point data.
+The bitmask is one for all bits to be retained and zero for all bits 
 to be zeroed.
 The algorithm assumes that the number of binary digits (i.e., bits)
 necessary to represent a single base-10 digit is 
@@ -6936,15 +6953,81 @@ undesired precision.
 The rounding 
 @footnote{
 Rounding is performed by the internal math library @command{rint()} 
-family of functions which were standardized in @acronym{C99}.
+family of functions that were standardized in C99.
 The exact alorithm employed is
-@math{val := rint(@var{scale}*@var{val})/@var{scale}} where @var{scale}
-is the nearest power @w{of 2} that exceeds @var{ppc}, and the inverse
-of @var{scale} is used when @math{@var{ppc} < 0}.
+@math{@var{val} := rint(@var{scale}*@var{val})/@var{scale}} where
+@var{scale} is the nearest power @w{of 2} that exceeds 
+@math{10**@var{prc}}, and the inverse of @var{scale} is used when 
+@math{@var{prc} < 0}.
 For @math{@var{ppc} = 3} or @math{@var{ppc} = -2}, for example, we have
 @math{@var{scale} = 1024} and @math{@var{scale} = 1/128}.}
 zeroes the greatest number of significand bits consistent with
 the desired precision.
+
+To demonstrate the change in @acronym{IEEE} representation caused by
+@acronym{PPC} rounding algorithms, consider again the case of @var{pi},
+represented as an @code{NC_FLOAT}.
+The @w{@acronym{IEEE} 754} single precision representations of the exact
+value (3.141592...), the value with only three significant digits treated
+as exact (3.140000...), and the value as stored (3.140625) after
+@acronym{PPC}-rounding with either the @acronym{NSD} (@math{@var{prc}=3})
+or @acronym{DSD} (@math{@var{prc}=2}) algorithm are, respectively,
+@ignore
+ncks -O -v pi --ppc pi=1  ~/nco/data/in.nc ~/foo_nsd1.nc 
+ncks -O -v pi --ppc pi=2  ~/nco/data/in.nc ~/foo_nsd2.nc 
+ncks -O -v pi --ppc pi=3  ~/nco/data/in.nc ~/foo_nsd3.nc 
+ncks -O -v pi --ppc pi=.2 ~/nco/data/in.nc ~/foo_dsd2.nc 
+ncks -O -v pi --ppc pi=4  ~/nco/data/in.nc ~/foo_nsd4.nc 
+ncks -O -v pi --ppc pi=5  ~/nco/data/in.nc ~/foo_nsd5.nc 
+ncks -O -v pi --ppc pi=6  ~/nco/data/in.nc ~/foo_nsd6.nc 
+ncks -s %20.16e -C -H ~/foo_nsd.nc
+ncks -s %20.16e -C -H ~/foo_dsd.nc
+ccc --tst=bnr --flt_foo=3.14159265358979323844 2> /dev/null | grep "Binary of float"
+ccc --tst=bnr --flt_foo=3.14000000000000000000 2> /dev/null | grep "Binary of float"
+ccc --tst=bnr --flt_foo=3.00000000000000000000 2> /dev/null | grep "Binary of float"
+ccc --tst=bnr --flt_foo=3.12500000000000000000 2> /dev/null | grep "Binary of float"
+ccc --tst=bnr --flt_foo=3.14062500000000000000 2> /dev/null | grep "Binary of float"
+ccc --tst=bnr --flt_foo=3.14062500000000000000 2> /dev/null | grep "Binary of float"
+ccc --tst=bnr --flt_foo=3.14147949218750000000 2> /dev/null | grep "Binary of float"
+@end ignore
+@example
+S Exponent  Fraction (Significand)   Decimal    Notes
+0 100000001 0010010000111111011011 # 3.14159265 Exact
+0 100000001 0010001111010111000011 # 3.14000000
+0 100000001 0010010000000000000000 # 3.14062500 NSD = 3
+0 100000001 0010010000000000000000 # 3.14062500 DSD = 2
+@end example
+The string of trailing zero-bits in the rounded values facilitates
+byte-stream compression. 
+Note that the @acronym{NSD} and @acronym{DSD} algorithms do not always
+produce results that are bit-for-bit identical, although they do in this
+particular case.
+
+Reducing the preserved precision of @acronym{NSD}-rounding produces
+increasingly long strings of zero-bits amenable to compression: 
+@example
+S Exponent  Fraction (Significand)   Decimal    Notes
+0 100000001 0010010000111111011011 # 3.14159265 Exact
+0 100000001 0010010000111111011011 # 3.14159265 NSD = 9
+0 100000001 0010010000111111011010 # 3.14159262 NSD = 8
+0 100000001 0010010000111111011000 # 3.14159203 NSD = 7
+0 100000001 0010010000111111000000 # 3.14158630 NSD = 6
+0 100000001 0010010000111000000000 # 3.14147949 NSD = 5
+0 100000001 0010010000000000000000 # 3.14062500 NSD = 4
+0 100000001 0010010000000000000000 # 3.14062500 NSD = 3
+0 100000001 0010000000000000000000 # 3.12500000 NSD = 2
+0 100000001 0000000000000000000000 # 3.00000000 NSD = 1
+@end example
+Although the @acronym{NSD} algorithm masks some bits for all 
+@math{@var{nsd} < 9}, compression algorithms like @acronym{DEFLATE}
+may require byte-size-or-greater (i.e., at least eight-bit) bit patterns 
+before compression becomes effective, so do not expect significant 
+compression from @math{@var{nsd} > 5} (for @code{NC_FLOAT}) or
+@math{@var{nsd} > 14} (for @code{NC_DOUBLE}).
+Values stored as @code{NC_DOUBLE} (i.e., eight-bytes) are susceptible
+to much greater compression than @code{NC_FLOAT} for a given precision
+because their significands explicitly contain @w{53 bits} rather than 
+@w{23 bits}.
 
 @cindex @acronym{DEFLATE}
 @cindex @acronym{HDF5}
@@ -6956,10 +7039,11 @@ the @acronym{IEEE} significand with a string of consecutive zeroes.
 Byte-stream compression techniques, such as the @command{gzip}
 @acronym{DEFLATE} algorithm compression used by @acronym{HDF5}, 
 always compress zero-strings more efficiently than random digits. 
-The net result is netCDF4 files that utilize compression can be
+The net result is netCDF files that utilize compression can be
 significantly reduced in size.  
-This feature only works when the output dataset is compressed.
-It is most straightfoward to accomplish this using the built-in
+This feature only works when the data are compressed, either internally 
+(by netCDF) or externally (by another user-supplied mechanism).
+It is most straightfoward to compress data internally using the built-in 
 compression and decompression supported by netCDF4.
 For convenience, @acronym{NCO} automatically activates file-wide
 Lempel-Ziv deflation (@pxref{Deflation}) level one (i.e., @samp{-L 1})
@@ -6968,25 +7052,26 @@ This makes @acronym{PPC} easier to use effectively, since the user
 need not explicitly specify deflation.
 Any explicitly specified deflation (including no deflation, @samp{-L 0}) 
 will override the @acronym{PPC} deflation default.
-When the output file is netCDF3, @acronym{NCO} emits a message
-suggesting internal netCDF4 or external netCDF3 compression.
-netCDF3 files compressed by an external utility such as
-@command{gzip} accrue the same benefits (shrinkage) as netCDF4,
-although with netCDF3 the user or provider must uncompress (e.g.,
-@command{gunzip}) the file before accessing the data.
-There is no benefit to rounding numbers and storing them in netCDF3  
+If the output file is a netCDF3 format, @acronym{NCO} will emit a
+message suggesting internal netCDF4 or external netCDF3 compression. 
+netCDF3 files compressed by an external utility such as @command{gzip}
+accrue approximately the same benefits (shrinkage) as netCDF4, although
+with netCDF3 the user or provider must uncompress (e.g.,
+@command{gunzip}) the file before accessing the data. 
+There is no benefit to rounding numbers and storing them in netCDF3
 files unless such custom compression/decompression is employed.
 Without that, one may as well maintain the undesired precision. 
 
 The user accesses @acronym{PPC} through a single switch, @samp{--ppc},
 repeated as many times as necessary.
-To apply the @acronym{NSD} algorithm to @var{u} use, e.g.,
+To apply the @acronym{NSD} algorithm to variable @var{u} use, e.g., 
 @example
-ncks -4 --ppc u=2 in.nc out.nc
+ncks -7 --ppc u=2 in.nc out.nc
 @end example
+The output file will preserve only two significant digits of @var{u}.
 The options @samp{-4} or @samp{-7} ensure a netCDF4-format output 
-to support internal compression.
-It is recommended though not required to write netCDF4 files after
+(regardless of the input file format) to support internal compression.
+It is recommended though not required to write netCDF4 files after 
 @acronym{PPC}.
 For clarity the @samp{-4/-7} switches are omitted in subsequent
 examples. 
@@ -6997,14 +7082,24 @@ degree of precision retained for each variable affected by
 @acronym{PPC}. 
 The @acronym{NSD} and @acronym{DSD} algorithms store the attributes
 @code{number_of_significant_digits} and @code{least_significant_digit}
-@footnote{The @command{nc3tonc4} by Jeff Whitaker inspired @acronym{NCO}
-to implement the @acronym{DSD} algorithm.
-@command{nc3tonc4} implements @acronym{DSD} differently than
-@acronym{NCO}, and produces different results in many cases.
-@command{nc3tonc4} records the usage of this algorithm with the same 
-attribute, @code{least_significant_digit}.
-@acronym{NCO} adopted this nomenclature to keep the two tools
-consistent.}, respectively.
+@footnote{The @command{nc3tonc4} tool by Jeff Whitaker inspired
+@acronym{NCO} to implement @acronym{PPC}.
+@acronym{NCO} implements a different @acronym{DSD} algorithm than 
+@command{nc3tonc4}, and produces slightly different (not bit-for-bit) 
+though self-consistent and equivalent results in many cases. 
+@command{nc3tonc4} records the usage of their @acronym{DSD} algorithm
+with the attribute @code{least_significant_digit} and @acronym{NCO} 
+does the same for consistency.}, respectively.
+
+It is safe to attempt @acronym{PPC} on input that has already been
+rounded. 
+Variables can be made rounder, not sharper, i.e., variables cannot be
+``un-rounded''. 
+Thus @acronym{PPC} attempted on an input variable with an existing
+@acronym{PPC} attribute proceeds only if the new rounding level exceeds
+the old, otherwise no new rounding occurs (i.e., a ``no-op''), and the
+original @acronym{PPC} attribute is retained rather than replaced with
+the newer value of @var{prc}.
 
 To request, say, five significant digits (@math{@var{nsd=5}}) for all
 fields, except, say, wind speeds which are only known to integer values
@@ -7036,14 +7131,57 @@ Unscientific testing shows that @acronym{PPC} rounding enhances
 compression of typical climate datasets.
 The degree of enhancement depends, of course, on the required
 precision. 
+Model results are often computed as @code{NC_DOUBLE} then archived 
+as @code{NC_FLOAT} to save space. 
+@ignore
+Use either
+dstmch90_clm.nc # 36 MB
+b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc # 120 MB
+fl=${DATA}/dstmch90/dstmch90_clm.nc
+fl=${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc
+# ncks PPC only
+ls -l ${fl}
+ncks -O -7 ${fl} ~/foo.nc;ls -l ~/foo.nc
+ncks -O -7 -L 1 ${fl} ~/foo.nc;ls -l ~/foo.nc
+ncks -O -7 -L 9 ${fl} ~/foo.nc;ls -l ~/foo.nc
+ncks -O -7 --ppc default=7 ${fl} ~/foo7.nc;ls -l ~/foo7.nc
+ncks -O -7 --ppc default=6 ${fl} ~/foo6.nc;ls -l ~/foo6.nc
+ncks -O -7 --ppc default=5 ${fl} ~/foo5.nc;ls -l ~/foo5.nc
+ncks -O -7 --ppc default=4 ${fl} ~/foo4.nc;ls -l ~/foo4.nc
+ncks -O -7 --ppc default=3 ${fl} ~/foo3.nc;ls -l ~/foo3.nc
+# ncpdq PPC with packing (double->short)
+ls -l ${fl}
+ncpdq -O -7 ${fl} ~/foo.nc;ls -l ~/foo.nc
+ncpdq -O -7 -L 1 ${fl} ~/foo.nc;ls -l ~/foo.nc
+ncpdq -O -7 -L 9 ${fl} ~/foo.nc;ls -l ~/foo.nc
+ncpdq -O -7 --ppc default=7 ${fl} ~/foo7.nc;ls -l ~/foo7.nc
+ncpdq -O -7 --ppc default=6 ${fl} ~/foo6.nc;ls -l ~/foo6.nc
+ncpdq -O -7 --ppc default=5 ${fl} ~/foo5.nc;ls -l ~/foo5.nc
+ncpdq -O -7 --ppc default=4 ${fl} ~/foo4.nc;ls -l ~/foo4.nc
+ncpdq -O -7 --ppc default=3 ${fl} ~/foo3.nc;ls -l ~/foo3.nc
+@end ignore
 @example
-ncks dstmch90_clm.nc ~/foo.nc # 
-ncks -O -4 dstmch90_clm.nc ~/foo.nc # 
-ncks -O -4 --ppc default=7 dstmch90_clm.nc ~/foo.nc # 
-ncks -O -4 --ppc default=6 dstmch90_clm.nc ~/foo.nc #
-ncks -O -4 --ppc default=5 dstmch90_clm.nc ~/foo.nc #
-ncks -O -4 --ppc default=4 dstmch90_clm.nc ~/foo.nc #
-ncks -O -4 --ppc default=3 dstmch90_clm.nc ~/foo.nc #
+ncks -O -7 dstmch90_clm.nc ~/foo.nc                 # 
+@end example
+
+@cindex @acronym{NCAR}
+@cindex @acronym{CAM}
+@cindex @acronym{GCM}
+A selective, per-variable approach to @acronym{PPC} yields the
+best balance of precision and compression yet requires the dataset
+producer to understand the intrinsic precision of each variable.
+Such a specification for a @acronym{GCM} dataset might look like this 
+(using names for the @acronym{NCAR} @acronym{CAM} model):
+@example
+# Be conservative on non-explicit quantities, so default=5
+# Some quantities deserve four significant digits
+# Many quantities, such as aerosol optical depths and burdens, are 
+# highly uncertain and only useful to three significant digits.
+ncks -7 -O \
+--ppc default=5 \
+--ppc AN.?,AQ.?=4 \
+--ppc AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 \
+ncar_cam.nc ~/foo.nc
 @end example
 
 @html
@@ -8180,23 +8318,25 @@ Single-precision (four-byte) numbers contain about seven significant
 figures, while double-precision contain about sixteen.
 More, err, precisely, the @acronym{IEEE} single-precision representation
 gives from @w{6 to 9} significant decimal digits precision
-@footnote{According to Wikipedia's summary of @acronym{IEEE} standard
-754, ``If a decimal string with at most 6 significant digits is
-converted to @acronym{IEEE} 754 single-precision and then converted back to the
-same number of significant decimal, then the final string should match
-the original; and if an @acronym{IEEE} 754 single-precision is converted to a
-decimal string with at least 9 significant decimal and then converted
-back to single, then the final number must match the original''.}.
+@footnote{According to Wikipedia's summary of @acronym{IEEE} 
+@w{standard 754}, ``If a decimal string with at most @w{6 significant} 
+digits is converted to @w{@acronym{IEEE} 754} single-precision and then
+converted back to the same number of significant decimal, then the final
+string should match the original; and if an @w{@acronym{IEEE} 754}
+single-precision is converted to a decimal string with at @w{leastn 9}
+significant decimal and then converted back to single, then the final
+number must match the original''.}. 
 And the @acronym{IEEE} double-precision representation
 gives from @w{15 to 17} significant decimal digits precision
-@footnote{According to Wikipedia's summary of @acronym{IEEE} standard
-754, ``If a decimal string with at most 15 significant digits is
-converted to @acronym{IEEE} 754 double-precision representation and then converted
-back to a string with the same number of significant digits, then the
-final string should match the original; and if an @acronym{IEEE} 754 double
-precision is converted to a decimal string with at least 17 significant
-digits and then converted back to double, then the final number must
-match the original''.}. 
+@footnote{According to Wikipedia's summary of @acronym{IEEE} 
+@w{standard 754}, ``If a decimal string with at most @w{15 significant}
+digits is converted to @w{@acronym{IEEE} 754} double-precision
+representation and then converted back to a string with the same number
+of significant digits, then the final string should match the original;
+and if an @w{@acronym{IEEE} 754} double precision is converted to a
+decimal string with at least @w{17 significant} digits and then
+converted back to double, then the final number must match the
+original''.}.  
 Hence double-precision numbers represent about nine digits more
 precision than single-precision numbers.
 
@@ -13170,7 +13310,7 @@ positive infinity and negative infinity
 @footnote{Arithmetic comparisons to NaN and NaN-like numbers always
 return False, contrary to the behavior of all other numbers.
 This is difficult to inuit, yet is the behavior defined for NaN by
-@acronym{IEEE} 754.
+@w{@acronym{IEEE} 754}.
 Using NaN for the missing value in datasets is legal.
 We strongly discourage it.}. 
 One way to work-around this problem is to change @acronym{IEEE} NaNs to

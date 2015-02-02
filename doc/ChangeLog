@@ -1,3 +1,9 @@
+2015-02-02  Charlie Zender  <zender@uci.edu>
+
+	* Optimize nco_ppc_set_var(), fail on invalid variable names
+
+	* Fully document PPC, NSD, DSD
+
 2015-01-31  Charlie Zender  <zender@uci.edu>
 
 	* Specifying PPC triggers dfl_lvl=1 on netCDF4 if not otherwise set

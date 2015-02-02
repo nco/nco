@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.14 2015-02-02 17:08:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.15 2015-02-02 23:39:32 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -84,7 +84,7 @@ nco_ppc_att_prc /* [fnc] Create PPC attribute */
 } /* end nco_ppc_att_prc() */
 
 void
-nco_ppc_set /* Set PPC based on user specifications */
+nco_ppc_ini /* Set PPC based on user specifications */
 (int *dfl_lvl, /* O [enm] Deflate level */
  const int fl_out_fmt,  /* I [enm] Output file format */
  char * const ppc_arg[], /* I [sng] List of user-specified PPC */
@@ -101,12 +101,12 @@ nco_ppc_set /* Set PPC based on user specifications */
     /* If user did not explicitly set deflate level for this file .. */
     if(*dfl_lvl == NCO_DFL_LVL_UNDEFINED){
       *dfl_lvl=1;
-      (void)fprintf(stderr,"%s: INFO Precision-Preserving Compression (PPC) automatically activating file-wide deflation level = %d\n",nco_prg_nm_get(),*dfl_lvl);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Precision-Preserving Compression (PPC) automatically activating file-wide deflation level = %d\n",nco_prg_nm_get(),*dfl_lvl);
     } /* endif */
   } /* endif */
 
   if(fl_out_fmt != NC_FORMAT_NETCDF4 && fl_out_fmt != NC_FORMAT_NETCDF4_CLASSIC){
-    (void)fprintf(stderr,"%s: INFO Requested Precision-Preserving Compression (PPC) on netCDF3 output dataset. Unlike netCDF4, netCDF3 does not support internal compression. To take full advantage of PPC consider writing file as netCDF4 enhanced (e.g., %s -4 ...) or classic (e.g., %s -7). Or consider compressing the netCDF3 file afterwards with, e.g., gzip or bzip2. File must then be uncompressed with, e.g., gunzip or bunzip2 before netCDF readers will recognize it. See http://nco.sf.net/nco.html#ppc for more information on PPC strategies.\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: INFO Requested Precision-Preserving Compression (PPC) on netCDF3 output dataset. Unlike netCDF4, netCDF3 does not support internal compression. To take full advantage of PPC consider writing file as netCDF4 enhanced (e.g., %s -4 ...) or classic (e.g., %s -7 ...). Or consider compressing the netCDF3 file afterwards with, e.g., gzip or bzip2. File must then be uncompressed with, e.g., gunzip or bunzip2 before netCDF readers will recognize it. See http://nco.sf.net/nco.html#ppc for more information on PPC strategies.\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
   } /* endif */
 
   ppc_lst=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
@@ -135,7 +135,7 @@ nco_ppc_set /* Set PPC based on user specifications */
   /* PPC default exists, set all non-coordinate variables to default first */
   for(idx=0;idx<ippc;idx++){
     if(!strcasecmp(ppc_lst[idx].key,"default")){
-      trv_tbl_ppc_set_dflt(ppc_lst[idx].value,trv_tbl);
+      nco_ppc_set_dflt(ppc_lst[idx].value,trv_tbl);
       break; /* only one default is needed */
     } /* endif */
   } /* end for */
@@ -143,7 +143,7 @@ nco_ppc_set /* Set PPC based on user specifications */
   /* Set explicit, non-default PPCs that can overwrite default */
   for(idx=0;idx<ippc;idx++){
     if(!strcasecmp(ppc_lst[idx].key,"default")) continue;
-    trv_tbl_ppc_set_var(ppc_lst[idx].key,ppc_lst[idx].value,trv_tbl);
+    nco_ppc_set_var(ppc_lst[idx].key,ppc_lst[idx].value,trv_tbl);
   } /* end for */
 
   /* Unset PPC and flag for all variables with excessive PPC
@@ -157,10 +157,10 @@ nco_ppc_set /* Set PPC based on user specifications */
       } /* endif */
 
   if(ppc_lst) nco_kvmaps_free(ppc_lst);
-} /* end nco_ppc_set() */
+} /* end nco_ppc_ini() */
 
 void
-trv_tbl_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc default  */
+nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc default  */
 (const char * const ppc_arg, /* I [sng] User input for precision-preserving compression */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
@@ -186,10 +186,10 @@ trv_tbl_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc
       trv_tbl->lst[idx_tbl].ppc=ppc;
       trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
     } /* endif */
-} /* end trv_tbl_ppc_set_dflt() */
+} /* end nco_ppc_set_dflt() */
 
 void
-trv_tbl_ppc_set_var
+nco_ppc_set_var
 (const char * const var_nm, /* I [sng] Variable name to find */
  const char * const ppc_arg, /* I [sng] User input for precision-preserving compression */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
@@ -213,13 +213,14 @@ trv_tbl_ppc_set_var
     } /* endif */    
   } /* end else */
 
-  if(strpbrk(var_nm,".*^$\\[]()<>+?|{}")){ /* regular expression ... */
+  if(strpbrk(var_nm,".*^$\\[]()<>+?|{}")){ /* Regular expression ... */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
     regmatch_t *result;
     regex_t *rx;
     size_t rx_prn_sub_xpr_nbr;
     rx=(regex_t *)nco_malloc(sizeof(regex_t));
     if(strchr(var_nm,sls_chr)){ /* Full name is used */
+      /* Important difference between full- and short-name matching: Prepend carat to RX so full name matches must start at beginning of variable name */
       char sng2mch[BUFSIZ]="^";
       strcat(sng2mch,var_nm);
       if(regcomp(rx,sng2mch,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
@@ -229,10 +230,12 @@ trv_tbl_ppc_set_var
       rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
       result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-        if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
-          trv_tbl->lst[idx_tbl].ppc=ppc;
-          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
-          mch_nbr++;
+        if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
+	  if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)){
+	    trv_tbl->lst[idx_tbl].ppc=ppc;
+	    trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+	    mch_nbr++;
+	  } /* endif */
         } /* endif */
       } /* endfor */
     }else{ /* Relative name is used */
@@ -243,11 +246,13 @@ trv_tbl_ppc_set_var
       rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
       result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-        if(!regexec(rx,trv_tbl->lst[idx_tbl].nm,rx_prn_sub_xpr_nbr,result,0)&&(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)){
-          trv_tbl->lst[idx_tbl].ppc=ppc;
-          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
-          mch_nbr++;
-        } /* endif */
+        if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
+	  if(!regexec(rx,trv_tbl->lst[idx_tbl].nm,rx_prn_sub_xpr_nbr,result,0)){
+	    trv_tbl->lst[idx_tbl].ppc=ppc;
+	    trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+	    mch_nbr++;
+	  } /* endif */
+	} /* endif */
       } /* endfor */
     } /* end Full name */
     regfree(rx); /* Free regular expression data structure */
@@ -255,31 +260,38 @@ trv_tbl_ppc_set_var
     result=(regmatch_t *)nco_free(result);
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
-    nco_exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
   }else if(strchr(var_nm,sls_chr)){ /* Full name */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
-        if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm_fll)){
-          trv_tbl->lst[idx_tbl].ppc=ppc;
-          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
-          mch_nbr++;
-          return; /* Only one match with full name */
-        } /* endif */
+	if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm_fll)){
+	  trv_tbl->lst[idx_tbl].ppc=ppc;
+	  trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+	  mch_nbr++;
+	  break; /* Only one match with full name */
+	} /* endif */
       } /* endif */
     } /* endfor */
   }else{ /* Not full name so set all matching vars */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
-        if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)){
-          trv_tbl->lst[idx_tbl].ppc=ppc;
-          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
-          mch_nbr++;
-        } /* endif */
+	if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)){
+	  trv_tbl->lst[idx_tbl].ppc=ppc;
+	  trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+	  mch_nbr++;
+	} /* endif */
       } /* endif */
     } /* endfor */
   } /* end Full name */
-} /* end trv_tbl_ppc_set_var() */
+  
+  if(mch_nbr == 0){
+    (void)fprintf(stdout,"%s: ERROR nco_ppc_set_var() reports user specified variable (or, possibly, regular expression) = \"%s\" does not match any variables in input file\n",nco_prg_nm_get(),var_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+    
+  return;
+} /* end nco_ppc_set_var() */
 
 char *
 nco_sng_strip( /* [fnc] Strip leading and trailing white space */

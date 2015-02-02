@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.512 2015-02-02 17:08:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.513 2015-02-02 23:39:32 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -1062,11 +1062,11 @@ nco_usg_prn(void)
     if(prg_lcl == ncpdq) (void)fprintf(stdout,"-P, --pck_plc, --pack_policy pck_plc\tPacking policy [all_new,all_xst,xst_new,upk]\n");
   } /* end if -P */
   if(strstr(opt_sng,"[-p")) (void)fprintf(stdout,"-p, --pth, --path path\tPath prefix for all input filenames\n");
-  if(strstr(opt_sng,"--ppc")) (void)fprintf(stdout,"    --ppc, --quantize v1[,v2[,...]=ppc\t\tPrecision-Preserving Compression: negative log_10 of desired precision\n");
+  if(strstr(opt_sng,"--ppc")) (void)fprintf(stdout,"    --ppc v1[,v2[,...]=prc\tPrecision-Preserving Compression: Number of total or decimal significant digits\n");
   if(strstr(opt_sng,"[-Q]")) (void)fprintf(stdout,"-Q, --quiet\t\tQuiet printing of dimension indices and coordinate values\n");
   if(strstr(opt_sng,"[-q]")) (void)fprintf(stdout,"-q, --quench\t\tQuench (turn-off) all printing to screen\n");
   if(strstr(opt_sng,"[-R]")) (void)fprintf(stdout,"-R, --rtn, --retain\tRetain remotely-retrieved files after use\n");
-  if(strstr(opt_sng,"[-r]")) (void)fprintf(stdout,"-r, --revision, --vrs, --version\tCompile-time configuration and/or program version\n");
+  if(strstr(opt_sng,"[-r]")) (void)fprintf(stdout,"-r, --revision, --version\tCompile-time configuration and/or program version\n");
   if(strstr(opt_sng,"--rad")) (void)fprintf(stdout,"    --orphan, --rph_dmn\tRetain or print all (including orphaned) dimensions\n");
   if(strstr(opt_sng,"--ram_all")) (void)fprintf(stdout,"    --ram_all, --diskless_all\tOpen netCDF3 files and create output files in RAM\n");
   if(strstr(opt_sng,"--rec_apn")) (void)fprintf(stdout,"    --rec_apn, --record_append\tAppend records directly to output file\n");

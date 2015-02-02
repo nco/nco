@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.752 2015-01-20 21:56:46 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.753 2015-02-02 23:39:31 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -14,6 +14,7 @@
 
 # Machine build parameters
 #                         Source     Method   Packages Compiler
+# aerosol.ess.uci.edu: NCO          Configure All else LLVM
 # givre.ess.uci.edu  : NCO + netCDF Makefile  All else LLVM
 # roulee.ess.uci.edu : NCO + netCDF Makefile  All else GCC
 # neige.ess.uci.edu  : NCO          Makefile  All else GCC
