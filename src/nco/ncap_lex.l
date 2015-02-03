@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.87 2015-01-17 00:53:13 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.88 2015-02-03 17:02:34 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -1041,7 +1041,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       lst_t_nbr=lst_t_nbr+0;
       /* 20140526: clang flags argument lval.sbs_lst->lst as incompatible with nm_id_sct * in receiving prototype
 	 This is true. Not sure how/if this line ever worked. Were ncap not in maintenance mode, would be worth fixing? */
-      lst_d=nco_var_lst_add(lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);
+      lst_d=nco_var_lst_add(lst_d,&lst_d_nbr,(nm_id_sct *)lval.sbs_lst->lst,lval.sbs_lst->nbr);
       if(lst_t_nbr > 0) (void)nco_nm_id_lst_free(lst_t,lst_t_nbr);
       break;
     default: 

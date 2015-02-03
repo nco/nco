@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.46 2015-02-03 16:52:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.47 2015-02-03 17:02:34 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -14,7 +14,7 @@
 #define NCO_VAR_RTH_H
 
 /* Standard header files */
-/* MSVC has math.h but does not define constants like M_LN10, M_LN2 unless _USE_MATH_DEFINES is defined first */
+/* C++ compilers have math.h but do not define constants like M_LN10, M_LN2 unless _USE_MATH_DEFINES is first defined */
 #ifdef _MSC_VER
 # define _USE_MATH_DEFINES
 #endif /* !_MSC_VER */
