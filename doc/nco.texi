@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1065 2015-02-02 23:39:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1066 2015-02-03 02:08:55 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -2527,8 +2527,8 @@ feature is automatic and cannot be controlled by the user.
 * Multiple Record Dimensions::
 * Missing Values::
 * Chunking::
-* Deflation::
 * Compression::
+* Deflation::
 * MD5 digests::
 * Buffer sizes::
 * RAM disks::
@@ -6354,7 +6354,7 @@ important information from being lost.
 <a name="cnk_sz"></a> <!-- http://nco.sf.net/nco.html#cnk_sz -->
 <a name="chunk_size"></a> <!-- http://nco.sf.net/nco.html#chunk_size -->
 @end html
-@node Chunking, Deflation, Missing Values, Shared features
+@node Chunking, Compression, Missing Values, Shared features
 @section Chunking
 @cindex @code{--cnk_byt}
 @cindex @code{--cnk_dmn}
@@ -6504,6 +6504,15 @@ and copies the chunking parameters from the input to the output file.
 Alternate invocation: none@*
 @var{cnk_plc} key values: @samp{xst}, @samp{cnk_xst}, @samp{plc_xst}@*
 Mnemonic: E@emph{X}i@emph{ST}ing chunked variables@*
+@item Chunk Variables @acronym{NCO} recommendations
+Definition: Chunk all variables according to @acronym{NCO} practices.
+This is a virtual option that ensures the chunking policy is (in the 
+subjective opinion of the authors) the best policy for typical usage.
+As of @acronym{NCO} version 4.4.8 (February, 2015), this virtual policy
+calls @samp{plc_all}.@*
+Alternate invocation: none@*
+@var{cnk_plc} key values: @samp{nco}, @samp{cnk_nco}, @samp{plc_nco}@*
+Mnemonic: @emph{N}et@emph{C}DF@emph{O}perator@*
 @item Unchunking
 Definition: Unchunk all variables possible. 
 The @acronym{HDF5} storge layer requires that record variables (i.e.,
@@ -6628,6 +6637,17 @@ This map can be used to reset (portions of) previously chunked files to
 default chunking values.@*
 @var{cnk_map} key values: @samp{nc4}, @samp{cnk_nc4}, @samp{map_nc4}@*
 Mnemonic: @emph{N}et@emph{C}DF@emph{4}@*
+@item Chunksizes use @acronym{NCO} recommendations
+Definition: Chunksizes are determined by the currently recommended
+@acronym{NCO} map.
+This is a virtual option that ensures the chunking map is (in the 
+subjective opinion of the authors) the best map for typical usage.
+As of @acronym{NCO} version 4.4.8 (February, 2015), this virtual map
+calls @samp{map_rew} for 3-D variables and @samp{map_lfp} for all
+others.@*  
+@var{cnk_map} key values: @samp{nco}, @samp{cnk_nco}, @samp{map_nco}@*
+Mnemonic: @emph{N}et@emph{C}DF@emph{O}perator@*
+
 @end table
 @noindent
 It is possible to combine the above chunking map algorithms with
@@ -6708,7 +6728,7 @@ ncwa -O -4 -D 4 -a time --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,32 \
 <a name="r1d"></a> <!-- http://nco.sf.net/nco.html#r1d -->
 @end html
 Chunking policy @samp{r1d} changes the chunksize of 1-D record variables
-(and no other variables) to the specified (with @samp{--cnk_dmn})
+(and no other variables) to that specified (with @samp{--cnk_dmn})
 chunksize. 
 Any specified record dimension chunksizes will be applied to 1-D
 record variables only. 
@@ -6738,73 +6758,17 @@ instructions to activate chunking nevertheless contain chunked
 variables. 
 
 @html
-<a name="dfl_lvl"></a> <!-- http://nco.sf.net/nco.html#dfl_lvl -->
-<a name="dfl"></a> <!-- http://nco.sf.net/nco.html#dfl -->
-<a name="lz"></a> <!-- http://nco.sf.net/nco.html#lz -->
-<a name="lz77"></a> <!-- http://nco.sf.net/nco.html#lz77 -->
-<a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
-<a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
-@end html
-@node Deflation, Compression, Chunking, Shared features
-@section Deflation
-@cindex @code{-L}
-@cindex @code{--deflate}
-@cindex @code{--dfl_lvl}
-@cindex Lempel-Ziv deflation
-@cindex compression
-@cindex deflation
-@cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{nces},
-@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
-@command{ncra}, @command{ncrcat}, @command{ncwa}@*
-Short options: @samp{-L}@*
-Long options: @samp{--dfl_lvl}, @samp{--deflate}@*  
-@end cartouche
-
-All @acronym{NCO} operators that define variables support 
-the netCDF4 feature of storing variables compressed with Lempel-Ziv
-deflation. 
-The Lempel-Ziv algorithm is a lossless data compression technique.
-Activate this deflation with the @code{-L @var{dfl_lvl}} short option
-(or with the same argument to the @samp{--dfl_lvl} or @samp{--deflate} 
-long options).
-Specify the deflation level @var{dfl_lvl} on a scale from 
-no deflation (@var{dfl_lvl = 0}) to maximum deflation 
-(@var{dfl_lvl = 9}).
-Minimal deflation (@var{dfl_lvl = 1}) achieves considerable storage
-compression with little time penalty.
-Higher deflation levels require more time for compression.
-File sizes resulting from minimal (@var{dfl_lvl = 1}) and maximal   
-(@var{dfl_lvl = 9}) deflation levels typically differ by a few
-percent in size. 
-
-To compress an entire file using deflation, use
-@example
-ncks -4 -L 0 in.nc out.nc # No deflation (fast, no time penalty)
-ncks -4 -L 1 in.nc out.nc # Minimal deflation (little time penalty)
-ncks -4 -L 9 in.nc out.nc # Maximal deflation (much slower)
-@end example
-
-Unscientific testing shows that deflation compresses typical climate
-datasets by 30-60%.  
-Packing, a lossy compression technique available for all netCDF files 
-(see @ref{Packed data}), can easily compress files by 50%.
-Packed data may be deflated to squeeze datasets by about 80%:
-@example
-ncks  -4 -L 1 in.nc out.nc # Minimal deflation (~30-60% compression)
-ncks  -4 -L 9 in.nc out.nc # Maximal deflation (~31-63% compression)
-ncpdq         in.nc out.nc # Standard packing  (~50% compression)
-ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
-@end example
-@findex ncks
-@command{ncks} prints deflation parameters, if any, to screen
-(@pxref{ncks netCDF Kitchen Sink}).
-
-@html
 <a name="ppc"></a> <!-- http://nco.sf.net/nco.html#ppc -->
 <a name="PPC"></a> <!-- http://nco.sf.net/nco.html#PPC -->
+<a name="compression"></a> <!-- http://nco.sf.net/nco.html#compression -->
+<a name="cmp"></a> <!-- http://nco.sf.net/nco.html#cmp -->
+<a name="nsd"></a> <!-- http://nco.sf.net/nco.html#nsd -->
+<a name="NSD"></a> <!-- http://nco.sf.net/nco.html#NSD -->
+<a name="dsd"></a> <!-- http://nco.sf.net/nco.html#dsd -->
+<a name="DSD"></a> <!-- http://nco.sf.net/nco.html#DSD -->
+<a name="qnt"></a> <!-- http://nco.sf.net/nco.html#qnt -->
 @end html
-@node Compression, MD5 digests, Deflation, Shared features
+@node Compression, Deflation, Chunking, Shared features
 @section Compression
 @cindex @code{--ppc}
 @cindex @code{--precision_preserving_compression}
@@ -6817,8 +6781,9 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @cartouche
 Availability: @command{ncks}, @command{ncpdq}@*
 Short options: None@*
-Long options: @samp{--ppc}, @samp{--precision_preserving_compression},
-@samp{--quantize}@*   
+Long options: @samp{--ppc @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
+@samp{--precision_preserving_compression @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
+@samp{--quantize @var{var1}[,@var{var2}[,...]]=@var{prc}}@*
 @end cartouche
 
 @acronym{NCO} implements or accesses four different compression
@@ -6976,10 +6941,10 @@ or @acronym{DSD} (@math{@var{prc}=2}) algorithm are, respectively,
 ncks -O -v pi --ppc pi=1  ~/nco/data/in.nc ~/foo_nsd1.nc 
 ncks -O -v pi --ppc pi=2  ~/nco/data/in.nc ~/foo_nsd2.nc 
 ncks -O -v pi --ppc pi=3  ~/nco/data/in.nc ~/foo_nsd3.nc 
-ncks -O -v pi --ppc pi=.2 ~/nco/data/in.nc ~/foo_dsd2.nc 
 ncks -O -v pi --ppc pi=4  ~/nco/data/in.nc ~/foo_nsd4.nc 
 ncks -O -v pi --ppc pi=5  ~/nco/data/in.nc ~/foo_nsd5.nc 
 ncks -O -v pi --ppc pi=6  ~/nco/data/in.nc ~/foo_nsd6.nc 
+ncks -O -v pi --ppc pi=.2 ~/nco/data/in.nc ~/foo_dsd2.nc 
 ncks -s %20.16e -C -H ~/foo_nsd.nc
 ncks -s %20.16e -C -H ~/foo_dsd.nc
 ccc --tst=bnr --flt_foo=3.14159265358979323844 2> /dev/null | grep "Binary of float"
@@ -7185,13 +7150,76 @@ ncar_cam.nc ~/foo.nc
 @end example
 
 @html
+<a name="dfl_lvl"></a> <!-- http://nco.sf.net/nco.html#dfl_lvl -->
+<a name="dfl"></a> <!-- http://nco.sf.net/nco.html#dfl -->
+<a name="lz"></a> <!-- http://nco.sf.net/nco.html#lz -->
+<a name="lz77"></a> <!-- http://nco.sf.net/nco.html#lz77 -->
+<a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
+<a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
+@end html
+@node Deflation, MD5 digests, Compression, Shared features
+@section Deflation
+@cindex @code{-L}
+@cindex @code{--deflate}
+@cindex @code{--dfl_lvl}
+@cindex Lempel-Ziv deflation
+@cindex compression
+@cindex deflation
+@cartouche
+Availability: @command{ncap2}, @command{ncbo}, @command{nces},
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
+@command{ncra}, @command{ncrcat}, @command{ncwa}@*
+Short options: @samp{-L}@*
+Long options: @samp{--dfl_lvl}, @samp{--deflate}@*  
+@end cartouche
+
+All @acronym{NCO} operators that define variables support 
+the netCDF4 feature of storing variables compressed with Lempel-Ziv
+deflation. 
+The Lempel-Ziv algorithm is a lossless data compression technique.
+Activate this deflation with the @code{-L @var{dfl_lvl}} short option
+(or with the same argument to the @samp{--dfl_lvl} or @samp{--deflate} 
+long options).
+Specify the deflation level @var{dfl_lvl} on a scale from 
+no deflation (@var{dfl_lvl = 0}) to maximum deflation 
+(@var{dfl_lvl = 9}).
+Minimal deflation (@var{dfl_lvl = 1}) achieves considerable storage
+compression with little time penalty.
+Higher deflation levels require more time for compression.
+File sizes resulting from minimal (@var{dfl_lvl = 1}) and maximal   
+(@var{dfl_lvl = 9}) deflation levels typically differ by a few
+percent in size. 
+
+To compress an entire file using deflation, use
+@example
+ncks -4 -L 0 in.nc out.nc # No deflation (fast, no time penalty)
+ncks -4 -L 1 in.nc out.nc # Minimal deflation (little time penalty)
+ncks -4 -L 9 in.nc out.nc # Maximal deflation (much slower)
+@end example
+
+Unscientific testing shows that deflation compresses typical climate
+datasets by 30-60%.  
+Packing, a lossy compression technique available for all netCDF files 
+(see @ref{Packed data}), can easily compress files by 50%.
+Packed data may be deflated to squeeze datasets by about 80%:
+@example
+ncks  -4 -L 1 in.nc out.nc # Minimal deflation (~30-60% compression)
+ncks  -4 -L 9 in.nc out.nc # Maximal deflation (~31-63% compression)
+ncpdq         in.nc out.nc # Standard packing  (~50% compression)
+ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
+@end example
+@findex ncks
+@command{ncks} prints deflation parameters, if any, to screen
+(@pxref{ncks netCDF Kitchen Sink}).
+
+@html
 <a name="md5"></a> <!-- http://nco.sf.net/nco.html#md5 -->
 <a name="digest"></a> <!-- http://nco.sf.net/nco.html#digest -->
 <a name="hash"></a> <!-- http://nco.sf.net/nco.html#hash -->
 <a name="integrity"></a> <!-- http://nco.sf.net/nco.html#integrity -->
 <a name="security"></a> <!-- http://nco.sf.net/nco.html#security -->
 @end html
-@node MD5 digests, Buffer sizes, Compression, Shared features
+@node MD5 digests, Buffer sizes, Deflation, Shared features
 @section MD5 digests
 @cindex @code{--md5_digest}
 @cindex @code{--md5_dgs}

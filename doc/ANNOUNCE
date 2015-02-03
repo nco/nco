@@ -1,18 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.765 2015-01-31 00:34:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.766 2015-02-03 02:08:54 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-NCO now provides a major new feature: lossy compression.
+NCO now implements a major new feature: lossy compression.
 This is distinct from the packing (scale_factor+add_offset) that
 NCO has long supported. The new lossy compression feature is
 activated by specifying desired level of precision in terms of
 either the total number of significant digits or the number of
 significant digits after (or before) the decimal point.
 These precision features are lumped together under the generic
-name Precision-Preserving Compression (PPC). More details below.
+name Precision-Preserving Compression (PPC), summarized below.
 
 Work on NCO 4.4.9 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
@@ -21,6 +21,32 @@ Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
+
+A. NCO will now store data at a per-variable precision level.
+   We call this Precision-Preserving Compression (PPC). PPC currently
+   understands two types of precision. Users can specify either the
+   total Number of Significant Digits (NSD) or the Decimal Significant
+   Digits (DSD), meaning the number of significant digits after (or
+   before) the decimal point. For example, NSD=5 tells NCO to retain 5
+   significant digits. Specifying DSD=3 or DSD=-2 causes NCO to
+   preserve the number rounded to the nearest thousandth or hundred,
+   respectively. 
+   Under the hood, NSD uses bitmasking to eliminate unnecessary
+   precision, while DSD utilizes rounding. The bitmasking/rounding
+   results in consecutive zero-bits ending the IEEE-754 storage of
+   each floating point number. Standard byte-stream compression
+   techniques, such as the DEFLATE compression used by gzip (and in
+   HDF5), compress these zero-bits more efficiently than unrounded
+   numbers. The net result is that netCDF files are skinnier when
+   compressed. This is internal with netCDF4 and external (e.g., gzip
+   or bzip2) with netCDF3. Space savings can be seriously large,
+   and face it, how often does your precision exceed 4 digits?
+   PPC data, BTW, can be packed for additional space savings.
+   And don't worry, coordinate variables will not be rounded :)
+   ncks -7 --ppc default=5 --ppc temperature=3 in.nc out.nc
+   ncks -7 --ppc AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 in.nc out.nc
+   ncpdq -7 --ppc default=4 in.nc out.nc
+   http://nco.sf.net/nco.html#ppc
 
 A. NCO warns when appended output type differs from input type. 
    Previously NCO would not warn or die when the user (usually
@@ -32,38 +58,6 @@ A. NCO warns when appended output type differs from input type.
    ncks -C -A -v float_var ~/nco/data/in.nc ~/foo.nc
    Now the user is warned but the operations is still permitted.
    http://nco.sf.net/nco.html#-A
-
-A. NCO will now store data at a specifiable level of precision.
-   Standard terminology for precision is remarkably ambiguous, and 
-   we call this Precision-Preserving Compression (PPC) functionality.
-   NCO's PPC implementation currently accepts two types of precision
-   specification implemented with completely different algorithms.
-   Users can specify either the total Number of Significant Digits
-   (NSD) or the Decimal Significant Digits (DSD), mean the number of
-   significant digits after (or before) the decimal point. 
-   For example, NSD=5 tells NCO to retain 5 significant digits in the
-   specified variables. Specifying DSD=3 or DSD=-2 causes NCO to
-   preserve the number rounded to the nearest thousandth or hundred,
-   respectively. In other words, DSD is the negative base-10 logarithm
-   of the desired decimal precision. Under the hood, NSD uses
-   bitmasking to eliminate unnecessary (false) precision, while
-   DSD utilizes rounding. PPC (both NSD and DSD) intentionally
-   loses information (aka unwanted precision).
-   The rounding is
-   performed by zeroing the greatest number of mantissa bits
-   consistent with the desired precision. This results in consecutive 
-   zeros occupying signicant portions least siginificant bit in
-   the on-disk IEEE storage of floating point numbers. Byte-stream
-   compression techniques, such as the gzip compression used
-   by HDF5, will compress these strings of zeros more efficiently than 
-   unrounded numbers. The net result is that netCDF4 files that
-   utilize compression (e.g., ncks -L 1) can be significantly
-   reduced in size. There is no benefit to rounding numbers and
-   storing them in netCDF3 files because netCDF3 does not support
-   compression and thus one may as well maintain the precision.
-   This feature only works when the output dataset is netCDF4.
-   ncks -4 --ppc temperature=3 --ppc pressure,speed=-2 in.nc out.nc
-   http://nco.sf.net/nco.htlm#ppc
 
 BUG FIXES:
 
