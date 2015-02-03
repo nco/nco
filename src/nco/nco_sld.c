@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.15 2015-02-02 23:39:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.16 2015-02-03 16:52:41 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -242,7 +242,7 @@ nco_ppc_set_var
       if(regcomp(rx,var_nm,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
         (void)fprintf(stdout,"%s: ERROR trv_tbl_set_ppc() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
         nco_exit(EXIT_FAILURE);
-      }
+      } /* endif */
       rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
       result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -259,7 +259,7 @@ nco_ppc_set_var
     rx=(regex_t *)nco_free(rx);
     result=(regmatch_t *)nco_free(result);
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-    (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
+    (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),var_nm);
       nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
   }else if(strchr(var_nm,sls_chr)){ /* Full name */
@@ -304,7 +304,7 @@ char *sng)
   if(start != sng){
     memmove(sng, start, end);
     sng[end]='\0';
-  }
+  } /* endif */
   while(isblank(*(sng+end-1))) end--;
   sng[end]='\0';
   return sng;
@@ -316,7 +316,7 @@ int nco_sng2array(const char *delim, const char *str, char **sarray)
   char *tstr;
   tstr=strdup(str);
   sarray[idx]=strtok(tstr,delim);
-  while(sarray[idx]!=NULL) sarray[++idx]=strtok(NULL,delim);
+  while(sarray[idx]) sarray[++idx]=strtok(NULL,delim);
   return idx;
 }/* end nco_sng2array */
 
@@ -324,10 +324,10 @@ void nco_kvmaps_free(kvmap_sct *kvmaps)
 {
   int idx=0;
   while(kvmaps[idx].key){
-    kvmaps[idx].key=nco_free(kvmaps[idx].key);
-    kvmaps[idx].value=nco_free(kvmaps[idx].value);
+    kvmaps[idx].key=(char *)nco_free(kvmaps[idx].key);
+    kvmaps[idx].value=(char *)nco_free(kvmaps[idx].value);
   } /* end while */
-  kvmaps=nco_free(kvmaps);
+  kvmaps=(kvmap_sct *)nco_free(kvmaps);
 }/* end nco_kvmaps_free */
 
 // nco_kvmap_prn

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.9 2015-02-02 23:39:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.10 2015-02-03 16:52:41 zender Exp $ */
 
 /* Purpose: Description (definition) of Swath-Like Data (SLD) functions */
 
@@ -14,6 +14,7 @@
 #define NCO_SLD_H
 
 /* Standard header files */
+#include <ctype.h> /* isalnum(), isdigit(), tolower() */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp() */

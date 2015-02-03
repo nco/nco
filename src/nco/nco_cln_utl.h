@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.39 2015-01-13 03:10:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.40 2015-02-03 16:52:41 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -18,7 +18,7 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
-#include <ctype.h> /* tolower() */
+#include <ctype.h> /* isalnum(), isdigit(), tolower() */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 
@@ -125,6 +125,7 @@ int /* O [flg] String is calendar date */
 nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
 (const char *unit_sng); /* I [sng] Units string */
 
+#ifdef HAVE_UDUNITS2_H
 int /* [rcd] Return code */
 nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
 (const ptr_unn val, /* I [sct] Value to rebase */
@@ -132,6 +133,7 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
  const nc_type val_typ, /* I [enm] Value type */
  const char *unit_sng, /* I [sng] Units string */
  char *lgb_sng); /* O [sng] Legible version of input string */
+#endif /* !HAVE_UDUNITS2 */
 
 #ifdef __cplusplus
 } /* end extern "C" */

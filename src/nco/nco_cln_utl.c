@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.52 2015-01-13 03:10:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.53 2015-02-03 16:52:41 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -389,7 +389,7 @@ nco_cln_prs_tm /* UDUnits1 Extract time stamp from a parsed udunits string */
 
 } /* end UDUnits1 nco_cln_prs_tm() */
 
-# endif /*!HAVE_UDUNITS2 */
+# endif /* !HAVE_UDUNITS2 */
 
 #else /* !ENABLE_UDUNITS */
 
@@ -705,6 +705,7 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
 
 } /* end nco_cln_chk_tm() */
 
+#ifdef HAVE_UDUNITS2_H
 int /* [rcd] Return code */
 nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
 (const ptr_unn val, /* I [sct] Value to rebase */
@@ -776,3 +777,5 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
   return NCO_NOERR;
 
 } /* end nco_cln_sng_rbs() */
+#endif /* !HAVE_UDUNITS2 */
+
