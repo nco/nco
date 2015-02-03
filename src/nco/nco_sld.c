@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.16 2015-02-03 16:52:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.17 2015-02-03 20:25:11 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -298,11 +298,11 @@ nco_sng_strip( /* [fnc] Strip leading and trailing white space */
 char *sng)
 {
   /* fxm: seems not working for \n??? */
-  char *start=sng;
-  while(isspace(*start)) start++;
-  int end=strlen(start);
-  if(start != sng){
-    memmove(sng, start, end);
+  char *srt=sng;
+  while(isspace(*srt)) srt++;
+  int end=strlen(srt);
+  if(srt != sng){
+    memmove(sng,srt,end);
     sng[end]='\0';
   } /* endif */
   while(isblank(*(sng+end-1))) end--;
@@ -310,13 +310,13 @@ char *sng)
   return sng;
 }/* end nco_sng_strip */
 
-int nco_sng2array(const char *delim, const char *str, char **sarray)
+int nco_sng2array(const char *dlm, const char *str, char **sarray)
 {
   int idx=0;
   char *tstr;
   tstr=strdup(str);
-  sarray[idx]=strtok(tstr,delim);
-  while(sarray[idx]) sarray[++idx]=strtok(NULL,delim);
+  sarray[idx]=strtok(tstr,dlm);
+  while(sarray[idx]) sarray[++idx]=strtok(NULL,dlm);
   return idx;
 }/* end nco_sng2array */
 
@@ -330,7 +330,6 @@ void nco_kvmaps_free(kvmap_sct *kvmaps)
   kvmaps=(kvmap_sct *)nco_free(kvmaps);
 }/* end nco_kvmaps_free */
 
-// nco_kvmap_prn
 void nco_kvmap_prn(kvmap_sct vm)
 {
   if(!vm.key) return;

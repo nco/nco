@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.82 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.83 2015-02-03 20:25:11 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -67,6 +67,16 @@ strncasecmp /* [fnc] Lexicographical case-insensitive string comparison */
   return 0;
 } /* end strncasecmp() */
 #endif /* !NEED_STRCASECMP */
+
+#ifdef NEED_ISBLANK
+int /* O [flg] Character is a space or horizontal tab */
+isblank /* [fnc] Is character a space or horizontal tab? */
+(const int chr) /* I [enm] Character to check */
+{
+  /* 20150203 Initial version */
+  return chr == ' ' || chr == '\t';
+} /* end isblank() */
+#endif /* !NEED_ISBLANK */
 
 /* 20130827 GNU g++ always provides strcasestr(), MSVC never does */
 #ifndef __GNUG__

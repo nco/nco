@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.51 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.52 2015-02-03 20:25:11 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -25,6 +25,10 @@
 #endif /* !HAVE_STRINGS_H */
 
 #ifdef _MSC_VER
+/* 20150203 C99 supplies isblank() and isspace() in ctype.h
+   MSVC 2010 has ctype.h and supplies isspace() but lacks isblank() 
+   MSVC 2012+ (apparently) supplies everything expected in ctype.h? */
+# define NEED_ISBLANK
 # define NEED_STRCASESTR
 #endif /* !_MSC_VER */
 
@@ -40,6 +44,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+#ifdef NEED_ISBLANK
+int /* O [flg] Character is a space or horizontal tab */
+isblank /* [fnc] Is character a space or horizontal tab? */
+(const int chr); /* I [enm] Character to check */
+#endif /* !NEED_ISBLANK */
 
 #ifdef NEED_STRCASECMP
 int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
