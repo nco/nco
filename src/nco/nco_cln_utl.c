@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.53 2015-02-03 16:52:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.54 2015-02-03 17:58:35 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -705,7 +705,6 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
 
 } /* end nco_cln_chk_tm() */
 
-#ifdef HAVE_UDUNITS2_H
 int /* [rcd] Return code */
 nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
 (const ptr_unn val, /* I [sct] Value to rebase */
@@ -721,6 +720,8 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
      dumplib.c/nctime_val_tostring() by Dave Allured, NOAA
      cdRel2Iso() from CDMS by Bob Drach, LLNL
      cdParseRelunits() from CDMS by Bob Drach, LLNL */
+
+#ifdef HAVE_UDUNITS2_H
 
   const char fnc_nm[]="nco_cln_sng_rbs()"; /* [sng] Function name */
   
@@ -768,14 +769,15 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
   } /* endif */
 
   val_dbl+=0*val_idx; /* CEWI */
-  lgb_sng[0]='\0'; /* CEWI */
 
   ut_free(ut_sct_in);
   ut_free(ut_sct_out);
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
+#endif /* !HAVE_UDUNITS2 */
+
+  lgb_sng[0]='\0'; /* CEWI */
 
   return NCO_NOERR;
 
 } /* end nco_cln_sng_rbs() */
-#endif /* !HAVE_UDUNITS2 */
 
