@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.11 2015-02-03 20:25:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.12 2015-02-03 22:21:22 zender Exp $ */
 
 /* Purpose: Description (definition) of Swath-Like Data (SLD) functions */
 
@@ -54,7 +54,7 @@ nco_ppc_ini /* [fnc] Set PPC based on user specifications */
 (int *dfl_lvl, /* O [enm] Deflate level */
  const int fl_out_fmt,  /* I [enm] Output file format */
  char *const ppc_arg[], /* I [sng] List of user-specified ppc */
- const int cnk_nbr, /* I [nbr] Number of ppc specified */
+ const int ppc_nbr, /* I [nbr] Number of ppc specified */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void

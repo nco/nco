@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.17 2015-02-03 20:25:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.18 2015-02-03 22:21:22 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -318,7 +318,7 @@ int nco_sng2array(const char *dlm, const char *str, char **sarray)
   sarray[idx]=strtok(tstr,dlm);
   while(sarray[idx]) sarray[++idx]=strtok(NULL,dlm);
   return idx;
-}/* end nco_sng2array */
+} /* end nco_sng2array */
 
 void nco_kvmaps_free(kvmap_sct *kvmaps)
 {
@@ -328,7 +328,7 @@ void nco_kvmaps_free(kvmap_sct *kvmaps)
     kvmaps[idx].value=(char *)nco_free(kvmaps[idx].value);
   } /* end while */
   kvmaps=(kvmap_sct *)nco_free(kvmaps);
-}/* end nco_kvmaps_free */
+} /* end nco_kvmaps_free */
 
 void nco_kvmap_prn(kvmap_sct vm)
 {
@@ -376,3 +376,61 @@ kvmap_sct *kvm_scrip)/* structure to hold contents of SCRIP file */
 
   return NCO_NOERR;
 } /* end hdlscrip */
+
+#if 0
+int
+nco_ESMF_Regrid(
+wgt,
+data_in,
+&data_out
+){
+// Given weights and data, do regridding
+ESMF_Regrid(wgt,data_in,data_);
+// write data_out
+}
+
+int
+nco_rgr_wgt_grd_mk();
+
+typedef struct{
+char *fl_grd_in;
+char *fl_grd_out;
+flg_1...;
+} rgr_wgt_sct;
+
+int
+nco_rgr_wgt_grd_mk(
+rgr_wgt_sct *rgr_wgt;
+){
+// Given grids, compute weights
+
+// NCO reads and checks inputs
+open(fl_grd_in);
+read lat_in,lon_in,lat_in_crn,... // nco_var_get
+
+// populate rgr_wgt
+
+nco_ESMF_RegridWeightGen(lat_in_crn,lon_in_crn,lat_out_crn,lon_out_crn,&wgt);
+
+// NCO writes output
+write wgt // nco_var_get
+
+}
+
+int
+nco_ESMF_RegridWeightGen(
+lat_in_crn,
+lon_in_crn,
+...
+){
+// Given grids, compute weights
+
+const char fnc_nm[]="nco_ESMF_RegridWeightGen()";
+int rcd=NC_NOERR;
+rcd=ESMF_RegridWeightGen(lat_in_crn,lon_in_crn,lat_out_crn,lon_out_crn,&wgt);
+if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+return rcd;
+
+// NCO writes output
+}
+#endif /* endif False */
