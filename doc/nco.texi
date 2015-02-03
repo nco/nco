@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1066 2015-02-03 02:08:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1067 2015-02-03 04:43:45 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6504,12 +6504,14 @@ and copies the chunking parameters from the input to the output file.
 Alternate invocation: none@*
 @var{cnk_plc} key values: @samp{xst}, @samp{cnk_xst}, @samp{plc_xst}@*
 Mnemonic: E@emph{X}i@emph{ST}ing chunked variables@*
-@item Chunk Variables @acronym{NCO} recommendations
-Definition: Chunk all variables according to @acronym{NCO} practices.
+@item Chunk Variables with @acronym{NCO} recommendations
+Definition: Chunk all variables according to @acronym{NCO} best
+practices. 
 This is a virtual option that ensures the chunking policy is (in the 
 subjective opinion of the authors) the best policy for typical usage.
 As of @acronym{NCO} version 4.4.8 (February, 2015), this virtual policy
-calls @samp{plc_all}.@*
+implements @samp{map_rew} for 3-D variables and @samp{map_lfp} for all
+other variables.@*
 Alternate invocation: none@*
 @var{cnk_plc} key values: @samp{nco}, @samp{cnk_nco}, @samp{plc_nco}@*
 Mnemonic: @emph{N}et@emph{C}DF@emph{O}perator@*

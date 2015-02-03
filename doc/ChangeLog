@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release"
 	cvs tag -c nco-4_4_8;cvs tag -c nco-4_4_8-1
 
+	* Implement cnk plc_nco and cause it and map_rew to do map_rew for 3-D otherwise map_lfp
+
 	* Optimize nco_ppc_set_var(), fail on invalid variable names
 
 	* Fully document PPC, NSD, DSD

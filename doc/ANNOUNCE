@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.766 2015-02-03 02:08:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.767 2015-02-03 04:43:45 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -13,6 +13,11 @@ either the total number of significant digits or the number of
 significant digits after (or before) the decimal point.
 These precision features are lumped together under the generic
 name Precision-Preserving Compression (PPC), summarized below.
+
+Specifying more reasonable and optimized chunking maps has been
+made easier by the addition of a new "best practices" policy 
+which implements Rew's balanced chunking for three-dimensional
+variables, and Lefter Product chunking for all others.
 
 Work on NCO 4.4.9 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
@@ -37,18 +42,33 @@ A. NCO will now store data at a per-variable precision level.
    each floating point number. Standard byte-stream compression
    techniques, such as the DEFLATE compression used by gzip (and in
    HDF5), compress these zero-bits more efficiently than unrounded
-   numbers. The net result is that netCDF files are skinnier when
-   compressed. This is internal with netCDF4 and external (e.g., gzip
-   or bzip2) with netCDF3. Space savings can be seriously large,
+   numbers. The net result is PPC makes netCDF files skinnier when
+   compressed. Compression is internal with netCDF4 and external
+   (e.g., gzip or bzip2) with netCDF3. Space savings can be enormous,  
    and face it, how often does your precision exceed 4 digits?
-   PPC data, BTW, can be packed for additional space savings.
-   And don't worry, coordinate variables will not be rounded :)
+   PPC data can also be packed to save additional space.
+   And don't worry, coordinate variables are not rounded :)
    ncks -7 --ppc default=5 --ppc temperature=3 in.nc out.nc
    ncks -7 --ppc AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 in.nc out.nc
-   ncpdq -7 --ppc default=4 in.nc out.nc
+   ncpdq -7 --ppc default=4 --ppc grid_area=15 in.nc out.nc
    http://nco.sf.net/nco.html#ppc
 
-A. NCO warns when appended output type differs from input type. 
+B. New "nco" chunking policy and modified "rew" chunking map: 
+   Policy "nco" is a virtual option that implements the best
+   (in the subjective opinion of the authors) policy and map
+   for typical usage. This combination will evolve with time.
+   As of NCO version 4.4.8, this virtual policy implements 
+   map_rew for 3-D variables and map_lfp for all other variables. 
+   For the time being, map_rew does the same, i.e., it also
+   calls map_lfp when variables are not 3-D. This ensures that
+   Rew's balanced chunking is used on variables for which it
+   applies, and another sensible default (lfp = Lefter Product) 
+   is used on all other variables big enough to chunk.
+   ncks -O -4 --cnk_plc=nco in.nc out.nc
+   ncks -O -4 --cnk_map=rew in.nc out.nc
+   http://nco.sf.net/nco.html#cnk
+
+C. NCO warns when appended output type differs from input type. 
    Previously NCO would not warn or die when the user (usually
    inadvertently) wrote data of one type into a destination meant
    for a different type. These commands would therefore complete
@@ -61,10 +81,10 @@ A. NCO warns when appended output type differs from input type.
 
 BUG FIXES:
 
-A. Hi
-   ncrename has known problems when renaming netCDF4 coordinates.
-   These problems will go away when Unidata issues a fix to the
-   underlying netCDF library. Thanks to Parker Allen for reporting.
+A. ncrename had problems when renaming netCDF4 coordinates.
+   These problems appear fixed but now there are new ones when 
+   renaming attributes. These will go away when Unidata fixes
+   the underlying netCDF4 library.
    http://nco.sf.net#bug_nc4_rename
 
 B. Fix ncks bug dumping files with multiple long dimension names.
@@ -75,9 +95,9 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.4.8 built/tested with netCDF
-   4.3.3-rc2 (20141112) on top of HDF5 hdf5-1.8.13 with:
+   4.3.3-rc3 (20150129) on top of HDF5 hdf5-1.8.13 with:
 
-   cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
+   cd ~/nco;./configure # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
 
 A. NOT YET FIXED (NCO problem)
@@ -106,11 +126,18 @@ B. NOT YET FIXED (NCO problem?)
 KNOWN PROBLEMS DUE TO BASE LIBRARIES/PROTOCOLS:
 
 A. NOT YET FIXED (netCDF4 problem)
+   Renaming attributes in netCDF4 enhanced file deletes attributes.
+
+   Demonstration with netCDF <= 4.3.3-rc3:
+   ncrename -O -a /g1/lon@units,new_units ~/nco/data/in_grp.nc ~/foo.nc
+   ncks -v /g1/lon ~/foo.nc
+
+   Previous bug is lumped together with following, related bug
    Renaming netCDF4 coordinate variables or dimensions "succeeds" but  
    corrupts (sets to _FillValue) values in the output dataset.
    Full description here http://nco.sf.net#bug_nc4_rename
 
-   Demonstration with netCDF <= 4.3.2:
+   Demonstration with netCDF <= 4.3.2 (fixed in 4.3.3-rc3?):
    ncrename -O -v time,newrec ~/nco/data/in_grp.nc ~/foo.nc
    ncks --cdl -g // -v newrec -d time,0 -C ~/foo.nc
 
@@ -118,6 +145,8 @@ A. NOT YET FIXED (netCDF4 problem)
    20141008: Problem reported to Unidata
    20141010: Verified by Unidata.
    20141112: Verified problem still exists
+   20150129: Coordinate problem appear to be fixed with 4.3.3
+   20150202: Now attribute renaming netCDF4 files deletes attributes
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/NCF-177
    Workaround: Convert to netCDF3, rename, convert back to netCDF4
 

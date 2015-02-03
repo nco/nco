@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.155 2015-01-27 00:58:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.156 2015-02-03 04:43:45 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -211,6 +211,7 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   /* NCO-recommended chunking map is expected to change over time
      cnk_map=nco assigns current NCO-recommended map */
   if(cnk_map == nco_cnk_map_nco) cnk->cnk_map=nco_cnk_map_rd1;
+  if(cnk_map == nco_cnk_plc_nco) cnk->cnk_plc=nco_cnk_plc_nco;
 
   return rcd;
 } /* end nco_cnk_ini() */
@@ -1085,7 +1086,11 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   } /* end loop over dimensions */
 
-  if(cnk_map == nco_cnk_map_lfp){
+  //cnk_map_lfp: /* end goto */
+
+  if(cnk_map == nco_cnk_map_lfp ||
+     (cnk_plc == nco_cnk_plc_nco && dmn_nbr != 3) ||
+     (cnk_map == nco_cnk_map_rew && dmn_nbr != 3)){
     /* Set "Lefter Product" chunksizes
        Reasonable defaults have been set for all dimensions, now adjust lefter dimensions to match overall size */
     int dmn_idx_1st_rec;
@@ -1118,10 +1123,13 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     goto cnk_xpl_override;
   } /* !nco_cnk_map_lfp */
 
-  if(cnk_map == nco_cnk_map_rew){
+  //cnk_map_rew: /* end goto */
 
-    /* Apply only to 3-D variables */
-    if(dmn_nbr != 3) goto cnk_xpl_override;
+  /* Apply Rew only to 3-D variables */
+  if(cnk_map == nco_cnk_map_rew && dmn_nbr != 3) goto cnk_xpl_override;
+
+  if(cnk_map == nco_cnk_map_rew || 
+     (cnk_plc == nco_cnk_plc_nco && dmn_nbr == 3)){
 
     /* Implementation by Russ Rew at http://www.unidata.ucar.edu/staff/russ/public/chunk_shape_3D.py
        >>> import cnk
@@ -1247,7 +1255,13 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     if(two_pwr_idx) two_pwr_idx=(size_t *)nco_free(two_pwr_idx); 
     if(var_shp) var_shp=(size_t *)nco_free(var_shp); 
 
+    /* Skip uniform and per-dimension overrides, go straight to final safety check */
+    goto cnk_sft_chk;
+
   } /* !nco_cnk_map_rew */
+
+  /* Uniform override */
+  // cnk_unf_override: /* end goto */
 
   /* Override "reasonable" defaults with explicitly set uniform scalar chunksize, if any */
   if(cnk_sz_dfl > 0UL){
@@ -1269,7 +1283,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     } /* end loop over dimensions */
   } /* !cnk_sz_dfl */
 
-cnk_xpl_override: /* end goto */
+  /* Explicit (per-dimension) override */
+ cnk_xpl_override: /* end goto */
 
   /* Override "reasonable" defaults with explicitly set per-dimension sizes, if any */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
@@ -1330,6 +1345,9 @@ cnk_xpl_override: /* end goto */
     } /* !rcd_dmn_id */
 
   } /* end loop over dmn_idx */
+
+  /* Final Safety Check */
+ cnk_sft_chk: /* end goto */
 
   /* Status: Previous loop implemented per-dimension checks on user-requested chunksizes only
      Loop below implements similar final safety check for ALL dimensions and ALL chunking maps

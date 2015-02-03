@@ -68,7 +68,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.209 2015-01-30 04:16:46 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.210 2015-02-03 04:43:45 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -346,36 +346,36 @@ variables:
 	lon_wgt:purpose = "Gaussian weights which sum to two for n = 4. These weights are all have floor of 0.0 so should cause SIGFPE when applied to integer types in weighted average.";
 
 	double ppc_dbl(time);
-        ppc_dbl:long_name = "Least Significant Digit, double precision";
+        ppc_dbl:long_name = "Precision-Preserving Compression, double precision";
         ppc_dbl:purpose = "test --ppc switches";
         ppc_dbl:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
 
 	float ppc_flt(time);
-        ppc_flt:long_name = "Least Significant Digit, single precision";
+        ppc_flt:long_name = "Precision-Preserving Compression, single precision";
         ppc_flt:purpose = "test --ppc switches";
         ppc_flt:original_values="0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789";
 
 	double ppc_big(time);
-        ppc_big:long_name = "Least Significant Digit, big numbers";
+        ppc_big:long_name = "Precision-Preserving Compression, big numbers";
         ppc_big:purpose = "test --ppc switches";
         ppc_big:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
 
 	float ppc_bgr(time);
-        ppc_bgr:long_name = "Least Significant Digit, bigger numbers";
+        ppc_bgr:long_name = "Precision-Preserving Compression, bigger numbers";
         ppc_bgr:purpose = "test --ppc switches";
         ppc_bgr:original_values="1234567890e20,1234567890e19,1234567890e18,1234567890e17,1234567890e16,1234567890e15,1234567890e14,1234567890e13,1234567890e12,1234567890e11";
 
 	float ppc_bgr_scl;
-        ppc_bgr:long_name = "Least Significant Digit, bigger numbers, scalar";
+        ppc_bgr:long_name = "Precision-Preserving Compression, bigger numbers, scalar";
         ppc_bgr:purpose = "test --ppc switches";
         ppc_bgr:original_value="1234567890e11";
 
 	double ppc_hgh(time);
-        ppc_hgh:long_name = "Least Significant Digit, high precision";
+        ppc_hgh:long_name = "Precision-Preserving Compression, high precision";
         ppc_hgh:purpose = "test --ppc switches";
 
 	double ppc_hgr(time);
-        ppc_hgr:long_name = "Least Significant Digit, higher precision";
+        ppc_hgr:long_name = "Precision-Preserving Compression, higher precision";
         ppc_hgr:purpose = "test --ppc switches";
 
 	char md5_a;
