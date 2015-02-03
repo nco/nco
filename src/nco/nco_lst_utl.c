@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.86 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.87 2015-02-03 19:32:37 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -100,7 +100,8 @@ nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
     (void)sprintf(fmt_sng_new+mch_psn_srt+2,"%s",fmt_sng+mch_psn_end+1);
   } /* !mch_nbr */
   
-  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG %s reports that the user-supplied formatting string \"%s\" has %d matches to the regular expression \"%s\", which has %zu parenthesized sub-expressions. The first match, if any, begins at offset %d and ends at offset %d and is %d characters long. The revised format string is \"%s\"\n",nco_prg_nm_get(),fnc_nm,fmt_sng,mch_nbr,rx_sng,rx_prn_sub_xpr_nbr,mch_psn_srt,mch_psn_end,mch_psn_end-mch_psn_srt+1,fmt_sng_new);
+  /* MSVC uses %I64d not %lld */
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG %s reports that the user-supplied formatting string \"%s\" has %d matches to the regular expression \"%s\", which has %zu parenthesized sub-expressions. The first match, if any, begins at offset %ld and ends at offset %ld and is %ld characters long. The revised format string is \"%s\"\n",nco_prg_nm_get(),fnc_nm,fmt_sng,mch_nbr,rx_sng,rx_prn_sub_xpr_nbr,(long int)mch_psn_srt,(long int)mch_psn_end,(long int)(mch_psn_end-mch_psn_srt+1),fmt_sng_new);
 
   regfree(rx); /* Free regular expression data structure */
   rx=(regex_t *)nco_free(rx);
