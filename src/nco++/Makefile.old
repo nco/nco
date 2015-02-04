@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.138 2015-02-04 22:24:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.139 2015-02-04 22:45:08 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -333,6 +333,12 @@ ifdef GSL_LIB
 else
  GSL_LIB_FLG := $(shell gsl-config --libs)
 endif # endif GSL_LIB
+ ifndef GSL_MINOR_VERSION
+  GSL_MINOR_VERSION := $(shell gsl-config --version | sed s/^[1-9]\.// )
+  ifeq (${GSL_MINOR_VERSION},${null})
+        GSL_MINOR_VERSION := 4
+  endif # end if GSL_MINOR_VERSION
+ endif # endif GSL_MINOR_VERSION
 endif # end if GSL
 
 ifeq (${UDUNITS},Y)

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1069 2015-02-04 22:19:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1070 2015-02-04 22:45:08 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -7136,18 +7136,25 @@ ncpdq -O -7 --ppc default=3 ${fl} ~/foo3.nc;ls -l ~/foo3.nc
 @end html
 @example
 dstmch90_clm.nc
-Type LZC PPC Pck Size    Notes
+Type LZC PPC Pck Size  % Flags and Notes
+
                    MB
-   3   0   0  -    36
-   7   0   0  -         
-   7   1   0  -         -L 1
-   7   9   0  -         -L 9
-   7   1   5  -         --ppc default=5
-   7   1   4  -         --ppc default=4
-   7   9   5  -         -L 0 --ppc default=5
-   7   9   4  -         -L 9 --ppc default=4
-   7   1   5  Y         ncpdq --ppc default=5
-   7   1   4  Y         ncpdq --ppc default=4
+   3   -   -  -    36  -
+   7   -   -  -         
+   7   1   -  -          -L 1
+   7   9   -  -          -L 9
+   7   -   -  Y          ncpdq --ppc default=5
+   7   1   -  Y          ncpdq -L 1 --ppc default=4
+   7   1   7  -          --ppc default=7
+   7   1   6  -          --ppc default=6
+   7   1   5  -          --ppc default=5
+   7   1   4  -          --ppc default=4
+   7   1   3  -          --ppc default=3
+   7   9   5  -          -L 9 --ppc default=5
+   7   9   4  -          -L 9 --ppc default=4
+   7   1   5  Y          ncpdq --ppc default=5
+   7   1   4  Y          ncpdq --ppc default=4
+
 b1850c5cn_doe.nc
 @end example
 
