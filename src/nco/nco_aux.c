@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.85 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.86 2015-02-04 04:16:24 zender Exp $ */
 
 /* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -354,10 +354,11 @@ nco_aux_prs
 #ifndef M_PI
 # define M_PI		3.14159265358979323846
 #endif /* M_PI */
-    *lon_min*=M_PI/180.0;
-    *lon_max*=M_PI/180.0;
-    *lat_min*=M_PI/180.0;
-    *lat_max*=M_PI/180.0;
+    const float dgr2rdn=M_PI/180.0;
+    *lon_min*=dgr2rdn;
+    *lon_max*=dgr2rdn;
+    *lat_min*=dgr2rdn;
+    *lat_max*=dgr2rdn;
   } /* endif radians */
 } /* nco_aux_prs */
 

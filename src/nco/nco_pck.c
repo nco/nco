@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.102 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.103 2015-02-04 04:16:24 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -853,14 +853,14 @@ nco_var_pck /* [fnc] Pack variable in memory */
 	pck_rng_max_dbl=NC_MAX_UINT;
 	break;
       case NC_INT64:
-	mss_val_dfl_dbl=NC_FILL_INT64; 
-	pck_rng_min_dbl=NC_MIN_INT64;
-	pck_rng_max_dbl=NC_MAX_INT64;
+	mss_val_dfl_dbl=(double)NC_FILL_INT64; /* CEWI for MSVC */
+	pck_rng_min_dbl=(double)NC_MIN_INT64; /* CEWI for MSVC */
+	pck_rng_max_dbl=(double)NC_MAX_INT64; /* CEWI for MSVC */
 	break;
       case NC_UINT64:
-	mss_val_dfl_dbl=NC_FILL_UINT64;
+	mss_val_dfl_dbl=(double)NC_FILL_UINT64; /* CEWI for MSVC */
 	pck_rng_min_dbl=0.0;
-	pck_rng_max_dbl=NC_MAX_UINT64;
+	pck_rng_max_dbl=(double)NC_MAX_UINT64; /* CEWI for MSVC */
 	break;
       case NC_BYTE:
 	mss_val_dfl_dbl=NC_FILL_BYTE; 

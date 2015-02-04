@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.156 2015-02-03 04:43:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.157 2015-02-04 04:16:24 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1173,7 +1173,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     cnk_sz_rgn_zro_dfl=var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs);
 
     if(var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs) >= 1.0){
-      cnk_sz_rgn[0]=cnk_sz_rgn_zro_dfl; // Here Rew13 uses Python // operator for integer arithmetic
+      cnk_sz_rgn[0]=(size_t)cnk_sz_rgn_zro_dfl; // Here Rew13 uses Python // operator for integer arithmetic
     }else{
       /* Adjust chunk shape because time-series length incommensurate with lateral dimensions:
 	 If default chunk shape would give time chunk size smaller than one, then set time chunk size equal to one
@@ -1186,7 +1186,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) /* NB: Start at index 1 */
       if(var_shp[dmn_idx]/cnk_nbr_2D_axs < 1.0) fct_ncr*=cnk_nbr_2D_axs/var_shp[dmn_idx];
     for(dmn_idx=1;dmn_idx<=dmn_nbr-1;dmn_idx++) /* NB: Start at index 1 */
-      if(var_shp[dmn_idx]/cnk_nbr_2D_axs < 1.0) cnk_sz_rgn[dmn_idx]=1L; else cnk_sz_rgn[dmn_idx]=fct_ncr*var_shp[dmn_idx]/cnk_nbr_2D_axs;
+      if(var_shp[dmn_idx]/cnk_nbr_2D_axs < 1.0) cnk_sz_rgn[dmn_idx]=1L; else cnk_sz_rgn[dmn_idx]=(size_t)(fct_ncr*var_shp[dmn_idx]/cnk_nbr_2D_axs);
 
     /* First-guess estimate of chunk size */
     size_t cnk_sz_prd=1L;
@@ -1204,7 +1204,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     size_t prm_idx; /* [idx] Permutation index [0..2^(dmn_nbr-1)] */
     size_t prt_sum; /* [nbr] Partial sum (sum of coefficients times powers of two for higher powers */
     /* Score initial guess */
-    cnk_gap=cnk_sz_byt-cnk_sz_prd*typ_sz;
+    cnk_gap=(long)(cnk_sz_byt-cnk_sz_prd*typ_sz);
     /* In case initial guess is lucky and permutation loop breaks before completing */
     for(dmn_idx=0;dmn_idx<=dmn_nbr-1;dmn_idx++) cnk_sz[dmn_idx]=cnk_sz_rgn[dmn_idx];
 
@@ -1224,7 +1224,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	cnk_sz_prd*=cnk_sz_prt[dmn_idx];
       } /* dmn_idx */
       /* Test gap narrowness */
-      cnk_gap_prt=cnk_sz_byt-cnk_sz_prd*typ_sz;
+      cnk_gap_prt=(long)(cnk_sz_byt-cnk_sz_prd*typ_sz);
 
       if(nco_dbg_lvl_get() >= nco_dbg_var){
 	(void)fprintf(stdout,"prm_idx = %lu, cnk_gap = %ld, cnk_sz_prd = %lu, cnk_gap_prt = %ld, prt_sum = %lu\n",(unsigned long)prm_idx,cnk_gap,(unsigned long)cnk_sz_prd,cnk_gap_prt,(unsigned long)prt_sum);

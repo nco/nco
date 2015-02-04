@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.87 2015-02-03 19:32:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.88 2015-02-04 04:16:24 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -193,7 +193,7 @@ nco_srt_ntg /* [fnc] Sort array of integers */
   /* Purpose: Stub for Numerical Recipes-compatible indexx() routine */
   long foo=sizeof(lmn_nbr)+sizeof(arr_in)+sizeof(idx); /* CEWI */
   foo++; /* CEWI */
-  (void)fprintf(stdout,"%s: ERROR nco_srt_ntg() routine should not be called\n",nco_prg_nm_get());
+  if(foo) (void)fprintf(stdout,"%s: ERROR nco_srt_ntg() routine should not be called\n",nco_prg_nm_get());
   nco_exit(EXIT_FAILURE);
 } /* end nco_srt_ntg() */
 
@@ -206,7 +206,7 @@ nco_srt_lph /* [fnc] Sort array of strings */
   /* Purpose: Stub for Numerical Recipes-compatible indexx_alpha() routine */
   long foo=sizeof(lmn_nbr)+sizeof(arr_in)+sizeof(idx); /* CEWI */
   foo++; /* CEWI */
-  (void)fprintf(stdout,"%s: ERROR nco_srt_lph() routine should not be called\n",nco_prg_nm_get());
+  if(foo) (void)fprintf(stdout,"%s: ERROR nco_srt_lph() routine should not be called\n",nco_prg_nm_get());
   nco_exit(EXIT_FAILURE);
 } /* end nco_srt_lph() */
 

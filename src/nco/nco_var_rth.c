@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.86 2015-02-02 17:08:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.87 2015-02-04 04:16:24 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -181,7 +181,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     scale=1048576.0;
     break;
   default:
-    bit_nbr=ceil(ppc_abs*bit_per_dcm_dgt_prc);
+    bit_nbr=(int)ceil(ppc_abs*bit_per_dcm_dgt_prc);
     scale=pow(2.0,bit_nbr);
     break;
   } /* end switch */   
@@ -213,7 +213,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     if(!has_mss_val){
       for(idx=0L;idx<sz;idx++) op1.dp[idx]=rint(scale*op1.dp[idx])/scale;
     }else{
-      const float mss_val_dbl=*mss_val.dp;
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++)
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=rint(scale*op1.dp[idx])/scale;
     } /* end else */

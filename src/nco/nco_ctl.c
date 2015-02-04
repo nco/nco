@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.513 2015-02-02 23:39:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.514 2015-02-04 04:16:24 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -133,13 +133,13 @@ nco_ddra /* [fnc] Count operations */
   
   /* Following speed parameter estimates are for clay.ess.uci.edu 
      clay is the dual opteron used in ppr_ZeM07 */
-  const float ntg_nbr_brd_fdg_fct=1.8; /* [frc] Empirical correction to broadcasting */
-  const float spd_flp_ncwa=153e6; /* [# s-1] Floating point operation speed */
-  const float spd_ntg_ncwa=200e6; /* [# s-1] Integer operation speed */
-  const float spd_flp_ncbo=353.2e6; /* [# s-1] Floating point operation speed */
-  const float spd_ntg_ncbo=1386.54e6; /* [# s-1] Integer operation speed */
-  const float spd_rd=63.375e6; /* [B s-1] Disk read bandwidth */
-  const float spd_wrt=57.865e6; /* [B s-1] Disk write bandwidth */
+  const float ntg_nbr_brd_fdg_fct=1.8f; /* [frc] Empirical correction to broadcasting */
+  const float spd_flp_ncwa=153e6f; /* [# s-1] Floating point operation speed */
+  const float spd_ntg_ncwa=200e6f; /* [# s-1] Integer operation speed */
+  const float spd_flp_ncbo=353.2e6f; /* [# s-1] Floating point operation speed */
+  const float spd_ntg_ncbo=1386.54e6f; /* [# s-1] Integer operation speed */
+  const float spd_rd=63.375e6f; /* [B s-1] Disk read bandwidth */
+  const float spd_wrt=57.865e6f; /* [B s-1] Disk write bandwidth */
 
   /* 20060602: 
      hjm estimates faster speeds for ncbo:     
