@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.135 2014-12-31 01:50:08 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.136 2015-02-04 21:56:08 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -167,13 +167,21 @@ ifndef NETCDF4_ROOT
  NETCDF4_ROOT := ${NETCDF_ROOT}
 endif
 ifndef NETCDF_INC
+ifdef INC_NCAR
+ NETCDF_INC := ${INC_NCAR} # NCAR module path
+else # endelse INC_NCAR
  NETCDF_INC := ${NETCDF_ROOT}/include # Directory containing netcdf.h
-endif
+endif # endif INC_NCAR
+endif # endif NETCDF_INC
 ifndef NETCDF_LIB
+ifdef LIB_NCAR
+ NETCDF_LIB := ${LIB_NCAR} # NCAR module path
+else # endelse LIB_NCAR
  NETCDF_LIB := ${NETCDF_ROOT}/lib # Directory containing libnetcdf.a
-endif
+endif # endif LIB_NCAR
+endif # endif NETCDF_LIB
 ifndef ${OMP} # OpenMP
- OMP := Y
+ OMP := N
 endif # endif OMP
 ifndef OPTS
  OPTS := O

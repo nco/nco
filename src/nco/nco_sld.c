@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.18 2015-02-03 22:21:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.19 2015-02-04 21:56:08 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -91,7 +91,6 @@ nco_ppc_ini /* Set PPC based on user specifications */
  const int ppc_nbr, /* I [nbr] Number of PPC specified */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
-  char *arg;
   int idx;
   int ippc=0;
   kvmap_sct *ppc_lst;  /* [sct] PPC container */
@@ -113,13 +112,12 @@ nco_ppc_ini /* Set PPC based on user specifications */
 
   /* Parse PPCs */
   for(idx=0;idx<ppc_nbr;idx++){
-    arg=(char *)strdup(ppc_arg[idx]);
-    if(!strstr(arg,"=")){
-      (void)fprintf(stdout,"%s: Invalid --ppc specification: %s\n",nco_prg_nm_get(),arg);
+    if(!strstr(ppc_arg[idx],"=")){
+      (void)fprintf(stdout,"%s: Invalid --ppc specification: %s\n",nco_prg_nm_get(),ppc_arg[idx]);
       if(ppc_lst) nco_kvmaps_free(ppc_lst);
       nco_exit(EXIT_FAILURE);
     } /* endif */
-    kvm=nco_sng2map(arg,kvm);
+    kvm=nco_sng2map(ppc_arg[idx],kvm);
     if(kvm.key){
       char *items[BUFSIZ];
       int idxi;
