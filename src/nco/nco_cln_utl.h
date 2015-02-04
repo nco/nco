@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.41 2015-02-03 17:58:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.42 2015-02-04 02:44:45 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -21,6 +21,10 @@
 #include <ctype.h> /* isalnum(), isdigit(), tolower() */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+#include <string.h> /* strcmp() */
+#ifdef HAVE_STRINGS_H
+# include <strings.h> /* strcasecmp() */
+#endif /* !HAVE_STRINGS_H */
 
 /* 3rd party vendors */
 #ifdef ENABLE_UDUNITS
@@ -34,6 +38,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1506 2015-01-31 00:34:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1507 2015-02-04 02:44:45 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -60,7 +60,7 @@ nco_inq_grps_full                     /* [fnc] Discover and return IDs of apex a
   int grp_nbr_crr; /* [nbr] Number of groups counted so far */
   int grp_id_crr; /* [ID] Current group ID */
 
-  grp_stk_sct *grp_stk; /* [sct] Group stack pointer */
+  grp_stk_sct *grp_stk=NULL_CEWI; /* [sct] Group stack pointer */
   
   /* Initialize variables that are incremented */
   grp_nbr_crr=0; /* [nbr] Number of groups counted (i.e., stored in grp_ids array) so far */
@@ -172,7 +172,7 @@ nco_grp_stk_get                       /* [fnc] Initialize and obtain group itera
 
 int                                   /* [rcd] Return code */
 nco_grp_stk_nxt                       /* [fnc] Find and return next group ID */
-(grp_stk_sct * const grp_stk,         /* O [sct] Group stack pointer */
+(grp_stk_sct * const grp_stk,         /* I/O [sct] Group stack pointer */
  int * const grp_id)                  /* O [ID] Group ID */
 {
   /* Purpose: Find and return next group ID

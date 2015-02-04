@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.231 2015-01-28 19:28:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.232 2015-02-04 02:44:46 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1362,7 +1362,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
   char *spr_sng=NULL; /* [sng] Output separator string */
   char *unit_sng_var; /* [sng] Units string for variable */ 
-  char *unit_sng_crd; /* [sng] Units string for coordinate */ 
+  char *unit_sng_crd=NULL_CEWI; /* [sng] Units string for coordinate */ 
 
   char chr_val; /* [sng] Current character */
 

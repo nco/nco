@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.125 2015-01-21 20:06:40 dywei2 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.126 2015-02-04 02:44:45 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -188,11 +188,6 @@ nco_gid_var_nm_2_var_nm_fll           /* [fnc] Construct full variable name from
 nco_bool                              
 nco_is_fll_pth                         /* [fnc] Utility function to inquire if a string is a full path */
 (const char * const str);              /* I [sng] A string to inquire */
-
-char *
-nco_strrstr                            /* [fnc] Searches a substring starting from the end */
-(const char *str,                      /* [fnc] String */
- const char *str_fnd);                 /* [fnc] String to find */
 
 trv_sct *                              /* O [sct] Table object */
 trv_tbl_var_nm                         /* [fnc] Return variable object (relative name) */

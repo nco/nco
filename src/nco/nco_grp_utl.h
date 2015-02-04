@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.519 2015-01-17 00:49:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.520 2015-02-04 02:44:45 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -88,7 +88,7 @@ nco_grp_stk_get                       /* [fnc] Initialize and obtain group itera
 
 int                                   /* [rcd] Return code */
 nco_grp_stk_nxt                       /* [fnc] Find and return next group ID */
-(grp_stk_sct * const grp_stk,         /* O [sct] Group stack pointer */
+(grp_stk_sct * const grp_stk,         /* I/O [sct] Group stack pointer */
  int * const grp_id);                 /* O [ID] Group ID */
    
 grp_stk_sct *                        /* O [sct] Group stack pointer */

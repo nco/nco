@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release"
 	cvs tag -c nco-4_4_8;cvs tag -c nco-4_4_8-1
 
+	* Put string.h headers in nco_cln_utl.h
+
 	* Add isblank() for MSVC
 
 	* Fix nco_var_lst_add() call in ncap_lex.l to restore g++ compilation capability
