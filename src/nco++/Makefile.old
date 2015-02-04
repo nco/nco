@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.137 2015-02-04 22:19:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.138 2015-02-04 22:24:54 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -350,8 +350,8 @@ endif # end if UDUNITS_LIB
 endif # end if UDUNITS
 
 # At this point we change NETCDF_INC from a directory to a flag
-NC_CFLAGS := $(shell nc-config --cflags)
-NC_LDFLAGS := $(shell nc-config --libs)
+NC_CFLAGS := $(shell ${NETCDF_ROOT}/bin/nc-config --cflags)
+NC_LDFLAGS := $(shell ${NETCDF_ROOT}/bin/nc-config --libs)
 NCO_LDFLAGS := -L${MY_LIB_DIR} -lnco -lnco++
 
 ifeq (${PNETCDF},Y)
