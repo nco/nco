@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.136 2015-02-04 21:56:08 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.137 2015-02-04 22:19:18 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -217,63 +217,22 @@ endif # endif USR_TKN
 ifndef VRS_SNG
  VRS_SNG := $(shell date +%Y%m%d)
 endif # endif VRS_SNG
-
 # Derived-tokens based on primary tokens
 # These tokens should not be altered by hand
-ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
-# Decide among the plethora of Linux compilers
-ifndef LINUX_CXX
-# C++ compiler for Linux
- LINUX_CXX := g++
- #LINUX_CXX := clang
- #LINUX_CXX := como
- #LINUX_CXX := icpc
- #LINUX_CXX := insure
- #LINUX_CXX := pgCC
-endif # endif LINUX_CXX
-ifndef LINUX_CC
-# C compiler for Linux
- LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
- #LINUX_CC := clang
- #LINUX_CC := como --c99
- #LINUX_CC := icc -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE
- #LINUX_CC := insure
- #LINUX_CC := pgcc
-endif # endif LINUX_CC
-ifndef LINUX_FC
-# Fortran compiler for Linux
- LINUX_FC := g95
- #LINUX_FC := gfortran
- #LINUX_FC := lf95
- #LINUX_FC := ifort
- #LINUX_FC := pgf90
-endif # endif LINUX_CC
-ifeq (${PVM_ARCH},LINUXAMD64)
-ifndef LINUX_CXX
-# GCC 3.3 fails in atomicity.h with -O, -O0, and -O2 so use 3.4 instead 
- LINUX_CXX := g++
-endif # endif LINUX_CXX
-ifndef LINUX_CC
- LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
-endif # endif LINUX_CC
-ifndef LINUX_FC
- LINUX_FC := g95
-endif # endif LINUX_FC
-endif # endif LINUXAMD64
-ifeq (${PVM_ARCH},LINUXALPHA)
- LINUX_FC := g77
-endif # endif LINUXALPHA
-endif # endif LINUX
 ifeq (${PRC},D)
  USR_TKN := -DPRC_DBL ${USR_TKN}
 else
  USR_TKN := -DPRC_FLT ${USR_TKN}
 endif # endif PRC
-# Derived-tokens based on primary tokens
-# These tokens should not be altered by hand
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
+ifndef LFLAGS # Flags for Flex (Lex)
+ LFLAGS := -P${NCO_YY_PFX}
+endif
+ifndef YFLAGS # Flags for Bison (Yacc)
+ YFLAGS := -d --name-prefix=${NCO_YY_PFX}
+endif
 
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
@@ -299,6 +258,68 @@ else # !MPI_PRC
  MPI_PRC_SNG :=
 endif # !MPI_PRC
 
+# PnetCDF implies MPI
+ifeq (${PNETCDF},Y)
+ MPI := Y
+endif # !PNETCDF
+
+ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
+# Decide among the plethora of Linux compilers
+ifndef LINUX_CXX
+# C++ compiler for Linux
+ LINUX_CXX := g++
+ #LINUX_CXX := clang
+ #LINUX_CXX := como
+ #LINUX_CXX := icpc
+ #LINUX_CXX := insure
+ #LINUX_CXX := pathCC
+ #LINUX_CXX := pgCC
+endif # endif LINUX_CXX
+ifndef LINUX_CC
+# C compiler for Linux
+ LINUX_CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
+ #LINUX_CC := clang
+ #LINUX_CC := como --c99
+ #LINUX_CC := icc -std=c99 -D_DEFAULT_SOURCE
+ #LINUX_CC := insure
+ #LINUX_CC := nvcc
+ #LINUX_CC := pathcc -std=c99
+ #LINUX_CC := pgcc -c9x
+endif # endif LINUX_CC
+ifndef LINUX_FC
+# Fortran compiler for Linux
+ #LINUX_FC := g95
+ LINUX_FC := gfortran
+ #LINUX_FC := ifort
+ #LINUX_FC := lf95
+ #LINUX_FC := pathf95
+ #LINUX_FC := pgf90
+endif # endif LINUX_CC
+endif # endif LINUX
+
+# OpenMP
+ifeq (${OMP},Y)
+ifdef THR_NBR
+# Pass this OpenMP argument to nco_bm.pl
+ THR_NBR_SNG := "--thr_nbr=${THR_NBR}"
+else # endif THR_NBR
+ THR_NBR_SNG :=
+endif # endif THR_NBR
+endif # endif OMP
+
+ifeq (${RPM},Y)
+# rpm command, and thus RPM variables only guaranteed in RedHat Linux
+# Use recursive expansion so rpm command is not executed on non-RPM systems
+ MDL_RPM_NST_NM = $(shell rpm -qa | grep nco-) # Name of installed package
+# MDL_RPM_PRV_NM = $(shell rpm -qp foo) # Name of package provided by specified RPM
+endif # endif RPM
+
+ifeq (${PVM_ARCH},WIN32)
+ BNR_SFX := .exe
+else
+ BNR_SFX := ${null}
+endif 
+
 ifeq (${GSL},Y)
 # Build GSL-enabled NCO 
 # Place GSL block after DAP blocks for both to work together
@@ -308,16 +329,10 @@ else
  GSL_INC_FLG := $(shell gsl-config --cflags)
 endif # endif GSL_INC
 ifdef GSL_LIB
- GSL_LIB_LIB := -L${GSL_LIB} -lgsl
+ GSL_LIB_FLG := -L${GSL_LIB} -lgsl
 else
  GSL_LIB_FLG := $(shell gsl-config --libs)
 endif # endif GSL_LIB
- ifndef GSL_MINOR_VERSION
-  GSL_MINOR_VERSION := $(shell gsl-config --version | sed s/^[1-9]\.// )
-  ifeq (${GSL_MINOR_VERSION},${null})
-        GSL_MINOR_VERSION := 4
-  endif # end if GSL_MINOR_VERSION
- endif # endif GSL_MINOR_VERSION
 endif # end if GSL
 
 ifeq (${UDUNITS},Y)
@@ -354,10 +369,6 @@ endif
 OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG} ${ANTLR_INC}
 OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${UDUNITS_LIB_FLG} ${ANTLR_LIB}
 
-# sort removes duplicates but unfortunately changes precedence too
-# fxm: use uniq instead
-#TMP_LDFLAGS := $(sort ${TMP_LDFLAGS})
-
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
 space := ${null} ${null}
@@ -370,12 +381,6 @@ slash_rx := cszzsc
 slash := /
 MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
-
-ifeq (${PVM_ARCH},WIN32)
- BNR_SFX := .exe
-else
- BNR_SFX := ${null}
-endif 
 
 # Automagically generated grammar
 NCAP2_ANTLR_GENERATED_CC_STB := ncoLexer ncoParser ncoTree
