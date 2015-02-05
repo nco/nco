@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1070 2015-02-04 22:45:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1071 2015-02-05 07:08:21 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -3581,7 +3581,8 @@ netCDF2 and netCDF3.
 As of 2005, nearly all netCDF datasets were in @code{CLASSIC} format. 
 The @code{64BIT} format was added in Fall, 2004.
 As of 2010, many netCDF datasets were in @code{64BIT} format. 
-As of 2013, many netCDF datasets are in @code{NETCDF4_CLASSIC} format. 
+As of 2013, an increasing number of netCDF datasets were in
+@code{NETCDF4_CLASSIC} format.
 
 The @code{NETCDF4} format uses @acronym{HDF5} as the file storage layer. 
 The files are (usually) created, accessed, and manipulated using the 
@@ -6987,7 +6988,7 @@ S Exponent  Fraction (Significand)   Decimal    Notes
 @end example
 The consumption of about @w{3 bits} per digit of base-10 precision is
 evident, as is the coincidence of a rounded value occasionally exceeding 
-the mandated precision, e.g., for @math{@acronym{NSD} = 3}}.
+the mandated precision, e.g., for @math{@acronym{NSD} = 3}.
 Although the @acronym{NSD} algorithm masks some bits for all 
 @math{@var{nsd} < 9}, compression algorithms like @acronym{DEFLATE}
 may require byte-size-or-greater (i.e., at least eight-bit) bit patterns 
@@ -7109,53 +7110,116 @@ dstmch90_clm.nc # 36 MB
 b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc # 120 MB
 fl=${DATA}/dstmch90/dstmch90_clm.nc
 fl=${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc
+fl=${DATA}/hdf/MERRA300.prod.assim.inst3_3d_asm_Cp.20130601.nc
+
 # ncks PPC only
-ls -l ${fl}
-ncks -O -7 ${fl} ~/foo.nc;ls -l ~/foo.nc
-ncks -O -7 -L 1 ${fl} ~/foo.nc;ls -l ~/foo.nc
-ncks -O -7 -L 9 ${fl} ~/foo.nc;ls -l ~/foo.nc
-ncks -O -7 --ppc default=7 ${fl} ~/foo7.nc;ls -l ~/foo7.nc
-ncks -O -7 --ppc default=6 ${fl} ~/foo6.nc;ls -l ~/foo6.nc
-ncks -O -7 --ppc default=5 ${fl} ~/foo5.nc;ls -l ~/foo5.nc
-ncks -O -7 --ppc default=4 ${fl} ~/foo4.nc;ls -l ~/foo4.nc
-ncks -O -7 --ppc default=3 ${fl} ~/foo3.nc;ls -l ~/foo3.nc
-# ncpdq PPC with packing (double->short)
-ls -l ${fl}
-ncpdq -O -7 ${fl} ~/foo.nc;ls -l ~/foo.nc
-ncpdq -O -7 -L 1 ${fl} ~/foo.nc;ls -l ~/foo.nc
-ncpdq -O -7 -L 9 ${fl} ~/foo.nc;ls -l ~/foo.nc
-ncpdq -O -7 --ppc default=7 ${fl} ~/foo7.nc;ls -l ~/foo7.nc
-ncpdq -O -7 --ppc default=6 ${fl} ~/foo6.nc;ls -l ~/foo6.nc
-ncpdq -O -7 --ppc default=5 ${fl} ~/foo5.nc;ls -l ~/foo5.nc
-ncpdq -O -7 --ppc default=4 ${fl} ~/foo4.nc;ls -l ~/foo4.nc
-ncpdq -O -7 --ppc default=3 ${fl} ~/foo3.nc;ls -l ~/foo3.nc
+sz_rgn=`ls -l ${fl} | cut -d ' ' -f 5`
+fmt_fnc(){ gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}';} 
+cmd="ls -l ${fl}";sz_new=`${cmd} | cut -d ' ' -f 5`;fmt_fnc ${sz_rgn} ${sz_new}
+
+sz_new=`bzip2 -1 -f ${fl};ls -l ${fl}.bz2 | cut -d ' ' -f 5`;bunzip2 ${fl}.bz2;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`bzip2 -9 -f ${fl};ls -l ${fl}.bz2 | cut -d ' ' -f 5`;bunzip2 ${fl}.bz2;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncks -O -7 -L 0 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncks -O -7 -L 1 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncks -O -7 -L 9 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncpdq -O -7 -L 0 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncpdq -O -7 -L 1 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncks -O -7 -L 1 --ppc default=7 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncks -O -7 -L 1 --ppc default=6 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncks -O -7 -L 1 --ppc default=5 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncks -O -7 -L 1 --ppc default=4 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncks -O -7 -L 1 --ppc default=3 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncpdq -O -7 -L 1 --ppc default=4 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncpdq -O -7 -L 9 --ppc default=4 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncpdq -O -3 --ppc default=4 ${fl} ~/foo.nc;bzip2 -1 -f ~/foo.nc;ls -l ~/foo.nc.bz2 | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
 @end ignore
 @html
 <a name="ppc_tbl_bit"></a> <!-- http://nco.sf.net/nco.html#ppc_tbl_bit -->
 <a name="ppc_tbl_nc"></a> <!-- http://nco.sf.net/nco.html#ppc_tbl_nc -->
 @end html
+@cindex Burrows-Wheeler algorithm
+@cindex @command{bzip2}
+The table below summarizes the performance of lossless and lossy
+compression on two typical, or at least random, netCDF data files. 
+Columns are as follows:
+@var{Type} is the netCDF file-type: 
+@kbd{3} for @code{CLASSIC},
+@kbd{4} for @code{NETCDF4}), 
+or @kbd{7} for @code{NETCDF4_CLASSIC}).
+@var{LLC} is the type, if any, of lossless compression employed.
+Bare numbers refer to the strength of the @acronym{DEFLATE} algorithm
+employed internally by netCDF4/@acronym{HDF5}, while numbers prefixed
+with @kbd{B} refer to the block size employed by the Burrows-Wheeler
+algorithm in @command{bzip2}. 
+@var{PPC} is the number of significant digits retained by the
+precision-preserving compression @acronym{NSD} algorithm. 
+@var{Pck} is @kbd{Y} if the default @command{ncpdq} packing
+algorithm (convert floating point types to @code{NC_SHORT}) 
+was employed.
+A dash (@kbd{-}) indicates the associated compression feature
+was not employed.
+@var{Size} is the resulting filesize in @acronym{MB}.
+Percent is the size relative to the original filesize.
 @example
-dstmch90_clm.nc
-Type LZC PPC Pck Size  % Flags and Notes
+# dstmch90_clm.nc
+Type LLC PPC Pck  Size   %    Flags and Notes
+   3   -   -  -   34.7   -
+   3  B1   -  -   28.9  83.2  bzip2 -1
+   3  B9   -  -   29.3  84.4  bzip2 -9
+   7   -   -  -   35.0 101.0     
+   7   1   -  -   28.2  81.3  -L 1
+   7   9   -  -   28.0  80.8  -L 9
+   7   -   -  Y   17.6  50.9  ncpdq 
+   7   1   -  Y    7.9  22.8  ncpdq -L 1
+   7   1   7  -   27.9  80.4  --ppc default=7
+   7   1   6  -   24.8  71.5  --ppc default=6
+   7   1   5  -   20.7  59.8  --ppc default=5
+   7   1   4  -   18.2  52.6  --ppc default=4
+   7   1   3  -   13.7  39.5  --ppc default=3
+   7   1   4  Y    7.9  22.9  ncpdq --ppc default=4
+   7   9   4  Y    7.7  22.1  ncpdq -L 9 --ppc default=4
+   3  B1   4  Y    6.1  17.6  ncpdq --ppc default=4 bzip2 -1
 
-                   MB
-   3   -   -  -    36  -
-   7   -   -  -         
-   7   1   -  -          -L 1
-   7   9   -  -          -L 9
-   7   -   -  Y          ncpdq --ppc default=5
-   7   1   -  Y          ncpdq -L 1 --ppc default=4
-   7   1   7  -          --ppc default=7
-   7   1   6  -          --ppc default=6
-   7   1   5  -          --ppc default=5
-   7   1   4  -          --ppc default=4
-   7   1   3  -          --ppc default=3
-   7   9   5  -          -L 9 --ppc default=5
-   7   9   4  -          -L 9 --ppc default=4
-   7   1   5  Y          ncpdq --ppc default=5
-   7   1   4  Y          ncpdq --ppc default=4
+# b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc
+Type LLC PPC Pck  Size   %    Flags and Notes
+   3   -   -  -  119.8   -
+   3  B1   -  -   84.2  70.3  bzip2 -1
+   3  B9   -  -   84.8  70.9  bzip2 -9
+   7   -   -  -  120.5 100.7     
+   7   1   -  -   82.6  69.0  -L 1
+   7   9   -  -   82.1  68.6  -L 9
+   7   -   -  Y   60.7  50.7  ncpdq 
+   7   1   -  Y   26.0  21.8  ncpdq -L 1
+   7   1   7  -   81.8  68.3  --ppc default=7
+   7   1   6  -   74.8  62.5  --ppc default=6
+   7   1   5  -   65.4  54.6  --ppc default=5
+   7   1   4  -   58.0  48.4  --ppc default=4
+   7   1   3  -   45.8  38.3  --ppc default=3
+   7   1   4  Y   26.3  21.9  ncpdq --ppc default=4
+   7   9   4  Y   25.6  21.4  ncpdq -L 9 --ppc default=4
+   3  B1   4  Y    7.3   6.1  ncpdq --ppc default=4 bzip2 -1
 
-b1850c5cn_doe.nc
+# MERRA300.prod.assim.inst3_3d_asm_Cp.20130601.hdf
+Type LLC PPC Pck  Size   %    Flags and Notes
+  H4   5   -  -  244.3     -   
+  H4  B1   -  -  244.7  bzip2 -1
+  N4   5   -  -  214.5
+   3   -   -  -  617.1
+  N4  B1   -  -  215.4  bzip2 -1
+  N4  B9   -  -         bzip2 -9
+   7   -   -  -  210.5     
+   7   1   -  -  223.2  -L 1
+   7   9   -  -  207.3  -L 9
+   7   -   -  Y  347.1    ncpdq 
+   7   1   -  Y  133.6    ncpdq -L 1
+   7   1   7  -  222.9  91.2  --ppc default=7
+   7   1   6  -  219.2  89.7  --ppc default=6
+   7   1   5  -  200.0  81.9  --ppc default=5
+   7   1   4  -  184.8  75.6  --ppc default=4
+   7   1   3  -  145.8  59.7  --ppc default=3
+   7   1   4  Y  133.6  54.7  ncpdq --ppc default=4
+   7   9   4  Y  127.0  52.0  ncpdq -L 9 --ppc default=4
+   3  B1   4  Y  114.0  46.7  ncpdq --ppc default=4 bzip2 -1
 @end example
 
 @cindex @acronym{NCAR}

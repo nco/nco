@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.421 2015-02-02 23:39:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.422 2015-02-05 07:08:21 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -138,8 +138,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.421 2015-02-02 23:39:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.421 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.422 2015-02-05 07:08:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.422 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -195,7 +195,6 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int ppc_nbr=0; /* [nbr] Number of PPC arguments */
-  int ppc=0; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
@@ -778,7 +777,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,nco_dbg_lvl,dmn_rdr_nbr,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,nco_prg_nm,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,IS_REORDER,ppc,fl_out_fmt)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,nco_dbg_lvl,dmn_rdr_nbr,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,nco_prg_nm,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,IS_REORDER,fl_out_fmt)
 #endif /* !_OPENMP */
 
     /* Process all variables in current file */
@@ -841,8 +840,8 @@ main(int argc,char **argv)
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif nco_pck_plc != nco_pck_plc_nil */
 
-      if(var_trv->ppc != NC_MAX_INT && (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
-	if(var_trv->flg_nsd) (void)nco_var_bitmask(ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val); else (void)nco_var_around(ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
+      if(var_trv->ppc != NC_MAX_INT){
+	if(var_trv->flg_nsd) (void)nco_var_bitmask(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val); else (void)nco_var_around(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
       } /* endif ppc */
 	
 #ifdef _OPENMP
