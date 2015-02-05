@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.755 2015-02-05 07:08:21 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.756 2015-02-05 19:26:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -920,6 +920,7 @@ ifeq (${GCC_OR_CLANG},Y)
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
 # -pg: Enable profiling, generate gmon.out output files (also needed by linker)
+# -O3: clang -O4 DNE, highest clang optimization is -O3 
 # -O4: Turn on optimization so uninitialized variables are flagged. Downside: optimizes-out many debugging symbols
 # Compilation flags recommended by GSL that I do not like and do not use:
 # -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
@@ -940,7 +941,11 @@ ifneq (clang,$(firstword ${CC}))
 endif # endif clang
 endif # endif OMP
 ifeq (${OPTS},O)
+ifeq (clang,$(firstword ${CC}))
+ CFLAGS += -O3 -g ${GCC_RCH_ARG}
+else # endif clang
  CFLAGS += -O4 -g ${GCC_RCH_ARG}
+endif # endif clang
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g -Wno-switch

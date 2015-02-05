@@ -19986,6 +19986,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
 # -pg: Enable profiling, generate gmon.out output files (also needed by linker)
+# -O3: Clang -O4 is is equivalent to -O3
 # -O4: Turn on optimization so uninitialized variables are flagged
 # Compilation flags recommended by GSL that I do not like and do not use:
 # -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
@@ -20390,7 +20391,8 @@ if test $ac_compiler_gnu = 'yes'; then
     CFLAGS="${CFLAGS} -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
     case ${host} in
 # MacOSX does not understand shared libraries
-	*-apple-darwin* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; CFLAGS="-fno-common ${CFLAGS}" ; enable_shared='no' ;;
+# Clang -O4 DNE. Highest is -O3. CEWI.
+	*-apple-darwin* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-O4/-O3/'` ; CFLAGS="-fno-common ${CFLAGS}" ; enable_shared='no' ;;
 # Solaris has problems with time.h
 	sparc-sun-solaris2* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; ;;
     esac

@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release"
 	cvs tag -c nco-4_4_8;cvs tag -c nco-4_4_8-1
 
+	* Use -O3 not -O4 on clang
+
 2015-02-04  Charlie Zender  <zender@uci.edu>
 
 	* Document PPC efficacy in tbl_ppc_nc

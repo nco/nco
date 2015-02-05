@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.59 2015-01-17 00:53:13 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.60 2015-02-05 19:26:54 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -795,6 +795,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
 # -pg: Enable profiling, generate gmon.out output files (also needed by linker)
+# -O3: clang -O4 DNE, highest clang optimization is -O3 
 # -O4: Turn on optimization so uninitialized variables are flagged
 # Compilation flags recommended by GSL that I do not like and do not use:
 # -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
@@ -1053,7 +1054,8 @@ if test $ac_compiler_gnu = 'yes'; then
     CFLAGS="${CFLAGS} -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
     case ${host} in
 # MacOSX does not understand shared libraries
-	*-apple-darwin* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; CFLAGS="-fno-common ${CFLAGS}" ; enable_shared='no' ;;
+# clang -O4 DNE, highest clang optimization is -O3 
+	*-apple-darwin* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-O4/-O3/'` ; CFLAGS="-fno-common ${CFLAGS}" ; enable_shared='no' ;;
 # Solaris has problems with time.h
 	sparc-sun-solaris2* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; ;;
     esac
