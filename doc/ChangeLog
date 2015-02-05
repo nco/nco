@@ -6,6 +6,10 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release"
 	cvs tag -c nco-4_4_8;cvs tag -c nco-4_4_8-1
 
+	* Increase prc_bnr_xpl_rqr by 2 so prc_bnr_xpl_rqr=prc_bnr_ceil. Fixes NSD=1 for Q?? in in.nc.
+
+	* Reduce verbosity of dbg_lvl_std
+
 	* Implement PPC in ncwa
 
 	* Use -O3 not -O4 on clang

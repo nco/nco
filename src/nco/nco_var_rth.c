@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.87 2015-02-04 04:16:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.88 2015-02-05 23:08:39 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -315,10 +315,15 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
   prc_bnr_xct=nsd*bit_per_dcm_dgt_prc;
   /* Be conservative, round upwards */
   prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
-  /* First bit is implicit not explicit */
-  prc_bnr_xpl_rqr=prc_bnr_ceil-1;
-  /* 20150128: Hand-tuning shows we can sacrifice one more bit */
-  prc_bnr_xpl_rqr--;
+  /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
+  // prc_bnr_xpl_rqr=prc_bnr_ceil-1;
+  prc_bnr_xpl_rqr=prc_bnr_ceil;
+  /* 20150128: Hand-tuning shows we can sacrifice one or two more bits for almost all cases
+     20150205: However, small integers are an exception. In fact they require two more bits, at least for NSD=1.
+     Thus minimum threshold to preserve half of least significant digit (LSD) is prc_bnr_xpl_rqr=prc_bnr_ceil.
+     Decrementing prc_bnr_xpl_rqr by one or two more bits, integers 1-100 have errors exceeding half of the LSD
+     ncra -4 -O -C --ppc default=1 --ppc one=1 -p ~/nco/data in.nc in.nc ~/foo.nc 
+     ncks -H -m -v Q.. --cdl ~/foo.nc | m */
 
   /* 20150126: fxm casting pointers is tricky with this routine. Avoid for now. */
   /* Typecast pointer to values before access */

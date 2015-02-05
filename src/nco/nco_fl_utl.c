@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.253 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.254 2015-02-05 23:08:39 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -236,7 +236,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_src,fl_dst)){
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to copy.\n",nco_prg_nm_get(),fl_src);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to copy.\n",nco_prg_nm_get(),fl_src);
     return;
   } /* end if */
 
@@ -247,7 +247,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
   /* Construct and execute copy command */
   cmd_cp=(char *)nco_malloc((strlen(cmd_cp_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Copying %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: Copying %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
   (void)sprintf(cmd_cp,cmd_cp_fmt,fl_src_cdl,fl_dst_cdl);
   rcd=system(cmd_cp);
   if(rcd == -1){
@@ -1166,7 +1166,7 @@ nco_fl_mv /* [fnc] Move first file to second */
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_src,fl_dst)){
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_src);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_src);
     return;
   } /* end if */
 
@@ -1177,7 +1177,7 @@ nco_fl_mv /* [fnc] Move first file to second */
 
   /* Construct and execute move command */
   cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
   (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src_cdl,fl_dst_cdl);
   rcd_sys=system(cmd_mv);
   if(rcd_sys == -1){
@@ -1445,7 +1445,7 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this
 #ifndef _MSC_VER
   fl_sys_blk_sz=(size_t)stat_sct.st_blksize;
 #endif /* _MSC_VER */
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports preferred output filesystem I/O block size: %ld bytes\n",nco_prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports preferred output filesystem I/O block size: %ld bytes\n",nco_prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
   
   if(drc_out) drc_out=(char *)nco_free(drc_out);
 
@@ -1723,7 +1723,7 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_out_tmp,fl_out)){
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_out);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_out);
     return;
   }else{
     (void)nco_fl_mv(fl_out_tmp,fl_out);
@@ -1748,7 +1748,7 @@ nco_fl_rm /* [fnc] Remove file */
   rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1UL+strlen(fl_nm)+1UL)*sizeof(char));
   (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",nco_prg_nm_get(),fl_nm,rm_cmd);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",nco_prg_nm_get(),fl_nm,rm_cmd);
   rcd=system(rm_cmd);
   if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",nco_prg_nm_get(),fl_nm);
 
