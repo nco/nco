@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.433 2015-02-04 04:19:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.434 2015-02-05 21:18:25 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -147,12 +147,13 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
+  char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.433 2015-02-04 04:19:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.433 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.434 2015-02-05 21:18:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.434 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -208,6 +209,7 @@ main(int argc,char **argv)
   int op_typ_rlt=0; /* Option o */
   int opt;
   int out_id;  
+  int ppc_nbr=0; /* [nbr] Number of PPC arguments */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
@@ -295,6 +297,9 @@ main(int argc,char **argv)
     {"file_format",required_argument,0,0},
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
+    {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
     /* Long options with short counterparts */
     {"3",no_argument,0,'3'},
     {"4",no_argument,0,'4'},
@@ -439,6 +444,10 @@ main(int argc,char **argv)
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
+      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
+        ppc_arg[ppc_nbr]=(char *)strdup(optarg);
+        ppc_nbr++;
+      } /* endif "ppc" */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
@@ -732,6 +741,9 @@ main(int argc,char **argv)
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+
+  /* Inititialize, decode, and set PPC information */
+  if(ppc_nbr > 0) nco_ppc_ini(&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);
 
   /* Verify output file format supports requested actions */
   (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
@@ -1107,6 +1119,10 @@ main(int argc,char **argv)
       /* Store the output variable ID */
       var_prc_out[idx]->id=var_out_id;
 
+      if(var_trv->ppc != NC_MAX_INT){
+	if(var_trv->flg_nsd) (void)nco_var_bitmask(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val); else (void)nco_var_around(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
+      } /* endif ppc */
+	
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
@@ -1191,6 +1207,10 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    /* Free limits */
+    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    for(idx=0;idx<ppc_nbr;idx++) ppc_arg[idx]=(char *)nco_free(ppc_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
