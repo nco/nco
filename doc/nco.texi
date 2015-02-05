@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1071 2015-02-05 07:08:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1072 2015-02-05 15:18:52 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -715,19 +715,22 @@ If these resources do not help enough, please
 @cindex compatability
 @cindex portability
 @cindex installation
-@acronym{NCO} has been successfully ported and tested and is known to
-work on the following 32- and 64-bit platforms:  
+In its time on Earth, @acronym{NCO} has been successfully ported and
+tested on so many 32- and 64-bit platforms that if we did not write
+them down here we would forget their names:  
 @c alphabetize by OS name
 @acronym{IBM AIX} 4.x, 5.x,
 FreeBSD 4.x, 
 @acronym{GNU}/Linux 2.x, LinuxPPC, LinuxAlpha, LinuxARM, LinuxSparc64,
+LinuxAMD64, 
 @acronym{SGI IRIX} 5.x and 6.x,
 @w{MacOS X} 10.x, 
-@acronym{NEC} Super-UX 10.x, 
 @acronym{DEC OSF}, 
+@acronym{NEC} Super-UX 10.x, 
 Sun SunOS 4.1.x, Solaris 2.x, 
 @acronym{Cray UNICOS} 8.x--10.x,
-and MS Windows95 and all later versions.
+and Microsoft Windows (95, 98, @acronym{NT}, 2000, @acronym{XP}, Vista,
+7, 8, 10).
 If you port the code to a new operating system, please send me a note 
 and any patches you required.
 
@@ -7201,17 +7204,17 @@ Type LLC PPC Pck  Size   %    Flags and Notes
 
 # MERRA300.prod.assim.inst3_3d_asm_Cp.20130601.hdf
 Type LLC PPC Pck  Size   %    Flags and Notes
-  H4   5   -  -  244.3     -   
-  H4  B1   -  -  244.7  bzip2 -1
-  N4   5   -  -  214.5
-   3   -   -  -  617.1
-  N4  B1   -  -  215.4  bzip2 -1
-  N4  B9   -  -         bzip2 -9
-   7   -   -  -  210.5     
-   7   1   -  -  223.2  -L 1
-   7   9   -  -  207.3  -L 9
-   7   -   -  Y  347.1    ncpdq 
-   7   1   -  Y  133.6    ncpdq -L 1
+  H4   5   -  -  244.3 100.0
+  H4  B1   -  -  244.7 100.1  bzip2 -1
+  N4   5   -  -  214.5  87.8
+   3   -   -  -  617.1 252.6
+  N4  B1   -  -  215.4  88.2  bzip2 -1
+  N4  B9   -  -  214.8  87.9  bzip2 -9
+   7   -   -  -  210.5  86.2  
+   7   1   -  -  223.2  91.3  -L 1
+   7   9   -  -  207.3  84.9  -L 9
+   7   -   -  Y  347.1 142.1  ncpdq 
+   7   1   -  Y  133.6  54.7  ncpdq -L 1
    7   1   7  -  222.9  91.2  --ppc default=7
    7   1   6  -  219.2  89.7  --ppc default=6
    7   1   5  -  200.0  81.9  --ppc default=5
