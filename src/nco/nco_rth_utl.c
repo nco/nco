@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.71 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.72 2015-02-07 04:39:39 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -83,6 +83,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
         break;
       case nco_op_min: /* Minimum is already in buffer, do nothing */
       case nco_op_max: /* Maximum is already in buffer, do nothing */
+      case nco_op_mabs: /* Maximum absolute value is already in buffer, do nothing */
         break;
       case nco_op_ttl: /* Total is already in buffer, stuff missing values into elements with zero tally */
         (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
@@ -148,6 +149,28 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
     /* On first loop, simply copy variables from var_prc to var_prc_out */
     if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else (void)nco_var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
+  case nco_op_mabs: /* Maximium absolute value */
+    /* Always take the absolute value of the fresh input
+       Then, on first loop, copy variable from var_prc to var_prc_out like min and max
+       Following loops, do comparative maximum after taking absolute */
+    (void)nco_var_abs(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val);
+    if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else (void)nco_var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
+    break;	
+  case nco_op_mebs: /* Mean absolute value */
+    /* Always take the absolute value of the fresh input
+       Then, on first loop, copy variable from var_prc to var_prc_out like min and max
+       Following loops, do comparative maximum after taking absolute value */
+    (void)nco_var_abs(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val);
+    if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); 
+    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    break;	
+  case nco_op_mibs: /* Mean absolute value */
+    /* Always take the absolute value of the fresh input
+       Then, on first loop, copy variable from var_prc to var_prc_out like min and max
+       Following loops, do comparative minimum after taking absolute value */
+    (void)nco_var_abs(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val);
+    if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else (void)nco_var_min_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
+    break;	
   case nco_op_ttl: /* Total */
     /* NB: Copying input to output on first loop for nco_op_ttl, in similar manner to nco_op_[max/min], can work
        However, copying with nco_var_copy() would not change the tally variable, leaving it equal to zero
@@ -184,17 +207,20 @@ nco_op_typ_cf_sng /* [fnc] Convert arithmetic operation type enum to string */
 (const int nco_op_typ) /* I [enm] Arithmetic operation type */
 {
   /* Purpose: Convert arithmetic operation type enum to string for use in CF Cell Methods 
-     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#appendix-cell-methods */
+     http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#cell-methods */
   switch(nco_op_typ){
   case nco_op_avg: return "mean"; break; /* [enm] Average */
   case nco_op_min: return "minimum"; break; /* [enm] Minimum value */
   case nco_op_max: return "maximum"; break; /* [enm] Maximum value */
   case nco_op_ttl: return "sum"; break; /* [enm] Linear sum */
-  case nco_op_sqravg: return "TBD"; break; /* [enm] Square of mean */
+  case nco_op_mabs: return "maximum_absolute_value"; break; /* [enm] Maximum absolute value */
+  case nco_op_mebs: return "mean_absolute_value"; break; /* [enm] Mean absolute value */
+  case nco_op_mibs: return "minimum_absolute_value"; break; /* [enm] Minimum absolute value */
+  case nco_op_sqravg: return "square_of_mean"; break; /* [enm] Square of mean */
   case nco_op_avgsqr: return "variance"; break; /* [enm] Mean of sum of squares */
-  case nco_op_sqrt: return "TBD"; break; /* [enm] Square root of mean */
-  case nco_op_rms: return "TBD"; break; /* [enm] Root-mean-square (normalized by N) */
-  case nco_op_rmssdn: return "TBD"; break; /* [enm] Root-mean square normalized by N-1 */
+  case nco_op_sqrt: return "square_root_of_mean"; break; /* [enm] Square root of mean */
+  case nco_op_rms: return "root_mean_square"; break; /* [enm] Root-mean-square (normalized by N) */
+  case nco_op_rmssdn: return "root_mean_square_nm1"; break; /* [enm] Root-mean square normalized by N-1 */
   case nco_op_add:
   case nco_op_sbt:
   case nco_op_mlt:
@@ -238,6 +264,9 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 
   if(!strcmp(nco_op_sng,"avg") || !strcmp(nco_op_sng,"average") || !strcmp(nco_op_sng,"mean")) return nco_op_avg;
   if(!strcmp(nco_op_sng,"avgsqr")) return nco_op_avgsqr;
+  if(!strcmp(nco_op_sng,"mabs") || !strcmp(nco_op_sng,"maximum_absolute_value")) return nco_op_mabs;
+  if(!strcmp(nco_op_sng,"mebs") || !strcmp(nco_op_sng,"mean_absolute_value")) return nco_op_mebs;
+  if(!strcmp(nco_op_sng,"mibs") || !strcmp(nco_op_sng,"minimum_absolute_value")) return nco_op_mibs;
   if(!strcmp(nco_op_sng,"max") || !strcmp(nco_op_sng,"maximum")) return nco_op_max;
   if(!strcmp(nco_op_sng,"min") || !strcmp(nco_op_sng,"minimum")) return nco_op_min;
   if(!strcmp(nco_op_sng,"rms") || !strcmp(nco_op_sng,"root-mean-square")) return nco_op_rms;
@@ -253,7 +282,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified operation type \"%s\"\n",nco_prg_nm,fnc_nm,nco_op_sng);
   (void)fprintf(stderr,"%s: HINT Valid operation type (op_typ) choices:\n",nco_prg_nm);
-  if(nco_prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtraction: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min or minimum, max or maximum, ttl or total or sum, avg or average or mean, sqrt or square-root, sqravg, avgsqr, rms or root-mean-square, rmssdn\n");
+  if(nco_prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtraction: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min or minimum, max or maximum, mabs or maximum_absolute_value, mebs or mean_absolute_value, mibs or maximum_absolute_value, ttl or total or sum, avg or average or mean, sqrt or square-root, sqravg, avgsqr, rms or root-mean-square, rmssdn\n");
   nco_exit(EXIT_FAILURE);
   return False; /* Statement should not be reached */
 } /* end nco_op_typ_get() */

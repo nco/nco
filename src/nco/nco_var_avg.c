@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.81 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.82 2015-02-07 04:39:39 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -325,12 +325,15 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
        nco_var_avg_rdc_*() sets tally array */
     if(var->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
     switch(nco_op_typ_lcl){
+    case nco_op_mabs:
     case nco_op_max:
       (void)nco_var_avg_rdc_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;
+    case nco_op_mibs:
     case nco_op_min:
       (void)nco_var_avg_rdc_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;
+    case nco_op_mebs: /* Operations: Previous=none, Current=sum, Next=normalize */
     case nco_op_avg: /* Operations: Previous=none, Current=sum, Next=normalize */
     case nco_op_sqravg: /* Operations: Previous=none, Current=sum, Next=normalize and square */
     case nco_op_avgsqr: /* Operations: Previous=square, Current=sum, Next=normalize */

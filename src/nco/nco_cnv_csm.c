@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.116 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.117 2015-02-07 04:39:39 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -237,11 +237,12 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* Purpose: Add/modify cell_methods attribute according to CF convention
-     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods
+     http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#cell-methods
      
      cell_methods values and description:
      point	: Data values are representative of points in space or time (instantaneous)
      sum	: Data values are representative of a sum or accumulation over the cell
+     maximum_absolute_value	: Maximum absolute value
      maximum	: Maximum
      median	: Median
      mid_range	: Average of maximum and minimum
@@ -256,6 +257,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
      avg Mean value
      sqravg Square of the mean
      avgsqr Mean of sum of squares
+     mabs Maximium absolute value
      max Maximium value
      min Minimium value
      rms Root-mean-square (normalized by N)
@@ -267,7 +269,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   aed_sct aed; /* [sct] Structure containing information necessary to edit */
 
-  char att_op_sng[8]; /* [sng] Operation type (longest is nco_op_max which translates to "maximum") */
+  char att_op_sng[23]; /* [sng] Operation type (longest is nco_op_mabs which translates to "maximum_absolute_value") */
 
   char *att_val_cpy; /* [sng] Copy of attribute */
   char *grp_out_fll=NULL; /* [sng] Group name */
@@ -338,17 +340,20 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* NUL-terminate before concatenation */
     att_op_sng[0]='\0';
     switch(nco_op_typ_lcl){
-      /* Next four operations are defined in CF Conventions */
+      /* Next five operations are defined in CF Conventions */
     case nco_op_avg: strcpy(att_op_sng,"mean"); break;
     case nco_op_min: strcpy(att_op_sng,"minimum"); break;
     case nco_op_max: strcpy(att_op_sng,"maximum"); break;
     case nco_op_ttl: strcpy(att_op_sng,"sum"); break;
+    case nco_op_avgsqr: strcpy(att_op_sng,"variance"); break; /* Mean of sum of squares */
       /* Remaining operations are supported by NCO yet are not in CF Conventions */
-    case nco_op_sqravg: strcpy(att_op_sng,"sqravg"); break; /* Square of mean */
-    case nco_op_avgsqr: strcpy(att_op_sng,"avgsqr"); break; /* Mean of sum of squares */
-    case nco_op_sqrt: strcpy(att_op_sng,"sqrt"); break; /* Square root of mean */ 
-    case nco_op_rms: strcpy(att_op_sng,"rms"); break; /* Root-mean-square (normalized by N) */
-    case nco_op_rmssdn: strcpy(att_op_sng,"rmssdn"); break; /* Root-mean square normalized by N-1 */
+    case nco_op_mabs: strcpy(att_op_sng,"maximum_absolute_value"); break; /* Maximum absolute value */
+    case nco_op_mebs: strcpy(att_op_sng,"mean_absolute_value"); break; /* Mean absolute value */
+    case nco_op_mibs: strcpy(att_op_sng,"minimum_absolute_value"); break; /* Minimum absolute value */
+    case nco_op_sqravg: strcpy(att_op_sng,"square_of_mean"); break; /* Square of mean */
+    case nco_op_sqrt: strcpy(att_op_sng,"square_root_of_mean"); break; /* Square root of mean */ 
+    case nco_op_rms: strcpy(att_op_sng,"root_mean_square"); break; /* Root-mean-square (normalized by N) */
+    case nco_op_rmssdn: strcpy(att_op_sng,"root_mean_square_nm1"); break; /* Root-mean square normalized by N-1 */
     case nco_op_nil: /* nco_op_nil, Undefined operation type */
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s cell_method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,nco_op_typ);
       continue;
@@ -405,6 +410,9 @@ int
 nco_rdc_sng_to_op_typ /* [fnc] Convert operation string to integer */
 (const char * const att_op_sng) /* [fnc] Operation string */
 {           
+  if(!strcmp(att_op_sng,"mabs")) return nco_op_mabs;
+  if(!strcmp(att_op_sng,"mebs")) return nco_op_mebs;
+  if(!strcmp(att_op_sng,"mibs")) return nco_op_mibs;
   if(!strcmp(att_op_sng,"mean")) return nco_op_avg;
   if(!strcmp(att_op_sng,"minimum")) return nco_op_min;
   if(!strcmp(att_op_sng,"maximum")) return nco_op_max;
@@ -424,6 +432,9 @@ nco_op_typ_to_rdc_sng /* [fnc] Convert operation type to string */
 {           
   switch(nco_op_typ){
   case nco_op_avg: return "mean";
+  case nco_op_mabs: return "mabs";
+  case nco_op_mebs: return "mebs";
+  case nco_op_mibs: return "mibs";
   case nco_op_min: return "minimum";
   case nco_op_max: return "maximum";
   case nco_op_ttl: return "sum";

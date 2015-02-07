@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.537 2015-01-31 00:34:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.538 2015-02-07 04:39:39 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -551,6 +551,9 @@ extern "C" {
     nco_op_sqrt, /* [enm] Square root of mean */
     nco_op_rms, /* [enm] Root-mean-square (normalized by N) */
     nco_op_rmssdn, /* [enm] Root-mean square normalized by N-1 */
+    nco_op_mabs, /* [enm] Maximum absolute value */
+    nco_op_mebs, /* [enm] Mean absolute value */
+    nco_op_mibs, /* [enm] Minimum absolute value */
     nco_op_nil /* [enm] Nil or undefined operation type */
   }; /* end nco_op_typ enum */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.81 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.82 2015-02-07 04:39:39 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -136,7 +136,7 @@ nco_typ_cnv_rth /* [fnc] Convert char, short, long, int, and float types to doub
     if(var->typ_upk == NC_FLOAT){
       var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
     }else{ /* Conversion only for appropriate operation types */ 
-      if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
+      if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max && nco_op_typ != nco_op_mabs && nco_op_typ != nco_op_mebs && nco_op_typ != nco_op_mibs) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
     } /* end if */
 
   }else{ /* !nco_rth_flt_flt */
@@ -144,7 +144,7 @@ nco_typ_cnv_rth /* [fnc] Convert char, short, long, int, and float types to doub
     /* NCO default after 201309: promote, where necessary, anything but doubles
        Now default and activated redundantly --dbl switch */
     /* Conversion only for appropriate operation types */ 
-    if(var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
+    if(var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max && nco_op_typ != nco_op_mabs && nco_op_typ != nco_op_mebs && nco_op_typ != nco_op_mibs) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
     
   } /* !nco_rth_flt_flt */
   

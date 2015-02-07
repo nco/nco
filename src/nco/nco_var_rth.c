@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.88 2015-02-05 23:08:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.89 2015-02-07 04:39:39 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -316,8 +316,9 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Be conservative, round upwards */
   prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
   /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
-  // prc_bnr_xpl_rqr=prc_bnr_ceil-1;
-  prc_bnr_xpl_rqr=prc_bnr_ceil;
+  //prc_bnr_xpl_rqr=prc_bnr_ceil-1;
+  //prc_bnr_xpl_rqr=prc_bnr_ceil;
+  prc_bnr_xpl_rqr=prc_bnr_ceil+1;
   /* 20150128: Hand-tuning shows we can sacrifice one or two more bits for almost all cases
      20150205: However, small integers are an exception. In fact they require two more bits, at least for NSD=1.
      Thus minimum threshold to preserve half of least significant digit (LSD) is prc_bnr_xpl_rqr=prc_bnr_ceil.
@@ -1380,7 +1381,7 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
  ptr_unn op1, /* I [val] Values of first operand */
  ptr_unn op2) /* I/O [val] Values of second operand on input, values of maximum on output */
 {
-  /* Purpose: Find minimium value(s) of two operands and store result in second operand 
+  /* Purpose: Find maximum value(s) of two operands and store result in second operand 
      Operands are assumed to conform, be of same specified type, and have values in memory */
   long idx;
   
@@ -1547,7 +1548,7 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
  ptr_unn op1, /* I [val] Values of first operand */
  ptr_unn op2) /* I/O [val] Values of second operand on input, values of minimum on output */
 {
-  /* Purpose: Find minimium value(s) of two operands and store result in second operand 
+  /* Purpose: Find minimum value(s) of two operands and store result in second operand 
      Operands are assumed to conform, be of same specified type, and have values in memory */
   long idx;
   

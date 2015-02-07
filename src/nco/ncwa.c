@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.434 2015-02-05 21:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.435 2015-02-07 04:39:39 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.434 2015-02-05 21:18:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.434 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.435 2015-02-07 04:39:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.435 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -928,6 +928,11 @@ main(int argc,char **argv)
       /* Perform non-linear transformations before weighting */
       if(!var_prc[idx]->is_crd_var){
         switch(nco_op_typ){
+        case nco_op_mabs: /* Absolute value variable before weighting */
+        case nco_op_mebs: /* Absolute value variable before weighting */
+        case nco_op_mibs: /* Absolute value variable before weighting */
+	  (void)nco_var_abs(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val);
+          break;
         case nco_op_avgsqr: /* Square variable before weighting */
         case nco_op_rms: /* Square variable before weighting */
         case nco_op_rmssdn: /* Square variable before weighting */
@@ -1038,6 +1043,8 @@ main(int argc,char **argv)
           if( /* Normalize by weighted tally if ....  */
             (nco_op_typ != nco_op_min) && /* ...operation is not min() and... */
             (nco_op_typ != nco_op_max) && /* ...operation is not max() and... */
+            (nco_op_typ != nco_op_mabs) && /* ...operation is not mabs() and... */
+            (nco_op_typ != nco_op_mibs) && /* ...operation is not mabs() and... */
             (nco_op_typ != nco_op_ttl || /* ...operation is not ttl() or... */
 	     var_prc[idx]->is_crd_var) /* ...variable is a coordinate */
             ){ /* Divide numerator by masked, averaged, weights */
@@ -1055,6 +1062,7 @@ main(int argc,char **argv)
           (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
         }else{ /* !var_prc[idx]->is_crd_var */
           switch(nco_op_typ){
+          case nco_op_mebs: /* Normalize sum by tally to create mean */
           case nco_op_avg: /* Normalize sum by tally to create mean */
           case nco_op_sqravg: /* Normalize sum by tally to create mean */
           case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
@@ -1067,6 +1075,8 @@ main(int argc,char **argv)
             break;
           case nco_op_min: /* Minimum is already in buffer, do nothing */
           case nco_op_max: /* Maximum is already in buffer, do nothing */	
+          case nco_op_mabs: /* Maximum absolute value is already in buffer, do nothing */	
+          case nco_op_mibs: /* Minimum absolute value is already in buffer, do nothing */	
           case nco_op_ttl: /* Total is already in buffer, do nothing */	
             break;
           default:

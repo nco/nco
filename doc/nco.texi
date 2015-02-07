@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1074 2015-02-05 21:18:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1075 2015-02-07 04:39:39 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -4811,6 +4811,9 @@ Example compliance checks of common @acronym{NASA} datasets are at
 Our long-term goal is to enrich the hierarchical data model with the 
 expressivity and syntactic power of @acronym{CF} conventions.
 
+@html
+<a name="daac"></a> <!-- http://nco.sf.net/nco.html#daac -->
+@end html
 @acronym{NASA} asked the @acronym{DIWG} to prepare a one-page summary
 of the procedure necessary to check @acronym{HDF} files for
 @acronym{CF}-compliance: 
@@ -6784,8 +6787,9 @@ variables.
 @cindex rounding
 @cindex Huffman coding
 @cindex @command{gzip}
+@cindex @command{zlib}
 @cartouche
-Availability: @command{ncks}, @command{ncpdq}@*
+Availability: @command{nces}, @command{ncks}, @command{ncpdq}, @command{ncra}, @command{ncrcat}, @command{ncwa}@@
 Short options: None@*
 Long options: @samp{--ppc @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
 @samp{--precision_preserving_compression @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
@@ -7109,9 +7113,17 @@ precision.
 Model results are often computed as @code{NC_DOUBLE} then archived 
 as @code{NC_FLOAT} to save space. 
 @ignore
-Use either
-dstmch90_clm.nc # 36 MB
-b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc # 120 MB
+# Accuracy tests
+ncap2 -O -v -s 'defdim("dmn",1000000);ppc=array(1.0f,1,$dmn);nsd1=ppc;nsd2=ppc;nsd3=ppc;nsd4=ppc;nsd5=ppc;nsd6=ppc' ~/nco/data/in.nc ~/foo_ppc_in.nc
+ncks -O -C --ppc nsd1=1 --ppc nsd2=2 --ppc nsd3=3 --ppc nsd4=4 --ppc nsd5=5 --ppc nsd6=6 ~/foo_ppc_in.nc ~/foo_ppc_out.nc
+ncbo -O -C ~/foo_ppc_out.nc ~/foo_ppc_in.nc ~/foo_ppc_dff.nc
+ncbo -O -C -y dvd ~/foo_ppc_dff.nc ~/foo_ppc_in.nc ~/foo_ppc_rat.nc
+ncap2 -O -v -s 'nsd1*=10;nsd2*=100;nsd3*=1000;nsd4*=10000;nsd5*=100000;nsd6*=1000000' ~/foo_ppc_rat.nc ~/foo_ppc_rat_scl.nc
+ncwa -O -C -y mabs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mabs.nc
+ncwa -O -C -y mebs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mebs.nc
+ncwa -O -C -y mibs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mibs.nc
+
+# Table entries
 fl=${DATA}/dstmch90/dstmch90_clm.nc
 fl=${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc
 fl=${DATA}/hdf/MERRA300.prod.assim.inst3_3d_asm_Cp.20130601.nc
@@ -7175,12 +7187,16 @@ was not employed.
 @item Size
 Resulting filesize in @acronym{MB}.
 @item %
-Resulting filesize relative to original size, in percent.
+Compression ratio, i.e., resulting filesize relative to original size,
+in percent. 
+In some cases the original files is already losslessly compressed. 
+The compression ratios reported are relative to the size of the original
+file as distributed, not as optimally losslessly compressed. 
 @end table
 @example
 # dstmch90_clm.nc
 Type LLC PPC Pck  Size   %    Flags and Notes
-  N3   -   -  -   34.7 100.0  Original
+  N3   -   -  -   34.7 100.0  Original is uncompressed
   N3  B1   -  -   28.9  83.2  bzip2 -1
   N3  B9   -  -   29.3  84.4  bzip2 -9
   N7   -   -  -   35.0 101.0     
@@ -7199,7 +7215,7 @@ Type LLC PPC Pck  Size   %    Flags and Notes
 
 # b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc
 Type LLC PPC Pck  Size   %    Flags and Notes
-  N3   -   -  -  119.8 100.0  Original
+  N3   -   -  -  119.8 100.0  Original is uncompressed
   N3  B1   -  -   84.2  70.3  bzip2 -1
   N3  B9   -  -   84.8  70.9  bzip2 -9
   N7   -   -  -  120.5 100.7     
@@ -7218,7 +7234,7 @@ Type LLC PPC Pck  Size   %    Flags and Notes
 
 # MERRA300.prod.assim.inst3_3d_asm_Cp.20130601.hdf
 Type LLC PPC Pck  Size   %    Flags and Notes
-  H4   5   -  -  244.3 100.0  Original
+  H4   5   -  -  244.3 100.0  Original is compressed
   H4  B1   -  -  244.7 100.1  bzip2 -1
   N4   5   -  -  214.5  87.8
   N7   5   -  -  210.6  86.2  
@@ -7241,7 +7257,7 @@ N4/7   9   4  Y  127.0  52.0  ncpdq -L 9 --ppc default=4
 
 # OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5
 Type LLC PPC Pck  Size   %    Flags and Notes
-  H5   5   -  -   29.5 100.0  Original
+  H5   5   -  -   29.5 100.0  Original is compressed
   H5  B1   -  -   29.3  99.6  bzip2 -1
   N4   5   -  -   29.5 100.0
   N4  B1   -  -   29.3  99.6  bzip2 -1
@@ -14049,7 +14065,7 @@ nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}] [--no_tmp_fl] [--nsm_fl|grp] [--nsm_sfx sfx]
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rth_dbl|flt]
+[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -14793,7 +14809,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--grp_xtr_var_xcl] [-H] [-h] [--hdn] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
-[--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] 
+[--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
 [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [-s @var{format}] 
 [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
 @var{input-file} [[@var{output-file}]]
@@ -15980,7 +15996,7 @@ ncpdq [-3] [-4] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
+[-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] [--ppc ...]
 [-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-U] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x]
 @var{input-file} [@var{output-file}]
 @end example
@@ -16571,7 +16587,7 @@ ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
+[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -16685,7 +16701,7 @@ ncrcat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}] [--no_tmp_fl]
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rec_apn]
+[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -17149,7 +17165,7 @@ ncwa [-3] [-4] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}] [-I]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] [--no_tmp_fl]
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rth_dbl|flt]
+[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rth_dbl|flt]
 [-T @var{mask_comp}] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}]
 [-X ...] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
