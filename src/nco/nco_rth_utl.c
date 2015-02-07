@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.72 2015-02-07 04:39:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.73 2015-02-07 05:42:35 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -145,11 +145,11 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
     /* On first loop, simply copy variables from var_prc to var_prc_out */
     if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else (void)nco_var_min_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;
-  case nco_op_max: /* Maximium */
+  case nco_op_max: /* Maximum */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
     if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else (void)nco_var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
-  case nco_op_mabs: /* Maximium absolute value */
+  case nco_op_mabs: /* Maximum absolute value */
     /* Always take the absolute value of the fresh input
        Then, on first loop, copy variable from var_prc to var_prc_out like min and max
        Following loops, do comparative maximum after taking absolute */

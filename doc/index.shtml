@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.947 2015-02-03 02:08:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.948 2015-02-07 05:42:34 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -642,6 +642,7 @@ netCDF4 compound types?;
 Optimize diskless files?</li>
 <li><b>NCO 4.4.8</b>: (<i>Current Stable Release</i>)
 Precision-Preserving Compression with <tt>--ppc</tt>;
+Arithmetic operators <tt>-y mabs/mebs/mibs</tt></li>
 <li><b>NCO 4.4.7</b>:
 <tt>cnk_min</tt> minimum chunksize;
 Chunking <tt>cnk_map=rew</tt>;

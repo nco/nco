@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1075 2015-02-07 04:39:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1076 2015-02-07 05:42:34 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -7114,7 +7114,7 @@ Model results are often computed as @code{NC_DOUBLE} then archived
 as @code{NC_FLOAT} to save space. 
 @ignore
 # Accuracy tests
-ncap2 -O -v -s 'defdim("dmn",1000000);ppc=array(1.0f,1,$dmn);nsd1=ppc;nsd2=ppc;nsd3=ppc;nsd4=ppc;nsd5=ppc;nsd6=ppc' ~/nco/data/in.nc ~/foo_ppc_in.nc
+ncap2 -O -v -s 'defdim("dmn",1000000);ppc=array(1.234567e-10f,1,$dmn);nsd1=ppc;nsd2=ppc;nsd3=ppc;nsd4=ppc;nsd5=ppc;nsd6=ppc' ~/nco/data/in.nc ~/foo_ppc_in.nc
 ncks -O -C --ppc nsd1=1 --ppc nsd2=2 --ppc nsd3=3 --ppc nsd4=4 --ppc nsd5=5 --ppc nsd6=6 ~/foo_ppc_in.nc ~/foo_ppc_out.nc
 ncbo -O -C ~/foo_ppc_out.nc ~/foo_ppc_in.nc ~/foo_ppc_dff.nc
 ncbo -O -C -y dvd ~/foo_ppc_dff.nc ~/foo_ppc_in.nc ~/foo_ppc_rat.nc
@@ -7869,6 +7869,9 @@ Pack and unpack individual variables with @command{ncpdq} and the
 @cindex @code{avgsqr}
 @cindex @code{min}
 @cindex @code{max}
+@cindex @code{mabs}
+@cindex @code{mebs}
+@cindex @code{mibs}
 @cindex @code{rmssdn}
 @cindex @code{rms}
 @cindex @code{ttl}
@@ -7901,9 +7904,15 @@ Square of the mean
 @item avgsqr
 Mean of sum of squares
 @item max
-Maximium value
+Maximum value
 @item min
-Minimium value
+Minimum value
+@item mabs
+Maximum absolute value
+@item mebs
+Mean absolute value
+@item mabs
+Minimum absolute value
 @item rms
 Root-mean-square (normalized by @var{N})
 @item rmssdn
@@ -8043,6 +8052,27 @@ $$
 $$
 Thus the minima and maxima are determined after any weights are applied.
 
+The minimum absolute value of~$\xxx$ (@code{-y mibs}) is 
+$$
+\bar \xxx_{\jjj} = \min [ \mssflg_{1} \mskflg_{1} \wgt_{1} |\xxx_{1}|,
+\mssflg_{2} \mskflg_{2} \wgt_{2} |\xxx_{2}|, \ldots, \mssflg_{\lmnnbr} 
+\mskflg_{\lmnnbr} \wgt_{\lmnnbr} |\xxx_{\lmnnbr}| ] 
+$$
+Analogously, the maximum absolute value of~$\xxx$ (@code{-y mabs}) is 
+$$
+\bar \xxx_{\jjj} = \max [ \mssflg_{1} \mskflg_{1} \wgt_{1} |\xxx_{1}|,
+\mssflg_{2} \mskflg_{2} \wgt_{2} |\xxx_{2}|, \ldots, \mssflg_{\lmnnbr} 
+\mskflg_{\lmnnbr} \wgt_{\lmnnbr} |\xxx_{\lmnnbr}| ] 
+$$
+Thus the minimum and maximum absolute values are determined after any weights are applied.
+The mean absolute value of~$\xxx$ (@code{-y mebs}) is 
+$$
+\bar \xxx_{\jjj} = \left( {\sum_{\idx=1}^{\idx=\lmnnbr}
+\mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx} |\xxx_{\idx}| \over
+\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx}} 
+\right)^{2}    
+$$
+
 The square of the mean value of~$\xxx$ (@code{-y sqravg}) is 
 $$
 \bar \xxx_{\jjj} = \left( {\sum_{\idx=1}^{\idx=\lmnnbr}
@@ -8136,6 +8166,9 @@ defined in @acronym{NCO} please contact the @acronym{NCO} project
 EXAMPLES
 
 @html
+<a name="mabs"></a> <!-- http://nco.sf.net/nco.html#mabs -->
+<a name="mebs"></a> <!-- http://nco.sf.net/nco.html#mebs -->
+<a name="mibs"></a> <!-- http://nco.sf.net/nco.html#mibs -->
 <a name="min"></a> <!-- http://nco.sf.net/nco.html#min -->
 <a name="max"></a> <!-- http://nco.sf.net/nco.html#max -->
 <a name="rms"></a> <!-- http://nco.sf.net/nco.html#rms -->
@@ -8144,7 +8177,7 @@ EXAMPLES
 Suppose you wish to examine the variable @code{prs_sfc(time,lat,lon)} 
 which contains a time series of the surface pressure as a function of
 latitude and longitude.
-Find the minimium value of @code{prs_sfc} over all dimensions:
+Find the minimum value of @code{prs_sfc} over all dimensions:
 @example
 ncwa -y min -v prs_sfc in.nc foo.nc 
 @end example
@@ -8176,7 +8209,7 @@ These operations work as expected in multi-file operators.
 Suppose that @code{prs_sfc} is stored in multiple timesteps per file
 across multiple files, say @file{jan.nc}, @file{feb.nc},
 @file{march.nc}.  
-We can now find the three month maximium surface pressure at every point.
+We can now find the three month maximum surface pressure at every point.
 @example
 nces -y max -v prs_sfc jan.nc feb.nc march.nc out.nc
 @end example
@@ -10531,6 +10564,15 @@ Maximum value
 @item min()
 @cindex min()
 Minimum value
+@item mabs()
+@cindex mabs()
+Maximum absolute value
+@item mebs()
+@cindex mebs()
+Mean absolute value
+@item mibs()
+@cindex mibs()
+Minimum absolute value
 @item rms()
 Root-mean-square (normalize by @var{N})
 @item rmssdn()
@@ -12165,16 +12207,16 @@ print(dmin);print(dmax);
 
 @node GSL random number generation, Examples ncap2, GSL statistics, ncap2 netCDF Arithmetic Processor
 @subsection GSL random number generation
-The @acronym{GSL} library has a large number of random number generators. In addition there are a large set of functions for turning uniform random numbers into discrete or continuous probabilty distributions. The random number generator algorithms vary in terms of quality numbers output, speed of execution and maximium number output. For more information see the @acronym{GSL} documentation. The algorithm and seed are set via environment variables, these are picked up by the @code{ncap2} code.
+The @acronym{GSL} library has a large number of random number generators. In addition there are a large set of functions for turning uniform random numbers into discrete or continuous probabilty distributions. The random number generator algorithms vary in terms of quality numbers output, speed of execution and maximum number output. For more information see the @acronym{GSL} documentation. The algorithm and seed are set via environment variables, these are picked up by the @code{ncap2} code.
 
 @noindent @strong{Setup} @*  
 The number algorithm is set by the environment variable @code{GSL_RNG_TYPE}. If this variable isn't set then the default rng algorithm is gsl_rng_19937. The seed is set with the environment variable @code{GSL_RNG_SEED}. The following wrapper functions in ncap2 provide information about the chosen algorithm. @* 
 
 @table @code
 @item gsl_rng_min() 
-the minimium value returned by the rng algorithm.
+the minimum value returned by the rng algorithm.
 @item gsl_rng_max()
-the maximium value returned by the rng algorithm. 
+the maximum value returned by the rng algorithm. 
 @end table
 
 @noindent @strong{Uniformly Distributed Random Numbers} 
@@ -12182,7 +12224,7 @@ the maximium value returned by the rng algorithm.
 @item gsl_rng_get(var_in)
 This function returns var_in with integers from the chosen rng algorithm. The min and max values depend uoon the chosen rng algorthm.
 @item gsl_rng_uniform_int(var_in)
-This function returns var_in with random integers from 0 to n-1. The value n must be less than or equal to the maximium value of the chosen rng algorithm. 
+This function returns var_in with random integers from 0 to n-1. The value n must be less than or equal to the maximum value of the chosen rng algorithm. 
 @item gsl_rng_uniform(var_in)
 This function returns var_in with double-precision numbers in the range [0.0,1). The range includes 0.0 and excludes 1.0.
 @item gsl_rng_uniform_pos(var_in)
@@ -12204,14 +12246,14 @@ a2 = 1, 1, 6, 9, 11, 13, 13, 15, 16, 19 ;
 
 @end example
 
-@noindent The following example produces an @code{ncap2} runtime error. This is because the chose rng algorithm has a maximium value greater than @code{ NC_MAX_INT=2147483647 }; the wrapper functions to @code{gsl_rng_get()} and @code{gsl_rng_uniform_int()} return variable of type @code{NC_INT}. Please be aware of this when using random number distribution functions functions from the @acronym{GSL} library which return @code{unsigned int}. Examples of these are @code{gsl_ran_geometric()} and @code{gsl_ran_pascal()}. 
+@noindent The following example produces an @code{ncap2} runtime error. This is because the chose rng algorithm has a maximum value greater than @code{ NC_MAX_INT=2147483647 }; the wrapper functions to @code{gsl_rng_get()} and @code{gsl_rng_uniform_int()} return variable of type @code{NC_INT}. Please be aware of this when using random number distribution functions functions from the @acronym{GSL} library which return @code{unsigned int}. Examples of these are @code{gsl_ran_geometric()} and @code{gsl_ran_pascal()}. 
 
 @example
 export GSL_RNG_TYPE=mt19937
 ncap2 -v -O -s 'a1[time]=0;a2=gsl_rng_get(a1);' in.nc foo.nc 
 @end example
 
-@noindent To find the maximium value of the chosen rng algorithm use the following code snippet.
+@noindent To find the maximum value of the chosen rng algorithm use the following code snippet.
 @example
 ncap2 -v -O -s 'rng_max=gsl_rng_max();print(rng_max)' in.nc foo.nc
 @end example

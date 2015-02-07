@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.117 2015-02-07 04:39:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.118 2015-02-07 05:42:35 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -257,9 +257,9 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
      avg Mean value
      sqravg Square of the mean
      avgsqr Mean of sum of squares
-     mabs Maximium absolute value
-     max Maximium value
-     min Minimium value
+     mabs Maximum absolute value
+     max Maximum value
+     min Minimum value
      rms Root-mean-square (normalized by N)
      rmssdn Root-mean square (normalized by N-1)
      sqrt Square root of the mean

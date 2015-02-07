@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.170 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.171 2015-02-07 05:42:35 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -97,7 +97,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   
   /* Create final variable list using bool array */
   
-  /* malloc() xtr_lst to maximium size(var_nbr_all) */
+  /* malloc() xtr_lst to maximum size(var_nbr_all) */
   xtr_lst=(nm_id_sct *)nco_malloc(var_nbr_all*sizeof(nm_id_sct));
   var_nbr_tmp=0; /* var_nbr_tmp is incremented */
   for(idx=0;idx<var_nbr_all;idx++){

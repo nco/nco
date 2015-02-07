@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.767 2015-02-03 04:43:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.768 2015-02-07 05:42:32 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -18,6 +18,9 @@ Specifying more reasonable and optimized chunking maps has been
 made easier by the addition of a new "best practices" policy 
 which implements Rew's balanced chunking for three-dimensional
 variables, and Lefter Product chunking for all others.
+
+New arithmetic operators mabs(), mebs(), and mibs() simplify
+statistical analysis.
 
 Work on NCO 4.4.9 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
@@ -68,7 +71,17 @@ B. New "nco" chunking policy and modified "rew" chunking map:
    ncks -O -4 --cnk_map=rew in.nc out.nc
    http://nco.sf.net/nco.html#cnk
 
-C. NCO warns when appended output type differs from input type. 
+C. NCO dimension-reducing operators (ncra, ncwa, nces) now support 
+   three new arithmetic operations to facilitate statistics:
+   mabs(), mebs(), and mibs(). These stand for maximum, mean, and
+   minimum absolute value, respectively. They are invoked with the
+   -y or --op_typ switch in the same manner as max/min/avg.
+   ncwa -O -y mabs in.nc out.nc # Maximum absolute value 
+   ncra -O -y mebs in.nc out.nc # Mean absolute value 
+   nces -O -y mibs in.nc out.nc # Minimum absolute value 
+   http://nco.sf.net/nco.html#op_typ
+
+D. NCO warns when appended output type differs from input type. 
    Previously NCO would not warn or die when the user (usually
    inadvertently) wrote data of one type into a destination meant
    for a different type. These commands would therefore complete

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.89 2015-02-07 04:39:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.90 2015-02-07 05:42:35 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -322,7 +322,7 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* 20150128: Hand-tuning shows we can sacrifice one or two more bits for almost all cases
      20150205: However, small integers are an exception. In fact they require two more bits, at least for NSD=1.
      Thus minimum threshold to preserve half of least significant digit (LSD) is prc_bnr_xpl_rqr=prc_bnr_ceil.
-     Decrementing prc_bnr_xpl_rqr by one or two more bits, integers 1-100 have errors exceeding half of the LSD
+     Decrementing prc_bnr_xpl_rqr by one or two more bits produces maximum errors that exceed half the LSD
      ncra -4 -O -C --ppc default=1 --ppc one=1 -p ~/nco/data in.nc in.nc ~/foo.nc 
      ncks -H -m -v Q.. --cdl ~/foo.nc | m */
 
