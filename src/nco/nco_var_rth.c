@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.92 2015-02-08 06:08:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.93 2015-02-08 06:15:49 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -210,15 +210,15 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 	for(idx=0L;idx<sz;idx++) op1.fp[idx]=(float)(rint(scale*op1.fp[idx])/scale);
     }else{
       const float mss_val_flt=*mss_val.fp;
-      if(nco_rth_cnv_get() == nco_rth_flt_flt)
+      if(nco_rth_cnv_get() == nco_rth_flt_flt){
 	for(idx=0;idx<sz;idx++)
 	  if(op1.fp[idx] != mss_val_flt)
 	    op1.fp[idx]=rintf(scalef*op1.fp[idx])/scalef;
-      else
+      }else{
 	for(idx=0;idx<sz;idx++)
 	  if(op1.fp[idx] != mss_val_flt)
 	    op1.fp[idx]=(float)(rint(scale*op1.fp[idx])/scale); /* Coerce to avoid implicit conversions warning */
-  } /* end else */
+      } /* end else */
     break;
   case NC_DOUBLE: 
     if(!has_mss_val){
