@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1078 2015-02-08 06:08:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1079 2015-02-08 18:19:16 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6821,15 +6821,16 @@ additional space savings.
 @cindex @acronym{PPC}
 @cindex @acronym{LSD}
 @cindex Least Significant Digit
+@cindex quantization
 @acronym{NCO} implemented the final two lossy compression algorithms
 in version 4.4.8 (February, 2015).
 These are both @dfn{Precision-Preserving Compression} (@acronym{PPC})
 algorithms and since standard terminology for precision is remarkably 
 imprecise, so is our nomenclature. 
 The operational definition of ``significant digit'' in our precision
-preserving algorithms is that exact value, before rounding, is within
-one-half the value of the decimal place occupied by the 
-@dfn{Least Significant Digit} (@acronym{LSD}) of the rounded value.
+preserving algorithms is that the exact value, before rounding or
+quantization, is within one-half the value of the decimal place occupied
+by the @dfn{Least Significant Digit} (@acronym{LSD}) of the rounded value.
 For example, the value @math{pi = 3.14} correctly represents the exact
 mathematical constant @var{pi} to three significant digits because the
 @acronym{LSD} of the rounded value @w{(i.e., 4)} is in the one-hundredths 
@@ -6874,7 +6875,7 @@ Users may wish to express the precision to be preserved as either
 Invoke @acronym{PPC} with the long option @samp{--ppc var=prc}, or give
 the same arguments to the synonyms
 @samp{--precision_preserving_compression}, or to @samp{--quantize}. 
-Here @var{var} is the variable to round, and @var{prc} is the 
+Here @var{var} is the variable to quantize, and @var{prc} is the 
 precision.
 The default algorithm assumes @var{prc} specifies @acronym{NSD}
 precision, e.g., @samp{T=2} means @math{@var{nsd=2}}.
@@ -6907,9 +6908,9 @@ decimal digits, @acronym{NCO} @emph{turns-off} @acronym{PPC} if
 @cindex @w{@acronym{IEEE} 754}
 The time penalty for compressing and uncompressing data varies according 
 to the algorithm.
-The Number of Significant Digit (@acronym{NSD}) algorithm works by
+The Number of Significant Digit (@acronym{NSD}) algorithm quantizes by
 bitmasking, and employs no floating point math.
-The Decimal Significant Digit (@acronym{DSD}) algorithm works by
+The Decimal Significant Digit (@acronym{DSD}) algorithm quantizes by
 rounding, which does require floating point math.
 Hence @acronym{NSD} is likely faster than @acronym{DSD}, though
 the difference has not been measured.
@@ -6955,6 +6956,9 @@ ncks -O -v pi --ppc pi=3  ~/nco/data/in.nc ~/foo_nsd3.nc
 ncks -O -v pi --ppc pi=4  ~/nco/data/in.nc ~/foo_nsd4.nc 
 ncks -O -v pi --ppc pi=5  ~/nco/data/in.nc ~/foo_nsd5.nc 
 ncks -O -v pi --ppc pi=6  ~/nco/data/in.nc ~/foo_nsd6.nc 
+ncks -O -v pi --ppc pi=7  ~/nco/data/in.nc ~/foo_nsd7.nc 
+ncks -O -v pi --ppc pi=8  ~/nco/data/in.nc ~/foo_nsd8.nc 
+ncks -O -v pi --ppc pi=9  ~/nco/data/in.nc ~/foo_nsd9.nc 
 ncks -O -v pi --ppc pi=.2 ~/nco/data/in.nc ~/foo_dsd2.nc 
 ncks -s %20.16e -C -H ~/foo_nsd.nc
 ncks -s %20.16e -C -H ~/foo_dsd.nc
@@ -6984,22 +6988,21 @@ increasingly long strings of identical-bits amenable to compression:
 @example
 S Exponent  Fraction (Significand)   Decimal    Notes
 0 100000001 0010010000111111011011 # 3.14159265 Exact
-0 100000001 0010010000111111011011 # 3.14159265 NSD = 9
-0 100000001 0010010000111111011010 # 3.14159262 NSD = 8
-0 100000001 0010010000111111011000 # 3.14159203 NSD = 7
-0 100000001 0010010000111111000000 # 3.14158630 NSD = 6
-0 100000001 0010010000111000000000 # 3.14147949 NSD = 5
-0 100000001 0010010000000000000000 # 3.14062500 NSD = 4
+0 100000001 0010010000111111011011 # 3.14159265 NSD = 8
+0 100000001 0010010000111111011010 # 3.14159262 NSD = 7
+0 100000001 0010010000111111011000 # 3.14159203 NSD = 6
+0 100000001 0010010000111111000000 # 3.14158630 NSD = 5
+0 100000001 0010010000111100000000 # 3.14154053 NSD = 4
 0 100000001 0010010000000000000000 # 3.14062500 NSD = 3
-0 100000001 0010000000000000000000 # 3.12500000 NSD = 2
-0 100000001 0000000000000000000000 # 3.00000000 NSD = 1
+0 100000001 0010010000000000000000 # 3.14062500 NSD = 2
+0 100000001 0010000000000000000000 # 3.12500000 NSD = 1
 @end example
 The consumption of about @w{3 bits} per digit of base-10 precision is
-evident, as is the coincidence of a rounded value occasionally exceeding 
-the mandated precision, e.g., for @math{@acronym{NSD} = 3}.
+evident, as is the coincidence of a rounded value occasionally greatly
+exceeding the mandated precision, e.g., for @math{@acronym{NSD} = 2}.
 Although the @acronym{NSD} algorithm masks some bits for all 
-@math{@var{nsd} < 9}, compression algorithms like @acronym{DEFLATE}
-may require byte-size-or-greater (i.e., at least eight-bit) bit patterns 
+@math{@var{nsd} <= 7}, compression algorithms like @acronym{DEFLATE}
+may require byte-size-or-greater (i.e., at least eight-bit) bit patterns  
 before compression becomes effective.
 Do not expect significant compression from @math{@var{nsd} > 5} 
 (for @code{NC_FLOAT}) or @math{@var{nsd} > 14} (for @code{NC_DOUBLE}).
@@ -7010,8 +7013,9 @@ because their significands explicitly contain @w{53 bits} rather than
 
 Maintaining non-biased statistical properties during lossy compression
 requires special attention. 
-The @acronym{DSD} algorithm uses @acronym{IEEE} rounding (toward the
-nearest even integer) which has no systematic bias.
+The @acronym{DSD} algorithm uses @code{rint()}, which rounds toward the
+nearest even integer. 
+Thus @acronym{DSD} has no systematic bias.
 However, the @acronym{NSD} algorithm uses a bitmask technique
 susceptible to bias.
 Zeroing all non-significant bits is guaranteed to produce numbers 
@@ -7020,11 +7024,12 @@ of the position occupied by the @acronym{LSD}.
 However, always zeroing the non-significant bits results in rounded
 numbers that never exceed the exact number.
 This would produce a negative bias in the mean of the rounded numbers.
-The obvious solution is balanced rounding where non-significant bits
-are rounded down (to zero) or up (to one) in an alternating fashion.
-The @acronym{NSD} algorithm rounds the first element of arrays down
-then alternates rounding every other element. 
+To avoid this bias, @acronym{NSD} rounds non-significant bits down (to
+zero) or up (to one) in an alternating fashion when processing array
+data.
+The first element is rounded down, the second up, etc.
 This results in a mean bias quite close to zero.
+For simplicity, @acronym{NSD} always rounds scalars downwards.
 
 @cindex @acronym{DEFLATE}
 @cindex @acronym{HDF5}
@@ -7124,22 +7129,24 @@ ncks --ppc Q.?=5 --ppc FS.?,FL.?=4 --ppc RH=.3 in.nc out.nc
 Although @acronym{PPC}-rounding instantly reduces data precision,
 on-disk storage reduction only occurs once the data are compressed.  
 
-Unscientific testing shows that @acronym{PPC} rounding enhances
-compression of typical climate datasets.
+Testing shows that @acronym{PPC} rounding enhances compression of
+typical climate datasets. 
 The degree of enhancement depends, of course, on the required
 precision. 
 Model results are often computed as @code{NC_DOUBLE} then archived 
 as @code{NC_FLOAT} to save space. 
 @ignore
 # Accuracy tests
-ncap2 -O -v -s 'defdim("dmn",1000000);ppc=array(1.234567e-10f,1,$dmn);nsd1=ppc;nsd2=ppc;nsd3=ppc;nsd4=ppc;nsd5=ppc;nsd6=ppc' ~/nco/data/in.nc ~/foo_ppc_in.nc
+# ppc=array(1.234567,1.e-6f,$dmn) produces toughest metrics, with mabs() 2x other tests
+# ncks -O -C --ppc nsd1=.1 --ppc nsd2=.2 --ppc nsd3=.3 --ppc nsd4=.4 --ppc nsd5=.5 --ppc nsd6=.6 ~/foo_ppc_in.nc ~/foo_ppc_out.nc
+ncap2 -O -v -s 'defdim("dmn",1000000);ppc=array(1.f,1.e-6f,$dmn);nsd1=ppc;nsd2=ppc;nsd3=ppc;nsd4=ppc;nsd5=ppc;nsd6=ppc' ~/nco/data/in.nc ~/foo_ppc_in.nc
 ncks -O -C --ppc nsd1=1 --ppc nsd2=2 --ppc nsd3=3 --ppc nsd4=4 --ppc nsd5=5 --ppc nsd6=6 ~/foo_ppc_in.nc ~/foo_ppc_out.nc
 ncbo -O -C ~/foo_ppc_out.nc ~/foo_ppc_in.nc ~/foo_ppc_dff.nc
 ncbo -O -C -y dvd ~/foo_ppc_dff.nc ~/foo_ppc_in.nc ~/foo_ppc_rat.nc
 ncap2 -O -v -s 'nsd1*=10;nsd2*=100;nsd3*=1000;nsd4*=10000;nsd5*=100000;nsd6*=1000000' ~/foo_ppc_rat.nc ~/foo_ppc_rat_scl.nc
 ncwa -O -C -y avg ~/foo_ppc_rat_scl.nc ~/foo_ppc_avg.nc
 ncwa -O -C -y max ~/foo_ppc_rat_scl.nc ~/foo_ppc_max.nc
-ncwa -O -C -y min ~/foo_ppc_rat_scl.nc ~/foo_ppc_min.nc
+ncwa -O -C -y min ~/foo_ppc_rat_scl.nc ~/foo_ppc_min.nch
 ncwa -O -C -y mabs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mabs.nc
 ncwa -O -C -y mebs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mebs.nc
 ncwa -O -C -y mibs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mibs.nc
