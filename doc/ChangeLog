@@ -1,10 +1,14 @@
-2015-02-06  Charlie Zender  <zender@uci.edu>
+2015-02-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.8 release procedure:
  	Changes since nco-4_4_7: -A warn, PPC, cnk nco=rew+lfp, mabs/mebs/mibs()
 	cd ~/nco;cvs tag -d nco-4_4_8;cvs tag -d nco-4_4_8-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release"
 	cvs tag -c nco-4_4_8;cvs tag -c nco-4_4_8-1
+
+	* Bitmask-up to ones instead of down to zeros every other element to avoid bias in rounded mean
+
+2015-02-06  Charlie Zender  <zender@uci.edu>
 
 	* Document mabs/mebs/mibs
 

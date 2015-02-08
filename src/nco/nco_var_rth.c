@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.90 2015-02-07 05:42:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.91 2015-02-08 05:22:17 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -302,9 +302,11 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
   long idx;
 
   unsigned int *u32_ptr;
-  unsigned int msk_f32_u32;
+  unsigned int msk_f32_u32_zro;
+  unsigned int msk_f32_u32_one;
   unsigned long int *u64_ptr;
-  unsigned long int msk_f64_u64;
+  unsigned long int msk_f64_u64_zro;
+  unsigned long int msk_f64_u64_one;
   unsigned short prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   unsigned short prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
   
@@ -324,7 +326,7 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
      Thus minimum threshold to preserve half of least significant digit (LSD) is prc_bnr_xpl_rqr=prc_bnr_ceil.
      Decrementing prc_bnr_xpl_rqr by one or two more bits produces maximum errors that exceed half the LSD
      ncra -4 -O -C --ppc default=1 --ppc one=1 -p ~/nco/data in.nc in.nc ~/foo.nc 
-     ncks -H -m -v Q.. --cdl ~/foo.nc | m */
+     ncks -H -v Q.. --cdl ~/foo.nc | m */
 
   /* 20150126: fxm casting pointers is tricky with this routine. Avoid for now. */
   /* Typecast pointer to values before access */
@@ -338,16 +340,20 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-BIT_XPL_NBR_MIN);
     u32_ptr=op1.uip;
     /* Create mask */
-    msk_f32_u32=0u; /* Zero all bits */
-    msk_f32_u32=~msk_f32_u32; /* Turn all bits to ones */
+    msk_f32_u32_zro=0u; /* Zero all bits */
+    msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
     /* Left shift zeros into bits to be rounded */
-    msk_f32_u32 <<= bit_xpl_nbr_zro;
+    msk_f32_u32_zro <<= bit_xpl_nbr_zro;
+    msk_f32_u32_one=~msk_f32_u32_zro;
     if(!has_mss_val){
-      for(idx=0L;idx<sz;idx++) u32_ptr[idx]&=msk_f32_u32;
+      for(idx=0L;idx<sz;idx+=2L) u32_ptr[idx]&=msk_f32_u32_zro;
+      for(idx=1L;idx<sz;idx+=2L) u32_ptr[idx]|=msk_f32_u32_one;
     }else{
       const float mss_val_flt=*mss_val.fp;
-      for(idx=0;idx<sz;idx++)
-	if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32;
+      for(idx=0L;idx<sz;idx+=2L)
+	if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_zro;
+      for(idx=1L;idx<sz;idx+=2L)
+	if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]|=msk_f32_u32_one;
     } /* end else */
     break;
   case NC_DOUBLE:
@@ -356,16 +362,20 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-BIT_XPL_NBR_MIN);
     u64_ptr=(unsigned long int *)op1.ui64p;
     /* Create mask */
-    msk_f64_u64=0ul; /* Zero all bits */
-    msk_f64_u64=~msk_f64_u64; /* Turn all bits to ones */
+    msk_f64_u64_zro=0ul; /* Zero all bits */
+    msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
     /* Left shift zeros into bits to be rounded */
-    msk_f64_u64 <<= bit_xpl_nbr_zro;
+    msk_f64_u64_zro <<= bit_xpl_nbr_zro;
+    msk_f64_u64_one=~msk_f64_u64_zro;
     if(!has_mss_val){
-      for(idx=0L;idx<sz;idx++) u64_ptr[idx]&=msk_f64_u64;
+      for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
+      for(idx=1L;idx<sz;idx+=2L) u64_ptr[idx]|=msk_f64_u64_one;
     }else{
       const double mss_val_dbl=*mss_val.dp;
-      for(idx=0;idx<sz;idx++)
-	if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64;
+      for(idx=0L;idx<sz;idx+=2L)
+	if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
+      for(idx=1L;idx<sz;idx+=2L)
+	if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]|=msk_f64_u64_one;
     } /* end else */
     break;
   case NC_INT: /* Do nothing for non-floating point types ...*/

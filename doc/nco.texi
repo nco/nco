@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1076 2015-02-07 05:42:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1077 2015-02-08 05:22:17 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -7119,6 +7119,9 @@ ncks -O -C --ppc nsd1=1 --ppc nsd2=2 --ppc nsd3=3 --ppc nsd4=4 --ppc nsd5=5 --pp
 ncbo -O -C ~/foo_ppc_out.nc ~/foo_ppc_in.nc ~/foo_ppc_dff.nc
 ncbo -O -C -y dvd ~/foo_ppc_dff.nc ~/foo_ppc_in.nc ~/foo_ppc_rat.nc
 ncap2 -O -v -s 'nsd1*=10;nsd2*=100;nsd3*=1000;nsd4*=10000;nsd5*=100000;nsd6*=1000000' ~/foo_ppc_rat.nc ~/foo_ppc_rat_scl.nc
+ncwa -O -C -y avg ~/foo_ppc_rat_scl.nc ~/foo_ppc_avg.nc
+ncwa -O -C -y max ~/foo_ppc_rat_scl.nc ~/foo_ppc_max.nc
+ncwa -O -C -y min ~/foo_ppc_rat_scl.nc ~/foo_ppc_min.nc
 ncwa -O -C -y mabs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mabs.nc
 ncwa -O -C -y mebs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mebs.nc
 ncwa -O -C -y mibs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mibs.nc
