@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.95 2015-02-08 18:19:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.96 2015-02-08 18:31:26 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -322,10 +322,14 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
   unsigned short prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   unsigned short prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
   
+  /* Only floating point types can be quantized */
+  if(type != NC_FLOAT && type != NC_DOUBLE) return;
+
+  /* Disallow unreasonable quantization */
   assert(nsd > 0);
   assert(nsd <= 16);
 
-  /* How many bits to preserve? */
+    /* How many bits to preserve? */
   prc_bnr_xct=nsd*bit_per_dcm_dgt_prc;
   /* Be conservative, round upwards */
   prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
@@ -345,6 +349,9 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Typecast pointer to values before access */
   //(void)cast_void_nctype(type,&op1);
   //if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
+  if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
 
   switch(type){
   case NC_FLOAT:
