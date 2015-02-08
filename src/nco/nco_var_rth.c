@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.91 2015-02-08 05:22:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.92 2015-02-08 06:08:43 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -143,6 +143,7 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
 
   double scale; /* [frc] Number by which to scale data to achieve rounding */
+  float scalef; /* [frc] Number by which to scale data to achieve rounding */
 
   int bit_nbr; /* [nbr] Number of bits required to exceed pow(10,-ppc) */
   int ppc_abs; /* [nbr] Absolute value of precision */
@@ -193,21 +194,31 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
   
+  scalef=(float)scale;
   switch(type){
   case NC_FLOAT: 
-    /* Do float arithmetic in double precision before converting back to float
-       20150128: fxm Implement pure float algorithm with rintf() when --flt specified?
+    /* By default do float arithmetic in double precision before converting back to float
+       Allow --flt to override
        NB: Use rint() not lrint()
        If ignoring this advice, be sure to bound calls to lrint(), e.g., 
        rint_arg=scale*op1.fp[idx];
        if(rint_arg > LONG_MIN && rint_arg < LONG_MAX) op1.fp[idx]=(float)lrint(scale*op1.fp[idx])/scale; */
     if(!has_mss_val){
-      for(idx=0L;idx<sz;idx++) op1.fp[idx]=(float)(rint(scale*op1.fp[idx])/scale);
+      if(nco_rth_cnv_get() == nco_rth_flt_flt)
+	for(idx=0L;idx<sz;idx++) op1.fp[idx]=rintf(scalef*op1.fp[idx])/scalef;
+      else
+	for(idx=0L;idx<sz;idx++) op1.fp[idx]=(float)(rint(scale*op1.fp[idx])/scale);
     }else{
       const float mss_val_flt=*mss_val.fp;
-      for(idx=0;idx<sz;idx++)
-	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(float)(rint(scale*op1.fp[idx])/scale); /* Coerce to avoid implicit conversions warning */
-    } /* end else */
+      if(nco_rth_cnv_get() == nco_rth_flt_flt)
+	for(idx=0;idx<sz;idx++)
+	  if(op1.fp[idx] != mss_val_flt)
+	    op1.fp[idx]=rintf(scalef*op1.fp[idx])/scalef;
+      else
+	for(idx=0;idx<sz;idx++)
+	  if(op1.fp[idx] != mss_val_flt)
+	    op1.fp[idx]=(float)(rint(scale*op1.fp[idx])/scale); /* Coerce to avoid implicit conversions warning */
+  } /* end else */
     break;
   case NC_DOUBLE: 
     if(!has_mss_val){
@@ -255,22 +266,22 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
   
   /* Number of Significant Digits (NSD) algorithm
      NSD based on absolute precision, i.e., number of digits in significand and in decimal scientific notation
-     PPC based on precision relative to decimal point, i.e., number of digits before/after decimal point
-     PPC is more often used colloquially, e.g., "thermometers measure temperature accurate to 1 degree C" 
+     DSD based on precision relative to decimal point, i.e., number of digits before/after decimal point
+     DSD is more often used colloquially, e.g., "thermometers measure temperature accurate to 1 degree C" 
      NSD is more often used scientifically, e.g., "thermometers measure temperature to three significant digits"
      These statements are both equivalent and describe the same instrument and data
-     If data are stored in C or K then optimal specifications for each algorithm would be PPC=0 and NSD=3
-     However, if data are stored in mK (milli-Kelvin) then optimal specifications would be PPC=-3 and NSD=3
-     In other words, the number of significant digits (NSD) does not depend on the units of storage, but PPC does
-     Hence NSD is more instrinsic and portable than PPC
+     If data are stored in C or K then optimal specifications for each algorithm would be DSD=0 and NSD=3
+     However, if data are stored in mK (milli-Kelvin) then optimal specifications would be DSD=-3 and NSD=3
+     In other words, the number of significant digits (NSD) does not depend on the units of storage, but DSD does
+     Hence NSD is more instrinsic and portable than DSD
      NSD requires only bit-shifting and bit-masking, no floating point math
-     PPC is implemented with rounding techniques that rely on floating point math
-     This makes PPC subject to accompanying overflow and underflow problems
-     Thus NSD is faster, more accurate, and less ambiguous than PPC
-     Nevertheless many users think in terms of PPC not NSD
+     DSD is implemented with rounding techniques that rely on floating point math
+     This makes DSD subject to accompanying overflow and underflow problems when exponent near MAX_EXP/2
+     Thus NSD is faster, more accurate, and less ambiguous than DSD
+     Nevertheless many users think in terms of DSD not NSD
      
      Terminology: 
-     Decimal Precision is number of significant digits following decimal point (PPC)
+     Decimal Precision is number of significant digits following decimal point (DSD)
      Arithmetic Precision is number of significant digits (NSD)
      "Arithmetic precision can also be defined with reference to a fixed number of decimal places (the number of digits following the decimal point). This second definition is useful in applications where the number of digits in the fractional part has particular importance, but it does not follow the rules of significance arithmetic." -- Wikipedia
      "A common convention in science and engineering is to express accuracy and/or precision implicitly by means of significant figures. Here, when not explicitly stated, the margin of error is understood to be one-half the value of the last significant place. For instance, a recording of 843.6 m, or 843.0 m, or 800.0 m would imply a margin of 0.05 m (the last significant place is the tenths place), while a recording of 8,436 m would imply a margin of error of 0.5 m (the last significant digits are the units)." -- Wikipedia

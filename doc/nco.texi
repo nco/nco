@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1077 2015-02-08 05:22:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1078 2015-02-08 06:08:42 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.8
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 4 February 2015
+@set update-date 6 February 2015
 @set update-month February 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6915,8 +6915,8 @@ Hence @acronym{NSD} is likely faster than @acronym{DSD}, though
 the difference has not been measured.
 @acronym{NSD} creates a bitmask to alter the @dfn{significand} of
 @w{@acronym{IEEE} 754} floating point data.
-The bitmask is one for all bits to be retained and zero for all bits 
-to be zeroed.
+The bitmask is one for all bits to be retained and zero or one for all
+bits to be ignored.
 The algorithm assumes that the number of binary digits (i.e., bits)
 necessary to represent a single base-10 digit is 
 @math{ln(10)/ln(2) = 3.32}.
@@ -6980,7 +6980,7 @@ produce results that are bit-for-bit identical, although they do in this
 particular case.
 
 Reducing the preserved precision of @acronym{NSD}-rounding produces
-increasingly long strings of zero-bits amenable to compression: 
+increasingly long strings of identical-bits amenable to compression: 
 @example
 S Exponent  Fraction (Significand)   Decimal    Notes
 0 100000001 0010010000111111011011 # 3.14159265 Exact
@@ -7007,6 +7007,24 @@ Values stored as @code{NC_DOUBLE} (i.e., eight-bytes) are susceptible
 to much greater compression than @code{NC_FLOAT} for a given precision
 because their significands explicitly contain @w{53 bits} rather than 
 @w{23 bits}.
+
+Maintaining non-biased statistical properties during lossy compression
+requires special attention. 
+The @acronym{DSD} algorithm uses @acronym{IEEE} rounding (toward the
+nearest even integer) which has no systematic bias.
+However, the @acronym{NSD} algorithm uses a bitmask technique
+susceptible to bias.
+Zeroing all non-significant bits is guaranteed to produce numbers 
+rounded to the specified tolerance, i.e., half of the decimal value
+of the position occupied by the @acronym{LSD}. 
+However, always zeroing the non-significant bits results in rounded
+numbers that never exceed the exact number.
+This would produce a negative bias in the mean of the rounded numbers.
+The obvious solution is balanced rounding where non-significant bits
+are rounded down (to zero) or up (to one) in an alternating fashion.
+The @acronym{NSD} algorithm rounds the first element of arrays down
+then alternates rounding every other element. 
+This results in a mean bias quite close to zero.
 
 @cindex @acronym{DEFLATE}
 @cindex @acronym{HDF5}
