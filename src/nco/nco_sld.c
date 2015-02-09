@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.20 2015-02-05 23:08:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.21 2015-02-09 00:53:52 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -145,14 +145,76 @@ nco_ppc_ini /* Set PPC based on user specifications */
   } /* end for */
 
   /* Unset PPC and flag for all variables with excessive PPC
-     Operational definition of maximum PPC is maximum decimal precision of double = DBL_DIG = 15 */
-  const int nco_max_ppc=15;
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(trv_tbl->lst[idx_tbl].ppc != NC_MAX_INT)
-      if(trv_tbl->lst[idx_tbl].ppc >= nco_max_ppc){
+     Operational definition of maximum PPC is maximum decimal precision of float/double = FLT_DIG/DBL_DIG = 7/15 */
+  const int nco_max_ppc_dbl=15;
+  const int nco_max_ppc_flt=7;
+  /* Maximum digits for integers taken based on LONG_MAX ... from limits.h */
+  const int nco_max_ppc_short=5;
+  const int nco_max_ppc_ushort=5;
+  const int nco_max_ppc_int=10;
+  const int nco_max_ppc_uint=10;
+  const int nco_max_ppc_int64=19;
+  const int nco_max_ppc_uint64=20;
+  int nco_max_ppc=int_CEWI;
+
+  switch(type){
+  case NC_FLOAT: nco_max_ppc=nco_max_ppc_flt; break;
+  case NC_DOUBLE: nco_max_ppc=nco_max_ppc_dbl; break;
+  case NC_SHORT: nco_max_ppc=nco_max_ppc_short; break;
+  case NC_USHORT: nco_max_ppc=nco_max_ppc_ushort; break;
+  case NC_INT: nco_max_ppc=nco_max_ppc_int; break;
+  case NC_UINT: nco_max_ppc=nco_max_ppc_uint; break;
+  case NC_INT64: nco_max_ppc=nco_max_ppc_int64; break;
+  case NC_UINT64: nco_max_ppc=nco_max_ppc_uint64; break;
+    /* Do nothing for non-numeric types ...*/
+  case NC_CHAR:
+  case NC_BYTE:
+  case NC_UBYTE:
+  case NC_STRING: break;
+  default: 
+    nco_dfl_case_nc_type_err();
+    break;
+  } /* end switch */
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    if(trv_tbl->lst[idx_tbl].ppc != NC_MAX_INT){
+      switch(trv_tbl->lst[idx_tbl].var_typ){
+	/* Floating point types */
+      case NC_FLOAT: 
+      case NC_DOUBLE: 
+	if(trv_tbl->lst[idx_tbl].ppc > nco_max_ppc) trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
+	break;
+	/* Integer types */
+      case NC_SHORT:
+      case NC_USHORT:
+      case NC_INT:
+      case NC_UINT:
+      case NC_INT64:
+      case NC_UINT64:
+	if(
+	   /* ...rounding requested with NSD ... */
+	   (trv_tbl->lst[idx_tbl].flg_nsd)) ||
+	   /* ...more rounding requested with DSD than available or ... */
+	   (!trv_tbl->lst[idx_tbl].flg_nsd && (trv_tbl->lst[idx_tbl].ppc < -1*nco_max_ppc)) ||
+	   /* ...more precision requested than integers have or ... */
+	   (!trv_tbl->lst[idx_tbl].flg_nsd && (trv_tbl->lst[idx_tbl].ppc >= 0)) ||
+	   False)
 	trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
-	trv_tbl->lst[idx_tbl].flg_nsd=True;
-      } /* endif */
+	break;
+      case NC_CHAR: /* Do nothing for non-numeric types ...*/
+      case NC_BYTE:
+      case NC_UBYTE:
+      case NC_STRING:
+	trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
+	break;
+      default: 
+	nco_dfl_case_nc_type_err();
+	break;
+      } /* end switch */
+      /* For consistency reset flg_nsd as well */
+      if(trv_tbl->lst[idx_tbl].ppc == NC_MAX_INT) trv_tbl->lst[idx_tbl].flg_nsd=True;
+    } /* endif */
+  } /* endfor */
 
   if(ppc_lst) nco_kvmaps_free(ppc_lst);
 } /* end nco_ppc_ini() */

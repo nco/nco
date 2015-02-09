@@ -1,5 +1,9 @@
 2015-02-08  Charlie Zender  <zender@uci.edu>
 
+	* Implement rounding (DSD) on integer types
+
+	* Prevent bitmasking (NSD) on integer types
+
 	* NCO 4.4.8 release procedure:
  	Changes since nco-4_4_7: -A warn, PPC, cnk nco=rew+lfp, mabs/mebs/mibs()
 	cd ~/nco;cvs tag -d nco-4_4_8;cvs tag -d nco-4_4_8-1

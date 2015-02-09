@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.96 2015-02-08 18:31:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.97 2015-02-09 00:53:52 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -150,6 +150,9 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 
   long idx;
   
+  /* Only numeric types can be quantized */
+  if(type == NC_CHAR || type == NC_BYTE || type == NC_UBYTE || type == NC_STRING) return;
+
   ppc_abs=abs(ppc);
   assert(ppc_abs <= 16);
   switch(ppc_abs){
@@ -230,15 +233,63 @@ nco_var_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=rint(scale*op1.dp[idx])/scale;
     } /* end else */
     break;
-  case NC_INT: /* Do nothing for non-floating point types ...*/
   case NC_SHORT:
-  case NC_CHAR:
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) op1.sp[idx]=(short int)lrint(scale*op1.sp[idx])/scale;
+    }else{
+      const nco_int mss_val_short=*mss_val.sp;
+      for(idx=0;idx<sz;idx++)
+	if(op1.sp[idx] != mss_val_short) op1.sp[idx]=(short int)lrint(scale*op1.sp[idx])/scale;
+    } /* end else */
+    break;
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) op1.usp[idx]=(unsigned short int)lrint(scale*op1.usp[idx])/scale;
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++)
+	if(op1.usp[idx] != mss_val_ushort) op1.usp[idx]=(unsigned short int)lrint(scale*op1.usp[idx])/scale;
+    } /* end else */
+    break;
+  case NC_INT:
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) op1.ip[idx]=lrint(scale*op1.ip[idx])/scale;
+    }else{
+      const nco_int mss_val_int=*mss_val.ip;
+      for(idx=0;idx<sz;idx++)
+	if(op1.ip[idx] != mss_val_int) op1.ip[idx]=lrint(scale*op1.ip[idx])/scale;
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) op1.uip[idx]=(unsigned int)lrint(scale*op1.uip[idx])/scale;
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++)
+	if(op1.uip[idx] != mss_val_uint) op1.uip[idx]=(unsigned int)lrint(scale*op1.uip[idx])/scale;
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) op1.i64p[idx]=lrint(scale*op1.i64p[idx])/scale;
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++)
+	if(op1.i64p[idx] != mss_val_int64) op1.i64p[idx]=lrint(scale*op1.i64p[idx])/scale;
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0L;idx<sz;idx++) op1.ui64p[idx]=(unsigned long)lrint(scale*op1.ui64p[idx])/scale;
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++)
+	if(op1.ui64p[idx] != mss_val_uint64) op1.ui64p[idx]=(unsigned long)lrint(scale*op1.ui64p[idx])/scale;
+    } /* end else */
+    break;
+  case NC_CHAR: /* Do nothing for non-numeric types ...*/
   case NC_BYTE:
   case NC_UBYTE:
-  case NC_USHORT:
-  case NC_UINT:
-  case NC_INT64:
-  case NC_UINT64:
   case NC_STRING: break;
   default: 
     nco_dfl_case_nc_type_err();
