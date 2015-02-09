@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.99 2015-02-09 18:06:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.100 2015-02-09 22:35:36 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -419,14 +419,14 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
     if(!has_mss_val){
       for(idx=0L;idx<sz;idx+=2L) u32_ptr[idx]&=msk_f32_u32_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != 0.0f) /* Never quantize upwards floating point values of zero */
+	if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	  u32_ptr[idx]|=msk_f32_u32_one;
     }else{
       const float mss_val_flt=*mss_val.fp;
       for(idx=0L;idx<sz;idx+=2L)
 	if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != 0.0f) u32_ptr[idx]|=msk_f32_u32_one;
+	if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U) u32_ptr[idx]|=msk_f32_u32_one;
     } /* end else */
     break;
   case NC_DOUBLE:
@@ -443,14 +443,14 @@ nco_var_bitmask /* [fnc] Mask-out insignificant bits of significand */
     if(!has_mss_val){
       for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != 0.0) /* Never quantize upwards floating point values of zero */
+	if(u64_ptr[idx] != 0UL) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
     }else{
       const double mss_val_dbl=*mss_val.dp;
       for(idx=0L;idx<sz;idx+=2L)
 	if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != 0.0) u64_ptr[idx]|=msk_f64_u64_one;
+	if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
     } /* end else */
     break;
   case NC_INT: /* Do nothing for non-floating point types ...*/

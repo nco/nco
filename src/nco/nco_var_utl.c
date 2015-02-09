@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.372 2015-02-02 17:08:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.373 2015-02-09 22:35:36 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1416,7 +1416,7 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
         /* NUL-terminate attribute */
         att_val[att_sz]='\0';
         /* Split list into separate coordinate names
-        Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+	   Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
         crd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_crd);
         /* ...for each coordinate in "coordinates" attribute... */
         for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
@@ -1490,7 +1490,7 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
         /* NUL-terminate attribute */
         att_val[att_sz]='\0';
         /* Split list into separate coordinate names
-        Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+	   Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
         bnd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_bnd);
         /* ...for each coordinate in "bounds" attribute... */
         for(idx_bnd=0;idx_bnd<nbr_bnd;idx_bnd++){

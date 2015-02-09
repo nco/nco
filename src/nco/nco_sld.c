@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.23 2015-02-09 18:04:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.24 2015-02-09 22:35:36 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -85,7 +85,8 @@ nco_ppc_att_prc /* [fnc] Create PPC attribute */
 
 void
 nco_ppc_ini /* Set PPC based on user specifications */
-(int *dfl_lvl, /* O [enm] Deflate level */
+(const int nc_id, /* I [id] netCDF input file ID */
+ int *dfl_lvl, /* O [enm] Deflate level */
  const int fl_out_fmt,  /* I [enm] Output file format */
  char * const ppc_arg[], /* I [sng] List of user-specified PPC */
  const int ppc_nbr, /* I [nbr] Number of PPC specified */
@@ -131,7 +132,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
   /* PPC default exists, set all non-coordinate variables to default first */
   for(idx=0;idx<ippc;idx++){
     if(!strcasecmp(ppc_lst[idx].key,"default")){
-      nco_ppc_set_dflt(ppc_lst[idx].value,trv_tbl);
+      nco_ppc_set_dflt(nc_id,ppc_lst[idx].value,trv_tbl);
       break; /* only one default is needed */
     } /* endif */
   } /* end for */
@@ -219,7 +220,8 @@ nco_ppc_ini /* Set PPC based on user specifications */
 
 void
 nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc default  */
-(const char * const ppc_arg, /* I [sng] User input for precision-preserving compression */
+(const int nc_id, /* I [id] netCDF input file ID */
+ const char * const ppc_arg, /* I [sng] User input for precision-preserving compression */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   int ppc;
@@ -243,8 +245,15 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var){
       /* Allow "default" to affect only floating point types */
       if(trv_tbl->lst[idx_tbl].var_typ == NC_FLOAT || trv_tbl->lst[idx_tbl].var_typ == NC_DOUBLE){
-	trv_tbl->lst[idx_tbl].ppc=ppc;
-	trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+	/* Prevent "default" from applying to coordinate and bounds variables */
+	int grp_id;
+	int var_id;
+	nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
+	nco_inq_varid(grp_id,trv_tbl->lst[idx_tbl].nm,&var_id);
+	if(!nco_is_spc_in_bnd_att(grp_id,var_id) && !nco_is_spc_in_crd_att(grp_id,var_id)){
+	  trv_tbl->lst[idx_tbl].ppc=ppc;
+	  trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+	} /* endif */
       } /* endif */
     } /* endif */
   } /* endfor */

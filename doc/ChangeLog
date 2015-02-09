@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release"
 	cvs tag -c nco-4_4_8;cvs tag -c nco-4_4_8-1
 
+	* More inclusive definition of "coordinate variables" to avoid quantizing
+
 	* Never quantize upwards floating point values of zero
 
 2015-02-08  Charlie Zender  <zender@uci.edu>

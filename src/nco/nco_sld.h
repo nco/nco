@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.12 2015-02-03 22:21:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.h,v 1.13 2015-02-09 22:35:36 zender Exp $ */
 
 /* Purpose: Description (definition) of Swath-Like Data (SLD) functions */
 
@@ -51,27 +51,29 @@ void nco_kvmap_prn(kvmap_sct kvm);  /* print kvmap contents */
 
 void 
 nco_ppc_ini /* [fnc] Set PPC based on user specifications */
-(int *dfl_lvl, /* O [enm] Deflate level */
- const int fl_out_fmt,  /* I [enm] Output file format */
+(const int nc_id, /* I [id] netCDF input file ID */
+ int *dfl_lvl, /* O [enm] Deflate level */
+ const int fl_out_fmt, /* I [enm] Output file format */
  char *const ppc_arg[], /* I [sng] List of user-specified ppc */
  const int ppc_nbr, /* I [nbr] Number of ppc specified */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
 nco_ppc_att_prc /* [fnc] create ppc att from trv_tbl */
-(const int nc_id,                     /* I [id] Input netCDF file ID */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+(const int nc_id, /* I [id] Input netCDF file ID */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
 void
 nco_ppc_set_dflt /* Set the ppc value for all non-coordinate vars */
-(const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
- trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+(const int nc_id, /* I [id] netCDF input file ID */
+ const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
+ trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
 nco_ppc_set_var
-(const char * const var_nm_fll,        /* I [sng] Variable name to find */
+(const char * const var_nm_fll, /* I [sng] Variable name to find */
  const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
- trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

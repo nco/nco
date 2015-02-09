@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.561 2015-02-09 05:23:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.562 2015-02-09 22:35:36 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.561 2015-02-09 05:23:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.561 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.562 2015-02-09 22:35:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.562 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -740,7 +740,7 @@ main(int argc,char **argv)
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 
   /* Inititialize, decode, and set PPC information */
-  if(ppc_nbr > 0) nco_ppc_ini(&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);
+  if(ppc_nbr > 0) nco_ppc_ini(in_id,&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);
 
   /* Verify output file format supports requested actions */
   (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
