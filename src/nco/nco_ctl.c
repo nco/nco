@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.519 2015-02-09 07:38:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.520 2015-02-09 23:29:38 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -1062,7 +1062,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncpdq) (void)fprintf(stdout,"-P, --pck_plc, --pack_policy pck_plc\tPacking policy [all_new,all_xst,xst_new,upk]\n");
   } /* end if -P */
   if(strstr(opt_sng,"[-p")) (void)fprintf(stdout,"-p, --pth, --path path\tPath prefix for all input filenames\n");
-  if(strstr(opt_sng,"--ppc")) (void)fprintf(stdout,"    --ppc v1[,v2[,...]=prc\tPrecision-Preserving Compression: Number of total or decimal significant digits\n");
+  if(strstr(opt_sng,"--ppc")) (void)fprintf(stdout,"    --ppc v1[,v2[,...]]=prc\tPrecision-Preserving Compression: Number of total or decimal significant digits\n");
   if(strstr(opt_sng,"[-Q]")) (void)fprintf(stdout,"-Q, --quiet\t\tQuiet printing of dimension indices and coordinate values\n");
   if(strstr(opt_sng,"[-q]")) (void)fprintf(stdout,"-q, --quench\t\tQuench (turn-off) all printing to screen\n");
   if(strstr(opt_sng,"[-R]")) (void)fprintf(stdout,"-R, --rtn, --retain\tRetain remotely-retrieved files after use\n");

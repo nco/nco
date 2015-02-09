@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1085 2015-02-09 22:35:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1086 2015-02-09 23:29:38 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6892,10 +6892,15 @@ For example, specifying @samp{T=.3} or @samp{T=.-2} tells the
 value of @var{T} rounded to the nearest thousandth or hundred,
 respectively. 
 
+@cindex @acronym{CF} conventions
+@cindex @code{coordinates} attribute
+@cindex @code{bounds} attribute
 Setting @var{var} to @code{default} has the special meaning of applying 
 the associated @acronym{NSD} or @acronym{DSD} algorithm to all floating
 point variables except coordinate variables.
-Integer and non-numeric types are not affected by @code{default}.
+Variables @emph{not affected} by @code{default} include integer and
+non-numeric atomic types, coordinates, and variables mentioned in 
+the @code{coordinates} or @code{bounds} attribute of any variable.
 @acronym{NCO} applies @acronym{PPC} to coordinate variables only if 
 those variables are explicitly specified (i.e., not with the
 @samp{default=@var{prc}} mechanism. 
@@ -9260,7 +9265,7 @@ or alter the @code{Conventions} attribute.
 <a name="cnv_CF_bnd"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_bnd -->
 <a name="bnd"></a> <!-- http://nco.sf.net/nco.html#bnd -->
 @end html
-@cindex @code{bounds}
+@cindex @code{bounds} attribute
 @cindex bounds convention
 As of @acronym{NCO} version 4.0.8 (April, 2011), @acronym{NCO} 
 supports the @acronym{CF} @code{bounds} convention for cell boundaries
@@ -9283,7 +9288,7 @@ Bounds are subject to the user-specified override switches
 <a name="cnv_CF_ncl"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_ncl -->
 <a name="ncl"></a> <!-- http://nco.sf.net/nco.html#ncl -->
 @end html
-@cindex @code{ancillary_variables}
+@cindex @code{ancillary_variables} attribute
 @cindex ancillary variables convention
 As of @acronym{NCO} version 4.4.5 (July, 2014), @acronym{NCO} 
 supports the @acronym{CF} @code{ancillary_variables} convention for 
@@ -15991,15 +15996,20 @@ Using the @code{%s} format code on strings which are not NUL-terminated
 @cindex subsetting
 @cindex exclusion
 @cindex extraction
+@cindex @acronym{CF} conventions
+@cindex @code{coordinates} attribute
+@cindex @code{bounds} attribute
+@cindex @code{ancillary_variables} attribute
 Create netCDF @file{out.nc} containing all variables, and any associated 
 coordinates, except variable @code{time}, from netCDF @file{in.nc}:
 @example
 ncks -x -v time in.nc out.nc
 @end example
 As a special case of this, consider how to remove a 
-@acronym{CF} Convention comliant @code{ancillary_variables},
-@code{bounds}, or @code{coordinates} variable (@pxref{CF Conventions})
-such as @code{time_bounds}. 
+variable such as @code{time_bounds} that is identified in a
+@acronym{CF} Convention (@pxref{CF Conventions}) compliant
+@code{ancillary_variables}, @code{bounds}, or @code{coordinates}
+attribute. 
 @acronym{NCO} subsetting assumes the user wants all ancillary variables,
 axes, bounds and coordinates associated with all extracted variables 
 (@pxref{Subsetting Coordinate Variables}).

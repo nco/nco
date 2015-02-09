@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.769 2015-02-09 06:59:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.770 2015-02-09 23:29:38 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -39,21 +39,22 @@ A. NCO will now store data at a per-variable precision level.
    significant digits. Specifying DSD=3 or DSD=-2 causes NCO to
    preserve the number rounded to the nearest thousandth or hundred,
    respectively. 
-   Under the hood, NSD uses bitmasking to eliminate unnecessary
-   precision, while DSD utilizes rounding. The bitmasking/rounding
-   results in consecutive zero-bits ending the IEEE-754 storage of
-   each floating point number. Standard byte-stream compression
-   techniques, such as the DEFLATE compression used by gzip (and in
-   HDF5), compress these zero-bits more efficiently than unrounded
-   numbers. The net result is PPC makes netCDF files skinnier when
-   compressed. Compression is internal with netCDF4 and external
-   (e.g., gzip or bzip2) with netCDF3. Space savings can be large.  
-   And face it, how often does your precision exceed 4 digits?
+   Under the hood, NSD uses bitmasking for quantization, while DSD
+   utilizes rounding. The bitmasking/rounding results in consecutive
+   zero-bits ending the IEEE-754 storage of each floating point
+   number. Standard byte-stream compression techniques, such as the
+   DEFLATE compression used by gzip (and in HDF5), compress these
+   zero-bits more efficiently than unrounded numbers.
+   The net result is PPC makes netCDF files skinnier when compressed.
+   Compression is internal with netCDF4 and external (e.g., gzip or
+   bzip2) with netCDF3. Space savings can be large.   
+   And face it, how often does your precision exceed 3 digits?
    PPC data can also be packed to save additional space.
    And don't worry, coordinate variables are not rounded :)
-   ncks -7 --ppc default=5 --ppc temperature=3 in.nc out.nc
-   ncks -7 --ppc AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 in.nc out.nc
-   ncpdq -7 --ppc default=4 --ppc grid_area=15 in.nc out.nc
+   Thanks to Rich Signell for suggesting lossy compression for NCO. 
+   ncks --ppc default=5 --ppc temperature=3 in.nc out.nc
+   ncks --ppc AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 in.nc out.nc
+   ncpdq --ppc default=4 --ppc grid_area=15 in.nc out.nc
    http://nco.sf.net/nco.html#ppc
 
 B. New "nco" chunking policy and modified "rew" chunking map: 
@@ -67,41 +68,41 @@ B. New "nco" chunking policy and modified "rew" chunking map:
    Rew's balanced chunking is used on variables for which it
    applies, and another sensible default (lfp = Lefter Product) 
    is used on all other variables big enough to chunk.
-   ncks -O -4 --cnk_plc=nco in.nc out.nc
-   ncks -O -4 --cnk_map=rew in.nc out.nc
+   ncks --cnk_plc=nco in.nc out.nc
+   ncks --cnk_map=rew in.nc out.nc
    http://nco.sf.net/nco.html#cnk
 
 C. NCO dimension-reducing operators (ncra, ncwa, nces) now support 
    three new arithmetic operations to facilitate statistics:
-   mabs(), mebs(), and mibs(). These stand for maximum, mean, and
+   mabs(), mebs(), and mibs(). These compute the maximum, mean, and 
    minimum absolute value, respectively. They are invoked with the
-   -y or --op_typ switch in the same manner as max/min/avg.
-   ncwa -O -y mabs in.nc out.nc # Maximum absolute value 
-   ncra -O -y mebs in.nc out.nc # Mean absolute value 
-   nces -O -y mibs in.nc out.nc # Minimum absolute value 
+   -y or --op_typ switch in the same manner as max/min/avg:
+   ncwa -y mabs in.nc out.nc # Maximum absolute value 
+   ncra -y mebs in.nc out.nc # Mean absolute value 
+   nces -y mibs in.nc out.nc # Minimum absolute value 
    http://nco.sf.net/nco.html#op_typ
 
 D. NCO warns when appended output type differs from input type. 
    Previously NCO would not warn or die when the user (usually
-   inadvertently) wrote data of one type into a destination meant
+   inadvertently) wrote data of one type into a destination meant 
    for a different type. These commands would therefore complete
    without warning:
    ncks -C -O -v double_var ~/nco/data/in.nc ~/foo.nc
    ncrename -O -v double_var,float_var ~/foo.nc
    ncks -C -A -v float_var ~/nco/data/in.nc ~/foo.nc
-   Now the user is warned but the operations is still permitted.
+   Now the user is warned though the operation is still permitted. 
    http://nco.sf.net/nco.html#-A
 
 BUG FIXES:
 
 A. ncrename had problems when renaming netCDF4 coordinates.
    These problems appear fixed but now there are new ones when 
-   renaming attributes. These will go away when Unidata fixes
-   the underlying netCDF4 library.
+   renaming attributes. These will go away when Unidata finishes
+   fixing renaming routines in the netCDF4 library.
    http://nco.sf.net#bug_nc4_rename
 
 B. Fix ncks bug dumping files with multiple long dimension names.
-   This means you, NASA AIRS :)
+   This means you, NASA AIRS.
 
 KNOWN PROBLEMS DUE TO NCO:
 
@@ -145,7 +146,7 @@ A. NOT YET FIXED (netCDF4 problem)
    ncrename -O -a /g1/lon@units,new_units ~/nco/data/in_grp.nc ~/foo.nc
    ncks -v /g1/lon ~/foo.nc
 
-   Previous bug is lumped together with following, related bug
+   Possibly new manifestation of already reported bug NCF-177
    Renaming netCDF4 coordinate variables or dimensions "succeeds" but  
    corrupts (sets to _FillValue) values in the output dataset.
    Full description here http://nco.sf.net#bug_nc4_rename
@@ -158,8 +159,8 @@ A. NOT YET FIXED (netCDF4 problem)
    20141008: Problem reported to Unidata
    20141010: Verified by Unidata.
    20141112: Verified problem still exists
-   20150129: Coordinate problem appear to be fixed with 4.3.3
-   20150202: Now attribute renaming netCDF4 files deletes attributes
+   20150129: Coordinate problem fixed with 4.3.3-rc3?
+   20150202: Attribute renaming in netCDF4 files deletes attributes
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/NCF-177
    Workaround: Convert to netCDF3, rename, convert back to netCDF4
 
