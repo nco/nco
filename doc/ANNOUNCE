@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.768 2015-02-07 05:42:32 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.769 2015-02-09 06:59:04 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -47,8 +47,8 @@ A. NCO will now store data at a per-variable precision level.
    HDF5), compress these zero-bits more efficiently than unrounded
    numbers. The net result is PPC makes netCDF files skinnier when
    compressed. Compression is internal with netCDF4 and external
-   (e.g., gzip or bzip2) with netCDF3. Space savings can be enormous,  
-   and face it, how often does your precision exceed 4 digits?
+   (e.g., gzip or bzip2) with netCDF3. Space savings can be large.  
+   And face it, how often does your precision exceed 4 digits?
    PPC data can also be packed to save additional space.
    And don't worry, coordinate variables are not rounded :)
    ncks -7 --ppc default=5 --ppc temperature=3 in.nc out.nc

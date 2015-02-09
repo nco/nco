@@ -68,7 +68,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.210 2015-02-03 04:43:45 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.211 2015-02-09 07:02:24 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -366,9 +366,9 @@ variables:
         ppc_bgr:original_values="1234567890e20,1234567890e19,1234567890e18,1234567890e17,1234567890e16,1234567890e15,1234567890e14,1234567890e13,1234567890e12,1234567890e11";
 
 	float ppc_bgr_scl;
-        ppc_bgr:long_name = "Precision-Preserving Compression, bigger numbers, scalar";
-        ppc_bgr:purpose = "test --ppc switches";
-        ppc_bgr:original_value="1234567890e11";
+        ppc_bgr_scl:long_name = "Precision-Preserving Compression, bigger numbers, scalar";
+        ppc_bgr_scl:purpose = "test --ppc switches";
+        ppc_bgr_scl:original_value="1234567890e11";
 
 	double ppc_hgh(time);
         ppc_hgh:long_name = "Precision-Preserving Compression, high precision";

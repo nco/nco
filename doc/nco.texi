@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1081 2015-02-09 03:38:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1082 2015-02-09 06:59:05 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -6789,7 +6789,9 @@ variables.
 @cindex @command{gzip}
 @cindex @command{zlib}
 @cartouche
-Availability: @command{nces}, @command{ncks}, @command{ncpdq}, @command{ncra}, @command{ncrcat}, @command{ncwa}@@
+Availability: @command{ncbo}, @command{ncecat}, @command{nces},
+@command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@* 
 Short options: None@*
 Long options: @samp{--ppc @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
 @samp{--precision_preserving_compression @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
@@ -13724,7 +13726,7 @@ ncbo [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl]
-[-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all]
+[-O] [-o @var{file_3}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
@@ -14375,7 +14377,7 @@ ncecat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] 
+[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -14633,7 +14635,7 @@ ncflint [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
 [-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] 
-[-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all] 
+[-O] [-o @var{file_3}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example

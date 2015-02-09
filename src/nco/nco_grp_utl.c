@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1508 2015-02-09 06:32:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1509 2015-02-09 06:59:05 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3685,9 +3685,9 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
     }else{
       /* Still possible that variables are mismatched even if ranks are equal
-      One or more dimensions could be degenerate
-      Before subtraction must make sure dimension sizes match
-      Or re-code ncap_var_cnf_dmn() so that it understands how to broadcast degenerate dimensions */
+	 One or more dimensions could be degenerate
+	 Before subtraction must make sure dimension sizes match
+	 Or re-code ncap_var_cnf_dmn() so that it understands how to broadcast degenerate dimensions */
       for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
         if(var_prc_1->dim[idx_dmn]->sz != var_prc_2->dim[idx_dmn]->sz){
           (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s with sizes %ld and %ld in input files one and two, respectively\n",nco_prg_nm_get(),var_prc_1->nm_fll,var_prc_1->dim[idx_dmn]->nm,var_prc_1->dim[idx_dmn]->sz,var_prc_2->dim[idx_dmn]->sz);
@@ -3747,7 +3747,6 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
   }else{ /* !flg_dfn */
     /* Write mode */
-
     int has_mss_val; /* [flg] Variable has missing value */
 
     md5_sct *md5=NULL; /* [sct] MD5 configuration */
@@ -3760,7 +3759,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     /* Get variable ID */
     (void)nco_inq_varid(grp_out_id,trv_1->nm,&var_out_id);         
 
-    if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",nco_prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
+    if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO %s reports operation type %d for %s\n",nco_prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
 
     /* Non-processed variable */
     if(prc_typ_1 == fix_typ || prc_typ_2 == fix_typ){
@@ -3803,6 +3802,10 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
         break;
       } /* end case */
 
+      if(trv_1->ppc != NC_MAX_INT){
+	if(trv_1->flg_nsd) (void)nco_var_bitmask(trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val); else (void)nco_var_around(trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val);
+      } /* endif ppc */
+
       /* Copy result to output file */
       if(var_prc_1->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_1->val.vp,var_prc_1->type); else (void)nco_put_vara(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_out->cnt,var_prc_1->val.vp,var_prc_1->type);
 
@@ -3812,7 +3815,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
     var_prc_1->dim[idx_dmn]->xrf=(dmn_sct *)nco_dmn_free(var_prc_1->dim[idx_dmn]->xrf);
     var_prc_1->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc_1->dim[idx_dmn]);   
-  }
+  } /* endfor */
 
   /* Free allocated variable structures */
   var_prc_out=(var_sct *)nco_var_free(var_prc_out);
@@ -3897,7 +3900,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
     /* Detect duplicate GPE names in advance, then exit with helpful error */
-    if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
+    if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);
 
     /* Define variable in output file */
     var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,(char *)NULL,trv_1,NULL,0,trv_tbl_1);
@@ -3907,7 +3910,6 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 
   }else{ /* !flg_dfn */
     /* Write mode */
-
     /* Get group ID */
     (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
 
@@ -3916,7 +3918,6 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 
     /* Copy non-processed variable */
     (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,md5,trv_1); 
-
   } /* !flg_dfn */
 
   /* Free allocated variable structures */
