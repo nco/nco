@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.548 2015-02-05 23:08:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.549 2015-02-09 05:23:41 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2478,7 +2478,7 @@ print "\n";
     $dsc_sng="Test NSD compression rounding to three significant digits";
     $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v ppc_big,ppc_dbl --ppc ppc_big,ppc_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -H -d time,5 -s %g -v ppc_big %tmp_fl_00";
-    $tst_cmd[2]="1234";
+    $tst_cmd[2]="1234.5";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
