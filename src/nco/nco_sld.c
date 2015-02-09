@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.22 2015-02-09 03:38:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.23 2015-02-09 18:04:43 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -102,11 +102,9 @@ nco_ppc_ini /* Set PPC based on user specifications */
       *dfl_lvl=1;
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Precision-Preserving Compression (PPC) automatically activating file-wide deflation level = %d\n",nco_prg_nm_get(),*dfl_lvl);
     } /* endif */
-  } /* endif */
-
-  if(fl_out_fmt != NC_FORMAT_NETCDF4 && fl_out_fmt != NC_FORMAT_NETCDF4_CLASSIC){
+  }else{
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Requested Precision-Preserving Compression (PPC) on netCDF3 output dataset. Unlike netCDF4, netCDF3 does not support internal compression. To take full advantage of PPC consider writing file as netCDF4 enhanced (e.g., %s -4 ...) or classic (e.g., %s -7 ...). Or consider compressing the netCDF3 file afterwards with, e.g., gzip or bzip2. File must then be uncompressed with, e.g., gunzip or bunzip2 before netCDF readers will recognize it. See http://nco.sf.net/nco.html#ppc for more information on PPC strategies.\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
-  } /* endif */
+  } /* endelse */
 
   ppc_lst=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
 
@@ -192,7 +190,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
       case NC_INT64:
       case NC_UINT64:
 	if(
-	   /* ...rounding requested with NSD ... */
+	   /* ...rounding requested with NSD or ... */
 	   (trv_tbl->lst[idx_tbl].flg_nsd) ||
 	   /* ...more rounding requested with DSD than available or ... */
 	   (!trv_tbl->lst[idx_tbl].flg_nsd && (trv_tbl->lst[idx_tbl].ppc < -1*nco_max_ppc)) ||
@@ -236,12 +234,12 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
     ppc=(int)strtol(ppc_arg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg,"strtol",sng_cnv_rcd);
     if(ppc <= 0){
-      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be postive. Default was specified as %d.\n",nco_prg_nm_get(),ppc);
+      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be postive. Default is specified as %d. HINT: Decimal Significant Digit (DSD) rounding does accept negative arguments (number of digits in front of the decimal point). However, the DSD argument must be prefixed by a period or \"dot\", e.g., \"--ppc foo=.-2\", to distinguish it from NSD quantization.\n",nco_prg_nm_get(),ppc);
       nco_exit(EXIT_FAILURE);
     } /* endif */    
   } /* end if */
 
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var){
       /* Allow "default" to affect only floating point types */
       if(trv_tbl->lst[idx_tbl].var_typ == NC_FLOAT || trv_tbl->lst[idx_tbl].var_typ == NC_DOUBLE){
@@ -249,6 +247,7 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
 	trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
       } /* endif */
     } /* endif */
+  } /* endfor */
 } /* end nco_ppc_set_dflt() */
 
 void
@@ -271,7 +270,7 @@ nco_ppc_set_var
     ppc=(int)strtol(ppc_arg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg,"strtol",sng_cnv_rcd);
     if(ppc <= 0){
-      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be positive. Specified value for %s was %d.\n",nco_prg_nm_get(),var_nm,ppc);
+      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be postive. Specified value for %s is %d. HINT: Decimal Significant Digit (DSD) rounding does accept negative arguments (number of digits in front of the decimal point). However, the DSD argument must be prefixed by a period or \"dot\", e.g., \"--ppc foo=.-2\", to distinguish it from NSD quantization.\n",nco_prg_nm_get(),var_nm,ppc);
       nco_exit(EXIT_FAILURE);
     } /* endif */    
   } /* end else */

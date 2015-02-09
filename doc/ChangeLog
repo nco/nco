@@ -1,10 +1,14 @@
-2015-02-08  Charlie Zender  <zender@uci.edu>
+2015-02-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.8 release procedure:
  	Changes since nco-4_4_7: -A warn, PPC, cnk nco=rew+lfp, mabs/mebs/mibs()
 	cd ~/nco;cvs tag -d nco-4_4_8;cvs tag -d nco-4_4_8-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release"
 	cvs tag -c nco-4_4_8;cvs tag -c nco-4_4_8-1
+
+	* Never quantize upwards floating point values of zero
+
+2015-02-08  Charlie Zender  <zender@uci.edu>
 
 	* Implement PPC in ncecat, ncflint (revert ncbo)
 

@@ -68,7 +68,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.211 2015-02-09 07:02:24 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.212 2015-02-09 18:04:43 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -605,6 +605,15 @@ variables:
 
 	float zero;
 	zero:long_name = "zero";
+
+	float ppc_zro_flt(time);
+	zero:long_name = "array of single precision floating point zeros";
+
+	double ppc_zro_dbl(time);
+	zero:long_name = "array of double precision floating point zeros";
+
+	int ppc_zro_int(time);
+	zero:long_name = "array of integer zeros";
 
 	float one;
 	one:long_name = "one";
@@ -1247,6 +1256,9 @@ data:
 	ppc_bgr_scl=1234567890e11;
 	ppc_hgh=0.00000000000000000000,0.10000000000000000000,0.12000000000000000000,0.123000000000000000000,0.1234000000000000000,0.12345000000000000000,0.123456000000000000000000,0.12345670000000000000000000,0.123456780000000000000,0.123456789000000000000;
 	ppc_hgr=0.123456789000000000000,0.1234567890100000000000,0.1234567890120000000000,0.12345678901230000000000,0.123456789012340000000,0.12345678901234500000,0.12345678901234560000,0.12345678901234567000,0.12345678901234567800,0.12345678901234567890;
+	ppc_zro_flt=0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0;
+	ppc_zro_dbl=0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0;
+	ppc_zro_int=0,0,0,0,0,0,0,0,0,0;
 	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
 	ORO=0.,1.,0.,0.,1.,1.,0.,2.;
 	mask=0.,1.,0.,0.,1.,1.,0.,2.;

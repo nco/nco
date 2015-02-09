@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1083 2015-02-09 07:38:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1084 2015-02-09 18:04:43 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -7025,18 +7025,22 @@ The @acronym{DSD} algorithm uses @code{rint()}, which rounds toward the
 nearest even integer. 
 Thus @acronym{DSD} has no systematic bias.
 However, the @acronym{NSD} algorithm uses a bitmask technique
-susceptible to bias.
+susceptible to statistical bias.
 Zeroing all non-significant bits is guaranteed to produce numbers 
-rounded to the specified tolerance, i.e., half of the decimal value
+quantized to the specified tolerance, i.e., half of the decimal value
 of the position occupied by the @acronym{LSD}. 
-However, always zeroing the non-significant bits results in rounded
+However, always zeroing the non-significant bits results in quantized
 numbers that never exceed the exact number.
-This would produce a negative bias in the mean of the rounded numbers.
+This would produce a negative bias in statistical quantities (e.g., the
+average) subsequently derived from the quantized numbers. 
 To avoid this bias, @acronym{NSD} rounds non-significant bits down (to
 zero) or up (to one) in an alternating fashion when processing array
 data.
-The first element is rounded down, the second up, etc.
+In general, the first element is rounded down, the second up, and so
+on. 
 This results in a mean bias quite close to zero.
+The only exception is that the floating point value of zero is never 
+quantized upwards.
 For simplicity, @acronym{NSD} always rounds scalars downwards.
 
 @cindex @acronym{DEFLATE}

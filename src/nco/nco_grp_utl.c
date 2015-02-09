@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1509 2015-02-09 06:59:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1510 2015-02-09 18:04:43 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7784,8 +7784,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       /* Filter variables with auxiliary coordinates */ 
       if(var_trv.flg_aux){
 
-        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable with auxiliary coordinates <%s>\n",nco_prg_nm_get(),fnc_nm,
-          trv_tbl->lst[idx_tbl].nm_fll);
+        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports variable with auxiliary coordinates %s\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[idx_tbl].nm_fll);
 
         int dmn_idx_fnd=-1; /* [nbr] Index of dimension that has the coordinate */
         int dmn_id_fnd_lat=-1; /* [id] ID of dimension that has the latitude coordinate */
@@ -7797,7 +7796,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         /* Loop dimensions, look for latitude */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
           /* Has 'latitude' auxiliary coordinates */
-          if (var_trv.var_dmn[idx_dmn].nbr_lat_crd){
+          if(var_trv.var_dmn[idx_dmn].nbr_lat_crd){
             /* Use the coordinate with lower group depth (index 0) (These were already sorted ) */
             lat_trv=trv_tbl_var_nm_fll(var_trv.var_dmn[idx_dmn].lat_crd[0].nm_fll,trv_tbl);
             dmn_idx_fnd=idx_dmn;
@@ -7809,7 +7808,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         /* Loop dimensions, look for longitude */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
           /* Has 'longitude' auxiliary coordinates */
-          if (var_trv.var_dmn[idx_dmn].nbr_lon_crd){
+          if(var_trv.var_dmn[idx_dmn].nbr_lon_crd){
             /* Use the coordinate with lower group depth (index 0) (These were already sorted ) */
             lon_trv=trv_tbl_var_nm_fll(var_trv.var_dmn[idx_dmn].lon_crd[0].nm_fll,trv_tbl);
             dmn_idx_fnd=idx_dmn;
@@ -7819,7 +7818,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         } /* Loop dimensions, look for longitude */
 
         /* Auxiliary coordinates found */
-        if (lat_trv && lon_trv){
+        if(lat_trv && lon_trv){
 
           lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
           int aux_lmt_nbr;           /* Number of auxiliary coordinate limits */
@@ -8147,19 +8146,15 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
 
       /* Single slab---no analysis needed */  
       if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr == 1){
-
         (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa);  
-
         continue;    
       } /* End Single slab */
 
-      /* Does Multi-Slab Algorithm returns hyperslabs in user-specified order? */
+      /* Does Multi-Slab Algorithm return hyperslabs in user-specified order? */
       if(MSA_USR_RDR){
         trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa.MSA_USR_RDR=True;
-
         /* Find and store size of output dimension */  
         (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa);  
-
         continue;
       } /* End MSA_USR_RDR */
 
@@ -8173,12 +8168,10 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
       (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa);
 
       if(nco_dbg_lvl_get() >= nco_dbg_fl){
-        if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),ncd->nm); 
-        else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),ncd->nm); 
-      } /* endif */
+	if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),ncd->nm); else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),ncd->nm);
+      } /* endif dbg */
 
-    }/* Loop limits */
-
+    } /* Loop limits */
 
   } /* b) Dimension only (no coordinate variable for this dimension) */
 
@@ -8186,9 +8179,9 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
 } /* nco_lmt_aux() */
 
 void
-nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates information into table */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- trv_tbl_sct *trv_tbl)                /* I [sct] GTT (Group Traversal Table) */
+nco_bld_crd_aux /* [fnc] Build auxiliary coordinates information into table */
+(const int nc_id, /* I [ID] netCDF file ID */
+ trv_tbl_sct *trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_bld_crd_aux()"; /* [sng] Function name */
 
@@ -8246,7 +8239,7 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
 		/* Check if possible 'latitude' (var_trv) is in scope */
 		if(nco_var_scp(&trv_tbl->lst[idx_crd],&var_trv,trv_tbl)){
 		  
-		  /* Mark the variable (e.g gds_var, gds_3dvar) as containing auxiliary coordinates   */
+		  /* Mark variable (e.g., gds_var, gds_3dvar) as containing auxiliary coordinates */
 		  trv_tbl->lst[idx_crd].flg_aux=True;
 		  
 		  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has auxiliary coordinates with dimension ID = %d\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[idx_crd].nm_fll,var_dim_id); 
@@ -8271,7 +8264,6 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
       has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&dmn_id,&crd_typ,units_lon);
       
       if(has_lon){
-	
         /* Variable contains 'standard_name' attribute "longitude" */ 
         trv_tbl->lst[idx_var].flg_std_att_lon=True; 
 
@@ -8466,7 +8458,7 @@ nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_s
     (*dmn)[idx]->cid=-1;
     (*dmn)[idx]->cnk_sz=-1L;
     (*dmn)[idx]->type=(nc_type)-1;
-  }  
+  } /* endfor */
   return;
 } /* end nco_dmn_lmt() */
 
@@ -8474,7 +8466,7 @@ void
 nco_prn_nsm                                 /* [fnc] Print ensembles  */                                
 (const trv_tbl_sct * const trv_tbl)         /* I [sct] Traversal table */
 {
-  if (!trv_tbl->nsm_nbr) return;
+  if(!trv_tbl->nsm_nbr) return;
 
   (void)fprintf(stdout,"%s: list of ensembles\n",nco_prg_nm_get()); 
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++) (void)fprintf(stdout,"%s: <%s>\n",nco_prg_nm_get(),trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
@@ -8488,7 +8480,7 @@ nco_prn_nsm                                 /* [fnc] Print ensembles  */
     if(trv_tbl->lst[idx_tbl].flg_nsm_tpl){
       (void)fprintf(stdout,"%s: <template> %d <%s>\n",nco_prg_nm_get(),idx_tpl,trv_tbl->lst[idx_tbl].nm_fll); 
       idx_tpl++;
-    }
+    } /* endif */
 
   (void)fprintf(stdout,"%s: list of ensemble members\n",nco_prg_nm_get()); 
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
@@ -8500,7 +8492,6 @@ nco_prn_nsm                                 /* [fnc] Print ensembles  */
       }
     }
   }
-
 } /* nco_prn_nsm() */
 
 void
@@ -8512,7 +8503,6 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Build ensembles  */
-
   const char fnc_nm[]="nco_bld_nsm()"; /* [sng] Function name */
 
   char **nm_lst_1;                     /* [sng] List of names */
@@ -8680,7 +8670,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             if(!var_trv){
               (void)fprintf(stderr,"%s: ERROR expected member ensemble <%s> does not exist\n",nco_prg_nm_get(),var_nm_fll);
               nco_exit(EXIT_FAILURE);
-            }
+            } /* endif */
 
             /* Mark variables as ensemble members */
 
@@ -8704,38 +8694,24 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
           /* Mark fixed templates as non extracted */
           if(flg_fix_xtr){
-
             /* List of fixed templates  */
             for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
-
               /* Get variable  */
               trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
-
               /* Define variable full name (using group name and relative name of fixed template) */
               char *skp_nm_fll=nco_bld_nm_fll(trv.nm_fll,var_trv->nm);
-
               /* Mark the skip names as non extracted variables */ 
               (void)trv_tbl_mrk_xtr(skp_nm_fll,False,trv_tbl); 
-
               /*And its group too... */ 
               (void)trv_tbl_mrk_grp_xtr(trv.nm_fll,False,trv_tbl); 
-
               /* Free */
               skp_nm_fll=(char *)nco_free(skp_nm_fll);
-
             } /* List of fixed templates  */
-
           } /* Mark fixed templates as non extracted */
-
       } /* Match */
     } /* Loop table */
   } /* Loop ensembles */
-
-
-  if(nco_dbg_lvl_get() >= nco_dbg_fl){
-    nco_prn_nsm(trv_tbl);
-  }
-
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) nco_prn_nsm(trv_tbl);
 } /* nco_bld_nsm() */
 
 void
