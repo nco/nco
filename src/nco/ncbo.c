@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.312 2014-12-31 01:50:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.313 2015-02-09 06:32:42 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -139,13 +139,14 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
+  char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char **grp_lst_in=NULL; /* [sng] User-specified list of groups */
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.312 2014-12-31 01:50:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.312 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.313 2015-02-09 06:32:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.313 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -207,6 +208,7 @@ main(int argc,char **argv)
   int nco_op_typ=nco_op_nil; /* [enm] Operation type */
   int opt;
   int out_id;  
+  int ppc_nbr=0; /* [nbr] Number of PPC arguments */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
@@ -284,6 +286,9 @@ main(int argc,char **argv)
       {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
+      {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -402,6 +407,10 @@ main(int argc,char **argv)
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
+        ppc_arg[ppc_nbr]=(char *)strdup(optarg);
+        ppc_nbr++;
+      } /* endif "ppc" */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
@@ -596,6 +605,9 @@ main(int argc,char **argv)
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt_1;
 
+  /* Inititialize, decode, and set PPC information */
+  if(ppc_nbr > 0) nco_ppc_ini(&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl_1);
+
   /* Verify output file format supports requested actions */
   (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
@@ -668,8 +680,9 @@ main(int argc,char **argv)
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
-    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    for(idx=0;idx<ppc_nbr;idx++) ppc_arg[idx]=(char *)nco_free(ppc_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);

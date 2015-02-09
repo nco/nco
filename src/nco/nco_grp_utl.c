@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1507 2015-02-04 02:44:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1508 2015-02-09 06:32:42 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4598,7 +4598,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
               /* ... output file adheres to netCDF3 API so there can be only one record dimension.
 		 In other words, define all other dimensions as fixed, non-record dimensions, even
 		 if they are a record dimension in the input file ... */
-              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
+              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API which permits only one record dimension.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
               DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             } /* !netCDF4 */
 
@@ -5922,9 +5922,9 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
     if(NEED_TO_DEFINE_DIM){
 
       /* Here begins a complex tree to decide a simple, binary output:
-      Will current input dimension be defined as an output record dimension or as a fixed dimension?
-      Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
-      Otherwise would repeat netCDF action code too many times */
+	 Will current input dimension be defined as an output record dimension or as a fixed dimension?
+	 Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
+	 Otherwise would repeat netCDF action code too many times */
 
       /* Is dimension unlimited in input file? Handy unique dimension has all this info */
       CRR_DMN_IS_REC_IN_INPUT=dmn_trv->is_rec_dmn;
@@ -5945,18 +5945,18 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
             if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
           }else{ /* !FIX_REC_DMN */
             /* ... otherwise we are in the --mk_rec_dmn case where things get complicated ... 
-            This dimension can be a record dimension only if it would not conflict with the requested 
-            record dimension being defined a record dimension, and that depends on file format. Uggh.
-            1. netCDF3 API allows only one record-dimension so conflicts are possible
-            2. netCDF4 API permits any number of unlimited dimensions so conflicts are impossible */
+	       This dimension can be a record dimension only if it would not conflict with the requested 
+	       record dimension being defined a record dimension, and that depends on file format. Uggh.
+	       1. netCDF3 API allows only one record-dimension so conflicts are possible
+	       2. netCDF4 API permits any number of unlimited dimensions so conflicts are impossible */
             if(fl_fmt == NC_FORMAT_NETCDF4){
               /* ... no conflicts possible so define dimension in output same as in input ... */
               if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             }else{ /* !netCDF4 */
               /* ... output file adheres to netCDF3 API so there can be only one record dimension.
-              In other words, define all other dimensions as fixed, non-record dimensions, even
-              if they are a record dimension in the input file ... */
-              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
+		 In other words, define all other dimensions as fixed, non-record dimensions, even
+		 if they are a record dimension in the input file ... */
+              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API which permits only one record dimension.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
               DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             } /* !netCDF4 */
           } /* !FIX_REC_DMN */
@@ -5986,22 +5986,16 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
       }else{
         /* Get size from GTT */
         if(var_trv->var_dmn[idx_dmn].is_crd_var){
-
           /* Set size */
           dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
-
           /* Update GTT dimension */
           (void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl);        
-
-        }else {
-
+        }else{
           /* Set size */
           dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
-
           /* Update GTT dimension */
           (void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl);  
-
-        }
+        } /* end else */
       } /* Define dimension size */
     } /* end if dimension is not yet defined */
   } /* End of the very important dimension loop */
@@ -6016,16 +6010,13 @@ nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions i
  const int nbr_dmn_dgn,               /* I [nbr] Total number of dimensions in list */
  trv_tbl_sct *trv_tbl)                /* I/O [sct] GTT (Group Traversal Table) */
 {
-
   trv_tbl->nbr_dmn_dgn=nbr_dmn_dgn;
   trv_tbl->dmn_dgn=(dmn_sct *)nco_malloc(nbr_dmn_dgn*sizeof(dmn_sct));
 
   /* Loop dimensions */
   for(int idx_dmn=0;idx_dmn<nbr_dmn_dgn;idx_dmn++){
-
     trv_tbl->dmn_dgn[idx_dmn].id=dmn_dgn[idx_dmn]->id;
     trv_tbl->dmn_dgn[idx_dmn].cnt=dmn_dgn[idx_dmn]->cnt;
- 
   } /* Loop dimensions */
 
 } /* nco_dmn_dgn_tbl() */
@@ -6041,10 +6032,10 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 
   const char fnc_nm[]="nco_dmn_lst_ass_var_trv()"; /* [sng] Function name */
 
-  int nbr_dmn;      /* [nbr] Number of dimensions associated with variables to be extracted */
+  int nbr_dmn; /* [nbr] Number of dimensions associated with variables to be extracted */
 
-  long dmn_cnt;     /* [nbr] Hyperslabbed size of dimension */  
-  long dmn_sz;      /* [nbr] Size of dimension  */  
+  long dmn_cnt; /* [nbr] Hyperslabbed size of dimension */  
+  long dmn_sz; /* [nbr] Size of dimension  */  
 
   nco_bool dmn_flg; /* [flg] Is dimension already inserted in output array  */  
 
@@ -6068,7 +6059,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_trv.var_dmn[idx_dmn_var].dmn_id,trv_tbl);
 
         assert(dmn_trv);
-        assert(strcmp(dmn_trv->nm,var_trv.var_dmn[idx_dmn_var].dmn_nm) == 0);
+        assert(!strcmp(dmn_trv->nm,var_trv.var_dmn[idx_dmn_var].dmn_nm));
 
         /* Loop constructed array of output dimensions to see if already inserted  */
         for(int idx_dmn_out=0;idx_dmn_out<nbr_dmn;idx_dmn_out++){
@@ -6092,11 +6083,11 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
             dmn_cnt=var_trv.var_dmn[idx_dmn_var].crd->lmt_msa.dmn_cnt;
             dmn_sz=var_trv.var_dmn[idx_dmn_var].crd->sz;
             (*dmn)[nbr_dmn]->is_crd_dmn=True;
-          }else {
+          }else{
             dmn_cnt=var_trv.var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_cnt;
             dmn_sz=var_trv.var_dmn[idx_dmn_var].ncd->sz;
             (*dmn)[nbr_dmn]->is_crd_dmn=False;
-          }
+          } /* end else */
 
           (*dmn)[nbr_dmn]->nm=(char *)strdup(var_trv.var_dmn[idx_dmn_var].dmn_nm);
           (*dmn)[nbr_dmn]->id=var_trv.var_dmn[idx_dmn_var].dmn_id;
@@ -6386,7 +6377,6 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
 
 } /* nco_dmn_out_mk() */
 
-
 void
 nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally flag degenerate for all dimensions that have the input ID */
 (const int dmn_id,                     /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
@@ -6540,7 +6530,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               cln_att_sng=nco_lmt_get_udu_att(grp_id,var_id,"calendar"); 
               (*lmt_rec)[rec_nbr]->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
               if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
-            }
+            } /* endif */
 
             /* Store ID */
             (*lmt_rec)[rec_nbr]->id=dmn_id;
@@ -6564,18 +6554,15 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   } /* Loop table */
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
-    (void)fprintf(stdout,"%s: DEBUG %s record dimensions to process: ",nco_prg_nm_get(),fnc_nm);        
-    for(int idx_rec=0;idx_rec<rec_nbr;idx_rec++){
+    (void)fprintf(stdout,"%s: DEBUG %s record dimensions to process: ",nco_prg_nm_get(),fnc_nm);   
+    for(int idx_rec=0;idx_rec<rec_nbr;idx_rec++)
       (void)fprintf(stdout,"#%d<%s/%s> : ",(*lmt_rec)[idx_rec]->id,(*lmt_rec)[idx_rec]->grp_nm_fll,(*lmt_rec)[idx_rec]->nm);        
-    }
     (void)fprintf(stdout,"\n");       
-  } 
+  } /* endif dbg */
 
   /* Export */
   *nbr_rec=rec_nbr;
-
   return;
-
 } /* nco_bld_rec_dmn() */
 
 void
@@ -6607,9 +6594,9 @@ nco_prn_tbl_lmt                       /* [fnc] Print table limits */
             for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){ 
               lmt_sct *lmt_dmn=crd->lmt_msa.lmt_dmn[lmt_idx];
               (void)fprintf(stdout," [%d]%s(%li,%li,%li) :",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
-            }
+            } /* endfor */
             (void)fprintf(stdout,"\n");
-          }
+          } /* endif */
 
           /* b) case of dimension only (there is no coordinate variable for this dimension */
         }else{
@@ -6623,9 +6610,9 @@ nco_prn_tbl_lmt                       /* [fnc] Print table limits */
             for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){ 
               lmt_sct *lmt_dmn=ncd->lmt_msa.lmt_dmn[lmt_idx];
               (void)fprintf(stdout," [%d]%s(%li,%li,%li) :",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
-            }
+            } /* endfor */
             (void)fprintf(stdout,"\n");
-          }
+          } /* endif */
 
         } /* b) case of dimension only (there is no coordinate variable for this dimension */
 
@@ -9214,17 +9201,17 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   /* Sanity check */
   assert(nco_prg_id_get() == ncbo);
 
-  /* Match 2 tables (find common objects) and export common objects */
+  /* Match two tables (find common objects) and export common objects */
   (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
 
-  /* Inquire if there is a variable with same absolute/relative path in both files */
+  /* Is there a variable with same absolute/relative path in both files? */
   (void)nco_cmn_var(trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,&flg_cmn_abs,&flg_cmn_rel); 
 
   /* Inquire if ensembles have "ensemble" attribute (meaning they were done by ncge already) */
   (void)nco_nsm_att(nc_id_1,trv_tbl_1,&flg_nsm_att_1,&nsm_grp_nm_fll_prn_1); 
   (void)nco_nsm_att(nc_id_2,trv_tbl_2,&flg_nsm_att_2,&nsm_grp_nm_fll_prn_2);
 
-  /* There is a variable with same absolute path in both files. Do them and return */
+  /* Process variables with same absolute path in both files. Do them and return */
   if(flg_cmn_abs) (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
 
   /* Inquire about group broadcasting (ensembles and not ensembles) */
@@ -9242,7 +9229,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 1\n",nco_prg_nm_get(),fnc_nm);
         nco_prn_nsm(trv_tbl_1);             
-      }
+      } /* endif dbg */
 
       /* File 2 has ensembles */
       if(flg_nsm_fl_2 == True){
@@ -9250,15 +9237,15 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         if(nco_dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
           nco_prn_nsm(trv_tbl_2);             
-        }
+        } /* endif dbg */
 
-        /* File 2 has ensembles in "special" places , defined in attributes */
+        /* File 2 has ensembles in "special" places, defined in attributes */
         if(flg_nsm_att_2){
 
           if(nco_dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s ensemble names read from attributes from file 2\n",nco_prg_nm_get(),fnc_nm);
-            for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);          
-          }
+            for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++) (void)fprintf(stdout,"%s: DEBUG %s %s\n",nco_prg_nm_get(),fnc_nm,nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);          
+          } /* endif dbg */
 
           /* Use table 1 as template for group creation */
           flg_grp_1=True;
@@ -9267,48 +9254,36 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           (void)nco_prc_cmn_nsm_att(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn,nsm_grp_nm_fll_prn_2);              
 
           /* File 2 has ensembles in the expected places */
-        } else {
-
+        }else{
           /* ncbo -O mdl_1.nc mdl_2.nc out.nc */
-
           /* Use table 1 as template for group creation */
           flg_grp_1=True;
-
           /* Process (define, write) variables belonging to ensembles in *both* files  */
-          (void)nco_prc_cmn_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);              
-
+          (void)nco_prc_cmn_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
         } /* File 2 has ensembles in the expected places */
 
-      }else if(flg_nsm_fl_2 == False){
-
+      }else if(!flg_nsm_fl_2){
         /* File 2 does NOT have ensembles */
-
         /* Inquire about file 2 having a common object from list of file 1 ensembles  */
         (void)nco_cmn_nsm_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_1,trv_tbl_2);
 
         /* Common variables at root */
         if(flg_var_cmn_rth){
-
           /* file 2 has a common object at root  */
           /* ncbo -O mdl_1.nc obs.nc out.nc */
-
           /* Use table 1 as template for group creation */
           flg_grp_1=True;
 
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
-
           /* Common variables not at root */
-        } else if(flg_var_cmn){
-
+        }else if(flg_var_cmn){
           /* Use table 1 as template for group creation */
           flg_grp_1=True;
 
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm,flg_grp_1,flg_dfn);              
-
-        }else {
-
+        }else{
           /* file 2 has no common objects   */
           (void)fprintf(stdout,"%s: ERROR no common variables found. HINT: %s expects to find at least one variable of the same name in similar locations in both input files. When such variables are not found in identical locations (i.e., on the same path) then %s attempts group broadcasting to find comparable variables in sub-groups and ensembles. This search for comparable variables has failed. Read more about group broadcasting at http://nco.sf.net/nco.html#grp_brd\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
@@ -9316,36 +9291,30 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
       } /* File 2 does NOT have ensembles */
 
-    }else if(flg_nsm_fl_1 == False){
-
+    }else if(!flg_nsm_fl_1){
       /* File 1 does NOT have ensembles */
-
       /* File 2 has ensembles */
-      if(flg_nsm_fl_2 == True){
+      if(flg_nsm_fl_2){
 
         if(nco_dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
           nco_prn_nsm(trv_tbl_2);             
-        }
+        } /* endif */
 
         /* Inquire about file 1 having a common object from list of file 2 ensembles (NB: order of tables in parameter switched)  */
         (void)nco_cmn_nsm_var(&flg_var_cmn,&flg_var_cmn_rth,&var_nm,&var_nm_rth,trv_tbl_2,trv_tbl_1);
 
          /* Common variables at root */
         if(flg_var_cmn_rth){
-
           /* file 1 has a common object at root  */
           /* ncbo -O obs.nc mdl_1.nc  out.nc */
-
           /* Do NOT use table 1 as template for group creation */
           flg_grp_1=False;
 
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
-
           /* Common variables not at root */
-        } else if(flg_var_cmn){
-
+        }else if(flg_var_cmn){
           /* file 1 has a common object not at root  */
           /* ncra  -Y ncge -O mdl_3.nc ncge_out.nc 
           ncbo  -O --op_typ=add ncge_out.nc  mdl_3.nc  out.nc */
@@ -9355,26 +9324,21 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
           (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm,flg_grp_1,flg_dfn);              
-
-        } else {
-
+        }else{
           /* file 1 has no common objects */
           (void)fprintf(stdout,"%s: ERROR no common variables found. HINT: %s expects to find at least one variable of the same name in similar locations in both input files. When such variables are not found in identical locations (i.e., on the same path) then %s attempts group broadcasting to find comparable variables in sub-groups and ensembles. This search for comparable variables has failed. Read more about group broadcasting at http://nco.sf.net/nco.html#grp_brd\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
-
         } /* ! flg_var_cmn_rth */
       } /* File 2 has ensembles */
     } /* File 1 does NOT have ensembles */
   } /* There are ensembles somewhere */
 
   /* There are NOT ensembles anywhere, but there are relative matches */
-  if(flg_nsm_fl_1 == False && flg_nsm_fl_2 == False && flg_cmn_rel == True){
-
+  if(!flg_nsm_fl_1 && !flg_nsm_fl_2 && flg_cmn_rel){
     if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Processing relative matches\n",nco_prg_nm_get(),fnc_nm);
 
     /* Process relative common objects (define or write) */
     (void)nco_prc_rel_cmn_nm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);
-
   } /* There are NOT ensembles anywhere, but there are relative matches */
 
   /* Memory management for common names list */
@@ -9384,26 +9348,21 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   if(var_nm){
     for(int idx=0;idx<var_nm->nbr;idx++) var_nm->lst[idx].nm=(char *)nco_free(var_nm->lst[idx].nm);
     var_nm=(nm_lst_sct *)nco_free(var_nm);
-  } 
+  } /* endif */
 
   if(var_nm_rth){
     for(int idx=0;idx<var_nm_rth->nbr;idx++) var_nm_rth->lst[idx].nm=(char *)nco_free(var_nm_rth->lst[idx].nm);
     var_nm_rth=(nm_lst_sct *)nco_free(var_nm_rth);
   } 
 
-  for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++){
-    nsm_grp_nm_fll_prn_2->lst[idx_nm].nm=(char *)nco_free(nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);   
-  }
+  for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++)
+    nsm_grp_nm_fll_prn_2->lst[idx_nm].nm=(char *)nco_free(nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);
   nsm_grp_nm_fll_prn_2=(nm_lst_sct *)nco_free(nsm_grp_nm_fll_prn_2);
 
-  for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_1->nbr;idx_nm++){
+  for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_1->nbr;idx_nm++)
     nsm_grp_nm_fll_prn_1->lst[idx_nm].nm=(char *)nco_free(nsm_grp_nm_fll_prn_1->lst[idx_nm].nm);   
-  }
   nsm_grp_nm_fll_prn_1=(nm_lst_sct *)nco_free(nsm_grp_nm_fll_prn_1);
-
-
 } /* nco_grp_brd() */
-
 
 void                                               
 nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variables belonging to ensembles in both files (ncbo) */
