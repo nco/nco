@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.21 2015-02-09 00:53:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.22 2015-02-09 03:38:41 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -157,27 +157,27 @@ nco_ppc_ini /* Set PPC based on user specifications */
   const int nco_max_ppc_uint64=20;
   int nco_max_ppc=int_CEWI;
 
-  switch(type){
-  case NC_FLOAT: nco_max_ppc=nco_max_ppc_flt; break;
-  case NC_DOUBLE: nco_max_ppc=nco_max_ppc_dbl; break;
-  case NC_SHORT: nco_max_ppc=nco_max_ppc_short; break;
-  case NC_USHORT: nco_max_ppc=nco_max_ppc_ushort; break;
-  case NC_INT: nco_max_ppc=nco_max_ppc_int; break;
-  case NC_UINT: nco_max_ppc=nco_max_ppc_uint; break;
-  case NC_INT64: nco_max_ppc=nco_max_ppc_int64; break;
-  case NC_UINT64: nco_max_ppc=nco_max_ppc_uint64; break;
-    /* Do nothing for non-numeric types ...*/
-  case NC_CHAR:
-  case NC_BYTE:
-  case NC_UBYTE:
-  case NC_STRING: break;
-  default: 
-    nco_dfl_case_nc_type_err();
-    break;
-  } /* end switch */
-
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     if(trv_tbl->lst[idx_tbl].ppc != NC_MAX_INT){
+      switch(trv_tbl->lst[idx_tbl].var_typ){
+      case NC_FLOAT: nco_max_ppc=nco_max_ppc_flt; break;
+      case NC_DOUBLE: nco_max_ppc=nco_max_ppc_dbl; break;
+      case NC_SHORT: nco_max_ppc=nco_max_ppc_short; break;
+      case NC_USHORT: nco_max_ppc=nco_max_ppc_ushort; break;
+      case NC_INT: nco_max_ppc=nco_max_ppc_int; break;
+      case NC_UINT: nco_max_ppc=nco_max_ppc_uint; break;
+      case NC_INT64: nco_max_ppc=nco_max_ppc_int64; break;
+      case NC_UINT64: nco_max_ppc=nco_max_ppc_uint64; break;
+	/* Do nothing for non-numeric types ...*/
+      case NC_CHAR:
+      case NC_BYTE:
+      case NC_UBYTE:
+      case NC_STRING: break;
+      default: 
+	nco_dfl_case_nc_type_err();
+	break;
+      } /* end switch */
+
       switch(trv_tbl->lst[idx_tbl].var_typ){
 	/* Floating point types */
       case NC_FLOAT: 
@@ -193,7 +193,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
       case NC_UINT64:
 	if(
 	   /* ...rounding requested with NSD ... */
-	   (trv_tbl->lst[idx_tbl].flg_nsd)) ||
+	   (trv_tbl->lst[idx_tbl].flg_nsd) ||
 	   /* ...more rounding requested with DSD than available or ... */
 	   (!trv_tbl->lst[idx_tbl].flg_nsd && (trv_tbl->lst[idx_tbl].ppc < -1*nco_max_ppc)) ||
 	   /* ...more precision requested than integers have or ... */
@@ -243,8 +243,11 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var){
-      trv_tbl->lst[idx_tbl].ppc=ppc;
-      trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+      /* Allow "default" to affect only floating point types */
+      if(trv_tbl->lst[idx_tbl].var_typ == NC_FLOAT || trv_tbl->lst[idx_tbl].var_typ == NC_DOUBLE){
+	trv_tbl->lst[idx_tbl].ppc=ppc;
+	trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+      } /* endif */
     } /* endif */
 } /* end nco_ppc_set_dflt() */
 

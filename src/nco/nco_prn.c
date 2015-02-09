@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.232 2015-02-04 02:44:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.233 2015-02-09 03:38:40 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1921,7 +1921,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             continue;
           } /* end if */
 
-          if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(dmn_sng,"%*s%%s[%%ld]=%s ",(idx == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(dim[dmn_idx].type)); else (void)sprintf(dmn_sng,"%*s%s ",(idx == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(dim[dmn_idx].type));
+          if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(dmn_sng,"%*s%%s%s%%ld%s=%s ",(idx == 0) ? prn_ndn : 0,spc_sng,prn_flg->FORTRAN_IDX_CNV ? "(" : "[",prn_flg->FORTRAN_IDX_CNV ? ")" : "]",nco_typ_fmt_sng(dim[dmn_idx].type)); else (void)sprintf(dmn_sng,"%*s%s ",(idx == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(dim[dmn_idx].type));
           dmn_sbs_prn=dmn_sbs_dsk[dmn_idx];
 
           if(prn_flg->FORTRAN_IDX_CNV){
@@ -2028,14 +2028,14 @@ lbl_chr_prn:
       } /* end if NC_CHAR */
 
       /* Print variable name, index, and value */
-      if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s[%%ld]=%s %%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%*s%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type));
+      if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s%s%%ld%s=%s %%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,prn_flg->FORTRAN_IDX_CNV ? "(" : "[",prn_flg->FORTRAN_IDX_CNV ? ")" : "]",nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%*s%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type));
       if(prn_flg->FORTRAN_IDX_CNV){
         (void)sng_idx_dlm_c2f(var_sng);
         var_dsk++;
       } /* end if FORTRAN_IDX_CNV */
 
       if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
-        if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s[%ld]=%s %s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,var_nm,var_dsk,mss_val_sng,unit_sng_var); else (void)fprintf(stdout,"%*s%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,mss_val_sng); 
+        if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s%s%ld%s=%s %s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,var_nm,prn_flg->FORTRAN_IDX_CNV ? "(" : "[",var_dsk,prn_flg->FORTRAN_IDX_CNV ? ")" : "]",mss_val_sng,unit_sng_var); else (void)fprintf(stdout,"%*s%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,mss_val_sng); 
       }else{ /* !is_mss_val */
         if(prn_flg->PRN_DMN_VAR_NM){
           switch(var.type){
