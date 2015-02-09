@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release"
 	cvs tag -c nco-4_4_8;cvs tag -c nco-4_4_8-1
 
-	* Implement PPC in ncecat, ncbo, ncflint
+	* Implement PPC in ncecat, ncflint (revert ncbo)
 
 	* Correctly format brackets on indices of missing_values in nco_prn.c
 

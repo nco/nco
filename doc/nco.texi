@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1082 2015-02-09 06:59:05 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1083 2015-02-09 07:38:06 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -3549,7 +3549,7 @@ when your other preferred methods are not available locally.
 @cindex @code{--file_format}
 @cindex @code{--64bit}
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{nces},
+Availability: @command{ncap2}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-3}, @samp{-4}, @samp{-6}, @samp{-7}@*
@@ -13726,7 +13726,7 @@ ncbo [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl]
-[-O] [-o @var{file_3}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all]
+[-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
