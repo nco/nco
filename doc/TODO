@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1275 2015-01-31 00:34:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1276 2015-02-10 01:11:40 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -661,7 +661,6 @@ nco1113. nco: rsp parker norton help srd slowdown issue help 20140718 completely
       time ncks -O -L 0 -d time,0,0,12 ~/ET_2000-01_2001-12.nc ~/foo.nc # borken after 6m13s, numerous HDF Errors
       time ncks -O -d time,0,,12 ~/ET_2000-01_2001-12.nc ~/foo.nc # borken after 6m13s, numerous HDF Errors
 nco1114. ncrcat fails when single record dimension is not first dimension
-nco1115. --ppc precision-preserving compression rich signell 
 nco1116. --add_bnds for creating bounds variables
 nco1117. ncks human-readable times
 nco1118. 

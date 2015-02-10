@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.24 2015-02-09 22:35:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.25 2015-02-10 01:07:57 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -98,7 +98,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
   kvmap_sct kvm;
 
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-    /* If user did not explicitly set deflate level for this file .. */
+    /* If user did not explicitly set deflate level for this file ... */
     if(*dfl_lvl == NCO_DFL_LVL_UNDEFINED){
       *dfl_lvl=1;
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Precision-Preserving Compression (PPC) automatically activating file-wide deflation level = %d\n",nco_prg_nm_get(),*dfl_lvl);

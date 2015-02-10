@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.770 2015-02-09 23:29:38 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.771 2015-02-10 01:11:39 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -19,8 +19,8 @@ made easier by the addition of a new "best practices" policy
 which implements Rew's balanced chunking for three-dimensional
 variables, and Lefter Product chunking for all others.
 
-New arithmetic operators mabs(), mebs(), and mibs() simplify
-statistical analysis.
+New ncwa/ncra/nces arithmetic operators mabs(), mebs(), and mibs()
+simplify statistical analysis.
 
 Work on NCO 4.4.9 is underway, still focused on stability and speed.
 This includes more netCDF4 mop-up and new chunking features.
@@ -97,8 +97,8 @@ BUG FIXES:
 
 A. ncrename had problems when renaming netCDF4 coordinates.
    These problems appear fixed but now there are new ones when 
-   renaming attributes. These will go away when Unidata finishes
-   fixing renaming routines in the netCDF4 library.
+   renaming netCDF4 attributes. These will go away when Unidata
+   finishes fixing rename() routines in the netCDF4 library.
    http://nco.sf.net#bug_nc4_rename
 
 B. Fix ncks bug dumping files with multiple long dimension names.
