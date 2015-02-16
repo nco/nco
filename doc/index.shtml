@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.950 2015-02-16 23:33:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.951 2015-02-16 23:36:39 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -150,7 +150,7 @@ and
 
 <ul>
 <li>2015 Mar&nbsp;??: 4.4.9 (<i>In progress</i>)
-<li>2015 Feb&nbsp;09: 4.4.8 (Precision-preserving Compression)
+<li>2015 Feb&nbsp;16: 4.4.8 (Precision-preserving Compression)
 <li>2014 Dec&nbsp;15: DOE ACME <a href="#prp_acme">project</a> commences</li>
 <li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
 <li>2014 Oct&nbsp;01: 4.4.6 (<tt>ncra, ncwa</tt> packing bugfixes, stride optimization)
