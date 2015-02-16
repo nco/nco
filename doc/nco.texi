@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1086 2015-02-09 23:29:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1087 2015-02-16 23:33:50 zender Exp $
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -168,6 +168,7 @@ x
 \gdef\shrnbr{S} % [nbr] Share number
 \gdef\dfr{{\rm d}} % [frc] Math differential fxm: upright
 \gdef\idx{i} % [idx] Index
+\gdef\psl{\epsilon} % [frc] epsilon
 \gdef\iii{i} % [idx] i
 \gdef\jjj{j} % [idx] j
 \gdef\kkk{k} % [idx] k
@@ -181,15 +182,23 @@ x
 \gdef\mpp{\cal{M}} % [map] Map
 \gdef\mskflg{m} % [flg] Mask flag
 \gdef\mssflg{\mu} % [flg] Missing value flag
+\gdef\qqq{q} % [ltr] q
 \gdef\tm{t} % [s] Time
 \gdef\prmsbs{\prime} % [sbs] Prime subscript
 \gdef\wgt{w} % [frc] Weight
 \gdef\wndmrd{v} % [m s-1] Meridional wind speed
 \gdef\wndznl{u} % [m s-1] Zonal wind speed
+\gdef\vvv{v} % [ltr] v
 \gdef\xxx{x} % [ltr] x
 \gdef\yyy{y} % [ltr] y
 
 % 2. Derived commands
+\gdef\pslavg{\bar{\epsilon}} % [frc] Mean error
+\gdef\pslmax{\epsilon_{\rm max}} % [frc] Maximum error
+\gdef\pslmin{\epsilon_{\rm min}} % [frc] Minimum error
+\gdef\pslmabs{\epsilon_{\rm mabs}^{+}} % [frc] Maximum absolute error
+\gdef\pslmibs{\epsilon_{\rm mibs}^{+}} % [frc] Minimum absolute error
+\gdef\pslmebs{\bar{\epsilon}^{+}} % [frc] Mean absolute error
 \gdef\dmnvct{{\bf \dmn}} % [vct] Dimension vector
 \gdef\dmnprm{\dmn^{\prmsbs}} % [vct] Dimension prime
 \gdef\dmnsubnnn{\dmn_{\dmnidx}} % [dmn] Dimension sub nnn
@@ -6934,8 +6943,15 @@ bits to be ignored.
 The algorithm assumes that the number of binary digits (i.e., bits)
 necessary to represent a single base-10 digit is 
 @math{ln(10)/ln(2) = 3.32}.
-By contrast, the @acronym{DSD} algorithm uses rounding to remove 
-undesired precision. 
+The exact numbers of bits @var{Nbit} retained for single and double
+precision values are @math{ceil(3.32*@var{nsd})+1} and
+@math{ceil(3.32*@var{nsd})+2}, respectively.
+Once these @w{reach 23} @w{and 53}, respectively, bitmasking is
+completely ineffective. 
+This occurs at @math{@var{nsd}=6.3} @w{and 15.4}, respectively.
+
+The @acronym{DSD} algorithm, by contrast, uses rounding to remove
+undesired precision.  
 @cindex @command{rint()}
 @cindex C99
 @cindex @acronym{IEEE}
@@ -6996,6 +7012,9 @@ Note that the @acronym{NSD} and @acronym{DSD} algorithms do not always
 produce results that are bit-for-bit identical, although they do in this
 particular case.
 
+@html
+<a name="ppc_tbl_bit"></a> <!-- http://nco.sf.net/nco.html#ppc_tbl_bit -->
+@end html
 Reducing the preserved precision of @acronym{NSD}-rounding produces
 increasingly long strings of identical-bits amenable to compression: 
 @example
@@ -7011,18 +7030,20 @@ S Exponent  Fraction (Significand)   Decimal    Notes
 0 100000001 0010000000000000000000 # 3.12500000 NSD = 1
 @end example
 The consumption of about @w{3 bits} per digit of base-10 precision is
-evident, as is the coincidence of a rounded value occasionally greatly
-exceeding the mandated precision, e.g., for @math{@acronym{NSD} = 2}.
-Although the @acronym{NSD} algorithm masks some bits for all 
-@math{@var{nsd} <= 7}, compression algorithms like @acronym{DEFLATE}
-may require byte-size-or-greater (i.e., at least eight-bit) bit patterns  
-before compression becomes effective.
-Do not expect significant compression from @math{@var{nsd} > 5} 
-(for @code{NC_FLOAT}) or @math{@var{nsd} > 14} (for @code{NC_DOUBLE}).
-Values stored as @code{NC_DOUBLE} (i.e., eight-bytes) are susceptible
-to much greater compression than @code{NC_FLOAT} for a given precision
-because their significands explicitly contain @w{53 bits} rather than 
-@w{23 bits}.
+evident, as is the coincidence of a quantized value that greatly
+exceeds the mandated precision for @math{@acronym{NSD} = 2}.
+Although the @acronym{NSD} algorithm generally masks some bits for all 
+@math{@var{nsd} <= 7} (for @code{NC_FLOAT}), compression algorithms like
+@acronym{DEFLATE} may need byte-size-or-greater (i.e., at least
+eight-bit) bit patterns before their algorithms can take advantage of
+of encoding such patterns for compression.
+Do not expect significantly enhanced compression from 
+@math{@var{nsd} > 5} (for @code{NC_FLOAT}) or @math{@var{nsd} > 14} (for
+@code{NC_DOUBLE}). 
+Clearly values stored as @code{NC_DOUBLE} (i.e., eight-bytes) are
+susceptible to much greater compression than @code{NC_FLOAT} for a given
+precision because their significands explicitly contain @w{53 bits}
+rather than @w{23 bits}.
 
 Maintaining non-biased statistical properties during lossy compression
 requires special attention. 
@@ -7105,9 +7126,9 @@ The @acronym{NSD} and @acronym{DSD} algorithms store the attributes
 @acronym{NCO} to implement @acronym{PPC}.
 @acronym{NCO} implements a different @acronym{DSD} algorithm than 
 @command{nc3tonc4}, and produces slightly different (not bit-for-bit) 
-though self-consistent and equivalent results in many cases. 
-@command{nc3tonc4} records the usage of their @acronym{DSD} algorithm
-with the attribute @code{least_significant_digit} and @acronym{NCO} 
+though self-consistent and equivalent results.
+@command{nc3tonc4} records the precision of its @acronym{DSD} algorithm 
+in the attribute @code{least_significant_digit} and @acronym{NCO} 
 does the same for consistency.}, respectively.
 
 It is safe to attempt @acronym{PPC} on input that has already been
@@ -7146,28 +7167,257 @@ ncks --ppc Q.?=5 --ppc FS.?,FL.?=4 --ppc RH=.3 in.nc out.nc
 Although @acronym{PPC}-rounding instantly reduces data precision,
 on-disk storage reduction only occurs once the data are compressed.  
 
-Testing shows that @acronym{PPC} rounding enhances compression of
-typical climate datasets. 
-The degree of enhancement depends, of course, on the required
-precision. 
-Model results are often computed as @code{NC_DOUBLE} then archived 
-as @code{NC_FLOAT} to save space. 
+@html
+<a name="ppc_tbl_ffc"></a> <!-- http://nco.sf.net/nco.html#ppc_tbl_ffc -->
+@end html
+How can one be sure the lossy data are sufficiently precise?
+@acronym{PPC} preserves all significant digits of every value.
+The @acronym{DSD} algorithm uses floating point math to round each 
+value optimally so that it has the maximum number of zeroed bits
+that preserve the specified precision.
+The @acronym{NSD} algorithm uses a theoretical approach (3.2 bits per
+base-10 digit), tuned and tested to ensure the @emph{worst} case
+quantization error is less than half the value of the minimum increment
+in the least significant digit. 
+
+@ifhtml
+@cartouche
+@html
+<p><b>Note for HTML users</b>: 
+<br>The definition of error metrics relies heavily on mathematical
+expressions which cannot easily be represented in HTML.  
+<b>See the <a href="./nco.pdf">printed manual</a> for much more detailed
+and complete documentation of this subject.</b>
+@end html
+@end cartouche
+@end ifhtml
+@ifnothtml
+@ifinfo
+@emph{Note for Info users}: 
+The definition of error metrics relies heavily on mathematical
+expressions which cannot be easily represented in Info.
+@emph{See the @uref{./nco.pdf, printed manual} for much more detailed
+and complete documentation of this subject.}
+@end ifinfo
+@end ifnothtml
+
+@tex
+We define several metrics to quantify the quantization error.
+The mean error~$\pslavg$ and mean absolute error~$\pslmebs$ incurred in
+quantizing a variable from its true values~$\xxx_{\idx}$ to quantized
+values~$\qqq_{\idx}$ are, respectively,
+$$
+\pslavg = {\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
+\mskflg_{\idx} \wgt_{\idx} ( \xxx_{\idx} - \qqq_{\idx} ) \over
+\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx}}\qquad\hbox{and}\qquad
+\pslmebs = {\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
+\mskflg_{\idx} \wgt_{\idx} | \xxx_{\idx} - \qqq_{\idx} | \over
+\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx}}  
+$$
+where $\mssflg_{\idx}$ is~1 unless $\xxx_{\idx}$~equals the missing
+value, $\mskflg_{\idx}$ is~1 unless $\xxx_{\idx}$~is masked, and
+$\wgt_{\idx}$~is the weight.
+The maximum and minimum errors $\pslmax$ and~$\pslmin$ are both signed 
+$$
+\pslmax = {\rm max}(\xxx_{\idx} - \qqq_{\idx})\qquad\hbox{and}\qquad
+\pslmin = {\rm min}(\xxx_{\idx} - \qqq_{\idx})
+$$
+while the maximum and minimum absolute errors $\pslmabs$ are positive-definite.
+$$
+\pslmabs = {\rm max}|\xxx_{\idx} - \qqq_{\idx}| = {\rm max}(|\pslmax|,|\pslmin|)
+$$
+$$
+\pslmibs = {\rm min}|\xxx_{\idx} - \qqq_{\idx}| = {\rm min}(|\pslmax|,|\pslmin|)
+$$
+Typically $\pslmibs = 0$ for quantization, since many exact values
+need no quantization.
+Bit-shifting zeros into the least significant bits (@acronym{LSB}s)
+always underestimates true values so that $\pslmax = 0$.
+Conversely, bit-shifting ones into the @acronym{LSB}s always
+overestimates true values so that $\pslmin = 0$. 
+Our @acronym{NSD} algorithm is balanced because it alternates
+bit-shifting zeroes and ones.
+Balanced algorithms should yield $\pslmax \approx -\pslmin$,
+$\pslmabs \approx \pslmibs$, and $\pslavg \approx 0$.
+
+The three most important error metrics for quantization are 
+$\pslmabs$, $\pslmebs$, and~$\pslavg$.
+The upper bound (worst case) quantization performance is~$\pslmabs$.
+$\pslmebs$~measures the absolute mean accuracy of quantization, and does
+not allow positive and negative offsets to compensate eachother and
+conceal poor performance.
+The difference bewtween~$\pslmabs$ and~$\pslmebs$ indicates how much 
+of an outlier the worst case is.
+The mean accuracy~$\pslavg$ indicates whether statistical properties of 
+quantized numbers will accurately reflect the true values. 
+@end tex
+
+All three metrics are expressed in terms of the fraction of the ten's
+place occupied by the @acronym{LSD}.
+If the @acronym{LSD} is the hundreds digit or the thousandths digit,
+then the metrics are fractions @w{of 100}, or @w{of 1/100},
+respectively. 
+@acronym{PPC} algorithms should produce maximum absolute errors no
+greater @w{than 0.5} in these units.
+If the @acronym{LSD} is the hundreds digit, then quantized versions of
+true values will be within fifty of the true value.
+It is much easier to satisfy this tolerance for a true value 
+@w{of 100} (only 50% accuracy required) than @w{for 999} 
+@w{(5% accuracy} required). 
+Thus the minimum accuracy guaranteed for @math{@var{nsd}=1} ranges
+from 5--50%.
+For this reason, the best and worst cast performance usually occurs for
+true values whose @acronym{LSD} value is close to one and nine,
+respectively. 
+Of course most users prefer @math{@var{prc} > 1} because accuracies
+increase exponentially with @var{prc}.
+Continuing the previous example to @math{@var{prc}=2}, 
+quantized versions of true values from 1000--9999 will also be 
+@w{within 50} of the true value, i.e., have accuracies from 0.5--5%.
+In other words, only two significant digits are necessary to guarantee 
+better @w{than 5%} accuracy in quantization. 
+We recommend that dataset producers and users consider quantizing
+datasets with @math{@var{nsd}=3}.
+This guarantees accuracy of 0.05--0.5% for individual values.
+Statistics computed from ensembles of quantized values will, assuming
+the mean error 
+@set flg
+@tex
+$\pslavg$
+@clear flg
+@end tex
+@ifinfo
+@math{@var{Emean}}
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html does not like @math{}
+@var{Emean}
+@clear flg
+@end ifset
+is small, have much better accuracy @w{than 0.5%}.
+This accuracy is the most that can be justified for many applications.   
+
+To demonstrate these principles we conduct error analyses on an
+artificial, reproducible dataset, and on an actual dataset of
+observational analysis values. 
+@footnote{The artificial dataset employed is one million evenly spaced
+values from 1.0--2.0.
+The analysis data are @math{N=13934592} values of the temperature field
+from the @acronym{NASA} @acronym{MERRA} analysis of 20130601.}
+The table summarizes quantization accuracy based on the three metrics.
+@table @code
+@item NSD
+Number of Significant Digits.
+@item Emabs
+Maximum absolute error.
+@item Emebs
+Mean absolute error.
+@item Emean
+Mean error.
+@end table
+
 @ignore
+9.9692099683868690e+36f = 0 1111100 111100000000000000000000 NC_FILL_FLOAT
+2.3509885615147286E-38f = 0 0000000 111111111111111111111111 Recommended
+9.9692099683868690e+36  = 0 1000111100 11110000000000000000000000000000000000000000000000000 NC_FILL_DOUBLE
+2.84809453888921745415348453979E-306 = 0 0000000111 11111111111111111111111111111111111111111111111111111 Recommended
+
+2.22507385850720088902458687609E-308 = 0 0000000000 11111111111111111111111111111111111111111111111111111
+1.17549435082228737746264717725E-38  = 0 0111000000 11111111111111111111111111111111111111111111111111111
+1.17549435082228737746264717725E-38  = 0 0000000    100000000000000000000000
+
 # Accuracy tests
-# ppc=array(1.234567,1.e-6,$dmn) produces toughest metrics, with mabs() 2x other tests
-# ncks -O -C --ppc nsd1=.1 --ppc nsd2=.2 --ppc nsd3=.3 --ppc nsd4=.4 --ppc nsd5=.5 --ppc nsd6=.6 ~/foo_ppc_in.nc ~/foo_ppc_out.nc
-ncap2 -O -v -s 'defdim("dmn",1000000);ppc=array(1.f,1.e-6f,$dmn);nsd1=ppc;nsd2=ppc;nsd3=ppc;nsd4=ppc;nsd5=ppc;nsd6=ppc' ~/nco/data/in.nc ~/foo_ppc_in.nc
-ncks -O -C --ppc nsd1=1 --ppc nsd2=2 --ppc nsd3=3 --ppc nsd4=4 --ppc nsd5=5 --ppc nsd6=6 ~/foo_ppc_in.nc ~/foo_ppc_out.nc
+
+# Satellite:
+ncks -3 -O -v T ${DATA}/hdf/MERRA300.prod.assim.inst3_3d_asm_Cp.20130601.nc ~/foo_T.nc
+ncatted -a scale_factor,,d,, -a add_offset,,d,, ~/foo_T.nc
+ncap2 -O -v -s 'ppc=T;nsd1=ppc;nsd2=ppc;nsd3=ppc;nsd4=ppc;nsd5=ppc;nsd6=ppc;nsd7=ppc' ~/foo_T.nc ~/foo_ppc_in.nc
+# Artificial double
+ncap2 -O -v -s 'defdim("dmn",1000000);ppc=array(1.0,1.e-6,$dmn);nsd1=ppc;nsd2=ppc;nsd3=ppc;nsd4=ppc;nsd5=ppc;nsd6=ppc;nsd7=ppc' ~/nco/data/in.nc ~/foo_ppc_in.nc
+# Artificial float
+ncap2 -O -v -s 'defdim("dmn",1000000);ppc=float(array(1.0,1.e-6,$dmn));nsd1=ppc;nsd2=ppc;nsd3=ppc;nsd4=ppc;nsd5=ppc;nsd6=ppc;nsd7=ppc' ~/nco/data/in.nc ~/foo_ppc_in.nc
+
+# nc3tonc4
+nc3tonc4 -o --quantize=nsd1=1,nsd2=2,nsd3=3,nsd4=4,nsd5=5,nsd6=6,nsd7=7 --quiet=1 ~/foo_ppc_in.nc ~/foo_ppc_out.nc
+# DSD
+ncks -O -C --ppc nsd1=.1 --ppc nsd2=.2 --ppc nsd3=.3 --ppc nsd4=.4 --ppc nsd5=.5 --ppc nsd6=.6 --ppc nsd7=.7 ~/foo_ppc_in.nc ~/foo_ppc_out.nc
+# NSD
+ncks -O -C --ppc nsd1=1 --ppc nsd2=2 --ppc nsd3=3 --ppc nsd4=4 --ppc nsd5=5 --ppc nsd6=6 --ppc nsd7=7 ~/foo_ppc_in.nc ~/foo_ppc_out.nc
+
+# Generic rounding test:
 ncbo -O -C ~/foo_ppc_out.nc ~/foo_ppc_in.nc ~/foo_ppc_dff.nc
 ncbo -O -C -y dvd ~/foo_ppc_dff.nc ~/foo_ppc_in.nc ~/foo_ppc_rat.nc
-ncap2 -O -v -s 'nsd1*=10;nsd2*=100;nsd3*=1000;nsd4*=10000;nsd5*=100000;nsd6*=1000000' ~/foo_ppc_rat.nc ~/foo_ppc_rat_scl.nc
+ncap2 -O -v -s 'nsd1*=10;nsd2*=100;nsd3*=1000;nsd4*=10000;nsd5*=100000;nsd6*=1000000;nsd7*=10000000' ~/foo_ppc_rat.nc ~/foo_ppc_rat_scl.nc
 ncwa -O -C -y avg ~/foo_ppc_rat_scl.nc ~/foo_ppc_avg.nc
 ncwa -O -C -y max ~/foo_ppc_rat_scl.nc ~/foo_ppc_max.nc
 ncwa -O -C -y min ~/foo_ppc_rat_scl.nc ~/foo_ppc_min.nc
 ncwa -O -C -y mabs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mabs.nc
 ncwa -O -C -y mebs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mebs.nc
 ncwa -O -C -y mibs ~/foo_ppc_rat_scl.nc ~/foo_ppc_mibs.nc
+@end ignore
+@example
+Artificial Data: N=1000000 values in [1.0,2.0) in steps of 1.0e-6
+Single-Precision        Double-Precision   Single-Precision
+NSD Emabs Emebs Emean   Emabs Emebs Emean  DSD Emabs Emebs Emean
+ 1  0.31  0.11  4.1e-4  0.31  0.11  4.0e-4  1  0.30  0.11 -8.1e-4  
+ 2  0.39  0.14  6.8e-5  0.39  0.14  5.5e-5  2  0.39  0.14 -1.3e-4
+ 3  0.49  0.17  1.0e-6  0.49  0.17 -5.5e-7  3  0.49  0.17 -2.0e-5
+ 4  0.30  0.11  3.2e-7  0.30  0.11 -6.1e-6  4  0.30  0.11  5.1e-8
+ 5  0.37  0.13  3.1e-7  0.38  0.13 -5.6e-6  5  0.38  0.13  2.6e-6
+ 6  0.36  0.12 -4.4e-7  0.48  0.17 -4.1e-7  6  0.48  0.17  7.2e-6
+ 7  0.00  0.00  0.0     0.30  0.10  1.5e-7  7  0.00  0.00  0.0     
 
+Observational Analysis: N=13934592 values MERRA Temperature 20130601
+Single-Precision        
+NSD Emabs Emebs Emean   
+ 1  0.31  0.11  2.4e-3
+ 2  0.39  0.14  3.8e-4
+ 3  0.49  0.17 -9.6e-5 
+ 4  0.30  0.11  2.3e-3
+ 5  0.37  0.13  2.2e-3
+ 6  0.36  0.13  1.7e-2
+ 7  0.00  0.00  0.0     
+@end example
+All results show that @acronym{PPC} quantization performs as expected.
+Absolute maximum errors @math{@var{Emabs} < 0.5} for all @var{prc}.
+For @math{1 <= @var{prc} <= 6}, quantization results in comparable
+maximum absolute and mean absolute errors @var{Emabs} and @var{Emebs},
+respectively. 
+Mean errors @var{Emean} are orders of magnitude smaller because 
+quantization produces over- and under-estimated values in balance.
+When @math{@var{prc}=7}, quantization of single-precision values is
+ineffective, because all available bits are used to represent the 
+maximum precision of seven digits.
+The maximum and mean absolute errors @var{Emabs} and @var{Emebs} are
+nearly identical across algorithms, precisions, and dataset types.
+This is consistent with both the artificial data and empirical data
+being random, and thus exercising equally strengths and weaknesses of
+the algorithms over the course of millions of input values.
+We generated artificial arrays with many different starting values
+and interval spacing and all gave qualitatively similar results.
+The results presented are the worst obtained.
+
+The artificial data has much smaller mean error @var{Emean} than the
+observational analysis. 
+The reason why is unclear.
+It may be because the temperature field is concentrated in particular
+ranges of values (and associated quantization errors) prevalent on
+Earth, e.g., @math{200 < @var{T} < 320}. 
+It is worth noting that the mean error @math{@var{Emean} < 0.01} for
+@math{1 <= @var{prc} < 6}, and that @var{Emean} is typically at least 
+two or more orders of magnitude less than @var{Emabs}.
+Thus quantized values with precisions as low as @math{@var{prc}=1} 
+still yield highly significant statistics by contemporary scientific
+standards. 
+
+Testing shows that @acronym{PPC} quantization enhances compression of 
+typical climate datasets. 
+The degree of enhancement depends, of course, on the required
+precision. 
+Model results are often computed as @code{NC_DOUBLE} then archived 
+as @code{NC_FLOAT} to save space. 
+@ignore
 # Table entries
 fl=${DATA}/dstmch90/dstmch90_clm.nc
 fl=${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc
@@ -7197,7 +7447,6 @@ sz_new=`ncpdq -O -7 -L 9 --ppc default=4 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d 
 sz_new=`ncpdq -O -3 --ppc default=4 ${fl} ~/foo.nc;bzip2 -1 -f ~/foo.nc;ls -l ~/foo.nc.bz2 | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
 @end ignore
 @html
-<a name="ppc_tbl_bit"></a> <!-- http://nco.sf.net/nco.html#ppc_tbl_bit -->
 <a name="ppc_tbl_nc"></a> <!-- http://nco.sf.net/nco.html#ppc_tbl_nc -->
 @end html
 @cindex Burrows-Wheeler algorithm
@@ -7247,7 +7496,7 @@ file as distributed, not as optimally losslessly compressed.
 @example
 # dstmch90_clm.nc
 Type LLC PPC Pck  Size   %    Flags and Notes
-  N3   -   -  -   34.7 100.0  Original is uncompressed
+  N3   -   -  -   34.7 100.0  Original is not compressed
   N3  B1   -  -   28.9  83.2  bzip2 -1
   N3  B9   -  -   29.3  84.4  bzip2 -9
   N7   -   -  -   35.0 101.0     
@@ -7267,7 +7516,7 @@ Type LLC PPC Pck  Size   %    Flags and Notes
 
 # b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc
 Type LLC PPC Pck  Size   %    Flags and Notes
-  N3   -   -  -  119.8 100.0  Original is uncompressed
+  N3   -   -  -  119.8 100.0  Original is not compressed
   N3  B1   -  -   84.2  70.3  bzip2 -1
   N3  B9   -  -   84.8  70.9  bzip2 -9
   N7   -   -  -  120.5 100.7     

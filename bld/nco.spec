@@ -1,4 +1,4 @@
-# Fedora RPMs are up-to-date!
+v# Fedora RPMs are up-to-date!
 # http://cvs.fedoraproject.org/viewvc/devel/nco/nco.spec?view=co
 
 Name:           nco
@@ -108,7 +108,7 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
-* Wed Dec 26 2014 Charlie Zender <zender@uci.edu> - 4.4.8-1
+* Mon Feb 09 2014 Charlie Zender <zender@uci.edu> - 4.4.8-1
 - new upstream 4.4.8
 
 * Wed Nov 26 2014 Charlie Zender <zender@uci.edu> - 4.4.7-1

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.771 2015-02-10 01:11:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.772 2015-02-16 23:33:48 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
@@ -55,7 +55,7 @@ A. NCO will now store data at a per-variable precision level.
    ncks --ppc default=5 --ppc temperature=3 in.nc out.nc
    ncks --ppc AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 in.nc out.nc
    ncpdq --ppc default=4 --ppc grid_area=15 in.nc out.nc
-   http://nco.sf.net/nco.html#ppc
+   http://nco.sf.net/nco.html#ppc has extensive documentation.
 
 B. New "nco" chunking policy and modified "rew" chunking map: 
    Policy "nco" is a virtual option that implements the best
@@ -226,4 +226,3 @@ E. Reminder that NCO works on most HDF4 and HDF5 datasets, e.g.,
    HDF4: AMSR MERRA MODIS ...
    HDF5: GLAS ICESat Mabel SBUV ...
    HDF-EOS5: AURA HIRDLS OMI ...
-

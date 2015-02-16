@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.25 2015-02-10 01:07:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.26 2015-02-16 23:33:51 zender Exp $ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
@@ -181,7 +181,10 @@ nco_ppc_ini /* Set PPC based on user specifications */
 	/* Floating point types */
       case NC_FLOAT: 
       case NC_DOUBLE: 
-	if(trv_tbl->lst[idx_tbl].ppc > nco_max_ppc) trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
+	if(trv_tbl->lst[idx_tbl].ppc > nco_max_ppc){
+	  if(trv_tbl->lst[idx_tbl].flg_nsd) (void)fprintf(stdout,"%s: INFO Number of Significant Digits (NSD) requested = %d too high for variable %s which is of type %s. No quantization or rounding will be performed for this variable. HINT: Maximum precisions for NC_FLOAT and NC_DOUBLE are %d and %d, respectively.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].ppc,trv_tbl->lst[idx_tbl].nm,nco_typ_sng(trv_tbl->lst[idx_tbl].var_typ),nco_max_ppc_flt,nco_max_ppc_dbl);
+	  trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
+	} /* endif */
 	break;
 	/* Integer types */
       case NC_SHORT:
