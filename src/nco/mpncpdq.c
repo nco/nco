@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.122 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.122 2014-12-31 01:50:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.122 $";
+  const char * const CVS_Id="$Id$"; 
+  const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="3467Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;

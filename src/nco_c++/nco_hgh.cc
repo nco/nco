@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.22 2014-12-31 01:50:08 zender Exp $ 
+// $Header$ 
 
 // Implementation (declaration) of C++ interface to high-level NCO utilities
 

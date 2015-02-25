@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.40 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Type definitions, opaque types */
 

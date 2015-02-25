@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.212 2014-12-31 01:50:08 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 

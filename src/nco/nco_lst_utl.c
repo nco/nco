@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.88 2015-02-04 04:16:24 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: List utilities */
 
@@ -94,7 +94,7 @@ nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
   fmt_sng_new=(char *)strdup(fmt_sng);
   if(mch_nbr){
     mch_psn_srt=result->rm_so; /* [B] Byte offset from start of string to start of substring */
-    mch_psn_end=result->rm_eo-1L; /* [B] Byte offset from start of string to end   of substring */
+    mch_psn_end=result->rm_eo-1L; /* [B] Byte offset from start of string to end of substring */
     (void)nco_realloc(fmt_sng_new,(mch_psn_srt+strlen(fmt_sng)-mch_psn_end+2L)*sizeof(char));
     (void)sprintf(fmt_sng_new+mch_psn_srt,"%%s");
     (void)sprintf(fmt_sng_new+mch_psn_srt+2,"%s",fmt_sng+mch_psn_end+1);

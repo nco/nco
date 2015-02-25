@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.17 2012-07-05 23:18:50 pvicente Exp $ -*-makefile-*-
+# $Header$ -*-makefile-*-
 
 #SUBDIRS = data src man doc
 SUBDIRS = data src man @DOC_FOLDER@

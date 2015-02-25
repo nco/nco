@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.17 2014-03-04 22:44:15 zender Exp $
+# $Header$
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.157 2015-02-04 04:16:24 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: NCO utilities for chunking */
 

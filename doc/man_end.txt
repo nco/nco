@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/doc/man_end.txt,v 1.9 2013-12-02 01:05:56 zender Exp $ -*-nroff-*-
+.\" $Header$ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

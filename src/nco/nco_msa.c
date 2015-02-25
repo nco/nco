@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.284 2015-02-07 05:42:35 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Multi-slabbing algorithm */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sld.c,v 1.26 2015-02-16 23:33:51 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 

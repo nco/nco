@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.23 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -198,7 +198,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.23 2014-12-31 01:50:07 zender Exp $ */
+/* $Id$ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

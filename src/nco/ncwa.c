@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.436 2015-02-09 22:35:36 zender Exp $ */
+/* $Header$ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.436 2015-02-09 22:35:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.436 $";
+  const char * const CVS_Id="$Id$"; 
+  const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

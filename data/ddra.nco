@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.10 2007-06-18 21:03:22 zender Exp $ -*-C++-*-
+// $Header$ -*-C++-*-
 
 // Purpose: Compute DDRA statistics for use in ppr_ZeM06
 // Demonstrate ncap2 scripting

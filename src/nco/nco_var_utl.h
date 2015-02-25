@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.106 2015-01-15 07:23:42 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Variable utilities */
 

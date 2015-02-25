@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.60 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Software configuration management */
 
@@ -31,7 +31,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   /* Unexpanded cvs keywords in cvs_Name trigger GCC 4.0+ warning
      "./src/nco/nco_scm.c:81: warning: offset outside bounds of constant string"
      because routine looks for cvs_Name+7 later on */
-  char cvs_Name[]="$Name: not supported by cvs2svn $";
+  char cvs_Name[]="$Name$";
   const char dlr_nm_cln_spc[]="$Name: "; /* [sng] Dollar name colon space */
   const char nco_sng[]="nco"; 
   const char spc_dlr[]=" $"; /* [sng] Space dollar */

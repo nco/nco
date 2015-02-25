@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1088 2015-02-16 23:36:50 zender Exp $
+$Header$
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.8
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 16 February 2015
+@set update-date 17 February 2015
 @set update-month February 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6815,7 +6815,7 @@ sacrificing no (lossless) or a tolerable amount (lossy) of precision.
 First, @acronym{NCO} can access the lossless @acronym{DEFLATE} algorithm,
 a combination of Lempel-Ziv encoding and Huffman coding, algorithm on
 any netCDF4 dataset (@pxref{Deflation}). 
-Because it is lossless, this algorithm can inflate deflated data to
+Because it is lossless, this algorithm re-inflates deflated data to
 their full original precision. 
 This algorithm is accessed via the @acronym{HDF5} library layer
 (which itself calls the @command{zlib} library also used by
@@ -6824,10 +6824,28 @@ This algorithm is accessed via the @acronym{HDF5} library layer
 The three lossy compression algorithms are Packing 
 (@pxref{Packed data}), and two precision-preserving algorithms.
 Packing quantizes data of a higher precision type into a lower precision 
-type (often @code{NC_SHORT}) and thus stores a fewer (though constant)
+type (often @code{NC_SHORT}) that thus stores a fewer (though constant)
 number of bytes per value. 
-As shown in the examples, packed data can (and should) be deflated for 
-additional space savings.
+Packed data almost unpacks into a (much) smaller dynamic range than
+the floating-point data can represent. 
+The type-conversion and reduced dynamic range of the data allows packing
+to eliminate bits typically used to store an exponent, thus improving 
+its packing efficiency.
+Packed data also can also be deflated for additional space savings. 
+
+A limitation of packing is that unpacking data stored as integers
+into the linear range defined by @code{scale_factor} and
+@code{add_offset} rapidly loses precision outside of a narrow range of
+floating point values.  
+Variables packed as @code{NC_SHORT}, for example, can represent only
+about 64000 discrete values in the range 
+@math{-32768*scale_factor+add_offset} to
+@math{32767*scale_factor+add_offset}. 
+The precision of packed data equals the value of @code{scale_factor},
+and @code{scale_factor} is usually chosen to span the range of valid
+data, not to represent the intrinsic precision of the variable.
+In other words, the precision of packed data cannot be specified in
+advance because it depends on the range of values to quantize.
 
 @cindex @acronym{PPC}
 @cindex @acronym{LSD}
@@ -7442,6 +7460,7 @@ sz_new=`ncks -O -7 -L 1 --ppc default=5 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d '
 sz_new=`ncks -O -7 -L 1 --ppc default=4 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
 sz_new=`ncks -O -7 -L 1 --ppc default=3 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
 sz_new=`ncks -O -7 -L 1 --ppc default=2 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
+sz_new=`ncks -O -7 -L 1 --ppc default=1 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
 sz_new=`ncpdq -O -7 -L 1 --ppc default=4 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
 sz_new=`ncpdq -O -7 -L 9 --ppc default=4 ${fl} ~/foo.nc;ls -l ~/foo.nc | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
 sz_new=`ncpdq -O -3 --ppc default=4 ${fl} ~/foo.nc;bzip2 -1 -f ~/foo.nc;ls -l ~/foo.nc.bz2 | cut -d ' ' -f 5`;echo ${sz_rgn} ${sz_new} | gawk '{print "old=" $1/1000000 " MB, new=" $2/1000000 " MB, cmp=" 100*$2/$1 "%"}'
@@ -7463,7 +7482,7 @@ The columns are
 @item Type 
 File-type: 
 @kbd{N3} for netCDF @code{CLASSIC},
-@kbd{N4} for @code{NETCDF4}), 
+@kbd{N4} for @code{NETCDF4}, 
 @kbd{N7} for @code{NETCDF4_CLASSIC} (which comprises netCDF3
 data types and structures with netCDF4 storage features like
 compression),  
@@ -7482,8 +7501,6 @@ compression @acronym{NSD} algorithm.
 @item Pck 
 @kbd{Y} if the default @command{ncpdq} packing algorithm (convert
 floating point types to @code{NC_SHORT}) was employed.
-A dash (@kbd{-}) indicates the associated compression feature
-was not employed.
 @item Size
 Resulting filesize in @acronym{MB}.
 @item %
@@ -7493,6 +7510,25 @@ In some cases the original files is already losslessly compressed.
 The compression ratios reported are relative to the size of the original
 file as distributed, not as optimally losslessly compressed. 
 @end table
+A dash (@kbd{-}) indicates the associated compression feature
+was not employed.
+@ignore
+# Lines trimmed from table as redundant/misleading
+  N7   1   4  Y    7.9  22.9  ncpdq --ppc default=4
+  N7   9   4  Y    7.7  22.1  ncpdq -L 9 --ppc default=4
+  N3  B1   4  Y    6.3  18.1  ncpdq --ppc default=4 bzip2 -1
+
+  N7   1   4  Y   26.3  21.9  ncpdq --ppc default=4
+  N7   9   4  Y   25.6  21.4  ncpdq -L 9 --ppc default=4
+  N3  B1   4  Y   20.9  17.4  ncpdq --ppc default=4 bzip2 -1
+
+N4/7   1   4  Y  133.6  54.7  ncpdq -L 1 --ppc default=4
+N4/7   9   4  Y  127.0  52.0  ncpdq -L 9 --ppc default=4
+  N3  B1   4  Y  114.0  46.7  ncpdq --ppc default=4 bzip2 -1
+
+  N4   1   4  Y   13.0  44.0  ncpdq -L 1 --ppc default=4
+  N4   9   4  Y   12.5  42.5  ncpdq -L 9 --ppc default=4
+@end ignore
 @example
 # dstmch90_clm.nc
 Type LLC PPC Pck  Size   %    Flags and Notes
@@ -7509,10 +7545,8 @@ Type LLC PPC Pck  Size   %    Flags and Notes
   N7   1   5  -   25.9  74.6  --ppc default=5
   N7   1   4  -   22.3  64.3  --ppc default=4
   N7   1   3  -   18.9  54.6  --ppc default=3
-  N7   1   3  -   14.5  43.2  --ppc default=2
-  N7   1   4  Y    7.9  22.9  ncpdq --ppc default=4
-  N7   9   4  Y    7.7  22.1  ncpdq -L 9 --ppc default=4
-  N3  B1   4  Y    6.3  18.1  ncpdq --ppc default=4 bzip2 -1
+  N7   1   2  -   14.5  43.2  --ppc default=2
+  N7   1   1  -   10.0  29.0  --ppc default=1
 
 # b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc
 Type LLC PPC Pck  Size   %    Flags and Notes
@@ -7530,9 +7564,7 @@ Type LLC PPC Pck  Size   %    Flags and Notes
   N7   1   4  -   69.0  57.6  --ppc default=4
   N7   1   3  -   59.3  49.5  --ppc default=3
   N7   1   2  -   49.5  41.3  --ppc default=2
-  N7   1   4  Y   26.3  21.9  ncpdq --ppc default=4
-  N7   9   4  Y   25.6  21.4  ncpdq -L 9 --ppc default=4
-  N3  B1   4  Y   20.9  17.4  ncpdq --ppc default=4 bzip2 -1
+  N7   1   1  -   38.2  31.9  --ppc default=1
 
 # MERRA300.prod.assim.inst3_3d_asm_Cp.20130601.hdf
 Type LLC PPC Pck  Size   %    Flags and Notes
@@ -7554,9 +7586,7 @@ N4/7   1   5  -  221.4  90.6  --ppc default=5
 N4/7   1   4  -  201.4  82.4  --ppc default=4
 N4/7   1   3  -  185.3  75.9  --ppc default=3
 N4/7   1   2  -  150.0  61.4  --ppc default=2
-N4/7   1   4  Y  133.6  54.7  ncpdq -L 1 --ppc default=4
-N4/7   9   4  Y  127.0  52.0  ncpdq -L 9 --ppc default=4
-  N3  B1   4  Y  114.0  46.7  ncpdq --ppc default=4 bzip2 -1
+N4/7   1   1  -  100.8  41.3  --ppc default=1
 
 # OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5
 Type LLC PPC Pck  Size   %    Flags and Notes
@@ -7576,8 +7606,7 @@ Type LLC PPC Pck  Size   %    Flags and Notes
   N4   1   4  -   23.8  80.7  --ppc default=4
   N4   1   3  -   20.3  69.0  --ppc default=3
   N4   1   2  -   15.1  51.2  --ppc default=2
-  N4   1   4  Y   13.0  44.0  ncpdq -L 1 --ppc default=4
-  N4   9   4  Y   12.5  42.5  ncpdq -L 9 --ppc default=4
+  N4   1   1  -    9.9  33.6  --ppc default=1
 @end example
 
 @cindex @acronym{NCAR}
@@ -9413,45 +9442,48 @@ Short options: None@*
 @acronym{NCO} recognizes some Climate and Forecast (@acronym{CF})
 metadata conventions, and applies special rules to such data.
 @acronym{NCO} was contemporaneous with @acronym{COARDS} and still
-contains some rules to handle older @acronym{NCAR} model datasets, such as 
-@acronym{CCM} and early @acronym{CCSM} datasets, that pre-date 
-@acronym{CF}.
+contains some rules to handle older model datasets that pre-date
+@acronym{CF}, such as @acronym{NCAR} @acronym{CCM} and early
+@acronym{CCSM} datasets.
 Such datasets may not contain an explicit @code{Conventions} attribute
 (e.g., @samp{CF-1.0}). 
-Nevertheless, we refer to all such metadata collectively as @acronym{CF} 
+Nevertheless, we refer to all such metadata collectively as @acronym{CF}  
 metadata. 
 Skip this section if you never work with @acronym{CF} metadata.
 
 The latest @acronym{CF} netCDF conventions are described 
 @uref{http://cfconventions.org/1.6.html, here}. 
-Most @acronym{CF} netCDF conventions are transparent to @acronym{NCO}  
-@footnote{
-The exception is appending/altering the attributes @code{x_op},
-@code{y_op}, @code{z_op}, and @code{t_op} for variables which have been
-averaged across space and time dimensions.
-This feature is scheduled for future inclusion in @acronym{NCO}.
-}.
+Most @acronym{CF} netCDF conventions are transparent to @acronym{NCO}.
 There are no known pitfalls associated with using any @acronym{NCO}
-operator on files adhering to these conventions
-@footnote{
-The @acronym{CF} conventions recommend @code{time} be stored in the
-format @var{time} since @var{base_time}, e.g., the @code{units}
-attribute of @code{time} might be 
-@samp{days since 1992-10-8 15:15:42.5 -6:00}. 
-@w{A problem} with this format occurs when using @command{ncrcat} to
-concatenate multiple files, each with a different @var{base_time}. 
-That is, any @code{time} values from files following the first file to
-be concatenated should be corrected to the @var{base_time} offset
-specified in the @code{units} attribute of @code{time} from the first
-file. 
-The analogous problem has been fixed in @acronym{ARM} files 
-(@pxref{ARM Conventions}) and could be fixed for @acronym{CF} files if
-there is sufficient lobbying.
-}.
-However, to facilitate maximum user friendliness, @acronym{NCO} applies 
-special rules to certain variables in @acronym{CF} files.
-The special functions are not required by the @acronym{CF} netCDF
-conventions, yet experience shows that they simplify data analysis.
+operator on files adhering to these conventions.
+To increase user friendliness, @acronym{NCO} applies special rules to
+certain variables in @acronym{CF} files. 
+Rules not required by @acronym{CF} are because experience shows that
+they simplify data analysis.   
+
+Here is a general sense of @acronym{NCO}'s @acronym{CF}-support: 
+Understanding and implementing @acronym{NUG} recommendations such
+as the history attribute, packing conventions, and attention to units. 
+Special handling of variables designated as coordinates, bounds, or
+ancillary variables, so that users subsetting a certain variable
+automatically obtain all related variables.
+Special handling and prevention of meaningless operations 
+(e.g., the root-mean-square of latitude) so that coordinates and bounds
+preserve meaningful information even as normal fields are statistically
+transformed.
+Understanding units and certain calendars so that hyperslabs
+may be specified in physical units, and so that user needs not manually
+decode per-file time specifications.
+Understanding auxiliary coordinates so that irregular hyperslabs may be
+specified on complex geometric grids.
+Checking for CF-compliance on netCDF3 and netCDF4 and @acronym{HDF}
+files. 
+Converting netCDF4 and @acronym{HDF} files to netCDF3 for strict  
+@acronym{CF}-compliance.
+Finally, a main use of @acronym{NCO} is to ``produce @acronym{CF}'', 
+i.e., to improve @acronym{CF}-compliance by annotating metadata,
+renaming objects (attributes, variables, and dimensions), permuting and
+inverting dimensions, recomputing values, and data compression.
 
 @html
 <a name="prc_xcp"></a> <!-- http://nco.sf.net/nco.html#prc_xcp -->
@@ -9490,14 +9522,14 @@ pack, etc.) the following variables:
 @code{lat_bnds}, 
 @code{lon_bnds},
 @code{msk_*}.
-These variables represent the Gaussian weights, the orography field,
+These variables represent Gaussian weights, land/sea masks,
 time fields, hybrid pressure coefficients, and latititude/longitude
 boundaries.
 We call these fields non-coordinate @dfn{grid properties}.
 Coordinate grid properties are easy to identify because they are 
 coordinate variables such as @code{latitude} and @code{longitude}.
 
-Users usually want @emph{all} grid properties to remain unaltered in the
+Users usually want @emph{all} grid properties to remain unaltered in the 
 output file. 
 To be treated as a grid property, the variable name must @emph{exactly}
 match a name in the above list, or be a coordinate variable. 
@@ -9517,7 +9549,7 @@ or alter the @code{Conventions} attribute.
 @cindex @code{bounds} attribute
 @cindex bounds convention
 As of @acronym{NCO} version 4.0.8 (April, 2011), @acronym{NCO} 
-supports the @acronym{CF} @code{bounds} convention for cell boundaries
+supports the @acronym{CF} @code{bounds} convention for cell boundaries 
 described 
 @uref{http://cfconventions.org/1.6.html#cell-boundaries, here}.
 This convention allows coordinate variables (including multidimensional
@@ -9641,10 +9673,13 @@ section.
 @acronym{ARM} data files store time information in two variables, a
 scalar, @code{base_time}, and a record variable, @code{time_offset}.
 Subtle but serious problems can arise when these type of files are
-just blindly concatenated.
-Therefore @command{ncrcat} has been specially programmed to be able to
-chain together consecutive @acronym{ARM} @var{input-files} and produce
-and an @var{output-file} which contains the correct time information.
+blindly concatenated without @acronym{CF} or @acronym{ARM} support. 
+@command{NCO} implements rebasing (@pxref{Rebasing Time Coordinate}) 
+as necessary on both @acronym{CF} and @acronym{ARM} files.
+Rebasing chains together consecutive @var{input-files} and produces an
+@var{output-file} which contains the correct time information. 
+For @acronym{ARM} files this is expecially complex because the time
+coordinates are often stored as type @code{NC_CHAR}.
 Currently, @command{ncrcat} determines whether a datafile is an
 @acronym{ARM} datafile simply by testing for the existence of the
 variables @code{base_time}, @code{time_offset}, and the dimension
@@ -18173,8 +18208,9 @@ Excellent bug reports and feature requests.
 @cindex Barry deFreese
 @cindex Aleksandar Jelenak
 @cindex Francesco Lovergine
+@cindex Bas Couwenberg
 @cindex Matej Vela
-@item Daniel Baumann, Nick Bower, Luk Claebs, Barry deFreese, Aleksandar Jelenak, Francesco Lovergine, Matej Vela
+@item Daniel Baumann, Nick Bower, Luk Claebs, Bas Couwenberg, Barry deFreese, Aleksandar Jelenak, Francesco Lovergine, Matej Vela
 Debian packaging
 @cindex Patrice Dumas
 @cindex Ed Hill

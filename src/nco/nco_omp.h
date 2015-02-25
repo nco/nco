@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.33 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: OpenMP utilities */
 

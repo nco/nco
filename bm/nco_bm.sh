@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.13 2006-08-29 17:50:28 zender Exp $ -*-shell-script-*-
+# $Header$ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 

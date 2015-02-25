@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.16 2013-02-09 03:43:36 zender Exp $ -*-C++-*-
+// $Header$ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 // Stress-test netCDF4 atomic types and features

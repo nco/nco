@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/bm/stl_5km.cdl,v 1.3 2006-06-25 06:54:00 zender Exp $
+// $Header$
 
 // Usage:
 // ncgen -b -o sat_5km.nc sat_5km.cdl 

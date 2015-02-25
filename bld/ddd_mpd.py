@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # spawns a ddd session for each one found in mpilistjobs
 # nco-specific: sends SIGUSR1 to nodeid>0 processes
-# $Id: ddd_mpd.py,v 1.2 2005-09-26 23:13:38 wangd Exp $ 
+# $Id$ 
 
 # Usage:
 #    ./ddd_mpd.py

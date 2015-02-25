@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.17 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Description (definition) of MD5 digest functions */
 
@@ -94,7 +94,7 @@ extern "C" {
   ghost@aladdin.com
   
 */
-/* $Id: nco_md5.h,v 1.17 2014-12-31 01:50:07 zender Exp $ */
+/* $Id$ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

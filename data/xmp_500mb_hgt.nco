@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/xmp_500mb_hgt.nco,v 1.1 2008-05-30 12:49:58 zender Exp $ -*-C++-*-
+// $Header$ -*-C++-*-
 
 /* Purpose: Compute 500mb height using CCSM output fields: 
    Z3 [m] (Geopotential Height), 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: pvmgetarch,v 1.9 2013-11-21 00:15:17 pvicente Exp $
+# $Id$
 
 # Purpose: Generate PVM architecture string
 

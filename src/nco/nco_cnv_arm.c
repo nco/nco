@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.37 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: ARM conventions, e.g., http://www.arm.gov/data/time.stm */
 

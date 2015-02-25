@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.52 2015-02-03 20:25:11 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: String utilities */
 

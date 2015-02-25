@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.73 2015-02-07 05:42:35 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Arithmetic controls and utilities */
 

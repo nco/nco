@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.38 2014-12-31 01:50:08 zender Exp $ 
+// $Header$ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 

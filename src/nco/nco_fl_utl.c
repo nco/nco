@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.254 2015-02-05 23:08:39 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: File manipulation */
 

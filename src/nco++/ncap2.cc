@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.203 2015-02-07 05:42:36 zender Exp $ */
+/* $Header$ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.203 2015-02-07 05:42:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.203 $";
+  const char * const CVS_Id="$Id$"; 
+  const char * const CVS_Revision="$Revision$";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   

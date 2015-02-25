@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.42 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 

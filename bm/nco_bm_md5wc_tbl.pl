@@ -1,6 +1,6 @@
 # this file is valid perl code that populates the MD5_table for validating output files.
 # Perl semantics must be maintained.
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_md5wc_tbl.pl,v 1.1 2005-09-16 19:16:03 mangalam Exp $
+# $Header$
 
 # the md5 table needs to be populated with the md5 checksums for the output files
 # generated with the no-history option.

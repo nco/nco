@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.12 2005-07-02 22:55:39 zender Exp $
+# $Header$
 
 # Purpose: Install DODS prior to building NCO as DODS-enabled clients
 # NB: OPeNDAP/DODS netCDF client library versions 3.4.X are obsolete

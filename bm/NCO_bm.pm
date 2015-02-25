@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.89 2014-12-31 01:50:06 zender Exp $
+# $Header$
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:

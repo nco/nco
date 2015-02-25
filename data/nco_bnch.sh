@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/data/nco_bnch.sh,v 1.5 2004-09-14 01:23:15 zender Exp $
+# $Header$
 
 # Purpose: Benchmark NCO performance
 

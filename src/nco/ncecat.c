@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.380 2015-02-09 22:35:36 zender Exp $ */
+/* $Header$ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.380 2015-02-09 22:35:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.380 $";
+  const char * const CVS_Id="$Id$"; 
+  const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

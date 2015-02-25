@@ -32,7 +32,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.219 2014-12-01 20:51:39 zender Exp $';
+my $CVS_Header='$Header$';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -69,9 +69,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2014-12-01 20:51:39 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.219 2014-12-01 20:51:39 zender Exp $';
-my $CVS_Revision='$Revision: 1.219 $';
+my $CVS_Date='$Date$';
+my $CVS_Id='$Id$';
+my $CVS_Revision='$Revision$';
 my $CVSROOT='zender@nco.cvs.sf.net:/cvsroot/nco'; # CVS repository
 my $DATA=$ENV{'DATA'};
 my $HOME=$ENV{'HOME'};
@@ -131,7 +131,7 @@ if($rm_cmd =~ m/( -r)|( -R)|( --recursive)/){die "$prg_nm: ERROR Dangerous setti
 
 $prg_dsc='NCO distribution maker'; # Program description
 ($prg_nm,$prg_vrs)=$CVS_Id =~ /: (.+).pl,v ([\d.]+)/; # Program name and version
-$prg_vrs.='*' if length('$Locker:  $ ') > 12; # Tack '*' if it is not checked in into CVS.
+$prg_vrs.='*' if length('$Locker$ ') > 12; # Tack '*' if it is not checked in into CVS.
 ($prg_nm,$pth_in,$fl_sfx)=fileparse($0,''); # $0 is program name Camel p. 136
 if(length($CVS_Date) > 6){($prg_date)=unpack '@7 a19',$CVS_Date;}else{$prg_date='Unknown';}
 

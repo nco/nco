@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.16 2006-06-12 20:02:11 zender Exp $
+# $Header$
 
 # Purpose: Perform NCO benchmarks while subsetting 
 

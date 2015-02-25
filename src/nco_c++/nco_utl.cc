@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.30 2014-12-31 01:50:08 zender Exp $ 
+// $Header$ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 

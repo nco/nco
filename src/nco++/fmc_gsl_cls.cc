@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.72 2015-02-07 05:42:35 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 

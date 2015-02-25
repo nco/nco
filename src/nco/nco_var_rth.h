@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.47 2015-02-03 17:02:34 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Variable arithmetic */
 

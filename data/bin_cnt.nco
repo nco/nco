@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/bin_cnt.nco,v 1.13 2009-05-22 17:22:41 zender Exp $ -*-C++-*-
+// $Header$ -*-C++-*-
 
 // Purpose: Compute wind speed PDFs from annual input files
 

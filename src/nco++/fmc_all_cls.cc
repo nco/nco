@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.72 2014-12-31 01:50:08 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 

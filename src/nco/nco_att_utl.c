@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.181 2015-01-28 23:33:08 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Attribute utilities */
 

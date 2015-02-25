@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.538 2015-02-07 04:39:39 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 

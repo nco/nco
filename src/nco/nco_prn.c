@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.233 2015-02-09 03:38:40 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1317,21 +1317,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
  const trv_sct * const var_trv, /* I [sct] Object to print (variable) */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose:
-     Get variable with limits from input file
-     User supplied dlm_sng, print var (includes nbr_dim == 0)
-     Get dimensional units
-     if nbr_dim == 0 and dlm_sng == NULL Print variable
-     if PRN.. == False Print variable taking account of FORTRAN (need variable indices)
-     if PRN_DMN_IDX_CRD_VAL then read in co-ordinate dimensions
-     if PRN.. == True Print variable taking account of FORTRAN (Use dimensions to calculate variable indices)
+  /* Purpose: Print variable data
      
-     Similar to nco_msa_prn_var_val() but uses limit information contained in GTT 
-     Differences are marked "GTT"
-     1) It is not needed to retrieve dimension IDs for variable, these were used in nco_msa_prn_var_val()
-     to match limits; Group Traversal Table (GTT) should be "ID free".
-     2) Object to print (variable) is passed as parameter
-     3) MSA: Modulo arrays: Changing subscript of first (least rapidly varying) dimension by one moves most quickly through 
+     Descended from nco_prn_var_val_lmt() but uses limit information contained in GTT 
+     Modulo arrays: Changing subscript of first (least rapidly varying) dimension by one moves most quickly through 
      address space. Changing the subscript of the last (most rapidly varying) dimension by one moves exactly one location 
      (e.g., 8 bytes for a double) in address space. Each dimension has its own "stride" or length of RAM space between
      consecutive entries. mod_map_in and mod_map_cnt keep track of these distances. They are mappings between index-based 
@@ -1447,7 +1436,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     { /* begin potential OpenMP critical */
       (void)nco_get_var1(grp_id,var.id,0L,var.val.vp,var.type);
     } /* end potential OpenMP critical */
-  } else { /* ! Scalars */
+  }else{ /* ! Scalars */
     /* Allocate local MSA */
     lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
     lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
@@ -1472,9 +1461,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
   if(var.has_mss_val) val_sz_byt=nco_typ_lng(var.type);
 
-  /* User-supplied dlm_sng, print variable (includes nbr_dmn == 0) */  
   if(prn_flg->dlm_sng) dlm_sng=strdup(prn_flg->dlm_sng); /* [sng] User-specified delimiter string, if any */
   if(dlm_sng){
+    /* Print variable with user-supplied dlm_sng (includes nbr_dmn == 0) */
     char *fmt_sng_mss_val=NULL;
 
     /* Print each element with user-supplied formatting code */
@@ -1482,10 +1471,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     (void)sng_ascii_trn(dlm_sng);
 
     /* Assume -s argument (dlm_sng) formats entire string
-    Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
-    and that user is only allowed to affect text between fields. 
-    This would be accomplished with:
-    (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
+       Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
+       and that user is only allowed to affect text between fields. 
+       This would be accomplished with:
+       (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
 
     /* Find replacement format string at most once, then re-use */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY

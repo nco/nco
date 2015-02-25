@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.769 2015-02-09 22:35:36 zender Exp $ */
+/* $Header$ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -187,8 +187,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.769 2015-02-09 22:35:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.769 $";
+  const char * const CVS_Id="$Id$"; 
+  const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -948,9 +948,7 @@ main(int argc,char **argv)
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
     /* Write extracted data to output file */
-    if(PRN_VAR_DATA) {
-      (void)nco_xtr_wrt(in_id,out_id,gpe,fp_bnr,md5,HAVE_LIMITS,trv_tbl);
-    }
+    if(PRN_VAR_DATA) (void)nco_xtr_wrt(in_id,out_id,gpe,fp_bnr,md5,HAVE_LIMITS,trv_tbl);
 
     /* [fnc] Close unformatted binary data file */
     if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
@@ -958,7 +956,7 @@ main(int argc,char **argv)
     if(nco_dbg_lvl_get() == 14){
       (void)nco_wrt_trv_tbl(in_id,trv_tbl,True);
       (void)nco_wrt_trv_tbl(out_id,trv_tbl,True);
-    } /* endif */
+    } /* endif dbg */
 
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
@@ -1047,7 +1045,7 @@ main(int argc,char **argv)
 
     if(!prn_flg.new_fmt){
 
-      /* Traditional printing order/format */
+      /* Traditional printing order/format always used prior to 201307 */
       if(PRN_GLB_METADATA){
         int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
         int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */

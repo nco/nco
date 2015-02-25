@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.70 2014-12-31 01:50:07 zender Exp $ -*-C-*- */
+%{ /* $Header$ -*-C-*- */
   
 /* Begin C declarations section */
   

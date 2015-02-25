@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.209 2014-12-31 01:50:08 zender Exp $ */
+/* $Header$ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
 
   char *obj_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.209 2014-12-31 01:50:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.209 $";
+  const char * const CVS_Id="$Id$"; 
+  const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute/group in file is optional */

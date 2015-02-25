@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.67 2014-10-13 15:35:04 zender Exp $ -*-text-*-
+# $Header$ -*-text-*-
 
 # Purpose: Potpurri of Sourceforge information for NCO netCDF Operators project
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.118 2015-02-07 05:42:35 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 

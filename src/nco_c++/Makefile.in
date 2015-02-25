@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.115 2015-01-07 18:07:24 zender Exp $ -*-makefile-*-
+# $Header$ -*-makefile-*-
 
 
 VPATH = @srcdir@

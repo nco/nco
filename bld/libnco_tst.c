@@ -23,8 +23,8 @@
 #include "libnco.h" /* netCDF Operator (NCO) library */
 int main()
 {
-  const char * const CVS_Id="$Id: libnco_tst.c,v 1.3 2005-07-01 06:51:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.3 $";
+  const char * const CVS_Id="$Id$"; 
+  const char * const CVS_Revision="$Revision$";
   (void)copyright_prn(CVS_Id,CVS_Revision);
 }
 

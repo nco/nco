@@ -93,7 +93,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.125 2015-02-03 04:43:45 zender Exp $";
+  :RCS_Header = "$Header$";
   
  data:
   ppc_dbl=0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789;

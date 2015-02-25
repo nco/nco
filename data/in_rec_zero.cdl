@@ -20,7 +20,7 @@ variables:
                         "History global attribute.\n",
                         "" ;
                 :julian_day = 200000.04 ;
-                :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_rec_zero.cdl,v 1.2 2006-05-05 00:42:30 zender Exp $" ;
+                :RCS_Header = "$Header$" ;
 data:
 
  lon = 0, 90, 180, 270 ;

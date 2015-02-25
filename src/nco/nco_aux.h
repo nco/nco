@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.36 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Sub-set cell-based grids using auxiliary coordinate variable */
 

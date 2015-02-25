@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.140 2015-01-17 00:49:35 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/insure.txt,v 1.1 2002-01-23 09:01:50 zender Exp $
+$Header$
 
 Purpose: Keep track of memory access problems with NCO reported by insure
 

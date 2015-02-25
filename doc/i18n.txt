@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/i18n.txt,v 1.4 2012-09-11 22:28:22 zender Exp $
+# $Header$
 
 # Purpose: NCO Internationalization (i18n)
 

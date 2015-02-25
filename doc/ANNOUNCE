@@ -1,29 +1,33 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.772 2015-02-16 23:33:48 zender Exp $ -*-text-*-
+$Header$ -*-text-*-
 
 The netCDF Operators NCO version 4.4.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-NCO now implements a major new feature: lossy compression.
-This is distinct from the packing (scale_factor+add_offset) that
-NCO has long supported. The new lossy compression feature is
-activated by specifying desired level of precision in terms of
-either the total number of significant digits or the number of
-significant digits after (or before) the decimal point.
-These precision features are lumped together under the generic
-name Precision-Preserving Compression (PPC), summarized below.
+NCO now implements a lossy compression feature distinct from the
+packing (scale_factor+add_offset) that NCO has long supported.
+The new feature is activated by specifying desired level of precision
+in terms of either the total number of significant digits or the
+number of significant digits after (or before) the decimal point.
+These precision features are lumped together under the generic name
+Precision-Preserving Compression (PPC), summarized below. 
 
 Specifying more reasonable and optimized chunking maps has been
 made easier by the addition of a new "best practices" policy 
 which implements Rew's balanced chunking for three-dimensional
-variables, and Lefter Product chunking for all others.
+variables, and LeFter-Product (lfp) chunking for all others.
 
 New ncwa/ncra/nces arithmetic operators mabs(), mebs(), and mibs()
 simplify statistical analysis.
 
-Work on NCO 4.4.9 is underway, still focused on stability and speed.
-This includes more netCDF4 mop-up and new chunking features.
+Work on NCO 4.4.9 is underway.
+This will include more netCDF4 mop-up and new chunking features.
+Work on NCO 4.5.0 has commenced and is aimed at regridding.
+There will be some intermittent downtime for access to the NCO CVS
+repository as we transition to either Subversion or Git in the
+near future. Once the new system is working, instructions for access
+will be updated on the NCO homepage.
 
 Enjoy,
 Charlie
@@ -49,9 +53,10 @@ A. NCO will now store data at a per-variable precision level.
    Compression is internal with netCDF4 and external (e.g., gzip or
    bzip2) with netCDF3. Space savings can be large.   
    And face it, how often does your precision exceed 3 digits?
-   PPC data can also be packed to save additional space.
    And don't worry, coordinate variables are not rounded :)
-   Thanks to Rich Signell for suggesting lossy compression for NCO. 
+   An advantage of PPC is that (unlike packing), PPC needs no explicit
+   support in other software because data stays in IEEE format. 
+   Thanks to Rich Signell for suggesting DSD compression for NCO. 
    ncks --ppc default=5 --ppc temperature=3 in.nc out.nc
    ncks --ppc AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 in.nc out.nc
    ncpdq --ppc default=4 --ppc grid_area=15 in.nc out.nc

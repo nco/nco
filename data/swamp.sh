@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/swamp.sh,v 1.7 2007-08-13 20:40:48 zender Exp $
+# $Header$
 
 # Purpose: Demonstrate SWAMP usage
 

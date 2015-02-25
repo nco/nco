@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/xmp_wnd_msk.nco,v 1.3 2008-08-07 17:25:20 scapps Exp $ -*-C++-*-
+// $Header$ -*-C++-*-
 /* USAGE: ncap2 -O -S xmp_wnd_msk.nco in.nc out.nc */
 
 // PARAMETERS------------------------------------------------------

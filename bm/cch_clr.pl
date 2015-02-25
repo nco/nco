@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/cch_clr.pl,v 1.3 2006-05-27 21:48:33 zender Exp $
+# $Header$
 
 # Purpose: Clear machine cache by loading memory with useless data
 # Once cache is clear, benchmarking may proceed without risk that

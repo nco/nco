@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/psd.nco,v 1.10 2006-11-30 07:21:58 zender Exp $ -*-C-*-
+// $Header$ -*-C-*-
 
 // Purpose: ncap script for particle size distributions
 // Produces Table~\ref{tbl:lgn_stt_anl} in http://dust.ess.uci.edu/facts/psd/psd.pdf

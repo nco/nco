@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/libnco_c++.hh,v 1.21 2014-12-31 01:50:08 zender Exp $ 
+// $Header$ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco_c++
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_getopt.h,v 1.2 2003-01-09 01:05:05 zender Exp $ */
+/* $Header$ */
 
 /* "my_getopt" package is "drop-in" replacement for GNU getopt() 
    by Benjamin Sittler <bsittler@iname.com> downloaded from

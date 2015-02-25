@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.314 2015-02-09 22:35:36 zender Exp $ */
+/* $Header$ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.314 2015-02-09 22:35:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.314 $";
+  const char * const CVS_Id="$Id$"; 
+  const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */

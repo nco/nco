@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.96 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Conform dimensions between variables */
 

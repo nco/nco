@@ -70,7 +70,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_nomismatch.cdl,v 1.5 2011-11-12 19:02:48 zender Exp $";
+	:RCS_Header = "$Header$";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.257 2015-01-08 20:37:08 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 

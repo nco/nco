@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.151 2014-12-31 01:50:07 zender Exp $ */
+/* $Header$ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.151 2014-12-31 01:50:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.151 $";
+  const char * const CVS_Id="$Id$"; 
+  const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="3467ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.22 2014-12-08 16:05:06 hmb Exp $ */
+/* $Header$ */
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
 /* Copyright (C) 1995--2014 Charlie Zender

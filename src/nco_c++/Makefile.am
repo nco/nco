@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.am,v 1.10 2006-12-03 01:58:24 zender Exp $ -*-makefile-*-
+# $Header$ -*-makefile-*-
 
 test_data = in.nc
 

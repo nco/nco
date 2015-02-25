@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/bm/gcm_T85.cdl,v 1.1 2006-06-17 22:15:37 zender Exp $
+// $Header$
 // ncgen -b -o ipcc_dly_T85.nc ipcc_dly_T85.cdl (-> 1,142,957,636 bytes)
 // takes about 48 (real) sec on 900MHz/512MB a22p thinkpad, 
 // most of it waiting for disk

@@ -1,0 +1,17 @@
+zender = Charlie Zender <zender@uci.edu>
+woodllan = Wenshan Wang <wenshanw@uci.edu>
+karkn = Karen Schuchardt <Karen.Schuchardt@pnl.gov>
+wangd = Daniel Wang <danielw@slac.stanford.edu>
+rorik = Rorik Peterson <ffrap1@uaf.edu>
+edhill = Ed Hill <eh3@mit.edu>
+mangalam = Harry Mangalam <hjm@tacgi.com>
+scapps = Scott Capps <scapps@atmos.ucla.edu>
+tlroche = Tom Roche <Tom_Roche@pobox.com>
+hmb = Henry Butowsky <henryb@hush.com>
+pvicente = Pedro Vicente <pedro.vicente@space-research.org>
+dywei2 = Dingying Wei <dywei@uci.edu>
+jedwards = Jim Edwards <jedwards@ucar.edu>
+gayathri_aiyar = Gayathri Venkitachalam <gvenkita@uci.edu>
+uid24006 = SourceForge uid24006 <zender@uci.edu>
+(no author) = Charlie Zender <workaround@dev.null>
+root = Charlie Zender <hack@dev.null>

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_dmn.cc,v 1.19 2014-12-31 01:50:08 zender Exp $ 
+// $Header$ 
 
 // Implementation (declaration) of C++ interface to netCDF dimension routines
 

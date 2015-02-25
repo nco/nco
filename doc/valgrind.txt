@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/valgrind.txt,v 1.5 2005-10-23 07:08:50 zender Exp $
+# $Header$
 
 # Purpose: Suppression file for valgrind
 # Default suppressed warnings in /usr/local/lib/valgrind/default.supp

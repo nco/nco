@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.44 2015-02-03 02:08:55 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Description (definition) of chunking functions */
 

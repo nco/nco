@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.42 2015-02-04 02:44:45 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Calendar utilities */
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.11 2006-05-23 22:24:07 zender Exp $
+# $Header$
 # Script resides in nco/bm
 
 # Purpose: 

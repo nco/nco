@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.82 2015-02-07 04:39:39 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Conform variable types */
 

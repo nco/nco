@@ -1,3 +1,68 @@
+2015-02-24  Charlie Zender  <zender@uci.edu>
+
+	* Remove CVS keyword expansions by copying un-expanded originals over from CVS tree
+
+	* Create README.md for Github
+
+	* Clean-up ChangeLog
+
+	* Worked on CVS->SVN-->Git migration all week. Preserving tags is hard.
+
+	* Final procedure was something like:
+	# Generate dumpfile
+	cvs2svn -v --encoding=ascii --encoding=latin_1 --dumpfile=/home/zender/nco_20150216_dumpfile -s /home/zender/svn > ~/cvs2svn.txt
+
+	rsync -aiv nco_20150216_dumpfile zender,nco@web.sf.net:
+	ssh -t zender,nco@shell.sourceforge.net create
+	mv /home/project-web/nco/nco_20150216_dumpfile .
+
+	# Initialize SF SVN repository
+	svnadmin create /home/project-web/nco/svn
+	# Do hard work
+	svnadmin load /home/project-web/nco/svn < /home/project-web/nco/nco_20150216_dumpfile
+	# Check-out (failed)
+	svn checkout --username=zender svn+ssh://zender@svn.code.sf.net/p/nco/svn/ ~/nco-svn
+
+	# Initialize local SVN repository
+	cd;mkdir svn;svnadmin create svn
+	# Do hard work
+	svnadmin load svn < nco_20150216_dumpfile
+	# Check-out
+	svn checkout file:///home/zender/svn/trunk/nco ~/nco_svn
+
+	# Create local Git repository
+	/bin/rm -r -f ~/nco
+	mkdir -p ~/nco
+	cd ~/nco
+
+	# Convert SVN to Git with git svn (actual command used, ~18.6 MiB compressed to clone)
+	# http://git-scm.com/book/en/v2/Git-and-Other-Systems-Migrating-to-Git
+	git svn clone file:///home/zender/svn/trunk/nco --authors-file=/home/zender/nco_authors.txt --ignore-paths='^CVSROOT' --no-metadata
+
+	# Move tags to be proper Git tags, move other references to be local branches
+	/bin/cp -Rf .git/refs/remotes/origin/tags/* .git/refs/tags/
+	/bin/rm -Rf .git/refs/remotes/origin/tags
+	/bin/cp -Rf .git/refs/remotes/* .git/refs/heads/
+	/bin/rm -Rf .git/refs/remotes
+
+	# Convert SVN to Git with svn2git (ultimately not used)
+	# https://github.com/nirvdrum/svn2git
+	sudo aptitude install git-core git-svn ruby rubygems
+	sudo gem install svn2git
+	# Loses all tags, produces small (~19 MiB compressed to clone) repository
+	svn2git file:///home/zender/svn/trunk/nco --trunk / --authors ~/nco_authors.txt --verbose
+	# Maintains tags but takes forever (ETA ~6 days)
+	svn2git file:///home/zender/svn --authors ~/nco_authors.txt --exclude '^CVSROOT.*' --trunk trunk/nco --nobranches --verbose
+
+	# Push new local Git repository to GitHub
+	git remote add origin https://github.com/czender/nco.git
+	git push origin --all
+	git push origin --tags
+	git push --set-upstream origin master
+
+	# Clone from GitHub
+	git clone https://github.com/czender/nco.git ~/nco
+
 2015-02-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.8 release procedure:
@@ -6233,7 +6298,7 @@
 
 2007-09-17  Charlie Zender  <zender@uci.edu>
 
-	* Add big.nc to CLEANFILES to (hopefully) fix Debian FTBFS problem 
+	* Add big.nc to CLEANFILES to (hopefully) fix Debian FTBFS problem
 	with two consecutive builds
 
 2007-09-12  Charlie Zender  <zender@uci.edu>
@@ -6331,7 +6396,7 @@
 	* Change licenses from GPL2 and FDL1.1 to GPL3 and FDL1.2 for code
 	and documentation, respectively
 
-	* Try to prevent debian rules configure/libtool from invoking RPATH 
+	* Try to prevent debian rules configure/libtool from invoking RPATH
 
 2007-07-19  Charlie Zender  <zender@uci.edu>
 
@@ -7134,7 +7199,7 @@
 	omp_flg, nco_D_flg, fl_out
 
 	* Kludge for pgcc compiler to workaround C99 designated	initializers
-	Timers should be OK but DDRA answers for ncbo, ncwa should not be 
+	Timers should be OK but DDRA answers for ncbo, ncwa should not be
 	trusted with pgcc (or any C++ compiler).
 
 2006-08-22  Charlie Zender  <zender@uci.edu>
@@ -7143,7 +7208,7 @@
 	likely due to ccache inadvertently mixing OpenMP-enabled and
 	dis-abled object code. Must be more careful about that in future.
 	This resolves TODO nco765 and 766
-	
+
 	* Add more informative OpenMP diagnostics
 
 	* Fix OpenMP flag-passing in Makefile for Intel icc compilers
@@ -7154,7 +7219,7 @@
 
 	* Fix specialized nco_bm.pl file processing for tms_lng.nc
 	This resolves TODO nco767.
-	
+
 2006-08-10  Charlie Zender  <zender@uci.edu>
 
 	* pgcc -c9x currently fails to handle C99 designated initializers
@@ -7226,18 +7291,18 @@
 2006-06-08  Charlie Zender  <zender@uci.edu>
 
 	* Re-release this as 3.1.4
-	
+
 	* Always initialize flg_ddra=False in ddra_info
 	Fixes spurious TIMER info on compilers (like xlc) which do not zero data
 
 	* Re-release this as 3.1.4
-	
-	* Take mtd timer out of loop in ncra.c and ncecat.c 
+
+	* Take mtd timer out of loop in ncra.c and ncecat.c
 
 2006-06-07  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_1_4
-	Changes since nco-3_1_4: 
+	Changes since nco-3_1_4:
 	timers, clean/dirty switches
 
 	* Add timer start and end calls to all operators
@@ -7330,7 +7395,7 @@
 	correctly with -C/-c switches.
 
 	* Move some nm_id_sct var_lst routines from nco_var_utl.c to
-	nco_var_lst.c 
+	nco_var_lst.c
 
 	* Split CF coordinate convention nco_cnv_cf_crd_add()
 	out of nco_var_lst_ass_crd_add() so it can be called
@@ -7348,7 +7413,7 @@
 	* Found bug in libnco_c++: library does incorrectly initializes
 	function parameters which default to CPP macros, e.g., NC_NOERR.
 	These parameters cannot be over-ridden by non-default values.
-	Same problems occurs whether passing rcd_opt as reference or not. 
+	Same problems occurs whether passing rcd_opt as reference or not.
 	Attempting to fix bug by creating named constant with global
 	library visibility.
 
@@ -7358,8 +7423,8 @@
 	Old code at nco.sf.net is a hodgepodge of erratic commits over past week.
 
 	* Finished hand-merging one week's patches from development on
-	multiple machines due to sourceforge.net outage. 
-	Master code is now on ashes. Everything from about 
+	multiple machines due to sourceforge.net outage.
+	Master code is now on ashes. Everything from about
 	20060506--20060512 was originally "out-of-tree" during outage.
 
 2006-05-13  Charlie Zender  <zender@uci.edu>
@@ -7406,7 +7471,7 @@
 
 	* Make zero-record record variables always fixed in arithmetic operators
 	This ensures airthmetic loops to not encounter empty variables
-	
+
 2006-05-06  Charlie Zender  <zender@uci.edu>
 
 	* Improve warning messages in ncra for size 0 records
@@ -8301,21 +8366,21 @@
 
 	* Implement/fix OpenMP in MPI_FAKE portions of all mpnc*.c codes
 
-	* Use icc ncecat bld/Makefile compilation fix for mpicc too 
+	* Use icc ncecat bld/Makefile compilation fix for mpicc too
 
 	* Use nco_mpi_get() to return MPI implementation information
 	Invoke with undocumented ncks --mpi switch
-	This (unwisely?) introduces mpi.h into libnco.a via nco_ctl.h 
+	This (unwisely?) introduces mpi.h into libnco.a via nco_ctl.h
 	Formerly, mpi.h only appeared in front-end codes
 	Still no MPI _calls_ are in libnco.a, just header information
-	
+
 	* Allow MPI and OpenMP to both be true
 	Now MPI_FAKE tests OpenMP so that MPI_FAKE operators are
 	plug-compatible replacements for UP/SMP operators.
 	No code actually takes advantage hybrid MPI/OMP since the MPI and
-	OpenMP implementations are currently orthogonal in mpnc*.c level. 
+	OpenMP implementations are currently orthogonal in mpnc*.c level.
 	This may change if benchmarks uncover good reasons to hybridize
-	
+
 	* Accomodate LAM MPI environment
 	No difference between regressions with LAM and with MPICH2
 
@@ -8334,7 +8399,7 @@
 
 	* Verify UP and SMP mpncra execute successfully while MPI mpncra
 	still hangs just before writing output file
-	
+
 	* Clean up mpncra.c to build cleanly with MPI_FAKE
 
 	* Fix mpncecat (same ole' strlen(fl_out_tmp) bug)
@@ -8357,7 +8422,7 @@
 	* Regression test shows mpncbo commutivity modifications work!
 	Same two-file framework should be implemented in ncflint/mpncflint
 
-	* Only allow master MPI process to strlen(fl_out_tmp) 
+	* Only allow master MPI process to strlen(fl_out_tmp)
 	This fixes nasty regressions which I introduced into Gayathri's codes
 	Still need to understand why it caused the bug in the first place
 
@@ -8367,7 +8432,7 @@
 
 	* Declare all MPI-specific variables in one place in mpncbo.c
 	This removes all warnings when spoofing MPI with MPI_FAKE
-	
+
 	* Clean up bld/Makefile header
 
 	* Rename FAKE_MPI switch to MPI_FAKE in bld/Makefile
@@ -8395,7 +8460,7 @@
 	Documented different test results in MPI section of TODO
 
 	* Committed recent mpncbo.c commutivity changes
-	
+
 2005-09-09  Charlie Zender  <zender@uci.edu>
 
 	* Complete and clean-up NCO MPI synonyms in prg_prs()
@@ -8434,12 +8499,12 @@
 
 	* cvs tag -c nco-3_0_2
 	Changes since nco-3_0_1: icc, OPeNDAP, ftp, sftp, .netrc, hdr_pad,
-	cf, bm for MPI + OPeNDAP 
+	cf, bm for MPI + OPeNDAP
 
 	* Plug two small leaks in ncks when printing and fl_out=NULL
 
 	* Plug double-free() error when fl_out=NULL in ncatted
-	Double-free() errors cause operator failure on Fedora, which 
+	Double-free() errors cause operator failure on Fedora, which
 	has a security-hardened glibc. Hence this was probably an
 	unreported headache for many Fedora NCO users since 3.0.0 or
 	3.0.1. Recommend they upgrade and this spurs release of 3.0.2.
@@ -8454,17 +8519,17 @@
 	1. Correctly handles cases where input variable orders are different
 	2. Correctly diagnoses (and attempts to broadcast) mis-matched dimensions
 	3. Can serve as template for similar [mp]ncflint re-write (TODO 578)
-	4. Improved logic needs to be merged into mpncbo.c so mpncbo 
+	4. Improved logic needs to be merged into mpncbo.c so mpncbo
 	   passes (currently deprecated) regression test ncbo #8 (TODO 579).
 	5. Works well when nbr_var_fix_1>nbr_var_fix_2 so long as discrepant
 	   variables are type fix not type prc but needs list merge to
 	   work when nbr_var_fix_1<nbr_var_fix_2 (TODO 581).
-	6. Works for rank(var_1) > rank(var_2), not rank(var_2) > rank(var_1) 
+	6. Works for rank(var_1) > rank(var_2), not rank(var_2) > rank(var_1)
 	   Pre-compute broadcast size before var_def(out_id,var_out) (TODO 552)
 
 	* Completely fixes TODO 550. Serial NCO regression test is spotless again.
 
-	* Plug memory leak caused by ncbo two list re-write 
+	* Plug memory leak caused by ncbo two list re-write
 
 2005-08-19  Harry Mangalam  <hjm@tacgi.com>
 
@@ -8477,12 +8542,12 @@
 	* Invert order of operands given to nco_var_sbt() by ncbo
 	This fixes numerics of ncbo regression TODO 550
 	However, operand order to nco_var_[sbt,dvd,...] is non-intuitive
-	and should be reversed NCO-wide in the future (now TODO 576)	
+	and should be reversed NCO-wide in the future (now TODO 576)
 
 2005-08-18 Charlie Zender <zender@uci.edu>
 
 	* Add SFTP and .netrc-based password-protected FTP (to ESG) regression tests
-	
+
 	* Add stub for wget-based regression test
 
 	* Fix ncbo regression to fail for right reason
@@ -8492,7 +8557,7 @@
 2005-08-17  Harry Mangalam  <hjm@tacgi.com>
 
 	* Add MPI bits to nco_bm.pl to test the MPI'ed operators.
-        
+
 2005-08-17  Charlie Zender  <zender@uci.edu>
 
 	* Add MPI_PRC option for bld/Makefile to pass through to nco_bm.pl
@@ -8508,12 +8573,12 @@
 	* Add hooks for output file-mode specification to ncks.c
 	This may break compatibility with netCDF nersion 3.5.x and hence OPeNDAP
 	Currently shrouded by #ifdef NETCDF4 tokens
-	
+
 2005-08-12  Harry Mangalam  <hjm@tacgi.com>
 
-	* small mods to nco_bm.pl to track diff in wall vs (sys+user) to 
+	* small mods to nco_bm.pl to track diff in wall vs (sys+user) to
 		get idea of how much time is lost to I/O (theoretically)
-        
+
 2005-08-13  Charlie Zender  <zender@uci.edu>
 
 	* Finished ncbo heart transplant: Symmetric subtraction still not working
@@ -8521,10 +8586,10 @@
 	Valgrind indicates new code is leak-proof except for one
 	double-free() caused by ncap_var_cnf_dmn()
 	Code appears to be commit-able since it's cleaner and extensible
-	
+
 	* Extended dual list method into heart of ncbo
 	Saved last known working version as ~/ncbo.last_known_working.c
-	
+
 	* Change NCAR_CCSM_FORMAT to CNV_CCM_CCSM_CF, ARM_FORMAT to CNV_ARM
 
 2005-08-11  Charlie Zender  <zender@uci.edu>
@@ -8541,12 +8606,12 @@
 	* change nco_fl_utl.c to use passive ftp rather than active
 		(many ftp servers no longer work with active requests)
 
-	* change nco_bm.pl to do net tests (except for those requiring a 
-		specific login	or location).  Tests ftp (see 1st change) and 
+	* change nco_bm.pl to do net tests (except for those requiring a
+		specific login	or location).  Tests ftp (see 1st change) and
 		DODS if compiled with DODS/DAP.
 2005-08-08  Harry Mangalam  <hjm@tacgi.com>
 
-	* final updates to nco_bm.pl for testing DAP (reduced number of 
+	* final updates to nco_bm.pl for testing DAP (reduced number of
 		files requested under DAP (also becasue of bug in DAP that
 		refuses > 30 files at once in some cases.
 
@@ -8558,7 +8623,7 @@
 
 	* major mods to nco_bm.pl to add DODS support to testing
 
-	* may be a bug in DODS server code that doesn't allow >30 files in 
+	* may be a bug in DODS server code that doesn't allow >30 files in
 		one session - posted.
 
 2005-08-03  Charlie Zender  <zender@uci.edu>
@@ -8580,8 +8645,8 @@
 	Henceforth NCO access to password protected FTP sites (like ESG) is scriptable!
 
 	* FTP uses .netrc, if present, in all cases instead of anonymous FTP
-	This essentially breaks anonymous FTP 
-	
+	This essentially breaks anonymous FTP
+
 2005-07-22  Charlie Zender  <zender@uci.edu>
 
 	* Finished SFTP support in nco_fl_mk_lcl()
@@ -8642,18 +8707,18 @@
 	libnco_c++.a works as intended. Have not tried with autotools yet.
 	Have not yet tested MPI programs with icc.
 
-	* -axW flag causes icc 8.1 to die compiling ncecat 
+	* -axW flag causes icc 8.1 to die compiling ncecat
 	This appears to be an icc bug
 	Implement target-specific workaround in bld/Makefile
-	
+
 	* Implement Intel 8.1 compiler compatibility
 
 2005-07-07  Charlie Zender  <zender@uci.edu>
 
 	* Fix small leak in ncap_var_stretch() TODO ncap74
 	ncap now appears to be leak-proofed!
-	
-	* Added lots or mirror fl_1=fl_2 code to ncbo in preparation 
+
+	* Added lots or mirror fl_1=fl_2 code to ncbo in preparation
 	for attempted solution to subtraction problems related to
 	asymmetry. In plain English: copied lots of code, didn't solve any
 	problems yet.
@@ -8666,11 +8731,11 @@
 2005-07-03  Charlie Zender  <zender@uci.edu>
 
 	* Realized that ncbo bug is longstanding/systemic and may
-	require re-writing approach to determining confmormality of var_2. 
+	require re-writing approach to determining confmormality of var_2.
 	Current code is expected to break when second file has same name
 	but different-sized dimensions, or has same-sized dimensions in
 	different order, i.e., all sort of corner-cases.
-	
+
 2005-07-02  Charlie Zender  <zender@uci.edu>
 
 	* Remove thr_nbr argument from ncatted in nco_bm.pl
@@ -8681,14 +8746,14 @@
 	ncra -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
 	free(): invalid pointer 0x80e4a98!
-	
+
 	* Verified DAP 3.5.1 works with both build mechanisms with
 	gcc NCO/gcc DAP (Debian elnino), and with icc NCO/gcc DAP
 
 	* Report NC_64BIT_OFFSET rather than old-fashioned LARGEFILE test
 	with -r option in nco_lbr_vrs_prn()
 
-	* Change 'DODS' to 'DAP' or 'OPeNDAP' where possible in codbase, 
+	* Change 'DODS' to 'DAP' or 'OPeNDAP' where possible in codbase,
 	e.g., 'enable-dap', make DAP=Y, ENABLE_DAP
 
 	* Support OPeNDAP 3.5.x in bld/Makefile
@@ -8720,14 +8785,14 @@
 	variable
 
 	Options:
-	1. Ask Unidata whether they have tested SMP robustness of netCDF 
-	reads under demanding battery of conditions? 
-	2. Scrutinize uninitialized data reported by icc/valgrind? 
+	1. Ask Unidata whether they have tested SMP robustness of netCDF
+	reads under demanding battery of conditions?
+	2. Scrutinize uninitialized data reported by icc/valgrind?
 	3. Write own SMP on read test?
 	4. ???
-	
+
 	* Finish making opaque types nco_byte, nco_char, nco_int self-consistent
-	
+
 2005-06-30  Charlie Zender  <zender@soot.ess.uci.edu>
 
 	* Change nco_long to nco_int to allow for future 64-bit type called nco_long
@@ -8738,7 +8803,7 @@
 
 	* Explicitly cast NC_CHAR type as "char" (rather than "unsigned
 	char") in nco_netcdf.c and nco.h. Previously, there were a mixture
-	of "char" and "unsigned char" occurances. 
+	of "char" and "unsigned char" occurances.
 	Not sure if this helps anything except consistency
 
 	* Removed two of three critical regions in nco_var_utl.c
@@ -8764,14 +8829,14 @@
 2005-06-22  Charlie Zender  <zender@uci.edu>
 
 	* Fix bld/Makefile indent that caused make to treat ncap: as
-	command not rule 
+	command not rule
 
 2005-06-21  Charlie Zender  <zender@uci.edu>
 
 	* Make LINUX_CC more MPI-friendly for both gcc and icc
 	'make MPI=Y' just works on my Debian machines now when
 	MPICH_CC=gcc and fails when MPICH_CC=icc
-	
+
 	* Set OMP=N when MPI=Y in bld/Makefile
 
 	* Add ${MDL_BIN_TRG} to .PHONY in bld/Makefile to solve problems
@@ -8793,14 +8858,14 @@
 
 2005-06-20  Charlie Zender  <zender@uci.edu>
 
-	* Add sys target to bld/Makefile. 
+	* Add sys target to bld/Makefile.
 	'make sys' installs executables in $MY_BIN_DIR to /usr/local/bin
 
 2005-06-17  Charlie Zender  <zender@uci.edu>
 
 	* Verified that nco_var_refresh() change does not introduce any
 	memory errors on any operator. Marking TODO nco543 as closed.
-	
+
 	* Re-name nco_var_refresh() to nco_var_mtd_refresh() to better
 	describe functionality (metadata, not data, is refreshed).
 
@@ -8811,12 +8876,12 @@
 	Hence back out previous fix for nco543 and handle this way
 	This is cleaner and more robust to varying variable types with
 	each input file
-	
-	* Revert ncra input variable structure to unpacked type at end of 
+
+	* Revert ncra input variable structure to unpacked type at end of
 	record loop
 	Reverting input values is not necessary since those are free()d next
-	However, type member of structure must be unpacked value so that 
-	cast of new missing_value in nco_mss_val_get() in next 
+	However, type member of structure must be unpacked value so that
+	cast of new missing_value in nco_mss_val_get() in next
 	nco_var_refresh() call (i.e., next file)
 	This solves TODO nco543 but will break when variables are different
 	unpacked types between files and both files contain missing values.
@@ -8826,31 +8891,31 @@
 
 2005-06-17  Harry Mangalam  <hjm@tacgi.com>
 
-	* Tested NCO with new (3.5.1) version of DAP/NC-DAP, with netcdf 3.6. 
-	Seems to work for small transfers but hangs with large transfers 
-	from sand's DODS server. Still testing. 
-	Brought configure and Makefile and .in's up to date with new DAP. 
+	* Tested NCO with new (3.5.1) version of DAP/NC-DAP, with netcdf 3.6.
+	Seems to work for small transfers but hangs with large transfers
+	from sand's DODS server. Still testing.
+	Brought configure and Makefile and .in's up to date with new DAP.
 	May have to drop back to netcdf 3.5 tho.
 
 2005-06-17  Gayathri Venkitachalam  <gvenkita@uci.edu>
 
-	* Cleaned up mpncflint 
-	
+	* Cleaned up mpncflint
+
 2005-06-17  Charlie Zender  <zender@uci.edu>
 
 	* Convert var_prc[idx]->mss_val back to on-disk type after every
-	record _except_ the last record in ncra. 
+	record _except_ the last record in ncra.
 	This fixes valgrind memory error associated with TODO nco543
 	Regression test still not passed, though no new regressions introduced
 
 2005-06-16  Charlie Zender  <zender@uci.edu>
 
 	* Added ncea regression test similar to current failing ncra TODO nco543
-	
+
 	* Remove call to nco_typ_cnv_rth() for var_prc[idx] in ncra and ncea
 	Call appears redundant since variable is converted to output
 	type with nco_var_cnf_typ() two lines later anyway.
-	Removing nco_typ_cnv_rth() for var_prc[idx] causes no new failures 
+	Removing nco_typ_cnv_rth() for var_prc[idx] causes no new failures
 	in regression tests.
 
 	* Set default packing policy for all potential MPI ncpdq operators
@@ -8858,9 +8923,9 @@
 2005-06-16  Gayathri Venkitachalam  <gvenkita@uci.edu>
 
 	* Added new operators mpncwa, mpncpdq, mpncecat
-	
+
 	* Modified mpncbo so that all processes do the final clean-up
-	
+
 	* Modified nco_ctl.c and nco_pck.c to accommodate new MPI operators
 
 2005-06-15  Gayathri Venkitachalam  <gvenkita@uci.edu>
@@ -8871,8 +8936,8 @@
 
 2005-06-15  Harry Mangalam  <hjm@tacgi.com>
 
-        * MD5 version of nco_bm.pl checked in - works on SV (Single Values) on 
-	x86-32, x86-64, esmf.  Passes benchmarks on all these platforms. 
+        * MD5 version of nco_bm.pl checked in - works on SV (Single Values) on
+	x86-32, x86-64, esmf.  Passes benchmarks on all these platforms.
 	on x86-32, passes all regressions except for funny-wrap-on-Intel regression,
 	        passes all MD5 & WC tests for regression (except noted above)
 		passes all benchmarks with MD5, WC, SV
@@ -8900,17 +8965,17 @@
 	* nco_bm.pl and nco_bm.sh appear to work with loadleveler
 	Solution is not general yet because unable to pass environment
 	variables (except DATA and HOME) through scripts for now
-	
+
 	* nco_bm.sh: Never pass strings with whitespace through Perl Getopt
 
 	* nco_bm.pl: Print many arguments when dbg_lvl=1
 
 2005-06-12  Charlie Zender  <zender@uci.edu>
 
-	* Noticed that regression tests in nco_bm.pl report some 
-	apparent successes as failures on SUNMP, e.g., 
+	* Noticed that regression tests in nco_bm.pl report some
+	apparent successes as failures on SUNMP, e.g.,
 	Result: [1e+36] != Expected: [1e+36]
-	always recorded as failure. 
+	always recorded as failure.
 	Seems like any "Expected's" containing "+" string may fail.
 	Perl problem?
 
@@ -8918,7 +8983,7 @@
 	(esmf). Noted that file creation is sickeningly slow on laptop and
 	desktop, takes thousands of seconds. Fast on ESMF. Same on
 	benchmarks: very slow on laptop and desktop, fast on ESMF
-	interactive node. 
+	interactive node.
 
 	* Add -t thr_nbr to nco_usg_prn() and nco.texi for newly threaded
 	operators
@@ -8934,31 +8999,31 @@
 	3. intel icc compatibility 4. Improved benchmarking
 
 	* Simplify treatment of math symbol table
-	C99 mandates support for 
+	C99 mandates support for
 	erf(), erfc(),tgamma(), acosh(), asinh(), atanh(), cosh(), sinh(), tanh()
 	Some OS's, like Linux, Solaris, provide these without C99.
 	Many others (AIX, SGI*, WIN32) do not.
 	Complicating things, many C99 implementations, e.g., AIX xlc, do
 	not yet support these functions.
 	Hence, ncap only supports them on Linux machines.
-	
+
 2005-06-09  Charlie Zender  <zender@uci.edu>
 
 	* Change default AMD64 compiler to gcc-4.0
 
-	* Revert patches to known working state (i.e., make reads critical) 
-	
+	* Revert patches to known working state (i.e., make reads critical)
+
 	* Temporarily un-revert critical region patches in nco_var_get.c
-	With icc and xlc_r, this causes variable numbers of ncra and ncwa 
+	With icc and xlc_r, this causes variable numbers of ncra and ncwa
 	regressions. Usually many more ncra than ncwa.
 	icc/valgrind combination gives capability to narrow down causes.
-	
+
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
 	* Change thr_nbr_max_fsh from 1 to 2 for ncrcat
 
 	* Change thr_nbr_max_fsh from unlimited to 2 for ncecat
-	
+
 	* Change thr_nbr_max_fsh from 1 to unlimited for ncwa
 
 	* Change thr_nbr_max_fsh from 4 to unlimited for ncbo
@@ -8969,7 +9034,7 @@
 	All operator appear memory clean in NCO portions except ncwa
 	ncwa may have a few unfree()d buffers but hard to tell with
 	valgrind version 2.2 which does not have good tracebacks.
-	Threading library has plenty of unfree'd memory which apparently 
+	Threading library has plenty of unfree'd memory which apparently
 	is harmless and there's nothing to be done about that anyway.
 
 	* ncbo memory problems disappeared
@@ -8986,13 +9051,13 @@
 	* Change DO_CONFORM_MSK,DO_CONFORM_WGT from private to
 	firstprivate and make sure both always have default values
 	This fixed all ncwa regressions with threads!
-	
+
 	* icc-compiled version passes regression test perfectly on soot
 	only when threading is disabled at compile time, e.g., OMP=N.
 	With threading enabled, code fails many tests (1 ncra and 22 ncwa)
 	....regardless of thread number! Not requesting any threads,
 	(i.e., -t 0 or no -t specification), requesting one thread (-t 1),
-	or requesting more threads breaks regression tests.	
+	or requesting more threads breaks regression tests.
 
 	Interesting that AIX version passes all, and icc fails many,
 	regressions when threading enabled with one thread.
@@ -9002,7 +9067,7 @@
 	icc will help to isolate any problems because it is so much more
 	sensitive than xlc_r. Moreover, valgrind appears to work fine
 	with icc-compiled OpenMP code on Xeon.
-	
+
 	* Code compiles as clean as possible with icc 8.1 and gcc 4.0
 
 	* Prohibit double definition of cmp_nm with icc
@@ -9030,14 +9095,14 @@
 
 	* Noticed that many ncra regression tests fail on AIX
 	When did this begin? What causes it?
-	Results from date-stamped-version tests 
-	20050605: Fail; 
-	20050524: Fail; 
-	20050521: Fail; 
+	Results from date-stamped-version tests
+	20050605: Fail;
+	20050524: Fail;
+	20050521: Fail;
 	20050520: Fail;
 	20050519: Succeed;
-	20050517: Succeed; 
-	20050510: Succeed; 
+	20050517: Succeed;
+	20050510: Succeed;
 
 2005-06-06  Charlie Zender  <zender@uci.edu>
 
@@ -9049,7 +9114,7 @@
 	Note that tgamma() is a C99 feature
 	Referencing tgamma() in the code is the second C99 feature,
 	after the restrict type keyword.
-	
+
 2005-06-05  Charlie Zender  <zender@uci.edu>
 
 	* gamma() function appears broken in ncap regression test 07
@@ -9059,9 +9124,9 @@
 
 2005-06-02  Charlie Zender  <zender@uci.edu>
 
-	* Henry implemented ncap exponentiation bugfix. 
+	* Henry implemented ncap exponentiation bugfix.
 	Versions < 3.0.1 incorrectly handle exponentiation of a variable
-	to a variable power (V^V). 
+	to a variable power (V^V).
 
 2005-05-29  Charlie Zender  <zender@uci.edu>
 
@@ -9072,14 +9137,14 @@
 
 	* ncks appears to be memory-pure!
 
-	* Leak-proofed nco_msa.c 
+	* Leak-proofed nco_msa.c
 
 2005-05-26  Hary Mangalam  <hjm@tacgi.com>
 
 	* finally brought in ncecat in OMP form
 
 	* changed configure.in configure scripts to reflect sync with
-	bld/Makefile flags; (again) noted problem with static/shared and 
+	bld/Makefile flags; (again) noted problem with static/shared and
 	DODS in configure.eg
 
 	* accepted CZ's peculiar variable naming in bm script.
@@ -9140,7 +9205,7 @@
 	critical to non-critical. Not sure why it was originally
 	critical.
 
-	* Make nco_var_refresh() routine from SMP non-critical. 
+	* Make nco_var_refresh() routine from SMP non-critical.
 	Not sure why it was originally critical.
 
 2005-05-18  Charlie Zender  <zender@uci.edu>
@@ -9167,7 +9232,7 @@
 	* Add cleanup_and_exit branch to nco_var_avg()
 
 	* Never allocate tally array for var_prc[idx] in ncwa, since it is
-	never used and caused double free() problems when it share the 
+	never used and caused double free() problems when it share the
 	var_prc_out[idx] tally buffer
 
 2005-05-16  Charlie Zender  <zender@uci.edu>
@@ -9184,7 +9249,7 @@
 
 2005-05-06 Henry Butowsky  <henryb@ntlworld>
 
-	* Cleaned up double parsing in ncap.c,ncap_*.[hc] 
+	* Cleaned up double parsing in ncap.c,ncap_*.[hc]
 	  now passes basic tests
 
 2005-05-05  Charlie Zender  <zender@uci.edu>
@@ -9246,20 +9311,20 @@
 	added Failure column to summary output to make it easier to see which
 	ones failed.
 
-	* added nco commandline to UDP report so can verify timing exactly. 
+	* added nco commandline to UDP report so can verify timing exactly.
 
 	* added --thr_nbr to option list to set # of threads to use (not
           implemented internally yet tho)
 
 	* finished adding those benchmarks that CZ wants added:
-		1 - ncwa averaging all variables to scalars 
+		1 - ncwa averaging all variables to scalars
 		2 - ncra time-averaging 2^5 (i.e., one month) files (using symlinks)
-		3 - ncea averaging 2^5 files 
+		3 - ncea averaging 2^5 files
 		4 - ncbo differencing two files (using '-' as operator)
 		5 - DEFERRED (Martin Schultz multi-slabbing test)
-		6 - ncap long algebraic operation 
-		7 - ncpdq packing the file 
-		8 - ncpdq dimension-order reversal the file 
+		6 - ncap long algebraic operation
+		7 - ncpdq packing the file
+		8 - ncpdq dimension-order reversal the file
 
 	* above benchmarks complete cleanly on sand and on those that can be done
 	  on bodi
@@ -9270,7 +9335,7 @@
 	gives apparently correct results on my laptop with default run.
 	However, mpncbo exits with errors when hyperslabs are specified,
 	e.g., mpncbo -d lon,1 ...
-	
+
 	* Synchronize mpncbo memory clean-up with latest ncbo
 
 	* Fix lmt handling in mpncbo as per 20050416 changes
@@ -9289,7 +9354,7 @@
 	* Checked in mpncbo.c & nco_att_utl.c after updating them to
 	compile with MPI=Y. Compiling with MPI=N still behaves the way it
 	used to.
-	
+
 2005-04-18  Charlie Zender  <zender@uci.edu>
 
 	* Memory status:
@@ -9298,7 +9363,7 @@
 	code, i.e., broadcasting. ncwa highlights these problems.
 	ncbo, ncea, ncflint, ncpdq, ncra, ncrcat are either memory-clean
 	or causes of problems are known and await resolution.
-	ncecat has yet to be examined but is expected to respond well to 
+	ncecat has yet to be examined but is expected to respond well to
 	same treatment given to ncea/ncra/ncrcat.
 
 	Problem #1: Promotion of char->double (and byte->double?) uses
@@ -9308,25 +9373,25 @@
 	intrinsically ill-defined and rarely used. It would be helpful
 	to document this problem in the manual, and possibly give users
 	some control over code paths, e.g.,
-	--disable_promote_char_double. 
+	--disable_promote_char_double.
 
 	Problem #2: nco_var_cnf_dmn(), in its various incarnations and
-	uses, leaks worse than Harry's roof. 
+	uses, leaks worse than Harry's roof.
 	The upside is that it is memory-efficient and fast.
 	This problem is serious and needs careful fixes.
 
 	Problem #3: ncap. I have not examined ncap since fixing the huge
 	ncap_var_stretch() leak. There seem to be many tiny leaks
 	in the flex and bison-generated code, which surprises me.
-	If these really are leaks, not sure what we can do beyond 
-	creating a valgrind suppression file for them. 
-	
+	If these really are leaks, not sure what we can do beyond
+	creating a valgrind suppression file for them.
+
 2005-04-17  Charlie Zender  <zender@uci.edu>
 
 	* Clean up leaks in file name code when abbreviation lists used
 	Solving leak in nco_fl_nm_prs() was rather contorted but appears
 	to work
-	
+
 	* Fix off-by-two error in memmove() in ncwa
 
 2005-04-16  Charlie Zender  <zender@uci.edu>
@@ -9338,13 +9403,13 @@
 	for averaging
 
 	* Tighten up memory in ncwa by free()ing dimension lists
-	
+
 	* Changed limit (lmt) memory paradigm from 1D to 2D structure list
 	in accord with all string, variable, and dimension lists.
 	This makes handling limits easier, at the expense of more indirect
 	referencing in metadata routines. Replace lmt[idx]. with lmt[idx]->
 	All lmt-related memory leaks appear to be gone
-	
+
 2005-04-15  Charlie Zender  <zender@uci.edu>
 
 	* Gayathri noted problem with missing_value inconsistency between
@@ -9363,7 +9428,7 @@
 	memory problems...
 
 	* Fixed AIX regression for printing bytes by moving from
-	non-standard %hhi format (which printed all bytes as "hi" on AIX) 
+	non-standard %hhi format (which printed all bytes as "hi" on AIX)
 	to standard %c format, which is lame and does not print signed
 	integer values for bytes. Now it should not trigger regressions.
 
@@ -9371,7 +9436,7 @@
 	Builds only with bld/Makefile using make MPI=Y switch
 	and requires MPI packages (e.g., mpich) and access to mpi.h
 	Has not been verified not to break autotools builds yet
-	
+
 2005-04-13  Charlie Zender  <zender@uci.edu>
 
 	* Fixed all memory leaks in simplest ncbo calls
@@ -9397,19 +9462,19 @@
 	Clear that limit structures will need some deep work
 	Genuine memory errors do occur and give hope that ultimately
 	ridding all ncwa problems may be possible by fixing leaks
-	
+
 	* Implement preliminary memory free routines in ncap and
 	immediately give up due to size and scope of job
 
 	* Move list free functions to respective utility routine files
 
 	* Changed names of ncap routines that maniputlated nm_id structures
-	These routines used the *_var_* nomenclature, e.g., nco_var_lst_free(), 
+	These routines used the *_var_* nomenclature, e.g., nco_var_lst_free(),
 	even though they manipulated lists of nm_id_sct structures.
 	Changed *_var_* to *_nm_id_* in these functions so that routines
 	are named after structure types which they manipulate, rather than
 	what their contents are
-	
+
 	* Created new routines to free lists of lmt, dmn, var structures
 
 	* ncpdq is officially leak-free! The first leak-free operator
@@ -9419,7 +9484,7 @@
 	* Fixed bug in nco_var_cnf_dmn() and nco_var_stretch() where
 	var->nm pointer was being copied instead of deep-copying
 	This appears to have fixed ncwa regression TODO nco490
-	
+
 	* Verified that var->nm freeing is last obstacle to perfect memory
 	releases in ncpdq
 
@@ -9471,7 +9536,7 @@
 
 	* Deep-copy nm in nco_var_dpl(); free nm in nco_var_free()
 	Ditto with dmn->nm, nco_dmn_dpl(), and nco_dmn_free()
-	
+
 	* Implement nco_dmn_free() to free dimensions
 
 	* Guaranteed system memory (optarg) reaches no further than
@@ -9479,11 +9544,11 @@
 	of temporarily increasing un-free'd memory in programs, because,
 	formerly, valgrind would not count that memory against NCO because
 	it was system memory (optarg). Now NCO owns it and needs to free
-	it. 
+	it.
 
 	* Planning to eliminate all remaining memory leaks from NCO
 	Un-free'd strings cause the most memory leaks (I think)
-	When NCO originated in 1993-1994 I was zealous about memory usage. 
+	When NCO originated in 1993-1994 I was zealous about memory usage.
 	I chose to use the system memory allocated to optarg rather than
 	duplicate that memory in NCO. As NCO grew and became more
 	object-oriented, being able to create structures (e.g., variables)
@@ -9499,16 +9564,16 @@
 	those strings are not duplicated much or contained in structures
 	and so never lead to situations that valgrind count against NCO
 	Using system memory for var_lst_in, however, causes problems
-	
+
 	Strategy:
 	1. Replace all such fragments in NCO by strdup()'d memory
 	2. Follow their code paths and free() these strings when possible
-	3. Add block to free all pointers at end of code (already in ncpdq)	
+	3. Add block to free all pointers at end of code (already in ncpdq)
 	4. Modify destructors (e.g., nco_var_free()) to free strings
-	
+
 	Initial work to free memory will be conducted in ncpdq
 	Implement same methods in other operators once ncpdq is leak-free...
-	
+
 2005-03-25  charlie  <zender@uci.edu>
 
 	* Documented and fixed some small ncap memory leaks with valgrind
@@ -9586,7 +9651,7 @@
 2005-03-02  Harry Mangalam  <hjm@tacgi.com>
 
 	* RE-Fixed configure, configure.in to find nc-dods lib
-	 AND also to treat UDUnits correctly if it's built and used from 
+	 AND also to treat UDUnits correctly if it's built and used from
 	 a local directory.
 
 2005-02-24  Harry Mangalam  <hjm@tacgi.com>
@@ -9615,7 +9680,7 @@
 	* added udp reporting   "
 	* more debugging for    "
 	* cleaned up and strictified code
-	
+
 2005-02-10  Harry Mangalam  <hjm@tacgi.com>
 
 	* added the getopt & usage section to test script bld/nco_tst.pl
@@ -9641,7 +9706,7 @@
 2005-01-09  Charlie Zender  <zender@uci.edu>
 
 	* Make ncks -q switch a true quiet switch that stops all printing
-	to screen. Make new -Q switch handle old -q job. 
+	to screen. Make new -Q switch handle old -q job.
 	Make ncks -R automatically invoke -q so that remote files may
 	be downloaded without attempting to print them.
 
@@ -9650,7 +9715,7 @@
 	* Fixed g++-3.4.2 prototype warnings with nco_c++
 
 	* Added return to about five void functions to squelch erroneous
-	gcc-3.4.2 warnings (and hopefully allow enable-custom-* to work) 
+	gcc-3.4.2 warnings (and hopefully allow enable-custom-* to work)
 
 2004-11-30  Charlie Zender  <zender@uci.edu>
 
@@ -9726,12 +9791,12 @@
 
 	* Verified packing/unpacking for: NC_INT->NC_SHORT,
 	NC_DOUBLE->NC_INT, NC_DOUBLE->NC_BYTE, NC_INT->NC_BYTE,
-	NC_SHORT->NC_BYTE, 
+	NC_SHORT->NC_BYTE,
 
 	* Allow add_offset, scale_factor to be any type but NC_BYTE and
 	NC_CHAR in nco_pck_dsk_inq(). This fixes NC_INT->NC_SHORT unpacking.
 
-	* Learned that NC_INT->NC_SHORT does not work. 
+	* Learned that NC_INT->NC_SHORT does not work.
 	Presumably all non-floating point packing is suspect until verified
 
 	* Verified each pack map works without memory problems for all_new policy
@@ -9749,7 +9814,7 @@
 	* Deprecated nco_is_packable() in favor of more flexible
 	nco_pck_plc_typ_get() which accounts for policy desired by nco_pck_map
 
-	* Eliminated all memory problems in ncpdq 
+	* Eliminated all memory problems in ncpdq
 	Verified no excess large blocks remain at program end
 	Valgrind rules!
 
@@ -9765,7 +9830,7 @@
 
 	* Create nco_pck_map_get() to parse nco_pck_map arguments to ncpdq -M option
 
-	* Introduce nco_pck_map to nco_typ_pck_get() 
+	* Introduce nco_pck_map to nco_typ_pck_get()
 	Only default type nco_pck_map_hgh_sht currently works
 
 	* Move high level packing routines from ncpdq.c to nco_pck.c
@@ -9801,7 +9866,7 @@
 
 2004-09-02  Charlie Zender  <zender@uci.edu>
 
-	* Finished implementing packing types: all_new, all_xst, upk 
+	* Finished implementing packing types: all_new, all_xst, upk
 
 2004-09-01  Charlie Zender  <zender@uci.edu>
 
@@ -9868,7 +9933,7 @@
 	All tests appear to work
 
 	* Fixed last known ncpdq problem caused by indexing var_prc_out
-	list with var_out index 
+	list with var_out index
 
 	* Added duplicate dimension flag has_dpl_dmn to var_sct
 
@@ -9908,13 +9973,13 @@
 	* Changed dimension re-order switch from -z to -a like ncwa
 
 	* Fixed NCO-wide bug where I used strstr(sng1,sng2) as boolean
-	instead of !strcmp(sng1,sng2) 
+	instead of !strcmp(sng1,sng2)
 	This bug occurred in:
 	nco_var_cnf_dmn() three times
 	nco_var_stretch() three times
 	ncbo.c() once time
 	When used as a boolean strstr(sng1,sng2) is approximately
-	interchangeable with !strcmp(sng1,sng2). 
+	interchangeable with !strcmp(sng1,sng2).
 	Exceptions occur where sng1 is a substring of sng2, in which case
 	the dimensions would be different but strstr() would return a match.
 	In all locations, the bug appears to have caused extra work, or to
@@ -9927,7 +9992,7 @@
 	* Eliminate ostensibly wrong memmove() in ncwa/ncpdq avg/rdr list processing
 
 	* Rewrote appropriate ncpdq routines to handles record dimension
-	re-definitions correctly 
+	re-definitions correctly
 
 2004-07-28  Charlie Zender  <zender@uci.edu>
 
@@ -9943,7 +10008,7 @@
 
 	* Added ncpdq to autoconf build machinery
 
-	* Finish first theoretically working version of ncpdq. 
+	* Finish first theoretically working version of ncpdq.
 	Of course, it crashes.
 
 2004-07-27  Charlie Zender  <zender@uci.edu>
@@ -9976,7 +10041,7 @@
 2004-07-21  Charlie Zender  <zender@uci.edu>
 
 	* Implement infrastructure for dimension re-ordering routine
-	nco_var_dmn_rdr() 
+	nco_var_dmn_rdr()
 
 2004-07-19  Charlie Zender  <zender@uci.edu>
 
@@ -9985,7 +10050,7 @@
 	* Implement preprocessor method in nco.h to disable restrict
 
 	* big.nc "restrict" test with yields incorrect answers with AIX xlc
-	
+
 	* Implement restrict in nco_var_cnf_dmn()
 
 	* Change default xlc from -qlanglvl=extended to -qlanglvl=extc99
@@ -10011,7 +10076,7 @@
 2004-07-06  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_9_7
-	Changes since nco-2_9_6: Read MFO input files from stdin, add 
+	Changes since nco-2_9_6: Read MFO input files from stdin, add
 	more attribute functionality to nco_c++, turn threading on in ncra
 
 	* Updated Makefile to use sophisticated make depends rules that
@@ -10024,7 +10089,7 @@
 	* Finished replacing %zu's with %lu's with casts to (unsigned long)
 
 	* Provide definitions of fabsf(), sqrtf() in nco_var_rth.c from
-	nco_flt_rth.h rather than from special #ifdefs 
+	nco_flt_rth.h rather than from special #ifdefs
 
 2004-07-04  Charlie Zender  <zender@uci.edu>
 
@@ -10043,7 +10108,7 @@
 2004-07-01  Charlie Zender  <zender@uci.edu>
 
 	* Changed configure.eg to enable OpenMP on AIX. 'make' and 'make
-	install' now work but 'make test' fails with zillions of linker errors: 
+	install' now work but 'make test' fails with zillions of linker errors:
 
         rtld: 0712-001 Symbol omp_get_num_threads was referenced
         from module /u/zender/nco/src/nco/.libs/libnco.so(), but a runtime definition
@@ -10056,9 +10121,9 @@
 	I think nco_c++ used to need this to find <valarray>, but that no
 	longer seems to be the case. Simpler is better.
 
-	* Improve LFS test in big.cdl. 
-	Created version that creates large files (> 4 GB) on small-RAM 
-	(< 4 GB) systems, and NCO seem OK to deal with resulting files. 
+	* Improve LFS test in big.cdl.
+	Created version that creates large files (> 4 GB) on small-RAM
+	(< 4 GB) systems, and NCO seem OK to deal with resulting files.
 
 	* Added $dbg_lvl variable to print nco_tst.pl tests during execution
 
@@ -10079,7 +10144,7 @@
 	* Added LFS stub to nco.texi, pass LFS info from configure.in
 
 	* Added large file support LFS to custom Makefiles. Rorik added it
-	to autoconf. 
+	to autoconf.
 
 2004-06-30  Charlie Zender  <zender@uci.edu>
 
@@ -10099,12 +10164,12 @@
 
 2004-06-28  Charlie Zender  <zender@uci.edu>
 
-	* Remove configure.in AC_CHECK_LIB check for cosf() in libC.a. 
+	* Remove configure.in AC_CHECK_LIB check for cosf() in libC.a.
 	NCO used to get the float functions from this library but it turns
 	out that all of these system-supplied float functions are broken
 	on AIX. NCO now uses it's own version of these functions.
 	Fixes TODO ncap57.
-	
+
 2004-06-25  Charlie Zender  <zender@uci.edu>
 
 	* Added ln() as synonym for log() in ncap
@@ -10197,7 +10262,7 @@
 
 2004-06-01  Charlie Zender  <zender@uci.edu>
 
-	* nco.texi: Documented funny ncflint behavior when one variable is missing 
+	* nco.texi: Documented funny ncflint behavior when one variable is missing
 
 	* Implement nco_mss_val_cnf() in ncflint to handle corner cases
 	where same variable has different missing values in each file
@@ -10248,7 +10313,7 @@
 	GCC 3.1.1 for x86-64
 
         * Put CEWI's in nco_lmt.c to allow builds with GCC and
-	--enable-*-custom when UDUnits not installed 
+	--enable-*-custom when UDUnits not installed
 
 2004-04-13  Charlie Zender  <zender@uci.edu>
 
@@ -10285,9 +10350,9 @@
 
 2004-03-17  Charlie Zender  <zender@uci.edu>
 
-	* Change nco_lmt.h from HAVE_UDUNITS_H to ENABLE_UDUNITS 
+	* Change nco_lmt.h from HAVE_UDUNITS_H to ENABLE_UDUNITS
 	to make bld/Makefile builds work again when udunits is not
-	installed. 
+	installed.
 
 2004-03-16  Charlie Zender  <zender@uci.edu>
 
@@ -10295,9 +10360,9 @@
 
 2004-03-12  Charlie Zender  <zender@uci.edu>
 
-	* Verify Solaris does autobuild correctly with up-to-date bison 
+	* Verify Solaris does autobuild correctly with up-to-date bison
 	and when UDUnits workaround is installed.
-	
+
 2004-03-11  Charlie Zender  <zender@uci.edu>
 
 	* Re-do UDUnits logic in configure.in to ignore broken UDUnits
@@ -10328,7 +10393,7 @@
 
 	* Added/explained OPeNDAP vs. DODS in documentation
 
-	* Rorik modified nco_cnf_typ.c: nco_typ_cnv_rth() to fix bug with 
+	* Rorik modified nco_cnf_typ.c: nco_typ_cnv_rth() to fix bug with
 	arithmetic on packed data in ncwa. Probably fixed same bug with
 	other artithmetic operators (besides ncap) as well.
 
@@ -10345,7 +10410,7 @@
 	Replace #ifndef __GNUC__ with #define FXM_NCO315 1; #ifdef FXM_NCO315
 	Will change back to original code only when stack memory problem
 	is fully understood/solved/benchmarked to improve on ANSI code branch
-	
+
 2004-02-10  Charlie Zender  <zender@uci.edu>
 
 	* Make Convention CF-1.0 behave same as existing CSM convention
@@ -10355,7 +10420,7 @@
 	* Make TODO list easier to understand to facilitate contributions
 
 	* Systematically "symmetrize" all ncap arithmetic operations so
-	var OP var, var OP scv, and scv OP var are handled for all operations. 
+	var OP var, var OP scv, and scv OP var are handled for all operations.
 
 	* ncap handles var % scv, scv % var
 
@@ -10370,9 +10435,9 @@
 
 	* cvs tag -c nco-2_8_8
 	Changes since nco-2_8_7: --enable-[optimize/debug]-custom works
-	again 
+	again
 
-	* Remove -fshort-enums from GCC switches as per Rorik. 
+	* Remove -fshort-enums from GCC switches as per Rorik.
 	It breaks ABI and caused mysterious failures because libnetcdf.a
 	must be compiled with same size enums as NCO apparently.
 
@@ -10382,7 +10447,7 @@
 
 2004-01-19  Charlie Zender  <zender@uci.edu>
 
-	* Use valgrind 2.1 to identify and fix small leaks: 
+	* Use valgrind 2.1 to identify and fix small leaks:
 	Free prg_nm in nco_exit_gracefully()
 
 2004-01-16  Charlie Zender  <zender@uci.edu>
@@ -10405,7 +10470,7 @@
  	ncap packing works again
 
 	* Fix GCC compiles when enable-*-custom	is not specified. This
-	should fix reported Cygwin build problem. 
+	should fix reported Cygwin build problem.
 
 	* nco_pck() uses tally-free arithmetic. Fixes ncap packing
 	bug introduced in 2.8.4.
@@ -10414,7 +10479,7 @@
 
 	* Only manually prototype lexer function in ncap_lex.l if
 	enable-*-custom build option specified with GCC.
-	Fixes build problems with cygwin 
+	Fixes build problems with cygwin
 
 	* Document make install-strip in doc/README as per Rorik
 
@@ -10438,7 +10503,7 @@
 	of that file unit. Unlikely that this caused problems since no
 	known casts were employed in prototypes. This demonstrates the
 	usefulness of -Werror. Without it, this bug would still be there.
-	
+
 2004-01-10  Charlie Zender  <zender@uci.edu>
 
 	* Conjoin setting GCC flags in configure.in, avoid duplication
@@ -10458,7 +10523,7 @@
 
 	* Give DODS example in -R documentation
 
-	* Add -R to correct -R examples in documentation 
+	* Add -R to correct -R examples in documentation
 
 2004-01-07  Charlie Zender  <zender@uci.edu>
 
@@ -10552,7 +10617,7 @@
 2003-12-01  Charlie Zender  <zender@uci.edu>
 
 	* Document hyperslab bug in 2.7.3--2.8.3 on homepage
-	
+
 	* Document NCAR SCD TCG support on homepage
 
 2003-11-26  Charlie Zender  <zender@uci.edu>
@@ -10573,7 +10638,7 @@
 	* Rorik fixed index-based hyperslabbing bug introduced in 2.7.3
 	Fixes TODO #286, #289
 
-	* Specify success correctly for ncap T42 test 
+	* Specify success correctly for ncap T42 test
 
 2003-11-24  Charlie Zender  <zender@uci.edu>
 
@@ -10728,7 +10793,7 @@
 
 2003-08-14  Henry Butowsky  <henryb@ntlworld.com>
 
-	* Added wildcarding of variables to ncks 
+	* Added wildcarding of variables to ncks
 
 2003-08-13  Charlie Zender  <zender@uci.edu>
 
@@ -10753,7 +10818,7 @@
 
 	* All regressions due to introduction of ncbnr appear to be fixed
 
-	* Correct nco_tst.sh procedure for ncap 
+	* Correct nco_tst.sh procedure for ncap
 
 	* Restore nco_op_avg inadvertently removed from nco_op_typ_get()
 
@@ -10784,7 +10849,7 @@
 2003-07-06  Charlie Zender  <zender@uci.edu>
 
 	* Removed FTP requirement from make tst. Create nco_tst.sh creates
-	foo.nc from scratch without needing to FTP nco_tst.nc. 
+	foo.nc from scratch without needing to FTP nco_tst.nc.
 	Test involving FTP is now called make tst_ftp.
 
 2003-07-04  Charlie Zender  <zender@uci.edu>
@@ -10803,7 +10868,7 @@
 2003-06-23  Charlie Zender  <zender@uci.edu>
 
 	* Rorik fixed UDUnits handling of hyperslab specifications in
-	floating point format, e.g., 1.23e-7. 
+	floating point format, e.g., 1.23e-7.
 
 2003-06-15  Charlie Zender  <zender@uci.edu>
 
@@ -10814,9 +10879,9 @@
 	* Clean up some MSA namespace
 
 	* Document supported non-ANSI functions (e.g., acosh(), trunc())
-	in nco.texi 
+	in nco.texi
 
-	* Changed --nocoords to --no-coord or --no-crd. 
+	* Changed --nocoords to --no-coord or --no-crd.
 	Decided all disabling actions will have same keyword as enabling
 	action except switch will start with --no-XXX
 
@@ -10949,7 +11014,7 @@
 2003-01-19  Charlie Zender  <zender@uci.edu>
 
 	* Fix inconsistent storing of fixed variables that are packed in ncap
-	Packed values were being saved in unpacked type without packing attributes	
+	Packed values were being saved in unpacked type without packing attributes
 
 2003-01-18  Charlie Zender  <zender@uci.edu>
 
@@ -10963,7 +11028,7 @@
 
 2003-01-08  Charlie Zender  <zender@uci.edu>
 
-	* Rorik added conditional compilation of Sittler's getopt_long() 
+	* Rorik added conditional compilation of Sittler's getopt_long()
 	where necessary, removed *_GETOPT_LONG tokens from all source code.
 
 2003-01-03  Charlie Zender  <zender@uci.edu>
@@ -10974,7 +11039,7 @@
 	be tested on all of these machines. My first test with a new
 	architecture, HP-UX (HPPA), failed because of lack of C++
 	compiler. Thus Testdrive computers do not appear to be fully
-	loaded with reliable compilers. 
+	loaded with reliable compilers.
 
 2003-01-02  Charlie Zender  <zender@uci.edu>
 
@@ -11105,7 +11170,7 @@
 2002-09-09  Charlie Zender  <zender@uci.edu>
 
 	* Added preliminary MACOSX support to bld/Makefile
-	Everything appears to work but ncap, which has numerous problems 
+	Everything appears to work but ncap, which has numerous problems
 	on MACOSX because of bison, float functions, and ranlib.
 
 	* Code compiles with gcc -ansi -pedantic -D_BSD_SOURCE
@@ -11139,7 +11204,7 @@
 
 	* #include <config.h> in all headers which reference strdup()
 
-	* Crude but workable HAVE_STRCASECMP support, 
+	* Crude but workable HAVE_STRCASECMP support,
 	include config.h headers to allow future HAVE_STRDUP handling
 
 	* Implement some Comeau support, but presence of non-ANSI
@@ -11151,7 +11216,7 @@
 	* Tweak CC list in configure.in, remove c89, xlc_r
 
 	* cvs tag -c nco-2_6_2
-	Changes since nco-2_6_1: 
+	Changes since nco-2_6_1:
 	Improvements to autotools builds
 	Initial ncap handling of user-defined dimensions
 
@@ -11160,10 +11225,10 @@
 	* Remove Fortran files nco_cal_utl.F,  nco_fortran.F,
 	nco_fortran.h since it is unlikely anyone will step forward to
 	maintain fortran support. Of course these can be resurrected if
-	necessary. 
+	necessary.
 
 	* Add instructions for using compile farm, modify AIX, MACOSX
-	builds 
+	builds
 
 2002-08-22  Charlie Zender  <zender@uci.edu>
 
@@ -11174,7 +11239,7 @@
 2002-08-21  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_6_1
-	Changes since nco-2_6_0: 
+	Changes since nco-2_6_0:
 	Unpacking is now supported for all arithmetic operators
 
 	* Improved regression testing in configure.eg
@@ -11186,7 +11251,7 @@
 2002-08-20  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_6_0
-	Changes since nco-2_5_6: 
+	Changes since nco-2_5_6:
 	Unpacking support is now beta for all arithmetic operators
 
 	* Print attributes with same formatting as variables
@@ -11203,7 +11268,7 @@
 	5. nco_var_get() refreshes var->pck_ram on each read
 	6. Use nco_cnv_mss_val_typ() to keep type of missing_value in sync
 	Unpacking appears to be working for all arithmetic operators!
-	
+
 2002-08-19  Charlie Zender  <zender@uci.edu>
 
 	* Added .cvsignore to dirs affected by autoconf
@@ -11232,7 +11297,7 @@
 	* Fixed problem in nco_cnf_typ.c which caused failure for ncra
 	when variable had missing_value attribute and needed to be
 	promoted before arithmetic (e.g., int to float). Freeing variable
-	each record but leaving mss_val the promoted type resulted in 
+	each record but leaving mss_val the promoted type resulted in
 	mss_val being overwritten (usually to value of 0.0) in all
 	records but first for each file. Problem was ncra-specific and
 	is described in more detail in header of nco_cnv_mss_val_typ_upk()
@@ -11312,7 +11377,7 @@
 	* Added man pages for NCO operators to man directory.
 	Source of man pages is Debian distribution by Brian Mays,
 	which automatically generates man pages from texinfo source.
-	Thus man pages are moderately out of date, currently for version 2.2.0. 
+	Thus man pages are moderately out of date, currently for version 2.2.0.
 
 2002-06-15  Charlie Zender  <zender@uci.edu>
 
@@ -11358,10 +11423,11 @@
 	Used ptrdiff_t instead of int where warranted.
 	Most of remaining warnings could be solved by using size_t instead
 	of int or long for counters, but mismatches are unavoidable at
-	some point since type nco_long variables (i.e., netCDF data) 
+	some point since type nco_long variables (i.e., netCDF data)a
 	needs to interact with size_t variables on occasion.
-	
+
 	* cvs tag -c nco-2_4_4
+
 	* Changes since nco-2_4_3: Build system
 
 2002-06-05  Charlie Zender  <zender@uci.edu>
@@ -11413,7 +11479,7 @@
 	* More ncap work to prepare for dimension list structures
 	which are going to be implemented correctly by tokenizing
 	each element of dimension list and assembling full list in
-	parser and letting scanner pass in each token. 
+	parser and letting scanner pass in each token.
 
 2002-05-18  Charlie Zender  <zender@uci.edu>
 
@@ -11432,7 +11498,7 @@
 
 	* cvs tag -c nco-2_4_0
 	Changes since nco-2_3_1: Builds out of box on all Unices
-	
+
 	* Surround fabsf and fmodf prototypes with ifndef __GNUG__
 	since g++ linking fails when prototypes explicitly specified
 	in header _and_ in function. This is a kludge to a kludge
@@ -11442,7 +11508,7 @@
 	as long as cc compiler, not xlc or xlC, is used. Prototype
 	warnings similar to gcc prototype warnings can be ignored.
 	All major platforms are once again working out of the box.
-	
+
 2002-05-11  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_3_1
@@ -11518,7 +11584,7 @@
 2002-04-18  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_2_2
-	Changes since nco-2_2_1: fix rare ncwa weight bug 
+	Changes since nco-2_2_1: fix rare ncwa weight bug
 
 	* make tst gets test file from dust.ps.uci.edu rather than CGD
 
@@ -11532,7 +11598,7 @@
 
 2002-04-02  Charlie Zender  <zender@uci.edu>
 
-	* Switch back to using pure_parser to prevent Linux core dumps on 
+	* Switch back to using pure_parser to prevent Linux core dumps on
 
 2002-03-30  Charlie Zender  <zender@uci.edu>
 
@@ -11556,7 +11622,7 @@
 
 	* Removed ncap_lex.c ncap.tab.c ncap.tab.h because they are not
 	portable across platforms so it is best to let these be generated
-	on user's machine until portable x-platform versions can be 
+	on user's machine until portable x-platform versions can be
 	generated. Immediate problem is that IRIX and Linux versions
 	are interfering with eachother.
 
@@ -11569,9 +11635,9 @@
 2002-02-11  Charlie Zender  <zender@uci.edu>
 
 	* Remove ncap dependency on getopt.o, getopt1.o since
-	getopt_long() is not currently used (but using it is on 
+	getopt_long() is not currently used (but using it is on
 	the TODO list). Re-implementing getopt_long() will be done
-	eventually, but now just make ncap easier to build to facilitate 
+	eventually, but now just make ncap easier to build to facilitate
 	more beta testing.
 
 2002-02-04  Charlie Zender  <zender@uci.edu>
@@ -11605,7 +11671,7 @@
 	* cvs tag -c nco-2_1_3
 	Changes since nco-2_1_2: LHS casting really works as long as
 	dimensions are already in output file. Replaced var_add() in ncap,
-	no known parser bugs, just missing features. 
+	no known parser bugs, just missing features.
 
 	* Created var_add_no_tally() by copying var_subtract() and
 	changing minuses to pluses. This routine does not use tally,
@@ -11635,7 +11701,7 @@
 	* LHS casting is semi-working, semi-broken. Seems to work when all
 	required dimensions are already in input file and RHS is variable,
 	not attribute. Thus a3[lat,lon,lev] = one works but
-	a3[lat,lon,lev]=1.0 does not. 
+	a3[lat,lon,lev]=1.0 does not.
 	Still thinking about how to stretch attributes.
 
 2002-01-27  Charlie Zender  <zender@uci.edu>
@@ -11657,7 +11723,7 @@
 	solved all IRIX cc warnings for ncap too. Since unsigned char
 	pointer and char pointer are same size, there should be no problem
 	casting between them. However, casting between unsigned char value
-	and char value could change answers. 
+	and char value could change answers.
 	String operations should be checked to ensure they still work.
 
 2002-01-23  Charlie Zender  <zender@uci.edu>
@@ -11675,11 +11741,11 @@
 
 	* Remove templates for math functions from ncap.c
 
-	* Implement CCOMMENT start state to recognize C comments /* */ 
+	* Implement CCOMMENT start state to recognize C comments /* */
 
 	* Explicitly declare yy_scan_string() to remove compiler warnings
 
-	* Implement/use nco_set_fill() wrapper 
+	* Implement/use nco_set_fill() wrapper
 	Remove architecture-dependent wrapper on usage
 	Pass pointer to valid fll_md_old since NULL is not safe
 	because nc_set_fill() may try to write to it
@@ -11695,7 +11761,7 @@
 	* Changed Makefile default to OMP=N until further testing
 
 	* Began implementation of lexer for subscripted variables
-	with x[dmn1,dmn2,...dmnN] syntax. Currently creates list of 
+	with x[dmn1,dmn2,...dmnN] syntax. Currently creates list of
 	dimension structures but does nothing with it.
 
 2002-01-13  Charlie Zender  <zender@uci.edu>
@@ -11703,13 +11769,13 @@
 	* Verified ncap script gives same answers as odxc.ncl script
 
 	* var_free() superceded variable in ncap_var_conform_dim()
-	causes core dump (why?), but not free'ing must cause memory leak 
+	causes core dump (why?), but not free'ing must cause memory leak
 
 	* Realized var_conform_dim() has bug of omission: does not abort
 	when variables do not conform because dimension list of one is
 	subset of other but ORDER of dimensions differs, e.g.,
-	a(lat,lev,lon) !~ b(lon,lev). 
-	NCO probably returns incorrect answers silently in this case!  
+	a(lat,lev,lon) !~ b(lon,lev).
+	NCO probably returns incorrect answers silently in this case!
 
 2002-01-12  Charlie Zender  <zender@uci.edu>
 

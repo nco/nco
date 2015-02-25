@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.19 2009-01-13 23:17:13 zender Exp $ -*-text-*-
+$Header$ -*-text-*-
 
 Installing an MPI Environment for NCO:
 

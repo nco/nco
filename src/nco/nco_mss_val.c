@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.60 2015-02-05 19:26:55 zender Exp $ */
+/* $Header$ */
 
 /* Purpose: Missing value utilities */
 
