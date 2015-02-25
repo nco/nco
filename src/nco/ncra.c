@@ -32,7 +32,7 @@
    University of California, Irvine
    Irvine, CA 92697-3100 */
 
-/* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncra.c
+/* URL: https://github.com/czender/nco/tree/master/src/nco/ncra.c
    
    Usage:
    ncra -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc

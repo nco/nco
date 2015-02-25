@@ -281,7 +281,7 @@ extern "C" {
 # define NCO_VERSION_MINOR 4
 #endif /* !NCO_VERSION_MINOR */
 #ifndef NCO_VERSION_PATCH
-# define NCO_VERSION_PATCH 8
+# define NCO_VERSION_PATCH 9
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
 # define NCO_VERSION_NOTE  "" /* My be blank */
@@ -291,7 +291,7 @@ extern "C" {
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.4.8"
+# define NCO_VERSION "4.4.9"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */

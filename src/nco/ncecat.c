@@ -27,7 +27,7 @@
    University of California, Irvine
    Irvine, CA 92697-3100 */
 
-/* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncecat.c
+/* URL: https://github.com/czender/nco/tree/master/src/nco/ncecat.c
 
    Usage:
    ncecat -O -D 1 -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc

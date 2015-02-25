@@ -31,7 +31,7 @@ apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy develo
    subdirectory of main package. 
    For starters, we wish to create .debs of tagged releases, e.g., nco-4.4.8
    First we create a clean source distribution of nco and place it in nco-4.4.8
-   Once automated, we will use cvs co -rnco-4_4_8 to get source
+   Once automated, we will use cvs co -rnco-4_4_9 to get source
    Until we know what is necessary, however, we just copy a snapshot
    
    2.1 Clean all build files from development directory
@@ -85,7 +85,7 @@ patch -p0 < nco_X.Y.Z-3.diff   # Patch destination with Debian diff
    make tags
 # Put cute version-specific string in nco_ctl.c:nco_nmn_get()
 # Install correct version numbers before updating Debian
-# tags-query replace 4_4_8 with X_Y_Z+1
+# tags-query replace 4_4_9 with X_Y_Z+1
 # tags-query replace 4.4.8 with X.Y.Z+1
 # If tags-query replace does not work, be sure to manually change
 # versions in configure.ac, debian/files, doc/ANNOUNCE, doc/debian.txt,
@@ -99,8 +99,8 @@ patch -p0 < nco_X.Y.Z-3.diff   # Patch destination with Debian diff
    cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
-   cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release";cvs tag -c nco-4_4_8
-   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_4_8
+   cd ~/nco;cvs commit -m "Preparing nco-4.4.8 release";cvs tag -c nco-4_4_9
+   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_4_9
 # Upload tarball to SF https://sourceforge.net/projects/nco/files 
    cd;scp dust.ess.uci.edu:/var/www/html/nco/src/nco-4.4.8.tar.gz .
 
@@ -169,7 +169,7 @@ Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal 
 # sudo aptitude install antlr bison flex gsl-bin libgsl0-dev libantlr-dev netcdf-bin libnetcdfc7 libnetcdf-dev texinfo libcurl4-gnutls-dev libexpat1-dev libxml2-dev udunits-bin libudunits2-0 libudunits2-dev
 cd ~/nco;cvc
 sudo /bin/rm -rf ${DATA}/nco-4.4.8 ${DATA}/nco_4.4.8* ${DATA}/debian # Cleanup last build. sudo necessary for removal because dpkg-buildpackage uses sudo?
-# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_4_8-1 -d nco-4.4.8 nco # Export based on tag
+# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_4_9-1 -d nco-4.4.8 nco # Export based on tag
 cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-4.4.8 nco # Export most recent
 tar cvzf ./nco_4.4.8.orig.tar.gz --exclude='nco-4.4.8/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.4.8 
 /bin/rm -rf ${DATA}/nco-4.4.8 # Remove cvs-exported directory
@@ -235,7 +235,7 @@ ${rpm_root}/RPMS/i386/nco-devel-4.4.8-?.i386.rpm \
 ${rpm_root}/SOURCES/nco-4.4.8.tar.gz \
 ${rpm_root}/SPECS/nco-4.4.8.spec \
 ${rpm_root}/SRPMS/nco-4.4.8-?.src.rpm
-cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_4_8-1 -d nco-4.4.8 nco # Export based on tag
+cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_4_9-1 -d nco-4.4.8 nco # Export based on tag
 ${sudo_sng} ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/SPECS/nco-4.4.8.spec
 tar cvzf ./nco-4.4.8.tar.gz --exclude='nco-4.4.8/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.4.8 
 ${sudo_sng} /bin/cp ${DATA}/nco-4.4.8.tar.gz ${rpm_root}/SOURCES
@@ -268,7 +268,7 @@ ${rpm_root}/nco-4.4.8.tar.gz \
 ${rpm_root}/*/nco-4.4.8-?.*.rpm \
 ${rpm_root}/*/nco-debuginfo-4.4.8-?.*.rpm \
 ${rpm_root}/*/nco-devel-4.4.8-?.*.rpm
-# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_4_8-1 -d nco-4.4.8 nco # Export based on tag
+# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_4_9-1 -d nco-4.4.8 nco # Export based on tag
 cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -dnco-4.4.8 nco # Export most recent and build as 4.4.8-1
 tar cvzf ./nco-4.4.8.tar.gz --exclude='nco-4.4.8/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.4.8 
 /bin/cp ${DATA}/nco-4.4.8.tar.gz ${rpm_root}

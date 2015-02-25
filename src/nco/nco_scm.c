@@ -149,7 +149,7 @@ nco_cpy_prn(void) /* [fnc] Print copyright notice */
 {
   /* Purpose: Print copyright notice */
   (void)fprintf(stderr,"Copyright (C) 1995--2015 Charlie Zender\n");
-  (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABOLUTELY NO WARRANTY\nYou may redistribute and/or modify NCO under the terms of the\nGNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\nGPL: http://www.gnu.org/copyleft/gpl.html\nLICENSE: http://nco.cvs.sf.net/nco/nco/LICENSE\n");
+  (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABOLUTELY NO WARRANTY\nYou may redistribute and/or modify NCO under the terms of the\nGNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\nGPL: http://www.gnu.org/copyleft/gpl.html\nLICENSE: https://github.com/czender/nco/tree/master/LICENSE\n");
 } /* end copyright_prn() */
 
 void

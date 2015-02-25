@@ -1,5 +1,9 @@
 2015-02-24  Charlie Zender  <zender@uci.edu>
 
+	* Replace SF source addresses with GitHub source addresses
+
+	* Document Git transition procedure
+
 	* Remove CVS keyword expansions by copying un-expanded originals over from CVS tree
 
 	* Create README.md for Github

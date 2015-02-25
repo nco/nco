@@ -7,18 +7,18 @@
 # Export tagged, public versions
 # /usr/bin/scp ${DATA}/nco-4.4.4.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_4_8 # Build, do not release on SF
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --sf nco-4_4_8 # Build, release on SF
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-4_4_8 # Install, do not build
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-4_4_8 # Build and install
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-4_4_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-4_4_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-4_4_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-4_4_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-4_4_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-4_4_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-4_4_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-4_4_8
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_4_9 # Build, do not release on SF
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --sf nco-4_4_9 # Build, release on SF
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-4_4_9 # Install, do not build
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-4_4_9 # Build and install
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-4_4_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-4_4_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-4_4_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-4_4_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-4_4_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-4_4_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-4_4_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-4_4_9
 
 # Export daily snapshot
 # ${HOME}/nco/bld/nco_dst.pl --dbg=2 

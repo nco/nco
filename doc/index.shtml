@@ -51,7 +51,7 @@ Try to disable Spammers' machines:
 <a href="http://sf.net/p/nco/discussion/9830">Help</a> /
 <a href="#RTFM">Manual</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
-<a href="http://nco.cvs.sf.net/nco/nco/src/nco">Source</a> /
+<a href="https://github.com/czender/nco/tree/master/src/nco">Source</a> /
 </td>
 
 <td align="right" valign="top">
@@ -653,11 +653,11 @@ San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
 <!-- http://nco.sf.net#hgh -->
 <dt><a name="Highlights"></a><a name="hgh"></a></dt>
 <h2>Release Highlights</h2>
-Releases receive unique CVS tags and their tarballs are stored  
+Releases receive unique tags and their tarballs are stored  
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
 <a href="http://dust.ess.uci.edu/nco/src">here</a> on our server at UCI.
 You may also retrieve the source of tagged versions directly
-<a name="#Source">with CVS</a>.
+<a name="#Source">with <tt>git</tt></a>.
 <ul>
 <li><b>NCO 4.5.0</b>: (<i>Future</i>) 
 Regridding?;</li>
@@ -808,7 +808,7 @@ the directory index <a href="src">here</a>.
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
 <ul> <!-- http://nco.sf.net/src/nco-4.2.5.aix53.tar.gz -->
 <li><a href="src/nco-4.2.5.aix53.tar.gz">nco-4.2.5.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.2.5.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.2.5.aix53.tar.gz"-->). Maintained by NCO Project.</li>
-Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
+Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="https://github.com/czender/nco/tree/master/doc/beta.txt">here</a>.
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
 
@@ -824,7 +824,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
 NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
-Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
+Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/czender/nco/tree/master/doc/beta.txt">here</a>.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.4.8-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_4.4.8-1_amd64.deb">nco_4.4.8-1_amd64.deb</a> (<!--#fsize file="src/nco_4.4.8-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.4.8-1_amd64.deb"-->)</li>
 <li><a href="src/nco_4.4.8-1.dsc">nco_4.4.8-1.dsc</a> (<!--#fsize file="src/nco_4.4.8-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.4.8-1.dsc"-->)</li>
@@ -1065,7 +1065,7 @@ site.</li>
 <dt><a name="Source"></a><a name="src"></a></dt>
 <h2>Get NCO Source Code</h2>
 
-The best way to acquire the source is with <a href="http://www.cvshome.org">CVS</a>.
+The best way to acquire the source is with <a href="http://git-scm.com/book/en/v2">Git</a>.
 The second best way is to download the source as a compressed tarfile:
 <ul>
 <li>
@@ -1080,33 +1080,30 @@ The second best way is to download the source as a compressed tarfile:
 <!-- Equivalent source browsing in Unidata's netCDF SVN repository:
      http://svn.unidata.ucar.edu/repos/netcdf/trunk/ncdump/nccopy.c -->
 <p>NCO's browsable
-<a href="http://nco.cvs.sf.net/nco/nco">CVS Repository</a> 
+<a href="https://github.com/czender/nco/tree/master">Git Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
 synchronized with NCO features.
-Retrieving NCO requires some familiarity with GNU development tools,
-especially <a href="http://www.cvshome.org">CVS</a> and 
+Retrieving and using NCO source requires some familiarity with
+development tools,
+especially <a href="http://git-scm.com/book/en/v2">Git</a> and  
 <a href="http://www.gnu.org/software/make/make.html">Make</a>.
 
-Sourceforge provides 
-<a href="http://sf.net/cvs/?group_id=3331">generic instructions</a> 
-for accessing their CVS servers.
-First log into the NCO CVS server:
-<p><tt>cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login</tt></p>
-Hit <tt>return</tt> when asked for the CVS password.
-This login procedure is only required the first time you access the CVS server.
-Then you may retrieve any NCO distribution you wish.
+GitHub provides 
+<a href="https://help.github.com">generic instructions</a> 
+for accessing their repositories.
+You may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves and places NCO version <tt>4.4.8</tt> (which is
-tagged as <tt>nco-4_4_8</tt> due to CVS rules) into local directory
-<tt>nco-4.4.8</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_4_8 -d nco-4.4.8 nco</tt></p>
+tagged as <tt>nco-4.4.8</tt>) into local directory
+<tt>nco-4.4.8</tt>:
+<p><tt>git clone https://github.com/czender/nco.git ~/nco-4.4.8;cd ~/nco-4.4.8;git checkout -b branch-4.4.8 nco-4.4.8</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
+<p><tt>git clone https://github.com/czender/nco.git ~/nco</tt></p>
 Track changes to the development version using
-<p><tt>cd nco;cvs update -kk</tt></p>
+<p><tt>cd nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4_4_8</tt>) and the development version is that the
+(e.g., <tt>nco-4.4.8</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
 <tt>4.4.8</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
@@ -1618,7 +1615,7 @@ community.
 <a href="http://sf.net/p/nco/discussion/9830">Help</a> /
 <a href="#RTFM">Manual</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
-<a href="http://nco.cvs.sf.net/nco/nco/src/nco/">Source</a> /
+<a href="https://github.com/czender/nco/tree/master/src/nco/">Source</a> /
 </td>
 
 <td align="right" valign="top">
