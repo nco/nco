@@ -1,0 +1,3 @@
+# Git-ignore patterns for ~/nco/data
+/%tmp_fl_*
+/nco_bm.stderr

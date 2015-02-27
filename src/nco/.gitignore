@@ -1,0 +1,4 @@
+# Git-ignore patterns for ~/nco/src/nco
+/ncap_lex.c
+/ncap_yacc.c
+/ncap_yacc.h
