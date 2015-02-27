@@ -1,0 +1,3 @@
+# Git-ignore patterns for ~/nco/src/nco++
+/Makefile
+/ncoParserTokenTypes.txt

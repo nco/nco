@@ -1,0 +1,22 @@
+# Git-ignore patterns for ~/nco/doc
+/Makefile
+
+/nco.html
+/nco.info*
+/nco.ps.gz
+/nco.ps
+/nco.pdf
+/nco.txt
+/nco.xml
+
+/nco.aux
+/nco.cp
+/nco.cps
+/nco.dvi
+/nco.fn
+/nco.ky
+/nco.log
+/nco.pg
+/nco.toc
+/nco.tp
+/nco.vr
