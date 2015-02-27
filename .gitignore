@@ -3,6 +3,11 @@
 # Autoconf/Automake
 
 Makefile.in
+.deps
+.libs
+*.o
+*.la
+*.lo
 
 /autom4te.cache
 /aclocal.m4
@@ -34,4 +39,9 @@ TAGS
 /config.status
 /libtool
 /stamp-h*
+
+nco.config.log.*.foo
+nco.configure.*.foo
+nco.libtool.*.foo
+nco.make.*.foo
 

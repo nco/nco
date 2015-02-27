@@ -1,4 +1,6 @@
 # Git-ignore patterns for ~/nco/doc
+/Makefile
+
 /nco.html
 /nco.info*
 /nco.ps.gz

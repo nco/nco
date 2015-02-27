@@ -1,4 +1,5 @@
 # Git-ignore patterns for ~/nco/src/nco
+/Makefile
 /ncap_lex.c
 /ncap_yacc.c
 /ncap_yacc.h

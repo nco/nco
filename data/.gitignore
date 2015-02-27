@@ -1,3 +1,4 @@
 # Git-ignore patterns for ~/nco/data
+/Makefile
 /%tmp_fl_*
 /nco_bm.stderr
