@@ -391,6 +391,7 @@ int nco_sng2array(const char *dlm, const char *str, char **sarray)
   tstr=strdup(str);
   sarray[idx]=strtok(tstr,dlm);
   while(sarray[idx]) sarray[++idx]=strtok(NULL,dlm);
+  tstr=(char *)nco_free(tstr);
   return idx;
 } /* end nco_sng2array */
 
@@ -400,6 +401,7 @@ void nco_kvmaps_free(kvmap_sct *kvmaps)
   while(kvmaps[idx].key){
     kvmaps[idx].key=(char *)nco_free(kvmaps[idx].key);
     kvmaps[idx].value=(char *)nco_free(kvmaps[idx].value);
+    idx++;
   } /* end while */
   kvmaps=(kvmap_sct *)nco_free(kvmaps);
 } /* end nco_kvmaps_free */
