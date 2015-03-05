@@ -549,7 +549,7 @@ main(int argc,char **argv)
       } /* endif "lbr" */
       if(!strcmp(opt_crr,"scrip")){
         fl_nm_scrip=strdup(optarg);
-	sld_nfo=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
+	      sld_nfo=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
         hdlscrip(fl_nm_scrip,sld_nfo);
       } /* endif "scrip" */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);

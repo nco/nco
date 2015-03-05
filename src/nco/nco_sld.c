@@ -118,7 +118,8 @@ nco_ppc_ini /* Set PPC based on user specifications */
     } /* endif */
     kvm=nco_sng2map(ppc_arg[idx],kvm);
     if(kvm.key){
-      char *items[BUFSIZ];
+      char **items;
+      items=(char **)nco_malloc(BUFSIZ*sizeof(char *));
       int idxi;
       int item_nbr=nco_sng2array(",",kvm.key,items); /* multi-var specification */
       for(idxi=0;idxi<item_nbr;idxi++){ /* expand multi-var specification */
@@ -126,6 +127,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
         ppc_lst[ippc].value=strdup(kvm.value);
         ippc++;
       } /* end for */
+      items=(char **)nco_free(items);
     } /* end if */
   } /* end for */
 
@@ -295,7 +297,9 @@ nco_ppc_set_var
     rx=(regex_t *)nco_malloc(sizeof(regex_t));
     if(strchr(var_nm,sls_chr)){ /* Full name is used */
       /* Important difference between full- and short-name matching: Prepend carat to RX so full name matches must start at beginning of variable name */
-      char sng2mch[BUFSIZ]="^";
+      char *sng2mch;
+      sng2mch=(char *)nco_malloc(BUFSIZ*sizeof(char *));
+      sng2mch="^";
       strcat(sng2mch,var_nm);
       if(regcomp(rx,sng2mch,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
         (void)fprintf(stdout,"%s: ERROR trv_tbl_set_ppc() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
@@ -305,13 +309,14 @@ nco_ppc_set_var
       result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
         if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
-	  if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)){
-	    trv_tbl->lst[idx_tbl].ppc=ppc;
-	    trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
-	    mch_nbr++;
-	  } /* endif */
+	        if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)){
+	          trv_tbl->lst[idx_tbl].ppc=ppc;
+	          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+	          mch_nbr++;
+	        } /* endif */
         } /* endif */
       } /* endfor */
+      sng2mch=(char *)nco_free(sng2mch);
     }else{ /* Relative name is used */
       if(regcomp(rx,var_nm,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
         (void)fprintf(stdout,"%s: ERROR trv_tbl_set_ppc() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
@@ -418,7 +423,7 @@ hdlscrip( /* return 0 invalid SCRIP file or rcd, 1 success */
 char *fl_nm_scrip, /* SCRIP file name with proper path */
 kvmap_sct *kvm_scrip)/* structure to hold contents of SCRIP file */ 
 {
-  char line[BUFSIZ];
+  line=(char *)nco_malloc(BUFSIZ*sizeof(char));
 
   int icnt;
   int idx=0;
@@ -447,6 +452,7 @@ kvmap_sct *kvm_scrip)/* structure to hold contents of SCRIP file */
     } /* end else */
   } /* finish parsing SCRIP file */
   fclose(fl_scrip);
+  line=(char *)nco_free(line);
 
   for(icnt=0;icnt<idx;icnt++) nco_kvmap_prn(kvm_scrip[icnt]);
 
