@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.9
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 25 February 2015
-@set update-month February 2015
+@set update-date 6 March 2015
+@set update-month March 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -16145,8 +16145,8 @@ Copy all global attributes (and no variables) from @file{in.nc} to
 @example
 ncks -A -x ~/nco/data/in.nc ~/out.nc
 @end example
-The @samp{-x} switch tells @acronym{NCO} to use the complement of the extraction
-list (@pxref{Subsetting Files}). 
+The @samp{-x} switch tells @acronym{NCO} to use the complement of the
+extraction list (@pxref{Subsetting Files}). 
 Since no extraction list is explicitly specified (with @samp{-v}),
 the default is to extract all variables.
 The complement of all variables is no variables.
@@ -16277,9 +16277,13 @@ ncks -s '%c' -v fl_nm_arr in.nc
 Using the @code{%s} format code on strings which are not NUL-terminated 
 (and thus not technically strings) is likely to result in a core dump.
 
+@html
+<a name="xmp_xtr_xcl"></a> <!-- http://nco.sf.net/nco.html#xmp_xtr_xcl -->
+@end html
 @cindex subsetting
 @cindex exclusion
 @cindex extraction
+@cindex @code{-x}
 @cindex @acronym{CF} conventions
 @cindex @code{coordinates} attribute
 @cindex @code{bounds} attribute
@@ -17450,13 +17454,13 @@ Unforunately while this bug and the related coordinate renaming bug
 were fixed in 4.3.1-rc5 (released in December, 2013), a new and related
 bug was discovered in October 2014.
 
-The final known netCDF bug that causes unintended side-effects with 
-@command{ncrename} affects (at least) versions 4.3.1--4.3.2 of the
-netCDF4 library (and snapshots at least until October, 2014):
-This bug corrupts values or renamed netCDF4 coordinate variables
-(i.e., variables with underlying dimensions of the same name) and
-other (non-coordinate) variables that include an underlying dimension
-that was renamed. 
+Another netCDF bug that causes unintended side-effects with
+@command{ncrename} affects (at least) versions 4.3.1--4.3.2 and all 
+snapshots of the netCDF4 library until January, 2015.
+This bug (fixed in 4.3.3 in February, 2015) corrupts values or renamed
+netCDF4 coordinate variables (i.e., variables with underlying dimensions
+of the same name) and other (non-coordinate) variables that include an
+underlying dimension that was renamed. 
 In other words, @emph{renaming} coordinate variables and dimensions
 succeeds yet it corrupts the values contained by the affected array
 variables. 
@@ -17471,9 +17475,23 @@ ncrename -O -d lat,tal -v lat,tal ~/bug.nc ~/foo.nc # Broken too
 ncks --cdl ~/foo.nc
 @end example
 To avoid this faulty behavior, either build @acronym{NCO} with netCDF 
-version 4.3.3 (TBD) or later, or convert the file to netCDF3 first, then 
-rename as intended, then convert back. 
+version 4.3.3 or later, or convert the file to netCDF3 first, then
+rename as intended, then convert back.  
 This bug does not affect renaming of groups or of attributes.
+
+The final netCDF bug that causes unintended side-effects with
+@command{ncrename} affects only snapshots from January--February, 2015,
+and released version 4.3.3 (February, 2015).
+It was fixed in netCDF version 4.3.3.1 (March, 2015).
+This bug causes renamed attributes of coordinate variables in netCDF4 
+to files to disappear: 
+@example
+# Demonstate bug in netCDF4/HDF5 library netCDF-4.3.3
+ncrename -O -h -a /g1/lon@units,new_units ~/nco/data/in_grp.nc ~/foo.nc 
+ncks -v /g1/lon ~/foo.nc # Shows units and new_units are both gone
+@end example
+As of netCDF version 4.3.3.1 (March, 2015) there are no known renaming
+bugs. 
 
 @cindex global attributes
 @cindex group attributes

@@ -663,7 +663,8 @@ nco1113. nco: rsp parker norton help srd slowdown issue help 20140718 completely
 nco1114. ncrcat fails when single record dimension is not first dimension
 nco1116. --add_bnds for creating bounds variables
 nco1117. ncks human-readable times
-nco1118. 
+nco1118. nco: ncwa eliminate dimensions from "coordinates" attribute after collapsing them (lynnes email 20150307)
+nco1119.
 qrk
 ************************************************************************
 End ncoXXX TODOs

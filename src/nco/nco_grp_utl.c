@@ -959,7 +959,8 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
 void
 nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
-(nco_bool GRP_XTR_VAR_XCL, /* I [flg] Extract matching groups, exclude matching variables */
+(nco_bool EXTRACT_ASSOCIATED_COORDINATES, /* I [flg] Extract all coordinates associated with extracted variables? */
+ nco_bool GRP_XTR_VAR_XCL, /* I [flg] Extract matching groups, exclude matching variables */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Convert extraction list to exclusion list
@@ -1014,9 +1015,16 @@ nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
   }else{
     /* Block implements default (and only) behavior until 20140521,
        i.e., extract all except exclude intersection of -g and -v arguments */
+    static short FIRST_WARNING=True;
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_tbl->lst[idx_tbl].flg_xtr=!trv_tbl->lst[idx_tbl].flg_xtr; /* Toggle extraction flag */
       trv_tbl->lst[idx_tbl].flg_xcl=True; /* Extraction flag was toggled by exclusion option */
+      if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].is_crd_var){
+	if(FIRST_WARNING && EXTRACT_ASSOCIATED_COORDINATES){
+	  (void)fprintf(stdout,"%s: WARNING Explicitly excluding (with -x) a coordinate variable (like \"%s\") from the extraction list does not always exclude the coordinate unless the -C option is also invoked to turn off extraction of coordinates of other variables. Otherwise, a coordinate you wish to exclude may be extracted in its capacity as coordinate-information for other extracted variables. Use \"-C -x -v crd_nm\" to guarantee crd_nm will not be output. See http://nco.sf.net/nco.html#xmp_xtr_xcl for more information.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm);
+	  FIRST_WARNING=False;
+	} /* !FIRST_WARNING */
+      } /* end if */
     } /* end for */
   } /* !GRP_XTR_VAR_XCL */
 
@@ -6618,7 +6626,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
  const nco_bool GRP_XTR_VAR_XCL,      /* I [flg] Extract matching groups, exclude matching variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
- const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */
+ const nco_bool EXTRACT_ASSOCIATED_COORDINATES, /* I [flg] Extract all coordinates associated with extracted variables? */
  const int nco_pck_plc,               /* I [enm] Packing policy */
  nco_dmn_dne_t **flg_dne,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
@@ -6689,7 +6697,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
 
   /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(GRP_XTR_VAR_XCL,trv_tbl);
+  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(EXTRACT_ASSOCIATED_COORDINATES,GRP_XTR_VAR_XCL,trv_tbl);
 
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);

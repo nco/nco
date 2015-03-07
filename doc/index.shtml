@@ -1346,7 +1346,7 @@ Comments welcome. Updates will be posted right here.
 <a name="bug_nc4_rename"></a>
 <li><i>netCDF4 Renaming bugs:</i>
 Unforunately from 2007&ndash;present (February, 2015) the netCDF
-library (versions 4.0.0&ndash;4.3.3-rc3) contained bugs or limitations  
+library (versions 4.0.0&ndash;4.3.3) contained bugs or limitations
 that prevent <tt>ncrename</tt> (and other netCDF4-based software) 
 from correctly renaming coordinate variables, dimensions, groups, 
 and attributes in netCDF4 files.
@@ -1357,6 +1357,8 @@ A summary of renaming limitations associated with particular versions
 of netCDF4 is maintained in the online manual   
 <a href="http://nco.sf.net/nco.html#bug_nc4_rename">here</a>.
 Important updates will also be posted here on the homepage.
+There are no known bugs with renaming features as of netCDF library
+version 4.3.3.1 (March, 2015). 
 </li>
 </ul>
 

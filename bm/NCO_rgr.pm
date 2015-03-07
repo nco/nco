@@ -2511,6 +2511,19 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 	
+#ncks #105
+# Test that -x exclusion of coordinate variables only works with -C
+# fxm: -x is not directly tested because it means testing for non-existance in output. how to do this?
+# ncks -O -x -v time ~/nco/data/in.nc ~/foo.nc
+# ncks -H -C -d time,0 -v time ~/foo.nc
+    $dsc_sng="Test that -x exclusion of coordinate variables only works with -C";
+    $tst_cmd[0]="ncks -O $nco_D_flg -x -v time $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[1]="ncks -H $nco_D_flg -d time,0 -C -v time %tmp_fl_00";
+    $tst_cmd[2]="time[0]=1";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
 #####################
 #### ncpdq tests #### -OK !
 #####################
