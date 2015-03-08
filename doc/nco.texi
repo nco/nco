@@ -17486,9 +17486,11 @@ It was fixed in netCDF version 4.3.3.1 (March, 2015).
 This bug causes renamed attributes of coordinate variables in netCDF4 
 to files to disappear: 
 @example
+@verbatim
 # Demonstate bug in netCDF4/HDF5 library netCDF-4.3.3
 ncrename -O -h -a /g1/lon@units,new_units ~/nco/data/in_grp.nc ~/foo.nc 
 ncks -v /g1/lon ~/foo.nc # Shows units and new_units are both gone
+@end verbatim
 @end example
 As of netCDF version 4.3.3.1 (March, 2015) there are no known renaming
 bugs. 

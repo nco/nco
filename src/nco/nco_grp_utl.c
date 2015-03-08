@@ -1019,7 +1019,7 @@ nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_tbl->lst[idx_tbl].flg_xtr=!trv_tbl->lst[idx_tbl].flg_xtr; /* Toggle extraction flag */
       trv_tbl->lst[idx_tbl].flg_xcl=True; /* Extraction flag was toggled by exclusion option */
-      if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].is_crd_var){
+      if(!trv_tbl->lst[idx_tbl].flg_xtr && trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].is_crd_var){
 	if(FIRST_WARNING && EXTRACT_ASSOCIATED_COORDINATES){
 	  (void)fprintf(stdout,"%s: WARNING Explicitly excluding (with -x) a coordinate variable (like \"%s\") from the extraction list does not always exclude the coordinate unless the -C option is also invoked to turn off extraction of coordinates of other variables. Otherwise, a coordinate you wish to exclude may be extracted in its capacity as coordinate-information for other extracted variables. Use \"-C -x -v crd_nm\" to guarantee crd_nm will not be output. See http://nco.sf.net/nco.html#xmp_xtr_xcl for more information.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm);
 	  FIRST_WARNING=False;
