@@ -4,6 +4,8 @@
  	Changes since nco-4.4.8: git, -x warn, crd att, fxm
 	cd ~/nco;git commit -a -m "Preparing nco-4.4.8 release"
 
+	* Refine .gitignore's for configure-make
+
 	* Fix regression tests to account for new "coordinates" attributes
 
 	* Eliminate dimensions from "coordinates" attribute after collapsing them
