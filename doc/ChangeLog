@@ -1,12 +1,18 @@
+2015-03-09  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.4.9 release procedure:
+ 	Changes since nco-4.4.8: git, -x warn, crd att, fxm
+	cd ~/nco;git commit -a -m "Preparing nco-4.4.8 release"
+
+	* Fix regression tests to account for new "coordinates" attributes
+
+	* Eliminate dimensions from "coordinates" attribute after collapsing them
+
 2015-03-08  Charlie Zender  <zender@uci.edu>
 
 	* Tighten new -x warning WARNING
 
 2015-03-07  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.9 release procedure:
- 	Changes since nco-4.4.8: git, -x warn,
-	cd ~/nco;git commit -a -m "Preparing nco-4.4.8 release"
 
 	* Warn when coordinate variables intended to be excluded by -x and -C was not invoked
 

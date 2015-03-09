@@ -660,13 +660,15 @@ You may also retrieve the source of tagged versions directly
 <a name="#Source">with <tt>git</tt></a>.
 <ul>
 <li><b>NCO 4.5.0</b>: (<i>Future</i>) 
-Regridding?;</li>
-<li><b>NCO 4.4.9</b>: (<i>In Progress, features completed or being worked on include</i>)
 extensive hashing?;
 netCDF4 compound types?;
+Optimize diskless files?;
+Regridding;</li>
+<li><b>NCO 4.4.9</b>: (<i>In Progress, features completed or being worked on include</i>)
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
-<tt>ncks</tt> prints human-legible ISO8601 dates;</li>
-Optimize diskless files?</li>
+<tt>ncks</tt> prints human-legible ISO8601 dates;
+<tt>ncks</tt> suggests <tt>-C</tt> with <tt>-x -v crd</tt>;
+<tt>ncwa</tt> modifies <tt>coordinates</tt> attribute;</li>
 <li><b>NCO 4.4.8</b>: (<i>Current Stable Release</i>)
 Precision-Preserving Compression with <tt>--ppc</tt>;
 Arithmetic operators <tt>-y mabs/mebs/mibs</tt></li>
