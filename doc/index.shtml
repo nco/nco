@@ -660,13 +660,15 @@ You may also retrieve the source of tagged versions directly
 <a name="#Source">with <tt>git</tt></a>.
 <ul>
 <li><b>NCO 4.5.0</b>: (<i>Future</i>) 
-Regridding?;</li>
-<li><b>NCO 4.4.9</b>: (<i>In Progress, features completed or being worked on include</i>)
 extensive hashing?;
 netCDF4 compound types?;
+Optimize diskless files?;
+Regridding;</li>
+<li><b>NCO 4.4.9</b>: (<i>In Progress, features completed or being worked on include</i>)
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
-<tt>ncks</tt> prints human-legible ISO8601 dates;</li>
-Optimize diskless files?</li>
+<tt>ncks</tt> prints human-legible ISO8601 dates;
+<tt>ncks</tt> suggests <tt>-C</tt> with <tt>-x -v crd</tt>;
+<tt>ncwa</tt> modifies <tt>coordinates</tt> attribute;</li>
 <li><b>NCO 4.4.8</b>: (<i>Current Stable Release</i>)
 Precision-Preserving Compression with <tt>--ppc</tt>;
 Arithmetic operators <tt>-y mabs/mebs/mibs</tt></li>
@@ -1346,7 +1348,7 @@ Comments welcome. Updates will be posted right here.
 <a name="bug_nc4_rename"></a>
 <li><i>netCDF4 Renaming bugs:</i>
 Unforunately from 2007&ndash;present (February, 2015) the netCDF
-library (versions 4.0.0&ndash;4.3.3-rc3) contained bugs or limitations  
+library (versions 4.0.0&ndash;4.3.3) contained bugs or limitations
 that prevent <tt>ncrename</tt> (and other netCDF4-based software) 
 from correctly renaming coordinate variables, dimensions, groups, 
 and attributes in netCDF4 files.
@@ -1357,6 +1359,8 @@ A summary of renaming limitations associated with particular versions
 of netCDF4 is maintained in the online manual   
 <a href="http://nco.sf.net/nco.html#bug_nc4_rename">here</a>.
 Important updates will also be posted here on the homepage.
+There are no known bugs with renaming features as of netCDF library
+version 4.3.3.1 (March, 2015). 
 </li>
 </ul>
 

@@ -147,7 +147,8 @@ nco_xtr_mk                           /* [fnc] Check -v and -g input names and cr
 
 void
 nco_xtr_xcl                          /* [fnc] Convert extraction list to exclusion list */
-(nco_bool GRP_XTR_VAR_XCL, /* [flg] Extract matching groups, exclude matching variables */
+(nco_bool EXTRACT_ASSOCIATED_COORDINATES, /* I [flg] Extract all coordinates associated with extracted variables? */
+ nco_bool GRP_XTR_VAR_XCL, /* [flg] Extract matching groups, exclude matching variables */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] GTT (Group Traversal Table) */
 
 void

@@ -1,0 +1,5 @@
+# Git-ignore patterns for ~/nco/src
+/Makefile
+
+# Created in all source sub-directories by configure->make test
+test-suite.log

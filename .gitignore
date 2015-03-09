@@ -1,0 +1,47 @@
+# Git-ignore patterns for ~/nco
+
+# Autoconf/Automake
+
+Makefile.in
+.deps
+.libs
+*.o
+*.la
+*.lo
+
+/autom4te.cache
+/aclocal.m4
+/compile
+/configure
+/depcomp
+/install-sh
+/missing
+/Makefile
+
+# Odd files
+gmon.out
+
+# Editors
+
+*.~?~
+*~
+TAGS
+
+# NCO-generic
+*.nc
+*.hdf
+
+# Directory-specific
+/config.h
+/config.guess
+/config.log
+/config.sub
+/config.status
+/libtool
+/stamp-h*
+
+nco.config.log.*.foo
+nco.configure.*.foo
+nco.libtool.*.foo
+nco.make.*.foo
+

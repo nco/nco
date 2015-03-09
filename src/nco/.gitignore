@@ -1,0 +1,17 @@
+# Git-ignore patterns for ~/nco/src/nco
+/Makefile
+/ncap_lex.c
+/ncap_yacc.c
+/ncap_yacc.h
+
+# Created locally by configure->make all
+/ncap
+/ncatted
+/ncbo
+/ncecat
+/ncflint
+/ncks
+/ncpdq
+/ncra
+/ncrename
+/ncwa

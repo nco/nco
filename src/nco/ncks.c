@@ -45,7 +45,7 @@
    ncks -H -C -v three_dmn_rec_var -d time,,,2 ~/nco/data/in.nc
    ncks -H -C -v lon -d lon,3,1 ~/nco/data/in.nc 
    ncks -M -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc
-   ncks -O -v one -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc ~/foo.nc
+   ncks -O -v one -p http://thredds-testa.ucar.edu/thredds/dodsC/testdods in.nc ~/foo.nc
    ncks -O -G foo ~/nco/data/in.nc ~/foo.nc
    ncks -O -G :-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc

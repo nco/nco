@@ -225,15 +225,15 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
   
 } /* end nco_cnv_cf_crd_add() */
 
-int                                  /* [rcd] Return code */
+int                                  /* O [rcd] Return code */
 nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 (const int out_id,                   /* I [id] netCDF file ID */
  var_sct * const * const var,        /* I [sct] Variable to reduce (e.g., average) (destroyed) */
  const int var_nbr,                  /* I [nbr] Number of variables to be defined */
- dmn_sct * const * const dmn_rdc,        /* I [sct] Dimensions over which to reduce variable */
- const int dmn_nbr_rdc,                  /* I [sct] Number of dimensions to reduce variable over */
+ dmn_sct * const * const dmn_rdc,    /* I [sct] Dimensions over which to reduce variable */
+ const int dmn_nbr_rdc,              /* I [sct] Number of dimensions to reduce variable over */
  const int nco_op_typ,               /* I [enm] Operation type, default is average */
- gpe_sct *gpe,                       /* [sng] Group Path Editing (GPE) structure */
+ gpe_sct *gpe,                       /* I [sng] Group Path Editing (GPE) structure */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* Purpose: Add/modify cell_methods attribute according to CF convention
@@ -271,9 +271,11 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   char att_op_sng[23]; /* [sng] Operation type (longest is nco_op_mabs which translates to "maximum_absolute_value") */
 
+  char *att_val=NULL; /* [sng] Coordinates attribute */
   char *att_val_cpy; /* [sng] Copy of attribute */
   char *grp_out_fll=NULL; /* [sng] Group name */
-
+  char *sbs_ptr; /* [sng] Pointer to substring */
+  
   int *dmn_mch; /* [idx] Indices of dimensions reduced in this variable */
 
   int dmn_idx_rdc;
@@ -285,7 +287,14 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   int var_idx;
   int var_out_id; /* [ID] Variable ID (output) */
 
+  long int att_lng; /* [nbr] Length of attribute string */
+  
   nc_type att_typ; /* [nbr] Attribute type */
+
+  nco_bool mlt_dmn_rdc; /* [flg] Multiple dimension reduction flag */
+
+  size_t dmn_sng_lng; /* [nbr] Length of dimension string */
+  size_t sbs_sng_lng; /* [nbr] Length of substring */
 
   trv_sct *var_trv=NULL;  /* [sct] Variable GTT object */
 
@@ -320,7 +329,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     aed.sz=0L;
     dmn_nbr_mch=0;
 
-    /* Format: blank-separated phrases of form "dmn1[, dmn2[...]]: op_typ" */ 
+    /* cell_methods format: blank-separated phrases of form "dmn1[, dmn2[...]]: op_typ" */ 
     for(dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
       for(dmn_idx_rdc=0;dmn_idx_rdc<dmn_nbr_rdc;dmn_idx_rdc++){
         assert(dmn_rdc[dmn_idx_rdc]->nm_fll);
@@ -337,6 +346,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
     /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
     if(var[var_idx]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
+
     /* NUL-terminate before concatenation */
     att_op_sng[0]='\0';
     switch(nco_op_typ_lcl){
@@ -376,7 +386,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     (void)strcat(aed.val.cp,att_op_sng);
 
     /* Does variable already have "cell_methods" attribute? */
-    rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,(long *)NULL);
+    strcpy(aed.att_nm,"cell_methods");
+    rcd=nco_inq_att_flg(grp_out_id,var_out_id,aed.att_nm,&att_typ,(long *)NULL);
     if(rcd == NC_NOERR){
       aed.mode=aed_append;
       if(att_typ == NC_STRING) (void)fprintf(stderr,"%s: WARNING %s reports existing cell_methods attribute for variable %s is type NC_STRING. Unpredictable results...\n",nco_prg_nm_get(),fnc_nm,aed.var_nm);
@@ -395,9 +406,63 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Edit attribute */
     (void)nco_aed_prc(grp_out_id,var_out_id,aed);
 
+    /* 20150308 */
+    /* Does variable already have "coordinates" attribute? */
+    strcpy(aed.att_nm,"coordinates");
+    rcd=nco_inq_att_flg(grp_out_id,var_out_id,aed.att_nm,&att_typ,&att_lng);
+    if(rcd == NC_NOERR && att_typ == NC_CHAR){
+      /* Remove reduced dimensions from coordinates string */
+      /* coordinates format: blank-separated names of form "dmn1 [dmn2 [...]] dmnN" */ 
+      /* Add room for NUL-terminator */
+      att_val=(char *)nco_malloc((att_lng+1L)*sizeof(char));
+      rcd=nco_get_att(grp_out_id,var_out_id,aed.att_nm,att_val,att_typ);
+      /* Reset value from previous use */
+      aed.val.cp[0]='\0';
+      att_val[att_lng]='\0';
+      mlt_dmn_rdc=False;
+      assert(rcd == NC_NOERR);
+      for(dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
+	for(dmn_idx_rdc=0;dmn_idx_rdc<dmn_nbr_rdc;dmn_idx_rdc++){
+	  /* Is reduced dimension in variable? */
+	  if(!strcmp(var_trv->var_dmn[dmn_idx_var].dmn_nm_fll,dmn_rdc[dmn_idx_rdc]->nm_fll)){
+	    if(mlt_dmn_rdc){
+	      /* At least one other dimension has already been reduced/excised
+		 Hence multiple dimensions of this variable may be reduced
+		 Start next excision from ending point of last excision, not from disk-values */
+	      strcpy(att_val,aed.val.cp);
+	      att_lng=strlen(aed.val.cp);
+	    } /* endif */
+	    /* Is dimension in current (possibly locally-modified) "coordinates" attribute? NB: Assume short name not full name */
+	    if((sbs_ptr=strstr(att_val,dmn_rdc[dmn_idx_rdc]->nm))){
+	      /* Is this the only dimension in "coordinates" attribute? */
+	      if(!strcmp(dmn_rdc[dmn_idx_rdc]->nm,att_val)){
+		/* Variable will become scalar so delete "coordinates" attribute */
+		aed.mode=aed_delete;
+	      }else{ /* endif scalar */
+		/* Excise dimension from "coordinates" attribute */
+		dmn_sng_lng=strlen(dmn_rdc[dmn_idx_rdc]->nm);
+		sbs_sng_lng=(size_t)(sbs_ptr-att_val);
+		aed.mode=aed_overwrite;
+		aed.sz=att_lng-dmn_sng_lng;
+		aed.val.cp=(char *)nco_realloc(aed.val.cp,(aed.sz+1L)*sizeof(char));
+		strncpy(aed.val.cp,att_val,sbs_sng_lng);
+		aed.val.cp[sbs_sng_lng]='\0';
+		/* Allow for one space-separator */
+		if((sbs_ptr+dmn_sng_lng)[0] == ' ') strcat(aed.val.cp,sbs_ptr+dmn_sng_lng+1L); else strcat(aed.val.cp,sbs_ptr+dmn_sng_lng);
+	      } /* endelse scalar */
+	      /* Edit attribute */
+	      (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+	      mlt_dmn_rdc=True;
+	    } /* !match attribute */
+	  } /* !match variable */
+	} /* dmn_idx_rdc */
+      } /* dmn_idx_var */
+    } /* endif attribute exists */
+
+    if(att_val) att_val=(char *)nco_free(att_val);
     if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
 
-  } /* var_idx>=var_nbr */
+  } /* var_idx >= var_nbr */
 
   if(aed.att_nm) aed.att_nm=(char *)nco_free(aed.att_nm);
   if(dmn_mch) dmn_mch=(int *)nco_free(dmn_mch);
