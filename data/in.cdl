@@ -847,6 +847,7 @@ variables:
 
 	int one_dmn_rec_var(time);
 	one_dmn_rec_var:long_name = "one dimensional record variable";
+	one_dmn_rec_var:coordinates = "time";
 	one_dmn_rec_var:units = "kelvin";
         
 	int one_dmn_rec_var_mdn(time);
@@ -1051,6 +1052,7 @@ variables:
 	float three_dmn_rec_var(time,lat,lon);
 	three_dmn_rec_var:long_name = "three dimensional record variable";
 	three_dmn_rec_var:units = "watt meter-2";
+	three_dmn_rec_var:coordinates = "time lat lon";
 
 	double three_dmn_var_dbl(time,lat,lon);
 	three_dmn_var_dbl:long_name = "three dimensional record variable of type double";
