@@ -1,2 +1,4 @@
 # Git-ignore patterns for ~/nco/man
 /Makefile
+
+/man1

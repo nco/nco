@@ -1,2 +1,7 @@
 # Git-ignore patterns for ~/nco/src/nco_c++
 /Makefile
+
+# Created locally by configure->make tst
+/tst
+/tst.log
+/tst.trs
