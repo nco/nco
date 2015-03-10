@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.9
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 6 March 2015
+@set update-date 10 March 2015
 @set update-month March 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9602,13 +9602,27 @@ As of @acronym{NCO} version 3.9.6 (January, 2009), @acronym{NCO}
 supports the @acronym{CF} @code{coordinates} convention described 
 @uref{http://cfconventions.org/1.6.html#coordinate-system, here}. 
 This convention allows variables to specify additional coordinates
-(including multidimensional coordinates) in a space-separated string
+(including mult-idimensional coordinates) in a space-separated string 
 attribute named @code{coordinates}. 
 @acronym{NCO} attaches any such coordinates to the extraction list along
-with variable and its usual (one-dimensional) coordinates, if any.
+with the variable and its usual (one-dimensional) coordinates, if any. 
 These auxiliary coordinates are subject to the user-specified override
 switches (including @samp{-c} and @samp{-C}) described in 
 @ref{Subsetting Coordinate Variables}. 
+
+Elimination of reduced dimensions from the @code{coordinates} attribute
+helps ensure that rank-reduced variables become completely independent
+from their former dimensions.
+As of @acronym{NCO} version 4.4.9 (March, 2015), @acronym{NCO}
+may modify the @code{coordinates} attribute to assist this.
+In particular, @command{ncwa} eliminates from the @code{coordinates}
+attribute any dimension that it collapses, e.g., by averaging.
+The former presence of this dimension will usually be indicated by the 
+@acronym{CF} @code{cell_methods} convention described 
+@uref{http://cfconventions.org/1.6.html#cell-methods, here}.
+Hence the @acronym{CF} @code{cell_methods} and @code{coordinates} 
+conventions can be said to work in tandem to characterize the state and
+history of a variable's analysis.
 
 @html
 <a name="cnv_CF_cll_mth"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_cll_mth -->

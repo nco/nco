@@ -879,7 +879,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   } /* endif cnk_sz_scl */
 
   if(FIRST_CALL && nco_dbg_lvl_get() >= nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO User requested chunking or unchunking\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: INFO User requests (or compression or record dimension requires) chunking or unchunking\n",nco_prg_nm_get());
     if(nco_dbg_lvl_get() >= nco_dbg_scl  && nco_dbg_lvl_get() != nco_dbg_dev){
       (void)fprintf(stdout,"cnk_plc, cnk_map: %s, %s\n",nco_cnk_plc_sng_get(cnk_plc),nco_cnk_map_sng_get(cnk_map));
       (void)fprintf(stdout,"cnk_sz_scl, cnk_sz_byt, cnk_min_byt: %lu, %lu, %lu\n",(unsigned long)cnk_sz_scl,(unsigned long)cnk_sz_byt,(unsigned long)cnk_min_byt);

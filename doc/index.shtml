@@ -793,14 +793,13 @@ Intersection/union <a href="http://nco.sf.net/nco.html#unn">modes</a>;
 <dt><a name="Binaries"></a><a name="bnr"></a></dt>
 <h2>Get NCO Binary Executables</h2>
 
-<p>NCO developers are too short-handed to provide pre-built binary
-executables for all platforms.
+<p>Pre-built binary executables are available for most platforms.
 Our source tarballs are always up-to-date, and work on our
-development systems (Fedora, Ubuntu, and Mac OS X).
+development systems (Fedora, Ubuntu, and Mac OS&nbsp;X).
 We also attempt to provide (theoretically) platform-independent sources
 in the most common Linux package formats (Debian and RPM).
-Below are links to these and to packages for other platforms created
-by volunteers.
+Below are one-line installation instructions and links to these and to
+packages for other platforms created by volunteers.
 Anyone willing to perform regular regression testing and porting 
 of NCO to other platforms is welcome.  
 Previous versions of these binaries are still available by searching
