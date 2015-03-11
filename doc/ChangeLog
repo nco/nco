@@ -1,13 +1,15 @@
 2015-03-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.9 release procedure:
- 	Changes since nco-4.4.9: git, -x warn, crd att, fxm
-	cd ~/nco;git commit -a -m "Preparing nco-4.4.9 release"
-	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push
+ 	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco
+	cd ~/nco;git commit -a -m "Version nco-4.4.9 release: "
+	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
+	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
 
 	* Tag nco-4.4.9-alpha to test new release procedure
 	cd ~/nco;git commit -a -m "Version nco-4.4.9-alpha"
-	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push
+	git tag -d nco-4.4.9-alpha;git push origin :refs/tags/nco-4.4.9-alpha
+	git tag -a nco-4.4.9-alpha -m 'Version 4.4.9-alpha: git, -x warn, crd att, cnk nco';git push --tags
 
 	* Document "coordinates" attribute modification
 
