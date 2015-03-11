@@ -1,5 +1,14 @@
 2015-03-10  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.9 release procedure:
+ 	Changes since nco-4.4.9: git, -x warn, crd att, fxm
+	cd ~/nco;git commit -a -m "Preparing nco-4.4.9 release"
+	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push
+
+	* Tag nco-4.4.9-alpha to test new release procedure
+	cd ~/nco;git commit -a -m "Version nco-4.4.9-alpha"
+	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push
+
 	* Document "coordinates" attribute modification
 
 2015-03-09  Charlie Zender  <zender@uci.edu>
@@ -7,10 +16,6 @@
 	* Created remote upstream branches dyw, hmb, and pvn
 
 	* Change on master by csz
-
-	* NCO 4.4.9 release procedure:
- 	Changes since nco-4.4.8: git, -x warn, crd att, fxm
-	cd ~/nco;git commit -a -m "Preparing nco-4.4.8 release"
 
 	* Fix regression tests to account for new "coordinates" attributes
 
