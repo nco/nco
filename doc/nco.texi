@@ -18258,9 +18258,11 @@ Gentoo packaging
 @cindex Filipe Fernandes
 @item Filipe Fernandes
 OpenSuse packaging
-@cindex Alexander Hansen
 @cindex Takeshi Enomoto
-@item Takeshi Enomoto, Alexander Hansen
+@cindex Alexander Hansen
+@cindex Ian Lancaster
+@cindex Alejandro Soto
+@item Takeshi Enomoto, Alexander Hansen, Ian Lancaster, Alejandro Soto
 Mac OS packaging
 @cindex Eric Blake
 @item Eric Blake

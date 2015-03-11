@@ -1,5 +1,9 @@
 2015-03-10  Charlie Zender  <zender@uci.edu>
 
+	* Build on rhea.ccs.ornl.edu
+
+	* Finish cnk_plc=nco implementation so plc/map=nco/nco means all/rew
+
 	* Document "coordinates" attribute modification
 
 2015-03-09  Charlie Zender  <zender@uci.edu>
