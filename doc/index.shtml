@@ -267,7 +267,7 @@ special cases.
 <p>In March, 2000, NCO became an Open Source project hosted by
 <a href="http://sf.net">SourceForge.net</a>.
 This facilitates collaboration, code contributions, and support.
-There is a <a href="./TODO">TODO list</a> hundreds of items long! 
+<p>In March, 2015, NCO source code moved to <a href="http://github.com">GitHub.com</a>.
 No matter what your programming background there is a task you can help with. 
 From re-organizing the TODO list itself, to improving this cheesy
 webpage, to documentation, to designing and implementing new features
@@ -653,11 +653,11 @@ San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
 <!-- http://nco.sf.net#hgh -->
 <dt><a name="Highlights"></a><a name="hgh"></a></dt>
 <h2>Release Highlights</h2>
-Releases receive unique tags and their tarballs are stored  
+Stable releases receive unique tags and their tarballs are stored  
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
-<a href="http://dust.ess.uci.edu/nco/src">here</a> on our server at UCI.
+<a href="https://github.com/czender/nco/releases">here</a> at GitHub.
 You may also retrieve the source of tagged versions directly
-<a name="#Source">with <tt>git</tt></a>.
+<a name="#Source">with <tt>git clone -b "nco-4.4.8" http://github.com/czender/nco.git nco-4.4.8</tt></a>.
 <ul>
 <li><b>NCO 4.5.0</b>: (<i>Future</i>) 
 extensive hashing?;
