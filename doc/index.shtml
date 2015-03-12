@@ -660,13 +660,13 @@ You may also retrieve the source of tagged versions directly
 <a name="#Source">with <tt>git clone -b "nco-4.4.8" http://github.com/czender/nco.git nco-4.4.8</tt></a>.
 <ul>
 <li><b>NCO 4.5.0</b>: (<i>Future</i>) 
+<tt>ncks</tt> prints human-legible ISO8601 dates;
+<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;
 Regridding;</li>
 <li><b>NCO 4.4.9</b>: (<i>In Progress, features completed or being worked on include</i>)
-<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
-<tt>ncks</tt> prints human-legible ISO8601 dates;
 <tt>ncks</tt> suggests <tt>-C</tt> with <tt>-x -v crd</tt>;
 <tt>ncwa</tt> modifies <tt>coordinates</tt> attribute;</li>
 <li><b>NCO 4.4.8</b>: (<i>Current Stable Release</i>)
@@ -790,10 +790,11 @@ Intersection/union <a href="http://nco.sf.net/nco.html#unn">modes</a>;
 
 <!-- http://nco.sf.net#bnr -->
 <!-- http://nco.sf.net#binaries -->
-<dt><a name="Binaries"></a><a name="bnr"></a></dt>
+<!-- http://nco.sf.net#Binaries -->
+<dt><a name="Binaries"></a><a name="bnr"><a name="binaries"></a></dt>
 <h2>Get NCO Binary Executables</h2>
 
-<p>Pre-built binary executables are available for most platforms.
+<p>Pre-built binary executables are available for many platforms.
 Our source tarballs are always up-to-date, and work on our
 development systems (Fedora, Ubuntu, and Mac OS&nbsp;X).
 We also attempt to provide (theoretically) platform-independent sources
@@ -871,22 +872,24 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <a name="macosx"></a> <!-- http://nco.sf.net#macosx -->
 <a name="osx"></a> <!-- http://nco.sf.net#osx -->
 <a name="macports"></a> <!-- http://nco.sf.net#macports -->
+<a name="homebrew"></a> <!-- http://nco.sf.net#homebrew -->
 <a name="fink"></a> <!-- http://nco.sf.net#fink -->
 <h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
 <ul>
 <!-- 
-# Mac OS X 10.9 (Mavericks) systems (aerosol):
+# Mac OS X 10.10 (Yosemite) systems (aerosol):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin/MACOSX;tar cvzf ${DATA}/nco-4.4.8.macosx.10.9.tar.gz nc*;scp ${DATA}/nco-4.4.8.macosx.10.9.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin/MACOSX;tar cvzf ${DATA}/nco-4.4.8.macosx.10.10.tar.gz nc*;scp ${DATA}/nco-4.4.8.macosx.10.10.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.4.8.macosx.10.9.tar.gz">nco-4.4.8.macosx.10.9.tar.gz</a> (<!--#fsize file="src/nco-4.4.8.macosx.10.9.tar.gz"-->): Executables MacOSX 10.9-compatible (last updated <!--#flastmod file="src/nco-4.4.8.macosx.10.9.tar.gz"-->). 
+<li><a href="src/nco-4.4.8.macosx.10.10.tar.gz">nco-4.4.8.macosx.10.10.tar.gz</a> (<!--#fsize file="src/nco-4.4.8.macosx.10.10.tar.gz"-->): Executables MacOSX 10.10-compatible (last updated <!--#flastmod file="src/nco-4.4.8.macosx.10.10.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
 <li><a href="src/nco-4.0.3_x86_10.6.dmg">nco-4.0.3_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.3_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.3_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
 <li><a href="src/nco-4.0.7_x86_10.6.dmg">nco-4.0.7_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.7_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.7_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
 <li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 3.9.5. Maintained by Alexander Hansen.</li> 
+<li><a href="http://brew.sh">Homebrew</a> packages for <a href="https://github.com/Homebrew/homebrew-science/nco.rb">NCO</a>: Currently NCO 4.4.2. Maintained by Ian Lancaster (Alejandro Soto's instructions <a href="http://alejandrosoto.net/blog/2014/01/22/setting-up-my-mac-for-scientific-research">here</a>).</li> 
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>: <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a> for NCO 4.4.4. Maintained by Takeshi Enomoto.</li>
 </ul>
 
@@ -1094,15 +1097,14 @@ GitHub provides
 for accessing their repositories.
 You may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>4.4.8</tt> (which is
-tagged as <tt>nco-4.4.8</tt>) into local directory
-<tt>nco-4.4.8</tt>:
-<p><tt>git clone https://github.com/czender/nco.git ~/nco-4.4.8;cd ~/nco-4.4.8;git checkout -b branch-4.4.8 nco-4.4.8</tt></p>
+This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
+then checks out NCO version <tt>4.4.8</tt>:
+<p><tt>git clone https://github.com/czender/nco.git;cd nco;git checkout -b nco-4.4.8</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>git clone https://github.com/czender/nco.git ~/nco</tt></p>
 Track changes to the development version using
-<p><tt>cd nco;git pull</tt></p>
+<p><tt>cd ~/nco;git pull</tt></p>
 One difference between running a "tagged" release 
 (e.g., <tt>nco-4.4.8</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
@@ -1263,12 +1265,13 @@ Still having trouble building NCO from source? Read these
 <!-- http://nco.sf.net#NCAR -->
 <dt><a name="NCAR"></a></dt>
 <h2>Using NCO at UCI, NCAR, and other High Performance Computing Centers (HPCCs)</h2>
-<p>UC Irvine and NCAR users <i>may</i> find pre-built,
+<p>UC Irvine, NCAR, and DOE ORNL/OLCF users <i>may</i> find pre-built,
 <i>almost</i> up-to-date NCO executables in the following locations.
-Users at NCAR/NWSC should first try the CISL-<i>supported</i>
-executables with <tt>module load nco</tt>. 
+Users at NCAR/NWSC and ORNL/OLCF should first try the institution-<i>supported</i>
+executables with <tt>module load nco</tt>.
+These stable releases are usually a few versions and up to two years old.
 The unsatisfied or adventurous may try my personal executables which
-are built from the &ldquo;main trunk&rdquo; of NCO, not a tagged
+are built from the &ldquo;master branch&rdquo; of NCO, not a tagged
 version, and therefore may behave slightly differently.
 <ul>
 <li>NCAR CISL <tt>yellowstone.ucar.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUXAMD64</tt></li>

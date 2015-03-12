@@ -210,8 +210,8 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
 
   /* NCO-recommended chunking map is expected to change over time
      cnk_map=nco assigns current NCO-recommended map */
-  if(cnk_map == nco_cnk_map_nco) cnk->cnk_map=nco_cnk_map_rd1;
-  if(cnk_map == nco_cnk_plc_nco) cnk->cnk_plc=nco_cnk_plc_nco;
+  if(cnk_map == nco_cnk_map_nco) cnk->cnk_map=nco_cnk_map_rew;
+  if(cnk_plc == nco_cnk_plc_nco) cnk->cnk_plc=nco_cnk_plc_all;
 
   return rcd;
 } /* end nco_cnk_ini() */
@@ -387,10 +387,13 @@ nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
   if(!strcmp(nco_cnk_plc_sng,"g3d")) return nco_cnk_plc_g3d;
   if(!strcmp(nco_cnk_plc_sng,"cnk_g3d")) return nco_cnk_plc_g3d;
   if(!strcmp(nco_cnk_plc_sng,"plc_g3d")) return nco_cnk_plc_g3d;
-  if(!strcmp(nco_cnk_plc_sng,"xpl")) return nco_cnk_plc_xpl;
+  if(!strcmp(nco_cnk_plc_sng,"nco")) return nco_cnk_plc_nco;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_nco")) return nco_cnk_plc_nco;
+  if(!strcmp(nco_cnk_plc_sng,"plc_nco")) return nco_cnk_plc_nco;
   if(!strcmp(nco_cnk_plc_sng,"r1d")) return nco_cnk_plc_r1d;
   if(!strcmp(nco_cnk_plc_sng,"cnk_r1d")) return nco_cnk_plc_r1d;
   if(!strcmp(nco_cnk_plc_sng,"plc_r1d")) return nco_cnk_plc_r1d;
+  if(!strcmp(nco_cnk_plc_sng,"xpl")) return nco_cnk_plc_xpl;
   if(!strcmp(nco_cnk_plc_sng,"cnk_xpl")) return nco_cnk_plc_xpl;
   if(!strcmp(nco_cnk_plc_sng,"plc_xpl")) return nco_cnk_plc_xpl;
   if(!strcmp(nco_cnk_plc_sng,"xst")) return nco_cnk_plc_xst;
