@@ -299,7 +299,8 @@ nco_ppc_set_var
       /* Important difference between full- and short-name matching: Prepend carat to RX so full name matches must start at beginning of variable name */
       char *sng2mch;
       sng2mch=(char *)nco_malloc(BUFSIZ*sizeof(char *));
-      sng2mch="^";
+      sng2mch[0]='\0';
+      strcat(sng2mch,"^");
       strcat(sng2mch,var_nm);
       if(regcomp(rx,sng2mch,(REG_EXTENDED | REG_NEWLINE))){ /* Compile regular expression */
         (void)fprintf(stdout,"%s: ERROR trv_tbl_set_ppc() error in regular expression \"%s\"\n",nco_prg_nm_get(),var_nm);
@@ -309,11 +310,11 @@ nco_ppc_set_var
       result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
         if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
-	        if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)){
-	          trv_tbl->lst[idx_tbl].ppc=ppc;
-	          trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
-	          mch_nbr++;
-	        } /* endif */
+	  if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)){
+	    trv_tbl->lst[idx_tbl].ppc=ppc;
+	    trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
+	    mch_nbr++;
+	  } /* endif */
         } /* endif */
       } /* endfor */
       sng2mch=(char *)nco_free(sng2mch);
