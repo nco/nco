@@ -663,7 +663,7 @@ nco1113. nco: rsp parker norton help srd slowdown issue help 20140718 completely
 nco1114. ncrcat fails when single record dimension is not first dimension
 nco1116. --add_bnds for creating bounds variables
 nco1117. ncks human-readable times
-nco1119.
+nco1119. brendan discussion 20150312 autoconf requires both --enable-netcdf4=no --and enable-netcdf-4=no to get "ENABLE_NETCDF4....... no" and avoid the "configure: Bad news: Simple program does not compile and link with netCDF4 library" message.nco1120.  
 qrk
 ************************************************************************
 End ncoXXX TODOs
