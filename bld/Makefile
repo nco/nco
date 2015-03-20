@@ -92,7 +92,7 @@
 # netCDF4 on ORNL Linux cluster systems (titan, rhea.ccs.ornl.gov):
 # module avail
 # . ~/.bashrc
-# module add intel
+# module add intel gsl
 # export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3/lib':${LD_LIBRARY_PATH}
 # export NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' 
 # export PATH='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3/bin':${PATH}

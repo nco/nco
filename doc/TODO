@@ -666,7 +666,8 @@ nco1117. ncks human-readable times
 nco1119. nco: ncap2 RNG works with arrays, fails with scalars (john 20150317)
       ncap2 -O -s 'defdim("r1",10);data[r1]=10;data=gsl_rng_uniform_int(data);print(data);' ~/nco/data/in.nc ~/foo.nc # works
       ncap2 -O -s 'data=10;data=gsl_rng_uniform_int(data);print(data);' ~/nco/data/in.nc ~/foo.nc # borken
-nco1120.
+nco1120. brendan discussion 20150312 autoconf requires both --enable-netcdf4=no --and enable-netcdf-4=no to get "ENABLE_NETCDF4....... no" and avoid the "configure: Bad news: Simple program does not compile and link with netCDF4 library" message.
+nco1121.  
 qrk
 ************************************************************************
 End ncoXXX TODOs

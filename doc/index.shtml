@@ -1067,14 +1067,13 @@ site.</li>
 
 <!-- http://nco.sf.net#src -->
 <dt><a name="Source"></a><a name="src"></a></dt>
-<h2>Get NCO Source Code</h2>
+<h2>Source Code</h2>
 
-The best way to acquire the source is with <a href="http://git-scm.com/book/en/v2">Git</a>.
-The second best way is to download the source as a compressed tarfile:
+The simplest way to acquire the source is to download the compressed tarball:
 <ul>
 <li>
 <!-- scp ${DATA}/nco-4.4.8.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
- <a href="src/nco-4.4.8.tar.gz">nco-4.4.8.tar.gz</a> 
+<a href="src/nco-4.4.8.tar.gz">nco-4.4.8.tar.gz</a> 
 (<!--#fsize file="src/nco-4.4.8.tar.gz"--> compressed tar-file)<br>
 <!--#exec cmd="openssl dgst -md5 src/nco-4.4.8.tar.gz"--><br>
 <!--#exec cmd="openssl dgst -sha1 src/nco-4.4.8.tar.gz"--> 
@@ -1083,19 +1082,17 @@ The second best way is to download the source as a compressed tarfile:
 
 <!-- Equivalent source browsing in Unidata's netCDF SVN repository:
      http://svn.unidata.ucar.edu/repos/netcdf/trunk/ncdump/nccopy.c -->
-<p>NCO's browsable
-<a href="https://github.com/czender/nco/tree/master">Git Repository</a> 
+<p>The best way to acquire the source and occasionally update to the
+latest features is with <a href="http://git-scm.com/book/en/v2">Git</a>. 
+The browsable <a href="https://github.com/czender/nco/tree/master">Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
 synchronized with NCO features.
-Retrieving and using NCO source requires some familiarity with
-development tools,
+Updating NCO source requires some familiarity with development tools,
 especially <a href="http://git-scm.com/book/en/v2">Git</a> and  
 <a href="http://www.gnu.org/software/make/make.html">Make</a>.
 
-GitHub provides 
-<a href="https://help.github.com">generic instructions</a> 
-for accessing their repositories.
-You may retrieve any NCO distribution you wish.
+You may retrieve any NCO distribution you wish from 
+<a href="https://help.github.com">GitHub</a>. 
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
 then checks out NCO version <tt>4.4.8</tt>:
