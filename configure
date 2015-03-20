@@ -19317,7 +19317,7 @@ if test "${enable_esmf}" != 'no'; then
     else
 	ESMF_ROOT='/usr/local'
 	ESMF_INC="${ESMF_ROOT}/include"
-	ESMF_INC_ARG="-I${ESMF_INC}/include
+	ESMF_INC_ARG="-I${ESMF_INC}/include"
 	CPPFLAGS="${CPPFLAGS} ${ESMF_INC_ARG}"
     fi
     if test "${ESMF_LIB}"; then
