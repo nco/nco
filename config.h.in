@@ -15,6 +15,9 @@
 /* Debugging symbols: Produce symbols for debuggers (e.g., dbx, gdb) */
 #undef ENABLE_DEBUG_SYMBOLS
 
+/* Compile operators with ESMF support */
+#undef ENABLE_ESMF
+
 /* Compile operators with GSL support */
 #undef ENABLE_GSL
 
@@ -90,6 +93,9 @@
 /* Define to 1 if compiler finds external `erff' function */
 #undef HAVE_ERFF
 
+/* Define to 1 if <ESMC.h> is present */
+#undef HAVE_ESMF_H
+
 /* Define to 1 if compiler finds external `expf' function */
 #undef HAVE_EXPF
 
@@ -137,6 +143,9 @@
 
 /* Define to 1 if you have the `dl' library (-ldl). */
 #undef HAVE_LIBDL
+
+/* Define to 1 if you have the `esmf' library (-lesmf). */
+#undef HAVE_LIBESMF
 
 /* Define to 1 if you have the `expat' library (-lexpat). */
 #undef HAVE_LIBEXPAT

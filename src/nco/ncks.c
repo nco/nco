@@ -110,13 +110,6 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-int
-nco_ESMF_rgr
-(const int nc_id, /* I [id] Input netCDF file ID */
-char *fl_nm, /* I [sng] scrip file name for dst grid */
-const int out_id /* I [id] Output netCDF file ID */
-);
-
 int 
 main(int argc,char **argv)
 {
@@ -924,16 +917,18 @@ main(int argc,char **argv)
     
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-    /* rgr */
-    if(rgr_nbr > 0) {
+
+#ifdef ENABLE_ESMF
+    if(rgr_nbr > 0){
       int rgr_out_id;
-      char * fl_rgr_nm="/data/dywei/rgr_dst.nc";
+      char *fl_rgr_nm="/data/zender/rgr/rgr_dst.nc";
       char *fl_rgr_tmp=NULL_CEWI;
       fl_rgr_tmp=nco_fl_out_open(fl_rgr_nm,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_out_id);
-      rcd=nco_ESMF_rgr(in_id,rgr_arg[0],rgr_out_id);
+      rcd=nco_rgr_esmf(in_id,rgr_arg[0],rgr_out_id);
       (void)nco_fl_out_cls(fl_rgr_nm,fl_rgr_tmp,rgr_out_id);
       if(fl_rgr_tmp) fl_rgr_tmp=(char *)nco_free(fl_rgr_tmp);
-    }
+    } /* endif */
+#endif /* !ENABLE_ESMF */
 
     /* Inititialize, decode, and set PPC information */
     if(ppc_nbr > 0) nco_ppc_ini(in_id,&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);

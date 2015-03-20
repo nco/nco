@@ -22,6 +22,9 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
+#ifdef ENABLE_ESMF
+# include <ESMC.h> /* ESMF definitions */
+#endif /* !ENABLE_ESMF */
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
@@ -32,48 +35,71 @@
 extern "C" {
 #endif /* __cplusplus */
 
-typedef struct {
-  char *key;
-  char *value;
-} kvmap_sct;
+ typedef struct {
+   char *key;
+   char *value;
+ } kvmap_sct;
  
-int hdlscrip(char *fl_nm_scrip, kvmap_sct *kvm_scrip); 
+  int
+  hdlscrip /* [fnc] Handle SCRIP file */
+  (char *fl_nm_scrip,
+   kvmap_sct *kvm_scrip);
   
-kvmap_sct nco_sng2map(char *str,  kvmap_sct kvm); /* parse a line return a name-value pair kvmap */
+  kvmap_sct
+  nco_sng2map /* [fnc] Parse line return key-value structure */
+  (char *str,
+   kvmap_sct kvm);
   
-int nco_sng2array(const char *delim, const char *str, char **sarray); /* split str by delim to sarray returns size of sarray */
+  int nco_sng2array /* [fnc] Split string by delimite to subarray and return size of subarray */
+  (const char *delim,
+   const char *str,
+   char **sarray);
 
-char *nco_sng_strip(char *str); /* remove heading and trailing blanks */
+  char *
+  nco_sng_strip /* [fnc] Remove leading and trailing blanks */
+  (char *str);
 
-void nco_kvmaps_free(kvmap_sct *kvmaps); /* release memory */
+  void
+  nco_kvmaps_free /* [fnc] Release memory */
+  (kvmap_sct *kvmaps);
 
-void nco_kvmap_prn(kvmap_sct kvm);  /* print kvmap contents */
+  void
+  nco_kvmap_prn /* [fnc] Print kvmap contents */
+  (kvmap_sct kvm);
 
-void 
-nco_ppc_ini /* [fnc] Set PPC based on user specifications */
-(const int nc_id, /* I [id] netCDF input file ID */
- int *dfl_lvl, /* O [enm] Deflate level */
- const int fl_out_fmt, /* I [enm] Output file format */
- char *const ppc_arg[], /* I [sng] List of user-specified ppc */
- const int ppc_nbr, /* I [nbr] Number of ppc specified */
- trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+  void 
+  nco_ppc_ini /* [fnc] Set PPC based on user specifications */
+  (const int nc_id, /* I [id] netCDF input file ID */
+   int *dfl_lvl, /* O [enm] Deflate level */
+   const int fl_out_fmt, /* I [enm] Output file format */
+   char *const ppc_arg[], /* I [sng] List of user-specified ppc */
+   const int ppc_nbr, /* I [nbr] Number of ppc specified */
+   trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+  
+  void
+  nco_ppc_att_prc /* [fnc] create ppc att from trv_tbl */
+  (const int nc_id, /* I [id] Input netCDF file ID */
+   const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+  
+  void
+  nco_ppc_set_dflt /* Set the ppc value for all non-coordinate vars */
+  (const int nc_id, /* I [id] netCDF input file ID */
+   const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
+   trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+  
+  void
+  nco_ppc_set_var
+  (const char * const var_nm_fll, /* I [sng] Variable name to find */
+   const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
+   trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
-void
-nco_ppc_att_prc /* [fnc] create ppc att from trv_tbl */
-(const int nc_id, /* I [id] Input netCDF file ID */
- const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
-
-void
-nco_ppc_set_dflt /* Set the ppc value for all non-coordinate vars */
-(const int nc_id, /* I [id] netCDF input file ID */
- const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
- trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
-
-void
-nco_ppc_set_var
-(const char * const var_nm_fll, /* I [sng] Variable name to find */
- const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
- trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+#ifdef ENABLE_ESMF
+  int /* O [enm] Return code */
+  nco_rgr_esmf /* [fnc] Regrid using ESMF library */
+  (const int nc_id, /* I [id] Input netCDF file ID */
+   char *fl_nm, /* I [sng] SCRIP file name for destination grid */
+   const int out_id); /* I [id] Output netCDF file ID */
+#endif /* !ENABLE_ESMF */
 
 #ifdef __cplusplus
 } /* end extern "C" */

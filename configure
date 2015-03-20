@@ -646,6 +646,8 @@ PATH_TO_NCGEN
 UDUNITS2_PATH
 ENABLE_GSL_FALSE
 ENABLE_GSL_TRUE
+ENABLE_ESMF_FALSE
+ENABLE_ESMF_TRUE
 I18N_SHARE
 ENABLE_MPI_FALSE
 ENABLE_MPI_TRUE
@@ -816,6 +818,7 @@ enable_mpi
 enable_fortran
 enable_i18n
 enable_nco_cplusplus
+enable_esmf
 enable_gsl
 enable_regex
 enable_udunits
@@ -1497,6 +1500,7 @@ Optional Features:
   --enable-i18n           Internationalization (i18n) support (WARNING:
                           Experimental, for future use) [[default=no]]
   --enable-nco_cplusplus  Build NCO C++ interface library [[default=yes]]
+  --enable-esmf           Build-in ESMF support if possible [[default=yes]]
   --enable-gsl            Build-in GSL support if possible [[default=yes]]
   --enable-regex          Allow extended regular expressions [[default=yes]]
   --enable-udunits        Build-in UDUnits support if possible [[default=no]]
@@ -19286,6 +19290,158 @@ fi
 # End nco_c++
 
 echo "########################################"
+echo "#     Testing for ESMF support          #"
+echo "########################################"
+# Begin ESMF
+# NB: Desirable for ESMF flags to preced netCDF flags so configure does not look in ESMF location for netCDF
+# Store pre-ESMF LIBS value to restore from later
+nco_LIBS_no_ESMF="${LIBS}"
+nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
+# Check whether --enable-esmf was given.
+if test "${enable_esmf+set}" = set; then :
+  enableval=$enable_esmf; enable_esmf=${enableval}
+else
+  enable_esmf=yes
+fi
+
+if test "${enable_esmf}" != 'yes'; then
+
+    enable_esmf='no'
+
+fi
+# Check for ESMF libraries unless told not to
+if test "${enable_esmf}" != 'no'; then
+# fxm: make non-fatal code path for when cannot find esmf-config
+    if test "${ESMF_INC}"; then
+	CPPFLAGS="${CPPFLAGS} -I${ESMF_INC}"
+    else
+	ESMF_ROOT='/usr/local'
+	ESMF_INC="${ESMF_ROOT}/include"
+	ESMF_INC_ARG="-I${ESMF_INC}/include
+	CPPFLAGS="${CPPFLAGS} ${ESMF_INC_ARG}"
+    fi
+    if test "${ESMF_LIB}"; then
+	LIBS="${LIBS} -L${ESMF_LIB}"
+    else
+	ESMF_ROOT='/usr/local'
+	ESMF_LIB="${ESMF_ROOT}/lib"
+	LIBS="${LIBS} -L${ESMF_LIB}"
+    fi
+    { $as_echo "$as_me:${as_lineno-$LINENO}: These ESMF library and header tests must succeed for ESMF support:" >&5
+$as_echo "$as_me: These ESMF library and header tests must succeed for ESMF support:" >&6;}
+# fxm: default action of check_lib adds a superfluous -lesmf to $LIBS
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ESMC_Initialize in -lesmf" >&5
+$as_echo_n "checking for ESMC_Initialize in -lesmf... " >&6; }
+if ${ac_cv_lib_esmf_ESMC_Initialize+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lesmf  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char ESMC_Initialize ();
+int
+main ()
+{
+return ESMC_Initialize ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_esmf_ESMC_Initialize=yes
+else
+  ac_cv_lib_esmf_ESMC_Initialize=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_esmf_ESMC_Initialize" >&5
+$as_echo "$ac_cv_lib_esmf_ESMC_Initialize" >&6; }
+if test "x$ac_cv_lib_esmf_ESMC_Initialize" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBESMF 1
+_ACEOF
+
+  LIBS="-lesmf $LIBS"
+
+else
+  enable_esmf=no
+fi
+
+    if test "${ESMF_ROOT}"; then
+	as_ac_File=`$as_echo "ac_cv_file_${ESMF_INC}/ESMC.h" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ${ESMF_INC}/ESMC.h" >&5
+$as_echo_n "checking for ${ESMF_INC}/ESMC.h... " >&6; }
+if eval \${$as_ac_File+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "${ESMF_INC}/ESMC.h"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+eval ac_res=\$$as_ac_File
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
+
+$as_echo "#define HAVE_ESMF_H 1" >>confdefs.h
+
+else
+  enable_esmf=no
+fi
+
+    else
+	ac_fn_c_check_header_mongrel "$LINENO" "ESMC.h" "ac_cv_header_ESMC_h" "$ac_includes_default"
+if test "x$ac_cv_header_ESMC_h" = xyes; then :
+
+$as_echo "#define HAVE_ESMF_H 1" >>confdefs.h
+
+else
+  enable_esmf=no
+fi
+
+
+    fi
+    if test "${enable_esmf}" = 'no'; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ESMF support disabled (missing/unusable library or header file)" >&5
+$as_echo "$as_me: WARNING: ESMF support disabled (missing/unusable library or header file)" >&2;}
+	LIBS="${nco_LIBS_no_ESMF}"
+	CPPFLAGS="${nco_CPPFLAGS_no_ESMF}"
+    elif test "${enable_esmf}" = 'yes'; then
+
+$as_echo "#define ENABLE_ESMF 1" >>confdefs.h
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: ESMF support enabled" >&5
+$as_echo "$as_me: ESMF support enabled" >&6;}
+    fi
+fi
+ if test "${enable_esmf}" = 'yes'; then
+  ENABLE_ESMF_TRUE=
+  ENABLE_ESMF_FALSE='#'
+else
+  ENABLE_ESMF_TRUE='#'
+  ENABLE_ESMF_FALSE=
+fi
+
+#echo "DEBUG: After ESMF tests LIBS = ${LIBS}"
+# This would activate conditional ESMF tests, if there were any
+# AM_CONDITIONAL(TEST_ESMF,[test "${enable_esmf}" = 'yes'])
+# End ESMF
+
+echo "########################################"
 echo "#     Testing for GSL support          #"
 echo "########################################"
 # Begin GSL
@@ -20677,6 +20833,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_MPI_TRUE}" && test -z "${ENABLE_MPI_FALSE}"; then
   as_fn_error $? "conditional \"ENABLE_MPI\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_ESMF_TRUE}" && test -z "${ENABLE_ESMF_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_ESMF\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_GSL_TRUE}" && test -z "${ENABLE_GSL_FALSE}"; then

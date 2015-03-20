@@ -369,6 +369,24 @@ else
  BNR_SFX := ${null}
 endif 
 
+ifeq (${ESMF},Y)
+# Build ESMF-enabled NCO 
+# Place ESMF block after DAP blocks for both to work together
+ifdef ESMF_INC
+ ESMF_INC_FLG := -I${ESMF_INC}
+else
+ ESMF_INC_FLG := -I/usr/local/include
+endif # endif ESMF_INC
+# 20150319: For some reaseon, ESMC.h #includes ESMC_VM.h which #includes mpi.h
+ESMF_INC_FLG += -I/usr/include/openmpi-x86_64
+ifdef ESMF_LIB
+ ESMF_LIB_FLG := -L${ESMF_LIB} -lesmf
+else
+ ESMF_LIB_FLG := -L/usr/local/lib -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
+# ESMF_LIB_FLG := -L/usr/local/lib -lesmf
+endif # endif ESMF_LIB
+endif # end if ESMF
+
 ifeq (${GSL},Y)
 # Build GSL-enabled NCO 
 # Place GSL block after DAP blocks for both to work together
@@ -415,8 +433,8 @@ ifdef LIB_NCAR
  NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
 endif
 
-OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG}
-OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${UDUNITS_LIB_FLG}
+OTHER_CFLAGS :=  ${ESMF_INC_FLG} ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${ESMF_LIB_FLG} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${UDUNITS_LIB_FLG}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -600,6 +618,9 @@ endif # !CNK
 ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP
 endif # !DAP
+ifeq (${ESMF},Y)
+ CPP_TKN_OS += -DENABLE_ESMF
+endif # !ESMF
 ifeq (${GSL},Y)
  CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H
 endif # !GSL

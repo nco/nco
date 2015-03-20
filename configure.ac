@@ -523,6 +523,61 @@ AC_ARG_ENABLE(nco_cplusplus,AS_HELP_STRING([--enable-nco_cplusplus],[Build NCO C
 # End nco_c++
 
 echo "########################################"
+echo "#     Testing for ESMF support          #"
+echo "########################################"
+# Begin ESMF
+# NB: Desirable for ESMF flags to preced netCDF flags so configure does not look in ESMF location for netCDF
+# Store pre-ESMF LIBS value to restore from later
+nco_LIBS_no_ESMF="${LIBS}"
+nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
+AC_ARG_ENABLE(esmf,AS_HELP_STRING([--enable-esmf],[Build-in ESMF support if possible [[default=yes]]]),enable_esmf=${enableval},enable_esmf=yes)
+if test "${enable_esmf}" != 'yes'; then
+
+    enable_esmf='no'
+
+fi
+# Check for ESMF libraries unless told not to
+if test "${enable_esmf}" != 'no'; then
+# fxm: make non-fatal code path for when cannot find esmf-config
+    if test "${ESMF_INC}"; then
+	CPPFLAGS="${CPPFLAGS} -I${ESMF_INC}"
+    else
+	ESMF_ROOT='/usr/local'
+	ESMF_INC="${ESMF_ROOT}/include"
+	ESMF_INC_ARG="-I${ESMF_INC}/include
+	CPPFLAGS="${CPPFLAGS} ${ESMF_INC_ARG}"
+    fi
+    if test "${ESMF_LIB}"; then
+	LIBS="${LIBS} -L${ESMF_LIB}"
+    else
+	ESMF_ROOT='/usr/local'
+	ESMF_LIB="${ESMF_ROOT}/lib"
+	LIBS="${LIBS} -L${ESMF_LIB}"
+    fi
+    AC_MSG_NOTICE([These ESMF library and header tests must succeed for ESMF support:])
+# fxm: default action of check_lib adds a superfluous -lesmf to $LIBS
+    AC_CHECK_LIB([esmf],[ESMC_Initialize],,enable_esmf=no)
+    if test "${ESMF_ROOT}"; then
+	AC_CHECK_FILE([${ESMF_INC}/ESMC.h],AC_DEFINE([HAVE_ESMF_H],1,[Define to 1 if <ESMC.h> is present]),enable_esmf=no)
+    else
+	AC_CHECK_HEADER([ESMC.h],AC_DEFINE([HAVE_ESMF_H],1,[Define to 1 if <ESMC.h> is present]),enable_esmf=no)
+    fi
+    if test "${enable_esmf}" = 'no'; then
+	AC_MSG_WARN([ESMF support disabled (missing/unusable library or header file)])
+	LIBS="${nco_LIBS_no_ESMF}"  
+	CPPFLAGS="${nco_CPPFLAGS_no_ESMF}"
+    elif test "${enable_esmf}" = 'yes'; then
+	AC_DEFINE(ENABLE_ESMF,1,Compile operators with ESMF support)
+	AC_MSG_NOTICE([ESMF support enabled])
+    fi
+fi
+AM_CONDITIONAL(ENABLE_ESMF,[test "${enable_esmf}" = 'yes'])
+#echo "DEBUG: After ESMF tests LIBS = ${LIBS}"
+# This would activate conditional ESMF tests, if there were any
+# AM_CONDITIONAL(TEST_ESMF,[test "${enable_esmf}" = 'yes'])
+# End ESMF
+
+echo "########################################"
 echo "#     Testing for GSL support          #"
 echo "########################################"
 # Begin GSL

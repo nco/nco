@@ -520,48 +520,64 @@ return rcd;
 #endif /* endif False */
 
 #ifdef ENABLE_ESMF
-int nco_ESMF_rgr(
-const int nc_id, /* I [id] Input netCDF file ID */
-char *fl_nm, /* I [sng] scrip file name for dst grid */
-const int out_id /* I [id] Output netCDF file ID */
-){
+int /* O [enm] Return code */
+nco_rgr_esmf /* [fnc] Regrid using ESMF library */
+(const int nc_id, /* I [id] Input netCDF file ID */
+ char *fl_nm, /* I [sng] SCRIP file name for destination grid */
+ const int out_id) /* I [id] Output netCDF file ID */
+{
+  /* Purpose:
+     ESMC is C-interface to ESMF documented at
+     http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMC_crefdoc/ESMC_crefdoc.html
+     ESMF Developer's Guide
+     http://www.earthsystemmodeling.org/documents/dev_guide */
+  
+  const char fnc_nm[]="nco_rgr_esmf()"; /* [sng] Function name */
 
-  const char fnc_nm[]="nco_ESMF_rgr()"; /* [sng] Function name */
-  int rc=ESMF_SUCCESS;
-  int *localPet, *petCount;
+  int *localPet=int_CEWI; 
+  int *max_idx;
+  int *petCount=int_CEWI;
+  int dim_cnt=2;
+  int rcd=ESMF_SUCCESS;
+
+  ESMC_InterfaceInt src_max_idx;
+  ESMC_Grid src_grd;
+  ESMC_Grid dst_grd;
+  ESMC_Field src_fld;
+  ESMC_Field dst_fld;
+  ESMC_RouteHandle route_hdl;
   ESMC_VM vm;
 
-  int dim_cnt=2;
-  int *max_idx;
-  ESMC_InterfaceInt src_max_idx;
-
-  enum ESMC_RegridMethod_Flag rgr_mtd=ESMC_REGRIDMETHOD_BILINEAR;
+  //enum ESMC_RegridMethod_Flag rgr_mth=ESMC_REGRIDMETHOD_BILINEAR;
   enum ESMC_StaggerLoc stg_loc=ESMC_STAGGERLOC_CENTER;
   //enum ESMC_CoordSys_Flag crd_sys=ESMC_COORDSYS_CART;
   enum ESMC_CoordSys_Flag crd_sys=ESMC_COORDSYS_SPH_DEG;
   enum ESMC_TypeKind_Flag typ_knd=ESMC_TYPEKIND_R8;
   nc_type var_typ_out=NC_DOUBLE;
   enum ESMC_LogMsgType_Flag log_msg=ESMC_LOGMSG_INFO;
-  enum ESMC_UnmappedAction_Flag unmap_act=ESMC_UNMAPPEDACTION_IGNORE;
+  //enum ESMC_UnmappedAction_Flag unmap_act=ESMC_UNMAPPEDACTION_IGNORE;
   enum ESMC_FileFormat_Flag fl_fmt=ESMC_FILEFORMAT_SCRIP;
   //enum ESMC_FileFormat_Flag fl_fmt=ESMC_FILEFORMAT_GRIDSPEC;
 
-  ESMC_Grid src_grd, dst_grd;
-  ESMC_Field src_fld, dst_fld;
-  ESMC_RouteHandle route_hdl;
-
-  int var_in_id;
-  int dmn_nbr;
-  int idx;
   int *dmn_id;
-  long var_sz=1L;
+
+  int idx;
+  int dmn_nbr;
+  int var_in_id;
+
   long *dmn_cnt;
   long *dmn_srt;
+
+  long var_sz=1L;
+
   nc_type var_typ;
+
   void *void_ptr_lon;
   void *void_ptr_lat;
   void *void_ptr_var;
+
   dmn_nbr=3;
+
   /* Allocate space to hold dimension IDs */
   dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
   dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
@@ -581,12 +597,12 @@ const int out_id /* I [id] Output netCDF file ID */
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
 
-  max_idx = (int *)malloc(dim_cnt*sizeof(int));
+  max_idx=(int *)malloc(dim_cnt*sizeof(int));
   max_idx[0]=var_sz; /* upbound idx of lon */
 
   /* Allocate enough space to hold variable */
   void_ptr_lon=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
-  rc=nco_get_vara(nc_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lon,var_typ);
+  rcd=nco_get_vara(nc_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lon,var_typ);
   float *lon=(float *)void_ptr_lon;
 
   /* obtain lat from input data file */
@@ -603,78 +619,79 @@ const int out_id /* I [id] Output netCDF file ID */
   } /* end loop over dim */
   max_idx[1]=var_sz; /* upbound idx of lat */
   void_ptr_lat=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
-  rc=nco_get_vara(nc_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lat,var_typ);
+  rcd=nco_get_vara(nc_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lat,var_typ);
   float *lat=(float *)void_ptr_lat;
 
-  /* Initialize --ALWAYS before any other ESMC API calls! */
-  ESMC_Initialize(&rc,ESMC_InitArgDefaultCalKind(ESMC_CALKIND_GREGORIAN),ESMC_InitArgLogFilename("ESMC_Regrid2.Log"), ESMC_InitArgLogKindFlag(ESMC_LOGKIND_MULTI),ESMC_ArgLast);
-  /* ESMC_ArgLast is ALWAYS at the end to indicate the end of opt args */
-  if (rc!=ESMF_SUCCESS){
+  /* Initialize before any other ESMC API calls!
+     ESMC_ArgLast is ALWAYS at the end to indicate the end of opt args */
+  ESMC_Initialize(&rcd,ESMC_InitArgDefaultCalKind(ESMC_CALKIND_GREGORIAN),ESMC_InitArgLogFilename("ESMC_Regrid2.Log"), ESMC_InitArgLogKindFlag(ESMC_LOGKIND_MULTI),ESMC_ArgLast);
+  if(rcd != ESMF_SUCCESS){
     ESMC_LogWrite("ESMC_Initialize() failed",log_msg);
     goto rgr_clean;
-  }
+  } /* endif */
+  
   /* set log to flush after every message */
-  rc=ESMC_LogSet(ESMF_TRUE);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  rcd=ESMC_LogSet(ESMF_TRUE);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
   /* get all vm information */
-  vm=ESMC_VMGetGlobal(&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  vm=ESMC_VMGetGlobal(&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
 
   /* set up local pet info */
-  rc=ESMC_VMGet(vm,localPet,petCount,(int *)NULL,(MPI_Comm *)NULL,(int *)NULL,(int *)NULL);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  rcd=ESMC_VMGet(vm,localPet,petCount,(int *)NULL,(MPI_Comm *)NULL,(int *)NULL,(int *)NULL);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
 
   /* create dst grid from scrip file */
   int *src_bnd_l=(int *)malloc(dim_cnt*sizeof(int));
   int *src_bnd_u=(int *)malloc(dim_cnt*sizeof(int));
   int *dst_bnd_l=(int *)malloc(dim_cnt*sizeof(int));
   int *dst_bnd_u=(int *)malloc(dim_cnt*sizeof(int));
-  dst_grd=ESMC_GridCreateFromFile(fl_nm,fl_fmt,NULL,NULL,NULL,NULL,"",NULL,&rc); /* NB: ESMC_COORDSYS_SPH_DEG only */
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
-  int *dst_msk = (int *)ESMC_GridGetItem(dst_grd,ESMC_GRIDITEM_MASK,stg_loc,&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
-  double *dst_lon=(double *)ESMC_GridGetCoord(dst_grd,1,stg_loc,dst_bnd_l,dst_bnd_u,&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
-  double *dst_lat=(double *)ESMC_GridGetCoord(dst_grd,2,stg_loc,NULL,NULL,&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  dst_grd=ESMC_GridCreateFromFile(fl_nm,fl_fmt,NULL,NULL,NULL,NULL,NULL,NULL,&rcd); /* NB: ESMC_COORDSYS_SPH_DEG only */
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  int *dst_msk = (int *)ESMC_GridGetItem(dst_grd,ESMC_GRIDITEM_MASK,stg_loc,&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  double *dst_lon=(double *)ESMC_GridGetCoord(dst_grd,1,stg_loc,dst_bnd_l,dst_bnd_u,&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  double *dst_lat=(double *)ESMC_GridGetCoord(dst_grd,2,stg_loc,NULL,NULL,&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
 
   double *lon_ptr; /* dim lon for output file */
   double *lat_ptr; /* dim lat for output file */
   lon_ptr=(double *)nco_malloc(dst_bnd_u[0]*sizeof(double));
   lat_ptr=(double *)nco_malloc(dst_bnd_u[1]*sizeof(double));
-  for(int idx=0;idx<dst_bnd_u[0];idx++) lon_ptr[idx]=dst_lon[idx];
-  for(int idx=0;idx<dst_bnd_u[1];idx++) lat_ptr[idx]=dst_lat[idx*dst_bnd_u[0]];
+  for(idx=0;idx<dst_bnd_u[0];idx++) lon_ptr[idx]=dst_lon[idx];
+  for(idx=0;idx<dst_bnd_u[1];idx++) lat_ptr[idx]=dst_lat[idx*dst_bnd_u[0]];
 
   for(idx=0;idx<dst_bnd_u[0]*dst_bnd_u[1];idx++) dst_msk[idx]=0;
   /* create src_grid from lon,lat data file */
-  src_max_idx=ESMC_InterfaceIntCreate(max_idx,dim_cnt,&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
-  src_grd=ESMC_GridCreateNoPeriDim(src_max_idx,&crd_sys,&typ_knd,&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  src_max_idx=ESMC_InterfaceIntCreate(max_idx,dim_cnt,&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  src_grd=ESMC_GridCreateNoPeriDim(src_max_idx,&crd_sys,&typ_knd,&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
 
   /* add crd to src grid */
-  rc=ESMC_GridAddCoord(src_grd, stg_loc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
-  double *src_lon=(double *)ESMC_GridGetCoord(src_grd,1,stg_loc,src_bnd_l,src_bnd_u,&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
-  double *src_lat=(double *)ESMC_GridGetCoord(src_grd,2,stg_loc,NULL,NULL,&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  rcd=ESMC_GridAddCoord(src_grd, stg_loc);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  double *src_lon=(double *)ESMC_GridGetCoord(src_grd,1,stg_loc,src_bnd_l,src_bnd_u,&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  double *src_lat=(double *)ESMC_GridGetCoord(src_grd,2,stg_loc,NULL,NULL,&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
 /* NB: work around for non-spherical coordinate 
   max_idx[0]=dst_bnd_u[0];
   max_idx[1]=dst_bnd_u[1];
-  src_max_idx=ESMC_InterfaceIntCreate(max_idx,dim_cnt,&rc);
-  dst_grd2=ESMC_GridCreateNoPeriDim(src_max_idx,&crd_sys,&typ_knd,&rc);
-  rc=ESMC_GridAddCoord(dst_grd2, stg_loc);
-  double *dst_lon2=(double *)ESMC_GridGetCoord(dst_grd2,1,stg_loc,dst_bnd_l,dst_bnd_u,&rc);
-  double *dst_lat2=(double *)ESMC_GridGetCoord(dst_grd2,2,stg_loc,NULL,NULL,&rc);
+  src_max_idx=ESMC_InterfaceIntCreate(max_idx,dim_cnt,&rcd);
+  dst_grd2=ESMC_GridCreateNoPeriDim(src_max_idx,&crd_sys,&typ_knd,&rcd);
+  rcd=ESMC_GridAddCoord(dst_grd2, stg_loc);
+  double *dst_lon2=(double *)ESMC_GridGetCoord(dst_grd2,1,stg_loc,dst_bnd_l,dst_bnd_u,&rcd);
+  double *dst_lat2=(double *)ESMC_GridGetCoord(dst_grd2,2,stg_loc,NULL,NULL,&rcd);
   dst_lon2=dst_lon;
   dst_lat2=dst_lat;
 */
   max_idx=nco_free(max_idx);
   ESMC_InterfaceIntDestroy(&src_max_idx);
 /* if mask is used
-  rc=ESMC_GridAddItem(src_grd,ESMC_GRIDITEM_MASK,stg_loc);
-  int *src_msk=(int *)ESMC_GridGetItem(src_grd,ESMC_GRIDITEM_MASK,stg_loc,&rc);
+  rcd=ESMC_GridAddItem(src_grd,ESMC_GRIDITEM_MASK,stg_loc);
+  int *src_msk=(int *)ESMC_GridGetItem(src_grd,ESMC_GRIDITEM_MASK,stg_loc,&rcd);
 */
   /* type conversion and cell-center coordinates */
   idx=0;
@@ -687,17 +704,17 @@ const int out_id /* I [id] Output netCDF file ID */
   }
 
   /* create src field from src grid */
-  src_fld=ESMC_FieldCreateGridTypeKind(src_grd,typ_knd,stg_loc,NULL,NULL,NULL,"src_fld",&rc);
+  src_fld=ESMC_FieldCreateGridTypeKind(src_grd,typ_knd,stg_loc,NULL,NULL,NULL,"src_fld",&rcd);
                                                                  
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
   /* create dst field from dst grid */
-  dst_fld=ESMC_FieldCreateGridTypeKind(dst_grd,typ_knd,stg_loc,NULL,NULL,NULL,"dst_fld",&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  dst_fld=ESMC_FieldCreateGridTypeKind(dst_grd,typ_knd,stg_loc,NULL,NULL,NULL,"dst_fld",&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
   /* get the field pointers */
-  double *src_fld_ptr=(double *)ESMC_FieldGetPtr(src_fld,0,&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
-  double *dst_fld_ptr=(double *)ESMC_FieldGetPtr(dst_fld,0,&rc);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  double *src_fld_ptr=(double *)ESMC_FieldGetPtr(src_fld,0,&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  double *dst_fld_ptr=(double *)ESMC_FieldGetPtr(dst_fld,0,&rcd);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
   /* getting vars from input file */
   //(void)nco_inq_varid(nc_id,"BSN_FCT",&var_in_id);
   (void)nco_inq_varid(nc_id,"ORO",&var_in_id);
@@ -713,7 +730,7 @@ const int out_id /* I [id] Output netCDF file ID */
   } /* end loop over dim */
   /* Allocate enough space to hold variable */
   void_ptr_var=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
-  rc=nco_get_vara(nc_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_var,var_typ);
+  rcd=nco_get_vara(nc_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_var,var_typ);
   float *var_fld=(float *)void_ptr_var;
   /* type conversion and ensure every cell has data */
   idx=0;
@@ -721,30 +738,30 @@ const int out_id /* I [id] Output netCDF file ID */
     for(int idx_0=src_bnd_l[0];idx_0<=src_bnd_u[0];idx_0++){
       src_fld_ptr[idx]=(double)var_fld[idx];
       idx++;
-    }
-  }
+    } /* idx_0 */
+  } /* idx_1 */
   /* initialize dst data ptr */
   idx=0;
   for(int idx_1=dst_bnd_l[1];idx_1<=dst_bnd_u[1];idx_1++){
     for(int idx_0=dst_bnd_l[0];idx_0<=dst_bnd_u[0];idx_0++){
       dst_fld_ptr[idx]=0.0;
       idx++;
-    }
-  }
+    } /* idx_0 */
+  } /* idx_1 */
 
   ESMC_LogWrite("ESMC starting regridstore DYW",log_msg);
 /*
   int *msk_val=(int *)malloc(sizeof(int));
   msk_val[0]=1;
-  ESMC_InterfaceInt i_msk_val=ESMC_InterfaceIntCreate(msk_val,1,&rc);
-  rc = ESMC_FieldRegridStore(src_fld,dst_fld,&i_msk_val,&i_msk_val,&route_hdl,NULL,NULL,NULL,&unmap_act,NULL,NULL);
-  rc=ESMC_FieldRegridStore(src_fld,dst_fld,NULL,NULL,&route_hdl,NULL,NULL,NULL,&unmap_act,NULL,NULL);
+  ESMC_InterfaceInt i_msk_val=ESMC_InterfaceIntCreate(msk_val,1,&rcd);
+  rcd = ESMC_FieldRegridStore(src_fld,dst_fld,&i_msk_val,&i_msk_val,&route_hdl,NULL,NULL,NULL,&unmap_act,NULL,NULL);
+  rcd=ESMC_FieldRegridStore(src_fld,dst_fld,NULL,NULL,&route_hdl,NULL,NULL,NULL,&unmap_act,NULL,NULL);
 */
 
-  rc=ESMC_FieldRegridStore(src_fld,dst_fld,NULL,NULL,&route_hdl,NULL,NULL,NULL,NULL,NULL,NULL);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
-  rc= ESMC_FieldRegrid(src_fld,dst_fld,route_hdl,NULL);
-  if (rc!=ESMF_SUCCESS) goto rgr_clean;
+  rcd=ESMC_FieldRegridStore(src_fld,dst_fld,NULL,NULL,&route_hdl,NULL,NULL,NULL,NULL,NULL,NULL);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  rcd=ESMC_FieldRegrid(src_fld,dst_fld,route_hdl,NULL);
+  if(rcd != ESMF_SUCCESS) goto rgr_clean;
   /* write dst_fld data to a netcdf file */
   int var_out_id, var_lon_id, var_lat_id;    /* [id] Variable ID */
   int lat_id,lon_id; /* dim id */
@@ -794,12 +811,13 @@ rgr_clean:
   if(dmn_id) dmn_id=(int *)nco_free(dmn_id);
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
 
-  rc=ESMC_FieldRegridRelease(&route_hdl);
-  rc=ESMC_FieldDestroy(&src_fld);
-  rc=ESMC_FieldDestroy(&dst_fld);
-  rc=ESMC_GridDestroy(&src_grd);
-  rc=ESMC_GridDestroy(&dst_grd);
+  rcd=ESMC_FieldRegridRelease(&route_hdl);
+  rcd=ESMC_FieldDestroy(&src_fld);
+  rcd=ESMC_FieldDestroy(&dst_fld);
+  rcd=ESMC_GridDestroy(&src_grd);
+  rcd=ESMC_GridDestroy(&dst_grd);
   ESMC_Finalize();
-  return(0);
-}
+
+  return rcd;
+} /* nco_rgr_esmf */
 #endif /* !ENABLE_ESMF */

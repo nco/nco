@@ -1,3 +1,11 @@
+2015-03-19  Charlie Zender  <zender@uci.edu>
+
+	* Add --enable_esmf option to configure
+
+	* Add EMSF option to Makefile
+
+	* Move ESMF functions to nco_sld.[ch]
+
 2015-03-18  Charlie Zender  <zender@uci.edu>
 
 	* Fix bugs in dyw branch
