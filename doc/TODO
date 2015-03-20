@@ -663,7 +663,10 @@ nco1113. nco: rsp parker norton help srd slowdown issue help 20140718 completely
 nco1114. ncrcat fails when single record dimension is not first dimension
 nco1116. --add_bnds for creating bounds variables
 nco1117. ncks human-readable times
-nco1119.
+nco1119. nco: ncap2 RNG works with arrays, fails with scalars (john 20150317)
+      ncap2 -O -s 'defdim("r1",10);data[r1]=10;data=gsl_rng_uniform_int(data);print(data);' ~/nco/data/in.nc ~/foo.nc # works
+      ncap2 -O -s 'data=10;data=gsl_rng_uniform_int(data);print(data);' ~/nco/data/in.nc ~/foo.nc # borken
+nco1120.
 qrk
 ************************************************************************
 End ncoXXX TODOs
