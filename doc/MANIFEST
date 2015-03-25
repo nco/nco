@@ -79,6 +79,7 @@ nco/data/Makefile.am	Automake instructions
 nco/data/Makefile.in(v)	Autotools-generated Makefile
 nco/data/big.cdl 	CDL file to test huge netCDF files
 nco/data/bin_cnt.nco 	ncap2 sample script that bins wind speeds
+nco/data/cf2.cdl 	CDL file to test CF group extensions
 nco/data/cmip5.cdl 	CDL file to test ncbo functionality on groups
 nco/data/cnk.cdl 	CDL file to test chunking
 nco/data/ddra.nco	Sample ncap2 script that computes DDRA statistics
