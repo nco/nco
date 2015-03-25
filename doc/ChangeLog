@@ -1,10 +1,14 @@
-2015-03-24  Charlie Zender  <zender@uci.edu>
+2015-03-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.9 release procedure:
  	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco
 	cd ~/nco;git commit -a -m "Version nco-4.4.9 release: "
 	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
 	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
+
+	* Add cf2.cdl to test different approaches to CF group extension questions
+
+2015-03-24  Charlie Zender  <zender@uci.edu>
 
 	* Various typo corrections to documentation
 
