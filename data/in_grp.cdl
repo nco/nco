@@ -82,6 +82,10 @@ netcdf in_grp {
 
   float one;
   
+  float val_one_mss(lat);
+ val_one_mss:long_name = "one regular value, one missing value";
+ val_one_mss:_FillValue = 1.0e36f;
+
   float scl;
   
   integer unique;
@@ -109,6 +113,7 @@ netcdf in_grp {
   scl=1.0;
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   unique=73;
+  val_one_mss=1.,1.0e36;
 
   //
   //g1

@@ -231,8 +231,6 @@ print "\n";
 ####################
 
 #ncatted #1
-
-	# FAILS!
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -m -v lev %tmp_fl_00% | grep units | cut -d ' ' -f 11-12"; ## daniel:fixme cut/ncks but how to do grep?
 	$dsc_sng="Modify all existing units attributes to meter second-1";
@@ -244,11 +242,9 @@ print "\n";
 #printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 
 #ncatted #2
-	
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tmp_fl_00%";
-	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0";
-        ###TODO 665
+	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 in netCDF3 file";
 	$tst_cmd[2]="0";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
@@ -257,7 +253,7 @@ print "\n";
 #ncatted #3
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,wgt_one,c,f,200.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v wgt_one %tmp_fl_00%";
-	$dsc_sng="Create new _FillValue attribute ";
+	$dsc_sng="Create new _FillValue attribute";
 	$tst_cmd[2]="1";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
@@ -275,7 +271,6 @@ print "\n";
 	$#tst_cmd=0; # Reset array
 
 #ncatted #5
-
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncap2 -v -C -O -s 'n2=three_dmn_var_int\@nw1;' %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[2]="ncks -O -C -H -s '%i' -v n2 %tmp_fl_01%";
@@ -285,16 +280,15 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 	
-#4.3.8	
-#ncatted #6
-#ncatted -O -a purpose,rlev,m,c,new_value in_grp_3.nc ~/foo.nc
-
     #######################################
     #### Group tests (requires netCDF4) ###
     #######################################
 
     if($RUN_NETCDF4_TESTS == 1){
 
+#4.3.8	
+#ncatted #6
+#ncatted -O -a purpose,rlev,m,c,new_value in_grp_3.nc ~/foo.nc
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
 	$dsc_sng="(Groups) Modify attribute for variable (input relative name)";
@@ -304,7 +298,6 @@ print "\n";
 	$#tst_cmd=0; # Reset array	
 	
 #ncatted #7	
-	
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,/g3/rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
 	$dsc_sng="(Groups) Modify attribute for variable (input absolute name)";
@@ -314,7 +307,6 @@ print "\n";
 	$#tst_cmd=0; # Reset array	
 	
 #ncatted #8
-
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a g3_group_attribute,group,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep g3_group_attribute";
 	$dsc_sng="(Groups) Modify attribute for group (input relative name)";
@@ -324,7 +316,6 @@ print "\n";
 	$#tst_cmd=0; # Reset array	
 
 #ncatted #9
-
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -C -g g10 -v three_dmn_rec_var %tmp_fl_00%";
 	$dsc_sng="(Groups) Variable wildcarding (requires regex)";
@@ -334,7 +325,6 @@ print "\n";
 	$#tst_cmd=0; # Reset array	
 
 #ncatted #10
-
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
 	$dsc_sng="(Groups) Edit all variables";
@@ -344,7 +334,6 @@ print "\n";
 	$#tst_cmd=0; # Reset array
 
 #ncatted #11
-
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a Conventions,group,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep Conventions";
 	$dsc_sng="(Groups) Modify global attribute";
@@ -353,6 +342,16 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array		
 	
+#ncatted #12
+	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in_grp.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tmp_fl_00%";
+	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 on netCDF4 file";
+        ###TODO 665
+	$tst_cmd[2]="0";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+
     } # $RUN_NETCDF4_TESTS	
 
     } #dodap

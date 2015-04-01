@@ -228,7 +228,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   /* Check if file is netCDF3 classic with netCDF4 library
      If so, do not employ rename trick 
-     NB: create global- rather than local-scope variable for output file format? */
+     NB: create global rather than local-scope variable for output file format? */
   { /* Temporary scope for fl_fmt */
     int fl_fmt;
     (void)nco_inq_format(nc_id,&fl_fmt);
@@ -239,7 +239,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
      flg_fmt_netCDF4 && /* Output file is netCDF4 and ... */
      aed.att_nm && /* 20130419: Verify att_nm exists before using it in strcmp() below. att_nm does not exist when user leaves field blank. Fix provided by Etienne Tourigny. */
      !strcmp(aed.att_nm,nco_mss_val_sng_get()) && /* ... attribute is missing value and ... */
-     aed.mode != aed_delete){ /* ... we are not deleting attribute */
+     aed.mode != aed_delete &&  /* ... we are not deleting attribute */
+     NC_LIB_VERSION < 434){ /* netCDF library does not contain fix to NCF-187 */
     /* Rename existing attribute to netCDF4-safe name 
        After modifying missing value attribute with netCDF4-safe name below, 
        we will rename attribute to original missing value name. */
