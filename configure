@@ -648,6 +648,8 @@ ENABLE_GSL_FALSE
 ENABLE_GSL_TRUE
 ENABLE_ESMF_FALSE
 ENABLE_ESMF_TRUE
+ESMF_LIB
+ESMF_INC
 I18N_SHARE
 ENABLE_MPI_FALSE
 ENABLE_MPI_TRUE
@@ -847,6 +849,8 @@ NETCDF_LIB
 NETCDF_ROOT
 ANTLR_ROOT
 I18N_SHARE
+ESMF_INC
+ESMF_LIB
 UDUNITS2_PATH'
 
 
@@ -1550,6 +1554,8 @@ Some influential environment variables:
   ANTLR_ROOT  Location of ANTLR version 2.7.x installation (compile-time)
   I18N_SHARE  Root of internationalization (i18n) locale directories
               (run-time)
+  ESMF_INC    Location of ESMF headers (compile-time)
+  ESMF_LIB    Location of ESMF library (compile-time)
   UDUNITS2_PATH
               Root directory of UDUnits2 (normally contains bin, include, lib,
               share subdirectories)
@@ -17597,47 +17603,6 @@ if test "x$ac_cv_file__opt_local_lib_libnetcdf_a" = xyes; then :
 fi
 
 
-# Greenplanet
-# fxm: 20150107 this is an embarassing kludge that needs to be changed
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h" >&5
-$as_echo_n "checking for /sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h... " >&6; }
-if ${ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_include_netcdf_h+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h"; then
-  ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_include_netcdf_h=yes
-else
-  ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_include_netcdf_h=no
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_include_netcdf_h" >&5
-$as_echo "$ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_include_netcdf_h" >&6; }
-if test "x$ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_include_netcdf_h" = xyes; then :
-  CPPFLAGS="$CPPFLAGS -I/sopt/netcdf/netcdf411-gcc-serial/include"
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /sopt/netcdf/netcdf411-gcc-serial/lib/libnetcdf.a" >&5
-$as_echo_n "checking for /sopt/netcdf/netcdf411-gcc-serial/lib/libnetcdf.a... " >&6; }
-if ${ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_lib_libnetcdf_a+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/sopt/netcdf/netcdf411-gcc-serial/lib/libnetcdf.a"; then
-  ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_lib_libnetcdf_a=yes
-else
-  ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_lib_libnetcdf_a=no
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_lib_libnetcdf_a" >&5
-$as_echo "$ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_lib_libnetcdf_a" >&6; }
-if test "x$ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_lib_libnetcdf_a" = xyes; then :
-  LDFLAGS="$LDFLAGS -L/sopt/netcdf/netcdf411-gcc-serial/lib -lnetcdf"
-fi
-
-
 # Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
 
@@ -19293,7 +19258,13 @@ echo "########################################"
 echo "#     Testing for ESMF support          #"
 echo "########################################"
 # Begin ESMF
-# NB: Desirable for ESMF flags to preced netCDF flags so configure does not look in ESMF location for netCDF
+
+# Begin mandatory link test with libnetcdf.a
+# Make precious variables for ./configure --help
+
+
+
+# NB: Desirable for ESMF flags to precede netCDF flags so configure does not look in ESMF location for netCDF
 # Store pre-ESMF LIBS value to restore from later
 nco_LIBS_no_ESMF="${LIBS}"
 nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
@@ -19321,11 +19292,11 @@ if test "${enable_esmf}" != 'no'; then
 	CPPFLAGS="${CPPFLAGS} ${ESMF_INC_ARG}"
     fi
     if test "${ESMF_LIB}"; then
-	LIBS="${LIBS} -L${ESMF_LIB}"
+	LIBS="${LIBS} -L${ESMF_LIB} -lesmf"
     else
 	ESMF_ROOT='/usr/local'
 	ESMF_LIB="${ESMF_ROOT}/lib"
-	LIBS="${LIBS} -L${ESMF_LIB}"
+	LIBS="${LIBS} -L${ESMF_LIB} -lesmf"
     fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: These ESMF library and header tests must succeed for ESMF support:" >&5
 $as_echo "$as_me: These ESMF library and header tests must succeed for ESMF support:" >&6;}

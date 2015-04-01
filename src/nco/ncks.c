@@ -101,9 +101,6 @@
 # include <netcdf_par.h> /* Parallel netCDF definitions */
 # include "nco_mpi.h" /* MPI utilities */
 #endif /* !ENABLE_MPI */
-#ifdef ENABLE_ESMF
-# include <ESMC.h> /* ESMF definitions */
-#endif /* !ENABLE_ESMF */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
@@ -162,6 +159,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **grp_lst_in=NULL;
+  char **rgr_arg; /* [sng] Regriding arguments */
   char **var_lst_in=NULL;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
@@ -175,13 +173,13 @@ main(int argc,char **argv)
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *fl_rgr=NULL; /* [sng] File containing fields to be regridded */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
-  char *rgr_arg[NC_MAX_VARS]; /* [sng] Regriding arguments */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
-  char *fl_nm_scrip=NULL; /* [sng] SCRIP file name */
+  char *fl_scrip=NULL; /* [sng] SCRIP file name */
   char *rec_dmn_nm_fix=NULL; /* [sng] Record dimension name (Original input name without _fix prefix) */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
@@ -235,14 +233,14 @@ main(int argc,char **argv)
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int ppc_nbr=0; /* [nbr] Number of PPC arguments */
-  int rgr_nbr=0; /* [nbr] Number of Regriding arguments */
+  int rgr_nbr=0; /* [nbr] Number of regridding arguments */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_lst_in_nbr=0;
   int var_nbr_fl;
   int var_ntm_fl;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
 
-/* DYW */
+  /* DYW */
   kvmap_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
@@ -348,6 +346,7 @@ main(int argc,char **argv)
       {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
+      {"fl_rgr",required_argument,0,0}, /* [sng] File containing fields to be regridded */
       {"fix_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
       {"no_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
       {"hdr_pad",required_argument,0,0},
@@ -356,15 +355,13 @@ main(int argc,char **argv)
       {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
       {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
       {"rgr",required_argument,0,0}, /* [sng] Regridding */
       {"regridding",required_argument,0,0}, /* [sng] Regridding */
-      {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      {"scrip",required_argument,0,0}, /* SCRIP file */
       {"tst_udunits",required_argument,0,0},
       {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
       {"xml_spr_nmr",required_argument,0,0}, /* [flg] Separator for XML numeric types */
-/* DYW */
-      {"scrip",required_argument,0,0}, /* SCRIP file */
-/* DYW end */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -529,6 +526,7 @@ main(int argc,char **argv)
         rec_dmn_nm_fix=strdup(optarg);
       } /* endif fix_rec_dmn */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"fl_rgr")) fl_rgr=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
       if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
       if(!strcmp(opt_crr,"get_prg_info")) GET_PRG_INFO=True;
@@ -543,9 +541,9 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "lbr" */
       if(!strcmp(opt_crr,"scrip")){
-        fl_nm_scrip=strdup(optarg);
-	      sld_nfo=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
-        hdlscrip(fl_nm_scrip,sld_nfo);
+        fl_scrip=strdup(optarg);
+	sld_nfo=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
+        nco_scrip_read(fl_scrip,sld_nfo);
       } /* endif "scrip" */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"mpi_implementation")){
@@ -918,17 +916,21 @@ main(int argc,char **argv)
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 
-#ifdef ENABLE_ESMF
     if(rgr_nbr > 0){
+#ifdef ENABLE_ESMF
       int rgr_out_id;
-      char *fl_rgr_nm="/data/zender/rgr/rgr_dst.nc";
+      if(!fl_rgr) fl_rgr=(char *)strdup("/data/zender/rgr/rgr_dst.nc");
       char *fl_rgr_tmp=NULL_CEWI;
-      fl_rgr_tmp=nco_fl_out_open(fl_rgr_nm,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_out_id);
+      fl_rgr_tmp=nco_fl_out_open(fl_rgr,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_out_id);
       rcd=nco_rgr_esmf(in_id,rgr_arg[0],rgr_out_id);
-      (void)nco_fl_out_cls(fl_rgr_nm,fl_rgr_tmp,rgr_out_id);
+      (void)nco_fl_out_cls(fl_rgr,fl_rgr_tmp,rgr_out_id);
+      if(fl_rgr) fl_rgr=(char *)nco_free(fl_rgr);
       if(fl_rgr_tmp) fl_rgr_tmp=(char *)nco_free(fl_rgr_tmp);
-    } /* endif */
+#else /* !ENABLE_ESMF */
+    (void)fprintf(stderr,"%s: ERROR attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm);
+    nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_ESMF */
+    } /* endif */
 
     /* Inititialize, decode, and set PPC information */
     if(ppc_nbr > 0) nco_ppc_ini(in_id,&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);
@@ -1127,12 +1129,12 @@ close_and_free:
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
     /* DYW */
-    if(fl_nm_scrip){
-      fl_nm_scrip=(char *)nco_free(fl_nm_scrip);
+    if(fl_scrip){
+      fl_scrip=(char *)nco_free(fl_scrip);
       idx=0;
       if(nco_dbg_lvl > nco_dbg_fl) while(sld_nfo[idx].key) nco_kvmap_prn(sld_nfo[idx++]);
       if(sld_nfo) nco_kvmaps_free(sld_nfo);
-    } /* endif fl_nm_scrip */
+    } /* endif fl_scrip */
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -1155,7 +1157,8 @@ close_and_free:
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     for(idx=0;idx<ppc_nbr;idx++) ppc_arg[idx]=(char *)nco_free(ppc_arg[idx]);
-    for(idx=0;idx<rgr_nbr;idx++) rgr_arg[idx]=(char *)nco_free(rgr_arg[idx]);
+    //for(idx=0;idx<rgr_nbr;idx++) rgr_arg[idx]=(char *)nco_free(rgr_arg[idx]);
+    if(rgr_arg) rgr_arg=nco_sng_lst_free(rgr_arg,rgr_nbr);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);

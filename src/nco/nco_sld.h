@@ -41,8 +41,8 @@ extern "C" {
  } kvmap_sct;
  
   int
-  hdlscrip /* [fnc] Handle SCRIP file */
-  (char *fl_nm_scrip,
+  nco_scrip_read /* [fnc] Handle SCRIP file */
+  (char *fl_scrip,
    kvmap_sct *kvm_scrip);
   
   kvmap_sct
@@ -96,8 +96,8 @@ extern "C" {
 #ifdef ENABLE_ESMF
   int /* O [enm] Return code */
   nco_rgr_esmf /* [fnc] Regrid using ESMF library */
-  (const int nc_id, /* I [id] Input netCDF file ID */
-   char *fl_nm, /* I [sng] SCRIP file name for destination grid */
+  (const int in_id, /* I [id] Input netCDF file ID */
+   char *fl_scrip, /* I [sng] Filename of SCRIP destination grid */
    const int out_id); /* I [id] Output netCDF file ID */
 #endif /* !ENABLE_ESMF */
 

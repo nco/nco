@@ -227,11 +227,6 @@ echo "################################"
 AC_CHECK_FILE([/opt/local/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include"], [])
 AC_CHECK_FILE([/opt/local/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib -lnetcdf"], [])
 
-# Greenplanet
-# fxm: 20150107 this is an embarassing kludge that needs to be changed
-AC_CHECK_FILE([/sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/sopt/netcdf/netcdf411-gcc-serial/include"], [])
-AC_CHECK_FILE([/sopt/netcdf/netcdf411-gcc-serial/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/sopt/netcdf/netcdf411-gcc-serial/lib -lnetcdf"], [])
-
 # Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
@@ -526,7 +521,13 @@ echo "########################################"
 echo "#     Testing for ESMF support          #"
 echo "########################################"
 # Begin ESMF
-# NB: Desirable for ESMF flags to preced netCDF flags so configure does not look in ESMF location for netCDF
+
+# Begin mandatory link test with libnetcdf.a
+# Make precious variables for ./configure --help
+AC_ARG_VAR(ESMF_INC,Location of ESMF headers (compile-time))
+AC_ARG_VAR(ESMF_LIB,Location of ESMF library (compile-time))
+
+# NB: Desirable for ESMF flags to precede netCDF flags so configure does not look in ESMF location for netCDF
 # Store pre-ESMF LIBS value to restore from later
 nco_LIBS_no_ESMF="${LIBS}"
 nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
@@ -548,11 +549,11 @@ if test "${enable_esmf}" != 'no'; then
 	CPPFLAGS="${CPPFLAGS} ${ESMF_INC_ARG}"
     fi
     if test "${ESMF_LIB}"; then
-	LIBS="${LIBS} -L${ESMF_LIB}"
+	LIBS="${LIBS} -L${ESMF_LIB} -lesmf"
     else
 	ESMF_ROOT='/usr/local'
 	ESMF_LIB="${ESMF_ROOT}/lib"
-	LIBS="${LIBS} -L${ESMF_LIB}"
+	LIBS="${LIBS} -L${ESMF_LIB} -lesmf"
     fi
     AC_MSG_NOTICE([These ESMF library and header tests must succeed for ESMF support:])
 # fxm: default action of check_lib adds a superfluous -lesmf to $LIBS

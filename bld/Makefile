@@ -380,7 +380,7 @@ endif # endif ESMF_INC
 # 20150319: For some reaseon, ESMC.h #includes ESMC_VM.h which #includes mpi.h
 ESMF_INC_FLG += -I/usr/include/openmpi-x86_64
 ifdef ESMF_LIB
- ESMF_LIB_FLG := -L${ESMF_LIB} -lesmf
+ ESMF_LIB_FLG := -L${ESMF_LIB} -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
 else
  ESMF_LIB_FLG := -L/usr/local/lib -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
 # ESMF_LIB_FLG := -L/usr/local/lib -lesmf

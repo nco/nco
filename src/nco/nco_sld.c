@@ -32,7 +32,7 @@ kvmap_sct nco_sng2map /* [fnc] parsing string to key-value pair */
       kvm.value=strdup(prt);
       break;
     default:
-      (void)fprintf(stderr,"Cannot get key-value pair from this input: %s\n",sng);
+      (void)fprintf(stderr,"nco_sng2map() cannot get key-value pair from input: %s\n",sng);
       break;
     }/* end switch */
     prt=strtok(NULL,"=");
@@ -420,8 +420,8 @@ void nco_kvmap_prn(kvmap_sct vm)
 } /* end nco_kvmap_prn */
 
 int 
-hdlscrip( /* return 0 invalid SCRIP file or rcd, 1 success */ 
-char *fl_nm_scrip, /* SCRIP file name with proper path */
+nco_scrip_read( /* return 0 invalid SCRIP file or rcd, 1 success */ 
+char *fl_scrip, /* SCRIP file name with proper path */
 kvmap_sct *kvm_scrip)/* structure to hold contents of SCRIP file */ 
 {
   char *line;
@@ -429,37 +429,37 @@ kvmap_sct *kvm_scrip)/* structure to hold contents of SCRIP file */
   int icnt;
   int idx=0;
 
-  FILE *fl_scrip;
+  FILE *fp_scrip;
 
-  fl_scrip=fopen(fl_nm_scrip,"r");
+  fp_scrip=fopen(fl_scrip,"r");
 
-  if(!fl_scrip){
-    fprintf(stderr,"Cannot open SCRIP file %s\n",fl_nm_scrip);
+  if(!fp_scrip){
+    (void)fprintf(stderr,"Cannot open SCRIP file %s\n",fl_scrip);
     return NCO_ERR;
   } /* endif */
 
   line=(char *)nco_malloc(BUFSIZ*sizeof(char));
-  while(fgets(line,sizeof(line),fl_scrip)){
+  while(fgets(line,sizeof(line),fp_scrip)){
     if(!strstr(line,"=")){
-      fprintf(stderr,"invalid line in SCRIP file: %s\n", line);
-      fclose(fl_scrip);
+      fprintf(stderr,"Invalid line in SCRIP file: %s\n",line);
+      fclose(fp_scrip);
       return NCO_ERR;
     } /* endif */
     kvm_scrip[idx]=nco_sng2map(line,kvm_scrip[idx]);
     if(!kvm_scrip[idx].key){
-      fclose(fl_scrip);
+      fclose(fp_scrip);
       return NCO_ERR;
     }else{
       idx++;
     } /* end else */
   } /* finish parsing SCRIP file */
-  fclose(fl_scrip);
+  fclose(fp_scrip);
   line=(char *)nco_free(line);
 
   for(icnt=0;icnt<idx;icnt++) nco_kvmap_prn(kvm_scrip[icnt]);
 
   return NCO_NOERR;
-} /* end hdlscrip */
+} /* end nco_scrip_read */
 
 #if 0
 int
@@ -522,16 +522,22 @@ return rcd;
 #ifdef ENABLE_ESMF
 int /* O [enm] Return code */
 nco_rgr_esmf /* [fnc] Regrid using ESMF library */
-(const int nc_id, /* I [id] Input netCDF file ID */
- char *fl_nm, /* I [sng] SCRIP file name for destination grid */
+(const int in_id, /* I [id] Input netCDF file ID */
+ char *fl_scrip, /* I [sng] Filename of SCRIP destination grid */
  const int out_id) /* I [id] Output netCDF file ID */
 {
   /* Purpose:
      ESMC is C-interface to ESMF documented at
      http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMC_crefdoc/ESMC_crefdoc.html
      ESMF Developer's Guide
-     http://www.earthsystemmodeling.org/documents/dev_guide */
-  
+     http://www.earthsystemmodeling.org/documents/dev_guide
+     ESMF_RegridWeightGen
+     http://www.earthsystemcog.org/projects/regridweightgen
+     http://www.earthsystemmodeling.org/python_releases/last_esmpy/esmpy_doc/html/index.html
+
+     Sample calls:
+     ncks -O --rgr=${DATA}/scrip/remap_grid_T42.nc --fl_rgr=${DATA}/rgr/rgr_dst.nc ${DATA}/rgr/dstmch90_clm.nc ~/foo.nc */
+
   const char fnc_nm[]="nco_rgr_esmf()"; /* [sng] Function name */
 
   int *localPet=int_CEWI; 
@@ -556,8 +562,8 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   nc_type var_typ_out=NC_DOUBLE;
   enum ESMC_LogMsgType_Flag log_msg=ESMC_LOGMSG_INFO;
   //enum ESMC_UnmappedAction_Flag unmap_act=ESMC_UNMAPPEDACTION_IGNORE;
-  enum ESMC_FileFormat_Flag fl_fmt=ESMC_FILEFORMAT_SCRIP;
-  //enum ESMC_FileFormat_Flag fl_fmt=ESMC_FILEFORMAT_GRIDSPEC;
+  enum ESMC_FileFormat_Flag grd_fl_typ=ESMC_FILEFORMAT_SCRIP;
+  //enum ESMC_FileFormat_Flag grd_fl_typ=ESMC_FILEFORMAT_GRIDSPEC;
 
   int *dmn_id;
 
@@ -583,16 +589,16 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
   dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
 
-  /* obtain lon from input data file */
-  (void)nco_inq_varid(nc_id,"lon",&var_in_id);
-  (void)nco_inq_var(nc_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
+  /* Obtain longitude from input data file */
+  (void)nco_inq_varid(in_id,"lon",&var_in_id);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
 
   /* Get dimension IDs from input file */
-  (void)nco_inq_vardimid(nc_id,var_in_id,dmn_id);
+  (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
 
   /* Get dimension sizes from input file */
   for(idx=0;idx<dmn_nbr;idx++){
-    (void)nco_inq_dimlen(nc_id,dmn_id[idx],dmn_cnt+idx);
+    (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
     dmn_srt[idx]=0L;
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
@@ -602,24 +608,24 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
 
   /* Allocate enough space to hold variable */
   void_ptr_lon=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
-  rcd=nco_get_vara(nc_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lon,var_typ);
+  rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lon,var_typ);
   float *lon=(float *)void_ptr_lon;
 
   /* obtain lat from input data file */
-  (void)nco_inq_varid(nc_id,"lat",&var_in_id);
-  (void)nco_inq_var(nc_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
+  (void)nco_inq_varid(in_id,"lat",&var_in_id);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
   /* Get dimension IDs from input file */
-  (void)nco_inq_vardimid(nc_id,var_in_id,dmn_id);
+  (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   var_sz=1L;
   /* Get dimension sizes from input file */
   for(idx=0;idx<dmn_nbr;idx++){
-    (void)nco_inq_dimlen(nc_id,dmn_id[idx],dmn_cnt+idx);
+    (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
     dmn_srt[idx]=0L;
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
   max_idx[1]=var_sz; /* upbound idx of lat */
   void_ptr_lat=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
-  rcd=nco_get_vara(nc_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lat,var_typ);
+  rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lat,var_typ);
   float *lat=(float *)void_ptr_lat;
 
   /* Initialize before any other ESMC API calls!
@@ -627,33 +633,33 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   ESMC_Initialize(&rcd,ESMC_InitArgDefaultCalKind(ESMC_CALKIND_GREGORIAN),ESMC_InitArgLogFilename("ESMC_Regrid2.Log"), ESMC_InitArgLogKindFlag(ESMC_LOGKIND_MULTI),ESMC_ArgLast);
   if(rcd != ESMF_SUCCESS){
     ESMC_LogWrite("ESMC_Initialize() failed",log_msg);
-    goto rgr_clean;
+    goto rgr_cln;
   } /* endif */
   
-  /* set log to flush after every message */
+  /* Set log to flush after every message */
   rcd=ESMC_LogSet(ESMF_TRUE);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
-  /* get all vm information */
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
+  /* Get all VM information */
   vm=ESMC_VMGetGlobal(&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
 
-  /* set up local pet info */
+  /* Set-up local pet info */
   rcd=ESMC_VMGet(vm,localPet,petCount,(int *)NULL,(MPI_Comm *)NULL,(int *)NULL,(int *)NULL);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
 
-  /* create dst grid from scrip file */
+  /* Create destination grid from SCRIP file */
   int *src_bnd_l=(int *)malloc(dim_cnt*sizeof(int));
   int *src_bnd_u=(int *)malloc(dim_cnt*sizeof(int));
   int *dst_bnd_l=(int *)malloc(dim_cnt*sizeof(int));
   int *dst_bnd_u=(int *)malloc(dim_cnt*sizeof(int));
-  dst_grd=ESMC_GridCreateFromFile(fl_nm,fl_fmt,NULL,NULL,NULL,NULL,NULL,NULL,&rcd); /* NB: ESMC_COORDSYS_SPH_DEG only */
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  dst_grd=ESMC_GridCreateFromFile((char *)fl_scrip,grd_fl_typ,NULL,NULL,NULL,NULL,NULL,NULL,&rcd); /* NB: ESMC_COORDSYS_SPH_DEG only */
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   int *dst_msk = (int *)ESMC_GridGetItem(dst_grd,ESMC_GRIDITEM_MASK,stg_loc,&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   double *dst_lon=(double *)ESMC_GridGetCoord(dst_grd,1,stg_loc,dst_bnd_l,dst_bnd_u,&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   double *dst_lat=(double *)ESMC_GridGetCoord(dst_grd,2,stg_loc,NULL,NULL,&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
 
   double *lon_ptr; /* dim lon for output file */
   double *lat_ptr; /* dim lat for output file */
@@ -665,17 +671,17 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   for(idx=0;idx<dst_bnd_u[0]*dst_bnd_u[1];idx++) dst_msk[idx]=0;
   /* create src_grid from lon,lat data file */
   src_max_idx=ESMC_InterfaceIntCreate(max_idx,dim_cnt,&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   src_grd=ESMC_GridCreateNoPeriDim(src_max_idx,&crd_sys,&typ_knd,&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
 
   /* add crd to src grid */
   rcd=ESMC_GridAddCoord(src_grd, stg_loc);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   double *src_lon=(double *)ESMC_GridGetCoord(src_grd,1,stg_loc,src_bnd_l,src_bnd_u,&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   double *src_lat=(double *)ESMC_GridGetCoord(src_grd,2,stg_loc,NULL,NULL,&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
 /* NB: work around for non-spherical coordinate 
   max_idx[0]=dst_bnd_u[0];
   max_idx[1]=dst_bnd_u[1];
@@ -706,31 +712,31 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   /* create src field from src grid */
   src_fld=ESMC_FieldCreateGridTypeKind(src_grd,typ_knd,stg_loc,NULL,NULL,NULL,"src_fld",&rcd);
                                                                  
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   /* create dst field from dst grid */
   dst_fld=ESMC_FieldCreateGridTypeKind(dst_grd,typ_knd,stg_loc,NULL,NULL,NULL,"dst_fld",&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   /* get the field pointers */
   double *src_fld_ptr=(double *)ESMC_FieldGetPtr(src_fld,0,&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   double *dst_fld_ptr=(double *)ESMC_FieldGetPtr(dst_fld,0,&rcd);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   /* getting vars from input file */
-  //(void)nco_inq_varid(nc_id,"BSN_FCT",&var_in_id);
-  (void)nco_inq_varid(nc_id,"ORO",&var_in_id);
-  (void)nco_inq_var(nc_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
+  //(void)nco_inq_varid(in_id,"BSN_FCT",&var_in_id);
+  (void)nco_inq_varid(in_id,"ORO",&var_in_id);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
   /* Get dimension IDs from input file */
-  (void)nco_inq_vardimid(nc_id,var_in_id,dmn_id);
+  (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   var_sz=1L;
   /* Get dimension sizes from input file */
   for(idx=0;idx<dmn_nbr;idx++){
-    (void)nco_inq_dimlen(nc_id,dmn_id[idx],dmn_cnt+idx);
+    (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
     dmn_srt[idx]=0L;
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
   /* Allocate enough space to hold variable */
   void_ptr_var=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
-  rcd=nco_get_vara(nc_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_var,var_typ);
+  rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_var,var_typ);
   float *var_fld=(float *)void_ptr_var;
   /* type conversion and ensure every cell has data */
   idx=0;
@@ -759,9 +765,9 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
 */
 
   rcd=ESMC_FieldRegridStore(src_fld,dst_fld,NULL,NULL,&route_hdl,NULL,NULL,NULL,NULL,NULL,NULL);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   rcd=ESMC_FieldRegrid(src_fld,dst_fld,route_hdl,NULL);
-  if(rcd != ESMF_SUCCESS) goto rgr_clean;
+  if(rcd != ESMF_SUCCESS) goto rgr_cln;
   /* write dst_fld data to a netcdf file */
   int var_out_id, var_lon_id, var_lat_id;    /* [id] Variable ID */
   int lat_id,lon_id; /* dim id */
@@ -797,7 +803,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   dmn_cnt_out[1]=dst_bnd_u[0];
   (void)nco_put_vara(out_id,var_out_id,dmn_srt_out,dmn_cnt_out,dst_fld_ptr,var_typ_out);
 
-rgr_clean:
+rgr_cln:
   if(src_bnd_l) src_bnd_l=(int *)nco_free(src_bnd_l);
   if(src_bnd_u) src_bnd_u=(int *)nco_free(src_bnd_u);
   if(dst_bnd_l) dst_bnd_l=(int *)nco_free(dst_bnd_l);
