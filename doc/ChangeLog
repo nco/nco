@@ -1,10 +1,16 @@
-2015-04-01  Charlie Zender  <zender@uci.edu>
+2015-04-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.9 release procedure:
  	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco
 	cd ~/nco;git commit -a -m "Version nco-4.4.9 release: "
 	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
 	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
+
+	* Quiet printing of extended filetype for dbg_lvl=2
+
+2015-04-01  Charlie Zender  <zender@uci.edu>
+
+	* Re-built MACOSX with XTools 6.2 clang 6.0 LLVM 3.5 for OS 10.10 Yosemite: No problems
 
 	* Add regression test for changing _FillValue in netCDF4 file
 
