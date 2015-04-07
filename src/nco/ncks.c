@@ -569,6 +569,7 @@ main(int argc,char **argv)
         ppc_nbr++;
       } /* endif "ppc" */
       if(!strcmp(opt_crr,"rgr") || !strcmp(opt_crr,"regridding") ){
+        rgr_arg=(char **)nco_realloc(rgr_arg,rgr_nbr*sizeof(char *));
         rgr_arg[rgr_nbr]=(char *)strdup(optarg);
         rgr_nbr++;
       } /* endif "rgr" */
@@ -1158,7 +1159,7 @@ close_and_free:
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     for(idx=0;idx<ppc_nbr;idx++) ppc_arg[idx]=(char *)nco_free(ppc_arg[idx]);
     //for(idx=0;idx<rgr_nbr;idx++) rgr_arg[idx]=(char *)nco_free(rgr_arg[idx]);
-    if(rgr_arg) rgr_arg=nco_sng_lst_free(rgr_arg,rgr_nbr);
+    if(rgr_nbr > 0) rgr_arg=nco_sng_lst_free(rgr_arg,rgr_nbr);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);

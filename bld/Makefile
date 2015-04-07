@@ -45,6 +45,7 @@
 # cd ~/nco/bld;make dir all; cd -    # Create target directories then build
 # cd ~/nco/bld;make dbg;cd -         # Print make diagnostics
 # cd ~/nco/bld;make DPKG=Y;cd -      # Debian hardening
+# cd ~/nco/bld;make ESMF=Y;cd -      # ESMF regridding
 # cd ~/nco/bld;make GSL=Y;cd -	     # GSL support
 # cd ~/nco/bld;make I18N=Y;cd -      # Internationalization
 # cd ~/nco/bld;make lib_cln;cd -     # Clean libraries
