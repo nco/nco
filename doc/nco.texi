@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.9
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 6 March 2015
+@set update-date 10 March 2015
 @set update-month March 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2879,6 +2879,7 @@ They produce identical answers.
 @example
 ncra 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
 ncra 8[56789].nc 8589.nc
+ncra 8?.nc 8589.nc
 ncra -p @var{input-path} 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
 ncra -n 5,2,1 85.nc 8589.nc
 @end example
@@ -2891,8 +2892,11 @@ regular expansion) to @command{ncra}.
 In this case @command{ncra} never knows that a regular expression was
 used, because the shell intercepts and expands and matches the regular
 expression before @command{ncra} is actually invoked.
-The third method uses the @samp{-p @var{input-path}} argument to specify   
-the directory where all the input files reside.
+The third method is uses globbing with a different regular expression
+that is less safe (it will also match unwanted files such as
+@file{81.nc} and @file{8Z.nc} if present). 
+The fourth method uses the @samp{-p @var{input-path}} argument to
+specify the directory where all the input files reside.
 @acronym{NCO} prepends @var{input-path} (e.g.,
 @file{/data/username/model}) to all @var{input-files} (though not to
 @var{output-file}).  
@@ -7436,6 +7440,9 @@ precision.
 Model results are often computed as @code{NC_DOUBLE} then archived 
 as @code{NC_FLOAT} to save space. 
 @ignore
+# Unidata Compression Blog:
+# http://www.unidata.ucar.edu/blogs/developer/en/entry/netcdf_compression
+
 # Table entries
 fl=${DATA}/dstmch90/dstmch90_clm.nc
 fl=${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc
@@ -9602,13 +9609,27 @@ As of @acronym{NCO} version 3.9.6 (January, 2009), @acronym{NCO}
 supports the @acronym{CF} @code{coordinates} convention described 
 @uref{http://cfconventions.org/1.6.html#coordinate-system, here}. 
 This convention allows variables to specify additional coordinates
-(including multidimensional coordinates) in a space-separated string
+(including mult-idimensional coordinates) in a space-separated string 
 attribute named @code{coordinates}. 
 @acronym{NCO} attaches any such coordinates to the extraction list along
-with variable and its usual (one-dimensional) coordinates, if any.
+with the variable and its usual (one-dimensional) coordinates, if any. 
 These auxiliary coordinates are subject to the user-specified override
 switches (including @samp{-c} and @samp{-C}) described in 
 @ref{Subsetting Coordinate Variables}. 
+
+Elimination of reduced dimensions from the @code{coordinates} attribute
+helps ensure that rank-reduced variables become completely independent
+from their former dimensions.
+As of @acronym{NCO} version 4.4.9 (March, 2015), @acronym{NCO}
+may modify the @code{coordinates} attribute to assist this.
+In particular, @command{ncwa} eliminates from the @code{coordinates}
+attribute any dimension that it collapses, e.g., by averaging.
+The former presence of this dimension will usually be indicated by the 
+@acronym{CF} @code{cell_methods} convention described 
+@uref{http://cfconventions.org/1.6.html#cell-methods, here}.
+Hence the @acronym{CF} @code{cell_methods} and @code{coordinates} 
+conventions can be said to work in tandem to characterize the state and
+history of a variable's analysis.
 
 @html
 <a name="cnv_CF_cll_mth"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_cll_mth -->
@@ -18244,9 +18265,11 @@ Gentoo packaging
 @cindex Filipe Fernandes
 @item Filipe Fernandes
 OpenSuse packaging
-@cindex Alexander Hansen
 @cindex Takeshi Enomoto
-@item Takeshi Enomoto, Alexander Hansen
+@cindex Alexander Hansen
+@cindex Ian Lancaster
+@cindex Alejandro Soto
+@item Takeshi Enomoto, Alexander Hansen, Ian Lancaster, Alejandro Soto
 Mac OS packaging
 @cindex Eric Blake
 @item Eric Blake

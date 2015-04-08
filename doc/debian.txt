@@ -90,7 +90,7 @@ patch -p0 < nco_X.Y.Z-3.diff   # Patch destination with Debian diff
 # If tags-query replace does not work, be sure to manually change
 # versions in configure.ac, debian/files, doc/ANNOUNCE, doc/debian.txt,
 # doc/index.shtml, doc/nco.texi, bld/nco_dst.pl, doc/VERSION
-# 20141201: Change NCO_VERSION_PATCH in src/nco.h!
+# 20141201: Change NCO_VERSION_PATCH in src/nco.h!!!!!!!!!!!!!!!!!!!!!!
    cd ~/nco/debian;dch -b --force-distribution --distribution=unstable -v 4.4.9-1 # Update changelog (-b forces this version number)
    emacs ~/nco/bld/nco.spec # Update changelog
 # For unknown reason rules file may lose its executable bit

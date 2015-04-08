@@ -272,7 +272,7 @@ extern "C" {
 # define NC_VERSION_PATCH 0
 #endif /* !NC_VERSION_PATCH */
 #ifndef NC_VERSION_NOTE
-# define NC_VERSION_NOTE  "" /* My be blank */
+# define NC_VERSION_NOTE  "" /* May be blank */
 #endif /* !NC_VERSION_NOTE */
 #ifndef NC_VERSION
 # define NC_VERSION "3.6.0"
@@ -294,14 +294,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 9
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE  "" /* My be blank */
+# define NCO_VERSION_NOTE  "alpha1" /* May be blank */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.4.9"
+# define NCO_VERSION "4.4.9-alpha1"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */

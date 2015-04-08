@@ -94,7 +94,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     var_nm_fll=nco_gid_var_nm_2_var_nm_fll(in_id,var_nm);
     // 20150115 fxm: hash table broken---use brute force
     var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
-    //(void)fprintf(stderr,"nco_cpy_rec_var_val reports var_nm_fll = %s, var_trv->var_nm_fll = %s\n",var_nm_fll,var_trv->nm_fll);
+    //(void)fprintf(stderr,"%s reports var_nm_fll = %s, var_trv->var_nm_fll = %s\n",fnc_nm,var_nm_fll,var_trv->nm_fll);
     assert(var_trv != NULL);
     if(var_trv) ppc=var_trv->ppc;
     if(var_trv) flg_nsd=var_trv->flg_nsd;
@@ -366,6 +366,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Mimic standard code path debugging information */
       if(nco_dbg_lvl_get() >= nco_dbg_var && !fp_bnr && rec_idx == 0) (void)fprintf(stderr,"%s, ",var_lst[var_idx]->nm);
       if(nco_dbg_lvl_get() >= nco_dbg_var && rec_idx == 0) (void)fflush(stderr);
+      if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,".");
 
       /* Get ID of requested variable from both files */
       (void)nco_inq_varid(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm,&var_in_id);
@@ -414,7 +415,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 	var_nm_fll=nco_gid_var_nm_2_var_nm_fll(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm);
 	// 20150115 fxm: hash table broken---use brute force
 	var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
-	//(void)fprintf(stderr,"nco_cpy_rec_var_val reports var_nm_fll = %s, var_trv->var_nm_fll = %s\n",var_nm_fll,var_trv->nm_fll);
+	//(void)fprintf(stderr,"%s reports var_nm_fll = %s, var_trv->var_nm_fll = %s\n",fnc_nm,var_nm_fll,var_trv->nm_fll);
 	assert(var_trv != NULL);
 	if(var_trv) ppc=var_trv->ppc;
 	if(var_trv) flg_nsd=var_trv->flg_nsd;

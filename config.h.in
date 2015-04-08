@@ -153,6 +153,9 @@
 /* Define to 1 if you have the `f95' library (-lf95). */
 #undef HAVE_LIBF95
 
+/* Define to 1 if you have the `gfortran' library (-lgfortran). */
+#undef HAVE_LIBGFORTRAN
+
 /* Define to 1 if you have the `gsl' library (-lgsl). */
 #undef HAVE_LIBGSL
 
@@ -168,11 +171,20 @@
 /* Define to 1 if you have the `netcdf' library (-lnetcdf). */
 #undef HAVE_LIBNETCDF
 
+/* Define to 1 if you have the `netcdff' library (-lnetcdff). */
+#undef HAVE_LIBNETCDFF
+
+/* Define to 1 if you have the `netcdf_c++' library (-lnetcdf_c++). */
+#undef HAVE_LIBNETCDF_C__
+
 /* Define to 1 if you have the `nsl' library (-lnsl). */
 #undef HAVE_LIBNSL
 
 /* Define to 1 if you have the `resolv' library (-lresolv). */
 #undef HAVE_LIBRESOLV
+
+/* Define to 1 if you have the `rt' library (-lrt). */
+#undef HAVE_LIBRT
 
 /* Define to 1 if you have the `socket' library (-lsocket). */
 #undef HAVE_LIBSOCKET

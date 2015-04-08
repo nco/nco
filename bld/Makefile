@@ -93,8 +93,12 @@
 # netCDF4 on ORNL Linux cluster systems (titan, rhea.ccs.ornl.gov):
 # module avail
 # . ~/.bashrc
-# module add intel netcdf udunits gsl
-# cd ~/nco/bld;make NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D allinone;cd -
+# module add intel gsl
+# export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3/lib':${LD_LIBRARY_PATH}
+# export NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' 
+# export PATH='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3/bin':${PATH}
+# cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D allinone;cd -
+# ncap2:
 # netCDF4 on NCAR Linux cluster systems (yellowstone):
 # /ncar/opt/hpss/hsi # Starts HPSS session
 # export PATH=${PATH}\:/ncar/opt/hpss

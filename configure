@@ -3255,7 +3255,7 @@ fi
 # End pvmgetarch Compatibility
 
 # Use automake to create Makefiles
-am__api_version='1.14'
+am__api_version='1.15'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -3427,8 +3427,8 @@ test "$program_suffix" != NONE &&
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in
@@ -3447,7 +3447,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh}" != xset; then
+if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -3775,8 +3775,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target.  The system "awk" is bad on
-# some platforms.
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -3833,6 +3833,7 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
+
 #AM_INIT_AUTOMAKE(nco,"${nco_version}")
 
 # Put preprocessor symbols in config.h
@@ -19036,7 +19037,6 @@ if test "${enable_ncoxx}" != 'no'; then
 # Add ${ANTLR_LIB}, if present, to library search path
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
     fi
-#close {enable_ncoxx}
 fi
 
 # AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
@@ -19281,8 +19281,9 @@ if test "${enable_esmf}" != 'yes'; then
 
 fi
 # Check for ESMF libraries unless told not to
+# Linking to ESMF library requires six more libraries to fully resolve on Linux:
+# -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
 if test "${enable_esmf}" != 'no'; then
-# fxm: make non-fatal code path for when cannot find esmf-config
     if test "${ESMF_INC}"; then
 	CPPFLAGS="${CPPFLAGS} -I${ESMF_INC}"
     else
@@ -19292,15 +19293,215 @@ if test "${enable_esmf}" != 'no'; then
 	CPPFLAGS="${CPPFLAGS} ${ESMF_INC_ARG}"
     fi
     if test "${ESMF_LIB}"; then
-	LIBS="${LIBS} -L${ESMF_LIB} -lesmf"
+	LIBS="${LIBS} -L${ESMF_LIB}"
     else
 	ESMF_ROOT='/usr/local'
 	ESMF_LIB="${ESMF_ROOT}/lib"
-	LIBS="${LIBS} -L${ESMF_LIB} -lesmf"
+	LIBS="${LIBS} -L${ESMF_LIB}"
     fi
-    { $as_echo "$as_me:${as_lineno-$LINENO}: These ESMF library and header tests must succeed for ESMF support:" >&5
-$as_echo "$as_me: These ESMF library and header tests must succeed for ESMF support:" >&6;}
-# fxm: default action of check_lib adds a superfluous -lesmf to $LIBS
+# fxm: make non-fatal code path for when cannot find esmf-config
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lnetcdf_c++" >&5
+$as_echo_n "checking for main in -lnetcdf_c++... " >&6; }
+if ${ac_cv_lib_netcdf_cpp_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnetcdf_c++  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_netcdf_cpp_main=yes
+else
+  ac_cv_lib_netcdf_cpp_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_netcdf_cpp_main" >&5
+$as_echo "$ac_cv_lib_netcdf_cpp_main" >&6; }
+if test "x$ac_cv_lib_netcdf_cpp_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBNETCDF_C__ 1
+_ACEOF
+
+  LIBS="-lnetcdf_c++ $LIBS"
+
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lnetcdff" >&5
+$as_echo_n "checking for main in -lnetcdff... " >&6; }
+if ${ac_cv_lib_netcdff_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnetcdff  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_netcdff_main=yes
+else
+  ac_cv_lib_netcdff_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_netcdff_main" >&5
+$as_echo "$ac_cv_lib_netcdff_main" >&6; }
+if test "x$ac_cv_lib_netcdff_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBNETCDFF 1
+_ACEOF
+
+  LIBS="-lnetcdff $LIBS"
+
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -ldl" >&5
+$as_echo_n "checking for main in -ldl... " >&6; }
+if ${ac_cv_lib_dl_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ldl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_dl_main=yes
+else
+  ac_cv_lib_dl_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dl_main" >&5
+$as_echo "$ac_cv_lib_dl_main" >&6; }
+if test "x$ac_cv_lib_dl_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBDL 1
+_ACEOF
+
+  LIBS="-ldl $LIBS"
+
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgfortran" >&5
+$as_echo_n "checking for main in -lgfortran... " >&6; }
+if ${ac_cv_lib_gfortran_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgfortran  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gfortran_main=yes
+else
+  ac_cv_lib_gfortran_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gfortran_main" >&5
+$as_echo "$ac_cv_lib_gfortran_main" >&6; }
+if test "x$ac_cv_lib_gfortran_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGFORTRAN 1
+_ACEOF
+
+  LIBS="-lgfortran $LIBS"
+
+fi
+
+# librt.a: Real-time library
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lrt" >&5
+$as_echo_n "checking for main in -lrt... " >&6; }
+if ${ac_cv_lib_rt_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lrt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_rt_main=yes
+else
+  ac_cv_lib_rt_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rt_main" >&5
+$as_echo "$ac_cv_lib_rt_main" >&6; }
+if test "x$ac_cv_lib_rt_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBRT 1
+_ACEOF
+
+  LIBS="-lrt $LIBS"
+
+fi
+
+# Most elegant formulation:
+#    AC_CHECK_FUNC([clock_gettime])
+#    if test $ac_cv_func_clock_gettime = no; then
+#	AC_CHECK_LIB(rt, clock_gettime,,
+#		     [AC_MSG_ERROR([librt required but not found])])
+#    fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ESMC_Initialize in -lesmf" >&5
 $as_echo_n "checking for ESMC_Initialize in -lesmf... " >&6; }
 if ${ac_cv_lib_esmf_ESMC_Initialize+:} false; then :
@@ -19348,6 +19549,8 @@ else
   enable_esmf=no
 fi
 
+    { $as_echo "$as_me:${as_lineno-$LINENO}: These ESMF library and header tests must succeed for ESMF support:" >&5
+$as_echo "$as_me: These ESMF library and header tests must succeed for ESMF support:" >&6;}
     if test "${ESMF_ROOT}"; then
 	as_ac_File=`$as_echo "ac_cv_file_${ESMF_INC}/ESMC.h" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ${ESMF_INC}/ESMC.h" >&5

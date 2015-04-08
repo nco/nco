@@ -663,7 +663,16 @@ nco1113. nco: rsp parker norton help srd slowdown issue help 20140718 completely
 nco1114. ncrcat fails when single record dimension is not first dimension
 nco1116. --add_bnds for creating bounds variables
 nco1117. ncks human-readable times
-nco1119.
+nco1119. nco: ncap2 RNG works with arrays, fails with scalars (john 20150317)
+      ncap2 -O -s 'defdim("r1",10);data[r1]=10;data=gsl_rng_uniform_int(data);print(data);' ~/nco/data/in.nc ~/foo.nc # works
+      ncap2 -O -s 'data=10;data=gsl_rng_uniform_int(data);print(data);' ~/nco/data/in.nc ~/foo.nc # borken
+nco1120. brendan discussion 20150312 autoconf requires both --enable-netcdf4=no --and enable-netcdf-4=no to get "ENABLE_NETCDF4....... no" and avoid the "configure: Bad news: Simple program does not compile and link with netCDF4 library" message.
+nco1121. ncap2 attribute propagation occurs for re-defined input variables Christine Smit https://sourceforge.net/p/nco/discussion/9829/thread/142457da/?limit=25
+nco1122. cnk slowdown Barry McInnes 3/9
+      # Severe slowdown in record loop of nco_cpy_rec_var_val() (MM3 workaround) for cnk_sz time != 1
+      ncks -O -v huss --fl_fmt=netcdf4_classic -L 5 ${DATA}/hdf/huss_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc ~/foo.nc # hangs
+      ncks -O -v huss --cnk_plc=r1d --fl_fmt=netcdf4_classic -L 5 ${DATA}/hdf/huss_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc ~/foo.nc # works
+nco1123. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

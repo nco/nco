@@ -427,7 +427,6 @@ if test "${enable_ncoxx}" != 'no'; then
 # Add ${ANTLR_LIB}, if present, to library search path
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
     fi
-#close {enable_ncoxx}
 fi
 
 # AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
@@ -538,8 +537,9 @@ if test "${enable_esmf}" != 'yes'; then
 
 fi
 # Check for ESMF libraries unless told not to
+# Linking to ESMF library requires six more libraries to fully resolve on Linux:
+# -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
 if test "${enable_esmf}" != 'no'; then
-# fxm: make non-fatal code path for when cannot find esmf-config
     if test "${ESMF_INC}"; then
 	CPPFLAGS="${CPPFLAGS} -I${ESMF_INC}"
     else
@@ -549,15 +549,27 @@ if test "${enable_esmf}" != 'no'; then
 	CPPFLAGS="${CPPFLAGS} ${ESMF_INC_ARG}"
     fi
     if test "${ESMF_LIB}"; then
-	LIBS="${LIBS} -L${ESMF_LIB} -lesmf"
+	LIBS="${LIBS} -L${ESMF_LIB}"
     else
 	ESMF_ROOT='/usr/local'
 	ESMF_LIB="${ESMF_ROOT}/lib"
-	LIBS="${LIBS} -L${ESMF_LIB} -lesmf"
+	LIBS="${LIBS} -L${ESMF_LIB}"
     fi
-    AC_MSG_NOTICE([These ESMF library and header tests must succeed for ESMF support:])
-# fxm: default action of check_lib adds a superfluous -lesmf to $LIBS
+# fxm: make non-fatal code path for when cannot find esmf-config
+    AC_CHECK_LIB([netcdf_c++],[main])
+    AC_CHECK_LIB([netcdff],[main])
+    AC_CHECK_LIB([dl],[main])
+    AC_CHECK_LIB([gfortran],[main])
+# librt.a: Real-time library
+    AC_CHECK_LIB([rt],[main])
+# Most elegant formulation:
+#    AC_CHECK_FUNC([clock_gettime])
+#    if test $ac_cv_func_clock_gettime = no; then
+#	AC_CHECK_LIB(rt, clock_gettime,,
+#		     [AC_MSG_ERROR([librt required but not found])])
+#    fi
     AC_CHECK_LIB([esmf],[ESMC_Initialize],,enable_esmf=no)
+    AC_MSG_NOTICE([These ESMF library and header tests must succeed for ESMF support:])
     if test "${ESMF_ROOT}"; then
 	AC_CHECK_FILE([${ESMF_INC}/ESMC.h],AC_DEFINE([HAVE_ESMF_H],1,[Define to 1 if <ESMC.h> is present]),enable_esmf=no)
     else

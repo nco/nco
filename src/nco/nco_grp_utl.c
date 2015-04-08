@@ -1874,7 +1874,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
  const gpe_sct * const gpe,           /* I [sct] GPE structure */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
  const md5_sct * const md5,           /* I [flg] MD5 Configuration */
- const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist ( For convenience, ideally... not needed ) */
+ const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Write extracted variables to output file */
@@ -1889,6 +1889,9 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
   /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
   USE_MM3_WORKAROUND=nco_use_mm3_workaround(nc_id_in,fl_out_fmt);
+  /* Workaround currently copies variable-at-a-time or record-at-a-time does not handle limits
+     The workaround could be modified to handle limits 
+     Until then, though, the workaround is incompatible with limits */
   if(HAVE_LIMITS) USE_MM3_WORKAROUND=False; 
 
   if(USE_MM3_WORKAROUND){  

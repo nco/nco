@@ -1,8 +1,38 @@
+2015-04-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.4.9 release procedure:
+ 	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco
+	cd ~/nco;git commit -a -m "Version nco-4.4.9 release: "
+	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
+	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
+
+	* Add to configure: -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
+	Most are found but -lesmf does not link on MACOSX due to clang/gfortran cross-compilation
+
+	* Merge changes from master into dyw branch:
+	git checkout dyw;git merge master
+
 2015-04-06  Charlie Zender  <zender@uci.edu>
 
 	* Makefile/ESMF appears to pass regression tests
 
 	* Fix memory issues with rgr_arg
+
+2015-04-01  Charlie Zender  <zender@uci.edu>
+
+	* Re-built MACOSX with XTools 6.2 clang 6.0 LLVM 3.5 for OS 10.10 Yosemite: No problems
+
+	* Add regression test for changing _FillValue in netCDF4 file
+
+	* Turn-off flg_netCDF4_rename_trick in nco_att_utl.c if NC_LIB_VERSION >= 434
+
+2015-03-25  Charlie Zender  <zender@uci.edu>
+
+	* Add cf2.cdl to test different approaches to CF group extension questions
+
+2015-03-24  Charlie Zender  <zender@uci.edu>
+
+	* Various typo corrections to documentation
 
 2015-03-19  Charlie Zender  <zender@uci.edu>
 
@@ -16,15 +46,32 @@
 
 	* Fix bugs in dyw branch
 
+2015-03-10  Charlie Zender  <zender@uci.edu>
+
+	* Tag nco-4.4.9-alpha to test new release procedure
+	cd ~/nco;git commit -a -m "Version nco-4.4.9-alpha"
+	git tag -d nco-4.4.9-alpha;git push origin :refs/tags/nco-4.4.9-alpha
+	git tag -a nco-4.4.9-alpha -m 'Version 4.4.9-alpha: git, -x warn, crd att, cnk nco';git push --tags
+
+	* Build on rhea.ccs.ornl.edu
+
+	* Finish cnk_plc=nco implementation so plc/map=nco/nco means all/rew
+
+	* Document "coordinates" attribute modification
+
 2015-03-09  Dingying Wei  <dywei@glace>
 
 	* Test git change as dyw
 
 2015-03-09  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.4.9 release procedure:
- 	Changes since nco-4.4.8: git, -x warn, crd att, fxm
-	cd ~/nco;git commit -a -m "Preparing nco-4.4.8 release"
+	* Quiet printing of extended filetype for dbg_lvl=2
+
+2015-03-09  Charlie Zender  <zender@uci.edu>
+
+	* Created remote upstream branches dyw, hmb, and pvn
+
+	* Change on master by csz
 
 	* Refine .gitignore's for configure-make
 
