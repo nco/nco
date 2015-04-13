@@ -1507,9 +1507,11 @@ Run the operator with @samp{-r} and then run the command with
 It is very important that your report contain the exact error messages 
 and compile-time environment.
 Include a copy of your sample input file, or place one on a 
-publically accessible location, of the file(s).
-Post the full bug report to the 
-@uref{http://sf.net/bugs/?group_id=3331, NCO Project buglist}.
+publicly accessible location, of the file(s).
+If you are sure it is a bug, post the full report to the 
+@uref{https://sourceforge.net/p/nco/bugs, NCO Project buglist}.
+Otherwise post all the information to 
+@uref{http://sf.net/p/nco/discussion/9830, NCO Help forum}.
 
 @cindex installation
 @cindex @command{autoconf}
@@ -12835,8 +12837,8 @@ This is because shell globbing tries to @dfn{interpolate} the value of
 @example
 ncap2 -s 'uavg=u.avg($time)'  in.nc foo.nc # Correct (recommended)
 ncap2 -s  uavg=u.avg('$time') in.nc foo.nc # Correct (and dangerous)
-ncap2 -s  uavg=u.avg($time)   in.nc foo.nc # Fails ($time = '')
-ncap2 -s "uavg=u.avg($time)"  in.nc foo.nc # Fails ($time = '')
+ncap2 -s  uavg=u.avg($time)   in.nc foo.nc # Wrong ($time = '')
+ncap2 -s "uavg=u.avg($time)"  in.nc foo.nc # Wrong ($time = '')
 @end example
 Without the single quotes, the shell replaces @code{$time} with an
 empty string.

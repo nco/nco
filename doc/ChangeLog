@@ -6,6 +6,12 @@
 	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
 	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
 
+	* Support GCC under MacPorts on MacOSX using
+	export LINUX_CC='gcc-mp-4.9'
+	export LINUX_CXX='g++-mp-4.9 -std=c++11'
+	So far compiling works but library archiving and linking does not so may need
+	export LINUX_AR='gcc-ar-mp-4.9'
+
 	* Fix MacOSX Yosemite LLVM version 6.0 (clang-600.0.57) (based on LLVM 3.5svn) issues:
 	'register' storage class specifier is deprecated [-Werror,-Wdeprecated-register]
 
