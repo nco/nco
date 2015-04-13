@@ -3084,16 +3084,10 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
     (void)cast_nctype_void(NC_DOUBLE,&var_out->val);    
     // change back to input type  
     var_out=nco_var_cnf_typ(in_typ,var_out);
-    
 
     return var_out;
+  } // end  
 
-
-  }// end  
-
-
-
-/*****************************************************************************************************************/
 /* ncap2 functions and methods */
 
 /* To avoid confusion when I say FUNC (uppercase) I mean a custom ncap2 function.
@@ -3152,11 +3146,10 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
  
   The most important methods are the following:
   
-  // initialize var_sct with the variable snm
+ // initialize var_sct with the variable snm
   var_sct *ncap_var_init(const std::string &snm, bool bfll);        
  // write var to disc
  int ncap_var_write (var_sct *var, bool bram);           
-
  
  Perhaps the most important thing to grasp is that given a list of statements TWO PARSES of the script (syntax tree) are made.
  In the first parse the vars are defined on disc. In the second parse the vars are populated. 
@@ -3167,9 +3160,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
  ncoParser -  The main grammer - creates a syntax tree
  ncoTree   -  Reads a syntax tree
 
- Hopefully the only thing you'll deal with here is the ncoTree methods
-
-/*****************************************************************************************************************/
+ Hopefully the only thing you'll deal with here is the ncoTree methods */
 
 /*
   Lets take a look at mth2_cls(). 
@@ -3185,8 +3176,4 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   
  It takes two fragments of the the parse tree ( expr, fargs) and returns a var_sct. 
  
- If expr is null then it is A FUNC else its a METHOD
-   
-  
-
-*/
+ If expr is null then it is A FUNC else its a METHOD */

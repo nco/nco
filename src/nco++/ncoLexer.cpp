@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoLexer.cpp"$ */
+/* $ANTLR 2.7.7 (20141120): "ncoGrammer.g" -> "ncoLexer.cpp"$ */
 #include "ncoLexer.hpp"
 #include <antlr/CharBuffer.hpp>
 #include <antlr/TokenStreamException.hpp>
@@ -2566,10 +2566,11 @@ void ncoLexer::mINCLUDE(bool _createToken) {
 	
 			// ANTLR_USING_NAMESPACE(std)
 			// create lexer to handle include
-			std::string f_nm= f->getText();
-			std::ifstream* input = new std::ifstream(f_nm.c_str());
-			if (*input==NULL) {
-	err_prn("Lexer cannot find include file "+ f_nm);               
+			std::string f_nm=f->getText();
+			std::ifstream* input=new std::ifstream(f_nm.c_str());
+			if(!(*input)){
+	//		if(*input==NULL){ // 20150413: Trips clang 6.0 MACOSX Yosemite warning from -Wnull-arithmetic and subsequent error "invalid operands to binary expression" 
+	err_prn("Lexer cannot find include file "+f_nm);
 			}
 			ncoLexer* sublexer = new ncoLexer(*input,prs_arg);
 			// make sure errors are reported in right file
@@ -2591,7 +2592,7 @@ void ncoLexer::mINCLUDE(bool _createToken) {
 			// of the new instance of this lexer.
 			selector.retry(); // throws TokenStreamRetryException
 			
-#line 2595 "ncoLexer.cpp"
+#line 2596 "ncoLexer.cpp"
 	if ( _createToken && _token==ANTLR_USE_NAMESPACE(antlr)nullToken && _ttype!=ANTLR_USE_NAMESPACE(antlr)Token::SKIP ) {
 	   _token = makeToken(_ttype);
 	   _token->setText(text.substr(_begin, text.length()-_begin));
