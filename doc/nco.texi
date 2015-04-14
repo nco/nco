@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.9
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 10 March 2015
-@set update-month March 2015
+@set update-date 13 April 2015
+@set update-month April 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -1507,9 +1507,11 @@ Run the operator with @samp{-r} and then run the command with
 It is very important that your report contain the exact error messages 
 and compile-time environment.
 Include a copy of your sample input file, or place one on a 
-publically accessible location, of the file(s).
-Post the full bug report to the 
-@uref{http://sf.net/bugs/?group_id=3331, NCO Project buglist}.
+publicly accessible location, of the file(s).
+If you are sure it is a bug, post the full report to the 
+@uref{http://sf.net/p/nco/bugs, NCO Project buglist}.
+Otherwise post all the information to 
+@uref{http://sf.net/p/nco/discussion/9830, NCO Help forum}.
 
 @cindex installation
 @cindex @command{autoconf}
@@ -10532,7 +10534,15 @@ a1($time.size-1)=a1@max;
 @end verbatim
 @end example
 
-A @emph{value list} can be used on the RHS of an assign...
+@html
+<a name="nst"></a> <!-- http://nco.sf.net/nco.html#nst -->
+<a name="instantiate"></a> <!-- http://nco.sf.net/nco.html#instantiate -->
+<a name="instantiation"></a> <!-- http://nco.sf.net/nco.html#instantiation -->
+@end html
+@cindex instantiate
+@cindex instantiation
+A @emph{value list} can be used on the RHS of an assignment statement
+to @dfn{instantiate} a variable:
 @cindex value list
 @example
 @verbatim
@@ -10540,6 +10550,7 @@ a1@trip1={1,2,3} ;
 a1@triplet={a1@min,(a1@min+a1@max)/2,a1@max}; 
 @end verbatim
 @end example
+
 The netCDF specification allows all attribute types to have a size
 greater than one. 
 The maximum is defined by @code{NC_MAX_ATTRS}.
@@ -10563,6 +10574,8 @@ sng_arr[$sng_len]=a1@long_name; // sng_arr now contains "Kelvin"
 @end example
 Attributes defined in a script are stored in memory and are written to Output after script completion.
 To stop the attribute being written use the ram_delete() method or use a bogus variable name.
+
+
 
 @noindent @strong{Attribute Propagation and Inheritance}
 @cindex attribute propagation
@@ -10611,7 +10624,6 @@ n3@a2=-666L;  // attribute will be type @code{NC_INT}
 A floating point number without a postfix will default to
 @code{NC_DOUBLE}. 
 An integer without a postfix will default to type @code{NC_INT}. 
-There is no postfix for characters, use a quoted string instead.
 @example
 @verbatim
 n4[$rlev]=0.1      // n4 will be of type @code{NC_DOUBLE}
@@ -10621,8 +10633,38 @@ n7[$gds_crd]=2e3f;  // n7 will be of type @code{NC_FLOAT}
 n6@a1=41;         // attribute will be type @code{NC_INT}
 n6@a2=-21;        // attribute will be type @code{NC_INT}  
 n6@units="kelvin" // attribute will be type @code{NC_CHAR}
+n6@units="kelvin"s // attribute will be type @code{NC_STRING}
 @end verbatim
 @end example 
+
+@cindex @code{NC_CHAR}
+@cindex @code{NC_STRING}
+There is no postfix for characters, use a quoted string instead for 
+@code{NC_CHAR} and a post-quote @samp{s} for @code{NC_STRING}.
+@command{ncap2} interprets a standard double-quoted string as a value
+of type @code{NC_CHAR}. 
+In this case, any receiving variable must be dimensioned as an array
+of @code{NC_CHAR} long enough to hold the value.
+Place the letter @samp{s} immediately following the double-quoted string
+to indicate that the value is of type @code{NC_STRING}.
+In this case, the receiving variable need not have any memory allocated
+to hold the string because netCDF4 handles that memory allocation.
+
+Suppose one creates a file containing an ensemble of model results, and
+wishes to label the record coordinate with the name of each model.
+The @code{NC_STRING} type is well-suited to this because it facilitates
+storing arrays of strings of arbitrary length.
+This is sophisticated, though easy with @command{ncap2}:
+@example 
+@verbatim
+% ncecat -O -u model cesm.nc ecmwf.nc giss.nc out.nc
+% ncap2 -4 -O -s 'model[$model]={"cesm"s,"ecmwf"s,"giss"s}' out.nc out.nc
+@end verbatim
+@end example 
+The key here to place an @samp{s} character after each double-quoted
+string value to indicate an @code{NC_STRING} type. 
+The @samp{-4} ensures the output filetype is netCDF4 in case the input
+filetype is not. 
 
 @table @asis
 @item @strong{netCDF3/4 Types}
@@ -10649,6 +10691,8 @@ n6@units="kelvin" // attribute will be type @code{NC_CHAR}
   @code{NC_INT64}, a signed 8-byte integer 
 @item ull|ULL 
   @code{NC_UINT64}, an unsigned 8-byte integer 
+@item s 
+  @code{NC_STRING}, a string of arbitrary length
 @end table
 
 @html
@@ -12835,8 +12879,8 @@ This is because shell globbing tries to @dfn{interpolate} the value of
 @example
 ncap2 -s 'uavg=u.avg($time)'  in.nc foo.nc # Correct (recommended)
 ncap2 -s  uavg=u.avg('$time') in.nc foo.nc # Correct (and dangerous)
-ncap2 -s  uavg=u.avg($time)   in.nc foo.nc # Fails ($time = '')
-ncap2 -s "uavg=u.avg($time)"  in.nc foo.nc # Fails ($time = '')
+ncap2 -s  uavg=u.avg($time)   in.nc foo.nc # Wrong ($time = '')
+ncap2 -s "uavg=u.avg($time)"  in.nc foo.nc # Wrong ($time = '')
 @end example
 Without the single quotes, the shell replaces @code{$time} with an
 empty string.
