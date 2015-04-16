@@ -970,7 +970,14 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       if(is_chunked){
 	/* Turn-off chunking for this variable */
 	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s unchunking %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	if(shuffle) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has shuffle flag set before unchunking. Expect the worst.",nco_prg_nm_get(),fnc_nm,var_nm);
+	if(shuffle){
+	  /* 20150415: If shuffle is set on input variable then NCO also sets it on output variable
+	     nco_cnk_sz_set_trv() is first place NCO knows whether to unchunk variable
+	     Variables defined with shuffle must be chunked, therefore instruct variable to be stored as not shuffled
+	     Unset shuffle before unchunking variable, otherwise nc_def_var_chunking() returns NC_EINVAL */
+	  if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s turning-off shuffle filter before unchunking variable %s.\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	  (void)nco_def_var_deflate(grp_id_out,var_id_out,0,0,0);
+	} /* !shuffle */
 	/* Redundant since default netCDF srg_typ = NC_CONTIGUOUS for variables that need not be chunked */
 	(void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
       }else{ /* !chunked */
