@@ -976,7 +976,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	     Variables defined with shuffle must be chunked, therefore instruct variable to be stored as not shuffled
 	     Unset shuffle before unchunking variable, otherwise nc_def_var_chunking() returns NC_EINVAL */
 	  if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s turning-off shuffle filter before unchunking variable %s.\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	  (void)nco_def_var_deflate(grp_id_out,var_id_out,0,0,0);
+	  shuffle=NC_NOSHUFFLE;
+	  deflate=0;
+	  (void)nco_def_var_deflate(grp_id_out,var_id_out,shuffle,deflate,(int)0);
 	} /* !shuffle */
 	/* Redundant since default netCDF srg_typ = NC_CONTIGUOUS for variables that need not be chunked */
 	(void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);

@@ -92,6 +92,9 @@
 #ifndef NC_NOCHECKSUM
 # define NC_NOCHECKSUM 0
 #endif
+#ifndef NC_NOSHUFFLE
+# define NC_NOSHUFFLE 0
+#endif
 
   /* Seven compatibility tokens introduced 20131222 in netCDF 4.3.1-rc7 netcdf.h */
 #ifndef NC_FORMAT_UNDEFINED

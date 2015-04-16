@@ -1385,8 +1385,8 @@ nco_inq_var_deflate
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     rcd=nc_inq_var_deflate(nc_id,var_id,shuffle,deflate,dfl_lvl);
   }else{ /* !netCDF4 */
-    if(shuffle) *shuffle=0;
-    if(deflate) *deflate=0;
+    if(shuffle) *shuffle=NC_NOSHUFFLE;
+    if(deflate) *deflate=0; /* NB: netCDF uses naked integer rather than token, e.g., NC_NODEFLATE, for this */
     if(dfl_lvl) *dfl_lvl=0;
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_deflate()");
@@ -2072,7 +2072,7 @@ int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,size_
 # endif /* !NC_HAVE_NEW_CHUNKING_API */
 int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t *const cnk_sz){*srg_typ=(size_t)NC_CONTIGUOUS;*cnk_sz=(size_t)NULL;return 1;}
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
-int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){if(shuffle) *shuffle=0;if(deflate) *deflate=0;if(dfl_lvl) *dfl_lvl=0;return 1;}
+int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){if(shuffle) *shuffle=NC_NOSHUFFLE;if(deflate) *deflate=0;if(dfl_lvl) *dfl_lvl=0;return 1;}
 int nc_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ){if(ndn_typ) *ndn_typ=0;return 1;}
 int nc_def_var_fletcher32(const int nc_id,const int var_id,const int chk_typ){return 1;}
 int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){if(chk_typ) *chk_typ=NC_NOCHECKSUM;return 1;}

@@ -139,7 +139,7 @@ nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   (void)nco_def_var(nc_id,time_sng,NC_DOUBLE,1,&time_dmn_id,&time_id);
 
   /* Set HDF Lempel-Ziv compression level, if requested */
-  if(dfl_lvl >= 0) (void)nco_def_var_deflate(nc_id,time_id,(int)True,(int)True,dfl_lvl);
+  if(dfl_lvl >= 0) (void)nco_def_var_deflate(nc_id,time_id,(int)NC_SHUFFLE,(int)True,dfl_lvl);
 
   /* Add attributes for time variable */
   (void)nco_put_att(nc_id,time_id,units_sng,NC_CHAR,(long int)(strlen(att_units)+1UL),(const void *)att_units);

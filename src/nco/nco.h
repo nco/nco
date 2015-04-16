@@ -335,6 +335,12 @@ extern "C" {
 #ifndef NC_FLETCHER32
 # define NC_FLETCHER32 1
 #endif
+#ifndef NC_NOSHUFFLE
+# define NC_NOSHUFFLE 0
+#endif
+#ifndef NC_SHUFFLE
+# define NC_SHUFFLE   1
+#endif
 
 /* Six compatibility tokens not all available until netCDF 3.6.1 netcdf.h
    NC_64BIT_OFFSET is used (so far) only in nco_fl_utl.c */

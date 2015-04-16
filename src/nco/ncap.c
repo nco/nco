@@ -747,7 +747,7 @@ main(int argc,char **argv)
       } /* endif */
       (void)nco_def_var(out_id,var_ycc[idx]->nm,var_ycc[idx]->type,var_ycc[idx]->nbr_dim,var_ycc[idx]->dmn_id,&var_id);
       /* Set HDF Lempel-Ziv compression level, if requested */
-      if(dfl_lvl >= 0 && var_ycc[idx]->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)True,(int)True,dfl_lvl);    
+      if(dfl_lvl >= 0 && var_ycc[idx]->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)NC_SHUFFLE,(int)True,dfl_lvl);
       var_ycc[idx]->val.vp=nco_free(var_ycc[idx]->val.vp);
     } /* end loop over idx */
     (void)nco_enddef(out_id);
