@@ -870,6 +870,21 @@ extern "C" {
     nco_bool PRN_VAR_METADATA; /* [flg] Print variable metadata */
   } prn_fmt_sct;
   
+  /* Regrid structure */
+  typedef struct{ /* rgr_sct */
+    char *fl_grd_src; /* [sng] File containing input grid */
+    char *fl_grd_dst; /* [sng] File containing destination grid */
+    char *fl_in; /* [sng] File containing fields to be regridded */
+    char *fl_out; /* [sng] File containing regridded fields */
+    char *fl_out_tmp; /* [sng] Temporary file containing regridded fields */
+    char *fl_map; /* [sng] File containing mapping weights from source to destination grid */
+    char **rgr_arg; /* [sng] Regriding arguments */
+    int rgr_nbr; /* [nbr] Number of regridding arguments */
+    int in_id; /* [id] Input netCDF file ID */
+    int out_id; /* [id] Output netCDF file ID */
+    nco_bool flg_usr_rqs; /* [flg] User requested regridding */
+  } rgr_sct;
+
   /* Attribute structure */
   typedef struct{ /* att_sct */
     char *nm;

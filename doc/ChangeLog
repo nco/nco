@@ -1,10 +1,14 @@
-2015-04-13  Charlie Zender  <zender@uci.edu>
+2015-04-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.9 release procedure:
  	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco
 	cd ~/nco;git commit -a -m "Version nco-4.4.9 release: "
 	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
 	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
+
+	* Revamp regridding command-line interface, initialization, and deallocation
+
+2015-04-13  Charlie Zender  <zender@uci.edu>
 
 	* Support GCC under MacPorts on MacOSX using
 	export LINUX_CC='gcc-mp-4.9'

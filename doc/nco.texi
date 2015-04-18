@@ -14515,7 +14515,7 @@ must be the same size after hyperslabbing
 hyperslabs resolve to the same size. 
 The fixed (i.e., non-record) dimensions should be the same size in
 all ensemble members both before and after hyperslabbing, although
-the hypserslabs may (and usually do) change the size of the dimensions
+the hyperslabs may (and usually do) change the size of the dimensions
 from the input to the output files.
 Prior to this, @command{nces} was only guaranteed to work on hyperslabs
 in the record dimension that resolved to the same size.}
@@ -17629,7 +17629,7 @@ these dimensions in a comma-separated list following @samp{-a}, e.g.,
 @cindex hyperslab
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
 As with all arithmetic operators, the operation may be restricted to
-an arbitrary hypserslab by employing the @samp{-d} option
+an arbitrary hyperslab by employing the @samp{-d} option
 (@pxref{Hyperslabs}). 
 @command{ncwa} also handles values matching the variable's
 @code{_FillValue} attribute correctly. 

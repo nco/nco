@@ -95,10 +95,24 @@ extern "C" {
 
 #ifdef ENABLE_ESMF
   int /* O [enm] Return code */
-  nco_rgr_esmf /* [fnc] Regrid using ESMF library */
+  nco_rgr_ini /* [fnc] Initialize regridding structure */
   (const int in_id, /* I [id] Input netCDF file ID */
-   char *fl_scrip, /* I [sng] Filename of SCRIP destination grid */
-   const int out_id); /* I [id] Output netCDF file ID */
+   char **rgr_arg, /* [sng] Regriding arguments */
+   const int rgr_nbr, /* [nbr] Number of regriding arguments */
+   char * const rgr_in, /* I [sng] File containing fields to be regridded */
+   char * const rgr_out, /* I [sng] File containing regridded fields */
+   char * const rgr_grd_src, /* I [sng] File containing input grid */
+   char * const rgr_grd_dst, /* I [sng] File containing destination grid */
+   char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
+   rgr_sct * const rgr_nfo); /* O [sct] Regridding structure */
+    
+  void
+  nco_rgr_free /* [fnc] Deallocate regridding structure */
+  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
+
+  int /* O [enm] Return code */
+  nco_rgr_esmf /* [fnc] Regrid using ESMF library */
+  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
 #endif /* !ENABLE_ESMF */
 
 #ifdef __cplusplus
