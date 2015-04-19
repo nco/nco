@@ -604,10 +604,11 @@ INCLUDE
 		{
 		// ANTLR_USING_NAMESPACE(std)
 		// create lexer to handle include
-		std::string f_nm= f->getText();
-		std::ifstream* input = new std::ifstream(f_nm.c_str());
-		if (*input==NULL) {
-            err_prn("Lexer cannot find include file "+ f_nm);               
+		std::string f_nm=f->getText();
+		std::ifstream* input=new std::ifstream(f_nm.c_str());
+		if(!(*input)){
+            //		if(*input==NULL){ // 20150413: Trips clang 6.0 MACOSX Yosemite warning from -Wnull-arithmetic and subsequent error "invalid operands to binary expression" 
+            err_prn("Lexer cannot find include file "+f_nm);
 		}
 		ncoLexer* sublexer = new ncoLexer(*input,prs_arg);
 		// make sure errors are reported in right file

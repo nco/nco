@@ -1618,9 +1618,10 @@ print "\n";
 # 
     
 #ncks #29 groups: Sort output alphabetically
+# ncks -z ~/nco/data in_grp.nc | tail -1
     $dsc_sng="(Groups) Sort output alphabetically";
     $tst_cmd[0]="ncks -z $in_pth_arg in_grp.nc | tail -1";
-    $tst_cmd[1]="var: /unique";
+    $tst_cmd[1]="var: /val_one_mss";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array

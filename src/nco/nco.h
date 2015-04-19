@@ -239,6 +239,16 @@ extern "C" {
   char *nco_mss_val_sng_get(void){return nco_mss_val_sng;} /* [sng] Missing value attribute name */
   char *nco_not_mss_val_sng_get(void){return nco_not_mss_val_sng;} /* [sng] Not missing value attribute name */
 
+#ifdef ENABLE_ESMF
+  /* csz 20150320
+     Define these only in main() files not in original location in ESMC_CoordSys.h  
+     Otherwise any file #including ESMC.h inadvertently includes these constants multiple times 
+     Should be defined as externals that resolve to single definition in main()
+     sudo cp ~/nco/src/nco/ESMC_CoordSys.h /usr/local/include */
+  const double ESMC_CoordSys_Deg2Rad= 0.01745329251994329547437;
+  const double ESMC_CoordSys_Rad2Deg=57.29577951308232286464772;
+#endif /* !ENABLE_ESMF */
+
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
   
   /* External references to global variables are declared as extern here
@@ -866,6 +876,21 @@ extern "C" {
     nco_bool PRN_VAR_METADATA; /* [flg] Print variable metadata */
   } prn_fmt_sct;
   
+  /* Regrid structure */
+  typedef struct{ /* rgr_sct */
+    char *fl_grd_src; /* [sng] File containing input grid */
+    char *fl_grd_dst; /* [sng] File containing destination grid */
+    char *fl_in; /* [sng] File containing fields to be regridded */
+    char *fl_out; /* [sng] File containing regridded fields */
+    char *fl_out_tmp; /* [sng] Temporary file containing regridded fields */
+    char *fl_map; /* [sng] File containing mapping weights from source to destination grid */
+    char **rgr_arg; /* [sng] Regriding arguments */
+    int rgr_nbr; /* [nbr] Number of regridding arguments */
+    int in_id; /* [id] Input netCDF file ID */
+    int out_id; /* [id] Output netCDF file ID */
+    nco_bool flg_usr_rqs; /* [flg] User requested regridding */
+  } rgr_sct;
+
   /* Attribute structure */
   typedef struct{ /* att_sct */
     char *nm;

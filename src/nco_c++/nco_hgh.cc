@@ -48,7 +48,7 @@ nco_var_dfn // [fnc] Define variables in output netCDF file
 
   int rcd(0); // Return success code
   // Local
-  register long idx; // [idx] Counting index
+  long idx; // [idx] Counting index
   const std::string sbr_nm("nco_var_dfn"); // [sng] Name of subroutine
   const unsigned short int nco_dbg_lvl(0); // [sng] Debugging level
   if(nco_dbg_lvl >= nco_dbg_sbr) std::cerr << "DEBUG: Entering " << sbr_nm << "()..." << std::endl;

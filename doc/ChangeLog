@@ -1,4 +1,8 @@
-2015-04-16  Charlie Zender  <zender@uci.edu>
+2015-04-19  Charlie Zender  <zender@uci.edu>
+
+	* Merge rgr (formerly dyw) branch back into master
+
+2015-04-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.9 release procedure:
  	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco, shuffle
@@ -16,6 +20,35 @@
 
 	* Quiet printing extended filetype for dbg_lvl=2
 
+	* Revamp regridding command-line interface, initialization, and deallocation
+
+2015-04-13  Charlie Zender  <zender@uci.edu>
+
+	* Support GCC under MacPorts on MacOSX using
+	export LINUX_CC='gcc-mp-4.9'
+	export LINUX_CXX='g++-mp-4.9 -std=c++11'
+	So far compiling works but library archiving and linking does not so may need
+	export LINUX_AR='gcc-ar-mp-4.9'
+
+	* Fix MacOSX Yosemite LLVM version 6.0 (clang-600.0.57) (based on LLVM 3.5svn) issues:
+	'register' storage class specifier is deprecated [-Werror,-Wdeprecated-register]
+
+2015-04-08  Charlie Zender  <zender@uci.edu>
+
+	* Changed name of dyw branch to rgr (for "regrid")
+
+	* Add to configure: -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
+	Most are found but -lesmf does not link on MACOSX due to clang/gfortran cross-compilation
+
+	* Merge changes from master into dyw branch:
+	git checkout dyw;git merge master
+
+2015-04-06  Charlie Zender  <zender@uci.edu>
+
+	* Makefile/ESMF appears to pass regression tests
+
+	* Fix memory issues with rgr_arg
+
 2015-04-01  Charlie Zender  <zender@uci.edu>
 
 	* Re-built MACOSX with XTools 6.2 clang 6.0 LLVM 3.5 for OS 10.10 Yosemite: No problems
@@ -32,6 +65,18 @@
 
 	* Various typo corrections to documentation
 
+2015-03-19  Charlie Zender  <zender@uci.edu>
+
+	* Add --enable_esmf option to configure
+
+	* Add EMSF option to Makefile
+
+	* Move ESMF functions to nco_sld.[ch]
+
+2015-03-18  Charlie Zender  <zender@uci.edu>
+
+	* Fix bugs in dyw branch
+
 2015-03-10  Charlie Zender  <zender@uci.edu>
 
 	* Tag nco-4.4.9-alpha to test new release procedure
@@ -45,11 +90,21 @@
 
 	* Document "coordinates" attribute modification
 
+2015-03-09  Dingying Wei  <dywei@glace>
+
+	* Test git change as dyw
+
+2015-03-09  Charlie Zender  <zender@uci.edu>
+
+	* Quiet printing of extended filetype for dbg_lvl=2
+
 2015-03-09  Charlie Zender  <zender@uci.edu>
 
 	* Created remote upstream branches dyw, hmb, and pvn
 
 	* Change on master by csz
+
+	* Refine .gitignore's for configure-make
 
 	* Fix regression tests to account for new "coordinates" attributes
 

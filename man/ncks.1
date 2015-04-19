@@ -332,7 +332,7 @@ lon(3)=180 lev(1)=100 lat(1)=\-90 three_dmn_var(3)=2
 Printing a hyperslab does not affect the variable or dimension indices
 since these indices are relative to the full variable (as stored in the
 input file), and the input file has not changed.
-However, if the hypserslab is saved to an output file and those values
+However, if the hyperslab is saved to an output file and those values
 are printed, the indices will change:
 .RS
 % ncks \-H \-d lat,90.0 \-d lev,1000.0 \-v three_dmn_var in.nc out.nc

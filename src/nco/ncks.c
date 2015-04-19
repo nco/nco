@@ -155,10 +155,12 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_rgr=True; /* [flg] Regrid */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **grp_lst_in=NULL;
+  char **rgr_arg=NULL; /* [sng] Regriding arguments */
   char **var_lst_in=NULL;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
@@ -172,13 +174,18 @@ main(int argc,char **argv)
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *fl_scrip=NULL; /* [sng] SCRIP file name */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
-  char *fl_nm_scrip=NULL; /* [sng] SCRIP file name */
   char *rec_dmn_nm_fix=NULL; /* [sng] Record dimension name (Original input name without _fix prefix) */
+  char *rgr_in=NULL; /* [sng] File containing fields to be regridded */
+  char *rgr_out=NULL; /* [sng] File containing regridded fields */
+  char *rgr_grd_src=NULL; /* [sng] File containing input grid */
+  char *rgr_grd_dst=NULL; /* [sng] File containing destination grid */
+  char *rgr_map=NULL; /* [sng] File containing mapping weights from source to destination grid */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -231,13 +238,14 @@ main(int argc,char **argv)
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int ppc_nbr=0; /* [nbr] Number of PPC arguments */
+  int rgr_nbr=0; /* [nbr] Number of regridding arguments */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_lst_in_nbr=0;
   int var_nbr_fl;
   int var_ntm_fl;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
 
-/* DYW */
+  /* DYW */
   kvmap_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
@@ -352,12 +360,17 @@ main(int argc,char **argv)
       {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
       {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
       {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      {"rgr",required_argument,0,0}, /* [sng] Regridding */
+      {"regridding",required_argument,0,0}, /* [sng] Regridding */
+      {"rgr_in",required_argument,0,0}, /* [sng] File containing fields to be regridded */
+      {"rgr_out",required_argument,0,0}, /* [sng] File containing regridded fields */
+      {"rgr_grd_src",required_argument,0,0}, /* [sng] File containing input grid */
+      {"rgr_grd_dst",required_argument,0,0}, /* [sng] File containing destination grid */
+      {"rgr_map",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
+      {"scrip",required_argument,0,0}, /* SCRIP file */
       {"tst_udunits",required_argument,0,0},
       {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
       {"xml_spr_nmr",required_argument,0,0}, /* [flg] Separator for XML numeric types */
-/* DYW */
-      {"scrip",required_argument,0,0}, /* SCRIP file */
-/* DYW end */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -536,9 +549,9 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "lbr" */
       if(!strcmp(opt_crr,"scrip")){
-        fl_nm_scrip=strdup(optarg);
+        fl_scrip=strdup(optarg);
 	sld_nfo=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
-        hdlscrip(fl_nm_scrip,sld_nfo);
+        nco_scrip_read(fl_scrip,sld_nfo);
       } /* endif "scrip" */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"mpi_implementation")){
@@ -566,8 +579,19 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
+      if(!strcmp(opt_crr,"rgr") || !strcmp(opt_crr,"regridding")){
+        flg_rgr=True;
+        rgr_nbr++;
+        rgr_arg=(char **)nco_realloc(rgr_arg,rgr_nbr*sizeof(char *));
+        rgr_arg[rgr_nbr-1]=(char *)strdup(optarg);
+      } /* endif "rgr" */
+      if(!strcmp(opt_crr,"rgr_in")) rgr_in=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"rgr_out")) rgr_out=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"rgr_grd_src")) rgr_grd_src=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"rgr_grd_dst")) rgr_grd_dst=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"rgr_map")) rgr_map=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nRegridding\t\t--rgr...\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */
@@ -907,6 +931,25 @@ main(int argc,char **argv)
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 
+    /* Regridding */
+    if(flg_rgr){
+#ifdef ENABLE_ESMF
+      rgr_sct rgr_nfo;
+      /* Initialize regridding structure */
+      rgr_in=(char *)strdup(fl_in);
+      rcd=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,&rgr_nfo);
+      rgr_nfo.fl_out_tmp=nco_fl_out_open(rgr_nfo.fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_nfo.out_id);
+      /* Regrid fields */
+      rcd=nco_rgr_esmf(&rgr_nfo);
+      /* Close output and free dynamic memory */
+      (void)nco_fl_out_cls(rgr_nfo.fl_out,rgr_nfo.fl_out_tmp,rgr_nfo.out_id);
+      (void)nco_rgr_free(&rgr_nfo);
+#else /* !ENABLE_ESMF */
+      (void)fprintf(stderr,"%s: ERROR attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm);
+      nco_exit(EXIT_FAILURE);
+#endif /* !ENABLE_ESMF */
+    } /* endif !flg_rgr */
+
     /* Inititialize, decode, and set PPC information */
     if(ppc_nbr > 0) nco_ppc_ini(in_id,&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);
 
@@ -1104,12 +1147,12 @@ close_and_free:
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
     /* DYW */
-    if(fl_nm_scrip){
-      fl_nm_scrip=(char *)nco_free(fl_nm_scrip);
+    if(fl_scrip){
+      fl_scrip=(char *)nco_free(fl_scrip);
       idx=0;
       if(nco_dbg_lvl > nco_dbg_fl) while(sld_nfo[idx].key) nco_kvmap_prn(sld_nfo[idx++]);
       if(sld_nfo) nco_kvmaps_free(sld_nfo);
-    } /* endif fl_nm_scrip */
+    } /* endif fl_scrip */
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -1132,6 +1175,7 @@ close_and_free:
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     for(idx=0;idx<ppc_nbr;idx++) ppc_arg[idx]=(char *)nco_free(ppc_arg[idx]);
+    if(rgr_nbr > 0) rgr_arg=nco_sng_lst_free(rgr_arg,rgr_nbr);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
@@ -1157,4 +1201,3 @@ close_and_free:
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-

@@ -53,7 +53,7 @@ int main(int argc,char **argv)
   long lat_nbr(1); // [nbr] Number of latitudes
   long lon_nbr(1); // [nbr] Number of longitudes
   long sz_nbr(1); // [nbr] Number of sizes
-  register long idx; // [idx] Counting index
+  long idx; // [idx] Counting index
 
   const std::string CVS_Date("$Date$"); // [sng] CVS date string
   const std::string CVS_Header("$Header$"); // [sng] CVS header string
