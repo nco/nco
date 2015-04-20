@@ -1,14 +1,16 @@
 2015-04-19  Charlie Zender  <zender@uci.edu>
 
-	* Merge rgr (formerly dyw) branch back into master
-
-2015-04-17  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.4.9 release procedure:
  	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco, shuffle
 	cd ~/nco;git commit -a -m "Version nco-4.4.9 release: "
 	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
 	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
+
+ 	* Eliminate borken nco_sng2array() (which failed on single-element lists) in favor of nco_lst_prs_2D()
+
+	* Merge rgr (formerly dyw) branch back into master
+
+2015-04-17  Charlie Zender  <zender@uci.edu>
 
 	* Use generic NC_SHUFFLE and NC_NOSHUFFLE tokens
 

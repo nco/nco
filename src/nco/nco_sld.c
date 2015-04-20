@@ -89,11 +89,12 @@ nco_ppc_ini /* Set PPC based on user specifications */
  int *dfl_lvl, /* O [enm] Deflate level */
  const int fl_out_fmt,  /* I [enm] Output file format */
  char * const ppc_arg[], /* I [sng] List of user-specified PPC */
- const int ppc_nbr, /* I [nbr] Number of PPC specified */
+ const int ppc_arg_nbr, /* I [nbr] Number of PPC specified */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
-  int idx;
-  int ippc=0;
+  int ppc_arg_idx; /* [idx] Index over ppr_arg (i.e., separate invocations of "--ppc var1[,var2]=val") */
+  int ppc_var_idx; /* [idx] Index over ppr_lst (i.e., all names explicitly specified in all "--ppc var1[,var2]=val" options) */
+  int ppc_var_nbr=0;
   kvmap_sct *ppc_lst;  /* [sct] PPC container */
   kvmap_sct kvm;
 
@@ -110,39 +111,41 @@ nco_ppc_ini /* Set PPC based on user specifications */
   ppc_lst=(kvmap_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvmap_sct));
 
   /* Parse PPCs */
-  for(idx=0;idx<ppc_nbr;idx++){
-    if(!strstr(ppc_arg[idx],"=")){
-      (void)fprintf(stdout,"%s: Invalid --ppc specification: %s\n",nco_prg_nm_get(),ppc_arg[idx]);
+  for(ppc_arg_idx=0;ppc_arg_idx<ppc_arg_nbr;ppc_arg_idx++){
+    if(!strstr(ppc_arg[ppc_arg_idx],"=")){
+      (void)fprintf(stdout,"%s: Invalid --ppc specification: %s. Must contain \"=\" sign.\n",nco_prg_nm_get(),ppc_arg[ppc_arg_idx]);
       if(ppc_lst) nco_kvmaps_free(ppc_lst);
       nco_exit(EXIT_FAILURE);
     } /* endif */
-    kvm=nco_sng2map(ppc_arg[idx],kvm);
+    kvm=nco_sng2map(ppc_arg[ppc_arg_idx],kvm);
+    /* nco_sng2map() converts argument "--ppc one,two=3" into kvm.key="one,two" and kvm.value=3
+       Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
     if(kvm.key){
-      char **items;
-      items=(char **)nco_malloc(BUFSIZ*sizeof(char *));
-      int idxi;
-      int item_nbr=nco_sng2array(",",kvm.key,items); /* multi-var specification */
-      for(idxi=0;idxi<item_nbr;idxi++){ /* expand multi-var specification */
-        ppc_lst[ippc].key=strdup(items[idxi]);
-        ppc_lst[ippc].value=strdup(kvm.value);
-        ippc++;
+      int var_idx; /* [idx] Index over variables in current PPC argument */
+      int var_nbr; /* [nbr] Number of variables in current PPC argument */
+      char **var_lst;
+      var_lst=nco_lst_prs_2D(kvm.key,",",&var_nbr);
+      for(var_idx=0;var_idx<var_nbr;var_idx++){ /* Expand multi-variable specification */
+        ppc_lst[ppc_var_nbr].key=strdup(var_lst[var_idx]);
+        ppc_lst[ppc_var_nbr].value=strdup(kvm.value);
+        ppc_var_nbr++;
       } /* end for */
-      items=(char **)nco_free(items);
+      var_lst=nco_sng_lst_free(var_lst,var_nbr);
     } /* end if */
   } /* end for */
 
   /* PPC default exists, set all non-coordinate variables to default first */
-  for(idx=0;idx<ippc;idx++){
-    if(!strcasecmp(ppc_lst[idx].key,"default")){
-      nco_ppc_set_dflt(nc_id,ppc_lst[idx].value,trv_tbl);
-      break; /* only one default is needed */
+  for(ppc_var_idx=0;ppc_var_idx<ppc_var_nbr;ppc_var_idx++){
+    if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default")){
+      nco_ppc_set_dflt(nc_id,ppc_lst[ppc_var_idx].value,trv_tbl);
+      break; /* Only one default is needed */
     } /* endif */
   } /* end for */
 
   /* Set explicit, non-default PPCs that can overwrite default */
-  for(idx=0;idx<ippc;idx++){
-    if(!strcasecmp(ppc_lst[idx].key,"default")) continue;
-    nco_ppc_set_var(ppc_lst[idx].key,ppc_lst[idx].value,trv_tbl);
+  for(ppc_var_idx=0;ppc_var_idx<ppc_var_nbr;ppc_var_idx++){
+    if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default")) continue;
+    nco_ppc_set_var(ppc_lst[ppc_var_idx].key,ppc_lst[ppc_var_idx].value,trv_tbl);
   } /* end for */
 
   /* Unset PPC and flag for all variables with excessive PPC
@@ -230,18 +233,18 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  int ppc;
+  int ppc_val;
   nco_bool flg_nsd=True; /* [flg] PPC is NSD */
 
   if(ppc_arg[0] == '.'){
     flg_nsd=False; /* DSD */
-    ppc=(int)strtol(ppc_arg+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    ppc_val=(int)strtol(ppc_arg+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg+1L,"strtol",sng_cnv_rcd);
   }else{ /* NSD */
-    ppc=(int)strtol(ppc_arg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    ppc_val=(int)strtol(ppc_arg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg,"strtol",sng_cnv_rcd);
-    if(ppc <= 0){
-      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be postive. Default is specified as %d. HINT: Decimal Significant Digit (DSD) rounding does accept negative arguments (number of digits in front of the decimal point). However, the DSD argument must be prefixed by a period or \"dot\", e.g., \"--ppc foo=.-2\", to distinguish it from NSD quantization.\n",nco_prg_nm_get(),ppc);
+    if(ppc_val <= 0){
+      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be postive. Default is specified as %d. HINT: Decimal Significant Digit (DSD) rounding does accept negative arguments (number of digits in front of the decimal point). However, the DSD argument must be prefixed by a period or \"dot\", e.g., \"--ppc foo=.-2\", to distinguish it from NSD quantization.\n",nco_prg_nm_get(),ppc_val);
       nco_exit(EXIT_FAILURE);
     } /* endif */    
   } /* end if */
@@ -256,7 +259,7 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
 	nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
 	nco_inq_varid(grp_id,trv_tbl->lst[idx_tbl].nm,&var_id);
 	if(!nco_is_spc_in_bnd_att(grp_id,var_id) && !nco_is_spc_in_crd_att(grp_id,var_id)){
-	  trv_tbl->lst[idx_tbl].ppc=ppc;
+	  trv_tbl->lst[idx_tbl].ppc=ppc_val;
 	  trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
 	} /* endif */
       } /* endif */
@@ -273,18 +276,18 @@ nco_ppc_set_var
   const char sls_chr='/'; /* [chr] Slash character */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   int mch_nbr=0;
-  int ppc;
+  int ppc_val;
   nco_bool flg_nsd=True; /* [flg] PPC is NSD */
 
   if(ppc_arg[0] == '.'){ /* DSD */
     flg_nsd=False;
-    ppc=(int)strtol(ppc_arg+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    ppc_val=(int)strtol(ppc_arg+1L,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg+1L,"strtol",sng_cnv_rcd);
   }else{ /* NSD */
-    ppc=(int)strtol(ppc_arg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    ppc_val=(int)strtol(ppc_arg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(ppc_arg,"strtol",sng_cnv_rcd);
-    if(ppc <= 0){
-      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be postive. Specified value for %s is %d. HINT: Decimal Significant Digit (DSD) rounding does accept negative arguments (number of digits in front of the decimal point). However, the DSD argument must be prefixed by a period or \"dot\", e.g., \"--ppc foo=.-2\", to distinguish it from NSD quantization.\n",nco_prg_nm_get(),var_nm,ppc);
+    if(ppc_val <= 0){
+      (void)fprintf(stdout,"%s ERROR Number of Significant Digits (NSD) must be postive. Specified value for %s is %d. HINT: Decimal Significant Digit (DSD) rounding does accept negative arguments (number of digits in front of the decimal point). However, the DSD argument must be prefixed by a period or \"dot\", e.g., \"--ppc foo=.-2\", to distinguish it from NSD quantization.\n",nco_prg_nm_get(),var_nm,ppc_val);
       nco_exit(EXIT_FAILURE);
     } /* endif */    
   } /* end else */
@@ -298,7 +301,7 @@ nco_ppc_set_var
     if(strchr(var_nm,sls_chr)){ /* Full name is used */
       /* Important difference between full- and short-name matching: Prepend carat to RX so full name matches must start at beginning of variable name */
       char *sng2mch;
-      sng2mch=(char *)nco_malloc(BUFSIZ*sizeof(char *));
+      sng2mch=(char *)nco_malloc(NC_MAX_VARS*sizeof(char *));
       sng2mch[0]='\0';
       strcat(sng2mch,"^");
       strcat(sng2mch,var_nm);
@@ -311,7 +314,7 @@ nco_ppc_set_var
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
         if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
 	  if(!regexec(rx,trv_tbl->lst[idx_tbl].nm_fll,rx_prn_sub_xpr_nbr,result,0)){
-	    trv_tbl->lst[idx_tbl].ppc=ppc;
+	    trv_tbl->lst[idx_tbl].ppc=ppc_val;
 	    trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
 	    mch_nbr++;
 	  } /* endif */
@@ -328,7 +331,7 @@ nco_ppc_set_var
       for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
         if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
 	  if(!regexec(rx,trv_tbl->lst[idx_tbl].nm,rx_prn_sub_xpr_nbr,result,0)){
-	    trv_tbl->lst[idx_tbl].ppc=ppc;
+	    trv_tbl->lst[idx_tbl].ppc=ppc_val;
 	    trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
 	    mch_nbr++;
 	  } /* endif */
@@ -346,7 +349,7 @@ nco_ppc_set_var
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
 	if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm_fll)){
-	  trv_tbl->lst[idx_tbl].ppc=ppc;
+	  trv_tbl->lst[idx_tbl].ppc=ppc_val;
 	  trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
 	  mch_nbr++;
 	  break; /* Only one match with full name */
@@ -357,7 +360,7 @@ nco_ppc_set_var
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
 	if(!strcmp(var_nm,trv_tbl->lst[idx_tbl].nm)){
-	  trv_tbl->lst[idx_tbl].ppc=ppc;
+	  trv_tbl->lst[idx_tbl].ppc=ppc_val;
 	  trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
 	  mch_nbr++;
 	} /* endif */
@@ -389,17 +392,6 @@ char *sng)
   sng[end]='\0';
   return sng;
 }/* end nco_sng_strip */
-
-int nco_sng2array(const char *dlm, const char *str, char **sarray)
-{
-  int idx=0;
-  char *tstr;
-  tstr=strdup(str);
-  sarray[idx]=strtok(tstr,dlm);
-  while(sarray[idx]) sarray[++idx]=strtok(NULL,dlm);
-  tstr=(char *)nco_free(tstr);
-  return idx;
-} /* end nco_sng2array */
 
 void nco_kvmaps_free(kvmap_sct *kvmaps)
 {

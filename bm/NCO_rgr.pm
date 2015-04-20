@@ -1349,7 +1349,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #05
-    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v int_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v int_var %tmp_fl_00%";
     $dsc_sng="extract variable of type NC_INT";
@@ -1359,7 +1358,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #06
-    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,0,0 -d lev,2,2 -d lon,0,,2 -d lon,1,,2 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tmp_fl_00%";
     $dsc_sng="Multi-slab lat and lon with srd";
@@ -1369,7 +1367,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #07
-    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tmp_fl_00%";
     $dsc_sng="Multi-slab with redundant hyperslabs";
@@ -1379,7 +1376,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #08
-    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0.,,2 -d lon,90.,,2 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tmp_fl_00%";
     $dsc_sng="Multi-slab with coordinates";
@@ -1387,7 +1383,6 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-    
     
     if(0){ # fxm use this test once script allows error exits to be intended result
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat -d lat,20.,20.001 $in_pth_arg in.nc %tmp_fl_00%";
@@ -1400,7 +1395,6 @@ print "\n";
     } # endif 0
     
 #ncks #09
-    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tmp_fl_00%";
     $dsc_sng="Double-wrapped hyperslab";
@@ -1410,7 +1404,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #10
-    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%6.0f' -d time_udunits,'1999-12-08 18:00:0.0','1999-12-09 12:00:0.0',2 -v time_udunits $in_pth_arg in.nc";
     $dsc_sng="dimension slice using UDUnits library (fails without UDUnits library support)";
@@ -1420,7 +1413,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #11
-    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lon_cal -d lon_cal,'1964-3-1 00:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -O -v -C -s 'lon_cln_ttl=lon_cal.total();print(lon_cln_ttl)' %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="lon_cln_ttl = 10";
@@ -1430,7 +1422,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #12
-
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat_cal -d lat_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -O -v -C -s 'lat_cln_ttl=lat_cal.total();print(lat_cln_ttl)' %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="lat_cln_ttl = 18";
@@ -1440,7 +1431,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #13
-
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' $in_pth_arg in.nc";
     $dsc_sng="dimension slice using UDUnit conversion (fails without UDUnits library support)";
     $tst_cmd[1]="1.0e-06";
@@ -1449,7 +1439,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #14
-
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v '^three_*' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -C -v three %tmp_fl_00%";
     $dsc_sng="variable wildcards A (fails without regex library)";
@@ -1459,7 +1448,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 
 #ncks #15
-
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v '^[a-z]{3}_[a-z]{3}_[a-z]{3,}\$' $in_pth_arg in.nc %tmp_fl_00%";
     # for this test, the regex is mod'ed                       ^
     $tst_cmd[1]="ncks -C -H -s '%d' -C -v val_one_int %tmp_fl_00%";
@@ -1480,7 +1468,6 @@ print "\n";
     } # endif 0
 
 #ncks #16
-
     $tst_cmd[0]="ncks -C -H -s '%d' -v byte_var $in_pth_arg in.nc";
     $dsc_sng="Print byte value";
     $tst_cmd[1]="122";
@@ -1489,7 +1476,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 
 #ncks #17
-
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v cnv_CF_crd $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lon_gds -d gds_crd,2 %tmp_fl_00%";
     $dsc_sng="CF convention coordinates attribute";
@@ -1499,7 +1485,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncks #18 
-
     $tst_cmd[0]="ncatted -O $fl_fmt $nco_D_flg -a _FillValue,global,c,l,222 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -v -O -s 'n2=global\@_FillValue;' %tmp_fl_01% %tmp_fl_02%";

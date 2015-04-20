@@ -155,7 +155,7 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
-  nco_bool flg_rgr=True; /* [flg] Regrid */
+  nco_bool flg_rgr=False; /* [flg] Regrid */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;

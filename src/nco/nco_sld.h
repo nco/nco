@@ -50,11 +50,6 @@ extern "C" {
   (char *str,
    kvmap_sct kvm);
   
-  int nco_sng2array /* [fnc] Split string by delimite to subarray and return size of subarray */
-  (const char *delim,
-   const char *str,
-   char **sarray);
-
   char *
   nco_sng_strip /* [fnc] Remove leading and trailing blanks */
   (char *str);
