@@ -35,10 +35,26 @@
 extern "C" {
 #endif /* __cplusplus */
 
- typedef struct {
-   char *key;
-   char *value;
- } kvmap_sct;
+  typedef enum nco_tmr_typ_enm{ /* [enm] Tempest remap type enum */
+    nco_tmr_AAA_nil=0,
+    nco_tmr_ApplyOfflineMap,
+    nco_tmr_CalculateDiffNorms,
+    nco_tmr_GenerateCSMesh,
+    nco_tmr_GenerateGLLMetaData,
+    nco_tmr_GenerateICOMesh,
+    nco_tmr_GenerateLambertConfConicMesh,
+    nco_tmr_GenerateOfflineMap,
+    nco_tmr_GenerateOverlapMesh,
+    nco_tmr_GenerateRLLMesh,
+    nco_tmr_GenerateTestData,
+    nco_tmr_MeshToTxt,
+    nco_tmr_ZZZ_last
+  } nco_tmr_typ;
+
+  typedef struct{
+    char *key;
+    char *value;
+  } kvmap_sct;
  
   int
   nco_scrip_read /* [fnc] Handle SCRIP file */

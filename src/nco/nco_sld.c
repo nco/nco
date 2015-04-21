@@ -531,15 +531,17 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
 
-  const char cmd_rgr_GenerateRLLMesh_fmt[]="GenerateRLLMesh --lat %d --lon %d --file %s";
   const int fmt_chr_nbr=6;
-  char *cmd_rgr_fmt;
   char *cmd_rgr;
   char fl_grd_dst[]="/tmp/foo_outRLLMesh.g";
   char *fl_grd_dst_cdl;
   int rcd_sys;
   int lat_nbr_rqs=180;
   int lon_nbr_rqs=360;
+  nco_tmr_typ nco_tmr_cmd; /* [enm] Tempest remap type enum */
+  const char *cmd_rgr_fmt[nco_tmr_ZZZ_last];
+  cmd_rgr_fmt[nco_tmr_AAA_nil]=strdup("Undefined Tempest remap operation");
+  cmd_rgr_fmt[nco_tmr_GenerateRLLMesh]=strdup("GenerateRLLMesh --lat %d --lon %d --file %s");
   
   /* Allow for whitespace characters in fl_grd_dst
      Assume CDL translation results in acceptable name for shell commands */
@@ -548,10 +550,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   //drc_dat=strcat(drc_dat,fl_grd_dst);
 
   /* Construct and execute regridding command */
-  cmd_rgr_fmt=strdup(cmd_rgr_GenerateRLLMesh_fmt);
-  cmd_rgr=(char *)nco_malloc((strlen(cmd_rgr_fmt)+strlen(fl_grd_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+  nco_tmr_cmd=nco_tmr_GenerateRLLMesh;
+  cmd_rgr=(char *)nco_malloc((strlen(cmd_rgr_fmt[nco_tmr_cmd])+strlen(fl_grd_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: Generating %d by %d RLL mesh in %s...\n",nco_prg_nm_get(),lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst);
-  (void)sprintf(cmd_rgr,cmd_rgr_fmt,lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst_cdl);
+  (void)sprintf(cmd_rgr,cmd_rgr_fmt[nco_tmr_cmd],lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst_cdl);
   rcd_sys=system(cmd_rgr);
   if(rcd_sys == -1){
     (void)fprintf(stdout,"%s: ERROR %s is unable to complete regridding command \"%s\"\n",nco_prg_nm_get(),fnc_nm,cmd_rgr);
@@ -562,7 +564,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Clean-up memory */
   if(fl_grd_dst_cdl) fl_grd_dst_cdl=(char *)nco_free(fl_grd_dst_cdl);
   if(cmd_rgr) cmd_rgr=(char *)nco_free(cmd_rgr);
-  if(cmd_rgr_fmt) cmd_rgr_fmt=(char *)nco_free(cmd_rgr_fmt);
   
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
