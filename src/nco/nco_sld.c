@@ -470,6 +470,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Purpose: Initialize regriding structure */
      
   /* Sample calls:
+     Debugging:
+     ncks -O --rgr=Y -D 5 ${DATA}/rgr/dstmch90_clm.nc ~/foo.nc
+
      T42->T42 from scratch, minimal arguments:
      ncks -O --rgr=Y ${DATA}/rgr/dstmch90_clm.nc ~/foo.nc
      T42->T42 from scratch, explicit arguments:
@@ -509,13 +512,57 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"flg_usr_rqs = %d, ",rgr_nfo->flg_usr_rqs);
     (void)fprintf(stderr,"rgr_nbr = %d, ",rgr_nfo->rgr_nbr);
-    (void)fprintf(stderr,"fl_grd_src = %s, ",rgr_nfo->fl_grd_src);
-    (void)fprintf(stderr,"fl_grd_dst = %s, ",rgr_nfo->fl_grd_dst);
-    (void)fprintf(stderr,"fl_in = %s, ",rgr_nfo->fl_in);
-    (void)fprintf(stderr,"fl_out = %s, ",rgr_nfo->fl_out);
-    (void)fprintf(stderr,"fl_out_tmp = %s, ",rgr_nfo->fl_out_tmp);
-    (void)fprintf(stderr,"fl_map = %s, ",rgr_nfo->fl_map);
+    (void)fprintf(stderr,"fl_grd_src = %s, ",rgr_nfo->fl_grd_src ? rgr_nfo->fl_grd_src : "NULL");
+    (void)fprintf(stderr,"fl_grd_dst = %s, ",rgr_nfo->fl_grd_dst ? rgr_nfo->fl_grd_dst : "NULL");
+    (void)fprintf(stderr,"fl_in = %s, ",rgr_nfo->fl_in ? rgr_nfo->fl_in : "NULL");
+    (void)fprintf(stderr,"fl_out = %s, ",rgr_nfo->fl_out ? rgr_nfo->fl_out : "NULL");
+    (void)fprintf(stderr,"fl_out_tmp = %s, ",rgr_nfo->fl_out_tmp ? rgr_nfo->fl_out_tmp : "NULL");
+    (void)fprintf(stderr,"fl_map = %s, ",rgr_nfo->fl_map ? rgr_nfo->fl_map : "NULL");
+    (void)fprintf(stderr,"\n");
   } /* endif dbg */
+  
+  char *nvr_DATA_TEMPEST; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
+  nvr_DATA_TEMPEST=getenv("DATA_TEMPEST");
+  rgr_nfo->drc_dat= (nvr_DATA_TEMPEST && strlen(nvr_DATA_TEMPEST) > 0) ? (char *)strdup(nvr_DATA_TEMPEST) : (char *)strdup("/tmp");
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+    (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"nvr_DATA_TEMPEST = %s, ",nvr_DATA_TEMPEST ? nvr_DATA_TEMPEST : "NULL");
+    (void)fprintf(stderr,"drc_dat = %s, ",rgr_nfo->drc_dat ? rgr_nfo->drc_dat : "NULL");
+    (void)fprintf(stderr,"\n");
+  } /* endif dbg */
+
+  const char cmd_rgr_GenerateRLLMesh_fmt[]="GenerateRLLMesh --lat %d --lon %d --file %s";
+  const int fmt_chr_nbr=6;
+  char *cmd_rgr_fmt;
+  char *cmd_rgr;
+  char fl_grd_dst[]="/tmp/foo_outRLLMesh.g";
+  char *fl_grd_dst_cdl;
+  int rcd_sys;
+  int lat_nbr_rqs=180;
+  int lon_nbr_rqs=360;
+  
+  /* Allow for whitespace characters in fl_grd_dst
+     Assume CDL translation results in acceptable name for shell commands */
+  fl_grd_dst_cdl=nm2sng_fl(fl_grd_dst);
+  //drc_dat=strcat(drc_dat,"/");
+  //drc_dat=strcat(drc_dat,fl_grd_dst);
+
+  /* Construct and execute regridding command */
+  cmd_rgr_fmt=strdup(cmd_rgr_GenerateRLLMesh_fmt);
+  cmd_rgr=(char *)nco_malloc((strlen(cmd_rgr_fmt)+strlen(fl_grd_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: Generating %d by %d RLL mesh in %s...\n",nco_prg_nm_get(),lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst);
+  (void)sprintf(cmd_rgr,cmd_rgr_fmt,lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst_cdl);
+  rcd_sys=system(cmd_rgr);
+  if(rcd_sys == -1){
+    (void)fprintf(stdout,"%s: ERROR %s is unable to complete regridding command \"%s\"\n",nco_prg_nm_get(),fnc_nm,cmd_rgr);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+
+  /* Clean-up memory */
+  if(fl_grd_dst_cdl) fl_grd_dst_cdl=(char *)nco_free(fl_grd_dst_cdl);
+  if(cmd_rgr) cmd_rgr=(char *)nco_free(cmd_rgr);
+  if(cmd_rgr_fmt) cmd_rgr_fmt=(char *)nco_free(cmd_rgr_fmt);
   
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
@@ -532,6 +579,9 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr_nfo->fl_out) rgr_nfo->fl_out=(char *)nco_free(rgr_nfo->fl_out);
   if(rgr_nfo->fl_out_tmp) rgr_nfo->fl_out_tmp=(char *)nco_free(rgr_nfo->fl_out_tmp);
   if(rgr_nfo->fl_map) rgr_nfo->fl_map=(char *)nco_free(rgr_nfo->fl_map);
+
+  /* Tempest */
+  if(rgr_nfo->drc_dat) rgr_nfo->drc_dat=(char *)nco_free(rgr_nfo->drc_dat);
 } /* end nco_rfr_free() */
   
 int /* O [enm] Return code */

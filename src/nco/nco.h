@@ -878,6 +878,7 @@ extern "C" {
   
   /* Regrid structure */
   typedef struct{ /* rgr_sct */
+    char *drc_dat; /* [sng] Data directory for Tempest grids, meshes, and weights */
     char *fl_grd_src; /* [sng] File containing input grid */
     char *fl_grd_dst; /* [sng] File containing destination grid */
     char *fl_in; /* [sng] File containing fields to be regridded */

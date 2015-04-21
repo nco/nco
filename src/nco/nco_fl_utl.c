@@ -234,7 +234,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
   int rcd;
   const int fmt_chr_nbr=4;
 
-  /* Only bother to perform system() call if files are not identical */
+  /* Perform system() call iff files are not identical */
   if(!strcmp(fl_src,fl_dst)){
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to copy.\n",nco_prg_nm_get(),fl_src);
     return;
