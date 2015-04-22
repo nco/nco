@@ -537,12 +537,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   char *fl_grd_dst_cdl;
   int rcd_sys;
   int lat_nbr_rqs=180;
-  int lon_nbr_rqs=360;
-  nco_tmr_typ nco_tmr_cmd; /* [enm] Tempest remap type enum */
-  const char *cmd_rgr_fmt[nco_tmr_ZZZ_last];
-  cmd_rgr_fmt[nco_tmr_AAA_nil]=strdup("Undefined Tempest remap operation");
-  cmd_rgr_fmt[nco_tmr_GenerateRLLMesh]=strdup("GenerateRLLMesh --lat %d --lon %d --file %s");
-  
+ int lon_nbr_rqs=360;
+  nco_rgr_cmd_typ nco_rgr_cmd; /* [enm] Tempest remap command enum */
+  const char *cmd_rgr_fmt;
+
   /* Allow for whitespace characters in fl_grd_dst
      Assume CDL translation results in acceptable name for shell commands */
   fl_grd_dst_cdl=nm2sng_fl(fl_grd_dst);
@@ -550,10 +548,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   //drc_dat=strcat(drc_dat,fl_grd_dst);
 
   /* Construct and execute regridding command */
-  nco_tmr_cmd=nco_tmr_GenerateRLLMesh;
-  cmd_rgr=(char *)nco_malloc((strlen(cmd_rgr_fmt[nco_tmr_cmd])+strlen(fl_grd_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+  nco_rgr_cmd=nco_rgr_GenerateRLLMesh;
+  cmd_rgr_fmt=nco_rgr_cmd_fmt_sng(nco_rgr_cmd);
+  cmd_rgr=(char *)nco_malloc((strlen(cmd_rgr_fmt)+strlen(fl_grd_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: Generating %d by %d RLL mesh in %s...\n",nco_prg_nm_get(),lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst);
-  (void)sprintf(cmd_rgr,cmd_rgr_fmt[nco_tmr_cmd],lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst_cdl);
+  (void)sprintf(cmd_rgr,cmd_rgr_fmt,lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst_cdl);
   rcd_sys=system(cmd_rgr);
   if(rcd_sys == -1){
     (void)fprintf(stdout,"%s: ERROR %s is unable to complete regridding command \"%s\"\n",nco_prg_nm_get(),fnc_nm,cmd_rgr);
@@ -585,6 +584,93 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr_nfo->drc_dat) rgr_nfo->drc_dat=(char *)nco_free(rgr_nfo->drc_dat);
 } /* end nco_rfr_free() */
   
+const char * /* O [sng] String containing regridding command and format */
+nco_rgr_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
+(const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] Tempest remap command enum */
+{
+  /* Purpose: Convert Tempest remap command enum to command string and format */
+  switch(nco_rgr_cmd){
+  case nco_rgr_ApplyOfflineMap:
+    return "ApplyOfflineMap";
+  case nco_rgr_CalculateDiffNorms:
+    return "CalculateDiffNorms";
+  case nco_rgr_GenerateCSMesh:
+    return "GenerateCSMesh --res %d --file %s";
+  case nco_rgr_GenerateGLLMetaData:
+    return "GenerateGLLMetaData";
+  case nco_rgr_GenerateICOMesh:
+    return "GenerateICOMesh";
+  case nco_rgr_GenerateLambertConfConicMesh:
+    return "GenerateLambertConfConicMesh";
+  case nco_rgr_GenerateOfflineMap:
+    return "GenerateOfflineMap --in_mesh %s --out_mesh %s --ov_mesh %s --in_data %s --out_data %s";
+  case nco_rgr_GenerateOverlapMesh:
+    return "GenerateOverlapMesh --a %s --b %s --out %s";
+  case nco_rgr_GenerateRLLMesh:
+    return "GenerateRLLMesh --lat %d --lon %d --file %s";
+  case nco_rgr_GenerateTestData:
+    return "GenerateTestData --mesh %s --np %d --test %d --out %s";
+  case nco_rgr_MeshToTxt:
+    return "MeshToTxt";
+  case nco_rgr_AAA_nil:
+  case nco_rgr_ZZZ_last:
+  default: nco_dfl_case_rgr_cmd_err(); break;
+  } /* end switch */
+  
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_rgr_cmd_fmt_sng() */
+
+const char * /* O [sng] String containing regridding command name */
+nco_rgr_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
+(const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] Tempest remap command enum */
+{
+  /* Purpose: Convert Tempest remap command enum to command string */
+  switch(nco_rgr_cmd){
+  case nco_rgr_ApplyOfflineMap:
+    return "ApplyOfflineMap";
+  case nco_rgr_CalculateDiffNorms:
+    return "CalculateDiffNorms";
+  case nco_rgr_GenerateCSMesh:
+    return "GenerateCSMesh";
+  case nco_rgr_GenerateGLLMetaData:
+    return "GenerateGLLMetaData";
+  case nco_rgr_GenerateICOMesh:
+    return "GenerateICOMesh";
+  case nco_rgr_GenerateLambertConfConicMesh:
+    return "GenerateLambertConfConicMesh";
+  case nco_rgr_GenerateOfflineMap:
+    return "GenerateOfflineMap";
+  case nco_rgr_GenerateOverlapMesh:
+    return "GenerateOverlapMesh";
+  case nco_rgr_GenerateRLLMesh:
+    return "GenerateRLLMesh";
+  case nco_rgr_GenerateTestData:
+    return "GenerateTestData";
+  case nco_rgr_MeshToTxt:
+    return "MeshToTxt";
+  case nco_rgr_AAA_nil:
+  case nco_rgr_ZZZ_last:
+  default: nco_dfl_case_rgr_cmd_err(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_rgr_cmd_sng() */
+
+void
+nco_dfl_case_rgr_cmd_err(void) /* [fnc] Print error and exit for illegal switch(nco_rgr_cmd) case */
+{
+  /* Purpose: Convenience routine for printing error and exiting when
+     switch(nco_rgr_cmd) statement receives an illegal default case
+
+     Placing this in its own routine also has the virtue of saving many lines
+     of code since this function is used in many many switch() statements. */
+  const char fnc_nm[]="nco_dfl_case_rgr_cmd_err()";
+  (void)fprintf(stdout,"%s: ERROR switch(nco_rgr_cmd) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(nco_cmd_err) statements are fully enumerated. Exiting...\n",fnc_nm);
+  nco_err_exit(0,fnc_nm);
+} /* end nco_dfl_case_rgr_cmd_err() */
+
 int /* O [enm] Return code */
 nco_rgr_esmf /* [fnc] Regrid using ESMF library */
 (rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
@@ -938,4 +1024,5 @@ nco_ESMF_RegridWeightGen
   
   // NCO writes output..
 }
+
 #endif /* endif False */

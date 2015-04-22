@@ -1,6 +1,8 @@
 2015-04-21  Charlie Zender  <zender@uci.edu>
 
-	* Enumerate Tempest remap (tmr) commands
+	* Utilize extensible functions to format/access Tempest regridding commands
+
+	* Enumerate Tempest (tps) rename commands
 
 2015-04-20  Charlie Zender  <zender@uci.edu>
 

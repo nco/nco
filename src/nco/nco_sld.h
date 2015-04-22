@@ -35,21 +35,21 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  typedef enum nco_tmr_typ_enm{ /* [enm] Tempest remap type enum */
-    nco_tmr_AAA_nil=0,
-    nco_tmr_ApplyOfflineMap,
-    nco_tmr_CalculateDiffNorms,
-    nco_tmr_GenerateCSMesh,
-    nco_tmr_GenerateGLLMetaData,
-    nco_tmr_GenerateICOMesh,
-    nco_tmr_GenerateLambertConfConicMesh,
-    nco_tmr_GenerateOfflineMap,
-    nco_tmr_GenerateOverlapMesh,
-    nco_tmr_GenerateRLLMesh,
-    nco_tmr_GenerateTestData,
-    nco_tmr_MeshToTxt,
-    nco_tmr_ZZZ_last
-  } nco_tmr_typ;
+  typedef enum nco_rgr_cmd_typ_enm{ /* [enm] Tempest remap type enum */
+    nco_rgr_AAA_nil=0,
+    nco_rgr_ApplyOfflineMap,
+    nco_rgr_CalculateDiffNorms,
+    nco_rgr_GenerateCSMesh,
+    nco_rgr_GenerateGLLMetaData,
+    nco_rgr_GenerateICOMesh,
+    nco_rgr_GenerateLambertConfConicMesh,
+    nco_rgr_GenerateOfflineMap,
+    nco_rgr_GenerateOverlapMesh,
+    nco_rgr_GenerateRLLMesh,
+    nco_rgr_GenerateTestData,
+    nco_rgr_MeshToTxt,
+    nco_rgr_ZZZ_last
+  } nco_rgr_cmd_typ;
 
   typedef struct{
     char *key;
@@ -124,6 +124,18 @@ extern "C" {
   int /* O [enm] Return code */
   nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
+
+  void
+  nco_dfl_case_rgr_cmd_err(void); /* [fnc] Print error and exit for illegal switch(nco_rgr_cmd) case */
+
+  const char * /* O [sng] String containing regridding command and format */
+  nco_rgr_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
+  (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
+
+  const char * /* O [sng] String containing regridding command name */
+  nco_rgr_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
+  (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
+
 #endif /* !ENABLE_ESMF */
 
 #ifdef __cplusplus
