@@ -1,5 +1,7 @@
 2015-04-23  Charlie Zender  <zender@uci.edu>
 
+	* Annotate ESMF variables and calls, search for bug in call to ESMC_GridCreateFromFile()
+
 	* Add regression test for unchunking variables with _Shuffle set
 
 2015-04-21  Charlie Zender  <zender@uci.edu>

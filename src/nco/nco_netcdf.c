@@ -548,7 +548,7 @@ nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(
      NETCDF2_ONLY.
      This makes the behavior easy to modify or remove in the future.
 
-     Placing this in its own routine also has the virtue of saving many lines
+     Placing this in its own routine saves many lines
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_nc_type_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal, because each type should have a well-defined action. This error may be triggered by using an NCO built with only netCDF3 functionality to examine a netCDF4 dataset that contains a new atomic type (e.g., NC_INT64).\nHINT: Configure/build NCO with --enable-netCDF4. Exiting...\n",fnc_nm);
@@ -583,7 +583,7 @@ nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(n
   /* Purpose: Convenience routine for printing error and exiting when
      switch(nco_prg_id) statement receives an illegal default case
 
-     Placing this in its own routine also has the virtue of saving many lines
+     Placing this in its own routine saves many lines
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_prg_id_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nco_prg_id) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(nco_prg_id) statements are fully enumerated. Exiting...\n",fnc_nm);

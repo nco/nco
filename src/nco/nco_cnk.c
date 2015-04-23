@@ -110,7 +110,7 @@ nco_dfl_case_cnk_map_err(void) /* [fnc] Print error and exit for illegal switch(
   /* Purpose: Convenience routine for printing error and exiting when
      switch(cnk_map) statement receives an illegal default case
 
-     Placing this in its own routine also has the virtue of saving many lines 
+     Placing this in its own routine saves many lines 
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_cnk_map_err()";
   (void)fprintf(stdout,"%s: ERROR switch(cnk_map) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(cnk_map) statements are fully enumerated. Exiting...\n",fnc_nm);
@@ -123,7 +123,7 @@ nco_dfl_case_cnk_plc_err(void) /* [fnc] Print error and exit for illegal switch(
   /* Purpose: Convenience routine for printing error and exiting when
      switch(cnk_plc) statement receives an illegal default case
 
-     Placing this in its own routine also has the virtue of saving many lines 
+     Placing this in its own routine saves many lines 
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_cnk_plc_err()";
   (void)fprintf(stdout,"%s: ERROR switch(cnk_plc) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(cnk_plc) statements are fully enumerated. Exiting...\n",fnc_nm);

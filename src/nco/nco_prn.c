@@ -2459,7 +2459,7 @@ nco_dfl_case_fmt_xtn_err(void) /* [fnc] Print error and exit for illegal switch(
   /* Purpose: Convenience routine for printing error and exiting when
      switch(nco_fmt_xtn) statement receives an illegal default case
 
-     Placing this in its own routine also has the virtue of saving many lines
+     Placing this in its own routine saves many lines
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_fmt_xtn_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nco_fmt_xtn) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(nco_fmt_xtn) statements are fully enumerated. Exiting...\n",fnc_nm);

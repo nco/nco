@@ -344,7 +344,7 @@ nco_dfl_case_nctype_err(void) // [fnc] Handle illegal nc_type references
      NETCDF2_ONLY.
      This makes the behavior easy to modify or remove in the future.
 
-     Placing this in its own routine also has the virtue of saving many lines 
+     Placing this in its own routine saves many lines 
      of code since this function is used in many many switch() statements. */
   const std::string sbr_nm("nco_dfl_case_nctype_err()");
   std::cout << sbr_nm << ": ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype defintion is braindead in netCDF2). Exiting..." << std::endl;
