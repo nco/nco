@@ -383,18 +383,19 @@ char *sng)
   /* fxm: seems not working for \n??? */
   char *srt=sng;
   while(isspace(*srt)) srt++;
-  int end=strlen(srt);
+  size_t end=strlen(srt);
   if(srt != sng){
     memmove(sng,srt,end);
     sng[end]='\0';
   } /* endif */
-  while(isblank(*(sng+end-1))) end--;
+  while(isblank(*(sng+end-1L))) end--;
   sng[end]='\0';
   return sng;
-}/* end nco_sng_strip */
+} /* end nco_sng_strip() */
 
 void nco_kvmaps_free(kvmap_sct *kvmaps)
 {
+  /* Purpose: Relinquish dynamic memory from list of kvmaps structures */
   int idx=0;
   while(kvmaps[idx].key){
     kvmaps[idx].key=(char *)nco_free(kvmaps[idx].key);
@@ -406,10 +407,8 @@ void nco_kvmaps_free(kvmap_sct *kvmaps)
 
 void nco_kvmap_prn(kvmap_sct vm)
 {
-  if(!vm.key) return;
-  (void)fprintf(stdout,"%s=",vm.key);
-  (void)fprintf(stdout,"%s\n",vm.value);
-} /* end nco_kvmap_prn */
+  if(vm.key) (void)fprintf(stdout,"%s = %s\n",vm.key,vm.value); else return;
+} /* end nco_kvmap_prn() */
 
 int /* O [rcd] Return code */
 nco_scrip_read /* [fnc] Read, parse, and print contents of SCRIP file */
@@ -974,26 +973,6 @@ rgr_cln:
 #endif /* !ENABLE_ESMF */
 
 #if 0
-int
-nco_ESMF_Regrid
-(wgt,
- data_in,
- &data_out
- ){
-  // Given weights and data, do regridding
-  ESMF_Regrid(wgt,data_in,data_);
-  // write data_out
-}
-
-int
-nco_rgr_wgt_grd_mk();
-
-typedef struct{
-  char *fl_grd_in;
-  char *fl_grd_out;
-  int flg_1 foo;
-} rgr_wgt_sct;
-
 int
 nco_rgr_wgt_grd_mk
 (rgr_wgt_sct *rgr_wgt){

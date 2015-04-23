@@ -10602,19 +10602,21 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 
 @html
 <a name="ncap_num"></a> <!-- http://nco.sf.net/nco.html#ncap_num -->
+<a name="ncap_string"></a> <!-- http://nco.sf.net/nco.html#ncap_string -->
 @end html
 @node Number literals, if statement, Attributes, ncap2 netCDF Arithmetic Processor
 @subsection Number literals
 @cindex number literals @command{ncap2}
 The table below lists the postfix character(s) to add to a number
-literal (aka a naked constant) for explicit type specification.
+literal (aka, a naked constant) for explicit type specification.
+The same type-specification rules are used for variables and
+attributes. 
 A floating point number without a postfix defaults to @code{NC_DOUBLE}, 
-and an integer without a postfix defaults to type @code{NC_INT}:
-
+while an integer without a postfix defaults to type @code{NC_INT}:
 @example
 @verbatim
-var[$rlev]=0.1      // Variable will be type @code{NC_DOUBLE}
-var[$lon_grd]=2.0   // Variable will be type @code{NC_DOUBLE}
+var[$rlev]=0.1;     // Variable will be type @code{NC_DOUBLE}
+var[$lon_grd]=2.0;  // Variable will be type @code{NC_DOUBLE}
 var[$gds_crd]=2e3;  // Variable will be type @code{NC_DOUBLE}
 var[$gds_crd]=2.0f; // Variable will be type @code{NC_FLOAT} (note "f")
 var[$gds_crd]=2e3f; // Variable will be type @code{NC_FLOAT} (note "f")
@@ -10622,36 +10624,36 @@ var[$gds_crd]=2;    // Variable will be type @code{NC_INT}
 var[$gds_crd]=-3;   // Variable will be type @code{NC_INT}
 var[$gds_crd]=2s;   // Variable will be type @code{NC_SHORT}
 var[$gds_crd]=-3s;  // Variable will be type @code{NC_SHORT}
-var@att=41.;         // Attribute will be type @code{NC_DOUBLE}
-var@att=41.f;         // Attribute will be type @code{NC_FLOAT}
+var@att=41.;        // Attribute will be type @code{NC_DOUBLE}
+var@att=41.f;       // Attribute will be type @code{NC_FLOAT}
 var@att=41;         // Attribute will be type @code{NC_INT}
 var@att=-21s;       // Attribute will be type @code{NC_SHORT}  
-var@units="kelvin"  // Attribute will be type @code{NC_CHAR}
+var@units="kelvin"; // Attribute will be type @code{NC_CHAR}
 @end verbatim
 @end example 
-The same type-specification rules are used for variables and
-attributes. 
-To use the newer netCDF4 types @acronym{NCO} must be compiled/linked to
-the netCDF4 library and the output file must be of type @code{NETCDF4}:
-@example
-@verbatim
-var[$time]=1UL;      // n1 will be type @code{NC_UINT}
-var[$lon]=4b;        // n2 will be type @code{NC_BYTE}
-var[$lat]=5ull;     // n3 will be type @code{NC_UINT64}  
-var@att=6.0d;        // Attribute will be type @code{NC_DOUBLE}
-var@att=-666L;       // Attribute will be type @code{NC_INT}
-var@att="kelvin"s // Attribute will be type @code{NC_STRING} (note the "s")
-@end verbatim
-@end example
-
-@cindex @code{NC_CHAR}
-@cindex @code{NC_STRING}
 There is no postfix for characters, use a quoted string instead for 
-@code{NC_CHAR} and a post-quote @samp{s} for @code{NC_STRING}.
+@code{NC_CHAR}.
 @command{ncap2} interprets a standard double-quoted string as a value
 of type @code{NC_CHAR}. 
 In this case, any receiving variable must be dimensioned as an array
 of @code{NC_CHAR} long enough to hold the value.
+
+To use the newer netCDF4 types @acronym{NCO} must be compiled/linked to
+the netCDF4 library and the output file must be of type @code{NETCDF4}:
+@example
+@verbatim
+var[$time]=1UL;    // Variable will be type @code{NC_UINT}
+var[$lon]=4b;      // Variable will be type @code{NC_BYTE}
+var[$lat]=5ull;    // Variable will be type @code{NC_UINT64}  
+var[$lat]=5ll;    // Variable will be type @code{NC_INT64}  
+var@att=6.0d;      // Attribute will be type @code{NC_DOUBLE}
+var@att=-666L;     // Attribute will be type @code{NC_INT}
+var@att="kelvin"s; // Attribute will be type @code{NC_STRING} (note the "s")
+@end verbatim
+@end example
+@cindex @code{NC_CHAR}
+@cindex @code{NC_STRING}
+Use a post-quote @samp{s} for @code{NC_STRING}.
 Place the letter @samp{s} immediately following the double-quoted string
 to indicate that the value is of type @code{NC_STRING}.
 In this case, the receiving variable need not have any memory allocated

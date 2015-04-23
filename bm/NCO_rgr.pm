@@ -97,19 +97,18 @@ if($? == -1){
 #  my $exit_value=$? >> 8;
     my $exit_value=$?;
 
-  # nco_get_prg_info() returns codes
+  # nco_get_prg_info() returns codes:
   # 3 (for library 3.x)
   # 410 (for library 4.1.x)
   # 430 (for library 4.3.0)
+  # 433 (for library 4.3.3)
 
   if($exit_value >= 400){$RUN_NETCDF4_TESTS=1;}
   if($exit_value >= 431){$RUN_NETCDF4_TESTS_VERSION_GE_431=1;}
-
   if($exit_value == 410){print "netCDF version 4.1.x detected\n";}
   if($exit_value == 431){print "netCDF version 4.3.1 detected\n";}
   if($exit_value == 432){print "netCDF version 4.3.2 detected\n";}
   if($exit_value == 433){print "netCDF version 4.3.3 detected\n";}
-
 }
 print "\n";
 
@@ -1863,16 +1862,6 @@ print "\n";
 # 1) Limits
 # 2) MSA
 # 3) Chunking
-#
-# ncks eliminate lmt_all array and replace with GTT (Group Traversal Table)
-#structure that stores full path names for dimensions and coordinate variables.
-#	nco_xtr_wrt_trv() writes extracted data to output file
-#nco_xtr_dfn_trv() defines extracted groups, variables, and attributes in output file
-#	nco_prn_xtr_val_trv() prints variable data
-#
-#	* ncks limits are stored in the GTT dimension structure and MSA is applied.
-#	Distribute these to variables when writing with nco_prn_var_val_trv().
-#	nco_bld_lmt_trv() assigns user specified dimension limits to traversal table dimensions.   
 
 # Chunking tests
  
@@ -1896,9 +1885,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			 
     
-# 
 # Limit/MSA tests
-#
 
 #ncks #56:
 # ncks -H -C --dmn time,1,3,2 --dmn lev,1,1,1 -v two_dmn_rec_var ~/nco/data/in_grp.nc
@@ -2345,20 +2332,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
-    if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
-
-#ncks #93
-#ncks -O -D 5 -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst ~/nco/data/hdn.nc ~/foo.nc
-    $dsc_sng="Chunking multiple variables while hyperslabbing";
-    $tst_cmd[0]="ncks -O $nco_D_flg -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst $in_pth_arg hdn.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -v one %tmp_fl_00% | grep 'chunksize'";
-    $tst_cmd[2]="one dimension 0: /lat, size = 1, chunksize = 1 (Non-coordinate dimension)";
-    $tst_cmd[3]="SS_OK";   
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array
-
-    } # RUN_NETCDF4_TESTS_VERSION_GE_431
-	
 #ncks #94
 #ncks -O -C -H -d lon,-1 -v lon ~/nco/data/in.nc
     $dsc_sng="Select last element using negative one index";
@@ -2508,6 +2481,30 @@ print "\n";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
+	
+    if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
+
+#ncks #93
+#ncks -O -D 5 -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst ~/nco/data/hdn.nc ~/foo.nc
+    $dsc_sng="Chunking multiple variables while hyperslabbing";
+    $tst_cmd[0]="ncks -O $nco_D_flg -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst $in_pth_arg hdn.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -v one %tmp_fl_00% | grep 'chunksize'";
+    $tst_cmd[2]="one dimension 0: /lat, size = 1, chunksize = 1 (Non-coordinate dimension)";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+#ncks #107
+#ncks -O -D 5 -C -d lat,0 -v var_shf --cnk_plc=uck ~/nco/data/hdn.nc ~/foo.nc
+    $dsc_sng="Unchunking variable with Shuffle flag set";
+    $tst_cmd[0]="ncks -O $nco_D_flg -C -v var_shf --cnk_plc=uck $in_pth_arg hdn.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks --hdn -v var_shf %tmp_fl_00% | grep 'Storage'";
+    $tst_cmd[2]="var_shf attribute 1: _Storage, size = 10 NC_CHAR, value = contiguous";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+    } # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #####################
 #### ncpdq tests #### -OK !

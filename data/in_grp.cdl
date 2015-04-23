@@ -83,8 +83,8 @@ netcdf in_grp {
   float one;
   
   float val_one_mss(lat);
- val_one_mss:long_name = "one regular value, one missing value";
- val_one_mss:_FillValue = 1.0e36f;
+  val_one_mss:long_name = "one regular value, one missing value";
+  val_one_mss:_FillValue = 1.0e36f;
 
   float scl;
   
@@ -115,9 +115,6 @@ netcdf in_grp {
   unique=73;
   val_one_mss=1.,1.0e36;
 
-  //
-  //g1
-  //
  group: g1 { 
   :history = "History group attribute.\n";
   variables:
@@ -185,9 +182,6 @@ netcdf in_grp {
     } // end g1:g2
   } // end g1
   
-  //
-  //g2
-  //
  group: g2 { 
   variables:
     //coordinate variable (dimension at root)
@@ -200,9 +194,6 @@ netcdf in_grp {
     scl=1.2;
   } // end g2
   
-  //
-  //g4
-  //
  group: g4 { 
   variables:
   double ppc_dbl(time);
@@ -231,9 +222,6 @@ netcdf in_grp {
     one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;  
   } // end g4
   
- //
- //g5
- //
  group: g5 { 
   dimensions:
   time51=unlimited;  //test --rec_apn with more than 1 record in group (NB: make first record, time51, differ from variable size (time52) ) 
@@ -250,9 +238,6 @@ netcdf in_grp {
     time52=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;	
   } // end g5
   
-  //
-  //g6
-  //
  group: g6 { // Level 1
   variables:
     float area(lat);
@@ -268,9 +253,6 @@ netcdf in_grp {
     } //end g6g1
   } // end g6
   
-  //
-  //g7
-  //
  group: g7 { 
   variables:
   
@@ -329,9 +311,6 @@ netcdf in_grp {
       } //g7g1
   } // end g7
  
-  //
-  //g8
-  //
  group: g8 { // Level 1
   group: g8g1 { // Level 2
     group: g8g1g1 { // Level 3
@@ -343,9 +322,6 @@ netcdf in_grp {
     } // end g8g1
   } // end g8
 
-  //
-  //g9
-  //
  group: g9 { // Level 1
   group: g9g1 { // Level 2
     variables:
