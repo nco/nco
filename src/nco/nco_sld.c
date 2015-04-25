@@ -615,7 +615,7 @@ nco_rgr_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command strin
     return "MeshToTxt";
   case nco_rgr_AAA_nil:
   case nco_rgr_ZZZ_last:
-  default: nco_dfl_case_rgr_cmd_err(); break;
+  default: nco_dfl_case_generic_err(); break;
   } /* end switch */
   
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -641,7 +641,7 @@ nco_rgr_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
   case nco_rgr_MeshToTxt: return "MeshToTxt";
   case nco_rgr_AAA_nil:
   case nco_rgr_ZZZ_last:
-  default: nco_dfl_case_rgr_cmd_err(); break;
+  default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -661,34 +661,122 @@ nco_esmf_fl_fmt_sng /* [fnc] Convert ESMF file format to string */
   case ESMC_FILEFORMAT_ESMCGRID: return "ESMC_FILEFORMAT_ESMCGRID";
   case ESMC_FILEFORMAT_UGRID: return "ESMC_FILEFORMAT_UGRID";
   case ESMC_FILEFORMAT_GRIDSPEC: return "ESMC_FILEFORMAT_GRIDSPEC";
-  default: nco_dfl_case_esmf_fl_fmt_err(); break;
+  default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_esmf_fl_fmt_sng() */
 
-void
-nco_dfl_case_rgr_cmd_err(void) /* [fnc] Print error and exit for illegal switch case */
+const char * /* O [sng] String version of ESMC_StaggerLoc enum */
+nco_esmf_stg_lcn_sng /* [fnc] Convert ESMF stagger location enum to string */
+(const int nco_esmf_stg_lcn) /* I [enm] ESMF stagger location enum ESMC_StaggerLoc */
 {
+  /* Purpose: Convert ESMF stagger location enum ESMC_StaggerLoc to string */
+  switch(nco_esmf_stg_lcn){
+  case ESMC_STAGGERLOC_INVALID: return "ESMC_STAGGERLOC_INVALID";
+  case ESMC_STAGGERLOC_UNINIT: return "ESMC_STAGGERLOC_UNINIT";
+  case ESMC_STAGGERLOC_CENTER: return "ESMC_STAGGERLOC_CENTER";
+  case ESMC_STAGGERLOC_EDGE1: return "ESMC_STAGGERLOC_EDGE1";
+  case ESMC_STAGGERLOC_EDGE2: return "ESMC_STAGGERLOC_EDGE2";
+  case ESMC_STAGGERLOC_CORNER: return "ESMC_STAGGERLOC_CORNER";
+  default: abort(); break;
+  } /* end switch */
 
-/* Purpose: Print error and exit when switch statement reaches illegal default case
-   Routine reduces bloat because many switch() statements invoke this functionality */
-const char fnc_nm[]="nco_dfl_case_rgr_cmd_err()";
-  (void)fprintf(stdout,"%s: ERROR switch statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch statements are fully enumerated. Exiting...\n",fnc_nm);
-  nco_err_exit(0,fnc_nm);
-} /* end nco_dfl_case_rgr_cmd_err() */
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_esmf_stg_lcn_sng() */
 
-void
-nco_dfl_case_esmf_fl_fmt_err(void) /* [fnc] Print error and exit for illegal switch case */
+const char * /* O [sng] String version of ESMC_GridItem_Flag enum */
+nco_esmf_grd_itm_sng /* [fnc] Convert ESMF grid item enum to string */
+(const int nco_esmf_grd_itm) /* I [enm] ESMF grid item enum ESMC_GridItem_Flag */
 {
+  /* Purpose: Convert ESMF grid item enum ESMC_GridItem_Flag to string */
+  switch(nco_esmf_grd_itm){
+  case ESMC_GRIDITEM_INVALID: return "ESMC_GRIDITEM_INVALID";
+  case ESMC_GRIDITEM_UNINIT: return "ESMC_GRIDITEM_UNINIT";
+  case ESMC_GRIDITEM_MASK: return "ESMC_GRIDITEM_MASK";
+  case ESMC_GRIDITEM_AREA: return "ESMC_GRIDITEM_AREA";
+  default: abort(); break;
+  } /* end switch */
 
-/* Purpose: Print error and exit when switch statement reaches illegal default case
-   Routine reduces bloat because many switch() statements invoke this functionality */
-const char fnc_nm[]="nco_dfl_case_esmf_fl_fmt_err()";
-  (void)fprintf(stdout,"%s: ERROR switch statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch statements are fully enumerated. Exiting...\n",fnc_nm);
-  nco_err_exit(0,fnc_nm);
-} /* end nco_dfl_case_esmf_fl_fmt_err() */
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_esmf_grd_itm_sng() */
+
+const char * /* O [sng] String version of ESMC_CoordSys_Flag enum */
+nco_esmf_crd_sys_sng /* [fnc] Convert ESMF coordinate system enum to string */
+(const int nco_esmf_crd_sys) /* I [enm] ESMF coordinate system enum ESMC_CoordSys_Flag */
+{
+  /* Purpose: Convert ESMF coordinate system enum ESMC_CoordSys_Flag to string */
+  switch(nco_esmf_crd_sys){
+  case ESMC_COORDSYS_INVALID: return "ESMC_COORDSYS_INVALID";
+  case ESMC_COORDSYS_UNINIT: return "ESMC_COORDSYS_UNINIT";
+  case ESMC_COORDSYS_CART: return "ESMC_COORDSYS_CART";
+  case ESMC_COORDSYS_SPH_DEG: return "ESMC_COORDSYS_SPH_DEG";
+  case ESMC_COORDSYS_SPH_RAD: return "ESMC_COORDSYS_SPH_RAD";
+  default: abort(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_esmf_crd_sys_sng() */
+
+const char * /* O [sng] String version of ESMC_TypeKind_Flag enum */
+nco_esmf_typ_knd_sng /* [fnc] Convert ESMF type kind enum to string */
+(const int nco_esmf_typ_knd) /* I [enm] ESMF type kind enum ESMC_TypeKind_Flag */
+{
+  /* Purpose: Convert ESMF type kind enum ESMC_TypeKind_Flag to string */
+  switch(nco_esmf_typ_knd){
+  case ESMC_TYPEKIND_I1: return "ESMC_TYPEKIND_I1";
+  case ESMC_TYPEKIND_I2: return "ESMC_TYPEKIND_I2";
+  case ESMC_TYPEKIND_I4: return "ESMC_TYPEKIND_I4";
+  case ESMC_TYPEKIND_I8: return "ESMC_TYPEKIND_I8";
+  case ESMC_TYPEKIND_R4: return "ESMC_TYPEKIND_R4";
+  case ESMC_TYPEKIND_R8: return "ESMC_TYPEKIND_R8";
+  case ESMC_TYPEKIND_LOGICAL: return "ESMC_TYPEKIND_LOGICAL";
+  case ESMC_TYPEKIND_CHARACTER: return "ESMC_TYPEKIND_CHARACTER";
+  default: abort(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_esmf_typ_knd_sng() */
+
+const char * /* O [sng] String version of ESMC_LogMsgType_Flag enum */
+nco_esmf_log_msg_sng /* [fnc] Convert ESMF log message type enum to string */
+(const int nco_esmf_log_msg) /* I [enm] ESMF log message type enum ESMC_LogMsgType_Flag */
+{
+  /* Purpose: Convert ESMF coordinate system enum ESMC_LogMsgType_Flag to string */
+  switch(nco_esmf_log_msg){
+  case ESMC_LOGMSG_INFO: return "ESMC_LOGMSG_INFO";
+  case ESMC_LOGMSG_WARN: return "ESMC_LOGMSG_WARN";
+  case ESMC_LOGMSG_ERROR: return "ESMC_LOGMSG_ERROR";
+  case ESMC_LOGMSG_TRACE: return "ESMC_LOGMSG_TRACE";
+  default: abort(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_esmf_log_msg_sng() */
+
+const char * /* O [sng] String version of ESMC_RegridMethod_Flag enum */
+nco_esmf_rgr_mth_sng /* [fnc] Convert ESMF regrid method type enum to string */
+(const int nco_esmf_rgr_mth) /* I [enm] ESMF regrid method type enum ESMC_RegridMethod_Flag */
+{
+  /* Purpose: Convert ESMF regrid method enum ESMC_RegridMethod_Flag to string */
+  switch(nco_esmf_rgr_mth){
+  case ESMC_REGRIDMETHOD_BILINEAR: return "ESMC_REGRIDMETHOD_BILINEAR";
+  case ESMC_REGRIDMETHOD_PATCH: return "ESMC_REGRIDMETHOD_PATCH";
+  case ESMC_REGRIDMETHOD_CONSERVE: return "ESMC_REGRIDMETHOD_CONSERVE";
+  case ESMC_REGRIDMETHOD_NEAREST_STOD: return "ESMC_REGRIDMETHOD_NEAREST_STOD";
+  case ESMC_REGRIDMETHOD_NEAREST_DTOS: return "ESMC_REGRIDMETHOD_NEAREST_DTOS";
+  default: abort(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_esmf_rgr_mth_sng() */
 
 int /* O [enm] Return code */
 nco_rgr_esmf /* [fnc] Regrid using ESMF library */
@@ -706,18 +794,17 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   const char fnc_nm[]="nco_rgr_esmf()"; /* [sng] Function name */
   const char fl_nm_esmf_log[]="nco_rgr_log_foo.txt"; /* [sng] Log file for ESMF routines */
   
-  int flg_isSphere=1; /* [enm] Set to 1 for a spherical grid, or 0 for regional. Defaults to 1. */
-  int flg_addCornerStagger=0; /* [enm] Add corner stagger to grid. Defaults to 0. */
-  int flg_addUserArea=0; /* [enm] Read cell area from Grid file (instead of calculate it). Defaults to 0. */
-  int flg_addMask=0; /* [enm] Generate mask using missing value attribute in var_nm (iff GRIDSPEC) */
+  int flg_openMPEnabledFlag; /* [flg] ESMF library was compiled with OpenMP enabled */
+  int flg_pthreadsEnabledFlag; /* [flg] ESMF library was compiled with Pthreads enabled */
+  int localPet; /* [id] ID of PET that issued call */
+  int peCount; /* [nbr] Number of PEs referenced by ESMF_VM */
+  int petCount; /* [nbr] Number of PETs referenced by ESMF_VM */
   char *var_nm=NULL; /* [sng] Iff addMask == 1 use this variable's missing value attribute */
   char **crd_nm=NULL; /* [sng] Iff GRIDSPEC use these lon/lat variable coordinates */
   int rcd_esmf; /* [enm] Return codes from ESMF functions */
   
-  int *localPet=int_CEWI; 
   int *max_idx;
-  int *petCount=int_CEWI;
-  int dim_cnt=2;
+  int dim_cnt_int=2;
   int rcd=ESMF_SUCCESS;
   
   ESMC_InterfaceInt src_max_idx;
@@ -728,20 +815,10 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   ESMC_RouteHandle route_hdl;
   ESMC_VM vm;
   
-  //enum ESMC_RegridMethod_Flag rgr_mth=ESMC_REGRIDMETHOD_BILINEAR;
-  enum ESMC_StaggerLoc stg_loc=ESMC_STAGGERLOC_CENTER;
-  //enum ESMC_CoordSys_Flag crd_sys=ESMC_COORDSYS_CART;
-  enum ESMC_CoordSys_Flag crd_sys=ESMC_COORDSYS_SPH_DEG;
-  enum ESMC_TypeKind_Flag typ_knd=ESMC_TYPEKIND_R8;
-  nc_type var_typ_out=NC_DOUBLE;
-  enum ESMC_LogMsgType_Flag log_msg=ESMC_LOGMSG_INFO;
-  //enum ESMC_UnmappedAction_Flag unmap_act=ESMC_UNMAPPEDACTION_IGNORE;
-  enum ESMC_FileFormat_Flag grd_fl_typ=ESMC_FILEFORMAT_SCRIP;
-  
   int *dmn_id;
   
-  int idx;
   int dmn_nbr;
+  int idx;
   int var_in_id;
   
   long *dmn_cnt;
@@ -749,7 +826,8 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   
   long var_sz=1L;
   
-  nc_type var_typ;
+  nc_type var_typ_in;
+  nc_type var_typ_out=NC_DOUBLE;
   
   void *void_ptr_lon;
   void *void_ptr_lat;
@@ -770,7 +848,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   
   /* Obtain longitude from input data file */
   (void)nco_inq_varid(in_id,"lon",&var_in_id);
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ_in,&dmn_nbr,(int *)NULL,(int *)NULL);
   
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
@@ -782,17 +860,17 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
   
-  max_idx=(int *)nco_malloc(dim_cnt*sizeof(int));
+    max_idx=(int *)nco_malloc(dim_cnt_int*sizeof(int));
   max_idx[0]=var_sz; /* upbound idx of lon */
   
   /* Allocate enough space to hold variable */
-  void_ptr_lon=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
-  rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lon,var_typ);
+  void_ptr_lon=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ_in),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
+  rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lon,var_typ_in);
   float *lon=(float *)void_ptr_lon;
 
   /* Obtain lat from input data file */
   (void)nco_inq_varid(in_id,"lat",&var_in_id);
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ_in,&dmn_nbr,(int *)NULL,(int *)NULL);
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   var_sz=1L;
@@ -803,8 +881,8 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
   max_idx[1]=var_sz; /* upbound idx of lat */
-  void_ptr_lat=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
-  rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lat,var_typ);
+  void_ptr_lat=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ_in),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
+  rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_lat,var_typ_in);
   float *lat=(float *)void_ptr_lat;
 
   /* Initialize before any other ESMC API calls!
@@ -814,6 +892,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
 		  ESMC_InitArgLogFilename(fl_nm_esmf_log),
 		  ESMC_InitArgLogKindFlag(ESMC_LOGKIND_MULTI),
 		  ESMC_ArgLast);
+  enum ESMC_LogMsgType_Flag log_msg=ESMC_LOGMSG_TRACE;
   if(rcd_esmf != ESMF_SUCCESS){
     ESMC_LogWrite("ESMC_Initialize() failed",log_msg);
     goto rgr_cln;
@@ -826,69 +905,88 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   vm=ESMC_VMGetGlobal(&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
-  /* Set-up local pet info */
-  rcd_esmf=ESMC_VMGet(vm,localPet,petCount,(int *)NULL,(MPI_Comm *)NULL,(int *)NULL,(int *)NULL);
+  /* Set-up local PET info */
+  rcd_esmf=ESMC_VMGet(vm,&localPet,&petCount,&peCount,(MPI_Comm *)NULL,&flg_pthreadsEnabledFlag,&flg_openMPEnabledFlag);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-
-  if(nco_dbg_lvl_get() >= nco_dbg_crr){
-    (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stderr,"ESMC_GridCreateFromFile arguments: filename = %s, fileTypeFlag = %s",rgr_nfo->fl_grd_dst,nco_esmf_fl_fmt_sng(grd_fl_typ));
-    (void)fprintf(stderr,"\n");
-  } /* endif dbg */
 
   /* Create destination grid from SCRIP file */
+  int flg_isSphere=1; /* [flg] Set to 1 for a spherical grid, or 0 for regional. Defaults to 1. */
+  int flg_addCornerStagger=0; /* [flg] Add corner stagger to grid. Defaults to 0. */
+  int flg_addUserArea=0; /* [flg] Read cell area from Grid file (instead of calculate it). Defaults to 0. */
+  int flg_addMask=0; /* [flg] Generate mask using missing value attribute in var_nm (iff GRIDSPEC) */
+  enum ESMC_FileFormat_Flag grd_fl_typ=ESMC_FILEFORMAT_SCRIP;
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+    (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"ESMC_VMGet(): localPet = %d, petCount = %d, peCount = %d, pthreadsEnabledFlag = %s, openMPEnabledFlag = %s\n",localPet,petCount,peCount,flg_pthreadsEnabledFlag ? "Enabled" : "Disabled",flg_openMPEnabledFlag ? "Enabled" : "Disabled");
+    (void)fprintf(stderr,"ESMC_GridCreateFromFile(): filename = %s, fileTypeFlag = %s, isSphere = %s, addCornerStagger = %s, addUserArea = %s, addMask = %s\n",rgr_nfo->fl_grd_dst,nco_esmf_fl_fmt_sng(grd_fl_typ),flg_isSphere ? "Enabled" : "Disabled",flg_addCornerStagger ? "Enabled" : "Disabled",flg_addUserArea ? "Enabled" : "Disabled",flg_addMask ? "Enabled" : "Disabled");
+  } /* endif dbg */
   /* 20150423 fxm core dump in next line */
-  dst_grd=ESMC_GridCreateFromFile(rgr_nfo->fl_grd_dst,grd_fl_typ,&flg_isSphere,&flg_addCornerStagger,&flg_addUserArea,&flg_addMask,var_nm,crd_nm,&rcd_esmf); /* NB: ESMC_COORDSYS_SPH_DEG only */
+  dst_grd=ESMC_GridCreateFromFile(rgr_nfo->fl_grd_dst,grd_fl_typ,&flg_isSphere,&flg_addCornerStagger,&flg_addUserArea,&flg_addMask,var_nm,crd_nm,&rcd_esmf);
+  if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
-  int *src_bnd_l=(int *)nco_malloc(dim_cnt*sizeof(int));
-  int *src_bnd_u=(int *)nco_malloc(dim_cnt*sizeof(int));
-  int *dst_bnd_l=(int *)nco_malloc(dim_cnt*sizeof(int));
-  int *dst_bnd_u=(int *)nco_malloc(dim_cnt*sizeof(int));
+  int *src_bnd_l=(int *)nco_malloc(dim_cnt_int*sizeof(int));
+  int *src_bnd_u=(int *)nco_malloc(dim_cnt_int*sizeof(int));
+  int *dst_bnd_l=(int *)nco_malloc(dim_cnt_int*sizeof(int));
+  int *dst_bnd_u=(int *)nco_malloc(dim_cnt_int*sizeof(int));
+  int *dst_msk; /* [enm] Destination grid mask */
+  enum ESMC_GridItem_Flag grd_itm=ESMC_GRIDITEM_MASK;
+  enum ESMC_StaggerLoc stg_lcn=ESMC_STAGGERLOC_CENTER;
+  dst_msk=ESMC_GridGetItem(dst_grd,grd_itm,stg_lcn,&rcd_esmf);
+  if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
+  /* SCRIP rank 2 grids are lat,lon (C) and lon,lat (Fortran) */
+  const int crd_idx_ftn_lon_dst=1; /* [dgr] Fortran-based index of destination grid longitude in rank 2 grids */
+  const int crd_idx_ftn_lat_dst=2; /* [dgr] Fortran-based index of destination grid latitude  in rank 2 grids */
+  const int crd_idx_c_lon_dst=0; /* [dgr] C-based index of destination grid longitude in rank 2 grids */
+  const int crd_idx_c_lat_dst=1; /* [dgr] C-based index of destination grid latitude  in rank 2 grids */
+  double *dst_lon; /* [dgr] Destination grid longitude */
+  dst_lon=ESMC_GridGetCoord(dst_grd,crd_idx_ftn_lon_dst,stg_lcn,dst_bnd_l,dst_bnd_u,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-  int *dst_msk = (int *)ESMC_GridGetItem(dst_grd,ESMC_GRIDITEM_MASK,stg_loc,&rcd_esmf);
-  if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-  double *dst_lon=(double *)ESMC_GridGetCoord(dst_grd,1,stg_loc,dst_bnd_l,dst_bnd_u,&rcd_esmf);
-  if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-  double *dst_lat=(double *)ESMC_GridGetCoord(dst_grd,2,stg_loc,NULL,NULL,&rcd_esmf);
+
+  double *dst_lat; /* [dgr] Destination grid latitude */
+  dst_lat=ESMC_GridGetCoord(dst_grd,crd_idx_ftn_lat_dst,stg_lcn,NULL,NULL,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   double *lon_ptr; /* dim lon for output file */
   double *lat_ptr; /* dim lat for output file */
-  lon_ptr=(double *)nco_malloc(dst_bnd_u[0]*sizeof(double));
-  lat_ptr=(double *)nco_malloc(dst_bnd_u[1]*sizeof(double));
-  for(idx=0;idx<dst_bnd_u[0];idx++) lon_ptr[idx]=dst_lon[idx];
-  for(idx=0;idx<dst_bnd_u[1];idx++) lat_ptr[idx]=dst_lat[idx*dst_bnd_u[0]];
+  lon_ptr=(double *)nco_malloc(dst_bnd_u[crd_idx_c_lon_dst]*sizeof(double));
+  lat_ptr=(double *)nco_malloc(dst_bnd_u[crd_idx_c_lat_dst]*sizeof(double));
+  for(idx=0;idx<dst_bnd_u[crd_idx_c_lon_dst];idx++) lon_ptr[idx]=dst_lon[idx];
+  for(idx=0;idx<dst_bnd_u[crd_idx_c_lat_dst];idx++) lat_ptr[idx]=dst_lat[idx*dst_bnd_u[crd_idx_c_lon_dst]];
 
-  for(idx=0;idx<dst_bnd_u[0]*dst_bnd_u[1];idx++) dst_msk[idx]=0;
+  for(idx=0;idx<dst_bnd_u[crd_idx_c_lon_dst]*dst_bnd_u[crd_idx_c_lat_dst];idx++) dst_msk[idx]=0;
+
   /* Create src_grid from lon,lat data file */
-  src_max_idx=ESMC_InterfaceIntCreate(max_idx,dim_cnt,&rcd_esmf);
+  src_max_idx=ESMC_InterfaceIntCreate(max_idx,dim_cnt_int,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
+
+  enum ESMC_CoordSys_Flag crd_sys=ESMC_COORDSYS_SPH_DEG; /* NB: dyw sez ESMF supports ESMC_COORDSYS_SPH_DEG only */
+  enum ESMC_TypeKind_Flag typ_knd=ESMC_TYPEKIND_R8;
   src_grd=ESMC_GridCreateNoPeriDim(src_max_idx,&crd_sys,&typ_knd,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   /* Add crd to src grid */
-  rcd_esmf=ESMC_GridAddCoord(src_grd, stg_loc);
+  rcd_esmf=ESMC_GridAddCoord(src_grd, stg_lcn);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-  double *src_lon=(double *)ESMC_GridGetCoord(src_grd,1,stg_loc,src_bnd_l,src_bnd_u,&rcd_esmf);
+  double *src_lon=(double *)ESMC_GridGetCoord(src_grd,1,stg_lcn,src_bnd_l,src_bnd_u,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-  double *src_lat=(double *)ESMC_GridGetCoord(src_grd,2,stg_loc,NULL,NULL,&rcd_esmf);
+  double *src_lat=(double *)ESMC_GridGetCoord(src_grd,2,stg_lcn,NULL,NULL,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
   /* NB: work around for non-spherical coordinate 
      max_idx[0]=dst_bnd_u[0];
      max_idx[1]=dst_bnd_u[1];
-     src_max_idx=ESMC_InterfaceIntCreate(max_idx,dim_cnt,&rcd_esmf);
+     src_max_idx=ESMC_InterfaceIntCreate(max_idx,dim_cnt_int,&rcd_esmf);
      dst_grd2=ESMC_GridCreateNoPeriDim(src_max_idx,&crd_sys,&typ_knd,&rcd_esmf);
-     rcd_esmf=ESMC_GridAddCoord(dst_grd2, stg_loc);
-     double *dst_lon2=(double *)ESMC_GridGetCoord(dst_grd2,1,stg_loc,dst_bnd_l,dst_bnd_u,&rcd_esmf);
-     double *dst_lat2=(double *)ESMC_GridGetCoord(dst_grd2,2,stg_loc,NULL,NULL,&rcd_esmf);
+     rcd_esmf=ESMC_GridAddCoord(dst_grd2, stg_lcn);
+     double *dst_lon2=(double *)ESMC_GridGetCoord(dst_grd2,1,stg_lcn,dst_bnd_l,dst_bnd_u,&rcd_esmf);
+     double *dst_lat2=(double *)ESMC_GridGetCoord(dst_grd2,2,stg_lcn,NULL,NULL,&rcd_esmf);
      dst_lon2=dst_lon;
      dst_lat2=dst_lat; */
   max_idx=nco_free(max_idx);
   ESMC_InterfaceIntDestroy(&src_max_idx);
   /* iff mask is used
-     rcd_esmf=ESMC_GridAddItem(src_grd,ESMC_GRIDITEM_MASK,stg_loc);
-     int *src_msk=(int *)ESMC_GridGetItem(src_grd,ESMC_GRIDITEM_MASK,stg_loc,&rcd_esmf); */
+     rcd_esmf=ESMC_GridAddItem(src_grd,ESMC_GRIDITEM_MASK,stg_lcn);
+     int *src_msk=(int *)ESMC_GridGetItem(src_grd,ESMC_GRIDITEM_MASK,stg_lcn,&rcd_esmf); */
   /* Type-conversion and cell-center coordinates */
   idx=0;
   for(int idx_1=0;idx_1<src_bnd_u[1];idx_1++){
@@ -900,10 +998,10 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   } /* endfor */
 
   /* Create src field from src grid */
-  src_fld=ESMC_FieldCreateGridTypeKind(src_grd,typ_knd,stg_loc,NULL,NULL,NULL,"src_fld",&rcd_esmf);
+  src_fld=ESMC_FieldCreateGridTypeKind(src_grd,typ_knd,stg_lcn,NULL,NULL,NULL,"src_fld",&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
   /* Create dst field from dst grid */
-  dst_fld=ESMC_FieldCreateGridTypeKind(dst_grd,typ_knd,stg_loc,NULL,NULL,NULL,"dst_fld",&rcd_esmf);
+  dst_fld=ESMC_FieldCreateGridTypeKind(dst_grd,typ_knd,stg_lcn,NULL,NULL,NULL,"dst_fld",&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
   /* Get field pointers */
   double *src_fld_ptr=(double *)ESMC_FieldGetPtr(src_fld,0,&rcd_esmf);
@@ -912,7 +1010,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
   /* Get variables from input file */
   (void)nco_inq_varid(in_id,"ORO",&var_in_id);
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ_in,&dmn_nbr,(int *)NULL,(int *)NULL);
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   var_sz=1L;
@@ -922,10 +1020,12 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
     dmn_srt[idx]=0L;
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
+
   /* Allocate enough space to hold variable */
-  void_ptr_var=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
-  rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_var,var_typ);
+  void_ptr_var=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ_in),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
+  rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_var,var_typ_in);
   float *var_fld=(float *)void_ptr_var;
+
   /* Type-conversion and ensure every cell has data */
   idx=0;
   for(int idx_1=src_bnd_l[1];idx_1<=src_bnd_u[1];idx_1++){
@@ -934,6 +1034,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
       idx++;
     } /* idx_0 */
   } /* idx_1 */
+
   /* Initialize dst data ptr */
   idx=0;
   for(int idx_1=dst_bnd_l[1];idx_1<=dst_bnd_u[1];idx_1++){
@@ -943,7 +1044,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
     } /* idx_0 */
   } /* idx_1 */
 
-  ESMC_LogWrite("ESMC starting regridstore DYW",log_msg);
+  ESMC_LogWrite("ESMC starting regridstore",log_msg);
   /* int *msk_val=(int *)nco_malloc(sizeof(int));
      msk_val[0]=1;
      ESMC_InterfaceInt i_msk_val=ESMC_InterfaceIntCreate(msk_val,1,&rcd_esmf);

@@ -137,11 +137,29 @@ extern "C" {
   nco_esmf_fl_fmt_sng /* [fnc] Convert ESMF file format to string */
   (const int nco_esmf_fl_fmt); /* I [enm] ESMF file format enum ESMC_FileFormat_Flag */
 
-  void
-  nco_dfl_case_rgr_cmd_err(void); /* [fnc] Print error and exit for illegal switch case */
-
-  void
-  nco_dfl_case_esmf_fl_fmt_err(void); /* [fnc] Print error and exit for illegal switch case */
+  const char * /* O [sng] String version of ESMC_StaggerLoc enum */
+  nco_esmf_stg_lcn_sng /* [fnc] Convert ESMF stagger location enum to string */
+  (const int nco_esmf_stg_lcn); /* I [enm] ESMF stagger location enum ESMC_StaggerLoc */
+  
+  const char * /* O [sng] String version of ESMC_GridItem_Flag enum */
+  nco_esmf_grd_itm_sng /* [fnc] Convert ESMF grid item enum to string */
+  (const int nco_esmf_grd_itm); /* I [enm] ESMF grid item enum ESMC_GridItem_Flag */
+  
+  const char * /* O [sng] String version of ESMC_CoordSys_Flag enum */
+  nco_esmf_crd_sys_sng /* [fnc] Convert ESMF coordinate system enum to string */
+  (const int nco_esmf_crd_sys); /* I [enm] ESMF coordinate system enum ESMC_CoordSys_Flag */
+  
+  const char * /* O [sng] String version of ESMC_TypeKind_Flag enum */
+  nco_esmf_typ_knd_sng /* [fnc] Convert ESMF type kind enum to string */
+  (const int nco_esmf_typ_knd); /* I [enm] ESMF type kind enum ESMC_TypeKind_Flag */
+  
+  const char * /* O [sng] String version of ESMC_LogMsgType_Flag enum */
+  nco_esmf_log_msg_sng /* [fnc] Convert ESMF log message type enum to string */
+  (const int nco_esmf_log_msg); /* I [enm] ESMF log message type enum ESMC_LogMsgType_Flag */
+  
+  const char * /* O [sng] String version of ESMC_RegridMethod_Flag enum */
+  nco_esmf_rgr_mth_sng /* [fnc] Convert ESMF regrid method type enum to string */
+  (const int nco_esmf_rgr_mth); /* I [enm] ESMF regrid method type enum ESMC_RegridMethod_Flag */
 
 #endif /* !ENABLE_ESMF */
 

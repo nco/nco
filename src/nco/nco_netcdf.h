@@ -210,6 +210,9 @@ nco_dfl_case_prg_id_err /* [fnc] Print error and exit for illegal switch(prg_id)
 (void);
 
 void
+nco_dfl_case_generic_err(void); /* [fnc] Print error and exit for illegal switch case */
+
+void
 nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
 (const char *cnv_sng, /* I [sng] String to convert */
  const char *sng_cnv_fnc, /* I [sng] Name of function used to convert string */

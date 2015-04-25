@@ -534,6 +534,9 @@ nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attribu
 void
 nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(nc_type) case */
 {
+  /* Purpose: Print error and exit when switch statement reaches illegal default case
+     Routine reduces bloat because many switch() statements invoke this functionality */
+
   /* Purpose: Convenience routine for printing error and exiting when
      switch(nctype) statement receives an illegal default case
      NCO emits warnings when compiled by GCC with -DNETCDF2_ONLY since,
@@ -546,14 +549,31 @@ nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(
      so I have implemented a uniform error function, nco_dfl_case_nc_type_err(),
      to be called by all routines which emit errors only when compiled with
      NETCDF2_ONLY.
-     This makes the behavior easy to modify or remove in the future.
-
-     Placing this in its own routine saves many lines
-     of code since this function is used in many many switch() statements. */
+     This makes the behavior easy to modify or remove in the future. */
   const char fnc_nm[]="nco_dfl_case_nc_type_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal, because each type should have a well-defined action. This error may be triggered by using an NCO built with only netCDF3 functionality to examine a netCDF4 dataset that contains a new atomic type (e.g., NC_INT64).\nHINT: Configure/build NCO with --enable-netCDF4. Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_nc_type_err() */
+
+void
+nco_dfl_case_generic_err(void) /* [fnc] Print error and exit for illegal switch case */
+{
+  /* Purpose: Print error and exit when switch statement reaches illegal default case
+     Routine reduces bloat because many switch() statements invoke this functionality */
+  const char fnc_nm[]="nco_dfl_case_generic_err()";
+  (void)fprintf(stdout,"%s: ERROR switch statement fell through to default case, which is unsafe. This generic error handler ensures all switch statements are fully enumerated. Exiting...\n",fnc_nm);
+  nco_err_exit(0,fnc_nm);
+} /* end nco_dfl_case_generic_err() */
+
+void
+nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(nco_prg_id_id) case */
+{
+  /* Purpose: Print error and exit when switch statement reaches illegal default case
+     Routine reduces bloat because many switch() statements invoke this functionality */
+  const char fnc_nm[]="nco_dfl_case_prg_id_err()";
+  (void)fprintf(stdout,"%s: ERROR switch(nco_prg_id) statement fell through to default case, which is unsafe. This specific error handler ensures all switch(nco_prg_id) statements are fully enumerated. Exiting...\n",fnc_nm);
+  nco_err_exit(0,fnc_nm);
+} /* end nco_dfl_case_prg_id_err() */
 
 void
 nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
@@ -576,19 +596,6 @@ nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
   (void)fprintf(stdout,"Exiting...\n");
   nco_err_exit(0,fnc_nm);
 } /* end nco_sng_cnv_err() */
-
-void
-nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(nco_prg_id_id) case */
-{
-  /* Purpose: Convenience routine for printing error and exiting when
-     switch(nco_prg_id) statement receives an illegal default case
-
-     Placing this in its own routine saves many lines
-     of code since this function is used in many many switch() statements. */
-  const char fnc_nm[]="nco_dfl_case_prg_id_err()";
-  (void)fprintf(stdout,"%s: ERROR switch(nco_prg_id) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(nco_prg_id) statements are fully enumerated. Exiting...\n",fnc_nm);
-  nco_err_exit(0,fnc_nm);
-} /* end nco_dfl_case_prg_id_err() */
 
 /* Begin file-level routines */
 int
