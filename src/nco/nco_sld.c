@@ -799,8 +799,6 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   int localPet; /* [id] ID of PET that issued call */
   int peCount; /* [nbr] Number of PEs referenced by ESMF_VM */
   int petCount; /* [nbr] Number of PETs referenced by ESMF_VM */
-  char *var_nm=NULL; /* [sng] Iff addMask == 1 use this variable's missing value attribute */
-  char **crd_nm=NULL; /* [sng] Iff GRIDSPEC use these lon/lat variable coordinates */
   int rcd_esmf; /* [enm] Return codes from ESMF functions */
   
   int *max_idx;
@@ -914,15 +912,17 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   int flg_addCornerStagger=0; /* [flg] Add corner stagger to grid. Defaults to 0. */
   int flg_addUserArea=0; /* [flg] Read cell area from Grid file (instead of calculate it). Defaults to 0. */
   int flg_addMask=0; /* [flg] Generate mask using missing value attribute in var_nm (iff GRIDSPEC) */
+  /* 20150424: ESMF library bug at ESMCI_Grid.C line 365 means var_nm must non-NULL so set to blank name */
+  char var_nm[]=""; /* [sng] Iff addMask == 1 use this variable's missing value attribute */
+  char **crd_nm=NULL; /* [sng] Iff GRIDSPEC use these lon/lat variable coordinates */
   enum ESMC_FileFormat_Flag grd_fl_typ=ESMC_FILEFORMAT_SCRIP;
+  dst_grd=ESMC_GridCreateFromFile(rgr_nfo->fl_grd_dst,grd_fl_typ,&flg_isSphere,&flg_addCornerStagger,&flg_addUserArea,&flg_addMask,var_nm,crd_nm,&rcd_esmf);
+  if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"ESMC_VMGet(): localPet = %d, petCount = %d, peCount = %d, pthreadsEnabledFlag = %s, openMPEnabledFlag = %s\n",localPet,petCount,peCount,flg_pthreadsEnabledFlag ? "Enabled" : "Disabled",flg_openMPEnabledFlag ? "Enabled" : "Disabled");
-    (void)fprintf(stderr,"ESMC_GridCreateFromFile(): filename = %s, fileTypeFlag = %s, isSphere = %s, addCornerStagger = %s, addUserArea = %s, addMask = %s\n",rgr_nfo->fl_grd_dst,nco_esmf_fl_fmt_sng(grd_fl_typ),flg_isSphere ? "Enabled" : "Disabled",flg_addCornerStagger ? "Enabled" : "Disabled",flg_addUserArea ? "Enabled" : "Disabled",flg_addMask ? "Enabled" : "Disabled");
+    (void)fprintf(stderr,"ESMC_GridCreateFromFile(): filename = %s, fileTypeFlag = %s, isSphere = %s, addCornerStagger = %s, addUserArea = %s, addMask = %s, var_nm = %s, crd_nm = %s\n",rgr_nfo->fl_grd_dst,nco_esmf_fl_fmt_sng(grd_fl_typ),flg_isSphere ? "Enabled" : "Disabled",flg_addCornerStagger ? "Enabled" : "Disabled",flg_addUserArea ? "Enabled" : "Disabled",flg_addMask ? "Enabled" : "Disabled",var_nm,crd_nm ? "non-NULL" : "NULL");
   } /* endif dbg */
-  /* 20150423 fxm core dump in next line */
-  dst_grd=ESMC_GridCreateFromFile(rgr_nfo->fl_grd_dst,grd_fl_typ,&flg_isSphere,&flg_addCornerStagger,&flg_addUserArea,&flg_addMask,var_nm,crd_nm,&rcd_esmf);
-  if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   int *src_bnd_l=(int *)nco_malloc(dim_cnt_int*sizeof(int));
   int *src_bnd_u=(int *)nco_malloc(dim_cnt_int*sizeof(int));
