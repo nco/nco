@@ -244,7 +244,8 @@ extern "C" {
      Define these only in main() files not in original location in ESMC_CoordSys.h  
      Otherwise any file #including ESMC.h inadvertently includes these constants multiple times 
      Should be defined as externals that resolve to single definition in main()
-     sudo cp ~/nco/src/nco/ESMC_CoordSys.h /usr/local/include */
+     sudo cp ~/nco/src/nco/ESMC_CoordSys.h /usr/local/include # Linux
+     sudo cp ~/nco/src/nco/ESMC_CoordSys.h /opt/local/include/esmf # MacOS MacPorts */
   const double ESMC_CoordSys_Deg2Rad= 0.01745329251994329547437;
   const double ESMC_CoordSys_Rad2Deg=57.29577951308232286464772;
 #endif /* !ENABLE_ESMF */

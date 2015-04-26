@@ -380,15 +380,38 @@ ifeq (${ESMF},Y)
 ifdef ESMF_INC
  ESMF_INC_FLG := -I${ESMF_INC}
 else
- ESMF_INC_FLG := -I/usr/local/include
+ifdef ESMF_ROOT
+ifeq (${PVM_ARCH},MACOSX)
+   ESMF_INC_FLG := -I${ESMF_ROOT}/include/esmf
+else
+   ESMF_INC_FLG := -I${ESMF_ROOT}/include
+endif # endif MACOSX
+else
+  ESMF_INC_FLG := -I/usr/local/include
+endif # endif ESMF_ROOT
 endif # endif ESMF_INC
 # 20150319: For some reaseon, ESMC.h #includes ESMC_VM.h which #includes mpi.h
-ESMF_INC_FLG += -I/usr/include/openmpi-x86_64
+ifeq (${PVM_ARCH},MACOSX)
+# Use stub header for uniprocessor MPI emulation provided by ESMF
+ ESMF_INC_FLG += -I/Users/zender/data/esmf/src/Infrastructure/stubs/mpiuni
+ ESMF_LIB_RT := ${null}
+ ESMF_LIB_LAPACK := -llapack
+ ESMF_LIB_XERCES := -lxerces-c
+else # endif MACOSX
+# Use real MPI
+ ESMF_INC_FLG += -I/usr/include/openmpi-x86_64
+ ESMF_LIB_RT := -lrt
+ ESMF_LIB_LAPACK := ${null}
+ ESMF_LIB_XERCES := ${null}
+endif # endif MACOSX
 ifdef ESMF_LIB
- ESMF_LIB_FLG := -L${ESMF_LIB} -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
+ ESMF_LIB_FLG := -L${ESMF_LIB} -lesmf ${ESMF_LIB_LAPACK} ${ESMF_LIB_RT} ${ESMF_LIB_XERCES} -lgfortran -ldl -lnetcdff -lnetcdf_c++
 else
- ESMF_LIB_FLG := -L/usr/local/lib -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
-# ESMF_LIB_FLG := -L/usr/local/lib -lesmf
+ifdef ESMF_ROOT
+  ESMF_LIB_FLG := -L${ESMF_ROOT}/lib -lesmf ${ESMF_LIB_LAPACK} ${ESMF_LIB_RT} ${ESMF_LIB_XERCES} -lgfortran -ldl -lnetcdff -lnetcdf_c++
+else
+  ESMF_LIB_FLG := -L/usr/local/lib -lesmf ${ESMF_LIB_LAPACK} ${ESMF_LIB_RT} ${ESMF_LIB_XERCES} -lgfortran -ldl -lnetcdff -lnetcdf_c++
+endif # endif ESMF_ROOT
 endif # endif ESMF_LIB
 endif # end if ESMF
 

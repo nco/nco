@@ -1,6 +1,12 @@
+2015-04-26  Charlie Zender  <zender@uci.edu>
+
+	* Refine MACOSX linking for libesmf.a
+
+	* Fix bug in call to ESMC_GridCreateFromFile(). Simple ESMF regridding works.
+
 2015-04-23  Charlie Zender  <zender@uci.edu>
 
-	* Annotate ESMF variables and calls, search for bug in call to ESMC_GridCreateFromFile()
+	* Annotate ESMF variables and calls
 
 	* Add regression test for unchunking variables with _Shuffle set
 
