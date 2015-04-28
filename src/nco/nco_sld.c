@@ -778,6 +778,54 @@ nco_esmf_rgr_mth_sng /* [fnc] Convert ESMF regrid method type enum to string */
   return (char *)NULL;
 } /* end nco_esmf_rgr_mth_sng() */
 
+const char * /* O [sng] String version of ESMC_PoleMethod_Flag enum */
+nco_esmf_pll_mth_sng /* [fnc] Convert ESMF pole method type enum to string */
+(const int nco_esmf_pll_mth) /* I [enm] ESMF pole method type enum ESMC_PoleMethod_Flag */
+{
+  /* Purpose: Convert ESMF pole method enum ESMC_PoleMethod_Flag to string */
+  switch(nco_esmf_pll_mth){
+  case ESMC_POLEMETHOD_NONE: return "ESMC_POLEMETHOD_NONE";
+  case ESMC_POLEMETHOD_ALLAVG: return "ESMC_POLEMETHOD_ALLAVG";
+  case ESMC_POLEMETHOD_NPNTAVG: return "ESMC_POLEMETHOD_NPNTAVG";
+  case ESMC_POLEMETHOD_TEETH: return "ESMC_POLEMETHOD_TEETH";
+  default: abort(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_esmf_pll_mth_sng() */
+
+const char * /* O [sng] String version of ESMC_UnmappedAction_Flag enum */
+nco_esmf_unm_act_sng /* [fnc] Convert ESMF unmapped action type enum to string */
+(const int nco_esmf_unm_act) /* I [enm] ESMF unmapped action type enum ESMC_UnmappedAction_Flag */
+{
+  /* Purpose: Convert ESMF unmapped action enum ESMC_UnmappedAction_Flag to string */
+  switch(nco_esmf_unm_act){
+  case ESMC_UNMAPPEDACTION_ERROR: return "ESMC_UNMAPPEDACTION_ERROR";
+  case ESMC_UNMAPPEDACTION_IGNORE: return "ESMC_UNMAPPEDACTION_IGNORE";
+  default: abort(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_esmf_unm_act_sng() */
+
+const char * /* O [sng] String version of ESMC_Region_Flag enum */
+nco_esmf_rgn_flg_sng /* [fnc] Convert ESMF region flag enum to string */
+(const int nco_esmf_rgn_flg) /* I [enm] ESMF region flag enum ESMC_Region_Flag */
+{
+  /* Purpose: Convert ESMF region flag enum ESMC_Region_Flag to string */
+  switch(nco_esmf_rgn_flg){
+  case ESMC_REGION_TOTAL: return "ESMC_REGION_TOTAL";
+  case ESMC_REGION_SELECT: return "ESMC_REGION_SELECT";
+  case ESMC_REGION_EMPTY: return "ESMC_REGION_EMPTY";
+  default: abort(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_esmf_rgn_flg_sng() */
+
 int /* O [enm] Return code */
 nco_rgr_esmf /* [fnc] Regrid using ESMF library */
 (rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
@@ -803,10 +851,6 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   
   int dim_cnt_int=2;
   int rcd=ESMF_SUCCESS;
-  
-  ESMC_Field fld_dst;
-  ESMC_RouteHandle route_hdl;
-  ESMC_VM vm;
   
   int *dmn_id;
   
@@ -904,6 +948,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   rcd_esmf=ESMC_LogSet(ESMF_TRUE);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
   /* Obtain VM */
+  ESMC_VM vm;
   vm=ESMC_VMGetGlobal(&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
@@ -931,7 +976,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   msk_dst=ESMC_GridGetItem(grd_dst,grd_itm,stg_lcn,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
-  /* SCRIP rank 2 grids are lat,lon (C) and lon,lat (Fortran) */
+  /* SCRIP rank-2 grids are almost always lat,lon (C) and lon,lat (Fortran) */
   const int crd_idx_ftn_lon_dst=1; /* [dgr] 1-based index of longitude in Fortran representation of rank-2 destination grids */
   const int crd_idx_ftn_lat_dst=2; /* [dgr] 1-based index of latitude  in Fortran representation of rank-2 destination grids */
   const int crd_idx_c_lon_dst=0; /* [dgr] C-based index of destination grid longitude in Fortran representation of rank-2 grids */
@@ -1025,6 +1070,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   fld_src=ESMC_FieldCreateGridTypeKind(grd_src,typ_knd,stg_lcn,NULL,NULL,NULL,"fld_src",&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
   /* Create destination field from destination grid */
+  ESMC_Field fld_dst;
   fld_dst=ESMC_FieldCreateGridTypeKind(grd_dst,typ_knd,stg_lcn,NULL,NULL,NULL,"fld_dst",&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
@@ -1074,40 +1120,57 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   /* int *msk_val=(int *)nco_malloc(sizeof(int));
      msk_val[0]=1;
      ESMC_InterfaceInt i_msk_val=ESMC_InterfaceIntCreate(msk_val,1,&rcd_esmf);
-     rcd_esmf = ESMC_FieldRegridStore(fld_src,fld_dst,&i_msk_val,&i_msk_val,&route_hdl,NULL,NULL,NULL,&unmap_act,NULL,NULL);
-     rcd_esmf=ESMC_FieldRegridStore(fld_src,fld_dst,NULL,NULL,&route_hdl,NULL,NULL,NULL,&unmap_act,NULL,NULL); */
+     rcd_esmf = ESMC_FieldRegridStore(fld_src,fld_dst,&i_msk_val,&i_msk_val,&rte_hnd,NULL,NULL,NULL,&unmap_act,NULL,NULL);
+     rcd_esmf=ESMC_FieldRegridStore(fld_src,fld_dst,NULL,NULL,&rte_hnd,NULL,NULL,NULL,&unmap_act,NULL,NULL); */
 
-  rcd_esmf=ESMC_FieldRegridStore(fld_src,fld_dst,NULL,NULL,&route_hdl,NULL,NULL,NULL,NULL,NULL,NULL);
+  ESMC_Field *cll_frc_dst=NULL; /* [frc] Fraction of each cell participating in regridding, destination grid */
+  ESMC_Field *cll_frc_src=NULL; /* [frc] Fraction of each cell participating in regridding, source grid */
+  ESMC_InterfaceInt *msk_src_rgr=NULL; /* [idx] Points to mask while regridding, source grid */
+  /* fxm: unsure whether/why need both msk_dst (above) and msk_dst_rgr (below) */
+  ESMC_InterfaceInt *msk_dst_rgr=NULL; /* [idx] Points to mask while regridding, destination grid */
+  ESMC_RouteHandle rte_hnd;
+  enum ESMC_RegridMethod_Flag rgr_mth=ESMC_REGRIDMETHOD_BILINEAR; /* [flg] Regrid method (default bilinear) */
+  enum ESMC_PoleMethod_Flag pll_mth=ESMC_POLEMETHOD_ALLAVG; /* [flg] Regrid method (default ESMC_POLEMETHOD_ALLAVG) */
+  enum ESMC_UnmappedAction_Flag unm_act=ESMC_UNMAPPEDACTION_ERROR; /* [flg] Unmapped action (default ESMC_UNMAPPEDACTION_ERROR) */
+  int pll_nbr=int_CEWI; /* [nbr] Number of points to average (iff ESMC_POLEMETHOD_NPNTAVG) */
+  /* Source: ${DATA}/esmf/src/Infrastructure/Field/interface/ESMC_Field.C */
+  rcd_esmf=ESMC_FieldRegridStore(fld_src,fld_dst,msk_src_rgr,msk_dst_rgr,&rte_hnd,&rgr_mth,&pll_mth,&pll_nbr,&unm_act,cll_frc_src,cll_frc_dst);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-  rcd_esmf=ESMC_FieldRegrid(fld_src,fld_dst,route_hdl,NULL);
+
+  enum ESMC_Region_Flag rgn_flg=ESMC_REGION_TOTAL; /* [flg] Whether/how to zero input fields before regridding (default ESMC_REGION_TOTAL) */
+  rcd_esmf=ESMC_FieldRegrid(fld_src,fld_dst,rte_hnd,&rgn_flg);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
+
   /* Write fld_dst data to netCDF file */
-  int var_out_id,var_lon_id,var_lat_id;    /* [id] Variable ID */
-  int lat_id,lon_id; /* [id] Dimension ID */
-  (void)nco_def_dim(out_id,"lat",bnd_upr_dst[1],&lat_id);
-  (void)nco_def_dim(out_id,"lon",bnd_upr_dst[0],&lon_id);
+  int var_out_id; /* [id] Variable ID */
+  int lon_out_id; /* [id] Variable ID for longitude */
+  int lat_out_id; /* [id] Variable ID for latitude  */
+  int dmn_id_lat; /* [id] Dimension ID */
+  int dmn_id_lon; /* [id] Dimension ID */
+  (void)nco_def_dim(out_id,"lat",bnd_upr_dst[1],&dmn_id_lat);
+  (void)nco_def_dim(out_id,"lon",bnd_upr_dst[0],&dmn_id_lon);
   int dmn_ids_out[2]; /* [id] Dimension IDs array for output variable */
   long dmn_srt_out[2];
   long dmn_cnt_out[2];
   long cnt_out[1];
   long srt_out[1];
-  dmn_ids_out[0]=lat_id;
-  dmn_ids_out[1]=lon_id;
-  (void)nco_def_var(out_id,"lon",var_typ_out,1,&lon_id,&var_lon_id);
-  (void)nco_def_var(out_id,"lat",var_typ_out,1,&lat_id,&var_lat_id);
+  dmn_ids_out[0]=dmn_id_lat;
+  dmn_ids_out[1]=dmn_id_lon;
+  (void)nco_def_var(out_id,"lon",var_typ_out,1,&dmn_id_lon,&lon_out_id);
+  (void)nco_def_var(out_id,"lat",var_typ_out,1,&dmn_id_lat,&lat_out_id);
   (void)nco_def_var(out_id,"ORO",var_typ_out,2,dmn_ids_out,&var_out_id);
   /* char * att_val;
      att_val=strdup("degrees_north");
-     nco_put_att(out_id,var_lon_id,"units",NC_STRING,strlen(att_val),att_val);
+     nco_put_att(out_id,lon_out_id,"units",NC_STRING,strlen(att_val),att_val);
      att_val=strdup("degrees_east");
-     nco_put_att(out_id,var_lat_id,"units",NC_STRING,strlen(att_val),att_val);
+     nco_put_att(out_id,lat_out_id,"units",NC_STRING,strlen(att_val),att_val);
      att_val=(char *)nco_free(att_val); */
   (void)nco_enddef(out_id);
   cnt_out[0]=bnd_upr_dst[1];
   srt_out[0]=0L;
-  (void)nco_put_vara(out_id,var_lat_id,srt_out,cnt_out,lat_out,var_typ_out);
+  (void)nco_put_vara(out_id,lat_out_id,srt_out,cnt_out,lat_out,var_typ_out);
   cnt_out[0]=bnd_upr_dst[0];
-  (void)nco_put_vara(out_id,var_lon_id,srt_out,cnt_out,lon_out,var_typ_out);
+  (void)nco_put_vara(out_id,lon_out_id,srt_out,cnt_out,lon_out,var_typ_out);
   dmn_srt_out[0]=0L;
   dmn_srt_out[1]=0L;
   dmn_cnt_out[0]=bnd_upr_dst[1];
@@ -1126,7 +1189,7 @@ rgr_cln:
   if(dmn_id) dmn_id=(int *)nco_free(dmn_id);
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
 
-  rcd_esmf=ESMC_FieldRegridRelease(&route_hdl);
+  rcd_esmf=ESMC_FieldRegridRelease(&rte_hnd);
   rcd_esmf=ESMC_FieldDestroy(&fld_src);
   rcd_esmf=ESMC_FieldDestroy(&fld_dst);
   rcd_esmf=ESMC_GridDestroy(&grd_src);
