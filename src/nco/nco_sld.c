@@ -842,6 +842,9 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   const char fnc_nm[]="nco_rgr_esmf()"; /* [sng] Function name */
   const char fl_nm_esmf_log[]="nco_rgr_log_foo.txt"; /* [sng] Log file for ESMF routines */
   
+  enum ESMC_StaggerLoc stg_lcn_src=ESMC_STAGGERLOC_CENTER; /* [enm] Stagger location of source grid */
+  enum ESMC_StaggerLoc stg_lcn_dst=ESMC_STAGGERLOC_CENTER; /* [enm] Stagger location of destination grid */
+
   int flg_openMPEnabledFlag; /* [flg] ESMF library was compiled with OpenMP enabled */
   int flg_pthreadsEnabledFlag; /* [flg] ESMF library was compiled with Pthreads enabled */
   int localPet; /* [id] ID of PET that issued call */
@@ -994,22 +997,21 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
 
   int *msk_dst; /* [enm] Destination grid mask */
   enum ESMC_GridItem_Flag grd_itm=ESMC_GRIDITEM_MASK;
-  enum ESMC_StaggerLoc stg_lcn=ESMC_STAGGERLOC_CENTER;
-  msk_dst=ESMC_GridGetItem(grd_dst,grd_itm,stg_lcn,&rcd_esmf);
+  msk_dst=ESMC_GridGetItem(grd_dst,grd_itm,stg_lcn_dst,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   int *bnd_lwr_dst=(int *)nco_malloc(dmn_nbr_grd*sizeof(int));
   int *bnd_upr_dst=(int *)nco_malloc(dmn_nbr_grd*sizeof(int));
 
   double *lon_dst; /* [dgr] Destination grid longitude */
-  /* 20150427: Written documentation inadequate/misleading/incorrect
+  /* 20150427: Written documentation is somewhat inadequate or misleading to normal C-programmers
      Some ESMC_Grid***() functions, like this one, return allocated void pointers that must be cast to desired numeric type
      Source: ${DATA}/esmf/src/Infrastructure/Grid/interface/ESMC_Grid.C */
-  lon_dst=ESMC_GridGetCoord(grd_dst,crd_idx_f_1bs_lon_dst,stg_lcn,bnd_lwr_dst,bnd_upr_dst,&rcd_esmf);
+  lon_dst=ESMC_GridGetCoord(grd_dst,crd_idx_f_1bs_lon_dst,stg_lcn_dst,bnd_lwr_dst,bnd_upr_dst,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   double *lat_dst; /* [dgr] Destination grid latitude */
-  lat_dst=ESMC_GridGetCoord(grd_dst,crd_idx_f_1bs_lat_dst,stg_lcn,bnd_lwr_dst,bnd_upr_dst,&rcd_esmf);
+  lat_dst=ESMC_GridGetCoord(grd_dst,crd_idx_f_1bs_lat_dst,stg_lcn_dst,bnd_lwr_dst,bnd_upr_dst,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   double *lon_out; /* [dgr] Longitude dimension for output file */
@@ -1017,11 +1019,9 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   lon_out=(double *)nco_malloc(bnd_upr_dst[crd_idx_f_0bs_lon_dst]*sizeof(double));
   lat_out=(double *)nco_malloc(bnd_upr_dst[crd_idx_f_0bs_lat_dst]*sizeof(double));
   for(idx=0;idx<bnd_upr_dst[crd_idx_f_0bs_lon_dst];idx++) lon_out[idx]=lon_dst[idx];
-  /* fxm: awkward */
-  for(idx=0;idx<bnd_upr_dst[crd_idx_f_0bs_lat_dst];idx++) lat_out[idx]=lat_dst[idx*bnd_upr_dst[crd_idx_f_0bs_lon_dst]];
-
-  /* fxm: awkward */
-  for(idx=0;idx<bnd_upr_dst[crd_idx_f_0bs_lon_dst]*bnd_upr_dst[crd_idx_f_0bs_lat_dst];idx++) msk_dst[idx]=0;
+  for(idx=0;idx<bnd_upr_dst[crd_idx_f_0bs_lat_dst];idx++) lat_out[idx]=lat_dst[idx];
+  const long var_sz_dst=bnd_upr_dst[crd_idx_f_0bs_lon_dst]*bnd_upr_dst[crd_idx_f_0bs_lat_dst]; /* [nbr] Number of elements in variable */
+  for(idx=0;idx<var_sz_dst;idx++) msk_dst[idx]=0;
 
   /* Create source grid with same sizes as those in input data file */
   ESMC_InterfaceInt max_idx_src;
@@ -1041,7 +1041,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   ESMC_InterfaceIntDestroy(&max_idx_src);
 
   /* Define stagger locations on source grid. Necessary for remapping later? */
-  rcd_esmf=ESMC_GridAddCoord(grd_src,stg_lcn);
+  rcd_esmf=ESMC_GridAddCoord(grd_src,stg_lcn_src);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
   
   /* Allocate */
@@ -1049,9 +1049,9 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   int *bnd_upr_src=(int *)nco_malloc(dmn_nbr_grd*sizeof(int));
   double *lon_src; /* [dgr] Source grid longitude */
   double *lat_src; /* [dgr] Source grid latitude  */
-  lon_src=(double *)ESMC_GridGetCoord(grd_src,crd_idx_f_1bs_lon_src,stg_lcn,bnd_lwr_src,bnd_upr_src,&rcd_esmf);
+  lon_src=(double *)ESMC_GridGetCoord(grd_src,crd_idx_f_1bs_lon_src,stg_lcn_src,bnd_lwr_src,bnd_upr_src,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-  lat_src=(double *)ESMC_GridGetCoord(grd_src,crd_idx_f_1bs_lat_src,stg_lcn,NULL,NULL,&rcd_esmf);
+  lat_src=(double *)ESMC_GridGetCoord(grd_src,crd_idx_f_1bs_lat_src,stg_lcn_src,NULL,NULL,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
@@ -1061,7 +1061,8 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
     (void)fprintf(stderr,"ESMC_GridGetCoord(): bnd_lwr_dst[0..1] = %d, %d; bnd_upr_dst[0..1] = %d, %d;\n",bnd_lwr_dst[0],bnd_lwr_dst[1],bnd_upr_dst[0],bnd_upr_dst[1]);
     (void)fprintf(stderr,"ESMC_InterfaceIntCreate(): No printable information\n");
     (void)fprintf(stderr,"ESMC_GridCreateNoPeriDim(): crd_sys = %s, typ_knd = %s\n",nco_esmf_crd_sys_sng(crd_sys),nco_esmf_typ_knd_sng(typ_knd));
-    (void)fprintf(stderr,"ESMC_GridAddCoord(): stg_lcn = %s\n",nco_esmf_stg_lcn_sng(stg_lcn));
+    (void)fprintf(stderr,"ESMC_GridAddCoord(): stg_lcn_dst = %s\n",nco_esmf_stg_lcn_sng(stg_lcn_dst));
+    (void)fprintf(stderr,"ESMC_GridAddCoord(): stg_lcn_src = %s\n",nco_esmf_stg_lcn_sng(stg_lcn_src));
     (void)fprintf(stderr,"ESMC_GridGetCoord(): bnd_lwr_src[0..1] = %d, %d; bnd_upr_src[0..1] = %d, %d;\n",bnd_lwr_src[0],bnd_lwr_src[1],bnd_upr_src[0],bnd_upr_src[1]);
     //    (void)fprintf(stderr,"ESMC_InterfaceIntCreate(): max_idx_src[0..1] = %d, %d\n",max_idx_src[0],max_idx_src[1]);
   } /* endif dbg */
@@ -1081,11 +1082,11 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   ESMC_InterfaceInt *gridToFieldMap=NULL; /* [idx] Map of all grid dimensions to field dimensions */
   ESMC_InterfaceInt *ungriddedLBound=NULL; /* [idx] Lower bounds of ungridded dimensions */
   ESMC_InterfaceInt *ungriddedUBound=NULL; /* [idx] Upper bounds of ungridded dimensions */
-  fld_src=ESMC_FieldCreateGridTypeKind(grd_src,typ_knd,stg_lcn,gridToFieldMap,ungriddedLBound,ungriddedUBound,"fld_src",&rcd_esmf);
+  fld_src=ESMC_FieldCreateGridTypeKind(grd_src,typ_knd,stg_lcn_src,gridToFieldMap,ungriddedLBound,ungriddedUBound,"fld_src",&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
   /* Create destination field from destination grid */
   ESMC_Field fld_dst;
-  fld_dst=ESMC_FieldCreateGridTypeKind(grd_dst,typ_knd,stg_lcn,gridToFieldMap,ungriddedLBound,ungriddedUBound,"fld_dst",&rcd_esmf);
+  fld_dst=ESMC_FieldCreateGridTypeKind(grd_dst,typ_knd,stg_lcn_dst,gridToFieldMap,ungriddedLBound,ungriddedUBound,"fld_dst",&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   /* Get field pointers */
@@ -1103,16 +1104,16 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ_in,&dmn_nbr,(int *)NULL,(int *)NULL);
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
-  long var_sz=1L; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  long var_sz_src=1L; /* [nbr] Number of elements in variable (will be self-multiplied) */
   /* Get input dimension sizes */
   for(idx=0;idx<dmn_nbr;idx++){
     (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
     dmn_srt[idx]=0L;
-    var_sz*=dmn_cnt[idx];
+    var_sz_src*=dmn_cnt[idx];
   } /* end loop over dim */
 
   /* Allocate space for and obtain latitude */
-  void_ptr_var=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ_in),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
+  void_ptr_var=(void *)nco_malloc_dbg(var_sz_src*nco_typ_lng(var_typ_in),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
   rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_var,var_typ_in);
   float *var_fld=(float *)void_ptr_var;
 
