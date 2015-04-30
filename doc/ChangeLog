@@ -1,3 +1,7 @@
+2015-04-30  Charlie Zender  <zender@uci.edu>
+
+	* Wait until after ESMC_Finalize() to free dynamic memory provided to ESMF
+
 2015-04-27  Charlie Zender  <zender@uci.edu>
 
 	* Improve nco_rgr_esmf() genericity

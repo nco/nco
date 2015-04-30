@@ -871,6 +871,32 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   int in_id; /* I [id] Input netCDF file ID */
   int out_id; /* I [id] Output netCDF file ID */
 
+  /* SCRIP rank-2 grids are almost always lat,lon (C) and lon,lat (Fortran)
+     Indexing is confusing because ESMF always uses Fortran-ordering convention with mixture of 0- and 1-based indices
+     netCDF always uses C-ordering convention with 0-based indices
+     No data transposition is necessary because variable RAM is always in C-order (same as netCDF)
+     However, Fortran and C (i.e., ESMF and netCDF) access that same RAM using different conventions
+     2-D data are always C[lat,lon] or F(lon,lat) in practice
+     2-D stored in netCDF or RAM as C[lon,lat] and F(lat,lon) are possible, though not seen in practice
+     NCO regridding below assumes data are in C[lat,lon] order
+     NCO hardcoded subscript conventions follow this pattern:
+     crd_idx_[axs]_[ibs]_[dmn]_[grd] where
+     axs = access convention = C or Fortran = _c_ or _f_ 
+     ibs = index base = 0 or 1 = _0bs_ or _1bs_ for zero-based or one-based indices
+     NB: axs is independent from ibs! 
+     dmn = dimension = lon or lat
+     grd = grid = source or destination */
+  const int crd_idx_c_0bs_lat_dst=0; /* [dgr] 0-based index of latitude  in C       representation of rank-2 destination grids */
+  const int crd_idx_c_0bs_lon_dst=1; /* [dgr] 0-based index of longitude in C       representation of rank-2 destination grids */
+  const int crd_idx_f_0bs_lat_dst=1; /* [dgr] 0-based index of latitude  in Fortran representation of rank-2 destination grids */
+  const int crd_idx_f_0bs_lat_src=1; /* [dgr] 0-based index of latitude  in Fortran representation of rank-2 source grids */
+  const int crd_idx_f_0bs_lon_dst=0; /* [dgr] 0-based index of longitude in Fortran representation of rank-2 destination grids */
+  const int crd_idx_f_0bs_lon_src=0; /* [dgr] 0-based index of longitude in Fortran representation of rank-2 source grids */
+  const int crd_idx_f_1bs_lat_dst=2; /* [dgr] 1-based index of latitude  in Fortran representation of rank-2 destination grids */
+  const int crd_idx_f_1bs_lat_src=2; /* [dgr] 1-based index of latitude  in Fortran representation of rank-2 source grids */
+  const int crd_idx_f_1bs_lon_dst=1; /* [dgr] 1-based index of longitude in Fortran representation of rank-2 destination grids */
+  const int crd_idx_f_1bs_lon_src=1; /* [dgr] 1-based index of longitude in Fortran representation of rank-2 source grids */
+
   /* Initialize */
   in_id=rgr_nfo->in_id;
   out_id=rgr_nfo->out_id;
@@ -899,9 +925,6 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   
   int *max_idx; /* [nbr] Zero-based array containing dimension sizes in order? */
   max_idx=(int *)nco_malloc(dmn_nbr_grd*sizeof(int));
-
-  const int crd_idx_f_0bs_lon_src=0; /* [dgr] 0-based index of source grid longitude in Fortran representation of rank-2 grids */
-  const int crd_idx_f_0bs_lat_src=1; /* [dgr] 0-based index of source grid latitude  in Fortran representation of rank-2 grids */
   max_idx[crd_idx_f_0bs_lon_src]=dmn_sz; /* [nbr] Number of elements in dimensions */
   
   /* Allocate space for and obtain longitude */
@@ -975,27 +998,6 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   msk_dst=ESMC_GridGetItem(grd_dst,grd_itm,stg_lcn,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
-  /* SCRIP rank-2 grids are almost always lat,lon (C) and lon,lat (Fortran)
-     Indexing is confusing because ESMF always uses Fortran-ordering convention with mixture of 0- and 1-based indices
-     netCDF always uses C-ordering convention with 0-based indices
-     No data transposition is necessary because variable RAM is always in C-order (same as netCDF)
-     However, Fortran and C (i.e., ESMF and netCDF) access that same RAM using different conventions
-     2-D data are always C[lat,lon] or F(lon,lat) in practice
-     2-D stored in netCDF or RAM as C[lon,lat] and F(lat,lon) are possible, though not seen in practice
-     NCO regridding below assumes data are in C[lat,lon] order
-     NCO hardcoded subscript conventions follow this pattern:
-     crd_idx_[axs]_[ibs]_[dmn]_[grd] where
-     axs = access convention = C or Fortran = _c_ or _f_ 
-     ibs = index base = 0 or 1 = _0bs_ or _1bs_ for zero-based or one-based indices
-     NB: axs is independent from ibs! 
-     dmn = dimension = lon or lat
-     grd = grid = source or destination */
-  const int crd_idx_f_1bs_lon_dst=1; /* [dgr] 1-based index of longitude in Fortran representation of rank-2 destination grids */
-  const int crd_idx_f_1bs_lat_dst=2; /* [dgr] 1-based index of latitude  in Fortran representation of rank-2 destination grids */
-  const int crd_idx_f_0bs_lon_dst=0; /* [dgr] 0-based index of destination grid longitude in Fortran representation of rank-2 grids */
-  const int crd_idx_f_0bs_lat_dst=1; /* [dgr] 0-based index of destination grid latitude  in Fortran representation of rank-2 grids */
-  const int crd_idx_c_0bs_lon_dst=1; /* [dgr] 0-based index of destination grid longitude in C representation of rank-2 grids */
-  const int crd_idx_c_0bs_lat_dst=0; /* [dgr] 0-based index of destination grid latitude  in C representation of rank-2 grids */
   int *bnd_lwr_dst=(int *)nco_malloc(dmn_nbr_grd*sizeof(int));
   int *bnd_upr_dst=(int *)nco_malloc(dmn_nbr_grd*sizeof(int));
 
@@ -1023,10 +1025,12 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
 
   /* Create source grid with same sizes as those in input data file */
   ESMC_InterfaceInt max_idx_src;
-  /* Source: ${DATA}/esmf/src/Infrastructure/Util/interface/ESMC_Interface.C */
+  /* Source: ${DATA}/esmf/src/Infrastructure/Util/interface/ESMC_Interface.C
+     NB: ESMF is fragile in that dynamic memory provided as input to grids cannot be immediately freed
+     In other words, ESMF copies the values of pointers but not the contents of pointers to provided arrays
+     To be concrete, the max_idx array provided below cannot be freed until after the ESMC_Finalize() is called */
   max_idx_src=ESMC_InterfaceIntCreate(max_idx,dmn_nbr_grd,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-  max_idx=(int *)nco_free(max_idx);
 
   enum ESMC_CoordSys_Flag crd_sys=ESMC_COORDSYS_SPH_DEG; /* NB: dyw sez ESMF supports ESMC_COORDSYS_SPH_DEG only */
   enum ESMC_TypeKind_Flag typ_knd=ESMC_TYPEKIND_R8; /* NB: NCO default is to use double precision for coordinates */
@@ -1045,11 +1049,9 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   int *bnd_upr_src=(int *)nco_malloc(dmn_nbr_grd*sizeof(int));
   double *lon_src; /* [dgr] Source grid longitude */
   double *lat_src; /* [dgr] Source grid latitude  */
-  const int crd_idx_ftn_lon_src=1; /* [dgr] 1-based index of longitude in Fortran representation of rank-2 source grids */
-  const int crd_idx_ftn_lat_src=2; /* [dgr] 1-based index of latitude  in Fortran representation of rank-2 source grids */
-  lon_src=(double *)ESMC_GridGetCoord(grd_src,crd_idx_ftn_lon_src,stg_lcn,bnd_lwr_src,bnd_upr_src,&rcd_esmf);
+  lon_src=(double *)ESMC_GridGetCoord(grd_src,crd_idx_f_1bs_lon_src,stg_lcn,bnd_lwr_src,bnd_upr_src,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
-  lat_src=(double *)ESMC_GridGetCoord(grd_src,crd_idx_ftn_lat_src,stg_lcn,NULL,NULL,&rcd_esmf);
+  lat_src=(double *)ESMC_GridGetCoord(grd_src,crd_idx_f_1bs_lat_src,stg_lcn,NULL,NULL,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
@@ -1157,6 +1159,10 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   rcd_esmf=ESMC_FieldRegrid(fld_src,fld_dst,rte_hnd,&rgn_flg);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
+  /* Call once on each PET */
+  rcd_esmf=ESMC_Finalize();
+  if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
+
   /* Write regridded data to netCDF file */
   int var_out_id; /* [id] Variable ID */
   int lon_out_id; /* [id] Variable ID for longitude */
@@ -1188,6 +1194,7 @@ rgr_cln:
        However, there seems to be no translator function for these codes */
     (void)fprintf(stderr,"%s: ERROR %s received ESMF return code %d\nSee ESMC_ReturnCodes.h or ESMC_LogErr.h for more information, e.g.,\n/bin/more /usr/local/include/ESMC_ReturnCodes.h | grep %d\n",nco_prg_nm_get(),fnc_nm,rcd_esmf,rcd_esmf);
   } /* rcd_esmf */
+  if(max_idx) max_idx=(int *)nco_free(max_idx);
   if(bnd_lwr_src) bnd_lwr_src=(int *)nco_free(bnd_lwr_src);
   if(bnd_upr_src) bnd_upr_src=(int *)nco_free(bnd_upr_src);
   if(bnd_lwr_dst) bnd_lwr_dst=(int *)nco_free(bnd_lwr_dst);
