@@ -1061,8 +1061,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
     (void)fprintf(stderr,"ESMC_GridGetCoord(): bnd_lwr_dst[0..1] = %d, %d; bnd_upr_dst[0..1] = %d, %d;\n",bnd_lwr_dst[0],bnd_lwr_dst[1],bnd_upr_dst[0],bnd_upr_dst[1]);
     (void)fprintf(stderr,"ESMC_InterfaceIntCreate(): No printable information\n");
     (void)fprintf(stderr,"ESMC_GridCreateNoPeriDim(): crd_sys = %s, typ_knd = %s\n",nco_esmf_crd_sys_sng(crd_sys),nco_esmf_typ_knd_sng(typ_knd));
-    (void)fprintf(stderr,"ESMC_GridAddCoord(): stg_lcn_dst = %s\n",nco_esmf_stg_lcn_sng(stg_lcn_dst));
-    (void)fprintf(stderr,"ESMC_GridAddCoord(): stg_lcn_src = %s\n",nco_esmf_stg_lcn_sng(stg_lcn_src));
+    (void)fprintf(stderr,"ESMC_GridAddCoord(): stg_lcn_src = %s,  stg_lcn_dst = %s\n",nco_esmf_stg_lcn_sng(stg_lcn_src),nco_esmf_stg_lcn_sng(stg_lcn_dst));
     (void)fprintf(stderr,"ESMC_GridGetCoord(): bnd_lwr_src[0..1] = %d, %d; bnd_upr_src[0..1] = %d, %d;\n",bnd_lwr_src[0],bnd_lwr_src[1],bnd_upr_src[0],bnd_upr_src[1]);
     //    (void)fprintf(stderr,"ESMC_InterfaceIntCreate(): max_idx_src[0..1] = %d, %d\n",max_idx_src[0],max_idx_src[1]);
   } /* endif dbg */
