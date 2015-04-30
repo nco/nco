@@ -895,8 +895,7 @@
 
 2014-04-16 Pedro Vicente  <pvicente@uci.edu>
 
-	* nco_prc_cmn_nsm_att() Process (define, write) variables belonging to ensembles in both files (ncbo);
-	special "attribute lookup"  ensemble version
+	* nco_prc_cmn_nsm_att() Process (define, write) variables belonging to ensembles in both files (ncbo); special "attribute lookup" ensemble version
 
 2014-04-16  Charlie Zender  <zender@uci.edu>
 
