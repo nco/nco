@@ -1077,10 +1077,10 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that shares at least one dimension with the re-order list\n",nco_prg_nm_get());
       break;
     case ncra:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_CHAR or NC_STRING\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain at least one record variable that is not NC_CHAR or NC_STRING. A record variable is a variable defined with a record dimension. Often the record dimension, aka unlimited dimension, refers to time. For more information on creating record dimensions within existing datasets, see http://nco.sf.net/nco.html#mk_rec_dmn\n",nco_prg_nm_get());
       break;
     case ncrcat:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable which to concatenate\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable which to concatenate. A record variable is a variable defined with a record dimension. Often the record dimension, aka unlimited dimension, refers to time. For more information on creating record dimensions within existing datasets, see http://nco.sf.net/nco.html#mk_rec_dmn\n",nco_prg_nm_get());
       break;
     case ncwa:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that contains an averaging dimension\n",nco_prg_nm_get());
