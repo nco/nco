@@ -6,6 +6,8 @@
 
 2015-04-30  Charlie Zender  <zender@uci.edu>
 
+	* Introduce special variable handling with --rgr_var
+
 	* Wait until after ESMC_Finalize() to free dynamic memory provided to ESMF
 
 2015-04-27  Charlie Zender  <zender@uci.edu>

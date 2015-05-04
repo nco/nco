@@ -186,6 +186,7 @@ main(int argc,char **argv)
   char *rgr_grd_src=NULL; /* [sng] File containing input grid */
   char *rgr_grd_dst=NULL; /* [sng] File containing destination grid */
   char *rgr_map=NULL; /* [sng] File containing mapping weights from source to destination grid */
+  char *rgr_var=NULL; /* [sng] Variable for special regridding treatment */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -367,6 +368,7 @@ main(int argc,char **argv)
       {"rgr_grd_src",required_argument,0,0}, /* [sng] File containing input grid */
       {"rgr_grd_dst",required_argument,0,0}, /* [sng] File containing destination grid */
       {"rgr_map",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
+      {"rgr_var",required_argument,0,0}, /* I [sng] Variable for special regridding treatment */
       {"scrip",required_argument,0,0}, /* SCRIP file */
       {"tst_udunits",required_argument,0,0},
       {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
@@ -590,6 +592,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"rgr_grd_src")) rgr_grd_src=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_grd_dst")) rgr_grd_dst=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_map")) rgr_map=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"rgr_var")) rgr_var=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
         (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nRegridding\t\t--rgr...\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
@@ -937,7 +940,7 @@ main(int argc,char **argv)
       rgr_sct rgr_nfo;
       /* Initialize regridding structure */
       rgr_in=(char *)strdup(fl_in);
-      rcd=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,&rgr_nfo);
+      rcd=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,&rgr_nfo);
       rgr_nfo.fl_out_tmp=nco_fl_out_open(rgr_nfo.fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_nfo.out_id);
       /* Regrid fields */
       rcd=nco_rgr_esmf(&rgr_nfo);

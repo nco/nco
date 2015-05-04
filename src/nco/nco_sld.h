@@ -120,6 +120,7 @@ extern "C" {
    char * const rgr_grd_src, /* I [sng] File containing input grid */
    char * const rgr_grd_dst, /* I [sng] File containing destination grid */
    char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
+   char * const rgr_var, /* I [sng] Variable for special regridding treatment */
    rgr_sct * const rgr_nfo); /* O [sct] Regridding structure */
     
   void

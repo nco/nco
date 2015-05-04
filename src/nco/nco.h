@@ -887,6 +887,7 @@ extern "C" {
     char *fl_out_tmp; /* [sng] Temporary file containing regridded fields */
     char *fl_map; /* [sng] File containing mapping weights from source to destination grid */
     char **rgr_arg; /* [sng] Regridding arguments */
+    char *var_nm; /* [sng] Variable for special regridding treatment */
     int rgr_nbr; /* [nbr] Number of regridding arguments */
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */
