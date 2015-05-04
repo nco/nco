@@ -327,102 +327,86 @@ nco_def_grp_rcr                       /* [fnc] Define groups */
   return rcd;
 } /* end nco_grp_dfn_rcr() */
 
-int
-nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs in a string path  */
-(char * const nm_fll)                 /* I [sct] Full name  */
+int /* [nbr] Number of slash characters */
+nco_get_sls_chr_cnt /* [fnc] Count slash characters in a string path */
+(char * const nm_fll) /* I [sng] Full name  */
 {
-  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
-  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
-  int psn_chr;        /* [nbr] Position of character '/' in in full name */
+  const char sls_chr='/'; /* [chr] Slash character */
+  char *ptr_chr; /* [sng] Pointer to character '/' in full name */
+  int sls_nbr=0; /* [nbr] Number of of slash characterrs in  string path */
+  int psn_chr; /* [nbr] Position of character '/' in in full name */
  
-  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Looking '/' in \"%s\"...",nm_fll);
-
-  ptr_chr=strchr(nm_fll,'/');
+  ptr_chr=strchr(nm_fll,sls_chr);
   while(ptr_chr){
     psn_chr=ptr_chr-nm_fll;
-
-    if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout," ::found at %d",psn_chr);
-
-    ptr_chr=strchr(ptr_chr+1,'/');
-
-    nbr_sls_chr++;
+    ptr_chr=strchr(ptr_chr+1,sls_chr);
+    sls_nbr++;
   } /* end while */
 
-  if(nco_dbg_lvl_get()== nco_dbg_old) (void)fprintf(stdout,"\n");
-  return nbr_sls_chr;
-
+  return sls_nbr;
 } /* nco_get_sls_chr_cnt() */
 
 int
 nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (path components) */
 (char * const nm_fll,                 /* I [sng] Full name  */ 
- sng_pth_sct ***str_pth_lst)          /* I/O [sct] List of path components  */    
+ sng_pth_sct ***sng_pth_lst)          /* I/O [sct] List of path components  */    
 {
   /* Purpose: Break full path name into components separated by slash character (netCDF4 path separator) 
-  
-  strtok()
-  A sequence of calls to this function split str into tokens, which are sequences of contiguous characters 
-  separated by any of the characters that are part of delimiters.
-
-  strchr() is used to get position of separator that corresponsds to each token
+     Uses strtok() to split string into tokens, sequences of contiguous characters separated by specified delimiters
+     Uses strchr() to get position of delimiter that separates tokens
 
   Use case: "/g16/g16g1/lon1"
-
   Token 0: g16
   Token 1: g16g1
   Token 2: lon1
 
   Usage:
-
   Get number of tokens in variable full name
-  nbr_sls_chr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
+  sls_nbr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
 
-  Alloc
-  str_pth_lst_var=(sng_pth_sct **)nco_malloc(nbr_sls_chr_var*sizeof(sng_pth_sct *)); 
+  Allocation:
+  sng_pth_lst_var=(sng_pth_sct **)nco_malloc(sls_nbr_var*sizeof(sng_pth_sct *)); 
 
-  Get token list in variable full name 
-  (void)nco_get_sng_pth_sct(var_trv->nm_fll,&str_pth_lst_var); */
+  Get token list in variable full name:
+  (void)nco_get_sng_pth_sct(var_trv->nm_fll,&sng_pth_lst_var); */
 
   char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
-  char *ptr_chr_tok;  /* [sng] Pointer to character */
-  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
+  char *ptr_chr_tkn;  /* [sng] Pointer to character */
+  int sls_nbr=0;  /* [nbr] Number of of slash characterrs in  string path */
   int psn_chr;        /* [nbr] Position of character '/' in in full name */
+  const char sls_chr='/';   /* [chr] Slash character */
+  const char sls_sng[]="/"; /* [sng] Slash string */
  
   /* Duplicate original, since strtok() changes it */
-  char *str=strdup(nm_fll);
+  char *sng=strdup(nm_fll);
 
-  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",sng);
 
   /* Get first token */
-  ptr_chr_tok=strtok (str,"/");
-
-  ptr_chr=strchr(nm_fll,'/');
+  ptr_chr_tkn=strtok(sng,sls_sng);
+  ptr_chr=strchr(nm_fll,sls_chr);
 
   while(ptr_chr){
-    if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
+    if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s ",ptr_chr_tkn);
 
     psn_chr=ptr_chr-nm_fll;
     
     /* Store token and position */
-    (*str_pth_lst)[nbr_sls_chr]=(sng_pth_sct *)nco_malloc(1*sizeof(sng_pth_sct));
-
-    (*str_pth_lst)[nbr_sls_chr]->nm=strdup(ptr_chr_tok);
-    (*str_pth_lst)[nbr_sls_chr]->psn=psn_chr;
+    (*sng_pth_lst)[sls_nbr]=(sng_pth_sct *)nco_malloc(sizeof(sng_pth_sct));
+    (*sng_pth_lst)[sls_nbr]->nm=strdup(ptr_chr_tkn);
+    (*sng_pth_lst)[sls_nbr]->psn=psn_chr;
 
     /* Point where last token was found is kept internally by function */
-    ptr_chr_tok=strtok(NULL,"/");
-
-    ptr_chr=strchr(ptr_chr+1,'/');
-
-    nbr_sls_chr++;   
+    ptr_chr_tkn=strtok(NULL,sls_sng);
+    ptr_chr=strchr(ptr_chr+1,sls_chr);
+    sls_nbr++;   
   } /* end while */
 
-  if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"\n");
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"\n");
 
-  str=(char *)nco_free(str);
+  if(sng) sng=(char *)nco_free(sng);
 
-  return nbr_sls_chr;
-
+  return sls_nbr;
 } /* nco_get_sls_chr_cnt() */
 
 void 

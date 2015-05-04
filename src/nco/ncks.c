@@ -160,7 +160,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **grp_lst_in=NULL;
-  char **rgr_arg=NULL; /* [sng] Regriding arguments */
+  char **rgr_arg=NULL; /* [sng] Regridding arguments */
   char **var_lst_in=NULL;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;

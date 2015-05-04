@@ -51,9 +51,10 @@ extern "C" {
     nco_rgr_ZZZ_last
   } nco_rgr_cmd_typ;
 
+  /* Key-value structure */
   typedef struct{
     char *key;
-    char *value;
+    char *val;
   } kvmap_sct;
  
   int
@@ -104,12 +105,16 @@ extern "C" {
    const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
    trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
+  int /* O [enm] Return code */
+  nco_rgr_wgt /* [fnc] Regrid using external weights */
+  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
+
 #ifdef ENABLE_ESMF
   int /* O [enm] Return code */
   nco_rgr_ini /* [fnc] Initialize regridding structure */
   (const int in_id, /* I [id] Input netCDF file ID */
-   char **rgr_arg, /* [sng] Regriding arguments */
-   const int rgr_nbr, /* [nbr] Number of regriding arguments */
+   char **rgr_arg, /* [sng] Regridding arguments */
+   const int rgr_nbr, /* [nbr] Number of regridding arguments */
    char * const rgr_in, /* I [sng] File containing fields to be regridded */
    char * const rgr_out, /* I [sng] File containing regridded fields */
    char * const rgr_grd_src, /* I [sng] File containing input grid */

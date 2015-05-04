@@ -12,30 +12,84 @@
 
 #include "nco_sld.h" /* Swath-Like Data */
 
+int /* O [enm] Return code */
+nco_rgr_wgt /* [fnc] Regrid using external weights */
+(rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
+{
+  /* Purpose: Regrid fields using external weights
+
+     Examine template SCRIP remap file:
+     ncks --cdl -m ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc | m
+
+     Conventions:
+     grid_size: Number of grid cells (product of lat*lon)
+     address: Source and destination index for each link pair
+     num_links: Number of unique address pairs in remapping, i.e., size of sparse matrix
+     num_wgts: Number of weights for given remapping
+     = 1 for bilinear- and distance-based, 
+     = 3 for second-order conservative
+     = 4 for bicubic (gradients in each direction plus cross-gradient term)
+     
+     wgt: 
+     Maximum number of source cells contributing to destination cell is not a dimension
+     in SCRIP remapping files because SCRIP stores everying in 1-D sparse matrix arrays
+     Sparse matrix formulations:
+
+     for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+       // Normalization: fractional area
+       dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0];
+       // Normalization: destination area
+       dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/dst_area[ddr_dst[lnk_idx]];
+       // Normalization: none
+       dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/(dst_area[ddr_dst[lnk_idx]]*dst_frc[ddr_dst[lnk_idx]);
+  */
+
+  const char fnc_nm[]="nco_rgr_wgt()"; /* [sng] Function name */
+  const char wgt_nm[]="remap_matrix"; /* [sng] Name of weighting variable */
+
+  int rcd=NC_NOERR;
+
+  size_t lnk_nbr; /* [nbr] Number of links */
+  size_t lnk_idx; 
+  
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO Obtaining mapping weights from %s...\n",nco_prg_nm_get(),rgr_nfo->fl_map);
+
+  var_sct *wgt=NULL;
+  var_sct *wgt_out=NULL;
+  
+  return rcd;
+} /* nco_rgr_wgt() */
+
 kvmap_sct nco_sng2map /* [fnc] Parse string into key-value pair */
 (char *sng, /* I [sng] String to parse, including "=" */
- kvmap_sct kvm) /* O [sct] key-value pair */
+ kvmap_sct kvm) /* O [sct] Key-value pair */
 {
-  char *prt;
+  /* Purpose: Convert string separated by single delimiter into two strings
+     Routine converts argument "--ppc key1,key2,...,keyN=val" into kvm.key="key1,key2,...keyN" and kvm.val=val
+     e.g., routine converts argument "--ppc one,two=3" into kvm.key="one,two" and kvm.val=3 */
+  char *tkn_sng;
+  const char dlm[]="="; /* [sng] Delimiter */
+  
+  int arg_idx=0; /* [nbr] */
 
-  int icnt=0;
-
-  prt=strtok(sng,"=");
-  while(prt){
-    icnt++;
-    nco_sng_strip(prt);
-    switch(icnt){
+  /* NB: Replace strtok() by strsep()? strtok() does not handle consecutive delimiters well */
+  tkn_sng=strtok(sng,dlm);
+  while(tkn_sng){
+    arg_idx++;
+    /* fxm: Whitespace-stripping may be unnecessary */
+    nco_sng_strip(tkn_sng);
+    switch(arg_idx){
     case 1:
-      kvm.key=strdup(prt);
+      kvm.key=strdup(tkn_sng);
       break;
     case 2:
-      kvm.value=strdup(prt);
+      kvm.val=strdup(tkn_sng);
       break;
     default:
       (void)fprintf(stderr,"nco_sng2map() cannot get key-value pair from input: %s\n",sng);
       break;
     }/* end switch */
-    prt=strtok(NULL,"=");
+    tkn_sng=strtok(NULL,dlm);
   }/* end while */
   return kvm;
 } /* end nco_sng2map() */
@@ -118,7 +172,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
       nco_exit(EXIT_FAILURE);
     } /* endif */
     kvm=nco_sng2map(ppc_arg[ppc_arg_idx],kvm);
-    /* nco_sng2map() converts argument "--ppc one,two=3" into kvm.key="one,two" and kvm.value=3
+    /* nco_sng2map() converts argument "--ppc one,two=3" into kvm.key="one,two" and kvm.val=3
        Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
     if(kvm.key){
       int var_idx; /* [idx] Index over variables in current PPC argument */
@@ -127,7 +181,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
       var_lst=nco_lst_prs_2D(kvm.key,",",&var_nbr);
       for(var_idx=0;var_idx<var_nbr;var_idx++){ /* Expand multi-variable specification */
         ppc_lst[ppc_var_nbr].key=strdup(var_lst[var_idx]);
-        ppc_lst[ppc_var_nbr].value=strdup(kvm.value);
+        ppc_lst[ppc_var_nbr].val=strdup(kvm.val);
         ppc_var_nbr++;
       } /* end for */
       var_lst=nco_sng_lst_free(var_lst,var_nbr);
@@ -137,7 +191,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
   /* PPC default exists, set all non-coordinate variables to default first */
   for(ppc_var_idx=0;ppc_var_idx<ppc_var_nbr;ppc_var_idx++){
     if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default")){
-      nco_ppc_set_dflt(nc_id,ppc_lst[ppc_var_idx].value,trv_tbl);
+      nco_ppc_set_dflt(nc_id,ppc_lst[ppc_var_idx].val,trv_tbl);
       break; /* Only one default is needed */
     } /* endif */
   } /* end for */
@@ -145,7 +199,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
   /* Set explicit, non-default PPCs that can overwrite default */
   for(ppc_var_idx=0;ppc_var_idx<ppc_var_nbr;ppc_var_idx++){
     if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default")) continue;
-    nco_ppc_set_var(ppc_lst[ppc_var_idx].key,ppc_lst[ppc_var_idx].value,trv_tbl);
+    nco_ppc_set_var(ppc_lst[ppc_var_idx].key,ppc_lst[ppc_var_idx].val,trv_tbl);
   } /* end for */
 
   /* Unset PPC and flag for all variables with excessive PPC
@@ -376,9 +430,9 @@ nco_ppc_set_var
   return;
 } /* end nco_ppc_set_var() */
 
-char *
-nco_sng_strip( /* [fnc] Strip leading and trailing white space */
-char *sng)
+char * /* O [sng] Stripped-string */
+nco_sng_strip /* [fnc] Strip leading and trailing white space */
+(char *sng) /* I/O [sng] String to strip */
 {
   /* fxm: seems not working for \n??? */
   char *srt=sng;
@@ -399,15 +453,15 @@ void nco_kvmaps_free(kvmap_sct *kvmaps)
   int idx=0;
   while(kvmaps[idx].key){
     kvmaps[idx].key=(char *)nco_free(kvmaps[idx].key);
-    kvmaps[idx].value=(char *)nco_free(kvmaps[idx].value);
+    kvmaps[idx].val=(char *)nco_free(kvmaps[idx].val);
     idx++;
   } /* end while */
   kvmaps=(kvmap_sct *)nco_free(kvmaps);
 } /* end nco_kvmaps_free */
 
-void nco_kvmap_prn(kvmap_sct vm)
+void nco_kvmap_prn(kvmap_sct kvm)
 {
-  if(vm.key) (void)fprintf(stdout,"%s = %s\n",vm.key,vm.value); else return;
+  if(kvm.key) (void)fprintf(stdout,"%s = %s\n",kvm.key,kvm.val); else return;
 } /* end nco_kvmap_prn() */
 
 int /* O [rcd] Return code */
@@ -457,8 +511,8 @@ nco_scrip_read /* [fnc] Read, parse, and print contents of SCRIP file */
 int /* O [enm] Return code */
 nco_rgr_ini /* [fnc] Initialize regridding structure */
 (const int in_id, /* I [id] Input netCDF file ID */
- char **rgr_arg, /* [sng] Regriding arguments */
- const int rgr_nbr, /* [nbr] Number of regriding arguments */
+ char **rgr_arg, /* [sng] Regridding arguments */
+ const int rgr_nbr, /* [nbr] Number of regridding arguments */
  char * const rgr_in, /* I [sng] File containing fields to be regridded */
  char * const rgr_out, /* I [sng] File containing regridded fields */
  char * const rgr_grd_src, /* I [sng] File containing input grid */
@@ -492,7 +546,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr_nfo->out_id=int_CEWI; /* [id] Output netCDF file ID */
 
   rgr_nfo->in_id=in_id; /* [id] Input netCDF file ID */
-  rgr_nfo->rgr_arg=rgr_arg; /* [sng] Regriding arguments */
+  rgr_nfo->rgr_arg=rgr_arg; /* [sng] Regridding arguments */
   rgr_nfo->rgr_nbr=rgr_nbr; /* [nbr] Number of regridding arguments */
 
   rgr_nfo->fl_grd_src=rgr_grd_src; /* [sng] File containing input grid */

@@ -317,8 +317,15 @@ ifeq (${PNETCDF},Y)
  MPI := Y
 endif # !PNETCDF
 
+LINUX_OR_MACOSX := N
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
-# Decide among the plethora of Linux compilers
+ LINUX_OR_MACOSX := Y
+endif
+ifneq (${null},$(findstring MACOSX,${PVM_ARCH}))
+ LINUX_OR_MACOSX := Y
+endif
+# Decide among the plethora of compilers. Use names like LINUX_CC for historical reasons.
+ifeq (${LINUX_OR_MACOSX},Y)
 ifndef LINUX_CXX
 # C++ compiler for Linux
  LINUX_CXX := g++
@@ -349,7 +356,7 @@ ifndef LINUX_FC
  #LINUX_FC := pathf95
  #LINUX_FC := pgf90
 endif # endif LINUX_CC
-endif # endif LINUX
+endif # endif LINUX_OR_MACOSX
 
 # OpenMP
 ifeq (${OMP},Y)
