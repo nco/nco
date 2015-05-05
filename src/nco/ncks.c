@@ -936,21 +936,13 @@ main(int argc,char **argv)
 
     /* Regridding */
     if(flg_rgr){
-#ifdef ENABLE_ESMF
       rgr_sct rgr_nfo;
       /* Initialize regridding structure */
       rgr_in=(char *)strdup(fl_in);
       rcd=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,&rgr_nfo);
       rgr_nfo.fl_out_tmp=nco_fl_out_open(rgr_nfo.fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_nfo.out_id);
       /* Regrid fields */
-      rcd=nco_rgr_esmf(&rgr_nfo);
-      /* Close output and free dynamic memory */
-      (void)nco_fl_out_cls(rgr_nfo.fl_out,rgr_nfo.fl_out_tmp,rgr_nfo.out_id);
-      (void)nco_rgr_free(&rgr_nfo);
-#else /* !ENABLE_ESMF */
-      (void)fprintf(stderr,"%s: ERROR attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm);
-      nco_exit(EXIT_FAILURE);
-#endif /* !ENABLE_ESMF */
+      rcd=nco_rgr_ctl(&rgr_nfo);
     } /* endif !flg_rgr */
 
     /* Inititialize, decode, and set PPC information */

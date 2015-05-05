@@ -109,7 +109,10 @@ extern "C" {
   nco_rgr_wgt /* [fnc] Regrid using external weights */
   (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
 
-#ifdef ENABLE_ESMF
+  int /* O [enm] Return code */
+  nco_rgr_ctl /* [fnc] Control regridding logic */
+  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
+
   int /* O [enm] Return code */
   nco_rgr_ini /* [fnc] Initialize regridding structure */
   (const int in_id, /* I [id] Input netCDF file ID */
@@ -127,10 +130,6 @@ extern "C" {
   nco_rgr_free /* [fnc] Deallocate regridding structure */
   (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
 
-  int /* O [enm] Return code */
-  nco_rgr_esmf /* [fnc] Regrid using ESMF library */
-  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
-
   const char * /* O [sng] String containing regridding command and format */
   nco_rgr_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
   (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
@@ -138,6 +137,11 @@ extern "C" {
   const char * /* O [sng] String containing regridding command name */
   nco_rgr_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
   (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
+
+#ifdef ENABLE_ESMF
+  int /* O [enm] Return code */
+  nco_rgr_esmf /* [fnc] Regrid using ESMF library */
+  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
 
   const char * /* O [sng] String version of ESMC_StaggerLoc enum */
   nco_esmf_stg_lcn_sng /* [fnc] Convert ESMF stagger location enum to string */
@@ -178,7 +182,6 @@ extern "C" {
   const char * /* O [sng] String version of ESMC_UnmappedAction_Flag enum */
   nco_esmf_unm_act_sng /* [fnc] Convert ESMF unmapped action type enum to string */
   (const int nco_esmf_unm_act); /* I [enm] ESMF unmapped action type enum ESMC_UnmappedAction_Flag */
-
 #endif /* !ENABLE_ESMF */
 
 #ifdef __cplusplus

@@ -1,3 +1,7 @@
+2015-05-05  Charlie Zender  <zender@uci.edu>
+
+	* Situate nco_rgr_ctl() between main() and all regridding routines
+
 2015-05-04  Charlie Zender  <zender@uci.edu>
 
 	* Tidy string functions by DYW and PVN

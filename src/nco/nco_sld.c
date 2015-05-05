@@ -507,7 +507,28 @@ nco_scrip_read /* [fnc] Read, parse, and print contents of SCRIP file */
   return NCO_NOERR;
 } /* end nco_scrip_read */
 
+int /* O [enm] Return code */
+nco_rgr_ctl /* [fnc] Control regridding logic */
+(rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
+{
+  /* Purpose: Control regridding logic */
+  int rcd=NCO_NOERR;
+  const char fnc_nm[]="nco_rgr_ctl()";
+
 #ifdef ENABLE_ESMF
+      /* Regrid fields */
+      rcd=nco_rgr_esmf(rgr_nfo);
+      /* Close output and free dynamic memory */
+      (void)nco_fl_out_cls(rgr_nfo.fl_out,rgr_nfo.fl_out_tmp,rgr_nfo.out_id);
+      (void)nco_rgr_free(&rgr_nfo);
+#else /* !ENABLE_ESMF */
+      (void)fprintf(stderr,"%s: ERROR attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+#endif /* !ENABLE_ESMF */
+
+  return rcd;
+} /* end nco_rgr_ctl() */
+
 int /* O [enm] Return code */
 nco_rgr_ini /* [fnc] Initialize regridding structure */
 (const int in_id, /* I [id] Input netCDF file ID */
@@ -706,6 +727,7 @@ nco_rgr_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
   return (char *)NULL;
 } /* end nco_rgr_cmd_sng() */
 
+#ifdef ENABLE_ESMF
 const char * /* O [sng] String version of ESMC_FileFormat_Flag */
 nco_esmf_fl_fmt_sng /* [fnc] Convert ESMF file format to string */
 (const int nco_esmf_fl_fmt) /* I [enm] ESMF file format enum ESMC_FileFormat_Flag */
@@ -895,7 +917,11 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
      http://www.earthsystemmodeling.org/documents/dev_guide
      ESMF_RegridWeightGen
      http://www.earthsystemcog.org/projects/regridweightgen
-     http://www.earthsystemmodeling.org/python_releases/last_esmpy/esmpy_doc/html/index.html */
+     http://www.earthsystemmodeling.org/python_releases/last_esmpy/esmpy_doc/html/index.html
+
+     ESMF C-interface examples:
+     ${DATA}/esmf/src/Infrastructure/Field/tests/ESMC_FieldRegridUTest.C
+     ${DATA}/esmf/src/Infrastructure/Field/tests/ESMC_FieldRegridCsrvUTest.C */
   
   const char fnc_nm[]="nco_rgr_esmf()"; /* [sng] Function name */
   const char fl_nm_esmf_log[]="nco_rgr_log_foo.txt"; /* [sng] Log file for ESMF routines */
