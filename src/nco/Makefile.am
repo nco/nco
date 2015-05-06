@@ -108,8 +108,10 @@ nco_mss_val.h \
 nco_netcdf.h \
 nco_omp.h \
 nco_pck.h \
+nco_ppc.h \
 nco_prn.h \
 nco_rec_var.h \
+nco_rgr.h \
 nco_rth_flt.h \
 nco_rth_utl.h \
 nco_scl_utl.h \
@@ -165,8 +167,10 @@ nco_mss_val.c \
 nco_netcdf.c \
 nco_omp.c \
 nco_pck.c \
+nco_ppc.c \
 nco_prn.c \
 nco_rec_var.c \
+nco_rgr.c \
 nco_rth_flt.c \
 nco_rth_utl.c \
 nco_scl_utl.c \

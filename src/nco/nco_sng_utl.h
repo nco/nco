@@ -125,6 +125,23 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing decimal point and preceding exponen
 (char * const sng, /* I/O [sng] String to process */
  const int trl_zro_max); /* [nbr] Maximum number of trailing zeros allowed */
 
+  kvm_sct /* O [sct] Key-value pair */
+  nco_sng2kvm /* [fnc] Parse string into key-value pair */
+  (char *sng, /* I [sng] String to parse, including "=" */
+   kvm_sct kvm); /* O [sct] Key-value pair */
+  
+  char * /* O [sng] Stripped-string */
+  nco_sng_strip /* [fnc] Strip leading and trailing white space */
+  (char *sng); /* I/O [sng] String to strip */
+  
+  void
+  nco_kvm_free /* [fnc] Relinquish dynamic memory from list of kvm structures */
+  (kvm_sct *kvm); /* I/O [sct] List of kvm structures */
+  
+  void
+  nco_kvm_prn /* [fnc] Print kvm contents */
+  (kvm_sct kvm); /* [fnc] kvm to print */
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

@@ -1913,8 +1913,10 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_netcdf.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_omp.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_pck.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_ppc.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_prn.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_rec_var.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_rgr.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_rth_flt.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_rth_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_scl_utl.o) \

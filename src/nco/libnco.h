@@ -43,15 +43,17 @@
 #include "nco_mss_val.h" /* Missing value utilities */
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_pck.h" /* Packing and unpacking variables */
+#include "nco_ppc.h" /* Precision-Preserving Compression */
 #include "nco_prn.h" /* Print variables, attributes, metadata */
 #include "nco_rec_var.h" /* Record variable utilities */
+#include "nco_rgr.h" /* Regridding */
 #include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
 #include "nco_rth_utl.h" /* Arithmetic controls and utilities */
 #include "nco_scl_utl.h" /* Scalar utilities */
 #include "nco_scm.h" /* Software configuration management */
+#include "nco_sld.h" /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
 #include "nco_srm.h" /* Streams */
-#include "nco_sld.h" /* Swath-Like Data */
 #include "nco_var_avg.h" /* Average variables */
 #include "nco_uthash.h" /* Hash table functionality */
 #include "nco_var_lst.h" /* Variable list utilities */

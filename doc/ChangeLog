@@ -1,3 +1,7 @@
+2015-05-06  Charlie Zender  <zender@uci.edu>
+
+	* Segregate parts of nco_sld.[ch] into nco_ppc.[ch] and nco_rgr.[ch]
+
 2015-05-05  Charlie Zender  <zender@uci.edu>
 
 	* Situate nco_rgr_ctl() between main() and all regridding routines

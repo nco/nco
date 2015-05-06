@@ -273,10 +273,14 @@ nco/src/nco/nco_omp.c
 nco/src/nco/nco_omp.h
 nco/src/nco/nco_pck.c
 nco/src/nco/nco_pck.h
+nco/src/nco/nco_ppc.c
+nco/src/nco/nco_ppc.h
 nco/src/nco/nco_prn.c
 nco/src/nco/nco_prn.h
 nco/src/nco/nco_rec_var.c
 nco/src/nco/nco_rec_var.h
+nco/src/nco/nco_rgr.c
+nco/src/nco/nco_rgr.h
 nco/src/nco/nco_rth_flt.c
 nco/src/nco/nco_rth_flt.h
 nco/src/nco/nco_rth_utl.c
@@ -285,6 +289,8 @@ nco/src/nco/nco_scl_utl.c
 nco/src/nco/nco_scl_utl.h
 nco/src/nco/nco_scm.c
 nco/src/nco/nco_scm.h
+nco/src/nco/nco_sld.c
+nco/src/nco/nco_sld.h
 nco/src/nco/nco_sng_utl.c
 nco/src/nco/nco_sng_utl.h
 nco/src/nco/nco_srm.c

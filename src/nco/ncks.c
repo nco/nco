@@ -247,7 +247,7 @@ main(int argc,char **argv)
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
 
   /* DYW */
-  kvmap_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
+  kvm_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
@@ -552,7 +552,7 @@ main(int argc,char **argv)
       } /* endif "lbr" */
       if(!strcmp(opt_crr,"scrip")){
         fl_scrip=strdup(optarg);
-	sld_nfo=(kvmap_sct *)nco_malloc(BUFSIZ*sizeof(kvmap_sct));
+	sld_nfo=(kvm_sct *)nco_malloc(BUFSIZ*sizeof(kvm_sct));
         nco_scrip_read(fl_scrip,sld_nfo);
       } /* endif "scrip" */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
@@ -1145,8 +1145,8 @@ close_and_free:
     if(fl_scrip){
       fl_scrip=(char *)nco_free(fl_scrip);
       idx=0;
-      if(nco_dbg_lvl > nco_dbg_fl) while(sld_nfo[idx].key) nco_kvmap_prn(sld_nfo[idx++]);
-      if(sld_nfo) nco_kvmaps_free(sld_nfo);
+      if(nco_dbg_lvl > nco_dbg_fl) while(sld_nfo[idx].key) nco_kvm_prn(sld_nfo[idx++]);
+      if(sld_nfo) nco_kvm_free(sld_nfo);
     } /* endif fl_scrip */
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */

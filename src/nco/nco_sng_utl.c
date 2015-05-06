@@ -596,3 +596,41 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing decimal point and preceding exponen
 
   return;
 } /* end sng_trm_trl_zro() */
+
+char * /* O [sng] Stripped-string */
+nco_sng_strip /* [fnc] Strip leading and trailing white space */
+(char *sng) /* I/O [sng] String to strip */
+{
+  /* fxm: seems not working for \n??? */
+  char *srt=sng;
+  while(isspace(*srt)) srt++;
+  size_t end=strlen(srt);
+  if(srt != sng){
+    memmove(sng,srt,end);
+    sng[end]='\0';
+  } /* endif */
+  while(isblank(*(sng+end-1L))) end--;
+  sng[end]='\0';
+  return sng;
+} /* end nco_sng_strip() */
+
+void
+nco_kvm_free /* [fnc] Relinquish dynamic memory from list of kvm structures */
+(kvm_sct *kvm) /* I/O [sct] List of kvm structures */
+{
+  /* Purpose: Relinquish dynamic memory from list of kvm structures
+     End of list is indicated by NULL in key slot */
+  int idx=0;
+  while(kvm[idx].key){
+    kvm[idx].key=(char *)nco_free(kvm[idx].key);
+    kvm[idx].val=(char *)nco_free(kvm[idx].val);
+    idx++;
+  } /* end while */
+  kvm=(kvm_sct *)nco_free(kvm);
+} /* end nco_kvm_free() */
+
+void
+nco_kvm_prn(kvm_sct kvm)
+{
+  if(kvm.key) (void)fprintf(stdout,"%s = %s\n",kvm.key,kvm.val); else return;
+} /* end nco_kvm_prn() */

@@ -892,8 +892,17 @@ extern "C" {
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */
     nco_bool flg_usr_rqs; /* [flg] User requested regridding */
+    nco_bool flg_grd_src; /* [flg] User-specified input grid */
+    nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
+    nco_bool flg_map; /* [flg] User-specified mapping weights */
   } rgr_sct;
 
+  /* Key-value structure */
+  typedef struct{
+    char *key;
+    char *val;
+  } kvm_sct;
+ 
   /* Attribute structure */
   typedef struct{ /* att_sct */
     char *nm;
