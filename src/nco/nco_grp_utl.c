@@ -334,11 +334,9 @@ nco_get_sls_chr_cnt /* [fnc] Count slash characters in a string path */
   const char sls_chr='/'; /* [chr] Slash character */
   char *ptr_chr; /* [sng] Pointer to character '/' in full name */
   int sls_nbr=0; /* [nbr] Number of of slash characterrs in  string path */
-  int psn_chr; /* [nbr] Position of character '/' in in full name */
  
   ptr_chr=strchr(nm_fll,sls_chr);
   while(ptr_chr){
-    psn_chr=ptr_chr-nm_fll;
     ptr_chr=strchr(ptr_chr+1,sls_chr);
     sls_nbr++;
   } /* end while */
