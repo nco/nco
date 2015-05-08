@@ -1,3 +1,7 @@
+2015-05-07  Charlie Zender  <zender@uci.edu>
+
+	* Describe SCRIP remapping in nco_rgr.c
+
 2015-05-06  Charlie Zender  <zender@uci.edu>
 
 	* Segregate parts of nco_sld.[ch] into nco_ppc.[ch] and nco_rgr.[ch]

@@ -13,19 +13,39 @@ int /* O [enm] Return code */
 nco_rgr_map /* [fnc] Regrid using external weights */
 (rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
 {
-  /* Purpose: Regrid fields using external weights
+  /* Purpose: Regrid fields using external weights (i.e., a mapping file)
 
-     Examine template SCRIP remap file:
+     Examine SCRIP remap file:
      ncks --cdl -m ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc | m
 
      Conventions:
      grid_size: Number of grid cells (product of lat*lon)
      address: Source and destination index for each link pair
      num_links: Number of unique address pairs in remapping, i.e., size of sparse matrix
-     num_wgts: Number of weights for given remapping
-     = 1 for bilinear- and distance-based, 
-     = 3 for second-order conservative
-     = 4 for bicubic (gradients in each direction plus cross-gradient term)
+     num_wgts: Number of weights per vertice for given remapping
+     = 1 Bilinear
+         Destination grid value determined by weights times known source grid values 
+         at vertices of source quadrilateral that bounds destination point P
+         One weight per vertice guarantees fxm but is not conservative
+         Bilinear requires logically rectangular grid
+     = 1 Distance-based:
+	 Distance-weighted uses values at num_neighbors points
+	 The weight is inversely proportional to the angular distance from 
+	 the destination point to each neighbor on the source grid
+     = 3 Second-order conservative:
+         Described in Jones, P. W. (1999), Monthly Weather Review, 127, 2204-2210
+         First-order conservative schemes assume fluxes are constant within gridcell
+	 Destination fluxes are simple summations of sources fluxes weighted by overlap areas
+	 Old clm and bds remappers use a first-order algorithm
+	 Second-order improves this by using a first-order Taylor expansion of flux
+	 Source flux is centroid value plus directional offset determined by dot product
+	 of directional gradient and vector pointing from vertice to centroid.
+         Three weights per vertice are centroid weight, weight times local theta-gradient from
+	 centroid to vertice, and weight times local phi-gradient from centroid to vertice.
+     = 4 Bicubic: 
+         The four weights are gradients in each direction plus a cross-gradient term
+         Same principle as bilinear, but more weights per vertice
+         Bicubic requires logically rectangular grid
      
      wgt: 
      Maximum number of source cells contributing to destination cell is not a dimension

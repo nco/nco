@@ -837,7 +837,7 @@ main(int argc,char **argv)
     /* Change missing_value of var_prc_2, if any, to missing_value of var_prc_1, if any */
     has_mss_val=nco_mss_val_cnf(var_prc_1[idx],var_prc_2[idx]);
 
-    /* NB: fxm: use tally to determine when to "unweight" answer? TODO  */
+    /* NB: fxm: use tally to determine when to "unweight" answer? TODO */
     (void)nco_var_add_tll_ncflint(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
 
     /* Re-cast output variable to original type */
