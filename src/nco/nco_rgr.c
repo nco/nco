@@ -307,7 +307,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   rcd+=nco_inq_dimlen(in_id,num_wgts_id,&scrip.num_wgts);
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
-    (void)fprintf(stderr,"%s: INFO %s reports",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"%s: INFO %s reports ",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"src_grid_size = %li, dst_grid_size = %li, src_grid_corners = %li, dst_grid_corners = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = %li, num_wgts = %li\n",scrip.src_grid_size,scrip.dst_grid_size,scrip.src_grid_corners,scrip.dst_grid_corners,scrip.src_grid_rank,scrip.dst_grid_rank,scrip.num_links,scrip.num_wgts);
   } /* endif dbg */
 
