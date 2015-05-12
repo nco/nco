@@ -1,3 +1,7 @@
+2015-05-11  Charlie Zender  <zender@uci.edu>
+
+	* Crude version of nco_rgr_map()
+
 2015-05-07  Charlie Zender  <zender@uci.edu>
 
 	* Describe SCRIP remapping in nco_rgr.c

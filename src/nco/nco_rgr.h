@@ -49,6 +49,18 @@ extern "C" {
     nco_rgr_ZZZ_last
   } nco_rgr_cmd_typ;
 
+  typedef struct{ /* scrip_sct */
+    /* Contents of SCRIP remapping file */
+    long int src_grid_size; /* [nbr] Source grid size */
+    long int dst_grid_size; /* [nbr] Destination grid size */
+    long int src_grid_corners; /* [nbr] Source grid corners */
+    long int dst_grid_corners; /* [nbr] Destination grid corners */
+    long int src_grid_rank; /* [nbr] Source grid rank */
+    long int dst_grid_rank; /* [nbr] Destination grid rank */
+    long int num_links; /* [nbr] Number of links */
+    long int num_wgts; /* [nbr] Number of weights */
+  } scrip_sct;
+  
   int /* O [enm] Return code */
   nco_rgr_map /* [fnc] Regrid using external weights */
   (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */

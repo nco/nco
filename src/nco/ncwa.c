@@ -655,7 +655,7 @@ main(int argc,char **argv)
 #endif /* _MSC_VER */
 
   /* Ensure we do not attempt to normalize by non-existent weight */
-  if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;
+  if(!wgt_nm) NORMALIZE_BY_WEIGHT=False;
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -884,12 +884,12 @@ main(int argc,char **argv)
       var_prc_out[idx]->sz=var_prc[idx]->sz;
      
       /* fxm: verify that var_prc->tally is not needed */
-      if((var_prc_out[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){
+      if(!(var_prc_out[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long)))){
         (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",nco_prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
         nco_exit(EXIT_FAILURE); 
       } /* end if err */
       (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-      if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
+      if(!(var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type)))){
         (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",nco_prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
         nco_exit(EXIT_FAILURE); 
       } /* end if err */
@@ -1021,7 +1021,7 @@ main(int argc,char **argv)
 	   When this occurs the nco_var_dpl() call in nco_var_cnf_dmn() does not copy
 	   tally array into wgt_avg. See related note about this above. TODO #114.*/
         if(wgt_avg->sz > 0)
-          if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
+          if(!(wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long)))){
             (void)fprintf(fp_stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",nco_prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
             nco_exit(EXIT_FAILURE); 
           } /* end if */

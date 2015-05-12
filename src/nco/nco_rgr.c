@@ -10,74 +10,6 @@
 #include "nco_rgr.h" /* Regridding */
 
 int /* O [enm] Return code */
-nco_rgr_map /* [fnc] Regrid using external weights */
-(rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
-{
-  /* Purpose: Regrid fields using external weights (i.e., a mapping file)
-
-     Examine SCRIP remap file:
-     ncks --cdl -m ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc | m
-
-     Conventions:
-     grid_size: Number of grid cells (product of lat*lon)
-     address: Source and destination index for each link pair
-     num_links: Number of unique address pairs in remapping, i.e., size of sparse matrix
-     num_wgts: Number of weights per vertice for given remapping
-     = 1 Bilinear
-         Destination grid value determined by weights times known source grid values 
-         at vertices of source quadrilateral that bounds destination point P
-         One weight per vertice guarantees fxm but is not conservative
-         Bilinear requires logically rectangular grid
-     = 1 Distance-based:
-	 Distance-weighted uses values at num_neighbors points
-	 The weight is inversely proportional to the angular distance from 
-	 the destination point to each neighbor on the source grid
-     = 3 Second-order conservative:
-         Described in Jones, P. W. (1999), Monthly Weather Review, 127, 2204-2210
-         First-order conservative schemes assume fluxes are constant within gridcell
-	 Destination fluxes are simple summations of sources fluxes weighted by overlap areas
-	 Old clm and bds remappers use a first-order algorithm
-	 Second-order improves this by using a first-order Taylor expansion of flux
-	 Source flux is centroid value plus directional offset determined by dot product
-	 of directional gradient and vector pointing from vertice to centroid.
-         Three weights per vertice are centroid weight, weight times local theta-gradient from
-	 centroid to vertice, and weight times local phi-gradient from centroid to vertice.
-     = 4 Bicubic: 
-         The four weights are gradients in each direction plus a cross-gradient term
-         Same principle as bilinear, but more weights per vertice
-         Bicubic requires logically rectangular grid
-     
-     wgt: 
-     Maximum number of source cells contributing to destination cell is not a dimension
-     in SCRIP remapping files because SCRIP stores everying in 1-D sparse matrix arrays
-     Sparse matrix formulations:
-
-     for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
-       // Normalization: fractional area
-       dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0];
-       // Normalization: destination area
-       dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/dst_area[ddr_dst[lnk_idx]];
-       // Normalization: none
-       dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/(dst_area[ddr_dst[lnk_idx]]*dst_frc[ddr_dst[lnk_idx]);
-  */
-
-  const char fnc_nm[]="nco_rgr_map()"; /* [sng] Function name */
-  const char wgt_nm[]="remap_matrix"; /* [sng] Name of weighting variable */
-
-  int rcd=NC_NOERR;
-
-  size_t lnk_nbr; /* [nbr] Number of links */
-  size_t lnk_idx; 
-  
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining mapping weights from %s...\n",nco_prg_nm_get(),fnc_nm,rgr_nfo->fl_map);
-
-  var_sct *wgt=NULL;
-  var_sct *wgt_out=NULL;
-  
-  return rcd;
-} /* nco_rgr_map() */
-
-int /* O [enm] Return code */
 nco_rgr_ctl /* [fnc] Control regridding logic */
 (rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
 {
@@ -105,12 +37,13 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   if(flg_smf){
 #ifdef ENABLE_ESMF
   /* Regrid using ESMF library */
+  (void)fprintf(stderr,"%s: %s calling nco_rgr_esmf() to generate and apply regridding map\n",nco_prg_nm_get(),fnc_nm);
   rcd=nco_rgr_esmf(rgr_nfo);
   /* Close output and free dynamic memory */
-  (void)nco_fl_out_cls(rgr_nfo.fl_out,rgr_nfo.fl_out_tmp,rgr_nfo.out_id);
-  (void)nco_rgr_free(&rgr_nfo);
+  (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,rgr_nfo->out_id);
+  (void)nco_rgr_free(rgr_nfo);
 #else /* !ENABLE_ESMF */
-  (void)fprintf(stderr,"%s: ERROR attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm_get());
+  (void)fprintf(stderr,"%s: ERROR %s reports attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm_get(),fnc_nm);
   nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_ESMF */
 } /* !flg_smf */
@@ -118,6 +51,23 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   return rcd;
 } /* end nco_rgr_ctl() */
 
+void
+nco_rgr_free /* [fnc] Deallocate regridding structure */
+(rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
+{
+  /* [fnc] Free all dynamic memory in regridding structure */
+  if(rgr_nfo->fl_grd_src) rgr_nfo->fl_grd_src=(char *)nco_free(rgr_nfo->fl_grd_src);
+  if(rgr_nfo->fl_grd_dst) rgr_nfo->fl_grd_dst=(char *)nco_free(rgr_nfo->fl_grd_dst);
+  if(rgr_nfo->fl_in) rgr_nfo->fl_in=(char *)nco_free(rgr_nfo->fl_in);
+  if(rgr_nfo->fl_out) rgr_nfo->fl_out=(char *)nco_free(rgr_nfo->fl_out);
+  if(rgr_nfo->fl_out_tmp) rgr_nfo->fl_out_tmp=(char *)nco_free(rgr_nfo->fl_out_tmp);
+  if(rgr_nfo->fl_map) rgr_nfo->fl_map=(char *)nco_free(rgr_nfo->fl_map);
+  if(rgr_nfo->var_nm) rgr_nfo->var_nm=(char *)nco_free(rgr_nfo->var_nm);
+
+  /* Tempest */
+  if(rgr_nfo->drc_dat) rgr_nfo->drc_dat=(char *)nco_free(rgr_nfo->drc_dat);
+} /* end nco_rfr_free() */
+  
 int /* O [enm] Return code */
 nco_rgr_ini /* [fnc] Initialize regridding structure */
 (const int in_id, /* I [id] Input netCDF file ID */
@@ -243,23 +193,133 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   return rcd;
 } /* end nco_rgr_ini() */
   
-void
-nco_rgr_free /* [fnc] Deallocate regridding structure */
+int /* O [enm] Return code */
+nco_rgr_map /* [fnc] Regrid using external weights */
 (rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
 {
-  /* [fnc] Free all dynamic memory in regridding structure */
-  if(rgr_nfo->fl_grd_src) rgr_nfo->fl_grd_src=(char *)nco_free(rgr_nfo->fl_grd_src);
-  if(rgr_nfo->fl_grd_dst) rgr_nfo->fl_grd_dst=(char *)nco_free(rgr_nfo->fl_grd_dst);
-  if(rgr_nfo->fl_in) rgr_nfo->fl_in=(char *)nco_free(rgr_nfo->fl_in);
-  if(rgr_nfo->fl_out) rgr_nfo->fl_out=(char *)nco_free(rgr_nfo->fl_out);
-  if(rgr_nfo->fl_out_tmp) rgr_nfo->fl_out_tmp=(char *)nco_free(rgr_nfo->fl_out_tmp);
-  if(rgr_nfo->fl_map) rgr_nfo->fl_map=(char *)nco_free(rgr_nfo->fl_map);
-  if(rgr_nfo->var_nm) rgr_nfo->var_nm=(char *)nco_free(rgr_nfo->var_nm);
+  /* Purpose: Regrid fields using external weights (i.e., a mapping file)
 
-  /* Tempest */
-  if(rgr_nfo->drc_dat) rgr_nfo->drc_dat=(char *)nco_free(rgr_nfo->drc_dat);
-} /* end nco_rfr_free() */
+     Examine SCRIP remap file:
+     ncks --cdl -m ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc | m
+
+     Test SCRIP remapping file:
+     ncks -O --rgr=Y --rgr_map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc
+ 
+     Conventions:
+     grid_size: Number of grid cells (product of lat*lon)
+     address: Source and destination index for each link pair
+     num_links: Number of unique address pairs in remapping, i.e., size of sparse matrix
+     num_wgts: Number of weights per vertice for given remapping
+     = 1 Bilinear
+         Destination grid value determined by weights times known source grid values 
+         at vertices of source quadrilateral that bounds destination point P
+         One weight per vertice guarantees fxm but is not conservative
+         Bilinear requires logically rectangular grid
+     = 1 Distance-based:
+	 Distance-weighted uses values at num_neighbors points
+	 The weight is inversely proportional to the angular distance from 
+	 the destination point to each neighbor on the source grid
+     = 3 Second-order conservative:
+         Described in Jones, P. W. (1999), Monthly Weather Review, 127, 2204-2210
+         First-order conservative schemes assume fluxes are constant within gridcell
+	 Destination fluxes are simple summations of sources fluxes weighted by overlap areas
+	 Old clm and bds remappers use a first-order algorithm
+	 Second-order improves this by using a first-order Taylor expansion of flux
+	 Source flux is centroid value plus directional offset determined by dot product
+	 of directional gradient and vector pointing from vertice to centroid.
+         Three weights per vertice are centroid weight, weight times local theta-gradient from
+	 centroid to vertice, and weight times local phi-gradient from centroid to vertice.
+     = 4 Bicubic: 
+         The four weights are gradients in each direction plus a cross-gradient term
+         Same principle as bilinear, but more weights per vertice
+         Bicubic requires logically rectangular grid
+     
+     wgt: 
+     Maximum number of source cells contributing to destination cell is not a dimension
+     in SCRIP remapping files because SCRIP stores everying in 1-D sparse matrix arrays
+     Sparse matrix formulations:
+
+     for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+       // Normalization: fractional area
+       dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0];
+       // Normalization: destination area
+       dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/dst_area[ddr_dst[lnk_idx]];
+       // Normalization: none
+       dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/(dst_area[ddr_dst[lnk_idx]]*dst_frc[ddr_dst[lnk_idx]);
+  */
+
+  const char fnc_nm[]="nco_rgr_map()"; /* [sng] Function name */
+  const char wgt_nm[]="remap_matrix"; /* [sng] Name of weighting variable */
+
+  char *fl_in=rgr_nfo->fl_map;
+  char *fl_pth_lcl=NULL;
+
+  int in_id;  
+  int md_open; /* [enm] Mode flag for nc_open() call */
+  int rcd=NC_NOERR;
+
+  int src_grid_size_id; /* [id] Source grid size dimension ID */
+  int dst_grid_size_id; /* [id] Destination grid size dimension ID */
+  int src_grid_corners_id; /* [id] Source grid corners dimension ID */
+  int dst_grid_corners_id; /* [id] Destination grid corners dimension ID */
+  int src_grid_rank_id; /* [id] Source grid rank dimension ID */
+  int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
+  int num_links_id; /* [id] Number of links dimension ID */
+  int num_wgts_id; /* [id] Number of weights dimension ID */
+
+  nco_bool FL_RTR_RMT_LCN;
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+
+  scrip_sct scrip;
+
+  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t lnk_nbr; /* [nbr] Number of links */
+  size_t lnk_idx; 
   
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining mapping weights from %s...\n",nco_prg_nm_get(),fnc_nm,rgr_nfo->fl_map);
+
+  var_sct *wgt=NULL;
+  var_sct *wgt_out=NULL;
+
+  /* Make sure file is on local system and is readable or die trying */
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+  /* Open file using appropriate buffer size hints and verbosity */
+  if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+  rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
+
+  rcd+=nco_inq_dimid(in_id,"src_grid_size",&src_grid_size_id);
+  rcd+=nco_inq_dimid(in_id,"dst_grid_size",&dst_grid_size_id);
+  rcd+=nco_inq_dimid(in_id,"src_grid_corners",&src_grid_corners_id);
+  rcd+=nco_inq_dimid(in_id,"dst_grid_corners",&dst_grid_corners_id);
+  rcd+=nco_inq_dimid(in_id,"src_grid_rank",&src_grid_rank_id);
+  rcd+=nco_inq_dimid(in_id,"dst_grid_rank",&dst_grid_rank_id);
+  rcd+=nco_inq_dimid(in_id,"num_links",&num_links_id);
+  rcd+=nco_inq_dimid(in_id,"num_wgts",&num_wgts_id);
+  
+  rcd+=nco_inq_dimlen(in_id,src_grid_size_id,&scrip.src_grid_size);
+  rcd+=nco_inq_dimlen(in_id,dst_grid_size_id,&scrip.dst_grid_size);
+  rcd+=nco_inq_dimlen(in_id,src_grid_corners_id,&scrip.src_grid_corners);
+  rcd+=nco_inq_dimlen(in_id,dst_grid_corners_id,&scrip.dst_grid_corners);
+  rcd+=nco_inq_dimlen(in_id,src_grid_rank_id,&scrip.src_grid_rank);
+  rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&scrip.dst_grid_rank);
+  rcd+=nco_inq_dimlen(in_id,num_links_id,&scrip.num_links);
+  rcd+=nco_inq_dimlen(in_id,num_wgts_id,&scrip.num_wgts);
+  
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+    (void)fprintf(stderr,"%s: INFO %s reports",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"src_grid_size = %li, dst_grid_size = %li, src_grid_corners = %li, dst_grid_corners = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = %li, num_wgts = %li\n",scrip.src_grid_size,scrip.dst_grid_size,scrip.src_grid_corners,scrip.dst_grid_corners,scrip.src_grid_rank,scrip.dst_grid_rank,scrip.num_links,scrip.num_wgts);
+  } /* endif dbg */
+
+  /* Close input netCDF file */
+  nco_close(in_id);
+
+  /* Remove local copy of file */
+  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
+
+  return rcd;
+} /* nco_rgr_map() */
+
 const char * /* O [sng] String containing regridding command and format */
 nco_rgr_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
 (const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] Tempest remap command enum */

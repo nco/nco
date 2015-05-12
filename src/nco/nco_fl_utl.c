@@ -1597,7 +1597,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
      which both requires them to work on local (not remote or DAP) files, 
      and prevents them from creating intermediate files.
      Changing towards greater NCO-wide consistency would be a good thing? 
-     No complaints yet about ncatted/ncrename locality requirement, though */
+     In ~20 years since release, though, only one complaint (from Chris Lynnes)
+     that ncatted/ncrename have this locality requirement */
   if(False){
     if(nco_prg_id_get() == ncrename || nco_prg_id_get() == ncatted){
       /* ncrename and ncatted allow single filename without question */
