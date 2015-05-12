@@ -1,3 +1,7 @@
+2015-05-12  Charlie Zender  <zender@uci.edu>
+
+	* Improve error message when nco_lmt.c encounters hyperslab requests on 2-D "coordinates"
+
 2015-05-11  Charlie Zender  <zender@uci.edu>
 
 	* Crude version of nco_rgr_map()

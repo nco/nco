@@ -6908,9 +6908,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
             }else{
               /* b) Dimension only (no coordinate variable for this dimension) */
-
               dmn_trv_sct *ncd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd;
-
 
               /* Limit is same as dimension in input file ? */
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.NON_HYP_DMN=False;

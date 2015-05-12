@@ -1327,7 +1327,9 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
      Tests:
      ncks -D 11 -d lon,0.,90.,1 -v lon -H ~/nco/data/in_grp.nc
      ncks -D 11 -d lon,0,1,1 -v lon -H ~/nco/data/in_grp.nc */
-  
+
+  const char fnc_nm[]="nco_lmt_evl_dmn_crd()";
+
   char *fl_udu_sng=NULL_CEWI;     /* [sng] Store units attribute of coordinate dimension */
   char *msg_sng=NULL_CEWI;        /* [sng] Error message */
   char *sng_cnv_rcd=NULL_CEWI;    /* [sng] strtol()/strtoul() return code */
@@ -1496,6 +1498,9 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     /* Get variable ID of coordinate */
     (void)nco_inq_varid(grp_id,lmt.nm,&dim.cid);
 
+    /* Ensure variable is 1-D so is true coordinate */
+    (void)nco_inq_varid(grp_id,lmt.nm,&dim.cid);
+
     char *cln_sng=NULL_CEWI;
 
     fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_id,"units"); /* Units attribute of coordinate variable */
@@ -1543,10 +1548,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       /* Retrieve this coordinate */
       int rcd;
       rcd=nc_get_vara_double(grp_id,var_id,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
-
-      /* Exit if read error */
+      if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: ERROR %s unable to read user-specified coordinate %s. Ensure this coordinate variable is in file and is a 1-D array.\n",nco_prg_nm_get(),fnc_nm,lmt.nm);
       if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_get_vara_double()");
-
     } /* end OpenMP critical */
 
     /* Officially change type */
