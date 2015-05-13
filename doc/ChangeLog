@@ -1,3 +1,7 @@
+2015-05-13  Charlie Zender  <zender@uci.edu>
+
+	* Split Tempest library calls into separate function, nco_rgr_tps()
+
 2015-05-12  Charlie Zender  <zender@uci.edu>
 
 	* Improve error message when nco_lmt.c encounters hyperslab requests on 2-D "coordinates"

@@ -48,6 +48,11 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
 #endif /* !ENABLE_ESMF */
 } /* !flg_smf */
   
+  if(flg_tps){
+    /* Regrid using Tempest regridding */
+    rcd=nco_rgr_tps(rgr_nfo);
+  } /* !flg_map */
+
   return rcd;
 } /* end nco_rgr_ctl() */
 
@@ -145,49 +150,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"fl_map = %s, ",rgr_nfo->fl_map ? rgr_nfo->fl_map : "NULL");
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
-  
-  char *nvr_DATA_TEMPEST; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
-  nvr_DATA_TEMPEST=getenv("DATA_TEMPEST");
-  rgr_nfo->drc_dat= (nvr_DATA_TEMPEST && strlen(nvr_DATA_TEMPEST) > 0) ? (char *)strdup(nvr_DATA_TEMPEST) : (char *)strdup("/tmp");
-  if(nco_dbg_lvl_get() >= nco_dbg_crr){
-    (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stderr,"nvr_DATA_TEMPEST = %s, ",nvr_DATA_TEMPEST ? nvr_DATA_TEMPEST : "NULL");
-    (void)fprintf(stderr,"drc_dat = %s, ",rgr_nfo->drc_dat ? rgr_nfo->drc_dat : "NULL");
-    (void)fprintf(stderr,"\n");
-  } /* endif dbg */
-
-  const int fmt_chr_nbr=6;
-  char *cmd_rgr;
-  char fl_grd_dst[]="/tmp/foo_outRLLMesh.g";
-  char *fl_grd_dst_cdl;
-  int rcd_sys;
-  int lat_nbr_rqs=180;
-  int lon_nbr_rqs=360;
-  nco_rgr_cmd_typ nco_rgr_cmd; /* [enm] Tempest remap command enum */
-  const char *cmd_rgr_fmt;
-
-  /* Allow for whitespace characters in fl_grd_dst
-     Assume CDL translation results in acceptable name for shell commands */
-  fl_grd_dst_cdl=nm2sng_fl(fl_grd_dst);
-  //drc_dat=strcat(drc_dat,"/");
-  //drc_dat=strcat(drc_dat,fl_grd_dst);
-
-  /* Construct and execute regridding command */
-  nco_rgr_cmd=nco_rgr_GenerateRLLMesh;
-  cmd_rgr_fmt=nco_rgr_cmd_fmt_sng(nco_rgr_cmd);
-  cmd_rgr=(char *)nco_malloc((strlen(cmd_rgr_fmt)+strlen(fl_grd_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: Generating %d by %d RLL mesh in %s...\n",nco_prg_nm_get(),lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst);
-  (void)sprintf(cmd_rgr,cmd_rgr_fmt,lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst_cdl);
-  rcd_sys=system(cmd_rgr);
-  if(rcd_sys == -1){
-    (void)fprintf(stdout,"%s: ERROR %s is unable to complete regridding command \"%s\"\n",nco_prg_nm_get(),fnc_nm,cmd_rgr);
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
-
-  /* Clean-up memory */
-  if(fl_grd_dst_cdl) fl_grd_dst_cdl=(char *)nco_free(fl_grd_dst_cdl);
-  if(cmd_rgr) cmd_rgr=(char *)nco_free(cmd_rgr);
   
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
@@ -320,8 +282,65 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   return rcd;
 } /* nco_rgr_map() */
 
+int /* O [enm] Return code */
+nco_rgr_tps /* [fnc] Regrid using Tempest library */
+(rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
+{
+  /* Purpose: Regrid fields using external weights (i.e., a mapping file)
+
+     Test Tempest library:
+     ncks -O --rgr=Y --rgr_map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
+
+  const char fnc_nm[]="nco_rgr_tps()";
+  char *nvr_DATA_TEMPEST; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
+  
+  const int fmt_chr_nbr=6;
+  const char *cmd_rgr_fmt;
+  char *cmd_rgr;
+  char fl_grd_dst[]="/tmp/foo_outRLLMesh.g";
+  char *fl_grd_dst_cdl;
+  int rcd_sys;
+  int lat_nbr_rqs=180;
+  int lon_nbr_rqs=360;
+  nco_rgr_cmd_typ nco_rgr_cmd; /* [enm] Tempest remap command enum */
+
+  nvr_DATA_TEMPEST=getenv("DATA_TEMPEST");
+  rgr_nfo->drc_dat= (nvr_DATA_TEMPEST && strlen(nvr_DATA_TEMPEST) > 0) ? (char *)strdup(nvr_DATA_TEMPEST) : (char *)strdup("/tmp");
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+    (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"nvr_DATA_TEMPEST = %s, ",nvr_DATA_TEMPEST ? nvr_DATA_TEMPEST : "NULL");
+    (void)fprintf(stderr,"drc_dat = %s, ",rgr_nfo->drc_dat ? rgr_nfo->drc_dat : "NULL");
+    (void)fprintf(stderr,"\n");
+  } /* endif dbg */
+
+  /* Allow for whitespace characters in fl_grd_dst
+     Assume CDL translation results in acceptable name for shell commands */
+  fl_grd_dst_cdl=nm2sng_fl(fl_grd_dst);
+  //drc_dat=strcat(drc_dat,"/");
+  //drc_dat=strcat(drc_dat,fl_grd_dst);
+
+  /* Construct and execute regridding command */
+  nco_rgr_cmd=nco_rgr_GenerateRLLMesh;
+  cmd_rgr_fmt=nco_tps_cmd_fmt_sng(nco_rgr_cmd);
+  cmd_rgr=(char *)nco_malloc((strlen(cmd_rgr_fmt)+strlen(fl_grd_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: %s reports generating %d by %d RLL mesh in %s...\n",nco_prg_nm_get(),fnc_nm,lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst);
+  (void)sprintf(cmd_rgr,cmd_rgr_fmt,lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst_cdl);
+  rcd_sys=system(cmd_rgr);
+  if(rcd_sys == -1){
+    (void)fprintf(stdout,"%s: ERROR %s is unable to complete regridding command \"%s\"\n",nco_prg_nm_get(),fnc_nm,cmd_rgr);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+
+  /* Clean-up memory */
+  if(fl_grd_dst_cdl) fl_grd_dst_cdl=(char *)nco_free(fl_grd_dst_cdl);
+  if(cmd_rgr) cmd_rgr=(char *)nco_free(cmd_rgr);
+  
+  return NCO_NOERR;
+} /* end nco_rgr_tps() */
+
 const char * /* O [sng] String containing regridding command and format */
-nco_rgr_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
+nco_tps_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
 (const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] Tempest remap command enum */
 {
   /* Purpose: Convert Tempest remap command enum to command string and format */
@@ -355,10 +374,10 @@ nco_rgr_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command strin
   
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_rgr_cmd_fmt_sng() */
+} /* end nco_tps_cmd_fmt_sng() */
 
 const char * /* O [sng] String containing regridding command name */
-nco_rgr_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
+nco_tps_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
 (const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] Tempest remap command enum */
 {
   /* Purpose: Convert Tempest remap command enum to command string */
@@ -381,7 +400,7 @@ nco_rgr_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_rgr_cmd_sng() */
+} /* end nco_tps_cmd_sng() */
 
 #ifdef ENABLE_ESMF
 const char * /* O [sng] String version of ESMC_FileFormat_Flag */

@@ -86,12 +86,16 @@ extern "C" {
   nco_rgr_free /* [fnc] Deallocate regridding structure */
   (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
 
+  int /* O [enm] Return code */
+  nco_rgr_tps /* [fnc] Regrid using Tempest library */
+  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
+
   const char * /* O [sng] String containing regridding command and format */
-  nco_rgr_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
+  nco_tps_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
   (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
 
   const char * /* O [sng] String containing regridding command name */
-  nco_rgr_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
+  nco_tps_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
   (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
 
 #ifdef ENABLE_ESMF
