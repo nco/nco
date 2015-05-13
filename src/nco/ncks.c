@@ -943,6 +943,8 @@ main(int argc,char **argv)
       rgr_nfo.fl_out_tmp=nco_fl_out_open(rgr_nfo.fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_nfo.out_id);
       /* Regrid fields */
       rcd=nco_rgr_ctl(&rgr_nfo);
+      /* Change from NCO_NOERR to NC_NOERR */
+      rcd=NC_NOERR;
     } /* endif !flg_rgr */
 
     /* Inititialize, decode, and set PPC information */

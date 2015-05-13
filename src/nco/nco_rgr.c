@@ -24,7 +24,8 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   /* Main control branching occurs here
      The branching complexity will increase as more regridding features are added */
   if(rgr_nfo->flg_map) flg_map=True;
-  if(!flg_map) flg_smf=True;
+  if(rgr_nfo->flg_grd_src && rgr_nfo->flg_grd_dst) flg_smf=True;
+  if(rgr_nfo->drc_dat) flg_tps=True;
   assert(!(flg_smf && flg_map));
   assert(!(flg_smf && flg_tps));
   assert(!(flg_map && flg_tps));
@@ -36,15 +37,15 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
 
   if(flg_smf){
 #ifdef ENABLE_ESMF
-  /* Regrid using ESMF library */
-  (void)fprintf(stderr,"%s: %s calling nco_rgr_esmf() to generate and apply regridding map\n",nco_prg_nm_get(),fnc_nm);
-  rcd=nco_rgr_esmf(rgr_nfo);
-  /* Close output and free dynamic memory */
-  (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,rgr_nfo->out_id);
-  (void)nco_rgr_free(rgr_nfo);
+    /* Regrid using ESMF library */
+    (void)fprintf(stderr,"%s: %s calling nco_rgr_esmf() to generate and apply regridding map\n",nco_prg_nm_get(),fnc_nm);
+    rcd=nco_rgr_esmf(rgr_nfo);
+    /* Close output and free dynamic memory */
+    (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,rgr_nfo->out_id);
+    (void)nco_rgr_free(rgr_nfo);
 #else /* !ENABLE_ESMF */
-  (void)fprintf(stderr,"%s: ERROR %s reports attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm_get(),fnc_nm);
-  nco_exit(EXIT_FAILURE);
+    (void)fprintf(stderr,"%s: ERROR %s reports attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_ESMF */
 } /* !flg_smf */
   
@@ -105,7 +106,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   const char fnc_nm[]="nco_rgr_ini()";
   
-  int rcd=NC_NOERR;
+  int rcd=NCO_NOERR;
   
   /* Initialize */
   rgr_nfo->flg_usr_rqs=False; /* [flg] User requested regridding */
@@ -151,7 +152,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
   
-  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  char *nvr_DATA_TEMPEST; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
+  nvr_DATA_TEMPEST=getenv("DATA_TEMPEST");
+  rgr_nfo->drc_dat= (nvr_DATA_TEMPEST && strlen(nvr_DATA_TEMPEST) > 0) ? (char *)strdup(nvr_DATA_TEMPEST) : (char *)strdup("/tmp");
+
   return rcd;
 } /* end nco_rgr_ini() */
   
@@ -289,10 +293,9 @@ nco_rgr_tps /* [fnc] Regrid using Tempest library */
   /* Purpose: Regrid fields using external weights (i.e., a mapping file)
 
      Test Tempest library:
-     ncks -O --rgr=Y --rgr_map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
+     export DATA_TEMPEST='/data/zender/rgr';ncks -O --rgr=Y ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_rgr_tps()";
-  char *nvr_DATA_TEMPEST; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
   
   const int fmt_chr_nbr=6;
   const char *cmd_rgr_fmt;
@@ -304,11 +307,8 @@ nco_rgr_tps /* [fnc] Regrid using Tempest library */
   int lon_nbr_rqs=360;
   nco_rgr_cmd_typ nco_rgr_cmd; /* [enm] Tempest remap command enum */
 
-  nvr_DATA_TEMPEST=getenv("DATA_TEMPEST");
-  rgr_nfo->drc_dat= (nvr_DATA_TEMPEST && strlen(nvr_DATA_TEMPEST) > 0) ? (char *)strdup(nvr_DATA_TEMPEST) : (char *)strdup("/tmp");
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stderr,"nvr_DATA_TEMPEST = %s, ",nvr_DATA_TEMPEST ? nvr_DATA_TEMPEST : "NULL");
     (void)fprintf(stderr,"drc_dat = %s, ",rgr_nfo->drc_dat ? rgr_nfo->drc_dat : "NULL");
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
