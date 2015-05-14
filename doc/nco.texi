@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.9
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 13 April 2015
-@set update-month April 2015
+@set update-date 14 May 2015
+@set update-month May 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -299,7 +299,7 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @subtitle @value{update-month}
 
 @author by Charlie Zender
-@author Department of Earth System Science
+@author Departments of Earth System Science and of Computer Science
 @author University of California, Irvine
 @html
 <p>WWW readers: Having trouble finding the section you want?</p> 
@@ -6593,7 +6593,7 @@ Eight chunking maps are currently implemented:@*
 @cindex @samp{map_nc4}
 @cindex Chris Barker
 @table @dfn
-@item Chunksize Equals Dimension Size [@emph{default}]
+@item Chunksize Equals Dimension Size
 Definition: Chunksize defaults to dimension size. 
 Explicitly specify chunksizes for particular dimensions with
 @samp{--cnk_dmn} option.@*
@@ -6621,6 +6621,7 @@ dimensions), the chunksize in each non-degenerate dimension is the
 @var{cnk_map} key values: @samp{prd}, @samp{cnk_prd}, @samp{map_prd}@*
 Mnemonic: @emph{PR}o@emph{D}uct@*
 @item Chunksize Lefter Product Matches Scalar Size Specified
+[@emph{default for netCDF3 input}]
 Definition: The product of the chunksizes for each variable
 (approximately) equals the size specified with the @samp{--cnk_scl} 
 option.
@@ -6640,7 +6641,7 @@ Variables not chunked in the input file will be chunked with
 default mappings.@*
 @var{cnk_map} key values: @samp{xst}, @samp{cnk_xst}, @samp{map_xst}@*
 Mnemonic: E@emph{X}i@emph{ST}@*
-@item Chunksize Balances 1D and (N-1)-D Access to N-D Variable
+@item Chunksize Balances 1D and (N-1)-D Access to N-D Variable [@emph{default for netCDF4 input}]
 Definition: Chunksizes are chosen so that 1-D and (@var{(N-1)})-D
 hyperslabs of @var{3}-D variables (e.g., point-timeseries orn
 latitude/longitude surfaces of 3-D fields) both require approximately
@@ -6661,14 +6662,14 @@ This map can be used to reset (portions of) previously chunked files to
 default chunking values.@*
 @var{cnk_map} key values: @samp{nc4}, @samp{cnk_nc4}, @samp{map_nc4}@*
 Mnemonic: @emph{N}et@emph{C}DF@emph{4}@*
-@item Chunksizes use @acronym{NCO} recommendations
+@item Chunksizes use @acronym{NCO} recommendations [@emph{default for netCDF3 input}]
 Definition: Chunksizes are determined by the currently recommended
 @acronym{NCO} map.
 This is a virtual option that ensures the chunking map is (in the 
 subjective opinion of the authors) the best map for typical usage.
-As of @acronym{NCO} version 4.4.8 (February, 2015), this virtual map
-calls @samp{map_rew} for 3-D variables and @samp{map_lfp} for all
-others.@*  
+As of @acronym{NCO} version 4.4.9 (May, 2015), this virtual map
+calls @samp{map_lfp}.@*
+@c for 3-D variables and @samp{map_lfp} for all others.@*  
 @var{cnk_map} key values: @samp{nco}, @samp{cnk_nco}, @samp{map_nco}@*
 Mnemonic: @emph{N}et@emph{C}DF@emph{O}perator@*
 

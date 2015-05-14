@@ -149,7 +149,7 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2015 Apr&nbsp;??: 4.4.9 (<i>In progress</i>)
+<li>2015 May&nbsp;??: 4.4.9 (<i>In progress</i>)
 <li>2015 Feb&nbsp;16: 4.4.8 (Precision-preserving Compression)
 <li>2014 Dec&nbsp;15: DOE ACME <a href="#prp_acme">project</a> commences</li>
 <li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
@@ -667,6 +667,7 @@ netCDF4 compound types?;
 Optimize diskless files?;
 Regridding;</li>
 <li><b>NCO 4.4.9</b>: (<i>In Progress, features completed or being worked on include</i>)
+Output chunking defaults to <tt>rd1/g2d</tt> on netCDF3 input;
 Unchunking plays nicely with <tt>shuffle</tt>;
 <tt>ncks</tt> suggests <tt>-C</tt> with <tt>-x -v crd</tt>;
 <tt>ncwa</tt> modifies <tt>coordinates</tt> attribute;</li>
