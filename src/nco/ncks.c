@@ -957,7 +957,7 @@ main(int argc,char **argv)
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
     
     /* Create structure with all chunking information */
-    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
+    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
     /* Define extracted groups, variables, and attributes in output file */
     (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);

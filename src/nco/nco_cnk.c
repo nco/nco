@@ -132,7 +132,8 @@ nco_dfl_case_cnk_plc_err(void) /* [fnc] Print error and exit for illegal switch(
 
 int /* [rcd] Return code */
 nco_cnk_ini /* [fnc] Create structure with all chunking information */
-(const char * const fl_out, /* I [sng] Output filename */
+(const int in_id, /* I [id] netCDF input file ID */
+ const char * const fl_out, /* I [sng] Output filename */
  CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg), /* I [sng] List of user-specified chunksizes */
  const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  const int cnk_map, /* I [enm] Chunking map */
@@ -195,22 +196,35 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   if(cnk->cnk_nbr > 0) cnk->cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Set actual chunk policy and map to defaults as necessary
-     20140821: Until today, defaults for map and policy were set independently
+     20140821: Until today, defaults for map and policy (rd1 and g2d, respectively) were set independently 
      20141013: Tweak defaults so chunking always called (required to preserve input chunking)
+     20150514: Use different defaults if input is netCDF3 (i.e., completely unchunked)
      Now we consider three distinct cases: 
      1. Neither map nor policy was explicitly set, and something else, e.g., size, was
      2. User set map not policy
      3. User set policy not map */
   if(cnk_map == nco_cnk_map_nil && cnk_plc == nco_cnk_plc_nil){
-    cnk->cnk_map=nco_cnk_map_xst;
-    cnk->cnk_plc=nco_cnk_plc_xst;
+    /* Does _input_ file support chunking? */
+    int fl_in_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Input file format */
+    (void)nco_inq_format(in_id,&fl_in_fmt);
+    if(fl_in_fmt == NC_FORMAT_NETCDF4 && fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+      /* Input is netCDF4 so preserve chunking unless otherwise specified */
+      cnk->cnk_map=nco_cnk_map_xst;
+      cnk->cnk_plc=nco_cnk_plc_xst;
+    }else{
+      /* Input is netCDF3 so choose chunking judiciously unless otherwise specified */
+      (void)fprintf(stderr,"%s: INFO Input file format is %s, which does not support chunking, so output chunking format will \n",nco_prg_nm_get(),nco_fmt_sng(fl_in_fmt));
+      cnk->cnk_map=nco_cnk_map_rd1;
+      cnk->cnk_plc=nco_cnk_plc_g2d;
+    } /* endif dbg */
   } /* endif */
+
   if(cnk_map == nco_cnk_map_nil && cnk_plc != nco_cnk_plc_nil) cnk->cnk_map=nco_cnk_map_rd1;
   if(cnk_plc == nco_cnk_plc_nil && cnk_map != nco_cnk_map_nil) cnk->cnk_plc=nco_cnk_plc_g2d;
 
   /* NCO-recommended chunking map is expected to change over time
      cnk_map=nco assigns current NCO-recommended map */
-  if(cnk_map == nco_cnk_map_nco) cnk->cnk_map=nco_cnk_map_rew;
+  if(cnk_map == nco_cnk_map_nco) cnk->cnk_map=nco_cnk_map_lfp;
   if(cnk_plc == nco_cnk_plc_nco) cnk->cnk_plc=nco_cnk_plc_all;
 
   return rcd;

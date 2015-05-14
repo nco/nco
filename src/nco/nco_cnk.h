@@ -76,7 +76,8 @@ nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
 
 int /* [rcd] [enm] Return code */
 nco_cnk_ini /* [fnc] Create structure with all chunking information */
-(const char * const fl_out, /* I [sng] Output filename */
+(const int in_id, /* I [id] netCDF input file ID */
+ const char * const fl_out, /* I [sng] Output filename */
  CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg), /* I [sng] List of user-specified chunksizes */
  const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  const int cnk_map, /* I [enm] Chunking map */
