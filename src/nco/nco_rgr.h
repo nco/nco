@@ -49,17 +49,43 @@ extern "C" {
     nco_rgr_ZZZ_last
   } nco_rgr_cmd_typ;
 
-  typedef struct{ /* scrip_sct */
-    /* Contents of SCRIP remapping file */
-    long int src_grid_size; /* [nbr] Source grid size */
-    long int dst_grid_size; /* [nbr] Destination grid size */
-    long int src_grid_corners; /* [nbr] Source grid corners */
-    long int dst_grid_corners; /* [nbr] Destination grid corners */
+  typedef enum nco_rgr_mpf_typ_enm{ /* [enm] Mapfile type enum */
+    nco_rgr_mpf_nil=0,
+    nco_rgr_mpf_SCRIP,
+    nco_rgr_mpf_ESMF
+  } nco_rgr_mpf_typ_enm;
+
+  /* ESMF: The normalization attribute describes how the conservative weights are calculated, currently this is always set to "destarea" because this is the only option which we currently support. The setting "destarea" means that the conservative weights are calculated by dividing the area of the intersection of the source and destination cells by the area of the destination cell. This is set even when the weights are not conservative in which case it can be ignored. */
+  typedef enum nco_rgr_nrm_typ_enm{ /* [enm] Normalization type enum */
+    nco_rgr_nrm_nil=0,
+    nco_rgr_nrm_fracarea, /* [] Allowed and explained by SCRIP */
+    nco_rgr_nrm_destarea, /* [] Only option supported by ESMF, ignored when non-conservative methods used */
+    nco_rgr_nrm_none, /* [] Allowed and explained by SCRIP */
+  } nco_rgr_nrm_typ_enm;
+
+  /* ESMF: The map_method attribute indicates the interpolation type. The format of the interpolation weight file was developed by a group outside of ESMF, because of its use by utilities outside of ESMF control, the range of some of the meta data is constrained. The map_method is one of these. Because of this constraint, there is no map method corresponding to patch interpolation. A weight file generated with the "patch" interpolation method will have map_method set to "Bilinear remapping".  */
+  typedef enum nco_rgr_mth_typ_enm{ /* [enm] Mapfile type enum */
+    nco_rgr_mth_nil=0,
+    nco_rgr_mth_conservative,
+    nco_rgr_mth_bilinear,
+    nco_rgr_mth_none, /* []  */
+  } nco_rgr_mth_typ_enm;
+
+  typedef struct{ /* nco_map_sct */
+    /* Contents of SCRIP-generated or -compliant remapping file */
+    long int src_grid_size; /* [nbr] Source grid size (src_grid_size or n_a) */
+    long int dst_grid_size; /* [nbr] Destination grid size (dst_grid_size or n_b) */
+    long int src_grid_corners; /* [nbr] Source grid corners/vertices per gridcell (src_grid_corners or nv_a) */
+    long int dst_grid_corners; /* [nbr] Destination grid corners/vertices per gridcell (dst_grid_corners or nv_b) */
     long int src_grid_rank; /* [nbr] Source grid rank */
     long int dst_grid_rank; /* [nbr] Destination grid rank */
-    long int num_links; /* [nbr] Number of links */
+    long int num_links; /* [nbr] Number of links (num_links or n_s) */
     long int num_wgts; /* [nbr] Number of weights */
-  } scrip_sct;
+    char *normalization; /* [sng] Normalization type */
+    char *map_method; /* [sng] Remapping method */
+    char *source_grid; /* [sng] Source grid */
+    char *dest_grid; /* [sng] Destination grid */
+  } nco_map_sct;
   
   int /* O [enm] Return code */
   nco_rgr_map /* [fnc] Regrid using external weights */

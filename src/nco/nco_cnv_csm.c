@@ -41,7 +41,7 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
   
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
     /* Add one for NUL byte */
-    att_val=(char *)nco_malloc(att_sz*nco_typ_lng(att_typ)+1);
+    att_val=(char *)nco_malloc(att_sz*nco_typ_lng(att_typ)+1L);
     (void)nco_get_att(nc_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';
