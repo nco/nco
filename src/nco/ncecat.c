@@ -631,7 +631,7 @@ main(int argc,char **argv)
   /* ncecat-specific operations */
   if(RECORD_AGGREGATE){
 
-    if(rec_dmn_nm == NULL) rec_dmn_nm=(char *)strdup("record"); 
+    if(!rec_dmn_nm) rec_dmn_nm=(char *)strdup("record"); 
 
     /* Prepend record dimension to beginning of all vectors for processed variables */
     for(idx=0;idx<nbr_var_prc;idx++){

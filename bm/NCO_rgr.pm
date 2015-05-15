@@ -1046,11 +1046,14 @@ print "\n";
     if($RUN_NETCDF4_TESTS == 1){
 
 # Fragile, depends on cut, expect failure on MACOSX
+# ncks -C -h -O -v area -p ~/nco/data in.nc ~/foo.nc
+# ncecat -C -h -O -G ensemble -d lat,1,1 -v area ~/foo.nc ~/foo.nc ~/foo2.nc
+# ncks -C -O -h -m -v area ~/foo2.nc | grep "ensemble../area" | wc | cut -c 7
 #ncecat #3    
+    $dsc_sng="Group aggregate variable with hyperslabbing (requires netCDF4)";
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -O -h -m -v area %tmp_fl_01% | grep \"ensemble../area\" | wc | cut -c 7";
-    $dsc_sng="group aggregate var with hyperslabbing (requires netCDF4)";
     $tst_cmd[3]="2"; 
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -2179,10 +2182,10 @@ print "\n";
 #ncks #81
 # There are two 'two_dmn_var' beneath /g19/g19g1, chunk the deeper and check the shallower was not chunked
 #ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
-#ncks -m -C -v /g19/g19g1/two_dmn_var --hdn ~/foo.nc | grep chunked | cut -d ' ' -f 8-9
+#ncks -m -C -v /g19/g19g1/two_dmn_var --hdn ~/foo.nc | grep chunked | cut -d ' ' -f 10-11
     $dsc_sng="(Groups) Chunking full dimension name does not chunk variables in parent group";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var --hdn %tmp_fl_00% | grep chunked | cut -d ' ' -f 8-9";
+    $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var --hdn %tmp_fl_00% | grep chunked | cut -d ' ' -f 10-11";
     $tst_cmd[2]="chunked? no,";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
@@ -2436,7 +2439,7 @@ print "\n";
     $dsc_sng="Test NSD compression rounding to three significant digits";
     $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v ppc_big,ppc_dbl --ppc ppc_big,ppc_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -H -d time,5 -s %g -v ppc_big %tmp_fl_00";
-    $tst_cmd[2]="1234.5";
+    $tst_cmd[2]="1235";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
@@ -4639,7 +4642,7 @@ if(0){
     $dsc_sng="Chunking -a /time --cnk_dmn /time,1 -v time";
     $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a /time --cnk_dmn /time,1 -v time $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'time: type'";
-    $tst_cmd[2]="time: type NC_DOUBLE, 0 dimensions, 5 attributes, chunked? no, compressed? no, packed? no";
+    $tst_cmd[2]="time: type NC_DOUBLE, 0 dimensions, 5 attributes, compressed? no, chunked? no, packed? no";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		

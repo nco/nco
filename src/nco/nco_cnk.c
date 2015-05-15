@@ -213,7 +213,7 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
       cnk->cnk_plc=nco_cnk_plc_xst;
     }else{
       /* Input is netCDF3 so choose chunking judiciously unless otherwise specified */
-      (void)fprintf(stderr,"%s: INFO Input file format %s does not support chunking and no chunking policy or map specified so output chunking format will use NCO (not netCDF) defaults\n",nco_prg_nm_get(),nco_fmt_sng(fl_in_fmt));
+      if(nco_dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Input file format %s does not support chunking and no chunking policy or map specified so output chunking format will use NCO (not netCDF) defaults\n",nco_prg_nm_get(),nco_fmt_sng(fl_in_fmt));
       cnk->cnk_map=nco_cnk_map_nco;
       cnk->cnk_plc=nco_cnk_plc_nco;
     } /* endif dbg */
