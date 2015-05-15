@@ -1,5 +1,7 @@
 2015-05-14  Charlie Zender  <zender@uci.edu>
 
+	* Turn-off MM3 workaround for MM3->MM4 copying to speed-up compression induced chunking
+
 	* Choose output chunking map/policy = rd1/g2d rather than xst/xst for netCDF3 input
 
 2015-05-13  Charlie Zender  <zender@uci.edu>

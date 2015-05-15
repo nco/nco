@@ -271,14 +271,20 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
   /* No advantage to workaround unless reading from or writing to netCDF3 file */
   if(
     (fl_out_fmt == NC_FORMAT_CLASSIC || fl_out_fmt == NC_FORMAT_64BIT) || /* Cases 1 & 2 above, i.e., MM3->MM3 & MM4->MM3 */
-    ((fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT) && /* Case 3 above, i.e., MM3->MM4 */
-    (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) ||
+    /* 20150515: Investigating an unusually sluggish response to compressing one of Gary Strand's netCDF3 files,
+       I learned that the MM3 workaround in combination with odd chunk sizes (like map=rew produces), 
+       explain most or all of the sluggishness. 
+       Executive decision: turn-off MM3 workaround when in Case 3 above (MM3->MM4 copying)
+       This speeds-up compression-induced chunking for users converting large netCDF3 files to netCDF4 
+       To restore MM3 workaround for Case 3, uncomment next two lines */
+    //    ((fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT) && /* Case 3 above, i.e., MM3->MM4 */
+    //     (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) ||
     False)
   {
     /* Subsequently, assume output is netCDF3 or classic-compatible netCDF4
-    If file contains record dimension (and netCDF3 files can have only one record dimension)
-    NB: fxm Following check only detects cases where MM3 conditions exist root group (not sub-groups)
-    Copying MM3-worthy subgroup from netCDF4 file to netCDF3 flat file produces false-negative */
+       If file contains record dimension (and netCDF3 files can have only one record dimension)
+       NB: fxm Following check only detects cases where MM3 conditions exist root group (not sub-groups)
+       Copying MM3-worthy subgroup from netCDF4 file to netCDF3 flat file produces false-negative */
     rcd=nco_inq_unlimdim(in_id,&rec_dmn_id);
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
       /* Slowdown only occurs in files with more than one record variable */
