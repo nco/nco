@@ -341,6 +341,15 @@ endif # endif GSL_LIB
  endif # endif GSL_MINOR_VERSION
 endif # end if GSL
 
+ifeq (${SZ},Y)
+# 20150515: -lsz needed (at least by icc) on rhea
+ifdef SZ_LIB
+ SZ_LIB_FLG := -L${SZ_LIB} -lsz
+else
+ SZ_LIB_FLG := -lsz
+endif # end if SZ_LIB
+endif # end if SZ
+
 ifeq (${UDUNITS},Y)
 # 20130607: -lexpat needed on .deb systems, not on RPM systems
 ifdef UDUNITS_INC
@@ -373,7 +382,7 @@ ifdef LIB_NCAR
 endif
 
 OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG} ${ANTLR_INC}
-OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${UDUNITS_LIB_FLG} ${ANTLR_LIB}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${SZ_LIB_FLG} ${UDUNITS_LIB_FLG} ${ANTLR_LIB}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=

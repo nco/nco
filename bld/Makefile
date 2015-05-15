@@ -98,7 +98,7 @@
 # export NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' 
 # export PATH='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3/bin':${PATH}
 # cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D allinone;cd -
-# cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' SZ_LIB='/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D allinone;cd -
+# cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' SZ=Y SZ_LIB='/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D allinone;cd -
 # ncap2:
 # netCDF4 on NCAR Linux cluster systems (yellowstone):
 # /ncar/opt/hpss/hsi # Starts HPSS session

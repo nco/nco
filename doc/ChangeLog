@@ -1,6 +1,6 @@
 2015-05-15  Charlie Zender  <zender@uci.edu>
 
-	* Recent rhea upgrade uses szip in icc netcdf, so (re-)add SZ and SZ_LIB flags to Makefile
+	* Recent rhea upgrade uses szip in icc netcdf, so (re-)add SZ and SZ_LIB flags to Makefile, Makefile.old
 
 	* Rhea icc 13.1.3 (gcc version 4.4.7 compatibility) requires -D_BSD_SOURCE on files that #include nameser.h
 
