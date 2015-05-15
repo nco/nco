@@ -213,19 +213,19 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
       cnk->cnk_plc=nco_cnk_plc_xst;
     }else{
       /* Input is netCDF3 so choose chunking judiciously unless otherwise specified */
-      (void)fprintf(stderr,"%s: INFO Input file format is %s, which does not support chunking, so output chunking format will \n",nco_prg_nm_get(),nco_fmt_sng(fl_in_fmt));
-      cnk->cnk_map=nco_cnk_map_rd1;
-      cnk->cnk_plc=nco_cnk_plc_g2d;
+      (void)fprintf(stderr,"%s: INFO Input file format %s does not support chunking and no chunking policy or map specified so output chunking format will use NCO (not netCDF) defaults\n",nco_prg_nm_get(),nco_fmt_sng(fl_in_fmt));
+      cnk->cnk_map=nco_cnk_map_nco;
+      cnk->cnk_plc=nco_cnk_plc_nco;
     } /* endif dbg */
   } /* endif */
 
-  if(cnk_map == nco_cnk_map_nil && cnk_plc != nco_cnk_plc_nil) cnk->cnk_map=nco_cnk_map_rd1;
-  if(cnk_plc == nco_cnk_plc_nil && cnk_map != nco_cnk_map_nil) cnk->cnk_plc=nco_cnk_plc_g2d;
+  if(cnk->cnk_map == nco_cnk_map_nil && cnk->cnk_plc != nco_cnk_plc_nil) cnk->cnk_map=nco_cnk_map_rd1;
+  if(cnk->cnk_plc == nco_cnk_plc_nil && cnk->cnk_map != nco_cnk_map_nil) cnk->cnk_plc=nco_cnk_plc_g2d;
 
   /* NCO-recommended chunking map is expected to change over time
      cnk_map=nco assigns current NCO-recommended map */
-  if(cnk_map == nco_cnk_map_nco) cnk->cnk_map=nco_cnk_map_lfp;
-  if(cnk_plc == nco_cnk_plc_nco) cnk->cnk_plc=nco_cnk_plc_all;
+  if(cnk->cnk_map == nco_cnk_map_nco) cnk->cnk_map=nco_cnk_map_rew;
+  if(cnk->cnk_plc == nco_cnk_plc_nco) cnk->cnk_plc=nco_cnk_plc_all;
 
   return rcd;
 } /* end nco_cnk_ini() */
@@ -1098,7 +1098,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
         /* When not hyperslabbed, use input record dimension size, except workaround zero size
 	   reported for new record dimensions before anything is written */
 	if(dmn_cmn[dmn_idx].sz == 0) cnk_sz[dmn_idx]=1UL; else cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
-	/* 20140518: As of netCDF 4.3.2, employ smarter defaults for record dimension in 1-D variables */
+	/* 20140518: As of netCDF 4.3.2, employ smarter defaults for record dimension in 1-D variables
+	   20150505: This "smarter" treatment of 1-D record variables consistently leads to cnk_sz ~ 512k
+	   This seems ridiculously large since many datasets have O(1) time slices but many 1-D in time variables
+	   Perhaps lose this 1-D exception that scales chunksize with blocksize? */
 	if(dmn_nbr == 1) cnk_sz[dmn_idx]=NCO_CNK_SZ_BYT_R1D_DFL/typ_sz;
       }else{ /* !NON_HYP_DMN */
         /* ... and when hyperslabbed, use user-specified count */
@@ -1127,6 +1130,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     double cnk_sz_lft_dbl;
     size_t cnk_sz_lft;
 
+    /* 20150515: Intent is to set chunksizes for variables that require more than one chunk (evaluated by cnk_sz_byt)
+       If variable is much smaller than a single chunk, then simply use dimension sizes set above */
+    if(var_sz_byt < cnk_sz_byt) goto cnk_xpl_override;
+      
     cnk_val_nbr=cnk_sz_byt/(double)typ_sz;
 
     /* Use default sizes on all righter dimensions than first record dimension */
