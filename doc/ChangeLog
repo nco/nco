@@ -1,5 +1,7 @@
 2015-05-14  Charlie Zender  <zender@uci.edu>
 
+	* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating
+
 	* LFP chunking uses "reasonable defaults" when var_sz < cnk_sz_ttl
 
 	* Turn-off MM3 workaround for MM3->MM4 copying to speed-up compression induced chunking

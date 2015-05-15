@@ -4205,7 +4205,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Set deflate and chunking to defaults */  
   var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
-  var->shuffle=False; /* [flg] Turn on shuffle filter */
+  var->shuffle=NC_NOSHUFFLE; /* [flg] Turn on shuffle filter */
 
   for(int idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
 
@@ -4845,7 +4845,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       /* Overwrite HDF Lempel-Ziv compression level, if requested */
       if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
       /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
-      if(dfl_lvl == 0) shuffle=(int)False;
+      if(dfl_lvl == 0) shuffle=NC_NOSHUFFLE;
+      /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating */
+      if(dfl_lvl >= 0) shuffle=NC_SHUFFLE;
       if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl);
     } /* endif */
 

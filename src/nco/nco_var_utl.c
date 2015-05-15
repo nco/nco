@@ -1082,7 +1082,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->undefined=False; /* [flg] Used by ncap parser */
   var->is_fix_var=True; /* Is this a fixed (non-processed) variable? */
   var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
-  var->shuffle=False; /* [flg] Turn on shuffle filter */
+  var->shuffle=NC_NOSHUFFLE; /* [flg] Turn on shuffle filter */
   /* Members related to packing */
   var->has_scl_fct=False; /* [flg] Valid scale_factor attribute exists */
   var->has_add_fst=False; /* [flg] Valid add_offset attribute exists */
@@ -1224,11 +1224,14 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
             rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
             /* Copy original deflation settings */
             if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var[idx]->id,deflate,shuffle,dfl_lvl_in);
-          } /* endif */
+          }else{
+	    /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating */
+	    shuffle=NC_SHUFFLE;
+	  } /* endelse */
           /* Overwrite HDF Lempel-Ziv compression level, if requested */
 	  if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
 	  /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
-	  if(dfl_lvl == 0) shuffle=(int)False; 
+	  if(dfl_lvl == 0) shuffle=NC_NOSHUFFLE; 
           if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
         } /* endif */
       } /* endif netCDF4 */
@@ -1539,7 +1542,7 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
   var->nc_id=nc_id;
 
   /* 20050519: Not sure why I originally made next four lines SMP-critical
-  20050629: Making next four lines multi-threaded causes no problems */
+     20050629: Making next four lines multi-threaded causes no problems */
   /* Refresh variable ID first */
   rcd+=nco_inq_varid(var->nc_id,var->nm,&var->id);
 
@@ -1763,7 +1766,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
   /* Set deflate and chunking to defaults */  
   var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
-  var->shuffle=False; /* [flg] Turn on shuffle filter */
+  var->shuffle=NC_NOSHUFFLE; /* [flg] Turn on shuffle filter */
 
   for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
 
