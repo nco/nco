@@ -672,7 +672,9 @@ nco1122. cnk slowdown Barry McInnes 3/9
       # Severe slowdown in record loop of nco_cpy_rec_var_val() (MM3 workaround) for cnk_sz time != 1
       ncks -O -v huss --fl_fmt=netcdf4_classic -L 5 ${DATA}/hdf/huss_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc ~/foo.nc # hangs
       ncks -O -v huss --cnk_plc=r1d --fl_fmt=netcdf4_classic -L 5 ${DATA}/hdf/huss_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc ~/foo.nc # works
-nco1123. 
+nco1123. ESGF access
+      ncks -M http://esgf-data2.ceda.ac.uk/thredds/dodsC/cmip5.output1.MOHC.HadGEM2-ES.rcp85.mon.ocean.Omon.r1i1p1.uo.20111014.aggregation.1
+nco1124. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

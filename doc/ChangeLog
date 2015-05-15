@@ -1,7 +1,11 @@
+2015-05-15  Charlie Zender  <zender@uci.edu>
+
+	* Fix ncecat --gag mode use of uninitialized file pointers
+
 2015-05-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.9 release procedure:
- 	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco lfp, shuffle on, MM3->MM4 off
+ 	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco lfp, shuffle on, MM3->MM4 off, ncecat
 	cd ~/nco;git commit -a -m "Version nco-4.4.9 release: "
 	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
 	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags

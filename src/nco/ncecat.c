@@ -576,16 +576,16 @@ main(int argc,char **argv)
 
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
 
+  /* Open file using appropriate buffer size hints and verbosity */
+  rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
+
+  (void)nco_inq_format(in_id,&fl_in_fmt); 
+
   if(RECORD_AGGREGATE){
 
     /* Initialize thread information */
     thr_nbr=nco_openmp_ini(thr_nbr);
     in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
-
-    /* Open file using appropriate buffer size hints and verbosity */
-    rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
-
-    (void)nco_inq_format(in_id,&fl_in_fmt); 
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
     (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,False,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
@@ -616,7 +616,7 @@ main(int argc,char **argv)
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 
-  /* Inititialize, decode, and set PPC information */
+  /* Initialize, decode, and set PPC information */
   if(ppc_nbr > 0) nco_ppc_ini(in_id,&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);
 
   /* Verify output file format supports requested actions */
@@ -776,7 +776,7 @@ main(int argc,char **argv)
       if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file has gpe->arg=%s\n",nco_prg_nm_get(),gpe->arg);
 
       /* Open file using appropriate buffer size hints and verbosity */
-      rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
+      if(fl_idx) rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
       if(fl_idx == 0){
         /* fxm: Copy global attributes of first file to root of output file to preserve history attribute */

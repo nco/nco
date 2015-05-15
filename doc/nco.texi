@@ -9596,6 +9596,7 @@ Ancillary variables are subject to the user-specified override switches
 
 @html
 <a name="cnv_CF_crd"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_crd -->
+<a name="coordinates"></a> <!-- http://nco.sf.net/nco.html#coordinates -->
 @end html
 @cindex @code{coordinates}
 @cindex coordinates convention
@@ -9677,6 +9678,8 @@ These options are only available in the operators @command{ncwa} and
 
 @html
 <a name="cnv_ARM"></a> <!-- http://nco.sf.net/nco.html#cnv_ARM -->
+<a name="ARM"></a> <!-- http://nco.sf.net/nco.html#ARM -->
+<a name="arm"></a> <!-- http://nco.sf.net/nco.html#arm -->
 @end html
 @node ARM Conventions, Operator Version, CF Conventions, Shared features
 @section @acronym{ARM} Conventions

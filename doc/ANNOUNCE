@@ -5,109 +5,58 @@ The netCDF Operators NCO version 4.4.9 are ready.
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-NCO now implements a lossy compression feature distinct from the
-packing (scale_factor+add_offset) that NCO has long supported.
-The new feature is activated by specifying desired level of precision
-in terms of either the total number of significant digits or the
-number of significant digits after (or before) the decimal point.
-These precision features are lumped together under the generic name
-Precision-Preserving Compression (PPC), summarized below. 
+This release combines small feature improvements in chunking,
+deflation, and attribute handling during dimension reduction.
+Also improvements in clarity and consistency of messages.
 
-Specifying more reasonable and optimized chunking maps has been
-made easier by the addition of a new "best practices" policy 
-which implements Rew's balanced chunking for three-dimensional
-variables, and LeFter-Product (lfp) chunking for all others.
-
-New ncwa/ncra/nces arithmetic operators mabs(), mebs(), and mibs()
-simplify statistical analysis.
-
-Work on NCO 4.4.9 is underway.
-This will include more netCDF4 mop-up and new chunking features.
-Work on NCO 4.5.0 has commenced and is aimed at regridding.
-There will be some intermittent downtime for access to the NCO CVS
-repository as we transition to either Subversion or Git in the
-near future. Once the new system is working, instructions for access
-will be updated on the NCO homepage.
+Work on NCO 4.5.0 has commenced and will support regridding, 
+authorization for datasets behind firewalls like ESGF, and
+easier builds on supercomputer systems that use modules.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. NCO will now store data at a per-variable precision level.
-   We call this Precision-Preserving Compression (PPC). PPC currently
-   understands two types of precision. Users can specify either the
-   total Number of Significant Digits (NSD) or the Decimal Significant
-   Digits (DSD), meaning the number of significant digits after (or
-   before) the decimal point. For example, NSD=5 tells NCO to retain 5
-   significant digits. Specifying DSD=3 or DSD=-2 causes NCO to
-   preserve the number rounded to the nearest thousandth or hundred,
-   respectively. 
-   Under the hood, NSD uses bitmasking for quantization, while DSD
-   utilizes rounding. The bitmasking/rounding results in consecutive
-   zero-bits ending the IEEE-754 storage of each floating point
-   number. Standard byte-stream compression techniques, such as the
-   DEFLATE compression used by gzip (and in HDF5), compress these
-   zero-bits more efficiently than unrounded numbers.
-   The net result is PPC makes netCDF files skinnier when compressed.
-   Compression is internal with netCDF4 and external (e.g., gzip or
-   bzip2) with netCDF3. Space savings can be large.   
-   And face it, how often does your precision exceed 3 digits?
-   And don't worry, coordinate variables are not rounded :)
-   An advantage of PPC is that (unlike packing), PPC needs no explicit
-   support in other software because data stays in IEEE format. 
-   Thanks to Rich Signell for suggesting DSD compression for NCO. 
-   ncks --ppc default=5 --ppc temperature=3 in.nc out.nc
-   ncks --ppc AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 in.nc out.nc
-   ncpdq --ppc default=4 --ppc grid_area=15 in.nc out.nc
-   http://nco.sf.net/nco.html#ppc has extensive documentation.
-
-B. New "nco" chunking policy and modified "rew" chunking map: 
-   Policy "nco" is a virtual option that implements the best
-   (in the subjective opinion of the authors) policy and map
-   for typical usage. This combination will evolve with time.
-   As of NCO version 4.4.8, this virtual policy implements 
-   map_rew for 3-D variables and map_lfp for all other variables. 
-   For the time being, map_rew does the same, i.e., it also
-   calls map_lfp when variables are not 3-D. This ensures that
-   Rew's balanced chunking is used on variables for which it
-   applies, and another sensible default (lfp = Lefter Product) 
-   is used on all other variables big enough to chunk.
-   ncks --cnk_plc=nco in.nc out.nc
-   ncks --cnk_map=rew in.nc out.nc
+A. NCO has improved default performance of deflation and chunking.
+   Our "best practices" chunking (map/policy=nco) is now default when 
+   manually deflating netCDF3 files into netCDF4 files.
+   This invokes Rew's balanced chunking for three-dimensional
+   variables, and LeFter-Product (cnk_map=lfp) chunking for others. 
+   LFP chunking, in turn, implements more reasonable defaults when
+   the variable size is smaller than a single chunksize.
+   This reduces excessive chunk sizes for many small variables.
+   Shuffle is now turned-on by default when manually deflating files.
+   This restores behavior from the NCO 4.3.x series, and can improve
+   compression ratios by 10-20% relative to not shuffling.
+   Copying multi-dimensional record variables from netCDF3 to netCDF4
+   files no longer invokes the MM3 workaround.
+   This speeds-up deflation of netCDF3 datasets.
+   ncks -O -4 -L 1 netCDF3.nc netCDF4.nc
    http://nco.sf.net/nco.html#cnk
 
-C. NCO dimension-reducing operators (ncra, ncwa, nces) now support 
-   three new arithmetic operations to facilitate statistics:
-   mabs(), mebs(), and mibs(). These compute the maximum, mean, and 
-   minimum absolute value, respectively. They are invoked with the
-   -y or --op_typ switch in the same manner as max/min/avg:
-   ncwa -y mabs in.nc out.nc # Maximum absolute value 
-   ncra -y mebs in.nc out.nc # Mean absolute value 
-   nces -y mibs in.nc out.nc # Minimum absolute value 
-   http://nco.sf.net/nco.html#op_typ
+B. ncwa now eliminates dimensions from the "coordinates" attribute
+   after collapsing them. This helps ensure that rank-reduced
+   variables become completely independent from their former
+   dimensions. The former presence of collapsed dimensions continues
+   to be indicated by the "cell_methods" attribute.
+   ncwa -O -a lat in.nc out.nc
+   http://nco.sf.net/nco.html#coordinates
+   http://nco.sf.net/nco.html#cell_methods
+   http://nco.sf.net/nco.html#ncwa
 
-D. NCO warns when appended output type differs from input type. 
-   Previously NCO would not warn or die when the user (usually
-   inadvertently) wrote data of one type into a destination meant 
-   for a different type. These commands would therefore complete
-   without warning:
-   ncks -C -O -v double_var ~/nco/data/in.nc ~/foo.nc
-   ncrename -O -v double_var,float_var ~/foo.nc
-   ncks -C -A -v float_var ~/nco/data/in.nc ~/foo.nc
-   Now the user is warned though the operation is still permitted. 
-   http://nco.sf.net/nco.html#-A
+C. NCO now warns users and suggest workarounds in situations when
+   operators behave correctly, though perhaps not as expected,
+   including:
+   1. When coordinate variables intended to be excluded by -x and -C
+      may nonetheless appear in output file, and suggest workaround
+   2. When hyperslabs are specified for multi-dimensional
+      "coordinates"  
 
 BUG FIXES:
 
-A. ncrename had problems when renaming netCDF4 coordinates.
-   These problems appear fixed but now there are new ones when 
-   renaming netCDF4 attributes. These will go away when Unidata
-   finishes fixing rename() routines in the netCDF4 library.
-   http://nco.sf.net#bug_nc4_rename
-
-B. Fix ncks bug dumping files with multiple long dimension names.
-   This means you, NASA AIRS.
+A. Fix ncecat in group aggregation mode (i.e., ncecat --gag) so it
+   can no longer use uninitialized file pointers. 
 
 KNOWN PROBLEMS DUE TO NCO:
 
@@ -144,32 +93,7 @@ B. NOT YET FIXED (NCO problem?)
 
 KNOWN PROBLEMS DUE TO BASE LIBRARIES/PROTOCOLS:
 
-A. NOT YET FIXED (netCDF4 problem)
-   Renaming attributes in netCDF4 enhanced file deletes attributes.
-
-   Demonstration with netCDF <= 4.3.3-rc3:
-   ncrename -O -a /g1/lon@units,new_units ~/nco/data/in_grp.nc ~/foo.nc
-   ncks -v /g1/lon ~/foo.nc
-
-   Possibly new manifestation of already reported bug NCF-177
-   Renaming netCDF4 coordinate variables or dimensions "succeeds" but  
-   corrupts (sets to _FillValue) values in the output dataset.
-   Full description here http://nco.sf.net#bug_nc4_rename
-
-   Demonstration with netCDF <= 4.3.2 (fixed in 4.3.3-rc3?):
-   ncrename -O -v time,newrec ~/nco/data/in_grp.nc ~/foo.nc
-   ncks --cdl -g // -v newrec -d time,0 -C ~/foo.nc
-
-   20141007: Problem reported by Parker Norton
-   20141008: Problem reported to Unidata
-   20141010: Verified by Unidata.
-   20141112: Verified problem still exists
-   20150129: Coordinate problem fixed with 4.3.3-rc3?
-   20150202: Attribute renaming in netCDF4 files deletes attributes
-   Bug tracking: https://www.unidata.ucar.edu/jira/browse/NCF-177
-   Workaround: Convert to netCDF3, rename, convert back to netCDF4
-
-B. NOT YET FIXED (netCDF4 or HDF5 problem?)
+A. NOT YET FIXED (netCDF4 or HDF5 problem?)
    Specifying strided hyperslab on large netCDF4 datasets leads
    to slowdown or failure with recent netCDF versions.
 
@@ -184,7 +108,7 @@ B. NOT YET FIXED (netCDF4 or HDF5 problem?)
    Workaround #1: Use NCO 4.4.6 or later (avoids nc_var_gets())
    Workaround #2: Convert file to netCDF3 first, then use stride
 
-C. NOT YET FIXED (would require DAP protocol change?)
+B. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
    Metadata are returned successfully, data are not.
@@ -199,7 +123,7 @@ C. NOT YET FIXED (would require DAP protocol change?)
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-D. NOT YET FIXED (would require DAP protocol change)
+C. NOT YET FIXED (would require DAP protocol change)
    Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol

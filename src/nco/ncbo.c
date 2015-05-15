@@ -605,7 +605,7 @@ main(int argc,char **argv)
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt_1;
 
-  /* Inititialize, decode, and set PPC information */
+  /* Initialize, decode, and set PPC information */
   if(ppc_nbr > 0) nco_ppc_ini(in_id_1,&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl_1);
 
   /* Verify output file format supports requested actions */

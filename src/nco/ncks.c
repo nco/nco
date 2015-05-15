@@ -947,7 +947,7 @@ main(int argc,char **argv)
       rcd=NC_NOERR;
     } /* endif !flg_rgr */
 
-    /* Inititialize, decode, and set PPC information */
+    /* Initialize, decode, and set PPC information */
     if(ppc_nbr > 0) nco_ppc_ini(in_id,&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);
 
     /* Verify output file format supports requested actions */
