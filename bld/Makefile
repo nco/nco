@@ -98,6 +98,7 @@
 # export NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' 
 # export PATH='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3/bin':${PATH}
 # cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D allinone;cd -
+# cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' SZ_LIB='/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D allinone;cd -
 # ncap2:
 # netCDF4 on NCAR Linux cluster systems (yellowstone):
 # /ncar/opt/hpss/hsi # Starts HPSS session
@@ -437,6 +438,15 @@ else
 endif # endif GSL_LIB
 endif # end if GSL
 
+ifeq (${SZ},Y)
+# 20150515: -lsz needed (at least by icc) on rhea
+ifdef SZ_LIB
+ SZ_LIB_FLG := -L${SZ_LIB} -lsz
+else
+ SZ_LIB_FLG := -lsz
+endif # end if SZ_LIB
+endif # end if SZ
+
 ifeq (${UDUNITS},Y)
 # 20130607: -lexpat needed on .deb systems, not on RPM systems
 ifdef UDUNITS_INC
@@ -469,7 +479,7 @@ ifdef LIB_NCAR
 endif
 
 OTHER_CFLAGS :=  ${ESMF_INC_FLG} ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG}
-OTHER_LDFLAGS := ${NCO_LDFLAGS} ${ESMF_LIB_FLG} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${UDUNITS_LIB_FLG}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${ESMF_LIB_FLG} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${SZ_LIB_FLG} ${UDUNITS_LIB_FLG}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -2052,6 +2062,7 @@ dbg:
 	@printf "SRC_LST = ${SRC_LST}\n"
 	@printf "STC = ${STC}\n"
 	@printf "SZ = ${SZ}\n"
+	@printf "SZ_LIB = ${SZ_LIB}\n"
 	@printf "TAGS_FILES = ${TAGS_FILES}\n"
 	@printf "TAGS_FILTER_FILES = ${TAGS_FILTER_FILES}\n"
 	@printf "THR_NBR = ${THR_NBR}\n"
