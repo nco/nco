@@ -1060,7 +1060,8 @@ ifeq (icc,$(firstword ${CC}))
 # remark #810: conversion from "double" to "float" may lose significant bits
 # remark #1572: floating-point equality and inequality comparisons are unreliable
  CFLAGS := -w1 -wd274
- CPPFLAGS += -no-gcc
+# Rhea icc 13.1.3 (gcc version 4.4.7 compatibility) requires -D_BSD_SOURCE on files that #include nameser.h, recent transition of gcc 4.9 to -D_DEFAULT_SOURCE does not cut the mustard
+ CPPFLAGS += -no-gcc -D_BSD_SOURCE
  LDFLAGS += -lsvml
  OMP_FLG_C := -openmp -openmp_report0
 ifeq (${OPTS},O)

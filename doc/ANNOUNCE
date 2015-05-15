@@ -28,8 +28,8 @@ A. NCO has improved default performance of deflation and chunking.
    This reduces excessive chunk sizes for many small variables.
    Shuffle is now turned-on by default when manually deflating files.
    This restores behavior from the NCO 4.3.x series, and can improve
-   compression ratios by 10-20% relative to not shuffling.
-   Copying multi-dimensional record variables from netCDF3 to netCDF4
+   compression ratios by 10-30% relative to not shuffling.
+   Copying multi-dimensional record variables from netCDF3 to netCDF4 
    files no longer invokes the MM3 workaround.
    This speeds-up deflation of netCDF3 datasets.
    ncks -O -4 -L 1 netCDF3.nc netCDF4.nc
