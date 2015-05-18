@@ -582,7 +582,7 @@ ${MY_OBJ_DIR}/%.o : %.c
 	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 ${MY_OBJ_DIR}/%.o : %.cu
 	nvcc -deviceemu ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
-${MY_OBJ_DIR}/%.o : %.cc
+${MY_OBJ_DIR}/%.o : %.ccxb
 	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 
 # Default Fortran pattern rules: CRAY and RS6K must override these rules

@@ -1,4 +1,10 @@
+2015-05-17  Charlie Zender  <zender@uci.edu>
+
+	* Obtain destination grid interfaces/boundaries from mapping file
+
 2015-05-15  Charlie Zender  <zender@uci.edu>
+
+	* All regression tests pass, 4.4.9 release once configure-builds work on yellowstone and rhea
 
 	* Recent rhea upgrade uses szip in icc netcdf, so (re-)add SZ and SZ_LIB flags to Makefile, Makefile.old
 

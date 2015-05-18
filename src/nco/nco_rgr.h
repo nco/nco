@@ -116,6 +116,14 @@ extern "C" {
   nco_rgr_tps /* [fnc] Regrid using Tempest library */
   (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
 
+  const char * /* O [sng] String describing regridding method */
+  nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */
+  (const nco_rgr_mth_typ_enm nco_rgr_mth_typ); /* I [enm] Regridding method enum */
+
+  const char * /* O [sng] String describing regridding normalization */
+  nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */
+  (const nco_rgr_nrm_typ_enm nco_rgr_nrm_typ); /* I [enm] Regridding normalization enum */
+
   const char * /* O [sng] String containing regridding command and format */
   nco_tps_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
   (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
