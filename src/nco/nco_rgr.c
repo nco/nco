@@ -217,7 +217,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   */
 
   const char fnc_nm[]="nco_rgr_map()"; /* [sng] Function name */
-  const char wgt_nm[]="remap_matrix"; /* [sng] Name of weighting variable */
 
   char *fl_in=rgr_nfo->fl_map;
   char *fl_pth_lcl=NULL;
@@ -319,7 +318,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     nco_dfl_case_generic_err(); break;
   } /* end switch */
     
-  /* Now we have IDs, get dimension sizes */
+  /* Now we have dimension IDs, get dimension sizes */
   rcd+=nco_inq_dimlen(in_id,src_grid_size_id,&rgr_map.src_grid_size);
   rcd+=nco_inq_dimlen(in_id,dst_grid_size_id,&rgr_map.dst_grid_size);
   rcd+=nco_inq_dimlen(in_id,src_grid_corners_id,&rgr_map.src_grid_corners);
@@ -373,7 +372,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int dst_grd_ctr_lat_id; /* [id] Destination grid center latitudes  variable ID */
   int dst_grd_crn_lon_id; /* [id] Destination grid corner longitudes variable ID */
   int dst_grd_crn_lat_id; /* [id] Destination grid corner latitudes  variable ID */
-  int dmn_sz_id; /* [id] Destination grid dimensions variable ID */
+  int dmn_sz_id; /* [id] Destination grid dimension sizes ID */
+  int wgt_raw_out_id; /* [id] Remap matrix variable ID */
 
   switch(nco_rgr_mpf_typ){
     /* Obtain fields whose name depends on mapfile type */
@@ -382,12 +382,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     rcd+=nco_inq_varid(in_id,"dst_grid_center_lat",&dst_grd_ctr_lat_id);
     rcd+=nco_inq_varid(in_id,"dst_grid_corner_lon",&dst_grd_crn_lon_id);
     rcd+=nco_inq_varid(in_id,"dst_grid_corner_lat",&dst_grd_crn_lat_id);
+    rcd+=nco_inq_varid(in_id,"remap_matrix",&wgt_raw_out_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
   break;
   case nco_rgr_mpf_ESMF:
     rcd+=nco_inq_varid(in_id,"xc_b",&dst_grd_ctr_lon_id);
     rcd+=nco_inq_varid(in_id,"yc_b",&dst_grd_ctr_lat_id);
     rcd+=nco_inq_varid(in_id,"xv_b",&dst_grd_crn_lon_id);
     rcd+=nco_inq_varid(in_id,"yv_b",&dst_grd_crn_lat_id);
+    rcd+=nco_inq_varid(in_id,"S",&wgt_raw_out_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
     break;
   default:
     (void)fprintf(stderr,"%s: ERROR %s unknown map file type\n",nco_prg_nm_get(),fnc_nm);
@@ -408,6 +410,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   double *lat_ntf_out; /* [dgr] Latitude  interfaces of rectangular destination grid */
   double *lon_bnd_out; /* [dgr] Longitude boundaries of rectangular destination grid */
   double *lat_bnd_out; /* [dgr] Latitude  boundaries of rectangular destination grid */
+  double *wgt_raw_out; /* [frc] Remapping weights */
   int *dmn_sz; /* [nbr] Array of dimension sizes of destination grid */
   const int lon_psn_dst=0; /* [idx] Ordinal position of longitude size in rectangular destination grid */
   const int lat_psn_dst=1; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
@@ -423,7 +426,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   const long lon_nbr_out=dmn_sz[lon_psn_dst]; /* [idx] Number of longitudes in rectangular destination grid */
   const long lat_nbr_out=dmn_sz[lat_psn_dst]; /* [idx] Number of latitudes  in rectangular destination grid */
   
-  /* Allocate space for and obtain coordinates */
+  /* Allocate space for and obtain coordinates and weights */
   nc_type crd_typ_out=NC_DOUBLE;
   lon_ctr_out=(double *)nco_malloc(lon_nbr_out*nco_typ_lng(crd_typ_out));
   lat_ctr_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
@@ -433,6 +436,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   lat_ntf_out=(double *)nco_malloc((lat_nbr_out+1L)*nco_typ_lng(crd_typ_out));
   lon_bnd_out=(double *)nco_malloc(bnd_rnk*lon_nbr_out*nco_typ_lng(crd_typ_out));
   lat_bnd_out=(double *)nco_malloc(bnd_rnk*lat_nbr_out*nco_typ_lng(crd_typ_out));
+  wgt_raw_out=(double *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(crd_typ_out),"Unable to malloc() value buffer for remapping weights",fnc_nm);
   
   /* Arrays unroll into all longitudes for first latitude, then second latitude, ...
      Thus longitudes obtained by reading first block contiguously (unstrided)
@@ -455,12 +459,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   dmn_srd[1]=1L;
   rcd=nco_get_vars(in_id,dst_grd_crn_lat_id,dmn_srt,dmn_cnt,dmn_srd,lat_crn_out,crd_typ_out);
   
-  /* Close input netCDF file */
-  nco_close(in_id);
-
-  /* Remove local copy of file */
-  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
-
   /* Derive interface boundaries from lat and lon grid-center values
      NB: Procedures to derive interfaces from midpoints on rectangular grids are theoretically possible 
      However, ESMF often outputs interfaces values (e.g., yv_b) for midpoint coordinates (e.g., yc_b)
@@ -490,11 +488,31 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     lat_bnd_out[lat_nbr_out+idx]=lat_ntf_out[idx+1];
   } /* end loop over latitude */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+  if(nco_dbg_lvl_get() >= nco_dbg_vec){
     (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
-    for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stderr,"lon[%li] =  [%g, %g, %g]\n",idx,lon_bnd_out[idx],lon_ctr_out[idx],lon_bnd_out[lon_nbr_out+idx]);
-    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stderr,"lat[%li] =  [%g, %g, %g]\n",idx,lat_bnd_out[idx],lat_ctr_out[idx],lat_bnd_out[lat_nbr_out+idx]);
+    for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stderr,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[idx],lon_ctr_out[idx],lon_bnd_out[lon_nbr_out+idx]);
+    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stderr,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[idx],lat_ctr_out[idx],lat_bnd_out[lat_nbr_out+idx]);
   } /* endif dbg */
+
+  /* Obtain weight from map file */
+  dmn_srt[0]=0L;
+  dmn_cnt[0]=rgr_map.num_links;
+  rcd=nco_get_vara(in_id,wgt_raw_out_id,dmn_srt,dmn_cnt,wgt_raw_out,crd_typ_out);
+
+  /* Close input netCDF file */
+  nco_close(in_id);
+
+  /* Remove local copy of file */
+  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
+
+  /* Weight variable */
+
+  /* Write variable */
+
+  /* From this point on we parallel ncks logic for writing output files except:
+     All actions take place in sand-boxed routine and output file visible to regridding only
+     We work with a separate traversal table? 
+     Once things work with copy of traversal table, we merge back into main logic */
 
   /* Free memory allocated for grid reading/writing */
   if(dmn_sz) dmn_sz=(int *)nco_free(dmn_sz);
@@ -506,6 +524,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(lat_ntf_out) lat_ntf_out=(double *)nco_free(lat_ntf_out);
   if(lon_bnd_out) lon_bnd_out=(double *)nco_free(lon_bnd_out);
   if(lat_bnd_out) lat_bnd_out=(double *)nco_free(lat_bnd_out);
+  if(wgt_raw_out) wgt_raw_out=(double *)nco_free(wgt_raw_out);
   
   return rcd;
 } /* nco_rgr_map() */
@@ -1129,7 +1148,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
     var_sz_src*=dmn_cnt[idx];
   } /* end loop over dim */
 
-  /* Allocate space for and obtain latitude */
+  /* Allocate space for and obtain input latitude */
   void_ptr_var=(void *)nco_malloc_dbg(var_sz_src*nco_typ_lng(var_typ_in),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
   rcd=nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr_var,var_typ_in);
   float *var_fld=(float *)void_ptr_var;

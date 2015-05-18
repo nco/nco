@@ -374,7 +374,7 @@ main(int argc,char **argv)
   /* Initialize traversal table */ 
   trv_tbl_init(&trv_tbl); 
 
-  /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
+  /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list */
   (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int)0,False,False,False,False,True,nco_pck_plc_nil,NULL,trv_tbl);
 
   /* Rename variables */

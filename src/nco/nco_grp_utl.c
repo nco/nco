@@ -1746,7 +1746,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
       if(nco_prg_id == ncge){
         /* Is requested variable already in output file?
-	   fxm: Seems wasteful. Can ncge restrict definition to only variables in template group? i.e., satifying both flg_xtr and flg_nsm_tpl */
+	   fxm: Seems wasteful. Can ncge restrict definition to only variables in template group? i.e., satisfying both flg_xtr and flg_nsm_tpl */
         int rcd=nco_inq_varid_flg(grp_out_id,var_trv.nm,&var_out_id);
         /* Yes, get outta' Dodge... avoid GPE failure on duplicate definition */
         if(rcd == NC_NOERR) continue;

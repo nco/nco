@@ -1,6 +1,6 @@
 2015-05-17  Charlie Zender  <zender@uci.edu>
 
-	* Obtain destination grid interfaces/boundaries from mapping file
+	* Obtain destination grid interfaces/boundaries and remap matrix from mapping file
 
 2015-05-15  Charlie Zender  <zender@uci.edu>
 
