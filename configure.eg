@@ -262,15 +262,17 @@ export GNU_TRP=`~/nco/autobld/config.guess`
 # Commands used for Makefile builds
 module avail
 . ~/.bashrc
-module add intel gsl
+module add intel gsl netcdf
 export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib':${LD_LIBRARY_PATH}
 export NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' 
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' SZ=Y SZ_LIB='/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D allinone;cd -
+
 # Commands used for Configure builds
 module add intel gsl netcdf
-export LDFLAGS="${NETCDF_CLIB} ${GSL_LIB}"
-export CPPFLAGS="-I${NETCDF_DIR}/include ${GSL_INCLUDE_OPTS}"
+export LDFLAGS="${NETCDF_CLIB} ${GSL_LIB} ${SZIP_POST_LINK_OPTS}"
+export CPPFLAGS="-I${NETCDF_DIR}/include ${GSL_INCLUDE_OPTS} ${SZIP_INCLUDE_OPTS}"
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='icc' CXX='icpc' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='icc' CXX='icpc' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1

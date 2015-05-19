@@ -132,7 +132,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
      The total, min, max, rms, etc. of the grid usually makes no sense
      Users are most interested in the mean grid coordinate
      20130112: The same logic applies to CF-style coordinates, e.g., 
-     to variables matching the CF "bounds" and "coordinates" conventions */
+     to variables matching CF "bounds" and "coordinates" conventions */
   if(var_prc->is_crd_var){
     (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     return;
