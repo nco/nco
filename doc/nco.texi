@@ -17056,7 +17056,7 @@ ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
-[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -17089,16 +17089,43 @@ work correctly.
 @command{ncra} supports the @var{stride} argument to the @samp{-d}
 hyperslab option (@pxref{Hyperslabs}) for the record dimension only,
 @var{stride} is not supported for non-record dimensions.
+@cindex operation types
+@command{ncra} @emph{always averages} coordinate variables (e.g., 
+@code{time}) regardless of the arithmetic operation type performed on
+non-coordinate variables (@pxref{Operation Types}).
 
-@command{ncra} weights each record (e.g., time slice) in the
-@var{input-files} equally.
+As of @acronym{NCO} @w{version 4.4.9}, released in May, 2015,
+@command{ncra} accepts user-specified weights with the @samp{-w} 
+(or long-option equivalent @samp{--wgt}, @samp{--wgt_var},
+or @samp{--weight} switches). 
+When no weight is specified, @command{ncra} weights each record (e.g.,
+time slice) in the @var{input-files} equally.
 @command{ncra} does not attempt to see if, say, the @code{time}
 coordinate is irregularly spaced and thus would require a weighted
 average in order to be a true time average.
-@cindex operation types
-@command{ncra} @emph{always averages} coordinate variables regardless of 
-the arithmetic operation type performed on the non-coordinate variables. 
-(@pxref{Operation Types}). 
+
+Weights specified with @samp{-w wgt} may take one of two forms.
+In the first form, the @samp{wgt} argument is a comma-separated list of
+values by which to weight each @emph{file}. 
+Thus the number of values must equal the number of files specified
+in the input file list, or else the program will exit.
+In the second form, the @samp{wgt} argument is the name of a weighting
+variable present in every input file.
+The variable may be a scalar or a one-dimensional record variable.
+Scalar weights are applied uniformly to the entire file (i.e., a
+per-file weight).
+One-dimensional weights (i.e., record weights) apply to each
+corresponding record (i.e., per-record weights), and are suitable
+for dynamically changing timesteps.
+
+Bear these two exceptions in mind when weighting input:
+First, @command{ncra} only applies weights if the arithmetic operation
+type is averaging (@pxref{Operation Types}), i.e., for timeseries mean
+and for timeseries mean absolute value.
+Second, weights are never applied for minimization, square-roots, etc.
+@command{ncra} @emph{never weights} coordinate variables (e.g., 
+@code{time}) regardless of the weighting performed on non-coordinate
+variables.
 
 @noindent
 @html

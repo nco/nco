@@ -126,11 +126,11 @@ extern "C" {
   /* Valid netCDF4 deflation levels (dfl_lvl) range from 0..9 inclusive 
      Variables with dfl_lvl == 0 return true for compression yet are not deflated
      Calling deflation routine with dfl_lvl == 0 wastes time _unless_ user wishes 
-     to uncompress variable is currently deflated with dfl_lvl != 0.
+     to uncompress variable that is currently deflated with dfl_lvl != 0.
      Undefined dfl_lvl indicates user has not yet specified and intended dfl_lvl
      This undefined value must be less than zero (and not equal to zero) so that
      if(dfl_lvl >= 0) deflate(); only calls deflate() when user requests it. 
-     Setting dfl_lvl == 0 decompresses variable */
+     Setting dfl_lvl == 0 decompresses already compressed variables */
 #define NCO_DFL_LVL_UNDEFINED -1
 
   /* netcdf.h defines four NC_FORMAT tokens: NC_FORMAT_CLASSIC, ...
