@@ -886,7 +886,7 @@ main(int argc,char **argv)
 
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
 
-      /* Loop over number of different record variables in file */
+      /* Loop over number of different record dimensions in file */
       for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
 
         /* Obtain group ID */
@@ -1090,7 +1090,7 @@ main(int argc,char **argv)
 	       sets missing var_prc_out value to var_prc[idx]->mss_val read as type */
 	    if(wgt_arr && nco_op_typ == nco_op_avg){
 	      wgt_nrm.type=NC_DOUBLE;
-	      wgt_nrm.val.d=wgt_ttl/fl_nbr;
+	      wgt_nrm.val.d=wgt_ttl;
 	      for(idx=0;idx<nbr_var_prc;idx++){
 		if(var_prc_out[idx]->is_crd_var) continue;
 		nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_nrm);
