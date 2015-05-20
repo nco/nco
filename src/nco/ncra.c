@@ -1028,7 +1028,7 @@ main(int argc,char **argv)
                 var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 
 		/* Apply per-file weight, if any, to current record */
-		if(wgt_arr && nco_op_typ == nco_op_avg && !var_prc[idx]->is_crd_var){
+		if(wgt_arr && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs) && !var_prc[idx]->is_crd_var){
 		  assert(wgt_nbr == fl_nbr);
 		  wgt.type=NC_DOUBLE;
 		  wgt.val.d=wgt_arr[fl_idx];
@@ -1088,7 +1088,7 @@ main(int argc,char **argv)
 	       2. In nco_opr_nrm() below, use mss_val from var_prc_out not var_prc
 	       Problem is var_prc[idx]->mss_val is typ_upk while var_prc_out is type, so normalization
 	       sets missing var_prc_out value to var_prc[idx]->mss_val read as type */
-	    if(wgt_arr && nco_op_typ == nco_op_avg){
+	    if(wgt_arr && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
 	      wgt_nrm.type=NC_DOUBLE;
 	      wgt_nrm.val.d=wgt_ttl;
 	      for(idx=0;idx<nbr_var_prc;idx++){
@@ -1350,7 +1350,7 @@ main(int argc,char **argv)
      In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
      FLG_BFR_NRM is always true here for ncfe and ncge */
   if(FLG_BFR_NRM){
-    if(wgt_arr && nco_op_typ == nco_op_avg){
+    if(wgt_arr && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
       wgt_nrm.type=NC_DOUBLE;
       wgt_nrm.val.d=wgt_ttl;
       for(idx=0;idx<nbr_var_prc;idx++){

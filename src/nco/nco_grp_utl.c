@@ -700,7 +700,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       if(!obj_lst_in[obj_idx]){
         (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name is empty. HINT: Eliminate consecutive or trailing commas from the extraction list.\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable");
         nco_exit(EXIT_FAILURE);
-      } /* end else */
+      } /* end if */
 
       usr_sng=strdup(obj_lst_in[obj_idx]); 
       usr_sng_lng=strlen(usr_sng);
