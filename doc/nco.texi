@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.9
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 14 May 2015
+@set update-date 20 May 2015
 @set update-month May 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6941,8 +6941,8 @@ the associated @acronym{NSD} or @acronym{DSD} algorithm to all floating
 point variables except coordinate variables.
 Variables @emph{not affected} by @code{default} include integer and
 non-numeric atomic types, coordinates, and variables mentioned in 
-the @code{bounds} @code{climatology} or @code{coordinates} attribute of
-any variable. 
+the @code{bounds}, @code{climatology}, or @code{coordinates} attribute
+of any variable. 
 @acronym{NCO} applies @acronym{PPC} to coordinate variables only if 
 those variables are explicitly specified (i.e., not with the
 @samp{default=@var{prc}} mechanism. 
@@ -17139,7 +17139,7 @@ non-coordinate variables (@pxref{Operation Types}).
 As of @acronym{NCO} @w{version 4.4.9}, released in May, 2015,
 @command{ncra} accepts user-specified weights with the @samp{-w} 
 (or long-option equivalent @samp{--wgt}, @samp{--wgt_var},
-or @samp{--weight} switches). 
+or @samp{--weight}) switch. 
 When no weight is specified, @command{ncra} weights each record (e.g.,
 time slice) in the @var{input-files} equally.
 @command{ncra} does not attempt to see if, say, the @code{time}
@@ -17156,9 +17156,9 @@ variable present in every input file.
 The variable may be a scalar or a one-dimensional record variable.
 Scalar weights are applied uniformly to the entire file (i.e., a
 per-file weight).
-One-dimensional weights (i.e., record weights) apply to each
-corresponding record (i.e., per-record weights), and are suitable
-for dynamically changing timesteps.
+One-dimensional weights apply to each corresponding record (i.e.,
+per-record weights), and are suitable for dynamically changing
+timesteps. 
 
 Bear these two exceptions in mind when weighting input:
 First, @command{ncra} only applies weights if the arithmetic operation
@@ -17219,6 +17219,17 @@ averages June, 1985--June, 1989:
 @example
 ncra -d time,6.,54. ??.nc 8506_8906.nc
 @end example
+
+The @samp{-w wgt} option weights input data @emph{per-file} or
+@emph{per-timestep}:
+@example
+ncra -w 31,31,28 dec.nc jan.nc feb.nc out.nc 
+ncra -w delta_t in1.nc in2.nc in3.nc out.nc 
+@end example
+The first example weights the input differently per-file to produce
+correctly weighted winter season mean statistics.
+The second example weights the input per-timestep to produce correctly 
+weighted mean statistics.
 
 @page
 @html

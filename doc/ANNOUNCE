@@ -53,9 +53,35 @@ C. NCO now warns users and suggest workarounds in situations when
    2. When hyperslabs are specified for multi-dimensional
       "coordinates"  
 
-D. climatology attribute
+D. NCO now respects the CF "climatology" attribute: The variable
+   pointed to by this attribute is treated as a pseudo-coordinate
+   variable, and is extracted by default with any referring variable.
+   Climatology variables now obey the same arithmetic rules as
+   coordinates and are exempted from certain operations.
+   Their treatment is identical to that of "bounds" variables.
+   This command now retrieves the named variable, its coordinates (if
+   any), and any variables named in the "ancillary_variable",
+   "bounds", "climatology", and "coordinates" attributes:
+   ncks -v temperature in.nc out.nc
+   http://nco.sf.net/nco.html#climatology
 
-E. ncra --wgt
+E. ncra now accepts user-specified weights with the -w switch.
+   When no weight is specified, ncra continues its old behavior
+   and weights each record (e.g., time slice) equally.
+   Weights specified with -w wgt may take one of two forms.
+   Fist, the wgt argument may be a comma-separated list of values by
+   which to weight each input file. Or, the wgt argument may be
+   the name of a weighting variable present in every input file.
+   The variable may be a scalar or a one-dimensional record variable. 
+   Scalar weights are applied uniformly to the entire file (i.e., a 
+   per-file weight), while one-dimensional weights apply to each
+   corresponding record (i.e., per-record weights). Two applications
+   of weights with ncra include easier generation of accurate averages
+   of seasonal statistics, and of accurate averages of quantities
+   sampled with a dynamically changing timestep.
+   ncra -w 31,31,28 dec.nc jan.nc feb.nc out.nc 
+   ncra -w delta_t in1.nc in2.nc in3.nc out.nc 
+   http://nco.sf.net/nco.html#ncra
 
 BUG FIXES:
 
