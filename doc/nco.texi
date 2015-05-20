@@ -4397,6 +4397,9 @@ convention described in @ref{CF Conventions}.
 As of @acronym{NCO} version 4.0.8 (April, 2011) 
 both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{bounds}
 convention described in @ref{CF Conventions}. 
+As of @acronym{NCO} version 4.4.9 (May, 2015) 
+both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{climatology}
+convention described in @ref{CF Conventions}. 
 As of @acronym{NCO} version 3.9.6 (January, 2009) 
 both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{coordinates}
 convention described in @ref{CF Conventions}.
@@ -6143,8 +6146,11 @@ time = 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, \
 @end example
 As of @acronym{NCO} version 4.2.1 (August, 2012), @acronym{NCO}
 automatically rebases not only the record coordinate (@code{time}, here) 
-but also any bounds associated with the record coordinate (e.g.,
-@code{time_bnds}) (@pxref{CF Conventions}).
+but also any cell boundaries associated with the record coordinate
+(e.g., @code{time_bnds}) (@pxref{CF Conventions}). 
+As of @acronym{NCO} version 4.4.9 (May, 2015), @acronym{NCO}
+also rebases any climatology boundaries associated with the record
+coordinate (e.g., @code{climatology_bounds}) (@pxref{CF Conventions}). 
 
 @html
 <a name="mrd"></a> <!-- http://nco.sf.net/nco.html#mrd -->
@@ -6928,13 +6934,15 @@ respectively.
 
 @cindex @acronym{CF} conventions
 @cindex @code{coordinates} attribute
+@cindex @code{climatology} attribute
 @cindex @code{bounds} attribute
 Setting @var{var} to @code{default} has the special meaning of applying 
 the associated @acronym{NSD} or @acronym{DSD} algorithm to all floating
 point variables except coordinate variables.
 Variables @emph{not affected} by @code{default} include integer and
 non-numeric atomic types, coordinates, and variables mentioned in 
-the @code{coordinates} or @code{bounds} attribute of any variable.
+the @code{bounds} @code{climatology} or @code{coordinates} attribute of
+any variable. 
 @acronym{NCO} applies @acronym{PPC} to coordinate variables only if 
 those variables are explicitly specified (i.e., not with the
 @samp{default=@var{prc}} mechanism. 
@@ -9555,6 +9563,7 @@ or alter the @code{Conventions} attribute.
 @html
 <a name="cnv_CF_bnd"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_bnd -->
 <a name="bnd"></a> <!-- http://nco.sf.net/nco.html#bnd -->
+<a name="bounds"></a> <!-- http://nco.sf.net/nco.html#bounds -->
 @end html
 @cindex @code{bounds} attribute
 @cindex bounds convention
@@ -9576,8 +9585,35 @@ Bounds are subject to the user-specified override switches
 @ref{Subsetting Coordinate Variables}. 
 
 @html
+<a name="cnv_CF_clm"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_clm -->
+<a name="clm"></a> <!-- http://nco.sf.net/nco.html#clm -->
+<a name="climatology"></a> <!-- http://nco.sf.net/nco.html#climatology -->
+@end html
+@cindex @code{climatology} attribute
+@cindex climatology convention
+As of @acronym{NCO} version 4.4.9 (May, 2015), @acronym{NCO} 
+supports the @acronym{CF} @code{climatology} convention for climatology 
+statistics described 
+@uref{http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#climatological-statistics, here}.
+This convention allows coordinate variables (including multidimensional
+coordinates) to describe the (possibly nested) periods and statistical
+methods of their associated statistics.
+This is done by naming the variable which contains the periods and
+methods in the @code{climatology} attribute. 
+Note that coordinates of rank @math{N} have climatology bounds of rank 
+@math{N+1}. 
+NCO-generated subsets of @acronym{CF}-compliant files with @code{climatology}
+attributes will include the variables specified by the @code{climatology}
+attribute, if any.  
+Hence the subsets will themselves be @acronym{CF}-compliant.
+Climatology variables are subject to the user-specified override switches 
+(including @samp{-c} and @samp{-C}) described in 
+@ref{Subsetting Coordinate Variables}. 
+
+@html
 <a name="cnv_CF_ncl"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_ncl -->
 <a name="ncl"></a> <!-- http://nco.sf.net/nco.html#ncl -->
+<a name="ancillary"></a> <!-- http://nco.sf.net/nco.html#ancillary -->
 @end html
 @cindex @code{ancillary_variables} attribute
 @cindex ancillary variables convention
@@ -16368,6 +16404,7 @@ Using the @code{%s} format code on strings which are not NUL-terminated
 @cindex @code{-x}
 @cindex @acronym{CF} conventions
 @cindex @code{coordinates} attribute
+@cindex @code{climatology} attribute
 @cindex @code{bounds} attribute
 @cindex @code{ancillary_variables} attribute
 Create netCDF @file{out.nc} containing all variables, and any associated 
@@ -16378,14 +16415,15 @@ ncks -x -v time in.nc out.nc
 As a special case of this, consider how to remove a 
 variable such as @code{time_bounds} that is identified in a
 @acronym{CF} Convention (@pxref{CF Conventions}) compliant
-@code{ancillary_variables}, @code{bounds}, or @code{coordinates}
-attribute. 
+@code{ancillary_variables}, @code{bounds}, @code{climatology}, or
+@code{coordinates} attribute. 
 @acronym{NCO} subsetting assumes the user wants all ancillary variables,
 axes, bounds and coordinates associated with all extracted variables 
 (@pxref{Subsetting Coordinate Variables}).
-Hence to exclude a @code{ancillary_variables}, @code{bounds}, or
-@code{coordinates} variable while retaining the ``parent'' variable
-(here @code{time}), one must use the @samp{-C} switch: 
+Hence to exclude a @code{ancillary_variables}, @code{bounds},
+@code{climatology}, or @code{coordinates} variable while retaining the
+``parent'' variable (here @code{time}), one must use the @samp{-C}
+switch:  
 @example
 ncks -C -x -v time_bounds in.nc out.nc
 @end example

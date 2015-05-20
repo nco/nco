@@ -53,6 +53,8 @@ C. NCO now warns users and suggest workarounds in situations when
    2. When hyperslabs are specified for multi-dimensional
       "coordinates"  
 
+D. climatology attribute
+
 BUG FIXES:
 
 A. Fix ncecat in group aggregation mode (i.e., ncecat --gag) so it

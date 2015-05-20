@@ -671,6 +671,7 @@ Output chunking map/policy nco/nco = rew/all is default for netCDF3 input;
 Turn-off MM3 workaround for MM3->MM4 copying to speed-up compression-induced chunking;
 LFP chunking uses &ldquo;reasonable defaults&rdquo; when variable smaller than default chunksize;
 Shuffle by default when manually deflating;
+Support CF <tt>climatology</tt> attribute;
 Output chunking defaults to <tt>rew/all</tt> on netCDF3 input;
 Unchunking plays nicely with <tt>shuffle</tt>;
 <tt>ncks</tt> suggests <tt>-C</tt> with <tt>-x -v crd</tt>;

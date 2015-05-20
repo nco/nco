@@ -1,3 +1,9 @@
+2015-05-19  Charlie Zender  <zender@uci.edu>
+
+	* Treat climatology variables as pseudo-coordinates like bounds variables
+
+	* Re-base climatology variables in ncra/ncrcat
+
 2015-05-18  Charlie Zender  <zender@uci.edu>
 
 	* Apply per-file weights/normalization to averaged non-coordinate variables
