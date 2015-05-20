@@ -6,6 +6,8 @@
 	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
 	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
 
+	* Add some infrastructure to accept weight names, e.g., ncra --wgt=time_dlt
+
 	* Correct normalization in ncra --wgt and combine into multiplication by one pre-normalized factor
 
 	* Treat climatology variables as pseudo-coordinates like bounds variables

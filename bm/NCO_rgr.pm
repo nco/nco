@@ -3653,7 +3653,6 @@ print "\n";
 ####################
 
 # ncra #01
-    
 #        if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /sand/)){ # test hangs because of ncrcat TODO nco772
     $dsc_sng="record sdn of float with double missing values across two files";
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_01% 2> %tmp_fl_00%";
@@ -3668,7 +3667,6 @@ print "\n";
 #    } else { print "NB: Current mpncra test skipped on sand because mpncrcat step hangs fxm TODO nco593\n";}
 
 # ncra #02
-    
     $dsc_sng="record mean of int across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
@@ -3678,7 +3676,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #03	
-    
     $dsc_sng="record mean of float with double missing values";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3688,7 +3685,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #04	
-    
     $dsc_sng="record mean of float with integer missing values";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_int %tmp_fl_00%";
@@ -3698,7 +3694,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #05	
-    
     $dsc_sng="record mean of integer with integer missing values";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int %tmp_fl_00%";
@@ -3708,7 +3703,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #06	
-    
     $dsc_sng="record mean of integer with integer missing values across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int %tmp_fl_00%";
@@ -3718,7 +3712,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #07
-    
     $dsc_sng="record mean of integer with float missing values";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_flt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt %tmp_fl_00%";
@@ -3728,7 +3721,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #08	
-    
     $dsc_sng="record mean of integer with float missing values across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_flt $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt %tmp_fl_00%";
@@ -3738,7 +3730,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #09	
-    
     $dsc_sng="record mean of packed double with double missing values";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck %tmp_fl_00%";
@@ -3748,7 +3739,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #10	
-    
     $dsc_sng="record mean of packed double to test precision";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_pck %tmp_fl_00%";
@@ -3758,7 +3748,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #11	
-    
     $dsc_sng="record mean of packed float to test precision";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%3.2f' -v rec_var_flt_pck %tmp_fl_00%";
@@ -3768,7 +3757,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #12	
-    
     $dsc_sng="pass through non-record (i.e., non-processed) packed data to output";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v pck,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tmp_fl_00%";
@@ -3778,7 +3766,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #13
-    
     $dsc_sng="record mean of float with double missing values across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3788,7 +3775,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #14
-    
     $dsc_sng="record min of float with double missing values across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3798,7 +3784,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #15	
-    
     $dsc_sng="record max of float with double missing values across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3808,7 +3793,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #16
-    
     $dsc_sng="record ttl of float with double missing values across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3818,7 +3802,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #17
-    
     $dsc_sng="record rms of float with double missing values across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%1.5f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3828,7 +3811,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #18
-    
     $dsc_sng="Return mean time coordinate (when computing totals) across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v time %tmp_fl_00%";
@@ -3838,7 +3820,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #19
-    
     $dsc_sng="Return total record (when computing totals) across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
@@ -3848,7 +3829,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #20	
-
     $dsc_sng="Return record average of cell-based geodesic data";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -X 0.,180.,-30.,30. -v gds_3dvar $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%8.1f' -v gds_3dvar %tmp_fl_00%";
@@ -3858,7 +3838,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #21
-	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
     $tst_cmd[2]="ncra -t 1 -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_01%";
@@ -3872,7 +3851,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 # ncra #22
-    
     $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncra $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[2]="ncks -C -H -s '%d' -d time,10 -v one_dmn_rec_var %tmp_fl_00%";
@@ -3890,7 +3868,6 @@ print "\n";
 	
 # ncra #23
 # same as ncra #02, for groups
-    
     $dsc_sng="(Groups) 1 group -g g4 -v one_dmn_rec_var record mean of int across two files";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -3899,10 +3876,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-	
 # ncra #24
 # (Groups) 1 record to process in 1 group
-    
     $dsc_sng="(Groups) 1 record to process in 1 group -g g23 (do variable and record in group) ";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g23 -v time %tmp_fl_00%";
@@ -3913,7 +3888,6 @@ print "\n";
 		
 # ncra #25
 # (Groups) 2 records to process in 2 groups (part 1)
-    
     $dsc_sng="(Groups) 2 records to process in 2 groups (part 1) (do record in group only)";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23,g24 -v time $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g23 -v time %tmp_fl_00%";
@@ -3924,7 +3898,6 @@ print "\n";
 
 # ncra #26
 # (Groups) 2 records to process in 2 groups (part 2)
-    
     $dsc_sng="(Groups) 2 records to process in 2 groups (part 2) (do record in group only)";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23,g24 -v time $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g24 -v time %tmp_fl_00%";
@@ -3936,7 +3909,6 @@ print "\n";
 # ncra #27
 # (Groups) 1D var 2 records to process in 2 groups (part 1)
 # ncra -h -O -g g25g1,g25g2 -p ~/nco/data in_grp_3.nc in_grp_3.nc ~/foo.nc
-    
     $dsc_sng="(Groups) 2 records to process in 2 groups (part 1) (1D variable and record in group)";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
@@ -3948,7 +3920,6 @@ print "\n";
 # ncra #28 same as #27
 # (Groups) 1D var 2 records to process in 2 groups (part 2)
 # ncra -h -O -g g25g1,g25g2 -p ~/nco/data in_grp_3.nc in_grp_3.nc ~/foo.nc
-    
     $dsc_sng="(Groups) 2 records to process in 2 groups (part 2) (1D variable and record in group)";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
@@ -3962,7 +3933,6 @@ print "\n";
 # ncpdq -O -a time,record ~/foo1.nc ~/foo2.nc # switch "record" and "time"
 # ncra -O ~/foo2.nc ~/foo.nc
 # ncks -C -g g25g1 -v one_dmn_rec_var ~/foo.nc
-    
     $dsc_sng="(Groups) 2 records in 1 group ('time' same as record, 1st record)";
     $tst_cmd[0]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a time,record %tmp_fl_00% %tmp_fl_01%";
@@ -3979,7 +3949,6 @@ print "\n";
 # ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
 # ncra -O -p ~ foo1.nc foo2.nc ~/foo3.nc
 # ncks -C -H -v one ~/foo3.nc
-
     $dsc_sng="Concatenate variables with different ID ordering";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
@@ -4004,7 +3973,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
-	#######################################
+    ######################################
     #### Group tests (requires netCDF4) ###
     #######################################
 
@@ -4038,9 +4007,18 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
-#print "paused - hit return to continue"; my $wait=<STDIN>;
-#print "<<<STOP>>>- hit return to continue"; my $wait=<STDIN>;
-    
+# ncra #34
+# Test per-file weighting
+# ncra -O -D 6 -w 28,29,30 -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
+# ncks -C -H -s '%g, ' -v two_dmn_rec_var ~/foo.nc
+    $dsc_sng="Test per-file weighting with --wgt";
+    $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -w 28,29,30 -n 3,4,1 $in_pth_arg h0001.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g, ' -v two_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[2]="1, 2.45, 3,";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
 ####################
 #### ncwa tests #### OK!
 ####################

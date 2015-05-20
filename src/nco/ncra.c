@@ -141,6 +141,7 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *wgt_nm=NULL_CEWI; /* [sng] Weight variable */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
   const char * const CVS_Id="$Id$"; 
@@ -263,7 +264,8 @@ main(int argc,char **argv)
   nc_type var_prc_typ_pre_prm=NC_NAT; /* [enm] Type of variable before promotion */
 
   scv_sct wgt;
-
+  scv_sct wgt_nrm;
+  
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
@@ -627,21 +629,22 @@ main(int argc,char **argv)
       xtr_nbr=var_lst_in_nbr;
       break;
     case 'w': /* Per-file weights */
-      optarg_lcl=(char *)strdup(optarg);
-      wgt_lst_in=nco_lst_prs_2D(optarg_lcl,",",&wgt_nbr);
-      optarg_lcl=(char *)nco_free(optarg_lcl);
-      wgt_arr=(double *)nco_malloc(wgt_nbr*sizeof(double));
-      for(idx=0L;idx<wgt_nbr;idx++){
-	wgt_arr[idx]=strtod(wgt_lst_in[idx],&sng_cnv_rcd);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(wgt_lst_in[idx],"strtod",sng_cnv_rcd);
-	wgt_avg+=wgt_arr[idx];
-      } /* end loop over elements */
-      wgt_avg/=wgt_nbr;
-      assert(wgt_nbr != 0.0);
-      for(idx=0L;idx<wgt_nbr;idx++) wgt_arr[idx]/=wgt_avg;
-      if(nco_dbg_lvl >= nco_dbg_crr)
-	for(idx=0L;idx<wgt_nbr;idx++)
-	  (void)fprintf(stdout,"wgt[%d] = %g\n",idx,wgt_arr[idx]);
+      if(isalpha(optarg[0])){
+	wgt_nm=(char *)strdup(optarg);
+      }else{ /* !alpha */
+	optarg_lcl=(char *)strdup(optarg);
+	wgt_lst_in=nco_lst_prs_2D(optarg_lcl,",",&wgt_nbr);
+	optarg_lcl=(char *)nco_free(optarg_lcl);
+	wgt_arr=(double *)nco_malloc(wgt_nbr*sizeof(double));
+	for(idx=0L;idx<wgt_nbr;idx++){
+	  wgt_arr[idx]=strtod(wgt_lst_in[idx],&sng_cnv_rcd);
+	  if(*sng_cnv_rcd) nco_sng_cnv_err(wgt_lst_in[idx],"strtod",sng_cnv_rcd);
+	  wgt_avg+=wgt_arr[idx];
+	} /* end loop over elements */
+	wgt_avg/=wgt_nbr;
+	assert(wgt_nbr != 0.0);
+	for(idx=0L;idx<wgt_nbr;idx++) wgt_arr[idx]/=wgt_avg;
+      } /* !alpha */
       break;
     case 'X': /* Copy auxiliary coordinate argument for later processing */
       aux_arg[aux_nbr]=(char *)strdup(optarg);
@@ -1031,8 +1034,8 @@ main(int argc,char **argv)
                 var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 
 		/* Apply per-file weight, if any, to current record */
-		if(wgt_arr && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs) && !var_prc[idx]->is_crd_var){
-		  assert(wgt_nbr == fl_nbr);
+		if((wgt_arr || wgt_nm) && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs) && !var_prc[idx]->is_crd_var){
+		  if(wgt_arr) assert(wgt_nbr == fl_nbr);
 		  wgt.type=NC_DOUBLE;
 		  wgt.val.d=wgt_arr[fl_idx];
 		  nco_scv_cnf_typ(var_prc[idx]->type,&wgt);
@@ -1091,6 +1094,20 @@ main(int argc,char **argv)
 	       2. In nco_opr_nrm() below, use mss_val from var_prc_out not var_prc
 	       Problem is var_prc[idx]->mss_val is typ_upk while var_prc_out is type, so normalization
 	       sets missing var_prc_out value to var_prc[idx]->mss_val read as type */
+	    if(False){
+	      /* Normalize output by mean of in situ weight, if any
+		 Perfectly well defined as long as MRO not invoked with --wgt 
+		 Leave code here to show the way to final implementation */
+	      if((wgt_arr || wgt_nm) && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
+		wgt_nrm.type=NC_DOUBLE;
+		wgt_nrm.val.d=wgt_avg;
+		for(idx=0;idx<nbr_var_prc;idx++){
+		  if(var_prc_out[idx]->is_crd_var || var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING) continue;
+		  nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_nrm);
+		  (void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_nrm);
+		} /* end loop over var */
+	      } /* !wgt */
+	    } /* !False */
             (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,lmt_rec[idx_rec]->nm_fll,trv_tbl);
             FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
 
@@ -1424,6 +1441,7 @@ main(int argc,char **argv)
     if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
     if(in_id_arr) in_id_arr=(int *)nco_free(in_id_arr);
     if(wgt_arr) wgt_arr=(double *)nco_free(wgt_arr);
+    if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
     /* Free lists of strings */
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);

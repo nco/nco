@@ -674,6 +674,7 @@ Shuffle by default when manually deflating;
 Support CF <tt>climatology</tt> attribute;
 Output chunking defaults to <tt>rew/all</tt> on netCDF3 input;
 Unchunking plays nicely with <tt>shuffle</tt>;
+<tt>ncra</tt> supports weights with </tt>--wgt</tt>;
 <tt>ncks</tt> suggests <tt>-C</tt> with <tt>-x -v crd</tt>;
 <tt>ncwa</tt> modifies <tt>coordinates</tt> attribute;</li>
 <li><b>NCO 4.4.8</b>: (<i>Current Stable Release</i>)
