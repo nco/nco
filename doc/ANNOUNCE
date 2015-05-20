@@ -55,6 +55,8 @@ C. NCO now warns users and suggest workarounds in situations when
 
 D. climatology attribute
 
+E. ncra --wgt
+
 BUG FIXES:
 
 A. Fix ncecat in group aggregation mode (i.e., ncecat --gag) so it

@@ -1,5 +1,13 @@
 2015-05-19  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.9 release procedure:
+ 	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco lfp, shuffle on, MM3->MM4 off, ncecat fix, climatology, ncra wgt
+	cd ~/nco;git commit -a -m "Version nco-4.4.9 release: "
+	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
+	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
+
+	* Correct normalization in ncra --wgt and combine into multiplication by one pre-normalized factor
+
 	* Treat climatology variables as pseudo-coordinates like bounds variables
 
 	* Re-base climatology variables in ncra/ncrcat
@@ -25,12 +33,6 @@
 	* Fix ncecat --gag mode use of uninitialized file pointers
 
 2015-05-14  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.9 release procedure:
- 	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco lfp, shuffle on, MM3->MM4 off, ncecat
-	cd ~/nco;git commit -a -m "Version nco-4.4.9 release: "
-	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
-	git tag -a nco-4.4.9 -m 'Version 4.4.9: ';git push --tags
 
 	* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating
 

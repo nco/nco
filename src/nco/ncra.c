@@ -160,7 +160,7 @@ main(int argc,char **argv)
   dmn_sct **dmn_out=NULL; /* CEWI */
 
   double *wgt_arr=NULL; /* Option w */
-  double wgt_ttl=0.0; /* [frc] Total of weights */
+  double wgt_avg=0.0; /* [frc] Average of weights */
 
   extern char *optarg;
   extern int optind;
@@ -263,7 +263,6 @@ main(int argc,char **argv)
   nc_type var_prc_typ_pre_prm=NC_NAT; /* [enm] Type of variable before promotion */
 
   scv_sct wgt;
-  scv_sct wgt_nrm;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
@@ -635,10 +634,14 @@ main(int argc,char **argv)
       for(idx=0L;idx<wgt_nbr;idx++){
 	wgt_arr[idx]=strtod(wgt_lst_in[idx],&sng_cnv_rcd);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(wgt_lst_in[idx],"strtod",sng_cnv_rcd);
-	if(nco_dbg_lvl >= nco_dbg_crr) (void)fprintf(stdout,"wgt[%d] = %g\n",idx,wgt_arr[idx]);
-	wgt_ttl+=wgt_arr[idx];
+	wgt_avg+=wgt_arr[idx];
       } /* end loop over elements */
-      assert(wgt_ttl != 0.0);
+      wgt_avg/=wgt_nbr;
+      assert(wgt_nbr != 0.0);
+      for(idx=0L;idx<wgt_nbr;idx++) wgt_arr[idx]/=wgt_avg;
+      if(nco_dbg_lvl >= nco_dbg_crr)
+	for(idx=0L;idx<wgt_nbr;idx++)
+	  (void)fprintf(stdout,"wgt[%d] = %g\n",idx,wgt_arr[idx]);
       break;
     case 'X': /* Copy auxiliary coordinate argument for later processing */
       aux_arg[aux_nbr]=(char *)strdup(optarg);
@@ -994,7 +997,7 @@ main(int argc,char **argv)
             if(nco_prg_id == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
             /* Re-base record coordinate and bounds if necessary (e.g., time, time_bnds) */
-            if(lmt_rec[idx_rec]->origin != 0.0 && (var_prc[idx]->is_crd_var || nco_is_spc_in_bnd_att(grp_id,var_prc[idx]->id) || nco_is_spc_in_clm_att(grp_id,var_prc[idx]))){
+            if(lmt_rec[idx_rec]->origin != 0.0 && (var_prc[idx]->is_crd_var || nco_is_spc_in_bnd_att(grp_id,var_prc[idx]->id) || nco_is_spc_in_clm_att(grp_id,var_prc[idx]->id))){
               var_sct *var_crd;
               scv_sct scv;
               /* De-reference */
@@ -1088,15 +1091,6 @@ main(int argc,char **argv)
 	       2. In nco_opr_nrm() below, use mss_val from var_prc_out not var_prc
 	       Problem is var_prc[idx]->mss_val is typ_upk while var_prc_out is type, so normalization
 	       sets missing var_prc_out value to var_prc[idx]->mss_val read as type */
-	    if(wgt_arr && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
-	      wgt_nrm.type=NC_DOUBLE;
-	      wgt_nrm.val.d=wgt_ttl;
-	      for(idx=0;idx<nbr_var_prc;idx++){
-		if(var_prc_out[idx]->is_crd_var) continue;
-		nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_nrm);
-		(void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_nrm);
-	      } /* end loop over var */
-	    } /* !wgt */
             (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,lmt_rec[idx_rec]->nm_fll,trv_tbl);
             FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
 
@@ -1349,18 +1343,7 @@ main(int argc,char **argv)
      Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
      In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
      FLG_BFR_NRM is always true here for ncfe and ncge */
-  if(FLG_BFR_NRM){
-    if(wgt_arr && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
-      wgt_nrm.type=NC_DOUBLE;
-      wgt_nrm.val.d=wgt_ttl;
-      for(idx=0;idx<nbr_var_prc;idx++){
-	if(var_prc_out[idx]->is_crd_var) continue;
-	nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_nrm);
-	(void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_nrm);
-      } /* end loop over var */
-    } /* !wgt */
-    (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,(char *)NULL,(trv_tbl_sct *)NULL);
-  } /* !nrm */
+  if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,(char *)NULL,(trv_tbl_sct *)NULL);
     
   /* Manually fix YYMMDD date which was mangled by averaging */
   if(CNV_CCM_CCSM_CF && nco_prg_id == ncra) (void)nco_cnv_ccm_ccsm_cf_date(grp_out_id,var_out,xtr_nbr);
