@@ -123,6 +123,11 @@ extern "C" {
   (const int nc_id, /* I [id] netCDF file ID */
    const int var_trg_id); /* I [id] Variable ID */
   
+  nco_bool /* [flg] Variable is listed in a "climatology" attribute */
+  nco_is_spc_in_clm_att /* [fnc] Variable is listed in a "climatology" attribute */
+  (const int nc_id, /* I [id] netCDF file ID */
+   const int var_trg_id); /* I [id] Variable ID */
+
   nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
   nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */
   (const int nc_id, /* I [id] netCDF file ID */

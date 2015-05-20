@@ -189,9 +189,13 @@ variables:
 	time:units = "days since 1964-03-12 12:09:00 -9:00"; 
 	time:calendar = "gregorian";
 	time:bounds = "time_bnds";
+	time:climatology = "climatology_bounds";
 
 	float time_bnds(time,vrt_nbr);
 	time_bnds:purpose = "Cell boundaries for time coordinate";
+
+	float climatology_bounds(time,vrt_nbr);
+	climatology_bounds:purpose = "Variable containing CF-compliant climatology bounds for time dimension";
 
 	double lon_cal(lon_cal);
 	lon_cal:long_name = "lon_cal";
@@ -1456,6 +1460,7 @@ data:
 	three_dmn_var_crd=0.,1.,2.,3.,12.,13.,14.,15.,4.,5.,6.,7.,16.,17.,18.,19.,8.,9.,10.,11.,20.,21.,22.,23.;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	time_bnds=0.5,1.5,1.5,2.5,2.5,3.5,3.5,4.5,4.5,5.5,5.5,6.5,6.5,7.5,7.5,8.5,8.5,9.5,9.5,10.5;
+	climatology_bounds=0.5,1.5,1.5,2.5,2.5,3.5,3.5,4.5,4.5,5.5,5.5,6.5,6.5,7.5,7.5,8.5,8.5,9.5,9.5,10.5;
 	tm_std=59;
 	tm_grg=59;
 	tm_jln=59;

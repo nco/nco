@@ -1518,6 +1518,80 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
   return IS_SPC_IN_BND_ATT; /* [flg] Variable is listed in a "bounds" attribute  */
 } /* end nco_is_spc_in_bnd_att() */
 
+nco_bool /* [flg] Variable is listed in a "climatology" attribute */
+nco_is_spc_in_clm_att /* [fnc] Variable is listed in a "climatology" attribute */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int var_trg_id) /* I [id] Variable ID */
+{
+  /* Purpose: Is variable specified in a "climatology" attribute?
+     Typical variables that appear in a "climatology" attribute include "lat_bnds", "lon_bnds", etc.
+     Such variables may be "multi-dimensional coordinates" that should
+     undergo special treatment by arithmetic operators.
+     Routine based on nco_is_spc_in_crd_att() */
+  nco_bool IS_SPC_IN_CLM_ATT=False; /* [flg] Variable is listed in a "climatology" attribute  */
+
+  const char dlm_sng[]=" "; /* [sng] Delimiter string */
+  const char fnc_nm[]="nco_is_spc_in_clm_att()"; /* [sng] Function name */
+  char **clm_lst; /* [sng] 1D array of list elements */
+  char *att_val;
+  char att_nm[NC_MAX_NAME];
+  char var_nm[NC_MAX_NAME];
+  char var_trg_nm[NC_MAX_NAME];
+  int idx_att;
+  int idx_clm;
+  int idx_var;
+  int nbr_att;
+  int nbr_clm; /* [nbr] Number of coordinates specified in "climatology" attribute */
+  int nbr_var; /* [nbr] Number of variables in file */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int var_id; /* [id] Variable ID */
+  long att_sz;
+  nc_type att_typ;
+
+  /* May need variable name for later comparison to "climatology" attribute */
+  rcd+=nco_inq_varname(nc_id,var_trg_id,var_trg_nm);
+  rcd+=nco_inq_nvars(nc_id,&nbr_var);
+
+  for(idx_var=0;idx_var<nbr_var;idx_var++){
+    /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
+    var_id=idx_var;
+
+    /* Find number of attributes */
+    rcd+=nco_inq_varnatts(nc_id,var_id,&nbr_att);
+    for(idx_att=0;idx_att<nbr_att;idx_att++){
+      rcd+=nco_inq_attname(nc_id,var_id,idx_att,att_nm);
+      /* Is attribute part of CF convention? */
+      if(!strcmp(att_nm,"climatology")){
+        /* Yes, get list of specified attributes */
+        rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+        if(att_typ != NC_CHAR){
+          rcd=nco_inq_varname(nc_id,var_id,var_nm);
+          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+          return IS_SPC_IN_CLM_ATT;
+        } /* end if */
+        att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+        if(att_sz > 0) rcd=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+        /* NUL-terminate attribute */
+        att_val[att_sz]='\0';
+        /* Split list into separate coordinate names
+	   Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+        clm_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_clm);
+        /* ...for each coordinate in "climatology" attribute... */
+        for(idx_clm=0;idx_clm<nbr_clm;idx_clm++){
+          /* Does variable match name specified in coordinate list? */
+          if(!strcmp(var_trg_nm,clm_lst[idx_clm])) break;
+        } /* end loop over coordinates in list */
+        if(idx_clm!=nbr_clm) IS_SPC_IN_CLM_ATT=True;
+        /* Free allocated memory */
+        att_val=(char *)nco_free(att_val);
+        clm_lst=nco_sng_lst_free(clm_lst,nbr_clm);
+      } /* !coordinates */
+    } /* end loop over attributes */
+  } /* end loop over idx_var */
+
+  return IS_SPC_IN_CLM_ATT; /* [flg] Variable is listed in a "climatology" attribute  */
+} /* end nco_is_spc_in_clm_att() */
+
 void
 nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
 (const int nc_id, /* I [id] netCDF input-file ID */
@@ -1637,7 +1711,7 @@ nco_var_dmn_refresh /* [fnc] Refresh var hyperslab info with var->dim[] info */
     var_tmp->sz=sz; 
     var_tmp->sz_rec=sz_rec;
   } /* end loop over variables */
-
+  
 }  /* end nco_var_dmn_refresh() */
 
 var_sct * /* O [sct] Variable structure */
@@ -1650,34 +1724,34 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 {
   /* Purpose: nco_malloc() and return a completed var_sct */
   char dmn_nm[NC_MAX_NAME];
-
+  
   int fl_fmt;
   int dmn_idx;
   int idx;
   int rec_dmn_id;
-
+  
   var_sct *var;
-
+  
   /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
-
+  
   /* Get record dimension ID */
   (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
-
+  
   /* Allocate space for variable structure */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
-
+  
   /* Fill-in known fields */
   /* Make sure var_free() frees names when variable is destroyed */
   var->nm_fll=NULL;
   var->nm=(char *)strdup(var_nm);
   var->id=var_id;
   var->nc_id=nc_id;
-
+  
   /* Get type and number of dimensions and attributes for variable */
   (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
-
+  
   /* Allocate space for dimension information */
   if(var->nbr_dim > 0) var->dim=(dmn_sct **)nco_malloc(var->nbr_dim*sizeof(dmn_sct *)); else var->dim=(dmn_sct **)NULL;
   if(var->nbr_dim > 0) var->dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
@@ -1686,10 +1760,10 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   if(var->nbr_dim > 0) var->srt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
   if(var->nbr_dim > 0) var->end=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
   if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
-
+  
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(var->nc_id,var->id,var->dmn_id);
-
+  
   /* Type in memory begins as same type as on disk */
   var->type=var->typ_dsk; /* [enm] Type of variable in RAM */
   /* Type of packed data on disk */
@@ -1729,47 +1803,48 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
     /* fxm: hmb, what is this for? */
     /* Re-define dmn_id so that if dim is dimension list from output file
-    then we get correct dmn_id. Should not affect normal running of 
-    routine as usually dim is dimension list from input file */
+       then we get correct dmn_id. Should not affect normal running of 
+       routine as usually dim is dimension list from input file */
     var->dmn_id[idx]=dim[dmn_idx]->id;
-
+    
     var->dim[idx]=dim[dmn_idx];
     var->cnt[idx]=dim[dmn_idx]->cnt;
     var->srt[idx]=dim[dmn_idx]->srt;
     var->end[idx]=dim[dmn_idx]->end;
     var->srd[idx]=dim[dmn_idx]->srd;
-
+    
     if(var->dmn_id[idx] == rec_dmn_id) var->is_rec_var=True; else var->sz_rec*=var->cnt[idx];
-
+    
     /* NB: dim[idx]->cid will be uninitialized unless dim[idx] is a coordinate 
-    Hence divide this into to sequential if statements so valgrind does not
-    complain about relying on uninitialized values */
+       Hence divide this into to sequential if statements so valgrind does not
+       complain about relying on uninitialized values */
     if(var->dim[idx]->is_crd_dmn){
       if(var->id == var->dim[idx]->cid){
         var->is_crd_var=True;
         var->cid=var->dmn_id[idx];
       } /* end if */
     } /* end if */
-
+    
     /* NB: This assumes default var->sz begins as 1 */
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
-
-  /* 20130112: Variables associated with "bounds" and "coordinates" attributes should,
-  in most cases, be treated as coordinates */
+  
+  /* 20130112: Variables associated with "bounds", "climatology", and "coordinates" attributes should,
+     in most cases, be treated as coordinates */
   if(nco_is_spc_in_bnd_att(var->nc_id,var->id)) var->is_crd_var=True;
+  if(nco_is_spc_in_clm_att(var->nc_id,var->id)) var->is_crd_var=True;
   if(nco_is_spc_in_crd_att(var->nc_id,var->id)) var->is_crd_var=True;
-
+  
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
-  nco_pck_dsk_inq() fills in these portions harmlessly */
+     nco_pck_dsk_inq() fills in these portions harmlessly */
   (void)nco_pck_dsk_inq(nc_id,var);
-
+  
   /* Set deflate and chunking to defaults */  
   var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   var->shuffle=NC_NOSHUFFLE; /* [flg] Turn on shuffle filter */
-
+  
   for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
-
+  
   /* Read deflate levels and chunking (if any) */  
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     int deflate; /* [enm] Deflate filter is on */
