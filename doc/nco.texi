@@ -56,7 +56,7 @@ cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSI
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
 # 20130806 Copy CMIP5 images (takes additional time)
 cd ~/nco/doc/xmp;/usr/bin/scp fgr*.png fgr*.eps zender,nco@web.sf.net:/home/project-web/nco/htdocs/xmp;cd -
-cd ~/nco/doc/xmp;/usr/bin/scp fgr*.png fgr*.eps                 dust.ess.uci.edu:/var/www/html/nco/xmp;cd -
+cd ~/nco/doc/xmp;/usr/bin/scp fgr*.png fgr*.eps dust.ess.uci.edu:/var/www/html/nco/xmp;cd -
 # 20120203 Copy all nco.html PNG images (takes additional time)
 cd ~/nco/doc;/usr/bin/scp nco_*.png zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 cd ~/nco/doc;scp -p nco_*.png dust.ess.uci.edu:/var/www/html/nco;cd -
@@ -16030,6 +16030,7 @@ include an NcML formatting characters (e.g., commas, angles, quotes).
 @html
 <a name="ncattget"></a> <!-- http://nco.sf.net/nco.html#ncattget -->
 <a name="nclist"></a> <!-- http://nco.sf.net/nco.html#nclist -->
+<a name="ncdmnlist"></a> <!-- http://nco.sf.net/nco.html#ncdmnlist -->
 <a name="ncdmnsz"></a> <!-- http://nco.sf.net/nco.html#ncdmnsz -->
 <a name="ncrecsz"></a> <!-- http://nco.sf.net/nco.html#ncrecsz -->
 <a name="ncmax"></a> <!-- http://nco.sf.net/nco.html#ncmax -->
@@ -16051,6 +16052,7 @@ include an NcML formatting characters (e.g., commas, angles, quotes).
 @cindex @acronym{UNIX}
 @cindex @command{ncattget}
 @cindex @command{ncavg}
+@cindex @command{ncdmnlist}
 @cindex @command{ncdmnsz}
 @cindex @command{nclist}
 @cindex @command{ncmax}
@@ -16145,6 +16147,8 @@ function ncunits { ncks -M -m ${2} | grep -E -i " attribute [0-9]+: units.+ ${1}
 function ncavg { ncwa -y avg -O -C -v ${1} ${2} ~/foo.nc ; ncks -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncavg $var_nm $fl_nm : What is mean of variable?
 function ncavg { ncap2 -O -C -v -s "foo=${1}.avg();print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
+# ncdmnlist $fl_nm : What dimensions are in file?
+ncdmnlist { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
 # ncdmnsz $dmn_nm $fl_nm : What is dimension size?
 function ncdmnsz { ncks -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
 # nclist $fl_nm : What variables are in file?
