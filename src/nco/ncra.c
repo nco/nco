@@ -632,10 +632,12 @@ main(int argc,char **argv)
       optarg_lcl=(char *)nco_free(optarg_lcl);
       xtr_nbr=var_lst_in_nbr;
       break;
-    case 'w': /* Per-file weights */
+    case 'w': /* Per-file and per-record weights */
       if(isalpha(optarg[0])){
 	wgt_nm=(char *)strdup(optarg);
-      }else{ /* !alpha */
+	(void)fprintf(stderr,"%s: ERROR The \"-w weight_name\" feature was disabled due to a bug discovered at the last minute before release of 4.4.9. In order to make the new feature that ARE ready available sooner, the \"-w weight_name\" feature will be delayed until 4.5.0. If you are interested in knowing when the \"-w weight_name\" feature is working in beta code, start a thread on SourceForge where I will post updates.\n",nco_prg_nm);
+	nco_exit(EXIT_FAILURE);
+      }else{ /* !wgt_nm */
 	optarg_lcl=(char *)strdup(optarg);
 	wgt_lst_in=nco_lst_prs_2D(optarg_lcl,",",&wgt_nbr);
 	optarg_lcl=(char *)nco_free(optarg_lcl);
@@ -646,9 +648,9 @@ main(int argc,char **argv)
 	  wgt_avg_scl+=wgt_arr[idx];
 	} /* end loop over elements */
 	wgt_avg_scl/=wgt_nbr;
-	assert(wgt_nbr != 0.0);
+	assert(wgt_avg_scl != 0.0);
 	for(idx=0L;idx<wgt_nbr;idx++) wgt_arr[idx]/=wgt_avg_scl;
-      } /* !alpha */
+      } /* !wgt_nm */
       break;
     case 'X': /* Copy auxiliary coordinate argument for later processing */
       aux_arg[aux_nbr]=(char *)strdup(optarg);

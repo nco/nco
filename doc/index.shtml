@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.4.8 last updated on <!--#flastmod file="VERSION"-->
+Current NCO version is 4.4.9 last updated on <!--#flastmod file="VERSION"-->
 </h2>
 
 <table border=0 width=100%>
@@ -149,7 +149,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2015 May&nbsp;??: 4.4.9 (<i>In progress</i>)
+<li>2015 Jun&nbsp;??: 4.5.0 (<i>In progress</i>)
+<li>2015 May&nbsp;21: 4.4.9 (<tt>ncra</tt> weights)
 <li>2015 Feb&nbsp;16: 4.4.8 (Precision-preserving Compression)
 <li>2014 Dec&nbsp;15: DOE ACME <a href="#prp_acme">project</a> commences</li>
 <li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
@@ -657,16 +658,18 @@ Stable releases receive unique tags and their tarballs are stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
 <a href="https://github.com/czender/nco/releases">here</a> at GitHub.
 You may also retrieve the source of tagged versions directly
-<a name="#Source">with <tt>git clone -b "nco-4.4.8" http://github.com/czender/nco.git nco-4.4.8</tt></a>.
+<a name="#Source">with <tt>git clone -b "nco-4.4.9" http://github.com/czender/nco.git nco-4.4.9</tt></a>.
 <ul>
-<li><b>NCO 4.5.0</b>: (<i>Future</i>) 
+<li><b>NCO 4.5.1</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 extensive hashing?;
 netCDF4 compound types?;
-Optimize diskless files?;
+Optimize diskless files?;</li>
+<li><b>NCO 4.5.0</b>: (<i>In Progress, features completed or being worked on include</i>)
+<tt>ncra</tt> weights with </tt>--wgt wgt_nm</tt>;
 Regridding;</li>
-<li><b>NCO 4.4.9</b>: (<i>In Progress, features completed or being worked on include</i>)
+<li><b>NCO 4.4.9</b>: (<i>Current Stable Release</i>)
 Output chunking map/policy nco/nco = rew/all is default for netCDF3 input;
 Turn-off MM3 workaround for MM3->MM4 copying to speed-up compression-induced chunking;
 LFP chunking uses &ldquo;reasonable defaults&rdquo; when variable smaller than default chunksize;
@@ -674,10 +677,10 @@ Shuffle by default when manually deflating;
 Support CF <tt>climatology</tt> attribute;
 Output chunking defaults to <tt>rew/all</tt> on netCDF3 input;
 Unchunking plays nicely with <tt>shuffle</tt>;
-<tt>ncra</tt> supports weights with </tt>--wgt</tt>;
+<tt>ncra</tt> weights with </tt>--wgt 1,2,3</tt>;
 <tt>ncks</tt> suggests <tt>-C</tt> with <tt>-x -v crd</tt>;
 <tt>ncwa</tt> modifies <tt>coordinates</tt> attribute;</li>
-<li><b>NCO 4.4.8</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.4.8</b>:
 Precision-Preserving Compression with <tt>--ppc</tt>;
 Arithmetic operators <tt>-y mabs/mebs/mibs</tt></li>
 <li><b>NCO 4.4.7</b>:
@@ -827,7 +830,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.4.8</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.4.9</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/natty/nco">Ubuntu NCO</a> homepages.
@@ -835,12 +838,12 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/czender/nco/tree/master/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.4.8-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_4.4.8-1_amd64.deb">nco_4.4.8-1_amd64.deb</a> (<!--#fsize file="src/nco_4.4.8-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.4.8-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.4.8-1.dsc">nco_4.4.8-1.dsc</a> (<!--#fsize file="src/nco_4.4.8-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.4.8-1.dsc"-->)</li>
-<li><a href="src/nco_4.4.8-1_amd64.changes">nco_4.4.8-1_amd64.changes</a> (<!--#fsize file="src/nco_4.4.8-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.4.8-1_amd64.changes"-->)</li>
-<li><a href="src/nco_4.4.8.orig.tar.gz">nco_4.4.8.orig.tar.gz</a> (<!--#fsize file="src/nco_4.4.8.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.4.8.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.4.8-1.diff.gz">nco_4.4.8-1.diff.gz</a> (<!--#fsize file="src/nco_4.4.8-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.4.8-1_amd64.changes"-->)</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.4.9-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_4.4.9-1_amd64.deb">nco_4.4.9-1_amd64.deb</a> (<!--#fsize file="src/nco_4.4.9-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.4.9-1_amd64.deb"-->)</li>
+<li><a href="src/nco_4.4.9-1.dsc">nco_4.4.9-1.dsc</a> (<!--#fsize file="src/nco_4.4.9-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.4.9-1.dsc"-->)</li>
+<li><a href="src/nco_4.4.9-1_amd64.changes">nco_4.4.9-1_amd64.changes</a> (<!--#fsize file="src/nco_4.4.9-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.4.9-1_amd64.changes"-->)</li>
+<li><a href="src/nco_4.4.9.orig.tar.gz">nco_4.4.9.orig.tar.gz</a> (<!--#fsize file="src/nco_4.4.9.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.4.9.orig.tar.gz"-->)</li>
+<li><a href="src/nco_4.4.9-1.diff.gz">nco_4.4.9-1.diff.gz</a> (<!--#fsize file="src/nco_4.4.9-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.4.9-1_amd64.changes"-->)</li>
 Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -887,10 +890,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # Mac OS X 10.10 (Yosemite) systems (aerosol):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin/MACOSX;tar cvzf ${DATA}/nco-4.4.8.macosx.10.10.tar.gz nc*;scp ${DATA}/nco-4.4.8.macosx.10.10.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin/MACOSX;tar cvzf ${DATA}/nco-4.4.9.macosx.10.10.tar.gz nc*;scp ${DATA}/nco-4.4.9.macosx.10.10.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.4.8.macosx.10.10.tar.gz">nco-4.4.8.macosx.10.10.tar.gz</a> (<!--#fsize file="src/nco-4.4.8.macosx.10.10.tar.gz"-->): Executables MacOSX 10.10-compatible (last updated <!--#flastmod file="src/nco-4.4.8.macosx.10.10.tar.gz"-->). 
+<li><a href="src/nco-4.4.9.macosx.10.10.tar.gz">nco-4.4.9.macosx.10.10.tar.gz</a> (<!--#fsize file="src/nco-4.4.9.macosx.10.10.tar.gz"-->): Executables MacOSX 10.10-compatible (last updated <!--#flastmod file="src/nco-4.4.9.macosx.10.10.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
@@ -913,7 +916,7 @@ To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.8.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.4.9.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.4.5.win32.cygwin.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 <li><a href="src/nco-4.4.8.windows.mvs.exe">nco-4.4.8.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.4.8.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.4.8.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
@@ -1080,11 +1083,11 @@ site.</li>
 The simplest way to acquire the source is to download the compressed tarball:
 <ul>
 <li>
-<!-- scp ${DATA}/nco-4.4.8.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
-<a href="src/nco-4.4.8.tar.gz">nco-4.4.8.tar.gz</a> 
-(<!--#fsize file="src/nco-4.4.8.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.4.8.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.4.8.tar.gz"--> 
+<!-- scp ${DATA}/nco-4.4.9.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
+<a href="src/nco-4.4.9.tar.gz">nco-4.4.9.tar.gz</a> 
+(<!--#fsize file="src/nco-4.4.9.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.4.9.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.4.9.tar.gz"--> 
 </li>
 </ul>
 
@@ -1103,17 +1106,17 @@ You may retrieve any NCO distribution you wish from
 <a href="https://help.github.com">GitHub</a>. 
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
-then checks out NCO version <tt>4.4.8</tt>:
-<p><tt>git clone https://github.com/czender/nco.git;cd nco;git checkout -b nco-4.4.8</tt></p>
+then checks out NCO version <tt>4.4.9</tt>:
+<p><tt>git clone https://github.com/czender/nco.git;cd nco;git checkout -b nco-4.4.9</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>git clone https://github.com/czender/nco.git ~/nco</tt></p>
 Track changes to the development version using
 <p><tt>cd ~/nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4.4.8</tt>) and the development version is that the
+(e.g., <tt>nco-4.4.9</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.4.8</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.4.9</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1237,7 +1240,7 @@ Users should instead first download and install the Antlr found <a href="http://
 <tt>
 <dt>wget http://dust.ess.uci.edu/nco/nco.tar.gz</dt>
 <dt>tar xvzf nco.tar.gz</dt>
-<dt>cd nco-4.4.8</dt>
+<dt>cd nco-4.4.9</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>
