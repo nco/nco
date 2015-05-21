@@ -1,8 +1,8 @@
 nco (4.4.9-1) unstable; urgency=low
 
-  * new upstream version (fxm)
+  * new upstream version (git, -x warn, crd att, cnk nco lfp, shuffle on, MM3->MM4 off, ncecat fix, climatology, ncra wgt)
 
- -- Charlie Zender <zender@uci.edu>  Mon, 09 Mar 2014 12:25:06 -0700
+ -- Charlie Zender <zender@uci.edu>  Thu, 21 Mar 2014 12:25:07 -0700
 
 nco (4.4.8-1) unstable; urgency=low
 

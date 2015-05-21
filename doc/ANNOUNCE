@@ -14,11 +14,9 @@ The chunking defaults and flexibility have reached a new level
 of robustness in this release. 
 
 The main new awesome feature is that ncra understands weights.
-Finally. Recently became aware of how clunky applying uneven
-weights to different input files used to be. Wish more people
-had spoken up earlier, since this was not hard to implement.
-This release is dedicated to those who figured out how with the
-old NCO to generate climatologies that require uneven weights.
+Finally. Applying uneven weights to different input files was
+too clunky. This release is dedicated to the intrepid souls who
+use NCO to generate climatologies that require uneven weights. 
 This release should make that task much easier.
 
 Work on NCO 4.5.0 has commenced and will support regridding, 
@@ -92,7 +90,7 @@ E. ncra now accepts user-specified weights with the -w switch.
    of seasonal statistics, and of accurate averages of quantities
    sampled with a dynamically changing timestep.
    ncra -w 31,31,28 dec.nc jan.nc feb.nc out.nc 
-   ncra -w delta_t in1.nc in2.nc in3.nc out.nc 
+   ncra -w delta_tm in1.nc in2.nc in3.nc out.nc 
    http://nco.sf.net/nco.html#ncra
 
 BUG FIXES:
