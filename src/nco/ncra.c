@@ -42,6 +42,7 @@
    ncra -O -C -d time,0,5,4,2 -v time -p ~/nco/data in.nc ~/foo.nc
    ncra -O -C --mro -d time,0,5,4,2 -v time -p ~/nco/data in.nc ~/foo.nc
    ncra -O -w 1,2,3 -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
+   ncra -O -w one_dmn_rec_var -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    
    scp ~/nco/src/nco/ncra.c esmf.ess.uci.edu:nco/src/nco
    
@@ -194,6 +195,7 @@ main(int argc,char **argv)
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int grp_out_id;    /* [ID] Group ID (output) */
   int idx=int_CEWI;
+  int idx_wgt; /* [idx] Index of weight variable in processed variable list */
   int idx_rec=0; /* [idx] Index that iterates over number of record dimensions */
   int in_id;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -216,6 +218,8 @@ main(int argc,char **argv)
   int var_out_id; /* [ID] Variable ID (output) */
   int wgt_nbr=0; 
   int xtr_nbr=0; /* xtr_nbr won't otherwise be set for -c with no -v */
+
+  lmt_sct **lmt_rec=NULL; /* [lst] (ncra) Record dimensions */
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
   long *idx_rec_out=NULL; /* [idx] Index of current record in output file (0 is first, ...) */
@@ -258,6 +262,8 @@ main(int argc,char **argv)
   nco_bool flg_skp1; /* [flg] Current record is not dimension of this variable */
   nco_bool flg_skp2; /* [flg] Current record is not dimension of this variable */
 
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
+
   nco_int base_time_srt=nco_int_CEWI;
   nco_int base_time_crr=nco_int_CEWI;
 
@@ -272,20 +278,17 @@ main(int argc,char **argv)
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
+  trv_sct *var_trv;        /* [sct] Variable GTT object */
+
+  trv_tbl_sct *trv_tbl;    /* [lst] Traversal table */
+
   var_sct **var;
   var_sct **var_fix;
   var_sct **var_fix_out;
   var_sct **var_out=NULL_CEWI;
   var_sct **var_prc;
   var_sct **var_prc_out;
-
-  trv_sct *var_trv;        /* [sct] Variable GTT object */
-
-  trv_tbl_sct *trv_tbl;    /* [lst] Traversal table */
-
-  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
-
-  lmt_sct **lmt_rec=NULL; /* [lst] (ncra) Record dimensions */
+  var_sct *wgt_var;
 
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
@@ -852,7 +855,15 @@ main(int argc,char **argv)
     } /* end if */
   } /* end loop over idx */
 
-  /* Timestamp end of metadata setup and disk layout */
+  if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
+    for(idx=0;idx<nbr_var_prc;idx++)
+      if(!strcmp(wgt_nm,var_prc[idx]->nm))
+	idx_wgt=idx;
+    wgt_var=nco_var_dpl(var_prc[idx_wgt]);
+    assert(wgt_var->nbr_dim < 2);
+  } /* !wgt_nm */
+
+/* Timestamp end of metadata setup and disk layout */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_rgl;
 
@@ -889,6 +900,13 @@ main(int argc,char **argv)
         (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
       } /* end loop over variables */
     } /* ! ncge */
+
+    if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
+      /* Get variable ID in this file */
+      trv_sct *trv=trv_tbl_var_nm_fll(wgt_var->nm_fll,trv_tbl);
+      (void)nco_inq_grp_full_ncid(in_id,trv->grp_nm_fll,&grp_id);
+      (void)nco_var_mtd_refresh(grp_id,wgt_var);
+    } /* !wgt_nm */
 
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
 
@@ -960,6 +978,10 @@ main(int argc,char **argv)
           if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
           /* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
           if(rec_rmn_prv_ssc == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
+
+	  /* Retrieve this record of weight variable */
+	  if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs))
+	    (void)nco_msa_var_get_rec_trv(in_id,wgt_var,lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
 
           /* Process all variables in current record */
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
@@ -1035,16 +1057,21 @@ main(int argc,char **argv)
 
 		/* Apply per-file weight, if any, to current record */
 		if((wgt_arr || wgt_nm) && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs) && !var_prc[idx]->is_crd_var){
-		  if(wgt_arr) assert(wgt_nbr == fl_nbr);
-		  wgt.type=NC_DOUBLE;
-		  wgt.val.d=wgt_arr[fl_idx];
+		  if(wgt_arr){
+		    assert(wgt_nbr == fl_nbr);
+		    wgt.type=NC_DOUBLE;
+		    wgt.val.d=wgt_arr[fl_idx];
+		  } /* !wgt_arr */
+		  if(wgt_nm){
+		    if(wgt_var->nbr_dim == 0) wgt.val.d=wgt_var->val.dp[0]; else wgt.val.d=wgt_var->val.dp[idx_rec_crr_in];
+		    wgt.type=wgt_var->type;
+		  } /* !wgt_nm */
 		  nco_scv_cnf_typ(var_prc[idx]->type,&wgt);
 		  (void)nco_var_scv_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,&wgt);
 		} /* !wgt */
-
-                /* Perform arithmetic operations: avg, min, max, ttl, ... */
-                if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,var_prc[idx],var_prc_out[idx]); else nco_opr_drv((long)1L,nco_op_typ,var_prc[idx],var_prc_out[idx]);
-              } /* end else */ 
+		/* Perform arithmetic operations: avg, min, max, ttl, ... */
+		if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,var_prc[idx],var_prc_out[idx]); else nco_opr_drv((long)1L,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+	      } /* end else */ 
             } /* end if ncra */
 
             /* All processed variables contain record dimension and both ncrcat and ncra write records singly */
@@ -1094,22 +1121,22 @@ main(int argc,char **argv)
 	       2. In nco_opr_nrm() below, use mss_val from var_prc_out not var_prc
 	       Problem is var_prc[idx]->mss_val is typ_upk while var_prc_out is type, so normalization
 	       sets missing var_prc_out value to var_prc[idx]->mss_val read as type */
-	    if(False){
-	      /* Normalize output by mean of in situ weight, if any
-		 Perfectly well defined as long as MRO not invoked with --wgt 
-		 Leave code here to show the way to final implementation */
-	      if((wgt_arr || wgt_nm) && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
-		wgt_nrm.type=NC_DOUBLE;
-		wgt_nrm.val.d=wgt_avg;
-		for(idx=0;idx<nbr_var_prc;idx++){
-		  if(var_prc_out[idx]->is_crd_var || var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING) continue;
-		  nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_nrm);
-		  (void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_nrm);
-		} /* end loop over var */
-	      } /* !wgt */
-	    } /* !False */
             (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,lmt_rec[idx_rec]->nm_fll,trv_tbl);
             FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
+
+	    if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
+	      /* Normalize by mean of per-record weight, if any
+		 Perfectly well defined as long as MRO not invoked with --wgt 
+		 Leave code here to show the way to final implementation
+		 Same logic must be applied after file loop for nces, and for ncra with superfluous trailing files */
+	      wgt_nrm.type=NC_DOUBLE;
+	      wgt_nrm.val.d=var_prc_out[idx_wgt]->val.dp[0];
+	      for(idx=0;idx<nbr_var_prc;idx++){
+		if(var_prc_out[idx]->is_crd_var || var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING) continue;
+		nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_nrm);
+		(void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_nrm);
+	      } /* end loop over var */
+	    } /* !wgt_nm */
 
             /* Copy averages to output file */
             for(idx=0;idx<nbr_var_prc;idx++){
@@ -1442,6 +1469,7 @@ main(int argc,char **argv)
     if(in_id_arr) in_id_arr=(int *)nco_free(in_id_arr);
     if(wgt_arr) wgt_arr=(double *)nco_free(wgt_arr);
     if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
+    if(wgt_var) wgt_var=(var_sct *)nco_var_free(wgt_var);
     /* Free lists of strings */
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);

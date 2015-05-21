@@ -1,3 +1,7 @@
+2015-05-20  Charlie Zender  <zender@uci.edu>
+
+	* Implement main logic for --wgt wgt_nm per-record weighting
+
 2015-05-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.9 release procedure:

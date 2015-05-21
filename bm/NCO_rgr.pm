@@ -4631,7 +4631,7 @@ if(0){
     $dsc_sng="Chunking -a /time --cnk_dmn /time,1 -v time";
     $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a /time --cnk_dmn /time,1 -v time $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'time: type'";
-    $tst_cmd[2]="time: type NC_DOUBLE, 0 dimensions, 5 attributes, compressed? no, chunked? no, packed? no";
+    $tst_cmd[2]="time: type NC_DOUBLE, 0 dimensions, 6 attributes, compressed? no, chunked? no, packed? no";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
