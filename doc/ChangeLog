@@ -1,8 +1,10 @@
 2015-05-20  Charlie Zender  <zender@uci.edu>
 
-	* Debugging wgt_nm logic. wgt_arr_scl still works fine.
+	* Allow wgt_nm to not be in extraction list
 
 	* Implement main logic for --wgt wgt_nm per-record weighting
+
+	* Per-file weighting with --wgt wgt_arr works fine
 
 2015-05-19  Charlie Zender  <zender@uci.edu>
 

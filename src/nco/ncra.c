@@ -1480,9 +1480,6 @@ main(int argc,char **argv)
     if(in_id_arr) in_id_arr=(int *)nco_free(in_id_arr);
     if(wgt_arr) wgt_arr=(double *)nco_free(wgt_arr);
     if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
-    if(wgt) wgt=(var_sct *)nco_var_free(wgt);
-    if(wgt_out) wgt_out=(var_sct *)nco_var_free(wgt_out);
-    if(wgt_avg) wgt_avg=(var_sct *)nco_var_free(wgt_avg);
     /* Free lists of strings */
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
@@ -1507,6 +1504,9 @@ main(int argc,char **argv)
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
+    //    if(wgt) wgt=(var_sct *)nco_var_free(wgt);
+    //    if(wgt_out) wgt_out=(var_sct *)nco_var_free(wgt_out);
+    //    if(wgt_avg) wgt_avg=(var_sct *)nco_var_free(wgt_avg);
 
     (void)trv_tbl_free(trv_tbl);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
