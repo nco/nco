@@ -13,6 +13,9 @@ header {
     #include <ctype.h>
 	#include <stdlib.h>
     #include <math.h>
+#ifdef HAVE_STRINGS_H
+    #include <strings.h> /* strcasecmp() */
+#endif /* !HAVE_STRINGS_H */
     #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
     #endif // C++ compilers that do not allow stdint.h
