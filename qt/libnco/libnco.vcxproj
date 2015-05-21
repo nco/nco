@@ -146,8 +146,10 @@
     <ClCompile Include="..\..\src\nco\nco_netcdf.c" />
     <ClCompile Include="..\..\src\nco\nco_omp.c" />
     <ClCompile Include="..\..\src\nco\nco_pck.c" />
+    <ClCompile Include="..\..\src\nco\nco_ppc.c" />
     <ClCompile Include="..\..\src\nco\nco_prn.c" />
     <ClCompile Include="..\..\src\nco\nco_rec_var.c" />
+    <ClCompile Include="..\..\src\nco\nco_rgr.c" />
     <ClCompile Include="..\..\src\nco\nco_rth_flt.c" />
     <ClCompile Include="..\..\src\nco\nco_rth_utl.c" />
     <ClCompile Include="..\..\src\nco\nco_scl_utl.c" />
@@ -191,8 +193,10 @@
     <ClInclude Include="..\..\src\nco\nco_netcdf.h" />
     <ClInclude Include="..\..\src\nco\nco_omp.h" />
     <ClInclude Include="..\..\src\nco\nco_pck.h" />
+    <ClInclude Include="..\..\src\nco\nco_ppc.h" />
     <ClInclude Include="..\..\src\nco\nco_prn.h" />
     <ClInclude Include="..\..\src\nco\nco_rec_var.h" />
+    <ClInclude Include="..\..\src\nco\nco_rgr.h" />
     <ClInclude Include="..\..\src\nco\nco_rth_flt.h" />
     <ClInclude Include="..\..\src\nco\nco_rth_utl.h" />
     <ClInclude Include="..\..\src\nco\nco_scl_utl.h" />
