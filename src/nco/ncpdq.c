@@ -663,7 +663,7 @@ main(int argc,char **argv)
   /* Create list of dimensions to average(ncwa)/re-order(ncpdq) */
   if(IS_REORDER) (void)nco_dmn_avg_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr_in,flg_dmn_prc_usr_spc,False,trv_tbl,&dmn_rdr,&dmn_rdr_nbr);
 
-  /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
+  /* Fill-in variable structure list for all extracted variables */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
   /* Duplicate to output array */

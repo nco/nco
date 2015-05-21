@@ -853,7 +853,10 @@ variables:
 	one_dmn_rec_var:long_name = "one dimensional record variable";
 	one_dmn_rec_var:coordinates = "time";
 	one_dmn_rec_var:units = "kelvin";
-        
+
+	double one_dmn_rec_wgt(time);
+	one_dmn_rec_wgt:long_name = "one dimensional record variable weight";
+	
 	int one_dmn_rec_var_mdn(time);
 	one_dmn_rec_var_mdn:long_name = "one dimensional record variable to test median";
         
@@ -1291,6 +1294,7 @@ data:
 	non_nul_trm_char_two_dmn="abcd","efgh","ijkm";
 	one=1.;
 	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
+	one_dmn_rec_wgt=2,1,0,0,0,0,0,0,0,0;
 	one_dmn_rec_var_unsorted=10,4,6,2,8,1,9,7,3,5;
 	one_dmn_rec_var_flt=1,2,3,4,5,6,7,8,9,10;
 	one_dmn_rec_var_flt_mss=_,2,3,4,5,6,7,8,9,_;

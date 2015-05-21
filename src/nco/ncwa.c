@@ -712,7 +712,7 @@ main(int argc,char **argv)
   /* Transfer degenerated dimensions information into GTT  */
   (void)nco_dmn_dgn_tbl(dmn_out,nbr_dmn_out,trv_tbl);
 
-  /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
+  /* Fill-in variable structure list for all extracted variables */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
   /* Duplicate to output array */
@@ -950,8 +950,7 @@ main(int argc,char **argv)
         wgt_out=nco_var_cnf_dmn(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
         if(DO_CONFORM_WGT){
           wgt_out=nco_var_cnf_typ(var_prc[idx]->type,wgt_out);
-          /* Weight after any initial non-linear operation so, e.g., variable is squared but not weights */
-          /* Weight variable by taking product of weight and variable */
+          /* Weight variable after any initial non-linear operation so, e.g., variable (not weights) is squared */
           (void)nco_var_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
         } /* end if weights conformed */
       } /* end if weight was specified and then tested for conformance */
@@ -961,11 +960,11 @@ main(int argc,char **argv)
       /* Reduce variable over specified dimensions (tally array is set here)
 	 NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling
 	 nco_var_avg() will perform nco_op_typ on all variables except coordinate variables
-	 nco_var_avg() always performs averaging on coordinate variables */
+	 nco_var_avg() always averages coordinate variables */
       var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,flg_rdd,&ddra_info);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	 Denominator is also tricky due to sundry normalization options
-	 These logical switches are VERY tricky---be careful modifying them */
+	 These logical switches are tricky---modify them with care */
       if(NRM_BY_DNM && DO_CONFORM_WGT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
         /* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
 	   averaging operation and may be re-used on next variable.
