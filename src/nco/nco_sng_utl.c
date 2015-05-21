@@ -16,7 +16,11 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
  const char * const sng_2) /* I [sng] Second string */
 {
   /* NB: Written by CSZ for clarity and type-safety, not speed nor POSIX conformance
-     POSIX may require conversion to unsigned char before comparison */
+     POSIX may require conversion to unsigned char before comparison
+     StackOverflow:
+     strcasecmp(0 is not a C or C++ standard. It is defined by POSIX.1-2001 and 4.4BSD.
+     Assuming your system is POSIX or BSD compliant, you must #include <strings.h> */
+
   /* Copy of (const) input strings */
   char *sng_1_c;
   char *sng_2_c;
@@ -596,6 +600,41 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing decimal point and preceding exponen
 
   return;
 } /* end sng_trm_trl_zro() */
+
+kvm_sct /* O [sct] Key-value pair */
+nco_sng2kvm /* [fnc] Parse string into key-value pair */
+(char *sng, /* I [sng] String to parse, including "=" */
+ kvm_sct kvm) /* O [sct] Key-value pair */
+{
+  /* Purpose: Convert string separated by single delimiter into two strings
+     Routine converts argument "--ppc key1,key2,...,keyN=val" into kvm.key="key1,key2,...keyN" and kvm.val=val
+     e.g., routine converts argument "--ppc one,two=3" into kvm.key="one,two" and kvm.val=3 */
+  char *tkn_sng;
+  const char dlm[]="="; /* [sng] Delimiter */
+  
+  int arg_idx=0; /* [nbr] */
+
+  /* NB: Replace strtok() by strsep()? strtok() does not handle consecutive delimiters well */
+  tkn_sng=strtok(sng,dlm);
+  while(tkn_sng){
+    arg_idx++;
+    /* fxm: Whitespace-stripping may be unnecessary */
+    nco_sng_strip(tkn_sng);
+    switch(arg_idx){
+    case 1:
+      kvm.key=strdup(tkn_sng);
+      break;
+    case 2:
+      kvm.val=strdup(tkn_sng);
+      break;
+    default:
+      (void)fprintf(stderr,"nco_sng2kvm() cannot get key-value pair from input: %s\n",sng);
+      break;
+    }/* end switch */
+    tkn_sng=strtok(NULL,dlm);
+  }/* end while */
+  return kvm;
+} /* end nco_sng2kvm() */
 
 char * /* O [sng] Stripped-string */
 nco_sng_strip /* [fnc] Strip leading and trailing white space */
