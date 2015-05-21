@@ -635,8 +635,7 @@ main(int argc,char **argv)
     case 'w': /* Per-file and per-record weights */
       if(isalpha(optarg[0])){
 	wgt_nm=(char *)strdup(optarg);
-	(void)fprintf(stderr,"%s: ERROR The \"-w weight_name\" feature was disabled due to a bug discovered at the last minute before release of 4.4.9. In order to make the new feature that ARE ready available sooner, the \"-w weight_name\" feature will be delayed until 4.5.0. If you are interested in knowing when the \"-w weight_name\" feature is working in beta code, start a thread on SourceForge where I will post updates.\n",nco_prg_nm);
-	nco_exit(EXIT_FAILURE);
+	(void)fprintf(stderr,"%s: WARNING The \"-w weight_name\" feature is still buggy and this switch is enabled only for developers\n",nco_prg_nm);
       }else{ /* !wgt_nm */
 	optarg_lcl=(char *)strdup(optarg);
 	wgt_lst_in=nco_lst_prs_2D(optarg_lcl,",",&wgt_nbr);

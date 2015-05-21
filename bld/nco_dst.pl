@@ -7,18 +7,18 @@
 # Export tagged, public versions
 # /usr/bin/scp ${DATA}/nco-4.4.4.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_4_9 # Build, do not release on SF
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --sf nco-4_4_9 # Build, release on SF
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-4_4_9 # Install, do not build
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-4_4_9 # Build and install
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-4_4_9
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-4_4_9
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-4_4_9
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-4_4_9
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-4_4_9
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-4_4_9
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-4_4_9
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-4_4_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_5_0 # Build, do not release on SF
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --sf nco-4_5_0 # Build, release on SF
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-4_5_0 # Install, do not build
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-4_5_0 # Build and install
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-4_5_0
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-4_5_0
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-4_5_0
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-4_5_0
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-4_5_0
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-4_5_0
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-4_5_0
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-4_5_0
 
 # Export daily snapshot
 # ${HOME}/nco/bld/nco_dst.pl --dbg=2 
@@ -256,7 +256,7 @@ if($bld){
 # Set up FTP server
     chdir $dst_pth_pfx or die "$prg_nm: ERROR unable to chdir to $dst_pth_pfx: $!\n"; # $! is system error string
     cmd_prc("$cp_cmd $doc_fl ./$dst_vrs/doc"); # Copy derived documentation to source directory
-    cmd_prc("$tar_cmd cvzf $dst_fl --exclude='nco-4.4.9/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude=ncap_yacc.[ch] ./$dst_vrs"); # Create gzipped tarfile
+    cmd_prc("$tar_cmd cvzf $dst_fl --exclude='nco-4.5.0/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude=ncap_yacc.[ch] ./$dst_vrs"); # Create gzipped tarfile
     cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/src/$dst_fl"); # Remove any distribution with same name
     if($dly_snp){cmd_prc("$rsh_cmd $www_mch $rm_cmd -r $www_drc/src/nco-????????.tar.gz");} # Remove previous daily snapshots from WWW server
     cmd_prc("$rcp_cmd $dst_fl $www_mch:$www_drc/src"); # Copy local tarfile to WWW server

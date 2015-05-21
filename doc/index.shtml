@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.4.9 last updated on <!--#flastmod file="VERSION"-->
+Current NCO version is 4.5.0 last updated on <!--#flastmod file="VERSION"-->
 </h2>
 
 <table border=0 width=100%>
@@ -150,7 +150,7 @@ and
 
 <ul>
 <li>2015 Jun&nbsp;??: 4.5.0 (<i>In progress</i>)
-<li>2015 May&nbsp;21: 4.4.9 (<tt>ncra</tt> weights)
+<li>2015 May&nbsp;21: 4.5.0 (<tt>ncra</tt> weights)
 <li>2015 Feb&nbsp;16: 4.4.8 (Precision-preserving Compression)
 <li>2014 Dec&nbsp;15: DOE ACME <a href="#prp_acme">project</a> commences</li>
 <li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
@@ -658,7 +658,7 @@ Stable releases receive unique tags and their tarballs are stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
 <a href="https://github.com/czender/nco/releases">here</a> at GitHub.
 You may also retrieve the source of tagged versions directly
-<a name="#Source">with <tt>git clone -b "nco-4.4.9" http://github.com/czender/nco.git nco-4.4.9</tt></a>.
+<a name="#Source">with <tt>git clone -b "nco-4.5.0" http://github.com/czender/nco.git nco-4.5.0</tt></a>.
 <ul>
 <li><b>NCO 4.5.1</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
