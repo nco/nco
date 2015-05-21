@@ -2,7 +2,7 @@
 #define INC_ncoLexer_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (20141120): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
+/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
 #include <antlr/CommonToken.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>
@@ -24,9 +24,6 @@
     #include <ctype.h>
 	#include <stdlib.h>
     #include <math.h>
-#ifdef HAVE_STRINGS_H
-    #include <strings.h> /* strcasecmp() */
-#endif /* !HAVE_STRINGS_H */
     #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
     #endif // C++ compilers that do not allow stdint.h
@@ -53,10 +50,10 @@
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
-#line 57 "ncoLexer.hpp"
+#line 54 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 339 "ncoGrammer.g"
+#line 336 "ncoGrammer.g"
 
 private:
     prs_cls *prs_arg;
@@ -85,7 +82,7 @@ public:
 		}
 		// else ANTLR_USE_NAMESPACE(std)cout << "Hit EOF of main file" << ANTLR_USE_NAMESPACE(std)endl;
 	}
-#line 61 "ncoLexer.hpp"
+#line 58 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:

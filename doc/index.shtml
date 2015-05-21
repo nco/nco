@@ -1166,8 +1166,14 @@ install the prerequisites:
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations).
 If possible, install this software stack from pre-built binaries 
 (commands to do so on Debian and RPM systems are given just below).
-Failing that (e.g., lack of root access, or systems without packages
-such as AIX), build these all with the same compiler and switches. 
+ANTLR binaries from major distributions are pre-built with the source
+patch necessary to allow NCO to link to ANTLR.
+If you must build the source stack yourself (e.g., due to lack of root
+access, or systems without packages such as AIX), build all libraries
+with the same compiler and switches.
+The ANTLR distributions must be built with the source file
+<tt>CharScanner.hpp</tt> patched to include this line:
+<tt>#include <cstring></tt> or else <tt>ncap2</tt> will not compile.
 Recent versions of netCDF automatically build OPeNDAP and UDUnits.
 NCO is mostly written in&nbsp;C99, and although you <i>may</i> mix and
 match compilers, this is often difficult in practice and is not recommended.

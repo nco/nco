@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.7 (20141120): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -22,9 +22,6 @@
     #include <ctype.h>
 	#include <stdlib.h>
     #include <math.h>
-#ifdef HAVE_STRINGS_H
-    #include <strings.h> /* strcasecmp() */
-#endif /* !HAVE_STRINGS_H */
     #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
     #endif // C++ compilers that do not allow stdint.h
@@ -51,10 +48,10 @@
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
-#line 55 "ncoTree.hpp"
+#line 52 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 639 "ncoGrammer.g"
+#line 636 "ncoGrammer.g"
 
 
 private:
@@ -389,7 +386,7 @@ RefAST nco_dupList(RefAST tr){
       */ 
       return otr; 
      }
-#line 59 "ncoTree.hpp"
+#line 56 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
