@@ -923,7 +923,6 @@ FC := ${LINUX_FC}
 LD := ld
 LDFLAGS += ${OTHER_LDFLAGS} -lm
 ifeq (${PVM_ARCH},MACOSX)
- CPPFLAGS += -DHAVE_STRINGS_H
  LDFLAGS += -lresolv
 endif # endif MACOSX
 LEX := flex
