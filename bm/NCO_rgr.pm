@@ -4012,7 +4012,7 @@ if(0){
 # ncra -O -D 6 -w 28,29,30 -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
 # ncks -C -H -s '%g, ' -v two_dmn_rec_var ~/foo.nc
     $dsc_sng="Test per-file weighting with --wgt";
-    $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -w 28,29,30 -n 3,4,1 $in_pth_arg h0001.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -w 28,29,30 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g, ' -v two_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="1, 2.45, 3,";
     $tst_cmd[3]="SS_OK";   
