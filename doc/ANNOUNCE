@@ -5,13 +5,25 @@ The netCDF Operators NCO version 4.4.9 are ready.
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release combines small feature improvements in chunking,
+This release includes small feature improvements in chunking,
 deflation, and attribute handling during dimension reduction.
 Also improvements in clarity and consistency of messages.
+While chunking is an esoteric feature for many, its importance
+is increasing as the move to netCDF4 (classic) continues.
+The chunking defaults and flexibility have reached a new level
+of robustness in this release. 
+
+The main new awesome feature is that ncra understands weights.
+Finally. Recently became aware of how clunky applying uneven
+weights to different input files used to be. Wish more people
+had spoken up earlier, since this was not hard to implement.
+This release is dedicated to those who figured out how with the
+old NCO to generate climatologies that require uneven weights.
+This release should make that task much easier.
 
 Work on NCO 4.5.0 has commenced and will support regridding, 
-authorization for datasets behind firewalls like ESGF, and
-easier builds on supercomputer systems that use modules.
+additional ncra flexibility with weights, and easier builds on
+supercomputer systems that use modules. 
 
 Enjoy,
 Charlie
