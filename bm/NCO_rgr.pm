@@ -4012,7 +4012,7 @@ if(0){
 # ncra -O -D 6 -w 28,29,30 -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
 # ncks -C -H -s '%g, ' -v two_dmn_rec_var ~/foo.nc
     $dsc_sng="Test per-file weighting with --wgt";
-    $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -w 28,29,30 -n 3,4,1 $in_pth_arg h0001.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -w 28,29,30 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g, ' -v two_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="1, 2.45, 3,";
     $tst_cmd[3]="SS_OK";   
@@ -4819,7 +4819,7 @@ if(0){
 #ncrename -O -a /g1/lon@units,new_units ~/nco/data/in_grp.nc ~/foo.nc 
 #ncks -v /g1/lon ~/foo.nc | grep 'new_units'
 
-    $dsc_sng="Attributes: Absolute rename '/g1/lon\@units' to 'new_units'";
+    $dsc_sng="Attributes: Absolute rename '/g1/lon\@units' to 'new_units' (failure OK with netCDF < 4.3.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g g1 %tmp_fl_00% | grep 'new_units'";
     $tst_cmd[2]="lon attribute 0: new_units, size = 12 NC_CHAR, value = degrees_east";
@@ -4831,7 +4831,7 @@ if(0){
 #ncrename -D 1 -O -a /g1/lon@units,/g1/lon@new_units ~/nco/data/in_grp.nc ~/foo.nc 
 #absolute rename /g1/lon@units att to /g1/lon@new_units
 
-    $dsc_sng="Attributes: Absolute rename '/g1/lon\@units' to '/g1/lon\@new_units'";
+    $dsc_sng="Attributes: Absolute rename '/g1/lon\@units' to '/g1/lon\@new_units' (failure OK with netCDF < 4.3.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@units,/g1/lon\@new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g g1 %tmp_fl_00% | grep 'new_units'";
     $tst_cmd[2]="lon attribute 0: new_units, size = 12 NC_CHAR, value = degrees_east";
@@ -4843,7 +4843,7 @@ if(0){
 #ncrename -O -a /g1/lon@.units,new_units ~/nco/data/in_grp.nc ~/foo.nc 
 # optional absolute rename /g1/lon@.units att to new_units
 
-    $dsc_sng="Attributes: Optional absolute rename '/g1/lon\@.units' to '/g1/lon\@new_units'";
+    $dsc_sng="Attributes: Optional absolute rename '/g1/lon\@.units' to '/g1/lon\@new_units' (failure OK with netCDF < 4.3.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@.units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g g1 %tmp_fl_00% | grep 'new_units'";
     $tst_cmd[2]="lon attribute 0: new_units, size = 12 NC_CHAR, value = degrees_east";
