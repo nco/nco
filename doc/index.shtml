@@ -1114,7 +1114,7 @@ development version of NCO into a local directory named <tt>nco</tt>:
 Track changes to the development version using
 <p><tt>cd ~/nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4.4.9</tt>) and the development version is that the
+(e.g., <tt>4.4.9</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
 <tt>4.4.9</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).

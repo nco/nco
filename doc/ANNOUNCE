@@ -103,7 +103,7 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.5.0 built/tested with netCDF
-   4.3.3-rc3 (20150129) on top of HDF5 hdf5-1.8.13 with:
+   4.3.3.1 (20150522) on top of HDF5 hdf5-1.8.13 with:
 
    cd ~/nco;./configure # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism

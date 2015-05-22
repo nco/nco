@@ -89,11 +89,13 @@ extern "C" {
   
   int /* O [enm] Return code */
   nco_rgr_map /* [fnc] Regrid using external weights */
-  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
+  (rgr_sct * const rgr_nfo, /* I/O [sct] Regridding structure */
+   trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal Table */
 
   int /* O [enm] Return code */
   nco_rgr_ctl /* [fnc] Control regridding logic */
-  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
+  (rgr_sct * const rgr_nfo, /* I/O [sct] Regridding structure */
+   trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal Table */
 
   int /* O [enm] Return code */
   nco_rgr_ini /* [fnc] Initialize regridding structure */
