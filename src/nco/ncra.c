@@ -635,9 +635,9 @@ main(int argc,char **argv)
     case 'w': /* Per-file and per-record weights */
       if(isalpha(optarg[0])){
 	wgt_nm=(char *)strdup(optarg);
-	//	(void)fprintf(stderr,"%s: WARNING The \"-w weight_name\" feature is still buggy and this switch is intended only for developers\n",nco_prg_nm);
-	(void)fprintf(stderr,"%s: WARNING The \"-w weight_name\" feature is still buggy and this option is intended only for developers. The \"-w weight_array\" option works fine, e.g., \"-w 31,31,28\". If you are very interested in the weight_name functionality, start a thread on SourceForge and we will update the status of that option there.\n",nco_prg_nm);
-        nco_exit(EXIT_FAILURE);
+	(void)fprintf(stderr,"%s: WARNING The \"-w weight_name\" feature is still buggy and this switch is intended only for developers\n",nco_prg_nm);
+	//	(void)fprintf(stderr,"%s: WARNING The \"-w weight_name\" feature is still buggy and this option is intended only for developers. The \"-w weight_array\" option works fine, e.g., \"-w 31,31,28\". If you are very interested in the weight_name functionality, start a thread on SourceForge and we will update the status of that option there.\n",nco_prg_nm);
+        // nco_exit(EXIT_FAILURE);
       }else{ /* !wgt_nm */
 	optarg_lcl=(char *)strdup(optarg);
 	wgt_lst_in=nco_lst_prs_2D(optarg_lcl,",",&wgt_nbr);

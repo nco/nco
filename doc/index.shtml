@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.5.0 last updated on <!--#flastmod file="VERSION"-->
+Current NCO version is 4.4.9 last updated on <!--#flastmod file="VERSION"-->
 </h2>
 
 <table border=0 width=100%>
@@ -150,7 +150,7 @@ and
 
 <ul>
 <li>2015 Jun&nbsp;??: 4.5.0 (<i>In progress</i>)
-<li>2015 May&nbsp;21: 4.5.0 (<tt>ncra</tt> weights)
+<li>2015 May&nbsp;21: 4.4.9 (<tt>ncra</tt> weights)
 <li>2015 Feb&nbsp;16: 4.4.8 (Precision-preserving Compression)
 <li>2014 Dec&nbsp;15: DOE ACME <a href="#prp_acme">project</a> commences</li>
 <li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
@@ -658,7 +658,7 @@ Stable releases receive unique tags and their tarballs are stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
 <a href="https://github.com/czender/nco/releases">here</a> at GitHub.
 You may also retrieve the source of tagged versions directly
-<a name="#Source">with <tt>git clone -b "nco-4.5.0" http://github.com/czender/nco.git nco-4.5.0</tt></a>.
+<a name="#Source">with <tt>git clone -b 4.4.9 http://github.com/czender/nco.git nco-4.4.9</tt></a>.
 <ul>
 <li><b>NCO 4.5.1</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
@@ -1107,7 +1107,7 @@ You may retrieve any NCO distribution you wish from
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
 then checks out NCO version <tt>4.4.9</tt>:
-<p><tt>git clone https://github.com/czender/nco.git;cd nco;git checkout -b nco-4.4.9</tt></p>
+<p><tt>git clone https://github.com/czender/nco.git;cd nco;git checkout -b 4.4.9</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>git clone https://github.com/czender/nco.git ~/nco</tt></p>
@@ -1244,8 +1244,8 @@ Users should instead first download and install the Antlr found <a href="http://
   then build the latest stable NCO and install it in,
   e.g., <tt>/usr/local</tt> with: 
 <tt>
-<dt>wget http://dust.ess.uci.edu/nco/nco.tar.gz</dt>
-<dt>tar xvzf nco.tar.gz</dt>
+<dt>wget https://github.com/czender/nco/archive/4.4.9.tar.gz</dt>
+<dt>tar xvzf 4.4.9.tar.gz</dt>
 <dt>cd nco-4.4.9</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>

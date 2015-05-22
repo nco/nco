@@ -6,14 +6,14 @@
 	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
 	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
 
-	* Undo crippling of ncra --wgt wgt_nm for further debugging
+	* Bump to 4.5.0-alpha1. Undo crippling of ncra --wgt wgt_nm for further debugging
 
 	* NCO 4.4.9 release procedure:
  	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco lfp, shuffle on, MM3->MM4 off, ncecat fix, climatology, ncra wgt
 	cd ~/nco;git commit -a -m "Version 4.4.9 release: "
 	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
 	git tag -d 4.4.9;git push origin :refs/tags/4.4.9
-	git tag -a 4.4.9 -m 'Version 4.4.9: ';git push --tags
+	git tag -a 4.4.9 -m 'Version 4.4.9: Final Release';git push --tags
 
 	* Cripple ncra. Re-tag. Re-release with new tag format so GitHub tarball naming conventions work.
 
