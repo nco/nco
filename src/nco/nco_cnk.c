@@ -131,7 +131,7 @@ nco_dfl_case_cnk_plc_err(void) /* [fnc] Print error and exit for illegal switch(
 } /* end nco_dfl_case_cnk_plc_err() */
 
 int /* [rcd] Return code */
-nco_cnk_ini /* [fnc] Create structure with all chunking information */
+nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const fl_out, /* I [sng] Output filename */
  CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg), /* I [sng] List of user-specified chunksizes */
@@ -143,7 +143,7 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
  cnk_sct * const cnk) /* O [sct] Chunking structure */
 {
-  /* Purpose: Create structure with all chunking information */
+  /* Purpose: Initialize chunking from user-specified inputs */
   int rcd=0; /* [enm] Return code  */
 
   size_t fl_sys_blk_sz=0UL; /* [nbr] File system blocksize for I/O */

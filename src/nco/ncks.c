@@ -942,7 +942,7 @@ main(int argc,char **argv)
       rcd=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,&rgr_nfo);
       rgr_nfo.fl_out_tmp=nco_fl_out_open(rgr_nfo.fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_nfo.out_id);
       /* Regrid fields */
-      rcd=nco_rgr_ctl(&rgr_nfo);
+      rcd=nco_rgr_ctl(&rgr_nfo,trv_tbl);
       /* Change from NCO_NOERR to NC_NOERR */
       rcd=NC_NOERR;
     } /* endif !flg_rgr */
@@ -956,7 +956,7 @@ main(int argc,char **argv)
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
     
-    /* Create structure with all chunking information */
+    /* Initialize chunking from user-specified inputs */
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
     /* Define extracted groups, variables, and attributes in output file */

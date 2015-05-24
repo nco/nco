@@ -658,7 +658,7 @@ Stable releases receive unique tags and their tarballs are stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
 <a href="https://github.com/czender/nco/releases">here</a> at GitHub.
 You may also retrieve the source of tagged versions directly
-<a name="#Source">with <tt>git clone -b "nco-4.4.9" http://github.com/czender/nco.git nco-4.4.9</tt></a>.
+<a name="#Source">with <tt>git clone -b 4.4.9 http://github.com/czender/nco.git nco-4.4.9</tt></a>.
 <ul>
 <li><b>NCO 4.5.1</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
@@ -919,7 +919,7 @@ To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.4.9.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.4.5.win32.cygwin.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.4.8.windows.mvs.exe">nco-4.4.8.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.4.8.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.4.8.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+<li><a href="src/nco-4.4.9.windows.mvs.exe">nco-4.4.9.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.4.9.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.4.9.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
@@ -1107,14 +1107,14 @@ You may retrieve any NCO distribution you wish from
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
 then checks out NCO version <tt>4.4.9</tt>:
-<p><tt>git clone https://github.com/czender/nco.git;cd nco;git checkout -b nco-4.4.9</tt></p>
+<p><tt>git clone https://github.com/czender/nco.git;cd nco;git checkout -b 4.4.9</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>git clone https://github.com/czender/nco.git ~/nco</tt></p>
 Track changes to the development version using
 <p><tt>cd ~/nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4.4.9</tt>) and the development version is that the
+(e.g., <tt>4.4.9</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
 <tt>4.4.9</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
@@ -1244,8 +1244,8 @@ Users should instead first download and install the Antlr found <a href="http://
   then build the latest stable NCO and install it in,
   e.g., <tt>/usr/local</tt> with: 
 <tt>
-<dt>wget http://dust.ess.uci.edu/nco/nco.tar.gz</dt>
-<dt>tar xvzf nco.tar.gz</dt>
+<dt>wget https://github.com/czender/nco/archive/4.4.9.tar.gz</dt>
+<dt>tar xvzf 4.4.9.tar.gz</dt>
 <dt>cd nco-4.4.9</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>

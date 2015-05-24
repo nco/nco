@@ -1,3 +1,24 @@
+2015-05-22  Charlie Zender  <zender@uci.edu>
+
+	* Output destination grid and coordinate metadata looks good in nco_rgr_map()
+
+	* NCO 4.5.0 release procedure:
+ 	Changes since nco-4.4.9: fxm
+	cd ~/nco;git commit -a -m "Version 4.5.0 release: "
+	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
+	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
+
+	* Bump to 4.5.0-alpha1. Undo crippling of ncra --wgt wgt_nm for further debugging
+
+	* NCO 4.4.9 release procedure:
+ 	Changes since nco-4.4.8: git, -x warn, crd att, cnk nco lfp, shuffle on, MM3->MM4 off, ncecat fix, climatology, ncra wgt
+	cd ~/nco;git commit -a -m "Version 4.4.9 release: "
+	git tag -d nco-4.4.9;git push origin :refs/tags/nco-4.4.9
+	git tag -d 4.4.9;git push origin :refs/tags/4.4.9
+	git tag -a 4.4.9 -m 'Version 4.4.9: Final Release';git push --tags
+
+	* Cripple ncra. Re-tag. Re-release with new tag format so GitHub tarball naming conventions work.
+
 2015-05-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.9 release procedure:

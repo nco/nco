@@ -652,7 +652,7 @@ main(int argc,char **argv)
     (void)nco_redef(out_id);
   } /* Existing file */
   
-  /* Create structure with all chunking information */
+  /* Initialize chunking from user-specified inputs */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Copy global attributes */

@@ -635,8 +635,9 @@ main(int argc,char **argv)
     case 'w': /* Per-file and per-record weights */
       if(isalpha(optarg[0])){
 	wgt_nm=(char *)strdup(optarg);
-	(void)fprintf(stderr,"%s: ERROR The \"-w weight_name\" feature was disabled due to a bug discovered at the last minute before release of 4.4.9. In order to make the new feature that ARE ready available sooner, the \"-w weight_name\" feature will be delayed until 4.5.0. If you are interested in knowing when the \"-w weight_name\" feature is working in beta code, start a thread on SourceForge where I will post updates.\n",nco_prg_nm);
-	nco_exit(EXIT_FAILURE);
+	(void)fprintf(stderr,"%s: WARNING The \"-w weight_name\" feature is still buggy and this switch is intended only for developers\n",nco_prg_nm);
+	//	(void)fprintf(stderr,"%s: WARNING The \"-w weight_name\" feature is still buggy and this option is intended only for developers. The \"-w weight_array\" option works fine, e.g., \"-w 31,31,28\". If you are very interested in the weight_name functionality, start a thread on SourceForge and we will update the status of that option there.\n",nco_prg_nm);
+        // nco_exit(EXIT_FAILURE);
       }else{ /* !wgt_nm */
 	optarg_lcl=(char *)strdup(optarg);
 	wgt_lst_in=nco_lst_prs_2D(optarg_lcl,",",&wgt_nbr);
@@ -783,7 +784,7 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-  /* Create structure with all chunking information */
+  /* Initialize chunking from user-specified inputs */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
