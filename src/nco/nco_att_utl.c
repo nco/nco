@@ -1468,7 +1468,7 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
 
   /* Insert thread number into value */
   att_val.cp=vrs_sng;
-  /* Initialize nco_openmp_thread_number attribute edit structure */
+  /* Initialize NCO version attribute edit structure */
   vrs_sng_aed.att_nm=att_nm;
   vrs_sng_aed.var_nm=NULL;
   vrs_sng_aed.id=NC_GLOBAL;

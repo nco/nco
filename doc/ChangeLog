@@ -1,3 +1,11 @@
+2015-05-24  Charlie Zender  <zender@uci.edu>
+
+	* Complete grid metadata for output file
+
+	* Add equi-angle latitude weights (also named "gw") to nco_rgr_map()
+
+	* Add nco_vrs_att_cat() to all operators (was only in ncks, ncbo)
+
 2015-05-22  Charlie Zender  <zender@uci.edu>
 
 	* Output destination grid and coordinate metadata looks good in nco_rgr_map()

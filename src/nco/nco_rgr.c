@@ -381,17 +381,17 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   switch(nco_rgr_mpf_typ){
     /* Obtain fields whose name depends on mapfile type */
   case nco_rgr_mpf_SCRIP:
-    rcd+=nco_inq_varid(in_id,"dst_grid_center_lon",&dst_grd_ctr_lon_id);
-    rcd+=nco_inq_varid(in_id,"dst_grid_center_lat",&dst_grd_ctr_lat_id);
-    rcd+=nco_inq_varid(in_id,"dst_grid_corner_lon",&dst_grd_crn_lon_id);
-    rcd+=nco_inq_varid(in_id,"dst_grid_corner_lat",&dst_grd_crn_lat_id);
+    rcd+=nco_inq_varid(in_id,"dst_grid_center_lon",&dst_grd_ctr_lon_id); /* ESMF: xc_b */
+    rcd+=nco_inq_varid(in_id,"dst_grid_center_lat",&dst_grd_ctr_lat_id); /* ESMF: yc_b */
+    rcd+=nco_inq_varid(in_id,"dst_grid_corner_lon",&dst_grd_crn_lon_id); /* ESMF: xv_b */
+    rcd+=nco_inq_varid(in_id,"dst_grid_corner_lat",&dst_grd_crn_lat_id); /* ESMF: yv_b */
     rcd+=nco_inq_varid(in_id,"remap_matrix",&wgt_raw_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
   break;
   case nco_rgr_mpf_ESMF:
-    rcd+=nco_inq_varid(in_id,"xc_b",&dst_grd_ctr_lon_id);
-    rcd+=nco_inq_varid(in_id,"yc_b",&dst_grd_ctr_lat_id);
-    rcd+=nco_inq_varid(in_id,"xv_b",&dst_grd_crn_lon_id);
-    rcd+=nco_inq_varid(in_id,"yv_b",&dst_grd_crn_lat_id);
+    rcd+=nco_inq_varid(in_id,"xc_b",&dst_grd_ctr_lon_id); /* SCRIP: dst_grid_center_lon */
+    rcd+=nco_inq_varid(in_id,"yc_b",&dst_grd_ctr_lat_id); /* SCRIP: dst_grid_center_lat */
+    rcd+=nco_inq_varid(in_id,"xv_b",&dst_grd_crn_lon_id); /* SCRIP: dst_grid_corner_lon */
+    rcd+=nco_inq_varid(in_id,"yv_b",&dst_grd_crn_lat_id); /* SCRIP: dst_grid_corner_lat */
     rcd+=nco_inq_varid(in_id,"S",&wgt_raw_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
     break;
   default:
@@ -407,6 +407,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   long idx; /* [idx] Counting index for unrolled grids */
   double *lon_ctr_out; /* [dgr] Longitude centers of rectangular destination grid */
   double *lat_ctr_out; /* [dgr] Latitude  centers of rectangular destination grid */
+  double *lat_wgt_out; /* [dgr] Latitude  weights of rectangular destination grid */
   double *lon_crn_out; /* [dgr] Longitude corners of rectangular destination grid */
   double *lat_crn_out; /* [dgr] Latitude  corners of rectangular destination grid */
   double *lon_ntf_out; /* [dgr] Longitude interfaces of rectangular destination grid */
@@ -433,6 +434,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nc_type crd_typ_out=NC_DOUBLE;
   lon_ctr_out=(double *)nco_malloc(lon_nbr_out*nco_typ_lng(crd_typ_out));
   lat_ctr_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
+  lat_wgt_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
   lon_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lon_nbr_out*nco_typ_lng(crd_typ_out));
   lat_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lat_nbr_out*nco_typ_lng(crd_typ_out));
   lon_ntf_out=(double *)nco_malloc((lon_nbr_out+1L)*nco_typ_lng(crd_typ_out));
@@ -494,11 +496,19 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     lat_bnd_out[idx]=lat_ntf_out[idx];
     lat_bnd_out[lat_nbr_out+idx]=lat_ntf_out[idx+1];
   } /* end loop over latitude */
+  /* WIN32 math.h does not define M_PI */
+#ifndef M_PI
+# define M_PI		3.14159265358979323846
+#endif /* M_PI */
+  const float dgr2rdn=M_PI/180.0;
+  for(idx=0;idx<lat_nbr_out;idx++){
+    lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[lat_nbr_out+idx])-sin(dgr2rdn*lat_bnd_out[idx]);
+  } /* end loop over latitude */
   
   if(nco_dbg_lvl_get() >= nco_dbg_vec){
     (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
-    for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stderr,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[idx],lon_ctr_out[idx],lon_bnd_out[lon_nbr_out+idx]);
-    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stderr,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[idx],lat_ctr_out[idx],lat_bnd_out[lat_nbr_out+idx]);
+    for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[idx],lon_ctr_out[idx],lon_bnd_out[lon_nbr_out+idx]);
+    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[idx],lat_ctr_out[idx],lat_bnd_out[lat_nbr_out+idx]);
   } /* endif dbg */
 
   /* Obtain remap matrix (i.e., weights) from map file */
@@ -518,9 +528,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   
   int dmn_id_lat; /* [id] Dimension ID */
   int dmn_id_lon; /* [id] Dimension ID */
-  int dmn_id_vrt; /* [id] Dimension ID */
+  int dmn_id_bnd; /* [id] Dimension ID */
   int lon_out_id; /* [id] Variable ID for longitude */
   int lat_out_id; /* [id] Variable ID for latitude */
+  int lat_wgt_id; /* [id] Variable ID for latitude weight */
   int lon_bnd_id; /* [id] Variable ID for lon_bnds */
   int lat_bnd_id; /* [id] Variable ID for lat_bnds */
   int dmn_ids_out[2]; /* [id] Dimension IDs array for output variable */
@@ -532,26 +543,55 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Define new dimensions in regridded file */
   aed_sct aed_mtd;
   char *att_nm;
+  char bnd_nm_out[]="nbnd"; /* NB: CESM uses nbnd for time bounds. Non-rectangular grids will have nbnd for time, and nv != nbnd for spatial bounds. */
   char lat_nm_out[]="lat";
   char lon_nm_out[]="lon";
+  char lat_wgt_nm[]="gw";
   char lat_bnd_nm[]="lat_bnds";
   char lon_bnd_nm[]="lon_bnds";
   rcd+=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
   rcd+=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
-  rcd+=nco_def_dim(out_id,"nv",(int)2,&dmn_id_vrt);
+  rcd+=nco_def_dim(out_id,bnd_nm_out,(int)2,&dmn_id_bnd);
   /* Define new coordinates in regridded file */
   (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,(int)1,&dmn_id_lon,&lon_out_id);
   (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,(int)1,&dmn_id_lat,&lat_out_id);
+  (void)nco_def_var(out_id,lat_wgt_nm,crd_typ_out,(int)1,&dmn_id_lat,&lat_wgt_id);
   dmn_ids_out[0]=dmn_id_lat;
-  dmn_ids_out[1]=dmn_id_vrt;
+  dmn_ids_out[1]=dmn_id_bnd;
   (void)nco_def_var(out_id,lat_bnd_nm,crd_typ_out,(int)2,dmn_ids_out,&lat_bnd_id);
   dmn_ids_out[0]=dmn_id_lon;
-  dmn_ids_out[1]=dmn_id_vrt;
+  dmn_ids_out[1]=dmn_id_bnd;
   (void)nco_def_var(out_id,lon_bnd_nm,crd_typ_out,(int)2,dmn_ids_out,&lon_bnd_id);
 
   /* Add metadata */
+  att_nm=strdup("long_name");
+  att_val=strdup("latitude");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lat_nm_out;
+  aed_mtd.id=lat_out_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lat_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
   att_nm=strdup("standard_name");
   att_val=strdup("latitude");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lat_nm_out;
+  aed_mtd.id=lat_out_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lat_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("units");
+  att_val=strdup("degrees_north");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lat_nm_out;
   aed_mtd.id=lat_out_id;
@@ -576,6 +616,58 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
+  att_nm=strdup("long_name");
+  att_val=strdup("gridcell latitude interfaces");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lat_bnd_nm;
+  aed_mtd.id=lat_bnd_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lat_bnd_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("long_name");
+  att_val=strdup("longitude");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lon_nm_out;
+  aed_mtd.id=lon_out_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lon_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("standard_name");
+  att_val=strdup("longitude");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lon_nm_out;
+  aed_mtd.id=lon_out_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lon_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("units");
+  att_val=strdup("degrees_east");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lon_nm_out;
+  aed_mtd.id=lon_out_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lon_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
   att_nm=strdup("bounds");
   att_val=strdup("lon_bnds");
   aed_mtd.att_nm=att_nm;
@@ -589,15 +681,70 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
+  att_nm=strdup("long_name");
+  att_val=strdup("gridcell longitude interfaces");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lon_bnd_nm;
+  aed_mtd.id=lon_bnd_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lon_bnd_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("long_name");
+  att_val=strdup("Equi-angle latitude weights normalized to sum to 2.0");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lat_wgt_nm;
+  aed_mtd.id=lat_wgt_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lat_wgt_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("mapping_file");
+  att_val=strdup(fl_in);
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=NULL;
+  aed_mtd.id=NC_GLOBAL;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("source_file");
+  att_val=strdup(rgr_nfo->fl_in);
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=NULL;
+  aed_mtd.id=NC_GLOBAL;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
   /* Begin data mode */
   (void)nco_enddef(out_id);
 
-  dmn_srt_out[crd_idx_c_0bs_lat_dst]=0L;
-  dmn_cnt_out[crd_idx_c_0bs_lat_dst]=lat_nbr_out;
+  dmn_srt_out[0]=0L;
+  dmn_cnt_out[0]=lat_nbr_out;
   (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_out,lat_ctr_out,crd_typ_out);
-  dmn_srt_out[crd_idx_c_0bs_lon_dst]=0L;
-  dmn_cnt_out[crd_idx_c_0bs_lon_dst]=lon_nbr_out;
+  dmn_srt_out[0]=0L;
+  dmn_cnt_out[0]=lon_nbr_out;
   (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_out,lon_ctr_out,crd_typ_out);
+  dmn_srt_out[0]=0L;
+  dmn_cnt_out[0]=lat_nbr_out;
+  (void)nco_put_vara(out_id,lat_wgt_id,dmn_srt_out,dmn_cnt_out,lat_wgt_out,crd_typ_out);
   dmn_srt_out[0]=dmn_srt_out[1]=0L;
   dmn_cnt_out[0]=lat_nbr_out;
   dmn_cnt_out[1]=2;
@@ -625,6 +772,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(dmn_sz) dmn_sz=(int *)nco_free(dmn_sz);
   if(lon_ctr_out) lon_ctr_out=(double *)nco_free(lon_ctr_out);
   if(lat_ctr_out) lat_ctr_out=(double *)nco_free(lat_ctr_out);
+  if(lat_wgt_out) lat_wgt_out=(double *)nco_free(lat_wgt_out);
   if(lon_crn_out) lon_crn_out=(double *)nco_free(lon_crn_out);
   if(lat_crn_out) lat_crn_out=(double *)nco_free(lat_crn_out);
   if(lon_ntf_out) lon_ntf_out=(double *)nco_free(lon_ntf_out);
