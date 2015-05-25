@@ -246,7 +246,6 @@ main(int argc,char **argv)
   int var_ntm_fl;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
 
-  /* DYW */
   kvm_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
@@ -368,6 +367,7 @@ main(int argc,char **argv)
       {"rgr_grd_src",required_argument,0,0}, /* [sng] File containing input grid */
       {"rgr_grd_dst",required_argument,0,0}, /* [sng] File containing destination grid */
       {"rgr_map",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
+      {"map_file",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
       {"rgr_var",required_argument,0,0}, /* I [sng] Variable for special regridding treatment */
       {"scrip",required_argument,0,0}, /* SCRIP file */
       {"tst_udunits",required_argument,0,0},
@@ -591,7 +591,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"rgr_out")) rgr_out=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_grd_src")) rgr_grd_src=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_grd_dst")) rgr_grd_dst=(char *)strdup(optarg);
-      if(!strcmp(opt_crr,"rgr_map")) rgr_map=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"rgr_map") || !strcmp(opt_crr,"map_file")){
+        flg_rgr=True;
+	rgr_map=(char *)strdup(optarg);
+      } /* endif rgr_map */
       if(!strcmp(opt_crr,"rgr_var")) rgr_var=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
         (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nRegridding\t\t--rgr...\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
@@ -939,6 +942,8 @@ main(int argc,char **argv)
       rgr_sct rgr_nfo;
       /* Initialize regridding structure */
       rgr_in=(char *)strdup(fl_in);
+      if(rgr_out) rgr_out=(char *)nco_free(rgr_out);
+      rgr_out=(char *)strdup(fl_out);
       rcd=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,&rgr_nfo);
       rgr_nfo.fl_out_tmp=nco_fl_out_open(rgr_nfo.fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_nfo.out_id);
       /* Regrid fields */
@@ -947,59 +952,63 @@ main(int argc,char **argv)
       rcd=NC_NOERR;
     } /* endif !flg_rgr */
 
-    /* Initialize, decode, and set PPC information */
-    if(ppc_nbr > 0) nco_ppc_ini(in_id,&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);
-
-    /* Verify output file format supports requested actions */
-    (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
-
-    /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+    if(!flg_rgr){
+      
+      /* Initialize, decode, and set PPC information */
+      if(ppc_nbr > 0) nco_ppc_ini(in_id,&dfl_lvl,fl_out_fmt,ppc_arg,ppc_nbr,trv_tbl);
+      
+      /* Verify output file format supports requested actions */
+      (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
+      
+      /* Open output file */
+      fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
     
-    /* Initialize chunking from user-specified inputs */
-    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
+      /* Initialize chunking from user-specified inputs */
+      if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
-    /* Define extracted groups, variables, and attributes in output file */
-    (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
+      /* Define extracted groups, variables, and attributes in output file */
+      (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
 
-    /* Catenate time-stamped command line to "history" global attribute */
-    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-    if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
+      /* Catenate time-stamped command line to "history" global attribute */
+      if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+      if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
 #ifdef ENABLE_MPI
-    if(prc_rnk == rnk_mgr)
-      if(prc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,prc_nbr);
+      if(prc_rnk == rnk_mgr)
+	if(prc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,prc_nbr);
 #endif /* !ENABLE_MPI */
+      
+      /* Turn off default filling behavior to enhance efficiency */
+      nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+      
+      /* Take output file out of define mode */
+      if(hdr_pad == 0UL){
+	(void)nco_enddef(out_id);
+      }else{
+	(void)nco__enddef(out_id,hdr_pad);
+	if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
+      } /* hdr_pad */
 
-    /* Turn off default filling behavior to enhance efficiency */
-    nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+      /* [fnc] Open unformatted binary data file for writing */
+      if(fl_bnr) fp_bnr=nco_bnr_open(fl_bnr);
+      
+      /* Timestamp end of metadata setup and disk layout */
+      rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+      ddra_info.tmr_flg=nco_tmr_rgl;
+      /* Write extracted data to output file */
+      if(PRN_VAR_DATA) (void)nco_xtr_wrt(in_id,out_id,gpe,fp_bnr,md5,HAVE_LIMITS,trv_tbl);
+      
+      /* [fnc] Close unformatted binary data file */
+      if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
+      
+      if(nco_dbg_lvl_get() == 14){
+	(void)nco_wrt_trv_tbl(in_id,trv_tbl,True);
+	(void)nco_wrt_trv_tbl(out_id,trv_tbl,True);
+      } /* endif dbg */
 
-    /* Take output file out of define mode */
-    if(hdr_pad == 0UL){
-      (void)nco_enddef(out_id);
-    }else{
-      (void)nco__enddef(out_id,hdr_pad);
-      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
-    } /* hdr_pad */
-
-    /* [fnc] Open unformatted binary data file for writing */
-    if(fl_bnr) fp_bnr=nco_bnr_open(fl_bnr);
-
-    /* Timestamp end of metadata setup and disk layout */
-    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-    ddra_info.tmr_flg=nco_tmr_rgl;
-    /* Write extracted data to output file */
-    if(PRN_VAR_DATA) (void)nco_xtr_wrt(in_id,out_id,gpe,fp_bnr,md5,HAVE_LIMITS,trv_tbl);
-
-    /* [fnc] Close unformatted binary data file */
-    if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
-
-    if(nco_dbg_lvl_get() == 14){
-      (void)nco_wrt_trv_tbl(in_id,trv_tbl,True);
-      (void)nco_wrt_trv_tbl(out_id,trv_tbl,True);
-    } /* endif dbg */
-
-    /* Close output file and move it from temporary to permanent location */
-    (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+      /* Close output file and move it from temporary to permanent location */
+      (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+    
+    } /* flg_rgr */
     
   }else{ /* !fl_out */
 
@@ -1147,7 +1156,6 @@ close_and_free:
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
-    /* DYW */
     if(fl_scrip){
       fl_scrip=(char *)nco_free(fl_scrip);
       idx=0;

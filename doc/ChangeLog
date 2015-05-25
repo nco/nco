@@ -1,5 +1,9 @@
 2015-05-25  Charlie Zender  <zender@uci.edu>
 
+	* Re-plumb I/O to regrid straight to fl_out (ignore --rgr_out)
+
+	* Add NCO version to global metadata of regridding
+
 	* Exempt /lat and /lon from regridding
 
 	* Regridding appears to work for 2D variables! Yay!
