@@ -1,5 +1,7 @@
 2015-05-25  Charlie Zender  <zender@uci.edu>
 
+	* Skip date_written and time_written variables when regridding
+
 	* Document (sort of) --map, --rgr_map
 
 	* Re-plumb I/O to regrid straight to fl_out (ignore --rgr_out)

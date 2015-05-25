@@ -555,6 +555,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
     if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/lon")) break;
   if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
+  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/date_written")) break;
+  if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
+  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/time_written")) break;
+  if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
   
   int dmn_idx; /* [idx] Dimension index */
   int dmn_nbr; /* [nbr] Number of dimensions */
