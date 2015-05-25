@@ -9396,7 +9396,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
       } /* Loop group members */
     } /* Loop ensembles */
 
-  } else if(flg_grp_1 == False) {
+  }else if(flg_grp_1 == False){
 
   } /* ! flg_grp_1 */
 
@@ -9481,7 +9481,6 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
             if(skp_trv) (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);
 
           } /* List of fixed templates  */
-
 
           /* Loop list of variables from other file */
           for(int idx_var_2=0;idx_var_2<var_lst->nbr;idx_var_2++){

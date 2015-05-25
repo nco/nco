@@ -1174,16 +1174,16 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
           /* Is dimension allowed in output file? */
           for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
             /* All I can say about this line, is...Yikes! 
-            No, really, it indicates poor program design
-            fxm: TODO nco374: have ncwa re-arrange output metadata prior to nco_var_dfn()
-            Then delete this branch and use straightforward branch of code */
+	       No, really, it indicates poor program design
+	       fxm: TODO nco374: have ncwa re-arrange output metadata prior to nco_var_dfn()
+	       Then delete this branch and use straightforward branch of code */
             if(var[idx]->xrf->dim[dmn_idx]->id == dmn_ncl[idx_ncl]->xrf->id){
               break;
-            }
+            } /* endif */
           } /* end loop over idx_ncl */
           if(idx_ncl != nbr_dmn_ncl){
             dmn_id_vec[dmn_nbr++]=var[idx]->dim[dmn_idx]->id;
-          }
+          } /* endif */
         } /* end loop over dmn_idx */
       }else{ /* ...operator does not change variable rank so handle normally... */
         /* More straightforward definition used by operators besides ncwa */
@@ -1195,9 +1195,9 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
       if(nco_dbg_lvl_get() > 3 && nco_prg_id != ncwa){
         /* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
-        contains _wrong name_ when variables will be averaged.
-        ncwa does contain write name information now if retain_degenerate_dimensions 
-        option is in effect, but this is the exception rather than the rule. */
+	   contains _wrong name_ when variables will be averaged.
+	   ncwa does contain write name information now if retain_degenerate_dimensions 
+	   option is in effect, but this is the exception rather than the rule. */
         (void)fprintf(stdout,"%s: DEBUG %s about to define variable %s with %d dimension%s%s",nco_prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
         for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
           (void)fprintf(stdout,"%s (%d,%s)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,"unknown",(dmn_idx < dmn_nbr-1) ? ", " : "");
@@ -1238,9 +1238,9 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
       if(nco_dbg_lvl_get() > 3 && nco_prg_id != ncwa){
         /* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
-        contains _wrong name_ when variables will be averaged.
-        ncwa does contain write name information now if retain_degenerate_dimensions 
-        option is in effect, but this is the exception rather than the rule. */
+	   contains _wrong name_ when variables will be averaged.
+	   ncwa does contain write name information now if retain_degenerate_dimensions 
+	   option is in effect, but this is the exception rather than the rule. */
         (void)fprintf(stdout,"%s: DEBUG %s defined variable %s with %d dimension%s%s",nco_prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
         for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
           (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");
@@ -1256,43 +1256,43 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     } /* end if variable is already in output file */
 
     /* Copy all attributes except in cases where packing/unpacking is involved
-    0. Variable is unpacked on input, unpacked on output
-    --> Copy all attributes
-    1. Variable is packed on input, is not altered, and remains packed on output
-    --> Copy all attributes
-    2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
-    --> Copy all attributes except scale_factor and add_offset
-    3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
-    --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
-    4. Variable is not packed on input, packing is performed, and output is packed
-    --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
+       0. Variable is unpacked on input, unpacked on output
+       --> Copy all attributes
+       1. Variable is packed on input, is not altered, and remains packed on output
+       --> Copy all attributes
+       2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
+       --> Copy all attributes except scale_factor and add_offset
+       3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
+       --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
+       4. Variable is not packed on input, packing is performed, and output is packed
+       --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
 
     /* Do not copy packing attributes "scale_factor" and "add_offset" 
-    if variable is packed in input file and unpacked in output file 
-    Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
-    Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
+       if variable is packed in input file and unpacked in output file 
+       Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
+       Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
     /* Copy exising packing attributes, if any, unless... */
     if(nco_is_rth_opr(nco_prg_id) && /* ...operator is arithmetic... */
-      nco_prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
-      !var[idx]->is_fix_var && /* ...and variable is processed (not fixed)... */
-      var[idx]->xrf->pck_dsk) /* ...and variable is packed in input file... */
+       nco_prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
+       !var[idx]->is_fix_var && /* ...and variable is processed (not fixed)... */
+       var[idx]->xrf->pck_dsk) /* ...and variable is packed in input file... */
       PCK_ATT_CPY=False;
-
+    
     /* Do not copy packing attributes when unpacking variables 
-    ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
+       ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
     if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
       PCK_ATT_CPY=False;
-
+    
     /* Recall that:
-    var      refers to output variable structure
-    var->xrf refers to input  variable structure 
-    ncpdq may pre-define packing attributes below regardless of PCK_ATT_CPY */ 
+       var      refers to output variable structure
+       var->xrf refers to input  variable structure 
+       ncpdq may pre-define packing attributes below regardless of PCK_ATT_CPY */ 
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
 
     /* Create dummy packing attributes for ncpdq if necessary 
-    Must apply nearly same logic at end of ncpdq when writing final attributes
-    Recall ncap calls ncap_var_write() to define newly packed LHS variables 
-    If variable is not fixed (e.g., coordinate variables)...*/
+       Must apply nearly same logic at end of ncpdq when writing final attributes
+       Recall ncap calls ncap_var_write() to define newly packed LHS variables 
+       If variable is not fixed (e.g., coordinate variables)...*/
     if(!var[idx]->is_fix_var){
       /* ...and operator will attempt to pack some variables... */
       if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){ 
@@ -1300,30 +1300,30 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
         if(nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)){
           /* ...and operator will pack this particular variable... */
           if(
-            /* ...either because operator newly packs all variables... */
-            (nco_pck_plc == nco_pck_plc_all_new_att) ||
-            /* ...or because operator newly packs un-packed variables like this one... */
-            (nco_pck_plc == nco_pck_plc_all_xst_att && !var[idx]->pck_ram) ||
-            /* ...or because operator re-packs packed variables like this one... */
-            (nco_pck_plc == nco_pck_plc_xst_new_att && var[idx]->pck_ram)
-            ){
-
-              /* ...then add/overwrite dummy scale_factor and add_offset attributes
-              Overwrite these with correct values once known
-              Adding dummy attributes of maximum possible size (NC_DOUBLE) now 
-              reduces likelihood that netCDF layer will impose file copy 
-              penalties when final attribute values are written later
-              Either add_offset or scale_factor may be removed in nco_pck_val() 
-              if nco_var_pck() packing algorithm did not require utilizing it */ 
-              const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
-              const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-              val_unn zero_unn; /* [frc] Generic container for value 0.0 */
-              var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
-              zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
-              zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
-              (void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
-              (void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
-              zero_var=(var_sct *)nco_var_free(zero_var);
+	     /* ...either because operator newly packs all variables... */
+	     (nco_pck_plc == nco_pck_plc_all_new_att) ||
+	     /* ...or because operator newly packs un-packed variables like this one... */
+	     (nco_pck_plc == nco_pck_plc_all_xst_att && !var[idx]->pck_ram) ||
+	     /* ...or because operator re-packs packed variables like this one... */
+	     (nco_pck_plc == nco_pck_plc_xst_new_att && var[idx]->pck_ram)
+	     ){
+	    
+	    /* ...then add/overwrite dummy scale_factor and add_offset attributes
+	       Overwrite these with correct values once known
+	       Adding dummy attributes of maximum possible size (NC_DOUBLE) now 
+	       reduces likelihood that netCDF layer will impose file copy 
+	       penalties when final attribute values are written later
+	       Either add_offset or scale_factor may be removed in nco_pck_val() 
+	       if nco_var_pck() packing algorithm did not require utilizing it */ 
+	    const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+	    const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+	    val_unn zero_unn; /* [frc] Generic container for value 0.0 */
+	    var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
+	    zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
+	    zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
+	    (void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
+	    (void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
+	    zero_var=(var_sct *)nco_var_free(zero_var);
           } /* endif this variable will be packed or re-packed */
         } /* !nco_pck_plc_alw */
       } /* endif nco_pck_plc involves packing */
@@ -1345,7 +1345,7 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
   int idx;
   int dmn_idx;
   long srd_prd=1L; /* [nbr] Product of strides */
-
+  
   for(idx=0;idx<nbr_var;idx++){
     var[idx]->xrf->val.vp=var[idx]->val.vp=(void *)nco_malloc(var[idx]->sz*nco_typ_lng(var[idx]->type));
     if(var[idx]->nbr_dim == 0){
@@ -1353,10 +1353,10 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
       nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->val.vp,var[idx]->type);
     }else{ /* end if variable is scalar */
       if(var[idx]->sz > 0){ /* Do nothing for zero-size record variables */
-
+	
         /* Is stride > 1? */
         for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++) srd_prd*=var[idx]->srd[dmn_idx];
-
+	
         if(srd_prd == 1L){ 
           nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
           nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);

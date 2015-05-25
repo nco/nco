@@ -1,5 +1,7 @@
 2015-05-24  Charlie Zender  <zender@uci.edu>
 
+	* Define fixed-variables in regridded file
+
 	* Set new flg_rgr for input variables that contain "ncol" dimension
 
 	* Complete grid metadata for output file
