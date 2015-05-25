@@ -949,8 +949,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
 
 	lvl_nbr=1;
-	val_out_fst=0L;
-	for(dmn_idx=0;dmn_idx<dmn_nbr_in-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
+	for(dmn_idx=0;dmn_idx<dmn_nbr_out-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
 
 	/* Apply weights */
 	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
@@ -960,9 +959,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  val_in_fst=0L;
 	  val_out_fst=0L;
 	  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-	    val_in_fst+=grd_sz_in*lvl_idx;
-	    val_out_fst+=grd_sz_out*lvl_idx;
+	    //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
 	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
+	    val_in_fst+=grd_sz_in;
+	    val_out_fst+=grd_sz_out;
 	  } /* end loop over lvl */
 	} /* lvl_nbr > 1 */
 	  
