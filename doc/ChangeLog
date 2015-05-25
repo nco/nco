@@ -1,8 +1,8 @@
 2015-05-25  Charlie Zender  <zender@uci.edu>
 
-	* Handle lefter aka leftmost aka vertical and time dimensions in regridding
+	* Verified NCO gives identical results as Taylor/Truesdale NCL script for 2-D & 3-D variables
 
-	* Verified NCO gives identical results as Taylor/Truesdale NCL script for 2-D variables
+	* Handle lefter aka leftmost aka vertical and time dimensions in regridding
 
 	* Optimize row/column access by pre-subtracting one to account for Fortran index offset relative to C
 
