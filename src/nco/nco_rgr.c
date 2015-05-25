@@ -900,6 +900,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
 
   /* Regrid or copy variable values */
+  const size_t grd_sz_in=rgr_map.src_grid_size; /* [nbr] Number of elements in single layer of input grid */
   const size_t grd_sz_out=rgr_map.dst_grid_size; /* [nbr] Number of elements in single layer of output grid */
   double *var_val_dbl_in;
   double *var_val_dbl_out;
@@ -908,7 +909,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   size_t dst_idx; 
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
-  size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab values are offset from origin */
+  size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
+  size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
   
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
@@ -949,12 +951,21 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	lvl_nbr=1;
 	val_out_fst=0L;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
-	for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++) val_out_fst+=grd_sz_out*lvl_idx;
 
 	/* Apply weights */
 	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
-	for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
-
+	if(lvl_nbr == 1){
+	  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
+	}else{
+	  val_in_fst=0L;
+	  val_out_fst=0L;
+	  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+	    val_in_fst+=grd_sz_in*lvl_idx;
+	    val_out_fst+=grd_sz_out*lvl_idx;
+	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
+	  } /* end loop over lvl */
+	} /* lvl_nbr > 1 */
+	  
 	rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ);
 
 	if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);
