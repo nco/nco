@@ -530,6 +530,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   lnk_nbr=rgr_map.num_links;
   for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) row_dst_adr[lnk_idx]--;
   for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) col_src_adr[lnk_idx]--;
+  if(nco_dbg_lvl_get() >= nco_dbg_io){
+    (void)fprintf(stdout,"idx row_dst col_src wgt_raw\n");
+    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) (void)fprintf(stdout,"%li %d %d %g\n",lnk_idx,row_dst_adr[lnk_idx],col_src_adr[lnk_idx],wgt_raw[lnk_idx]);
+  } /* endif dbg */
 
   /* Free memory associated with input file */
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
@@ -566,14 +570,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
   
   int dmn_idx; /* [idx] Dimension index */
-  int dmn_nbr; /* [nbr] Number of dimensions */
+  int dmn_nbr_in; /* [nbr] Number of dimensions in input variable */
+  int dmn_nbr_out; /* [nbr] Number of dimensions in output variable */
   const char ncol_nm[]="ncol"; /* [sng] Name of dimension that indicates regridding */
   /* Define regridding flag for each variable */
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
-    dmn_nbr=trv_tbl->lst[idx_tbl].nbr_dmn;
+    dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
-      for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	if(!strcmp(trv.var_dmn[dmn_idx].dmn_nm,ncol_nm)){
 	  trv_tbl->lst[idx_tbl].flg_rgr=True;
 	} /* endif */
@@ -637,19 +642,20 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       var_nm=trv.nm;
       var_typ=trv.var_typ;
-      dmn_nbr=trv.nbr_dmn;
+      dmn_nbr_in=trv.nbr_dmn;
+      dmn_nbr_out=trv.nbr_dmn;
       rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
       rcd=nco_inq_varid_flg(out_id,var_nm,&var_id_out);
       /* If variable has not been defined, define it */
       if(rcd != NC_NOERR){
-	dmn_id_in=(int *)nco_malloc((dmn_nbr+1)*sizeof(int)); /* Allocate an extra slot for new dimensions */
-	dmn_id_out=(int *)nco_malloc((dmn_nbr+1)*sizeof(int));
-	dmn_srt=(long *)nco_malloc((dmn_nbr+1)*sizeof(long));
-	dmn_cnt=(long *)nco_malloc((dmn_nbr+1)*sizeof(long));
+	dmn_id_in=(int *)nco_malloc((dmn_nbr_in+1)*sizeof(int)); /* Allocate an extra slot for new dimensions */
+	dmn_id_out=(int *)nco_malloc((dmn_nbr_in+1)*sizeof(int));
+	dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
+	dmn_cnt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
 	if(trv.flg_rgr){
 	  /* Regrid */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
-	  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    if(!strcmp(dmn_nm,ncol_nm)){
 	      /* Replace unstructured dimension by orthogonal horizontal dimensions already defined */
@@ -658,7 +664,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	      dmn_cnt[dmn_idx]=lat_nbr_out;
 	      dmn_cnt[dmn_idx+1]=lon_nbr_out;
 	      dmn_idx++;
-	      dmn_nbr++;
+	      dmn_nbr_out++;
 	    }else{
 	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
 	      /* If dimension has not been defined, define it */
@@ -671,7 +677,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	}else{
 	  /* Copy as-is */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
-	  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
 	    /* If dimension has not been defined, define it */
@@ -681,7 +687,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	    } /* !rcd */
 	  } /* end loop over dimensions */
 	} /* end else */
-	rcd=nco_def_var(out_id,var_nm,var_typ,dmn_nbr,dmn_id_out,&var_id_out);
+	rcd=nco_def_var(out_id,var_nm,var_typ,dmn_nbr_out,dmn_id_out,&var_id_out);
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
 	if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
 	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
@@ -894,14 +900,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
 
   /* Regrid or copy variable values */
-  void *void_ptr_var_in;
-  void *void_ptr_var_out;
-  size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
-  size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
-
-  size_t dst_idx; 
+  const size_t grd_sz_out=rgr_map.dst_grid_size; /* [nbr] Number of elements in single layer of output grid */
   double *var_val_dbl_in;
   double *var_val_dbl_out;
+  int lvl_idx; /* [idx] Level index */
+  int lvl_nbr; /* [nbr] Number of levels */
+  size_t dst_idx; 
+  size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab values are offset from origin */
   
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
@@ -916,50 +923,46 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	var_sz_out=1L;
 	rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
 	rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
-	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr);
-	dmn_id_in=(int *)nco_malloc((dmn_nbr+1)*sizeof(int)); /* Allocate an extra slot for new dimensions */
-	dmn_id_out=(int *)nco_malloc((dmn_nbr+1)*sizeof(int));
-	dmn_srt=(long *)nco_malloc((dmn_nbr+1)*sizeof(long));
-	dmn_cnt=(long *)nco_malloc((dmn_nbr+1)*sizeof(long));
+	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr_out);
+	rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
+	dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+	dmn_id_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
+	dmn_srt=(long *)nco_malloc(dmn_nbr_out*sizeof(long)); /* Allocate an extra slot for new dimensions */
+	dmn_cnt=(long *)nco_malloc(dmn_nbr_out*sizeof(long));
 	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_id_out);
 	rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
-	rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr);
-	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
 	  var_sz_in*=dmn_cnt[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
-	void_ptr_var_in=(void *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
-	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt,void_ptr_var_in,var_typ);
+	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
+	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt,var_val_dbl_in,var_typ);
 
-	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr);
-	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt+dmn_idx);
 	  var_sz_out*=dmn_cnt[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
-	void_ptr_var_out=(void *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
+	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
+
+	lvl_nbr=1;
+	val_out_fst=0L;
+	for(dmn_idx=0;dmn_idx<dmn_nbr_in-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
+	for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++) val_out_fst+=grd_sz_out*lvl_idx;
 
 	/* Apply weights */
-	var_val_dbl_in=(double *)void_ptr_var_in;
-	var_val_dbl_out=(double *)void_ptr_var_out;
 	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
-	if(nco_dbg_lvl_get() >= nco_dbg_io){
-	  (void)fprintf(stdout,"idx row_dst col_src wgt_raw\n");
-	  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) (void)fprintf(stdout,"%li %d %d %g\n",lnk_idx,row_dst_adr[lnk_idx],col_src_adr[lnk_idx],wgt_raw[lnk_idx]);
-	} /* endif dbg */
-	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
-	/* NB: row and col employ Fortran index conventions, i.e., they are 1-based */
 	for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 
-	rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,void_ptr_var_out,var_typ);
+	rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ);
 
 	if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);
 	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
 	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
 	if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
-	if(void_ptr_var_out) void_ptr_var_out=(long *)nco_free(void_ptr_var_out);
-	if(void_ptr_var_in) void_ptr_var_in=(long *)nco_free(void_ptr_var_in);
+	if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
+	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
       }else{
 	(void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
      } /* end else */

@@ -1,5 +1,7 @@
 2015-05-25  Charlie Zender  <zender@uci.edu>
 
+	* Verified NCO gives identical results as Taylor/Truesdale NCL script for 2-D variables
+
 	* Optimize row/column access by pre-subtracting one to account for Fortran index offset relative to C
 
 	* Clean-up debugging output
