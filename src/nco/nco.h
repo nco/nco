@@ -992,7 +992,7 @@ extern "C" {
   } aux_crd_sct; 
 
   /* GTT Variable dimensions:
-  Dimension have name and size, and can have an associated variable (coordinate variable) */
+     Dimensions have name and size, and maybe an associated (coordinate) variable */
   typedef struct{ 
     char *dmn_nm_fll;        /* [sng] Full dimension name */
     char *dmn_nm;            /* [sng] Dimension name */
@@ -1058,6 +1058,7 @@ extern "C" {
     nco_bool flg_ncs;                 /* [flg] Group is ancestor of specified group or variable */
     nco_bool flg_nsx;                 /* [flg] Object matches intersection criteria */
     nco_bool flg_rcr;                 /* [flg] Extract group recursively */
+    nco_bool flg_rgr;                 /* [flg] Regrid object */ 
     nco_bool flg_unn;                 /* [flg] Object matches union criteria */
     nco_bool flg_vfp;                 /* [flg] Variable matches full path specification */
     nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */
