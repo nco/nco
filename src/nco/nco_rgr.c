@@ -209,14 +209,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
      in SCRIP remapping files because SCRIP stores everying in 1-D sparse matrix arrays
      Sparse matrix formulations:
 
-     for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+     for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
        // Normalization: fractional area
        dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0];
        // Normalization: destination area
        dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/dst_area[ddr_dst[lnk_idx]];
        // Normalization: none
        dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/(dst_area[ddr_dst[lnk_idx]]*dst_frc[ddr_dst[lnk_idx]);
-  */
+     } // end loop over lnk */
 
   const char fnc_nm[]="nco_rgr_map()"; /* [sng] Function name */
 
@@ -244,13 +244,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nco_map_sct rgr_map;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-  size_t lnk_nbr; /* [nbr] Number of links */
-  size_t lnk_idx; 
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining mapping weights from %s\n",nco_prg_nm_get(),fnc_nm,rgr_nfo->fl_map);
-
-  var_sct *wgt=NULL;
-  var_sct *wgt_out=NULL;
 
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
@@ -376,6 +371,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int dst_grd_crn_lon_id; /* [id] Destination grid corner longitudes variable ID */
   int dst_grd_crn_lat_id; /* [id] Destination grid corner latitudes  variable ID */
   int dmn_sz_int_id; /* [id] Destination grid dimension sizes ID */
+  int col_src_adr_id; /* [id] Source address (col) variable ID */
+  int row_dst_adr_id; /* [id] Destination address (row) variable ID */
   int wgt_raw_id; /* [id] Remap matrix variable ID */
 
   switch(nco_rgr_mpf_typ){
@@ -385,13 +382,17 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     rcd+=nco_inq_varid(in_id,"dst_grid_center_lat",&dst_grd_ctr_lat_id); /* ESMF: yc_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_corner_lon",&dst_grd_crn_lon_id); /* ESMF: xv_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_corner_lat",&dst_grd_crn_lat_id); /* ESMF: yv_b */
+    rcd+=nco_inq_varid(in_id,"dst_address",&row_dst_adr_id); /* ESMF: row */
+    rcd+=nco_inq_varid(in_id,"src_address",&col_src_adr_id); /* ESMF: col */
     rcd+=nco_inq_varid(in_id,"remap_matrix",&wgt_raw_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
-  break;
+    break;
   case nco_rgr_mpf_ESMF:
     rcd+=nco_inq_varid(in_id,"xc_b",&dst_grd_ctr_lon_id); /* SCRIP: dst_grid_center_lon */
     rcd+=nco_inq_varid(in_id,"yc_b",&dst_grd_ctr_lat_id); /* SCRIP: dst_grid_center_lat */
     rcd+=nco_inq_varid(in_id,"xv_b",&dst_grd_crn_lon_id); /* SCRIP: dst_grid_corner_lon */
     rcd+=nco_inq_varid(in_id,"yv_b",&dst_grd_crn_lat_id); /* SCRIP: dst_grid_corner_lat */
+    rcd+=nco_inq_varid(in_id,"row",&row_dst_adr_id); /* SCRIP: dst_address */
+    rcd+=nco_inq_varid(in_id,"col",&col_src_adr_id); /* SCRIP: src_address */
     rcd+=nco_inq_varid(in_id,"S",&wgt_raw_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
     break;
   default:
@@ -414,6 +415,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   double *lat_ntf_out; /* [dgr] Latitude  interfaces of rectangular destination grid */
   double *lon_bnd_out; /* [dgr] Longitude boundaries of rectangular destination grid */
   double *lat_bnd_out; /* [dgr] Latitude  boundaries of rectangular destination grid */
+  int *col_src_adr; /* [idx] Source address (col) */
+  int *row_dst_adr; /* [idx] Destination address (row) */
   double *wgt_raw; /* [frc] Remapping weights */
   int *dmn_sz_int; /* [nbr] Array of dimension sizes of destination grid */
   const int lon_psn_dst=0; /* [idx] Ordinal position of longitude size in rectangular destination grid */
@@ -446,7 +449,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   lat_ntf_out=(double *)nco_malloc((lat_nbr_out+1L)*nco_typ_lng(crd_typ_out));
   lon_bnd_out=(double *)nco_malloc(bnd_rnk*lon_nbr_out*nco_typ_lng(crd_typ_out));
   lat_bnd_out=(double *)nco_malloc(bnd_rnk*lat_nbr_out*nco_typ_lng(crd_typ_out));
-  wgt_raw=(double *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(crd_typ_out),"Unable to malloc() value buffer for remapping weights",fnc_nm);
+  wgt_raw=(double *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_DOUBLE),"Unable to malloc() value buffer for remapping weights",fnc_nm);
+  col_src_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),"Unable to malloc() value buffer for remapping addresses",fnc_nm);
+  row_dst_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),"Unable to malloc() value buffer for remapping addresses",fnc_nm);
   
   /* Arrays unroll into all longitudes for first latitude, then second latitude, ...
      Thus longitudes obtained by reading first block contiguously (unstrided)
@@ -516,10 +521,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[idx],lat_ctr_out[idx],lat_bnd_out[lat_nbr_out+idx]);
   } /* endif dbg */
 
-  /* Obtain remap matrix (i.e., weights) from map file */
+  /* Obtain remap matrix addresses and weights from map file */
   dmn_srt[0]=0L;
   dmn_cnt[0]=rgr_map.num_links;
-  rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,crd_typ_out);
+  rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,NC_DOUBLE);
+  rcd=nco_get_vara(in_id,col_src_adr_id,dmn_srt,dmn_cnt,col_src_adr,NC_INT);
+  rcd=nco_get_vara(in_id,row_dst_adr_id,dmn_srt,dmn_cnt,row_dst_adr,NC_INT);
 
   /* Free memory associated with input file */
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
@@ -866,13 +873,75 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   dmn_cnt_out[1]=2;
   (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
 
-  /* Obtain variable */
+  /* Regrid or copy variable values */
+  void *void_ptr_var_in;
+  void *void_ptr_var_out;
+  size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
+
+  size_t lnk_nbr; /* [nbr] Number of links */
+  size_t lnk_idx; 
+  size_t dst_idx; 
+  double *var_val_dbl_in;
+  double *var_val_dbl_out;
+  lnk_nbr=rgr_map.num_links;
+  
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       if(trv.flg_rgr){
-	/* Weight variable */
-	;
+	/* Regrid variable */
+	var_nm=trv.nm;
+	//var_typ=trv.var_typ;
+	var_typ=NC_DOUBLE; /* NB: Perform regridding in double precision */
+	var_sz_in=1L;
+	var_sz_out=1L;
+	rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
+	rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
+	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr);
+	dmn_id_in=(int *)nco_malloc((dmn_nbr+1)*sizeof(int)); /* Allocate an extra slot for new dimensions */
+	dmn_id_out=(int *)nco_malloc((dmn_nbr+1)*sizeof(int));
+	dmn_srt=(long *)nco_malloc((dmn_nbr+1)*sizeof(long));
+	dmn_cnt=(long *)nco_malloc((dmn_nbr+1)*sizeof(long));
+	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_id_out);
+	rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr);
+	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+	  var_sz_in*=dmn_cnt[dmn_idx];
+	  dmn_srt[dmn_idx]=0L;
+	} /* end loop over dimensions */
+	void_ptr_var_in=(void *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
+	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt,void_ptr_var_in,var_typ);
+
+	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr);
+	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt+dmn_idx);
+	  var_sz_out*=dmn_cnt[dmn_idx];
+	  dmn_srt[dmn_idx]=0L;
+	} /* end loop over dimensions */
+	void_ptr_var_out=(void *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
+
+	/* Apply weights */
+	var_val_dbl_in=(double *)void_ptr_var_in;
+	var_val_dbl_out=(double *)void_ptr_var_out;
+	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
+	if(nco_dbg_lvl_get() > nco_dbg_io){
+	  (void)fprintf(stdout,"idx row_dst col_src wgt_raw\n");
+	  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) (void)fprintf(stdout,"%li %d %d %g\n",lnk_idx,row_dst_adr[lnk_idx],col_src_adr[lnk_idx],wgt_raw[lnk_idx]);
+	} /* endif dbg */
+	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
+	/* NB: row and col employ Fortran index conventions, i.e., they are 1-based */
+	for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]-1]+=var_val_dbl_in[col_src_adr[lnk_idx]-1]*wgt_raw[lnk_idx];
+
+	rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,void_ptr_var_out,var_typ);
+
+	if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);
+	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
+	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+	if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
+	if(void_ptr_var_out) void_ptr_var_out=(long *)nco_free(void_ptr_var_out);
+	if(void_ptr_var_in) void_ptr_var_in=(long *)nco_free(void_ptr_var_in);
       }else{
 	(void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
      } /* end else */
@@ -899,6 +968,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(lon_bnd_out) lon_bnd_out=(double *)nco_free(lon_bnd_out);
   if(lat_bnd_out) lat_bnd_out=(double *)nco_free(lat_bnd_out);
   if(wgt_raw) wgt_raw=(double *)nco_free(wgt_raw);
+  if(col_src_adr) col_src_adr=(int *)nco_free(col_src_adr);
+  if(row_dst_adr) row_dst_adr=(int *)nco_free(row_dst_adr);
   
   return rcd;
 } /* nco_rgr_map() */

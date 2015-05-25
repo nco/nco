@@ -1,3 +1,9 @@
+2015-05-25  Charlie Zender  <zender@uci.edu>
+
+	* Regridding appears to work for 2D variables! Yay!
+
+	* Weight variables and copy values to regridded file
+
 2015-05-24  Charlie Zender  <zender@uci.edu>
 
 	* Define regridded-variables in and copy their metadata to regridded file
