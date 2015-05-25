@@ -1,6 +1,8 @@
 2015-05-24  Charlie Zender  <zender@uci.edu>
 
-	* Define fixed-variables in regridded file
+	* Copy global and fixed-variable metadata to regridded file
+
+	* Define fixed-variables in and copy to regridded file
 
 	* Set new flg_rgr for input variables that contain "ncol" dimension
 

@@ -569,6 +569,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int var_id_in; /* [id] Variable ID */
   int var_id_out; /* [id] Variable ID */
   nc_type var_typ; /* [enm] Variable type */
+  nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
+
+  /* Copy Global Metadata */
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var){
@@ -579,6 +583,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	var_typ=trv.var_typ;
 	var_nm=trv.nm;
 	dmn_nbr=trv.nbr_dmn;
+	rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
 	rcd=nco_inq_varid_flg(out_id,var_nm,&var_id_out);
 	/* If variable has not been defined, define it */
 	if(rcd != NC_NOERR){
@@ -586,7 +591,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  dmn_id_out=(int *)nco_malloc(dmn_nbr*sizeof(int));
 	  dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
 	  dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
-	  rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
@@ -597,7 +601,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
 	    } /* !rcd */
 	  } /* end loop over dimensions */
-	  (void)nco_def_var(out_id,var_nm,var_typ,dmn_nbr,dmn_id_out,&var_id_out);
+	  rcd=nco_def_var(out_id,var_nm,var_typ,dmn_nbr,dmn_id_out,&var_id_out);
+	  (void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
+
 	  if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
 	  if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
 	  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
@@ -839,6 +845,16 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
 
   /* Obtain variable */
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct trv=trv_tbl->lst[idx_tbl];
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      if(trv.flg_rgr){
+	;
+      }else{
+	(void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+     } /* end else */
+    } /* !xtr */
+  } /* end idx_tbl */
   
   /* Weight variable */
 
