@@ -26,7 +26,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
      Branching complexity and utility will increase as regridding features are added */
   if(rgr_nfo->flg_map) flg_map=True;
   if(rgr_nfo->flg_grd_src && rgr_nfo->flg_grd_dst) flg_smf=True;
-  if(rgr_nfo->drc_tps) flg_tps=True;
+  if(rgr_nfo->drc_tps && !flg_map) flg_tps=True;
   assert(!(flg_smf && flg_map));
   assert(!(flg_smf && flg_tps));
   assert(!(flg_map && flg_tps));
@@ -72,9 +72,6 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr_nfo->var_nm) rgr_nfo->var_nm=(char *)nco_free(rgr_nfo->var_nm);
 
   /* Tempest */
-  if(rgr_nfo->drc_tps) rgr_nfo->drc_tps=(char *)nco_free(rgr_nfo->drc_tps);
-
-  /* Mapfiles */
   if(rgr_nfo->drc_tps) rgr_nfo->drc_tps=(char *)nco_free(rgr_nfo->drc_tps);
 
 } /* end nco_rfr_free() */
@@ -1016,7 +1013,7 @@ nco_rgr_tps /* [fnc] Regrid using Tempest library */
 
   char *nvr_DATA_TEMPEST; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
   nvr_DATA_TEMPEST=getenv("DATA_TEMPEST");
-  rgr_nfo->drc_tps= (nvr_DATA_TEMPEST && strlen(nvr_DATA_TEMPEST) > 0) ? (char *)strdup(nvr_DATA_TEMPEST) : (char *)strdup("/tmp");
+  rgr_nfo->drc_tps= (nvr_DATA_TEMPEST && strlen(nvr_DATA_TEMPEST) > 0L) ? (char *)strdup(nvr_DATA_TEMPEST) : (char *)strdup("/tmp");
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
