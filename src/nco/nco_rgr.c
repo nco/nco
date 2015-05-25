@@ -529,8 +529,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   in_id=rgr_nfo->in_id;
   out_id=rgr_nfo->out_id;
 
-  int dmn_nbr; /* [nbr] Number of dimensions */
   int dmn_idx; /* [idx] Dimension index */
+  int dmn_nbr; /* [nbr] Number of dimensions */
   const char ncol_nm[]="ncol"; /* [sng] Name of dimension that indicates regridding */
   /* Define regridding flag for each variable */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -548,7 +548,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct trv=trv_tbl->lst[idx_tbl];
-      if(trv.nco_typ == nco_obj_typ_var) (void)fprintf(stderr,"Regrid %s? %s\n",trv.nm,(trv.flg_rgr) ? "Yes" : "No");
+      if(trv.nco_typ == nco_obj_typ_var) (void)fprintf(stderr,"Regrid %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
     } /* end idx_tbl */
   } /* end dbg */
 

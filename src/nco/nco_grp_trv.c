@@ -68,7 +68,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     for(int dmn_idx=0;dmn_idx<tbl->lst[idx].nbr_dmn;dmn_idx++){
 
       /* If dimensions exist (only for variables ) */
-      if(tbl->lst[idx].var_dmn){
+      if (tbl->lst[idx].var_dmn){
         tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll);
         tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
         tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
@@ -89,7 +89,9 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
           tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm);
 
-          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr;lmt_idx++) tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]);
+          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
+            tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]);
+          }
 
           tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn);
 
@@ -98,8 +100,11 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 #ifdef DEBUG_LEAKS
           crt_counter++;
 #endif
-        }else if(tbl->lst[idx].var_dmn[dmn_idx].ncd){
+
+        } /* Coordinate structure */ 
+
         /* Pointer to non-coordinate dimension  */
+        else if(tbl->lst[idx].var_dmn[dmn_idx].ncd){
 
           tbl->lst[idx].var_dmn[dmn_idx].ncd->grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->grp_nm_fll);
           tbl->lst[idx].var_dmn[dmn_idx].ncd->nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->nm_fll);
@@ -107,11 +112,16 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
           tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.dmn_nm);
 
-          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn_nbr;lmt_idx++) tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn[lmt_idx]);
+          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
+            tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn[lmt_idx]);
+          }
 
           tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn);
+
           tbl->lst[idx].var_dmn[dmn_idx].ncd=(dmn_trv_sct *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd);
+
         }
+
 
       } /* Dimensions */
       
@@ -147,8 +157,9 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm);
 
-      for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;lmt_idx++)
+      for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;lmt_idx++){
         tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]);
+      }
 
       tbl->lst_dmn[dmn_idx].crd[crd_idx]=(crd_sct *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]);
     }  /* Coordinate structures */

@@ -2531,7 +2531,6 @@ print "\n";
 #####################    
     
 #ncpdq #1
-    
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a -lat -v lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat -d lat,0 %tmp_fl_00%";
     $dsc_sng="Reverse coordinate -a -lat -v lat";
@@ -2542,7 +2541,6 @@ print "\n";
     
 #ncpdq #2
 #three_dmn_var(lat,lev,lon);
-
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a -lat,-lev,-lon -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,0 -d lon,0 %tmp_fl_00%";
     $dsc_sng="Reverse 3D variable a -lat,-lev,-lon -v three_dmn_var";
@@ -2552,7 +2550,8 @@ print "\n";
     $#tst_cmd=0; # Reset array
     
 #ncpdq #3 NEW NCO 4.3.2
-    
+# ncpdq -h -O -C -a lon,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,2 -d lon,3 ~/foo.nc
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -C -a lon,lat -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,2 -d lon,3 %tmp_fl_00%";
     $dsc_sng="Re-order 3D variable (no associated coordinates) -C -a lon,lat -v three_dmn_var ";
@@ -2562,7 +2561,6 @@ print "\n";
     $#tst_cmd=0; # Reset array    
     
 #ncpdq #4 
-    
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a lon,lat -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,2 -d lon,3 %tmp_fl_00%";
     $dsc_sng="Re-order 3D variable (associated coordinates) -a lon,lat -v three_dmn_var ";
@@ -2574,7 +2572,6 @@ print "\n";
 #ncpdq #5
 #three_dmn_var_dbl(time,lat,lon);
 #ncpdq -h -O -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 in.nc
-    
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var_dbl -d lat,0 -d lon,1 -d time,2 %tmp_fl_00%";
     $dsc_sng="Re-order 3D variable with MSA -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3";
@@ -2586,7 +2583,6 @@ print "\n";
 #NEW NCO 4.3.2 
 #ncpdq #6 (same run as #5) 
 #make sure first dimension is record
-    
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v three_dmn_var_dbl %tmp_fl_00% | grep  'three_dmn_var_dbl dimension 0: lat, size = 2 (Record non-coordinate dimension)'";
     $dsc_sng="Re-order 3D variable with MSA -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3";
@@ -2600,7 +2596,6 @@ print "\n";
 #ncpdq -h -O -a lat,lon,time -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl in.nc ~/foo.nc 
 #ncks -C -H -v three_dmn_var_dbl -d lat,0,0 -d lon,1,1 -d time,0 ~/foo.nc
 #lat[0]=90 lon[1]=270 time[0]=2 three_dmn_var_dbl[2]=16 
-
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon,time -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl  $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v three_dmn_var_dbl -d lat,0,0 -d lon,1,1 -d time,0 %tmp_fl_00%";
     $dsc_sng="Re-order 3D variable with MSA (stride) -a lat,lon,time -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl";
@@ -2610,7 +2605,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
    
 #ncpdq #8
-
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lat,lon,-time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var_dbl -d lat,1 -d lon,1 -d time,4 %tmp_fl_00%";
     $dsc_sng="Re-order 3D variable with MSA+ reversal of time dim -C -a lat,lon,-time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3";
@@ -2620,7 +2614,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 
 #ncpdq #9
-    
      $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lon,lat -v three_dmn_var_dbl -d time,0,2 -d time,4 -d lat,1 -d lat,1 --msa_usr_rdr $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%2.f,' -v three_dmn_var_dbl -d time,1 -d lon,0 %tmp_fl_00%";
     $dsc_sng="Re-order 3D variable with MSA and --msa_usr_rdr flag -C -a lon,lat -v three_dmn_var_dbl -d time,0,2 -d time,4 -d lat,1 -d lat,1 --msa_usr_rdr";
@@ -2648,7 +2641,6 @@ print "\n";
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
 # ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 ~/foo.nc
-
   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -a lev,lat -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable (-C, no MSA) -v two_dmn_var -a lev,lat";
@@ -2663,7 +2655,6 @@ print "\n";
 # ncpdq -O -a lev,lat -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
 # ncks -C -d lat,1,1 -d lev,1,1 ~/foo.nc
 #$tst_cmd[2]="lev[1]=500 lat[1]=90 two_dmn_var[3]=17.5 fraction";
-
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,lat -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -C -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable (no -C, no MSA) -v two_dmn_var -a lev,lat";
@@ -2671,14 +2662,12 @@ print "\n";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array     
-   
 
 #NEW NCO 4.3.2
 #ncpdq #13
 # two_dmn_var (lat,lev) -C, MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
 # ncks ~/foo.nc
-
   $tst_cmd[0]="ncpdq $omp_flg -O -C $fl_fmt $nco_D_flg -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable (-C, MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1";
@@ -2692,7 +2681,6 @@ print "\n";
 # two_dmn_var (lat,lev) MSA (associated coordinates)
 # ncpdq -O -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
 # ncks ~/foo.nc
-
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable (no -C, MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1";
@@ -2706,7 +2694,6 @@ print "\n";
 # two_dmn_rec_var(time,lev) 2D variable with record  (-C, no MSA)
 # ncpdq -O -C -a lev,time -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
 # ncks -d time,1,1 -d lev,1,1 ~/foo.nc
-
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -C -a lev,time -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var -d time,1,1 -d lev,1,1 %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable with record (-C, no MSA) -v two_dmn_rec_var -C -a lev,time";
@@ -2721,7 +2708,6 @@ print "\n";
 # two_dmn_rec_var(time,lev) 2D variable with record  (no MSA)
 # ncpdq -O -a lev,time -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
 # ncks -d time,1,1 -d lev,1,1 ~/foo.nc
-
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,time -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var -d time,1,1 -d lev,1,1 %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable with record (no -C, no MSA) -v two_dmn_rec_var -a lev,time";
@@ -2735,7 +2721,6 @@ print "\n";
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
 # ncpdq -O -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
 # ncks ~/foo.nc
-
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable with record (-C, MSA) -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var";
@@ -2749,7 +2734,6 @@ print "\n";
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
 # ncpdq -O -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
 # ncks ~/foo.nc
-
   $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_rec_var %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable with record (no -C, MSA) -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var";
@@ -2762,7 +2746,6 @@ print "\n";
 #ncpdq #19
 #three_dmn_var_dbl(time,lat,lon);
 #ncpdq -h -O -a lat,time -v three_dmn_var -d time,1,1 -d lat,1,1 -d lon,1,1 in.nc ~/foo.nc
-    
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a -lat,-time -v three_dmn_var_dbl -d time,1,6,2 -d lat,0,1 -d lon,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -C -v three_dmn_var_dbl -d lat,1,1 -d time,2,2 %tmp_fl_00%";
     $dsc_sng="Reverse/Re-order 3D variable -a -lat,-time -v three_dmn_var_dbl -d time,1,1 -d lat,1,1 -d lon,1,1";
@@ -2776,7 +2759,6 @@ print "\n";
 #three_dmn_rec_var(time,lat,lon);
 #ty(time,lat);
 #ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
-    
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v ty -d time,1,1 -d lat,1,1 %tmp_fl_00%";
     $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var (no MSA) Test1";
@@ -2790,7 +2772,6 @@ print "\n";
 #three_dmn_rec_var(time,lat,lon);
 #ty(time,lat);
 #ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
-    
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v three_dmn_rec_var -d time,1,1 -d lat,1,1 -d lon,1,1 %tmp_fl_00%";
     $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var (no MSA) Test2";
@@ -2804,7 +2785,6 @@ print "\n";
 #three_dmn_rec_var(time,lat,lon); MSA
 #ty(time,lat);
 #ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 in.nc ~/foo.nc
-    
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v ty -d time,2,2 %tmp_fl_00%";
     $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var (MSA) Test1 read ty";
@@ -2818,7 +2798,6 @@ print "\n";
 #three_dmn_rec_var(time,lat,lon); MSA
 #ty(time,lat);
 #ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 in.nc ~/foo.nc
-    
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var -d time,1,6,2 -d lat,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v three_dmn_rec_var -d lat,0,0 -d time,1,1 -d lon,1,1 %tmp_fl_00%";
     $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var (MSA) Test2 read three_dmn_rec_var";
@@ -2832,7 +2811,6 @@ print "\n";
 #three_dmn_rec_var(time,lat,lon); 
 #ty(time,lat);
 #ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
-    
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v three_dmn_rec_var %tmp_fl_00% | grep 'three_dmn_rec_var dimension 0: lat, size = 2 NC_FLOAT (Record coordinate is lat)'";
     $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var Test3 check record for lat";
@@ -2846,7 +2824,6 @@ print "\n";
 #three_dmn_rec_var(time,lat,lon); 
 #ty(time,lat);
 #ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
-    
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v three_dmn_rec_var %tmp_fl_00% | grep 'three_dmn_rec_var dimension 1: time, size = 10 NC_DOUBLE (Coordinate is time)'";
     $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var Test4 check non record for time";
@@ -2860,7 +2837,6 @@ print "\n";
 #four_dmn_rec_var(time,lat,lev,lon); MSA
 #ncpdq -h -O -a lev,time,-lon,-lat -v four_dmn_rec_var -d time,1,6,2 -d lat,1,1 -d lon,1,1 -d lev,1,1 in.nc ~/foo.nc
 #ncks -C -H -v four_dmn_rec_var -d time,2,2 ~/foo.nc
-
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lev,time,-lon,-lat -v four_dmn_rec_var -d time,1,6,2 -d lat,1,1 -d lon,1,1 -d lev,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v four_dmn_rec_var -d time,2,2 %tmp_fl_00%";
     $dsc_sng="Reverse/Re-order 4D variable -a lev,time,-lon,-lat -v four_dmn_rec_var (MSA)";
@@ -2875,7 +2851,6 @@ print "\n";
 #three_dmn_var_crd(lev,lat,lon);
 #ncpdq -h -O -a lat,time -v PS,three_dmn_var_crd -d lev,1,1 -d lat,1,1 -d lon,1,1 -d lev,1,1 in.nc ~/foo.nc
 #ncks -C -H -v three_dmn_var_crd ~/foo.nc
-
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v PS,three_dmn_var_crd -d lev,1,1 -d lat,1,1 -d lon,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -C -v three_dmn_var_crd %tmp_fl_00%";
     $dsc_sng="Re-order 3D variable (only 1 in -a) -a lat,time -v PS,three_dmn_var_crd (MSA)";
@@ -2888,7 +2863,6 @@ print "\n";
 #ncpdq #28 
 #ncpdq -h -O -a lat,time -d time,1,6,2 -d lat,1,1 in.nc ~/foo.nc
 #ncks -C -H -v -d time,2,2 four_dmn_rec_var ~/foo.nc
-
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -d time,1,1 -d lat,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v four_dmn_rec_var -d lon,2,2 -d lev,2,2 %tmp_fl_00%";
     $dsc_sng="Re-order all variables -a lat,time (MSA)";
@@ -2902,7 +2876,6 @@ print "\n";
 #####################       
     
 #ncpdq #29
-    
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P all_new -v upk $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P upk -v upk %tmp_fl_00% %tmp_fl_00%";
     $tst_cmd[2]="ncks -C -H -s '%g' -v upk %tmp_fl_00%";
@@ -2913,7 +2886,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 
 #ncpdq #30
-    
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 %tmp_fl_00%";
     $dsc_sng="Unpack 1D variable with MSA -C P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6";
@@ -2923,7 +2895,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 
 #ncpdq #31
-
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P all_xst -v three_dmn_var_dbl -d time,0,2 -d time,8,9 -d lon,0 -d lon,1 -d lat,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%i' -v three_dmn_var_dbl -d time,2 -d lon,1 -d lat,0 %tmp_fl_00%";
     $dsc_sng="Pack 3D variable with MSA -C -P all_xst -v three_dmn_var_dbl -d time,0,2 -d time,8,9 -d lon,0 -d lon,1 -d lat,1"; 
@@ -2933,8 +2904,7 @@ print "\n";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
 	
-	
-	#######################################
+    #######################################
     #### Group tests (requires netCDF4) ###
     #######################################
 
@@ -2950,7 +2920,6 @@ print "\n";
 # ncpdq -O -C -a lev,lat -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
 # ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 ~/foo.nc
 
-
 # same as previous but with group
     
 #NEW NCO 4.3.2
@@ -2961,8 +2930,6 @@ print "\n";
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
 # ncpdq -O -C -g g19g1 -a lev,lat -v two_dmn_var ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 ~/foo.nc
-
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g1 -a lev,lat -v two_dmn_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable (-C, no MSA) -v two_dmn_var -a lev,lat";
@@ -2978,7 +2945,6 @@ print "\n";
 # ncpdq -O -a lev,lat -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
 # ncks -C -d lat,1,1 -d lev,1,1 ~/foo.nc
 
-
 # same as previous but with group
     
 #NEW NCO 4.3.2
@@ -2989,7 +2955,6 @@ print "\n";
 # two_dmn_var (lat,lev) no -C, no MSA 
 # ncpdq -O -g g19g1 -a lev,lat -v two_dmn_var ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -C -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 ~/foo.nc
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -a lev,lat -v two_dmn_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable (no -C, no MSA) -v two_dmn_var -a lev,lat";
@@ -3004,7 +2969,6 @@ print "\n";
 # ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
 # ncks ~/foo.nc
 
-
 # same as previous but with group
     
 #NEW NCO 4.3.2
@@ -3015,8 +2979,6 @@ print "\n";
 # two_dmn_var (lat,lev) -C, MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks ~/foo.nc
-
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -C -a lev,lat -v two_dmn_var -d lat,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g1 -v two_dmn_var %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable (-C, MSA) -v two_dmn_var -a lev,lat";
@@ -3041,7 +3003,6 @@ print "\n";
 # two_dmn_var (lat,lev) MSA (associated coordinates)
 # ncpdq -O -g g19g1 -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -C -g g19g1 -v two_dmn_var ~/foo.nc
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -a lev,lat -v two_dmn_var -d lat,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g1 -v two_dmn_var %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable (no -C, MSA) -v two_dmn_var -a lev,lat";
@@ -3064,7 +3025,6 @@ print "\n";
 # dimensions:lat=2;lev=3;lon=4;time=unlimited;
 # ncpdq -O -g g19g2 -C -a lev,time -v two_dmn_rec_var ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -d time,1,1 -d lev,1,1 ~/foo.nc
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -C -a lev,time -v two_dmn_rec_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g2 -v two_dmn_rec_var -d time,1,1 -d lev,1,1 %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable with record (-C, no MSA) -v two_dmn_rec_var -C -a lev,time";
@@ -3078,9 +3038,7 @@ print "\n";
 # two_dmn_rec_var(time,lev) 2D variable with record  (no -C, no MSA)
 # ncpdq -O -g g19g2 -a lev,time -v two_dmn_rec_var ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -C -g g19g2 -d time,1,1 -d lev,1,1 ~/foo.nc
-
 # same #16 as previous but with group
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -a lev,time -v two_dmn_rec_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g2 -d time,1,1 -d lev,1,1 %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable with record (no -C, no MSA) -v two_dmn_rec_var -C -a lev,time";
@@ -3094,9 +3052,7 @@ print "\n";
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
 # ncpdq -O -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -g g19g2 -v two_dmn_rec_var ~/foo.nc
-
 # same as #17 but with group
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g2 -a lev,time -v two_dmn_rec_var -d time,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g2 -v two_dmn_rec_var %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable with record (-C, MSA) -v two_dmn_rec_var -C -a lev,time";
@@ -3112,7 +3068,6 @@ print "\n";
 # ncks -C -g g19g2 -v two_dmn_rec_var ~/foo.nc
 # $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
 # same as #18 but with group
-  
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -a lev,time -v two_dmn_rec_var -d time,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g2 -v two_dmn_rec_var %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable with record (no -C, MSA) -v two_dmn_rec_var";
@@ -3123,7 +3078,6 @@ print "\n";
 
 #NEW NCO 4.3.5
 #ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc ~/foo.nc
-  
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat -g g23,g24 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -v lat -g g23 %tmp_fl_00%";
    $dsc_sng="(Groups) Reverse -a lat -g g23 several groups";
@@ -3134,7 +3088,6 @@ print "\n";
 
 #NEW NCO 4.3.5
 #ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc ~/foo.nc
-  
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat -g g23,g24 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -v lat -g g24 %tmp_fl_00%";
    $dsc_sng="(Groups) Reverse -a lat -g g24 several groups";
@@ -3182,7 +3135,6 @@ print "\n";
 #ncpdq #46
 # ncpdq -O -4 -a lon,lat --cnk_min=1 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct ~/nco/data/in.nc ~/foo.nc
 # ncks -m ~/foo.nc | grep 'lat_2D_rct dimension 0'
-
    $dsc_sng="Chunking -a lon,lat --cnk_min=1 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
    $tst_cmd[0]="ncpdq $omp_flg -4 $nco_D_flg -a lon,lat --cnk_min=1 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct $in_pth_arg in.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'lat_2D_rct dimension 0'";
@@ -3194,7 +3146,6 @@ print "\n";
 } ##### Group tests	
 	
 #ncpdq #42
-
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_01%";
@@ -3205,7 +3156,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 #ncpdq #43	
-
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
     $dsc_sng="Unpack 1D variable with netCDF convention";
@@ -3215,7 +3165,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 #ncpdq #44	
-
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk --hdf_upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
     $dsc_sng="Unpack 1D variable with HDF convention";
@@ -3225,7 +3174,6 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 #ncpdq #45	
-
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P xst_new --hdf_upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_01%";
@@ -3234,8 +3182,6 @@ print "\n";
     $tst_cmd[4]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array	
-	
-
 
 ####################
 #### ncrcat tests ## OK !

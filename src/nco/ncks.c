@@ -1074,6 +1074,8 @@ main(int argc,char **argv)
     } /* endif JSON */
     if(prn_flg.xml) prn_flg.PRN_MSS_VAL_BLANK=False;
 
+    if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG qrk3 nm = %s xtr = %s\n",nco_prg_nm_get(),trv_tbl->lst[1].nm_fll,(trv_tbl->lst[1].flg_xtr) ? "Yes" : "No");
+
     /* File summary */
     if(PRN_GLB_METADATA){
       prn_flg.smr_sng=smr_sng=(char *)nco_malloc((strlen(fl_in)+300L*sizeof(char))); /* [sng] File summary string */
@@ -1115,6 +1117,8 @@ main(int argc,char **argv)
         nco_srm_hdr();
         goto close_and_free;
       } /* !PRN_SRM */
+
+      if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG qrk4 nm = %s xtr = %s\n",nco_prg_nm_get(),trv_tbl->lst[1].nm_fll,(trv_tbl->lst[1].flg_xtr) ? "Yes" : "No");
 
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
 	/* Ineptly named nco_grp_prn() emits full CDL and XML formats, and partial JSN */
