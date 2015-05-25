@@ -66,6 +66,11 @@ trv_tbl_fnd_var_nm_fll                 /* [fnc] Check if "var_nm_fll" is in tabl
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 trv_sct *                              /* O [sct] Table object */
+trv_tbl_var_nm                         /* [fnc] Return variable object (relative name) */
+(const char * const var_nm,            /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
+trv_sct *                              /* O [sct] Table object */
 trv_tbl_var_nm_fll                     /* [fnc] Return object from full name key */
 (const char * const var_nm_fll,        /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
@@ -188,11 +193,6 @@ nco_gid_var_nm_2_var_nm_fll           /* [fnc] Construct full variable name from
 nco_bool                              
 nco_is_fll_pth                         /* [fnc] Utility function to inquire if a string is a full path */
 (const char * const str);              /* I [sng] A string to inquire */
-
-trv_sct *                              /* O [sct] Table object */
-trv_tbl_var_nm                         /* [fnc] Return variable object (relative name) */
-(const char * const var_nm,            /* I [sng] Variable name to find */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 trv_sct *                              /* O [sct] Table object */
 trv_tbl_nsm_nm                         /* [fnc] Return variable object  */

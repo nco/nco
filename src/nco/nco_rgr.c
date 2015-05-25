@@ -546,11 +546,21 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   in_id=rgr_nfo->in_id;
   out_id=rgr_nfo->out_id;
 
+  /* Do not extract lon, lat, or area
+     Create them from scratch using regridding data */
+  unsigned int idx_tbl; /* [idx] Counter for traversal table */
+  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/lat")) break;
+  if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
+  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
+    if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/lon")) break;
+  if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
+  
   int dmn_idx; /* [idx] Dimension index */
   int dmn_nbr; /* [nbr] Number of dimensions */
   const char ncol_nm[]="ncol"; /* [sng] Name of dimension that indicates regridding */
   /* Define regridding flag for each variable */
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
     dmn_nbr=trv_tbl->lst[idx_tbl].nbr_dmn;
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
@@ -562,10 +572,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* end nco_obj_typ_var */
   } /* end idx_tbl */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_crr){
-    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+    for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct trv=trv_tbl->lst[idx_tbl];
-      if(trv.nco_typ == nco_obj_typ_var) (void)fprintf(stderr,"Regrid %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
+      if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Regrid %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
     } /* end idx_tbl */
   } /* end dbg */
 
@@ -612,7 +622,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
 
   /* Define variables */
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       var_nm=trv.nm;
@@ -886,7 +896,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   double *var_val_dbl_out;
   lnk_nbr=rgr_map.num_links;
   
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       if(trv.flg_rgr){

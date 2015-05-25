@@ -1,5 +1,7 @@
 2015-05-25  Charlie Zender  <zender@uci.edu>
 
+	* Exempt /lat and /lon from regridding
+
 	* Regridding appears to work for 2D variables! Yay!
 
 	* Weight variables and copy values to regridded file
