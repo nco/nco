@@ -906,6 +906,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
       if(trv.flg_rgr){
 	/* Regrid variable */
 	var_nm=trv.nm;
@@ -943,7 +944,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	var_val_dbl_in=(double *)void_ptr_var_in;
 	var_val_dbl_out=(double *)void_ptr_var_out;
 	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
-	if(nco_dbg_lvl_get() > nco_dbg_io){
+	if(nco_dbg_lvl_get() >= nco_dbg_io){
 	  (void)fprintf(stdout,"idx row_dst col_src wgt_raw\n");
 	  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) (void)fprintf(stdout,"%li %d %d %g\n",lnk_idx,row_dst_adr[lnk_idx],col_src_adr[lnk_idx],wgt_raw[lnk_idx]);
 	} /* endif dbg */
@@ -964,6 +965,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
      } /* end else */
     } /* !xtr */
   } /* end idx_tbl */
+  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
   
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,out_id);

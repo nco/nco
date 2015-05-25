@@ -58,7 +58,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     (void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s examining variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s examining variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 
   /* Query attribute metadata when attribute name was specified */
   if(aed.att_nm) rcd_inq_att=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);

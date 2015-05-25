@@ -1,5 +1,7 @@
 2015-05-25  Charlie Zender  <zender@uci.edu>
 
+	* Clean-up debugging output
+
 	* Skip date_written and time_written variables when regridding
 
 	* Document (sort of) --map, --rgr_map
