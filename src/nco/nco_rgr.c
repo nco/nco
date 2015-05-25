@@ -562,57 +562,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* end idx_tbl */
   } /* end dbg */
 
-  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
-  char *var_nm; /* [sng] Variable name */
-  int *dmn_id_in; /* [id] Dimension IDs */
-  int *dmn_id_out; /* [id] Dimension IDs */
-  int var_id_in; /* [id] Variable ID */
-  int var_id_out; /* [id] Variable ID */
-  nc_type var_typ; /* [enm] Variable type */
-  nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
-
-  /* Copy Global Metadata */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_sct trv=trv_tbl->lst[idx_tbl];
-    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
-      var_nm=trv.nm;
-      var_typ=trv.var_typ;
-      dmn_nbr=trv.nbr_dmn;
-      rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
-      rcd=nco_inq_varid_flg(out_id,var_nm,&var_id_out);
-      /* If variable has not been defined, define it */
-      if(rcd != NC_NOERR){
-	dmn_id_in=(int *)nco_malloc(dmn_nbr*sizeof(int));
-	dmn_id_out=(int *)nco_malloc(dmn_nbr*sizeof(int));
-	dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
-	dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
-	if(trv.flg_rgr){
-	  /* Regrid */
-	  continue;
-	}else{
-	  /* Copy as-is */
-	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
-	  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
-	    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
-	    /* If dimension has not been defined, define it */
-	    if(rcd != NC_NOERR){
-	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
-	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
-	    } /* !rcd */
-	  } /* end loop over dimensions */
-	} /* end else */
-	rcd=nco_def_var(out_id,var_nm,var_typ,dmn_nbr,dmn_id_out,&var_id_out);
-	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
-	if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
-	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
-	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
-	if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
-      } /* !rcd */
-    } /* !var */
-  } /* end idx_tbl */
-
   /* Prepare to layout regridded file */
   aed_sct aed_mtd;
   char *att_nm;
@@ -636,12 +585,85 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   long dmn_srt_out[2];
   long dmn_cnt_out[2];
 
-  /* Define new dimensions in regridded file */
+  /* Define new horizontal dimensions before all else */
   rcd=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
   rcd=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
   rcd=nco_inq_dimid_flg(out_id,bnd_nm_out,&dmn_id_bnd);
   /* If dimension has not been defined, define it */
-  if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,dmn_nm,(int)2,&dmn_id_bnd);
+  if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,bnd_nm_out,(int)2,&dmn_id_bnd);
+
+  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
+  char *var_nm; /* [sng] Variable name */
+  int *dmn_id_in; /* [id] Dimension IDs */
+  int *dmn_id_out; /* [id] Dimension IDs */
+  int var_id_in; /* [id] Variable ID */
+  int var_id_out; /* [id] Variable ID */
+  nc_type var_typ; /* [enm] Variable type */
+  nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
+
+  /* Copy Global Metadata */
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
+
+  /* Define variables */
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct trv=trv_tbl->lst[idx_tbl];
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      var_nm=trv.nm;
+      var_typ=trv.var_typ;
+      dmn_nbr=trv.nbr_dmn;
+      rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
+      rcd=nco_inq_varid_flg(out_id,var_nm,&var_id_out);
+      /* If variable has not been defined, define it */
+      if(rcd != NC_NOERR){
+	dmn_id_in=(int *)nco_malloc((dmn_nbr+1)*sizeof(int)); /* Allocate an extra slot for new dimensions */
+	dmn_id_out=(int *)nco_malloc((dmn_nbr+1)*sizeof(int));
+	dmn_srt=(long *)nco_malloc((dmn_nbr+1)*sizeof(long));
+	dmn_cnt=(long *)nco_malloc((dmn_nbr+1)*sizeof(long));
+	if(trv.flg_rgr){
+	  /* Regrid */
+	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
+	    if(!strcmp(dmn_nm,ncol_nm)){
+	      /* Replace unstructured dimension by orthogonal horizontal dimensions already defined */
+	      dmn_id_out[dmn_idx]=dmn_id_lat;
+	      dmn_id_out[dmn_idx+1]=dmn_id_lon;
+	      dmn_cnt[dmn_idx]=lat_nbr_out;
+	      dmn_cnt[dmn_idx+1]=lon_nbr_out;
+	      dmn_idx++;
+	      dmn_nbr++;
+	    }else{
+	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
+	      /* If dimension has not been defined, define it */
+	      if(rcd != NC_NOERR){
+		rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+		rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+	      } /* !rcd */
+	    } /* end else */
+	  } /* end loop over dimensions */
+	}else{
+	  /* Copy as-is */
+	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
+	    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
+	    /* If dimension has not been defined, define it */
+	    if(rcd != NC_NOERR){
+	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+	    } /* !rcd */
+	  } /* end loop over dimensions */
+	} /* end else */
+	rcd=nco_def_var(out_id,var_nm,var_typ,dmn_nbr,dmn_id_out,&var_id_out);
+	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
+	if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
+	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
+	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+	if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
+      } /* !rcd */
+    } /* !var */
+  } /* end idx_tbl */
+
   /* Define new coordinates in regridded file */
   (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,(int)1,&dmn_id_lon,&lon_out_id);
   (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,(int)1,&dmn_id_lat,&lat_out_id);
@@ -849,6 +871,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       if(trv.flg_rgr){
+	/* Weight variable */
 	;
       }else{
 	(void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
@@ -856,10 +879,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* !xtr */
   } /* end idx_tbl */
   
-  /* Weight variable */
-
-  /* Write variable */
-
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,out_id);
 
