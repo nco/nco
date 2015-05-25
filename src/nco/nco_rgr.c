@@ -620,6 +620,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   /* Copy Global Metadata */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
+  (void)nco_vrs_att_cat(out_id);
 
   /* Define variables */
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
