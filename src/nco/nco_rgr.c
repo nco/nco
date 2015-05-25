@@ -632,10 +632,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nc_type var_typ; /* [enm] Variable type */
   nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
-  /* Copy Global Metadata */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
-  (void)nco_vrs_att_cat(out_id);
-
   /* Define variables */
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
@@ -981,9 +977,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* end idx_tbl */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
   
-  /* Close output file and move it from temporary to permanent location */
-  (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,out_id);
-
   /* From this point on we parallel ncks logic for writing output files except:
      All actions take place in sand-boxed routine and output file visible to regridding only
      We work with a separate traversal table? 
