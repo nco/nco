@@ -524,6 +524,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,NC_DOUBLE);
   rcd=nco_get_vara(in_id,col_src_adr_id,dmn_srt,dmn_cnt,col_src_adr,NC_INT);
   rcd=nco_get_vara(in_id,row_dst_adr_id,dmn_srt,dmn_cnt,row_dst_adr,NC_INT);
+  /* Optimize row/column access by pre-subtracting one to account for Fortran index offset relative to C */
+  size_t lnk_nbr; /* [nbr] Number of links */
+  size_t lnk_idx; /* [idx] Link index */
+  lnk_nbr=rgr_map.num_links;
+  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) row_dst_adr[lnk_idx]--;
+  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) col_src_adr[lnk_idx]--;
 
   /* Free memory associated with input file */
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
@@ -893,12 +899,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
 
-  size_t lnk_nbr; /* [nbr] Number of links */
-  size_t lnk_idx; 
   size_t dst_idx; 
   double *var_val_dbl_in;
   double *var_val_dbl_out;
-  lnk_nbr=rgr_map.num_links;
   
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
@@ -947,7 +950,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	} /* endif dbg */
 	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
 	/* NB: row and col employ Fortran index conventions, i.e., they are 1-based */
-	for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]-1]+=var_val_dbl_in[col_src_adr[lnk_idx]-1]*wgt_raw[lnk_idx];
+	for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 
 	rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,void_ptr_var_out,var_typ);
 
