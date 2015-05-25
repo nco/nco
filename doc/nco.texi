@@ -15303,7 +15303,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--grp_xtr_var_xcl] [-H] [-h] [--hdn] [--hdr_pad @var{nbr}]
-[-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
+[-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--map @var{map-file}] [--md5_digest] [--mk_rec_dmn @var{dim}]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
 [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [-s @var{format}] 
 [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
@@ -15318,8 +15318,9 @@ The nickname ``kitchen sink'' is a catch-all because @command{ncks}
 combines most features of @command{ncdump} and @command{nccopy} with
 extra features to extract, hyperslab, multi-slab, sub-set, and translate  
 into one versatile utility. 
-@command{ncks} extracts (a subset of the) data from @var{input-file} and 
-and writes (or pastes) it in netCDF format to @var{output-file}, and 
+@command{ncks} extracts (a subset of the) data from @var{input-file},
+regrids it according to @var{map-file} if specified,
+then writes in netCDF format to @var{output-file}, and 
 optionally writes it in flat binary format to @file{binary-file}, and
 optionally prints it to screen.
 
@@ -15796,6 +15797,26 @@ Use @samp{-m} to print variable metadata to screen if a netCDF output is
 specified. 
 Also use @samp{-m} to turn-off copying of variable metadata to an output
 file.
+
+@html
+<a name="map"></a> <!-- http://nco.sf.net/nco.html#map -->
+<a name="esmf"></a> <!-- http://nco.sf.net/nco.html#esmf -->
+<a name="scrip"></a> <!-- http://nco.sf.net/nco.html#scrip -->
+<a name="rgr"></a> <!-- http://nco.sf.net/nco.html#rgr -->
+<a name="rgr_map"></a> <!-- http://nco.sf.net/nco.html#rgr_map -->
+<a name="regrid"></a> <!-- http://nco.sf.net/nco.html#regrid -->
+@end html
+@cindex map
+@cindex regrid
+@cindex @code{--map}
+@cindex @code{--rgr_map}
+@cindex ESMF
+@cindex SCRIP
+@item --map @file{map-file}
+Regrid input data in to different grid using input and output
+grid data and mapping weights specified in ESMF- or SCRIP-format
+@file{map-file}.
+Also @samp{--rgr_map}.
 
 @html
 <a name="no_blank"></a> <!-- http://nco.sf.net/nco.html#no_blank -->
