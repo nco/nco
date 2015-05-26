@@ -1,5 +1,17 @@
 2015-05-25  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.0 release procedure:
+ 	Changes since nco-4.4.9: --map
+	cd ~/nco;git commit -a -m "Version 4.5.0 release: "
+	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
+	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
+
+	* NCO 4.5.0-alpha1 release procedure:
+ 	Changes since nco-4.4.9: --map
+	cd ~/nco;git commit -a -m "Version 4.5.0-alpha1: Regridding with external mapfile"
+	git tag -d 4.5.0-alpha1;git push origin :refs/tags/4.5.0-alpha1
+	git tag -a 4.5.0-alpha1 -m 'Version 4.5.0-alpha1: Regridding with external mapfile';git push --tags
+
 	* Reorganize global attribute writing, catenate history attribute
 
 	* Verified NCO gives identical results as Taylor/Truesdale NCL script for 2-D & 3-D variables
@@ -43,12 +55,6 @@
 2015-05-22  Charlie Zender  <zender@uci.edu>
 
 	* Output destination grid and coordinate metadata looks good in nco_rgr_map()
-
-	* NCO 4.5.0 release procedure:
- 	Changes since nco-4.4.9: fxm
-	cd ~/nco;git commit -a -m "Version 4.5.0 release: "
-	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
-	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
 
 	* Bump to 4.5.0-alpha1. Undo crippling of ncra --wgt wgt_nm for further debugging
 

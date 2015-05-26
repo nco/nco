@@ -15810,13 +15810,28 @@ file.
 @cindex regrid
 @cindex @code{--map}
 @cindex @code{--rgr_map}
-@cindex ESMF
-@cindex SCRIP
+@cindex @acronym{ESMF}
+@cindex @acronym{SCRIP}
 @item --map @file{map-file}
-Regrid input data in to different grid using input and output
-grid data and mapping weights specified in ESMF- or SCRIP-format
+Regrid input data to different horizontal grid using input and output 
+grids and mapping weights specified in @acronym{ESMF}- or @acronym{SCRIP}-format
 @file{map-file}.
 Also @samp{--rgr_map}.
+@example
+@verbatim
+# Entire file, same output format as input:
+ncks --map=map.nc in.nc out.nc
+# Selected variables, netCDF4 output:
+ncks -4 -v FS.?,T --map=map.nc in.nc out.nc
+@end verbatim
+@end example
+As of @acronym{NCO} version 4.5.0 (June, 2015), @command{ncks} supports 
+horizontal regridding using the mapfile format pioneered by
+@acronym{SCRIP} 
+(@url{http://oceans11.lanl.gov/svn/SCRIP/trunk/SCRIP})
+and later extended by @acronym{ESMF} 
+(@uref{http://www.earthsystemcog.org/projects/regridweightgen}).
+See those references for additional documentation.
 
 @html
 <a name="no_blank"></a> <!-- http://nco.sf.net/nco.html#no_blank -->
@@ -15830,7 +15845,6 @@ Also @samp{--rgr_map}.
 @cindex missing values
 @item --no_blank
 Print numeric representation of missing values.
-As of @acronym{NCO}
 As of @acronym{NCO} version 4.2.2 (October, 2012), @acronym{NCO} prints
 missing values as blanks (i.e., the underscore character @samp{_}) by default.
 To enable the old behavior of printing the numeric representation of
