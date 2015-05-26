@@ -15823,6 +15823,8 @@ Also @samp{--rgr_map}.
 ncks --map=map.nc in.nc out.nc
 # Selected variables, netCDF4 output:
 ncks -4 -v FS.?,T --map=map.nc in.nc out.nc
+# Selected variables, deflated netCDF4 output:
+ncks -4 -L 1 -v FS.?,T --map=map.nc in.nc out.nc
 @end verbatim
 @end example
 As of @acronym{NCO} version 4.5.0 (June, 2015), @command{ncks} supports 
