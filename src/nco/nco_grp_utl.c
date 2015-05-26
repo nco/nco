@@ -2197,6 +2197,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_mtd=False;                /* [flg] Group contains only metadata */
   trv_tbl->lst[idx].flg_ncs=False;                /* [flg] Group is ancestor of specified group or variable */
   trv_tbl->lst[idx].flg_nsx=False;                /* [flg] Object matches intersection criteria */
+  trv_tbl->lst[idx].flg_rgr=False;                /* [flg] Regrid variable */
   trv_tbl->lst[idx].flg_rcr=False;                /* [flg] Extract group recursively */
   trv_tbl->lst[idx].flg_unn=False;                /* [flg] Object matches union criteria */
   trv_tbl->lst[idx].flg_vfp=False;                /* [flg] Variable matches full path specification */
@@ -2299,6 +2300,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_ncs=False; 
     trv_tbl->lst[idx].flg_nsx=False; 
     trv_tbl->lst[idx].flg_rcr=False; 
+    trv_tbl->lst[idx].flg_rgr=False; 
     trv_tbl->lst[idx].flg_unn=False; 
     trv_tbl->lst[idx].flg_vfp=False; 
     trv_tbl->lst[idx].flg_vsg=False; 
@@ -6636,14 +6638,14 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
      nco_bld_crd_var_trv()
      nco_has_crd_dmn_scp()
      nco_bld_var_dmn()
-     complete structures for the traversal table to be completed.
-     Then, user options functions are called:
+     Traversal table now has all necessary _structures_ complete
+     Next, call functions dependent on user-supplied options:
      nco_xtr_mk()
      nco_xtr_xcl()
      nco_xtr_crd_add()
      nco_xtr_crd_ass_add()
      nco_xtr_cf_add()
-     Limits related function must be called in order:
+     Limit-related functions must be called in order:
      nco_lmt_prs()
      nco_prs_aux_crd()
      nco_chk_dmn_in()
@@ -9394,7 +9396,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
       } /* Loop group members */
     } /* Loop ensembles */
 
-  } else if(flg_grp_1 == False) {
+  }else if(flg_grp_1 == False){
 
   } /* ! flg_grp_1 */
 
@@ -9479,7 +9481,6 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
             if(skp_trv) (void)nco_fix_dfn_wrt(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,skp_trv,trv_tbl_1,flg_dfn);
 
           } /* List of fixed templates  */
-
 
           /* Loop list of variables from other file */
           for(int idx_var_2=0;idx_var_2<var_lst->nbr;idx_var_2++){

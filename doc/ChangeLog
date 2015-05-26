@@ -1,12 +1,60 @@
-2015-05-22  Charlie Zender  <zender@uci.edu>
-
-	* Output destination grid and coordinate metadata looks good in nco_rgr_map()
+2015-05-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.0 release procedure:
- 	Changes since nco-4.4.9: fxm
+ 	Changes since nco-4.4.9: --map
 	cd ~/nco;git commit -a -m "Version 4.5.0 release: "
 	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
 	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
+
+	* NCO 4.5.0-alpha1 release procedure:
+ 	Changes since nco-4.4.9: --map
+	cd ~/nco;git commit -a -m "Version 4.5.0-alpha1: Regridding with external mapfile"
+	git tag -d 4.5.0-alpha1;git push origin :refs/tags/4.5.0-alpha1
+	git tag -a 4.5.0-alpha1 -m 'Version 4.5.0-alpha1: Regridding with external mapfile';git push --tags
+
+	* Reorganize global attribute writing, catenate history attribute
+
+	* Verified NCO gives identical results as Taylor/Truesdale NCL script for 2-D & 3-D variables
+
+	* Handle lefter aka leftmost aka vertical and time dimensions in regridding
+
+	* Optimize row/column access by pre-subtracting one to account for Fortran index offset relative to C
+
+	* Clean-up debugging output
+
+	* Skip date_written and time_written variables when regridding
+
+	* Document (sort of) --map, --rgr_map
+
+	* Re-plumb I/O to regrid straight to fl_out (ignore --rgr_out)
+
+	* Add NCO version to global metadata of regridding
+
+	* Exempt /lat and /lon from regridding
+
+	* Regridding appears to work for 2D variables! Yay!
+
+	* Weight variables and copy values to regridded file
+
+2015-05-24  Charlie Zender  <zender@uci.edu>
+
+	* Define regridded-variables in and copy their metadata to regridded file
+
+	* Copy global and fixed-variable metadata to regridded file
+
+	* Define fixed-variables in and copy their data to regridded file
+
+	* Set new flg_rgr for input variables that contain "ncol" dimension
+
+	* Complete grid metadata for output file
+
+	* Add equi-angle latitude weights (also named "gw") to nco_rgr_map()
+
+	* Add nco_vrs_att_cat() to all operators (was only in ncks, ncbo)
+
+2015-05-22  Charlie Zender  <zender@uci.edu>
+
+	* Output destination grid and coordinate metadata looks good in nco_rgr_map()
 
 	* Bump to 4.5.0-alpha1. Undo crippling of ncra --wgt wgt_nm for further debugging
 

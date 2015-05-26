@@ -2157,6 +2157,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   dmn_nbr=0; /* [nbr] Number of dimensions defined in group */
   var_nbr_xtr=0; /* [nbr] Number of variables to be extracted in group */
 
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG qrk5 nm = %s xtr = %s\n",nco_prg_nm_get(),trv_tbl->lst[1].nm_fll,(trv_tbl->lst[1].flg_xtr) ? "Yes" : "No");
+
   /* Find group in traversal table */
   for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
     if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
@@ -2238,6 +2240,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Create array to hold names and indices of extracted variables in this group */
   var_lst=(nm_id_sct *)nco_malloc(nbr_var*(sizeof(nm_id_sct)));
 
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG qrk6 nm = %s xtr = %s\n",nco_prg_nm_get(),trv_tbl->lst[1].nm_fll,(trv_tbl->lst[1].flg_xtr) ? "Yes" : "No");
+
   for(var_idx=0;var_idx<nbr_var;var_idx++){
     /* Get variable name */
     rcd+=nco_inq_varname(grp_id,var_idx,var_nm);
@@ -2273,6 +2277,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     var_nm_fll=(char *)nco_free(var_nm_fll);
 
   } /* end loop over variables */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG qrk7 nm = %s xtr = %s\n",nco_prg_nm_get(),trv_tbl->lst[1].nm_fll,(trv_tbl->lst[1].flg_xtr) ? "Yes" : "No");
 
   /* Compactify array to hold names and indices of extracted variables in this group */
   var_lst=(nm_id_sct *)nco_realloc(var_lst,var_nbr_xtr*(sizeof(nm_id_sct)));

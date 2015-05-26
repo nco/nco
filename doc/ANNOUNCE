@@ -5,21 +5,15 @@ The netCDF Operators NCO version 4.5.0 are ready.
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release includes small feature improvements in chunking,
-deflation, and attribute handling during dimension reduction.
-Also improvements in clarity and consistency of messages.
-While chunking is an esoteric feature for many, its importance
-is increasing as the move to netCDF4 (classic) continues.
-The chunking defaults and flexibility have reached a new level
-of robustness in this release. 
+This release brings regridding capability to NCO.
+The current regridding features build on infrastructure pioneered by
+Phil Jones (SCRIP), and the multi-agency Earth System Modeling
+Framework (ESMF). ESMF is a Fortran library with a new C-interface,
+so NCO once again (optionally) links to Fortran. It was sixteen years
+ago that NCO (version 1.1.18) changed from default Fortran arithmetic
+to C. 
 
-The main new awesome feature is that ncra understands weights.
-Finally. Applying uneven weights to different input files was
-too clunky. This release is dedicated to the intrepid souls who
-use NCO to generate climatologies that require uneven weights. 
-This release should make that task much easier.
-
-Work on NCO 4.5.0 has commenced and will support regridding, 
+Work on NCO 4.5.1 has commenced and will support more regridding,  
 additional ncra flexibility with weights, and easier builds on
 supercomputer systems that use modules. 
 

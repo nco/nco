@@ -295,14 +295,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 0
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE  "alpha1" /* May be blank */
+# define NCO_VERSION_NOTE  "beta1" /* May be blank */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.5.0-alpha1"
+# define NCO_VERSION "4.5.0-beta1"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -992,7 +992,7 @@ extern "C" {
   } aux_crd_sct; 
 
   /* GTT Variable dimensions:
-  Dimension have name and size, and can have an associated variable (coordinate variable) */
+     Dimensions have name and size, and maybe an associated (coordinate) variable */
   typedef struct{ 
     char *dmn_nm_fll;        /* [sng] Full dimension name */
     char *dmn_nm;            /* [sng] Dimension name */
@@ -1058,6 +1058,7 @@ extern "C" {
     nco_bool flg_ncs;                 /* [flg] Group is ancestor of specified group or variable */
     nco_bool flg_nsx;                 /* [flg] Object matches intersection criteria */
     nco_bool flg_rcr;                 /* [flg] Extract group recursively */
+    nco_bool flg_rgr;                 /* [flg] Regrid variable */ 
     nco_bool flg_unn;                 /* [flg] Object matches union criteria */
     nco_bool flg_vfp;                 /* [flg] Variable matches full path specification */
     nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */

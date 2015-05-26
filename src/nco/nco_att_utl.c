@@ -58,7 +58,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     (void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s examining variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s examining variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 
   /* Query attribute metadata when attribute name was specified */
   if(aed.att_nm) rcd_inq_att=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
@@ -1468,7 +1468,7 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
 
   /* Insert thread number into value */
   att_val.cp=vrs_sng;
-  /* Initialize nco_openmp_thread_number attribute edit structure */
+  /* Initialize NCO version attribute edit structure */
   vrs_sng_aed.att_nm=att_nm;
   vrs_sng_aed.var_nm=NULL;
   vrs_sng_aed.id=NC_GLOBAL;

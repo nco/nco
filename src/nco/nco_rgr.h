@@ -14,6 +14,7 @@
 #define NCO_RGR_H
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 
