@@ -19029,12 +19029,20 @@ Here is an example showing:
 
 @html
 <a name="parallel"></a> <!-- http://nco.sf.net/nco.html#parallel -->
+<a name="prl"></a> <!-- http://nco.sf.net/nco.html#prl -->
+<a name="swift"></a> <!-- http://nco.sf.net/nco.html#swift -->
+<a name="swf"></a> <!-- http://nco.sf.net/nco.html#swf -->
+<a name="Parallel"></a> <!-- http://nco.sf.net/nco.html#Parallel -->
+<a name="Swift"></a> <!-- http://nco.sf.net/nco.html#Swift -->
 @end html
 @node Parallel, CCSM Example, CMIP5 Example, Top
 @chapter Parallel
+@cindex Parallel
+@cindex Swift
 @cindex @command{parallel}
-This section will describe scripting strategies, including the use of
-@acronym{GNU} Parallel, to @acronym{NCO}.
+This section will describe @acronym{NCO} scripting strategies.
+Many techniques can be used to exploit script-level parallelism,
+including @acronym{GNU} Parallel and Swift.
 @example
 @verbatim
 ls *historical*.nc | parallel ncks -O -d time,"1950-01-01","2000-01-01" {} 50y/{}
