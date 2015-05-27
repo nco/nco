@@ -522,7 +522,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[lat_nbr_out+idx])-sin(dgr2rdn*lat_bnd_out[idx]);
   } /* end loop over latitude */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_std){
+  if(nco_dbg_lvl_get() >= nco_dbg_vec){
     (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
     for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[idx],lon_ctr_out[idx],lon_bnd_out[lon_nbr_out+idx]);
     for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[idx],lat_ctr_out[idx],lat_bnd_out[lat_nbr_out+idx]);
