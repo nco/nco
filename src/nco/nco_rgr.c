@@ -1070,10 +1070,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	      val_out_fst+=grd_sz_out;
 	    } /* end loop over lvl */
 	  } /* lvl_nbr > 1 */
+	  /* NCL and ESMF treatment of weights and missing values described at
+	     https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
+	     http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000 */
 	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	    /* NCL and ESMF treatment of weights and missing values described at
-	       https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
-	       http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000 */
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
 	} /* !has_mss_val */
 	

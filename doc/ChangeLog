@@ -1,5 +1,7 @@
 2015-05-28  Charlie Zender  <zender@uci.edu>
 
+	* Fix typo bug in nco_cnk_ini() reported by ocehugo. Caused existing chunk maps to be ignored.
+
 	* NCO 4.5.0-beta3 release procedure:
 	cd ~/nco;git commit -a -m "Version 4.5.0-beta3: Missing values work. Fix gw bug in beta2."
 	git tag -a 4.5.0-beta3 -m 'Version 4.5.0-beta3: Missing values work. Fix gw bug in beta2.';git push --tags
