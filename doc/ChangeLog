@@ -1,9 +1,16 @@
+2015-05-28  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.0-beta3 release procedure:
+	cd ~/nco;git commit -a -m "Version 4.5.0-beta3: Missing values work. Fix gw bug in beta2."
+	git tag -a 4.5.0-beta3 -m 'Version 4.5.0-beta3: Missing values work. Fix gw bug in beta2.';git push --tags
+
+	* Fix gw problem introduced in beta2
+
 2015-05-27  Charlie Zender  <zender@uci.edu>
 
 	* Handle missing values in regridding. Be liberal: Any valid input points make valid output
 
 	* NCO 4.5.0-beta2 release procedure:
- 	Changes since nco-4.4.9: --map
 	cd ~/nco;git commit -a -m "Version 4.5.0-beta2: Correct output grid bounds, precision"
 	git tag -a 4.5.0-beta2 -m 'Version 4.5.0-beta2: Correct output grid bounds, precision';git push --tags
 
@@ -12,7 +19,6 @@
 	* Change dgr2rdn from float (oops!) to double to prevent precision loss
 
 	* NCO 4.5.0-beta1 release procedure:
- 	Changes since nco-4.4.9: --map
 	cd ~/nco;git commit -a -m "Version 4.5.0-beta1: Correct area output variable"
 	git tag -a 4.5.0-beta1 -m 'Version 4.5.0-beta1: Correct area output variable';git push --tags
 
