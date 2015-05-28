@@ -516,7 +516,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 #ifndef M_PI
 # define M_PI		3.14159265358979323846
 #endif /* M_PI */
-  const float dgr2rdn=M_PI/180.0;
+  const double dgr2rdn=M_PI/180.0;
   /* fxm: Only output gw for rectangular grids */
   for(idx=0;idx<lat_nbr_out;idx++){
     lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[lat_nbr_out+idx])-sin(dgr2rdn*lat_bnd_out[idx]);
