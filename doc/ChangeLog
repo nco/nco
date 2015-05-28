@@ -1,12 +1,15 @@
 2015-05-27  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.5.0-beta1 release procedure:
+	* NCO 4.5.0-beta2 release procedure:
  	Changes since nco-4.4.9: --map
-	cd ~/nco;git commit -a -m "Version 4.5.0-beta1: Correct area output variable"
-	git tag -d 4.5.0-beta1;git push origin :refs/tags/4.5.0-beta1
-	git tag -a 4.5.0-beta1 -m 'Version 4.5.0-beta1: Correct area output variable';git push --tags
+	cd ~/nco;git commit -a -m "Version 4.5.0-beta2: Correct area output variable, precision"
+	git tag -a 4.5.0-beta2 -m 'Version 4.5.0-beta2: Correct area output variable, precision';git push --tags
 
-	* Change dgr2rdn from float to double (oops!) to prevent precision loss
+	* Handling of missing values is main missing feature
+
+	* Fix output grid bounds (internal bounds were stored with weird memory layout that did not write to disk as expected)
+
+	* Change dgr2rdn from float (oops!) to double to prevent precision loss
 
 	* NCO 4.5.0-beta1 release procedure:
  	Changes since nco-4.4.9: --map
