@@ -1012,10 +1012,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
 	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt,var_val_dbl_in,var_typ);
 
-	/* Missing value setup */
-	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
-	if(has_mss_val) (void)fprintf(stdout,"%s: WARNING variable %s has missing value attribute, regridding does not yet handle that\n",nco_prg_nm_get(),trv.nm);
-
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt+dmn_idx);
 	  var_sz_out*=dmn_cnt[dmn_idx];
@@ -1028,6 +1024,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
 	/* Initialize output */
 	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
+	/* Missing value setup */
+	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 	if(has_mss_val) tally=(int *)nco_calloc(var_sz_out,nco_typ_lng(NC_INT));
 
 	/* Apply weights */
