@@ -1,11 +1,11 @@
 2015-05-27  Charlie Zender  <zender@uci.edu>
 
+	* Handle missing values in regridding. Be liberal: Any valid input points make valid output
+
 	* NCO 4.5.0-beta2 release procedure:
  	Changes since nco-4.4.9: --map
-	cd ~/nco;git commit -a -m "Version 4.5.0-beta2: Correct area output variable, precision"
-	git tag -a 4.5.0-beta2 -m 'Version 4.5.0-beta2: Correct area output variable, precision';git push --tags
-
-	* Handling of missing values is main missing feature
+	cd ~/nco;git commit -a -m "Version 4.5.0-beta2: Correct output grid bounds, precision"
+	git tag -a 4.5.0-beta2 -m 'Version 4.5.0-beta2: Correct output grid bounds, precision';git push --tags
 
 	* Fix output grid bounds (internal bounds were stored with weird memory layout that did not write to disk as expected)
 

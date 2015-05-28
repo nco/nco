@@ -968,8 +968,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   const size_t grd_sz_out=rgr_map.dst_grid_size; /* [nbr] Number of elements in single layer of output grid */
   double *var_val_dbl_in;
   double *var_val_dbl_out;
+  double mss_val_dbl;
+  double var_val_crr;
+  int *tally=NULL; /* [nbr] Number of valid (non-missing) values */
+  int idx_in; /* [idx] Input grid index */
+  int idx_out; /* [idx] Output grid index */
   int lvl_idx; /* [idx] Level index */
   int lvl_nbr; /* [nbr] Number of levels */
+  nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
   size_t dst_idx; 
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
@@ -1006,6 +1012,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
 	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt,var_val_dbl_in,var_typ);
 
+	/* Missing value setup */
+	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
+	if(has_mss_val) (void)fprintf(stdout,"%s: WARNING variable %s has missing value attribute, regridding does not yet handle that\n",nco_prg_nm_get(),trv.nm);
+
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt+dmn_idx);
 	  var_sz_out*=dmn_cnt[dmn_idx];
@@ -1016,27 +1026,63 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	lvl_nbr=1;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
 
-	/* Apply weights */
+	/* Initialize output */
 	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
-	if(lvl_nbr == 1){
-	  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
-	}else{
-	  val_in_fst=0L;
-	  val_out_fst=0L;
-	  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-	    //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
-	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
-	    val_in_fst+=grd_sz_in;
-	    val_out_fst+=grd_sz_out;
-	  } /* end loop over lvl */
-	} /* lvl_nbr > 1 */
-	  
-	rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ);
+	if(has_mss_val) tally=(int *)nco_calloc(var_sz_out,nco_typ_lng(NC_INT));
 
+	/* Apply weights */
+	if(!has_mss_val){
+	  if(lvl_nbr == 1){
+	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+	      var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
+	  }else{
+	    val_in_fst=0L;
+	    val_out_fst=0L;
+	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+	      //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
+	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+		var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
+	      val_in_fst+=grd_sz_in;
+	      val_out_fst+=grd_sz_out;
+	    } /* end loop over lvl */
+	  } /* lvl_nbr > 1 */
+	}else{
+	  if(lvl_nbr == 1){
+	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+	      idx_in=col_src_adr[lnk_idx];
+	      idx_out=row_dst_adr[lnk_idx];
+	      if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		tally[idx_out]++;
+	      } /* endif */
+	    } /* end loop over link */
+	  }else{
+	    val_in_fst=0L;
+	    val_out_fst=0L;
+	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		idx_in=col_src_adr[lnk_idx]+val_in_fst;
+		idx_out=row_dst_adr[lnk_idx]+val_out_fst;
+		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		  var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		  tally[idx_out]++;
+		} /* endif */
+	      } /* end loop over link */
+	      val_in_fst+=grd_sz_in;
+	      val_out_fst+=grd_sz_out;
+	    } /* end loop over lvl */
+	  } /* lvl_nbr > 1 */
+	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
+	} /* !has_mss_val */
+	
+	rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ);
+	
 	if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);
 	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
 	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
 	if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
+	if(tally) tally=(int *)nco_free(tally);
 	if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
 	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
       }else{
