@@ -28,6 +28,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_omp.h" /* OpenMP utilities */
 #include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus

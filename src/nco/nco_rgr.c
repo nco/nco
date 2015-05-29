@@ -225,14 +225,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int rcd=NC_NOERR;
 
-  int src_grid_size_id; /* [id] Source grid size dimension ID */
-  int dst_grid_size_id; /* [id] Destination grid size dimension ID */
-  int src_grid_corners_id; /* [id] Source grid corners dimension ID */
   int dst_grid_corners_id; /* [id] Destination grid corners dimension ID */
-  int src_grid_rank_id; /* [id] Source grid rank dimension ID */
   int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
+  int dst_grid_size_id; /* [id] Destination grid size dimension ID */
   int num_links_id; /* [id] Number of links dimension ID */
   int num_wgts_id; /* [id] Number of weights dimension ID */
+  int src_grid_corners_id; /* [id] Source grid corners dimension ID */
+  int src_grid_rank_id; /* [id] Source grid rank dimension ID */
+  int src_grid_size_id; /* [id] Source grid size dimension ID */
 
   nco_bool FL_RTR_RMT_LCN;
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
@@ -996,19 +996,21 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: #var_nm means regridded, ~var_nm means copied\n");
 
-  /* Initialize thread information */
-  thr_nbr=nco_openmp_ini(thr_nbr);
+  /* Using naked stdin/stdout/stderr in parallel region generates warning
+     Copy appropriate filehandle to variable scoped shared in parallel clause */
+  FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
 #ifdef _OPENMP
   /* OpenMP notes:
-     shared(): msk and wgt are not altered within loop
-     private(): wgt_avg does not need initialization */
-# pragma omp parallel for default(none) firstprivate(fxm) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,idx,idx_tbl,rcd,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ) shared(in_id,out_id,trv_tbl)
+     firstprivate():
+     private():
+     shared(): */
+# pragma omp parallel for default(none) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,tally,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,in_id,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 #endif /* !_OPENMP */
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
       if(trv.flg_rgr){
 	/* Regrid variable */
 	var_nm=trv.nm;
@@ -1059,7 +1061,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	    val_in_fst=0L;
 	    val_out_fst=0L;
 	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-	      //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
+	      //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 		var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
 	      val_in_fst+=grd_sz_in;

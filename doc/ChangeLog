@@ -4,6 +4,12 @@
 	cd ~/nco;git commit -a -m "Version 4.5.0-beta4: area cell_methods"
 	git tag -a 4.5.0-beta4 -m 'Version 4.5.0-beta4: area cell_methods';git push --tags
 
+	* Surprisingly, all regressions still pass. Probably because thr_nbr is prescribed to be one :)
+
+	* Update ncra OpenMP threading infrastructure to compile
+
+	* Add OpenMP threading infrastructure to ncks and nco_rgr() in specific
+
 	* Add cell_methods = sum attribute to area variable during regridding
 
 	* NCO 4.5.0-beta4 release procedure:
