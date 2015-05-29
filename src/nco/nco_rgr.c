@@ -521,9 +521,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 #endif /* M_PI */
   const double dgr2rdn=M_PI/180.0;
   /* fxm: Be sure only to output gw for rectangular grids */
-  for(idx=0;idx<lat_nbr_out;idx++){
+  for(idx=0;idx<lat_nbr_out;idx++)
     lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
-  } /* end loop over latitude */
   
   if(nco_dbg_lvl_get() >= nco_dbg_vec){
     (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
@@ -612,7 +611,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* end idx_tbl */
   } /* end dbg */
 
-  /* Prepare to layout regridded file */
+  /* Layout regridded file */
   aed_sct aed_mtd;
   char *att_nm;
   char bnd_nm_out[]="nbnd"; /* NB: CESM uses nbnd for time bounds. Non-rectangular grids will have nbnd for time, and nv != nbnd for spatial bounds. */
@@ -757,6 +756,19 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   att_nm=strdup("units");
   att_val=strdup("steradian");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=area_nm_out;
+  aed_mtd.id=area_out_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("cell_methods");
+  att_val=strdup("sum");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=area_nm_out;
   aed_mtd.id=area_out_id;
@@ -983,6 +995,16 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
   
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: #var_nm means regridded, ~var_nm means copied\n");
+
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+
+#ifdef _OPENMP
+  /* OpenMP notes:
+     shared(): msk and wgt are not altered within loop
+     private(): wgt_avg does not need initialization */
+# pragma omp parallel for default(none) firstprivate(fxm) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,idx,idx_tbl,rcd,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ) shared(in_id,out_id,trv_tbl)
+#endif /* !_OPENMP */
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
@@ -1077,7 +1099,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
 	} /* !has_mss_val */
 	
-	rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ);
+#ifdef _OPENMP
+# pragma omp critical
+#endif /* _OPENMP */
+	{ /* begin OpenMP critical */
+	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ);
+	} /* end OpenMP critical */
 	
 	if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);
 	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
@@ -1087,10 +1114,11 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
 	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
       }else{
+	/* Use standard NCO copy routine for variables that are not regridded */
 	(void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
-     } /* end else */
+     } /* !flg_rgr */
     } /* !xtr */
-  } /* end idx_tbl */
+  } /* end (OpenMP parallel for) loop over idx_tbl */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
   
   /* Free memory allocated for grid reading/writing */

@@ -1,6 +1,12 @@
 2015-05-28  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.5.0-beta3 release procedure:
+	* NCO 4.5.0-beta5 release procedure:
+	cd ~/nco;git commit -a -m "Version 4.5.0-beta4: area cell_methods"
+	git tag -a 4.5.0-beta4 -m 'Version 4.5.0-beta4: area cell_methods';git push --tags
+
+	* Add cell_methods = sum attribute to area variable during regridding
+
+	* NCO 4.5.0-beta4 release procedure:
 	cd ~/nco;git commit -a -m "Version 4.5.0-beta4: Deprecate missing value warning. Fix cnk_map_xst handling."
 	git tag -a 4.5.0-beta4 -m 'Version 4.5.0-beta4: Deprecate missing value warning. Fix cnk_map_xst handling.';git push --tags
 

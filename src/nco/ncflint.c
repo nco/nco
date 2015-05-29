@@ -867,11 +867,7 @@ main(int argc,char **argv)
 #endif /* _OPENMP */
     { /* begin OpenMP critical */
       /* Copy interpolations to output file */
-    if(var_prc_out[idx]->nbr_dim == 0){
-    (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
-  }else{ /* end if variable is scalar */
-        (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
-      } /* end else */
+      if(!var_prc_out[idx]->nbr_dim) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
     } /* end OpenMP critical */
 
     /* Free dynamically allocated buffers */
