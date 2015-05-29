@@ -702,8 +702,8 @@ main(int argc,char **argv)
     if (xtr_nbr_ntp_1) ntp_1=var_ntp_1[0];
     if (xtr_nbr_ntp_2) ntp_2=var_ntp_2[0];
 
-    if(xtr_nbr_ntp_1 == 0 || xtr_nbr_ntp_2 == 0){
-      (void)fprintf(fp_stdout,"%s: ERROR Variable <%s> is not present in input file. ncflint assumes same file structure for both input files\n",nco_prg_nm_get(),ntp_nm);
+    if(!xtr_nbr_ntp_1 || !xtr_nbr_ntp_2){
+      (void)fprintf(fp_stdout,"%s: ERROR Variable %s is not present in input file. ncflint assumes same file structure for both input files\n",nco_prg_nm_get(),ntp_nm);
       nco_exit(EXIT_FAILURE);
     } /* endif */
     

@@ -134,7 +134,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr_nfo->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
   /* Did user explicitly request regridding? */
-  if(rgr_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_out != NULL || rgr_map != NULL) rgr_nfo->flg_usr_rqs=True;
+  if(rgr_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr_nfo->flg_usr_rqs=True;
 
   /* Initialize arguments after copying */
   if(!rgr_nfo->fl_out) rgr_nfo->fl_out=(char *)strdup("/data/zender/rgr/rgr_out.nc");
@@ -621,8 +621,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   char lat_wgt_nm[]="gw";
   char lat_bnd_nm[]="lat_bnds";
   char lon_bnd_nm[]="lon_bnds";
-  //  const int crd_idx_c_0bs_lat_dst=0; /* [dgr] 0-based index of latitude  in C       representation of rank-2 destination grids */
-  //  const int crd_idx_c_0bs_lon_dst=1; /* [dgr] 0-based index of longitude in C       representation of rank-2 destination grids */
   int dmn_id_lat; /* [id] Dimension ID */
   int dmn_id_lon; /* [id] Dimension ID */
   int dmn_id_bnd; /* [id] Dimension ID */
@@ -768,7 +766,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("cell_methods");
-  att_val=strdup("sum");
+  att_val=strdup("lat, lon: sum");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=area_nm_out;
   aed_mtd.id=area_out_id;
@@ -1000,17 +998,35 @@ nco_rgr_map /* [fnc] Regrid using external weights */
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
+#if 0
+  /* Sandbox for testing OpenMP code */
+#ifdef _OPENMP
+# pragma omp parallel for default(none) private(idx_tbl,in_id) shared(out_id)
+#endif /* !_OPENMP */
+  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct trv_foo=trv_tbl->lst[idx_tbl];
+    in_id=trv_tbl->in_id_arr[omp_get_thread_num()];
+#ifdef _OPENMP
+    (void)fprintf(fp_stdout,"%s: thread = %d, in_id = %d, out_id = %d, idx_tbl = %d, var_nm = %s\n",nco_prg_nm_get(),omp_get_thread_num(),in_id,out_id,idx_tbl,trv_foo.nm);
+#endif /* !_OPENMP */
+  } /* end OpenMP parallel loopa  */
+#endif /* endif 0 */
+  
 #ifdef _OPENMP
   /* OpenMP notes:
-     firstprivate():
+     firstprivate(): none
      private():
      shared(): */
-# pragma omp parallel for default(none) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,tally,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,in_id,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+# pragma omp parallel for default(none) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,tally,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 #endif /* !_OPENMP */
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl];
+    in_id=trv_tbl->in_id_arr[omp_get_thread_num()];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
+#ifdef _OPENMP
+      if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, var_nm = %s\n",nco_prg_nm_get(),omp_get_thread_num(),idx_tbl,trv.nm);
+#endif /* !_OPENMP */
       if(trv.flg_rgr){
 	/* Regrid variable */
 	var_nm=trv.nm;

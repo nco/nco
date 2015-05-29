@@ -1154,6 +1154,8 @@ extern "C" {
     int nsm_nbr;            /* [nbr] (ncge) Number of ensembles (i.e., number in first file) */ 
     nsm_sct *nsm;           /* [lst] (ncge) List of ensembles (size is nsm_nbr) */ 
     char *nsm_sfx;          /* [sng] (ncge) Ensemble suffix (e.g., /cesm + _avg). Store here instead of passing as function parameters (ncge only) */
+    int thr_nbr; /* [nbr] Thread number Option t */
+    int *in_id_arr; /* [id] netCDF file IDs used by OpenMP code */
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */

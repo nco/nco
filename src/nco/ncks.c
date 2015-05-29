@@ -215,7 +215,7 @@ main(int argc,char **argv)
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
-  int *in_id_arr;
+  int *in_id_arr; /* [id] netCDF file IDs used by OpenMP code */
 
   int abb_arg_nbr=0;
   int att_glb_nbr;
@@ -367,7 +367,6 @@ main(int argc,char **argv)
       {"rgr",required_argument,0,0}, /* [sng] Regridding */
       {"regridding",required_argument,0,0}, /* [sng] Regridding */
       {"rgr_in",required_argument,0,0}, /* [sng] File containing fields to be regridded */
-      {"rgr_out",required_argument,0,0}, /* [sng] File containing regridded fields */
       {"rgr_grd_src",required_argument,0,0}, /* [sng] File containing input grid */
       {"rgr_grd_dst",required_argument,0,0}, /* [sng] File containing destination grid */
       {"rgr_map",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
@@ -435,6 +434,8 @@ main(int argc,char **argv)
       {"sng_fmt",required_argument,0,'s'},
       {"string",required_argument,0,'s'},
       {"thr_nbr",required_argument,0,'t'},
+      {"threads",required_argument,0,'t'},
+      {"omp_num_threads",required_argument,0,'t'},
       {"units",no_argument,0,'u'},
       {"var_val",no_argument,0,'V'}, /* [flg] Print variable values only */
       {"variable",required_argument,0,'v'},
@@ -593,7 +594,6 @@ main(int argc,char **argv)
         rgr_arg[rgr_nbr-1]=(char *)strdup(optarg);
       } /* endif "rgr" */
       if(!strcmp(opt_crr,"rgr_in")) rgr_in=(char *)strdup(optarg);
-      if(!strcmp(opt_crr,"rgr_out")) rgr_out=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_grd_src")) rgr_grd_src=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_grd_dst")) rgr_grd_dst=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_map") || !strcmp(opt_crr,"map_file")){
@@ -837,7 +837,6 @@ main(int argc,char **argv)
 #endif /* !_LANGINFO_H */
 
   /* Initialize traversal table */
-
   (void)trv_tbl_init(&trv_tbl);
  
   /* Get program info for regressions tests */
@@ -849,6 +848,8 @@ main(int argc,char **argv)
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
+  trv_tbl->thr_nbr=thr_nbr;
+  trv_tbl->in_id_arr=in_id_arr;
 
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -858,7 +859,7 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
   in_id=in_id_arr[0];
-
+  
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
@@ -956,7 +957,6 @@ main(int argc,char **argv)
       rgr_sct rgr_nfo;
       /* Initialize regridding structure */
       rgr_in=(char *)strdup(fl_in);
-      if(rgr_out) rgr_out=(char *)nco_free(rgr_out);
       rgr_out=(char *)strdup(fl_out);
       rcd=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,&rgr_nfo);
       rgr_nfo.fl_out_tmp=nco_fl_out_open(rgr_nfo.fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_nfo.out_id);
