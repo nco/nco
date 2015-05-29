@@ -1012,21 +1012,18 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* end OpenMP parallel loopa  */
 #endif /* endif 0 */
   
+  trv_sct trv;
 #ifdef _OPENMP
-  /* OpenMP notes:
-     firstprivate(): none
-     private():
-     shared(): */
-# pragma omp parallel for default(none) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,tally,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+# pragma omp parallel for default(none) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,tally,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 #endif /* !_OPENMP */
   for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_sct trv=trv_tbl->lst[idx_tbl];
+    trv=trv_tbl->lst[idx_tbl];
     in_id=trv_tbl->in_id_arr[omp_get_thread_num()];
+#ifdef _OPENMP
+      if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, var_nm = %s\n",nco_prg_nm_get(),omp_get_thread_num(),idx_tbl,trv.nm);
+#endif /* !_OPENMP */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
-#ifdef _OPENMP
-      if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, var_nm = %s\n",nco_prg_nm_get(),omp_get_thread_num(),idx_tbl,trv.nm);
-#endif /* !_OPENMP */
       if(trv.flg_rgr){
 	/* Regrid variable */
 	var_nm=trv.nm;
@@ -1133,7 +1130,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
       }else{
 	/* Use standard NCO copy routine for variables that are not regridded */
-	(void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+#ifdef _OPENMP
+# pragma omp critical
+#endif /* _OPENMP */
+	{ /* begin OpenMP critical */
+	  (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+	} /* end OpenMP critical */
      } /* !flg_rgr */
     } /* !xtr */
   } /* end (OpenMP parallel for) loop over idx_tbl */
