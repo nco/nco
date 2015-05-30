@@ -955,6 +955,8 @@ main(int argc,char **argv)
     /* ncflint-specific memory */
     if(fl_in_1) fl_in_1=(char *)nco_free(fl_in_1);
     if(fl_in_2) fl_in_2=(char *)nco_free(fl_in_2);
+    if(in_id_arr_1) in_id_arr_1=(int *)nco_free(in_id_arr_1);
+    if(in_id_arr_2) in_id_arr_2=(int *)nco_free(in_id_arr_2);
     var_prc_1=(var_sct **)nco_free(var_prc_1);
     var_prc_2=(var_sct **)nco_free(var_prc_2);
     if(wgt_1) wgt_1=(var_sct *)nco_var_free(wgt_1);

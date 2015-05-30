@@ -155,7 +155,7 @@ main(int argc,char **argv)
   extern int optind;
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning
-  Copy appropriate filehandle to variable scoped shared in parallel clause */
+     Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
@@ -655,7 +655,7 @@ main(int argc,char **argv)
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-    if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
+  if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   /* Turn off default filling behavior to enhance efficiency */
@@ -702,8 +702,8 @@ main(int argc,char **argv)
     if (xtr_nbr_ntp_1) ntp_1=var_ntp_1[0];
     if (xtr_nbr_ntp_2) ntp_2=var_ntp_2[0];
 
-    if(xtr_nbr_ntp_1 == 0 || xtr_nbr_ntp_2 == 0){
-      (void)fprintf(fp_stdout,"%s: ERROR Variable <%s> is not present in input file. ncflint assumes same file structure for both input files\n",nco_prg_nm_get(),ntp_nm);
+    if(!xtr_nbr_ntp_1 || !xtr_nbr_ntp_2){
+      (void)fprintf(fp_stdout,"%s: ERROR Variable %s is not present in input file. ncflint assumes same file structure for both input files\n",nco_prg_nm_get(),ntp_nm);
       nco_exit(EXIT_FAILURE);
     } /* endif */
     
@@ -867,11 +867,7 @@ main(int argc,char **argv)
 #endif /* _OPENMP */
     { /* begin OpenMP critical */
       /* Copy interpolations to output file */
-    if(var_prc_out[idx]->nbr_dim == 0){
-    (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
-  }else{ /* end if variable is scalar */
-        (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
-      } /* end else */
+      if(!var_prc_out[idx]->nbr_dim) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
     } /* end OpenMP critical */
 
     /* Free dynamically allocated buffers */

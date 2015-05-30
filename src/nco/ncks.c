@@ -197,7 +197,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uVv:X:xz-:";
+  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -214,6 +214,8 @@ main(int argc,char **argv)
   FILE *fp_bnr=NULL; /* [fl] Unformatted binary output file handle */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
+
+  int *in_id_arr; /* [id] netCDF file IDs used by OpenMP code */
 
   int abb_arg_nbr=0;
   int att_glb_nbr;
@@ -241,6 +243,8 @@ main(int argc,char **argv)
   int ppc_nbr=0; /* [nbr] Number of PPC arguments */
   int rgr_nbr=0; /* [nbr] Number of regridding arguments */
   int rcd=NC_NOERR; /* [rcd] Return code */
+  int thr_idx; /* [idx] Index of current thread */
+  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
   int var_nbr_fl;
   int var_ntm_fl;
@@ -363,7 +367,6 @@ main(int argc,char **argv)
       {"rgr",required_argument,0,0}, /* [sng] Regridding */
       {"regridding",required_argument,0,0}, /* [sng] Regridding */
       {"rgr_in",required_argument,0,0}, /* [sng] File containing fields to be regridded */
-      {"rgr_out",required_argument,0,0}, /* [sng] File containing regridded fields */
       {"rgr_grd_src",required_argument,0,0}, /* [sng] File containing input grid */
       {"rgr_grd_dst",required_argument,0,0}, /* [sng] File containing destination grid */
       {"rgr_map",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
@@ -430,6 +433,9 @@ main(int argc,char **argv)
       {"spinlock",no_argument,0,'S'}, /* [flg] Suspend with signal handler to facilitate debugging */
       {"sng_fmt",required_argument,0,'s'},
       {"string",required_argument,0,'s'},
+      {"thr_nbr",required_argument,0,'t'},
+      {"threads",required_argument,0,'t'},
+      {"omp_num_threads",required_argument,0,'t'},
       {"units",no_argument,0,'u'},
       {"var_val",no_argument,0,'V'}, /* [flg] Print variable values only */
       {"variable",required_argument,0,'v'},
@@ -588,7 +594,6 @@ main(int argc,char **argv)
         rgr_arg[rgr_nbr-1]=(char *)strdup(optarg);
       } /* endif "rgr" */
       if(!strcmp(opt_crr,"rgr_in")) rgr_in=(char *)strdup(optarg);
-      if(!strcmp(opt_crr,"rgr_out")) rgr_out=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_grd_src")) rgr_grd_src=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_grd_dst")) rgr_grd_dst=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_map") || !strcmp(opt_crr,"map_file")){
@@ -762,6 +767,10 @@ main(int argc,char **argv)
     case 's': /* User specified delimiter string for printed output */
       dlm_sng=(char *)strdup(optarg);
       break;
+    case 't': /* Thread number */
+      thr_nbr=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      break;
     case 'u': /* Toggle printing dimensional units */
       PRN_DMN_UNITS_TGL=True;
       break;
@@ -828,7 +837,6 @@ main(int argc,char **argv)
 #endif /* !_LANGINFO_H */
 
   /* Initialize traversal table */
-
   (void)trv_tbl_init(&trv_tbl);
  
   /* Get program info for regressions tests */
@@ -837,14 +845,21 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+  in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
+  trv_tbl->thr_nbr=thr_nbr;
+  trv_tbl->in_id_arr=in_id_arr;
+
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
-  rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
-
+  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
+  in_id=in_id_arr[0];
+  
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
@@ -942,7 +957,6 @@ main(int argc,char **argv)
       rgr_sct rgr_nfo;
       /* Initialize regridding structure */
       rgr_in=(char *)strdup(fl_in);
-      if(rgr_out) rgr_out=(char *)nco_free(rgr_out);
       rgr_out=(char *)strdup(fl_out);
       rcd=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,&rgr_nfo);
       rgr_nfo.fl_out_tmp=nco_fl_out_open(rgr_nfo.fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&rgr_nfo.out_id);
@@ -954,6 +968,7 @@ main(int argc,char **argv)
       /* Catenate time-stamped command line to "history" global attribute */
       if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
       if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
+      if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
       /* Regrid fields */
       rcd=nco_rgr_ctl(&rgr_nfo,trv_tbl);
@@ -1158,8 +1173,8 @@ main(int argc,char **argv)
   /* goto close_and_free */
 close_and_free: 
 
-  /* Close input netCDF file */
-  nco_close(in_id);
+  /* Close input netCDF files */
+  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
 
   /* Remove local copy of file */
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
@@ -1185,6 +1200,7 @@ close_and_free:
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
     if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
     if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(in_id_arr) in_id_arr=(int *)nco_free(in_id_arr);
     if(spr_nmr) spr_nmr=(char *)nco_free(spr_nmr);
     if(spr_chr) spr_chr=(char *)nco_free(spr_chr);
     /* Free lists of strings */

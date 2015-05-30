@@ -295,14 +295,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 0
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE  "beta1" /* May be blank */
+# define NCO_VERSION_NOTE  "beta6" /* May be blank */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.5.0-beta1"
+# define NCO_VERSION "4.5.0-beta6"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -1154,6 +1154,8 @@ extern "C" {
     int nsm_nbr;            /* [nbr] (ncge) Number of ensembles (i.e., number in first file) */ 
     nsm_sct *nsm;           /* [lst] (ncge) List of ensembles (size is nsm_nbr) */ 
     char *nsm_sfx;          /* [sng] (ncge) Ensemble suffix (e.g., /cesm + _avg). Store here instead of passing as function parameters (ncge only) */
+    int thr_nbr; /* [nbr] Thread number Option t */
+    int *in_id_arr; /* [id] netCDF file IDs used by OpenMP code */
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */

@@ -60,6 +60,12 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
 (const int nc_id, /* I [id] netCDF input-file ID */
  var_sct * const var); /* I/O [sct] Variable with missing_value to update */
 
+nco_bool /* O [flg] Variable has missing value */
+nco_mss_val_get_dbl /* [fnc] Return missing_value of variable, if any, as double precision number */
+(const int nc_id, /* I [id] netCDF input-file ID */
+ const int var_id, /* I [id] netCDF variable ID */
+ double *mss_val_dbl); /* O [frc] Missing value in double precision */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

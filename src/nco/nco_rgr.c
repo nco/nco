@@ -134,7 +134,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr_nfo->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
   /* Did user explicitly request regridding? */
-  if(rgr_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_out != NULL || rgr_map != NULL) rgr_nfo->flg_usr_rqs=True;
+  if(rgr_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr_nfo->flg_usr_rqs=True;
 
   /* Initialize arguments after copying */
   if(!rgr_nfo->fl_out) rgr_nfo->fl_out=(char *)strdup("/data/zender/rgr/rgr_out.nc");
@@ -225,14 +225,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int rcd=NC_NOERR;
 
-  int src_grid_size_id; /* [id] Source grid size dimension ID */
-  int dst_grid_size_id; /* [id] Destination grid size dimension ID */
-  int src_grid_corners_id; /* [id] Source grid corners dimension ID */
   int dst_grid_corners_id; /* [id] Destination grid corners dimension ID */
-  int src_grid_rank_id; /* [id] Source grid rank dimension ID */
   int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
+  int dst_grid_size_id; /* [id] Destination grid size dimension ID */
   int num_links_id; /* [id] Number of links dimension ID */
   int num_wgts_id; /* [id] Number of weights dimension ID */
+  int src_grid_corners_id; /* [id] Source grid corners dimension ID */
+  int src_grid_rank_id; /* [id] Source grid rank dimension ID */
+  int src_grid_size_id; /* [id] Source grid size dimension ID */
 
   nco_bool FL_RTR_RMT_LCN;
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
@@ -283,7 +283,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     /* ESMF conventions */
     if(strstr(att_val,"NCAR-CSM")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF;
     if(strstr(att_val,"SCRIP")) nco_rgr_mpf_typ=nco_rgr_mpf_SCRIP;
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_nil) (void)fprintf(stderr,"%s: ERROR %s unrecognized map type specified in attribute Conventions = %s\n",nco_prg_nm_get(),fnc_nm,att_val);
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_nil) (void)fprintf(stderr,"%s: ERROR %s unrecognized map-type specified in attribute Conventions = %s\n",nco_prg_nm_get(),fnc_nm,att_val);
     if(att_val) att_val=(char *)nco_free(att_val);
   } /* end rcd && att_typ */
 
@@ -331,7 +331,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     att_val=(char *)nco_malloc(att_sz*nco_typ_lng(att_typ)+1L);
     rcd+=nco_get_att(in_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
   } /* endif */
-    /* NUL-terminate convention attribute before using strcmp() */
+  /* NUL-terminate convention attribute before using strcmp() */
   att_val[att_sz]='\0';
   if(strstr(att_val,"fracarea")) nco_rgr_nrm_typ=nco_rgr_nrm_fracarea;
   if(strstr(att_val,"destarea")) nco_rgr_nrm_typ=nco_rgr_nrm_destarea;
@@ -423,12 +423,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   const int lon_psn_dst=0; /* [idx] Ordinal position of longitude size in rectangular destination grid */
   const int lat_psn_dst=1; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
   const int bnd_rnk=2; /* [nbr] Rank of output coordinate CF boundary variables */
-  const int dmn_nbr_2D=2; /* [nbr] Highest rank of grid variables */
+  const int bnd_nbr_out=2; /* [nbr] Number of vertices for output rectangular grid coordinates */
+  const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
+  const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
+  const int dmn_nbr_grd_max=(dmn_nbr_2D); /* [nbr] Maximum rank of grid variables */
     
   /* Allocate space to hold dimension metadata for rectangular destination grid */
-  dmn_srt=(long *)nco_malloc(dmn_nbr_2D*sizeof(long));
-  dmn_cnt=(long *)nco_malloc(dmn_nbr_2D*sizeof(long));
-  dmn_srd=(long *)nco_malloc(dmn_nbr_2D*sizeof(long));
+  dmn_srt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
+  dmn_cnt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
+  dmn_srd=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
 
   assert(rgr_map.dst_grid_rank == 2);
   dmn_srt[0]=0L;
@@ -449,8 +452,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   lat_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lat_nbr_out*nco_typ_lng(crd_typ_out));
   lon_ntf_out=(double *)nco_malloc((lon_nbr_out+1L)*nco_typ_lng(crd_typ_out));
   lat_ntf_out=(double *)nco_malloc((lat_nbr_out+1L)*nco_typ_lng(crd_typ_out));
-  lon_bnd_out=(double *)nco_malloc(bnd_rnk*lon_nbr_out*nco_typ_lng(crd_typ_out));
-  lat_bnd_out=(double *)nco_malloc(bnd_rnk*lat_nbr_out*nco_typ_lng(crd_typ_out));
+  lon_bnd_out=(double *)nco_malloc(lon_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+  lat_bnd_out=(double *)nco_malloc(lat_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
   wgt_raw=(double *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_DOUBLE),"Unable to malloc() value buffer for remapping weights",fnc_nm);
   col_src_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),"Unable to malloc() value buffer for remapping addresses",fnc_nm);
   row_dst_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),"Unable to malloc() value buffer for remapping addresses",fnc_nm);
@@ -488,10 +491,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
      Maybe there is an ESMF flag or something that resolves this special case?
      More safe to read boundary interfaces directly from grid corner/vertice arrays in map file
 
-     Derivation of boundaries from _correct_ xc_b, yc_b is follows
+     Derivation of boundaries xv_b, yv_b from _correct_ xc_b, yc_b is follows
      Do not implement this procedure until resolving midpoint/center issue described above:
-     lon_ntf_out[0]=0.5*(lon_ctr_out[0]+lon_ctr_out[lon_nbr_out-1])-180.0;
-     lat_ntf_out[0]=lat_ctr_out[0]-0.5*(lat_ctr_out[1]-lat_ctr_out[0]);
+     lon_ntf_out[0]=0.5*(lon_ctr_out[0]+lon_ctr_out[lon_nbr_out-1])-180.0; // Extrapolation
+     lat_ntf_out[0]=lat_ctr_out[0]-0.5*(lat_ctr_out[1]-lat_ctr_out[0]); // Extrapolation
      for(idx=1;idx<lon_nbr_out;idx++) lon_ntf_out[idx]=0.5*(lon_ctr_out[idx-1]+lon_ctr_out[idx]);
      for(idx=1;idx<lat_nbr_out;idx++) lat_ntf_out[idx]=0.5*(lat_ctr_out[idx-1]+lat_ctr_out[idx]);
      lon_ntf_out[lon_nbr_out]=lon_ntf_out[0]+360.0;
@@ -505,27 +508,26 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   /* Place 1-D rectangular interfaces into 2-D coordinate boundaries */
   for(idx=0;idx<lon_nbr_out;idx++){
-    lon_bnd_out[idx]=lon_ntf_out[idx];
-    lon_bnd_out[lon_nbr_out+idx]=lon_ntf_out[idx+1];
+    lon_bnd_out[2*idx]=lon_ntf_out[idx];
+    lon_bnd_out[2*idx+1]=lon_ntf_out[idx+1];
   } /* end loop over longitude */
   for(idx=0;idx<lat_nbr_out;idx++){
-    lat_bnd_out[idx]=lat_ntf_out[idx];
-    lat_bnd_out[lat_nbr_out+idx]=lat_ntf_out[idx+1];
+    lat_bnd_out[2*idx]=lat_ntf_out[idx];
+    lat_bnd_out[2*idx+1]=lat_ntf_out[idx+1];
   } /* end loop over latitude */
   /* WIN32 math.h does not define M_PI */
 #ifndef M_PI
 # define M_PI		3.14159265358979323846
 #endif /* M_PI */
-  const float dgr2rdn=M_PI/180.0;
-  /* fxm: Only output gw for rectangular grids */
-  for(idx=0;idx<lat_nbr_out;idx++){
-    lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[lat_nbr_out+idx])-sin(dgr2rdn*lat_bnd_out[idx]);
-  } /* end loop over latitude */
+  const double dgr2rdn=M_PI/180.0;
+  /* fxm: Be sure only to output gw for rectangular grids */
+  for(idx=0;idx<lat_nbr_out;idx++)
+    lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
   
   if(nco_dbg_lvl_get() >= nco_dbg_vec){
     (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
-    for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[idx],lon_ctr_out[idx],lon_bnd_out[lon_nbr_out+idx]);
-    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[idx],lat_ctr_out[idx],lat_bnd_out[lat_nbr_out+idx]);
+    for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
+    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
     for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
       for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
 	(void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g]\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
@@ -568,48 +570,56 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   /* Do not extract lon, lat, or area
      Create them from scratch using regridding data */
+  const int var_xcl_lst_nbr=13;
+  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/lat","/latitude","/lat_bnds","/bounds_lat","/lon","/longitude","/lon_bnds","/bounds_lon","/date_written","/time_written"};
+  int var_cpy_nbr=0; /* [nbr] Number of copied variables */
+  int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
+  int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
+  int var_crt_nbr=0; /* [nbr] Number of created variables */
   unsigned int idx_tbl; /* [idx] Counter for traversal table */
-  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/area")) break;
-  if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
-  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/lat")) break;
-  if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
-  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/lon")) break;
-  if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
-  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/date_written")) break;
-  if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
-  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,"/time_written")) break;
-  if(idx_tbl < trv_tbl->nbr) trv_tbl->lst[idx_tbl].flg_xtr=False;
+  const unsigned int trv_nbr=trv_tbl->nbr; /* [idx] Number of traversal table entries */
+  for(idx=0;idx<var_xcl_lst_nbr;idx++){
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
+      if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,var_xcl_lst[idx])) break;
+    if(idx_tbl < trv_nbr){
+      if(trv_tbl->lst[idx_tbl].flg_xtr){
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
+	var_xcl_nbr++;
+      } /* endif */
+      trv_tbl->lst[idx_tbl].flg_xtr=False;
+    } /* endif */
+  } /* end loop */
   
   int dmn_idx; /* [idx] Dimension index */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input variable */
   int dmn_nbr_out; /* [nbr] Number of dimensions in output variable */
   const char ncol_nm[]="ncol"; /* [sng] Name of dimension that indicates regridding */
+  trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
   /* Define regridding flag for each variable */
-  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_sct trv=trv_tbl->lst[idx_tbl];
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv=trv_tbl->lst[idx_tbl];
     dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	if(!strcmp(trv.var_dmn[dmn_idx].dmn_nm,ncol_nm)){
 	  trv_tbl->lst[idx_tbl].flg_rgr=True;
+	  var_rgr_nbr++;
+	  break;
 	} /* endif */
       } /* end loop over dimensions */
+      if(dmn_idx == dmn_nbr_in) var_cpy_nbr++;
     } /* end nco_obj_typ_var */
   } /* end idx_tbl */
+  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria\n",nco_prg_nm_get(),fnc_nm);
   
   if(nco_dbg_lvl_get() >= nco_dbg_sbr){
-    for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-      trv_sct trv=trv_tbl->lst[idx_tbl];
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+      trv=trv_tbl->lst[idx_tbl];
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Regrid %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
     } /* end idx_tbl */
   } /* end dbg */
 
-  /* Prepare to layout regridded file */
+  /* Layout regridded file */
   aed_sct aed_mtd;
   char *att_nm;
   char bnd_nm_out[]="nbnd"; /* NB: CESM uses nbnd for time bounds. Non-rectangular grids will have nbnd for time, and nv != nbnd for spatial bounds. */
@@ -619,8 +629,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   char lat_wgt_nm[]="gw";
   char lat_bnd_nm[]="lat_bnds";
   char lon_bnd_nm[]="lon_bnds";
-  //  const int crd_idx_c_0bs_lat_dst=0; /* [dgr] 0-based index of latitude  in C       representation of rank-2 destination grids */
-  //  const int crd_idx_c_0bs_lon_dst=1; /* [dgr] 0-based index of longitude in C       representation of rank-2 destination grids */
   int dmn_id_lat; /* [id] Dimension ID */
   int dmn_id_lon; /* [id] Dimension ID */
   int dmn_id_bnd; /* [id] Dimension ID */
@@ -630,16 +638,16 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int lat_wgt_id; /* [id] Variable ID for latitude weight */
   int lon_bnd_id; /* [id] Variable ID for lon_bnds */
   int lat_bnd_id; /* [id] Variable ID for lat_bnds */
-  int dmn_ids_out[2]; /* [id] Dimension IDs array for output variable */
-  long dmn_srt_out[2];
-  long dmn_cnt_out[2];
+  int dmn_ids_out[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
+  long dmn_srt_out[dmn_nbr_grd_max];
+  long dmn_cnt_out[dmn_nbr_grd_max];
 
   /* Define new horizontal dimensions before all else */
   rcd=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
   rcd=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
   rcd=nco_inq_dimid_flg(out_id,bnd_nm_out,&dmn_id_bnd);
   /* If dimension has not been defined, define it */
-  if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,bnd_nm_out,(int)2,&dmn_id_bnd);
+  if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,bnd_nm_out,bnd_rnk,&dmn_id_bnd);
 
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   char *var_nm; /* [sng] Variable name */
@@ -651,22 +659,28 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
   /* Define new coordinates and variables in regridded file */
-  (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,(int)1,&dmn_id_lat,&lat_out_id);
-  (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,(int)1,&dmn_id_lon,&lon_out_id);
-  (void)nco_def_var(out_id,lat_wgt_nm,crd_typ_out,(int)1,&dmn_id_lat,&lat_wgt_id);
+  (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_out_id);
+  var_crt_nbr++;
+  (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon,&lon_out_id);
+  var_crt_nbr++;
+  (void)nco_def_var(out_id,lat_wgt_nm,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_wgt_id);
+  var_crt_nbr++;
   dmn_ids_out[0]=dmn_id_lat;
   dmn_ids_out[1]=dmn_id_bnd;
-  (void)nco_def_var(out_id,lat_bnd_nm,crd_typ_out,(int)2,dmn_ids_out,&lat_bnd_id);
+  (void)nco_def_var(out_id,lat_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
+  var_crt_nbr++;
   dmn_ids_out[0]=dmn_id_lon;
   dmn_ids_out[1]=dmn_id_bnd;
-  (void)nco_def_var(out_id,lon_bnd_nm,crd_typ_out,(int)2,dmn_ids_out,&lon_bnd_id);
+  (void)nco_def_var(out_id,lon_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
+  var_crt_nbr++;
   dmn_ids_out[0]=dmn_id_lat;
   dmn_ids_out[1]=dmn_id_lon;
-  (void)nco_def_var(out_id,area_nm_out,crd_typ_out,(int)2,dmn_ids_out,&area_out_id);
+  (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
+  var_crt_nbr++;
 
   /* Define regridded variables in regridded file */
-  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_sct trv=trv_tbl->lst[idx_tbl];
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       var_nm=trv.nm;
       var_typ=trv.var_typ;
@@ -727,7 +741,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   /* Define new metadata in regridded file */
   att_nm=strdup("long_name");
-  att_val=strdup("area");
+  att_val=strdup("solid angle subtended by grid cell");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=area_nm_out;
   aed_mtd.id=area_out_id;
@@ -740,7 +754,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("standard_name");
-  att_val=strdup("area");
+  att_val=strdup("cell_area");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=area_nm_out;
   aed_mtd.id=area_out_id;
@@ -754,6 +768,19 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   att_nm=strdup("units");
   att_val=strdup("steradian");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=area_nm_out;
+  aed_mtd.id=area_out_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("cell_methods");
+  att_val=strdup("lat, lon: sum");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=area_nm_out;
   aed_mtd.id=area_out_id;
@@ -949,11 +976,11 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   (void)nco_put_vara(out_id,lat_wgt_id,dmn_srt_out,dmn_cnt_out,lat_wgt_out,crd_typ_out);
   dmn_srt_out[0]=dmn_srt_out[1]=0L;
   dmn_cnt_out[0]=lat_nbr_out;
-  dmn_cnt_out[1]=2;
+  dmn_cnt_out[1]=bnd_nbr_out;
   (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_out,lat_bnd_out,crd_typ_out);
   dmn_srt_out[0]=dmn_srt_out[1]=0L;
   dmn_cnt_out[0]=lon_nbr_out;
-  dmn_cnt_out[1]=2;
+  dmn_cnt_out[1]=bnd_nbr_out;
   (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
   dmn_srt_out[0]=dmn_srt_out[1]=0L;
   dmn_cnt_out[0]=lat_nbr_out;
@@ -965,19 +992,57 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   const size_t grd_sz_out=rgr_map.dst_grid_size; /* [nbr] Number of elements in single layer of output grid */
   double *var_val_dbl_in;
   double *var_val_dbl_out;
+  double mss_val_dbl;
+  double var_val_crr;
+  int *tally=NULL; /* [nbr] Number of valid (non-missing) values */
+  int idx_in; /* [idx] Input grid index */
+  int idx_out; /* [idx] Output grid index */
   int lvl_idx; /* [idx] Level index */
   int lvl_nbr; /* [nbr] Number of levels */
+  int thr_idx; /* [idx] Thread index */
+  nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
   size_t dst_idx; 
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
   size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: #var_nm means regridded, ~var_nm means copied\n");
-  for(idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_sct trv=trv_tbl->lst[idx_tbl];
+  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: # means regridded, ~ means copied\n");
+
+  /* Using naked stdin/stdout/stderr in parallel region generates warning
+     Copy appropriate filehandle to variable scoped shared in parallel clause */
+  FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
+
+#if 0
+  /* Sandbox for testing OpenMP code */
+#ifdef _OPENMP
+# pragma omp parallel for default(none) private(idx_tbl,in_id) shared(out_id)
+#endif /* !_OPENMP */
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv_sct trv_foo=trv_tbl->lst[idx_tbl];
+    in_id=trv_tbl->in_id_arr[omp_get_thread_num()];
+#ifdef _OPENMP
+    (void)fprintf(fp_stdout,"%s: thread = %d, in_id = %d, out_id = %d, idx_tbl = %d, var_nm = %s\n",nco_prg_nm_get(),omp_get_thread_num(),in_id,out_id,idx_tbl,trv_foo.nm);
+#endif /* !_OPENMP */
+  } /* end OpenMP parallel loopa  */
+#endif /* endif 0 */
+  
+#ifdef _OPENMP
+  /* OpenMP notes:
+     firstprivate(): tally (NULL-initialized)
+     private(): almost everything
+     shared(): usual suspects */
+# pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+#endif /* !_OPENMP */
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv=trv_tbl->lst[idx_tbl];
+    thr_idx=omp_get_thread_num();
+    in_id=trv_tbl->in_id_arr[thr_idx];
+#ifdef _OPENMP
+      if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, nm = %s\n",nco_prg_nm_get(),thr_idx,idx_tbl,trv.nm);
+#endif /* !_OPENMP */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
       if(trv.flg_rgr){
 	/* Regrid variable */
 	var_nm=trv.nm;
@@ -1013,35 +1078,88 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	lvl_nbr=1;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
 
-	/* Apply weights */
+	/* Initialize output */
 	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
-	if(lvl_nbr == 1){
-	  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
-	}else{
-	  val_in_fst=0L;
-	  val_out_fst=0L;
-	  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-	    //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
-	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
-	    val_in_fst+=grd_sz_in;
-	    val_out_fst+=grd_sz_out;
-	  } /* end loop over lvl */
-	} /* lvl_nbr > 1 */
-	  
-	rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ);
+	/* Missing value setup */
+	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
+	if(has_mss_val) tally=(int *)nco_calloc(var_sz_out,nco_typ_lng(NC_INT));
 
+	/* Apply weights */
+	if(!has_mss_val){
+	  if(lvl_nbr == 1){
+	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+	      var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
+	  }else{
+	    val_in_fst=0L;
+	    val_out_fst=0L;
+	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+	      //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
+	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+		var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
+	      val_in_fst+=grd_sz_in;
+	      val_out_fst+=grd_sz_out;
+	    } /* end loop over lvl */
+	  } /* lvl_nbr > 1 */
+	}else{
+	  if(lvl_nbr == 1){
+	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+	      idx_in=col_src_adr[lnk_idx];
+	      idx_out=row_dst_adr[lnk_idx];
+	      if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		tally[idx_out]++;
+	      } /* endif */
+	    } /* end loop over link */
+	  }else{
+	    val_in_fst=0L;
+	    val_out_fst=0L;
+	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		idx_in=col_src_adr[lnk_idx]+val_in_fst;
+		idx_out=row_dst_adr[lnk_idx]+val_out_fst;
+		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		  var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		  tally[idx_out]++;
+		} /* endif */
+	      } /* end loop over link */
+	      val_in_fst+=grd_sz_in;
+	      val_out_fst+=grd_sz_out;
+	    } /* end loop over lvl */
+	  } /* lvl_nbr > 1 */
+	  /* NCL and ESMF treatment of weights and missing values described at
+	     https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
+	     http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000 */
+	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
+	} /* !has_mss_val */
+	
+#ifdef _OPENMP
+# pragma omp critical
+#endif /* _OPENMP */
+	{ /* begin OpenMP critical */
+	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ);
+	} /* end OpenMP critical */
+	
 	if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);
 	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
 	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
 	if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
+	if(tally) tally=(int *)nco_free(tally);
 	if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
 	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
       }else{
-	(void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
-     } /* end else */
+	/* Use standard NCO copy routine for variables that are not regridded */
+#ifdef _OPENMP
+# pragma omp critical
+#endif /* _OPENMP */
+	{ /* begin OpenMP critical */
+	  (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+	} /* end OpenMP critical */
+     } /* !flg_rgr */
     } /* !xtr */
-  } /* end idx_tbl */
+  } /* end (OpenMP parallel for) loop over idx_tbl */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report. Variables regridded = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
   
   /* Free memory allocated for grid reading/writing */
   if(area_out) area_out=(double *)nco_free(area_out);

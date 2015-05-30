@@ -1,9 +1,63 @@
+2015-05-29  Charlie Zender  <zender@uci.edu>
+
+	* Document threading
+
+	* NCO 4.5.0-beta5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.0-beta5 final changes'
+	git tag -a 4.5.0-beta5 -m 'Version 4.5.0-beta5 tag: OpenMP and area cell_methods';git push --tags
+
+	* Verified threading works with netCDF4 output with netCDF 4.3.3.1 (rhea has 4.1.3)
+
+	* Use firstprivate(tally) and now multiple threads work (exactly) on roulee
+
+	* Added regrid report to summarize variables regridded, copied,	omitted, created
+
+	* Demonstrated that four threads can produce exactly correct answers
+
+	* Allow up to eight threads for ncks only
+
+	* All regressions still pass but only one-thread used
+
+	* Clean-up threading in ncks.c and nco_rgr()
+
+	* Carry per-thread file IDs in trv_tbl
+
+2015-05-28  Charlie Zender  <zender@uci.edu>
+
+	* Surprisingly, all regressions still pass. Probably because thr_nbr is prescribed to be one :)
+
+	* Update ncra OpenMP threading infrastructure to compile
+
+	* Add OpenMP threading infrastructure to ncks and nco_rgr() in specific
+
+	* Add cell_methods = sum attribute to area variable during regridding
+
+	* NCO 4.5.0-beta4 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.0-beta4: final changes'
+	git tag -a 4.5.0-beta4 -m 'Version 4.5.0-beta4: Deprecate missing value warning. Fix cnk_map_xst handling.';git push --tags
+
+	* Fix typo bug in nco_cnk_ini() reported by ocehugo. Caused existing chunk maps to be ignored.
+
+	* NCO 4.5.0-beta3 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.0-beta3: final changes'
+	git tag -a 4.5.0-beta3 -m 'Version 4.5.0-beta3: Missing values work. Fix gw bug in beta2.';git push --tags
+
+	* Fix gw problem introduced in beta2
+
 2015-05-27  Charlie Zender  <zender@uci.edu>
 
+	* Handle missing values in regridding. Be liberal: Any valid input points make valid output
+
+	* NCO 4.5.0-beta2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.0-beta2: final changes'
+	git tag -a 4.5.0-beta2 -m 'Version 4.5.0-beta2: Correct output grid bounds, precision';git push --tags
+
+	* Fix output grid bounds (internal bounds were stored with weird memory layout that did not write to disk as expected)
+
+	* Change dgr2rdn from float (oops!) to double to prevent precision loss
+
 	* NCO 4.5.0-beta1 release procedure:
- 	Changes since nco-4.4.9: --map
-	cd ~/nco;git commit -a -m "Version 4.5.0-beta1: Correct area output variable"
-	git tag -d 4.5.0-beta1;git push origin :refs/tags/4.5.0-beta1
+	cd ~/nco;git commit -a -m 'Version 4.5.0-beta1: final changes'
 	git tag -a 4.5.0-beta1 -m 'Version 4.5.0-beta1: Correct area output variable';git push --tags
 
 	* Read and output area variable directly from remap file rather than regridding it
@@ -12,13 +66,13 @@
 
 	* NCO 4.5.0 release procedure:
  	Changes since nco-4.4.9: --map
-	cd ~/nco;git commit -a -m "Version 4.5.0 release: "
+	cd ~/nco;git commit -a -m 'Version 4.5.0 release: '
 	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
 	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
 
 	* NCO 4.5.0-alpha1 release procedure:
  	Changes since nco-4.4.9: --map
-	cd ~/nco;git commit -a -m "Version 4.5.0-alpha1: Regridding with external mapfile"
+	cd ~/nco;git commit -a -m 'Version 4.5.0-alpha1: final changes'
 	git tag -d 4.5.0-alpha1;git push origin :refs/tags/4.5.0-alpha1
 	git tag -a 4.5.0-alpha1 -m 'Version 4.5.0-alpha1: Regridding with external mapfile';git push --tags
 

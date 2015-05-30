@@ -207,7 +207,7 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
     /* Does _input_ file support chunking? */
     int fl_in_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Input file format */
     (void)nco_inq_format(in_id,&fl_in_fmt);
-    if(fl_in_fmt == NC_FORMAT_NETCDF4 && fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    if(fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
       /* Input is netCDF4 so preserve chunking unless otherwise specified */
       cnk->cnk_map=nco_cnk_map_xst;
       cnk->cnk_plc=nco_cnk_plc_xst;
@@ -813,7 +813,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
      1) Instead of loop for all variables, this functions chunks one variable
      2) In dimension loop, dimension object is obtained from variable object
 
-     Unidata defaults set in libsrc4/nc4hdf.c, nc4var.c
+     Unidata sets netCDF chunking defaults in libsrc4/nc4hdf.c, nc4var.c
 
      netCDF 4.3.2 and later:
      DEFAULT_CHUNK_SIZE=4 MB
