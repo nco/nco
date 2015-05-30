@@ -1490,8 +1490,8 @@ Optional Features:
                           enable-netcdf-4) [[default=yes]]
   --enable-netcdf-4       Enable netCDF Version 4 features (same as
                           enable-netcdf4) [[default=yes]]
-  --disable-openmp        do not use OpenMP
   --enable-openmp         Build NCO with OpenMP [[default=yes]]
+  --disable-openmp        do not use OpenMP
   --enable-dap            Build DAP-enabled NCO with netCDF-provided DAP
                           [[default=yes]]
   --enable-ncoxx          Build libnco++ and ncap2 (same as enable-ncap2)
@@ -17809,6 +17809,15 @@ fi
 fi
 
 # Begin OpenMP
+# Check whether --enable-openmp was given.
+if test "${enable_openmp+set}" = set; then :
+  enableval=$enable_openmp; enable_openmp=${enableval}
+else
+  enable_openmp=yes
+fi
+
+# Enable OpenMP unless told not to
+if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
 
   OPENMP_CFLAGS=
   # Check whether --enable-openmp was given.
@@ -17876,15 +17885,11 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
 
 
 
-# Check whether --enable-openmp was given.
-if test "${enable_openmp+set}" = set; then :
-  enableval=$enable_openmp; enable_openmp=${enableval}
-else
-  enable_openmp=yes
-fi
 
-# Enable OpenMP unless told not to
-if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
+$as_echo "#define ENABLE_OPENMP 1" >>confdefs.h
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: OpenMP support enabled" >&5
+$as_echo "$as_me: OpenMP support enabled" >&6;}
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP

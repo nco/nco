@@ -304,11 +304,13 @@ if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" =
 fi
 
 # Begin OpenMP
-AC_OPENMP
-AC_SUBST(OPENMP_CFLAGS)
 AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [[default=yes]]]),enable_openmp=${enableval},enable_openmp=yes)
 # Enable OpenMP unless told not to
 if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
+    AC_OPENMP
+    AC_SUBST(OPENMP_CFLAGS)
+    AC_DEFINE([ENABLE_OPENMP],[1],[Compile operators with OpenMP support])
+    AC_MSG_NOTICE([OpenMP support enabled])
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP

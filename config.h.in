@@ -27,6 +27,9 @@
 /* Define to 1 if libnetcdf.a contains netCDF4 functions */
 #undef ENABLE_NETCDF4
 
+/* Compile operators with OpenMP support */
+#undef ENABLE_OPENMP
+
 /* Fastest possible execution (slowest compilation) */
 #undef ENABLE_OPTIMIZE_CUSTOM
 
