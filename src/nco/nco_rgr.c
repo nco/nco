@@ -357,15 +357,16 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr){
-    (void)fprintf(stderr,"%s: INFO %s reports ",nco_prg_nm_get(),fnc_nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+    (void)fprintf(stderr,"%s: INFO %s regridding input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"map_method = %s, normalization = %s, src_grid_size = %li, dst_grid_size = %li, src_grid_corners = %li, dst_grid_corners = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = %li, num_wgts = %li\n",nco_rgr_mth_sng(nco_rgr_mth_typ),nco_rgr_nrm_sng(nco_rgr_nrm_typ),rgr_map.src_grid_size,rgr_map.dst_grid_size,rgr_map.src_grid_corners,rgr_map.dst_grid_corners,rgr_map.src_grid_rank,rgr_map.dst_grid_rank,rgr_map.num_links,rgr_map.num_wgts);
   } /* endif dbg */
 
   /* Obtain grid values necessary to compute output latitude and longitude coordinates */
   int area_dst_id; /* [id] Area variable ID */
   int col_src_adr_id; /* [id] Source address (col) variable ID */
-  int dmn_sz_int_id; /* [id] Destination grid dimension sizes ID */
+  int dmn_sz_in_int_id; /* [id] Source grid dimension sizes ID */
+  int dmn_sz_out_int_id; /* [id] Destination grid dimension sizes ID */
   int dst_grd_crn_lat_id; /* [id] Destination grid corner latitudes  variable ID */
   int dst_grd_crn_lon_id; /* [id] Destination grid corner longitudes variable ID */
   int dst_grd_ctr_lat_id; /* [id] Destination grid center latitudes  variable ID */
@@ -400,12 +401,16 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     nco_dfl_case_generic_err(); break;
   } /* end switch */
   /* Obtain fields whose name is independent of mapfile type */
-  rcd+=nco_inq_varid(in_id,"dst_grid_dims",&dmn_sz_int_id);
+  rcd+=nco_inq_varid(in_id,"src_grid_dims",&dmn_sz_in_int_id);
+  rcd+=nco_inq_varid(in_id,"dst_grid_dims",&dmn_sz_out_int_id);
 
-  long *dmn_cnt;
-  long *dmn_srt;
-  long *dmn_srd;
-  long idx; /* [idx] Counting index for unrolled grids */
+  const int lon_psn_dst=0; /* [idx] Ordinal position of longitude size in rectangular destination grid */
+  const int lat_psn_dst=1; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
+  const int bnd_rnk=2; /* [nbr] Rank of output coordinate CF boundary variables */
+  const int bnd_nbr_out=2; /* [nbr] Number of vertices for output rectangular grid coordinates */
+  const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
+  const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
+  const int dmn_nbr_grd_max=(dmn_nbr_2D); /* [nbr] Maximum rank of grid variables */
   double *area_out; /* [sr] Area of destination grid */
   double *lon_ctr_out; /* [dgr] Longitude centers of rectangular destination grid */
   double *lat_ctr_out; /* [dgr] Latitude  centers of rectangular destination grid */
@@ -416,17 +421,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   double *lat_ntf_out; /* [dgr] Latitude  interfaces of rectangular destination grid */
   double *lon_bnd_out; /* [dgr] Longitude boundaries of rectangular destination grid */
   double *lat_bnd_out; /* [dgr] Latitude  boundaries of rectangular destination grid */
+  double *wgt_raw; /* [frc] Remapping weights */
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
-  double *wgt_raw; /* [frc] Remapping weights */
-  int *dmn_sz_int; /* [nbr] Array of dimension sizes of destination grid */
-  const int lon_psn_dst=0; /* [idx] Ordinal position of longitude size in rectangular destination grid */
-  const int lat_psn_dst=1; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
-  const int bnd_rnk=2; /* [nbr] Rank of output coordinate CF boundary variables */
-  const int bnd_nbr_out=2; /* [nbr] Number of vertices for output rectangular grid coordinates */
-  const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
-  const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
-  const int dmn_nbr_grd_max=(dmn_nbr_2D); /* [nbr] Maximum rank of grid variables */
+  int *dmn_sz_in_int; /* [nbr] Array of dimension sizes of source grid */
+  int *dmn_sz_out_int; /* [nbr] Array of dimension sizes of destination grid */
+  long *dmn_cnt;
+  long *dmn_srt;
+  long *dmn_srd;
+  long idx; /* [idx] Counting index for unrolled grids */
     
   /* Allocate space to hold dimension metadata for rectangular destination grid */
   dmn_srt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
@@ -435,13 +438,45 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   assert(rgr_map.dst_grid_rank == 2);
   dmn_srt[0]=0L;
+  dmn_cnt[0]=rgr_map.src_grid_rank;
+  dmn_sz_in_int=(int *)nco_malloc(rgr_map.src_grid_rank*nco_typ_lng((nc_type)NC_INT));
+  rcd=nco_get_vara(in_id,dmn_sz_in_int_id,dmn_srt,dmn_cnt,dmn_sz_in_int,(nc_type)NC_INT);
+  dmn_srt[0]=0L;
   dmn_cnt[0]=rgr_map.dst_grid_rank;
-  dmn_sz_int=(int *)nco_malloc(rgr_map.dst_grid_rank*nco_typ_lng((nc_type)NC_INT));
-  rcd=nco_get_vara(in_id,dmn_sz_int_id,dmn_srt,dmn_cnt,dmn_sz_int,(nc_type)NC_INT);
+  dmn_sz_out_int=(int *)nco_malloc(rgr_map.dst_grid_rank*nco_typ_lng((nc_type)NC_INT));
+  rcd=nco_get_vara(in_id,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
 
-  const long lon_nbr_out=dmn_sz_int[lon_psn_dst]; /* [idx] Number of longitudes in rectangular destination grid */
-  const long lat_nbr_out=dmn_sz_int[lat_psn_dst]; /* [idx] Number of latitudes  in rectangular destination grid */
-  
+  long ncol_nbr_in; /* [idx] Number of columns in source grid */
+  long lon_nbr_in; /* [idx] Number of longitudes in rectangular source grid */
+  long lat_nbr_in; /* [idx] Number of latitudes  in rectangular source grid */
+  if(rgr_map.src_grid_rank == 2){
+    lon_nbr_in=dmn_sz_in_int[lon_psn_dst];
+    lat_nbr_in=dmn_sz_in_int[lat_psn_dst];
+    ncol_nbr_in=0;
+  }else{
+    lon_nbr_in=0;
+    lat_nbr_in=0;
+    ncol_nbr_in=dmn_sz_in_int[0];
+  } /* !src_grid_rank */
+
+  long ncol_nbr_out; /* [idx] Number of columns in destination grid */
+  long lon_nbr_out; /* [idx] Number of longitudes in rectangular destination grid */
+  long lat_nbr_out; /* [idx] Number of latitudes  in rectangular destination grid */
+  if(rgr_map.dst_grid_rank == 2){
+    lon_nbr_out=dmn_sz_out_int[lon_psn_dst];
+    lat_nbr_out=dmn_sz_out_int[lat_psn_dst];
+    ncol_nbr_out=0;
+  }else{
+    lon_nbr_out=0;
+    lat_nbr_out=0;
+    ncol_nbr_out=dmn_sz_out_int[0];
+  } /* !dst_grid_rank */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+    (void)fprintf(stderr,"%s: INFO %s expected input and prescribed output grid sizes: ",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"lat_in = %li, lon_in  %li, ncol_in = %li, lat_out = %li, lon_out = %li, ncol_out = %li\n",lat_nbr_in,lon_nbr_in,ncol_nbr_in,lat_nbr_out,lon_nbr_out,ncol_nbr_out);
+  } /* endif dbg */
+
   /* Allocate space for and obtain coordinates and weights */
   nc_type crd_typ_out=NC_DOUBLE;
   area_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
@@ -1016,9 +1051,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 #ifdef _OPENMP
   /* OpenMP notes:
      default(): none
-     firstprivate(): tally (NULL-initialized)
-     private(): almost everything
-     shared(): fnc_nm explicit for icc 13.1.3 (rhea), implicit for gcc 4.9.2 */
+     firstprivate(): tally (preserve NULL-initialization)
+     private(): almost everything else
+     shared(): fnc_nm explicit shared for icc 13.1.3 (rhea), default shared for gcc 4.9.2 */
 # ifdef __INTEL_COMPILER
 #  pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 #else /* !__INTEL_COMPILER */
@@ -1155,7 +1190,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Free memory allocated for grid reading/writing */
   if(area_out) area_out=(double *)nco_free(area_out);
   if(col_src_adr) col_src_adr=(int *)nco_free(col_src_adr);
-  if(dmn_sz_int) dmn_sz_int=(int *)nco_free(dmn_sz_int);
+  if(dmn_sz_out_int) dmn_sz_out_int=(int *)nco_free(dmn_sz_out_int);
+  if(dmn_sz_in_int) dmn_sz_in_int=(int *)nco_free(dmn_sz_in_int);
   if(lat_bnd_out) lat_bnd_out=(double *)nco_free(lat_bnd_out);
   if(lat_crn_out) lat_crn_out=(double *)nco_free(lat_crn_out);
   if(lat_ctr_out) lat_ctr_out=(double *)nco_free(lat_ctr_out);

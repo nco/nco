@@ -1,5 +1,7 @@
 2015-05-30  Charlie Zender  <zender@uci.edu>
 
+	* Diagnose input and output grid sizes for dogfood logic
+
 	* Activate OpenMP in autoconf/configure NCO builds (clang does not yet support OpenMP)
 
 	* Verified that regridding works on MACOSX---ne30 ~5x faster on aerosol than roulee
