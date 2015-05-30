@@ -136,7 +136,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
       break;
     case ncks: 
       // 20150529: Turn-on OpenMP while testing regridder
-      thr_nbr_max_fsh=16;
+      thr_nbr_max_fsh=8;
       break;
       /* Operators with higher maximum pre-set thread limit (NB: not all of these are threaded!) */
     case ncbo: 
