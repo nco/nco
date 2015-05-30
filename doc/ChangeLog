@@ -1,5 +1,7 @@
 2015-05-29  Charlie Zender  <zender@uci.edu>
 
+	* Document threading
+
 	* NCO 4.5.0-beta5 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.0-beta5 final changes'
 	git tag -a 4.5.0-beta5 -m 'Version 4.5.0-beta5 tag: OpenMP and area cell_methods';git push --tags
