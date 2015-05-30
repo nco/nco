@@ -1,5 +1,9 @@
 2015-05-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.0-beta5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.0-beta5 final changes'
+	git tag -a 4.5.0-beta5 -m 'Version 4.5.0-beta5 tag: OpenMP and area cell_methods';git push --tags
+
 	* Use firstprivate(tally) and now multiple threads work (exactly) on roulee
 
 	* Added regrid report to summarize variables regridded, copied,	omitted, created
@@ -15,10 +19,6 @@
 	* Carry per-thread file IDs in trv_tbl
 
 2015-05-28  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.5.0-beta5 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.5.0-beta5 final changes'
-	git tag -a 4.5.0-beta5 -m 'Version 4.5.0-beta5 tag: area cell_methods';git push --tags
 
 	* Surprisingly, all regressions still pass. Probably because thr_nbr is prescribed to be one :)
 
