@@ -15813,10 +15813,10 @@ file.
 @cindex @acronym{ESMF}
 @cindex @acronym{SCRIP}
 @cindex OpenMP
-@item --map @file{map-file}
+@item --map @var{map-file}
 Regrid input data to different horizontal grid using input and output 
 grids and mapping weights specified in @acronym{ESMF}- or @acronym{SCRIP}-format
-@file{map-file}.
+@var{map-file}.
 Also @samp{--rgr_map}.
 @example
 @verbatim

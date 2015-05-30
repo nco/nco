@@ -1013,26 +1013,17 @@ nco_rgr_map /* [fnc] Regrid using external weights */
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-#if 0
-  /* Sandbox for testing OpenMP code */
-#ifdef _OPENMP
-# pragma omp parallel for default(none) private(idx_tbl,in_id) shared(out_id)
-#endif /* !_OPENMP */
-  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
-    trv_sct trv_foo=trv_tbl->lst[idx_tbl];
-    in_id=trv_tbl->in_id_arr[omp_get_thread_num()];
-#ifdef _OPENMP
-    (void)fprintf(fp_stdout,"%s: thread = %d, in_id = %d, out_id = %d, idx_tbl = %d, var_nm = %s\n",nco_prg_nm_get(),omp_get_thread_num(),in_id,out_id,idx_tbl,trv_foo.nm);
-#endif /* !_OPENMP */
-  } /* end OpenMP parallel loopa  */
-#endif /* endif 0 */
-  
 #ifdef _OPENMP
   /* OpenMP notes:
+     default(): none
      firstprivate(): tally (NULL-initialized)
      private(): almost everything
-     shared(): usual suspects */
-# pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+     shared(): fnc_nm explicit for icc 13.1.3 (rhea), implicit for gcc 4.9.2 */
+# ifdef __INTEL_COMPILER
+#  pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+#else /* !__INTEL_COMPILER */
+#  pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+# endif /* !__INTEL_COMPILER */
 #endif /* !_OPENMP */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
