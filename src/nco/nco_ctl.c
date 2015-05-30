@@ -461,7 +461,7 @@ nco_ddra /* [fnc] Count operations */
 		  var_idx,var_nm,(float)lmn_nbr,(float)flp_nbr,(float)ntg_nbr,tm_io,tm_crr,(float)lmn_nbr_ttl,(float)flp_nbr_ttl,(float)ntg_nbr_ttl,100.0*tm_frc_flp_ttl,100.0*tm_frc_ntg_ttl,100.0*tm_frc_rd_ttl,100.0*tm_frc_wrt_ttl,100.0*tm_frc_io_ttl,tm_ttl,tm_obs_ttl);
     break;
   case nco_tmr_end: /* [enm] Close timer (last timer call) */
-    if(ddra_info->flg_ddra || nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: TIMER Wallclock-elapsed time for command is %7.2f s\n",nco_prg_nm_get(),tm_obs_ttl);
+    if(ddra_info->flg_ddra || nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: TIMER Elapsed time for command is %7.2f s\n",nco_prg_nm_get(),tm_obs_ttl);
     break;
   default: nco_dfl_case_tmr_typ_err(); break;
   } /* end switch */

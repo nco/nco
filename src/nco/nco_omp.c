@@ -117,11 +117,12 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     switch(nco_prg_id_get()){
       /* Operators with pre-set thread limit
 	 NB: All operators currently have default restrictions
-	 Only ncwa and ncap2 have a chance to scale on non-parallel filesystems
+	 2007: Only ncwa and ncap2 have a chance to scale on non-parallel filesystems
 	 ncap2 may, one day, see a big performance boost from threading
 	 However, as of 20090327, ncap2 threading may be buggy due to ANTLR
 	 Moreover, we want to prevent hogging processes on 32-way nodes
-	 until/unless clear benefits of threading are demonstrated. */
+	 until/unless clear benefits of threading are demonstrated.
+	 2015: Threads improve ncks regridding performance by 2-3x on ACME ~1-20 GB netCDF3 files */
     case ncap: 
       /* 20090327: Restrict ncap2 to one thread until ANTLR threading resolved */
       thr_nbr_max_fsh=1;
@@ -135,7 +136,11 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
       thr_nbr_max_fsh=1;
       break;
     case ncks: 
-      // 20150529: Turn-on OpenMP while testing regridder
+      // 20150529: Turn-on OpenMP for regridder
+      thr_nbr_max_fsh=8;
+      break;
+    case ncwa: 
+      // 20150530: Turn-on OpenMP for debugging
       thr_nbr_max_fsh=8;
       break;
       /* Operators with higher maximum pre-set thread limit (NB: not all of these are threaded!) */
@@ -146,7 +151,6 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     case ncpdq: 
     case ncra:
     case ncrename: 
-    case ncwa: 
     case ncge:
       // 20140219: Turn-off OpenMP until thoroughly tested
       // thr_nbr_max_fsh=4;
@@ -169,8 +173,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   } /* !USR_SPC_THR_RQS */
 
 #ifdef ENABLE_NETCDF4
-  // 20150529 Do not limit ncks during nco_rgr_map() threading development
-  if(nco_prg_id_get() != ncks && thr_nbr_rqs > 1){
+  if(nco_prg_id_get() != ncks && nco_prg_id_get() != ncwa && thr_nbr_rqs > 1){
     if(USR_SPC_THR_RQS && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: WARNING This is TODO nco939. Requested threading with netCDF4 (HDF5) support. The NCO thread request algorithm considers user-input, environment variables, and software and hardware limitations in determining the number of threads to request, thr_nbr_rqs. At this point NCO would request result %d threads from a netCDF3-based library. However, this NCO was built with netCDF4, which relies on HDF5. netCDF4 is not thread-safe unless HDF5 is configured with the (non-default) --enable-threadsafe option. NCO currently has no way to know whether HDF5 was built thread-safe. Hence, all netCDF4-based operators are currently restricted to a single thread. The program will now automatically set thr_nbr_rqs = 1.\nThis unfortunate limitation is necessary to keep the NCO developers sane. If you want/need threading in netCDF4-based NCO, please politely yet firmly request of the Unidata netCDF developers that better thread support be built into netCDF4, and request of the HDF5 developers that they make the --enable-threadsafe option compatible with all HDF5 libraries and APIs, including Fortran (which, as of HDF5 1.8.0 in 2008, is incompatible with --enable-threadsafe).\n",nco_prg_nm_get(),thr_nbr_rqs);
     thr_nbr_rqs=1;
   } /* endif */
@@ -200,6 +203,11 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   } /* end dbg */
 #endif /* !_OPENMP */
   
+  /* Issue any warnings about OpenMP credibility during debugging phase */
+  if(False)
+    if(nco_prg_id_get() == ncwa && thr_nbr_act > 1)
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: WARNING OpenMP threading active with %d threads but not guaranteed to work on this operator. If strange behavior ensues, manually turn-off multi-threading by specifying \"-t 1\" option.\n",nco_prg_nm_get(),thr_nbr_act);
+
   return thr_nbr_act; /* O [nbr] Number of threads NCO uses */
 } /* end nco_openmp_ini() */
 
