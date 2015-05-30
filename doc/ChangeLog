@@ -1,6 +1,6 @@
 2015-05-30  Charlie Zender  <zender@uci.edu>
 
-	* Diagnose input and output grid sizes for dogfood logic
+	* Diagnose input and output grid sizes and conversion type for dogfood logic
 
 	* Activate OpenMP in autoconf/configure NCO builds (clang does not yet support OpenMP)
 

@@ -264,6 +264,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nc_type att_typ;
 
   nco_rgr_mpf_typ_enm nco_rgr_mpf_typ=nco_rgr_mpf_nil; /* [enm] Type of remapping file */
+  nco_rgr_grd_typ_enm nco_rgr_grd_typ=nco_rgr_grd_nil; /* [enm] Type of grid conversion */
   
   /* Look for map-type signature in Conventions attribute */
   cnv_sng=cnv_sng_UC;
@@ -361,6 +362,13 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     (void)fprintf(stderr,"%s: INFO %s regridding input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"map_method = %s, normalization = %s, src_grid_size = %li, dst_grid_size = %li, src_grid_corners = %li, dst_grid_corners = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = %li, num_wgts = %li\n",nco_rgr_mth_sng(nco_rgr_mth_typ),nco_rgr_nrm_sng(nco_rgr_nrm_typ),rgr_map.src_grid_size,rgr_map.dst_grid_size,rgr_map.src_grid_corners,rgr_map.dst_grid_corners,rgr_map.src_grid_rank,rgr_map.dst_grid_rank,rgr_map.num_links,rgr_map.num_wgts);
   } /* endif dbg */
+
+  /* Set type of grid conversion */
+  if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 1) nco_rgr_grd_typ=nco_rgr_grd_1D_to_1D;
+  if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 2) nco_rgr_grd_typ=nco_rgr_grd_1D_to_2D;
+  if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 1) nco_rgr_grd_typ=nco_rgr_grd_2D_to_1D;
+  if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 2) nco_rgr_grd_typ=nco_rgr_grd_2D_to_2D;
+  assert(nco_rgr_grd_typ != nco_rgr_grd_nil);
 
   /* Obtain grid values necessary to compute output latitude and longitude coordinates */
   int area_dst_id; /* [id] Area variable ID */
@@ -473,7 +481,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !dst_grid_rank */
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
-    (void)fprintf(stderr,"%s: INFO %s expected input and prescribed output grid sizes: ",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"%s: INFO %s grid conversion type = %s with expected input and prescribed output grid sizes: ",nco_prg_nm_get(),fnc_nm,nco_rgr_grd_sng(nco_rgr_grd_typ));
     (void)fprintf(stderr,"lat_in = %li, lon_in  %li, ncol_in = %li, lat_out = %li, lon_out = %li, ncol_out = %li\n",lat_nbr_in,lon_nbr_in,ncol_nbr_in,lat_nbr_out,lon_nbr_out,ncol_nbr_out);
   } /* endif dbg */
 
@@ -1263,6 +1271,23 @@ nco_rgr_tps /* [fnc] Regrid using Tempest library */
   
   return NCO_NOERR;
 } /* end nco_rgr_tps() */
+
+const char * /* O [sng] String describing grid conversion */
+nco_rgr_grd_sng /* [fnc] Convert grid conversion enum to string */
+(const nco_rgr_grd_typ_enm nco_rgr_grd_typ) /* I [enm] Grid conversion enum */
+{
+  /* Purpose: Convert grid conversion enum to string */
+  switch(nco_rgr_grd_typ){
+  case nco_rgr_grd_1D_to_1D: return "1D_to_1D";
+  case nco_rgr_grd_1D_to_2D: return "1D_to_2D";
+  case nco_rgr_grd_2D_to_1D: return "2D_to_1D";
+  case nco_rgr_grd_2D_to_2D: return "2D_to_2D";
+  default: nco_dfl_case_generic_err(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_rgr_grd_sng() */
 
 const char * /* O [sng] String describing regridding method */
 nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */
