@@ -1,10 +1,8 @@
 2015-05-30  Charlie Zender  <zender@uci.edu>
 
-	* Activate OpenMP in autoconf/configure NCO builds
+	* Activate OpenMP in autoconf/configure NCO builds (clang does not yet support OpenMP)
 
-	* Existing autoconf/configure NCO builds do not support OpenMP
-
-	* Verified that regridding works on MACOSX
+	* Verified that regridding works on MACOSX---ne30 ~5x faster on aerosol than roulee
 
 2015-05-29  Charlie Zender  <zender@uci.edu>
 
