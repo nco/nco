@@ -1,6 +1,6 @@
 2015-05-29  Charlie Zender  <zender@uci.edu>
 
-	* Introduced bug that causes flg_rgr to copy (not regrid) all variables and thus produce garbage...BEWARE!
+	* Added regrid report to summarize variables regridded, copied,	omitted, created
 
 	* Demonstrated that four threads can produce exactly correct answers
 
