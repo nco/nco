@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.5.0-beta5 final changes'
 	git tag -a 4.5.0-beta5 -m 'Version 4.5.0-beta5 tag: OpenMP and area cell_methods';git push --tags
 
+	* Verified threading works with netCDF4 output with netCDF 4.3.3.1 (rhea has 4.1.3)
+
 	* Use firstprivate(tally) and now multiple threads work (exactly) on roulee
 
 	* Added regrid report to summarize variables regridded, copied,	omitted, created
