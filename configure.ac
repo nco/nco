@@ -51,7 +51,7 @@
 
 # Process configure input with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
-AC_INIT([NCO netCDF Operators],[4.5.0],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.5.0-beta6],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -308,7 +308,7 @@ AC_OPENMP
 AC_SUBST(OPENMP_CFLAGS)
 AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [[default=yes]]]),enable_openmp=${enableval},enable_openmp=yes)
 # Enable OpenMP unless told not to
-if ((test "${enable_openmp}" != 'no') && (test "${enable_netcdf4}" = 'xyes')); then
+if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP

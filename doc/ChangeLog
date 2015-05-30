@@ -1,3 +1,11 @@
+2015-05-30  Charlie Zender  <zender@uci.edu>
+
+	* Activate OpenMP in autoconf/configure NCO builds
+
+	* Existing autoconf/configure NCO builds do not support OpenMP
+
+	* Verified that regridding works on MACOSX
+
 2015-05-29  Charlie Zender  <zender@uci.edu>
 
 	* Document threading
