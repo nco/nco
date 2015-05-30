@@ -1,5 +1,7 @@
 2015-05-29  Charlie Zender  <zender@uci.edu>
 
+	* Use firstprivate(tally) and now multiple threads work (exactly) on roulee
+
 	* Added regrid report to summarize variables regridded, copied,	omitted, created
 
 	* Demonstrated that four threads can produce exactly correct answers
