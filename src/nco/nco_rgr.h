@@ -14,6 +14,7 @@
 #define NCO_RGR_H
 
 /* Standard header files */
+#include <limits.h> /* INT_MAX, LONG_MAX */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
@@ -35,6 +36,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
+/* WIN32 math.h does not define M_PI, needed for dgr2rdn and rdn2dgr */
+#ifndef M_PI
+# define M_PI		3.14159265358979323846
+#endif /* M_PI */
+
   typedef enum nco_rgr_cmd_typ_enm{ /* [enm] Tempest remap type enum */
     nco_rgr_AAA_nil=0,
     nco_rgr_ApplyOfflineMap,
@@ -54,7 +60,7 @@ extern "C" {
   typedef enum nco_rgr_mpf_typ_enm{ /* [enm] Mapfile type enum */
     nco_rgr_mpf_nil=0,
     nco_rgr_mpf_SCRIP,
-    nco_rgr_mpf_ESMF
+    nco_rgr_mpf_ESMF,
   } nco_rgr_mpf_typ_enm;
 
   typedef enum nco_rgr_grd_typ_enm{ /* [enm] Regrid type enum */
@@ -64,6 +70,13 @@ extern "C" {
     nco_rgr_grd_2D_to_1D,
     nco_rgr_grd_2D_to_2D,
   } nco_rgr_grd_typ_enm;
+
+  typedef enum nco_grd_2D_typ_enm{ /* [enm] Two-dimensional grid-type enum */
+    nco_grd_2D_nil=0,
+    nco_grd_2D_gss, /* Gaussian latitudes used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM */
+    nco_grd_2D_ngl_eqi_pol, /* Equi-angle grid including poles, the FV scalar grid (lat[0]=-90): CAM FV, GEOS-CHEM, UCICTM, UKMO */
+    nco_grd_2D_ngl_eqi_fst, /* Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
+  } nco_grd_2D_typ_enm;
 
   /* ESMF: The normalization attribute describes how the conservative weights are calculated, currently this is always set to "destarea" because this is the only option which we currently support. The setting "destarea" means that the conservative weights are calculated by dividing the area of the intersection of the source and destination cells by the area of the destination cell. This is set even when the weights are not conservative in which case it can be ignored. */
   typedef enum nco_rgr_nrm_typ_enm{ /* [enm] Normalization type enum */
@@ -127,6 +140,10 @@ extern "C" {
   int /* O [enm] Return code */
   nco_rgr_tps /* [fnc] Regrid using Tempest library */
   (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
+
+  const char * /* O [sng] String describing two-dimensional grid-type */
+  nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
+  (const nco_grd_2D_typ_enm nco_grd_2D_typ); /* I [enm] Two-dimensional grid-type enum */
 
   const char * /* O [sng] String describing grid conversion */
   nco_rgr_grd_sng /* [fnc] Convert grid conversion enum to string */

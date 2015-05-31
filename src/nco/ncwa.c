@@ -843,22 +843,18 @@ main(int argc,char **argv)
 
 #ifdef _OPENMP
     /* OpenMP notes:
-       firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
-       shared(): msk and wgt are not altered within loop
-       private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,nco_dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,nco_prg_nm,rcd,trv_tbl,var_prc,var_prc_out,wgt_nm)
+       firstprivate(): 
+       lastprivate(): retain rcd value from last thread
+       private(): wgt_avg does not need initialization
+       shared(): msk and wgt are not altered within loop */
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info) lastprivate(rcd) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_nm,op_typ_rlt,out_id,trv_tbl,var_prc,var_prc_out,wgt_nm)
 #endif /* !_OPENMP */
-
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
-
       char *grp_out_fll=NULL; /* [sng] Group name */
-
       int grp_id;        /* [ID] Group ID */
       int grp_out_id;    /* [ID] Group ID (output) */
       int var_out_id;    /* [ID] Variable ID (output) */
-
       trv_sct *var_trv;  /* [sct] Variable GTT object */
-
       var_sct *wgt=NULL;
       var_sct *wgt_out=NULL;
       var_sct *msk=NULL;
@@ -1130,7 +1126,7 @@ main(int argc,char **argv)
       var_prc_out[idx]->id=var_out_id;
 
       if(var_trv->ppc != NC_MAX_INT){
-	if(var_trv->flg_nsd) (void)nco_var_bitmask(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val); else (void)nco_var_around(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
+	if(var_trv->flg_nsd) (void)nco_ppc_bitmask(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val); else (void)nco_ppc_around(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
       } /* endif ppc */
 	
 #ifdef _OPENMP

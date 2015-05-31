@@ -39,6 +39,7 @@
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mss_val.h" /* Missing value utilities */
 #include "nco_pck.h" /* Packing and unpacking variables */
+#include "nco_ppc.h" /* Precision-Preserving Compression */
 
 #ifdef __cplusplus
 extern "C" {

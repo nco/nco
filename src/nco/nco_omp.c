@@ -204,9 +204,9 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
 #endif /* !_OPENMP */
   
   /* Issue any warnings about OpenMP credibility during debugging phase */
-  if(False)
+  if(True)
     if(nco_prg_id_get() == ncwa && thr_nbr_act > 1)
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: WARNING OpenMP threading active with %d threads but not guaranteed to work on this operator. If strange behavior ensues, manually turn-off multi-threading by specifying \"-t 1\" option.\n",nco_prg_nm_get(),thr_nbr_act);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: WARNING OpenMP threading active with %d threads but not guaranteed to work on this operator. If strange behavior (e.g., NaN results) ensues, manually turn-off multi-threading by specifying \"-t 1\" option.\n",nco_prg_nm_get(),thr_nbr_act);
 
   return thr_nbr_act; /* O [nbr] Number of threads NCO uses */
 } /* end nco_openmp_ini() */

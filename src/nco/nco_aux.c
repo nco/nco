@@ -350,10 +350,6 @@ nco_aux_prs
   if(bnd_bx_sng_tmp) bnd_bx_sng_tmp=(char *)nco_free(bnd_bx_sng_tmp);
   
   if(!strcmp(units,"radians")){
-    /* WIN32 math.h does not define M_PI */
-#ifndef M_PI
-# define M_PI		3.14159265358979323846
-#endif /* M_PI */
     const float dgr2rdn=M_PI/180.0;
     *lon_min*=dgr2rdn;
     *lon_max*=dgr2rdn;
@@ -361,7 +357,6 @@ nco_aux_prs
     *lat_max*=dgr2rdn;
   } /* endif radians */
 } /* nco_aux_prs */
-
 
 lmt_sct **                           /* O [lst] Auxiliary coordinate limits */
 nco_aux_evl_trv

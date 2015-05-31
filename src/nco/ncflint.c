@@ -860,7 +860,7 @@ main(int argc,char **argv)
     var_prc_out[idx]->id=var_out_id;
 
     if(var_trv_1->ppc != NC_MAX_INT){
-    if(var_trv_1->flg_nsd) (void)nco_var_bitmask(var_trv_1->ppc,var_prc_2[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_2[idx]->val); else (void)nco_var_around(var_trv_1->ppc,var_prc_2[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_2[idx]->val);
+    if(var_trv_1->flg_nsd) (void)nco_ppc_bitmask(var_trv_1->ppc,var_prc_2[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_2[idx]->val); else (void)nco_ppc_around(var_trv_1->ppc,var_prc_2[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_2[idx]->val);
     } /* endif ppc */
 #ifdef _OPENMP
 # pragma omp critical

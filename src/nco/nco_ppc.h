@@ -58,6 +58,24 @@ extern "C" {
    const char * const ppc_arg, /* I [sng] user input for precision-preserving compression */
    trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
+  void
+  nco_ppc_around /* [fnc] Replace op1 values by their values rounded to decimal precision prc */
+  (const int prc, /* I [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+   const nc_type type, /* I [enm] netCDF type of operand */
+   const long sz, /* I [nbr] Size (in elements) of operand */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [val] Value of missing value */
+   ptr_unn op1); /* I/O [val] Values of first operand */
+
+  void
+  nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
+  (const int nsd, /* I [nbr] Number of significant digits, i.e., arithmetic precision */
+   const nc_type type, /* I [enm] netCDF type of operand */
+   const long sz, /* I [nbr] Size (in elements) of operand */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [val] Value of missing value */
+   ptr_unn op1); /* I/O [val] Values of first operand */
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

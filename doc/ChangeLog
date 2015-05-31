@@ -1,3 +1,11 @@
+2015-05-31  Charlie Zender  <zender@uci.edu>
+
+	* Fuzzy test for latitude weight normalization
+
+	* Move bitmask() and around() routines from nco_var_rth.[ch] to nco_ppc.[ch]
+
+	* Infrastructure for detecting correct type of latitude grid
+
 2015-05-30  Charlie Zender  <zender@uci.edu>
 
 	* Clarify Conventions warnings

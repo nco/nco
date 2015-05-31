@@ -340,6 +340,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   assert(nco_rgr_nrm_typ == nco_rgr_nrm_destarea);
   if(att_val) att_val=(char *)nco_free(att_val);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
+  assert(rgr_map.src_grid_size < INT_MAX && rgr_map.dst_grid_size < INT_MAX);
 
   cnv_sng=strdup("map_method");
   nco_rgr_mth_typ_enm nco_rgr_mth_typ=nco_rgr_mth_nil;
@@ -369,6 +370,11 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 1) nco_rgr_grd_typ=nco_rgr_grd_2D_to_1D;
   if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 2) nco_rgr_grd_typ=nco_rgr_grd_2D_to_2D;
   assert(nco_rgr_grd_typ != nco_rgr_grd_nil);
+  /* Save typing later */
+  nco_bool flg_grd_out_1D=False;
+  nco_bool flg_grd_out_2D=False;
+  if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_1D || nco_rgr_grd_typ == nco_rgr_grd_2D_to_1D) flg_grd_out_1D=True;
+  if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D || nco_rgr_grd_typ == nco_rgr_grd_2D_to_2D) flg_grd_out_2D=True;
 
   /* Obtain grid values necessary to compute output latitude and longitude coordinates */
   int area_dst_id; /* [id] Area variable ID */
@@ -488,15 +494,29 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Allocate space for and obtain coordinates and weights */
   nc_type crd_typ_out=NC_DOUBLE;
   area_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
-  lon_ctr_out=(double *)nco_malloc(lon_nbr_out*nco_typ_lng(crd_typ_out));
-  lat_ctr_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
-  lat_wgt_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
-  lon_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lon_nbr_out*nco_typ_lng(crd_typ_out));
-  lat_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lat_nbr_out*nco_typ_lng(crd_typ_out));
-  lon_ntf_out=(double *)nco_malloc((lon_nbr_out+1L)*nco_typ_lng(crd_typ_out));
-  lat_ntf_out=(double *)nco_malloc((lat_nbr_out+1L)*nco_typ_lng(crd_typ_out));
-  lon_bnd_out=(double *)nco_malloc(lon_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-  lat_bnd_out=(double *)nco_malloc(lat_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+
+  if(flg_grd_out_1D){
+    lon_ctr_out=(double *)nco_malloc(ncol_nbr_out*nco_typ_lng(crd_typ_out));
+    lat_ctr_out=(double *)nco_malloc(ncol_nbr_out*nco_typ_lng(crd_typ_out));
+    lon_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*ncol_nbr_out*nco_typ_lng(crd_typ_out));
+    lat_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*ncol_nbr_out*nco_typ_lng(crd_typ_out));
+    lon_ntf_out=(double *)nco_malloc((ncol_nbr_out+1L)*nco_typ_lng(crd_typ_out));
+    lat_ntf_out=(double *)nco_malloc((ncol_nbr_out+1L)*nco_typ_lng(crd_typ_out));
+    lon_bnd_out=(double *)nco_malloc(ncol_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+    lat_bnd_out=(double *)nco_malloc(ncol_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+  } /* !flg_grd_out_1D */
+  if(flg_grd_out_2D){
+    lon_ctr_out=(double *)nco_malloc(lon_nbr_out*nco_typ_lng(crd_typ_out));
+    lat_ctr_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
+    lat_wgt_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
+    lon_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lon_nbr_out*nco_typ_lng(crd_typ_out));
+    lat_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lat_nbr_out*nco_typ_lng(crd_typ_out));
+    lon_ntf_out=(double *)nco_malloc((lon_nbr_out+1L)*nco_typ_lng(crd_typ_out));
+    lat_ntf_out=(double *)nco_malloc((lat_nbr_out+1L)*nco_typ_lng(crd_typ_out));
+    lon_bnd_out=(double *)nco_malloc(lon_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+    lat_bnd_out=(double *)nco_malloc(lat_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+  } /* !flg_grd_out_2D */
+
   wgt_raw=(double *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_DOUBLE),"Unable to malloc() value buffer for remapping weights",fnc_nm);
   col_src_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),"Unable to malloc() value buffer for remapping addresses",fnc_nm);
   row_dst_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),"Unable to malloc() value buffer for remapping addresses",fnc_nm);
@@ -531,8 +551,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
      However, ESMF often outputs interfaces values (e.g., yv_b) for midpoint coordinates (e.g., yc_b)
      For example, ACME standard map from ne120np4 to 181x360 has yc_b[0] = yv_b[0] = -90.0
      Latitude = -90 is, by definition, not a midpoint coordinate
-     Maybe there is an ESMF flag or something that resolves this special case?
-     More safe to read boundary interfaces directly from grid corner/vertice arrays in map file
+     This appears to be an artifact of the non-physical representation of the FV grid, i.e.,
+     a grid center located at the pole where longitudes collapse in the model, but cannot be
+     represented as collapsed on a rectangular 2D grid with non-zero areas.
+     Unfortunately, ESMF supports this nonsense by labeling the grid center as at the pole
+     so that applications can easily diagnose an FV grid when they read-in datasets.
+     A superior application could diagnose FV just fine from actual non-polar gridcell centers
+     Maybe ESMF could introduce a flag or something to indicate/avoid this special case?
+     Safer to read boundary interfaces directly from grid corner/vertice arrays in map file
 
      Derivation of boundaries xv_b, yv_b from _correct_ xc_b, yc_b is follows
      Do not implement this procedure until resolving midpoint/center issue described above:
@@ -558,14 +584,45 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     lat_bnd_out[2*idx]=lat_ntf_out[idx];
     lat_bnd_out[2*idx+1]=lat_ntf_out[idx+1];
   } /* end loop over latitude */
-  /* WIN32 math.h does not define M_PI */
-#ifndef M_PI
-# define M_PI		3.14159265358979323846
-#endif /* M_PI */
+
+  /* Diagnose type of two-dimensional output grid by testing second latitude center against formulae */
+  nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
+  // const double lat_ctr_tst_gss;
+  const double lat_ctr_tst_ngl_eqi_pol=-90.0+180.0/(lat_nbr_out-1);
+  const double lat_ctr_tst_ngl_eqi_fst=-90.0+180.0*1.5/lat_nbr_out;
+  if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_fst) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_fst;
+  if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_pol) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_pol;
+  (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid type is %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
+  
   const double dgr2rdn=M_PI/180.0;
-  /* fxm: Be sure only to output gw for rectangular grids */
-  for(idx=0;idx<lat_nbr_out;idx++)
-    lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
+  switch(nco_grd_2D_typ){
+  case nco_grd_2D_ngl_eqi_fst:
+    for(idx=0;idx<lat_nbr_out;idx++)
+      lat_wgt_out[idx]=cos(dgr2rdn*lat_ctr_out[idx]);
+    break;
+  case nco_grd_2D_ngl_eqi_pol:
+    for(idx=0;idx<lat_nbr_out;idx++)
+      lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
+    break;
+  case nco_grd_2D_gss: /* fxm */
+  default:
+    (void)fprintf(stderr,"%s: ERROR %s unknown output latitude grid type\n",nco_prg_nm_get(),fnc_nm);
+    nco_dfl_case_generic_err(); break;
+  } /* end nco_grd_2D_typ switch */
+  assert(nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol);
+  /* Test latitude weight normalization */
+  double lat_wgt_ttl=0.0; 
+  for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
+  /* Accumulated rounding error can change last bit */
+  unsigned long int *u64_ptr;
+  unsigned long int msk_f64_u64_zro;
+  msk_f64_u64_zro=0ul; /* Zero all bits */
+  msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
+  const int bit_xpl_nbr_zro=1; /* [nbr] Number of bits of rounding error to tolerate */
+  msk_f64_u64_zro <<= bit_xpl_nbr_zro;
+  u64_ptr=(unsigned long int *)&lat_wgt_ttl;
+  *u64_ptr&=msk_f64_u64_zro;
+  assert(lat_wgt_ttl == 2.0);
   
   if(nco_dbg_lvl_get() >= nco_dbg_vec){
     (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
@@ -1271,6 +1328,22 @@ nco_rgr_tps /* [fnc] Regrid using Tempest library */
   
   return NCO_NOERR;
 } /* end nco_rgr_tps() */
+
+const char * /* O [sng] String describing two-dimensional grid-type */
+nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
+(const nco_grd_2D_typ_enm nco_grd_2D_typ) /* I [enm] Two-dimensional grid-type enum */
+{
+  /* Purpose: Convert two-dimensional grid-type enum to string */
+  switch(nco_grd_2D_typ){
+  case nco_grd_2D_gss: return "Gaussian latitudes used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
+  case nco_grd_2D_ngl_eqi_pol: return "Equi-angle grid including poles, the FV scalar grid (lat[0]=-90): CAM FV, GEOS-CHEM, UCICTM, UKMO";
+  case nco_grd_2D_ngl_eqi_fst: return "Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
+  default: nco_dfl_case_generic_err(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_grd_2D_sng() */
 
 const char * /* O [sng] String describing grid conversion */
 nco_rgr_grd_sng /* [fnc] Convert grid conversion enum to string */
