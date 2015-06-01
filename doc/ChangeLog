@@ -1,5 +1,9 @@
 2015-05-31  Charlie Zender  <zender@uci.edu>
 
+	* Add Gaussian grid detection and required functions nco_lat_Gss_mk() and nco_bsl_zero_get()
+
+	* Improve ncdismember documentation
+
 	* Fuzzy test for latitude weight normalization
 
 	* Move bitmask() and around() routines from nco_var_rth.[ch] to nco_ppc.[ch]

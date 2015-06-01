@@ -4497,7 +4497,7 @@ level.
 In other words, @acronym{GPE} is tolerant of specifying too many group
 components to delete. 
 It deletes as many as possible, without complaint, and then begins to
-flatten the file (which will fail if namespace conflicts arise).
+flatten the file (which fails if namespace conflicts arise).
 
 In Truncate-mode, @var{lvl_nbr} is a negative integer which specifies
 the maximum number of group path components (i.e., groups) that
@@ -4671,20 +4671,20 @@ cat > ~/ncdismember << 'EOF'
 
 # Usage:
 # ncdismember <fl_in> <drc_out> [flg_cf] [cf_vrs] [opt]
-# where fl_in is input file/URL to dismember, drc_out is output directory,
-# CF-compliance check is performed when optional third argument is 'cf',
+# where fl_in is input file/URL to dismember, drc_out is output directory
+# CF-compliance check is performed when optional third argument is 'cf'
 # Optional fourth argument cf_vrs is CF version to check
-# Optional fifth argument opt passes straight through to ncks
+# Optional fifth argument opt passes straight-through to ncks
 # chmod a+x ~/sh/ncdismember
-# ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp
-# ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp
-# ncdismember http://dust.ess.uci.edu/nco/mdl_1.nc /data/zender/nco/tmp
-# ncdismember http://thredds-test.ucar.edu/thredds/dodsC/testdods/foo.nc /data/zender/nco/tmp
+# Examples:
+# ncdismember ~/nco/data/mdl_1.nc /data/zender/tmp
+# ncdismember http://dust.ess.uci.edu/nco/mdl_1.nc /tmp
+# ncdismember http://thredds-test.ucar.edu/thredds/dodsC/testdods/foo.nc /tmp
 # ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf
 # ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf 1.3
 # ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf 1.5 --fix_rec_dmn=all
 
-# Command line argument defaults
+# Command-line argument defaults
 fl_in="${HOME}/nco/data/mdl_1.nc" # [sng] Input file to dismember/check
 drc_out="${DATA}/nco/tmp" # [sng] Output directory
 flg_cf='0' # [flg] Perform CF-compliance check
@@ -4693,7 +4693,7 @@ opt='' # [flg] Additional ncks options (e.g., '--fix_rec_dmn=all')
 # Use single quotes to pass multiple arguments to opt=${5}
 # Otherwise arguments would be seen as ${5}, ${6}, ${7} ...
 
-# Command line argument option parsing
+# Command-line argument option parsing
 if [ -n "${1}" ]; then fl_in=${1}; fi
 if [ -n "${2}" ]; then drc_out=${2}; fi
 if [ -n "${3}" ]; then flg_cf=${3}; fi

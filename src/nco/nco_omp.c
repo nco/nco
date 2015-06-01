@@ -192,9 +192,9 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d threads\n",nco_prg_nm_get(),thr_nbr_act);
 #ifdef _OPENMP
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
-#pragma omp parallel default(none) shared(thr_nbr_act)
+# pragma omp parallel default(none) shared(thr_nbr_act)
     { /* begin OpenMP parallel */
-#pragma omp single nowait
+# pragma omp single nowait
       { /* begin OpenMP single */
 	thr_nbr_act=omp_get_num_threads(); /* [nbr] Number of threads NCO uses */
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO Small parallel test region spawned team of %d threads\n",nco_prg_nm_get(),thr_nbr_act);

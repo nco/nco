@@ -587,11 +587,22 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   /* Diagnose type of two-dimensional output grid by testing second latitude center against formulae */
   nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
-  // const double lat_ctr_tst_gss;
   const double lat_ctr_tst_ngl_eqi_pol=-90.0+180.0/(lat_nbr_out-1);
   const double lat_ctr_tst_ngl_eqi_fst=-90.0+180.0*1.5/lat_nbr_out;
+  double lat_ctr_tst_gss;
   if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_fst) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_fst;
   if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_pol) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_pol;
+  double *wgt_Gss_out=NULL; // [frc] Gaussian weights double precision
+  if(nco_grd_2D_typ == nco_grd_2D_nil){
+    /* Check for Gaussian grid */
+    double *lat_sin_out; // [frc] Sine of Gaussian latitudes double precision
+    lat_sin_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
+    wgt_Gss_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
+    (void)nco_lat_wgt_gss(lat_nbr_out,lat_sin_out,wgt_Gss_out);
+    lat_ctr_tst_gss=asin(lat_sin_out[1]);
+    if(lat_ctr_out[1] == lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
+    if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
+  } /* !Gaussian */
   (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid type is %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
   
   const double dgr2rdn=M_PI/180.0;
@@ -605,6 +616,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
     break;
   case nco_grd_2D_gss: /* fxm */
+    for(idx=0;idx<lat_nbr_out;idx++)
+      lat_wgt_out[idx]=wgt_Gss_out[idx];
+    break;
+    if(wgt_Gss_out) wgt_Gss_out=(double *)nco_free(wgt_Gss_out);
   default:
     (void)fprintf(stderr,"%s: ERROR %s unknown output latitude grid type\n",nco_prg_nm_get(),fnc_nm);
     nco_dfl_case_generic_err(); break;
@@ -613,12 +628,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Test latitude weight normalization */
   double lat_wgt_ttl=0.0; 
   for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
-  /* Accumulated rounding error can change last bit */
+  /* Accumulated rounding error can change last bits */
   unsigned long int *u64_ptr;
   unsigned long int msk_f64_u64_zro;
   msk_f64_u64_zro=0ul; /* Zero all bits */
   msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
-  const int bit_xpl_nbr_zro=1; /* [nbr] Number of bits of rounding error to tolerate */
+  const int bit_xpl_nbr_zro=1; /* [nbr] Bits of rounding error to tolerate */
   msk_f64_u64_zro <<= bit_xpl_nbr_zro;
   u64_ptr=(unsigned long int *)&lat_wgt_ttl;
   *u64_ptr&=msk_f64_u64_zro;
@@ -1113,24 +1128,23 @@ nco_rgr_map /* [fnc] Regrid using external weights */
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-#ifdef _OPENMP
   /* OpenMP notes:
      default(): none
      firstprivate(): tally (preserve NULL-initialization)
      private(): almost everything else
      shared(): fnc_nm explicit shared for icc 13.1.3 (rhea), default shared for gcc 4.9.2 */
-# ifdef __INTEL_COMPILER
-#  pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+#ifdef __INTEL_COMPILER
+# pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 #else /* !__INTEL_COMPILER */
-#  pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
-# endif /* !__INTEL_COMPILER */
-#endif /* !_OPENMP */
+# pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+#endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
     thr_idx=omp_get_thread_num();
     in_id=trv_tbl->in_id_arr[thr_idx];
 #ifdef _OPENMP
-      if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, nm = %s\n",nco_prg_nm_get(),thr_idx,idx_tbl,trv.nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_var && !thr_idx && !idx_tbl) (void)fprintf(fp_stdout,"%s: %s reports regrid loop uses %d threads\n",nco_prg_nm_get(),fnc_nm,omp_get_num_threads());
+    if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, nm = %s\n",nco_prg_nm_get(),thr_idx,idx_tbl,trv.nm);
 #endif /* !_OPENMP */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
@@ -1157,6 +1171,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
+	/* Current bug */
 	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt,var_val_dbl_in,var_typ);
 
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
@@ -1224,9 +1239,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
 	} /* !has_mss_val */
 	
-#ifdef _OPENMP
-# pragma omp critical
-#endif /* _OPENMP */
+#pragma omp critical
 	{ /* begin OpenMP critical */
 	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ);
 	} /* end OpenMP critical */
@@ -1240,9 +1253,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
       }else{
 	/* Use standard NCO copy routine for variables that are not regridded */
-#ifdef _OPENMP
-# pragma omp critical
-#endif /* _OPENMP */
+
+#pragma omp critical
 	{ /* begin OpenMP critical */
 	  (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
 	} /* end OpenMP critical */
@@ -1272,6 +1284,180 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   return rcd;
 } /* nco_rgr_map() */
 
+void
+nco_bsl_zro /*  Return Bessel function zeros */
+(const int bsl_zro_nbr, /* O [nbr] Order of Bessel function */
+ double * const bsl_zro) /* O [frc] Bessel zero */
+{
+  /* Purpose: Return Bessel function zeros
+     Source: CCM code /fs/cgd/csm/models/atm/ccm3.5.8/src/ccmlsm_share/bsslzr.F
+     Return bsl_zro_nbr zeros (or if bsl_zro_nbr > 50, approximate zeros), of the Bessel function j0
+     First 50 zeros are given exactly, and remaining zeros are computed by extrapolation, and therefore are not exact
+     Original version:  CCM1
+     Standardized:      J. Rosinski, June 1992
+     Reviewed:          J. Hack, D. Williamson, August 1992
+     Reviewed:          J. Hack, D. Williamson, April 1996
+     Modified 19970123 by Jim Rosinski to use double precision arithmetic
+     ~2000: Converted to Fortran9X by C. Zender, changed all real*16 statements to double precision (real*8)
+     20150530: Converted to C99 by C. Zender */
+  const char fnc_nm[]="nco_bsl_zro()"; /* [sng] Function name */
+  const double pi=M_PI; // [frc] 3
+  const double bsl_zro_tbl[]={ // Table of first bsl_zro_tbl_nbr_max zeros
+    -1.e36, 2.4048255577,   5.5200781103, 
+    8.6537279129,  11.7915344391,  14.9309177086,  18.0710639679, 
+    21.2116366299,  24.3524715308,  27.4934791320,  30.6346064684, 
+    33.7758202136,  36.9170983537,  40.0584257646,  43.1997917132, 
+    46.3411883717,  49.4826098974,  52.6240518411,  55.7655107550, 
+    58.9069839261,  62.0484691902,  65.1899648002,  68.3314693299, 
+    71.4729816036,  74.6145006437,  77.7560256304,  80.8975558711, 
+    84.0390907769,  87.1806298436,  90.3221726372,  93.4637187819, 
+    96.6052679510,  99.7468198587, 102.8883742542, 106.0299309165, 
+    109.1714896498, 112.3130502805, 115.4546126537, 118.5961766309, 
+    121.7377420880, 124.8793089132, 128.0208770059, 131.1624462752, 
+    134.3040166383, 137.4455880203, 140.5871603528, 143.7287335737, 
+    146.8703076258, 150.0118824570, 153.1534580192, 156.2950342685};
+  const int bsl_zro_tbl_nbr_max=sizeof(bsl_zro_tbl)/sizeof(double); // [nbr]
+  int bsl_idx; // [idx] Counting index
+    
+  // Main Code
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: DEBUG Entering %s\n",nco_prg_nm_get(),fnc_nm);
+    
+  for(bsl_idx=1;bsl_idx<=bsl_zro_nbr;bsl_idx++)
+    if(bsl_idx <= bsl_zro_tbl_nbr_max) bsl_zro[bsl_idx]=bsl_zro_tbl[bsl_idx];
+
+  if(bsl_zro_nbr > bsl_zro_tbl_nbr_max)
+    for(bsl_idx=bsl_zro_tbl_nbr_max+1;bsl_idx<=bsl_zro_nbr;bsl_idx++)
+      bsl_zro[bsl_idx]=bsl_zro[bsl_idx-1]+pi;
+    
+  if(nco_dbg_lvl_get() == nco_dbg_old){
+    (void)fprintf(stdout,"%s: DEBUG %s reports bsl_zro_nbr = %d\n",nco_prg_nm_get(),fnc_nm,bsl_zro_nbr);
+    (void)fprintf(stdout,"idx\tbsl_zro\n");
+    for(bsl_idx=1;bsl_idx<=bsl_zro_nbr;bsl_idx++)
+      (void)fprintf(stdout,"%d\t%g\n",bsl_idx,bsl_zro[bsl_idx]);
+  } // endif dbg
+
+  return;
+} // end nco_bsl_zro()
+
+void
+nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their weights */
+(const int lat_nbr, /* I [nbr] Latitude number */
+ double * const lat_sin, /* O [frc] Sine of latitudes */
+ double * const wgt_Gss) /* O [frc] Gaussian weights */
+{  
+  /* Purpose: Compute and return sine of Gaussian latitudes and their weights
+     Source: CCM /fs/cgd/csm/models/atm/ccm3.5.8/src/ccmlsm_share/gauaw.F
+     Calculate sine of latitudes lat_sin(lat_nbr) and weights wgt_Gss(lat_nbr) for Gaussian quadrature
+     Algorithm described in Davis and Rabinowitz, Journal of Research of the NBS, V 56, Jan 1956
+     Zeros of Bessel function j0, obtained from nco_bsl_zro(), are first guess for abscissae
+     Original version: CCM1
+     Standardized: L. Bath, Jun 1992
+                   L. Buja, Feb 1996
+     Reviewed:     D. Williamson, J. Hack, Aug 1992
+                   D. Williamson, J. Hack, Feb 1996
+     19970123 Modified by Jim Rosinski to use real*16 arithmetic in order to 
+     achieve (nearly) identical weights and latitudes on all machines.
+     ~2000: Converted to Fortran9X by C. Zender, changed all real*16 statements to double precision (real*8)
+     20150530: Converted to C99 by C. Zender */
+  
+  const char fnc_nm[]="nco_lat_wgt_gss()"; /* [sng] Function name */
+  const double eps_rlt=1.0e-15; // Convergence criterion (NB: Threshold was 1.0d-27 in real*16)
+  const double pi=M_PI; // [frc] 3
+  const int itr_nbr_max=20; // [nbr] Maximum number of iterations
+  double c; // Constant combination
+  double lat_idx_dbl; // Latitude index, double precision
+  double lat_nnr_idx_dbl; // Inner latitude index, double precision
+  double lat_nbr_dbl; // [nbr] Number of latitudes, double precision
+  double pk; // Polynomial
+  double pkm1; // Polynomial
+  double pkm2; // Polynomial
+  double pkmrk; // Polynomial
+  double sp; // Current iteration latitude increment
+  double xz; // Abscissa estimate
+  int itr_cnt; // Iteration counter
+  int lat_idx; // [idx] Counting index (latitude)
+  int lat_sym_idx; // [idx] Counting index (symmetric latitude)
+  int lat_nnr_idx; // [idx] Counting index (inner latitude loop)
+  int lat_nbr_rcp2; // lat_nbr/2 (number of latitudes in hemisphere)
+  double *lat_sin_p1; // Sine of Gaussian latitudes double precision
+  double *wgt_Gss_p1; // Gaussian weights double precision
+
+  // Main Code
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: DEBUG Entering %s\n",nco_prg_nm_get(),fnc_nm);
+    
+  // Create arrays with Fortran indexing to keep numerical algorithm identical
+  lat_sin_p1=(double *)nco_malloc((lat_nbr+1)*sizeof(double)); // Sine of Gaussian latitudes double precision
+  wgt_Gss_p1=(double *)nco_malloc((lat_nbr+1)*sizeof(double)); // Gaussian weights double precision
+    
+  // The value eps_rlt, used for convergence tests in the iterations, can be changed
+  // Use Newton iteration to find the abscissas
+  c=sqrt(sqrt(1.0-4.0/(pi*pi)));
+  lat_nbr_dbl=lat_nbr;
+  lat_nbr_rcp2=lat_nbr/2; // Integer arithmetic
+  (void)nco_bsl_zro(lat_nbr_rcp2,lat_sin_p1);
+  for(lat_idx=1;lat_idx<=lat_nbr_rcp2;lat_idx++){
+    xz=cos(lat_sin_p1[lat_idx]/sqrt((lat_nbr_dbl+0.5)*(lat_nbr_dbl+0.5)+c));
+    // First approximation to xz
+    itr_cnt=0;
+    /* goto label_73 */
+  label_73:
+    pkm2=1.0;
+    pkm1=xz;
+    itr_cnt=itr_cnt+1;
+    if(itr_cnt > itr_nbr_max){
+      // Error exit
+      (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %d\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
+      nco_exit(EXIT_FAILURE);
+    } /* endif */
+    // Compute Legendre polynomial
+    for(lat_nnr_idx=2;lat_nnr_idx<=lat_nbr;lat_nnr_idx++){
+      lat_nnr_idx_dbl=lat_nnr_idx;
+      pk=((2.0*lat_nnr_idx_dbl-1.0)*xz*pkm1-(lat_nnr_idx_dbl-1.0)*pkm2)/lat_nnr_idx_dbl;
+      pkm2=pkm1;
+      pkm1=pk;
+    } // end inner loop over lat
+    pkm1=pkm2;
+    pkmrk=(lat_nbr_dbl*(pkm1-xz*pk))/(1.0-xz*xz);
+    sp=pk/pkmrk;
+    xz=xz-sp;
+    if(abs(sp) > eps_rlt) goto label_73;
+    lat_sin_p1[lat_idx]=xz;
+    wgt_Gss_p1[lat_idx]=(2.0*(1.0-xz*xz))/((lat_nbr_dbl*pkm1)*(lat_nbr_dbl*pkm1));
+  } // end outer loop over lat
+  if(lat_nbr != lat_nbr_rcp2*2){
+    // When lat_nbr is odd, compute weight at the Equator
+    lat_sin_p1[lat_nbr_rcp2+1]=0.0;
+    pk=2.0/(lat_nbr_dbl*lat_nbr_dbl);
+    for(lat_idx=2;lat_idx<=lat_nbr;lat_idx+=2){
+      lat_idx_dbl=lat_idx;
+      pk=pk*lat_idx_dbl*lat_idx_dbl/((lat_idx_dbl-1.0)*(lat_idx_dbl-1.0));
+    } // end loop over lat
+    wgt_Gss_p1[lat_nbr_rcp2+1]=pk;
+  } // endif lat_nbr is odd
+    
+  // Complete sets of abscissas and weights, using symmetry properties
+  // Also note truncation from double precision to real
+  for(lat_idx=1;lat_idx<=lat_nbr_rcp2;lat_idx++){
+    lat_sym_idx=lat_nbr-lat_idx+1;
+    lat_sin_p1[lat_sym_idx]=-lat_sin_p1[lat_idx];
+    wgt_Gss_p1[lat_sym_idx]=wgt_Gss_p1[lat_idx];
+  } // end loop over lat
+    
+  memcpy(lat_sin,lat_sin_p1,lat_nbr*sizeof(double));
+  memcpy(wgt_Gss,wgt_Gss_p1,lat_nbr*sizeof(double));
+  
+  if(nco_dbg_lvl_get() == nco_dbg_old){
+    (void)fprintf(stdout,"%s: DEBUG %s reports lat_nbr = %d\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
+    (void)fprintf(stdout,"idx\tasin\tngl_rad\tngl_dgr\tgw\n");
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+      (void)fprintf(stdout,"%d\t%g\t%g\t%g%g\n",lat_idx,lat_sin[lat_idx],asin(lat_sin[lat_idx]),180.0*asin(lat_sin[lat_idx])/pi,wgt_Gss[lat_idx]);
+  } // endif dbg
+  
+  if(wgt_Gss_p1) wgt_Gss_p1=(double *)nco_free(wgt_Gss_p1);
+  if(lat_sin_p1) lat_sin_p1=(double *)nco_free(lat_sin_p1);
+  return;
+} // end nco_lat_wgt_gss()
+  
 int /* O [enm] Return code */
 nco_rgr_tps /* [fnc] Regrid using Tempest library */
 (rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */

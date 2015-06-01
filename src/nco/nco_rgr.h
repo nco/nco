@@ -110,6 +110,17 @@ extern "C" {
     char *dest_grid; /* [sng] Destination grid */
   } nco_map_sct;
   
+  void
+  nco_bsl_zro /*  Return Bessel function zeros */
+  (const int bsl_zro_nbr, /* O [nbr] Order of Bessel function */
+   double * const bsl_zro); /* O [frc] Bessel zero */
+  
+  void
+  nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their weights */
+  (const int lat_nbr, /* I [nbr] Latitude number */
+   double * const lat_sin, /* O [frc] Sine of latitudes */
+   double * const wgt_Gss); /* O [frc] Gaussian weights */
+
   int /* O [enm] Return code */
   nco_rgr_map /* [fnc] Regrid using external weights */
   (rgr_sct * const rgr_nfo, /* I/O [sct] Regridding structure */
