@@ -1,5 +1,9 @@
 2015-06-02  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.0-beta6 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.0-beta6 final changes'
+	git tag -a 4.5.0-beta6 -m 'Version 4.5.0-beta6 tag: Gaussian and equiangular offset grids';git push --tags
+
 	* Verified ne30->T42 works and conserves perfectly
 
 	* Gaussian grid diagnosis works
