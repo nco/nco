@@ -631,12 +631,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* end nco_grd_2D_typ switch */
   
   /* Fuzzy test of latitude weight normalization */
-  const int bit_xpl_nbr_zro=1; /* [nbr] Bits of rounding error to tolerate */
-  double lat_wgt_ttl=0.0; /* [frc] Exact sum of quadrature weights */
-  double lat_wgt_ttl_fzz; /* [frc] Fuzzy sum of quadrature weights */
+  const double eps_wgt_ttl=1.0e-14; /* [frc] Roundoff tolerance for sum of quadrature weights */
+  double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
   for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
-  /* Accumulated rounding error can change last bits */
-  lat_wgt_ttl_fzz=nco_ppc_bitmask_scl(lat_wgt_ttl,bit_xpl_nbr_zro);
+  assert(1.0-lat_wgt_ttl/2.0 < eps_wgt_ttl);
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
@@ -647,7 +645,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       lat_wgt_ttl+=lat_wgt_out[idx];
     for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
       for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_idx];
+	area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_igdx];
     (void)fprintf(stdout,"lat_wgt_ttl = %f15, area_ttl = %f15\n",lat_wgt_ttl,area_out_ttl);
     for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
     for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
@@ -658,7 +656,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  (void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
   } /* endif dbg */
 
-  assert(lat_wgt_ttl_fzz == 2.0);
 
   assert(nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol);
 
@@ -1434,7 +1431,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     pkmrk=(lat_nbr_dbl*(pkm1-xz*pk))/(1.0-xz*xz);
     sp=pk/pkmrk;
     xz=xz-sp;
-    if(abs(sp) > eps_rlt) goto label_73;
+    if(fabs(sp) > eps_rlt) goto label_73;
     lat_sin_p1[lat_idx]=xz;
     wgt_Gss_p1[lat_idx]=(2.0*(1.0-xz*xz))/((lat_nbr_dbl*pkm1)*(lat_nbr_dbl*pkm1));
   } /* end outer loop over lat */
