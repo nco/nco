@@ -648,13 +648,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
       for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
 	area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_idx];
-    (void)fprintf(stdout,"lat_wgt_ttl = %g, area_ttl = %g\n",lat_wgt_ttl,area_out_ttl);
+    (void)fprintf(stdout,"lat_wgt_ttl = %f15, area_ttl = %f15\n",lat_wgt_ttl,area_out_ttl);
     for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
     for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
-    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li], wgt[%li] = %g, %g\n",idx,idx,lat_ctr_out[idx],lat_wgt_out[idx]);
-    for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
-      for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	(void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
+    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li], wgt[%li] = %f15, %f15\n",idx,idx,lat_ctr_out[idx],lat_wgt_out[idx]);
+    if(nco_dbg_lvl_get() > nco_dbg_crr)
+      for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+	for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	  (void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
   } /* endif dbg */
 
   assert(lat_wgt_ttl_fzz == 2.0);
@@ -1405,7 +1406,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   wgt_Gss_p1=(double *)nco_malloc((lat_nbr+1)*sizeof(double)); // Gaussian weights double precision
     
   /* Use Newton iteration to find abscissas */
-  c=sqrt(sqrt(1.0-4.0/(pi*pi)));
+  c=0.25*(1.0-4.0/(pi*pi));
   lat_nbr_dbl=lat_nbr;
   lat_nbr_rcp2=lat_nbr/2; // Integer arithmetic
   (void)nco_bsl_zro(lat_nbr_rcp2,lat_sin_p1);

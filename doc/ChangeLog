@@ -1,5 +1,7 @@
 2015-06-02  Charlie Zender  <zender@uci.edu>
 
+	* Fix numerical bug in nco_lat_wgt_gss()
+
 	* Improve Gaussian grid diagnosis
 
 2015-06-01  Charlie Zender  <zender@uci.edu>
