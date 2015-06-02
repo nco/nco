@@ -1,3 +1,7 @@
+2015-06-02  Charlie Zender  <zender@uci.edu>
+
+	* Improve Gaussian grid diagnosis
+
 2015-06-01  Charlie Zender  <zender@uci.edu>
 
 	* Reverse latitudes and weight generated for Gaussian grids from N->S to S->N

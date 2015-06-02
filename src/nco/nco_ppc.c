@@ -595,9 +595,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Use constants defined in math.h */
   const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
   
-  /* Preserve at least two explicit bits, plus one implicit bit means three total bits */
-  /* [nbr] Minimum number of explicit significand bits to preserve */
-#define BIT_XPL_NBR_MIN 2
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicit. */
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicit. */
   
@@ -652,7 +649,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   case NC_FLOAT:
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_flt;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
-    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-BIT_XPL_NBR_MIN);
+    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
     u32_ptr=op1.uip;
     /* Create mask */
     msk_f32_u32_zro=0u; /* Zero all bits */
@@ -676,7 +673,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   case NC_DOUBLE:
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
-    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-BIT_XPL_NBR_MIN);
+    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
     u64_ptr=(unsigned long int *)op1.ui64p;
     /* Create mask */
     msk_f64_u64_zro=0ul; /* Zero all bits */
@@ -717,3 +714,28 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      because we have only operated on local copies of them. */
 
 } /* end nco_ppc_bitmask() */
+
+double /* [frc] Rounded value */
+nco_ppc_bitmask_scl /* [fnc] Round input value significand by specified number of bits */
+(const double val_xct, /* I [frc] Exact value to round */
+ const int bit_xpl_nbr_zro) /* I [nbr] Bits to round */
+{
+  /* Purpose: Mask-out bit_xpl_nbr_zro least most significant bits of a scalar double precision value
+     Code originally from nco_ppc_bitmask() (bitmasking is my signature move)
+     Code used in nco_rgr_map() when diagnosing whether quadrature weights properly normalized */
+
+  const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicit. */
+  double val_rnd; /* [frc] Rounded version of exact value */
+  unsigned long int *u64_ptr;
+  unsigned long int msk_f64_u64_zro;
+  assert(bit_xpl_nbr_zro >= 0 && bit_xpl_nbr_zro <= bit_xpl_nbr_sgn_dbl-NCO_PPC_BIT_XPL_NBR_MIN);
+
+  val_rnd=val_xct;
+  msk_f64_u64_zro=0ul; /* Zero all bits */
+  msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
+  msk_f64_u64_zro <<= bit_xpl_nbr_zro;
+  u64_ptr=(unsigned long int *)&val_rnd;
+  *u64_ptr&=msk_f64_u64_zro;
+
+  return val_rnd;
+} /* end nco_ppc_bitmask_scl() */

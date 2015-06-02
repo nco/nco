@@ -28,6 +28,12 @@
 #include "nco_mmr.h" /* Memory management */
 #include "nco_sng_utl.h" /* String utilities */
 
+/* Minimum number of explicit significand bits to preserve when zeroing/bit-masking floating point values
+   Codes will preserve at least two explicit bits, IEEE significand representation contains one implicit bit
+   Thus preserve a least three bits which is approximately one sigificant decimal digit
+   Used in nco_ppc_bitmask() and nco_ppc_bitmask_scl() */
+#define NCO_PPC_BIT_XPL_NBR_MIN 2
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -76,6 +82,11 @@ extern "C" {
    ptr_unn mss_val, /* I [val] Value of missing value */
    ptr_unn op1); /* I/O [val] Values of first operand */
   
+  double /* [frc] Rounded value */
+  nco_ppc_bitmask_scl /* [fnc] Round input value significand by specified number of bits */
+  (const double val_xct, /* I [frc] Exact value to round */
+   const int bit_xpl_nbr_zro); /* I [nbr] Bits to round */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

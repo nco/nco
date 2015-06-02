@@ -213,7 +213,11 @@ nco_rgr_map /* [fnc] Regrid using external weights */
        dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/dst_area[ddr_dst[lnk_idx]];
        // Normalization: none
        dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/(dst_area[ddr_dst[lnk_idx]]*dst_frc[ddr_dst[lnk_idx]);
-     } // end loop over lnk */
+     } // end loop over lnk
+
+     Documentation:
+     NCL special cases described in popRemap.ncl, e.g., at
+     https://github.com/yyr/ncl/blob/master/ni/src/examples/gsun/popRemap.ncl */
 
   const char fnc_nm[]="nco_rgr_map()"; /* [sng] Function name */
 
@@ -601,10 +605,13 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     wgt_Gss_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
     (void)nco_lat_wgt_gss(lat_nbr_out,lat_sin_out,wgt_Gss_out);
     lat_ctr_tst_gss=rdn2dgr*asin(lat_sin_out[1]);
-    if(lat_ctr_out[1] == lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
+    /* Agreement with input to single-precision is "good enough for government work"
+       Gaussian weights on output grid will be double-precision accurate
+       Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
+    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
     if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
   } /* !Gaussian */
-  (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid type is %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
+  (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
   
   const double dgr2rdn=M_PI/180.0;
   switch(nco_grd_2D_typ){
@@ -619,32 +626,40 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     break;
     if(wgt_Gss_out) wgt_Gss_out=(double *)nco_free(wgt_Gss_out);
   default:
-    (void)fprintf(stderr,"%s: ERROR %s unknown output latitude grid type\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"%s: ERROR %s unknown output latitude grid-type\n",nco_prg_nm_get(),fnc_nm);
     nco_dfl_case_generic_err(); break;
   } /* end nco_grd_2D_typ switch */
-  assert(nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol);
+  
   /* Fuzzy test of latitude weight normalization */
-  double lat_wgt_ttl=0.0; 
+  const int bit_xpl_nbr_zro=1; /* [nbr] Bits of rounding error to tolerate */
+  double lat_wgt_ttl=0.0; /* [frc] Exact sum of quadrature weights */
+  double lat_wgt_ttl_fzz; /* [frc] Fuzzy sum of quadrature weights */
   for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
   /* Accumulated rounding error can change last bits */
-  unsigned long int *u64_ptr;
-  unsigned long int msk_f64_u64_zro;
-  msk_f64_u64_zro=0ul; /* Zero all bits */
-  msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
-  const int bit_xpl_nbr_zro=1; /* [nbr] Bits of rounding error to tolerate */
-  msk_f64_u64_zro <<= bit_xpl_nbr_zro;
-  u64_ptr=(unsigned long int *)&lat_wgt_ttl;
-  *u64_ptr&=msk_f64_u64_zro;
-  assert(lat_wgt_ttl == 2.0);
-  
-  if(nco_dbg_lvl_get() >= nco_dbg_vec){
+  lat_wgt_ttl_fzz=nco_ppc_bitmask_scl(lat_wgt_ttl,bit_xpl_nbr_zro);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
-    for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
-    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
+    double area_out_ttl=0.0; /* [frc] Exact sum of area */
+    lat_wgt_ttl=0.0;
+    area_out_ttl=0.0;
+    for(idx=0;idx<lat_nbr_out;idx++)
+      lat_wgt_ttl+=lat_wgt_out[idx];
     for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
       for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	(void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g]\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
+	area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_idx];
+    (void)fprintf(stdout,"lat_wgt_ttl = %g, area_ttl = %g\n",lat_wgt_ttl,area_out_ttl);
+    for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
+    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
+    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li], wgt[%li] = %g, %g\n",idx,idx,lat_ctr_out[idx],lat_wgt_out[idx]);
+    for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+      for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	(void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
   } /* endif dbg */
+
+  assert(lat_wgt_ttl_fzz == 2.0);
+
+  assert(nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol);
 
   /* Obtain remap matrix addresses and weights from map file */
   dmn_srt[0]=0L;
@@ -1283,7 +1298,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 } /* nco_rgr_map() */
 
 void
-nco_bsl_zro /*  Return Bessel function zeros */
+nco_bsl_zro /* Return Bessel function zeros */
 (const int bsl_zro_nbr, /* O [nbr] Order of Bessel function */
  double * const bsl_zro) /* O [frc] Bessel zero */
 {
@@ -1300,7 +1315,7 @@ nco_bsl_zro /*  Return Bessel function zeros */
      20150530: Converted to C99 by C. Zender */
   const char fnc_nm[]="nco_bsl_zro()"; /* [sng] Function name */
   const double pi=M_PI; // [frc] 3
-  const double bsl_zro_tbl[]={ // Table of first bsl_zro_tbl_nbr_max zeros
+  const double bsl_zro_tbl[]={ // Zeros of Bessel functions of order 1 to 50
     -1.e36, 2.4048255577,   5.5200781103, 
     8.6537279129,  11.7915344391,  14.9309177086,  18.0710639679, 
     21.2116366299,  24.3524715308,  27.4934791320,  30.6346064684, 
@@ -1314,12 +1329,14 @@ nco_bsl_zro /*  Return Bessel function zeros */
     121.7377420880, 124.8793089132, 128.0208770059, 131.1624462752, 
     134.3040166383, 137.4455880203, 140.5871603528, 143.7287335737, 
     146.8703076258, 150.0118824570, 153.1534580192, 156.2950342685};
-  const int bsl_zro_tbl_nbr_max=sizeof(bsl_zro_tbl)/sizeof(double); // [nbr]
-  int bsl_idx; // [idx] Counting index
+  const int bsl_zro_tbl_nbr_max=sizeof(bsl_zro_tbl)/sizeof(double); /* [nbr] */
+  int bsl_idx; /* [idx] Counting index */
     
-  // Main Code
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: DEBUG Entering %s\n",nco_prg_nm_get(),fnc_nm);
+  /* Main Code */
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: DEBUG Entering %s\n",nco_prg_nm_get(),fnc_nm);
     
+  assert(bsl_zro_tbl_nbr_max == 51); /* 51 is original size of 50 plus extra value for Fortran offset */
+
   for(bsl_idx=1;bsl_idx<=bsl_zro_nbr;bsl_idx++)
     if(bsl_idx <= bsl_zro_tbl_nbr_max) bsl_zro[bsl_idx]=bsl_zro_tbl[bsl_idx];
 
@@ -1332,10 +1349,10 @@ nco_bsl_zro /*  Return Bessel function zeros */
     (void)fprintf(stdout,"idx\tbsl_zro\n");
     for(bsl_idx=1;bsl_idx<=bsl_zro_nbr;bsl_idx++)
       (void)fprintf(stdout,"%d\t%g\n",bsl_idx,bsl_zro[bsl_idx]);
-  } // endif dbg
+  } /* endif dbg */
 
   return;
-} // end nco_bsl_zro()
+} /* end nco_bsl_zro() */
 
 void
 nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their weights */
@@ -1359,7 +1376,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
      20150530: Converted to C99 by C. Zender */
   
   const char fnc_nm[]="nco_lat_wgt_gss()"; /* [sng] Function name */
-  const double eps_rlt=1.0e-15; // Convergence criterion (NB: Threshold was 1.0d-27 in real*16)
+  const double eps_rlt=1.0e-15; // Convergence criterion (NB: Threshold was 1.0d-27 in real*16, 1.0e-15 is for real*8)
   const double pi=M_PI; // [frc] 3
   const int itr_nbr_max=20; // [nbr] Maximum number of iterations
   double c; // Constant combination
@@ -1380,22 +1397,21 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   double *lat_sin_p1; // Sine of Gaussian latitudes double precision
   double *wgt_Gss_p1; // Gaussian weights double precision
 
-  // Main Code
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: DEBUG Entering %s\n",nco_prg_nm_get(),fnc_nm);
+  /* Main Code */
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: DEBUG Entering %s\n",nco_prg_nm_get(),fnc_nm);
     
-  // Create arrays with Fortran indexing to keep numerical algorithm identical
+  /* Create arrays with Fortran indexing to keep numerical algorithm identical */
   lat_sin_p1=(double *)nco_malloc((lat_nbr+1)*sizeof(double)); // Sine of Gaussian latitudes double precision
   wgt_Gss_p1=(double *)nco_malloc((lat_nbr+1)*sizeof(double)); // Gaussian weights double precision
     
-  // The value eps_rlt, used for convergence tests in the iterations, can be changed
-  // Use Newton iteration to find the abscissas
+  /* Use Newton iteration to find abscissas */
   c=sqrt(sqrt(1.0-4.0/(pi*pi)));
   lat_nbr_dbl=lat_nbr;
   lat_nbr_rcp2=lat_nbr/2; // Integer arithmetic
   (void)nco_bsl_zro(lat_nbr_rcp2,lat_sin_p1);
   for(lat_idx=1;lat_idx<=lat_nbr_rcp2;lat_idx++){
     xz=cos(lat_sin_p1[lat_idx]/sqrt((lat_nbr_dbl+0.5)*(lat_nbr_dbl+0.5)+c));
-    // First approximation to xz
+    /* First approximation to xz */
     itr_cnt=0;
     /* goto label_73 */
   label_73:
@@ -1403,17 +1419,16 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     pkm1=xz;
     itr_cnt=itr_cnt+1;
     if(itr_cnt > itr_nbr_max){
-      // Error exit
       (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %d\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
       nco_exit(EXIT_FAILURE);
     } /* endif */
-    // Compute Legendre polynomial
+    /* Compute Legendre polynomial */
     for(lat_nnr_idx=2;lat_nnr_idx<=lat_nbr;lat_nnr_idx++){
       lat_nnr_idx_dbl=lat_nnr_idx;
       pk=((2.0*lat_nnr_idx_dbl-1.0)*xz*pkm1-(lat_nnr_idx_dbl-1.0)*pkm2)/lat_nnr_idx_dbl;
       pkm2=pkm1;
       pkm1=pk;
-    } // end inner loop over lat
+    } /* end inner loop over lat_nnr */
     pkm1=pkm2;
     pkmrk=(lat_nbr_dbl*(pkm1-xz*pk))/(1.0-xz*xz);
     sp=pk/pkmrk;
@@ -1421,27 +1436,26 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     if(abs(sp) > eps_rlt) goto label_73;
     lat_sin_p1[lat_idx]=xz;
     wgt_Gss_p1[lat_idx]=(2.0*(1.0-xz*xz))/((lat_nbr_dbl*pkm1)*(lat_nbr_dbl*pkm1));
-  } // end outer loop over lat
+  } /* end outer loop over lat */
   if(lat_nbr != lat_nbr_rcp2*2){
-    // When lat_nbr is odd, compute weight at the Equator
+    /* When lat_nbr is odd, compute weight at Equator */
     lat_sin_p1[lat_nbr_rcp2+1]=0.0;
     pk=2.0/(lat_nbr_dbl*lat_nbr_dbl);
     for(lat_idx=2;lat_idx<=lat_nbr;lat_idx+=2){
       lat_idx_dbl=lat_idx;
       pk=pk*lat_idx_dbl*lat_idx_dbl/((lat_idx_dbl-1.0)*(lat_idx_dbl-1.0));
-    } // end loop over lat
+    } /* end loop over lat */
     wgt_Gss_p1[lat_nbr_rcp2+1]=pk;
-  } // endif lat_nbr is odd
+  } /* endif lat_nbr is odd */
     
-  // Complete sets of abscissas and weights, using symmetry properties
-  // Also note truncation from double precision to real
+  /* Complete sets of abscissas and weights, using symmetry properties */
   for(lat_idx=1;lat_idx<=lat_nbr_rcp2;lat_idx++){
     lat_sym_idx=lat_nbr-lat_idx+1;
     lat_sin_p1[lat_sym_idx]=-lat_sin_p1[lat_idx];
     wgt_Gss_p1[lat_sym_idx]=wgt_Gss_p1[lat_idx];
-  } // end loop over lat
+  } /* end loop over lat */
     
-  // Shift by one to remove Fortran offset in p1 arrays
+  /* Shift by one to remove Fortran offset in p1 arrays */
   //memcpy(lat_sin,lat_sin_p1,lat_nbr*sizeof(double));
   //memcpy(wgt_Gss,wgt_Gss_p1,lat_nbr*sizeof(double));
   
@@ -1457,12 +1471,12 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     (void)fprintf(stdout,"idx\tasin\tngl_rad\tngl_dgr\tgw\n");
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
       (void)fprintf(stdout,"%d\t%g\t%g\t%g%g\n",lat_idx,lat_sin[lat_idx],asin(lat_sin[lat_idx]),180.0*asin(lat_sin[lat_idx])/pi,wgt_Gss[lat_idx]);
-  } // endif dbg
+  } /* endif dbg */
   
   if(wgt_Gss_p1) wgt_Gss_p1=(double *)nco_free(wgt_Gss_p1);
   if(lat_sin_p1) lat_sin_p1=(double *)nco_free(lat_sin_p1);
   return;
-} // end nco_lat_wgt_gss()
+} /* end nco_lat_wgt_gss() */
   
 int /* O [enm] Return code */
 nco_rgr_tps /* [fnc] Regrid using Tempest library */
@@ -1527,9 +1541,9 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
 {
   /* Purpose: Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
-  case nco_grd_2D_gss: return "Gaussian latitudes used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
-  case nco_grd_2D_ngl_eqi_pol: return "Equi-angle grid including poles, the FV scalar grid (lat[0]=-90): CAM FV, GEOS-CHEM, UCICTM, UKMO";
-  case nco_grd_2D_ngl_eqi_fst: return "Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
+  case nco_grd_2D_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
+  case nco_grd_2D_ngl_eqi_pol: return "Equi-angle latitude grid with poles at centers of first and last gridpoints (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO";
+  case nco_grd_2D_ngl_eqi_fst: return "Equi-angle latitude grid with poles at edges of first and last gridpoints (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
