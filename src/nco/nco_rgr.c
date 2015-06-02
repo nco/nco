@@ -636,7 +636,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
   assert(1.0-lat_wgt_ttl/2.0 < eps_wgt_ttl);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
     (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
     double area_out_ttl=0.0; /* [frc] Exact sum of area */
     lat_wgt_ttl=0.0;
@@ -645,7 +645,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       lat_wgt_ttl+=lat_wgt_out[idx];
     for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
       for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_igdx];
+	area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_idx];
     (void)fprintf(stdout,"lat_wgt_ttl = %f15, area_ttl = %f15\n",lat_wgt_ttl,area_out_ttl);
     for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
     for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
@@ -655,9 +655,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
 	  (void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
   } /* endif dbg */
-
-
-  assert(nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol);
 
   /* Obtain remap matrix addresses and weights from map file */
   dmn_srt[0]=0L;
@@ -738,7 +735,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* end idx_tbl */
   if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria\n",nco_prg_nm_get(),fnc_nm);
   
-  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
       trv=trv_tbl->lst[idx_tbl];
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Regrid %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");

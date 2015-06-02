@@ -1,5 +1,7 @@
 2015-06-02  Charlie Zender  <zender@uci.edu>
 
+	* Verified ne30->T42 works and conserves perfectly
+
 	* Gaussian grid diagnosis works
 
 	* Fix numerical bugs in nco_lat_wgt_gss(): fabs() != abs()
