@@ -185,11 +185,11 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     nco_exit(EXIT_FAILURE);
   }else{
     (void)omp_set_num_threads(thr_nbr_rqs); 
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO omp_set_num_threads() used to set execution environment to spawn teams of %d threads\n",nco_prg_nm_get(),thr_nbr_rqs);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO omp_set_num_threads() used to set execution environment to spawn teams of %d thread(s)\n",nco_prg_nm_get(),thr_nbr_rqs);
   } /* end error */
 
   thr_nbr_act=omp_get_max_threads();
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d threads\n",nco_prg_nm_get(),thr_nbr_act);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d thread(s)\n",nco_prg_nm_get(),thr_nbr_act);
 #ifdef _OPENMP
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
 # pragma omp parallel default(none) shared(thr_nbr_act)
@@ -197,7 +197,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
 # pragma omp single nowait
       { /* begin OpenMP single */
 	thr_nbr_act=omp_get_num_threads(); /* [nbr] Number of threads NCO uses */
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO Small parallel test region spawned team of %d threads\n",nco_prg_nm_get(),thr_nbr_act);
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO Small parallel test region spawned team of %d thread(s)\n",nco_prg_nm_get(),thr_nbr_act);
       } /* end OpenMP single */
     } /* end OpenMP parallel */
   } /* end dbg */

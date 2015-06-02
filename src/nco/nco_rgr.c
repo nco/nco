@@ -595,11 +595,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   double *wgt_Gss_out=NULL; // [frc] Gaussian weights double precision
   if(nco_grd_2D_typ == nco_grd_2D_nil){
     /* Check for Gaussian grid */
+    const double rdn2dgr=180.0/M_PI;
     double *lat_sin_out; // [frc] Sine of Gaussian latitudes double precision
     lat_sin_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
     wgt_Gss_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
     (void)nco_lat_wgt_gss(lat_nbr_out,lat_sin_out,wgt_Gss_out);
-    lat_ctr_tst_gss=asin(lat_sin_out[1]);
+    lat_ctr_tst_gss=rdn2dgr*asin(lat_sin_out[1]);
     if(lat_ctr_out[1] == lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
     if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
   } /* !Gaussian */
@@ -608,16 +609,13 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   const double dgr2rdn=M_PI/180.0;
   switch(nco_grd_2D_typ){
   case nco_grd_2D_ngl_eqi_fst:
-    for(idx=0;idx<lat_nbr_out;idx++)
-      lat_wgt_out[idx]=cos(dgr2rdn*lat_ctr_out[idx]);
+    for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=cos(dgr2rdn*lat_ctr_out[idx]);
     break;
   case nco_grd_2D_ngl_eqi_pol:
-    for(idx=0;idx<lat_nbr_out;idx++)
-      lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
+    for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
     break;
-  case nco_grd_2D_gss: /* fxm */
-    for(idx=0;idx<lat_nbr_out;idx++)
-      lat_wgt_out[idx]=wgt_Gss_out[idx];
+  case nco_grd_2D_gss:
+    for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=wgt_Gss_out[idx];
     break;
     if(wgt_Gss_out) wgt_Gss_out=(double *)nco_free(wgt_Gss_out);
   default:
@@ -625,7 +623,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     nco_dfl_case_generic_err(); break;
   } /* end nco_grd_2D_typ switch */
   assert(nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol);
-  /* Test latitude weight normalization */
+  /* Fuzzy test of latitude weight normalization */
   double lat_wgt_ttl=0.0; 
   for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
   /* Accumulated rounding error can change last bits */
@@ -1143,7 +1141,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     thr_idx=omp_get_thread_num();
     in_id=trv_tbl->in_id_arr[thr_idx];
 #ifdef _OPENMP
-    if(nco_dbg_lvl_get() >= nco_dbg_var && !thr_idx && !idx_tbl) (void)fprintf(fp_stdout,"%s: %s reports regrid loop uses %d threads\n",nco_prg_nm_get(),fnc_nm,omp_get_num_threads());
+    if(nco_dbg_lvl_get() >= nco_dbg_var && !thr_idx && !idx_tbl) (void)fprintf(fp_stdout,"%s: %s reports regrid loop uses %d thread%s\n",nco_prg_nm_get(),fnc_nm,omp_get_num_threads(),(omp_get_num_threads() > 1) ? "s" : "");
     if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, nm = %s\n",nco_prg_nm_get(),thr_idx,idx_tbl,trv.nm);
 #endif /* !_OPENMP */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
@@ -1443,9 +1441,17 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     wgt_Gss_p1[lat_sym_idx]=wgt_Gss_p1[lat_idx];
   } // end loop over lat
     
-  memcpy(lat_sin,lat_sin_p1,lat_nbr*sizeof(double));
-  memcpy(wgt_Gss,wgt_Gss_p1,lat_nbr*sizeof(double));
+  // Shift by one to remove Fortran offset in p1 arrays
+  //memcpy(lat_sin,lat_sin_p1,lat_nbr*sizeof(double));
+  //memcpy(wgt_Gss,wgt_Gss_p1,lat_nbr*sizeof(double));
   
+  /* Reverse and shift arrays because original CCM code algorithm computed latitudes from north-to-south
+     Shift by one to remove Fortran offset in p1 arrays */
+  for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+    lat_sin[lat_idx]=lat_sin_p1[lat_nbr-lat_idx];
+    wgt_Gss[lat_idx]=wgt_Gss_p1[lat_nbr-lat_idx];
+  } /* end loop over lat */
+
   if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s reports lat_nbr = %d\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
     (void)fprintf(stdout,"idx\tasin\tngl_rad\tngl_dgr\tgw\n");

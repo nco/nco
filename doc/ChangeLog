@@ -1,6 +1,10 @@
+2015-06-01  Charlie Zender  <zender@uci.edu>
+
+	* Reverse latitudes and weight generated for Gaussian grids from N->S to S->N
+
 2015-05-31  Charlie Zender  <zender@uci.edu>
 
-	* Add Gaussian grid detection and required functions nco_lat_Gss_mk() and nco_bsl_zero_get()
+	* Add Gaussian grid detection and required functions nco_lat_wgt_gss() and nco_bsl_zero()
 
 	* Improve ncdismember documentation
 
