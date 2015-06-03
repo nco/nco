@@ -375,8 +375,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 2) nco_rgr_grd_typ=nco_rgr_grd_2D_to_2D;
   assert(nco_rgr_grd_typ != nco_rgr_grd_nil);
   /* Save typing later */
+  //nco_bool flg_grd_in_1D=False;
+  //nco_bool flg_grd_in_2D=False;
   nco_bool flg_grd_out_1D=False;
   nco_bool flg_grd_out_2D=False;
+  //if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_1D || nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D) flg_grd_in_1D=True;
+  //if(nco_rgr_grd_typ == nco_rgr_grd_2D_to_1D || nco_rgr_grd_typ == nco_rgr_grd_2D_to_2D) flg_grd_in_2D=True;
   if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_1D || nco_rgr_grd_typ == nco_rgr_grd_2D_to_1D) flg_grd_out_1D=True;
   if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D || nco_rgr_grd_typ == nco_rgr_grd_2D_to_2D) flg_grd_out_2D=True;
 
@@ -454,7 +458,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   dmn_cnt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
   dmn_srd=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
 
-  assert(rgr_map.dst_grid_rank == 2);
   dmn_srt[0]=0L;
   dmn_cnt[0]=rgr_map.src_grid_rank;
   dmn_sz_in_int=(int *)nco_malloc(rgr_map.src_grid_rank*nco_typ_lng((nc_type)NC_INT));
@@ -589,72 +592,74 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     lat_bnd_out[2*idx+1]=lat_ntf_out[idx+1];
   } /* end loop over latitude */
 
-  /* Diagnose type of two-dimensional output grid by testing second latitude center against formulae */
-  nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
-  const double lat_ctr_tst_ngl_eqi_pol=-90.0+180.0/(lat_nbr_out-1);
-  const double lat_ctr_tst_ngl_eqi_fst=-90.0+180.0*1.5/lat_nbr_out;
-  double lat_ctr_tst_gss;
-  if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_fst) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_fst;
-  if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_pol) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_pol;
-  double *wgt_Gss_out=NULL; // [frc] Gaussian weights double precision
-  if(nco_grd_2D_typ == nco_grd_2D_nil){
-    /* Check for Gaussian grid */
-    const double rdn2dgr=180.0/M_PI;
-    double *lat_sin_out; // [frc] Sine of Gaussian latitudes double precision
-    lat_sin_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
-    wgt_Gss_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
-    (void)nco_lat_wgt_gss(lat_nbr_out,lat_sin_out,wgt_Gss_out);
-    lat_ctr_tst_gss=rdn2dgr*asin(lat_sin_out[1]);
-    /* Agreement with input to single-precision is "good enough for government work"
-       Gaussian weights on output grid will be double-precision accurate
-       Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
-    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
-    if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
-  } /* !Gaussian */
-  (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
-  
-  const double dgr2rdn=M_PI/180.0;
-  switch(nco_grd_2D_typ){
-  case nco_grd_2D_ngl_eqi_fst:
-    for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=cos(dgr2rdn*lat_ctr_out[idx]);
-    break;
-  case nco_grd_2D_ngl_eqi_pol:
-    for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
-    break;
-  case nco_grd_2D_gss:
-    for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=wgt_Gss_out[idx];
-    break;
-    if(wgt_Gss_out) wgt_Gss_out=(double *)nco_free(wgt_Gss_out);
-  default:
-    (void)fprintf(stderr,"%s: ERROR %s unknown output latitude grid-type\n",nco_prg_nm_get(),fnc_nm);
-    nco_dfl_case_generic_err(); break;
-  } /* end nco_grd_2D_typ switch */
-  
-  /* Fuzzy test of latitude weight normalization */
-  const double eps_wgt_ttl=1.0e-14; /* [frc] Roundoff tolerance for sum of quadrature weights */
-  double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
-  for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
-  assert(1.0-lat_wgt_ttl/2.0 < eps_wgt_ttl);
-
-  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
-    (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
-    double area_out_ttl=0.0; /* [frc] Exact sum of area */
-    lat_wgt_ttl=0.0;
-    area_out_ttl=0.0;
-    for(idx=0;idx<lat_nbr_out;idx++)
-      lat_wgt_ttl+=lat_wgt_out[idx];
-    for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
-      for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_idx];
-    (void)fprintf(stdout,"lat_wgt_ttl = %f15, area_ttl = %f15\n",lat_wgt_ttl,area_out_ttl);
-    for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
-    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
-    for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li], wgt[%li] = %f15, %f15\n",idx,idx,lat_ctr_out[idx],lat_wgt_out[idx]);
-    if(nco_dbg_lvl_get() > nco_dbg_crr)
+  if(flg_grd_out_2D){
+    /* Diagnose type of two-dimensional output grid by testing second latitude center against formulae */
+    nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
+    const double lat_ctr_tst_ngl_eqi_pol=-90.0+180.0/(lat_nbr_out-1);
+    const double lat_ctr_tst_ngl_eqi_fst=-90.0+180.0*1.5/lat_nbr_out;
+    double lat_ctr_tst_gss;
+    if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_fst) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_fst;
+    if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_pol) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_pol;
+    double *wgt_Gss_out=NULL; // [frc] Gaussian weights double precision
+    if(nco_grd_2D_typ == nco_grd_2D_nil){
+      /* Check for Gaussian grid */
+      const double rdn2dgr=180.0/M_PI;
+      double *lat_sin_out; // [frc] Sine of Gaussian latitudes double precision
+      lat_sin_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
+      wgt_Gss_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
+      (void)nco_lat_wgt_gss(lat_nbr_out,lat_sin_out,wgt_Gss_out);
+      lat_ctr_tst_gss=rdn2dgr*asin(lat_sin_out[1]);
+      /* Agreement with input to single-precision is "good enough for government work"
+	 Gaussian weights on output grid will be double-precision accurate
+	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
+      if((float)lat_ctr_out[1] == (float)lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
+      if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
+    } /* !Gaussian */
+    (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
+    
+    const double dgr2rdn=M_PI/180.0;
+    switch(nco_grd_2D_typ){
+    case nco_grd_2D_ngl_eqi_fst:
+      for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=cos(dgr2rdn*lat_ctr_out[idx]);
+      break;
+    case nco_grd_2D_ngl_eqi_pol:
+      for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
+      break;
+    case nco_grd_2D_gss:
+      for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=wgt_Gss_out[idx];
+      break;
+      if(wgt_Gss_out) wgt_Gss_out=(double *)nco_free(wgt_Gss_out);
+    default:
+      (void)fprintf(stderr,"%s: ERROR %s unknown output latitude grid-type\n",nco_prg_nm_get(),fnc_nm);
+      nco_dfl_case_generic_err(); break;
+    } /* end nco_grd_2D_typ switch */
+    
+    /* Fuzzy test of latitude weight normalization */
+    const double eps_wgt_ttl=1.0e-14; /* [frc] Roundoff tolerance for sum of quadrature weights */
+    double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
+    for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
+    assert(1.0-lat_wgt_ttl/2.0 < eps_wgt_ttl);
+    
+    if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+      (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
+      double area_out_ttl=0.0; /* [frc] Exact sum of area */
+      lat_wgt_ttl=0.0;
+      area_out_ttl=0.0;
+      for(idx=0;idx<lat_nbr_out;idx++)
+	lat_wgt_ttl+=lat_wgt_out[idx];
       for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
 	for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	  (void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
-  } /* endif dbg */
+	  area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_idx];
+      (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, area_ttl = %20.15f\n",lat_wgt_ttl,area_out_ttl);
+      for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
+      for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
+      for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li], wgt[%li] = %20.15f, %20.15f\n",idx,idx,lat_ctr_out[idx],lat_wgt_out[idx]);
+      if(nco_dbg_lvl_get() > nco_dbg_crr)
+	for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+	  for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	    (void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
+    } /* endif dbg */
+  } /* !flg_grd_out_2D */
 
   /* Obtain remap matrix addresses and weights from map file */
   dmn_srt[0]=0L;
@@ -691,8 +696,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   in_id=rgr_nfo->in_id;
   out_id=rgr_nfo->out_id;
 
-  /* Do not extract lon, lat, or area
-     Create them from scratch using regridding data */
+  /* Do not extract extensive variables like lon, lat, and area
+     If necessary, create them from scratch from remap data */
   const int var_xcl_lst_nbr=13;
   const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/lat","/latitude","/lat_bnds","/bounds_lat","/lon","/longitude","/lon_bnds","/bounds_lon","/date_written","/time_written"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
@@ -713,10 +718,13 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* endif */
   } /* end loop */
   
+  const char ncol_nm[]="ncol"; /* [sng] Name of horizontal spatial dimension on unstructured grid */
+  const char lat_nm[]="lat"; /* [sng] Name of dimension to recognize as latitude */
+  const char lon_nm[]="lon"; /* [sng] Name of dimension to recognize as longitude */
+  char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
   int dmn_idx; /* [idx] Dimension index */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input variable */
   int dmn_nbr_out; /* [nbr] Number of dimensions in output variable */
-  const char ncol_nm[]="ncol"; /* [sng] Name of dimension that indicates regridding */
   trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
   /* Define regridding flag for each variable */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -724,7 +732,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
-	if(!strcmp(trv.var_dmn[dmn_idx].dmn_nm,ncol_nm)){
+	dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
+	/* Regrid variables containing a horizontal spatial dimension */
+	/* fxm: generalize to include any variable containing a dimension in a coordinate with "standard_name" = "latitude" or "longitude" */
+	if(!strcmp(dmn_nm_cp,ncol_nm) || !strcmp(dmn_nm_cp,lat_nm) || !strcmp(dmn_nm_cp,lon_nm)){
 	  trv_tbl->lst[idx_tbl].flg_rgr=True;
 	  var_rgr_nbr++;
 	  break;
@@ -735,7 +746,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* end idx_tbl */
   if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria\n",nco_prg_nm_get(),fnc_nm);
   
-  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
       trv=trv_tbl->lst[idx_tbl];
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Regrid %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
@@ -747,12 +758,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   char *att_nm;
   char bnd_nm_out[]="nbnd"; /* NB: CESM uses nbnd for time bounds. Non-rectangular grids will have nbnd for time, and nv != nbnd for spatial bounds. */
   char area_nm_out[]="area";
+  char ncol_nm_out[]="ncol";
   char lat_nm_out[]="lat";
   char lon_nm_out[]="lon";
   char lat_wgt_nm[]="gw";
   char lat_bnd_nm[]="lat_bnds";
   char lon_bnd_nm[]="lon_bnds";
   int dmn_id_lat; /* [id] Dimension ID */
+  int dmn_id_ncol; /* [id] Dimension ID */
   int dmn_id_lon; /* [id] Dimension ID */
   int dmn_id_bnd; /* [id] Dimension ID */
   int area_out_id; /* [id] Variable ID for area */
@@ -766,8 +779,13 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   long dmn_cnt_out[dmn_nbr_grd_max];
 
   /* Define new horizontal dimensions before all else */
-  rcd=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
-  rcd=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
+  if(flg_grd_out_1D){
+    rcd=nco_def_dim(out_id,ncol_nm_out,ncol_nbr_out,&dmn_id_ncol);
+  } /* !flg_grd_out_1D */
+  if(flg_grd_out_2D){
+    rcd=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
+    rcd=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
+  } /* !flg_grd_out_2D */
   rcd=nco_inq_dimid_flg(out_id,bnd_nm_out,&dmn_id_bnd);
   /* If dimension has not been defined, define it */
   if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,bnd_nm_out,bnd_rnk,&dmn_id_bnd);
@@ -782,26 +800,44 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
   /* Define new coordinates and variables in regridded file */
-  (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_out_id);
-  var_crt_nbr++;
-  (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon,&lon_out_id);
-  var_crt_nbr++;
-  (void)nco_def_var(out_id,lat_wgt_nm,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_wgt_id);
-  var_crt_nbr++;
-  dmn_ids_out[0]=dmn_id_lat;
-  dmn_ids_out[1]=dmn_id_bnd;
-  (void)nco_def_var(out_id,lat_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
-  var_crt_nbr++;
-  dmn_ids_out[0]=dmn_id_lon;
-  dmn_ids_out[1]=dmn_id_bnd;
-  (void)nco_def_var(out_id,lon_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
-  var_crt_nbr++;
-  dmn_ids_out[0]=dmn_id_lat;
-  dmn_ids_out[1]=dmn_id_lon;
-  (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
-  var_crt_nbr++;
+  if(flg_grd_out_1D){
+    (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ncol,&lat_out_id);
+    var_crt_nbr++;
+    (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ncol,&lon_out_id);
+    var_crt_nbr++;
+    dmn_ids_out[0]=dmn_id_ncol;
+    dmn_ids_out[1]=dmn_id_bnd;
+    (void)nco_def_var(out_id,lat_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
+    var_crt_nbr++;
+    dmn_ids_out[0]=dmn_id_ncol;
+    dmn_ids_out[1]=dmn_id_bnd;
+    (void)nco_def_var(out_id,lon_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
+    var_crt_nbr++;
+    (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ncol,&area_out_id);
+    var_crt_nbr++;
+  } /* !flg_grd_out_1D */
+  if(flg_grd_out_2D){
+    (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_out_id);
+    var_crt_nbr++;
+    (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon,&lon_out_id);
+    var_crt_nbr++;
+    dmn_ids_out[0]=dmn_id_lat;
+    dmn_ids_out[1]=dmn_id_bnd;
+    (void)nco_def_var(out_id,lat_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
+    var_crt_nbr++;
+    dmn_ids_out[0]=dmn_id_lon;
+    dmn_ids_out[1]=dmn_id_bnd;
+    (void)nco_def_var(out_id,lon_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
+    var_crt_nbr++;
+    (void)nco_def_var(out_id,lat_wgt_nm,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_wgt_id);
+    var_crt_nbr++;
+    dmn_ids_out[0]=dmn_id_lat;
+    dmn_ids_out[1]=dmn_id_lon;
+    (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
+    var_crt_nbr++;
+  } /* !flg_grd_out_2D */
 
-  /* Define regridded variables in regridded file */
+  /* Define regridded variables in output file */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
@@ -813,7 +849,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       rcd=nco_inq_varid_flg(out_id,var_nm,&var_id_out);
       /* If variable has not been defined, define it */
       if(rcd != NC_NOERR){
-	dmn_id_in=(int *)nco_malloc((dmn_nbr_in+1)*sizeof(int)); /* Allocate an extra slot for new dimensions */
+	dmn_id_in=(int *)nco_malloc((dmn_nbr_in+1)*sizeof(int)); /* Allocate an extra slot in case additional dimension in output */
 	dmn_id_out=(int *)nco_malloc((dmn_nbr_in+1)*sizeof(int));
 	dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
 	dmn_cnt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
@@ -822,22 +858,45 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
-	    if(!strcmp(dmn_nm,ncol_nm)){
-	      /* Replace unstructured dimension by orthogonal horizontal dimensions already defined */
-	      dmn_id_out[dmn_idx]=dmn_id_lat;
-	      dmn_id_out[dmn_idx+1]=dmn_id_lon;
-	      dmn_cnt[dmn_idx]=lat_nbr_out;
-	      dmn_cnt[dmn_idx+1]=lon_nbr_out;
-	      dmn_idx++;
-	      dmn_nbr_out++;
-	    }else{
-	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
-	      /* If dimension has not been defined, define it */
-	      if(rcd != NC_NOERR){
-		rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
-		rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
-	      } /* !rcd */
-	    } /* end else */
+	    if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D){
+	      if(!strcmp(dmn_nm,ncol_nm)){
+		/* Replace unstructured horizontal dimension by orthogonal horizontal dimensions already defined */
+		dmn_id_out[dmn_idx]=dmn_id_lat;
+		dmn_id_out[dmn_idx+1]=dmn_id_lon;
+		dmn_cnt[dmn_idx]=lat_nbr_out;
+		dmn_cnt[dmn_idx+1]=lon_nbr_out;
+		dmn_idx++;
+		dmn_nbr_out++;
+	      }else{
+		rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
+		/* If dimension has not been defined, define it */
+		if(rcd != NC_NOERR){
+		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+		} /* !rcd */
+	      } /* !ncol */
+	    } /* !1D_to_2D */
+	    if(nco_rgr_grd_typ == nco_rgr_grd_2D_to_1D){
+	      if(!strcmp(dmn_nm,lat_nm) || !strcmp(dmn_nm,lon_nm)){
+		/* Replace orthogonal horizontal dimensions by unstructured horizontal dimension already defined */
+		if(!strcmp(dmn_nm,lat_nm)){
+		  dmn_id_out[dmn_idx]=dmn_id_ncol;
+		  dmn_cnt[dmn_idx]=ncol_nbr_out;
+		} /* endif lat */
+		if(!strcmp(dmn_nm,lon_nm)){
+		  dmn_id_out[dmn_idx]=-999;
+		  dmn_cnt[dmn_idx]=-999;
+		  dmn_nbr_out--;
+		} /* endif lon */
+	      }else{
+		rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
+		/* If dimension has not been defined, define it */
+		if(rcd != NC_NOERR){
+		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+		} /* !rcd */
+	      } /* !lat && !lon */
+	    } /* !2D_to_1D */
 	  } /* end loop over dimensions */
 	}else{
 	  /* Copy as-is */
@@ -1045,19 +1104,21 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
-  att_nm=strdup("long_name");
-  att_val=strdup("Equi-angle latitude weights normalized to sum to 2.0");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=lat_wgt_nm;
-  aed_mtd.id=lat_wgt_id;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,lat_wgt_id,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
+  if(flg_grd_out_2D){
+    att_nm=strdup("long_name");
+    att_val=strdup("latitude quadrature weights (normalized to sum to 2.0)");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lat_wgt_nm;
+    aed_mtd.id=lat_wgt_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lat_wgt_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+  } /* !flg_grd_out_2D */
+  
   att_nm=strdup("mapping_file");
   att_val=strdup(fl_in);
   aed_mtd.att_nm=att_nm;
@@ -1088,27 +1149,48 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   (void)nco_enddef(out_id);
 
   /* Write new coordinates and variables to regridded file */
-  dmn_srt_out[0]=0L;
-  dmn_cnt_out[0]=lat_nbr_out;
-  (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_out,lat_ctr_out,crd_typ_out);
-  dmn_srt_out[0]=0L;
-  dmn_cnt_out[0]=lon_nbr_out;
-  (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_out,lon_ctr_out,crd_typ_out);
-  dmn_srt_out[0]=0L;
-  dmn_cnt_out[0]=lat_nbr_out;
-  (void)nco_put_vara(out_id,lat_wgt_id,dmn_srt_out,dmn_cnt_out,lat_wgt_out,crd_typ_out);
-  dmn_srt_out[0]=dmn_srt_out[1]=0L;
-  dmn_cnt_out[0]=lat_nbr_out;
-  dmn_cnt_out[1]=bnd_nbr_out;
-  (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_out,lat_bnd_out,crd_typ_out);
-  dmn_srt_out[0]=dmn_srt_out[1]=0L;
-  dmn_cnt_out[0]=lon_nbr_out;
-  dmn_cnt_out[1]=bnd_nbr_out;
-  (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
-  dmn_srt_out[0]=dmn_srt_out[1]=0L;
-  dmn_cnt_out[0]=lat_nbr_out;
-  dmn_cnt_out[1]=lon_nbr_out;
-  (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
+  if(flg_grd_out_1D){
+    dmn_srt_out[0]=0L;
+    dmn_cnt_out[0]=ncol_nbr_out;
+    (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_out,lat_ctr_out,crd_typ_out);
+    dmn_srt_out[0]=0L;
+    dmn_cnt_out[0]=ncol_nbr_out;
+    (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_out,lon_ctr_out,crd_typ_out);
+    dmn_srt_out[0]=dmn_srt_out[1]=0L;
+    dmn_cnt_out[0]=ncol_nbr_out;
+    dmn_cnt_out[1]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_out,lat_bnd_out,crd_typ_out);
+    dmn_srt_out[0]=dmn_srt_out[1]=0L;
+    dmn_cnt_out[0]=ncol_nbr_out;
+    dmn_cnt_out[1]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
+    dmn_srt_out[0]=0L;
+    dmn_cnt_out[0]=ncol_nbr_out;
+    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
+  } /* !flg_grd_out_1D */
+  if(flg_grd_out_2D){
+    dmn_srt_out[0]=0L;
+    dmn_cnt_out[0]=lat_nbr_out;
+    (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_out,lat_ctr_out,crd_typ_out);
+    dmn_srt_out[0]=0L;
+    dmn_cnt_out[0]=lon_nbr_out;
+    (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_out,lon_ctr_out,crd_typ_out);
+    dmn_srt_out[0]=0L;
+    dmn_cnt_out[0]=lat_nbr_out;
+    (void)nco_put_vara(out_id,lat_wgt_id,dmn_srt_out,dmn_cnt_out,lat_wgt_out,crd_typ_out);
+    dmn_srt_out[0]=dmn_srt_out[1]=0L;
+    dmn_cnt_out[0]=lat_nbr_out;
+    dmn_cnt_out[1]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_out,lat_bnd_out,crd_typ_out);
+    dmn_srt_out[0]=dmn_srt_out[1]=0L;
+    dmn_cnt_out[0]=lon_nbr_out;
+    dmn_cnt_out[1]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
+    dmn_srt_out[0]=dmn_srt_out[1]=0L;
+    dmn_cnt_out[0]=lat_nbr_out;
+    dmn_cnt_out[1]=lon_nbr_out;
+    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
+  } /* !flg_grd_out_2D */
 
   /* Regrid or copy variable values */
   const size_t grd_sz_in=rgr_map.src_grid_size; /* [nbr] Number of elements in single layer of input grid */
@@ -1261,7 +1343,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
       }else{
 	/* Use standard NCO copy routine for variables that are not regridded */
-
 #pragma omp critical
 	{ /* begin OpenMP critical */
 	  (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);

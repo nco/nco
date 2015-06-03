@@ -7882,16 +7882,11 @@ nco_lmt_std_att_lat_lon               /* [fnc] Apply limits to variable in table
   /* Loop table  */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     /* Match variable that has 'standard_name' flag */
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && 
-      (trv_tbl->lst[idx_tbl].flg_std_att_lat || trv_tbl->lst[idx_tbl].flg_std_att_lon)){
-
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && (trv_tbl->lst[idx_tbl].flg_std_att_lat || trv_tbl->lst[idx_tbl].flg_std_att_lon)){
         trv_sct var_trv=trv_tbl->lst[idx_tbl];
-
-        /* Loop dimensions  */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++)
           if(dmn_id == var_trv.var_dmn[idx_dmn].dmn_id)
-            (void)nco_lmt_aux(nc_id,lmt,nbr_nbr,FORTRAN_IDX_CNV,MSA_USR_RDR,idx_tbl,idx_dmn,trv_tbl);    
-
+	    (void)nco_lmt_aux(nc_id,lmt,nbr_nbr,FORTRAN_IDX_CNV,MSA_USR_RDR,idx_tbl,idx_dmn,trv_tbl);    
     } /* Match variable  */
   } /* Loop table  */
 
@@ -8142,7 +8137,7 @@ nco_bld_crd_aux /* [fnc] Build auxiliary coordinates information into table */
   /* Look for attributes 'standard_name' == 'latitude' and 'longitude' */
   char *var_nm_fll=NULL;
 
-  int dmn_id; /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g., lat_gds(gds_crd) */
+  int dmn_id; /* [id] Dimension ID for 'latitude' and 'longitude' coordinate variables, e.g., lat_gds(gds_crd) */
 
   nc_type crd_typ;
 
@@ -8248,7 +8243,7 @@ nco_bld_crd_aux /* [fnc] Build auxiliary coordinates information into table */
 		/* Check if possible 'longitude' (var_trv) is in scope */
 		if(nco_var_scp(&trv_tbl->lst[idx_crd],&var_trv,trv_tbl)){
 		  
-		  /* Mark the variable (e.g gds_var, gds_3dvar) as containing auxiliary coordinates */
+		  /* Mark variable (e.g., gds_var, gds_3dvar) as containing auxiliary coordinates */
 		  trv_tbl->lst[idx_crd].flg_aux=True;
 		  
 		  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has auxiliary coordinates with dimension ID = %d\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[idx_crd].nm_fll,var_dim_id); 
