@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.5.0-beta7 final changes'
 	git tag -a 4.5.0-beta7 -m 'Version 4.5.0-beta7 tag: Supports 1D->1D, 1D->2D, 2D->1D, and 2D->2D regridding for any unstructured 1D grid and any rectangular 2D grid';git push --tags
 
+	* Write coordinates attribute after all others, fix lat metadata
+
 	* Do second sweep for associated CF variables when creating extraction list
 
 	* Correct bounds names to vertices for 1D output grids

@@ -874,14 +874,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Define new coordinates and variables in regridded file */
   if(flg_grd_out_1D){
     (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ncol,&lat_out_id);
-    aed_mtd_crd.var_nm=lat_nm_out;
-    aed_mtd_crd.id=lat_out_id;
-    (void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
     var_crt_nbr++;
     (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ncol,&lon_out_id);
-    aed_mtd_crd.var_nm=lon_nm_out;
-    aed_mtd_crd.id=lon_out_id;
-    (void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_ncol;
     dmn_ids_out[1]=dmn_id_bnd;
@@ -892,9 +886,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     (void)nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
     var_crt_nbr++;
     (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ncol,&area_out_id);
-    aed_mtd_crd.var_nm=area_nm_out;
-    aed_mtd_crd.id=area_out_id;
-    (void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
     var_crt_nbr++;
   } /* !flg_grd_out_1D */
   if(flg_grd_out_2D){
@@ -1257,6 +1248,21 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
+  /* Annotate persistent metadata that should appear last in attribute list */
+  if(flg_grd_out_1D){
+    aed_mtd_crd.var_nm=area_nm_out;
+    aed_mtd_crd.id=area_out_id;
+    (void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
+    
+    aed_mtd_crd.var_nm=lat_nm_out;
+    aed_mtd_crd.id=lat_out_id;
+    (void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
+    
+    aed_mtd_crd.var_nm=lon_nm_out;
+    aed_mtd_crd.id=lon_out_id;
+    (void)nco_aed_prc(out_id,lon_out_id,aed_mtd_crd);
+  } /* !flg_grd_out_1D */
+  
   /* Dimension metadata */
   if(bnd_nm_out) bnd_nm_out=(char *)nco_free(bnd_nm_out);
   if(bnd_tm_nm_out) bnd_tm_nm_out=(char *)nco_free(bnd_tm_nm_out);
