@@ -1,6 +1,12 @@
 2015-06-03  Charlie Zender  <zender@uci.edu>
 
-	* Verified fv129x256->fv257x512 works and conserves perfectly
+	* Do second sweep for associated CF variables when creating extraction list
+
+	* Correct bounds names to vertices for 1D output grids
+
+	* Verified ne30->ne120 works and perfectly conserves FSNT
+
+	* Verified fv129x256->fv257x512 works and perfectly conserves FSNT
 
 	* Complete grid description and metadata decoration for 2D->2D mappings
 

@@ -162,7 +162,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variable a
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
-nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordinates of specified variable to extraction list */
+nco_xtr_cf_var_add                    /* [fnc] Add specified CF-compliant coordinates of specified variable to extraction list */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,       /* I [sct] Variable (object) */
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */

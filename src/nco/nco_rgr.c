@@ -812,8 +812,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int lon_out_id; /* [id] Variable ID for longitude */
   int lat_out_id; /* [id] Variable ID for latitude */
   int lat_wgt_id; /* [id] Variable ID for latitude weight */
-  int lon_bnd_id; /* [id] Variable ID for lon_bnds */
-  int lat_bnd_id; /* [id] Variable ID for lat_bnds */
+  int lon_bnd_id; /* [id] Variable ID for lon_bnds/lon_vertices */
+  int lat_bnd_id; /* [id] Variable ID for lat_bnds/lat_vertices */
   int dmn_ids_out[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
   long dmn_srt_out[dmn_nbr_grd_max];
   long dmn_cnt_out[dmn_nbr_grd_max];
@@ -1115,7 +1115,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("bounds");
-  att_val=strdup("lat_bnds");
+  att_val=lat_bnd_nm_out;
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lat_nm_out;
   aed_mtd.id=lat_out_id;
@@ -1125,10 +1125,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   aed_mtd.mode=aed_create;
   (void)nco_aed_prc(out_id,lat_out_id,aed_mtd);
   if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("long_name");
-  att_val=strdup("gridcell latitude interfaces");
+  if(flg_grd_out_2D) att_val=strdup("gridcell latitude interfaces"); else att_val=strdup("gridcell latitude vertices");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lat_bnd_nm_out;
   aed_mtd.id=lat_bnd_id;
@@ -1193,7 +1192,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("bounds");
-  att_val=strdup("lon_bnds");
+  att_val=lon_bnd_nm_out;
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lon_nm_out;
   aed_mtd.id=lon_out_id;
@@ -1203,10 +1202,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   aed_mtd.mode=aed_create;
   (void)nco_aed_prc(out_id,lon_out_id,aed_mtd);
   if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("long_name");
-  att_val=strdup("gridcell longitude interfaces");
+  if(flg_grd_out_2D) att_val=strdup("gridcell longitude interfaces"); else att_val=strdup("gridcell longitude vertices");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lon_bnd_nm_out;
   aed_mtd.id=lon_bnd_id;
