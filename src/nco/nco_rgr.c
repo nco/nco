@@ -514,8 +514,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     lon_ctr_out=(double *)nco_malloc(lon_nbr_out*nco_typ_lng(crd_typ_out));
     lat_ctr_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
     lat_wgt_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
-    lon_crn_out=(double *)nco_malloc(bnd_nbr_out*lon_nbr_out*nco_typ_lng(crd_typ_out));
-    lat_crn_out=(double *)nco_malloc(bnd_nbr_out*lat_nbr_out*nco_typ_lng(crd_typ_out));
+    lon_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lon_nbr_out*nco_typ_lng(crd_typ_out));
+    lat_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lat_nbr_out*nco_typ_lng(crd_typ_out));
     lon_ntf_out=(double *)nco_malloc((lon_nbr_out+1L)*nco_typ_lng(crd_typ_out));
     lat_ntf_out=(double *)nco_malloc((lat_nbr_out+1L)*nco_typ_lng(crd_typ_out));
     lon_bnd_out=(double *)nco_malloc(lon_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
@@ -624,6 +624,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !flg_grd_out_2D */
   
   if(flg_grd_out_2D){
+
+    if(nco_dbg_lvl_get() >= nco_dbg_crr){
+      for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
+      for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
+    } /* endif dbg */
+
     /* Diagnose type of two-dimensional output grid by testing second latitude center against formulae */
     nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
     const double lat_ctr_tst_ngl_eqi_pol=-90.0+180.0/(lat_nbr_out-1);
@@ -834,7 +840,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   char *att_nm_crd=NULL;
   att_nm_crd=strdup("coordinates");
   aed_mtd_crd.att_nm=att_nm_crd;
-  aed_mtd_crd.mode=aed_overwrite;
+  if(flg_grd_out_1D) aed_mtd_crd.mode=aed_overwrite; else aed_mtd_crd.mode=aed_delete;
   aed_mtd_crd.type=NC_CHAR;
   aed_mtd_crd.sz=strlen(lat_nm_out)+strlen(lon_nm_out)+1L;
   att_val_crd=(char *)nco_malloc(aed_mtd_crd.sz*nco_typ_lng(aed_mtd_crd.type)+1L);
@@ -933,26 +939,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
-	    if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D){
-	      if(!strcmp(dmn_nm,ncol_nm)){
-		/* Replace unstructured horizontal dimension by orthogonal horizontal dimensions already defined */
-		dmn_id_out[dmn_idx]=dmn_id_lat;
-		dmn_id_out[dmn_idx+1]=dmn_id_lon;
-		dmn_cnt[dmn_idx]=lat_nbr_out;
-		dmn_cnt[dmn_idx+1]=lon_nbr_out;
-		dmn_idx++;
-		dmn_nbr_out++;
-	      }else{
-		rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
-		/* If dimension has not been defined, define it */
-		if(rcd != NC_NOERR){
-		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
-		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
-		} /* !rcd */
-	      } /* !ncol */
-	    } /* !1D_to_2D */
-	    if(nco_rgr_grd_typ == nco_rgr_grd_2D_to_1D){
-	      if(!strcmp(dmn_nm,lat_nm) || !strcmp(dmn_nm,lon_nm)){
+	    if(flg_grd_out_1D){
+	      if(nco_rgr_grd_typ == nco_rgr_grd_2D_to_1D && (!strcmp(dmn_nm,lat_nm) || !strcmp(dmn_nm,lon_nm))){
 		/* Replace orthogonal horizontal dimensions by unstructured horizontal dimension already defined */
 		if(!strcmp(dmn_nm,lat_nm)){
 		  dmn_id_out[dmn_idx]=dmn_id_ncol;
@@ -964,6 +952,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 		  dmn_nbr_out--;
 		} /* endif lon */
 	      }else{
+		/* Always copy existing horizontal dimensions for 1D->1D */
 		rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
 		/* If dimension has not been defined, define it */
 		if(rcd != NC_NOERR){
@@ -972,8 +961,27 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 		} /* !rcd */
 	      } /* !lat && !lon */
 	    } /* !2D_to_1D */
+	    if(flg_grd_out_2D){
+	      if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D && !strcmp(dmn_nm,ncol_nm)){
+		/* Replace unstructured horizontal dimension by orthogonal horizontal dimensions already defined */
+		dmn_id_out[dmn_idx]=dmn_id_lat;
+		dmn_id_out[dmn_idx+1]=dmn_id_lon;
+		dmn_cnt[dmn_idx]=lat_nbr_out;
+		dmn_cnt[dmn_idx+1]=lon_nbr_out;
+		dmn_idx++;
+		dmn_nbr_out++;
+	      }else{
+		/* Always copy existing horizontal dimensions for 2D->2D */
+		rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
+		/* If dimension has not been defined, define it */
+		if(rcd != NC_NOERR){
+		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+		} /* !rcd */
+	      } /* !ncol */
+	    } /* !1D_to_2D */
 	  } /* end loop over dimensions */
-	}else{
+	}else{ /* !flg_rgr */
 	  /* Copy as-is */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
@@ -985,12 +993,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
 	    } /* !rcd */
 	  } /* end loop over dimensions */
-	} /* end else */
+	} /* end !flg_rgr */
 	rcd=nco_def_var(out_id,var_nm,var_typ,dmn_nbr_out,dmn_id_out,&var_id_out);
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
-	aed_mtd_crd.var_nm=var_nm;
-	aed_mtd_crd.id=var_id_out;
-	(void)nco_aed_prc(out_id,var_id_out,aed_mtd_crd);
+	if(trv.flg_rgr){
+	  aed_mtd_crd.var_nm=var_nm;
+	  aed_mtd_crd.id=var_id_out;
+	  (void)nco_aed_prc(out_id,var_id_out,aed_mtd_crd);
+	} /* !flg_rgr */
 	if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
 	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
 	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);

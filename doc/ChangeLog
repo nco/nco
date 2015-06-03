@@ -1,5 +1,9 @@
 2015-06-03  Charlie Zender  <zender@uci.edu>
 
+	* Verified fv129x256->fv257x512 works and conserves perfectly
+
+	* Complete grid description and metadata decoration for 2D->2D mappings
+
 	* Annotate lat and lon variables with "axis = X/Y" attributes
 
 	* Annotate variables with "coordinates" attribute for auxiliary coordinate variables lat and lon
