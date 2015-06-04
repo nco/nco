@@ -680,7 +680,7 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
 
     /* Add 4 for formatting characters */
     prv_new=(char *)nco_malloc((strlen(prv_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4UL)*sizeof(char));
-    (void)sprintf(prv_new,"%s: %s\n%s",time_stamp_sng,hst_sng,prv_crr);
+    (void)sprintf(prv_new,"%s: %s%s",time_stamp_sng,hst_sng,prv_crr);
   } /* endif provenance global attribute currently exists */
 
   rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(prv_new)+1UL),(void *)prv_new);

@@ -663,10 +663,11 @@ main(int argc,char **argv)
     } /* end loop over idx */
 
     /* Define dimensions, extracted groups, variables, and attributes in output file */
-    (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,False,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
+    (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,True,False,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
 
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+    if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
     if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
     /* Add input file list global attribute */
     if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);

@@ -1,6 +1,10 @@
 2015-06-04  Charlie Zender  <zender@uci.edu>
 
-	* Add history_from_appended_files global attribute to improve provenance
+	* NCO 4.5.0-beta8 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.0-beta8 final changes'
+	git tag -a 4.5.0-beta8 -m 'Version 4.5.0-beta8 tag: history_of_appended_files';git push --tags
+
+	* Add history_of_appended_files global attribute to improve provenance
 
 2015-06-03  Charlie Zender  <zender@uci.edu>
 

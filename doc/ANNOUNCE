@@ -5,13 +5,9 @@ The netCDF Operators NCO version 4.5.0 are ready.
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release brings regridding capability to NCO.
-The current regridding features build on infrastructure pioneered by
-Phil Jones (SCRIP), and the multi-agency Earth System Modeling
-Framework (ESMF). ESMF is a Fortran library with a new C-interface,
-so NCO once again (optionally) links to Fortran. It was sixteen years
-ago that NCO (version 1.1.18) changed from default Fortran arithmetic
-to C. 
+This release supports regridding global datasets. The current
+regridding features build on infrastructure pioneered by Phil Jones
+(SCRIP), and the multi-agency Earth System Modeling Framework (ESMF).
 
 Work on NCO 4.5.1 has commenced and will support more regridding,  
 additional ncra flexibility with weights, and easier builds on
@@ -22,75 +18,18 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. NCO has improved default performance of deflation and chunking.
-   Our "best practices" chunking (map/policy=nco) is now default when 
-   manually deflating netCDF3 files into netCDF4 files.
-   This invokes Rew's balanced chunking for three-dimensional
-   variables, and LeFter-Product (cnk_map=lfp) chunking for others. 
-   LFP chunking, in turn, implements more reasonable defaults when
-   the variable size is smaller than a single chunksize.
-   This reduces excessive chunk sizes for many small variables.
-   Shuffle is now turned-on by default when manually deflating files.
-   This restores behavior from the NCO 4.3.x series, and can improve
-   compression ratios by 10-30% relative to not shuffling.
-   Copying multi-dimensional record variables from netCDF3 to netCDF4 
-   files no longer invokes the MM3 workaround.
-   This speeds-up deflation of netCDF3 datasets.
-   ncks -O -4 -L 1 netCDF3.nc netCDF4.nc
-   http://nco.sf.net/nco.html#cnk
-
-B. ncwa now eliminates dimensions from the "coordinates" attribute
-   after collapsing them. This helps ensure that rank-reduced
-   variables become completely independent from their former
-   dimensions. The former presence of collapsed dimensions continues
-   to be indicated by the "cell_methods" attribute.
-   ncwa -O -a lat in.nc out.nc
-   http://nco.sf.net/nco.html#coordinates
-   http://nco.sf.net/nco.html#cell_methods
-   http://nco.sf.net/nco.html#ncwa
-
-C. NCO now warns users and suggest workarounds in situations when
-   operators behave correctly, though perhaps not as expected,
-   including:
-   1. When coordinate variables intended to be excluded by -x and -C
-      may nonetheless appear in output file, and suggest workaround
-   2. When hyperslabs are specified for multi-dimensional
-      "coordinates"  
-
-D. NCO now respects the CF "climatology" attribute: The variable
-   pointed to by this attribute is treated as a pseudo-coordinate
-   variable, and is extracted by default with any referring variable.
-   Climatology variables now obey the same arithmetic rules as
-   coordinates and are exempted from certain operations.
-   Their treatment is identical to that of "bounds" variables.
-   This command now retrieves the named variable, its coordinates (if
-   any), and any variables named in the "ancillary_variable",
-   "bounds", "climatology", and "coordinates" attributes:
-   ncks -v temperature in.nc out.nc
-   http://nco.sf.net/nco.html#climatology
-
-E. ncra now accepts user-specified weights with the -w switch.
-   When no weight is specified, ncra continues its old behavior
-   and weights each record (e.g., time slice) equally.
-   Weights specified with -w wgt may take one of two forms.
-   Fist, the wgt argument may be a comma-separated list of values by
-   which to weight each input file. Or, the wgt argument may be
-   the name of a weighting variable present in every input file.
-   The variable may be a scalar or a one-dimensional record variable. 
-   Scalar weights are applied uniformly to the entire file (i.e., a 
-   per-file weight), while one-dimensional weights apply to each
-   corresponding record (i.e., per-record weights). Two applications
-   of weights with ncra include easier generation of accurate averages
-   of seasonal statistics, and of accurate averages of quantities
-   sampled with a dynamically changing timestep.
-   ncra -w 31,31,28 dec.nc jan.nc feb.nc out.nc 
-   ncra -w delta_tm in1.nc in2.nc in3.nc out.nc 
-   http://nco.sf.net/nco.html#ncra
+A. NCO introduces a  convention to retain the history-attribute  
+   contents of all files that were appended to a file. This convention 
+   stores those contents in the new global attribute called
+   history_of_appended_files. This complements the history-attribute
+   to provide a more complete provenance. The optional -h switch
+   turns-off this behavior.
+   http://nco.sf.net/nco.html#history
 
 BUG FIXES:
 
-A. Fix ncecat in group aggregation mode (i.e., ncecat --gag) so it
-   can no longer use uninitialized file pointers. 
+A. Fix ncatted so it preserves global attributes (including history) 
+   from the output file when in append (-A) mode.
 
 KNOWN PROBLEMS DUE TO NCO:
 

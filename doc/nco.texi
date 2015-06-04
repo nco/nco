@@ -114,12 +114,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.0
-@set doc-edition 4.5.0
+@set nco-edition 4.5.0-beta8
+@set doc-edition 4.5.0-beta8
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 29 May 2015
-@set update-month May 2015
+@set update-date 4 June 2015
+@set update-month June 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -2062,6 +2062,7 @@ filenames to @acronym{NCO} in environment-limited situations.
 <a name="stdin"></a> <!-- http://nco.sf.net/nco.html#stdin -->
 @end html
 @cindex standard input
+@cindex provenance
 @cindex @code{stdin}
 The recommended method for sending very large numbers (hundreds or
 more, typically) of input filenames to the multi-file operators is
@@ -2168,6 +2169,7 @@ automatically generate the filnames of the symbolic links.
 This circumvents any @acronym{OS} and shell limits on command line size.
 The symbolic links are easily removed once @acronym{NCO} is finished.
 @cindex @code{history}
+@cindex provenance
 One drawback to this method is that the @code{history} attribute
 (@pxref{History Attribute}) retains the filename list of the symbolic
 links, rather than the data files themselves. 
@@ -9379,6 +9381,44 @@ Note that the @samp{-h} switch also turns off writing the
 @code{nco_input_file_list}-attribute for multi-file operators
 (@pxref{File List Attributes}).
 
+@cindex @code{history_of_appended_files}
+@cindex provenance
+As of @acronym{NCO} version 4.5.0 (June, 2015), @acronym{NCO} 
+supports its own convention to retain the @code{history}-attribute 
+contents of all files that were appended to a file
+@footnote{Note that before version 4.5.0, @acronym{NCO} could,
+in append (@samp{-A}) mode only, inadvertently overwrite the global
+metadata (including  @code{history}) of the output file with that of the
+input file. 
+This is the opposite behavior most would want.}.
+This convention stores those contents in the
+@code{history_of_appended_files} attribute, which complements
+the @code{history}-attribute to provide a more complete provenance.
+These attributes may appear something like this in output:
+@example
+@verbatim
+// global attributes:
+:history = "Thu Jun  4 14:19:04 2015: ncks -A /home/zender/foo3.nc /home/zender/tmp.nc\n",
+  "Thu Jun  4 14:19:04 2015: ncks -A /home/zender/foo2.nc /home/zender/tmp.nc\n",
+  "Thu Jun  4 14:19:04 2015: ncatted -O -a att1,global,o,c,global metadata only in foo1 /home/zender/foo1.nc\n",
+  "original history from the ur-file serving as the basis for subsequent appends." ;
+:history_of_appended_files = "Thu Jun  4 14:19:04 2015: Appended file \
+  /home/zender/foo3.nc had following \"history\" attribute:\n",
+  "Thu Jun  4 14:19:04 2015: ncatted -O -a att2,global,o,c,global metadata only in foo3 /home/zender/foo3.nc\n",
+  "history from foo3 from which data was appended to foo1 after data from foo2 was appended\n",
+  "Thu Jun  4 14:19:04 2015: Appended file /home/zender/foo2.nc had following \"history\" attribute:\n",
+  "Thu Jun  4 14:19:04 2015: ncatted -O -a att2,global,o,c,global metadata only in foo2 /home/zender/foo2.nc\n",
+  "history of some totally different file foo2 from which data was appended to foo1 before foo3 was appended\n",
+:att1 = "global metadata only in foo1" ;
+@end verbatim
+@end example
+Note that the @code{history_of_appended_files}-attribute is only
+created, and will only exist, in a file that is, or descends from
+a file that was, appended to.
+The optional switch @samp{-h} (or @samp{--hst} or @samp{--history})  
+also overrides automatically appending the
+@code{history_of_appended_files} attribute.
+
 @html
 <a name="fl_lst_in_att"></a> <!-- http://nco.sf.net/nco.html#fl_lst_in_att -->
 @end html
@@ -14904,6 +14944,8 @@ as positional arguments on the command line
 
 @cindex @code{-M}
 @cindex @code{--glb_mtd_spp}
+@cindex @code{history}
+@cindex provenance
 @cindex metadata, global 
 Suppress global metadata copying.
 By default @acronym{NCO}'s multi-file operators copy the global metadata

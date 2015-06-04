@@ -658,7 +658,8 @@ main(int argc,char **argv)
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-    if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
+  if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
+  if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
   
   /* Take output file out of define mode */
   if(hdr_pad == 0UL){

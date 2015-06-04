@@ -632,6 +632,7 @@ main(int argc,char **argv)
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+  if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in_1,in_id_1,out_id);
   if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
 
   /* Turn off default filling behavior to enhance efficiency */

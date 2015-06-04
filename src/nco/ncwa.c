@@ -755,11 +755,12 @@ main(int argc,char **argv)
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file.  */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
+  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,True,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-    if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
+  if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
+  if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   /* Add new missing values to output file while in define mode */
