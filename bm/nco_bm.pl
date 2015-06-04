@@ -209,7 +209,7 @@ if (-e "$ENV{'HOME'}/.ncorc" && -r "$ENV{'HOME'}/.ncorc" && !-z "$ENV{'HOME'}/.n
 	$ln_cnt++;
 	if ($_ !~ /^#/) { # Ignore comments
 	    my $N = my @L = split('=');
-	    chomp $L[1]; # Get rid of \n, if any
+	    chomp $L[1]; # Eliminate \n, if any
 	    if ($N != 2) {print "ERR: typo in ~/.ncorc file on line $ln_cnt.\nFormat is: 'Name=value'\nIgnoring error for now\n";}
 	    $NCO_RC{$L[0]} = $L[1];
 	}

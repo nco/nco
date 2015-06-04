@@ -72,6 +72,12 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
  const char * const hst_sng); /* I [sng] String to add to history attribute */
 
 void 
+nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to provenance attribute */
+(const char * const fl_in, /* I [sng] Name of input-file */
+ const int in_id, /* I [id] netCDF input-file ID */
+ const int out_id); /* I [id] netCDF output-file ID */
+
+void 
 nco_mpi_att_cat /* [fnc] Add MPI tasks global attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const int mpi_nbr); /* I [nbr] MPI nodes/tasks number */

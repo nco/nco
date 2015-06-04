@@ -9355,30 +9355,28 @@ All operators automatically append a @code{history} global attribute to
 any file they create or modify.
 The @code{history} attribute consists of a timestamp and the full string
 of the invocation command to the operator, e.g., @samp{Mon May 26 20:10:24
-1997: ncks in.nc foo.nc}.
+1997: ncks in.nc out.nc}.
 The full contents of an existing @code{history} attribute are copied
 from the first @var{input-file} to the @var{output-file}.
 The timestamps appear in reverse chronological order, with the most
 recent timestamp appearing first in the @code{history} attribute.
-Since @acronym{NCO} and many other netCDF operators adhere to the
-@code{history} convention, the entire data processing path of a given
-netCDF file may often be deduced from examination of its @code{history}
-attribute. 
+Since @acronym{NCO} adheres to the @code{history} convention, the entire
+data processing path of a given netCDF file may often be deduced from
+examination of its @code{history} attribute. 
 As of May, 2002, @acronym{NCO} is case-insensitive to the spelling
 of the @code{history} attribute name.
 Thus attributes named @code{History} or @code{HISTORY} (which are
 non-standard and not recommended) will be treated as valid history
 attributes. 
 When more than one global attribute fits the case-insensitive search
-for ``history'', the first one found will be used.
-@code{history} attribute
+for ``history'', the first one found is used.
 @cindex @command{ncatted}
 To avoid information overkill, all operators have an optional switch
 (@samp{-h}, @samp{--hst}, or @samp{--history}) to override
 automatically appending the @code{history} attribute 
 (@pxref{ncatted netCDF Attribute Editor}).   
 Note that the @samp{-h} switch also turns off writing the
-@code{nco_input_file_list} attribute for multi-file operators
+@code{nco_input_file_list}-attribute for multi-file operators
 (@pxref{File List Attributes}).
 
 @html

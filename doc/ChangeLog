@@ -1,3 +1,7 @@
+2015-06-04  Charlie Zender  <zender@uci.edu>
+
+	* Add history_from_appended_files global attribute to improve provenance
+
 2015-06-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.0-beta7 release procedure:

@@ -132,7 +132,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,dmn_rdd_nbr*sizeof(dmn_sct *));
   dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *));
 
-  /* Get rid of averaged dimensions */
+  /* Eliminate averaged dimensions */
   fix->nbr_dim=dmn_rdd_nbr;
 
   avg_sz=1L;
@@ -354,7 +354,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     /* Simplest way to retain degenerate dimensions is average over them,
        then insert degenerate dimensions back into list at end */
 
-    /* Get rid of averaged dimensions */
+    /* Eliminate averaged dimensions */
     fix->nbr_dim=dmn_rdd_nbr;
     if(var->is_rec_var) fix->is_rec_var=True;
     fix->is_crd_var=var->is_crd_var;

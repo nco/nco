@@ -561,23 +561,30 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
 } /* end nco_fl_lst_att_cat() */
  
 void 
-nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
-(const int out_id, /* I [id] netCDF output-file ID */
- const char * const hst_sng) /* I [sng] String to add to history attribute */
+nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to provenance attribute */
+(const char * const fl_in, /* I [sng] Name of input-file */
+ const int in_id, /* I [id] netCDF input-file ID */
+ const int out_id) /* I [id] netCDF output-file ID */
 {
-  /* Purpose: Add command line and date stamp to existing history attribute, if any,
-     and write them to specified output file */
+  /* Purpose: Add provenance (history contents) of appended file to provenance attribute
+     NB: "Provenance" means, to NCO, the contents of the history attribute 
+     This is an operational definition that may change in the future
+     Other defensible definitions of "provenance" would be the contents of ALL global attributes, not just history */
   
   /* Length of string + NUL required to hold output of ctime() */
 #define TIME_STAMP_SNG_LNG 25 
   
-  char att_nm[NC_MAX_NAME];
   char *ctime_sng;
-  char *history_crr=NULL;
-  char *history_new;
+  char *hst_sng;
+  char *hst_crr=NULL;
+  char *prv_crr=NULL;
+  char *prv_new;
+
+  char att_nm[NC_MAX_NAME];
   char time_stamp_sng[TIME_STAMP_SNG_LNG];
   
-  const char sng_history[]="history"; /* [sng] Possible name of history attribute */
+  const char att_nm_prv[]="history_of_appended_files"; /* [sng] Lowercase name of provenance attribute */
+  const char att_nm_hst[]="history"; /* [sng] Lowercase name of history attribute */
   
   int idx;
   int glb_att_nbr;
@@ -594,7 +601,133 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   ctime_sng=ctime(&time_crr_time_t);
   /* NUL-terminate time_stamp_sng */
   time_stamp_sng[TIME_STAMP_SNG_LNG-1]='\0';
-  /* Get rid of carriage return in ctime_sng */
+  /* Eliminate carriage return in ctime_sng */
+  (void)strncpy(time_stamp_sng,ctime_sng,TIME_STAMP_SNG_LNG-1UL);
+
+  /* Get number of global attributes in input file */
+  (void)nco_inq(in_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
+
+  for(idx=0;idx<glb_att_nbr;idx++){
+    (void)nco_inq_attname(in_id,NC_GLOBAL,idx,att_nm);
+    if(!strcasecmp(att_nm,att_nm_hst)) break;
+  } /* end loop over att */
+
+  if(idx == glb_att_nbr){
+    /* Input file does not contain Global attribute "[hH]istory" */
+    char hst_sng_fmt[]="Appended file %s had no \"%s\" attribute\n";
+
+    att_sz=strlen(hst_sng_fmt)+strlen(time_stamp_sng)+strlen(fl_in)+strlen(att_nm_hst);
+    hst_sng=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+    hst_sng[att_sz]='\0';
+    (void)sprintf(hst_sng,hst_sng_fmt,time_stamp_sng,fl_in,att_nm_hst);
+  }else{
+    /* Input file contains Global attribute "[hH]istory" */
+    char hst_sng_fmt[]="Appended file %s had following \"%s\" attribute:\n%s\n";
+
+    (void)nco_inq_att(in_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
+    if(att_typ != NC_CHAR){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore contents will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
+      return;
+    } /* end if */
+
+    /* Allocate and NUL-terminate space for current history attribute
+       If history attribute is of size zero then ensure strlen(hst_crr) = 0 */
+    hst_crr=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+    hst_crr[att_sz]='\0';
+    if(att_sz > 0) (void)nco_get_att(in_id,NC_GLOBAL,att_nm,(void *)hst_crr,NC_CHAR);
+
+    att_sz=strlen(hst_sng_fmt)+strlen(fl_in)+strlen(att_nm)+strlen(hst_crr);
+    hst_sng=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+    hst_sng[att_sz]='\0';
+    (void)sprintf(hst_sng,hst_sng_fmt,fl_in,att_nm,hst_crr);
+  } /* endif history global attribute exists in input file */
+
+  /* Get number of global attributes in output file */
+  (void)nco_inq(out_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
+
+  for(idx=0;idx<glb_att_nbr;idx++){
+    (void)nco_inq_attname(out_id,NC_GLOBAL,idx,att_nm);
+    if(!strcasecmp(att_nm,att_nm_prv)) break;
+  } /* end loop over att */
+
+  /* Fill-in provenance string */
+  if(idx == glb_att_nbr){
+    /* Global attribute for provenance does not yet exist in output */
+
+    /* Add 3 for formatting characters */
+    att_sz=strlen(hst_sng)+strlen(time_stamp_sng)+2UL;
+    prv_new=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+    prv_new[att_sz]='\0';
+    (void)sprintf(prv_new,"%s: %s",time_stamp_sng,hst_sng);
+    /* Set attribute name to default */
+    (void)strcpy(att_nm,att_nm_prv);
+
+  }else{ 
+    /* Global provenance attribute currently exists */
+  
+    /* NB: ncattinq(), unlike strlen(), counts terminating NUL for stored NC_CHAR arrays */
+    (void)nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
+    if(att_typ != NC_CHAR){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore contents will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
+      return;
+    } /* end if */
+
+    /* Allocate and NUL-terminate space for current provenance attribute
+       If provenance attribute is of size zero then ensure strlen(prv_crr) = 0 */
+    prv_crr=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+    prv_crr[att_sz]='\0';
+    if(att_sz > 0) (void)nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)prv_crr,NC_CHAR);
+
+    /* Add 4 for formatting characters */
+    prv_new=(char *)nco_malloc((strlen(prv_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4UL)*sizeof(char));
+    (void)sprintf(prv_new,"%s: %s\n%s",time_stamp_sng,hst_sng,prv_crr);
+  } /* endif provenance global attribute currently exists */
+
+  rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(prv_new)+1UL),(void *)prv_new);
+
+  if(hst_sng) hst_sng=(char *)nco_free(hst_sng);
+  if(hst_crr) hst_crr=(char *)nco_free(hst_crr);
+  if(prv_crr) prv_crr=(char *)nco_free(prv_crr);
+  if(prv_new) prv_new=(char *)nco_free(prv_new);
+
+  return; /* 20050109: fxm added return to void function to squelch unwelcome gcc-3.4.2 warning */ 
+} /* end nco_prv_att_cat() */
+
+void 
+nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
+(const int out_id, /* I [id] netCDF output-file ID */
+ const char * const hst_sng) /* I [sng] String to add to history attribute */
+{
+  /* Purpose: Add command line and date stamp to existing history attribute, if any, 
+     and write them to specified output file */
+  
+  /* Length of string + NUL required to hold output of ctime() */
+#define TIME_STAMP_SNG_LNG 25 
+  
+  char att_nm[NC_MAX_NAME];
+  char *ctime_sng;
+  char *hst_crr=NULL;
+  char *hst_new;
+  char time_stamp_sng[TIME_STAMP_SNG_LNG];
+  
+  const char att_nm_hst[]="history"; /* [sng] Lowercase name of history attribute */
+  
+  int idx;
+  int glb_att_nbr;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  long att_sz=0L;
+
+  nc_type att_typ;
+  
+  time_t time_crr_time_t;
+
+  /* Create timestamp string */
+  time_crr_time_t=time((time_t *)NULL);
+  ctime_sng=ctime(&time_crr_time_t);
+  /* NUL-terminate time_stamp_sng */
+  time_stamp_sng[TIME_STAMP_SNG_LNG-1]='\0';
+  /* Eliminate carriage return in ctime_sng */
   (void)strncpy(time_stamp_sng,ctime_sng,TIME_STAMP_SNG_LNG-1UL);
 
   /* Get number of global attributes in file */
@@ -602,7 +735,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 
   for(idx=0;idx<glb_att_nbr;idx++){
     (void)nco_inq_attname(out_id,NC_GLOBAL,idx,att_nm);
-    if(!strcasecmp(att_nm,sng_history)) break;
+    if(!strcasecmp(att_nm,att_nm_hst)) break;
   } /* end loop over att */
 
   /* Fill-in history string */
@@ -610,10 +743,10 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     /* Global attribute "[hH]istory" does not yet exist */
 
     /* Add 3 for formatting characters */
-    history_new=(char *)nco_malloc((strlen(hst_sng)+strlen(time_stamp_sng)+3UL)*sizeof(char));
-    (void)sprintf(history_new,"%s: %s",time_stamp_sng,hst_sng);
+    hst_new=(char *)nco_malloc((strlen(hst_sng)+strlen(time_stamp_sng)+3UL)*sizeof(char));
+    (void)sprintf(hst_new,"%s: %s",time_stamp_sng,hst_sng);
     /* Set attribute name to default */
-    (void)strcpy(att_nm,sng_history);
+    (void)strcpy(att_nm,att_nm_hst);
 
   }else{ 
     /* Global attribute "[hH]istory" currently exists */
@@ -626,22 +759,22 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     } /* end if */
 
     /* Allocate and NUL-terminate space for current history attribute
-       If history attribute is of size zero then ensure strlen(history_crr) = 0 */
-    history_crr=(char *)nco_malloc((att_sz+1)*sizeof(char));
-    history_crr[att_sz]='\0';
-    if(att_sz > 0) (void)nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)history_crr,NC_CHAR);
+       If history attribute is of size zero then ensure strlen(hst_crr) = 0 */
+    hst_crr=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+    hst_crr[att_sz]='\0';
+    if(att_sz > 0) (void)nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)hst_crr,NC_CHAR);
 
     /* Add 4 for formatting characters */
-    history_new=(char *)nco_malloc((strlen(history_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4UL)*sizeof(char));
-    (void)sprintf(history_new,"%s: %s\n%s",time_stamp_sng,hst_sng,history_crr);
+    hst_new=(char *)nco_malloc((strlen(hst_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4UL)*sizeof(char));
+    (void)sprintf(hst_new,"%s: %s\n%s",time_stamp_sng,hst_sng,hst_crr);
   } /* endif history global attribute currently exists */
 
-  rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(history_new)+1UL),(void *)history_new);
+  rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(hst_new)+1UL),(void *)hst_new);
 
-  history_crr=(char *)nco_free(history_crr);
-  history_new=(char *)nco_free(history_new);
+  hst_crr=(char *)nco_free(hst_crr);
+  hst_new=(char *)nco_free(hst_new);
 
-  return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
+  return; /* 20050109: fxm added return to void function to squelch unwelcome gcc-3.4.2 warning */ 
 } /* end nco_hst_att_cat() */
 
 aed_sct * /* O [sct] List of attribute edit structures */
