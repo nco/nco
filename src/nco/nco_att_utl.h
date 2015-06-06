@@ -131,6 +131,17 @@ void
 nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
 (const int out_id); /* I [id] netCDF output-file ID */
 
+nco_bool /* [O] Perform exception processing on this variable */
+nco_is_xcp /* [fnc] Determine whether to perform exception processing */
+(const char * const var_nm); /* [sng] Variable name */
+
+void
+nco_xcp_prc /* [fnc] Perform exception processing on this variable */
+(const char * const var_nm, /* [sng] Variable name */
+ const nc_type var_typ, /* I [enm] netCDF type of operand */
+ const long var_sz, /* I [nbr] Size (in elements) of operand */
+ char * const var_val); /* I/O [sng] Values of operand */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

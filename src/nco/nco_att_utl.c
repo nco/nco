@@ -1673,3 +1673,56 @@ nco_mpi_att_cat /* [fnc] Add MPI tasks global attribute */
   (void)nco_aed_prc(out_id,NC_GLOBAL,mpi_nbr_aed);
 
 } /* end nco_mpi_att_cat() */
+
+nco_bool /* [O] Perform exception processing on this variable */
+nco_is_xcp /* [fnc] Determine whether to perform exception processing */
+(const char * const var_nm) /* [sng] Variable name */
+{
+  /* Purpose: Determine whether to perform exception processing */
+  const char *var_xcp_lst[]={"date_written","time_written"};
+  const int var_xcp_lst_nbr=2; /* [nbr] Number of items on exception list */
+  int xcp_idx; /* [idx] Exception list index */
+  for(xcp_idx=0;xcp_idx<var_xcp_lst_nbr;xcp_idx++)
+    if(!strcmp(var_nm,var_xcp_lst[xcp_idx])) break;
+  if(xcp_idx < var_xcp_lst_nbr) return True; else return False;
+} /* end nco_is_xcp() */
+  
+void
+nco_xcp_prc /* [fnc] Perform exception processing on this variable */
+(const char * const var_nm, /* [sng] Variable name */
+ const nc_type var_typ, /* I [enm] netCDF type of operand */
+ const long var_sz, /* I [nbr] Size (in elements) of operand */
+ char * const var_val) /* I/O [sng] Values of string operand */
+ {
+  /* Purpose: Perform exception processing on this variable
+     Exception processing currently limited to variables of type NC_CHAR */
+  char *ctime_sng;
+  time_t time_crr_time_t;
+  struct tm *time_crr_tm;
+
+  /* Create timestamp string */
+  time_crr_time_t=time((time_t *)NULL);
+  time_crr_tm=localtime(&time_crr_time_t);
+  ctime_sng=ctime(&time_crr_time_t);
+
+  /* Currently this is true for both variables in list */
+  assert(var_sz == 8);
+  assert(var_typ == NC_CHAR);
+  
+  /* One block for each variable in exception list in nco_is_xcp() */
+  if(!strcmp(var_nm,"date_written")){
+    /* Contents of these fields are demonstrated by:
+       ncks -C -H -v date_written,time_written ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc
+       time[0]=31 chars[0] date_written[0--7]='04/29/15' 
+       time[0]=31 chars[0] time_written[0--7]='23:05:05' */
+    sprintf(var_val,"%02d/%02d/%02d",time_crr_tm->tm_mon+1,time_crr_tm->tm_mday,time_crr_tm->tm_year%100);
+    return;
+  } /* !date_written */
+  if(!strcmp(var_nm,"time_written")){
+    /* Datestamp strings are formatted thusly: "Fri Jun  5 17:24:13 2015\n" */
+    strncpy(var_val,ctime_sng+11,8);
+    return;
+  } /* !time_written */
+  
+ } /* end nco_xcp_prc() */
+

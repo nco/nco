@@ -19,10 +19,10 @@
 
 /* Standard header files */
 #include <assert.h> /* assert() */
+#include <limits.h> /* need LONG_MAX */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp() */
-#include <limits.h> /* need LONG_MAX */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

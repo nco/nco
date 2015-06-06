@@ -112,7 +112,10 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
       if(var_out.nm) var_out.nm=(char *)nco_free(var_out.nm);
     } /* endif ppc */
   } /* endif True */
-    
+
+  nco_bool flg_xcp; /* [flg] Variable requires exception processing */
+  flg_xcp=nco_is_xcp(var_nm);
+
   /* Get variable */
   if(dmn_nbr == 0){
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
@@ -126,6 +129,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
       if(flg_ppc){
 	if(flg_nsd) (void)nco_ppc_bitmask(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
       } /* !PPC */
+      if(flg_xcp) nco_xcp_prc(var_nm,var_typ,var_sz,(char *)void_ptr);
       nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
     } /* end if var_sz */
   } /* end if variable is an array */

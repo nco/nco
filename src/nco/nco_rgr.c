@@ -9,7 +9,7 @@
 
 #include "nco_rgr.h" /* Regridding */
 
-int /* O [enm] Return code */
+  int /* O [enm] Return code */
 nco_rgr_ctl /* [fnc] Control regridding logic */
 (rgr_sct * const rgr_nfo, /* I/O [sct] Regridding structure */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */
@@ -736,7 +736,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Do not extract extensive variables like lon, lat, and area
      If necessary, create them from scratch from remap data
      I decided not to include "date_written" and "time_written" in this list, this is debatable... */
-  const int var_xcl_lst_nbr=13;
+  const int var_xcl_lst_nbr=13; /* [nbr] Number of objects on exclusion list */
   const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/lat","/latitude","/lat_bnds","/lat_vertices","/bounds_lat","/lon","/longitude","/lon_bnds","/lon_vertices","/bounds_lon"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
