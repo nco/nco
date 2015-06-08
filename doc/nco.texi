@@ -4677,6 +4677,7 @@ cat > ~/ncdismember << 'EOF'
 # CF-compliance check is performed when optional third argument is 'cf'
 # Optional fourth argument cf_vrs is CF version to check
 # Optional fifth argument opt passes straight-through to ncks
+# Arguments must not use shell expansion/globbing
 # chmod a+x ~/sh/ncdismember
 # Examples:
 # ncdismember ~/nco/data/mdl_1.nc /data/zender/tmp
@@ -4730,7 +4731,7 @@ for grp_in in ${grp_lst} ; do
     fi # !flg_cf
 done
 if [ ${flg_cf} = 'cf' ]; then
-    echo "CFchecker reports CF-compliance of each group in flat netCDF3 format"
+    echo 'CFchecker reports CF-compliance of each group in flat netCDF3 format'
     cfchecker -c ${cf_vrs} *.nc
 fi # !flg_cf
 EOF

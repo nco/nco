@@ -65,7 +65,7 @@ netcdf in {
 dimensions:
   dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,Lon=4,Lat=2,time=unlimited;
 variables:
-  :Conventions = "CF-1.0";
+  :Conventions = "CF-1.5";
   :history = "History global attribute.\nTextual attributes like history often have embedded newlines like this.\nSuch newlines should serve as linebreaks on the screen to enhance legibility like this.\nFriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings where each embedded delimiter marks a linebreak.\nThis makes poetry embedded in CDL much nicer to read:\nA POET by Hafiz\n\nA poet is someone\nWho can pour light into a cup,\nThen raise it to nourish\nYour beautiful parched, holy mouth\n";
   :lorem_ipsum = "The Lorem Ipsum attribute demonstrates the legibility of text without embedded linebreaks:\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lady Gaga amat indueris vestimento laetus. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
   :julian_day = 200000.04;
