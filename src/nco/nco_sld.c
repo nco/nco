@@ -39,7 +39,7 @@ nco_scrip_read /* [fnc] Read, parse, and print contents of SCRIP file */
       fclose(fp_scrip);
       return NCO_ERR;
     } /* endif */
-    kvm_scrip[idx]=nco_sng2kvm(sng_line,kvm_scrip[idx]);
+    kvm_scrip[idx]=nco_sng2kvm(sng_line);
     if(!kvm_scrip[idx].key){
       fclose(fp_scrip);
       return NCO_ERR;

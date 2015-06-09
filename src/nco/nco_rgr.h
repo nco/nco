@@ -131,7 +131,7 @@ extern "C" {
   (rgr_sct * const rgr_nfo, /* I/O [sct] Regridding structure */
    trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal Table */
 
-  int /* O [enm] Return code */
+  rgr_sct * /* O [sct] Regridding structure */
   nco_rgr_ini /* [fnc] Initialize regridding structure */
   (const int in_id, /* I [id] Input netCDF file ID */
    char **rgr_arg, /* [sng] Regridding arguments */
@@ -141,12 +141,11 @@ extern "C" {
    char * const rgr_grd_src, /* I [sng] File containing input grid */
    char * const rgr_grd_dst, /* I [sng] File containing destination grid */
    char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
-   char * const rgr_var, /* I [sng] Variable for special regridding treatment */
-   rgr_sct * const rgr_nfo); /* O [sct] Regridding structure */
+   char * const rgr_var); /* I [sng] Variable for special regridding treatment */
     
-  void
+  rgr_sct * /* O [sct] Pointer to free'd regridding structure */
   nco_rgr_free /* [fnc] Deallocate regridding structure */
-  (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
+  (rgr_sct *rgr_nfo); /* I/O [sct] Regridding structure */
 
   int /* O [enm] Return code */
   nco_rgr_tps /* [fnc] Regrid using Tempest library */

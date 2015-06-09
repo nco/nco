@@ -9,7 +9,7 @@
 
 #include "nco_rgr.h" /* Regridding */
 
-  int /* O [enm] Return code */
+int /* O [enm] Return code */
 nco_rgr_ctl /* [fnc] Control regridding logic */
 (rgr_sct * const rgr_nfo, /* I/O [sct] Regridding structure */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */
@@ -43,7 +43,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
     rcd=nco_rgr_esmf(rgr_nfo);
     /* Close output and free dynamic memory */
     (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,rgr_nfo->out_id);
-    (void)nco_rgr_free(rgr_nfo);
+    rgr_nfo=nco_rgr_free(rgr_nfo);
 #else /* !ENABLE_ESMF */
     (void)fprintf(stderr,"%s: ERROR %s reports attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
@@ -58,25 +58,30 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   return rcd;
 } /* end nco_rgr_ctl() */
 
-void
+rgr_sct * /* O [sct] Pointer to free'd regridding structure */
 nco_rgr_free /* [fnc] Deallocate regridding structure */
-(rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
+(rgr_sct *rgr) /* I/O [sct] Regridding structure */
 {
-  /* [fnc] Free all dynamic memory in regridding structure */
-  if(rgr_nfo->fl_grd_src) rgr_nfo->fl_grd_src=(char *)nco_free(rgr_nfo->fl_grd_src);
-  if(rgr_nfo->fl_grd_dst) rgr_nfo->fl_grd_dst=(char *)nco_free(rgr_nfo->fl_grd_dst);
-  if(rgr_nfo->fl_in) rgr_nfo->fl_in=(char *)nco_free(rgr_nfo->fl_in);
-  if(rgr_nfo->fl_out) rgr_nfo->fl_out=(char *)nco_free(rgr_nfo->fl_out);
-  if(rgr_nfo->fl_out_tmp) rgr_nfo->fl_out_tmp=(char *)nco_free(rgr_nfo->fl_out_tmp);
-  if(rgr_nfo->fl_map) rgr_nfo->fl_map=(char *)nco_free(rgr_nfo->fl_map);
-  if(rgr_nfo->var_nm) rgr_nfo->var_nm=(char *)nco_free(rgr_nfo->var_nm);
+  /* Purpose: Free all dynamic memory in regridding structure */
+  if(rgr->fl_grd_src) rgr->fl_grd_src=(char *)nco_free(rgr->fl_grd_src);
+  if(rgr->fl_grd_dst) rgr->fl_grd_dst=(char *)nco_free(rgr->fl_grd_dst);
+  if(rgr->fl_in) rgr->fl_in=(char *)nco_free(rgr->fl_in);
+  if(rgr->fl_out) rgr->fl_out=(char *)nco_free(rgr->fl_out);
+  if(rgr->fl_out_tmp) rgr->fl_out_tmp=(char *)nco_free(rgr->fl_out_tmp);
+  if(rgr->fl_map) rgr->fl_map=(char *)nco_free(rgr->fl_map);
+  if(rgr->var_nm) rgr->var_nm=(char *)nco_free(rgr->var_nm);
 
   /* Tempest */
-  if(rgr_nfo->drc_tps) rgr_nfo->drc_tps=(char *)nco_free(rgr_nfo->drc_tps);
+  if(rgr->drc_tps) rgr->drc_tps=(char *)nco_free(rgr->drc_tps);
 
+  if(rgr->rgr_nbr > 0) rgr->rgr_arg=nco_sng_lst_free(rgr->rgr_arg,rgr->rgr_nbr);
+
+  if(rgr) rgr=(rgr_sct *)nco_free(rgr);
+
+  return rgr;
 } /* end nco_rfr_free() */
   
-int /* O [enm] Return code */
+rgr_sct * /* O [sct] Regridding structure */
 nco_rgr_ini /* [fnc] Initialize regridding structure */
 (const int in_id, /* I [id] Input netCDF file ID */
  char **rgr_arg, /* [sng] Regridding arguments */
@@ -86,8 +91,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
  char * const rgr_grd_src, /* I [sng] File containing input grid */
  char * const rgr_grd_dst, /* I [sng] File containing destination grid */
  char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
- char * const rgr_var, /* I [sng] Variable for special regridding treatment */
- rgr_sct * const rgr_nfo) /* O [sct] Regridding structure */
+ char * const rgr_var) /* I [sng] Variable for special regridding treatment */
 {
   /* Purpose: Initialize regridding structure */
      
@@ -108,53 +112,56 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   const char fnc_nm[]="nco_rgr_ini()";
   
-  int rcd=NCO_NOERR;
+  rgr_sct *rgr;
+
+  /* Allocate */
+  rgr=(rgr_sct *)nco_malloc(sizeof(rgr_sct));
   
   /* Initialize */
-  rgr_nfo->flg_usr_rqs=False; /* [flg] User requested regridding */
-  rgr_nfo->out_id=int_CEWI; /* [id] Output netCDF file ID */
+  rgr->flg_usr_rqs=False; /* [flg] User requested regridding */
+  rgr->out_id=int_CEWI; /* [id] Output netCDF file ID */
 
-  rgr_nfo->in_id=in_id; /* [id] Input netCDF file ID */
-  rgr_nfo->rgr_arg=rgr_arg; /* [sng] Regridding arguments */
-  rgr_nfo->rgr_nbr=rgr_nbr; /* [nbr] Number of regridding arguments */
+  rgr->in_id=in_id; /* [id] Input netCDF file ID */
+  rgr->rgr_arg=rgr_arg; /* [sng] Regridding arguments */
+  rgr->rgr_nbr=rgr_nbr; /* [nbr] Number of regridding arguments */
 
-  rgr_nfo->flg_grd_src= rgr_grd_src ? True : False; /* [flg] User-specified input grid */
-  rgr_nfo->fl_grd_src=rgr_grd_src; /* [sng] File containing input grid */
+  rgr->flg_grd_src= rgr_grd_src ? True : False; /* [flg] User-specified input grid */
+  rgr->fl_grd_src=rgr_grd_src; /* [sng] File containing input grid */
 
-  rgr_nfo->flg_grd_dst= rgr_grd_dst ? True : False; /* [flg] User-specified destination grid */
-  rgr_nfo->fl_grd_dst=rgr_grd_dst; /* [sng] File containing destination grid */
+  rgr->flg_grd_dst= rgr_grd_dst ? True : False; /* [flg] User-specified destination grid */
+  rgr->fl_grd_dst=rgr_grd_dst; /* [sng] File containing destination grid */
 
-  rgr_nfo->fl_in=rgr_in; /* [sng] File containing fields to be regridded */
-  rgr_nfo->fl_out=rgr_out; /* [sng] File containing regridded fields */
-  rgr_nfo->fl_out_tmp=NULL_CEWI; /* [sng] Temporary file containing regridded fields */
+  rgr->fl_in=rgr_in; /* [sng] File containing fields to be regridded */
+  rgr->fl_out=rgr_out; /* [sng] File containing regridded fields */
+  rgr->fl_out_tmp=NULL_CEWI; /* [sng] Temporary file containing regridded fields */
 
-  rgr_nfo->flg_map= rgr_map ? True : False; /* [flg] User-specified mapping weights */
-  rgr_nfo->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
+  rgr->flg_map= rgr_map ? True : False; /* [flg] User-specified mapping weights */
+  rgr->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
 
-  rgr_nfo->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
+  rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
   /* Did user explicitly request regridding? */
-  if(rgr_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr_nfo->flg_usr_rqs=True;
+  if(rgr_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr->flg_usr_rqs=True;
 
   /* Initialize arguments after copying */
-  if(!rgr_nfo->fl_out) rgr_nfo->fl_out=(char *)strdup("/data/zender/rgr/rgr_out.nc");
-  if(!rgr_nfo->fl_grd_dst) rgr_nfo->fl_grd_dst=(char *)strdup("/data/zender/scrip/grids/remap_grid_T42.nc");
-  if(!rgr_nfo->var_nm) rgr_nfo->var_nm=(char *)strdup("ORO");
+  if(!rgr->fl_out) rgr->fl_out=(char *)strdup("/data/zender/rgr/rgr_out.nc");
+  if(!rgr->fl_grd_dst) rgr->fl_grd_dst=(char *)strdup("/data/zender/scrip/grids/remap_grid_T42.nc");
+  if(!rgr->var_nm) rgr->var_nm=(char *)strdup("ORO");
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports ",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stderr,"flg_usr_rqs = %d, ",rgr_nfo->flg_usr_rqs);
-    (void)fprintf(stderr,"rgr_nbr = %d, ",rgr_nfo->rgr_nbr);
-    (void)fprintf(stderr,"fl_grd_src = %s, ",rgr_nfo->fl_grd_src ? rgr_nfo->fl_grd_src : "NULL");
-    (void)fprintf(stderr,"fl_grd_dst = %s, ",rgr_nfo->fl_grd_dst ? rgr_nfo->fl_grd_dst : "NULL");
-    (void)fprintf(stderr,"fl_in = %s, ",rgr_nfo->fl_in ? rgr_nfo->fl_in : "NULL");
-    (void)fprintf(stderr,"fl_out = %s, ",rgr_nfo->fl_out ? rgr_nfo->fl_out : "NULL");
-    (void)fprintf(stderr,"fl_out_tmp = %s, ",rgr_nfo->fl_out_tmp ? rgr_nfo->fl_out_tmp : "NULL");
-    (void)fprintf(stderr,"fl_map = %s, ",rgr_nfo->fl_map ? rgr_nfo->fl_map : "NULL");
+    (void)fprintf(stderr,"flg_usr_rqs = %d, ",rgr->flg_usr_rqs);
+    (void)fprintf(stderr,"rgr_nbr = %d, ",rgr->rgr_nbr);
+    (void)fprintf(stderr,"fl_grd_src = %s, ",rgr->fl_grd_src ? rgr->fl_grd_src : "NULL");
+    (void)fprintf(stderr,"fl_grd_dst = %s, ",rgr->fl_grd_dst ? rgr->fl_grd_dst : "NULL");
+    (void)fprintf(stderr,"fl_in = %s, ",rgr->fl_in ? rgr->fl_in : "NULL");
+    (void)fprintf(stderr,"fl_out = %s, ",rgr->fl_out ? rgr->fl_out : "NULL");
+    (void)fprintf(stderr,"fl_out_tmp = %s, ",rgr->fl_out_tmp ? rgr->fl_out_tmp : "NULL");
+    (void)fprintf(stderr,"fl_map = %s, ",rgr->fl_map ? rgr->fl_map : "NULL");
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
   
-  return rcd;
+  return rgr;
 } /* end nco_rgr_ini() */
   
 int /* O [enm] Return code */
