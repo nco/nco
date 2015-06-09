@@ -73,8 +73,21 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   /* Tempest */
   if(rgr->drc_tps) rgr->drc_tps=(char *)nco_free(rgr->drc_tps);
 
+  /* free() memory used to construct KVMs */
   if(rgr->rgr_nbr > 0) rgr->rgr_arg=nco_sng_lst_free(rgr->rgr_arg,rgr->rgr_nbr);
 
+  /* free() memory copied from KVMs */
+  if(rgr->area_nm) rgr->area_nm=(char *)nco_free(rgr->area_nm);
+  if(rgr->bnd_nm) rgr->bnd_nm=(char *)nco_free(rgr->bnd_nm);
+  if(rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)nco_free(rgr->lat_bnd_nm);
+  if(rgr->lat_nm) rgr->lat_nm=(char *)nco_free(rgr->lat_nm);
+  if(rgr->lat_wgt_nm) rgr->lat_wgt_nm=(char *)nco_free(rgr->lat_wgt_nm);
+  if(rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)nco_free(rgr->lon_bnd_nm);
+  if(rgr->lon_nm) rgr->lon_nm=(char *)nco_free(rgr->lon_nm);
+  if(rgr->ncol_nm) rgr->ncol_nm=(char *)nco_free(rgr->ncol_nm);
+  if(rgr->vrt_nm) rgr->vrt_nm=(char *)nco_free(rgr->vrt_nm);
+
+  /* Lastly, free() regrid structure itself */
   if(rgr) rgr=(rgr_sct *)nco_free(rgr);
 
   return rgr;
@@ -193,14 +206,61 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* end if */
   } /* end for */
 
-  /* RGR default exists, set all non-coordinate variables to default first */
+  /* NULL-initialize */
+  rgr->area_nm=NULL; /* [sng] Name of variable containing gridcell area */
+  rgr->bnd_nm=NULL; /* [sng] Name of dimension to employ for bounds */
+  rgr->lat_bnd_nm=NULL; /* [sng] Name of boundary variable for latitude */
+  rgr->lat_nm=NULL; /* [sng] Name of dimension to recognize as latitude */
+  rgr->lat_wgt_nm=NULL; /* [sng] Name of variable containing latitude weights */
+  rgr->lon_bnd_nm=NULL; /* [sng] Name of boundary variable for longitude */
+  rgr->lon_nm=NULL; /* [sng] Name of dimension to recognize as longitude */
+  rgr->ncol_nm=NULL; /* [sng] Name of horizontal spatial dimension on unstructured grid */
+  rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
+
   for(rgr_var_idx=0;rgr_var_idx<rgr_var_nbr;rgr_var_idx++){
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"default")){
-      //fxm
-      break; /* Only one default is needed */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"area_nm")){
+      rgr->area_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
     } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"bnd_nm")){
+      rgr->bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_bnd_nm")){
+      rgr->lat_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nm")){
+      rgr->lat_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_wgt_nm")){
+      rgr->lat_wgt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_bnd_nm")){
+      rgr->lon_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_nm")){
+      rgr->lon_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"ncol_nm")){
+      rgr->ncol_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){
+      rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    (void)fprintf(stderr,"%s: ERROR %s reports unrecognized key-value option to --rgr switch: %s\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key);
+    nco_exit(EXIT_FAILURE);
   } /* end for */
-  
+
+  /* Free kvms */
+  if(rgr_lst) rgr_lst=nco_kvm_lst_free(rgr_lst,rgr_var_nbr);
+
   return rgr;
 } /* end nco_rgr_ini() */
   
