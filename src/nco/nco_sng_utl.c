@@ -652,20 +652,20 @@ nco_sng_strip /* [fnc] Strip leading and trailing white space */
   return sng;
 } /* end nco_sng_strip() */
 
-void
-nco_kvm_free /* [fnc] Relinquish dynamic memory from list of kvm structures */
-(kvm_sct *kvm) /* I/O [sct] List of kvm structures */
+kvm_sct * /* O [sct] Pointer to free'd kvm list */
+nco_kvm_lst_free /* [fnc] Relinquish dynamic memory from list of kvm structures */
+(kvm_sct *kvm, /* I/O [sct] List of kvm structures */
+ const int kvm_nbr) /* I [nbr] Number of kvm structures */
 {
   /* Purpose: Relinquish dynamic memory from list of kvm structures
      End of list is indicated by NULL in key slot */
-  int idx=0;
-  while(kvm[idx].key){
-    kvm[idx].key=(char *)nco_free(kvm[idx].key);
-    kvm[idx].val=(char *)nco_free(kvm[idx].val);
-    idx++;
-  } /* end while */
-  kvm=(kvm_sct *)nco_free(kvm);
-} /* end nco_kvm_free() */
+  for(int kvm_idx=0;kvm_idx<kvm_nbr;kvm_idx++){
+    kvm[kvm_idx].key=(char *)nco_free(kvm[kvm_idx].key);
+    kvm[kvm_idx].val=(char *)nco_free(kvm[kvm_idx].val);
+  } /* end for */
+  if(kvm) kvm=(kvm_sct *)nco_free(kvm);
+  return kvm;
+} /* end nco_kvm_lst_free() */
 
 void
 nco_kvm_prn(kvm_sct kvm)

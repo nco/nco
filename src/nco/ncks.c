@@ -1187,7 +1187,7 @@ close_and_free:
       fl_scrip=(char *)nco_free(fl_scrip);
       idx=0;
       if(nco_dbg_lvl > nco_dbg_fl) while(sld_nfo[idx].key) nco_kvm_prn(sld_nfo[idx++]);
-      if(sld_nfo) nco_kvm_free(sld_nfo);
+      if(sld_nfo) sld_nfo=nco_kvm_lst_free(sld_nfo,idx);
     } /* endif fl_scrip */
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */

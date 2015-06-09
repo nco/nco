@@ -195,7 +195,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
     } /* endif */
   } /* endfor */
 
-  if(ppc_lst) nco_kvm_free(ppc_lst);
+  if(ppc_lst) ppc_lst=nco_kvm_lst_free(ppc_lst,ppc_var_nbr);
 } /* end nco_ppc_ini() */
 
 void

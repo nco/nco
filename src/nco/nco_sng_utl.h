@@ -133,9 +133,10 @@ extern "C" {
   nco_sng_strip /* [fnc] Strip leading and trailing white space */
   (char *sng); /* I/O [sng] String to strip */
   
-  void
-  nco_kvm_free /* [fnc] Relinquish dynamic memory from list of kvm structures */
-  (kvm_sct *kvm); /* I/O [sct] List of kvm structures */
+  kvm_sct * /* O [sct] Pointer to free'd kvm list */
+  nco_kvm_lst_free /* [fnc] Relinquish dynamic memory from list of kvm structures */
+  (kvm_sct *kvm, /* I/O [sct] List of kvm structures */
+   const int kvm_nbr); /* I [nbr] Number of kvm structures */
   
   void
   nco_kvm_prn /* [fnc] Print kvm contents */
