@@ -64,10 +64,10 @@ nco_ppc_ini /* Set PPC based on user specifications */
  const int ppc_arg_nbr, /* I [nbr] Number of PPC specified */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
-  int ppc_arg_idx; /* [idx] Index over ppr_arg (i.e., separate invocations of "--ppc var1[,var2]=val") */
-  int ppc_var_idx; /* [idx] Index over ppr_lst (i.e., all names explicitly specified in all "--ppc var1[,var2]=val" options) */
+  int ppc_arg_idx; /* [idx] Index over ppc_arg (i.e., separate invocations of "--ppc var1[,var2]=val") */
+  int ppc_var_idx; /* [idx] Index over ppc_lst (i.e., all names explicitly specified in all "--ppc var1[,var2]=val" options) */
   int ppc_var_nbr=0;
-  kvm_sct *ppc_lst;  /* [sct] PPC container */
+  kvm_sct *ppc_lst; /* [sct] List of all PPC specifications */
   kvm_sct kvm;
 
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){

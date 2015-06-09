@@ -76,6 +76,9 @@ texi2html: Index sub-divided by first character
            Misprints title
            Includes @ifinfo sections by default
 
+Official TeXInfo documentation:
+http://www.gnu.org/software/texinfo/manual/texinfo/texinfo.html
+
 Legend (defined in "highlighting" section of TeXInfo manual):
 @code{}: Program text, e.g., @code{if(foo) x=y;}
 @command{}: Commands, e.g., @command{ncra}
@@ -15925,22 +15928,63 @@ equiangular, @acronym{FV}, and unstructured cubed-sphere grids.
 Support for irregular 2D- and for regional grids (e.g., swath-like data)  
 is planned. 
 
-@command{ncks} automatically annotates the output with relevant metadata
-such as coordinate bounds, axes, and vertices (@w{à la} @acronym{CF}). 
+@acronym{NCO}} automatically annotates the output with relevant metadata
+such as coordinate bounds, axes, and vertices (@w{@`{a} la} @acronym{CF}). 
 These annotations include
 @enumerate
+@cindex @var{lat_nm}
+@cindex @var{lon_nm}
+@cindex @samp{--rgr lon=@var{lon_nm}}
+@cindex @samp{--rgr lat=@var{lat_nm}}
+@item The name of the horizontal spatial dimensions assumed to represent
+    latitude and longitude in 2D rectangular input files are
+    @var{lat_nm} and @var{lon_nm}, which default to @code{lat} and
+    @code{lon}, respectively.  
+    Variables that contain a @var{lat_nm}-dimension and a
+    @var{lon_nm}-dimension on a 2D-rectangular input grid will be 
+    regridded, and variables regridded to a 2D-rectangular output grid 
+    will all contain the @var{lat_nm}- and @var{lon_nm}-dimensions,
+    and variables regridded to a 1D-unstructured output grid will have
+    @var{lat_nm} and @var{lon_nm} as auxiliary coordinate variables.
+    To treat different dimensions and variables as latitude and
+    longitude, use the options @samp{--rgr lat=@var{lat_nm}} and 
+    @samp{--rgr lon=@var{lon_nm}}.  
+    Note that, for now at least, @var{lat_nm} and @var{lon_nm} indicate
+    both the variable names associated @emph{and}, where applicable
+    (i.e., on 2D-grids), the dimensions of the horizontal coordinates.
+@cindex @code{ncol}
+@cindex @var{ncol_nm}
+@cindex @samp{--rgr ncol=@var{ncol_nm}}
+@item The name of the horizontal spatial dimension assumed to delineate
+    an unstructured grid is @var{ncol_nm}, which defaults to @code{ncol}
+    (number of columns).  
+    Variables that contain the @var{ncol_nm}-dimension on an
+    unstructured input grid will be regridded, and regridded variables
+    written to an unstructured output grid will all contain the 
+    @var{ncol_nm}-dimension.
+    To treat a different dimension as unstructured, use the option
+    @samp{--rgr ncol=@var{ncol_nm}}. 
+    Note: Often there is no coordinate variable for the
+    @var{ncol_nm}-dimension, i.e., there is no variable named
+    @var{ncol_nm}, although such a coordinate could contain useful
+    information about the unstructured grid.
 @cindex @acronym{CF}
 @cindex @code{latitude}
 @cindex @code{longitude}
 @cindex @code{axes}
 @cindex @code{standard_name}
+@cindex @code{degrees_east}
+@cindex @code{degrees_north}
+@cindex @code{units}
+@cindex @code{X} axis
+@cindex @code{Y} axis
 @cindex auxiliary coordinates
 @item Longitude and latitude coordinates (both regular and auxiliary,
     i.e., for unstructured grids) receive @acronym{CF}
     @code{standard_name} values of @code{latitude} and @code{longitude},
-    respectively, and receive @acronym{CF} @code{axes} attributes with
-    values @code{X} and @code{Y}, respectively.
-@cindex @code{coordinates}
+    @acronym{CF} @code{axes} attributes with values @code{X} and
+    @code{Y}, and @code{units} attributes with values
+    @code{degrees_east} and @code{degrees_north}, respectively.
 @cindex @code{lat}
 @cindex @code{lon}
 @item Unstructured grid auxiliary coordinates for longitude and latitude
@@ -15949,78 +15993,72 @@ These annotations include
 @cindex @code{lon_bnds}
 @cindex @code{lat_bnds}
 @cindex @code{nbnd}
-@cindex @var{lat_bnds_nm}
-@cindex @var{lon_bnds_nm}
-@cindex @samp{--rgr_bnds_lat}
-@cindex @samp{--rgr_bnds_lon}
+@cindex @var{lat_bnd_nm}
+@cindex @var{lon_bnd_nm}
+@cindex @samp{--rgr lat_bnd=@var{lat_bnd_nm}}
+@cindex @samp{--rgr lon_bnd=@var{lon_bnd_nm}}
 @item Grids with 1D-coordinates use the dimension @code{nbnd = 2} with
-    the spatial bounds variables in @var{lat_bnds_nm} and
-    @var{lon_bnds_nm} which default to @code{lon_bnds} and
+    the spatial bounds variables in @var{lat_bnd_nm} and
+    @var{lon_bnd_nm} which default to @code{lon_bnds} and
     @code{lat_bnds}, respectively.
     These bounds are attached to the horizontal spatial dimensions
     via their @code{bounds} attributes.
     To store the new spatial bounds in different variables, use the
-    options @samp{--rgr_bnds_lat=@var{lat_bnds_nm}} and
-    @samp{--rgr_bnds_lon=@var{lon_bnds_nm}}.
+    options @samp{--rgr lat_bnd=@var{lat_bnd_nm}} and
+    @samp{--rgr lon_bnd=@var{lon_bnd_nm}}.
 @cindex @code{lat_vertices}
 @cindex @code{lon_vertices}
 @cindex @code{nv}
 @cindex @code{bounds}
 @item Unstructured grids with 1D-coordinates use the dimension @code{nv}
     (number of vertices) for the spatial bounds variables
-    @var{lat_bnds_nm} and @var{lon_bnds_nm} which default to 
+    @var{lat_bnd_nm} and @var{lon_bnd_nm} which default to 
     @code{lat_vertices} and @code{lon_vertices}, respectively.
     These bounds are attached to the horizontal spatial dimensions
     via their @code{bounds} attributes.
     To store the new spatial bounds in different variables, use the
-    options @samp{--rgr_bnds_lat=@var{lat_bnds_nm}} and
-    @samp{--rgr_bnds_lon=@var{lon_bnds_nm}}.
+    options @samp{--rgr lat_bnd=@var{lat_bnd_nm}} and
+    @samp{--rgr lon_bnd=@var{lon_bnd_nm}}.
     The temporal bounds dimension in unstructured grid output remains as
     in the @var{input-file}, usually @code{nbnd}.
 @cindex @code{area}
 @cindex @code{cell_methods}
 @cindex @code{cell_area}
-@cindex @samp{--rgr_area}
+@cindex @code{steradian}
+@cindex @samp{--rgr area=@var{area_nm}}
 @cindex @var{area_nm}
+@cindex @acronym{SI}
+@cindex solid angle
 @cindex extensive variable
 @item The variable @var{area_nm} (which defaults to @code{area}) is
     always (re-)created in the @var{output_file} to hold the gridcell
     area in steradians.     
     To store the area in a different variable, use the option
-    @samp{--rgr_area=@var{area_nm}}.
+    @samp{--rgr area=@var{area_nm}}.
     The @var{area_nm} variable receives a @code{standard_name} attribute 
-    of @code{cell_area}, and a @code{cell_methods} attribute with value
-    @code{lat, lon: sum} to indicate that it is @dfn{extensive}, meaning
+    of @code{cell_area}, a @code{units} attribute of @code{steradian}
+    (the @acronym{SI} unit of solid angle),
+    and a @code{cell_methods} attribute with value @code{lat, lon: sum},
+    which indicates that @var{area_nm} is @dfn{extensive}, meaning 
     that its value depends on the gridcell boundaries.  
-    Since @code{area} is a property of the grid, it is read directly
+    Since @var{area_nm} is a property of the grid, it is read directly
     from the @var{map-file} rather than regridded itself. 
-@cindex @code{ncol}
-@cindex @var{ncol_nm}
-@cindex @samp{--rgr_ncol}
-@item The name of the horizontal spatial dimension assumed to delineate
-    an unstructured grid is @var{ncol_nm}, which defaults to @code{ncol}
-    (number of columns).  
-    Variables that contain the @var{ncol_nm}-dimension on an
-    unstructured input grid will be regridded, and regridded variables
-    written to an unstructured output grid will all contain the 
-    @var{ncol_nm}-dimension.
-    To cause @acronym{NCO} to treat a different dimension as
-    unstructured, use the option @samp{--rgr_ncol=@var{ncol_nm}}.
-@cindex @var{lat_nm}
-@cindex @var{lon_nm}
-@cindex @samp{--rgr_lon}
-@cindex @samp{--rgr_lat}
-@item The name of the horizontal spatial dimensions assumed to represent
-    latitude and longitude in 2D rectangular input files are
-    @var{lat_nm} and @var{lon_nm}, respectively, which default to
-    @code{lat} and @code{lon}, respectively. 
-    Variables that contain a @var{lat_nm}-dimension and a
-    @var{lon_nm}-dimension on an 2D-rectangular input grid will be 
-    regridded, and variables regridded to a 2D-rectangular output grid
-    will all contain the @var{lat_nm}- and @var{lon_nm}-dimensions.
-    To cause @acronym{NCO} to treat different dimensions as
-    latitude and longitude, use the options
-    @samp{--rgr_lat=@var{lat_nm}} and @samp{--rgr_lat=@var{lon_nm}}. 
+@cindex @code{gw}
+@cindex @samp{--rgr lat_weight=@var{lat_wgt_nm}}
+@cindex @var{lat_wgt_nm}
+@cindex Gaussian weight
+@item Rectangular 2D-grids use the variable @var{lat_wgt_nm}, which
+    defaults to @code{gw} (originally for ``Gaussian weight''), to store 
+    the 1D-weight appropriate for area-weighting the latitude grid.
+    To store the latitude weight in a different variable, use the option
+    @samp{--rgr lat_wgt=@var{lat_wgt_nm}}.
+    The @var{lat_wgt_nm} variable will not appear in 1D-grid output.
+    Weighting statistics by latitude (i.e., by @var{lat_wgt_nm}) will
+    produce the same answers (up-to round-off error) as weighting by
+    area (i.e., by @var{area_nm}) in grids which have both variables.
+    The former requires less memory because @var{lat_wgt_nm} is 1D), 
+    whereas the latter is more general because @var{area_nm} works on
+    @emph{any} grid.
 @cindex @code{mapping_file}
 @cindex @code{source_file}
 @item The @var{map-file} and @var{input-file} names are stored in the
@@ -16028,16 +16066,15 @@ These annotations include
     @code{source_file}, respectively.
 @end enumerate
 
-When used with an identity remapping files, this feature can
-signficantly improve the metadata and usability of the original 
-dataset. 
-Selected metadata (unchanged are not shown for brevity) associated with
-the variable @code{FSNT} from typical unstructured grid
-(@acronym{CAM-SE} cubed-sphere) output before and after an identity
-regridding: 
+When used with an identity remapping files, regridding can signficantly
+enhance the metadata and therefore the dataset usability.
+Consider these selected metadata (those unchanged are not shown for
+brevity) associated with the variable @code{FSNT} from typical
+unstructured grid (@acronym{CAM-SE} cubed-sphere) output before and
+after an identity regridding: 
 @example
 @verbatim
-# Raw model output
+# Raw model output before regridding
 netcdf ne30_FSNT {
   dimensions:
     nbnd = 2 ;
@@ -16056,7 +16093,7 @@ netcdf ne30_FSNT {
       time_bnds:long_name = "time interval endpoints" ;
 } // group /
 
-# Model output after identity regridding
+# Same model output after identity regridding
 netcdf dogfood {
   dimensions:
     nbnd = 2 ;
@@ -16102,16 +16139,43 @@ netcdf dogfood {
 @end example
 The raw model output lacks the @acronym{CF} @code{coordinates} and
 @code{bounds} attributes that the regridder adds.
-@acronym{NCO} can then hyperslab the regridded file based on the
-rectangular latitude/longitude coordinates on the unstructured grid
-because the metadata turns @code{lat} and @code{lon} into auxiliary
-coordinate variables (@pxref{Auxiliary Coordinates}).
+The metadata turns @code{lat} and @code{lon} into auxiliary coordinate
+variables (@pxref{Auxiliary Coordinates}) which can then be hyperslabbed
+(with @samp{-X}) using latitude/longitude coordinates bounding the
+region of interest:
 @example
 @verbatim
-% ncks -H -C -X 314.6,315.3,-35.6,-35.1 -v FSNT dogfood.nc
-time[0]=31 ncol[0] FSNT[0]=358.301 
+% ncks -u -H -X 314.6,315.3,-35.6,-35.1 -v FSNT dogfood.nc
+time[0]=31 ncol[0] FSNT[0]=344.575 W/m2
+
+ncol[0] lat[0]=-35.2643896828 degrees_north
+
+ncol[0] nv[0] lat_vertices[0]=-35.5977213708 
+ncol[0] nv[1] lat_vertices[1]=-35.5977213708 
+ncol[0] nv[2] lat_vertices[2]=-35.0972113817 
+ncol[0] nv[3] lat_vertices[3]=-35.0972113817 
+ncol[0] nv[4] lat_vertices[4]=-35.0972113817 
+
+ncol[0] lon[0]=315 degrees_east
+
+ncol[0] nv[0] lon_vertices[0]=315 
+ncol[0] nv[1] lon_vertices[1]=315 
+ncol[0] nv[2] lon_vertices[2]=315.352825437 
+ncol[0] nv[3] lon_vertices[3]=314.647174563 
+ncol[0] nv[4] lon_vertices[4]=314.647174563 
+
+time[0]=31 days since 1979-01-01 00:00:00
+
+time[0]=31 nbnd[0] time_bnds[0]=0 
+time[0]=31 nbnd[1] time_bnds[1]=31 
 @end verbatim
 @end example
+Thus auxiliary coordinate variables help to structure unstructured grids.
+The expanded metadata annotations from an identity regridding may
+obviate the need to place unstructured data on a rectangular grid. 
+For example, statistics for regions that can be expressed as unions of 
+rectangular regions can now be performed on the native (unstructured)
+grid. 
 
 @html
 <a name="no_blank"></a> <!-- http://nco.sf.net/nco.html#no_blank -->

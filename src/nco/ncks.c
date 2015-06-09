@@ -188,7 +188,6 @@ main(int argc,char **argv)
   char *rgr_grd_dst=NULL; /* [sng] File containing destination grid */
   char *rgr_map=NULL; /* [sng] File containing mapping weights from source to destination grid */
   char *rgr_var=NULL; /* [sng] Variable for special regridding treatment */
-  char *rgr_foo=NULL; /* [sng] */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */

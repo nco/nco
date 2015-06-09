@@ -879,6 +879,7 @@ extern "C" {
   
   /* Regrid structure */
   typedef struct{ /* rgr_sct */
+    char **rgr_arg; /* [sng] Regridding arguments */
     char *drc_tps; /* [sng] Data directory for Tempest grids, meshes, and weights */
     char *fl_grd_src; /* [sng] File containing input grid */
     char *fl_grd_dst; /* [sng] File containing destination grid */
@@ -886,11 +887,19 @@ extern "C" {
     char *fl_out; /* [sng] File containing regridded fields */
     char *fl_out_tmp; /* [sng] Temporary file containing regridded fields */
     char *fl_map; /* [sng] File containing mapping weights from source to destination grid */
-    char **rgr_arg; /* [sng] Regridding arguments */
     char *var_nm; /* [sng] Variable for special regridding treatment */
-    int rgr_nbr; /* [nbr] Number of regridding arguments */
+    char *area_nm; /* [sng] Name of variable containing gridcell area */
+    char *bnd_nm; /* [sng] Name of dimension to employ for bounds */
+    char *lat_bnd_nm; /* [sng] Name of boundary variable for latitude */
+    char *lat_nm; /* [sng] Name of dimension to recognize as latitude */
+    char *lat_wgt_nm; /* [sng] Name of variable containing latitude weights */
+    char *lon_bnd_nm; /* [sng] Name of boundary variable for longitude */
+    char *lon_nm; /* [sng] Name of dimension to recognize as longitude */
+    char *ncol_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
+    char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */
+    int rgr_nbr; /* [nbr] Number of regridding arguments */
     nco_bool flg_usr_rqs; /* [flg] User requested regridding */
     nco_bool flg_grd_src; /* [flg] User-specified input grid */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */

@@ -18,9 +18,9 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   int rcd=NCO_NOERR;
   const char fnc_nm[]="nco_rgr_ctl()";
 
+  nco_bool flg_map=False; /* [flg] Weight-based regridding */
   nco_bool flg_smf=False; /* [flg] ESMF regridding */
   nco_bool flg_tps=False; /* [flg] Tempest regridding */
-  nco_bool flg_map=False; /* [flg] Weight-based regridding */
 
   /* Main control branching occurs here
      Branching complexity and utility will increase as regridding features are added */
@@ -43,7 +43,6 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
     rcd=nco_rgr_esmf(rgr_nfo);
     /* Close output and free dynamic memory */
     (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,rgr_nfo->out_id);
-    rgr_nfo=nco_rgr_free(rgr_nfo);
 #else /* !ENABLE_ESMF */
     (void)fprintf(stderr,"%s: ERROR %s reports attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
@@ -85,7 +84,7 @@ rgr_sct * /* O [sct] Regridding structure */
 nco_rgr_ini /* [fnc] Initialize regridding structure */
 (const int in_id, /* I [id] Input netCDF file ID */
  char **rgr_arg, /* [sng] Regridding arguments */
- const int rgr_nbr, /* [nbr] Number of regridding arguments */
+ const int rgr_arg_nbr, /* [nbr] Number of regridding arguments */
  char * const rgr_in, /* I [sng] File containing fields to be regridded */
  char * const rgr_out, /* I [sng] File containing regridded fields */
  char * const rgr_grd_src, /* I [sng] File containing input grid */
@@ -123,7 +122,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   rgr->in_id=in_id; /* [id] Input netCDF file ID */
   rgr->rgr_arg=rgr_arg; /* [sng] Regridding arguments */
-  rgr->rgr_nbr=rgr_nbr; /* [nbr] Number of regridding arguments */
+  rgr->rgr_nbr=rgr_arg_nbr; /* [nbr] Number of regridding arguments */
 
   rgr->flg_grd_src= rgr_grd_src ? True : False; /* [flg] User-specified input grid */
   rgr->fl_grd_src=rgr_grd_src; /* [sng] File containing input grid */
@@ -141,7 +140,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
   /* Did user explicitly request regridding? */
-  if(rgr_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr->flg_usr_rqs=True;
+  if(rgr_arg_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr->flg_usr_rqs=True;
 
   /* Initialize arguments after copying */
   if(!rgr->fl_out) rgr->fl_out=(char *)strdup("/data/zender/rgr/rgr_out.nc");
@@ -160,6 +159,47 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"fl_map = %s, ",rgr->fl_map ? rgr->fl_map : "NULL");
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
+  
+  /* Parse extended kvm options */
+  int rgr_arg_idx; /* [idx] Index over rgr_arg (i.e., separate invocations of "--rgr var1[,var2]=val") */
+  int rgr_var_idx; /* [idx] Index over rgr_lst (i.e., all names explicitly specified in all "--rgr var1[,var2]=val" options) */
+  int rgr_var_nbr=0;
+  kvm_sct *rgr_lst; /* [sct] List of all regrid specifications */
+  kvm_sct kvm;
+
+  rgr_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
+
+  /* Parse RGRs */
+  for(rgr_arg_idx=0;rgr_arg_idx<rgr_arg_nbr;rgr_arg_idx++){
+    if(!strstr(rgr_arg[rgr_arg_idx],"=")){
+      (void)fprintf(stdout,"%s: Invalid --rgr specification: %s. Must contain \"=\" sign, e.g., \"key=value\".\n",nco_prg_nm_get(),rgr_arg[rgr_arg_idx]);
+      if(rgr_lst) rgr_lst=(kvm_sct *)nco_free(rgr_lst);
+      nco_exit(EXIT_FAILURE);
+    } /* endif */
+    kvm=nco_sng2kvm(rgr_arg[rgr_arg_idx]);
+    /* nco_sng2kvm() converts argument "--rgr one,two=3" into kvm.key="one,two" and kvm.val=3
+       Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
+    if(kvm.key){
+      int var_idx; /* [idx] Index over variables in current RGR argument */
+      int var_nbr; /* [nbr] Number of variables in current RGR argument */
+      char **var_lst;
+      var_lst=nco_lst_prs_2D(kvm.key,",",&var_nbr);
+      for(var_idx=0;var_idx<var_nbr;var_idx++){ /* Expand multi-variable specification */
+        rgr_lst[rgr_var_nbr].key=strdup(var_lst[var_idx]);
+        rgr_lst[rgr_var_nbr].val=strdup(kvm.val);
+        rgr_var_nbr++;
+      } /* end for */
+      var_lst=nco_sng_lst_free(var_lst,var_nbr);
+    } /* end if */
+  } /* end for */
+
+  /* RGR default exists, set all non-coordinate variables to default first */
+  for(rgr_var_idx=0;rgr_var_idx<rgr_var_nbr;rgr_var_idx++){
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"default")){
+      //fxm
+      break; /* Only one default is needed */
+    } /* endif */
+  } /* end for */
   
   return rgr;
 } /* end nco_rgr_ini() */
