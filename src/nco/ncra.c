@@ -1104,6 +1104,7 @@ main(int argc,char **argv)
 	      if(var_trv->ppc != NC_MAX_INT){
 		if(var_trv->flg_nsd) (void)nco_ppc_bitmask(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->val); else (void)nco_ppc_around(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->val);
 	      } /* endif ppc */
+	      if(nco_is_xcp(var_trv->nm)) nco_xcp_prc(var_trv->nm,var_prc_out[idx]->type,var_prc_out[idx]->sz,(char *)var_prc[idx]->val.vp);
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
@@ -1181,6 +1182,7 @@ main(int argc,char **argv)
 	      if(var_trv->ppc != NC_MAX_INT){
 		if(var_trv->flg_nsd) (void)nco_ppc_bitmask(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val); else (void)nco_ppc_around(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
 	      } /* endif ppc */
+	      if(nco_is_xcp(var_trv->nm)) nco_xcp_prc(var_trv->nm,var_prc_out[idx]->type,var_prc_out[idx]->sz,(char *)var_prc_out[idx]->val.vp);
               if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
             } /* end loop over idx */
             idx_rec_out[idx_rec]++; /* [idx] Index of current record in output file (0 is first, ...) */

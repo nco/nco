@@ -893,7 +893,8 @@ main(int argc,char **argv)
 	if(var_trv->ppc != NC_MAX_INT){
 	  if(var_trv->flg_nsd) (void)nco_ppc_bitmask(var_trv->ppc,var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val); else (void)nco_ppc_around(var_trv->ppc,var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val);
 	} /* endif ppc */
-
+	if(nco_is_xcp(var_trv->nm)) nco_xcp_prc(var_trv->nm,var_prc[idx]->type,var_prc[idx]->sz,(char *)var_prc[idx]->val.vp);
+ 
 #ifdef _OPENMP
 # pragma omp critical
 #endif /* _OPENMP */

@@ -3772,6 +3772,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       if(trv_1->ppc != NC_MAX_INT){
 	if(trv_1->flg_nsd) (void)nco_ppc_bitmask(trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val); else (void)nco_ppc_around(trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val);
       } /* endif ppc */
+      if(nco_is_xcp(trv_1->nm)) nco_xcp_prc(trv_1->nm,var_prc_1->type,var_prc_out->sz,(char *)var_prc_1->val.vp);
 
       /* Copy result to output file */
       if(var_prc_1->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_1->val.vp,var_prc_1->type); else (void)nco_put_vara(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_out->cnt,var_prc_1->val.vp,var_prc_1->type);

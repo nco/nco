@@ -329,7 +329,7 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
   (void)cast_void_nctype(type,&op1);
   switch(type){
   case NC_FLOAT:
-    for(idx=0;idx<sz;idx++) op1.fp[idx]=op2;
+    for(idx=0;idx<sz;idx++) op1.fp[idx]=(float)op2;
     break;
   case NC_DOUBLE:
     for(idx=0;idx<sz;idx++) op1.dp[idx]=op2;

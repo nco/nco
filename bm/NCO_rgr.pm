@@ -2394,8 +2394,8 @@ print "\n";
 	
 #ncks #99
 # Test DSD attribute does not overwrite pre-existing rounder values
-# ncks -4 -O -C -v ppc_dbl,ppc_big --ppc .?=4 --ppc ppc_big=-2 ~/nco/data/in.nc ~/foo.nc
-# ncks -4 -O -C -v ppc_dbl,ppc_big --ppc ppc_big,ppc_dbl=3 ~/foo.nc ~/foo2.nc
+# ncks -4 -O -C -v ppc_dbl,ppc_big --ppc .?=4 --ppc ppc_big=.-2 ~/nco/data/in.nc ~/foo.nc
+# ncks -4 -O -C -v ppc_dbl,ppc_big --ppc ppc_big,ppc_dbl=.3 ~/foo.nc ~/foo2.nc
 # ncks -m -v ppc_big ~/foo2.nc
     $dsc_sng="Test DSD attribute does not overwrite pre-existing rounder values";
     $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v ppc_dbl,ppc_big --ppc .?=.4 --ppc ppc_big=.-2 $in_pth_arg in.nc %tmp_fl_00";

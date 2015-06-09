@@ -1355,6 +1355,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
       nco_mss_val_get(out_id,&var_out);
       if(flg_nsd) (void)nco_ppc_bitmask(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
     } /* endif */
+    if(nco_is_xcp(var_nm)) nco_xcp_prc(var_nm,var_typ_out,var_out.sz,(char *)var_out.val.vp);
 
     if(nbr_dim == 0) (void)nco_put_var1(out_id,var_out_id,0L,var_out.val.vp,var_typ_out); else (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp,var_typ_out);
   } /* !flg_write */

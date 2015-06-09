@@ -127,8 +127,7 @@ extern "C" {
   
   kvm_sct /* O [sct] Key-value pair */
   nco_sng2kvm /* [fnc] Parse string into key-value pair */
-  (char *sng, /* I [sng] String to parse, including "=" */
-   kvm_sct kvm); /* O [sct] Key-value pair */
+  (char *sng); /* I [sng] String to parse, including "=" */
   
   char * /* O [sng] Stripped-string */
   nco_sng_strip /* [fnc] Strip leading and trailing white space */

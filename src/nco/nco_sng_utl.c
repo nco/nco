@@ -603,16 +603,15 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing decimal point and preceding exponen
 
 kvm_sct /* O [sct] Key-value pair */
 nco_sng2kvm /* [fnc] Parse string into key-value pair */
-(char *sng, /* I [sng] String to parse, including "=" */
- kvm_sct kvm) /* O [sct] Key-value pair */
+(char *sng) /* I [sng] String to parse, including "=" */
 {
   /* Purpose: Convert string separated by single delimiter into two strings
      Routine converts argument "--ppc key1,key2,...,keyN=val" into kvm.key="key1,key2,...keyN" and kvm.val=val
      e.g., routine converts argument "--ppc one,two=3" into kvm.key="one,two" and kvm.val=3 */
   char *tkn_sng;
   const char dlm[]="="; /* [sng] Delimiter */
-  
   int arg_idx=0; /* [nbr] */
+  kvm_sct kvm;
 
   /* NB: Replace strtok() by strsep()? strtok() does not handle consecutive delimiters well */
   tkn_sng=strtok(sng,dlm);

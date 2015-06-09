@@ -5,9 +5,10 @@ The netCDF Operators NCO version 4.5.0 are ready.
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release supports regridding global datasets. The current
-regridding features build on infrastructure pioneered by Phil Jones
-(SCRIP), and the multi-agency Earth System Modeling Framework (ESMF).
+This is the first NCO release that supports regridding datasets,
+currently limited to global datasets. These features build on
+infrastructure pioneered by Phil Jones (SCRIP), and the multi-agency
+Earth System Modeling Framework (ESMF). 
 
 Work on NCO 4.5.1 has commenced and will support more regridding,  
 additional ncra flexibility with weights, and easier builds on
@@ -18,6 +19,27 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. Regrid global datasets with ESMF or SCRIP remap files.
+   Given a map-file that contains source-to-destination grid weights,
+   ncks will regrid and input file to the destination grid.
+   Acceptable file formats for map-files are described here:
+   http://www.earthsystemcog.org/projects/regridweightgen
+   http://oceans11.lanl.gov/svn/SCRIP/trunk/SCRIP
+   ncks supports 1D->1D, 1D->2D, 2D->1D, and 2D->2D regridding for any
+   unstructured 1D grid and any rectangular 2D grid. It has been
+   tested converting among and between Gaussian, equiangular, FV, and
+   unstructured cubed-sphere grids. Support for irregular 2D and
+   regional grids (e.g., swath-like data) is planned. ncks
+   automatically annotates the output with relevant metadata such as
+   coordinate bounds, axes, and vertices (à la CF). When used with an
+   identity remapping files, this feature can signficantly improve the
+   metadata and usability of the original dataset.
+   # Regrid entire file, same output format as input:
+   ncks --map=map.nc in.nc out.nc
+   # Deflated netCDF4 output, threading, selected variables:
+   ncks -4 -L 1 -t 8 -v FS.?,T --map=map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#regrid
+
 A. NCO introduces a  convention to retain the history-attribute  
    contents of all files that were appended to a file. This convention 
    stores those contents in the new global attribute called
@@ -26,6 +48,11 @@ A. NCO introduces a  convention to retain the history-attribute
    turns-off this behavior.
    http://nco.sf.net/nco.html#history
 
+A. When copying the variables date_written or time_written to the
+   output file, NCO now updates their contents the GMT time reported
+   by the system-supplied gmtime().
+   http://nco.sf.net/nco.html#cnv_acme
+   
 BUG FIXES:
 
 A. Fix ncatted so it preserves global attributes (including history) 

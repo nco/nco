@@ -86,10 +86,10 @@ nco_ppc_ini /* Set PPC based on user specifications */
   for(ppc_arg_idx=0;ppc_arg_idx<ppc_arg_nbr;ppc_arg_idx++){
     if(!strstr(ppc_arg[ppc_arg_idx],"=")){
       (void)fprintf(stdout,"%s: Invalid --ppc specification: %s. Must contain \"=\" sign.\n",nco_prg_nm_get(),ppc_arg[ppc_arg_idx]);
-      if(ppc_lst) nco_kvm_free(ppc_lst);
+      if(ppc_lst) ppc_lst=(kvm_sct *)nco_free(ppc_lst);
       nco_exit(EXIT_FAILURE);
     } /* endif */
-    kvm=nco_sng2kvm(ppc_arg[ppc_arg_idx],kvm);
+    kvm=nco_sng2kvm(ppc_arg[ppc_arg_idx]);
     /* nco_sng2kvm() converts argument "--ppc one,two=3" into kvm.key="one,two" and kvm.val=3
        Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
     if(kvm.key){

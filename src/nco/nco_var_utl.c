@@ -450,6 +450,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 	if(flg_ppc){
 	  if(flg_nsd) (void)nco_ppc_bitmask(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
 	} /* !PPC */
+	if(nco_is_xcp(var_lst[var_idx]->nm)) nco_xcp_prc(var_lst[var_idx]->nm,var_typ,var_sz,(char *)void_ptr);
         nco_put_vara(var_lst[var_idx]->grp_id_out,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       } /* end if var_sz */
 

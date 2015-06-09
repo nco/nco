@@ -1702,7 +1702,8 @@ nco_xcp_prc /* [fnc] Perform exception processing on this variable */
 
   /* Create timestamp string */
   time_crr_time_t=time((time_t *)NULL);
-  time_crr_tm=localtime(&time_crr_time_t);
+  /* NB: easy to replace with localtime() if desired */
+  time_crr_tm=gmtime(&time_crr_time_t);
   ctime_sng=ctime(&time_crr_time_t);
 
   /* Currently this is true for both variables in list */

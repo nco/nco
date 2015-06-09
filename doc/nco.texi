@@ -5727,6 +5727,7 @@ values (@pxref{Hyperslabs}).
 @cindex @code{--auxiliary}
 @cindex @code{standard_name}
 @cindex @code{coordinates}
+@cindex auxiliary coordinates
 @cindex @acronym{CF} conventions
 @cindex @code{-X @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}
 @cindex @code{--auxiliary @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}
@@ -9471,11 +9472,15 @@ may amount to many thousands of filenames in a metadata attribute.
 @html
 <a name="CF"></a> <!-- http://nco.sf.net/nco.html#CF -->
 <a name="cnv"></a> <!-- http://nco.sf.net/nco.html#cnv -->
+<a name="cnv_ACME"></a> <!-- http://nco.sf.net/nco.html#cnv_ACME -->
+<a name="ACME"></a> <!-- http://nco.sf.net/nco.html#ACME -->
+<a name="acme"></a> <!-- http://nco.sf.net/nco.html#acme -->
 <a name="cnv_CF"></a> <!-- http://nco.sf.net/nco.html#cnv_CF -->
 <a name="cnv_CCSM"></a> <!-- http://nco.sf.net/nco.html#cnv_CCSM -->
 @end html
 @node CF Conventions, ARM Conventions, File List Attributes, Shared features
 @section @acronym{CF} Conventions
+@cindex @acronym{ACME} conventions
 @cindex @acronym{CF} conventions
 @cindex @acronym{CCSM} conventions
 @cindex UDUnits
@@ -9593,6 +9598,20 @@ match a name in the above list, or be a coordinate variable.
 The handling of @code{msk_*} is exceptional in that @emph{any} variable 
 name beginning with the string @code{msk_} is considered to be a
 ``mask'' and is thus preserved (not operated on arithmetically).
+
+As of @acronym{NCO} version 4.5.0 (June, 2015), @acronym{NCO} began
+to support behavior required for the @acronym{DOE} @acronym{ACME}
+program, and we refer to these rules collectively as the @acronym{ACME} 
+convention. 
+@cindex @acronym{GMT}
+@cindex @code{date_written}
+@cindex @code{time_written}
+@cindex @code{gmtime()}
+The first @acronym{ACME} rule implemented is that the contents of
+@var{input-file} variables named @code{date_written} and
+@code{time_written}, if any, will be updated to the current 
+system-supplied (with @code{gmtime()}) @acronym{GMT}-time as the
+variables are copied to the @var{output-file}.
 
 You must spoof @acronym{NCO} if you would like any grid properties
 or other special @acronym{CF} fields processed normally.
@@ -15859,9 +15878,24 @@ Regrid input data to different horizontal grid using input and output
 grids and mapping weights specified in @acronym{ESMF}- or @acronym{SCRIP}-format
 @var{map-file}.
 Also @samp{--rgr_map}.
+As of @acronym{NCO} version 4.5.0 (June, 2015), @command{ncks} supports 
+horizontal regridding using the mapfile format pioneered by
+@acronym{SCRIP} 
+(@url{http://oceans11.lanl.gov/svn/SCRIP/trunk/SCRIP})
+and later extended by @acronym{ESMF} 
+(@uref{http://www.earthsystemcog.org/projects/regridweightgen}).
+See those references for additional documentation on map formats.
+
+The regridding currently supported by @acronym{NCO} could equally well
+be called weight-application.
+What @acronym{NCO} actually does is read-in pre-stored weights from the
+@var{map-file} and apply them to (almost) every variable, thereby
+creating a regridded @var{output-file}.
+Hence regridding looks like a standard @command{ncks} command with the
+additional specification of a @var{map-file}:
 @example
 @verbatim
-# Entire file, same output format as input:
+# Regrid dntire file, same output format as input:
 ncks --map=map.nc in.nc out.nc
 # Entire file, netCDF4 output:
 ncks -4 --map=map.nc in.nc out.nc
@@ -15875,17 +15909,209 @@ ncks -t 8 --map=map.nc in.nc out.nc
 ncks -4 -L 1 -t 8 -v FS.?,T --map=map.nc in.nc out.nc
 @end verbatim
 @end example
-As of @acronym{NCO} version 4.5.0 (June, 2015), @command{ncks} supports 
-horizontal regridding using the mapfile format pioneered by
-@acronym{SCRIP} 
-(@url{http://oceans11.lanl.gov/svn/SCRIP/trunk/SCRIP})
-and later extended by @acronym{ESMF} 
-(@uref{http://www.earthsystemcog.org/projects/regridweightgen}).
-See those references for additional documentation on map formats.
-
 OpenMP threading works well with regridding large datasets.
 Threading improves throughput of regridding @w{1--10 GB} files by 
 factors of 2--5.
+
+@cindex equiangular grid
+@cindex Gaussian grid
+@cindex cubed-sphere grid
+@cindex @acronym{FV} grid
+@acronym{NCO} supports 1D@result{}1D, 1D@result{}2D, 2D@result{}1D, and
+2D@result{}2D regridding for any unstructured 
+1D-grid and any rectangular 2D-grid.  
+This has been tested by converting among and between Gaussian,
+equiangular, @acronym{FV}, and unstructured cubed-sphere grids.
+Support for irregular 2D- and for regional grids (e.g., swath-like data)  
+is planned. 
+
+@command{ncks} automatically annotates the output with relevant metadata
+such as coordinate bounds, axes, and vertices (@w{à la} @acronym{CF}). 
+These annotations include
+@enumerate
+@cindex @acronym{CF}
+@cindex @code{latitude}
+@cindex @code{longitude}
+@cindex @code{axes}
+@cindex @code{standard_name}
+@cindex auxiliary coordinates
+@item Longitude and latitude coordinates (both regular and auxiliary,
+    i.e., for unstructured grids) receive @acronym{CF}
+    @code{standard_name} values of @code{latitude} and @code{longitude},
+    respectively, and receive @acronym{CF} @code{axes} attributes with
+    values @code{X} and @code{Y}, respectively.
+@cindex @code{coordinates}
+@cindex @code{lat}
+@cindex @code{lon}
+@item Unstructured grid auxiliary coordinates for longitude and latitude
+    receive @acronym{CF} @code{coordinates} attributes with values
+    @code{lon} and @code{lat}, respectively.
+@cindex @code{lon_bnds}
+@cindex @code{lat_bnds}
+@cindex @code{nbnd}
+@cindex @var{lat_bnds_nm}
+@cindex @var{lon_bnds_nm}
+@cindex @samp{--rgr_bnds_lat}
+@cindex @samp{--rgr_bnds_lon}
+@item Grids with 1D-coordinates use the dimension @code{nbnd = 2} with
+    the spatial bounds variables in @var{lat_bnds_nm} and
+    @var{lon_bnds_nm} which default to @code{lon_bnds} and
+    @code{lat_bnds}, respectively.
+    These bounds are attached to the horizontal spatial dimensions
+    via their @code{bounds} attributes.
+    To store the new spatial bounds in different variables, use the
+    options @samp{--rgr_bnds_lat=@var{lat_bnds_nm}} and
+    @samp{--rgr_bnds_lon=@var{lon_bnds_nm}}.
+@cindex @code{lat_vertices}
+@cindex @code{lon_vertices}
+@cindex @code{nv}
+@cindex @code{bounds}
+@item Unstructured grids with 1D-coordinates use the dimension @code{nv}
+    (number of vertices) for the spatial bounds variables
+    @var{lat_bnds_nm} and @var{lon_bnds_nm} which default to 
+    @code{lat_vertices} and @code{lon_vertices}, respectively.
+    These bounds are attached to the horizontal spatial dimensions
+    via their @code{bounds} attributes.
+    To store the new spatial bounds in different variables, use the
+    options @samp{--rgr_bnds_lat=@var{lat_bnds_nm}} and
+    @samp{--rgr_bnds_lon=@var{lon_bnds_nm}}.
+    The temporal bounds dimension in unstructured grid output remains as
+    in the @var{input-file}, usually @code{nbnd}.
+@cindex @code{area}
+@cindex @code{cell_methods}
+@cindex @code{cell_area}
+@cindex @samp{--rgr_area}
+@cindex @var{area_nm}
+@cindex extensive variable
+@item The variable @var{area_nm} (which defaults to @code{area}) is
+    always (re-)created in the @var{output_file} to hold the gridcell
+    area in steradians.     
+    To store the area in a different variable, use the option
+    @samp{--rgr_area=@var{area_nm}}.
+    The @var{area_nm} variable receives a @code{standard_name} attribute 
+    of @code{cell_area}, and a @code{cell_methods} attribute with value
+    @code{lat, lon: sum} to indicate that it is @dfn{extensive}, meaning
+    that its value depends on the gridcell boundaries.  
+    Since @code{area} is a property of the grid, it is read directly
+    from the @var{map-file} rather than regridded itself. 
+@cindex @code{ncol}
+@cindex @var{ncol_nm}
+@cindex @samp{--rgr_ncol}
+@item The name of the horizontal spatial dimension assumed to delineate
+    an unstructured grid is @var{ncol_nm}, which defaults to @code{ncol}
+    (number of columns).  
+    Variables that contain the @var{ncol_nm}-dimension on an
+    unstructured input grid will be regridded, and regridded variables
+    written to an unstructured output grid will all contain the 
+    @var{ncol_nm}-dimension.
+    To cause @acronym{NCO} to treat a different dimension as
+    unstructured, use the option @samp{--rgr_ncol=@var{ncol_nm}}.
+@cindex @var{lat_nm}
+@cindex @var{lon_nm}
+@cindex @samp{--rgr_lon}
+@cindex @samp{--rgr_lat}
+@item The name of the horizontal spatial dimensions assumed to represent
+    latitude and longitude in 2D rectangular input files are
+    @var{lat_nm} and @var{lon_nm}, respectively, which default to
+    @code{lat} and @code{lon}, respectively. 
+    Variables that contain a @var{lat_nm}-dimension and a
+    @var{lon_nm}-dimension on an 2D-rectangular input grid will be 
+    regridded, and variables regridded to a 2D-rectangular output grid
+    will all contain the @var{lat_nm}- and @var{lon_nm}-dimensions.
+    To cause @acronym{NCO} to treat different dimensions as
+    latitude and longitude, use the options
+    @samp{--rgr_lat=@var{lat_nm}} and @samp{--rgr_lat=@var{lon_nm}}. 
+@cindex @code{mapping_file}
+@cindex @code{source_file}
+@item The @var{map-file} and @var{input-file} names are stored in the
+    @var{output-file} global attributes @code{mapping_file} and
+    @code{source_file}, respectively.
+@end enumerate
+
+When used with an identity remapping files, this feature can
+signficantly improve the metadata and usability of the original 
+dataset. 
+Selected metadata (unchanged are not shown for brevity) associated with
+the variable @code{FSNT} from typical unstructured grid
+(@acronym{CAM-SE} cubed-sphere) output before and after an identity
+regridding: 
+@example
+@verbatim
+# Raw model output
+netcdf ne30_FSNT {
+  dimensions:
+    nbnd = 2 ;
+    ncol = 48602 ;
+    time = UNLIMITED ; // (1 currently)
+
+  variables:
+    float FSNT(time,ncol) ;
+      FSNT:long_name = "Net solar flux at top of model" ;
+
+    double time(time) ;
+      time:long_name = "time" ;
+      time:bounds = "time_bnds" ;
+
+    double time_bnds(time,nbnd) ;
+      time_bnds:long_name = "time interval endpoints" ;
+} // group /
+
+# Model output after identity regridding
+netcdf dogfood {
+  dimensions:
+    nbnd = 2 ;
+    ncol = 48602 ;
+    nv = 5 ;
+    time = 1 ;
+
+  variables:
+    float FSNT(time,ncol) ;
+      FSNT:long_name = "Net solar flux at top of model" ;
+      FSNT:coordinates = "lat lon" ;
+
+    double lat(ncol) ;
+      lat:long_name = "latitude" ;
+      lat:standard_name = "latitude" ;
+      lat:units = "degrees_north" ;
+      lat:axis = "Y" ;
+      lat:bounds = "lat_vertices" ;
+      lat:coordinates = "lat lon" ;
+
+    double lat_vertices(ncol,nv) ;
+      lat_vertices:long_name = "gridcell latitude vertices" ;
+
+    double lon(ncol) ;
+      lon:long_name = "longitude" ;
+      lon:standard_name = "longitude" ;
+      lon:units = "degrees_east" ;
+      lon:axis = "X" ;
+      lon:bounds = "lon_vertices" ;
+      lon:coordinates = "lat lon" ;
+
+    double lon_vertices(ncol,nv) ;
+      lon_vertices:long_name = "gridcell longitude vertices" ;
+
+    double time(time) ;
+      time:long_name = "time" ;
+      time:bounds = "time_bnds" ;
+
+    double time_bnds(time,nbnd) ;
+      time_bnds:long_name = "time interval endpoints" ;
+} // group /
+@end verbatim
+@end example
+The raw model output lacks the @acronym{CF} @code{coordinates} and
+@code{bounds} attributes that the regridder adds.
+@acronym{NCO} can then hyperslab the regridded file based on the
+rectangular latitude/longitude coordinates on the unstructured grid
+because the metadata turns @code{lat} and @code{lon} into auxiliary
+coordinate variables (@pxref{Auxiliary Coordinates}).
+@example
+@verbatim
+% ncks -H -C -X 314.6,315.3,-35.6,-35.1 -v FSNT dogfood.nc
+time[0]=31 ncol[0] FSNT[0]=358.301 
+@end verbatim
+@end example
 
 @html
 <a name="no_blank"></a> <!-- http://nco.sf.net/nco.html#no_blank -->
