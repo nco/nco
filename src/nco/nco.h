@@ -893,6 +893,7 @@ extern "C" {
     char *area_nm; /* [sng] Name of variable containing gridcell area */
     char *bnd_nm; /* [sng] Name of dimension to employ for spatial bounds */
     char *bnd_tm_nm; /* [sng] Name of dimension to employ for temporal bounds */
+    char *col_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
     char *lat_bnd_nm; /* [sng] Name of rectangular boundary variable for latitude */
     char *lat_nm; /* [sng] Name of dimension to recognize as latitude */
     char *lat_vrt_nm; /* [sng] Name of non-rectangular boundary variable for latitude */
@@ -900,7 +901,6 @@ extern "C" {
     char *lon_bnd_nm; /* [sng] Name of rectangular boundary variable for longitude */
     char *lon_nm; /* [sng] Name of dimension to recognize as longitude */
     char *lon_vrt_nm; /* [sng] Name of non-rectangular boundary variable for longitude */
-    char *ncol_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */

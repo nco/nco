@@ -318,6 +318,9 @@ main(int argc,char **argv)
       {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
       {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
       {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+      {"rgr_rnr",no_argument,0,0}, /* [flg] Renormalize destination values by valid area */
+      {"rnr",no_argument,0,0}, /* [flg] Renormalize destination values by valid area */
+      {"renormalize",no_argument,0,0}, /* [flg] Renormalize destination values by valid area */
       {"secret",no_argument,0,0},
       {"shh",no_argument,0,0},
       {"srm",no_argument,0,0}, /* [flg] Print ncStream */
@@ -598,7 +601,7 @@ main(int argc,char **argv)
         flg_rgr=True;
 	rgr_map=(char *)strdup(optarg);
       } /* endif rgr_map */
-      if(!strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize")) flg_rnr=True;
+      if(!strcmp(opt_crr,"rnr") || !strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize")) flg_rnr=True;
       if(!strcmp(opt_crr,"rgr_var")) rgr_var=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
         (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nRegridding\t\t--rgr...\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
