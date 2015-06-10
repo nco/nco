@@ -68,7 +68,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     for(int dmn_idx=0;dmn_idx<tbl->lst[idx].nbr_dmn;dmn_idx++){
 
       /* If dimensions exist (only for variables ) */
-      if (tbl->lst[idx].var_dmn){
+      if(tbl->lst[idx].var_dmn){
         tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll);
         tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
         tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
@@ -141,11 +141,9 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
     tbl->lst_dmn[dmn_idx].crd=(crd_sct **)nco_free(tbl->lst_dmn[dmn_idx].crd);
   } /* Dimension list */
-
   tbl->lst_dmn=(dmn_trv_sct *)nco_free(tbl->lst_dmn);
 
   /* Members used only by transformation operators (non-ncks) */
-
   /* (ncwa) Degenerate dimensions */
   tbl->dmn_dgn=(dmn_sct *)nco_free(tbl->dmn_dgn); 
 
@@ -156,7 +154,6 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     for(int idx=0;idx<tbl->nsm[idx_nsm].skp_nbr;idx++) tbl->nsm[idx_nsm].skp_nm_fll[idx]=(char *)nco_free(tbl->nsm[idx_nsm].skp_nm_fll[idx]);
     tbl->nsm[idx_nsm].mbr=(nsm_grp_sct*)nco_free(tbl->nsm[idx_nsm].mbr);
   } /* Ensembles */
-
   tbl->nsm_sfx=(char *)nco_free(tbl->nsm_sfx);  
   tbl=(trv_tbl_sct *)nco_free(tbl);
 #ifdef DEBUG_LEAKS

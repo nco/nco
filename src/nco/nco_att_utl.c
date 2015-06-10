@@ -1696,9 +1696,9 @@ nco_xcp_prc /* [fnc] Perform exception processing on this variable */
  {
   /* Purpose: Perform exception processing on this variable
      Exception processing currently limited to variables of type NC_CHAR */
-  char *ctime_sng;
-  time_t time_crr_time_t;
-  struct tm *time_crr_tm;
+   char *ctime_sng;
+   time_t time_crr_time_t;
+   struct tm *time_crr_tm;
 
   /* Create timestamp string */
   time_crr_time_t=time((time_t *)NULL);
@@ -1716,7 +1716,12 @@ nco_xcp_prc /* [fnc] Perform exception processing on this variable */
        ncks -C -H -v date_written,time_written ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc
        time[0]=31 chars[0] date_written[0--7]='04/29/15' 
        time[0]=31 chars[0] time_written[0--7]='23:05:05' */
-    sprintf(var_val,"%02d/%02d/%02d",time_crr_tm->tm_mon+1,time_crr_tm->tm_mday,time_crr_tm->tm_year%100);
+    char *var_val_p1;
+    var_val_p1=(char *)nco_malloc((var_sz+1L)*sizeof(char));
+    sprintf(var_val_p1,"%02d/%02d/%02d",time_crr_tm->tm_mon+1,time_crr_tm->tm_mday,time_crr_tm->tm_year%100);
+    /* Copy string (except for terminating NUL) into variable (which likely does not have room for terminating NUL */
+    strncpy(var_val,var_val_p1,var_sz);
+    var_val_p1=(char *)nco_free(var_val_p1);
     return;
   } /* !date_written */
   if(!strcmp(var_nm,"time_written")){
