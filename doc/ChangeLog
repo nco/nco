@@ -6,6 +6,10 @@
 	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
 	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
 
+	* NCO 4.5.0-beta9 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.0-beta9 final changes'
+	git tag -a 4.5.0-beta9 -m 'Version 4.5.0-beta9 tag: --rnr, kvm clean-up, date_written/time_written handling';git push --tags
+
 	* Complete --rnr/--rgr_rnr/--renormalization implementation
 
 2015-06-09  Charlie Zender  <zender@uci.edu>
