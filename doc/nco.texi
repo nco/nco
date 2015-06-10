@@ -5922,7 +5922,7 @@ Hence regridding looks like a standard @command{ncks} command with the
 additional specification of a @var{map-file}:
 @example
 @verbatim
-# Regrid dntire file, same output format as input:
+# Regrid entire file, same output format as input:
 ncks --map=map.nc in.nc out.nc
 # Entire file, netCDF4 output:
 ncks -4 --map=map.nc in.nc out.nc
@@ -5961,11 +5961,15 @@ is planned.
 @cindex @code{--rnr}
 @cindex @code{--renormalize}
 @cindex @code{--rgr_rnr}
-The treatment of missing values when regridding requires some thought.
+First-order-accurate data regridding is a straightforward procedure of 
+identifying gridcell overlap and apportioning values correctly
+from source to destination.
+The presence of missing values forces a decision on how to handle
+destination gridcells where some but not all source cells are valid. 
 @acronym{NCO} implements one of two procedures: ``conservative'' or
 ``renormalized''. 
 The ``conservative'' algorithm uses all valid data from the input grid
-on the output grid.
+on the output grid once and only once.
 Destination cells receive the weighted valid values of the source cells.
 This is conservative because the global integrals of the source and
 destination fields are equal.
@@ -5973,13 +5977,19 @@ The ``renormalized'' algorithm divides the destination value by the sum
 of the valid weights.
 This returns ``reasonable'' values, i.e., the mean of the valid input
 values. 
-However, the renormalization extrapolates valid data to missing
-regions. 
-Hence the input and output integrals are unequal and renormalized
-regridding is not conservative. 
+However, renormalization is equivalent to extrapolating valid data to
+missing regions. 
+Input and output integrals are unequal and renormalized regridding is
+not conservative.  
 By default, @acronym{NCO} implements the ``conservative'' algorithm.
 To employ the ``renormalized'' algorithm instead, use the @samp{--rnr},
 @samp{--rgr_rnr}, or @samp{--renormalize} options.
+@example
+@verbatim
+ncks       --map=map.nc in.nc out.nc # Conservative regridding
+ncks --rnr --map=map.nc in.nc out.nc # Renormalized regridding
+@end verbatim
+@end example
 
 @acronym{NCO} automatically annotates the output with relevant metadata
 such as coordinate bounds, axes, and vertices (@w{@`{a} la} @acronym{CF}). 
@@ -6006,20 +6016,20 @@ These annotations include
     both the variable names associated @emph{and}, where applicable
     (i.e., on 2D-grids), the dimensions of the horizontal coordinates.
 @cindex @code{ncol}
-@cindex @var{ncol_nm}
-@cindex @samp{--rgr ncol=@var{ncol_nm}}
+@cindex @var{col_nm}
+@cindex @samp{--rgr col=@var{col_nm}}
 @item The name of the horizontal spatial dimension assumed to delineate
-    an unstructured grid is @var{ncol_nm}, which defaults to @code{ncol}
-    (number of columns).  
-    Variables that contain the @var{ncol_nm}-dimension on an
+    an unstructured grid is @var{col_nm}, which defaults to @code{ncol}
+    (number of columns).
+    Variables that contain the @var{col_nm}-dimension on an
     unstructured input grid will be regridded, and regridded variables
     written to an unstructured output grid will all contain the 
-    @var{ncol_nm}-dimension.
+    @var{col_nm}-dimension.
     To treat a different dimension as unstructured, use the option
-    @samp{--rgr ncol=@var{ncol_nm}}. 
+    @samp{--rgr ncol=@var{col_nm}}. 
     Note: Often there is no coordinate variable for the
-    @var{ncol_nm}-dimension, i.e., there is no variable named
-    @var{ncol_nm}, although such a coordinate could contain useful
+    @var{col_nm}-dimension, i.e., there is no variable named
+    @var{col_nm}, although such a coordinate could contain useful
     information about the unstructured grid.
 @cindex @acronym{CF}
 @cindex @code{latitude}
@@ -6119,7 +6129,7 @@ These annotations include
     To store the latitude weight in a different variable, use the option
     @samp{--rgr lat_wgt=@var{lat_wgt_nm}}.
     The @var{lat_wgt_nm} variable will not appear in 1D-grid output.
-    Weighting statistics by latitude (i.e., by @var{lat_wgt_nm}) will
+    Weighting statistics by latitude (i.e., by @var{lat_wgt_nm}will
     produce the same answers (up-to round-off error) as weighting by
     area (i.e., by @var{area_nm}) in grids which have both variables.
     The former requires less memory because @var{lat_wgt_nm} is 1D), 
@@ -6131,6 +6141,34 @@ These annotations include
     @var{output-file} global attributes @code{mapping_file} and
     @code{source_file}, respectively.
 @end enumerate
+
+One may supply muliple @samp{--rgr @var{key}=@var{value}} options
+to simultaneously customize multiple grid-field names.
+The following examples may all be assumed to end with the standard
+options @samp{--map=map.nc in.nc out.nc}.
+@example
+@verbatim
+ncks --rgr lat=latitude --rgr lon=longitude
+ncks --rgr col=column --rgr lat_wgt=lat_wgt
+ncks --rgr bnd=bounds --rgr lat_bnd=lat_bounds --rgr lon_bnd=lon_bounds
+ncks --rgr bnd=vertices --rgr lat_bnd=lat_vrt --rgr lon_bnd=lon_vrt
+@end verbatim
+@end example
+The first command causes the regridder to associate the latitude and
+longitude dimensions with the dimension names @code{latitude} and
+@code{longitude} (instead of @code{lat} and @code{lon}).
+The second command causes the regridder to associate the independent
+columns in an unstructured grid with the dimension name @code{column}
+(instead of @code{ncol}) and the variable containing latitude weights
+to be named @code{lat_wgt} (instead of @code{gw}).
+The third command associates the latitude and longitude bounds with the
+dimension @code{bounds} (instead of @code{nbnd}) and the variables
+@code{lat_bounds} and @code{lon_bounds} (instead of @code{lat_bnds} and 
+@code{lon_bnds}, respectively). 
+The fourth command associates the latitude and longitude bounds with the
+dimension @code{vertices} (instead of @code{nv}) and the variables
+@code{lat_vrt} and @code{lon_vrt} (instead of @code{lat_vertices} and 
+@code{lon_vertices}, respectively). 
 
 When used with an identity remapping files, regridding can signficantly
 enhance the metadata and therefore the dataset usability.
