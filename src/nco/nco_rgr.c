@@ -1612,7 +1612,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	     This is conservative because the global integrals of the source and destination fields are equal
 	     The "renormalized" algorithm divides the destination value by the sum of the valid weights
 	     This returns "reasonable" values, i.e., the mean of the valid input values
-	     However, the renormalization is effectively extrapolating valid data to missing regions
+	     However, renormalization is equivalent to extrapolating valid data to missing regions
 	     Hence the input and output integrals are unequal and the regridding is not conservative */
 	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
