@@ -631,7 +631,7 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
     } /* end if */
 
     /* Allocate and NUL-terminate space for current history attribute
-       If history attribute is of size zero then ensure strlen(hst_crr) = 0 */
+       If history attribute is of size zero then ensure strlen(hst_crr) == 0 */
     hst_crr=(char *)nco_malloc((att_sz+1L)*sizeof(char));
     hst_crr[att_sz]='\0';
     if(att_sz > 0) (void)nco_get_att(in_id,NC_GLOBAL,att_nm,(void *)hst_crr,NC_CHAR);
@@ -683,7 +683,7 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
     (void)sprintf(prv_new,"%s: %s%s",time_stamp_sng,hst_sng,prv_crr);
   } /* endif provenance global attribute currently exists */
 
-  rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(prv_new)+1UL),(void *)prv_new);
+  rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(prv_new)),(void *)prv_new);
 
   if(hst_sng) hst_sng=(char *)nco_free(hst_sng);
   if(hst_crr) hst_crr=(char *)nco_free(hst_crr);
