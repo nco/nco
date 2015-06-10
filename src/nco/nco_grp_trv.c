@@ -86,50 +86,30 @@ trv_tbl_free                           /* [fnc] GTT free memory */
           tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll);
           tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_grp_nm_fll);
           tbl->lst[idx].var_dmn[dmn_idx].crd->nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->nm);
-
           tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm);
-
-          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
+          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr;lmt_idx++)
             tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]);
-          }
-
           tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn);
-
           tbl->lst[idx].var_dmn[dmn_idx].crd=(crd_sct *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd);
-
 #ifdef DEBUG_LEAKS
           crt_counter++;
 #endif
-
-        } /* Coordinate structure */ 
-
-        /* Pointer to non-coordinate dimension  */
-        else if(tbl->lst[idx].var_dmn[dmn_idx].ncd){
-
+        }else if(tbl->lst[idx].var_dmn[dmn_idx].ncd){
           tbl->lst[idx].var_dmn[dmn_idx].ncd->grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->grp_nm_fll);
           tbl->lst[idx].var_dmn[dmn_idx].ncd->nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->nm_fll);
           tbl->lst[idx].var_dmn[dmn_idx].ncd->nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->nm);
-
           tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.dmn_nm);
-
-          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
+          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn_nbr;lmt_idx++)
             tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn[lmt_idx]);
-          }
-
           tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn);
-
           tbl->lst[idx].var_dmn[dmn_idx].ncd=(dmn_trv_sct *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].ncd);
-
         }
-
-
       } /* Dimensions */
       
       tbl->lst[idx].var_dmn=(var_dmn_sct *)nco_free(tbl->lst[idx].var_dmn);
       tbl->lst[idx].dmn_idx_out_in=(int *)nco_free(tbl->lst[idx].dmn_idx_out_in);
       tbl->lst[idx].dmn_rvr_in=(nco_bool *)nco_free(tbl->lst[idx].dmn_rvr_in);
-
-    } /* If dimensions exist (only for variables ) */
+    } /* If dimensions exist (only for variables) */
   } /* Object (group/variable) list */ 
 
   tbl->lst=(trv_sct *)nco_free(tbl->lst);
@@ -140,7 +120,6 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     tbl->lst_dmn[dmn_idx].nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].nm_fll);
     tbl->lst_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].grp_nm_fll);
     tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm);
-
     for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn_nbr;lmt_idx++)
       tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]);
 
@@ -154,13 +133,9 @@ trv_tbl_free                           /* [fnc] GTT free memory */
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm);
-
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm);
-
-      for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;lmt_idx++){
+      for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;lmt_idx++)
         tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]);
-      }
-
       tbl->lst_dmn[dmn_idx].crd[crd_idx]=(crd_sct *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]);
     }  /* Coordinate structures */
 
@@ -177,18 +152,13 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   /* Ensembles */
   for(int idx_nsm=0;idx_nsm<tbl->nsm_nbr;idx_nsm++){
     tbl->nsm[idx_nsm].grp_nm_fll_prn=(char *)nco_free(tbl->nsm[idx_nsm].grp_nm_fll_prn);
-
     for(int idx=0;idx<tbl->nsm[idx_nsm].tpl_nbr;idx++) tbl->nsm[idx_nsm].tpl_mbr_nm[idx]=(char *)nco_free(tbl->nsm[idx_nsm].tpl_mbr_nm[idx]);
-
     for(int idx=0;idx<tbl->nsm[idx_nsm].skp_nbr;idx++) tbl->nsm[idx_nsm].skp_nm_fll[idx]=(char *)nco_free(tbl->nsm[idx_nsm].skp_nm_fll[idx]);
-
     tbl->nsm[idx_nsm].mbr=(nsm_grp_sct*)nco_free(tbl->nsm[idx_nsm].mbr);
   } /* Ensembles */
 
   tbl->nsm_sfx=(char *)nco_free(tbl->nsm_sfx);  
-
   tbl=(trv_tbl_sct *)nco_free(tbl);
-
 #ifdef DEBUG_LEAKS
   if(nco_dbg_lvl_get() >= nco_dbg_sup)(void)fprintf(stdout,"%s: DEBUG %s %d crd",nco_prg_nm_get(),fnc_nm,crt_counter);
 #endif

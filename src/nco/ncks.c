@@ -956,10 +956,11 @@ main(int argc,char **argv)
       rgr_in=(char *)strdup(fl_in);
       rgr_out=(char *)strdup(fl_out);
       rgr_nfo=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var);
-      rgr_nfo->fl_out_tmp=nco_fl_out_open(rgr_nfo->fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&(rgr_nfo->out_id));
+      rgr_nfo->fl_out_tmp=nco_fl_out_open(rgr_nfo->fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
       /* Copy Global Metadata */
-      out_id=rgr_nfo->out_id;
+      rgr_nfo->out_id=out_id;
+      //      out_id=rgr_nfo->out_id;
       nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
       (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
       /* Catenate time-stamped command line to "history" global attribute */

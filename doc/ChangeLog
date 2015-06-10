@@ -1,6 +1,5 @@
 2015-06-09  Charlie Zender  <zender@uci.edu>
 
-
 	* NCO 4.5.0 release procedure:
  	Changes since nco-4.4.9: --map
 	cd ~/nco;git commit -a -m 'Version 4.5.0 release: '

@@ -11,7 +11,7 @@
 
 int /* O [enm] Return code */
 nco_rgr_ctl /* [fnc] Control regridding logic */
-(rgr_sct * const rgr_nfo, /* I/O [sct] Regridding structure */
+(rgr_sct * const rgr, /* I/O [sct] Regridding structure */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */
 {
   /* Purpose: Control regridding logic */
@@ -24,25 +24,25 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
 
   /* Main control branching occurs here
      Branching complexity and utility will increase as regridding features are added */
-  if(rgr_nfo->flg_map) flg_map=True;
-  if(rgr_nfo->flg_grd_src && rgr_nfo->flg_grd_dst) flg_smf=True;
-  if(rgr_nfo->drc_tps && !flg_map) flg_tps=True;
+  if(rgr->flg_map) flg_map=True;
+  if(rgr->flg_grd_src && rgr->flg_grd_dst) flg_smf=True;
+  if(rgr->drc_tps && !flg_map) flg_tps=True;
   assert(!(flg_smf && flg_map));
   assert(!(flg_smf && flg_tps));
   assert(!(flg_map && flg_tps));
   
   if(flg_map){
     /* Regrid using external mapping weights */
-    rcd=nco_rgr_map(rgr_nfo,trv_tbl);
+    rcd=nco_rgr_map(rgr,trv_tbl);
   } /* !flg_map */
 
   if(flg_smf){
 #ifdef ENABLE_ESMF
     /* Regrid using ESMF library */
     (void)fprintf(stderr,"%s: %s calling nco_rgr_esmf() to generate and apply regridding map\n",nco_prg_nm_get(),fnc_nm);
-    rcd=nco_rgr_esmf(rgr_nfo);
+    rcd=nco_rgr_esmf(rgr);
     /* Close output and free dynamic memory */
-    (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,rgr_nfo->out_id);
+    (void)nco_fl_out_cls(rgr->fl_out,rgr->fl_out_tmp,rgr->out_id);
 #else /* !ENABLE_ESMF */
     (void)fprintf(stderr,"%s: ERROR %s reports attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
@@ -51,7 +51,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   
   if(flg_tps){
     /* Regrid using Tempest regridding */
-    rcd=nco_rgr_tps(rgr_nfo);
+    rcd=nco_rgr_tps(rgr);
   } /* !flg_map */
 
   return rcd;
@@ -79,11 +79,14 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   /* free() memory copied from KVMs */
   if(rgr->area_nm) rgr->area_nm=(char *)nco_free(rgr->area_nm);
   if(rgr->bnd_nm) rgr->bnd_nm=(char *)nco_free(rgr->bnd_nm);
+  if(rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)nco_free(rgr->bnd_tm_nm);
   if(rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)nco_free(rgr->lat_bnd_nm);
   if(rgr->lat_nm) rgr->lat_nm=(char *)nco_free(rgr->lat_nm);
+  if(rgr->lat_vrt_nm) rgr->lat_vrt_nm=(char *)nco_free(rgr->lat_vrt_nm);
   if(rgr->lat_wgt_nm) rgr->lat_wgt_nm=(char *)nco_free(rgr->lat_wgt_nm);
   if(rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)nco_free(rgr->lon_bnd_nm);
   if(rgr->lon_nm) rgr->lon_nm=(char *)nco_free(rgr->lon_nm);
+  if(rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)nco_free(rgr->lon_vrt_nm);
   if(rgr->ncol_nm) rgr->ncol_nm=(char *)nco_free(rgr->ncol_nm);
   if(rgr->vrt_nm) rgr->vrt_nm=(char *)nco_free(rgr->vrt_nm);
 
@@ -136,6 +139,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->in_id=in_id; /* [id] Input netCDF file ID */
   rgr->rgr_arg=rgr_arg; /* [sng] Regridding arguments */
   rgr->rgr_nbr=rgr_arg_nbr; /* [nbr] Number of regridding arguments */
+
+  rgr->drc_tps=NULL; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
 
   rgr->flg_grd_src= rgr_grd_src ? True : False; /* [flg] User-specified input grid */
   rgr->fl_grd_src=rgr_grd_src; /* [sng] File containing input grid */
@@ -208,12 +213,15 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   /* NULL-initialize */
   rgr->area_nm=NULL; /* [sng] Name of variable containing gridcell area */
-  rgr->bnd_nm=NULL; /* [sng] Name of dimension to employ for bounds */
-  rgr->lat_bnd_nm=NULL; /* [sng] Name of boundary variable for latitude */
+  rgr->bnd_nm=NULL; /* [sng] Name of dimension to employ for spatial bounds */
+  rgr->bnd_tm_nm=NULL; /* [sng] Name of dimension to employ for temporal bounds */
+  rgr->lat_bnd_nm=NULL; /* [sng] Name of rectangular boundary variable for latitude */
   rgr->lat_nm=NULL; /* [sng] Name of dimension to recognize as latitude */
+  rgr->lat_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for latitude */
   rgr->lat_wgt_nm=NULL; /* [sng] Name of variable containing latitude weights */
-  rgr->lon_bnd_nm=NULL; /* [sng] Name of boundary variable for longitude */
+  rgr->lon_bnd_nm=NULL; /* [sng] Name of rectangular boundary variable for longitude */
   rgr->lon_nm=NULL; /* [sng] Name of dimension to recognize as longitude */
+  rgr->lon_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for longitude */
   rgr->ncol_nm=NULL; /* [sng] Name of horizontal spatial dimension on unstructured grid */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
@@ -226,12 +234,20 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"bnd_tm_nm")){
+      rgr->bnd_tm_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_bnd_nm")){
       rgr->lat_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nm")){
       rgr->lat_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_vrt_nm")){
+      rgr->lat_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_wgt_nm")){
@@ -246,6 +262,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->lon_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_vrt_nm")){
+      rgr->lon_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"ncol_nm")){
       rgr->ncol_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -258,6 +278,21 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     nco_exit(EXIT_FAILURE);
   } /* end for */
 
+  /* Revert to defaults for any not specified on command-line */
+  if(!rgr->area_nm) rgr->area_nm=(char *)strdup("area"); /* [sng] Name of variable containing gridcell area */
+  if(!rgr->bnd_nm) rgr->bnd_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for spatial bounds */
+  /* NB: CESM uses nbnd for temporal bounds. NCO defaults to nbnd for all bounds with two endpoints */
+  if(!rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for spatial bounds */
+  if(!rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)strdup("lat_bnds"); /* [sng] Name of rectangular boundary variable for latitude */
+  if(!rgr->lat_nm) rgr->lat_nm=(char *)strdup("lat"); /* [sng] Name of dimension to recognize as latitude */
+  if(!rgr->lat_vrt_nm) rgr->lat_vrt_nm=(char *)strdup("lat_vertices"); /* [sng] Name of non-rectangular boundary variable for latitude */
+  if(!rgr->lat_wgt_nm) rgr->lat_wgt_nm=(char *)strdup("gw"); /* [sng] Name of variable containing latitude weights */
+  if(!rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)strdup("lon_bnds"); /* [sng] Name of rectangular boundary variable for longitude */
+  if(!rgr->lon_nm) rgr->lon_nm=(char *)strdup("lon"); /* [sng] Name of dimension to recognize as longitude */
+  if(!rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)strdup("lon_vertices"); /* [sng] Name of non-rectangular boundary variable for longitude */
+  if(!rgr->ncol_nm) rgr->ncol_nm=(char *)strdup("ncol"); /* [sng] Name of horizontal spatial dimension on unstructured grid */
+  if(!rgr->vrt_nm) rgr->vrt_nm=(char *)strdup("nv"); /* [sng] Name of dimension to employ for vertices */
+
   /* Free kvms */
   if(rgr_lst) rgr_lst=nco_kvm_lst_free(rgr_lst,rgr_var_nbr);
 
@@ -266,7 +301,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   
 int /* O [enm] Return code */
 nco_rgr_map /* [fnc] Regrid using external weights */
-(rgr_sct * const rgr_nfo, /* I/O [sct] Regridding structure */
+(rgr_sct * const rgr, /* I/O [sct] Regridding structure */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */
 {
   /* Purpose: Regrid fields using external weights (i.e., a mapping file)
@@ -328,7 +363,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   const char fnc_nm[]="nco_rgr_map()"; /* [sng] Function name */
 
-  char *fl_in=rgr_nfo->fl_map;
+  char *fl_in=rgr->fl_map;
   char *fl_pth_lcl=NULL;
 
   int in_id; /* I [id] Input netCDF file ID */
@@ -353,7 +388,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining mapping weights from %s\n",nco_prg_nm_get(),fnc_nm,rgr_nfo->fl_map);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining mapping weights from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_map);
 
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
@@ -837,8 +872,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
      Below this line, fl_in and in_id refer to input file to be regridded */
 
   /* Initialize */
-  in_id=rgr_nfo->in_id;
-  out_id=rgr_nfo->out_id;
+  in_id=rgr->in_id;
+  out_id=rgr->out_id;
 
   /* Do not extract extensive variables like lon, lat, and area
      If necessary, create them from scratch from remap data
@@ -863,9 +898,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* endif */
   } /* end loop */
   
-  const char ncol_nm[]="ncol"; /* [sng] Name of horizontal spatial dimension on unstructured grid */
-  const char lat_nm[]="lat"; /* [sng] Name of dimension to recognize as latitude */
-  const char lon_nm[]="lon"; /* [sng] Name of dimension to recognize as longitude */
+  char *ncol_nm=rgr->ncol_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
+  char *lat_nm=rgr->lat_nm; /* [sng] Name of dimension to recognize as latitude */
+  char *lon_nm=rgr->lon_nm; /* [sng] Name of dimension to recognize as longitude */
   char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
   int dmn_idx; /* [idx] Dimension index */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input variable */
@@ -900,15 +935,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   /* Layout regridded file */
   aed_sct aed_mtd;
-  char area_nm_out[]="area";
-  char lat_wgt_nm[]="gw";
+  char *area_nm_out;
   char *att_nm;
-  char *bnd_tm_nm_out;
   char *bnd_nm_out;
-  char *lat_nm_out;
-  char *lon_nm_out;
+  char *bnd_tm_nm_out;
   char *lat_bnd_nm_out;
+  char *lat_nm_out;
+  char *lat_wgt_nm;
   char *lon_bnd_nm_out;
+  char *lon_nm_out;
   char *ncol_nm_out;
   int dmn_id_lat; /* [id] Dimension ID */
   int dmn_id_ncol; /* [id] Dimension ID */
@@ -926,19 +961,24 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   long dmn_cnt_out[dmn_nbr_grd_max];
 
   /* Name output dimensions */
-  bnd_tm_nm_out=(char *)strdup("nbnd"); /* NB: CESM uses nbnd for time bounds. NCO uses nbnd for all bounds with two endpoints */
-  lat_nm_out=(char *)strdup("lat");
-  lon_nm_out=(char *)strdup("lon");
-  ncol_nm_out=(char *)strdup("ncol");
+  area_nm_out=rgr->area_nm;
+  bnd_nm_out=rgr->bnd_nm;
+  bnd_tm_nm_out=rgr->bnd_tm_nm;
+  lat_bnd_nm_out=rgr->lat_bnd_nm;
+  lat_nm_out=rgr->lat_nm;
+  lat_wgt_nm=rgr->lat_wgt_nm;
+  lon_bnd_nm_out=rgr->lon_bnd_nm;
+  lon_nm_out=rgr->lon_nm;
+  ncol_nm_out=rgr->ncol_nm;
   if(flg_grd_out_1D){
-    bnd_nm_out=(char *)strdup("nv");
-    lat_bnd_nm_out=(char *)strdup("lat_vertices");
-    lon_bnd_nm_out=(char *)strdup("lon_vertices");
+    bnd_nm_out=rgr->vrt_nm;
+    lat_bnd_nm_out=rgr->lat_vrt_nm;
+    lon_bnd_nm_out=rgr->lon_vrt_nm;
   } /* !flg_grd_out_1D */
   if(flg_grd_out_2D){
-    bnd_nm_out=(char *)strdup("nbnd");
-    lat_bnd_nm_out=(char *)strdup("lat_bnds");
-    lon_bnd_nm_out=(char *)strdup("lon_bnds");
+    bnd_nm_out=rgr->bnd_nm;
+    lat_bnd_nm_out=rgr->lat_bnd_nm;
+    lon_bnd_nm_out=rgr->lon_bnd_nm;
   } /* !flg_grd_out_2D */
 
   /* Persistent metadata */
@@ -1343,7 +1383,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("source_file");
-  att_val=strdup(rgr_nfo->fl_in);
+  att_val=strdup(rgr->fl_in);
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=NULL;
   aed_mtd.id=NC_GLOBAL;
@@ -1370,15 +1410,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     (void)nco_aed_prc(out_id,lon_out_id,aed_mtd_crd);
   } /* !flg_grd_out_1D */
   
-  /* Dimension metadata */
-  if(bnd_nm_out) bnd_nm_out=(char *)nco_free(bnd_nm_out);
-  if(bnd_tm_nm_out) bnd_tm_nm_out=(char *)nco_free(bnd_tm_nm_out);
-  if(lat_bnd_nm_out) lat_bnd_nm_out=(char *)nco_free(lat_bnd_nm_out);
-  if(lat_nm_out) lat_nm_out=(char *)nco_free(lat_nm_out);
-  if(lon_bnd_nm_out) lon_bnd_nm_out=(char *)nco_free(lon_bnd_nm_out);
-  if(lon_nm_out) lon_nm_out=(char *)nco_free(lon_nm_out);
-  if(ncol_nm_out) ncol_nm_out=(char *)nco_free(ncol_nm_out);
-
   /* Persistent metadata */
   if(att_nm_crd) att_nm_crd=(char *)nco_free(att_nm_crd);
   if(att_val_crd) att_val_crd=(char *)nco_free(att_val_crd);
@@ -1794,7 +1825,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   
 int /* O [enm] Return code */
 nco_rgr_tps /* [fnc] Regrid using Tempest library */
-(rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
+(rgr_sct * const rgr) /* I/O [sct] Regridding structure */
 {
   /* Purpose: Regrid fields using Tempest remapping "library" (more precisely, executables)
 
@@ -1815,11 +1846,11 @@ nco_rgr_tps /* [fnc] Regrid using Tempest library */
 
   char *nvr_DATA_TEMPEST; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
   nvr_DATA_TEMPEST=getenv("DATA_TEMPEST");
-  rgr_nfo->drc_tps= (nvr_DATA_TEMPEST && strlen(nvr_DATA_TEMPEST) > 0L) ? (char *)strdup(nvr_DATA_TEMPEST) : (char *)strdup("/tmp");
+  rgr->drc_tps= (nvr_DATA_TEMPEST && strlen(nvr_DATA_TEMPEST) > 0L) ? (char *)strdup(nvr_DATA_TEMPEST) : (char *)strdup("/tmp");
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stderr,"drc_tps = %s, ",rgr_nfo->drc_tps ? rgr_nfo->drc_tps : "NULL");
+    (void)fprintf(stderr,"drc_tps = %s, ",rgr->drc_tps ? rgr->drc_tps : "NULL");
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
 
@@ -2158,7 +2189,7 @@ nco_esmf_rgn_flg_sng /* [fnc] Convert ESMF region flag enum to string */
 
 int /* O [enm] Return code */
 nco_rgr_esmf /* [fnc] Regrid using ESMF library */
-(rgr_sct * const rgr_nfo) /* I/O [sct] Regridding structure */
+(rgr_sct * const rgr) /* I/O [sct] Regridding structure */
 {
   /* Purpose: Regrid fields
      ESMC is C-interface to ESMF documented at
@@ -2236,8 +2267,8 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   const int crd_idx_f_1bs_lon_src=1; /* [dgr] 1-based index of longitude in Fortran representation of rank-2 source grids */
 
   /* Initialize */
-  in_id=rgr_nfo->in_id;
-  out_id=rgr_nfo->out_id;
+  in_id=rgr->in_id;
+  out_id=rgr->out_id;
   
   /* Obtain input longitude type and length */
   char lon_nm_in[]="lon";
@@ -2245,7 +2276,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ_in,&dmn_nbr,(int *)NULL,(int *)NULL);
   if(var_typ_in != NC_DOUBLE){
     assert(var_typ_in == NC_FLOAT);
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO WARNING Cheapskate regridding input file %s stores coordinate as NC_FLOAT\n",nco_prg_nm_get(),rgr_nfo->fl_in);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO WARNING Cheapskate regridding input file %s stores coordinate as NC_FLOAT\n",nco_prg_nm_get(),rgr->fl_in);
   } /* !var_typ_in */
 
   /* Allocate space to hold dimension metadata */
@@ -2275,7 +2306,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ_in,&dmn_nbr,(int *)NULL,(int *)NULL);
   if(var_typ_in != NC_DOUBLE){
     assert(var_typ_in == NC_FLOAT);
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO WARNING Cheapskate regridding input file %s stores coordinate as NC_FLOAT\n",nco_prg_nm_get(),rgr_nfo->fl_in);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO WARNING Cheapskate regridding input file %s stores coordinate as NC_FLOAT\n",nco_prg_nm_get(),rgr->fl_in);
   } /* !var_typ_in */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   dmn_sz=1L;
@@ -2327,7 +2358,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   char **crd_nm=NULL; /* [sng] Iff GRIDSPEC use these lon/lat variable coordinates */
   enum ESMC_FileFormat_Flag grd_fl_typ=ESMC_FILEFORMAT_SCRIP;
   ESMC_Grid grd_dst;
-  grd_dst=ESMC_GridCreateFromFile(rgr_nfo->fl_grd_dst,grd_fl_typ,&flg_isSphere,&flg_addCornerStagger,&flg_addUserArea,&flg_addMask,var_nm,crd_nm,&rcd_esmf);
+  grd_dst=ESMC_GridCreateFromFile(rgr->fl_grd_dst,grd_fl_typ,&flg_isSphere,&flg_addCornerStagger,&flg_addUserArea,&flg_addMask,var_nm,crd_nm,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   int *msk_dst; /* [enm] Destination grid mask */
@@ -2390,7 +2421,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"ESMC_VMGet(): localPet = %d, petCount = %d, peCount = %d, pthreadsEnabledFlag = %s, openMPEnabledFlag = %s\n",localPet,petCount,peCount,flg_pthreadsEnabledFlag ? "Enabled" : "Disabled",flg_openMPEnabledFlag ? "Enabled" : "Disabled");
-    (void)fprintf(stderr,"ESMC_GridCreateFromFile(): filename = %s, fileTypeFlag = %s, isSphere = %s, addCornerStagger = %s, addUserArea = %s, addMask = %s, var_nm = %s, crd_nm = %s\n",rgr_nfo->fl_grd_dst,nco_esmf_fl_fmt_sng(grd_fl_typ),flg_isSphere ? "Enabled" : "Disabled",flg_addCornerStagger ? "Enabled" : "Disabled",flg_addUserArea ? "Enabled" : "Disabled",flg_addMask ? "Enabled" : "Disabled",var_nm,crd_nm ? "non-NULL" : "NULL");
+    (void)fprintf(stderr,"ESMC_GridCreateFromFile(): filename = %s, fileTypeFlag = %s, isSphere = %s, addCornerStagger = %s, addUserArea = %s, addMask = %s, var_nm = %s, crd_nm = %s\n",rgr->fl_grd_dst,nco_esmf_fl_fmt_sng(grd_fl_typ),flg_isSphere ? "Enabled" : "Disabled",flg_addCornerStagger ? "Enabled" : "Disabled",flg_addUserArea ? "Enabled" : "Disabled",flg_addMask ? "Enabled" : "Disabled",var_nm,crd_nm ? "non-NULL" : "NULL");
     (void)fprintf(stderr,"ESMC_GridGetCoord(): bnd_lwr_dst[0..1] = %d, %d; bnd_upr_dst[0..1] = %d, %d;\n",bnd_lwr_dst[0],bnd_lwr_dst[1],bnd_upr_dst[0],bnd_upr_dst[1]);
     (void)fprintf(stderr,"ESMC_InterfaceIntCreate(): No printable information\n");
     (void)fprintf(stderr,"ESMC_GridCreateNoPeriDim(): crd_sys = %s, typ_knd = %s\n",nco_esmf_crd_sys_sng(crd_sys),nco_esmf_typ_knd_sng(typ_knd));
@@ -2433,7 +2464,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   if(rcd_esmf != ESMF_SUCCESS) goto rgr_cln;
 
   /* Get variables from input file */
-  (void)nco_inq_varid(in_id,rgr_nfo->var_nm,&var_in_id);
+  (void)nco_inq_varid(in_id,rgr->var_nm,&var_in_id);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ_in,&dmn_nbr,(int *)NULL,(int *)NULL);
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
@@ -2514,7 +2545,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   dmn_ids_out[crd_idx_c_0bs_lon_dst]=dmn_id_lon;
   (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,(int)1,&dmn_id_lon,&lon_out_id);
   (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,(int)1,&dmn_id_lat,&lat_out_id);
-  (void)nco_def_var(out_id,rgr_nfo->var_nm,var_typ_out,(int)2,dmn_ids_out,&var_out_id);
+  (void)nco_def_var(out_id,rgr->var_nm,var_typ_out,(int)2,dmn_ids_out,&var_out_id);
   (void)nco_enddef(out_id);
   dmn_srt_out[crd_idx_c_0bs_lat_dst]=0L;
   dmn_srt_out[crd_idx_c_0bs_lon_dst]=0L;
@@ -2525,7 +2556,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   (void)nco_put_vara(out_id,var_out_id,dmn_srt_out,dmn_cnt_out,fld_dst_ptr,var_typ_out);
 
   /* Close output file and move it from temporary to permanent location */
-  (void)nco_fl_out_cls(rgr_nfo->fl_out,rgr_nfo->fl_out_tmp,out_id);
+  (void)nco_fl_out_cls(rgr->fl_out,rgr->fl_out_tmp,out_id);
 
 rgr_cln:
   if(rcd_esmf != ESMF_SUCCESS){
