@@ -2541,6 +2541,7 @@ feature is automatic and cannot be controlled by the user.
 * Multislabs::
 * Wrapped Coordinates::
 * Auxiliary Coordinates::
+* Regridding::
 * UDUnits Support::
 * Rebasing Time Coordinate::
 * Multiple Record Dimensions::
@@ -5724,7 +5725,7 @@ values (@pxref{Hyperslabs}).
 <a name="std_nm"></a> <!-- http://nco.sf.net/nco.html#std_nm -->
 <a name="standard_name"></a> <!-- http://nco.sf.net/nco.html#standard_name -->
 @end html
-@node Auxiliary Coordinates, UDUnits Support, Wrapped Coordinates, Shared features
+@node Auxiliary Coordinates, Regridding, Wrapped Coordinates, Shared features
 @section Auxiliary Coordinates
 @cindex @code{-X}
 @cindex @code{--auxiliary}
@@ -5873,7 +5874,7 @@ to avoid confusion.
 <a name="rgr_map"></a> <!-- http://nco.sf.net/nco.html#rgr_map -->
 <a name="regrid"></a> <!-- http://nco.sf.net/nco.html#regrid -->
 @end html
-@node Regridding
+@node Regridding, UDUnits Support, Auxiliary Coordinates, Shared features
 @section Regridding
 @cindex map
 @cindex regridding
@@ -5888,17 +5889,21 @@ to avoid confusion.
 Availability: @command{ncks}@* 
 Short options: None@*
 Long options: 
+@samp{--map @var{map-file}}@*
+@samp{--rgr_map @var{map-file}}@*
 @samp{--rgr @var{key}=@var{val}}@*
-@samp{--rgr_map @var{map-file}@*
 @end cartouche
 
-@item --map @var{map-file}
-Regrid input data to different horizontal grid using input and output 
-grids and mapping weights specified in @acronym{ESMF}- or @acronym{SCRIP}-format
-@var{map-file}.
-Also @samp{--rgr_map}.
 As of @acronym{NCO} version 4.5.0 (June, 2015), @command{ncks} supports 
-horizontal regridding using the mapfile format pioneered by
+horizontal regridding of global datasets where the grids and weights are
+all stored in an external @var{map-file}.
+Use the @samp{--map} or @samp{--rgr_map} options to specify the
+@var{map-file}, and @acronym{NCO} will regrid the @var{input-file} to
+a new (or possibly the same, aka, an identity mapping) horizontal grid
+in the @var{output-file}, using the input and output grids and mapping
+weights specified in the @acronym{ESMF}- or @acronym{SCRIP}-format
+@var{map-file}. 
+Currently @acronym{NCO} understands only the mapfile format pioneered by 
 @acronym{SCRIP} 
 (@url{http://oceans11.lanl.gov/svn/SCRIP/trunk/SCRIP})
 and later extended by @acronym{ESMF} 
@@ -6197,7 +6202,7 @@ grid.
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
 <a name="UDUnits2"></a> <!-- http://nco.sf.net/nco.html#UDUnits2 -->
 @end html
-@node UDUnits Support, Rebasing Time Coordinate, Auxiliary Coordinates, Shared features
+@node UDUnits Support, Rebasing Time Coordinate, Regridding, Shared features
 @section UDUnits Support 
 @cindex UDUnits
 @cindex Unidata
