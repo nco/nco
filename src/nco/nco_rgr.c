@@ -80,6 +80,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->area_nm) rgr->area_nm=(char *)nco_free(rgr->area_nm);
   if(rgr->bnd_nm) rgr->bnd_nm=(char *)nco_free(rgr->bnd_nm);
   if(rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)nco_free(rgr->bnd_tm_nm);
+  if(rgr->col_nm) rgr->col_nm=(char *)nco_free(rgr->col_nm);
   if(rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)nco_free(rgr->lat_bnd_nm);
   if(rgr->lat_nm) rgr->lat_nm=(char *)nco_free(rgr->lat_nm);
   if(rgr->lat_vrt_nm) rgr->lat_vrt_nm=(char *)nco_free(rgr->lat_vrt_nm);
@@ -87,7 +88,6 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)nco_free(rgr->lon_bnd_nm);
   if(rgr->lon_nm) rgr->lon_nm=(char *)nco_free(rgr->lon_nm);
   if(rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)nco_free(rgr->lon_vrt_nm);
-  if(rgr->ncol_nm) rgr->ncol_nm=(char *)nco_free(rgr->ncol_nm);
   if(rgr->vrt_nm) rgr->vrt_nm=(char *)nco_free(rgr->vrt_nm);
 
   /* Lastly, free() regrid structure itself */
@@ -219,6 +219,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->area_nm=NULL; /* [sng] Name of variable containing gridcell area */
   rgr->bnd_nm=NULL; /* [sng] Name of dimension to employ for spatial bounds */
   rgr->bnd_tm_nm=NULL; /* [sng] Name of dimension to employ for temporal bounds */
+  rgr->col_nm=NULL; /* [sng] Name of horizontal spatial dimension on unstructured grid */
   rgr->lat_bnd_nm=NULL; /* [sng] Name of rectangular boundary variable for latitude */
   rgr->lat_nm=NULL; /* [sng] Name of dimension to recognize as latitude */
   rgr->lat_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for latitude */
@@ -226,7 +227,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_bnd_nm=NULL; /* [sng] Name of rectangular boundary variable for longitude */
   rgr->lon_nm=NULL; /* [sng] Name of dimension to recognize as longitude */
   rgr->lon_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for longitude */
-  rgr->ncol_nm=NULL; /* [sng] Name of horizontal spatial dimension on unstructured grid */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
   for(rgr_var_idx=0;rgr_var_idx<rgr_var_nbr;rgr_var_idx++){
@@ -240,6 +240,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"bnd_tm_nm")){
       rgr->bnd_tm_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"col_nm")){
+      rgr->col_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_bnd_nm")){
@@ -270,10 +274,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->lon_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* endif */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"ncol_nm")){
-      rgr->ncol_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
-      continue;
-    } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -287,6 +287,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(!rgr->bnd_nm) rgr->bnd_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for spatial bounds */
   /* NB: CESM uses nbnd for temporal bounds. NCO defaults to nbnd for all bounds with two endpoints */
   if(!rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for spatial bounds */
+  if(!rgr->col_nm) rgr->col_nm=(char *)strdup("ncol"); /* [sng] Name of horizontal spatial dimension on unstructured grid */
   if(!rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)strdup("lat_bnds"); /* [sng] Name of rectangular boundary variable for latitude */
   if(!rgr->lat_nm) rgr->lat_nm=(char *)strdup("lat"); /* [sng] Name of dimension to recognize as latitude */
   if(!rgr->lat_vrt_nm) rgr->lat_vrt_nm=(char *)strdup("lat_vertices"); /* [sng] Name of non-rectangular boundary variable for latitude */
@@ -294,7 +295,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(!rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)strdup("lon_bnds"); /* [sng] Name of rectangular boundary variable for longitude */
   if(!rgr->lon_nm) rgr->lon_nm=(char *)strdup("lon"); /* [sng] Name of dimension to recognize as longitude */
   if(!rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)strdup("lon_vertices"); /* [sng] Name of non-rectangular boundary variable for longitude */
-  if(!rgr->ncol_nm) rgr->ncol_nm=(char *)strdup("ncol"); /* [sng] Name of horizontal spatial dimension on unstructured grid */
   if(!rgr->vrt_nm) rgr->vrt_nm=(char *)strdup("nv"); /* [sng] Name of dimension to employ for vertices */
 
   /* Free kvms */
@@ -904,7 +904,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* endif */
   } /* end loop */
   
-  char *ncol_nm=rgr->ncol_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
+  char *col_nm=rgr->col_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
   char *lat_nm=rgr->lat_nm; /* [sng] Name of dimension to recognize as latitude */
   char *lon_nm=rgr->lon_nm; /* [sng] Name of dimension to recognize as longitude */
   char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
@@ -921,7 +921,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
 	/* Regrid variables containing a horizontal spatial dimension */
 	/* fxm: generalize to include any variable containing a dimension in a coordinate with "standard_name" = "latitude" or "longitude" */
-	if(!strcmp(dmn_nm_cp,ncol_nm) || !strcmp(dmn_nm_cp,lat_nm) || !strcmp(dmn_nm_cp,lon_nm)){
+	if(!strcmp(dmn_nm_cp,col_nm) || !strcmp(dmn_nm_cp,lat_nm) || !strcmp(dmn_nm_cp,lon_nm)){
 	  trv_tbl->lst[idx_tbl].flg_rgr=True;
 	  var_rgr_nbr++;
 	  break;
@@ -945,12 +945,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   char *att_nm;
   char *bnd_nm_out;
   char *bnd_tm_nm_out;
+  char *col_nm_out;
   char *lat_bnd_nm_out;
   char *lat_nm_out;
   char *lat_wgt_nm;
   char *lon_bnd_nm_out;
   char *lon_nm_out;
-  char *ncol_nm_out;
   int dmn_id_lat; /* [id] Dimension ID */
   int dmn_id_ncol; /* [id] Dimension ID */
   int dmn_id_lon; /* [id] Dimension ID */
@@ -970,12 +970,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   area_nm_out=rgr->area_nm;
   bnd_nm_out=rgr->bnd_nm;
   bnd_tm_nm_out=rgr->bnd_tm_nm;
+  col_nm_out=rgr->col_nm;
   lat_bnd_nm_out=rgr->lat_bnd_nm;
   lat_nm_out=rgr->lat_nm;
   lat_wgt_nm=rgr->lat_wgt_nm;
   lon_bnd_nm_out=rgr->lon_bnd_nm;
   lon_nm_out=rgr->lon_nm;
-  ncol_nm_out=rgr->ncol_nm;
   if(flg_grd_out_1D){
     bnd_nm_out=rgr->vrt_nm;
     lat_bnd_nm_out=rgr->lat_vrt_nm;
@@ -1002,7 +1002,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   /* Define new horizontal dimensions before all else */
   if(flg_grd_out_1D){
-    rcd=nco_def_dim(out_id,ncol_nm_out,ncol_nbr_out,&dmn_id_ncol);
+    rcd=nco_def_dim(out_id,col_nm_out,ncol_nbr_out,&dmn_id_ncol);
   } /* !flg_grd_out_1D */
   if(flg_grd_out_2D){
     rcd=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
@@ -1106,7 +1106,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	      } /* !lat && !lon */
 	    } /* !2D_to_1D */
 	    if(flg_grd_out_2D){
-	      if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D && !strcmp(dmn_nm,ncol_nm)){
+	      if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D && !strcmp(dmn_nm,col_nm)){
 		/* Replace unstructured horizontal dimension by orthogonal horizontal dimensions already defined */
 		dmn_id_out[dmn_idx]=dmn_id_lat;
 		dmn_id_out[dmn_idx+1]=dmn_id_lon;
@@ -1618,7 +1618,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
 	  if(flg_rnr) 
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	      if(!tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
+	      if(tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
 	} /* !has_mss_val */
 	
 #pragma omp critical
