@@ -879,7 +879,7 @@ extern "C" {
   
   /* Regrid structure */
   typedef struct{ /* rgr_sct */
-    char **rgr_arg; /* [sng] Regridding arguments */
+    // File names specifiable with individual command line switches
     char *drc_tps; /* [sng] Data directory for Tempest grids, meshes, and weights */
     char *fl_grd_src; /* [sng] File containing input grid */
     char *fl_grd_dst; /* [sng] File containing destination grid */
@@ -888,6 +888,8 @@ extern "C" {
     char *fl_out_tmp; /* [sng] Temporary file containing regridded fields */
     char *fl_map; /* [sng] File containing mapping weights from source to destination grid */
     char *var_nm; /* [sng] Variable for special regridding treatment */
+    // Grid names specifiable with key-value syntax
+    char **rgr_arg; /* [sng] Regridding arguments */
     char *area_nm; /* [sng] Name of variable containing gridcell area */
     char *bnd_nm; /* [sng] Name of dimension to employ for spatial bounds */
     char *bnd_tm_nm; /* [sng] Name of dimension to employ for temporal bounds */
@@ -907,6 +909,7 @@ extern "C" {
     nco_bool flg_grd_src; /* [flg] User-specified input grid */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
     nco_bool flg_map; /* [flg] User-specified mapping weights */
+    nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
   } rgr_sct;
 
   /* Key-value structure */

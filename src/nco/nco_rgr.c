@@ -106,7 +106,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
  char * const rgr_grd_src, /* I [sng] File containing input grid */
  char * const rgr_grd_dst, /* I [sng] File containing destination grid */
  char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
- char * const rgr_var) /* I [sng] Variable for special regridding treatment */
+ char * const rgr_var, /* I [sng] Variable for special regridding treatment */
+ nco_bool flg_rnr) /* [flg] Renormalize destination values by valid area */
 {
   /* Purpose: Initialize regridding structure */
      
@@ -157,6 +158,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
+  /* Flags */
+  rgr->flg_rnr=flg_rnr; /* [flg] Renormalize destination values by valid area */
+
   /* Did user explicitly request regridding? */
   if(rgr_arg_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr->flg_usr_rqs=True;
 
@@ -383,7 +387,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nco_bool FL_RTR_RMT_LCN;
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
-
+  
   nco_map_sct rgr_map;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
@@ -1464,10 +1468,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !flg_grd_out_2D */
 
   /* Regrid or copy variable values */
+  const nco_bool flg_rnr=rgr->flg_rnr; /* [flg] Renormalize destination values by valid area */
   const size_t grd_sz_in=rgr_map.src_grid_size; /* [nbr] Number of elements in single layer of input grid */
   const size_t grd_sz_out=rgr_map.dst_grid_size; /* [nbr] Number of elements in single layer of output grid */
   double *var_val_dbl_in;
   double *var_val_dbl_out;
+  double *wgt_vld_out=NULL;
   double mss_val_dbl;
   double var_val_crr;
   int *tally=NULL; /* [nbr] Number of valid (non-missing) values */
@@ -1491,13 +1497,13 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   /* OpenMP notes:
      default(): none
-     firstprivate(): tally (preserve NULL-initialization)
+     firstprivate(): tally,wgt_vld_out (preserve NULL-initialization)
      private(): almost everything else
-     shared(): fnc_nm explicit shared for icc 13.1.3 (rhea), default shared for gcc 4.9.2 */
+     shared(): flg_rnr,fnc_nm explicit shared for icc 13.1.3 (rhea), default shared for gcc 4.9.2 */
 #ifdef __INTEL_COMPILER
-# pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+# pragma omp parallel for default(none) firstprivate(tally,wgt_vld_out) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,flg_rnr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 #else /* !__INTEL_COMPILER */
-# pragma omp parallel for default(none) firstprivate(tally) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+# pragma omp parallel for default(none) firstprivate(tally,wgt_vld_out) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1532,7 +1538,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
-	/* Current bug */
 	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt,var_val_dbl_in,var_typ);
 
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
@@ -1541,7 +1546,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ),"Unable to malloc() input value buffer",fnc_nm);
-
+	
 	lvl_nbr=1;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
 
@@ -1550,6 +1555,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	/* Missing value setup */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 	if(has_mss_val) tally=(int *)nco_calloc(var_sz_out,nco_typ_lng(NC_INT));
+	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ),"Unable to malloc() input weight buffer",fnc_nm);
+	if(has_mss_val && flg_rnr) 
+	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) wgt_vld_out[dst_idx]=0.0;
 
 	/* Apply weights */
 	if(!has_mss_val){
@@ -1567,17 +1575,18 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	      val_out_fst+=grd_sz_out;
 	    } /* end loop over lvl */
 	  } /* lvl_nbr > 1 */
-	}else{
+	}else{ /* has_mss_val */
 	  if(lvl_nbr == 1){
 	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 	      idx_in=col_src_adr[lnk_idx];
 	      idx_out=row_dst_adr[lnk_idx];
 	      if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
 		var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		tally[idx_out]++;
 	      } /* endif */
 	    } /* end loop over link */
-	  }else{
+	  }else{ /* lvl_nbr > 1 */
 	    val_in_fst=0L;
 	    val_out_fst=0L;
 	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
@@ -1586,6 +1595,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 		idx_out=row_dst_adr[lnk_idx]+val_out_fst;
 		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
 		  var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		  if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		  tally[idx_out]++;
 		} /* endif */
 	      } /* end loop over link */
@@ -1595,9 +1605,20 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  } /* lvl_nbr > 1 */
 	  /* NCL and ESMF treatment of weights and missing values described at
 	     https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
-	     http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000 */
+	     http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000
+	     NCO implements one of two procedures: "conservative" or "renormalized"
+	     The "conservative" algorithm uses all valid data from the input grid on the output grid
+	     Destination cells receive the weighted valid values of the source cells
+	     This is conservative because the global integrals of the source and destination fields are equal
+	     The "renormalized" algorithm divides the destination value by the sum of the valid weights
+	     This returns "reasonable" values, i.e., the mean of the valid input values
+	     However, the renormalization is effectively extrapolating valid data to missing regions
+	     Hence the input and output integrals are unequal and the regridding is not conservative */
 	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
+	  if(flg_rnr) 
+	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+	      if(!tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
 	} /* !has_mss_val */
 	
 #pragma omp critical
@@ -1612,6 +1633,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	if(tally) tally=(int *)nco_free(tally);
 	if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
 	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
+	if(wgt_vld_out) wgt_vld_out=(double *)nco_free(wgt_vld_out);
       }else{
 	/* Use standard NCO copy routine for variables that are not regridded */
 #pragma omp critical

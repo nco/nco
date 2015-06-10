@@ -6,6 +6,8 @@
 	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
 	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
 
+	* Implement infrastructure for renormalization of destinations affected by missing values
+
 	* Remove extraneous last character from history_of_appended_files
 
 	* Do not attempt date_written/time_written update when var_sz != 8
