@@ -4669,6 +4669,8 @@ directory @var{drc_out} specified by the second argument:
 @example
 @verbatim
 cat > ~/ncdismember << 'EOF'
+#!/bin/sh
+
 # Purpose: Dismember netCDF4/HDF5 hierarchical files. CF-check them.
 # Place each input file group in separate netCDF3 output file
 # Described in NCO User Guide at http://nco.sf.net/nco.html#dismember
@@ -4676,9 +4678,11 @@ cat > ~/ncdismember << 'EOF'
 # Optional: CFchecker command https://bitbucket.org/mde_/cfchecker
 
 # Usage:
-# ncdismember <fl_in> <drc_out> [flg_cf] [cf_vrs] [opt]
+# ncdismember <fl_in> <drc_out> [cf_chk] [cf_vrs] [opt]
 # where fl_in is input file/URL to dismember, drc_out is output directory
-# CF-compliance check is performed when optional third argument is 'cf'
+# CF-compliance check is performed when optional third argument is not '0'
+# Default checker is Decker's cfchecker installed locally
+# Specify cf_chk=nerc for smallified uploads to NERC checker
 # Optional fourth argument cf_vrs is CF version to check
 # Optional fifth argument opt passes straight-through to ncks
 # Arguments must not use shell expansion/globbing
@@ -4688,13 +4692,14 @@ cat > ~/ncdismember << 'EOF'
 # ncdismember http://dust.ess.uci.edu/nco/mdl_1.nc /tmp
 # ncdismember http://thredds-test.ucar.edu/thredds/dodsC/testdods/foo.nc /tmp
 # ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf
+# ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp nerc
 # ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf 1.3
 # ncdismember ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf 1.5 --fix_rec_dmn=all
 
 # Command-line argument defaults
 fl_in="${HOME}/nco/data/mdl_1.nc" # [sng] Input file to dismember/check
 drc_out="${DATA}/nco/tmp" # [sng] Output directory
-flg_cf='0' # [flg] Perform CF-compliance check
+cf_chk='0' # [flg] Perform CF-compliance check? Which checker?
 cf_vrs='1.5' # [sng] Compliance-check this CF version (e.g., '1.5')
 opt='' # [flg] Additional ncks options (e.g., '--fix_rec_dmn=all')
 # Use single quotes to pass multiple arguments to opt=${5}
@@ -4703,7 +4708,7 @@ opt='' # [flg] Additional ncks options (e.g., '--fix_rec_dmn=all')
 # Command-line argument option parsing
 if [ -n "${1}" ]; then fl_in=${1}; fi
 if [ -n "${2}" ]; then drc_out=${2}; fi
-if [ -n "${3}" ]; then flg_cf=${3}; fi
+if [ -n "${3}" ]; then cf_chk=${3}; fi
 if [ -n "${4}" ]; then cf_vrs=${4}; fi
 if [ -n "${5}" ]; then opt=${5}; fi
 
@@ -4713,6 +4718,15 @@ fl_stb=$(basename ${fl_in})
 drc_out=${drc_out}/${fl_stb}
 mkdir -p ${drc_out}
 cd ${drc_out}
+chk_dck='n'
+chk_nrc='n'
+if [ ${cf_chk} = 'nerc' ]; then
+    chk_nrc='y'
+fi # chk_nrc
+if [ ${cf_chk} != '0' ] && [ ${cf_chk} != 'nerc' ]; then
+    chk_dck='y'
+    hash cfchecker 2>/dev/null || { echo >&2 "Local cfchecker command not found, will smallify and upload to NERC checker instead"; chk_nrc='y'; chk_dck='n'; }
+fi # !cf_chk
 # Obtain group list
 grp_lst=`ncks --cdl -m ${fl_in} | grep '// group' | awk '{$1=$2=$3="";sub(/^  */,"",$0);print}'`
 IFS=$'\n' # Change Internal-Field-Separator from <Space><Tab><Newline> to <Newline>
@@ -4726,18 +4740,43 @@ for grp_in in ${grp_lst} ; do
     cmd="ncks -O -3 -G : -g ${grp_in}/ -h --no_tmp_fl --hdr_pad=40 ${hdf4} ${opt} ${fl_in} ${drc_out}/${grp_out}.nc"
     # Use eval in case ${opt} contains multiple arguments separated by whitespace
     eval ${cmd}
-    if [ ${flg_cf} = 'cf' ]; then
-       # cfchecker needs Conventions <= 1.5
+    if [ ${chk_dck} = 'y' ]; then
+       # Decker checker needs Conventions <= 1.6
        no_bck_sls=`echo ${drc_out}/${grp_out} | sed 's/\\\ / /g'`
        ncatted -h -a Conventions,global,o,c,CF-${cf_vrs} ${no_bck_sls}.nc
-    else # !flg_cf
+    else # !chk_dck
        echo ${drc_out}/${grp_out}.nc
-    fi # !flg_cf
+    fi # !chk_dck
 done
-if [ ${flg_cf} = 'cf' ]; then
-    echo 'CFchecker reports CF-compliance of each group in flat netCDF3 format'
+if [ ${chk_dck} = 'y' ]; then
+    echo 'Decker CFchecker reports CF-compliance of each group in flat netCDF3 format'
     cfchecker -c ${cf_vrs} *.nc
-fi # !flg_cf
+fi
+if [ ${chk_nrc} = 'y' ]; then
+    # Portion of script by PJR
+    echo 'Using remote CFchecker http://puma.nerc.ac.uk/cgi-bin/cf-checker.pl'
+    cf_lcn='http://puma.nerc.ac.uk/cgi-bin/cf-checker.pl'
+    for fl in ${drc_out}/*.nc ; do
+	fl_sml=${fl}
+	cf_out=${fl%.nc}.html
+	dmns=`ncdump -h ${fl_in} | sed -n -e '/dimensions/,/variables/p' | grep = | sed -e 's/=.*//'`
+	hyp_sml=''
+	for dmn in ${dmns}; do
+	    dmn_lc=`echo ${dmn} | tr "[:upper:]" "[:lower:]"`
+	    if [ ${dmn_lc} = 'lat' ] || [ ${dmn_lc} = 'latitude' ] || [ ${dmn_lc} = 'lon' ] || [ ${dmn_lc} = 'longitude' ] || [ ${dmn_lc} = 'time' ]; then
+		hyp_sml=`echo ${hyp_sml}" -d ${dmn},0"`
+	    fi # !dmn_lc
+	done
+	# Create small version of input file by sampling only first element of lat, lon, time
+	ncks -O ${hyp_sml} ${fl} ${fl_sml}
+	# Send small file to NERC checker
+	curl --form cfversion=1.6 --form upload=@${fl_sml} --form press="Check%20file" ${cf_lcn} -o ${cf_out}
+	# Strip most HTML to improve readability
+	cat ${cf_out} | sed -e "s/<[^>]*>//g" -e "/DOCTYPE/,/\]\]/d" -e "s/CF-Convention//g" -e "s/Output of//g" -e "s/Compliance Checker//g" -e "s/Check another//g" -e "s/CF-Checker follows//g" -e "s/Received//g" -e "s/for NetCDF//g" -e "s/NetCDF format//g" -e "s/against CF version 1//g" -e "s/\.\.\.//g"
+	echo "Full NERC compliance-check log for ${fl} in ${cf_out}"
+    done
+fi # !nerc
+
 EOF
 chmod 755 ~/ncdismember # Make command executable
 /bin/mv -f ~/ncdismember ~/sh # Store in location on $PATH, e.g., /usr/local/bin
@@ -5889,12 +5928,9 @@ to avoid confusion.
 Availability: @command{ncks}@* 
 Short options: None@*
 Long options: 
-@samp{--map @var{map-file}}@*
-@samp{--rgr_map @var{map-file}}@*
-@samp{--rgr @var{key}=@var{val}}@*
-@samp{--rnr}@*
-@samp{--rgr_rnr}@*
-@samp{--renormalization}@*
+@samp{--map @var{map-file}} or @samp{--rgr_map @var{map-file}}@*
+@samp{--rgr @var{key}=@var{val}} (multiple invocations allowed)@*
+@samp{--rnr} or @samp{--rgr_rnr} or @samp{--renormalize}@*
 @end cartouche
 
 As of @acronym{NCO} version 4.5.0 (June, 2015), @command{ncks} supports 
@@ -5915,11 +5951,11 @@ See those references for additional documentation on map formats.
 
 The regridding currently supported by @acronym{NCO} could equally well
 be called weight-application.
-What @acronym{NCO} actually does is read-in pre-stored weights from the
-@var{map-file} and apply them to (almost) every variable, thereby
-creating a regridded @var{output-file}.
-Hence regridding looks like a standard @command{ncks} command with the
-additional specification of a @var{map-file}:
+@acronym{NCO} reads-in pre-stored weights from the @var{map-file} and
+applies them to (almost) every variable, thereby creating a regridded
+@var{output-file}. 
+Specify regridding with a standard @command{ncks} command and options
+along with the additional specification of a @var{map-file}: 
 @example
 @verbatim
 # Regrid entire file, same output format as input:
@@ -5939,6 +5975,7 @@ ncks -4 -L 1 -t 8 -v FS.?,T --map=map.nc in.nc out.nc
 OpenMP threading works well with regridding large datasets.
 Threading improves throughput of regridding @w{1--10 GB} files by 
 factors of 2--5.
+Options specific to regridding are described below.
 
 @cindex equiangular grid
 @cindex Gaussian grid
