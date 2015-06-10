@@ -390,8 +390,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining mapping weights from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_map);
 
-  /* Make sure file is on local system and is readable or die trying */
+  /* Duplicate (because nco_fl_mk_lcl() free()'s fl_in) */
   fl_in=(char *)strdup(rgr->fl_map);
+  /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;

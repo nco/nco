@@ -886,7 +886,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   nco_prg_id=nco_prg_id_get(); /* Program key */
 
   /* Allocate space for too many structures first then realloc() appropriately
-  It is calling function's responsibility to free() this memory */
+     It is calling function's responsibility to free() this memory */
   var_fix=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
   var_fix_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
   var_prc=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
@@ -906,7 +906,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
     var_nm=var[idx]->nm;
     var_typ=var[idx]->type;
-    /* Until 20131005, NCO default was to consider NC_BYTE and NC_UBYTE as funky, too */
+    /* Until 20131005, NCO default was to consider NC_BYTE and NC_UBYTE as funky, too
+       NB: Unfortunately, ncra and ncwa must process funky variables that contain averaging dimensions
+       Otherwise, a new dummy dimension would be required to store the uncollapsed output */
     if((var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
 
     /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...)
@@ -949,13 +951,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
       break;
     case ncge:
-      /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var[idx]->nm_fll,trv_tbl);
       /* If variable is template, mark as processed */
       if(var_trv->flg_nsm_tpl && var_trv->nco_typ == nco_obj_typ_var){
-        assert(var_trv->flg_nsm_mbr == True);
+        assert(var_trv->flg_nsm_mbr);
         var_op_typ[idx]=prc_typ;
-      }
+      } /* endif */
       break;
     case ncrcat:
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
@@ -1010,13 +1011,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       if(var[idx]->sz == 0L) var_op_typ[idx]=fix_typ;
 
     if(CNV_CCM_CCSM_CF){
-
       nco_bool var_is_fix;  /* [fnc] Variable should be treated as a fixed variable */
-
       var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc);  
-
-      if (var_is_fix) var_op_typ[idx]=fix_typ;
-
+      if(var_is_fix) var_op_typ[idx]=fix_typ;
     } /* end if CNV_CCM_CCSM_CF */
 
     /* Warn about any expected weird behavior */
@@ -1085,7 +1082,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable which to concatenate. A record variable is a variable defined with a record dimension. Often the record dimension, aka unlimited dimension, refers to time. For more information on creating record dimensions within existing datasets, see http://nco.sf.net/nco.html#mk_rec_dmn\n",nco_prg_nm_get());
       break;
     case ncwa:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that contains an averaging dimension\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-character variable with an averaging dimension\n",nco_prg_nm_get());
       break;
     default: nco_dfl_case_prg_id_err(); break;
     } /* end switch */
@@ -1275,32 +1272,32 @@ nco_var_is_fix                               /* [fnc] Variable should be treated
   /* NB: all !strcmp()'s except "msk_" which uses strstr() */
   if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_is_fix=True;
   /* Known "multi-dimensional coordinates" in CCSM-like model output:
-  lat, lon, lev are normally 1-D coordinates
-  Known exceptions:
-  lat and lon are "2-D coordinates" in NARCCAP output
-  NARCCAP specifies lat and lon in "coordinates" attribute of 2-D fields
-  latixy and longxy are "2-D coordinates" in CLM output
-  CLM does not specify latixy and longxy in "coordinates" attribute of any fields
-  NARCCAP output gives all "coordinate-like" fields an "axis" attribute
-  This includes the record coordinate (i.e., "time") which both ncra and ncwa _should_ process
-  CLM does not give an "axis" attribute to any fields
-  One method of chasing down all "coordinate-like" fields is to look
-  for the field name in the "coordinates" attribute of any variable.
-  However, this will miss (false-negative) the case when no variables 
-  use an N-D coordinate-like variable as a coordinate. 
-  And this may hit (false-positive) the record coordinate (often "time")
-  which should be averaged by ncra, though perhaps not by nces.
-  "coordinate-like" variables that should be "fixed", and not
-  differenced, interpolated, or ensemble-averaged, include those 
-  satisfying these conditions:
-  0. Traditional coordinate (1-D variable same name as its dimension)
-  1. Present in a "coordinates" attribute (except "time" for ncra)
-  2. Present in a "bounds" attribute (except "time_bnds" for ncra)
-  3. Contain an "axis" attribute (except "time") fxm not done yet
-  4. Found in empirical list of variables
-  NB: In the above algorithm discussion, "time" is my shorthand 
-  for "the record variable, if any" */
-
+     lat, lon, lev are normally 1-D coordinates
+     Known exceptions:
+     lat and lon are "2-D coordinates" in NARCCAP output
+     NARCCAP specifies lat and lon in "coordinates" attribute of 2-D fields
+     latixy and longxy are "2-D coordinates" in CLM output
+     CLM does not specify latixy and longxy in "coordinates" attribute of any fields
+     NARCCAP output gives all "coordinate-like" fields an "axis" attribute
+     This includes the record coordinate (i.e., "time") which both ncra and ncwa _should_ process
+     CLM does not give an "axis" attribute to any fields
+     One method of chasing down all "coordinate-like" fields is to look
+     for the field name in the "coordinates" attribute of any variable.
+     However, this will miss (false-negative) the case when no variables 
+     use an N-D coordinate-like variable as a coordinate. 
+     And this may hit (false-positive) the record coordinate (often "time")
+     which should be averaged by ncra, though perhaps not by nces.
+     "coordinate-like" variables that should be "fixed", and not
+     differenced, interpolated, or ensemble-averaged, include those 
+     satisfying these conditions:
+     0. Traditional coordinate (1-D variable same name as its dimension)
+     1. Present in a "coordinates" attribute (except "time" for ncra)
+     2. Present in a "bounds" attribute (except "time_bnds" for ncra)
+     3. Contain an "axis" attribute (except "time") fxm not done yet
+     4. Found in empirical list of variables
+     NB: In the above algorithm discussion, "time" is my shorthand 
+     for "the record variable, if any" */
+  
   /* Conditions #1 and #2 are already implemented above in the case() statement */
   /* Check condition #4 above: */
   if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_is_fix=True;

@@ -1706,9 +1706,13 @@ nco_xcp_prc /* [fnc] Perform exception processing on this variable */
   time_crr_tm=gmtime(&time_crr_time_t);
   ctime_sng=ctime(&time_crr_time_t);
 
-  /* Currently this is true for both variables in list */
-  assert(var_sz == 8);
+  /* Currently both variables in list are NC_CHAR of size 8 when written
+     Interestingly, date_written and time_written are 2D (time x char)
+     Thus operators like ncra, ncwa may need to reduce their rank and shrink their size 
+     Otherwise these variables would need a dummy dimension for time or char 
+     For now, do not attempt to update values when var_sz != 8 */
   assert(var_typ == NC_CHAR);
+  if(var_sz != 8) return;
   
   /* One block for each variable in exception list in nco_is_xcp() */
   if(!strcmp(var_nm,"date_written")){
