@@ -902,6 +902,7 @@ extern "C" {
     char *lon_nm; /* [sng] Name of dimension to recognize as longitude */
     char *lon_vrt_nm; /* [sng] Name of non-rectangular boundary variable for longitude */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
+    double wgt_vld_thr; /* [frc] Weight threshold for valid destination value */
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */
     int rgr_nbr; /* [nbr] Number of regridding arguments */

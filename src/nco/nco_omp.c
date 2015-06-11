@@ -141,7 +141,9 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
       break;
     case ncwa: 
       // 20150530: Turn-on OpenMP for debugging
-      thr_nbr_max_fsh=8;
+      // 20150610: 8 threads with ncwa seemed to work for a little while, but then got flaky. Turned-off for 4.5.0 release
+      // thr_nbr_max_fsh=8;
+      thr_nbr_max_fsh=1;
       break;
       /* Operators with higher maximum pre-set thread limit (NB: not all of these are threaded!) */
     case ncbo: 
