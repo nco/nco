@@ -30,7 +30,10 @@ libtool(v)
 Makefile	Top-level Makefile created by configure from Makefile.in
 Makefile.am	NCO directory structure used by automake to create Makefile.in
 Makefile.in	Makefile template created from Makefile.am by automake and used by autoconf
+README.md	GitHub Repository description in markdown format
 stamp-h1(v)	Time-stamp
+.gitignore	Git ignore
+.travis.yml	Travis automated test-builds
 
 Top-level directories:
 nco/autobld	Files related to and used by autotools: autoconf/automake/autolib
