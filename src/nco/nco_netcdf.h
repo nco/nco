@@ -268,6 +268,7 @@ int nco_create(const char * const fl_nm,const int cmode,int * const nc_id);
 int nco__create(const char * const fl_nm,const int cmode,const size_t sz_ntl,size_t * const bfr_sz_hnt,int * const nc_id);
 int nco_open(const char * const fl_nm,const int mode,int * const nc_id);
 int nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id);
+int nco_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id);
 int nco__open(const char * const fl_nm,const int mode,size_t * const bfr_sz_hnt,int * const nc_id);
 int nco_redef(const int nc_id);
 int nco_set_fill(const int nc_id,const int fill_mode,int * const old_mode);
@@ -381,6 +382,9 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 #ifndef NC_HAVE_RENAME_GRP
   int nc_rename_grp(int grp_id,const char * const grp_nm);
 #endif /* NC_HAVE_RENAME_GRP */
+#if NC_LIB_VERSION < 440
+  int nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id);
+#endif /* 4.4.0 */
 
 /* Begin netCDF4 stubs */
 #ifndef HAVE_NETCDF4_H

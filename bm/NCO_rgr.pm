@@ -3972,23 +3972,23 @@ if(0){
 ####################
 
 #ncwa #1
+    $dsc_sng="Creating %tmp_fl_03% again (FAILURE netCDF4 ncrename nco821) ";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc %tmp_fl_03%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tmp_fl_03%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 %tmp_fl_04%";
-    $dsc_sng="Creating %tmp_fl_03% again (FAILURE netCDF4 ncrename nco821) ";
     $tst_cmd[4]="1";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.
 
 #ncwa #2
+    $dsc_sng="normalize by denominator upper hemisphere (FAILURE netCDF4 ncrename nco821)";
     push(@tst_cmd, "ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc %tmp_fl_03%");
     push(@tst_cmd, "ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tmp_fl_03%");
     push(@tst_cmd, "ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tmp_fl_03% %tmp_fl_04%");
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw -d lat,0.0,90.0 %tmp_fl_04% %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%g' -v one %tmp_fl_00%");
-    $dsc_sng="normalize by denominator upper hemisphere (FAILURE netCDF4 ncrename nco821)";
     $prsrv_fl=1; # save previously generated files.
 #	$nsr_xpc= 1;
 # tst_run();
@@ -4000,153 +4000,154 @@ if(0){
 #ncwa #3
 # 20140207: Behavior changed to comply with documentation that coordinate variables always return averages, never extrema or other statistics
 # Hence request for min(lat) should actually return avg(lat) = 0 != -90
+# ncwa -O -y min -v lat ~/nco/data/in.nc ~/foo.nc
+    $dsc_sng="return average coordinate coordinate variable during minimization for non-coordinate variables";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
-    $dsc_sng="return average coordinate coordinate variable during minimization for non-coordinate variables";
     $tst_cmd[2]="0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #4
+    $dsc_sng="pass through non-averaged (i.e., non-processed) packed data to output";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -v pck,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tmp_fl_00%";
-    $dsc_sng="pass through non-averaged (i.e., non-processed) packed data to output";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #5
+    $dsc_sng="do not normalize by denominator (FAILURE netCDF4 nco946)";
     $tst_cmd[0]="ncwa -N $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v mask %tmp_fl_00%";
-    $dsc_sng="do not normalize by denominator (FAILURE netCDF4 nco946)";
     $tst_cmd[2]="50";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #6
+    $dsc_sng="average with missing value attribute";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -v mss_val $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v mss_val %tmp_fl_00%";
-    $dsc_sng="average with missing value attribute";
     $tst_cmd[2]="73";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #7
+    $dsc_sng="average without missing value attribute";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -v no_mss_val $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v no_mss_val %tmp_fl_00%";
-    $dsc_sng="average without missing value attribute";
     $tst_cmd[2]="5.0e35";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #8
+    $dsc_sng="average masked coordinate";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat -m lat -M 90.0 -T eq -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat %tmp_fl_00%";
-    $dsc_sng="average masked coordinate";
     $tst_cmd[2]="90.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #9
+    $dsc_sng="average masked variable";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat_var -m lat -M 90.0 -T eq -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat_var %tmp_fl_00%";
-    $dsc_sng="average masked variable";
     $tst_cmd[2]="2.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #10
+    $dsc_sng="average masked, weighted coordinate";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -m lev -M 100.0 -T eq -a lev -w lev_wgt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lev %tmp_fl_00%";
-    $dsc_sng="average masked, weighted coordinate";
     $tst_cmd[2]="100.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #11
+    $dsc_sng="average masked, weighted variable";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev_var -m lev -M 100.0 -T gt -a lev -w lev_wgt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lev_var %tmp_fl_00%";
-    $dsc_sng="average masked, weighted variable";
     $tst_cmd[2]="666.6667";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #12
+    $dsc_sng="weight conforms to variable first time";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat -a lat -w gw -d lat,0 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat %tmp_fl_00%";
-    $dsc_sng="weight conforms to variable first time";
     $tst_cmd[2]="-90.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #13
+    $dsc_sng="average all missing values with weights";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v mss_val_all -a lon -w lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_all %tmp_fl_00%";
-    $dsc_sng="average all missing values with weights";
     $tst_cmd[2]="1.0e36";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #14
+    $dsc_sng="average some missing values with unity weights";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v val_one_mss -a lat -w wgt_one $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v val_one_mss %tmp_fl_00%";
-    $dsc_sng="average some missing values with unity weights";
     $tst_cmd[2]="1.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #15
+    $dsc_sng="average masked variable with some missing values";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -T lt -a lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v msk_prt_mss_prt %tmp_fl_00%";
-    $dsc_sng="average masked variable with some missing values";
     $tst_cmd[2]="0.5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #16
+    $dsc_sng="average uniform field with uniform weights";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area -v area -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v area %tmp_fl_00%";
-    $dsc_sng="average uniform field with uniform weights";
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #17
+    $dsc_sng="average uniform field with asymmetric weights";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area_asm -v area -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v area %tmp_fl_00%";
-    $dsc_sng="average uniform field with asymmetric weights";
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #18
+    $dsc_sng="average asymmetric field with asymmetric weights";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area_asm -v area2 -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v area2 %tmp_fl_00%";
-    $dsc_sng="average asymmetric field with asymmetric weights";
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #19
+    $dsc_sng="min switch on type double, some missing values";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
-    $dsc_sng="min switch on type double, some missing values";
     $tst_cmd[2]="2";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4154,11 +4155,11 @@ if(0){
 
 #ncwa #20
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction with min switch and missing values";
     @tst_cmd=(); # really reset array. $#tst_cmd=0; sets last index=0 --> list has one element.
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -v three_dmn_var_dbl -d time,3 -d lat,0 %tmp_fl_00%");
     # used to cut for field 7. (1 + 3x2 + 0x1=7)
-    $dsc_sng="Dimension reduction with min switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
@@ -4166,10 +4167,10 @@ if(0){
 
 #ncwa #21
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction with min switch";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,9 -d lat,1 %tmp_fl_00%");
     # used to cut for field 20. (1 + 9x2 + 1x1 = 20)
-    $dsc_sng="Dimension reduction with min switch";
     $prsrv_fl=1; ## this is not needed anymore-- now independent from prev test-- remove this line soon
     push(@tst_cmd,"77");
     push(@tst_cmd, "SS_OK");
@@ -4178,10 +4179,10 @@ if(0){
 
 #ncwa #22
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type int with min switch and missing values";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_int -d time,2 -d lat,0 %tmp_fl_00%");
     # used to cut field 5: (1 + 2x2 + 0x1 = 5) 
-    $dsc_sng="Dimension reduction on type int with min switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
@@ -4189,10 +4190,10 @@ if(0){
 
 #ncwa #23
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type int variable";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_int -d time,3 -d lat,0 %tmp_fl_00%");
     # used to cut field 7: (1 + 3x2 + 0x1 = 7) 
-    $dsc_sng="Dimension reduction on type int variable";
     $prsrv_fl=1;
     push(@tst_cmd, "25");
     push(@tst_cmd, "SS_OK");
@@ -4201,10 +4202,10 @@ if(0){
 
 #ncwa #24
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type short variable with min switch and missing values";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_sht -d time,9 -d lat,1 %tmp_fl_00%");
     # used to cut field 20: (1 + 9x2 + 1x1 = 20) 
-    $dsc_sng="Dimension reduction on type short variable with min switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
@@ -4212,10 +4213,10 @@ if(0){
 
 #ncwa #25
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type short variable";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_sht -d time,3 -d lat,1 %tmp_fl_00%");
     # used to cut field 8: (1 + 3x2 + 1x1 = 8) 
-    $dsc_sng="Dimension reduction on type short variable";
     $prsrv_fl=1;
     push(@tst_cmd, "29");
     push(@tst_cmd, "SS_OK");
@@ -4223,18 +4224,18 @@ if(0){
     @tst_cmd=(); # Reset array
 
 #ncwa #26
+    $dsc_sng="Dimension reduction with min flag on type float variable";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var %tmp_fl_00%";
-     $dsc_sng="Dimension reduction with min flag on type float variable";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
 
 #ncwa #27
+    $dsc_sng="Max flag on type float variable";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v four_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v four_dmn_rec_var %tmp_fl_00%";
-    $dsc_sng="Max flag on type float variable";
     $tst_cmd[2]="240";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4243,10 +4244,10 @@ if(0){
 #ncwa #28
 # ncwa -h -O -y max -v three_dmn_var_dbl -a lat,lon in.nc ~/foo.nc
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type double variable with max switch and missing values";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -v three_dmn_var_dbl -d time,3 %tmp_fl_00%");
     # used to cut field 4: (1 + 3x1=4) 
-    $dsc_sng="Dimension reduction on type double variable with max switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
@@ -4254,10 +4255,10 @@ if(0){
 
 #ncwa #29
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type double variable";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,4 %tmp_fl_00%"); 
     # used to cut field 5: (1 + 4x1=5) 
-    $dsc_sng="Dimension reduction on type double variable";
     $prsrv_fl=1;
     push(@tst_cmd, "40");
     push(@tst_cmd, "SS_OK");
@@ -4266,10 +4267,10 @@ if(0){
 
 #ncwa #30
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type int variable with min switch and missing values";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_int -d time,2 -d lon,0 %tmp_fl_00%");
     # used to cut field 9: (1 + 2x4 + 0x1=9) 
-    $dsc_sng="Dimension reduction on type int variable with min switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
@@ -4277,10 +4278,10 @@ if(0){
 
 #ncwa #31
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type int variable";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_int -d time,3 -d lon,0 %tmp_fl_00%");
     # used to cut field 13 = 1 + 3x4 + 0x1
-    $dsc_sng="Dimension reduction on type int variable";
     $prsrv_fl=1;
     push(@tst_cmd, "29");
     push(@tst_cmd, "SS_OK");
@@ -4289,10 +4290,10 @@ if(0){
 
 #ncwa #32
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type short variable with max switch and missing values";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_sht -d time,9 -d lon,0 %tmp_fl_00%");
     # used to cut field 37 = 1 + 9x4 + 0x1
-    $dsc_sng="Dimension reduction on type short variable with max switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
@@ -4300,10 +4301,10 @@ if(0){
 
 #ncwa #33
 # will fail SS - ncks not the last cmd
+    $dsc_sng="Dimension reduction on type short, max switch variable";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_sht -d time,8 -d lon,0 %tmp_fl_00%");
     # used to cut field 33 = 1 + 8x4 + 0x1
-    $dsc_sng="Dimension reduction on type short, max switch variable";
     $prsrv_fl=1;
     push(@tst_cmd, "69");
     push(@tst_cmd, "SS_OK");
@@ -4311,18 +4312,18 @@ if(0){
     @tst_cmd=(); # Reset array
 
 #ncwa #34
+    $dsc_sng="rms with weights";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -v lat_cpy $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v lat_cpy %tmp_fl_00%";;
-    $dsc_sng="rms with weights";
     $tst_cmd[2]="90";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #35
+    $dsc_sng="weights would cause SIGFPE without dbl_prc patch";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w val_half_half -v val_one_one_int $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_one_one_int %tmp_fl_00%";;
-    $dsc_sng="weights would cause SIGFPE without dbl_prc patch";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4338,9 +4339,9 @@ if(0){
     $#tst_cmd=0; # Reset array
 
 #ncwa #37
+    $dsc_sng="test wrapped ttl with dbl_prc patch (harmless failure expected/OK on all chips since wrap behavior is not IEEE-specified)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v val_max_max_sht $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht %tmp_fl_00%";
-    $dsc_sng="test wrapped ttl with dbl_prc patch (harmless failure expected/OK on all chips since wrap behavior is not IEEE-specified)";
 #    $nsr_xpc= -31536 ; # Expected on Pentium IV GCC Debian 3.4.3-13, PowerPC xlc
 #    $nsr_xpc= -32768 ; # Expected on Xeon GCC Fedora 3.4.2-6.fc3
 #    $nsr_xpc= -32768 ; # Expected on Opteron
@@ -4352,54 +4353,54 @@ if(0){
     $#tst_cmd=0; # Reset array
 
 #ncwa #38
+    $dsc_sng="min with weights";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tmp_fl_00%";;
-    $dsc_sng="min with weights";
     $tst_cmd[2]="-900";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #39
+    $dsc_sng="max with weights";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tmp_fl_00%";;
-    $dsc_sng="max with weights";
     $tst_cmd[2]="900";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #40
+    $dsc_sng="Return mean time coordinate (when computing totals)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v time %tmp_fl_00%";
-    $dsc_sng="Return mean time coordinate (when computing totals)";
     $tst_cmd[2]="5.5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 #ncwa #41
+    $dsc_sng="Return total record (when computing totals)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
-    $dsc_sng="Return total record (when computing totals)";
     $tst_cmd[2]="55";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
 #ncwa #42
+    $dsc_sng="Retain degenerate dimensions (one variable)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -b -v lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v lon %tmp_fl_00%";
-    $dsc_sng="Retain degenerate dimensions (one variable)";
     $tst_cmd[2]="lon[0]=135";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
 #ncwa #43
+    $dsc_sng="Retain degenerate dimensions (all variables)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -b  $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v lon %tmp_fl_00%";
-    $dsc_sng="Retain degenerate dimensions (all variables)";
     $tst_cmd[2]="lon[0]=135";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4420,9 +4421,9 @@ if(0){
 #$tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var %tmp_fl_00%";
 #$dsc_sng="Dimension reduction with min flag on type float variable";
 #$tst_cmd[2]="1";
+    $dsc_sng="(Groups) Dimension reduction with min flag on type float variable";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -g g10 -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -g g10 -v three_dmn_rec_var %tmp_fl_00%";
-    $dsc_sng="(Groups) Dimension reduction with min flag on type float variable";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4431,13 +4432,13 @@ if(0){
 #ncwa #45
 #NEW NCO 4.3.3
 #same as #ncwa #27
-# ncwa -h -O -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc ~/foo.nc
+# ncwa -O -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -C -H --no_blank -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,3 ~/foo.nc
 # will fail SS - ncks not the last cmd
+    $dsc_sng="(Groups) Dimension reduction on type double variable with max switch and missing values";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon $in_pth_arg in_grp_3.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,3 %tmp_fl_00%");
     # used to cut field 4: (1 + 3x1=4) 
-    $dsc_sng="(Groups) Dimension reduction on type double variable with max switch and missing values";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
@@ -4446,13 +4447,13 @@ if(0){
 #ncwa #46
 #NEW NCO 4.3.3
 #same as #ncwa #28
-# ncwa -h -O  -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc ~/foo.nc
+# ncwa -h -O  -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -C -H -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,4 ~/foo.nc 
 # will fail SS - ncks not the last cmd
+    $dsc_sng="(Groups) Dimension reduction on type double variable";
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon $in_pth_arg in_grp_3.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,4 %tmp_fl_00%"); 
     # used to cut field 5: (1 + 4x1=5) 
-    $dsc_sng="(Groups) Dimension reduction on type double variable";
     $prsrv_fl=1;
     push(@tst_cmd, "40");
     push(@tst_cmd, "SS_OK");
@@ -4462,11 +4463,11 @@ if(0){
 #ncwa #47
 #NEW NCO 4.3.3
 #same as #ncwa #33
-# ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy in_grp_3.nc ~/foo.nc
+# ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -C -H -s '%f' -g g20g1 -v lat_cpy ~/foo.nc
+    $dsc_sng="(Groups) rms with weights";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -g g20g1 -v lat_cpy $in_pth_arg in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -g g20g1 -v lat_cpy %tmp_fl_00%";;
-    $dsc_sng="(Groups) rms with weights";
     $tst_cmd[2]="90";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4474,34 +4475,34 @@ if(0){
 
 #ncwa #48
 #NEW NCO 4.3.6
-#ncwa -O -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 in_grp_3.nc ~/foo.nc
+#ncwa -O -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 ~/nco/data/in_grp_3.nc ~/foo.nc
+    $dsc_sng="(Groups) Weights and hyperslabs";
     $tst_cmd[0]="ncwa $omp_flg -O $fl_fmt $nco_D_flg -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v a %tmp_fl_00%";;
-    $dsc_sng="(Groups) Weights and hyperslabs";
     $tst_cmd[2]="a = 35.5803";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
 #ncwa #49
-# ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc ~/foo.nc
+# ncwa -h -O -v lev -a lev -w lev_wgt ~/nco/data/in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
+    $dsc_sng="(Groups) Weights and groups (relative weight name test 1)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
-    $dsc_sng="(Groups) Weights and groups (relative weight name test 1)";
     $tst_cmd[2]="lev = 241.667";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
 #ncwa #50
-# ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc ~/foo.nc
+# ncwa -h -O -v lev -a lev -w lev_wgt ~/nco/data/in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
+    $dsc_sng="(Groups) Weights and groups (relative weight name test 2)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g19 -v lev %tmp_fl_00%";
-    $dsc_sng="(Groups) Weights and groups (relative weight name test 2)";
     $tst_cmd[2]="lev = 230.769";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4511,9 +4512,9 @@ if(0){
 #ncwa #51
 # ncwa -h -O -a time -b -v time ~/nco/data/in_grp.nc ~/foo.nc
 # ncks ~/foo.nc | grep 'time dimension 0'
+    $dsc_sng="(Groups) retain degenerate record dimension";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -b -v time $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -v /g2/time %tmp_fl_00% | grep '=5.5'";
-    $dsc_sng="(Groups) retain degenerate record dimension";
     $tst_cmd[2]="time[0]=5.5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4521,12 +4522,12 @@ if(0){
 	
 #NEW 4.4.0	
 #ncwa #52 Use -w /g8/lev_wgt
-# ncwa -h -O -v lev -a lev -w /g8/lev_wgt in_grp_3.nc ~/foo.nc
+# ncwa -h -O -v lev -a lev -w /g8/lev_wgt ~/nco/data/in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
+    $dsc_sng="(Groups) Weights and groups (absolute weight name -w /g8/lev_wgt test 1)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w /g8/lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
-    $dsc_sng="(Groups) Weights and groups (absolute weight name -w /g8/lev_wgt test 1)";
     $tst_cmd[2]="lev = 241.667";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4534,12 +4535,12 @@ if(0){
 
 #NEW 4.4.0		
 #ncwa #53 Use -w /g8/lev_wgt
-# ncwa -h -O -v lev -a lev -w /g19/lev_wgt in_grp_3.nc ~/foo.nc
+# ncwa -h -O -v lev -a lev -w /g19/lev_wgt ~/nco/data/in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
+    $dsc_sng="(Groups) Weights and groups (absolute weight name -w /g19/lev_wgt test 2)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w /g8/lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g19 -v lev %tmp_fl_00%";
-    $dsc_sng="(Groups) Weights and groups (absolute weight name -w /g19/lev_wgt test 2)";
     $tst_cmd[2]="lev = 241.667";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4548,12 +4549,12 @@ if(0){
 #NEW 4.4.0	
 #ncwa #54 
 #Use -a /g8/lev, -w /g8/lev_wgt
-# ncwa -h -O -v lev -a /g8/lev -w /g8/lev_wgt in_grp_3.nc ~/foo.nc
+# ncwa -h -O -v lev -a /g8/lev -w /g8/lev_wgt ~/nco/data/in_grp_3.nc ~/foo.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
+    $dsc_sng="(Groups) Weights and groups (absolute dimension name -a /g8/lev)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a /g8/lev -w /g8/lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
-    $dsc_sng="(Groups) Weights and groups (absolute dimension name -a /g8/lev)";
     $tst_cmd[2]="lev = 241.667";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4596,7 +4597,7 @@ if(0){
 	
 #NEW 4.4.2	
 #ncwa #58
-#ncwa -O -y avg -a time301 -v time301 -C in_grp_3.nc ~/foo.nc
+#ncwa -O -y avg -a time301 -v time301 -C ~/nco/data/in_grp_3.nc ~/foo.nc
 #ncks -m ~/foo.nc
     $dsc_sng="Groups (Cell methods) (Create, average) -y avg -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y avg -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -4608,7 +4609,7 @@ if(0){
 	
 #NEW 4.4.2	
 #ncwa #59
-#ncwa -O -y max -a time301 -v time301 -C in_grp_3.nc ~/foo.nc	  
+#ncwa -O -y max -a time301 -v time301 -C ~/nco/data/in_grp_3.nc ~/foo.nc	  
 #ncks -m ~/foo.nc	
     $dsc_sng="Groups (Cell methods) (Create, maximum) -y max -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y max -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";

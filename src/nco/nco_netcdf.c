@@ -664,6 +664,37 @@ nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
   return rcd;
 } /* end nco_open */
 
+#if NC_LIB_VERSION < 440
+int
+nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id)
+{
+  /* Purpose: Pseudo-library stub function to open a netCDF file stored in RAM
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library that it too old to have the nc_open_mem() function. */
+  int rcd;
+  const char fnc_nm[]="nc_open_mem()";
+  rcd=strlen(fl_nm)+mode+sz;
+  (void)fprintf(stdout,"ERROR: %s reports attempt to open file memory was foiled because libnetcdf.a does not contain nc_open_mem(). To obtain this functionality, please rebuild NCO against netCDF library version 4.4.0-rc1 (released ~20150610) or later.\nExiting...\n",fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  *nc_id=*((int *)void_ptr);
+  return rcd;
+} /* end nc_open_mem() */
+#endif /* 4.4.0 */
+
+int
+nco_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id)
+{
+  /* Purpose: Wrapper for nc_open_mem() */
+  const char fnc_nm[]="nco_open_mem()";
+  int rcd;
+  rcd=nc_open_mem(fl_nm,mode,sz,void_ptr,nc_id);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s unable to open_mem file \"%s\"\n",fnc_nm,fl_nm);
+    nco_err_exit(rcd,fnc_nm);
+  } /* endif */
+  return rcd;
+} /* end nco_open_mem() */
+
 #ifdef ENABLE_MPI
 # ifdef HAVE_NETCDF4_H
 /* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a 
@@ -1000,7 +1031,7 @@ nc_rename_grp(int grp_id,const char * const grp_nm)
   rcd=NC_NOERR;
   rcd+=nco_inq_grpname(grp_id,grp_nm_old);
   (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\" was foiled because libnetcdf.a does not contain nc_rename_grp(). To obtain this functionality, please rebuild NCO against netCDF library version 4.3.1-pre1 (released ~201309) or later.\nContinuing as though nothing untoward happened...\n",fnc_nm,grp_nm_old,grp_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_rename_grp()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nc_rename_grp() */
 #endif /* NC_HAVE_RENAME_GRP */

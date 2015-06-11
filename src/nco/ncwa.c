@@ -844,11 +844,11 @@ main(int argc,char **argv)
 
 #ifdef _OPENMP
     /* OpenMP notes:
-       firstprivate(): 
+       firstprivate(): rcd gets incremented, so keep initial value
        lastprivate(): retain rcd value from last thread
        private(): wgt_avg does not need initialization
        shared(): msk and wgt are not altered within loop */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info) lastprivate(rcd) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_nm,op_typ_rlt,out_id,trv_tbl,var_prc,var_prc_out,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,rcd) lastprivate(rcd) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_nm,op_typ_rlt,out_id,trv_tbl,var_prc,var_prc_out,wgt_nm)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       char *grp_out_fll=NULL; /* [sng] Group name */

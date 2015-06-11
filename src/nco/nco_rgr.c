@@ -182,6 +182,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
   
+  rgr->wgt_vld_thr=0.0; /* [frc] Weight threshold for valid destination value */
+
   /* Parse extended kvm options */
   int rgr_arg_idx; /* [idx] Index over rgr_arg (i.e., separate invocations of "--rgr var1[,var2]=val") */
   int rgr_var_idx; /* [idx] Index over rgr_lst (i.e., all names explicitly specified in all "--rgr var1[,var2]=val" options) */
@@ -1468,6 +1470,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !flg_grd_out_2D */
 
   /* Regrid or copy variable values */
+  const double wgt_vld_thr=rgr->wgt_vld_thr; /* [frc] Weight threshold for valid destination value */
   const nco_bool flg_rnr=rgr->flg_rnr; /* [flg] Renormalize destination values by valid area */
   const size_t grd_sz_in=rgr_map.src_grid_size; /* [nbr] Number of elements in single layer of input grid */
   const size_t grd_sz_out=rgr_map.dst_grid_size; /* [nbr] Number of elements in single layer of output grid */
@@ -1499,9 +1502,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
      default(): none
      firstprivate(): tally,wgt_vld_out (preserve NULL-initialization)
      private(): almost everything else
-     shared(): flg_rnr,fnc_nm explicit shared for icc 13.1.3 (rhea), default shared for gcc 4.9.2 */
+     shared(): flg_rnr,fnc_nm,wgt_vld_thr explicit shared for icc 13.1.3 (rhea), default shared for gcc 4.9.2 */
 #ifdef __INTEL_COMPILER
-# pragma omp parallel for default(none) firstprivate(tally,wgt_vld_out) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,flg_rnr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+# pragma omp parallel for default(none) firstprivate(tally,wgt_vld_out) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,flg_rnr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw,wgt_vld_thr)
 #else /* !__INTEL_COMPILER */
 # pragma omp parallel for default(none) firstprivate(tally,wgt_vld_out) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 #endif /* !__INTEL_COMPILER */
@@ -1618,7 +1621,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
 	  if(flg_rnr) 
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	      if(tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
+	      if(wgt_vld_out[dst_idx] >= wgt_vld_thr) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx]; else var_val_dbl_out[dst_idx]=mss_val_dbl;
 	} /* !has_mss_val */
 	
 #pragma omp critical

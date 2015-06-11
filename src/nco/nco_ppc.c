@@ -60,7 +60,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
 (const int nc_id, /* I [id] netCDF input file ID */
  int *dfl_lvl, /* O [enm] Deflate level */
  const int fl_out_fmt,  /* I [enm] Output file format */
- char * const ppc_arg[], /* I [sng] List of user-specified PPC */
+ char * const ppc_arg[], /* I [sng] List of user-specified PPCs */
  const int ppc_arg_nbr, /* I [nbr] Number of PPC specified */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
@@ -106,7 +106,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
     } /* end if */
   } /* end for */
 
-  /* PPC default exists, set all non-coordinate variables to default first */
+  /* PPC "default" specified, set all non-coordinate variables to default first */
   for(ppc_var_idx=0;ppc_var_idx<ppc_var_nbr;ppc_var_idx++){
     if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default")){
       nco_ppc_set_dflt(nc_id,ppc_lst[ppc_var_idx].val,trv_tbl);
