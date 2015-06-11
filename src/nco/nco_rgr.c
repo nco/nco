@@ -107,7 +107,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
  char * const rgr_grd_dst, /* I [sng] File containing destination grid */
  char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
  char * const rgr_var, /* I [sng] Variable for special regridding treatment */
- nco_bool flg_rnr) /* [flg] Renormalize destination values by valid area */
+ const double wgt_vld_thr) /* I [frc] Weight threshold for valid destination value */
 {
   /* Purpose: Initialize regridding structure */
      
@@ -128,6 +128,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   const char fnc_nm[]="nco_rgr_ini()";
   
+  const double wgt_vld_thr_min=1.0e-10; /* [frc] Minimum weight threshold for valid destination value */
+
   rgr_sct *rgr;
 
   /* Allocate */
@@ -158,9 +160,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
-  /* Flags */
-  rgr->flg_rnr=flg_rnr; /* [flg] Renormalize destination values by valid area */
-
   /* Did user explicitly request regridding? */
   if(rgr_arg_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr->flg_usr_rqs=True;
 
@@ -182,8 +181,18 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
   
-  rgr->wgt_vld_thr=0.0; /* [frc] Weight threshold for valid destination value */
-
+  /* Flags */
+  if(wgt_vld_thr == NC_MIN_DOUBLE){
+    rgr->flg_rnr=False;
+  }else if(wgt_vld_thr >= 0.0 && wgt_vld_thr <= 1.0){
+    /* NB: Weight thresholds of 0.0 or nearly zero can lead to underflow or divide-by-zero errors */
+    rgr->flg_rnr=True;
+    rgr->wgt_vld_thr=wgt_vld_thr;
+  }else{
+    (void)fprintf(stderr,"%s: ERROR weight threshold must be in [0.0,1.0] and user supplied wgt_vld_thr = %g\n",nco_prg_nm_get(),wgt_vld_thr);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+  
   /* Parse extended kvm options */
   int rgr_arg_idx; /* [idx] Index over rgr_arg (i.e., separate invocations of "--rgr var1[,var2]=val") */
   int rgr_var_idx; /* [idx] Index over rgr_lst (i.e., all names explicitly specified in all "--rgr var1[,var2]=val" options) */
@@ -1619,9 +1628,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	     Hence the input and output integrals are unequal and the regridding is not conservative */
 	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
-	  if(flg_rnr) 
-	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	      if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
+	  if(flg_rnr){
+	    if(wgt_vld_thr == 0.0){
+	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+		if(tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
+	    }else{
+	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+		if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
+	    } /* !wgt_vld_thr */
+	  } /* !flg_rnr */
 	} /* !has_mss_val */
 	
 #pragma omp critical

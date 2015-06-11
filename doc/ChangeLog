@@ -6,6 +6,8 @@
 	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
 	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
 
+	* Make renormalize algorithm consider number of valid inputs when wgt_thr = 0.0, weight of valid inputs when wgt_thr > 0.0.
+
 	* Reduce thr_nbr_max_fsh from 8 to 1 for ncwa stability with 4.5.0 release
 
 	* Verify OpenMP with ncwa is flaky

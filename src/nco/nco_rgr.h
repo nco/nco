@@ -142,7 +142,7 @@ extern "C" {
    char * const rgr_grd_dst, /* I [sng] File containing destination grid */
    char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
    char * const rgr_var, /* I [sng] Variable for special regridding treatment */
-   nco_bool flg_rnr); /* [flg] Renormalize destination values by valid area */
+   const double wgt_vld_thr); /* I [frc] Weight threshold for valid destination value */
     
   rgr_sct * /* O [sct] Pointer to free'd regridding structure */
   nco_rgr_free /* [fnc] Deallocate regridding structure */

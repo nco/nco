@@ -157,7 +157,6 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_rgr=False; /* [flg] Regrid */
-  nco_bool flg_rnr=False; /* [flg] Renormalize destination values by valid area */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -209,6 +208,8 @@ main(int argc,char **argv)
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.flg_ddra=False};
 #endif /* !__cplusplus */
+
+  double wgt_vld_thr=NC_MIN_DOUBLE; /* [frc] Weight threshold for valid destination value */
 
   extern char *optarg;
   extern int optind;
@@ -318,9 +319,6 @@ main(int argc,char **argv)
       {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
       {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
       {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"rgr_rnr",no_argument,0,0}, /* [flg] Renormalize destination values by valid area */
-      {"rnr",no_argument,0,0}, /* [flg] Renormalize destination values by valid area */
-      {"renormalize",no_argument,0,0}, /* [flg] Renormalize destination values by valid area */
       {"secret",no_argument,0,0},
       {"shh",no_argument,0,0},
       {"srm",no_argument,0,0}, /* [flg] Print ncStream */
@@ -377,6 +375,9 @@ main(int argc,char **argv)
       {"rgr_map",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
       {"map_file",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
       {"rgr_var",required_argument,0,0}, /* I [sng] Variable for special regridding treatment */
+      {"rgr_rnr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
+      {"rnr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
+      {"renormalize",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
       {"scrip",required_argument,0,0}, /* SCRIP file */
       {"tst_udunits",required_argument,0,0},
       {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
@@ -601,7 +602,10 @@ main(int argc,char **argv)
         flg_rgr=True;
 	rgr_map=(char *)strdup(optarg);
       } /* endif rgr_map */
-      if(!strcmp(opt_crr,"rnr") || !strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize")) flg_rnr=True;
+      if(!strcmp(opt_crr,"rnr") || !strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize")){
+        wgt_vld_thr=strtod(optarg,&sng_cnv_rcd);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtod",sng_cnv_rcd);
+      } /* endif rgr_rnr */
       if(!strcmp(opt_crr,"rgr_var")) rgr_var=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
         (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nRegridding\t\t--rgr...\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
@@ -960,7 +964,7 @@ main(int argc,char **argv)
       /* Initialize regridding structure */
       rgr_in=(char *)strdup(fl_in);
       rgr_out=(char *)strdup(fl_out);
-      rgr_nfo=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,flg_rnr);
+      rgr_nfo=nco_rgr_ini(in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,wgt_vld_thr);
       rgr_nfo->fl_out_tmp=nco_fl_out_open(rgr_nfo->fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
       /* Copy Global Metadata */
