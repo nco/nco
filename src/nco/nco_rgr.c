@@ -128,8 +128,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   const char fnc_nm[]="nco_rgr_ini()";
   
-  const double wgt_vld_thr_min=1.0e-10; /* [frc] Minimum weight threshold for valid destination value */
-
   rgr_sct *rgr;
 
   /* Allocate */
@@ -186,6 +184,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     rgr->flg_rnr=False;
   }else if(wgt_vld_thr >= 0.0 && wgt_vld_thr <= 1.0){
     /* NB: Weight thresholds of 0.0 or nearly zero can lead to underflow or divide-by-zero errors */
+    // const double wgt_vld_thr_min=1.0e-10; /* [frc] Minimum weight threshold for valid destination value */
     rgr->flg_rnr=True;
     rgr->wgt_vld_thr=wgt_vld_thr;
   }else{
@@ -794,8 +793,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     const double lat_ctr_tst_ngl_eqi_pol=-90.0+180.0/(lat_nbr_out-1);
     const double lat_ctr_tst_ngl_eqi_fst=-90.0+180.0*1.5/lat_nbr_out;
     double lat_ctr_tst_gss;
-    if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_fst) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_fst;
-    if(lat_ctr_out[1] == lat_ctr_tst_ngl_eqi_pol) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_pol;
+    /* In diagnosing grids, agreement with input to single-precision is "good enough for government work"
+       Hence some comparisons cast from double to float before comparison
+       20150526: T42 grid from SCRIP and related maps
+       20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006 */
+    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_ngl_eqi_fst) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_fst;
+    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_ngl_eqi_pol) nco_grd_2D_typ=nco_grd_2D_ngl_eqi_pol;
     double *wgt_Gss_out=NULL; // [frc] Gaussian weights double precision
     if(nco_grd_2D_typ == nco_grd_2D_nil){
       /* Check for Gaussian grid */
@@ -805,8 +808,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       wgt_Gss_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
       (void)nco_lat_wgt_gss(lat_nbr_out,lat_sin_out,wgt_Gss_out);
       lat_ctr_tst_gss=rdn2dgr*asin(lat_sin_out[1]);
-      /* Agreement with input to single-precision is "good enough for government work"
-	 Gaussian weights on output grid will be double-precision accurate
+      /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
       if((float)lat_ctr_out[1] == (float)lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
       if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);

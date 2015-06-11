@@ -40,8 +40,26 @@ A. Regrid global datasets with ESMF or SCRIP remap files.
    ncks -4 -L 1 -t 8 -v FS.?,T --map=map.nc in.nc out.nc
    http://nco.sf.net/nco.html#regrid
 
-A. NCO introduces a  convention to retain the history-attribute  
-   contents of all files that were appended to a file. This convention 
+A. ncdismember is your one-stop shop for flattening and CF-checking.
+   When specifically requested, or when it cannot find a local
+   cfchecker command, ncdismember will now upload each file (which
+   could be a group) to the NERC CF compliance-checker, and print a
+   the report summary (and save the full HTML reports for viewing).
+   Previously, ncdismember required a local cfchecker command to check
+   files, but few users enjoyed the pain of installing a cfchecker.
+   This is obviated by automatic uploads to the NERC web service.
+   To conserve bandwidth, ncdismember "smallifies" the data file
+   before uploading, by hyperslabbing the dataset into a single
+   element of latitude, longitude, and time. Thanks to Phil Rasch for
+   this idea and sample code.
+   Using no checker, default (Decker) checker, NERC checker:
+   ncdismember ~/nco/data/mdl_1.nc /tmp
+   ncdismember ~/nco/data/mdl_1.nc /tmp decker
+   ncdismember ~/nco/data/mdl_1.nc /tmp nerc
+   http://nco.sf.net/nco.html#ncdismember
+
+A. NCO introduces a convention to retain the history-attribute
+   contents of all files that were appended to a file. This convention  
    stores those contents in the new global attribute called
    history_of_appended_files. This complements the history-attribute
    to provide a more complete provenance. The optional -h switch

@@ -1,3 +1,7 @@
+2015-06-11  Charlie Zender  <zender@uci.edu>
+
+	* Always cast latitudes to float before diagnosing grid type to	avoid failures with strangely-off grids
+
 2015-06-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.0 release procedure:
