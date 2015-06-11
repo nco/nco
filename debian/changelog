@@ -1,8 +1,8 @@
 nco (4.5.0-1) unstable; urgency=low
 
-  * new upstream version (fxm)
+  * new upstream version --map, --rnr=wgt, -A provenance, [date/time]_written, ncdismember
 
- -- Charlie Zender <zender@uci.edu>  Thu, 21 Jun 2014 12:25:08 -0700
+ -- Charlie Zender <zender@uci.edu>  Thu, 11 Jun 2014 12:25:08 -0700
 
 nco (4.4.9-1) unstable; urgency=low
 
