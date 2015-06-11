@@ -5930,7 +5930,8 @@ Short options: None@*
 Long options: 
 @samp{--map @var{map-file}} or @samp{--rgr_map @var{map-file}}@*
 @samp{--rgr @var{key}=@var{val}} (multiple invocations allowed)@*
-@samp{--rnr} or @samp{--rgr_rnr} or @samp{--renormalize}@*
+@samp{--rnr=@var{wgt_thr}} or @samp{--rgr_rnr=@var{wgt_thr}} or 
+@samp{--renormalize=@var{wgt_thr}}@*
 @end cartouche
 
 As of @acronym{NCO} version 4.5.0 (June, 2015), @command{ncks} supports 
@@ -6018,15 +6019,40 @@ However, renormalization is equivalent to extrapolating valid data to
 missing regions. 
 Input and output integrals are unequal and renormalized regridding is
 not conservative.  
+
+@cindex @var{wgt_thr}
 By default, @acronym{NCO} implements the ``conservative'' algorithm.
 To employ the ``renormalized'' algorithm instead, use the @samp{--rnr},
-@samp{--rgr_rnr}, or @samp{--renormalize} options.
+@samp{--rgr_rnr}, or @samp{--renormalize} options to supply
+@var{wgt_thr}, the threshold weight for valid destination values.
+Valid values must cover at least the fraction @var{wgt_thr} of the
+destination gridcell to meet the threshold for a non-missing destination
+value. 
+When @var{wgt_thr} is exceeded, the mean valid value is renormalized by
+the valid area and placed in the destination gridcell. 
+If the valid area covers less than @var{wgt_thr}, then the destination
+gridcell is assigned the missing value.
+Valid values of @var{wgt_thr} range from zero to one.
+Keep in mind though, that this threshold is potentially a divisor, and 
+values of zero or very near to zero can lead to floating-point underflow
+and divide-by-zero errors.
+For convenience @acronym{NCO} permits users to specify a 
+@math{@var{wgt_thr} = 0.0} threshold weight.
+This indicates that any valid data should be represented and
+renormalized on the output grid. 
 @example
 @verbatim
-ncks       --map=map.nc in.nc out.nc # Conservative regridding
-ncks --rnr --map=map.nc in.nc out.nc # Renormalized regridding
+ncks           --map=map.nc in.nc out.nc # Conservative regridding
+ncks --rnr=0.1 --map=map.nc in.nc out.nc # Renormalized regridding
 @end verbatim
 @end example
+The first example uses the default conservative algorithm.
+The second example specifies that valid values must cover at least 10%
+of the destination gridcell to meet the threshold for a non-missing
+destination value. 
+For a valid destination area of, say 25%, the renormalized algorithm
+produces a destination value four-times greater than the conservative
+algorithm.  
 
 @acronym{NCO} automatically annotates the output with relevant metadata
 such as coordinate bounds, axes, and vertices (@w{@`{a} la} @acronym{CF}). 
@@ -15822,7 +15848,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--grp_xtr_var_xcl] [-H] [-h] [--hdn] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--map @var{map-file}] [--md5_digest] [--mk_rec_dmn @var{dim}]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
-[-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rnr] [-s @var{format}] 
+[-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rnr=wgt] [-s @var{format}] 
 [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
 @var{input-file} [[@var{output-file}]]
 @end example
