@@ -1,0 +1,12 @@
+language: c
+compiler:
+  - gcc
+  - clang
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y -qq libnetcdf6 libnetcdf-dev netcdf-bin
+
+script:
+  - make -j 4
+  - make test
