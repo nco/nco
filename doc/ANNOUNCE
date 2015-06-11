@@ -10,9 +10,9 @@ currently limited to global datasets. These features build on
 infrastructure pioneered by Phil Jones (SCRIP), and the multi-agency
 Earth System Modeling Framework (ESMF). 
 
-Work on NCO 4.5.1 has commenced and will support more regridding,  
-additional ncra flexibility with weights, and easier builds on
-supercomputer systems that use modules. 
+Work on NCO 4.5.1 has commenced and will support more regridding, 
+additional ncra flexibility with weights, better threading, and easier
+builds on supercomputer systems that use modules. 
 
 Enjoy,
 Charlie
@@ -40,25 +40,26 @@ A. Regrid global datasets with ESMF or SCRIP remap files.
    ncks -4 -L 1 -t 8 -v FS.?,T --map=map.nc in.nc out.nc
    http://nco.sf.net/nco.html#regrid
 
-A. ncdismember is your one-stop shop for flattening and CF-checking.
+B. ncdismember is a one-stop shop for flattening and CF-checking.
    When specifically requested, or when it cannot find a local
-   cfchecker command, ncdismember will now upload each file (which
-   could be a group) to the NERC CF compliance-checker, and print a
-   the report summary (and save the full HTML reports for viewing).
+   cfchecker command, ncdismember will now upload each file (or,
+   in the case of netCDF4 hierarchical files, each group) to the NERC
+   CF compliance-checker, print the report summary, and save the full
+   HTML reports for viewing after Orange is the New Black is over. 
    Previously, ncdismember required a local cfchecker command to check
-   files, but few users enjoyed the pain of installing a cfchecker.
-   This is obviated by automatic uploads to the NERC web service.
-   To conserve bandwidth, ncdismember "smallifies" the data file
-   before uploading, by hyperslabbing the dataset into a single
-   element of latitude, longitude, and time. Thanks to Phil Rasch for
-   this idea and sample code.
+   files, though few users have managed to install a cfchecker.
+   This need is obviated by automatic uploads to the NERC web service.
+   To conserve bandwidth, ncdismember first "smallifies" the data file
+   by hyperslabbing the dataset into a single element of latitude,
+   longitude, and time---only then does it upload. Thanks to Phil
+   Rasch for this idea and sample code.
    Using no checker, default (Decker) checker, NERC checker:
    ncdismember ~/nco/data/mdl_1.nc /tmp
    ncdismember ~/nco/data/mdl_1.nc /tmp decker
    ncdismember ~/nco/data/mdl_1.nc /tmp nerc
    http://nco.sf.net/nco.html#ncdismember
 
-A. NCO introduces a convention to retain the history-attribute
+C. NCO introduces a convention to retain the history-attribute
    contents of all files that were appended to a file. This convention  
    stores those contents in the new global attribute called
    history_of_appended_files. This complements the history-attribute
@@ -66,7 +67,7 @@ A. NCO introduces a convention to retain the history-attribute
    turns-off this behavior.
    http://nco.sf.net/nco.html#history
 
-A. When copying the variables date_written or time_written to the
+D. When copying the variables date_written or time_written to the
    output file, NCO now updates their contents the GMT time reported
    by the system-supplied gmtime().
    http://nco.sf.net/nco.html#cnv_acme
@@ -81,7 +82,7 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.5.0 built/tested with netCDF
-   4.3.3.1 (20150522) on top of HDF5 hdf5-1.8.13 with:
+   4.4.0-rc1 (20150610) on top of HDF5 hdf5-1.8.13 with:
 
    cd ~/nco;./configure # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
