@@ -1621,7 +1621,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
 	  if(flg_rnr) 
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	      if(wgt_vld_out[dst_idx] >= wgt_vld_thr) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx]; else var_val_dbl_out[dst_idx]=mss_val_dbl;
+	      if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
 	} /* !has_mss_val */
 	
 #pragma omp critical
