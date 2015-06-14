@@ -669,12 +669,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   long lat_nbr_out; /* [nbr] Number of latitudes  in rectangular destination grid */
   long ncol_nbr_out; /* [nbr] Number of columns in destination grid */
   if(flg_grd_out_1D){
-    bnd_nbr_out=rgr_map.dst_grid_corners; /* NB: this assumes rectangular latitude and longitude and is invalid for other quadrilaterals */
+    bnd_nbr_out=rgr_map.dst_grid_corners;
     lon_nbr_out=dmn_sz_out_int[0];
     lat_nbr_out=dmn_sz_out_int[0];
     ncol_nbr_out=dmn_sz_out_int[0];
   }else if(flg_grd_out_2D){
-    bnd_nbr_out=2; /* NB: this assumes rectangular latitude and longitude and is invalid for other quadrilaterals */
+    bnd_nbr_out=2; /* NB: Assumes rectangular latitude and longitude and is invalid for other quadrilaterals */
     lon_nbr_out=dmn_sz_out_int[lon_psn_dst];
     lat_nbr_out=dmn_sz_out_int[lat_psn_dst];
     ncol_nbr_out=0;
@@ -963,6 +963,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       if(flg_grd_in_2D){
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	  /* Pre-determine flags necessary during next loop */
+	  dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
 	  if(!has_lon) has_lon=!strcmp(dmn_nm_cp,lon_nm);
 	  if(!has_lat) has_lat=!strcmp(dmn_nm_cp,lat_nm);
 	} /* end loop over dimensions */
@@ -977,16 +978,19 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  break;
 	} /* endif */
       } /* end loop over dimensions */
-      if(flg_grd_in_2D && (has_lon || has_lat)){
+      if(dmn_idx == dmn_nbr_in){
+	/* Not regridded, so must be omitted or copied... */
+	if(flg_grd_in_2D && (has_lon || has_lat)){
 	/* Single spatial dimensional variables on 2D input grids are likely extensive (e.g., grd_mrd_lng from bds)
 	   They can only be salvaged with explicit rules or implicit assumptions */
-	trv_tbl->lst[idx_tbl].flg_xtr=False;
-	var_xcl_nbr++;
-	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) extensive-seeming (i.e., 1D spatial variable in 2D input grid) variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
-	break;
-      } /* endif */
-      /* Copy all variables that are not regridded or omitted */
-      if(dmn_idx == dmn_nbr_in) var_cpy_nbr++;
+	  trv_tbl->lst[idx_tbl].flg_xtr=False;
+	  var_xcl_nbr++;
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) extensive-seeming (i.e., 1D spatial variable in 2D input grid) variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
+	}else{ /* !omitted */
+	  /* Copy all variables that are not regridded or omitted */
+	  var_cpy_nbr++;
+	} /* !omitted */
+      } /* endif not regridded */
     } /* end nco_obj_typ_var */
   } /* end idx_tbl */
   if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria\n",nco_prg_nm_get(),fnc_nm);
@@ -1978,8 +1982,8 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   /* Purpose: Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
   case nco_grd_2D_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
-  case nco_grd_2D_ngl_eqi_pol: return "Equi-angle latitude grid with poles at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO";
-  case nco_grd_2D_ngl_eqi_fst: return "Equi-angle latitude grid with poles at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
+  case nco_grd_2D_ngl_eqi_pol: return "Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO";
+  case nco_grd_2D_ngl_eqi_fst: return "Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 

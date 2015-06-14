@@ -1,3 +1,9 @@
+2015-06-14  Charlie Zender  <zender@uci.edu>
+
+	* Regridder works on bds output files
+
+	* Omit extensive-seeming 1D variables on 2D input grids (e.g., grd_rds_rth, grd_mrd_lng, grd_znl_lng, lat_sz, lon_sz)
+
 2015-06-13  Charlie Zender  <zender@uci.edu>
 
 	* Reverse ordinal number of lat and lon dimensions in src_grid_rank, dst_grid_rank
