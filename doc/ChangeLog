@@ -1,5 +1,7 @@
 2015-06-13  Charlie Zender  <zender@uci.edu>
 
+	* Reverse ordinal number of lat and lon dimensions in src_grid_rank, dst_grid_rank
+
 	* Modify routines to accept TempestRemap-generated maps
 
 2015-06-11  Charlie Zender  <zender@uci.edu>
