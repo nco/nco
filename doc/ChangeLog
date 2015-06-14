@@ -1,6 +1,10 @@
 2015-06-14  Charlie Zender  <zender@uci.edu>
 
-	* Regridder works on bds output files
+	* NCO 4.5.1-alpha1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha1 final changes'
+	git tag -a 4.5.1-alpha1 -m 'Version 4.5.1-alpha1 tag: Regrid from Tempest-generated map-files';git push --tags
+
+	* Regridder works on bds output files with Tempest-generated map-files
 
 	* Omit extensive-seeming 1D variables on 2D input grids (e.g., grd_rds_rth, grd_mrd_lng, grd_znl_lng, lat_sz, lon_sz)
 

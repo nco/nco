@@ -964,6 +964,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	  /* Pre-determine flags necessary during next loop */
 	  dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
+	  /* fxm: generalize to include any variable containing two coordinates with "standard_name" = "latitude" and "longitude" */
 	  if(!has_lon) has_lon=!strcmp(dmn_nm_cp,lon_nm);
 	  if(!has_lat) has_lat=!strcmp(dmn_nm_cp,lat_nm);
 	} /* end loop over dimensions */
@@ -971,7 +972,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
 	/* Regrid variables containing the horizontal spatial dimension on 1D grids, and both latitude and longitude on 2D grids */
-	/* fxm: generalize to include any variable containing two coordinates with "standard_name" = "latitude" and "longitude" */
 	if(!strcmp(dmn_nm_cp,col_nm) || (has_lon && has_lat)){
 	  trv_tbl->lst[idx_tbl].flg_rgr=True;
 	  var_rgr_nbr++;
