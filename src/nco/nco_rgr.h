@@ -59,8 +59,9 @@ extern "C" {
 
   typedef enum nco_rgr_mpf_typ_enm{ /* [enm] Mapfile type enum */
     nco_rgr_mpf_nil=0,
-    nco_rgr_mpf_SCRIP,
     nco_rgr_mpf_ESMF,
+    nco_rgr_mpf_SCRIP,
+    nco_rgr_mpf_Tempest,
   } nco_rgr_mpf_typ_enm;
 
   typedef enum nco_rgr_grd_typ_enm{ /* [enm] Regrid type enum */
@@ -84,6 +85,7 @@ extern "C" {
     nco_rgr_nrm_fracarea, /* [] Allowed and explained by SCRIP */
     nco_rgr_nrm_destarea, /* [] Only option supported by ESMF, ignored when non-conservative methods used */
     nco_rgr_nrm_none, /* [] Allowed and explained by SCRIP */
+    nco_rgr_nrm_unknown, /* Tempest */
   } nco_rgr_nrm_typ_enm;
 
   /* ESMF: The map_method attribute indicates the interpolation type. The format of the interpolation weight file was developed by a group outside of ESMF, because of its use by utilities outside of ESMF control, the range of some of the meta data is constrained. The map_method is one of these. Because of this constraint, there is no map method corresponding to patch interpolation. A weight file generated with the "patch" interpolation method will have map_method set to "Bilinear remapping".  */
@@ -91,7 +93,8 @@ extern "C" {
     nco_rgr_mth_nil=0,
     nco_rgr_mth_conservative,
     nco_rgr_mth_bilinear,
-    nco_rgr_mth_none, /* []  */
+    nco_rgr_mth_none,
+    nco_rgr_mth_unknown, /* Tempest */
   } nco_rgr_mth_typ_enm;
 
   typedef struct{ /* nco_map_sct */
