@@ -344,7 +344,7 @@ prs_cls::ncap_var_write_omp(
   
   // FINAL SCAN
   Nvar=var_vtr.find(var->nm);
-  if(Nvar) {
+  if(Nvar){
     // temporary fix make typ_dsk same as type
     Nvar->var->typ_dsk=Nvar->var->type;
     bdef=true;
@@ -352,15 +352,14 @@ prs_cls::ncap_var_write_omp(
     //Possibly overwrite bram !!
     bram=Nvar->flg_mem;
     
-    if(var->has_mss_val)
+    if(var->has_mss_val){
       (void)nco_mss_val_cp(var,Nvar->var);
     // delete missing value
-    else if(Nvar->var->has_mss_val){
+    }else if(Nvar->var->has_mss_val){
       Nvar->var->has_mss_val=False;
       Nvar->var->mss_val.vp=(void*)nco_free(Nvar->var->mss_val.vp);
-    }      
-    
-  } 
+    } // !has_mss_val
+  } // !Nvar
   
   
   // Deal with a new RAM only variable
@@ -375,7 +374,6 @@ prs_cls::ncap_var_write_omp(
     return True;
   }
   
-  
   // Deal with a an existing RAM variable
   if(bdef && bram){
     var_sct *var_ref;
@@ -383,8 +381,6 @@ prs_cls::ncap_var_write_omp(
     
     // De-reference
     var_ref=Nvar->var;
-    
-    
     
     // check sizes are the same 
     if(var_ref->sz != var->sz) {
@@ -395,7 +391,7 @@ prs_cls::ncap_var_write_omp(
       wrn_prn(fnc_nm,os.str());  
       var = nco_var_free(var);
       return False;
-    }
+    } // var->sz
     
     /* convert type to disk type */
     var=nco_var_cnf_typ(var_ref->type,var);    
@@ -407,16 +403,15 @@ prs_cls::ncap_var_write_omp(
     
     Nvar->flg_stt=2;
     
-    
     (void)nco_var_free(var);
     
     return True;
-  }
+  } // !(bdef && bram)
   
   // var is already defined but not populated 
   if(bdef && !bram && Nvar->flg_stt==1){
     ;
-  }
+  } // endif
   
   // var is already defined & populated in output 
   if(bdef && !bram && Nvar->flg_stt==2){
@@ -424,9 +419,8 @@ prs_cls::ncap_var_write_omp(
     var_sct* var_inf;
     var_inf=Nvar->cpyVarNoData();
     
-    
     /* check sizes are the same */
-    if(var_inf->sz != var->sz) {
+    if(var_inf->sz != var->sz){
       std::ostringstream os;
       os<< "Variable "<< var->nm << " size=" << var->sz << " has aleady been saved in ";
       os<< fl_out << " with size=" << var_inf->sz;
@@ -436,11 +430,10 @@ prs_cls::ncap_var_write_omp(
       var = nco_var_free(var);
       var_inf=nco_var_free(var_inf);
       return False;
-    }
+    } // var->sz
     
     /* convert type to disk type */
     var=nco_var_cnf_typ(var_inf->type,var);
-    
     
     //Swap values about
     var_inf->val=var->val;var->val.vp=(void*)NULL;
@@ -457,7 +450,7 @@ prs_cls::ncap_var_write_omp(
     
 #ifdef _OPENMP
     if(omp_in_parallel()) err_prn(fnc_nm, "Attempt to go into netCDF define mode while in OpenMP parallel mode");
-#endif
+#endif // _OPENMP
     (void)nco_redef(out_id);
     
     /* Define variable */   
@@ -474,11 +467,8 @@ prs_cls::ncap_var_write_omp(
 	  /* Set chunk sizes, if requested */
 	  // fxm: must first allow cnk_sz specification in ncap2.cc main()
 	  //if(var->cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var->cnk_sz);
-      } /* endif netCDF4 */
-
-
+	} /* endif netCDF4 */
       } /* endif */
-      
     } // bdef
     /* Put missing value 
        if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
@@ -505,7 +495,7 @@ prs_cls::ncap_var_write_omp(
 #ifdef NCO_RUSAGE_DBG
   /* Compile: cd ~/nco/bld;make 'USR_TKN=-DNCO_RUSAGE_DBG';cd - */
   /* Print rusage memory usage statistics */
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) {
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
     std::ostringstream os;
     os<<" Writing variable "<<var_nm; <<" to disk.";
     dbg_prn(fnc_nm,os.str());

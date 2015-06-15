@@ -1,4 +1,14 @@
+2015-06-15  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.1-alpha2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha2 final changes'
+	git tag -a 4.5.1-alpha2 -m 'Version 4.5.1-alpha2 tag: Regrid from Tempest-generated map-files';git push --tags
+
+	* Patch Makefiles so ncap2.cc is passed ENABLE_NETCDF4 flag (solves Heather Aldridge's report)
+
 2015-06-14  Charlie Zender  <zender@uci.edu>
+
+	* Verified NCO is regression-free with GCC 5.1.1
 
 	* NCO 4.5.1-alpha1 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha1 final changes'

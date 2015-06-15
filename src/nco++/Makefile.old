@@ -158,7 +158,7 @@ ifndef ${MPI_FAKE} # MPI
  MPI_FAKE := N
 endif # endif MPI_FAKE
 ifndef ${NETCDF4} # netCDF4 support
- NETCDF4 := N
+ NETCDF4 := Y
 endif # endif NETCDF4
 ifndef NETCDF_ROOT
  NETCDF_ROOT := /usr/local
@@ -184,7 +184,7 @@ ifndef ${OMP} # OpenMP
  OMP := N
 endif # endif OMP
 ifndef OPTS
- OPTS := O
+ OPTS := D
 endif # endif OPTS
 ifndef ${PNETCDF} # pnetCDF support
  PNETCDF := N
@@ -542,6 +542,13 @@ endif # !UDUNITS
 ifeq (${null},$(findstring SGI,${PVM_ARCH}))
  CPP_TKN_OS += -DHAVE_CSTDLIB
 endif # SGI
+ifeq (${NETCDF4},Y)
+ CPP_TKN_OS += -DENABLE_NETCDF4 -DHAVE_NETCDF4_H
+endif # endif NETCDF4
+ifeq (${PNETCDF},Y)
+ CPP_TKN_OS += -DENABLE_PNETCDF
+endif # !PNETCDF
+# endif PNETCDF
 
 # Works on AIX and AIX46K
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
