@@ -860,10 +860,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* end nco_grd_2D_typ switch */
     
     /* Fuzzy test of latitude weight normalization */
-    const double eps_wgt_ttl=1.0e-14; /* [frc] Roundoff tolerance for sum of quadrature weights */
     double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
-    assert(1.0-lat_wgt_ttl/2.0 < eps_wgt_ttl);
+    assert(1.0-lat_wgt_ttl/2.0 < 1.0e-14); /* [frc] Roundoff tolerance for sum of quadrature weights */
     
     if(nco_dbg_lvl_get() >= nco_dbg_sbr){
       (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);

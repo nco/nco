@@ -3946,32 +3946,12 @@ nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variab
   /* Purpose: Store processed and fixed variables info into GTT */
 
   /* Store processed variables info into table */
-  for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
-    trv_sct *var_trv;
-
-    /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var_prc[idx_var]->nm_fll,trv_tbl);
-
-    assert(var_trv);
-
-    /* Mark fixed/processed flag in table for "var_nm_fll" */
+  for(int idx_var=0;idx_var<nbr_var_prc;idx_var++)
     (void)trv_tbl_mrk_prc_fix(var_prc[idx_var]->nm_fll,prc_typ,trv_tbl);
 
-  } /* Store processed variables info into table */
-
   /* Store fixed variables info into table */
-  for(int idx_var=0;idx_var<nbr_var_fix;idx_var++){
-    trv_sct *var_trv;
-
-    /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var_fix[idx_var]->nm_fll,trv_tbl);
-
-    assert(var_trv);
-
-    /* Mark fixed/processed flag in table for "var_nm_fll" */
+  for(int idx_var=0;idx_var<nbr_var_fix;idx_var++)
     (void)trv_tbl_mrk_prc_fix(var_fix[idx_var]->nm_fll,fix_typ,trv_tbl);
-
-  } /* Store fixed variables info into table */
 
   return;
 } /* end nco_var_prc_fix_trv() */

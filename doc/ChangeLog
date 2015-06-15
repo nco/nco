@@ -1,6 +1,8 @@
 2015-06-15  Charlie Zender  <zender@uci.edu>
 
-	* Fix off-by-one memory overwrite in nco_cnv_cf_cll_mth_add()
+	* Variables used only in assert() statements flag "unused" warnings with GCC < 4.9.x
+
+	* Fix off-by-one memory overwrite in nco_cnv_cf_cll_mth_add() (symptom was heap corruption bug in ncwa)
 
 	* NCO 4.5.1-alpha2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha2 final changes'
