@@ -1,6 +1,12 @@
+2015-06-16  Charlie Zender  <zender@uci.edu>
+
+	* Travis CI builds now "pass" on gcc and clang. Regressions are due to old netCDF library.
+
+	* Work on Travis CI YAML .travis.yml file syntax with http://lint.travis-ci.org
+
 2015-06-15  Charlie Zender  <zender@uci.edu>
 
-	* Variables used only in assert() statements flag "unused" warnings with GCC < 4.9.x
+	* Variables used only in assert() statements flag "unused" warnings with GCC < 4.9.x. Change logic to prevent some of these warnings.
 
 	* Fix off-by-one memory overwrite in nco_cnv_cf_cll_mth_add() (symptom was heap corruption bug in ncwa)
 
