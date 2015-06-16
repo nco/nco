@@ -1,3 +1,5 @@
+# Syntax-check Travis YAML .travis.yml files at http://lint.travis-ci.org
+
 language: c
 compiler:
   - gcc
