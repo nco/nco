@@ -1,10 +1,40 @@
+2015-06-15  Charlie Zender  <zender@uci.edu>
+
+	* Variables used only in assert() statements flag "unused" warnings with GCC < 4.9.x
+
+	* Fix off-by-one memory overwrite in nco_cnv_cf_cll_mth_add() (symptom was heap corruption bug in ncwa)
+
+	* NCO 4.5.1-alpha2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha2 final changes'
+	git tag -a 4.5.1-alpha2 -m 'Version 4.5.1-alpha2 tag: Regrid from Tempest-generated map-files';git push --tags
+
+	* Patch Makefiles so ncap2.cc is passed ENABLE_NETCDF4 flag (solves Heather Aldridge's report)
+
+2015-06-14  Charlie Zender  <zender@uci.edu>
+
+	* Verified NCO is regression-free with GCC 5.1.1
+
+	* NCO 4.5.1-alpha1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha1 final changes'
+	git tag -a 4.5.1-alpha1 -m 'Version 4.5.1-alpha1 tag: Regrid from Tempest-generated map-files';git push --tags
+
+	* Regridder works on bds output files with Tempest-generated map-files
+
+	* Omit extensive-seeming 1D variables on 2D input grids (e.g., grd_rds_rth, grd_mrd_lng, grd_znl_lng, lat_sz, lon_sz)
+
+2015-06-13  Charlie Zender  <zender@uci.edu>
+
+	* Reverse ordinal number of lat and lon dimensions in src_grid_rank, dst_grid_rank
+
+	* Modify routines to accept TempestRemap-generated maps
+
 2015-06-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.0 release procedure:
  	Changes since nco-4.4.9: --map, --rnr=wgt, -A provenance, [date/time]_written, ncdismember
-	cd ~/nco;git commit -a -m 'Version 4.5.0 release: '
+	cd ~/nco;git commit -a -m 'Version 4.5.0 release final changes'
 	git tag -d 4.5.0;git push origin :refs/tags/4.5.0
-	git tag -a 4.5.0 -m 'Version 4.5.0: ';git push --tags
+	git tag -a 4.5.0 -m 'Version 4.5.0: Even Keel';git push --tags
 
 	* Always cast latitudes to float before diagnosing grid type to	avoid failures with strangely-off grids
 

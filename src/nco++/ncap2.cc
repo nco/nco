@@ -1,5 +1,5 @@
 /* $Header$ */
-
+ 
 /* ncap2 -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
@@ -554,14 +554,14 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&misc_obj);
 
 #ifdef ENABLE_GSL
-#ifdef ENABLE_NCO_GSL
+# ifdef ENABLE_NCO_GSL
   // nco_gsl functions
   nco_gsl_cls nco_gsl_obj(true); 
 
   // Populate vector
   (void)pop_fmc_vtr(fmc_vtr,&nco_gsl_obj);
-#endif //ENABLE_NCO_GSL
-#endif //ENABLE_GSL
+# endif // !ENABLE_NCO_GSL
+#endif // !ENABLE_GSL
    
   // GSL functions
 #ifdef ENABLE_GSL
@@ -693,10 +693,10 @@ main(int argc,char **argv)
   prs_arg.cnk_sz=(size_t*)NULL; /* Chunk sizes NULL for now */ 
   
 #ifdef NCO_NETCDF4_AND_FILLVALUE
-  prs_arg.NCAP4_FILL = (fl_out_fmt==NC_FORMAT_NETCDF4 || fl_out_fmt==NC_FORMAT_NETCDF4_CLASSIC);
+  prs_arg.NCAP4_FILL=(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC);
 #else
   prs_arg.NCAP4_FILL=false;
-#endif
+#endif // !ENABLE_NETCDF4
   prs_arg.ntl_scn=false;
   (void)ram_vars_add(&prs_arg);
   
@@ -1137,28 +1137,28 @@ ram_vars_add
 
 #endif // !ENABLE_NETCDF4
   
-  #ifdef INFINITY
-  var1=ncap_sclr_var_mk(std::string("inff"),INFINITY); //float
+#ifdef INFINITY
+  var1=ncap_sclr_var_mk(std::string("inff"),INFINITY); // float
   prs_arg->ncap_var_write(var1,true);
-  #endif
+#endif // !INFINITY
 
-  #ifdef NAN
-  var1=ncap_sclr_var_mk(std::string("nanf"),NAN);    //float
+#ifdef NAN
+  var1=ncap_sclr_var_mk(std::string("nanf"),NAN); // float
   prs_arg->ncap_var_write(var1,true);
-  #endif
+#endif // !NAN
 
-  #ifdef HUGE_VAL
-  var1=ncap_sclr_var_mk(std::string("inf"),HUGE_VAL);    //double
+#ifdef HUGE_VAL
+  var1=ncap_sclr_var_mk(std::string("inf"),HUGE_VAL); // double
   prs_arg->ncap_var_write(var1,true);
-  #endif
+#endif // !HUGE_VAL
 
   char buff[20];
   double dnan;
 #ifndef _MSC_VER
-  if( (dnan=nan(buff)) ){
-    var1=ncap_sclr_var_mk(std::string("nan"),dnan);    //double
+  if((dnan=nan(buff))){
+    var1=ncap_sclr_var_mk(std::string("nan"),dnan); // double
     prs_arg->ncap_var_write(var1,true);
-  }
-#endif
+  } // ! dnan
+#endif // !_MSC_VER
 
 } // end ram_vars_add()

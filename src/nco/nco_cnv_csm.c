@@ -394,10 +394,13 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       if(att_typ != NC_STRING && att_typ != NC_CHAR) (void)fprintf(stderr,"%s: WARNING %s reports existing cell_methods attribute for variable %s is type %s. Unpredictable results...\n",nco_prg_nm_get(),fnc_nm,aed.var_nm,nco_typ_sng(att_typ));
       /* Insert space between existing attribute and appended attribute */
       att_val_cpy=(char *)strdup(aed.val.cp);
-      aed.val.cp=(char *)nco_realloc(aed.val.cp,(++aed.sz)*sizeof(char));
+      /* Add one for space character */
+      aed.sz++;
+      /* Add one for NUL-terminator */
+      aed.val.cp=(char *)nco_realloc(aed.val.cp,(aed.sz+1L)*sizeof(char));
       aed.val.cp[0]=' ';
       aed.val.cp[1]='\0';
-      (void)strcat(aed.val.cp,att_val_cpy);
+      (void)strncat(aed.val.cp,att_val_cpy,aed.sz-1L);
       if(att_val_cpy) att_val_cpy=(char *)nco_free(att_val_cpy);
     }else{
       aed.mode=aed_create;

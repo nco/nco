@@ -417,10 +417,10 @@ with care.
 Append the string "Data version 2.0.\\n" to the global attribute
 .BR history :
 .RS
-ncatted -O -a history,global,a,c,"Data version 2.0\\n" in.nc 
+ncatted \-O \-a history,global,a,c,"Data version 2.0\\n" in.nc 
 .RE
 Note the use of embedded C language 
-.BR printf() -style
+.BR printf() \-style
 escape
 sequences. 
 .PP
@@ -430,14 +430,14 @@ attribute for variable
 .B T
 from whatever it currently is to "temperature":
 .RS
-ncatted -O -a long_name,T,o,c,temperature in.nc
+ncatted \-O \-a long_name,T,o,c,temperature in.nc
 .RE
 .PP
 Delete all existing 
 .B units
 attributes:
 .RS
-ncatted -O -a units,,d,, in.nc
+ncatted \-O \-a units,,d,, in.nc
 .RE
 The value of 
 .I var_nm
@@ -456,7 +456,7 @@ Modify all existing
 .B units
 attributes to "meter second-1"
 .RS
-ncatted -O -a units,,m,c,"meter second-1" in.nc
+ncatted \-O \-a units,,m,c,"meter second-1" in.nc
 .RE
 .PP
 Overwrite the 
@@ -465,7 +465,7 @@ attribute of variable
 .B energy
 to an array of four integers. 
 .RS
-ncatted -O -a quanta,energy,o,s,"010,101,111,121" in.nc
+ncatted \-O \-a quanta,energy,o,s,"010,101,111,121" in.nc
 .RE
 .PP
 See the manual for more complex examples, including how to input
