@@ -1398,6 +1398,33 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
+  /* UGRID Conventions define "topology" and "modulo" attributes
+     https://github.com/ugrid-conventions/ugrid-conventions/blob/master/ugrid-conventions.md */
+  att_nm=strdup("modulo");
+  double modulo=360.0;
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lon_nm_out;
+  aed_mtd.id=lon_out_id;
+  aed_mtd.sz=1;
+  aed_mtd.type=NC_DOUBLE;
+  aed_mtd.val.dp=&modulo;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lon_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+
+  att_nm=strdup("topology");
+  att_val=strdup("circular");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lon_nm_out;
+  aed_mtd.id=lon_out_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lon_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
   att_nm=strdup("bounds");
   att_val=lon_bnd_nm_out;
   aed_mtd.att_nm=att_nm;

@@ -1,5 +1,7 @@
 2015-06-17  Charlie Zender  <zender@uci.edu>
 
+	* Add topology and modulo metadata to longitude
+
 	* NCO 4.5.1-alpha3 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha3 final changes'
 	git tag -a 4.5.1-alpha3 -m 'Version 4.5.1-alpha3 tag: Add regridding regression tests. Fix strcat() buffer overrun that may have caused writing zeros to output files.';git push --tags
