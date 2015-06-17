@@ -172,8 +172,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/autobld/mkinstalldirs AUTHORS COPYING INSTALL \
 	autobld/compile autobld/config.guess autobld/config.sub \
 	autobld/depcomp autobld/install-sh autobld/ltmain.sh \
-	autobld/missing autobld/mkinstalldirs autobld/texinfo.tex \
-	autobld/ylwrap
+	autobld/mdate-sh autobld/missing autobld/mkinstalldirs \
+	autobld/texinfo.tex autobld/ylwrap
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
