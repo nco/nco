@@ -1,3 +1,7 @@
+2015-06-17  Charlie Zender  <zender@uci.edu>
+
+	* Introduce CEWI_assert() to prevent unused warnings on variables used only in assert() macros
+
 2015-06-16  Charlie Zender  <zender@uci.edu>
 
 	* Add regridding regression tests based on AODVIS, FSNT, and area as ncap2 regression test only for USER=zender

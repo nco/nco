@@ -4985,7 +4985,7 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
 } /* end nco_dmn_rdr_trv() */
 
 void
-nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable (ncpdq) */
+nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-ordered variable */
 (trv_tbl_sct * const trv_tbl,         /* I/O [sct] GTT (Group Traversal Table) */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
  var_sct **var_prc,                   /* I/O [sct] Processed variables */
@@ -4996,31 +4996,25 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
  const nco_bool *dmn_rvr_rdr)         /* I [flg] Reverse dimension */
 {
-  /* Purpose: Determine and set new dimensionality in metadata of each re-ordered variable */
+  /* Purpose: Determine and set new dimensionality in metadata of each re-ordered variable
+     Based in nco_var_dmn_rdr_mtd(). LIMITATION: the first record dimension for the object variable is used
+     Test case : ncpdq -O -a lev,time -v two_dmn_rec_var in.nc out.nc
+     Mark lev as record and un-mark time as record (by setting the record name as lev) */
 
-  /* Based in nco_var_dmn_rdr_mtd(). LIMITATION: the first record dimension for the object variable is used */
-
-  /* Test case : ncpdq -O -a lev,time -v two_dmn_rec_var in.nc out.nc */
-
-  /* Mark lev as record and un-mark time as record (by setting the record name as lev) */
-
-  char *rec_dmn_nm_out_crr;                  /* [sng] Name of record dimension, if any, required by re-order */
-  char *rec_dmn_nm_in;                       /* [sng] Record dimension name, original */
-  char *rec_dmn_nm_out;                      /* [sng] Record dimension name, re-ordered */
-
-  int dmn_idx_out_in[NC_MAX_DIMS];           /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
-  int nco_prg_id;                                /* [enm] Program ID */
-
-  nco_bool REDEFINED_RECORD_DIMENSION;       /* [flg] Re-defined record dimension */
-  nco_bool dmn_rvr_in[NC_MAX_DIMS];          /* [flg] Reverse dimension  (Stored in GTT ) */
-
-  nm_lst_sct *rec_dmn_nm;                    /* [sct] Record dimension names array */
+  char *rec_dmn_nm_out_crr; /* [sng] Name of record dimension, if any, required by re-order */
+  char *rec_dmn_nm_in; /* [sng] Record dimension name, original */
+  char *rec_dmn_nm_out; /* [sng] Record dimension name, re-ordered */
+  int dmn_idx_out_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
+  int nco_prg_id; /* [enm] Program ID */
+  nco_bool REDEFINED_RECORD_DIMENSION; /* [flg] Re-defined record dimension */
+  nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension  (Stored in GTT ) */
+  nm_lst_sct *rec_dmn_nm; /* [sct] Record dimension names array */
 
   /* Get Program ID */
   nco_prg_id=nco_prg_id_get(); 
-
   assert(nco_prg_id == ncpdq);
-
+  CEWI_unused(nco_prg_id);
+  
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
 
@@ -7777,13 +7771,14 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             lmt_sct **lmt=aux;
             int lmt_dmn_nbr=aux_lmt_nbr;
 
-            /* The dimension IDs of both 'latitude' and 'longitude' must refer to the same dimemsion (e.g., 'gds_crd) */
+            /* Dimension IDs of both 'latitude' and 'longitude' must refer to same dimemsion (e.g., 'gds_crd) */
             assert(dmn_id_fnd_lon == dmn_id_fnd_lat);
-
+	    CEWI_assert(dmn_id_fnd_lon);
+	    
             /* Apply limits to variable in table */
             (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,var_trv.nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
 
-            /*  Apply limits to *all* 'latitude', 'longitude' variables that share the same ID */
+            /* Apply limits to *all* 'latitude', 'longitude' variables that share the same ID */
             (void)nco_lmt_std_att_lat_lon(nc_id,lmt,lmt_dmn_nbr,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);   
 
             /* Get unique dimension object from unique dimension ID (e.g., 'gds_crd) */
@@ -7803,8 +7798,6 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
                 nco_lmt_prt(lmt[idx_lmt]);
               }
             }
-
-
           } /* Found limits */
 
           /* Free limits exported from nco_aux_evl_trv() */

@@ -64,12 +64,10 @@ extern "C" {
 /* Boolean values */
 /* From Wikipedia:
    "On a recent C compiler (supporting the C99 standard), there is a _Bool type, which is used to define bool by the stdbool.h header: 
-
    #include <stdbool.h>
    bool b = false;
    ...
    b = true;
-
    During its standardization process, the C++ programming language introduced the bool, true and false keywords, adding a native datatype to support boolean data.
    Preprocessor macros may be used to turn bool into _Bool, false into 0 and true into 1, allowing compatibility with the aforementioned C99 use of the stdbool.h header." */
 #define nco_bool int
@@ -110,6 +108,12 @@ extern "C" {
 #define nco_string_CEWI NULL
 #define short_CEWI 0
 #define size_t_CEWI 0UL
+
+  /* 20150617: Define macro to indicate variables are unused by design
+     http://stackoverflow.com/questions/777261/avoiding-unused-variables-warnings-when-using-assert-in-a-release-build 
+     Especially useful to keep variables used only in assert() macros from triggering unused variable warnings
+     Eventually, much CEWI code could be replaced by this macro */
+#define CEWI_unused(x)   ((void)x)
   
   /* Numeric constants to simplify arithmetic */
 #define NCO_BYT_PER_KB 1024UL

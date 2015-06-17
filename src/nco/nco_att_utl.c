@@ -1712,6 +1712,7 @@ nco_xcp_prc /* [fnc] Perform exception processing on this variable */
      Otherwise these variables would need a dummy dimension for time or char 
      For now, do not attempt to update values when var_sz != 8 */
   assert(var_typ == NC_CHAR);
+  CEWI_unused(var_typ);
   if(var_sz != 8) return;
   
   /* One block for each variable in exception list in nco_is_xcp() */
