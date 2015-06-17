@@ -26,7 +26,7 @@ our @EXPORT = qw (
 		  $foo_xy_fl $foo_xymyx_fl $pth_rmt_scp_tst $omp_flg $nco_D_flg %NCO_RC
 		  );
 use vars qw(
-	    $dodap $dbg_lvl $dsc_sng $dust_usr $fl_fmt $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
+	    $dodap $dbg_lvl $drc_dat $dsc_sng $dust_usr $fl_fmt $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
 	    $foo_fl $foo_tst $foo_x_fl $foo_xy_fl
 	    $foo_xymyx_fl $foo_y_fl $foo_yx_fl $mpi_prc $nco_D_flg $localhostname
 	    $nsr_xpc $omp_flg $opr_nm $opr_rgr_mpi $fl_out_rgn
@@ -228,6 +228,12 @@ print "\n";
 	$tst_cmd[0]="scp givre.ess.uci.edu:/data/zender/maps/map_ne30np4_to_fv129x256_aave.150418.nc .";
 	$tst_cmd[1]="scp givre.ess.uci.edu:/data/zender/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.150418.nc ne30_tst.nc %tmp_fl_00%";
+#	my $pwd=`pwd`; chomp $pwd; print $pwd;
+#	$dsc_sng="Regridding FSNT to regridding conservation (uses wget to glace.ess.uci.edu)";
+#	$tst_cmd[0]="wget -c -P $drc_dat http://glace.ess.uci.edu/maps/map_ne30np4_to_fv129x256_aave.150418.nc";
+#	$tst_cmd[1]="wget -c -P $drc_dat http://glace.ess.uci.edu/ne30/rgr/ne30_tst.nc";
+#	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg --map=".$drc_dat."/map_ne30np4_to_fv129x256_aave.150418.nc ".$drc_dat."/ne30_tst.nc %tmp_fl_00%";
+	
 	$tst_cmd[3]="ncwa -h -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[4]="ncks -h -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
 	$tst_cmd[5]="FSNT = 244.124 W/m2";
@@ -243,7 +249,7 @@ print "\n";
 	$#tst_cmd=0; # Reset array
 
 	$dsc_sng="Regridding area to test grid normalization";
-	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.150418.nc ne30_tst.nc %tmp_fl_00%";
+	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg --map=${drc_dat}/map_ne30np4_to_fv129x256_aave.150418.nc $drc_dat/ne30_tst.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncwa -h -O $fl_fmt $nco_D_flg -y ttl -v area %tmp_fl_00% %tmp_fl_02%";
 	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg -H -u -C -v area %tmp_fl_02%";
 	$tst_cmd[3]="area = 12.5663706144 steradian";

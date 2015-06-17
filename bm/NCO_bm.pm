@@ -201,7 +201,7 @@ sub bm_ntl($$){
 	system("ncgen -o in.nc in.cdl") if (`which ncgen` and -e "in.cdl");
     } die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$drc_in_nc\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$drc_in_nc/in.cdl\" does not exist.\n stopped" unless (-e "in.nc");
 #create large files openMP testing
-    if( !(-e "lrg_bm.nc") && (-e "lrg_bm.in") && (-e "$MY_BIN_DIR/ncap2")   ){
+    if( !(-e "lrg_bm.nc") && (-e "lrg_bm.in") && (-e "$MY_BIN_DIR/ncap2") ){
 # make lrg_bm.nc
 	system("$MY_BIN_DIR/ncap2 -C -v -O -t1 -S lrg_bm.in in.nc lrg_bm.nc");
 # make lrg_bm1.nc
@@ -446,11 +446,11 @@ sub tst_run {
     *fl_out = *main::fl_out;
     *mpi_prc = *main::mpi_prc;
     
-    if ($dbg_lvl > 0) {
+    if($dbg_lvl > 0){
 	print "\n\n\n### New tst_run() cycle [$opr_nm: $dsc_sng] ###\n";
-	    if ($fl_nm_lcl{'%tmp_fl_00%'} eq "") {
-		print "fl_out undefined!\n";
-	    } # else {	print "\$fl_nm_lcl{'%tmp_fl_00%'} = [$fl_nm_lcl{'%tmp_fl_00%'}] \n";}
+	if($fl_nm_lcl{'%tmp_fl_00%'} eq ""){
+	    print "fl_out undefined!\n";
+	} # else {	print "\$fl_nm_lcl{'%tmp_fl_00%'} = [$fl_nm_lcl{'%tmp_fl_00%'}] \n";}
     }
 
 # tst_run() requires regression tests provide expected values
