@@ -530,16 +530,22 @@ Group-oriented Data Analysis and Distribution (@acronym{GODAD}) software
 ecosystem. 
 Shifting geoscience data analysis to @acronym{GODAD}, no small task,
 drives our plans.
-Partly due to this success, the @acronym{NASA} @acronym{ACCESS} 2013
-program agreed to support (Cooperative Agreement NNX14AH55A)
-@acronym{NCO} from 2014--2016. 
+Then the the @acronym{NASA} @acronym{ACCESS} 2013 program agreed to
+support (Cooperative Agreement NNX14AH55A) @acronym{NCO} from
+2014--2016.  
 This support will allow us to implement support for Swath-like Data
-(@acronym{SLD}) and re-gridding.
-
+(@acronym{SLD}).
+Finally, the @acronym{DOE} funded me to implement @acronym{NCO}
+re-gridding and parallelization in support of their @acronym{ACME}
+program.
+After many years of crafting @acronym{NCO} as an after hours hobby,
+I finally have the cushion necessary to give it some real attention. 
+And I'm looking forward to this next, and most intense yet, phase of
+@acronym{NCO} development.
 @sp 1
 @noindent
 Charlie Zender@*
-June, 2014@*
+June, 2015@*
 Irvine, California@*
 @end ignore
 
@@ -5952,8 +5958,11 @@ Currently @acronym{NCO} understands only the mapfile format pioneered by
 @acronym{SCRIP} 
 (@url{http://oceans11.lanl.gov/svn/SCRIP/trunk/SCRIP})
 and later extended by @acronym{ESMF} 
-(@uref{http://www.earthsystemcog.org/projects/regridweightgen}).
-See those references for additional documentation on map formats.
+(@uref{http://www.earthsystemcog.org/projects/regridweightgen}),
+and adopted by Tempest
+(@uref{https://github.com/ClimateGlobalChange/tempestremap.git}).
+See those references for documentation on map formats, grid
+specification, and weight generation. 
 
 The regridding currently supported by @acronym{NCO} could equally well
 be called weight-application.
@@ -6009,8 +6018,8 @@ identifying gridcell overlap and apportioning values correctly
 from source to destination.
 The presence of missing values forces a decision on how to handle
 destination gridcells where some but not all source cells are valid. 
-@acronym{NCO} implements one of two procedures: ``conservative'' or
-``renormalized''. 
+@acronym{NCO} allows the user to choose between two distinct algorithms:
+``conservative'' and ``renormalized''. 
 The ``conservative'' algorithm uses all valid data from the input grid
 on the output grid once and only once.
 Destination cells receive the weighted valid values of the source cells.
@@ -6018,15 +6027,19 @@ This is conservative because the global integrals of the source and
 destination fields are equal.
 The ``renormalized'' algorithm divides the destination value by the sum
 of the valid weights.
-This returns ``reasonable'' values, i.e., the mean of the valid input
-values. 
-However, renormalization is equivalent to extrapolating valid data to
-missing regions. 
+This produces values equal to the mean of the valid input values, but
+extended to the entire destination gridcell. 
+Thus renormalization is equivalent to extrapolating valid data to
+missing regions.  
 Input and output integrals are unequal and renormalized regridding is
-not conservative.  
+not conservative. 
+Both algorithms produce identical answers when no missing data maps to 
+the destination gridcell.
 
 @cindex @var{wgt_thr}
-By default, @acronym{NCO} implements the ``conservative'' algorithm.
+By default, @acronym{NCO} implements the ``conservative'' algorithm
+because it has useful properties, is simpler to understand, and requires
+no additional parameters.
 To employ the ``renormalized'' algorithm instead, use the @samp{--rnr},
 @samp{--rgr_rnr}, or @samp{--renormalize} options to supply
 @var{wgt_thr}, the threshold weight for valid destination values.
@@ -9577,23 +9590,24 @@ The input contains a single-precision global temperature field
 circulation model (@acronym{GCM}) run and stored at @w{1.9 by 2.5}
 degrees resolution. 
 This requires @w{94 latitudes} and @w{144 longitudes}, or @math{13,824} 
-total surface gridpoints, a typical GCM resolution these days.
+total surface gridpoints, a typical GCM resolution in 2008--2013.
 These input characteristics are provided only to show the context
 to the interested reader, equivalent results would be found in 
 statistics of any dataset of comparable size.
 Models often represent Earth on a spherical grid where global averages 
 must be created by weighting each gridcell by its latitude-dependent
-weight (i.e., the Gaussian weight stored in @code{gw}), or by the
+weight (e.g., a Gaussian weight stored in @code{gw}), or by the
 surface area of each contributing gridpoint (stored in @code{area}).
 
 Like many geophysical models and most @acronym{GCM}s, @acronym{CAM3}
 runs completely in double-precision yet stores its archival output in
 single-precision to save space.
 In practice such models usually save multi-dimensional prognostic and
-diagnostic fields (like @code{TREFHT(lat,lon)} and @code{area(lat,lon)})
-as single-precision, while saving all one-dimensional coordinates and
-weights (here @code{lat}, @code{lon}, and @code{gw(lon)}) as
-double-precision.  
+diagnostic fields (like @code{TREFHT(lat,lon)}) as single-precision,
+while saving all one-dimensional coordinates and weights (here
+@code{lat}, @code{lon}, and @code{gw(lon)}) as double-precision.  
+The gridcell area @code{area(lat,lon)} is an extensive grid property
+that should be, but often is not, stored as double-precision.
 To obtain pure double-precision arithmetic @emph{and} storage of the 
 globla mean temperature, we first create and store double-precision
 versions of the single-precision fields:
@@ -9644,9 +9658,9 @@ These averages differ in the fifth digit, i.e., they agree only to four
 significant figures!
 Given that climate scientists are concerned about global temperature
 variations of a tenth of a degree or less, this difference is large.
-It means that the global mean temperature changes scientists are looking
-for are comparable in size to the numerical artifacts produced by the
-averaging procedure. 
+Global mean temperature changes significant to climate scientists are  
+comparable in size to the numerical artifacts produced by the averaging
+procedure.  
 
 @cindex rounding
 @cindex random walk
@@ -9686,7 +9700,7 @@ Hence, addition alone of about fifteen thousand single-precision floats
 is expected to consume about two significant digits of precision.
 This neglects the error due to the inner product (weights times values)
 and normalization (division by tally) aspects of a weighted average.
-the ratio of two numbers each containing a numerical bias can magnify
+The ratio of two numbers each containing a numerical bias can magnify
 the size of the bias. 
 In summary, a global mean number computed from about 15,000 gridpoints
 each with weights can be expected to lose up to three significant digits.
