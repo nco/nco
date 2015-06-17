@@ -7773,7 +7773,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
             /* Dimension IDs of both 'latitude' and 'longitude' must refer to same dimemsion (e.g., 'gds_crd) */
             assert(dmn_id_fnd_lon == dmn_id_fnd_lat);
-	    CEWI_assert(dmn_id_fnd_lon);
+	    CEWI_unused(dmn_id_fnd_lon);
 	    
             /* Apply limits to variable in table */
             (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,var_trv.nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
