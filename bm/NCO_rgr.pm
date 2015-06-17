@@ -227,31 +227,31 @@ print "\n";
 	$dsc_sng="Regridding FSNT to regridding conservation (uses SSH/scp to givre.ess.uci.edu)";
 	$tst_cmd[0]="scp givre.ess.uci.edu:/data/zender/maps/map_ne30np4_to_fv129x256_aave.150418.nc .";
 	$tst_cmd[1]="scp givre.ess.uci.edu:/data/zender/ne30/rgr/ne30_tst.nc .";
-	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.150418.nc ne30_tst.nc %tmp_fl_00%";
+	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.150418.nc ne30_tst.nc %tmp_fl_00%";
 #	my $pwd=`pwd`; chomp $pwd; print $pwd;
 #	$dsc_sng="Regridding FSNT to regridding conservation (uses wget to glace.ess.uci.edu)";
 #	$tst_cmd[0]="wget -c -P $drc_dat http://glace.ess.uci.edu/maps/map_ne30np4_to_fv129x256_aave.150418.nc";
 #	$tst_cmd[1]="wget -c -P $drc_dat http://glace.ess.uci.edu/ne30/rgr/ne30_tst.nc";
 #	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg --map=".$drc_dat."/map_ne30np4_to_fv129x256_aave.150418.nc ".$drc_dat."/ne30_tst.nc %tmp_fl_00%";
 	
-	$tst_cmd[3]="ncwa -h -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
-	$tst_cmd[4]="ncks -h -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
+	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
+	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
 	$tst_cmd[5]="FSNT = 244.124 W/m2";
 	$tst_cmd[6]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
 	$dsc_sng="Regridding AODVIS to test missing values";
-	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -H -u -C -v AODVIS %tmp_fl_01%";
+	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v AODVIS %tmp_fl_01%";
 	$tst_cmd[1]="AODVIS = 0.151705";
 	$tst_cmd[2]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
 	$dsc_sng="Regridding area to test grid normalization";
-	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg --map=${drc_dat}/map_ne30np4_to_fv129x256_aave.150418.nc $drc_dat/ne30_tst.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncwa -h -O $fl_fmt $nco_D_flg -y ttl -v area %tmp_fl_00% %tmp_fl_02%";
-	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg -H -u -C -v area %tmp_fl_02%";
+	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --map=${drc_dat}/map_ne30np4_to_fv129x256_aave.150418.nc $drc_dat/ne30_tst.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncwa -O $fl_fmt $nco_D_flg -y ttl -v area %tmp_fl_00% %tmp_fl_02%";
+	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v area %tmp_fl_02%";
 	$tst_cmd[3]="area = 12.5663706144 steradian";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
