@@ -967,7 +967,8 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"%s: Attribute %s size %ld excceeds maximum %d\n",nco_prg_nm_get(),att_item.att_nm,att_item.sz, NC_MAX_ATTRS );
       goto cln_up;
     } /* end if */
-    /* NB: Write these attributes prior to last data mode */
+    /* NB: Write these attributes prior to last data mode
+       20150616: ncap2.in fails here because time1 attribute bounds is passed with att_item.val=NULL */
     (void)nco_aed_prc(out_id,var_id,att_item);
     
   cln_up:

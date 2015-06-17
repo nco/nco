@@ -845,7 +845,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
         } /* end loop over tbl_idx */
 
         if(!flg_usr_mch_obj && !EXCLUDE_INPUT_LIST){
-          (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
+          (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression \'%s\' is not in and/or does not match contents of input file\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
           nco_exit(EXIT_FAILURE);
         } /* flg_usr_mch_obj */
         /* Free dynamic memory */

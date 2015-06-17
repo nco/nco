@@ -83,10 +83,8 @@ sub tst_rgr {
     if(0){} #################  SKIP THESE #####################
     
 print "\n";
-
 my $RUN_NETCDF4_TESTS=0;
 my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
-
 system("ncks --get_prg_info");
 # system() runs a command and returns exit status information as a 16 bit value: 
 # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
@@ -121,8 +119,8 @@ print "\n";
 # This stanza will not map to the way the SS is done - needs a %stdouterr% added but all the rest of them
 # have an ncks which triggers this addition from the sub tst_run() -> gnarly_pything.
 # this stanza also requires a script on the SS.
-    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S ncap2.in $in_pth_arg in.nc %tmp_fl_00% %stdouterr%";
     $dsc_sng="running ncap2.in script in nco_bm.pl (failure expected)";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S ncap2.in $in_pth_arg in.nc %tmp_fl_00% %stdouterr%";
     $tst_cmd[1]="ncks -C -H -v b2 --no_blank -s '%d' %tmp_fl_00%";
     $tst_cmd[2]="999";
     $tst_cmd[3]="NO_SS";
@@ -214,6 +212,42 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+    $USER=$ENV{'USER'};
+    if($USER eq 'zender'){
+	# Regridding regression tests
+	# ncks -O -D 5 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc ${DATA}/ne30/rgr/ne30_tst.nc ~/foo.nc
+	# ncwa -O -w area ~/foo.nc ~/foo2.nc
+	# ncks -H -u -C -v FSNT ~/foo2.nc
+	# ncwa -O -y ttl -v area ~/foo.nc ~/foo3.nc
+	# ncks -H -u -C -v area ~/foo3.nc
+	
+	$dsc_sng="Regridding FSNT (requires authorized SSH/scp access to givre.ess.uci.edu)";
+	$tst_cmd[0]="scp givre.ess.uci.edu:/data/zender/maps/map_ne30np4_to_fv129x256_aave.150418.nc .";
+	$tst_cmd[1]="scp givre.ess.uci.edu:/data/zender/ne30/rgr/ne30_tst.nc .";
+	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.150418.nc ne30_tst.nc %tmp_fl_00%";
+	$tst_cmd[3]="ncwa -h -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
+	$tst_cmd[4]="ncks -h -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
+	$tst_cmd[5]="FSNT = 244.124 W/m2";
+	$tst_cmd[6]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+
+	$dsc_sng="Regridding AODVIS (requires authorized SSH/scp access to givre.ess.uci.edu)";
+	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -H -u -C -v AODVIS %tmp_fl_01%";
+	$tst_cmd[1]="AODVIS = 0.151705";
+	$tst_cmd[2]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+
+	$dsc_sng="Regridding area (requires authorized SSH/scp access to givre.ess.uci.edu)";
+	$tst_cmd[0]="ncwa -h -O $fl_fmt $nco_D_flg -y ttl -v area %tmp_fl_00% %tmp_fl_02%";
+	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -H -u -C -v area %tmp_fl_02%";
+	$tst_cmd[2]="area = 12.5663706144 steradian";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+    }
+    
     if($dodap eq "FALSE"){
 ####################
 #### ncatted tests #
@@ -222,9 +256,9 @@ print "\n";
 ####################
 
 #ncatted #1
+	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -m -v lev %tmp_fl_00% | grep units | cut -d ' ' -f 11-12"; ## daniel:fixme cut/ncks but how to do grep?
-	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$tst_cmd[2]="meter second-1";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
@@ -233,18 +267,18 @@ print "\n";
 #printf("paused @ %s:%d - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 
 #ncatted #2
+	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 in netCDF3 file";
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tmp_fl_00%";
-	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 in netCDF3 file";
 	$tst_cmd[2]="0";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
 #ncatted #3
+	$dsc_sng="Create new _FillValue attribute";
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,wgt_one,c,f,200.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v wgt_one %tmp_fl_00%";
-	$dsc_sng="Create new _FillValue attribute";
 	$tst_cmd[2]="1";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
@@ -252,20 +286,20 @@ print "\n";
 
 #ncatted #4
 # Fragile: Test fails when command length changes, e.g., on MACOSX
+	$dsc_sng="Pad header with 1000B extra for future metadata (failure OK/expected since test depends on command-line length)";
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep hdr_pad | wc > %tmp_fl_01%";
 	$tst_cmd[2]="cut -c 14-15 %tmp_fl_01%"; ## Daniel:fxm cut/ncks, but how to do grep and wc???
-	$dsc_sng="Pad header with 1000B extra for future metadata (failure OK/expected since test depends on command-line length)";
 	$tst_cmd[3]="27";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
 #ncatted #5
+	$dsc_sng="Variable wildcarding (requires regex)";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncap2 -v -C -O -s 'n2=three_dmn_var_int\@nw1;' %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[2]="ncks -O -C -H -s '%i' -v n2 %tmp_fl_01%";
-	$dsc_sng="Variable wildcarding (requires regex)";
 	$tst_cmd[3]="999";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
@@ -276,67 +310,66 @@ print "\n";
     #######################################
 
     if($RUN_NETCDF4_TESTS == 1){
-
 #4.3.8	
 #ncatted #6
 #ncatted -O -a purpose,rlev,m,c,new_value in_grp_3.nc ~/foo.nc
+	$dsc_sng="(Groups) Modify attribute for variable (input relative name)";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
-	$dsc_sng="(Groups) Modify attribute for variable (input relative name)";
 	$tst_cmd[2]="rlev attribute 0: purpose, size = 9 NC_CHAR, value = new_value";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array	
 	
 #ncatted #7	
+	$dsc_sng="(Groups) Modify attribute for variable (input absolute name)";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,/g3/rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
-	$dsc_sng="(Groups) Modify attribute for variable (input absolute name)";
 	$tst_cmd[2]="rlev attribute 0: purpose, size = 9 NC_CHAR, value = new_value";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array	
 	
 #ncatted #8
+	$dsc_sng="(Groups) Modify attribute for group (input relative name)";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a g3_group_attribute,group,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep g3_group_attribute";
-	$dsc_sng="(Groups) Modify attribute for group (input relative name)";
 	$tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 9 NC_CHAR, value = new_value";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array	
 
 #ncatted #9
+	$dsc_sng="(Groups) Variable wildcarding (requires regex)";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -C -g g10 -v three_dmn_rec_var %tmp_fl_00%";
-	$dsc_sng="(Groups) Variable wildcarding (requires regex)";
 	$tst_cmd[2]="three_dmn_rec_var attribute 1: nw1, size = 1 NC_INT, value = 999";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array	
 
 #ncatted #10
+	$dsc_sng="(Groups) Edit all variables";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
-	$dsc_sng="(Groups) Edit all variables";
 	$tst_cmd[2]="rlev attribute 0: purpose, size = 9 NC_CHAR, value = new_value";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
 #ncatted #11
+	$dsc_sng="(Groups) Modify global attribute";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a Conventions,group,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep Conventions";
-	$dsc_sng="(Groups) Modify global attribute";
 	$tst_cmd[2]="Group attribute 0: Conventions, size = 9 NC_CHAR, value = new_value";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array		
 	
 #ncatted #12
+	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 on netCDF4 file";
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tmp_fl_00%";
-	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 on netCDF4 file";
         ###TODO 665
 	$tst_cmd[2]="0";
 	$tst_cmd[3]="SS_OK";
@@ -1295,8 +1328,6 @@ print "\n";
     $#tst_cmd=0; # Reset array 			   
 
     }  	#### Group tests
- 
-
     
 ####################
 #### ncks tests #### OK !
@@ -5146,7 +5177,6 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 ##### net tests #### OK ! (ones that can be done by non-zender)
 ####################
     $opr_nm='net';
-####################
 if(0){ #################  SKIP THESE #####################
 # test 1
     $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
@@ -5158,69 +5188,65 @@ if(0){ #################  SKIP THESE #####################
     $#tst_cmd=0; # Reset array
     
 # test 2
+    $dsc_sng="Secure FTP (SFTP) protocol (requires SFTP access to dust.ess.uci.edu)";
     my $sftp_url="sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco";
-    if($dust_usr ne ""){ # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
-	$sftp_url =~ s/dust/$dust_usr\@dust/;
-    }
-#sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco
+    # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
+    if($dust_usr ne ""){$sftp_url =~ s/dust/$dust_usr\@dust/;}
+    #sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco
     $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
     $tst_cmd[1]="ncks -O $nco_D_flg -v one -p $sftp_url -l /tmp in.nc";
     $tst_cmd[2]="ncks -H $nco_D_flg -s '%e' -v one -l /tmp in.nc";
-    $dsc_sng="Secure FTP (SFTP) protocol (requires SFTP access to dust.ess.uci.edu)";
     $tst_cmd[3]="1.000000e+00";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
 # test 3
-    if($dust_usr ne ""){ # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
-	$pth_rmt_scp_tst=$dust_usr . '@' . $pth_rmt_scp_tst;
-    }
+# if we need to connect as another user (hmangalm@esmf -> hjm@dust))
+    $dsc_sng="SSH protocol (requires authorized SSH/scp access to dust.ess.uci.edu)";
+    if($dust_usr ne ""){$pth_rmt_scp_tst=$dust_usr.'@'.$pth_rmt_scp_tst;}
     $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -s '%e' -v one -p $pth_rmt_scp_tst -l /tmp in.nc | tail -1";
-    $dsc_sng="SSH protocol (requires authorized SSH/scp access to dust.ess.uci.edu)";
     $tst_cmd[2]=1;
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
-    $tst_cmd[0]="ncks -C -O -d lon,0 -s '%e' -v lon -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc";
     $dsc_sng="OPeNDAP protocol (requires OPeNDAP/DODS-enabled NCO)";
+    $tst_cmd[0]="ncks -C -O -d lon,0 -s '%e' -v lon -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc";
     $tst_cmd[1]="0";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
     if($USER eq 'zender'){
+	$dsc_sng="Password-protected FTP protocol (requires .netrc-based FTP access to climate.llnl.gov)";
 	$tst_cmd[0]="/bin/rm -f /tmp/etr_A4.SRESA1B_9.CCSM.atmd.2000_cat_2099.nc";
 	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -s '%e' -d time,0 -v time -p ftp://climate.llnl.gov//sresa1b/atm/yr/etr/ncar_ccsm3_0/run9 -l /tmp etr_A4.SRESA1B_9.CCSM.atmd.2000_cat_2099.nc";
-	$dsc_sng="Password-protected FTP protocol (requires .netrc-based FTP access to climate.llnl.gov)";
 	$tst_cmd[2]="182.5";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 	
+	$dsc_sng="msrcp protocol (requires msrcp and authorized access to NCAR MSS)";
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -v one -p mss:/ZENDER/nc -l /tmp in.nc";
 	$tst_cmd[2]="ncks -C -H -s '%e' -v one %tmp_fl_00%";
-	$dsc_sng="msrcp protocol (requires msrcp and authorized access to NCAR MSS)";
 	$tst_cmd[3]="1";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
-	
-    } else { print "WARN: Skipping net tests of mss: and password protected FTP protocol retrieval---user not zender\n";}
+    }else{ print "WARN: Skipping net tests of mss: and password protected FTP protocol retrieval---user not zender\n";}
     
     if($USER eq 'zender' || $USER eq 'hjm'){
+	$dsc_sng="HTTP protocol (requires developers to implement wget in NCO nudge nudge wink wink)";
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -s '%e' -v one -p wget://dust.ess.uci.edu/nco -l /tmp in.nc";
-	$dsc_sng="HTTP protocol (requires developers to implement wget in NCO nudge nudge wink wink)";
  	$tst_cmd[2]="1";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
-	
-    } else { print "WARN: Skipping net test wget: protocol retrieval---not implemented yet\n";}
+    }else{ print "WARN: Skipping net test wget: protocol retrieval---not implemented yet\n";}
 } #################  SKIP THESE #####################
     
 } # end of perform_test()

@@ -350,8 +350,8 @@ sub rsl_smr_fl_mk {
     } # and send it back separately
 } # end of rsl_smr_fl_mk
 
-# drc_dat_set() tries to answer the question of where to write data
-sub drc_dat_set {
+# drc_dat_set(): figures out where to write data
+sub drc_dat_set{
     $caseid = shift;
     my $tmp;
     my $umask = umask;
@@ -907,10 +907,6 @@ sub SS_sanity_check {
 sub SS_prepare {
     SS_init() unless $SSD{"initialized"};
 }
-
-
-
-
 
 ####################
 sub failed {

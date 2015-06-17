@@ -1,6 +1,8 @@
 2015-06-16  Charlie Zender  <zender@uci.edu>
 
-	* Cleaning up ncap2.in test in preparation for adding regridding regression test
+	* Add regridding regression tests based on AODVIS, FSNT, and area as ncap2 regression test only for USER=zender
+
+	* Clean-up ncap2.in test in preparation for adding regridding regression testt
 
 	* Travis CI builds now pass on gcc and clang. Yay! Regressions are due to old netCDF library.
 
