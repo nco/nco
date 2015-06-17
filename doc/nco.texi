@@ -521,24 +521,23 @@ Charlie Zender@*
 April, 2012@*
 Irvine, California@*
 
-@ignore
 @sp 2
+Test print @value{EDITION}, @value{VERSION}, @value{UPDATED}, @value{UPDATED-MONTH}.
 The @acronym{NASA} @acronym{ACCESS} 2011 program generously supported 
 (Cooperative Agreement NNX12AF48A) @acronym{NCO} from 2012--2015.
-We accomplished our goals and produced the first iteration of a
-Group-oriented Data Analysis and Distribution (@acronym{GODAD}) software 
-ecosystem. 
-Shifting geoscience data analysis to @acronym{GODAD}, no small task,
-drives our plans.
-Then the the @acronym{NASA} @acronym{ACCESS} 2013 program agreed to
+This allowed us to produce the first iteration of a Group-oriented 
+Data Analysis and Distribution (@acronym{GODAD}) software ecosystem. 
+Shifting more geoscience data analysis to @acronym{GODAD} is a 
+long-term plan.
+Then the @acronym{NASA} @acronym{ACCESS} 2013 program agreed to
 support (Cooperative Agreement NNX14AH55A) @acronym{NCO} from
 2014--2016.  
-This support will allow us to implement support for Swath-like Data
+This support permits us to implement support for Swath-like Data
 (@acronym{SLD}).
-Finally, the @acronym{DOE} funded me to implement @acronym{NCO}
-re-gridding and parallelization in support of their @acronym{ACME}
-program.
-After many years of crafting @acronym{NCO} as an after hours hobby,
+Most recently, the @acronym{DOE} has funded me to implement 
+@acronym{NCO} re-gridding and parallelization in support of their 
+@acronym{ACME} program.
+After many years of crafting @acronym{NCO} as an after-hours hobby,
 I finally have the cushion necessary to give it some real attention. 
 And I'm looking forward to this next, and most intense yet, phase of
 @acronym{NCO} development.
@@ -547,7 +546,6 @@ And I'm looking forward to this next, and most intense yet, phase of
 Charlie Zender@*
 June, 2015@*
 Irvine, California@*
-@end ignore
 
 @html
 <a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->
