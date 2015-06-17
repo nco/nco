@@ -1369,7 +1369,7 @@ nco_get_prg_info(void) /* [fnc] Get program info */
   /* Purpose: Return numeric code depending on netCDF library version */
   char lbr_sng[NC_MAX_NAME+1];
 
-  int rcd=3;
+  int rcd=360;
   strcpy(lbr_sng,nc_inq_libvers());
 #if defined(ENABLE_NETCDF4) && defined(HAVE_NETCDF4_H)
   rcd=400;
@@ -1379,9 +1379,9 @@ nco_get_prg_info(void) /* [fnc] Get program info */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '0' ){rcd=430;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '1' ){rcd=431;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '2' ){rcd=432;}
-  /* NB: Same return values for 4.3.3 and 4.3.3.1 */
+  /* NB: Same return values for 4.3.3 and 4.3.3.1. Few people installed 4.3.3, most installed 4.3.3.1. */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '3' ){rcd=433;}
-  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '4' ){rcd=434;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '4' && lbr_sng[3] == '.' && lbr_sng[4] == '0' ){rcd=440;}
 #endif /* HAVE_NETCDF4_H */
   exit(rcd);
 } /* end nco_get_prg_info() */

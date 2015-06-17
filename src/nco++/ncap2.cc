@@ -759,7 +759,7 @@ main(int argc,char **argv)
       Nvar->flg_stt=2;   
       prs_arg.var_vtr.push(Nvar);
       /* Copy output attributes into var_vtr */
-      ncap_att_gnrl(xtr_lst_a[idx].nm, xtr_lst_a[idx].nm,2,&prs_arg);        
+      ncap_att_gnrl(xtr_lst_a[idx].nm,xtr_lst_a[idx].nm,2,&prs_arg);        
     } /* end loop over variables */
 
     /* Free lists */
@@ -934,9 +934,8 @@ main(int argc,char **argv)
     } /* endif */
 
      /* Write misssing value contained inside variable */
-     /* If missing value type is same as disk type  */  
-     /*
-    if(var_vtr[idx]->xpr_typ == ncap_var ){
+     /* If missing value type is same as disk type */  
+     /* if(var_vtr[idx]->xpr_typ == ncap_var){
       if(!var_vtr[idx]->var->has_mss_val) continue;  
       att_item.att_nm=strdup(nco_mss_val_sng_get());
       att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
@@ -945,33 +944,30 @@ main(int argc,char **argv)
       att_item.val=var_vtr[idx]->var->mss_val;
       att_item.mode=aed_overwrite;
       //att_item.mode=aed_create;
-    }
-     */
+    } */
     if(var_vtr[idx]->xpr_typ == ncap_att){
       /* Skip missing values (for now) */
       if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) continue;     
-    
       att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
       att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
       att_item.sz=var_vtr[idx]->var->sz;
       att_item.type=var_vtr[idx]->var->type;
       att_item.val=var_vtr[idx]->var->val;
       att_item.mode=aed_overwrite;
-    } 
-   
+    } /* endif ncap_att */
 
-    if(!strcmp(att_item.var_nm,"global")) 
+    if(!strcmp(att_item.var_nm,"global")){
       var_id=NC_GLOBAL;
-    else{
+    }else{
       rcd=nco_inq_varid_flg(out_id,att_item.var_nm,&var_id);
       if(rcd != NC_NOERR)  goto cln_up;
     } /* end else */
     /* Check size */
-    if(att_item.sz > NC_MAX_ATTRS ){ 
+    if(att_item.sz > NC_MAX_ATTRS){ 
       (void)fprintf(stdout,"%s: Attribute %s size %ld excceeds maximum %d\n",nco_prg_nm_get(),att_item.att_nm,att_item.sz, NC_MAX_ATTRS );
       goto cln_up;
     } /* end if */
-    /* NB: These attributes should probably be written prior to last data mode */
+    /* NB: Write these attributes prior to last data mode */
     (void)nco_aed_prc(out_id,var_id,att_item);
     
   cln_up:
@@ -1042,23 +1038,19 @@ main(int argc,char **argv)
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     /* Free dimension vectors */
-    if(dmn_in_vtr.size() > 0) { 
+    if(dmn_in_vtr.size() > 0)
       for(idx=0;idx<dmn_in_vtr.size();idx++)
         (void)nco_dmn_free(dmn_in_vtr[idx]);
-    }
-    if(dmn_out_vtr.size() > 0) { 
+    if(dmn_out_vtr.size() > 0) 
       for(idx=0;idx< dmn_out_vtr.size();idx++)
         (void)nco_dmn_free(dmn_out_vtr[idx]);
-    }
     /* Free var_vtr */
-    if(var_vtr.size() > 0) { 
+    if(var_vtr.size() > 0)
       for(idx=0; idx < var_vtr.size(); idx++)
         delete var_vtr[idx];
-    }  
 
     /* Clear vectors */
-    /*
-    fmc_vtr.clear();
+    /* fmc_vtr.clear();
     cnv_obj.fmc_vtr.clear();
     agg_obj.fmc_vtr.clear();
     utl_obj.fmc_vtr.clear();
@@ -1067,9 +1059,7 @@ main(int argc,char **argv)
     bsc_obj.fmc_vtr.clear();
     pdq_obj.fmc_vtr.clear();
     msk_obj.fmc_vtr.clear();
-    pck_obj.fmc_vtr.clear();     
-
-    */
+    pck_obj.fmc_vtr.clear(); */
     /* Free variable lists */
     if(xtr_nbr > 0) var=nco_var_lst_free(var,xtr_nbr);
     if(xtr_nbr > 0) var_out=nco_var_lst_free(var_out,xtr_nbr);
@@ -1134,7 +1124,6 @@ ram_vars_add
   
   var1=ncap_sclr_var_mk(std::string("__UINT64"),nco_int(NC_UINT64));
   prs_arg->ncap_var_write(var1,true);
-
 #endif // !ENABLE_NETCDF4
   
 #ifdef INFINITY
@@ -1160,5 +1149,4 @@ ram_vars_add
     prs_arg->ncap_var_write(var1,true);
   } // ! dnan
 #endif // !_MSC_VER
-
 } // end ram_vars_add()

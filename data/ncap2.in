@@ -4,8 +4,7 @@
 
 /* Usage: 
    ncap2 -O -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
-   ncks ~/foo.nc | /bin/more
-*/
+   ncks ~/foo.nc | /bin/more */
 
 a1=three_dmn_var_dbl+three_dmn_var_int;
 a2=sin(three_dmn_var_dbl)^2.0 + cos(three_dmn_var_dbl)^2.0;
@@ -229,5 +228,3 @@ m3=m1.reverse($lon);
 // record dim must be the first dim in list
 m4=m1.permute($0,$2,$1);
 m5=a22.permute($time,$lev,$lon,$lat);
-
-

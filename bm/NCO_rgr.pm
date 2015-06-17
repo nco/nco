@@ -34,15 +34,14 @@ use vars qw(
 	    );
 
 sub tst_rgr {
+# Tests are organized and laid-out as follows:
 # Tests are in alphabetical order by operator name
-    
-# The following tests are organized and laid out as follows:
-# - $tst_cmd[] holds command lines for each operator being tested
-#   the last 2 lines are the expected value and the serverside string, either:
-#       "NO_SS" - No Serverside allowed or (all regr are NO_SS still)
-#       "SS_OK" - OK to send it serverside. (has to be requested with '--serverside'
-# - $dsc_sng still holds test description line
-# - tst_run() is function which executes each test
+# $tst_cmd[] holds command lines for each operator being tested
+# Last two lines are the expected value and the serverside string, either:
+# "NO_SS" - No ServerSide allowed or (all regr are NO_SS still)
+# "SS_OK" - OK to send it ServerSide (request with '--serverside')
+# $dsc_sng still holds test description line
+# tst_run() is function which executes each test
     
     my $in_pth="../data";
     my $in_pth_arg="-p $in_pth";
@@ -67,7 +66,7 @@ sub tst_rgr {
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$omp_flg = $omp_flg");
 # csz--
     
-# in general, $fl_out    -> %tmp_fl_00%
+# in general, $fl_out     -> %tmp_fl_00%
 #             $foo_fl     -> %tmp_fl_01%
 #             $foo_tst    -> %tmp_fl_02%
 #             $foo_avg_fl -> %tmp_fl_03%
@@ -94,21 +93,22 @@ system("ncks --get_prg_info");
 if($? == -1){
   print "failed to execute: ncks --get_prg_info: $!\n";
 }else{
-#  my $exit_value=$? >> 8;
     my $exit_value=$?;
 
   # nco_get_prg_info() returns codes:
-  # 3 (for library 3.x)
+  # 360 (for library 3.x)
   # 410 (for library 4.1.x)
   # 430 (for library 4.3.0)
   # 433 (for library 4.3.3)
 
-  if($exit_value >= 400){$RUN_NETCDF4_TESTS=1;}
-  if($exit_value >= 431){$RUN_NETCDF4_TESTS_VERSION_GE_431=1;}
   if($exit_value == 410){print "netCDF version 4.1.x detected\n";}
   if($exit_value == 431){print "netCDF version 4.3.1 detected\n";}
   if($exit_value == 432){print "netCDF version 4.3.2 detected\n";}
   if($exit_value == 433){print "netCDF version 4.3.3 detected\n";}
+  if($exit_value == 440){print "netCDF version 4.4.0 detected\n";}
+
+  if($exit_value >= 400){$RUN_NETCDF4_TESTS=1;}
+  if($exit_value >= 431){$RUN_NETCDF4_TESTS_VERSION_GE_431=1;}
 }
 print "\n";
 
@@ -122,11 +122,11 @@ print "\n";
 # have an ncks which triggers this addition from the sub tst_run() -> gnarly_pything.
 # this stanza also requires a script on the SS.
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S ncap2.in $in_pth_arg in.nc %tmp_fl_00% %stdouterr%";
-    $dsc_sng="running ncap2.in script in nco_bm.pl (failure expected on netCDF4 ncap81)";
+    $dsc_sng="running ncap2.in script in nco_bm.pl (failure expected)";
     $tst_cmd[1]="ncks -C -H -v b2 --no_blank -s '%d' %tmp_fl_00%";
     $tst_cmd[2]="999";
-#	$tst_cmd[3]="NO_SS";
-    $tst_cmd[3]="SS_OK";
+    $tst_cmd[3]="NO_SS";
+#    $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
@@ -140,8 +140,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
-#printf("paused @ [%s:%d] - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
-
     $dsc_sng="Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_flt)^1' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.6f\\n' %tmp_fl_00%";
@@ -149,9 +147,7 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-#print "paused - hit return to continue"; my $wait = <STDIN>;
     
-# where did e_dbl tst_run??  it's in in.cdl but gets lost thru the rgrs...?
     $dsc_sng="Testing foo=log(e_dbl)^1";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_dbl)^1' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tmp_fl_00%";
@@ -168,9 +164,9 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
+    $dsc_sng="Testing foo=erf(1) (fails on AIX TODO ncap57)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=erf(1)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tmp_fl_00%";
-    $dsc_sng="Testing foo=erf(1) (fails on AIX TODO ncap57)";
     $tst_cmd[2]="0.842701";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -185,24 +181,23 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
+    $dsc_sng="Testing foo=sin(pi/2)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.12f\\n' %tmp_fl_00%";
-    $dsc_sng="Testing foo=sin(pi/2)";
     $tst_cmd[2]="1.000000000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
+    $dsc_sng="Testing foo=cos(pi)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=cos(pi)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.12f\\n' %tmp_fl_00%";
-    $dsc_sng="Testing foo=cos(pi)";
     $tst_cmd[2]="-1.000000000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array\
     
-    ##TODO ncap81
-    $dsc_sng="Casting variable with same name as dimension (failure expected on netCDF4 ncap81)";
+    $dsc_sng="Casting variable with same name as dimension (ncap81 failed with netCDF4 until netCDF 4.3.x)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",3);defdim(\"b\",4); a[\$a,\$b]=10;c=a(1,1);' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v c -s '%i' %tmp_fl_00%";
     $tst_cmd[2]="10";
@@ -210,8 +205,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-    ##TODO ncap81
-    $dsc_sng="Casting variable with a single dim of sz=1";
+    $dsc_sng="Casting variable with a single dim of sz=1 (ncap81 failed with netCDF4 until netCDF 4.3.x)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",1); b[\$a]=10;c=b(0:0);' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncwa -h -O $fl_fmt $nco_D_flg -C -a a %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -H -v b -s '%i' %tmp_fl_01%";
@@ -220,9 +214,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-# printf("paused @ %s:%d - hit return to continue", __FILE__ , __LINE__); my $wait=<STDIN>;
-    
-    if($dodap eq "FALSE") {
+    if($dodap eq "FALSE"){
 ####################
 #### ncatted tests #
 ####################
@@ -2111,7 +2103,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-    if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
+if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 #ncks #75
 # ncks -O -c ~/nco/data/in_grp.nc ~/foo.nc
@@ -2123,7 +2115,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-	} #RUN_NETCDF4_TESTS_VERSION_GE_431
+} #RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #ncks #76
 # ncks -O ~/nco/data/in_grp.nc ~/foo.nc
@@ -2166,7 +2158,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-	if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){	
+if($RUN_NETCDF4_TESTS_VERSION_GE_431){	
 	
 #ncks #80
 #ncks -O -4 -L 0 --cnk_min=1 --cnk_dmn lev,1 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
@@ -2238,7 +2230,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array  
 
-	} # RUN_NETCDF4_TESTS_VERSION_GE_431
+} # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #ncks #86
 #Imposing zero-deflation (-L 0) on contiguous variable uses netCDF-default (not user-specified) sizes.
@@ -2496,7 +2488,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
-    if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
+if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 #ncks #93
 #ncks -O -D 5 -C -d lat,0 -v one,four --cnk_plc=xst --cnk_map=xst ~/nco/data/hdn.nc ~/foo.nc
@@ -2518,7 +2510,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-    } # RUN_NETCDF4_TESTS_VERSION_GE_431
+} # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #####################
 #### ncpdq tests #### -OK !
@@ -2908,7 +2900,7 @@ print "\n";
     #### Group tests (requires netCDF4) ###
     #######################################
 
-    if($RUN_NETCDF4_TESTS == 1){
+    if($RUN_NETCDF4_TESTS){
 
 #####################
 #### ncpdq GROUP tests 
@@ -3461,7 +3453,7 @@ print "\n";
     #### Group tests (requires netCDF4) ###
     #######################################
 
-    if($RUN_NETCDF4_TESTS == 1){
+    if($RUN_NETCDF4_TESTS){
 	
 #ncrcat #22	
 # same as ncrcat #02 with group
@@ -3544,7 +3536,7 @@ print "\n";
     #### Group tests (requires netCDF4) ###
     #######################################
 
-    if($RUN_NETCDF4_TESTS == 1){
+    if($RUN_NETCDF4_TESTS){
 
 #ncrcat #28
 #ncks -h -O -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc in_grp1.nc
@@ -3810,7 +3802,7 @@ print "\n";
     #### Group tests (requires netCDF4) ###
     #######################################
 
-    if($RUN_NETCDF4_TESTS == 1){
+    if($RUN_NETCDF4_TESTS){
 	
 # ncra #23
 # same as ncra #02, for groups
@@ -3923,7 +3915,7 @@ print "\n";
     #### Group tests (requires netCDF4) ###
     #######################################
 
-    if($RUN_NETCDF4_TESTS == 1){
+    if($RUN_NETCDF4_TESTS){
 	
 #NEW 4.4.2	
 #ncra #32
@@ -4410,7 +4402,7 @@ if(0){
     #### Group tests (requires netCDF4) ###
     #######################################
 
-    if($RUN_NETCDF4_TESTS == 1){
+    if($RUN_NETCDF4_TESTS){
 	
 #ncwa #44
 #NEW NCO 4.3.3
@@ -4658,7 +4650,7 @@ if(0){
     $#tst_cmd=0; # Reset array
 
 #### Group tests	
-    if($RUN_NETCDF4_TESTS == 1){	
+    if($RUN_NETCDF4_TESTS){	
 
 #NEW 4.4.3	
 #ncwa #63 
@@ -4707,7 +4699,7 @@ if(0){
     #### Group tests (requires netCDF4) ###
     #######################################
 
-    if($RUN_NETCDF4_TESTS == 1){
+    if($RUN_NETCDF4_TESTS){
 
 #################### Attributes
 
@@ -4800,7 +4792,7 @@ if(0){
 	
 #################### Dimensions	
 
-   if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
+if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 #ncrename #8	
 #ncrename -O -d lat,new_lat ~/nco/data/in_grp.nc ~/foo.nc
@@ -4850,7 +4842,7 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
-	} # RUN_NETCDF4_TESTS_VERSION_GE_431 
+} # RUN_NETCDF4_TESTS_VERSION_GE_431 
 
 #ncrename #12
 #ncrename -O -d ./lat_non_existing,new_lat ~/nco/data/in_grp.nc ~/foo.nc
@@ -4931,7 +4923,7 @@ if(0){
 #ncrename -O -g g1,new_g1 ~/nco/data/in_grp.nc ~/foo.nc 
 # relative rename g1 to new_g1
 
-   if($RUN_NETCDF4_TESTS_VERSION_GE_431 == 1){
+if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
     $dsc_sng="Groups: Relative rename 'g1' to 'new_g1' (expect failure with netCDF < 4.3.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g g1,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -4965,7 +4957,7 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
-	} # RUN_NETCDF4_TESTS_VERSION_GE_431
+} # RUN_NETCDF4_TESTS_VERSION_GE_431
 
 #ncrename #21	
 #ncrename -O -g .gfoo,new_g1 ~/nco/data/in_grp.nc ~/foo.nc 
