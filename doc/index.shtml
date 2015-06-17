@@ -859,10 +859,10 @@ NCO for Debian over the years.
 <a name="centos"></a><a name="cnt"></a><a name="rhel"></a> <!-- http://nco.sf.net#centos --> <!-- http://nco.sf.net#cnt --> <!-- http://nco.sf.net#rhel -->
 <h3><a href="http://fedora.redhat.com">Fedora</a>, RedHat Enterprise Linux (<a href="http://www.redhat.com/rhel">RHEL</a>), and Community ENTerprise Operating System (<a href="http://www.centos.org">CentOS</a>) GNU/Linux</h3>
 <ul>
-<dt>The <a href="https://admin.fedoraproject.org/pkgdb/package/nco">Fedora NCO</a> RPMs are usually up-to-date so that &lsquo;<tt>yum install nco</tt>&rsquo; will install a recent version. 
+<dt>The <a href="https://admin.fedoraproject.org/pkgdb/package/nco">Fedora NCO</a> RPMs are usually up-to-date so that &lsquo;<tt>dnf install nco</tt>&rsquo; will install a recent version. 
 A comprehensive list of pre-built RPMs for many OS's is <a href="http://rpmfind.net/linux/rpm2html/search.php?query=nco">here</a>.
 <li><a href="ftp://rpmfind.net/linux/fedora/linux/development/rawhide/x86_64/os/Packages/n/nco-4.3.2-1.fc20.x86_64.rpm">nco-4.3.2-1.fc20.x86_64.rpm</a>: Executables for x86_64/Fedora Core&nbsp;20-compatible environments</li></dt>
-<dt>If not, try our own most recent (we stopped building RPMs many years ago and are looking for a volunteer to do this instead) self-built NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.5-1.fc7.i386.rpm</tt>&rsquo;):
+<dt>If not, try our own most recent (we stopped building RPMs many years ago and are looking for a volunteer to do this instead) self-built NCO RPMs (install with, e.g., &lsquo;<tt>dnf install nco-3.9.5-1.fc7.i386.rpm</tt>&rsquo;):
 <li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.fc7.src.rpm">nco-3.9.5-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.src.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.x86_64.rpm">nco-3.9.5-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;5-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.x86_64.rpm"-->)</li>
@@ -1157,6 +1157,7 @@ we recommend that you first try the pre-built binaries for your
 system, e.g.,  
 <tt>
 <dt>sudo aptitude install nco # Debian-based systems like Debian, Mint, Ubuntu</dt>
+<dt>sudo dnf-install nco      # RPM-based systems like CentOS, Fedora, openSUSE, RHEL</dt>
 <dt>sudo yum-install nco      # RPM-based systems like CentOS, Fedora, openSUSE, RHEL</dt>
 <dt>sudo port install nco     # MacPorts (after installing MacPorts on Mac OS X)</dt>
 </tt>
@@ -1208,17 +1209,19 @@ For Debian-based systems:
 
 <dt><a name="yum"></a></dt> <!-- http://nco.sf.net#yum -->
 <dt><a name="bld_yum"></a></dt> <!-- http://nco.sf.net#bld_yum -->
-For RPM-based systems:
+<dt><a name="dnf"></a></dt> <!-- http://nco.sf.net#dnf -->
+<dt><a name="bld_dnf"></a></dt> <!-- http://nco.sf.net#bld_dnf -->
+For RPM-based systems (substitute <tt>yum</tt> for <tt>dnf</tt> on older Fedora systems):
 <tt>
-<dt>sudo yum install antlr antlr-C++ -y # ANTLR</dt>
-<dt>sudo yum install curl-devel libxml2-devel -y # DAP-prereqs</dt>
-<dt>sudo yum install expat expat-devel -y # expat XML parser, a UDUnits-prereq (RHEL only?)</dt>
-<dt>sudo yum install libdap libdap-devel -y # DAP</dt>
-<dt>sudo yum install bison flex gcc gcc-c++ -y # GNU toolchain</dt>
-<dt>sudo yum install gsl gsl-devel -y # GSL</dt>
-<dt>sudo yum install netcdf netcdf-devel -y # netCDF</dt>
-<dt>sudo yum install librx librx-devel -y # RX</dt>
-<dt>sudo yum install udunits2 udunits2-devel -y # UDUnits</dt>
+<dt>sudo dnf install antlr antlr-C++ -y # ANTLR</dt>
+<dt>sudo dnf install curl-devel libxml2-devel -y # DAP-prereqs</dt>
+<dt>sudo dnf install expat expat-devel -y # expat XML parser, a UDUnits-prereq (RHEL only?)</dt>
+<dt>sudo dnf install libdap libdap-devel -y # DAP</dt>
+<dt>sudo dnf install bison flex gcc gcc-c++ -y # GNU toolchain</dt>
+<dt>sudo dnf install gsl gsl-devel -y # GSL</dt>
+<dt>sudo dnf install netcdf netcdf-devel -y # netCDF</dt>
+<dt>sudo dnf install librx librx-devel -y # RX</dt>
+<dt>sudo dnf install udunits2 udunits2-devel -y # UDUnits</dt>
 </tt>
 
 <dt><a name="port"></a></dt> <!-- http://nco.sf.net#port -->

@@ -136,6 +136,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @include my-bib-macros.texi
 @mybibuselist{References}
 
+@c 20150616 Add version info as per
+@c http://www.gnu.org/software/automake/manual/html_node/Texinfo.html
+@include version.texi
+
 @c end of header
 
 @c TeXInfo macros may not appear before TeXInfo @setfilename header

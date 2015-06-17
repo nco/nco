@@ -1,6 +1,6 @@
 2015-06-16  Charlie Zender  <zender@uci.edu>
 
-	* Travis CI builds now "pass" on gcc and clang. Regressions are due to old netCDF library.
+	* Travis CI builds now pass on gcc and clang. Yay! Regressions are due to old netCDF library.
 
 	* Work on Travis CI YAML .travis.yml file syntax with http://lint.travis-ci.org
 
