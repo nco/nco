@@ -729,7 +729,8 @@ nco_ppc_bitmask_scl /* [fnc] Round input value significand by specified number o
   unsigned long int *u64_ptr;
   unsigned long int msk_f64_u64_zro;
   assert(bit_xpl_nbr_zro >= 0 && bit_xpl_nbr_zro <= bit_xpl_nbr_sgn_dbl-NCO_PPC_BIT_XPL_NBR_MIN);
-
+  CEWI_unused(bit_xpl_nbr_sgn_dbl);
+  
   val_rnd=val_xct;
   msk_f64_u64_zro=0ul; /* Zero all bits */
   msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */

@@ -1,10 +1,18 @@
+2015-06-17  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.1-alpha3 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha3 final changes'
+	git tag -a 4.5.1-alpha3 -m 'Version 4.5.1-alpha3 tag: Add regridding regression tests. Fix strcat() buffer overrun that may have caused writing zeros to output files.';git push --tags
+
+	* Introduce CEWI_unused() to prevent unused warnings on variables used only in assert() macros
+
 2015-06-16  Charlie Zender  <zender@uci.edu>
 
 	* Add regridding regression tests based on AODVIS, FSNT, and area as ncap2 regression test only for USER=zender
 
-	* Clean-up ncap2.in test in preparation for adding regridding regression testt
+	* Clean-up ncap2.in test in preparation for adding regridding regression tests
 
-	* Travis CI builds now pass on gcc and clang. Yay! Regressions are due to old netCDF library.
+	* Travis CI builds now pass on gcc and clang. Yay! Only regressions are due to old netCDF library.
 
 	* Work on Travis CI YAML .travis.yml file syntax with http://lint.travis-ci.org
 

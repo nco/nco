@@ -1157,8 +1157,8 @@ we recommend that you first try the pre-built binaries for your
 system, e.g.,  
 <tt>
 <dt>sudo aptitude install nco # Debian-based systems like Debian, Mint, Ubuntu</dt>
-<dt>sudo dnf-install nco      # RPM-based systems like CentOS, Fedora, openSUSE, RHEL</dt>
-<dt>sudo yum-install nco      # RPM-based systems like CentOS, Fedora, openSUSE, RHEL</dt>
+<dt>sudo dnf-install nco      # Newer RPM-based systems like CentOS, Fedora, openSUSE, RHEL</dt>
+<dt>sudo yum-install nco      # Older RPM-based systems like CentOS, Fedora, openSUSE, RHEL</dt>
 <dt>sudo port install nco     # MacPorts (after installing MacPorts on Mac OS X)</dt>
 </tt>
 If pre-built executables do not satisfy you (e.g., are out-of-date)

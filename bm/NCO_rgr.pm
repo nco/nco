@@ -218,6 +218,7 @@ print "\n";
     $USER=$ENV{'USER'};
     if($USER eq 'zender'){
 	# Regridding regression tests
+	# valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncks -O -D 5 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc ${DATA}/ne30/rgr/ne30_tst.nc ~/foo.nc > ~/foo 2>&1
 	# ncks -O -D 5 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc ${DATA}/ne30/rgr/ne30_tst.nc ~/foo.nc
 	# ncwa -O -w area ~/foo.nc ~/foo2.nc
 	# ncks -H -u -C -v FSNT ~/foo2.nc
