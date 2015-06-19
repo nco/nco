@@ -1,5 +1,7 @@
 2015-06-18  Charlie Zender  <zender@uci.edu>
 
+	* Fill-in var_nm for tedious mss_val warning
+
 	* Add 2D->1D, and 2D->2D regression tests
 
 	* Ensure lat/lon_psn_dst are not used uninitialized
