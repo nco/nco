@@ -1,5 +1,7 @@
 2015-06-19  Charlie Zender  <zender@uci.edu>
 
+	* Add [int,long,NULL]_CEWI to quiet maybe-uninitialize warnings with GCC 4.8.2
+
 	* Fix treatment of exiting with library as return code for regression tests
 
 	* NCO 4.5.1-alpha4 release procedure:

@@ -613,8 +613,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   int lon_psn_src; /* [idx] Ordinal position of longitude size in rectangular source grid */
   int lat_psn_src; /* [idx] Ordinal position of latitude  size in rectangular source grid */
-  int lon_psn_dst; /* [idx] Ordinal position of longitude size in rectangular destination grid */
-  int lat_psn_dst; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
+  int lon_psn_dst=int_CEWI; /* [idx] Ordinal position of longitude size in rectangular destination grid */
+  int lat_psn_dst=int_CEWI; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
   if(flg_grd_in_2D){
     if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
       lon_psn_src=1;
@@ -637,15 +637,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_2D; /* [nbr] Maximum rank of grid variables */
   double *area_out; /* [sr] Area of destination grid */
-  double *lon_ctr_out; /* [dgr] Longitude centers of rectangular destination grid */
-  double *lat_ctr_out; /* [dgr] Latitude  centers of rectangular destination grid */
+  double *lon_ctr_out=NULL_CEWI; /* [dgr] Longitude centers of rectangular destination grid */
+  double *lat_ctr_out=NULL_CEWI; /* [dgr] Latitude  centers of rectangular destination grid */
   double *lat_wgt_out=NULL; /* [dgr] Latitude  weights of rectangular destination grid */
   double *lon_crn_out=NULL; /* [dgr] Longitude corners of rectangular destination grid */
   double *lat_crn_out=NULL; /* [dgr] Latitude  corners of rectangular destination grid */
   double *lon_ntf_out=NULL; /* [dgr] Longitude interfaces of rectangular destination grid */
   double *lat_ntf_out=NULL; /* [dgr] Latitude  interfaces of rectangular destination grid */
-  double *lon_bnd_out; /* [dgr] Longitude boundaries of rectangular destination grid */
-  double *lat_bnd_out; /* [dgr] Latitude  boundaries of rectangular destination grid */
+  double *lon_bnd_out=NULL_CEWI; /* [dgr] Longitude boundaries of rectangular destination grid */
+  double *lat_bnd_out=NULL_CEWI; /* [dgr] Latitude  boundaries of rectangular destination grid */
   double *wgt_raw; /* [frc] Remapping weights */
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
@@ -684,9 +684,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !src_grid_rank */
 
   const int bnd_tm_nbr_out=2; /* [nbr] Number of boundaries for output time */
-  int bnd_nbr_out; /* [nbr] Number of boundaries for output time and rectangular grid coordinates, and number of vertices for output non-rectangular grid coordinates */
-  long lon_nbr_out; /* [nbr] Number of longitudes in rectangular destination grid */
-  long lat_nbr_out; /* [nbr] Number of latitudes  in rectangular destination grid */
+  int bnd_nbr_out=int_CEWI; /* [nbr] Number of boundaries for output time and rectangular grid coordinates, and number of vertices for output non-rectangular grid coordinates */
+  long lon_nbr_out=long_CEWI; /* [nbr] Number of longitudes in rectangular destination grid */
+  long lat_nbr_out=long_CEWI; /* [nbr] Number of latitudes  in rectangular destination grid */
   long ncol_nbr_out; /* [nbr] Number of columns in destination grid */
   if(flg_grd_out_1D){
     bnd_nbr_out=rgr_map.dst_grid_corners;
@@ -1877,7 +1877,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   double lat_idx_dbl; // Latitude index, double precision
   double lat_nnr_idx_dbl; // Inner latitude index, double precision
   double lat_nbr_dbl; // [nbr] Number of latitudes, double precision
-  double pk; // Polynomial
+  double pk=double_CEWI; // Polynomial
   double pkm1; // Polynomial
   double pkm2; // Polynomial
   double pkmrk; // Polynomial
