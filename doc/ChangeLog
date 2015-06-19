@@ -1,5 +1,9 @@
 2015-06-19  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.1-alpha5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha5 final changes'
+	git tag -a 4.5.1-alpha5 -m 'Version 4.5.1-alpha5 tag: Revert some broken doc build changes, patch handling of library return codes by regression tests';git push --tags
+
 	* Remove autobld/mdate-sh, a testimonial to wasted time
 
 	* Add [int,long,NULL]_CEWI to quiet maybe-uninitialize warnings with GCC 4.8.2
