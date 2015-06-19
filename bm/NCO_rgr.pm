@@ -225,7 +225,7 @@ print "\n";
 	# ncwa -O -y ttl -v area ~/foo.nc ~/foo3.nc
 	# ncks -H -u -C -v area ~/foo3.nc
 	
-	$dsc_sng="Regridding FSNT to test regridding conservation (uses SSH/scp to givre.ess.uci.edu)";
+	$dsc_sng="Regridding FSNT 1D->2D to test conservation (uses SSH/scp to givre.ess.uci.edu)";
 	$tst_cmd[0]="scp givre.ess.uci.edu:/data/zender/maps/map_ne30np4_to_fv129x256_aave.150418.nc .";
 	$tst_cmd[1]="scp givre.ess.uci.edu:/data/zender/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.150418.nc ne30_tst.nc %tmp_fl_00%";
@@ -234,22 +234,22 @@ print "\n";
 #	$tst_cmd[0]="wget -c -P $drc_dat http://glace.ess.uci.edu/maps/map_ne30np4_to_fv129x256_aave.150418.nc";
 #	$tst_cmd[1]="wget -c -P $drc_dat http://glace.ess.uci.edu/ne30/rgr/ne30_tst.nc";
 #	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg --map=".$drc_dat."/map_ne30np4_to_fv129x256_aave.150418.nc ".$drc_dat."/ne30_tst.nc %tmp_fl_00%";
-	
-	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
-	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
-	$tst_cmd[5]="FSNT = 244.124 W/m2";
-	$tst_cmd[6]="SS_OK";
+	$tst_cmd[3]="/bin/cp -f %tmp_fl_00% ne30_2D.nc";
+	$tst_cmd[4]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
+	$tst_cmd[5]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
+	$tst_cmd[6]="FSNT = 244.124 W/m2";
+	$tst_cmd[7]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Regridding AODVIS to test missing value treatment";
+	$dsc_sng="Regridding AODVIS 1D->2D to test missing value treatment";
 	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v AODVIS %tmp_fl_01%";
 	$tst_cmd[1]="AODVIS = 0.151705";
 	$tst_cmd[2]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Regridding area to test grid normalization";
+	$dsc_sng="Regridding area 1D->2D to test grid normalization";
 	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --map=${drc_dat}/map_ne30np4_to_fv129x256_aave.150418.nc $drc_dat/ne30_tst.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncwa -O $fl_fmt $nco_D_flg -y ttl -v area %tmp_fl_00% %tmp_fl_02%";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v area %tmp_fl_02%";
@@ -257,7 +257,29 @@ print "\n";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
-    }
+
+	$dsc_sng="Regridding FSNT 2D->1D to test conservation (uses SSH/scp to givre.ess.uci.edu)";
+	$tst_cmd[0]="scp givre.ess.uci.edu:/data/zender/maps/map_fv129x256_to_ne30np4_aave.20150602.nc .";
+	$tst_cmd[1]="scp givre.ess.uci.edu:/data/zender/ne30/rgr/ne30_tst.nc .";
+	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_fv129x256_to_ne30np4_aave.20150602.nc ne30_2D.nc %tmp_fl_00%";
+	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
+	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
+	$tst_cmd[5]="FSNT = 244.124 W/m2";
+	$tst_cmd[6]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+
+	$dsc_sng="Regridding FSNT 2D->2D to test conservation (uses SSH/scp to givre.ess.uci.edu)";
+	$tst_cmd[0]="scp givre.ess.uci.edu:/data/zender/maps/map_fv129x256_to_fv257x512_aave.20150529.nc .";
+	$tst_cmd[1]="scp givre.ess.uci.edu:/data/zender/ne30/rgr/ne30_tst.nc .";
+	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_fv129x256_to_fv257x512_aave.20150529.nc ne30_2D.nc %tmp_fl_00%";
+	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
+	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
+	$tst_cmd[5]="FSNT = 244.124 W/m2";
+	$tst_cmd[6]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+    } # !CSZ
     
     if($dodap eq "FALSE"){
 ####################
