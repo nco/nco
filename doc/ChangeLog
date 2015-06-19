@@ -1,5 +1,7 @@
 2015-06-19  Charlie Zender  <zender@uci.edu>
 
+	* Fix treatment of exiting with library as return code for regression tests
+
 	* NCO 4.5.1-alpha4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha4 final changes'
 	git tag -a 4.5.1-alpha4 -m 'Version 4.5.1-alpha4 tag: More regridding regression tests. Fix possibly uninitialized destination pointer that may have caused writing zeros to output files with clang on MacOS X';git push --tags
@@ -8,7 +10,7 @@
 
 	* Fill-in var_nm for tedious mss_val warning
 
-	* Add 2D->1D, and 2D->2D regression tests
+	* Add 2D->1D and 2D->2D regression tests
 
 	* Ensure lat/lon_psn_dst are not used uninitialized
 
@@ -17,8 +19,8 @@
 	* firstprivate() to preserve NULL on pointers that could inadvertently be free()'d
 
 	* clang on linux with debugging produced troves of useful warning messages
-	clang messages are much more thorough than gcc/icc
-	clang is also as unforgiving as AIX xlc when at finding sometimes uninitialized memory
+	clang messages are more thorough than gcc/icc for finding sometimes uninitialized memory
+	clang is about as unforgiving as AIX xlc at strictly enforcing initialization
 	clang would be my default development compiler if it supported OpenMP
 	That being said, had to suppress annoying clang sometimes uninitialized memory warnings :)
 

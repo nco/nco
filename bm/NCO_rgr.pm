@@ -85,19 +85,22 @@ sub tst_rgr {
 print "\n";
 my $RUN_NETCDF4_TESTS=0;
 my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
-system("ncks --get_prg_info");
-# system() runs a command and returns exit status information as a 16 bit value: 
-# Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
+system("ncks --lbr_rcd");
 if($? == -1){
-  print "failed to execute: ncks --get_prg_info: $!\n";
+    print "failed to execute: ncks --get_prg_info: $!\n";
 }else{
-    my $exit_value=$?;
+    # system() runs a command and returns exit status information as a 16 bit value 
+    # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
+    my $exit_value=$? >> 8;
+    
+    # 20150619: nco_exit_lbr_vrs() deducts offset of 300 so rcd < 255
+    $exit_value+=300;
 
-  # nco_get_prg_info() returns codes:
-  # 360 (for library 3.x)
-  # 410 (for library 4.1.x)
-  # 430 (for library 4.3.0)
-  # 433 (for library 4.3.3)
+    # nco_exit_lbr_rcd() returns codes:
+    # 360 (for library 3.x)
+    # 410 (for library 4.1.x)
+    # 430 (for library 4.3.0)
+    # 433 (for library 4.3.3)
 
   if($exit_value == 410){print "netCDF version 4.1.x detected\n";}
   if($exit_value == 431){print "netCDF version 4.3.1 detected\n";}

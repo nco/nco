@@ -2483,6 +2483,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   enum ESMC_LogMsgType_Flag log_msg_typ=ESMC_LOGMSG_TRACE;
   if(rcd_esmf != ESMF_SUCCESS){
     ESMC_LogWrite("ESMC_Initialize() failed",log_msg_typ);
+    abort(); /* Prevent clang sometimes uninitialized warnings */
     goto rgr_cln;
   } /* endif */
   

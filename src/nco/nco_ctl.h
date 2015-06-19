@@ -53,6 +53,9 @@ nco_exit /* [fnc] Wrapper for exit() */
 void 
 nco_exit_gracefully(void); /* [fnc] Clean up timers, file descriptors, memory, then exit */
 
+void
+nco_exit_lbr_rcd(void); /* [fnc] Exit with netCDF library version as return code */
+
 nco_bool /* [flg] Program does arithmetic */
 nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int nco_prg_id); /* [enm] Program ID */

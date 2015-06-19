@@ -123,7 +123,6 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool GET_FILE_INFO=False; /* [flg] Get file information (#groups, #dimensions, #attributes, #variables) */
-  nco_bool GET_PRG_INFO=False; /* [flg] Get compiled program information (e.g., libraries) */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool GRP_XTR_VAR_XCL=False; /* [flg] Extract matching groups, exclude matching variables */
@@ -451,8 +450,8 @@ main(int argc,char **argv)
       {"help",no_argument,0,'?'},
       {"hlp",no_argument,0,'?'},
       {"get_grp_info",no_argument,0,0},
-      {"get_prg_info",no_argument,0,0},
       {"get_file_info",no_argument,0,0},
+      {"lbr_rcd",no_argument,0,0},
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
@@ -551,7 +550,6 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
       if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
-      if(!strcmp(opt_crr,"get_prg_info")) GET_PRG_INFO=True;
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdn") || !strcmp(opt_crr,"hidden")) PRN_HDN=True; /* [flg] Print hidden attributes */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
@@ -562,6 +560,7 @@ main(int argc,char **argv)
         (void)nco_lbr_vrs_prn();
         nco_exit(EXIT_SUCCESS);
       } /* endif "lbr" */
+      if(!strcmp(opt_crr,"lbr_rcd")) nco_exit_lbr_rcd();
       if(!strcmp(opt_crr,"scrip")){
         fl_scrip=strdup(optarg);
 	sld_nfo=(kvm_sct *)nco_malloc(BUFSIZ*sizeof(kvm_sct));
@@ -845,9 +844,6 @@ main(int argc,char **argv)
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);
  
-  /* Get program info for regressions tests */
-  if(GET_PRG_INFO) nco_get_prg_info();
-
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
@@ -885,25 +881,21 @@ main(int argc,char **argv)
   (void)fprintf(stdout,"%s: MPI process rank %d reports %d process%s\n",nco_prg_nm,prc_rnk,prc_nbr,(prc_nbr == 1) ? "" : "es");
 #endif /* !ENABLE_MPI */
 
-  /* Process -z option if requested */ 
+  /* Pedro's options, essentially for debugging (deprecated, likely to be eliminated in future) */ 
   if(GET_LIST){ 
     if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
     trv_tbl_prn(trv_tbl);
     goto close_and_free; 
-  } /* end GET_LIST */ 
-
-  /* Process --get_grp_info option if requested */ 
+  } /* !GET_LIST */ 
   if(GET_GRP_INFO){ 
     nco_prn_trv_tbl(in_id,trv_tbl);
     goto close_and_free; 
-  } /* end GET_GRP_INFO */
-
-  /* Process --get_file_info option if requested */ 
+  } /* !GET_GRP_INFO */
   if(GET_FILE_INFO){ 
     (void)fprintf(stderr,"%s: INFO reports file information\n",nco_prg_nm_get());
     (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d atomic-type variables, %d non-atomic variables\n",grp_nbr_fl,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,att_glb_nbr+att_glb_nbr,var_nbr_fl,var_ntm_fl);
     goto close_and_free; 
-  } /* end GET_FILE_INFO */
+  } /* !GET_FILE_INFO */
 
   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
 
