@@ -1,3 +1,9 @@
+2015-06-19  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.1-alpha4 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha4 final changes'
+	git tag -a 4.5.1-alpha4 -m 'Version 4.5.1-alpha4 tag: More regridding regression tests. Fix possibly uninitialized destination pointer that may have caused writing zeros to output files with clang on MacOS X';git push --tags
+
 2015-06-18  Charlie Zender  <zender@uci.edu>
 
 	* Fill-in var_nm for tedious mss_val warning

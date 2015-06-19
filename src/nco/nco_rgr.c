@@ -1637,7 +1637,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	/* Regrid variable */
 	var_nm=trv.nm;
 	var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
-	var_typ_out=trv.var_typ;
+	var_typ_out=trv.var_typ; /* NB: Output type in file is same as input type */
 	var_sz_in=1L;
 	var_sz_out=1L;
 	rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
