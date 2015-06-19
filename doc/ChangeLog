@@ -1,3 +1,17 @@
+2015-06-18  Charlie Zender  <zender@uci.edu>
+
+	* Ensure lat/lon_psn_dst are not used uninitialized
+
+	* One-size fits all pre-allocation for dimension IDs and cnt/srt
+
+	* firstprivate() to preserve NULL on pointers that could inadvertently be free()'d
+
+	* clang on linux with debugging produced troves of useful warning messages
+	clang messages are much more thorough than gcc/icc
+	clang is also as unforgiving as AIX xlc when at finding sometimes uninitialized memory
+	clang would be my default development compiler if it supported OpenMP
+	That being said, had to suppress annoying clang sometimes uninitialized memory warnings :)
+
 2015-06-17  Charlie Zender  <zender@uci.edu>
 
 	* Add topology and modulo metadata to longitude

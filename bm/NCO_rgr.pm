@@ -225,7 +225,7 @@ print "\n";
 	# ncwa -O -y ttl -v area ~/foo.nc ~/foo3.nc
 	# ncks -H -u -C -v area ~/foo3.nc
 	
-	$dsc_sng="Regridding FSNT to regridding conservation (uses SSH/scp to givre.ess.uci.edu)";
+	$dsc_sng="Regridding FSNT to test regridding conservation (uses SSH/scp to givre.ess.uci.edu)";
 	$tst_cmd[0]="scp givre.ess.uci.edu:/data/zender/maps/map_ne30np4_to_fv129x256_aave.150418.nc .";
 	$tst_cmd[1]="scp givre.ess.uci.edu:/data/zender/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.150418.nc ne30_tst.nc %tmp_fl_00%";
@@ -242,7 +242,7 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Regridding AODVIS to test missing values";
+	$dsc_sng="Regridding AODVIS to test missing value treatment";
 	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v AODVIS %tmp_fl_01%";
 	$tst_cmd[1]="AODVIS = 0.151705";
 	$tst_cmd[2]="SS_OK";
