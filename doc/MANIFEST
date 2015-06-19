@@ -52,7 +52,7 @@ nco/src		Source files
 Autotools directory:
 nco/autobld/compile	Wrapper for compilers which do not understand '-c -o'
 nco/autobld/fxm		Many files need documentation here
-nco/autobld/mdate-sh	Installed by automake, needed by TeXInfo for version.texi
+(nco/autobld/mdate-sh)	(Formerly needed by TeXInfo for version.texi, could be installed by automake --add-missing)
 
 Binary directory:
 nco/bin/README		Description of binary directory
