@@ -445,7 +445,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* endif Tempest */
   
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
-    /* Add one for NUL byte */
     att_val=(char *)nco_malloc(att_sz*nco_typ_lng(att_typ)+1L);
     rcd+=nco_get_att(in_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
     /* NUL-terminate attribute before using strstr() */
@@ -482,7 +481,12 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     break;
   default:
     (void)fprintf(stderr,"%s: ERROR %s unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
-    nco_dfl_case_generic_err(); break;
+    nco_dfl_case_generic_err();
+    /* NB: This return never executes because nco_dfl_case_generic_err() calls exit()
+       Return placed here to suppress clang -Wsometimes-uninitialized warnings
+       This is done many other times throughout the code, though explained only once, here */
+    return NCO_ERR;
+    break;
   } /* end switch */
     
   /* Now we have dimension IDs, get dimension sizes */
@@ -596,21 +600,37 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     break;
   default:
     (void)fprintf(stderr,"%s: ERROR %s unknown map file type\n",nco_prg_nm_get(),fnc_nm);
-    nco_dfl_case_generic_err(); break;
+    nco_dfl_case_generic_err();
+    /* NB: This return never executes because nco_dfl_case_generic_err() calls exit()
+       Return placed here to suppress clang -Wsometimes-uninitialized warnings
+       This is done many other times throughout the code, though explained only once, here */
+    return NCO_ERR;
+    break;
   } /* end switch */
   /* Obtain fields whose name is independent of mapfile type */
   rcd+=nco_inq_varid(in_id,"src_grid_dims",&dmn_sz_in_int_id);
   rcd+=nco_inq_varid(in_id,"dst_grid_dims",&dmn_sz_out_int_id);
 
+  int lon_psn_src; /* [idx] Ordinal position of longitude size in rectangular source grid */
+  int lat_psn_src; /* [idx] Ordinal position of latitude  size in rectangular source grid */
   int lon_psn_dst; /* [idx] Ordinal position of longitude size in rectangular destination grid */
   int lat_psn_dst; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
+  if(flg_grd_in_2D){
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
+      lon_psn_src=1;
+      lat_psn_src=0;
+    }else{
+      lon_psn_src=0;
+      lat_psn_src=1;
+    } /* !Tempest */
+  } /* !flg_grd_in_2D */
   if(flg_grd_out_2D){
     if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
-      lon_psn_dst=1; /* [idx] Ordinal position of longitude size in rectangular destination grid */
-      lat_psn_dst=0; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
+      lon_psn_dst=1;
+      lat_psn_dst=0;
     }else{
-      lon_psn_dst=0; /* [idx] Ordinal position of longitude size in rectangular destination grid */
-      lat_psn_dst=1; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
+      lon_psn_dst=0;
+      lat_psn_dst=1;
     } /* !Tempest */
   } /* !flg_grd_out_2D */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
@@ -631,9 +651,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int *row_dst_adr; /* [idx] Destination address (row) */
   int *dmn_sz_in_int; /* [nbr] Array of dimension sizes of source grid */
   int *dmn_sz_out_int; /* [nbr] Array of dimension sizes of destination grid */
-  long *dmn_cnt;
-  long *dmn_srt;
-  long *dmn_srd;
+  long *dmn_cnt=NULL;
+  long *dmn_srt=NULL;
+  long *dmn_srd=NULL;
   long idx; /* [idx] Counting index for unrolled grids */
     
   /* Allocate space to hold dimension metadata for rectangular destination grid */
@@ -658,8 +678,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     lat_nbr_in=dmn_sz_in_int[0];
     ncol_nbr_in=dmn_sz_in_int[0];
   }else if(flg_grd_in_2D){
-    lon_nbr_in=dmn_sz_in_int[lon_psn_dst];
-    lat_nbr_in=dmn_sz_in_int[lat_psn_dst];
+    lon_nbr_in=dmn_sz_in_int[lon_psn_src];
+    lat_nbr_in=dmn_sz_in_int[lat_psn_src];
     ncol_nbr_in=0;
   } /* !src_grid_rank */
 
@@ -1079,8 +1099,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   char *var_nm; /* [sng] Variable name */
-  int *dmn_id_in; /* [id] Dimension IDs */
-  int *dmn_id_out; /* [id] Dimension IDs */
+  int *dmn_id_in=NULL; /* [id] Dimension IDs */
+  int *dmn_id_out=NULL; /* [id] Dimension IDs */
   int var_id_in; /* [id] Variable ID */
   int var_id_out; /* [id] Variable ID */
   nc_type var_typ_out; /* [enm] Variable type to write to disk */
@@ -1125,6 +1145,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     var_crt_nbr++;
   } /* !flg_grd_out_2D */
 
+  /* Pre-allocate dimension ID and cnt/srt space */
+  int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
+  rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
+  dmn_nbr_max++; /* Safety in case regridding adds dimension */
+  dmn_id_in=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
+  dmn_id_out=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
+  dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+  dmn_cnt=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+
   /* Define regridded and copied variables in output file */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1137,10 +1166,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       rcd=nco_inq_varid_flg(out_id,var_nm,&var_id_out);
       /* If variable has not been defined, define it */
       if(rcd != NC_NOERR){
-	dmn_id_in=(int *)nco_malloc((dmn_nbr_in+1)*sizeof(int)); /* Allocate an extra slot in case additional dimension in output */
-	dmn_id_out=(int *)nco_malloc((dmn_nbr_in+1)*sizeof(int));
-	dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
-	dmn_cnt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
 	if(trv.flg_rgr){
 	  /* Regrid */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
@@ -1208,13 +1233,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  aed_mtd_crd.id=var_id_out;
 	  (void)nco_aed_prc(out_id,var_id_out,aed_mtd_crd);
 	} /* !flg_rgr */
-	if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
-	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
-	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
-	if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
       } /* !rcd */
     } /* !var */
   } /* end idx_tbl */
+
+  /* Free pre-allocated array space */
+  if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
+  if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
+  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+  if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
 
   /* Define new metadata in regridded file */
   att_nm=strdup("long_name");
@@ -1562,8 +1589,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   const nco_bool flg_rnr=rgr->flg_rnr; /* [flg] Renormalize destination values by valid area */
   const size_t grd_sz_in=rgr_map.src_grid_size; /* [nbr] Number of elements in single layer of input grid */
   const size_t grd_sz_out=rgr_map.dst_grid_size; /* [nbr] Number of elements in single layer of output grid */
-  double *var_val_dbl_in;
-  double *var_val_dbl_out;
+  double *var_val_dbl_in=NULL;
+  double *var_val_dbl_out=NULL;
   double *wgt_vld_out=NULL;
   double mss_val_dbl;
   double var_val_crr;
@@ -1588,13 +1615,13 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   /* OpenMP notes:
      default(): none
-     firstprivate(): tally,wgt_vld_out (preserve NULL-initialization)
+     firstprivate(): Pointers that could inadvertently be free()'d if they lost their NULL-initialization
      private(): almost everything else
-     shared(): flg_rnr,fnc_nm,wgt_vld_thr explicit shared for icc 13.1.3 (rhea), default shared for gcc 4.9.2 */
+     shared(): flg_rnr,fnc_nm,wgt_vld_thr explicit shared for icc 13.1.3 (rhea), default shared for gcc >= 4.9.2 */
 #ifdef __INTEL_COMPILER
-# pragma omp parallel for default(none) firstprivate(tally,wgt_vld_out) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,flg_rnr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,flg_rnr,fnc_nm,lnk_nbr,out_id,row_dst_adr,wgt_raw,wgt_vld_thr)
 #else /* !__INTEL_COMPILER */
-# pragma omp parallel for default(none) firstprivate(tally,wgt_vld_out) private(dmn_cnt,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr,var_val_dbl_in,var_val_dbl_out) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1617,10 +1644,11 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
 	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr_out);
 	rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
+	dmn_nbr_max= dmn_nbr_in > dmn_nbr_out ? dmn_nbr_in : dmn_nbr_out;
 	dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
 	dmn_id_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
-	dmn_srt=(long *)nco_malloc(dmn_nbr_out*sizeof(long)); /* Allocate an extra slot for new dimensions */
-	dmn_cnt=(long *)nco_malloc(dmn_nbr_out*sizeof(long));
+	dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long)); /* max() for both input and output grids */
+	dmn_cnt=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
 	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_id_out);
 	rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
