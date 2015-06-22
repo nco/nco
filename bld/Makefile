@@ -271,7 +271,9 @@ ifndef USR_TKN
  USR_TKN :=
 endif # endif USR_TKN
 ifndef VRS_SNG
- VRS_SNG := $(shell date +%Y%m%d)
+# VRS_SNG := $(shell date +%Y%m%d)
+# 20150622
+ VRS_SNG := $(shell git describe --abbrev=7 --dirty --always --tags)
 endif # endif VRS_SNG
 ifndef ${ZNETCDF} # znetcdf support
  ZNETCDF := N
