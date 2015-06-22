@@ -1,4 +1,5 @@
 # Syntax-check Travis YAML .travis.yml files at http://lint.travis-ci.org
+# Force Travis to rebuild by commiting an increment to this counter: 1
 
 language: c
 compiler:
