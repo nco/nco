@@ -85,7 +85,7 @@ sub tst_rgr {
 print "\n";
 my $RUN_NETCDF4_TESTS=0;
 my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
-system("ncks --lbr_rcd");
+system("${MY_BIN_DIR}/ncks --lbr_rcd");
 if($? == -1){
     print "failed to execute: ncks --lbr_rcd: $!\n";
 }else{
@@ -1923,8 +1923,8 @@ print "\n";
     } # endif false
     
 # NCO 4.2.6 tests
-# This version has a major change in the way dimensions are handled; the global array lmt_all was eliminated and replaced
-# with GTT (Group Traversal Table) structures that contain full dimension paths; it needs extensive testing, in special
+# This version has a major change in dimension handling---global array lmt_all was eliminated and replaced
+# with GTT (Group Traversal Table) structures with full dimension paths
 # 1) Limits
 # 2) MSA
 # 3) Chunking
