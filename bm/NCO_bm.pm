@@ -155,9 +155,9 @@ sub bm_ntl($$){
     $opr_sng_mpi = "ncbo ncdiff ncecat ncflint nces ncpdq ncra ncwa "; # ncpdq ncra MPI, but fail bench
     $opr_rgr_mpi = "ncbo ncdiff ncecat ncflint nces ncpdq ncra ncwa ncrcat"; # need all of them for regression
     
-    if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
-    if (defined $ENV{'MY_BIN_DIR'} && $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
-    else{
+    if(scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
+    if(defined $ENV{'MY_BIN_DIR'} && $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};
+    }else{
 # Set and verify MY_BIN_DIR
 	$MY_BIN_DIR=abs_path("../src/nco");
 	dbg_msg(2, "ENV var 'MY_BIN_DIR' not specified, so using default [$MY_BIN_DIR].");

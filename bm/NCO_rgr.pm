@@ -80,15 +80,15 @@ sub tst_rgr {
     }
     NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from tst_rgr()  -------------");
     
-    if(0){} #################  SKIP THESE #####################
-    
-print "\n";
-my $RUN_NETCDF4_TESTS=0;
-my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
-system("${MY_BIN_DIR}/ncks --lbr_rcd");
-if($? == -1){
-    print "failed to execute: ncks --lbr_rcd: $!\n";
-}else{
+    print "\n";
+    my $RUN_NETCDF4_TESTS=0;
+    my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
+    #my $lbr_rcd_cmd=${pfx_cmd}."ncks --lbr_rcd";
+    my $lbr_rcd_cmd="ncks --lbr_rcd";
+    system($lbr_rcd_cmd);
+    if($? == -1){
+	print "failed to execute: ncks --lbr_rcd: $!\n";
+    }else{
     # system() runs a command and returns exit status information as a 16 bit value 
     # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
     my $exit_value=$? >> 8;
