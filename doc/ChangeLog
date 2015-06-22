@@ -1,5 +1,13 @@
 2015-06-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.1-alpha6 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha6 final changes'
+	git tag -a 4.5.1-alpha6 -m 'Version 4.5.1-alpha6 tag: Works on Travis and with OpenMP when compiled with g++ 4.6.3-5.1.1';git push --tags
+
+	* Code now passes Travis build when compiled with g++
+
+	* Remove assert() from within OpenMP parallel regions for g++ 4.6.3 on Travis
+
 	* Use older OpenMP shared() statement for g++ < 4.8.0 (for Travis)
 
 	* Diagnose and discriminate g++ from gcc compiler
