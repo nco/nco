@@ -1,5 +1,7 @@
 2015-06-22  Charlie Zender  <zender@uci.edu>
 
+	* Bump thr_nbr_max_fsh to 16 for ncks, to 8 (with -D >= 3) for ncwa
+
 	* Version = 'git describe --abbrev=7 --dirty --always --tags', e.g., 4.5.1-alpha6-1-gaa4fe2b-dirty
 
 2015-06-21  Charlie Zender  <zender@uci.edu>

@@ -137,15 +137,16 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
       break;
     case ncks: 
       // 20150529: Turn-on OpenMP for regridder
-      thr_nbr_max_fsh=8;
+      thr_nbr_max_fsh=16;
       break;
     case ncwa: 
       // 20150530: Turn-on OpenMP for debugging
-      // 20150610: 8 threads with ncwa seemed to work for a little while, but then got flaky. Turned-off for 4.5.0 release
+      // 20150610: Eight threads with ncwa seemed to work for a little while, then it got flaky. Turned-off for 4.5.0 release
+      // 20150622: Allowing eight threads again for debugging with -D 3
       // Symptoms of bugs, if any, show up with
       // cd ~/nco/bm;nco_bm.pl --regress ncwa;cd -
-      // thr_nbr_max_fsh=8;
       thr_nbr_max_fsh=1;
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) thr_nbr_max_fsh=8;
       break;
       /* Operators with higher maximum pre-set thread limit (NB: not all of these are threaded!) */
     case ncbo: 
