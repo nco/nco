@@ -1,5 +1,9 @@
 2015-06-21  Charlie Zender  <zender@uci.edu>
 
+	* Use older OpenMP shared() statement for g++ < 4.8.0 (for Travis)
+
+	* Diagnose and discriminate g++ from gcc compiler
+
 	* Code compiles warning-free with clang and g++ (without ESMF)
 
 	* Isolated all ESMF library calls in nco_sld.c
