@@ -87,13 +87,15 @@ my $RUN_NETCDF4_TESTS=0;
 my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
 system("ncks --lbr_rcd");
 if($? == -1){
-    print "failed to execute: ncks --get_prg_info: $!\n";
+    print "failed to execute: ncks --lbr_rcd: $!\n";
 }else{
     # system() runs a command and returns exit status information as a 16 bit value 
     # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
     my $exit_value=$? >> 8;
     
     # 20150619: nco_exit_lbr_vrs() deducts offset of 300 so rcd < 255
+    # Verify exit status in shell with "echo $?"
+    # Library 4.3.3 should return $? = 133
     $exit_value+=300;
 
     # nco_exit_lbr_rcd() returns codes:
@@ -403,6 +405,8 @@ print "\n";
 	$#tst_cmd=0; # Reset array		
 	
 #ncatted #12
+# ncatted -h -O -a _FillValue,val_one_mss,m,f,0.0 ~/nco/data/in_grp.nc ~/foo.nc
+# ncks -C -H -s '%g' -d lat,1 -v val_one_mss ~/foo.nc
 	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 on netCDF4 file";
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tmp_fl_00%";
