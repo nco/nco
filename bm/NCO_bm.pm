@@ -155,9 +155,9 @@ sub bm_ntl($$){
     $opr_sng_mpi = "ncbo ncdiff ncecat ncflint nces ncpdq ncra ncwa "; # ncpdq ncra MPI, but fail bench
     $opr_rgr_mpi = "ncbo ncdiff ncecat ncflint nces ncpdq ncra ncwa ncrcat"; # need all of them for regression
     
-    if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
-    if (defined $ENV{'MY_BIN_DIR'} && $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
-    else{
+    if(scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
+    if(defined $ENV{'MY_BIN_DIR'} && $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};
+    }else{
 # Set and verify MY_BIN_DIR
 	$MY_BIN_DIR=abs_path("../src/nco");
 	dbg_msg(2, "ENV var 'MY_BIN_DIR' not specified, so using default [$MY_BIN_DIR].");
@@ -187,7 +187,7 @@ sub bm_ntl($$){
     $sym_link{ncdiff}=$dotlib . "ncbo";
     $sym_link{nces}=$dotlib . "ncra";
     $sym_link{ncrcat}=$dotlib . "ncra";
-    foreach(keys %sym_link) {
+    foreach(keys %sym_link){
 	system("cd $MY_BIN_DIR && ln -s -f $sym_link{$_} $_ || (/bin/rm -f $_ && ln -s -f $sym_link{$_} $_)");
     }
     
@@ -453,7 +453,7 @@ sub tst_run {
 	} # else {	print "\$fl_nm_lcl{'%tmp_fl_00%'} = [$fl_nm_lcl{'%tmp_fl_00%'}] \n";}
     }
 
-# tst_run() requires regression tests provide expected values
+# tst_run() requires that regression tests provide expected values
 # If last element is not SS_OK, tst_run() pops off expected value and 
 # processes commands same as it did previously
     my $arr_ref = shift; # Pass benchmark()'s @tst_cmd via reference to maintain coherence
@@ -473,11 +473,15 @@ sub tst_run {
     # on AIX, non-MPI ops compiled with MPI will atttempt to run MP_PROCS.  
     # To hold them to one process, must add explicit prefix ($aix_mpi_sgl_nvr), added below
     my $aix = 0; if ($os_nm =~ /AIX/) {$aix = 1;} # yafv for aix
-    if($aix){$pfx_mpi = " $aix_mpi_nvr_pfx $MY_BIN_DIR/mp";}
-    elsif($mpi_upx eq "") {# Assume Linux-like MPI
-        $pfx_mpi = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";
-    } else { $pfx_mpi = " ". $mpi_upx . "  $MY_BIN_DIR/mp"; } # use user-supplied prefix
-    $pfxd = 1; $timed = 1;
+    if($aix){$pfx_mpi=" $aix_mpi_nvr_pfx $MY_BIN_DIR/mp";}
+    elsif($mpi_upx eq "") {
+	# Assume Linux-like MPI
+        $pfx_mpi = "mpirun -np $mpi_prc $MY_BIN_DIR/mp";
+    }else{
+	$pfx_mpi = " ". $mpi_upx . "  $MY_BIN_DIR/mp";
+    } # use user-supplied prefix
+    $pfxd = 1; 
+    $timed = 1;
     
     my $pwd=`pwd`; chomp $pwd;
     dbg_msg(1,"\$pwd=$pwd | \$pfx_cmd=$pfx_cmd | \$pfx_mpi=$pfx_mpi | \$pfx_fk=$pfx_fk");
@@ -488,16 +492,15 @@ sub tst_run {
 #	print "DEBUG[tst_run]:\$dodap = [$dodap], \$prsrv_fl = [$prsrv_fl]\n";
     if ($dodap ne "FALSE" && !$prsrv_fl) {
 	print "\nWARN: about to unlink everything in $drc_dat ! Continue? [Ny]\n";
-	my $wait = <STDIN>; if ($wait !~ /[Yy]/) { die "Make sure of the commandline options!\n";}
+	my $wait = <STDIN>; 
+	if ($wait !~ /[Yy]/){ die "Make sure of the commandline options!\n";}
 	my $unlink_cnt = unlink <$drc_dat/*>;
 	print "\nINFO: OK - unlinked $unlink_cnt files\n";
     }
 #	print "just past unlinking stage \n";  my $wait = <STDIN>;
     
-    if ($dbg_lvl > 0) {
-	for (my $cmd_idx=0; $cmd_idx <= $#cmd_lst; $cmd_idx++){
-	    print "### cmd_lst[$cmd_idx] = $cmd_lst[$cmd_idx] ###\n";
-	    }
+    if($dbg_lvl > 0){
+	for(my $cmd_idx=0; $cmd_idx <= $#cmd_lst; $cmd_idx++) {print "### cmd_lst[$cmd_idx] = $cmd_lst[$cmd_idx] ###\n";}
     }
     
 # Perform tests of requested operator; default is all
@@ -505,11 +508,11 @@ sub tst_run {
 	#print "DEBUG: \$tst_nbr{\$opr_nm} not defined - going to exit!\n";
 	@cmd_lst=();  # Clear test array
 	# and init the timing hashes
-	$real_tme{$opr_nm} = 0;
-	$usr_tme{$opr_nm}  = 0;
-	$sys_tme{$opr_nm}  = 0;
+	$real_tme{$opr_nm}=0;
+	$usr_tme{$opr_nm}=0;
+	$sys_tme{$opr_nm}=0;
 	return;
-    } else {
+    }else{
 	#print "\$tst_nbr{\$opr_nm} = $tst_nbr{$opr_nm}\n";
     }
 #	print "DEBUG: for $opr_nm, \$tst_nbr{\$opr_nm} = $tst_nbr{$opr_nm}\n";
@@ -563,9 +566,9 @@ sub tst_run {
         $nsr_xpc=$cmd_lst[$#cmd_lst]; # pop last value to provide exepected answer
 #		print "\n##DEBUG:\t$nsr_xpc (expt)\n\t\t$cmd_rsl (SS)\n";
     } else {
-	# delete the SS value to leave "expected value" as last
+	# delete SS value to leave "expected value" as last
 	delete $cmd_lst[$#cmd_lst];
-	#regardless, pop the next value off to provide the 'expected value'
+	# regardless, pop the next value off to provide the 'expected value'
 	$nsr_xpc = $cmd_lst[$#cmd_lst]; # pop the next value off \
 	delete $cmd_lst[$#cmd_lst]; # and now the $cmd_lst is the same as it ever was..
 	
@@ -617,8 +620,7 @@ sub tst_run {
 	    # NB: May require ONLY HiRes timing since SERVERSIDE will be hard to do otherwise
 	    # timing code using Time::HiRes
 	    my $t0;
-	    if ($hiresfound) {$t0 = [gettimeofday()];}
-	    else {$t0 = time;}
+	    if($hiresfound) {$t0 = [gettimeofday()];} else{$t0 = time;}
 	    
 	    # Execute command, split off stderr to file 'nco_bm.stderr'
 	    $cmd_rsl = `($_) 2> nco_bm.stderr`; # stderr contains timing info, if any
@@ -661,8 +663,8 @@ sub tst_run {
 		    $sys_tme{$opr_nm}  += $rev_sys_tim_arr[4] + 0;
 		}
 	    }
-	    if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}
-	    else {$elapsed = time - $t0;}
+	    if($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}
+	    else{$elapsed = time - $t0;}
 	    
 	    #print "inter benchmark for $opr_nm = $subbenchmarks{$opr_nm} \n";
 	    $subbenchmarks{$opr_nm} += $elapsed;
@@ -688,9 +690,9 @@ sub tst_run {
 		my $wait = <STDIN>;
 	    }
 	} # end loop: 	foreach (@cmd_lst)
-    }  # end of client side 'else'
+    } # end of client side 'else'
     
-    $dbg_sng .= "DEBUG: Total time for $opr_nm [$tst_nbr{$opr_nm}] = $subbenchmarks{$opr_nm} s\n";
+    $dbg_sng.="DEBUG: Total time for $opr_nm [$tst_nbr{$opr_nm}] = $subbenchmarks{$opr_nm} s\n";
     $totbenchmarks{$opr_nm}+=$subbenchmarks{$opr_nm};
     
     # Results comparison should not be necessary to validate whole file,
@@ -698,68 +700,67 @@ sub tst_run {
 #	chomp $cmd_rsl;  # Remove trailing newline for easier regex comparison
     
     # Still newlines in $cmd_rsl? -> a multiline result & only want the last one.
-    if ($cmd_rsl =~/\n/) {
+    if($cmd_rsl =~/\n/){
 	my @rsl_arr = split(/\n/, $cmd_rsl);
 	$cmd_rsl = $rsl_arr[$#rsl_arr]; # take the last line
-	if ($dbg_lvl >= 1) {print "\nprocessed multiline \$cmd_rsl = [$cmd_rsl]\n";}
+	if($dbg_lvl >= 1){print "\nprocessed multiline \$cmd_rsl = [$cmd_rsl]\n";}
     }
     # Is $cmd_rsl numeric or alpha?
-    if ($cmd_rsl =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
+    if($cmd_rsl =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
 	$cmd_rsl !~ /[a-df-zA-DF-Z ,]/) { $cmd_rsl_is_nbr = 1;}
-    else { #print "DEBUG: \$cmd_rsl is not numeric: $cmd_rsl \n";
+    else{ #print "DEBUG: \$cmd_rsl is not numeric: $cmd_rsl \n";
 	$cmd_rsl_is_nbr = 0;
     }
     # Is $nsr_xpc numeric or alpha?
-    if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
+    if($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
 	$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $xpc_is_nbr = 1;}
-    else { #print "DEBUG: \$nsr_xpc is not numeric: $nsr_xpc \n";
+    else{ #print "DEBUG: \$nsr_xpc is not numeric: $nsr_xpc \n";
 	$xpc_is_nbr = 0;
     }
     
     # Compare numeric results
-    if ($cmd_rsl_is_nbr && $xpc_is_nbr) { # && it equals the expected value
+    if($cmd_rsl_is_nbr && $xpc_is_nbr){ # && it equals the expected value
 #print "\n \$nsr_xpc [$nsr_xpc] considered a number\n";
-	$dbg_sng .= "DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc & actual  \$cmd_rsl = [$cmd_rsl]\n";
-	if ($nsr_xpc == $cmd_rsl) {
+	$dbg_sng.="DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc & actual  \$cmd_rsl = [$cmd_rsl]\n";
+	if($nsr_xpc == $cmd_rsl){
 	    $success{$opr_nm}++;
 	    printf STDERR (" SVn ok\n");
 	    $dbg_sng .= "DEBUG: PASSED (Numeric output)\n";
-	} elsif (abs($cmd_rsl - $nsr_xpc) < 0.02) {
+	}elsif(abs($cmd_rsl - $nsr_xpc) < 0.02){
 	    $success{$opr_nm}++;
 	    printf STDERR (" SVn prov. ok\n");
 	    $dbg_sng .= "DEBUG: PASSED PROVISIONALLY (Numeric output):[$nsr_xpc vs $cmd_rsl]\n";
-	} else {
+	}else{
 	    printf STDERR (" FAILED!\n");
 	    &failed($nsr_xpc);
 	    my $diff = abs($nsr_xpc - $cmd_rsl);
 	    $dbg_sng .= "DEBUG: !!FAILED (Numeric output) [expected: $nsr_xpc vs result: $cmd_rsl].  Difference = $diff.\n";
 	}
-    }elsif(!$cmd_rsl_is_nbr && !$xpc_is_nbr)
-    {# Compare non-numeric tests
+    }elsif(!$cmd_rsl_is_nbr && !$xpc_is_nbr){# Compare non-numeric tests
 	 dbg_msg(2,"DEBUG: expected value assumed to be alphabetic: $nsr_xpc\n\$cmd_rsl = $cmd_rsl\n");
 #print "\n \$nsr_xpc [$nsr_xpc] considered a string\n";
 	 
 	 # Compare $cmd_rsl with $nsr_xpc
 #		if ($cmd_rsl =~ $nsr_xpc) {
-	 if (substr($cmd_rsl,0,length($nsr_xpc)) eq $nsr_xpc) {
+	 if(substr($cmd_rsl,0,length($nsr_xpc)) eq $nsr_xpc){
 	     $success{$opr_nm}++;
 	     printf STDERR (" SVa ok\n");
 	     $dbg_sng .= "DEBUG: PASSED Alphabetic output";
-	 } else {
+	 }else{
 	     &failed($nsr_xpc);
 	     $dbg_sng .= "DEBUG: !!FAILED Alphabetic output (expected: $nsr_xpc vs result: $cmd_rsl) ";
 	 }
-     }  else {  # No result at all?
+     }else{  # No result at all?
 	 print STDERR " !!FAILED\n  \$cmd_rsl_is_nbr = $cmd_rsl_is_nbr and \$xpc_is_nbr = $xpc_is_nbr\n";
 	 &failed();
 	 $dbg_sng .= "DEBUG: !!FAILED - No result from [$opr_nm]\n";
 						   }
     print $err_sng;
-    if ($dbg_lvl > 0) {print $dbg_sng;}
-    if ($wnt_log) {print LOG $dbg_sng;}
-    @cmd_lst =(); # Clear test
-    if (!$bm) { $prsrv_fl = 0; } # reset so files will be deleted unless doing benchmarks
-    if (-e $fl_nm_lcl{'%tmp_fl_00%'} && -w $fl_nm_lcl{'%tmp_fl_00%'}) { unlink $fl_nm_lcl{'%tmp_fl_00%'};	}
+    if($dbg_lvl > 0){print $dbg_sng;}
+    if($wnt_log){print LOG $dbg_sng;}
+    @cmd_lst=(); # Clear test
+    if(!$bm){$prsrv_fl = 0;} # reset so files will be deleted unless doing benchmarks
+    if(-e $fl_nm_lcl{'%tmp_fl_00%'} && -w $fl_nm_lcl{'%tmp_fl_00%'}){unlink $fl_nm_lcl{'%tmp_fl_00%'};}
 } # end tst_run()
 
 ####################

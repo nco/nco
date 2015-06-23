@@ -870,8 +870,6 @@ main(int argc,char **argv)
 	(void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
 	(void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
 
-        assert(var_trv);
-
         /* Read */
         (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 

@@ -180,9 +180,6 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
-nco_get_prg_info(void);               /* [fnc] Get program info */
-
-void
 nco_prn_xtr_mtd                       /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
 (const int nc_id,                     /* I netCDF file ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */

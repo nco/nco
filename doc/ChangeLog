@@ -1,8 +1,48 @@
+2015-06-22  Charlie Zender  <zender@uci.edu>
+
+	* Bump thr_nbr_max_fsh to 16 for ncks, to 8 (with -D >= 3) for ncwa
+
+	* Version = 'git describe --abbrev=7 --dirty --always --tags', e.g., 4.5.1-alpha6-1-gaa4fe2b-dirty
+
+2015-06-21  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.1-alpha6 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha6 final changes'
+	git tag -a 4.5.1-alpha6 -m 'Version 4.5.1-alpha6 tag: Works on Travis and with OpenMP when compiled with g++ 4.6.3-5.1.1';git push --tags
+
+	* Code now passes Travis build when compiled with g++
+
+	* Remove assert() from within OpenMP parallel regions for g++ 4.6.3 on Travis
+
+	* Use older OpenMP shared() statement for g++ < 4.8.0 (for Travis)
+
+	* Diagnose and discriminate g++ from gcc compiler
+
+	* Code compiles warning-free with clang and g++ (without ESMF)
+
+	* Isolated all ESMF library calls in nco_sld.c
+
+2015-06-19  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.1-alpha5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha5 final changes'
+	git tag -a 4.5.1-alpha5 -m 'Version 4.5.1-alpha5 tag: Revert some broken doc build changes, patch handling of library return codes by regression tests';git push --tags
+
+	* Remove autobld/mdate-sh, a testimonial to wasted time
+
+	* Add [int,long,NULL]_CEWI to quiet maybe-uninitialize warnings with GCC 4.8.2
+
+	* Fix treatment of exiting with library as return code for regression tests
+
+	* NCO 4.5.1-alpha4 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha4 final changes'
+	git tag -a 4.5.1-alpha4 -m 'Version 4.5.1-alpha4 tag: More regridding regression tests. Fix possibly uninitialized destination pointer that may have caused writing zeros to output files with clang on MacOS X';git push --tags
+
 2015-06-18  Charlie Zender  <zender@uci.edu>
 
 	* Fill-in var_nm for tedious mss_val warning
 
-	* Add 2D->1D, and 2D->2D regression tests
+	* Add 2D->1D and 2D->2D regression tests
 
 	* Ensure lat/lon_psn_dst are not used uninitialized
 
@@ -11,8 +51,8 @@
 	* firstprivate() to preserve NULL on pointers that could inadvertently be free()'d
 
 	* clang on linux with debugging produced troves of useful warning messages
-	clang messages are much more thorough than gcc/icc
-	clang is also as unforgiving as AIX xlc when at finding sometimes uninitialized memory
+	clang messages are more thorough than gcc/icc for finding sometimes uninitialized memory
+	clang is about as unforgiving as AIX xlc at strictly enforcing initialization
 	clang would be my default development compiler if it supported OpenMP
 	That being said, had to suppress annoying clang sometimes uninitialized memory warnings :)
 

@@ -1550,12 +1550,11 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
     
     lng_arg_1=comma_1_cp-rnm_arg[idx]; 
 
-    /* If new name is absolute path, get rid of it (ncrename does in place, same group, changes, so absolute path is redundant) */
+    /* Skip absolute path component (ncrename does in place, same group, changes, so absolute path is redundant) */
     char *abs_1_cp=strrchr(comma_1_cp,'/');
+
     /* Found path separator in new name (string after ',' ) */
-    if (abs_1_cp){
-      comma_1_cp=strrchr(comma_1_cp,'/');
-    }
+    if(abs_1_cp) comma_1_cp=strrchr(comma_1_cp,'/');
 
     lng_arg_2=rnm_arg[idx]+strlen(rnm_arg[idx])-comma_1_cp-1; 
     
@@ -1567,12 +1566,11 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
     
     /* Assign pointers to member of rnm_lst */
     rnm_lst[idx].old_nm=rnm_arg[idx];
-    rnm_lst[idx].new_nm=comma_1_cp+1;
+    rnm_lst[idx].new_nm=comma_1_cp+1L;
 
     /* NUL-terminate arguments */
     rnm_lst[idx].old_nm[lng_arg_1]='\0';
     rnm_lst[idx].new_nm[lng_arg_2]='\0';
-    
   } /* end loop over rnm_lst */
 
   if(nco_dbg_lvl_get() >= nco_dbg_io){
@@ -1591,13 +1589,16 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
 {
   /* Purpose: Write NCO version information to global metadata */
   aed_sct vrs_sng_aed;
-  char att_nm[]="NCO";
-  char *vrs_cvs; /* [sng] Version according to CVS release tag */
+  char att_nm[]="NCO"; /* [sng] Name of attribute in which to store NCO version */
+  char vrs_git[]=TKN2SNG(VERSION); /* [sng] Version according to Git */
+  char *vrs_cvs; /* [sng] Version according to RCS/CVS-like release tag */
   char *vrs_sng; /* [sng] NCO version */
   ptr_unn att_val;
   
   vrs_cvs=cvs_vrs_prs();
+  
   vrs_sng=vrs_cvs;
+  vrs_sng=vrs_git;
 
   /* Insert thread number into value */
   att_val.cp=vrs_sng;
@@ -1610,9 +1611,9 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   /* Insert value into attribute structure */
   vrs_sng_aed.val=att_val;
   vrs_sng_aed.mode=aed_overwrite;
-  /* Write nco_openmp_thread_number attribute to disk */
+  /* Write NCO version attribute to disk */
   (void)nco_aed_prc(out_id,NC_GLOBAL,vrs_sng_aed);
-  vrs_sng=(char *)nco_free(vrs_sng);
+  // vrs_sng=(char *)nco_free(vrs_sng);
 
 } /* end nco_vrs_att_cat() */
 

@@ -27,8 +27,13 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
 #if defined(__GNUC__) && !defined(__clang) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Testing for GCC macros early is dangerous because some compilers, 
      including Intel's, define GCC macros for compatibility */
+#if defined(__GNUG__)
   static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
+  static const char cmp_sng[]="Token __GNUG__ defined in nco_cmp_get(). Compiled with GNU g++ (or a compiler that emulates g++)."; /* [sng] Compiler string */
+#else /* !__GNUG__ */
+  static const char cmp_nm[]="g++"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(). Compiled with GNU gcc (or a compiler that emulates gcc)."; /* [sng] Compiler string */
+#endif /* !__GNUG__ */
   static const char cmp_vrs[]=TKN2SNG(__VERSION__); // [sng] Compiler version
   static const char cmp_vrs_mjr[]=TKN2SNG(__GNUC__); // [sng] Compiler major version
   static const char cmp_vrs_mnr[]=TKN2SNG(__GNUC_MINOR__); // [sng] Compiler minor version
@@ -521,6 +526,36 @@ nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, memory, th
   nco_exit(EXIT_SUCCESS);
 } /* end nco_exit_gracefully() */
 
+void
+nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code */
+{
+  /* Purpose: Exit with status equaling a numeric code determined by netCDF library version
+     Exit status must be 0-255
+     Modern netCDF versions range from 300-440
+     Hence program returns netCDF version minus an offset of 300 so version 4.4.0 exit()s with $?=140
+     Usage: ncks --lbr_rcd
+     Verify exit status with "echo $?" */
+  char lbr_sng[NC_MAX_NAME+1];
+
+  int rcd=360;
+#if defined(ENABLE_NETCDF4) && defined(HAVE_NETCDF4_H)
+  strcpy(lbr_sng,nc_inq_libvers());
+  rcd=400;
+  /* Detect buggy netCDF version 4.1 so that workarounds may be implemented
+     Other versions used to enable version-specific regression tests in NCO_rgr.pm */
+  if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '1'){rcd=410;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '0' ){rcd=430;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '1' ){rcd=431;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '2' ){rcd=432;}
+  /* NB: Same return values for 4.3.3 and 4.3.3.1. Few people installed 4.3.3, most installed 4.3.3.1. */
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '3' ){rcd=433;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '4' && lbr_sng[3] == '.' && lbr_sng[4] == '0' ){rcd=440;}
+#endif /* HAVE_NETCDF4_H */
+  /* exit() with custom rcd for use by Perl regression tester nco_bm.pl/NCO_rgr.pm */
+  rcd-=300;
+  exit(rcd);
+} /* end nco_exit_lbr_rcd() */
+
 nco_bool /* [flg] Program is multi-file operator */
 nco_is_mfo /* [fnc] Query whether program is multi-file operator */
 (const int nco_prg_id) /* [enm] Program ID */
@@ -808,7 +843,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always Include terminal \n so mnemonic does not dangle */
-  return "Zeros\n";
+  return "Inside Out\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

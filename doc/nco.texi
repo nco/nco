@@ -117,8 +117,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.1-alpha4
-@set doc-edition 4.5.1-alpha4
+@set nco-edition 4.5.1-alpha7
+@set doc-edition 4.5.1-alpha7
 @set copyright-years 1995--2015
 @set update-year 2015
 @set update-date 10 June 2015
@@ -138,9 +138,9 @@ Octave TeXInfo manual shows clean TeXInfo structure
 
 @c 20150616 Add version info as per
 @c http://www.gnu.org/software/automake/manual/html_node/Texinfo.html
-@c@include version.texi
-@c This does not work as expected, otherwise this would work automagically:
-@c Test print @value{EDITION}, @value{VERSION}, @value{UPDATED}, @value{UPDATED-MONTH}.
+@c Seems to require running automake --add-missing on local maching
+@c Nightmare because it means clients must run autoconf
+@c @include version.texi
 
 @c end of header
 
@@ -524,6 +524,8 @@ April, 2012@*
 Irvine, California@*
 
 @sp 2
+@c 20150619 Test values automagically installed by version.texi, which is a nightmare
+@c Test print @value{EDITION}, @value{VERSION}, @value{UPDATED}, @value{UPDATED-MONTH}.
 The @acronym{NASA} @acronym{ACCESS} 2011 program generously supported 
 (Cooperative Agreement NNX12AF48A) @acronym{NCO} from 2012--2015.
 This allowed us to produce the first iteration of a Group-oriented 
@@ -6106,7 +6108,7 @@ These annotations include
     written to an unstructured output grid will all contain the 
     @var{col_nm}-dimension.
     To treat a different dimension as unstructured, use the option
-    @samp{--rgr ncol=@var{col_nm}}. 
+    @samp{--rgr col=@var{col_nm}}. 
     Note: Often there is no coordinate variable for the
     @var{col_nm}-dimension, i.e., there is no variable named
     @var{col_nm}, although such a coordinate could contain useful

@@ -1,9 +1,11 @@
 # Syntax-check Travis YAML .travis.yml files at http://lint.travis-ci.org
+# Force Travis to rebuild by commiting an increment to this counter: 5
 
 language: c
 compiler:
   - gcc
   - clang
+  - g++
 
 before_install:
   - sudo apt-get update -qq

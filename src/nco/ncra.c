@@ -1069,7 +1069,6 @@ main(int argc,char **argv)
 		if((wgt_arr || wgt_nm) && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs) && !var_prc[idx]->is_crd_var){
 		  if(wgt_arr){
 		    /* Per-file weight */
-		    assert(wgt_nbr == fl_nbr);
 		    wgt_scv.type=NC_DOUBLE;
 		    wgt_scv.val.d=wgt_arr[fl_idx];
 		  } /* !wgt_arr */

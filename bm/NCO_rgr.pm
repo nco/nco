@@ -80,24 +80,29 @@ sub tst_rgr {
     }
     NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from tst_rgr()  -------------");
     
-    if(0){} #################  SKIP THESE #####################
+    print "\n";
+    my $RUN_NETCDF4_TESTS=0;
+    my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
+    #my $lbr_rcd_cmd=${pfx_cmd}."ncks --lbr_rcd";
+    my $lbr_rcd_cmd="ncks --lbr_rcd";
+    system($lbr_rcd_cmd);
+    if($? == -1){
+	print "failed to execute: ncks --lbr_rcd: $!\n";
+    }else{
+    # system() runs a command and returns exit status information as a 16 bit value 
+    # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
+    my $exit_value=$? >> 8;
     
-print "\n";
-my $RUN_NETCDF4_TESTS=0;
-my $RUN_NETCDF4_TESTS_VERSION_GE_431=0;
-system("ncks --get_prg_info");
-# system() runs a command and returns exit status information as a 16 bit value: 
-# Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
-if($? == -1){
-  print "failed to execute: ncks --get_prg_info: $!\n";
-}else{
-    my $exit_value=$?;
+    # 20150619: nco_exit_lbr_vrs() deducts offset of 300 so rcd < 255
+    # Verify exit status in shell with "echo $?"
+    # Library 4.3.3 should return $? = 133
+    $exit_value+=300;
 
-  # nco_get_prg_info() returns codes:
-  # 360 (for library 3.x)
-  # 410 (for library 4.1.x)
-  # 430 (for library 4.3.0)
-  # 433 (for library 4.3.3)
+    # nco_exit_lbr_rcd() returns codes:
+    # 360 (for library 3.x)
+    # 410 (for library 4.1.x)
+    # 430 (for library 4.3.0)
+    # 433 (for library 4.3.3)
 
   if($exit_value == 410){print "netCDF version 4.1.x detected\n";}
   if($exit_value == 431){print "netCDF version 4.3.1 detected\n";}
@@ -400,6 +405,8 @@ print "\n";
 	$#tst_cmd=0; # Reset array		
 	
 #ncatted #12
+# ncatted -h -O -a _FillValue,val_one_mss,m,f,0.0 ~/nco/data/in_grp.nc ~/foo.nc
+# ncks -C -H -s '%g' -d lat,1 -v val_one_mss ~/foo.nc
 	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 on netCDF4 file";
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tmp_fl_00%";
@@ -1916,8 +1923,8 @@ print "\n";
     } # endif false
     
 # NCO 4.2.6 tests
-# This version has a major change in the way dimensions are handled; the global array lmt_all was eliminated and replaced
-# with GTT (Group Traversal Table) structures that contain full dimension paths; it needs extensive testing, in special
+# This version has a major change in dimension handling---global array lmt_all was eliminated and replaced
+# with GTT (Group Traversal Table) structures with full dimension paths
 # 1) Limits
 # 2) MSA
 # 3) Chunking
