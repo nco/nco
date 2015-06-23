@@ -165,6 +165,10 @@ extern "C" {
   nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */
   (const nco_rgr_mth_typ_enm nco_rgr_mth_typ); /* I [enm] Regridding method enum */
 
+  const char * /* O [sng] String describing mapfile generator */
+  nco_rgr_mpf_sng /* [fnc] Convert mapfile generator enum to string */
+  (const nco_rgr_mth_typ_enm nco_rgr_mth_typ); /* I [enm] Mapfile generator enum */
+
   const char * /* O [sng] String describing regridding normalization */
   nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */
   (const nco_rgr_nrm_typ_enm nco_rgr_nrm_typ); /* I [enm] Regridding normalization enum */

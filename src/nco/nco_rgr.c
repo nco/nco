@@ -544,7 +544,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
     (void)fprintf(stderr,"%s: INFO %s regridding input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stderr,"map_method = %s, normalization = %s, src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = n_s = %li, num_wgts = %li\n",nco_rgr_mth_sng(nco_rgr_mth_typ),nco_rgr_nrm_sng(nco_rgr_nrm_typ),rgr_map.src_grid_size,rgr_map.dst_grid_size,rgr_map.src_grid_corners,rgr_map.dst_grid_corners,rgr_map.src_grid_rank,rgr_map.dst_grid_rank,rgr_map.num_links,rgr_map.num_wgts);
+    (void)fprintf(stderr,"mapfile_generator = %s, map_method = %s, normalization = %s, src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = n_s = %li, num_wgts = %li\n",nco_rgr_mpf_sng(nco_rgr_mpf_typ),nco_rgr_mth_sng(nco_rgr_mth_typ),nco_rgr_nrm_sng(nco_rgr_nrm_typ),rgr_map.src_grid_size,rgr_map.dst_grid_size,rgr_map.src_grid_corners,rgr_map.dst_grid_corners,rgr_map.src_grid_rank,rgr_map.dst_grid_rank,rgr_map.num_links,rgr_map.num_wgts);
   } /* endif dbg */
 
   /* Set type of grid conversion */
@@ -1012,7 +1012,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       } /* endif not regridded */
     } /* end nco_obj_typ_var */
   } /* end idx_tbl */
-  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria\n",nco_prg_nm_get(),fnc_nm);
+  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria. The regridder expects something to regrid, and variables not regridded are copied straight to output. HINT: If the name(s) of the input horizontal spatial dimensions to be regridded (e.g., latitude and longitude or column) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"latitude\", \"longitude\", and \"ncol\", respectively) then change the dimensions NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr col=lndgrid --rgr lat=north ...\".\n",nco_prg_nm_get(),fnc_nm);
   
   if(nco_dbg_lvl_get() >= nco_dbg_sbr){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -2091,6 +2091,22 @@ nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_rgr_mth_sng() */
+
+const char * /* O [sng] String describing mapfile generator */
+nco_rgr_mpf_sng /* [fnc] Convert mapfile generator enum to string */
+(const nco_rgr_mth_typ_enm nco_rgr_mth_typ) /* I [enm] Mapfile generator enum */
+{
+  /* Purpose: Convert mapfile generator enum to string */
+  switch(nco_rgr_mth_typ){
+  case nco_rgr_mpf_ESMF: return "ESMF Offline Regridding Weight Generator (either ESMF_RegridWeightGen directly or via NCL)";
+  case nco_rgr_mpf_SCRIP: return "SCRIP (original LANL package)";
+  case nco_rgr_mpf_Tempest: return "TempestRemap (GenerateOfflineMap)";
+  default: nco_dfl_case_generic_err(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_rgr_mpf_sng() */
 
 const char * /* O [sng] String describing regridding normalization */
 nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */

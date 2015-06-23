@@ -6108,7 +6108,7 @@ These annotations include
     written to an unstructured output grid will all contain the 
     @var{col_nm}-dimension.
     To treat a different dimension as unstructured, use the option
-    @samp{--rgr ncol=@var{col_nm}}. 
+    @samp{--rgr col=@var{col_nm}}. 
     Note: Often there is no coordinate variable for the
     @var{col_nm}-dimension, i.e., there is no variable named
     @var{col_nm}, although such a coordinate could contain useful
