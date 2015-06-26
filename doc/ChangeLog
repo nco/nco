@@ -1,5 +1,9 @@
 2015-06-25  Charlie Zender  <zender@uci.edu>
 
+	* Warn when non-standard "cell_method" attribute is detected
+
+	* Prevent nco_cnv_cf_cll_mth_add() from repeating existing cell_methods attribute
+
 	* Move aed_prc functions to nco_att_utl.c to prepare for RX feature
 
 2015-06-22  Charlie Zender  <zender@uci.edu>

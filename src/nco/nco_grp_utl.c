@@ -9923,7 +9923,7 @@ nco_nsm_wrt_att                  /* [fnc] Save ncge metadata attribute */
   int grp_id;                          /* [ID] Group ID in input file */
   int grp_out_id;                      /* [ID] Group ID in output file */ 
 
-  aed_sct aed; /* [sct] Structure containing information necessary to edit */
+  aed_sct aed; /* [sct] Attribute-edit information */
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct grp_trv=trv_tbl->lst[idx_tbl];

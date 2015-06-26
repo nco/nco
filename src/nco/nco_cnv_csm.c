@@ -236,7 +236,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
  gpe_sct *gpe,                       /* I [sng] Group Path Editing (GPE) structure */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
-  /* Purpose: Add/modify cell_methods attribute according to CF convention
+  /* Purpose: Add/modify CF cell_methods attribute
      http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#cell-methods
      
      cell_methods values and description:
@@ -255,19 +255,21 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
      
      NCO operation types:
      avg Mean value
-     sqravg Square of the mean
      avgsqr Mean of sum of squares
      mabs Maximum absolute value
      max Maximum value
+     mebs Mean absolute value
+     mibs Minimum absolute value
      min Minimum value
      rms Root-mean-square (normalized by N)
      rmssdn Root-mean square (normalized by N-1)
+     sqravg Square of the mean
      sqrt Square root of the mean
      ttl Sum of values */
 
   const char fnc_nm[]="nco_cnv_cf_cll_mth_add()"; /* [sng] Function name */
 
-  aed_sct aed; /* [sct] Structure containing information necessary to edit */
+  aed_sct aed; /* [sct] Attribute-edit information */
 
   char att_op_sng[23]; /* [sng] Operation type (longest is nco_op_mabs which translates to "maximum_absolute_value") */
 
@@ -291,6 +293,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   
   nc_type att_typ; /* [nbr] Attribute type */
 
+  nco_bool FIRST_WARNING=True;
+  nco_bool flg_dpl; /* [flg] New cell_methods attribute duplicates old */
   nco_bool mlt_dmn_rdc; /* [flg] Multiple dimension reduction flag */
 
   size_t dmn_sng_lng; /* [nbr] Length of dimension string */
@@ -328,6 +332,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     aed.id=var_out_id;
     aed.sz=0L;
     dmn_nbr_mch=0;
+    flg_dpl=False;
 
     /* cell_methods format: blank-separated phrases of form "dmn1[, dmn2[...]]: op_typ" */ 
     for(dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
@@ -342,7 +347,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       } /* dmn_idx_rdc */
     } /* dmn_idx_var */
 
-    assert(dmn_nbr_mch != 0);
+    assert(dmn_nbr_mch > 0);
 
     /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
     if(var[var_idx]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
@@ -385,13 +390,42 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     (void)strcat(aed.val.cp,": ");
     (void)strcat(aed.val.cp,att_op_sng);
 
+    /* 20150625: Older versions of CAM, e.g., CAM3, used "cell_method" instead of "cell_methods" 
+       If old attribute is not deleted then the output file will contain both attributes
+       Does variable already have "cell_method" attribute? */
+    strcpy(aed.att_nm,"cell_method");
+    rcd=nco_inq_att_flg(grp_out_id,var_out_id,aed.att_nm,&att_typ,&att_lng);
+    if(rcd == NC_NOERR){
+      if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING: Variable \"%s\" uses the non-standard attribute name \"cell_method\" instead of the correct attribute name, \"cell_methods\". This problem occurs in CAM3 model (and others?). Expect double attributes in output. This message is printed only once per invocation, although the problem likely occurs in more variables.\n",nco_prg_nm_get(),aed.var_nm);
+      FIRST_WARNING=False;
+    } /* endif attribute exists */
+
     /* Does variable already have "cell_methods" attribute? */
     strcpy(aed.att_nm,"cell_methods");
-    rcd=nco_inq_att_flg(grp_out_id,var_out_id,aed.att_nm,&att_typ,(long *)NULL);
+    rcd=nco_inq_att_flg(grp_out_id,var_out_id,aed.att_nm,&att_typ,&att_lng);
     if(rcd == NC_NOERR){
-      aed.mode=aed_append;
       if(att_typ == NC_STRING) (void)fprintf(stderr,"%s: WARNING %s reports existing cell_methods attribute for variable %s is type NC_STRING. Unpredictable results...\n",nco_prg_nm_get(),fnc_nm,aed.var_nm);
       if(att_typ != NC_STRING && att_typ != NC_CHAR) (void)fprintf(stderr,"%s: WARNING %s reports existing cell_methods attribute for variable %s is type %s. Unpredictable results...\n",nco_prg_nm_get(),fnc_nm,aed.var_nm,nco_typ_sng(att_typ));
+
+      /* 20150625: Often climatologies are multiply-averaged over time
+	 For example, climate model output is often archived as monthly means in each gridcell
+	 The cell_methods attribute of these monthly data begin as "time: mean" (i.e., monthly mean).
+	 We then create a climatology by a sequence of one or two more temporal-averaging steps
+	 The one-step method puts all the months in the hopper and averages those
+	 Variables in the resultiing file may have cell_methods = "time: mean time: mean"
+	 The two-step method first averages the months into four climatological seasons
+	 Then it averages those four seasons into the climatological annual mean
+	 Variables in the resultiing file may have cell_methods = "time: mean time: mean time: mean"
+	 To avoid this redundancy, we check that the new cell_method does not duplicate the old 
+	 If it would, then skip adding the new */
+      ptr_unn val_old; /* [sng] Old cell_methods attribute */
+      val_old.vp=(void *)nco_malloc((att_lng+1L)*sizeof(char));
+      (void)nco_get_att(grp_out_id,var_out_id,aed.att_nm,val_old.vp,NC_CHAR);
+      val_old.cp[att_lng]='\0';
+      if(!strcmp(aed.val.cp,val_old.cp)) flg_dpl=True;
+      if(val_old.vp) val_old.vp=(void *)nco_free(val_old.vp);
+      
+      aed.mode=aed_append;
       /* Insert space between existing attribute and appended attribute */
       att_val_cpy=(char *)strdup(aed.val.cp);
       /* Add one for space character */
@@ -407,10 +441,11 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     } /* endif attribute exists */
 
     /* Edit attribute */
-    (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+    if(!flg_dpl) (void)nco_aed_prc(grp_out_id,var_out_id,aed);
 
     /* 20150308 */
-    /* Does variable already have "coordinates" attribute? */
+    /* Does variable already have "coordinates" attribute?
+       NB: This reuses att_nm which has only enough space to hold "cell_methods" */
     strcpy(aed.att_nm,"coordinates");
     rcd=nco_inq_att_flg(grp_out_id,var_out_id,aed.att_nm,&att_typ,&att_lng);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){

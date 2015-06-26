@@ -22,7 +22,7 @@ nco_bool /* [flg] Attribute was changed */
 nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const int var_id, /* I [id] ID of variable on which to perform attribute editing */
- const aed_sct aed) /* I [sct] Structure containing information necessary to edit */
+ const aed_sct aed) /* I [sct] Attribute-edit information */
 {
   /* Purpose: Process single attribute edit for single variable */
   
@@ -335,7 +335,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 nco_bool /* [flg] Attribute was changed */
 nco_aed_prc_glb /* [fnc] Process attributes in root group */
 (const int nc_id, /* I [id] netCDF file ID */
- const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const aed_sct aed, /* I [sct] Attribute-edit information */
  const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
 {
   /* Purpose: Process attributes in root group */
@@ -359,7 +359,7 @@ nco_aed_prc_glb /* [fnc] Process attributes in root group */
 nco_bool /* [flg] Attribute was changed */
 nco_aed_prc_grp /* [fnc] Process attributes in groups */
 (const int nc_id, /* I [id] netCDF file ID */
- const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const aed_sct aed, /* I [sct] Attribute-edit information */
  const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
 {
   /* Purpose: Process attributes in groups */
@@ -382,7 +382,7 @@ nco_aed_prc_grp /* [fnc] Process attributes in groups */
 nco_bool /* [flg] Attribute was changed */
 nco_aed_prc_var_all /* [fnc] Process attributes in all variables */
 (const int nc_id, /* I [id] netCDF file ID */
- const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const aed_sct aed, /* I [sct] Attribute-edit information */
  const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
 {
   /* Purpose: Process attributes in all variables */
@@ -413,7 +413,7 @@ nco_aed_prc_var_all /* [fnc] Process attributes in all variables */
 nco_bool /* [flg] Attribute was changed */
 nco_aed_prc_var_nm /* [fnc] Process attributes in variables that match input name */
 (const int nc_id, /* I [id] netCDF file ID */
- const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const aed_sct aed, /* I [sct] Attribute-edit information */
  const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
 {
   /* Purpose: Process attributes in variables that match input name (absolute or relative)  */
@@ -481,7 +481,7 @@ nco_aed_prc_var_nm /* [fnc] Process attributes in variables that match input nam
 nco_bool /* [flg] Attribute was changed */
 nco_aed_prc_var_xtr /* [fnc] Process attributes in variables with extraction flag set */
 (const int nc_id, /* I [id] netCDF file ID */
- const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const aed_sct aed, /* I [sct] Attribute-edit information */
  const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
 {
   /* Purpose: Process attributes in extracted variables */
