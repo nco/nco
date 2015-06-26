@@ -629,7 +629,7 @@ nco1079. ncap2: add option to return index of max/min/etc. kevin raeder suggesti
 nco1084. ncks feature: allow multiple specifications of mk_rec_dmn and fix_rec_dmn
 nco1093. ncks: print attribute function lynnes (NB: windows does not use filters)
 	 ncks -v var_lst -a att_lst (--abc=abc_md  --alphabetize=abc_md) in.nc
-nco1097. ncatted: rx attributes lynnes and 1 other 20130702
+nco1097. ncatted: rx attributes lynnes and 1 other 20130702 and 1 other 20150625
 nco1094. ncks: print statistics function lynnes (NB: windows does not use filters)
 nco1095. ncap2: user-defined functions (UDFs) lynnes
 nco1096. ncecat: --playnice, recognize, e.g., "latitude" variants lynnes

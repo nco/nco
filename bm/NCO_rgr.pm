@@ -294,6 +294,8 @@ print "\n";
 ####################
 
 #ncatted #1
+# ncatted -h -O $nco_D_flg -a units,,m,c,'meter second-1' ~/nco/data/in.nc ~/foo.nc
+# ncks -C -m -v lev ~/foo.nc | grep units | cut -d ' ' -f 11-12
 	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -m -v lev %tmp_fl_00% | grep units | cut -d ' ' -f 11-12"; ## daniel:fixme cut/ncks but how to do grep?
@@ -334,6 +336,9 @@ print "\n";
 	$#tst_cmd=0; # Reset array
 
 #ncatted #5
+# ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 ~/nco/data/in.nc ~/foo.nc
+# ncap2 -v -C -O -s 'n2=three_dmn_var_int@nw1;' ~/foo.nc ~/foo1.nc
+# ncks -O -C -H -s '%i' -v n2 ~/foo1.nc
 	$dsc_sng="Variable wildcarding (requires regex)";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncap2 -v -C -O -s 'n2=three_dmn_var_int\@nw1;' %tmp_fl_00% %tmp_fl_01%";
@@ -396,8 +401,10 @@ print "\n";
 	$#tst_cmd=0; # Reset array
 
 #ncatted #11
+# ncatted -h -O -a Conventions,group,m,c,new_value ~/nco/data/in_grp_3.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep Conventions
 	$dsc_sng="(Groups) Modify global attribute";
-	$tst_cmd[0]="ncatted -O $nco_D_flg -a Conventions,group,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a Conventions,group,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep Conventions";
 	$tst_cmd[2]="Group attribute 0: Conventions, size = 9 NC_CHAR, value = new_value";
 	$tst_cmd[3]="SS_OK";

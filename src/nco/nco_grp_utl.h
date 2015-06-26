@@ -463,13 +463,6 @@ nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable 
  int * var_prc_idx_out);              /* O [nbr] Number of dimension to re-order */
 
 void
-nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
-(const int nc_id,                     /* I [id] Input netCDF file ID */
- const aed_sct *aed,                  /* I [sct] Structure containing information necessary to edit */
- const int nbr_aed,                   /* I [nbr] Number of attribute structures */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
-void
 nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabbed size */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
@@ -584,36 +577,6 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
  const char * const wgt_nm,           /* I [sng] Weight variable name (relative) */
  const var_sct * const var,           /* I [sct] Variable that needs the weight/mask variable */
  const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */
-
-void                                  
-nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */ 
-
-void                                  
-nco_aed_prc_glb                       /* [fnc] Process attributes in root group */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */ 
-
-void                                  
-nco_aed_prc_var                       /* [fnc] Process attributes in variables */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */ 
-
-void                                  
-nco_aed_prc_var_xtr                   /* [fnc] Process attributes in variables that match table extraction flag */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */ 
-
-void                                  
-nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables that match input name */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */ 
 
 void                                    
 nco_grp_var_lst                        /* [fnc] Export list of variable names for group */

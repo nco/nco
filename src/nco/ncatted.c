@@ -410,31 +410,31 @@ main(int argc,char **argv)
   ddra_info.tmr_flg=nco_tmr_rgl;
 
   for(int idx_aed=0;idx_aed<nbr_aed;idx_aed++){
-    if(aed_lst[idx_aed].var_nm == NULL){
-      /* Variable name is blank so edit same attribute for all variables ... */
-      (void)nco_aed_prc_var(nc_id,aed_lst[idx_aed],trv_tbl);
+    if(!aed_lst[idx_aed].var_nm){
+      /* Variable name is blank so edit same attribute for all variables */
+      (void)nco_aed_prc_var_all(nc_id,aed_lst[idx_aed],trv_tbl);
     }else if(strpbrk(aed_lst[idx_aed].var_nm,".*^$\\[]()<>+?|{}")){
-      /* Variable name contains a "regular expression" (rx) ... */
+      /* Variable name contains a "regular expression" (rx) */
       trv_tbl_sct *trv_tbl_rx;
       char **var_lst_in; /* I [sng] User-specified list of variables */
       int var_lst_in_nbr; /* I [nbr] Number of variables in list */
       var_lst_in=nco_lst_prs_2D(aed_lst[idx_aed].var_nm,",",&var_lst_in_nbr);
       trv_tbl_init(&trv_tbl_rx); 
-      /* Construct GTT (Group Traversal Table) */
+      /* Use regular expressions in aed structure to construct traversal table
+	 Variables marked for extraction will then have the attributes edited */
       (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,var_lst_in,var_lst_in_nbr,False,False,False,False,False,nco_pck_plc_nil,&flg_dne,trv_tbl_rx); 
-      /* Edit same attribute for all variables ... */
+      /* Edit same attribute for all variables marked for extraction */
       (void)nco_aed_prc_var_xtr(nc_id,aed_lst[idx_aed],trv_tbl_rx);
       trv_tbl_free(trv_tbl_rx);
       var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"group")){
-      /* Variable name indicates a group attribute ... */
+      /* Variable name of "group" means edit group attributes */
       (void)nco_aed_prc_grp(nc_id,aed_lst[idx_aed],trv_tbl);
     }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
-      /* Variable name indicates a global attribute ... */
+      /* Variable name of "global" means edit global attributes */
       (void)nco_aed_prc_glb(nc_id,aed_lst[idx_aed],trv_tbl);
     }else{ 
-      /* Variable is a normal variable ... */
-      /* Inquire if any variable matches (absolute, relative)  */
+      /* Regular ole' variable name means edits attributes that match absoluted and relative names */
       (void)nco_aed_prc_var_nm(nc_id,aed_lst[idx_aed],trv_tbl);
     } /* end var_nm */
   } /* end loop over aed structures */

@@ -18,7 +18,7 @@
 # define strtoll  _strtoi64
 #endif /* !_MSC_VER */
 
-void
+nco_bool /* [flg] Attribute was changed */
 nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const int var_id, /* I [id] ID of variable on which to perform attribute editing */
@@ -46,6 +46,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   long att_sz;
   
   nc_type att_typ;
+  nco_bool flg_chg=False; /* [flg] Attribute was altered */
   
   void *att_val_new=NULL;
   
@@ -272,34 +273,47 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 		   (void *)aed.val.vp,
 		   aed.sz*nco_typ_lng(aed.type));
       rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
+      flg_chg=True; /* [flg] Attribute was altered */
       att_val_new=nco_free(att_val_new);
     }else{
       /* Create new attribute */
       rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+      flg_chg=True; /* [flg] Attribute was altered */
     } /* end else */
     break;
   case aed_create:	
-    if(rcd_inq_att != NC_NOERR) rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+    if(rcd_inq_att != NC_NOERR){
+      rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+      flg_chg=True; /* [flg] Attribute was altered */
+    } /* endif */
     break;
   case aed_delete:	
     /* Delete specified attribute if attribute name was specified... */
     if(aed.att_nm){
       /* ...and if attribute is known to exist from previous inquire call... */
-      if(rcd_inq_att == NC_NOERR) rcd+=nco_del_att(nc_id,var_id,aed.att_nm);
+      if(rcd_inq_att == NC_NOERR){
+	rcd+=nco_del_att(nc_id,var_id,aed.att_nm);
+	flg_chg=True; /* [flg] Attribute was altered */
+      } /* endif */
     }else{
       /* ...else delete all attributes for this variable... */
       while(nbr_att){
 	rcd+=nco_inq_attname(nc_id,var_id,nbr_att-1,att_nm);
 	rcd+=nco_del_att(nc_id,var_id,att_nm);
 	nbr_att--;
+	flg_chg=True; /* [flg] Attribute was altered */
       } /* end while */
     } /* end else */
     break;
   case aed_modify:	
-    if(rcd_inq_att == NC_NOERR) rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+    if(rcd_inq_att == NC_NOERR){
+      rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+      flg_chg=True; /* [flg] Attribute was altered */
+    } /* endif */
     break;
   case aed_overwrite:	
     rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+    flg_chg=True; /* [flg] Attribute was altered */
     break;
   default: 
     break;
@@ -315,7 +329,186 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: DEBUG WARNING %s reports unexpected cumulative rcd = %i on exit. Please report this to NCO project.\n",nco_prg_nm_get(),fnc_nm,rcd);
 
+  return flg_chg; /* [flg] Attribute was altered */
 } /* end nco_aed_prc() */
+
+nco_bool /* [flg] Attribute was changed */
+nco_aed_prc_glb /* [fnc] Process attributes in root group */
+(const int nc_id, /* I [id] netCDF file ID */
+ const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
+{
+  /* Purpose: Process attributes in root group */
+  const char fnc_nm[]="nco_aed_prc_glb()"; /* [sng] Function name */
+  int grp_id; /* [id] Group ID */
+  nco_bool flg_chg=nco_bool_CEWI; /* [flg] Attribute was altered */
+
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && !strcmp("/",trv_tbl->lst[tbl_idx].nm_fll)){
+      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
+      flg_chg=nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      break;
+    } /* !grp */
+  } /* !tbl */ 
+
+  if(nco_dbg_lvl_get() > nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed in root group\n",fnc_nm,nco_prg_nm_get(),aed.att_nm);
+
+  return flg_chg;
+} /* nco_aed_prc_glb() */
+
+nco_bool /* [flg] Attribute was changed */
+nco_aed_prc_grp /* [fnc] Process attributes in groups */
+(const int nc_id, /* I [id] netCDF file ID */
+ const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
+{
+  /* Purpose: Process attributes in groups */
+  const char fnc_nm[]="nco_aed_prc_grp()"; /* [sng] Function name */
+  int grp_id; /* [id] Group ID */
+  nco_bool flg_chg=False; /* [flg] Attribute was altered */
+
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp){
+      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
+      flg_chg|=nco_aed_prc(grp_id,NC_GLOBAL,aed);
+    } /* !group */
+  } /* end loop over tables */ 
+
+  if(nco_dbg_lvl_get() > nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed in any group\n",fnc_nm,nco_prg_nm_get(),aed.att_nm);
+
+  return flg_chg;
+} /* nco_aed_prc_grp() */
+
+nco_bool /* [flg] Attribute was changed */
+nco_aed_prc_var_all /* [fnc] Process attributes in all variables */
+(const int nc_id, /* I [id] netCDF file ID */
+ const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
+{
+  /* Purpose: Process attributes in all variables */
+  const char fnc_nm[]="nco_aed_prc_var_all()"; /* [sng] Function name */
+  int grp_id; /* [id] Group ID */
+  int var_id; /* [id] Variable ID */
+  nco_bool flg_chg=False; /* [flg] Attribute was altered */
+  nco_bool var_fnd=False; /* [flg] Variable was found */
+
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
+      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
+      flg_chg|=nco_aed_prc(grp_id,var_id,aed);
+      var_fnd=True;
+    } /* !var */
+  } /* !tbl */ 
+
+  if(!var_fnd){
+    (void)fprintf(stderr,"%s: ERROR File contains no variables so variable attributes cannot be changed\n",nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* var_fnd */
+  if(nco_dbg_lvl_get() >= nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed in any variable\n",fnc_nm,nco_prg_nm_get(),aed.att_nm);
+
+  return flg_chg;
+} /* nco_aed_prc_var_all() */
+
+nco_bool /* [flg] Attribute was changed */
+nco_aed_prc_var_nm /* [fnc] Process attributes in variables that match input name */
+(const int nc_id, /* I [id] netCDF file ID */
+ const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
+{
+  /* Purpose: Process attributes in variables that match input name (absolute or relative)  */
+  const char fnc_nm[]="nco_aed_prc_var_nm()"; /* [sng] Function name */
+  int grp_id; /* [id] Group ID */
+  int var_id; /* [id] Variable ID */
+  nco_bool flg_chg=False; /* [flg] Attribute was altered */
+  nco_bool var_fnd=False; /* [flg] Variable was found */
+
+  /* Loop table (absolute name) */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_sct trv=trv_tbl->lst[tbl_idx];
+    if(trv.nco_typ == nco_obj_typ_var && !strcmp(aed.var_nm,trv.nm_fll)){
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+      flg_chg|=nco_aed_prc(grp_id,var_id,aed);
+      /* Only 1 match possible, return */
+      if(nco_dbg_lvl_get() >= nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed for variable %s\n",fnc_nm,nco_prg_nm_get(),aed.att_nm,trv.grp_nm_fll);
+      return flg_chg;
+    } /* !var */
+  } /* !tbl */ 
+
+  /* Try relative variable names */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_sct trv=trv_tbl->lst[tbl_idx];
+    if(trv.nco_typ == nco_obj_typ_var && !strcmp(aed.var_nm,trv.nm)){
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+      flg_chg|=nco_aed_prc(grp_id,var_id,aed);
+      var_fnd=True;
+    } /* !var */
+  } /* !tbl */ 
+
+  /* Try absolute group names */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_sct trv=trv_tbl->lst[tbl_idx];
+    if(trv.nco_typ == nco_obj_typ_grp && !strcmp(aed.var_nm,trv.nm_fll)){
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      flg_chg = flg_chg || nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      if(nco_dbg_lvl_get() >= nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed for group %s\n",fnc_nm,nco_prg_nm_get(),aed.att_nm,trv.grp_nm_fll);
+      /* Only 1 match possible, return */
+      return flg_chg;
+    } /* !var */
+  } /* !tbl */ 
+
+  /* Try relative group names */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_sct trv=trv_tbl->lst[tbl_idx];
+    if(trv.nco_typ == nco_obj_typ_grp && !strcmp(aed.var_nm,trv.nm)){
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      flg_chg|=nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      var_fnd=True;
+    } /* !var */
+  } /* !tbl */ 
+
+  if(!var_fnd){
+    (void)fprintf(stderr,"%s: ERROR File contains no variables or groups that match name %s so attribute %s cannot be changed\n",nco_prg_nm_get(),aed.var_nm,aed.att_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* var_fnd */
+  if(nco_dbg_lvl_get() >= nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed for groups or variables that match relative name %s\n",fnc_nm,nco_prg_nm_get(),aed.att_nm,aed.var_nm);
+
+  return flg_chg;
+} /* nco_aed_prc_var_nm() */
+
+nco_bool /* [flg] Attribute was changed */
+nco_aed_prc_var_xtr /* [fnc] Process attributes in variables with extraction flag set */
+(const int nc_id, /* I [id] netCDF file ID */
+ const aed_sct aed, /* I [sct] Structure containing information necessary to edit */
+ const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
+{
+  /* Purpose: Process attributes in extracted variables */
+  const char fnc_nm[]="nco_aed_prc_var_xtr()"; /* [sng] Function name */
+  int grp_id; /* [id] Group ID */
+  int var_id; /* [id] Variable ID */
+  nco_bool flg_chg=False; /* [flg] Attribute was altered */
+  nco_bool var_fnd=False; /* [flg] Variable was found */
+
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_sct trv=trv_tbl->lst[tbl_idx];
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+      flg_chg|=nco_aed_prc(grp_id,var_id,aed);
+      var_fnd=True;
+    } /* !var */
+  } /* !tbl */ 
+
+  if(!var_fnd){
+    (void)fprintf(stderr,"%s: ERROR File contains no extracted variables or groups so attribute %s cannot be changed\n",nco_prg_nm_get(),aed.att_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* var_fnd */
+  if(nco_dbg_lvl_get() >= nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed in any extracted variables\n",fnc_nm,nco_prg_nm_get(),aed.att_nm);
+
+  return flg_chg;
+} /* nco_aed_prc_var_xtr() */
 
 void 
 nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file */

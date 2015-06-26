@@ -2075,7 +2075,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Populate traversal table by examining, recursively, subgroups of parent */
-
+  const char fnc_nm[]="nco_grp_itr()"; /* [sng] Function name */
   const char sls_sng[]="/";        /* [sng] Slash string */
 
   char grp_nm[NC_MAX_NAME+1];      /* [sng] Group name */
@@ -2137,7 +2137,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   sls_psn=grp_nm_fll;
   if(!strcmp(grp_nm_fll,sls_sng)) grp_dpt=0; else grp_dpt=1;
   while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
-  if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",nco_prg_nm_get(),grp_nm_fll,grp_dpt);
+  if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stderr,"%s: INFO %s found group %s at level %d\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,grp_dpt);
 
   /* Keep the old table objects size for insertion */
   unsigned int idx;
@@ -2454,7 +2454,7 @@ nco_bld_crd_rec_var_trv /* [fnc] Build dimension information for all variables *
 (const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Build "is_crd_var" and "is_rec_var" members for all variables */
-  const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_bld_crd_var_trv()"; /* [sng] Function name */
 
   /* Loop all objects */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -2482,21 +2482,21 @@ nco_bld_crd_rec_var_trv /* [fnc] Build dimension information for all variables *
             } /* endif dbg */
             /* Go to next variable */
             break;
-          }/* Is variable in scope of dimension ? */
+          } /* Is variable in scope of dimension ? */
         } /* Is there a variable with this dimension name anywhere? (relative name)  */
       } /* Loop unique dimensions list in groups */
     } /* Interested in variables only */
   } /* Loop all variables */
 
-} /* nco_blb_crd_var_trv() */
+} /* nco_bld_crd_rec_var_trv() */
 
 void                      
-nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
-(trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+nco_bld_crd_var_trv /* [fnc] Build GTT "crd_sct" coordinate variable structure */
+(trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Build GTT "crd_sct" coordinate variable structure */
 
-  const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_bld_crd_var_trv()"; /* [sng] Function name */
 
   /* Step 1) Find the total number of coordinate variables for every dimension */
 
@@ -2520,7 +2520,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             /* Increment the number of coordinate variables for this dimension */
             trv_tbl->lst_dmn[idx_dmn].crd_nbr++;
 
-          }/* Is variable in scope of dimension ? */
+          } /* Is variable in scope of dimension ? */
         } /* Is there a variable with this dimension name anywhere? (relative name)  */
       } /* Interested in variables only */
     } /* Loop all objects */
@@ -2607,21 +2607,17 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             if(nco_dbg_lvl_get() == nco_dbg_old){     
               crd_sct *crd=trv_tbl->lst_dmn[idx_dmn].crd[crd_idx];
               (void)fprintf(stdout,"%s: INFO %s variable <%s> has coordinate <%s> from dimension <%s>\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,crd->crd_nm_fll,crd->dmn_nm_fll);
-            }
+            } /* endif */
 
-            /* Limits are initialized in build limits function */
-        
-            /* Incrementr coordinate index for current dimension */
+            /* Increment coordinate index for current dimension */
             crd_idx++;
 
-          }/* Is variable in scope of dimension ? */
+          } /* Is variable in scope of dimension ? */
         } /* Is there a variable with this dimension name anywhere? (relative name)  */
       } /* Interested in variables only */
     } /* Loop all objects */
   } /* Loop unique dimensions list in groups */
-
-} /* nco_blb_crd_var_trv() */
-
+} /* nco_bld_crd_var_trv() */
 
 static void
 prt_lmt                             /* [fnc] Print limit  */
@@ -2630,8 +2626,6 @@ prt_lmt                             /* [fnc] Print limit  */
 {
   (void)fprintf(stdout," LIMIT[%d]%s(%li,%li,%li) ",lmt_idx,lmt->nm,lmt->srt,lmt->cnt,lmt->srd);
 } /* prt_lmt() */
-
-
 
 void                          
 nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) */
@@ -2666,59 +2660,38 @@ nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
   (void)fprintf(stdout,"\n");
   (void)fprintf(stdout,"%s: INFO reports variable information\n",nco_prg_nm_get());
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-
     trv_sct var_trv=trv_tbl->lst[idx_var];   
-
-    /* Filter variables  */
     if(var_trv.nco_typ == nco_obj_typ_var){
-
       (void)fprintf(stdout,"%s:",var_trv.nm_fll);
-
-      /* Filter output */
       if(var_trv.is_crd_var){
         (void)fprintf(stdout," (coordinate)");
         nbr_crd++;
       } /* endif */
-
-      /* Filter output */
       if(var_trv.is_rec_var) (void)fprintf(stdout," (record)");
 
       /* If record variable must be coordinate variable */
       if(var_trv.is_rec_var) assert(var_trv.is_crd_var);
-
       (void)fprintf(stdout," %d dimensions: ",var_trv.nbr_dmn); 
 
-      /* Dimensions */
       for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++){
-
         var_dmn_sct var_dmn=var_trv.var_dmn[idx_dmn_var];
-
         (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,var_dmn.dmn_nm_fll,var_dmn.dmn_id); 
-        /* Filter output */
         if(var_dmn.is_crd_var) (void)fprintf(stdout," (coordinate) : ");
 
-        /*  The limits have to be separated to */
-
-        /* a) case where the dimension has coordinate variables */
+        /*  Segregate limits into two cases */
         if(var_dmn.crd){
-
+	  /* Dimension has coordinate variables */
           for(int lmt_idx=0;lmt_idx<var_dmn.crd->lmt_msa.lmt_dmn_nbr;lmt_idx++)
             (void)prt_lmt(lmt_idx,var_dmn.crd->lmt_msa.lmt_dmn[lmt_idx]);
-
-          /* ! case where the dimension has coordinate variables */
         }else{
-
+          /* Dimension has no coordinate variables */
           for(int lmt_idx=0;lmt_idx<var_dmn.ncd->lmt_msa.lmt_dmn_nbr;lmt_idx++)
             (void)prt_lmt(lmt_idx,var_dmn.ncd->lmt_msa.lmt_dmn[lmt_idx]);
-
-        } /* ! case where the dimension has coordinate variables */
-      } /* Dimensions */
-
-      /* End this variable */
+        } /* !crd */
+      } /* !dmn */
       (void)fprintf(stdout,"\n");
-
-    } /* Filter variables  */
-  } /* Variables */
+    } /* !var  */
+  } /* !var */
 
   /* Unique dimension list, Coordinate variables stored in unique dimension list, limits */
   nbr_crd_var=0;
@@ -5583,103 +5556,6 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 } /* nco_var_dmn_rdr_val_trv() */
   
 void
-nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
-(const int nc_id,                     /* I [id] Input netCDF file ID */
- const aed_sct *aed_lst,              /* I [sct] Structure containing information necessary to edit */
- const int nbr_aed,                   /* I [nbr] Number of attribute structures */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
-{
-  int grp_id; /* [id] Group ID */
-  int var_id; /* [id] Variable ID */
-
-  /* Loop all attribure structure entries */
-  for(int idx_aed=0;idx_aed<nbr_aed;idx_aed++){
-
-    /* Variable name is blank so edit same attribute for all variables ... */
-
-    if(aed_lst[idx_aed].var_nm == NULL){
-
-      /* Loop table */
-      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-        trv_sct var_trv=trv_tbl->lst[idx_tbl];
-        /* Filter variables */
-        if(var_trv.nco_typ == nco_obj_typ_var){
-          /* Obtain group ID */
-          (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-          /* Obtain variable ID */
-          (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
-          /* Edit attribute */
-          (void)nco_aed_prc(grp_id,var_id,aed_lst[idx_aed]);
-        } /* Filter variables */
-      } /* Loop table */
-
-    } /* End Variable name is blank so edit same attribute for all variables ... */
-
-    /* Variable name contains a "regular expression" (rx) ... */
-
-    else if(strpbrk(aed_lst[idx_aed].var_nm,".*^$\\[]()<>+?|{}")){
-
-      /* Loop table */
-      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-        trv_sct var_trv=trv_tbl->lst[idx_tbl];
-        /* Filter variables */
-        if(var_trv.nco_typ == nco_obj_typ_var ){
-          /* Obtain group ID */
-          (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-          /* Obtain variable ID */
-          (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
-          /* Edit attribute */
-          (void)nco_aed_prc(grp_id,var_id,aed_lst[idx_aed]);
-        } /* Filter variables */
-      } /* Loop table */
-
-      /* End Variable name contains a "regular expression" (rx) ... */
-
-      /* Variable name indicates a global attribute ... */
-
-    }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
-
-       /* Loop table */
-      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-        trv_sct var_trv=trv_tbl->lst[idx_tbl];
-        /* Filter variables */
-        if(var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
-          /* Obtain group ID */
-          (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-          /* Obtain variable ID */
-          (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
-          /* Edit attribute */
-          (void)nco_aed_prc(grp_id,NC_GLOBAL,aed_lst[idx_aed]);
-        } /* Filter variables */
-      } /* Loop table */
-
-      /* End Variable name indicates a global attribute ... */
-
-    }else{ 
-      /* Variable is a normal variable ... */
-
-      /* Loop table */
-      for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-        trv_sct var_trv=trv_tbl->lst[idx_tbl];
-        /* Filter variables */
-        if(var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
-          /* Obtain group ID */
-          (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-          /* Obtain variable ID */
-          (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
-          /* Edit attribute */
-          (void)nco_aed_prc(grp_id,var_id,aed_lst[idx_aed]);
-        } /* Filter variables */
-      } /* Loop table */
-
-    }
-    /* End Variable is a normal variable ... */
-
-  } /* Loop all attribure structure entries */
-
-} /* nco_aed_prc_trv() */
-
-void
 nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabbed size */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
@@ -7284,244 +7160,6 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
   return NULL;
   
 } /* nco_var_get_wgt_trv() */
-
-void                                  
-nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
-{
-  /* Purpose: Process attributes  */
-
-  int grp_id; /* [id] Group ID */
-
-  nco_bool var_fnd=False; /* [flg] Variable was found */
-
-  /* Only used by ncatted */
-  assert(nco_prg_id_get() == ncatted);
-
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
-      /* Process attribute */
-      (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
-      var_fnd=True;
-    } /* !group */
-  } /* end loop over tables */ 
-
-  if(!var_fnd){
-    (void)fprintf(stderr,"%s: ERROR No attributes were found\n",nco_prg_nm_get());
-    nco_exit(EXIT_FAILURE);
-  } 
-
-  return;
-
-} /* nco_aed_prc_grp() */
-
-void                                  
-nco_aed_prc_glb                       /* [fnc] Process attributes in root group */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
-{
-  /* Purpose: Process attributes  */
-
-  int grp_id; /* [id] Group ID */
-
-  nco_bool var_fnd=False; /* [flg] Variable was found */
-
-  /* Only used by ncatted */
-  assert(nco_prg_id_get() == ncatted);
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Is root group */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && strcmp("/",trv_tbl->lst[tbl_idx].nm_fll) == 0){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
-      /* Process attribute */
-      (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
-      var_fnd=True;
-    } /* Is group */
-  } /* Loop table */ 
-
-  if(!var_fnd){
-    (void)fprintf(stderr,"%s: ERROR Attribute was not found\n",nco_prg_nm_get());
-    nco_exit(EXIT_FAILURE);
-  } 
-
-  return;
-} /* nco_aed_prc_grp() */
-
-void                                  
-nco_aed_prc_var                       /* [fnc] Process attributes in variables */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
-{
-  /* Purpose: Process attributes  */
-
-  int grp_id; /* [id] Group ID */
-  int var_id; /* [id] Variable ID */
-
-  nco_bool var_fnd=False; /* [flg] Variable was found */
-
-  /* Only used by ncatted */
-  assert(nco_prg_id_get() == ncatted);
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Is variable */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
-      /* Get variable ID  */
-      (void)nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
-      /* Process attribute */
-      (void)nco_aed_prc(grp_id,var_id,aed);
-      var_fnd=True;
-    } /* Is variable */
-  } /* Loop table */ 
-
-  if(!var_fnd){
-    (void)fprintf(stderr,"%s: No attributes were found\n",nco_prg_nm_get());
-    nco_exit(EXIT_FAILURE);
-  } 
-
-  return;
-
-} /* nco_aed_prc_var() */
-
-
-void                                  
-nco_aed_prc_var_xtr                   /* [fnc] Process attributes in variables that match table extraction flag */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
-{
-  /* Purpose: Process attributes  */
-
-  int grp_id; /* [id] Group ID */
-  int var_id; /* [id] Variable ID */
-
-  nco_bool var_fnd=False; /* [flg] Variable was found */
-
-  /* Only used by ncatted */
-  assert(nco_prg_id_get() == ncatted);
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    trv_sct trv=trv_tbl->lst[tbl_idx];
-    /* Is variable to extract */
-    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-      /* Get variable ID  */
-      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-      /* Process attribute */
-      (void)nco_aed_prc(grp_id,var_id,aed);
-      var_fnd=True;
-    } /* Is variable */
-  } /* Loop table */ 
-
-  if(!var_fnd){
-    (void)fprintf(stderr,"%s: No attributes were found\n",nco_prg_nm_get());
-    nco_exit(EXIT_FAILURE);
-  } 
-
-  return;
-
-} /* nco_aed_prc_var_xtr() */
-
-void                                  
-nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables that match input name */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
- const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
-{
-  /* Purpose: Process attributes in variables that match input name (absolute or relative)  */
-
-  int grp_id; /* [id] Group ID */
-  int var_id; /* [id] Variable ID */
-
-  nco_bool var_fnd=False; /* [flg] Variable was found */
-
-  /* Only used by ncatted */
-  assert(nco_prg_id_get() == ncatted);
-
-  /* Assume name is for variable */
-
-  /* Loop table (absolute name) */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    trv_sct trv=trv_tbl->lst[tbl_idx];
-    /* Variable name match */
-    if(trv.nco_typ == nco_obj_typ_var && strcmp(aed.var_nm,trv.nm_fll) == 0){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-      /* Get variable ID  */
-      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-      /* Process attribute */
-      (void)nco_aed_prc(grp_id,var_id,aed);
-      /* Only 1 match possible, return */
-      return;
-    } /* Is variable */
-  } /* Loop table */ 
-
-  /* Loop table (relative name, can be many) */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    trv_sct trv=trv_tbl->lst[tbl_idx];
-    /* Variable name (relative) match */
-    if(trv.nco_typ == nco_obj_typ_var && strcmp(aed.var_nm,trv.nm) == 0){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-      /* Get variable ID  */
-      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-      /* Process attribute */
-      (void)nco_aed_prc(grp_id,var_id,aed);
-      var_fnd=True;
-    } /* Is variable */
-  } /* Loop table */ 
-
-
-  /* Try name for group */
-
-  /* Loop table (absolute name) */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    trv_sct trv=trv_tbl->lst[tbl_idx];
-    /* Group name match */
-    if(trv.nco_typ == nco_obj_typ_grp && strcmp(aed.var_nm,trv.nm_fll) == 0){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-      /* Process attribute */
-      (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
-      /* Only 1 match possible, return */
-      return;
-    } /* Is variable */
-  } /* Loop table */ 
-
-  /* Loop table (relative name, can be many) */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    trv_sct trv=trv_tbl->lst[tbl_idx];
-    /* Group name (relative) match */
-    if(trv.nco_typ == nco_obj_typ_grp && strcmp(aed.var_nm,trv.nm) == 0){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-      /* Process attribute */
-      (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
-      var_fnd=True;
-    } /* Is variable */
-  } /* Loop table */ 
-
-
-  if(!var_fnd){
-    (void)fprintf(stderr,"%s: Variable <%s> was not found\n",nco_prg_nm_get(),aed.var_nm);
-    nco_exit(EXIT_FAILURE);
-  } 
-
-  return;
-
-} /* nco_aed_prc_var_nm() */
 
 void                                    
 nco_grp_var_lst                        /* [fnc] Export list of variable names for group */
