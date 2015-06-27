@@ -422,7 +422,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       val_old.vp=(void *)nco_malloc((att_lng+1L)*sizeof(char));
       (void)nco_get_att(grp_out_id,var_out_id,aed.att_nm,val_old.vp,NC_CHAR);
       val_old.cp[att_lng]='\0';
-      if(!strcmp(aed.val.cp,val_old.cp)) flg_dpl=True;
+      if(strstr(val_old.cp,aed.val.cp)) flg_dpl=True;
       if(val_old.vp) val_old.vp=(void *)nco_free(val_old.vp);
       
       aed.mode=aed_append;

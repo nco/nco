@@ -416,7 +416,7 @@ nco_aed_prc_var_nm /* [fnc] Process attributes in variables that match input nam
  const aed_sct aed, /* I [sct] Attribute-edit information */
  const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
 {
-  /* Purpose: Process attributes in variables that match input name (absolute or relative)  */
+  /* Purpose: Process attributes in variables that match input name (absolute or relative) */
   const char fnc_nm[]="nco_aed_prc_var_nm()"; /* [sng] Function name */
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
@@ -452,7 +452,7 @@ nco_aed_prc_var_nm /* [fnc] Process attributes in variables that match input nam
     trv_sct trv=trv_tbl->lst[tbl_idx];
     if(trv.nco_typ == nco_obj_typ_grp && !strcmp(aed.var_nm,trv.nm_fll)){
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-      flg_chg = flg_chg || nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      flg_chg|=nco_aed_prc(grp_id,NC_GLOBAL,aed);
       if(nco_dbg_lvl_get() >= nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed for group %s\n",fnc_nm,nco_prg_nm_get(),aed.att_nm,trv.grp_nm_fll);
       /* Only 1 match possible, return */
       return flg_chg;

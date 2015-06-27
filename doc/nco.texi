@@ -11603,7 +11603,7 @@ four_time_avg=four_dmn_rec_var($time);
 @end example
 
 @sp 1
-@noindent @strong{ Packing Methods @* } 
+@noindent @strong{Packing Methods @*}
 For more information see @pxref{Packed data} and @pxref{ncpdq netCDF Permute Dimensions Quickly}@*
 @table @code
 @item pack() & pack_short()
@@ -11622,6 +11622,16 @@ Variable is packed to @code{NC_INT}
 @cindex unpack()
 The standard unpacking algorithm is applied. 
 @end table
+@acronym{NCO} automatically unpacks packed data before arithmetically
+modifying it. 
+After modification @acronym{NCO} stores the unpacked data.
+To store it as packed data again, repack it with, e.g., the 
+@code{pack()} function.
+To ensure that @code{temperature} is packed in the output file,
+regardless of whether it is packed in the input file, one uses, e.g.,
+@example
+ncap2 -s 'temperature=pack(temperature-273.15)' in.nc out.nc
+@end example
 
 @noindent @strong{Basic Methods @*}
 These methods work with variables and attributes. They have no arguments

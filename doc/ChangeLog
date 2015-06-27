@@ -1,3 +1,7 @@
+2015-06-26  Charlie Zender  <zender@uci.edu>
+
+	* Prevent not only duplicates, but sub-string duplicates in nco_cnv_cll_mth_add()
+
 2015-06-25  Charlie Zender  <zender@uci.edu>
 
 	* Warn when non-standard "cell_method" attribute is detected

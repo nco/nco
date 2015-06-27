@@ -94,15 +94,15 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     if(nvr_OMP_NUM_THREADS && *sng_cnv_rcd) nco_sng_cnv_err(nvr_OMP_NUM_THREADS,"strtol",sng_cnv_rcd);
     (void)fprintf(fp_stderr,"%s: INFO Environment variable OMP_NUM_THREADS ",nco_prg_nm_get());
     if(ntg_OMP_NUM_THREADS > 0) (void)fprintf(fp_stderr,"= %d\n",ntg_OMP_NUM_THREADS); else (void)fprintf(fp_stderr,"does not exist\n");
-    (void)fprintf(fp_stderr,"%s: INFO Number of processors available is %d\n",nco_prg_nm_get(),prc_nbr_max);
-    (void)fprintf(fp_stderr,"%s: INFO Maximum number of threads system allows is %d\n",nco_prg_nm_get(),thr_nbr_max);
+    (void)fprintf(fp_stderr,"%s: INFO omp_get_num_procs() reports number of processors available is %d\n",nco_prg_nm_get(),prc_nbr_max);
+    (void)fprintf(fp_stderr,"%s: INFO omp_get_max_threads() reports maximum number of threads system allows is %d\n",nco_prg_nm_get(),thr_nbr_max);
   } /* endif dbg */
 
   if(USR_SPC_THR_RQS){
-    /* Always try to honor user-specified thread request... */
+    /* Try to honor user-specified thread request... */
     thr_nbr_rqs=thr_nbr; /* [nbr] Number of threads to request */
     /* ...if possible... */
-    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(fp_stderr,"%s: INFO User command-line-requested %d thread%s\n",nco_prg_nm_get(),thr_nbr,(thr_nbr > 1) ? "s" : "");
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(fp_stderr,"%s: INFO Command-line requests %d thread%s\n",nco_prg_nm_get(),thr_nbr,(thr_nbr > 1) ? "s" : "");
     if(thr_nbr > thr_nbr_max){
       (void)fprintf(fp_stderr,"%s: WARNING Reducing user-requested thread number = %d to maximum thread number allowed = %d\n",nco_prg_nm_get(),thr_nbr,thr_nbr_max);
       thr_nbr_rqs=thr_nbr_max; /* [nbr] Number of threads to request */
@@ -169,9 +169,9 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     
     /* Automatic algorithm tries to play nice with others */
     (void)omp_set_dynamic(dyn_thr); /* [flg] Allow system to dynamically set number of threads */
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO %s OS to dynamically set threads\n",nco_prg_nm_get(),(dyn_thr ? "Allowing" : "Not allowing"));
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO omp_set_dynamic() used to %s OS to dynamically set threads\n",nco_prg_nm_get(),(dyn_thr ? "ALLOW" : "DISALLOW"));
     dyn_thr=omp_get_dynamic(); /* [flg] Allow system to dynamically set number of threads */
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO System will%s utilize dynamic threading\n",nco_prg_nm_get(),(dyn_thr ? "" : " not"));
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO omp_get_dynamic() reports system will%s utilize dynamic threading\n",nco_prg_nm_get(),(dyn_thr ? "" : " NOT"));
 
     /* Apply program/system limitations */
     if(thr_nbr_max > thr_nbr_max_fsh){
@@ -213,7 +213,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   
   /* Issue any warnings about OpenMP credibility during debugging phase */
   if(True)
-    if((nco_prg_id_get() == ncwa || nco_prg_id_get() == ncra) && thr_nbr_act > 1)
+     if((nco_prg_id_get() == ncwa || nco_prg_id_get() == ncra) && thr_nbr_act > 1)
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: WARNING OpenMP threading active with %d threads but not guaranteed to work on this operator. If strange behavior (e.g., NaN results) ensues, manually turn-off multi-threading by specifying \"-t 1\" option.\n",nco_prg_nm_get(),thr_nbr_act);
 
   return thr_nbr_act; /* O [nbr] Number of threads NCO uses */
