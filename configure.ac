@@ -709,35 +709,39 @@ fi # End test for UDUnits duplication
 # Check for UDUnits2 libraries unless told not to
 if test "${enable_udunits2}" != 'no'; then
     AC_CHECK_LIB([expat],[XML_ParserCreate],,)
-    if [ -n "${UDUNITS2_PATH}" ] && [ -d "${UDUNITS2_PATH}" ] ; then
-	# NB: Use ${UDUNITS2_PATH} not ${UDUNITS2_ROOT} because UDUnits software looks for ${UDUNITS2_PATH}
-	# Add ${UDUNITS2_PATH}/lib to search path if present
-	nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
-	LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
-	CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
+    if test "${UDUNITS2_PATH}" != ''; then
+	if test -d "${UDUNITS2_PATH}"; then
+	    # NB: Use ${UDUNITS2_PATH} not ${UDUNITS2_ROOT} because UDUnits software looks for ${UDUNITS2_PATH}
+	    # Add ${UDUNITS2_PATH}/lib to search path if present
+	    nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
+	    LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
+	    CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
+	else
+	    echo "WARNING: UDUNITS2_PATH location \"${UDUNITS2_PATH}\" does not exist!"
+	fi
     elif test "${NETCDF_INC}"; then
 	nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
     else
 	# NO UDUNITS2_PATH section
-	#Fedora 1.7 has /usr/include/udunits2/udunits2.h
-	#add this path to CPPFLAGS if it exists, otherwise do nothing
+	# Fedora 1.7 has /usr/include/udunits2/udunits2.h
+	# Add this path to CPPFLAGS if it exists, otherwise do nothing
 	AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"], [])
-	#Ubuntu
-	#/usr/lib/x86_64-linux-gnu/libudunits2.a
-	#/usr/lib/i386-linux-gnu/libudunits2.a
-	#/usr/include/udunits2.h
+	# Ubuntu
+	# /usr/lib/x86_64-linux-gnu/libudunits2.a
+	# /usr/lib/i386-linux-gnu/libudunits2.a
+	# /usr/include/udunits2.h
 	AC_CHECK_FILE([/usr/include/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include"], [])
 	AC_CHECK_FILE([/usr/lib/x86_64-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/x86_64-linux-gnu"], [])
 	AC_CHECK_FILE([/usr/lib/i386-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/i386-linux-gnu"], [])
-	#Mac OSX MacPorts packages
-	#sudo port install libdap
-	#sudo port install gsl
-	#sudo port install antlr
-	#sudo port install udunits2
-	#sudo port install netcdf
-	#installs to /opt/local/include/udunits2/udunits2.h
-	#/opt/local/share/udunits/udunits2.xml
-	#add this path to CPPFLAGS if it exists, otherwise do nothing
+	# Mac OSX MacPorts packages
+	# sudo port install libdap
+	# sudo port install gsl
+	# sudo port install antlr
+	# sudo port install udunits2
+	# sudo port install netcdf
+	# installs to /opt/local/include/udunits2/udunits2.h
+	# /opt/local/share/udunits/udunits2.xml
+	# Add this path to CPPFLAGS if it exists, otherwise do nothing
 	AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
 	#/opt/local/lib/libudunits2.a
 	AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib/"], [])
