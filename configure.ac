@@ -709,7 +709,8 @@ fi # End test for UDUnits duplication
 # Check for UDUnits2 libraries unless told not to
 if test "${enable_udunits2}" != 'no'; then
     AC_CHECK_LIB([expat],[XML_ParserCreate],,)
-    if test "${UDUNITS2_PATH}"; then
+    if [ -n "${UDUNITS2_PATH}" ] && [ -d "${UDUNITS2_PATH}" ] ; then
+	# NB: Use ${UDUNITS2_PATH} not ${UDUNITS2_ROOT} because UDUnits software looks for ${UDUNITS2_PATH}
 	# Add ${UDUNITS2_PATH}/lib to search path if present
 	nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
 	LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
