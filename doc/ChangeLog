@@ -1,5 +1,9 @@
 2015-06-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.1-alpha7 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha7 final changes'
+	git tag -a 4.5.1-alpha7 -m 'Version 4.5.1-alpha7 tag: ncatted rx att_nm, no duplicate cell_methods ';git push --tags
+
 	* Added attribute wildcarding to ncatted
 
 2015-06-28  Charlie Zender  <zender@uci.edu>
