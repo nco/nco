@@ -7154,7 +7154,7 @@ default mappings.@*
 @var{cnk_map} key values: @samp{xst}, @samp{cnk_xst}, @samp{map_xst}@*
 Mnemonic: E@emph{X}i@emph{ST}@*
 @item Chunksize Balances 1D and (N-1)-D Access to N-D Variable [@emph{default for netCDF4 input}]
-Definition: Chunksizes are chosen so that 1-D and (@var{(N-1)})-D
+Definition: Chunksizes are chosen so that 1-D and (@var{N-1})-D
 hyperslabs of @var{3}-D variables (e.g., point-timeseries orn
 latitude/longitude surfaces of 3-D fields) both require approximately
 the number of chunks. 

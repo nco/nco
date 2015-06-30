@@ -454,15 +454,16 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
   /* Avoid compiler warning of unused variables by using obj_typ and trv_tbl */
   if(trv_tbl->lst) trv_tbl->lst[0].nco_typ = obj_typ;
 #else /* NCO_HAVE_REGEX_FUNCTIONALITY */
-  char *sng2mch; /* [sng] String to match to regular expression */
+  const char fnc_nm[]="nco_trv_rx_search()"; /* [sng] Function name  */
   const char sls_chr='/'; /* [chr] Slash character */
+  char *sng2mch; /* [sng] String to match to regular expression */
 
   int err_id;
   int flg_cmp; /* Comparison flags */
   int flg_exe; /* Execution flages */
   
-  regmatch_t *result;
   regex_t *rx;
+  regmatch_t *result;
 
   size_t obj_idx;
   size_t rx_prn_sub_xpr_nbr;
@@ -493,7 +494,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
     case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
     default: rx_err_sng="Invalid pattern"; break;  
     } /* end switch */
-    (void)fprintf(stdout,"%s: ERROR nco_trv_rx_search() error in regular expression \"%s\" %s\n",nco_prg_nm_get(),rx_sng,rx_err_sng); 
+    (void)fprintf(stdout,"%s: ERROR %s error in regular expression \"%s\" %s\n",nco_prg_nm_get(),fnc_nm,rx_sng,rx_err_sng); 
     nco_exit(EXIT_FAILURE);
   } /* end if err */
 

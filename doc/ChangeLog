@@ -1,3 +1,11 @@
+2015-06-29  Charlie Zender  <zender@uci.edu>
+
+	* Added attribute wildcarding to ncatted
+
+2015-06-28  Charlie Zender  <zender@uci.edu>
+
+	* Introduce routine nco_aed_prc_wrp() to expand attribute regular expressions
+
 2015-06-26  Charlie Zender  <zender@uci.edu>
 
 	* Prevent not only duplicates, but sub-string duplicates in nco_cnv_cll_mth_add()

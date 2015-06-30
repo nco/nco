@@ -1296,11 +1296,12 @@ The unsatisfied or adventurous may try my personal executables which
 are built from the &ldquo;master branch&rdquo; of NCO, not a tagged
 version, and therefore may behave slightly differently.
 <ul>
-<li>NCAR CISL <tt>yellowstone.ucar.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUXAMD64</tt></li>
-<li>NCAR CISL <tt>mirage0.ucar.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUXAMD64</tt></li>
-<li>ORNL Rhea <tt></tt> (Linux 2.6.x): <tt>~zender/bin/LINUXAMD64</tt></li>
-<li>UCI ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUX</tt></li>
-<li>UCI ESS <tt>dust.ess.uci.edu</tt> (Linux 3.2.x): <tt>~zender/bin/LINUXAMD64</tt></li>
+<li>ANL Cooley <tt></tt> (Linux 2.6.x): <tt>~zender/bin</tt></li>
+<li>NCAR CISL <tt>yellowstone.ucar.edu</tt> (Linux 2.6.x): <tt>~zender/bin</tt></li>
+<li>NCAR CISL <tt>mirage0.ucar.edu</tt> (Linux 2.6.x): <tt>~zender/bin</tt></li>
+<li>ORNL Rhea <tt></tt> (Linux 2.6.x): <tt>~zender/bin</tt></li>
+<li>UCI ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>~zender/bin</tt></li>
+<li>UCI ESS <tt>dust.ess.uci.edu</tt> (Linux 3.2.x): <tt>~zender/bin</tt></li>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#NCAR -->

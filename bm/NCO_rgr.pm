@@ -423,6 +423,17 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
+#ncatted #13
+# ncatted -O -a '.?_att$',att_var,o,i,999 ~/nco/data/in.nc ~/foo.nc
+# ncks -C -m -v att_var ~/foo.nc | grep float_att | cut -d ' ' -f 11
+	$dsc_sng="Attribute wildcarding (requires regex)";
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a '.?_att$',att_var,o,i,999 $in_pth_arg in.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -C -m -v att_var %tmp_fl_00% | grep float_att | cut -d ' ' -f 11";
+	$tst_cmd[2]="999";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+	
     } # $RUN_NETCDF4_TESTS	
 
     } #dodap

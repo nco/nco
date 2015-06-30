@@ -19,6 +19,122 @@
 #endif /* !_MSC_VER */
 
 nco_bool /* [flg] Attribute was changed */
+nco_aed_prc_wrp /* [fnc] Expand regular expressions then pass attribute edits to nco_aed_prc() */
+(const int nc_id, /* I [id] Input netCDF file ID */
+ const int var_id, /* I [id] ID of variable on which to perform attribute editing */
+ const aed_sct aed) /* I [sct] Attribute-edit information */
+{
+  /* Purpose: Wrapper for nco_aed_prc(), which processes single attribute edit for single variable
+     This wrapper passes its arguments straight throught to nco_aed_prc() with one exception---
+     it unrolls attribute name that are regular expression into multiple calls to nco_aed_prc() */
+  const char fnc_nm[]="nco_aed_prc_wrp()"; /* [sng] Function name */
+  nco_bool flg_chg=False; /* [flg] Attribute was altered */
+
+  if(!strpbrk(aed.att_nm,".*^$\\[]()<>+?|{}")){
+    // const char foo[]="foo {{";
+    /* NB: previous line confuses Emacs C-mode indenter. Restore with isolated parenthesis? */
+    /* If attribute name is not regular expression, call single attribute routine then return */
+    flg_chg|=nco_aed_prc(nc_id,var_id,aed);
+    return flg_chg; /* [flg] Attribute was altered */
+  } /* !rx */
+  
+#ifndef NCO_HAVE_REGEX_FUNCTIONALITY
+  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to attributes) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),aed.att_nm);
+  nco_exit(EXIT_FAILURE);
+#else /* NCO_HAVE_REGEX_FUNCTIONALITY */
+  /* aed.att_nm is regular expression */
+
+  aed_sct aed_swp; /* [sct] Attribute-edit information */
+
+  char *rx_sng; /* [sng] Regular expression pattern */
+
+  int err_id;
+  int flg_cmp; /* Comparison flags */
+  int flg_exe; /* Execution flages */
+  int mch_nbr=0;
+  
+  regex_t *rx;
+  regmatch_t *result;
+
+  size_t rx_prn_sub_xpr_nbr;
+
+  rx_sng=aed.att_nm;
+  rx=(regex_t *)nco_malloc(sizeof(regex_t));
+
+  /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
+  flg_cmp=(REG_EXTENDED | REG_NEWLINE);
+  /* Set execution flags */
+  flg_exe=0;
+
+  /* Compile regular expression */
+  if((err_id=regcomp(rx,rx_sng,flg_cmp))){ /* Compile regular expression */
+    char const * rx_err_sng;  
+    /* POSIX regcomp return error codes */
+    switch(err_id){
+    case REG_BADPAT: rx_err_sng="Invalid pattern"; break;  
+    case REG_ECOLLATE: rx_err_sng="Not implemented"; break;
+    case REG_ECTYPE: rx_err_sng="Invalid character class name"; break;
+    case REG_EESCAPE: rx_err_sng="Trailing backslash"; break;
+    case REG_ESUBREG: rx_err_sng="Invalid back reference"; break;
+    case REG_EBRACK: rx_err_sng="Unmatched left bracket"; break;
+    case REG_EPAREN: rx_err_sng="Parenthesis imbalance"; break;
+    case REG_EBRACE: rx_err_sng="Unmatched {"; break;
+    case REG_BADBR: rx_err_sng="Invalid contents of { }"; break;
+    case REG_ERANGE: rx_err_sng="Invalid range end"; break;
+    case REG_ESPACE: rx_err_sng="Ran out of memory"; break;
+    case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
+    default: rx_err_sng="Invalid pattern"; break;  
+    } /* end switch */
+    (void)fprintf(stdout,"%s: ERROR %s error in regular expression \"%s\" %s\n",nco_prg_nm_get(),fnc_nm,rx_sng,rx_err_sng); 
+    nco_exit(EXIT_FAILURE);
+  } /* end if err */
+
+  rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
+
+  /* Search string */
+  result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
+
+  /* Regular expression is ready to use */
+  char **att_nm_lst;
+  int att_idx;
+  int att_nbr;
+  int grp_id;
+  grp_id=nc_id;
+  /* Get number of attributes for variable/group */
+  (void)nco_inq_varnatts(grp_id,var_id,&att_nbr);
+
+  /* 20150629: Read in all attribute names before any editing 
+     This is because creation or deletion of attributes can change their number
+     According to the netCDF documentation, "The number of an attribute is more volatile than the name, since it can change when other attributes of the same variable are deleted. This is why an attribute number is not called an attribute ID." */
+  att_nm_lst=(char **)nco_malloc(att_nbr*sizeof(char *));
+  for(att_idx=0;att_idx<att_nbr;att_idx++){
+    att_nm_lst[att_idx]=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(char));
+    nco_inq_attname(grp_id,var_id,att_idx,att_nm_lst[att_idx]);
+  } /* !att */
+
+  /* Check each attribute for match to rx */
+  for(att_idx=0;att_idx<att_nbr;att_idx++){
+    if(!regexec(rx,att_nm_lst[att_idx],rx_prn_sub_xpr_nbr,result,flg_exe)){
+      mch_nbr++;
+      /* Swap original attibute name (the regular expression) with its current match */
+      aed_swp=aed;
+      aed_swp.att_nm=att_nm_lst[att_idx];
+      flg_chg|=nco_aed_prc(nc_id,var_id,aed_swp);
+    } /* !mch */
+  } /* !att */
+
+  if(att_nm_lst) att_nm_lst=nco_sng_lst_free(att_nm_lst,att_nbr);
+  if(!mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any attribute\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",nco_prg_nm_get(),aed.att_nm); 
+
+  regfree(rx); /* Free regular expression data structure */
+  rx=(regex_t *)nco_free(rx);
+  result=(regmatch_t *)nco_free(result);
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+  
+ return flg_chg; /* [flg] Attribute was altered */
+} /* end nco_aed_prc() */
+
+ nco_bool /* [flg] Attribute was changed */
 nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const int var_id, /* I [id] ID of variable on which to perform attribute editing */
@@ -26,7 +142,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 {
   /* Purpose: Process single attribute edit for single variable */
   
-  /* If var_id == NC_GLOBAL ( = -1) then global attribute will be edited */
+  /* If var_id == NC_GLOBAL == -1 then edit global/group attribute */
   
   const char fnc_nm[]="nco_aed_prc()"; /* [sng] Function name */
   
@@ -346,7 +462,7 @@ nco_aed_prc_glb /* [fnc] Process attributes in root group */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && !strcmp("/",trv_tbl->lst[tbl_idx].nm_fll)){
       (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
-      flg_chg=nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      flg_chg=nco_aed_prc_wrp(grp_id,NC_GLOBAL,aed);
       break;
     } /* !grp */
   } /* !tbl */ 
@@ -370,7 +486,7 @@ nco_aed_prc_grp /* [fnc] Process attributes in groups */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp){
       (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
-      flg_chg|=nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      flg_chg|=nco_aed_prc_wrp(grp_id,NC_GLOBAL,aed);
     } /* !group */
   } /* end loop over tables */ 
 
@@ -396,7 +512,7 @@ nco_aed_prc_var_all /* [fnc] Process attributes in all variables */
     if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
       (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
       (void)nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
-      flg_chg|=nco_aed_prc(grp_id,var_id,aed);
+      flg_chg|=nco_aed_prc_wrp(grp_id,var_id,aed);
       var_fnd=True;
     } /* !var */
   } /* !tbl */ 
@@ -429,7 +545,7 @@ nco_aed_prc_var_nm /* [fnc] Process attributes in variables that match input nam
     if(trv.nco_typ == nco_obj_typ_var && !strcmp(aed.var_nm,trv.nm_fll)){
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-      flg_chg|=nco_aed_prc(grp_id,var_id,aed);
+      flg_chg|=nco_aed_prc_wrp(grp_id,var_id,aed);
       /* Only 1 match possible, return */
       if(nco_dbg_lvl_get() >= nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed for variable %s\n",fnc_nm,nco_prg_nm_get(),aed.att_nm,trv.grp_nm_fll);
       return flg_chg;
@@ -442,7 +558,7 @@ nco_aed_prc_var_nm /* [fnc] Process attributes in variables that match input nam
     if(trv.nco_typ == nco_obj_typ_var && !strcmp(aed.var_nm,trv.nm)){
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-      flg_chg|=nco_aed_prc(grp_id,var_id,aed);
+      flg_chg|=nco_aed_prc_wrp(grp_id,var_id,aed);
       var_fnd=True;
     } /* !var */
   } /* !tbl */ 
@@ -452,7 +568,7 @@ nco_aed_prc_var_nm /* [fnc] Process attributes in variables that match input nam
     trv_sct trv=trv_tbl->lst[tbl_idx];
     if(trv.nco_typ == nco_obj_typ_grp && !strcmp(aed.var_nm,trv.nm_fll)){
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-      flg_chg|=nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      flg_chg|=nco_aed_prc_wrp(grp_id,NC_GLOBAL,aed);
       if(nco_dbg_lvl_get() >= nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed for group %s\n",fnc_nm,nco_prg_nm_get(),aed.att_nm,trv.grp_nm_fll);
       /* Only 1 match possible, return */
       return flg_chg;
@@ -464,7 +580,7 @@ nco_aed_prc_var_nm /* [fnc] Process attributes in variables that match input nam
     trv_sct trv=trv_tbl->lst[tbl_idx];
     if(trv.nco_typ == nco_obj_typ_grp && !strcmp(aed.var_nm,trv.nm)){
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-      flg_chg|=nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      flg_chg|=nco_aed_prc_wrp(grp_id,NC_GLOBAL,aed);
       var_fnd=True;
     } /* !var */
   } /* !tbl */ 
@@ -496,7 +612,7 @@ nco_aed_prc_var_xtr /* [fnc] Process attributes in variables with extraction fla
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-      flg_chg|=nco_aed_prc(grp_id,var_id,aed);
+      flg_chg|=nco_aed_prc_wrp(grp_id,var_id,aed);
       var_fnd=True;
     } /* !var */
   } /* !tbl */ 

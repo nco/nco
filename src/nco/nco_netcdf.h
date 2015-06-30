@@ -335,7 +335,7 @@ int nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,
 int nco_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz);
 int nco_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
 int nco_def_var_fletcher32(const int nc_id,const int var_id,const int chk_typ);
-int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * const var_typ,int * const dmn_nbr,int * const dmn_id,int * const nbr_att);
+int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * const var_typ,int * const dmn_nbr,int * const dmn_id,int * const att_nbr);
 int nco_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
 int nco_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle,int * const deflate,int * const dfl_lvl);
 int nco_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ);
@@ -346,7 +346,7 @@ int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);
 int nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id);
 int nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id);
 int nco_inq_varname(const int nc_id,const int var_id,char * const var_nm);
-int nco_inq_varnatts(const int nc_id,const int var_id,int * const nbr_att);
+int nco_inq_varnatts(const int nc_id,const int var_id,int * const att_nbr);
 int nco_inq_varndims(const int nc_id,const int var_id,int * const dmn_nbr);
 int nco_inq_vartype(const int nc_id,const int var_id,nc_type * const var_typ);
 int nco_rename_var(const int nc_id,const int var_id,const char * const var_nm);

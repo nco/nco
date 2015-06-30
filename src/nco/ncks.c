@@ -874,6 +874,7 @@ main(int argc,char **argv)
   /* Make output and input files consanguinous */
   (void)nco_inq_format(in_id,&fl_in_fmt);
   if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)omp_set_num_threads((int)0);
 
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr) (void)fprintf(stdout,"%s: MPI process rank %d reports %d process%s\n",nco_prg_nm,prc_rnk,prc_nbr,(prc_nbr == 1) ? "" : "es");

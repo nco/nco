@@ -46,7 +46,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
-nco_bool /* [flg] Attribute was altered */
+nco_bool /* [flg] Attribute was changed */
+nco_aed_prc_wrp /* [fnc] Expand regular expressions then pass attribute edits to nco_aed_prc() */
+(const int nc_id, /* I [id] Input netCDF file ID */
+ const int var_id, /* I [id] ID of variable on which to perform attribute editing */
+ const aed_sct aed); /* I [sct] Attribute-edit information */
+
+  nco_bool /* [flg] Attribute was altered */
 nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const int var_id, /* I [id] ID of variable on which to perform attribute editing */

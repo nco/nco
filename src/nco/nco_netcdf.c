@@ -1375,11 +1375,11 @@ int nco_def_var_deflate
 } /* end nco_def_var_deflate() */
 
 int
-nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_typ,int * const dmn_nbr,int * const dmn_id,int * const nbr_att)
+nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_typ,int * const dmn_nbr,int * const dmn_id,int * const att_nbr)
 {
   /* Purpose: Wrapper for nco_inq_var() */
   int rcd;
-  rcd=nc_inq_var(nc_id,var_id,var_nm,var_typ,dmn_nbr,dmn_id,nbr_att);
+  rcd=nc_inq_var(nc_id,var_id,var_nm,var_typ,dmn_nbr,dmn_id,att_nbr);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var()");
   return rcd;
 } /* end nco_inq_var */
@@ -1648,11 +1648,11 @@ nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id)
 } /* end nco_inq_vardimid */
 
 int
-nco_inq_varnatts(const int nc_id,const int var_id,int * const nbr_att)
+nco_inq_varnatts(const int nc_id,const int var_id,int * const att_nbr)
 {
   /* Purpose: Wrapper for nc_inq_varnatts() */
   int rcd;
-  rcd=nc_inq_varnatts(nc_id,var_id,nbr_att);
+  rcd=nc_inq_varnatts(nc_id,var_id,att_nbr);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varnatts()");
   return rcd;
 } /* end nco_inq_varnatts */

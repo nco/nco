@@ -633,7 +633,7 @@ gcc/g++:
 export PVM_ARCH=`~/nco/bld/pvmgetarch`
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${PVM_ARCH} ./configure --disable-regex --disable-shared --prefix=${HOME} --bindir=${HOME}/bin/${PVM_ARCH} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${PVM_ARCH} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib ./configure --disable-regex --disable-shared --prefix=${HOME} --bindir=${HOME}/bin --datadir=${HOME}/nco/data --libdir=${HOME}/lib --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
