@@ -121,7 +121,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.1-alpha8
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 28 June 2015
+@set update-date 30 June 2015
 @set update-month June 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -14256,6 +14256,10 @@ The @var{att_dsc} fields are in the following order:@*
 @item att_nm
 Attribute name. 
 Example: @code{units}
+As of @acronym{NCO} 4.5.1 (July, 2015), @command{ncatted} accepts 
+regular expressions (@pxref{Subsetting Files}) for attribute names
+(it has ``always'' accepted regular expressions for variable names). 
+Regular expressions will select all matching attribute names. 
 @item var_nm
 Variable name. 
 Example: @code{pressure}, @code{'^H2O'}.
@@ -14264,7 +14268,7 @@ Example: @code{pressure}, @code{'^H2O'}.
 @cindex pattern matching
 @cindex wildcards
 Regular expressions (@pxref{Subsetting Files}) are accepted and will 
-select any matching variable (@emph{not} attribute) names.
+select all matching variable names. 
 The names @code{global} and @code{group} have special meaning.
 @item mode
 Edit mode abbreviation. 
@@ -14286,8 +14290,8 @@ appearance.
 
 The value of @var{att_nm} is the name of the attribute to edit. 
 This meaning of this should be clear to all @command{ncatted} users.
-Recall, as mentioned above, that @var{var_nm} (but not @var{att_nm}) may
-be specified as a regular expression. 
+Both @var{att_nm}) and @var{var_nm} may be specified as regular
+expressions.
 If @var{att_nm} is omitted (i.e., left blank) and @dfn{Delete} mode is 
 selected, then all attributes associated with the specified variable
 will be deleted. 
@@ -14621,12 +14625,15 @@ ncatted -a quanta,energy,o,s,'010,101,111,121' in.nc
 @cindex wildcards
 As of @acronym{NCO} 3.9.6 (January, 2009), @command{ncatted} accepts
 @dfn{extended regular expressions} as arguments for variable names,
-though not for attribute names.
-Create @code{isotope} attributes for all variables containing @samp{H2O} 
-in their names.
+and, since @acronym{NCO} 4.5.1 (July, 2015), for attribute names.
 @example
 ncatted -a isotope,'^H2O*',c,s,'18' in.nc
+ncatted -a '.?_att$','^H2O*',d,s,'18' in.nc
 @end example
+The first example creates @code{isotope} attributes for all variables
+containing @samp{H2O} in their names.
+The second delets all attributes whose names end in @code{_att} from all
+variables that contain @samp{H2O} in their names.
 See @ref{Subsetting Files} for more details.
 
 @cindex groups
