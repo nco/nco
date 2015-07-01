@@ -284,6 +284,18 @@ print "\n";
 	$tst_cmd[6]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
+
+	$dsc_sng="Regridding FSNT 1D->1D to test conservation (uses SSH/scp to givre.ess.uci.edu)";
+	$tst_cmd[0]="scp givre.ess.uci.edu:/data/zender/maps/map_ne30np4_to_ne120np4_aave.20150603.nc .";
+#	$tst_cmd[0]="scp givre.ess.uci.edu:/data/zender/maps/map_ne30np4_to_ne30np4_aave.20150603.nc .";
+	$tst_cmd[1]="scp givre.ess.uci.edu:/data/zender/ne30/rgr/ne30_tst.nc .";
+	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_ne120np4_aave.20150603.nc ne30_tst.nc %tmp_fl_00%";
+	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
+	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
+	$tst_cmd[5]="FSNT = 244.124 W/m2";
+	$tst_cmd[6]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
     } # !CSZ
     
     if($dodap eq "FALSE"){
