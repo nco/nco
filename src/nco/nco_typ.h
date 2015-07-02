@@ -425,7 +425,7 @@ typedef unsigned long long nco_uint64; /* [typ] NC_UINT64 */
 
 /* NC_STRING handling */
 #ifndef NCO_STRING
-/* 20070514: netcdf4-beta1 only supports nc_put_var_string() and nc_get_var_string() */
+/* 20070514: netcdf4-alpha9 only supports nc_put_var_string() and nc_get_var_string() */
 /* Only valid option is NCO_TYP_STRING
    Default is NCO_TYP_STRING, which treats NC_STRING as C-type char */
 # define NCO_STRING NCO_TYP_STRING
