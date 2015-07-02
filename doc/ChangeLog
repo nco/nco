@@ -1,5 +1,9 @@
 2015-07-01  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.1-alpha8 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-alpha8 final changes'
+	git tag -a 4.5.1-alpha8 -m 'Version 4.5.1-alpha8 tag: Regridder	workaround for Tempest 1D grids';git push --tags
+
 	* Diagnose problem (incorrect Tempest dst/src_grid_dims variable) and implement workaround
 
 	* Change ncol to col in code for symmetry with lat/lon
