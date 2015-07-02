@@ -11352,7 +11352,7 @@ operands are True/False.
 # Simple example
 if(time>0)
   print("All values of time are greater than zero\n");
-else if( time<0)
+else if(time<0)
   print("All values of time are less than zero\n");   
 else {
   time_max=time.max();

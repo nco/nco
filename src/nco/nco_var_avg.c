@@ -322,8 +322,11 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
        in same order as blocks' average values will appear in output buffer. 
        Averaging routines can take advantage of this by casting avg_val to 
        two dimensional variable and averaging over inner dimension. 
-       nco_var_avg_rdc_*() sets tally array */
-    if(var->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
+       nco_var_avg_rdc_*() sets tally array
+       NCO operations on coordinate variables are restricted to averaging
+       ncap2 is an exception because presumably the user knows what he/she is doing */
+    nco_op_typ_lcl=nco_op_typ;
+    if(nco_prg_id_get() != ncap && var->is_crd_var) nco_op_typ_lcl=nco_op_avg;
     switch(nco_op_typ_lcl){
     case nco_op_mabs:
     case nco_op_max:
