@@ -79,7 +79,7 @@ public:
 //Aggregate Functions /***************************************/
 class agg_cls: public vtl_cls {
 private:
-  enum{ PAVG ,PAVGSQR ,PMAX ,PMIN ,PRMS,
+  enum{ PAVG ,PAVGSQR , PMIBS, PMABS, PMEBS, PMAX ,PMIN ,PRMS,
 	PRMSSDN, PSQRAVG, PTTL};
   bool _flg_dbg;
 public:

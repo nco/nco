@@ -1,5 +1,7 @@
 2015-07-01  Charlie Zender  <zender@uci.edu>
 
+	* Add mibs/mabs/mebs to ncap2
+
 	* NCO 4.5.1-beta1 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.1-beta1 final changes'
 	git tag -a 4.5.1-beta1 -m 'Version 4.5.1-beta1 tag: ncap2 fix for min/max on cordinates';git push --tags

@@ -222,7 +222,7 @@ print "\n";
 
 # ncap2 -O -v -s 'lat_min=min(lat)' ~/nco/data/in.nc ~/foo.nc
 # ncks -C -H -v lat_min -s '%g' ~/foo.nc
-    $dsc_sng="min/max";
+    $dsc_sng="Verify non-averaging functions min/max on coordinate variables";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'lat_min=min(lat)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v lat_min -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="-90";

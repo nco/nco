@@ -66,6 +66,9 @@
       fmc_vtr.push_back( fmc_cls("avg",this,(int)PAVG));
       fmc_vtr.push_back( fmc_cls("avgsqr",this,(int)PAVGSQR));
       fmc_vtr.push_back( fmc_cls("max",this,(int)PMAX));
+      fmc_vtr.push_back( fmc_cls("mibs",this,(int)PMIBS));
+      fmc_vtr.push_back( fmc_cls("mabs",this,(int)PMABS));
+      fmc_vtr.push_back( fmc_cls("mebs",this,(int)PMEBS));
       fmc_vtr.push_back( fmc_cls("min",this,(int)PMIN));
       fmc_vtr.push_back( fmc_cls("rms",this,(int)PRMS));
       fmc_vtr.push_back( fmc_cls("rmssdn",this,(int)PRMSSDN));
@@ -248,6 +251,18 @@
                     var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_avgsqr,False,&ddra_info);
                     // Normalize
                     (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
+                    break;
+                    
+                case PMIBS:
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_mibs,False,&ddra_info);
+                    break;
+                    
+                case PMABS:
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_mabs,False,&ddra_info);
+                    break;
+                    
+                case PMEBS:
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_mebs,False,&ddra_info);
                     break;
                     
                 case PMAX:
@@ -3123,7 +3138,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
                   Some classes deal with a whole family of FUNCS others only one or two
                   The index's are defined in an enum. 
                   so for (basic)-    bsc_cls we have:   enum {PSIZE, PTYPE, PNDIMS, PEXISTS };
-                  and for(aggregate) agg_cls we have:   enum {PAVG ,PAVGSQR ,PMAX ,PMIN ,PRMS, PRMSSDN, PSQRAVG, PTTL} 
+                  and for(aggregate) agg_cls we have:   enum {PAVG ,PAVGSQR ,PMIBS, PMABS, PMEBS, PMAX ,PMIN ,PRMS, PRMSSDN, PSQRAVG, PTTL} 
 
   This vector 'fmc_vtr' is used by the lexer to identify FUNC names and to distingush them from var names 
   so for example:
