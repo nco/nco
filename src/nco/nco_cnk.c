@@ -1149,6 +1149,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     dmn_nbr_lft=dmn_idx_1st_rec+1;
     cnk_sz_lft_dbl=pow(cnk_sz_prd_lft,1.0/dmn_nbr_lft);
     cnk_sz_lft=(size_t)cnk_sz_lft_dbl;
+    if(cnk_sz_lft <= 0) cnk_sz_lft=1L;
     /* Assign remaining chunkspace equally amongst lefter dimensions */
     for(dmn_idx=0;dmn_idx<=dmn_idx_1st_rec;dmn_idx++) cnk_sz[dmn_idx]=cnk_sz_lft;
 

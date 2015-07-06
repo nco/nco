@@ -1,5 +1,7 @@
 2015-07-06  Charlie Zender  <zender@uci.edu>
 
+	* Round-up to one rather than round-down to zero in cnk_map=lfp
+
 	* Fix history_of_appended_files attribute
 
 2015-07-01  Charlie Zender  <zender@uci.edu>
