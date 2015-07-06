@@ -1228,6 +1228,7 @@ For RPM-based systems (substitute <tt>yum</tt> for <tt>dnf</tt> on older Fedora 
 <dt><a name="bld_macports"></a></dt> <!-- http://nco.sf.net#bld_macports -->
 For Mac OS X with MacPorts:
 <tt>
+<dt>sudo port install antlr # Antlr</dt>
 <dt>sudo port install libdap # DAP</dt>
 <dt>sudo port install gsl # GSL</dt>
 <dt>sudo port install netcdf # netCDF</dt>

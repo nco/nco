@@ -928,7 +928,7 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
     att_sz=strlen(hst_sng_fmt)+strlen(time_stamp_sng)+strlen(fl_in)+strlen(att_nm_hst);
     hst_sng=(char *)nco_malloc((att_sz+1L)*sizeof(char));
     hst_sng[att_sz]='\0';
-    (void)sprintf(hst_sng,hst_sng_fmt,time_stamp_sng,fl_in,att_nm_hst);
+    (void)sprintf(hst_sng,hst_sng_fmt,fl_in,att_nm_hst);
   }else{
     /* Input file contains Global attribute "[hH]istory" */
     char hst_sng_fmt[]="Appended file %s had following \"%s\" attribute:\n%s\n";
