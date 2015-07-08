@@ -574,32 +574,32 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int dst_grd_crn_lon_id; /* [id] Destination grid corner longitudes variable ID */
   int dst_grd_ctr_lat_id; /* [id] Destination grid center latitudes  variable ID */
   int dst_grd_ctr_lon_id; /* [id] Destination grid center longitudes variable ID */
+  int frc_dst_id; /* [id] Fraction variable ID */
+  int msk_dst_id; /* [id] Mask variable ID */
   int row_dst_adr_id; /* [id] Destination address (row) variable ID */
   int wgt_raw_id; /* [id] Remap matrix variable ID */
 
   switch(nco_rgr_mpf_typ){
     /* Obtain fields whose name depends on mapfile type */
   case nco_rgr_mpf_SCRIP:
-    //    rcd+=nco_inq_varid(in_id,"dst_grid_frac",&frc_dst_id); /* ESMF: frac_b */
-    //    rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_area",&area_dst_id); /* ESMF: area_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_center_lon",&dst_grd_ctr_lon_id); /* ESMF: xc_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_center_lat",&dst_grd_ctr_lat_id); /* ESMF: yc_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_corner_lon",&dst_grd_crn_lon_id); /* ESMF: xv_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_corner_lat",&dst_grd_crn_lat_id); /* ESMF: yv_b */
+    rcd+=nco_inq_varid(in_id,"dst_grid_frac",&frc_dst_id); /* ESMF: frac_b */
     rcd+=nco_inq_varid(in_id,"dst_address",&row_dst_adr_id); /* ESMF: row */
     rcd+=nco_inq_varid(in_id,"src_address",&col_src_adr_id); /* ESMF: col */
     rcd+=nco_inq_varid(in_id,"remap_matrix",&wgt_raw_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
     break;
   case nco_rgr_mpf_ESMF:
   case nco_rgr_mpf_Tempest:
-    //    rcd+=nco_inq_varid(in_id,"frac_b",&frc_dst_id); /* SCRIP: dst_grid_frac */
-    //    rcd+=nco_inq_varid(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
     rcd+=nco_inq_varid(in_id,"area_b",&area_dst_id); /* SCRIP: dst_grid_area */
     rcd+=nco_inq_varid(in_id,"xc_b",&dst_grd_ctr_lon_id); /* SCRIP: dst_grid_center_lon */
     rcd+=nco_inq_varid(in_id,"yc_b",&dst_grd_ctr_lat_id); /* SCRIP: dst_grid_center_lat */
     rcd+=nco_inq_varid(in_id,"xv_b",&dst_grd_crn_lon_id); /* SCRIP: dst_grid_corner_lon */
     rcd+=nco_inq_varid(in_id,"yv_b",&dst_grd_crn_lat_id); /* SCRIP: dst_grid_corner_lat */
+    rcd+=nco_inq_varid(in_id,"frac_b",&frc_dst_id); /* SCRIP: dst_grid_frac */
     rcd+=nco_inq_varid(in_id,"row",&row_dst_adr_id); /* SCRIP: dst_address */
     rcd+=nco_inq_varid(in_id,"col",&col_src_adr_id); /* SCRIP: src_address */
     rcd+=nco_inq_varid(in_id,"S",&wgt_raw_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
@@ -613,6 +613,14 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     return NCO_ERR;
     break;
   } /* end switch */
+  /* Obtain fields whose presence depends on mapfile type */
+  if(nco_rgr_mpf_typ == nco_rgr_mpf_ESMF){
+    rcd+=nco_inq_varid(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
+  }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
+    rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
+  }else{ /* !SCRIP */
+    msk_dst_id=NC_MIN_INT;
+  } /* !Tempest */
   /* Obtain fields whose name is independent of mapfile type */
   rcd+=nco_inq_varid(in_id,"src_grid_dims",&dmn_sz_in_int_id);
   rcd+=nco_inq_varid(in_id,"dst_grid_dims",&dmn_sz_out_int_id);
@@ -643,15 +651,17 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_2D; /* [nbr] Maximum rank of grid variables */
   double *area_out; /* [sr] Area of destination grid */
-  double *lon_ctr_out=NULL_CEWI; /* [dgr] Longitude centers of rectangular destination grid */
-  double *lat_ctr_out=NULL_CEWI; /* [dgr] Latitude  centers of rectangular destination grid */
-  double *lat_wgt_out=NULL; /* [dgr] Latitude  weights of rectangular destination grid */
-  double *lon_crn_out=NULL; /* [dgr] Longitude corners of rectangular destination grid */
-  double *lat_crn_out=NULL; /* [dgr] Latitude  corners of rectangular destination grid */
-  double *lon_ntf_out=NULL; /* [dgr] Longitude interfaces of rectangular destination grid */
-  double *lat_ntf_out=NULL; /* [dgr] Latitude  interfaces of rectangular destination grid */
-  double *lon_bnd_out=NULL_CEWI; /* [dgr] Longitude boundaries of rectangular destination grid */
+  double *frc_out; /* [frc] Fraction of destination grid */
   double *lat_bnd_out=NULL_CEWI; /* [dgr] Latitude  boundaries of rectangular destination grid */
+  double *lat_crn_out=NULL; /* [dgr] Latitude  corners of rectangular destination grid */
+  double *lat_ctr_out=NULL_CEWI; /* [dgr] Latitude  centers of rectangular destination grid */
+  double *lat_ntf_out=NULL; /* [dgr] Latitude  interfaces of rectangular destination grid */
+  double *lat_wgt_out=NULL; /* [dgr] Latitude  weights of rectangular destination grid */
+  double *lon_bnd_out=NULL_CEWI; /* [dgr] Longitude boundaries of rectangular destination grid */
+  double *lon_crn_out=NULL; /* [dgr] Longitude corners of rectangular destination grid */
+  double *lon_ctr_out=NULL_CEWI; /* [dgr] Longitude centers of rectangular destination grid */
+  double *lon_ntf_out=NULL; /* [dgr] Longitude interfaces of rectangular destination grid */
+  double *msk_out; /* [flg] Mask of destination grid */
   double *wgt_raw; /* [frc] Remapping weights */
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
@@ -677,7 +687,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   rcd=nco_get_vara(in_id,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
 
   if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
-    /* Double-check we are not dealing with fault Tempest grid sizes */
+    /* Check-for and workaround faulty Tempest grid sizes */
     if(flg_grd_in_1D && (rgr_map.src_grid_size != dmn_sz_in_int[0])){
       (void)fprintf(stdout,"%s: WARNING %s input grid dimension sizes disagree rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable in Tempest mapfile. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
       dmn_sz_in_int[0]=rgr_map.src_grid_size;
@@ -726,7 +736,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Allocate space for and obtain coordinates and weights */
   nc_type crd_typ_out=NC_DOUBLE;
   area_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
-
+  frc_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
+  msk_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
+  
   if(flg_grd_out_1D){
     lon_ctr_out=(double *)nco_malloc(col_nbr_out*nco_typ_lng(crd_typ_out));
     lat_ctr_out=(double *)nco_malloc(col_nbr_out*nco_typ_lng(crd_typ_out));
@@ -1802,8 +1814,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Free memory allocated for grid reading/writing */
   if(area_out) area_out=(double *)nco_free(area_out);
   if(col_src_adr) col_src_adr=(int *)nco_free(col_src_adr);
-  if(dmn_sz_out_int) dmn_sz_out_int=(int *)nco_free(dmn_sz_out_int);
   if(dmn_sz_in_int) dmn_sz_in_int=(int *)nco_free(dmn_sz_in_int);
+  if(dmn_sz_out_int) dmn_sz_out_int=(int *)nco_free(dmn_sz_out_int);
+  if(frc_out) frc_out=(double *)nco_free(frc_out);
   if(lat_bnd_out) lat_bnd_out=(double *)nco_free(lat_bnd_out);
   if(lat_crn_out) lat_crn_out=(double *)nco_free(lat_crn_out);
   if(lat_ctr_out) lat_ctr_out=(double *)nco_free(lat_ctr_out);
@@ -1813,6 +1826,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(lon_crn_out) lon_crn_out=(double *)nco_free(lon_crn_out);
   if(lon_ctr_out) lon_ctr_out=(double *)nco_free(lon_ctr_out);
   if(lon_ntf_out) lon_ntf_out=(double *)nco_free(lon_ntf_out);
+  if(msk_out) msk_out=(double *)nco_free(msk_out);
   if(row_dst_adr) row_dst_adr=(int *)nco_free(row_dst_adr);
   if(wgt_raw) wgt_raw=(double *)nco_free(wgt_raw);
   
