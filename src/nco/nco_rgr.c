@@ -580,8 +580,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   switch(nco_rgr_mpf_typ){
     /* Obtain fields whose name depends on mapfile type */
   case nco_rgr_mpf_SCRIP:
-    //    rcd+=nco_inq_varid(in_id,"dst_grid_frac",&frac_dst_id); /* ESMF: */
-    //    rcd+=nco_inq_varid(in_id,"dst_grid_imask",&imask_dst_id); /* ESMF: */
+    //    rcd+=nco_inq_varid(in_id,"dst_grid_frac",&frc_dst_id); /* ESMF: frac_b */
+    //    rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_area",&area_dst_id); /* ESMF: area_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_center_lon",&dst_grd_ctr_lon_id); /* ESMF: xc_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_center_lat",&dst_grd_ctr_lat_id); /* ESMF: yc_b */
@@ -593,6 +593,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     break;
   case nco_rgr_mpf_ESMF:
   case nco_rgr_mpf_Tempest:
+    //    rcd+=nco_inq_varid(in_id,"frac_b",&frc_dst_id); /* SCRIP: dst_grid_frac */
+    //    rcd+=nco_inq_varid(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
     rcd+=nco_inq_varid(in_id,"area_b",&area_dst_id); /* SCRIP: dst_grid_area */
     rcd+=nco_inq_varid(in_id,"xc_b",&dst_grd_ctr_lon_id); /* SCRIP: dst_grid_center_lon */
     rcd+=nco_inq_varid(in_id,"yc_b",&dst_grd_ctr_lat_id); /* SCRIP: dst_grid_center_lat */
