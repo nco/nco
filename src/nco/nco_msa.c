@@ -1387,59 +1387,59 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
  lmt_msa_sct ***lmt_msa)            /* O [sct] MSA array for dimensions */
 {
   /* Purpose: Deep copy MSA structs from table to local array used in print or write */
-
+  
   /* Loop dimensions for object (variable)  */
-  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
-
+  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
+    
     (*lmt_msa)[dmn_idx_var]=(lmt_msa_sct *)nco_malloc(sizeof(lmt_msa_sct));
-
+    
     if(var_trv->var_dmn[dmn_idx_var].is_crd_var == True){
       /* This dimension has a coordinate variable */
-
+      
       /* Get number of limits */
       int lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.lmt_dmn_nbr;
-
+      
       /* Initialize to NULL the limit array */
       (*lmt_msa)[dmn_idx_var]->lmt_dmn=NULL;
-
+      
       /* If limits, make space for them */
       if(lmt_dmn_nbr) (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
-
+      
       /* And copy the structure made while building limits  */
       (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].crd->nm);
-
+      
       (*lmt_msa)[dmn_idx_var]->NON_HYP_DMN=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.NON_HYP_DMN;
       (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.dmn_cnt;
       (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn[dmn_idx_var].crd->sz;
       (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.lmt_dmn_nbr;
       (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.MSA_USR_RDR;
       (*lmt_msa)[dmn_idx_var]->WRP=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.WRP;
-
+      
       /* Loop needed limits */
       for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
-
+	
         /* Alloc new limit */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-
+	
         /* Initialize NULL/invalid */
         (void)nco_lmt_init((*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
-
+	
         /* Deep copy from table to local array */ 
         (void)nco_lmt_cpy(var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.lmt_dmn[lmt_idx],(*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
       } /* !lmt_idx */
-
+      
       if((*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr == 0){
 	/* No limits so ake a limit to read all */
         if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
-
+	
         /* Allocate one dummy limit */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=1;
         (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-
+	
         /* Initialize NULL/invalid */
         (void)nco_lmt_init((*lmt_msa)[dmn_idx_var]->lmt_dmn[0]);
-
+	
         /* And set start,count,stride to read everything ...major success */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srt=0L;
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->cnt=(*lmt_msa)[dmn_idx_var]->dmn_sz_org;
@@ -1447,36 +1447,36 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       } /* !no limites */
     }else if(var_trv->var_dmn[dmn_idx_var].is_crd_var == False){
       /* Dimension does not have a coordinate variable, it must have a unique dimension pointer */
-
+      
       /* Get number of limits */
       int lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.lmt_dmn_nbr;
-
+      
       /* If limits, make space for them */
       if(lmt_dmn_nbr) (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
-
+      
       /* And copy the structure made while building limits  */
       (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].ncd->nm);
-
+      
       (*lmt_msa)[dmn_idx_var]->NON_HYP_DMN=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.NON_HYP_DMN;
       (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.dmn_cnt;
       (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn[dmn_idx_var].ncd->sz;
       (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.lmt_dmn_nbr;
       (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.MSA_USR_RDR;
       (*lmt_msa)[dmn_idx_var]->WRP=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.WRP;
-
+      
       /* Loop needed limits */
       for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
-
+	
         /* Alloc new limit */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-
+	
         /* Initialize NULL/invalid */
         (void)nco_lmt_init((*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
-
+	
         /* Deep copy from table to local array */ 
         (void)nco_lmt_cpy(var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.lmt_dmn[lmt_idx],(*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
       } /* !lmt_idx */
-
+      
       if((*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr == 0){
 	/* No limits so ake a limit to read all */
         if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
@@ -1484,10 +1484,10 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
         (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=1;
         (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-
+	
         /* Initialize NULL/invalid */
         (void)nco_lmt_init((*lmt_msa)[dmn_idx_var]->lmt_dmn[0]);
-
+	
         /* And set start,count,stride to read everything ...major success */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->srt=0L;
         (*lmt_msa)[dmn_idx_var]->lmt_dmn[0]->cnt=(*lmt_msa)[dmn_idx_var]->dmn_sz_org;
@@ -1497,9 +1497,9 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       /* This dimension must have either a coordinate or a dimension pointer */
       assert(False);
     } /* end else */
-
-  } /* !dmn_idx_var
-
+    
+  } /* !dmn_idx_var */
+       
 } /* nco_cpy_msa_lmt() */
 
 void
@@ -1509,49 +1509,49 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_msa_var_get_trv()"; /* [sng] Function name  */
-
+  
   int nbr_dim;
   int grp_id;
-
+  
   lmt_msa_sct **lmt_msa;
   lmt_sct **lmt;
-
+  
   nc_type mss_typ_tmp=NC_NAT; /* CEWI */
-
+  
   trv_sct *var_trv;
-
+  
   /* Obtain variable GTT object using full variable name */
   var_trv=trv_tbl_var_nm_fll(var_in->nm_fll,trv_tbl);
   assert(var_trv);
-
+  
   /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
-
+  
   nbr_dim=var_in->nbr_dim;	
   var_in->nc_id=grp_id; 
-
+  
   assert(nbr_dim == var_trv->nbr_dmn);
   assert(!strcmp(var_in->nm_fll,var_trv->nm_fll));
-
+  
   /* Scalars */
   if(nbr_dim == 0){
     var_in->val.vp=nco_malloc(nco_typ_lng(var_in->typ_dsk));
     (void)nco_get_var1(var_in->nc_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
     goto do_upk;
   } /* end if scalar */
-
-  /* Allocate local MSA */
+  
+    /* Allocate local MSA */
   lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
   lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
-
+  
   /* Copy from table to local MSA */
   (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
-
+  
   if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s reports reading %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
       (void)fprintf(stdout,"%s: DEBUG %s reports dimension %s has dmn_cnt = %ld",nco_prg_nm_get(),fnc_nm,lmt_msa[idx_dmn]->dmn_nm,lmt_msa[idx_dmn]->dmn_cnt);
-      for(int idx_lmt=0;idx_lmt<lmt_msa[idx_dmn]->lmt_dmn_nbr;idx_lmt++) (void)fprintf(stdout," : %ld (%ld->%ld)",lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->cnt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->srt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->end);
+	for(int idx_lmt=0;idx_lmt<lmt_msa[idx_dmn]->lmt_dmn_nbr;idx_lmt++) (void)fprintf(stdout," : %ld (%ld->%ld)",lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->cnt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->srt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->end);
       (void)fprintf(stdout,"\n");
     } /* end loop over dimensions */
   } /* endif dbg */
