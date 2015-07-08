@@ -1,6 +1,10 @@
 2015-07-07  Charlie Zender  <zender@uci.edu>
 
-	* Fix weighting with ncra --wgt=nm
+	* NCO 4.5.1-beta2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.1-beta2 final changes'
+	git tag -a 4.5.1-beta2 -m 'Version 4.5.1-beta2 tag: ncra --wgt=wgt_nm works';git push --tags
+
+	* Fix weighting with ncra --wgt=wgt_nm, allow for full pathnames in wgt_nm
 
 2015-07-06  Charlie Zender  <zender@uci.edu>
 
