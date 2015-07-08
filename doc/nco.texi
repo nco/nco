@@ -7677,9 +7677,10 @@ The Unidata blog
 @uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/compression_by_bit_shaving,  
 here} also shows how to compress @acronym{IEEE} floating point data by
 zeroing insignificant bits.
-The author, John Caron, calls the technique ``bit-shaving''.
+The author, John Caron, writes that the technique has been called
+``bit-shaving''.
 When combined with our bias-elimination procedure that rounds-up to one,
-a more suitable terminology might be ``bit-barbering''.}, respectively.
+a more suitable terminology might be ``bit-grooming''.}, respectively.
 
 It is safe to attempt @acronym{PPC} on input that has already been
 rounded. 

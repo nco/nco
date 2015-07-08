@@ -7,9 +7,6 @@
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
-/* Usage:
-   ncks -4 -O -C -v ppc_dbl --ppc /ppc_dbl=3 ~/nco/data/in.nc ~/foo.nc */
-
 #include "nco_sld.h" /* Swath-Like Data */
 
 int /* O [rcd] Return code */
@@ -238,7 +235,7 @@ int /* O [enm] Return code */
 nco_rgr_esmf /* [fnc] Regrid using ESMF library */
 (rgr_sct * const rgr) /* I/O [sct] Regridding structure */
 {
-  /* Purpose: Regrid fields
+  /* Purpose: Regrid fields using ESMF library (actually ESMC interface to ESMF library)
      ESMC is C-interface to ESMF documented at
      http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMC_crefdoc/ESMC_crefdoc.html
      ESMF Developer's Guide
@@ -249,7 +246,10 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
 
      ESMF C-interface examples:
      ${DATA}/esmf/src/Infrastructure/Field/tests/ESMC_FieldRegridUTest.C
-     ${DATA}/esmf/src/Infrastructure/Field/tests/ESMC_FieldRegridCsrvUTest.C */
+     ${DATA}/esmf/src/Infrastructure/Field/tests/ESMC_FieldRegridCsrvUTest.C
+
+     Usage:
+     ncks -4 -O -C -v ppc_dbl --ppc /ppc_dbl=3 ~/nco/data/in.nc ~/foo.nc */
   
   const char fnc_nm[]="nco_rgr_esmf()"; /* [sng] Function name */
   const char fl_nm_esmf_log[]="nco_rgr_log_foo.txt"; /* [sng] Log file for ESMF routines */

@@ -124,7 +124,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
      T42->T42 from scratch:
      ncks -O --rgr=Y --rgr_grd_src=${DATA}/scrip/grids/remap_grid_T42.nc --rgr_grd_dst=${DATA}/scrip/grids/remap_grid_T42.nc --rgr_out=${DATA}/rgr/rgr_out.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc
      T42->POP43 from existing weights:
-     ncks -O --rgr=Y --rgr_map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc --rgr_out=${DATA}/rgr/rgr_out.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
+     ncks -O --map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_rgr_ini()";
   
@@ -320,13 +320,15 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 {
   /* Purpose: Regrid fields using external weights (i.e., a mapping file)
 
-     Examine SCRIP map-file:
-     ncks --cdl -m ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc | m
+     Examine ESMF, SCRIP, Tempest map-files:
+     ncks --cdl -M -m ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc | m
+     ncks --cdl -M -m ${DATA}/maps/map_t42_to_fv129x256_aave.20150621.nc | m
+     ncks --cdl -M -m ${DATA}/maps/map_ne30np4_to_ne120np4_tps.20150618.nc | m
 
-     Test SCRIP map-file:
-     ncks -D 6 -O --rgr=Y --rgr_map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc
-     Test ESMF map-file:
-     ncks -D 6 -O --rgr=Y --rgr_map=${DATA}/rgr/map_ne120np4_to_181x360_aave.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc
+     Test ESMF, SCRIP, Tempest map-files:
+     ncks -D 5 -O --map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc
+     ncks -D 5 -O --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150621.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc
+     ncks -D 5 -O --map=${DATA}/maps/map_ne30np4_to_ne120np4_tps.20150618.nc ${DATA}/ne30/rgr/ne30_1D.nc ~/foo.nc
  
      Conventions:
      grid_size: Number of grid cells (product of lat*lon)
@@ -578,6 +580,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   switch(nco_rgr_mpf_typ){
     /* Obtain fields whose name depends on mapfile type */
   case nco_rgr_mpf_SCRIP:
+    //    rcd+=nco_inq_varid(in_id,"dst_grid_frac",&frac_dst_id); /* ESMF: */
+    //    rcd+=nco_inq_varid(in_id,"dst_grid_imask",&imask_dst_id); /* ESMF: */
     rcd+=nco_inq_varid(in_id,"dst_grid_area",&area_dst_id); /* ESMF: area_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_center_lon",&dst_grd_ctr_lon_id); /* ESMF: xc_b */
     rcd+=nco_inq_varid(in_id,"dst_grid_center_lat",&dst_grd_ctr_lat_id); /* ESMF: yc_b */
