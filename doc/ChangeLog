@@ -1,3 +1,7 @@
+2015-07-07  Charlie Zender  <zender@uci.edu>
+
+	* Fix weighting with ncra --wgt=nm
+
 2015-07-06  Charlie Zender  <zender@uci.edu>
 
 	* Round-up to one rather than round-down to zero in cnk_map=lfp

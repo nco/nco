@@ -4059,11 +4059,25 @@ if(0){
 # Test per-file weighting
 # ncra -O -D 6 -w 28,29,30 -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
 # ncks -C -H -s '%g, ' -v two_dmn_rec_var ~/foo.nc
-    $dsc_sng="Test per-file weighting with --wgt";
+    $dsc_sng="Test per-file weighting with --wgt 28,29,30";
     $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -w 28,29,30 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g, ' -v two_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="1, 2.45, 3,";
     $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
+# ncra #35
+# Test per-record weighting
+# ncks -O -C -d time,,1 -v one_dmn_rec_wgt,one_dmn_rec_var_flt -p ${HOME}/nco/data h0001.nc ~/foo.nc
+# ncra -O -D 2 -w one_dmn_rec_wgt -v one_dmn_rec_var_flt ~/foo.nc ~/foo2.nc
+# ncks -C -H -s '%g, ' -v one_dmn_rec_var_flt ~/foo2.nc
+    $dsc_sng="Test per-record weighting with --wgt=one_dmn_rec_wgt";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,,1 -v one_dmn_rec_wgt,one_dmn_rec_var_flt $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -h -O $fl_fmt $nco_D_flg -w one_dmn_rec_wgt -v one_dmn_rec_var_flt %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -C -H -s '%g' -v one_dmn_rec_var_flt %tmp_fl_01%";
+    $tst_cmd[3]="1.33333";
+    $tst_cmd[4]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 

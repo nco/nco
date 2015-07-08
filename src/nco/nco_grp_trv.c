@@ -306,7 +306,9 @@ trv_tbl_var_nm_fll                    /* [fnc] Return variable object from full 
   if(trv_obj && trv_obj->nco_typ == nco_obj_typ_var) return trv_obj; else return NULL;
 #else /* !NCO_HSH_TRV_OBJ */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll)) return &trv_tbl->lst[idx_tbl];
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var)
+      if(!strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll))
+	return &trv_tbl->lst[idx_tbl];
 
   return NULL;
 #endif /* !NCO_HSH_TRV_OBJ */

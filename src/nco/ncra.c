@@ -162,7 +162,7 @@ main(int argc,char **argv)
   dmn_sct **dmn_out=NULL; /* CEWI */
 
   double *wgt_arr=NULL; /* Option w */
-  double wgt_avg_scl=0.0; /* [frc] Average of weights */
+  double wgt_avg_scl=0.0; /* [frc] Scalar version of wgt_avg */
 
   extern char *optarg;
   extern int optind;
@@ -277,9 +277,9 @@ main(int argc,char **argv)
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
-  trv_sct *var_trv;        /* [sct] Variable GTT object */
+  trv_sct *var_trv; /* [sct] Variable GTT object */
 
-  trv_tbl_sct *trv_tbl;    /* [lst] Traversal table */
+  trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
 
   var_sct **var;
   var_sct **var_fix;
@@ -287,9 +287,15 @@ main(int argc,char **argv)
   var_sct **var_out=NULL_CEWI;
   var_sct **var_prc;
   var_sct **var_prc_out;
-  var_sct *wgt=NULL;
-  var_sct *wgt_out=NULL;
-  var_sct *wgt_avg=NULL;
+  var_sct *wgt=NULL; /* [sct] Raw weight on disk in input file */
+  var_sct *wgt_out=NULL; /* [sct] Copy of wgt, 
+			    Tally and val members malloc'd & initialized
+			    IDs updated each new file by nco_var_mtd_refresh() in file loop
+			    Current record value obtained by nco_msa_var_get_rec_trv() in record loop
+			    One copy of wgt_out used for all variables */
+  var_sct *wgt_avg=NULL; /* [sct] Copy of wgt_out created to mimic var_prc_out processing 
+			    Holds running total and tally of weight
+			    Acts as op2 for wgt_out averaging just before var_prc[nbr_var_prc-1] */
 
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
@@ -633,7 +639,7 @@ main(int argc,char **argv)
       xtr_nbr=var_lst_in_nbr;
       break;
     case 'w': /* Per-file and per-record weights */
-      if(isalpha(optarg[0])){
+      if(isalpha(optarg[0]) || optarg[0] == '/'){
 	wgt_nm=(char *)strdup(optarg);
 	(void)fprintf(stderr,"%s: WARNING The \"-w weight_name\" feature is still buggy and this switch is intended only for developers\n",nco_prg_nm);
 	//	(void)fprintf(stderr,"%s: WARNING The \"-w weight_name\" feature is still buggy and this option is intended only for developers. The \"-w weight_array\" option works fine, e.g., \"-w 31,31,28\". If you are very interested in the weight_name functionality, start a thread on SourceForge and we will update the status of that option there.\n",nco_prg_nm);
@@ -859,15 +865,20 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
-    /* Find weighting variable that matches current variable */
+    /* Find weight variable that matches current variable */
     wgt=nco_var_get_wgt_trv(in_id,wgt_nm,var_prc[0],trv_tbl);
+    if(!wgt) (void)fprintf(stdout,"%s: ERROR Unable to find weight variable \"%s\"\n",nco_prg_nm_get(),wgt_nm);
+    assert(wgt);
+    assert(wgt->nbr_dim < 2);
+    /* Change wgt from a normal full variable to one that only holds one record at a time
+       This differs from ncwa wgt treatment
+       20150708: nco_var_dpl() calls below generate valgrind invalid read errors. Not sure why. */
+    wgt->val.vp=(void *)nco_realloc(wgt->val.vp,wgt->sz_rec*nco_typ_lng(wgt->type));
+    wgt->tally=(long *)nco_realloc(wgt->tally,wgt->sz_rec*sizeof(long));
+    (void)nco_var_zero(wgt->type,wgt->sz_rec,wgt->val);
+    (void)nco_zero_long(wgt->sz_rec,wgt->tally);
     wgt_out=nco_var_dpl(wgt);
-    wgt_out->tally=wgt->tally=(long *)nco_malloc(wgt_out->sz_rec*sizeof(long));
-    wgt_out->val.vp=(void *)nco_malloc(wgt_out->sz_rec*nco_typ_lng(wgt_out->type));
-    (void)nco_zero_long(wgt_out->sz_rec,wgt_out->tally);
-    (void)nco_var_zero(wgt_out->type,wgt_out->sz_rec,wgt_out->val);
-    if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"wgt_nm = %s, wgt_out->nm = %s\n",wgt_nm,wgt_out->nm_fll);
-    assert(wgt_out->nbr_dim < 2);
+    wgt_avg=nco_var_dpl(wgt_out);
   } /* !wgt_nm */
 
   /* Close first input netCDF file */
@@ -1079,12 +1090,9 @@ main(int argc,char **argv)
 		  nco_scv_cnf_typ(var_prc[idx]->type,&wgt_scv);
 		  if(nco_dbg_lvl > nco_dbg_std && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, idx = %li, typ = %s, wgt_val = %g, var_val=%g\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,idx_rec_crr_in,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->val.dp[0]);
 		  (void)nco_var_scv_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,&wgt_scv);
-		  /* Increment running total of weight after its application to last processed variable */
-		  if(wgt_nm){
-		    wgt_avg=nco_var_dpl(wgt_out);
-		    if(idx == nbr_var_prc-1){
-		      if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,wgt_out,wgt_avg); else nco_opr_drv((long)1L,nco_op_typ,wgt_out,wgt_avg);
-		    } /* endif */
+		  /* Increment running total of wgt_out after its application to last processed variable */
+		  if(wgt_nm && (idx == nbr_var_prc-1)){
+		    if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,wgt_out,wgt_avg); else nco_opr_drv((long)1L,nco_op_typ,wgt_out,wgt_avg);
 		  } /* !wgt_nm */
 		} /* !wgt */
 		/* Perform arithmetic operations: avg, min, max, ttl, ... */
@@ -1147,16 +1155,17 @@ main(int argc,char **argv)
 	      /* Compute mean of per-record weight, by normalizing running sum of weight by tally
 		 Then normalize all numerical record variables by mean of per-record weight
 		 Still ill-defined when MRO is invoked with --wgt 
-		 Same logic must be applied after file loop for nces, and for ncra with superfluous trailing files */
+		 Same logic applies in two locations in this code:
+		 1. During SSC normalization inside record loop when REC_LST_DSR is true
+		 2. After file loop for nces, and for ncra with superfluous trailing files */
 	      wgt_avg_scv.type=NC_DOUBLE;
-	      wgt_avg->val.dp[0]/=wgt_avg->tally[0];
+	      wgt_avg->val.dp[0]/=wgt_out->tally[0]; /* NB: wgt_avg tally is kept in wgt_out */
 	      wgt_avg_scv.val.d=wgt_avg->val.dp[0];
 	      for(idx=0;idx<nbr_var_prc;idx++){
 		if(var_prc_out[idx]->is_crd_var || var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING) continue;
 		nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_avg_scv);
 		(void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
 	      } /* end loop over var */
-	      if(wgt_avg) wgt_avg=(var_sct *)nco_var_free(wgt_avg);
 	    } /* !wgt_nm */
 
             /* Copy averages to output file */
@@ -1409,8 +1418,27 @@ main(int argc,char **argv)
      Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
      In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
      FLG_BFR_NRM is always true here for ncfe and ncge */
-  if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,(char *)NULL,(trv_tbl_sct *)NULL);
+  if(FLG_BFR_NRM){
+    (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,(char *)NULL,(trv_tbl_sct *)NULL);
     
+    if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
+      /* Compute mean of per-record weight, by normalizing running sum of weight by tally
+	 Then normalize all numerical record variables by mean of per-record weight
+	 Still ill-defined when MRO is invoked with --wgt 
+	 Same logic applies in two locations in this code:
+	 1. During SSC normalization inside record loop when REC_LST_DSR is true
+	 2. After file loop for nces, and for ncra with superfluous trailing files */
+      wgt_avg_scv.type=NC_DOUBLE;
+      wgt_avg->val.dp[0]/=wgt_out->tally[0]; /* NB: wgt_avg tally is kept in wgt_out */
+      wgt_avg_scv.val.d=wgt_avg->val.dp[0];
+      for(idx=0;idx<nbr_var_prc;idx++){
+	if(var_prc_out[idx]->is_crd_var || var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING) continue;
+	nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_avg_scv);
+	(void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
+      } /* end loop over var */
+    } /* !wgt_nm */
+  } /* !FLG_BFR_NRM */
+
   /* Manually fix YYMMDD date which was mangled by averaging */
   if(CNV_CCM_CCSM_CF && nco_prg_id == ncra) (void)nco_cnv_ccm_ccsm_cf_date(grp_out_id,var_out,xtr_nbr);
 
@@ -1515,10 +1543,9 @@ main(int argc,char **argv)
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
-    // fxm free this memory:
-    //    if(wgt) wgt=(var_sct *)nco_var_free(wgt);
-    //    if(wgt_out) wgt_out=(var_sct *)nco_var_free(wgt_out);
-    //    if(wgt_avg) wgt_avg=(var_sct *)nco_var_free(wgt_avg);
+    if(wgt) wgt=(var_sct *)nco_var_free(wgt);
+    if(wgt_out) wgt_out=(var_sct *)nco_var_free(wgt_out);
+    if(wgt_avg) wgt_avg=(var_sct *)nco_var_free(wgt_avg);
 
     (void)trv_tbl_free(trv_tbl);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);

@@ -819,11 +819,11 @@ nco_var_dpl /* [fnc] Duplicate input variable */
   /* Shallow-copy structure itself */
   (void)memcpy((void *)var_cpy,(const void *)var,sizeof(var_sct));
   
-  /* Make sure var_free() frees names when variable is destructed */
+  /* Make sure nco_var_free() frees names when variable is destructed */
   if(var->nm) var_cpy->nm=(char *)strdup(var->nm);
   if(var->nm_fll) var_cpy->nm_fll=(char *)strdup(var->nm_fll);
   
-  /* Deep-copy dyamically allocated arrays from original to copy */
+  /* Deep-copy dynamically allocated arrays from original to copy */
   if(var->val.vp){
     var_cpy->val.vp=(void *)nco_malloc_dbg(var_cpy->sz*nco_typ_lng(var_cpy->type),"Unable to malloc() value buffer in variable deep-copy",fnc_nm);
     (void)memcpy((void *)(var_cpy->val.vp),(void *)(var->val.vp),var_cpy->sz*nco_typ_lng(var_cpy->type));

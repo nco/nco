@@ -973,7 +973,7 @@ main(int argc,char **argv)
           double mss_val_dbl=double_CEWI;
           /* Set denominator to missing value at all locations where variable is missing value
 	     If this is accomplished by setting weight to missing value wherever variable is missing value
-	     then weight must not be re-used by next variable (which might conform but have missing values in different locations)
+	     then weight must not be re-used by next variable (which may conform but have missing values in different locations)
 	     This is one good reason to copy wgt_out into disposable wgt_avg for each new variable */
           /* First, make sure wgt_avg has same missing value as variable */
           (void)nco_mss_val_cp(var_prc[idx],wgt_avg);

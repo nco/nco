@@ -7091,18 +7091,16 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
 {
   /* Purpose: Return weight or mask variable closest in scope to specified variable */
 
-  int grp_id;        /* [ID] Group ID */
-  int var_id;        /* [ID] Variable ID */
-  int idx_wgt;       /* [nbr] Weight array counter */
+  int grp_id; /* [ID] Group ID */
+  int var_id; /* [ID] Variable ID */
+  int idx_wgt; /* [nbr] Weight array counter */
+  var_sct *wgt_var;
 
-  /* Detect if the weight variable name is relative or absolute */
-
-  /* If first character is '/' then assume absolute path */
-
+  /* If first character is '/' then weight name is absolute path */
   if(wgt_nm[0] == '/'){
     /* Absolute name given for weight. Straightforward extract and copy */
-    trv_sct *wgt_trv=trv_tbl_var_nm_fll(wgt_nm,trv_tbl);
-    var_sct *wgt_var;
+    trv_sct *wgt_trv;
+    wgt_trv=trv_tbl_var_nm_fll(wgt_nm,trv_tbl);
     (void)nco_inq_grp_full_ncid(nc_id,wgt_trv->grp_nm_fll,&grp_id);
     (void)nco_inq_varid(grp_id,wgt_trv->nm,&var_id);
     /* Transfer from table to local variable  */
@@ -7127,23 +7125,18 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
       if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && !strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm)){
         wgt_trv[idx_wgt]=&trv_tbl->lst[tbl_idx]; 
         idx_wgt++;
-      } /* Filter variables  */
-    } /* Loop table */
+      } /* endif */
+    } /* !tbl_idx */
 
-    /* Loop table */
     for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-
       /* Find variable that needs weight/mask */
       if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var &&
 	 trv_tbl->lst[idx_var].flg_xtr &&
 	 !strcmp(trv_tbl->lst[idx_var].nm_fll,var->nm_fll)){
 	trv_sct var_trv=trv_tbl->lst[idx_var];  
 
-	/* Loop over weights */
 	for(idx_wgt=0;idx_wgt<nbr_wgt;idx_wgt++){
-	  /* Same group */
 	  if(!strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){
-	    var_sct *wgt_var;
 	    (void)nco_inq_grp_full_ncid(nc_id,wgt_trv[idx_wgt]->grp_nm_fll,&grp_id);
 	    (void)nco_inq_varid(grp_id,wgt_trv[idx_wgt]->nm,&var_id);
 	    /* Transfer from table to local variable */
@@ -7152,14 +7145,13 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
 	    (void)nco_msa_var_get_trv(nc_id,wgt_var,trv_tbl);
 	    wgt_trv=(trv_sct **)nco_free(wgt_trv);
 	    return wgt_var;
-	  } /* Same group  */ 
-	} /* end loop loop over weights */
-      } /* Filter variables  */
-    } /* end loop over table */
-  } /* Relative name */
+	  } /* !strcmp() */
+	} /* !idx_wgt */
+      } /* !var */
+    } /* !idx_var */
+  } /* !Relative name */
   
   return NULL;
-  
 } /* nco_var_get_wgt_trv() */
 
 void                                    
