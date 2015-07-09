@@ -661,10 +661,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   double *lon_crn_out=NULL; /* [dgr] Longitude corners of rectangular destination grid */
   double *lon_ctr_out=NULL_CEWI; /* [dgr] Longitude centers of rectangular destination grid */
   double *lon_ntf_out=NULL; /* [dgr] Longitude interfaces of rectangular destination grid */
-  double *msk_out; /* [flg] Mask of destination grid */
   double *wgt_raw; /* [frc] Remapping weights */
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
+  int *msk_out; /* [flg] Mask of destination grid */
   int *dmn_sz_in_int; /* [nbr] Array of dimension sizes of source grid */
   int *dmn_sz_out_int; /* [nbr] Array of dimension sizes of destination grid */
   long *dmn_cnt=NULL;
@@ -737,7 +737,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nc_type crd_typ_out=NC_DOUBLE;
   area_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
   frc_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
-  msk_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
+  msk_out=(int *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(NC_INT));
   
   if(flg_grd_out_1D){
     lon_ctr_out=(double *)nco_malloc(col_nbr_out*nco_typ_lng(crd_typ_out));
@@ -1826,7 +1826,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(lon_crn_out) lon_crn_out=(double *)nco_free(lon_crn_out);
   if(lon_ctr_out) lon_ctr_out=(double *)nco_free(lon_ctr_out);
   if(lon_ntf_out) lon_ntf_out=(double *)nco_free(lon_ntf_out);
-  if(msk_out) msk_out=(double *)nco_free(msk_out);
+  if(msk_out) msk_out=(int *)nco_free(msk_out);
   if(row_dst_adr) row_dst_adr=(int *)nco_free(row_dst_adr);
   if(wgt_raw) wgt_raw=(double *)nco_free(wgt_raw);
   
