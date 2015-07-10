@@ -901,7 +901,7 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # Mac OS X 10.10 (Yosemite) systems (aerosol):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin/MACOSX;tar cvzf ${DATA}/nco-4.5.1.macosx.10.10.tar.gz nc*;scp ${DATA}/nco-4.5.1.macosx.10.10.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.5.1.macosx.10.10.tar.gz nc*;scp ${DATA}/nco-4.5.1.macosx.10.10.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
 <li><a href="src/nco-4.5.1.macosx.10.10.tar.gz">nco-4.5.1.macosx.10.10.tar.gz</a> (<!--#fsize file="src/nco-4.5.1.macosx.10.10.tar.gz"-->): Executables MacOSX 10.10-compatible (last updated <!--#flastmod file="src/nco-4.5.1.macosx.10.10.tar.gz"-->). 
