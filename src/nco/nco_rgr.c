@@ -890,6 +890,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       if((float)lat_ctr_out[1] == (float)lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
       if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
     } /* !Gaussian */
+    if(nco_grd_2D_typ == nco_grd_2D_nil){
+      
+    } /* !RRM */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
     
     const double dgr2rdn=M_PI/180.0;

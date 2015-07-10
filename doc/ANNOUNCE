@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.1-beta3 are ready. 
+The netCDF Operators NCO version 4.5.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -15,8 +15,8 @@ And ncatted supports regular expressions in both the variable name
 AND the attribute name (simultaneously, too).
 
 Work on NCO 4.5.2 has commenced and will better support regional
-regridding, threading, and easier builds on supercomputer systems that
-use modules.  
+regridding, masks, threading, CF-checking and easier builds on
+computer systems that use modules.  
 
 Enjoy,
 Charlie
@@ -27,9 +27,10 @@ A. Regrid global datasets with TempestRemap mapfiles (in addition to
    ESMF and SCRIP, which were already supported). Tempest mapfiles
    use slightly different conventions than the other two, and this
    release accounts for those differences. This capability makes
-   the NCO regridder a drop-in replacement for the Tempest program
-   ApplyOfflineMap. The two produce the same results, modulo
-   metadata. Please give it a try and send us feedback!
+   NCO's regridder a drop-in replacement for the Tempest program
+   ApplyOfflineMap with global (source and destination) maps.
+   The two produce the same results, modulo metadata.
+   Please give it a try and send us feedback!
    # Regrid entire file, same output format as input:
    ncks --map=map.nc in.nc out.nc
    # Deflated netCDF4 output, threading, selected variables:
@@ -47,22 +48,7 @@ B. ncatted now supports regular expressions in both the variable name
    ncatted -a '.?_iso19115$','^H2O*',d,, in.nc
    http://nco.sf.net/nco.html#ncatted
 
-C. ncdismember was a one-stop shop for flattening and CF-checking that
-   supported netCDF4 flattening and two (and counting) CF-checkers.
-   We implemented a getopt() interface for precision and extensibility.
-   Now users can independently specify whether they want flattening,
-   and which CF checker to employ, and other minor conveniences.
-   Given that most of its use is ultimately for CF-checking, we have
-   re-dubbed ncdismember as nccf. The ncdismember name is now
-   deprecated and will be removed when you least expect it. Kidding.
-   Using no checker, default (Decker) checker, NERC checker:
-   nccf ~/nco/data/mdl_1.nc -t /tmp
-   nccf ~/nco/data/mdl_1.nc -t /tmp -c decker
-   nccf ~/nco/data/mdl_1.nc -t /tmp -c nerc
-   http://nco.sf.net/nco.html#ncdismember
-   http://nco.sf.net/nco.html#nccf
-
-D. Add mibs/mabs/mebs methods and operators to ncap2. These are the
+C. Add mibs/mabs/mebs methods and operators to ncap2. These are the
    absolute-value analogues of min/max/mean, so that, e.g., mibs()
    returns the minimum absolute-value of the operand.
    tpt_max=temperature.max();
@@ -73,7 +59,7 @@ D. Add mibs/mabs/mebs methods and operators to ncap2. These are the
    http://nco.sf.net/nco.html#ppc
    http://nco.sf.net/nco.html#ncap2
 
-E. Prevent operators from repeating existing cell_methods attribute.
+D. Prevent operators from repeating existing cell_methods attribute.
    Previously NCO would append new operations, e.g., "time: mean" to
    the existing cell_methods attribute, if any. Now it first checks
    to see whether that method has been applied and, if so, declines
@@ -100,8 +86,8 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.5.1-beta3 built/tested with netCDF
-   4.4.0-rc1 (20150610) on top of HDF5 hdf5-1.8.13 with:
+   These problems occur with NCO 4.5.1 built/tested with netCDF
+   4.4.0-development (20150710) on top of HDF5 hdf5-1.8.13 with:
 
    cd ~/nco;./configure # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism

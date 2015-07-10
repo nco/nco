@@ -612,7 +612,9 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(rgr->fl_out,rgr->fl_out_tmp,out_id);
 
-rgr_cln:
+  goto rgr_cln; /* Prevent 'rgr_cln' defined but not used warning */
+
+ rgr_cln:
   if(rcd_esmf != ESMF_SUCCESS){
     /* ESMF return codes are enumerated in ESMC_ReturnCodes.h and ESMC_LogErr.h
        However, there seems to be no translator function for these codes */

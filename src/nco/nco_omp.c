@@ -143,15 +143,17 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
       // 20150530: Turn-on OpenMP for debugging
       // 20150610: Eight threads with ncwa seemed to work for a little while, then it got flaky. Turned-off for 4.5.0 release
       // 20150622: Allowing eight threads again for debugging with -D 3
+      // 20150701: Firmly established that netCDF4 involvement hoses threading because HDF5 is not threadsafe by default
+      // 20150710: Turned-off for 4.5.1 release
       // Symptoms of bugs, if any, show up with
       // cd ~/nco/bm;nco_bm.pl --regress ncwa;cd -
       thr_nbr_max_fsh=1;
-      if(nco_dbg_lvl_get() >= nco_dbg_scl) thr_nbr_max_fsh=8;
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) thr_nbr_max_fsh=1;
       break;
       /* Operators with higher maximum pre-set thread limit (NB: not all of these are threaded!) */
     case ncra:
       thr_nbr_max_fsh=1;
-      if(nco_dbg_lvl_get() >= nco_dbg_scl) thr_nbr_max_fsh=8;
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) thr_nbr_max_fsh=1;
       break;
     case ncbo: 
     case ncatted: 

@@ -1,10 +1,14 @@
-2015-07-09  Charlie Zender  <zender@uci.edu>
+2015-07-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.1 release procedure:
- 	Changes since nco-4.5.0: ncra --wgt=wgt_nm, nccf, ncap2	mibs/mabs/mebs, Tempest
+ 	Changes since nco-4.5.0: ncra --wgt=wgt_nm, ncap2 mibs/mabs/mebs, Tempest
 	cd ~/nco;git commit -a -m 'Version 4.5.1 release final changes'
 	git tag -d 4.5.1;git push origin :refs/tags/4.5.1
-	git tag -a 4.5.1 -m 'Version 4.5.1: Even Keel';git push --tags
+	git tag -a 4.5.1 -m 'Version 4.5.1: Maxine';git push --tags
+
+	* Turn-off ncra and ncwa threading for dbg_lvl >= 3 for 4.5.1 release
+
+	* Revert back to old _FillValue trick when netCDF library <= 4.4.0 because Unidata NCF-187 fix does not help NCO
 
 2015-07-07  Charlie Zender  <zender@uci.edu>
 
