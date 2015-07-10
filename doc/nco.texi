@@ -121,7 +121,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.1-beta3
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 8 July 2015
+@set update-date 9 July 2015
 @set update-month July 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9907,7 +9907,7 @@ contents of all files that were appended to a file
 in append (@samp{-A}) mode only, inadvertently overwrite the global
 metadata (including  @code{history}) of the output file with that of the
 input file. 
-This is the opposite behavior most would want.}.
+This is opposite the behavior most would want.}.
 This convention stores those contents in the
 @code{history_of_appended_files} attribute, which complements
 the @code{history}-attribute to provide a more complete provenance.
@@ -11546,7 +11546,8 @@ print(three_dmn_var_dbl);
 @end example
 
 @html
-<a name="ncap_mtd"></a> <!-- http://nco.sf.net/nco.html#ncap_mtd -->
+<a name="ncap_mth"></a> <!-- http://nco.sf.net/nco.html#ncap_mth -->
+<a name="ncap2_mth"></a> <!-- http://nco.sf.net/nco.html#ncap2_mth -->
 @end html
 @node Methods and functions, RAM variables, Missing values ncap2, ncap2 netCDF Arithmetic Processor
 @subsection Methods and functions
@@ -14280,7 +14281,7 @@ Example: @code{pressure}, @code{'^H2O'}.
 @cindex pattern matching
 @cindex wildcards
 Regular expressions (@pxref{Subsetting Files}) are accepted and will 
-select all matching variable names. 
+select all matching variable (and/or group) names. 
 The names @code{global} and @code{group} have special meaning.
 @item mode
 Edit mode abbreviation. 
@@ -14640,13 +14641,14 @@ As of @acronym{NCO} 3.9.6 (January, 2009), @command{ncatted} accepts
 and, since @acronym{NCO} 4.5.1 (July, 2015), for attribute names.
 @example
 ncatted -a isotope,'^H2O*',c,s,'18' in.nc
-ncatted -a '.?_att$','^H2O*',d,s,'18' in.nc
+ncatted -a '.?_iso19115$','^H2O*',d,, in.nc
 @end example
 The first example creates @code{isotope} attributes for all variables
-containing @samp{H2O} in their names.
-The second delets all attributes whose names end in @code{_att} from all
-variables that contain @samp{H2O} in their names.
-See @ref{Subsetting Files} for more details.
+whose names contain @samp{H2O}.
+The second deletes all attributes whose names end in @code{_iso19115}
+from all variables whose names contain @samp{H2O}.
+See @ref{Subsetting Files} for more details on using regular
+expressions. 
 
 @cindex groups
 As of @acronym{NCO} 4.3.8 (November, 2013), @command{ncatted} 
@@ -14671,6 +14673,10 @@ ncatted -O -a g1_grp_att,g1,c,sng,'new group attribute' in_grp.nc
 # Add new_glb_att global attribute to root group
 ncatted -O -a new_glb_att,global,c,sng,'new global attribute' in_grp.nc
 @end example
+Note that regular expressions work well in conjuction with group
+path support. 
+In other words, the variable name (including group path component) and
+the attribute names may both be extended regular expressions.
 
 Demonstrate input of C-language escape sequences (e.g., @code{\n}) and
 other special characters (e.g., @code{\"}) 

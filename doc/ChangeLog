@@ -1,3 +1,11 @@
+2015-07-09  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.1 release procedure:
+ 	Changes since nco-4.5.0: ncra --wgt=wgt_nm, nccf, ncap2	mibs/mabs/mebs, Tempest
+	cd ~/nco;git commit -a -m 'Version 4.5.1 release final changes'
+	git tag -d 4.5.1;git push origin :refs/tags/4.5.1
+	git tag -a 4.5.1 -m 'Version 4.5.1: Even Keel';git push --tags
+
 2015-07-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.1-beta2 release procedure:
@@ -158,7 +166,7 @@
 
 2015-06-13  Charlie Zender  <zender@uci.edu>
 
-	* Reverse ordinal number of lat and lon dimensions in src_grid_rank, dst_grid_rank
+	* Reverse ordinal number of lat and lon dimensions in src_grid_rank, dst_grid_rank for Tempest
 
 	* Modify routines to accept TempestRemap-generated maps
 
