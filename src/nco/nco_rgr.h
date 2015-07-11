@@ -77,6 +77,12 @@ extern "C" {
     nco_grd_2D_ngl_eqi_fst, /* Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
   } nco_grd_2D_typ_enm;
 
+  typedef enum nco_grd_xtn_enm{ /* [enm] Grid-extent enum */
+    nco_grd_xtn_nil=0,
+    nco_grd_xtn_glb,
+    nco_grd_xtn_rgn,
+  } nco_grd_xtn_enm;
+
   /* ESMF: The normalization attribute describes how the conservative weights are calculated, currently this is always set to "destarea" because this is the only option which we currently support. The setting "destarea" means that the conservative weights are calculated by dividing the area of the intersection of the source and destination cells by the area of the destination cell. This is set even when the weights are not conservative in which case it can be ignored. */
   typedef enum nco_rgr_nrm_typ_enm{ /* [enm] Normalization type enum */
     nco_rgr_nrm_nil=0,
@@ -156,6 +162,10 @@ extern "C" {
   const char * /* O [sng] String describing two-dimensional grid-type */
   nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   (const nco_grd_2D_typ_enm nco_grd_2D_typ); /* I [enm] Two-dimensional grid-type enum */
+
+  const char * /* O [sng] String describing grid extent */
+  nco_grd_xtn_sng /* [fnc] Convert two-dimensional grid-extent enum to string */
+  (const nco_grd_xtn_enm nco_grd_xtn); /* I [enm] Grid-extent enum */
 
   const char * /* O [sng] String describing grid conversion */
   nco_rgr_grd_sng /* [fnc] Convert grid conversion enum to string */

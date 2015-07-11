@@ -1,4 +1,18 @@
+2015-07-11  Charlie Zender  <zender@uci.edu>
+
+	* Cause nco_var_get_wgt_trv() to die when weight/mask not found, re-jigger weight testing to be more thorough
+
+	* Found bug where ncwa proceeded without complaining when weights were not found
+
+	* Regridding works on Tempest RRM conus grid
+
+	* Manually normalize polar offset grid latitude weights to sum to 2.0 for global extent, less for regional
+
+	* Create area_out from analytic function when area_b has zeros in mapfile
+
 2015-07-10  Charlie Zender  <zender@uci.edu>
+
+	* Implement regional destination grid capability
 
 	* NCO 4.5.1 release procedure:
  	Changes since nco-4.5.0: ncra --wgt=wgt_nm, ncap2 mibs/mabs/mebs, Tempest

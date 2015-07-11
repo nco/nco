@@ -288,7 +288,7 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   var_sct *wgt=NULL; /* [sct] Raw weight on disk in input file */
-  var_sct *wgt_out=NULL; /* [sct] Copy of wgt, 
+  var_sct *wgt_out=NULL; /* [sct] Copy of wgt
 			    Tally and val members malloc'd & initialized
 			    IDs updated each new file by nco_var_mtd_refresh() in file loop
 			    Current record value obtained by nco_msa_var_get_rec_trv() in record loop
@@ -864,8 +864,6 @@ main(int argc,char **argv)
   if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
     /* Find weight variable that matches current variable */
     wgt=nco_var_get_wgt_trv(in_id,wgt_nm,var_prc[0],trv_tbl);
-    if(!wgt) (void)fprintf(stdout,"%s: ERROR Unable to find weight variable \"%s\"\n",nco_prg_nm_get(),wgt_nm);
-    assert(wgt);
     assert(wgt->nbr_dim < 2);
     /* Change wgt from a normal full variable to one that only holds one record at a time
        This differs from ncwa wgt treatment

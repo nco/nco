@@ -4428,10 +4428,10 @@ if(0){
     @tst_cmd=(); # Reset array
 
 #ncwa #34
-    $dsc_sng="rms with weights";
-    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -v lat_cpy $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
+    $dsc_sng="Weights at root group level";
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w lat_wgt -v lat_cpy $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v lat_cpy %tmp_fl_00%";;
-    $tst_cmd[2]="90";
+    $tst_cmd[2]="30";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -4578,13 +4578,12 @@ if(0){
 
 #ncwa #47
 #NEW NCO 4.3.3
-#same as #ncwa #33
-# ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy ~/nco/data/in_grp_3.nc ~/foo.nc
+# ncwa -h -O -w lat_wgt -g g20g1 -C -v lat_cpy ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks -C -H -s '%f' -g g20g1 -v lat_cpy ~/foo.nc
-    $dsc_sng="(Groups) rms with weights";
-    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -g g20g1 -v lat_cpy $in_pth_arg in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
+    $dsc_sng="(Groups) Test weights in group";
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -C -w lat_wgt -g g20g1 -v lat_cpy $in_pth_arg in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -g g20g1 -v lat_cpy %tmp_fl_00%";;
-    $tst_cmd[2]="90";
+    $tst_cmd[2]="-90";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -4813,6 +4812,17 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
+#ncwa #66
+# ncwa -h -O -C -w one_dmn_rec_wgt -v one_dmn_rec_var_flt ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H -s '%f' -v one_dmn_rec_var_flt ~/foo.nc
+    $dsc_sng="Simple weights";
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -C -w one_dmn_rec_wgt -v one_dmn_rec_var_flt $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
+    $tst_cmd[1]="ncks -C -H -s '%f' -v one_dmn_rec_var_flt %tmp_fl_00%";;
+    $tst_cmd[2]="1.333333";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
 ####################
 #### ncrename tests #### OK!
 ####################

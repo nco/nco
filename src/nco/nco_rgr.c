@@ -859,6 +859,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !flg_grd_out_2D */
   
   if(flg_grd_out_2D){
+    long int lat_idx;
+    long int lon_idx;
 
     if(nco_dbg_lvl_get() >= nco_dbg_crr){
       for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
@@ -867,6 +869,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
     /* Diagnose type of two-dimensional output grid by testing second latitude center against formulae */
     nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
+    nco_grd_xtn_enm nco_grd_xtn=nco_grd_xtn_glb; /* [enm] Extent of grid */
     const double lat_ctr_tst_ngl_eqi_pol=-90.0+180.0/(lat_nbr_out-1);
     const double lat_ctr_tst_ngl_eqi_fst=-90.0+180.0*1.5/lat_nbr_out;
     double lat_ctr_tst_gss;
@@ -891,14 +894,39 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
     } /* !Gaussian */
     if(nco_grd_2D_typ == nco_grd_2D_nil){
-      
+      /* If still of unknown type, this 2D grid may be regional (not global) and rectangular
+	 Find latitude increment, check if apparently constant throughout grid */
+      double lat_ctr_ncr_srt; /* [dgr] First latitude increment */
+      double lat_ctr_ncr_end; /* [dgr] Last latitude increment */
+      lat_ctr_ncr_srt=lat_ctr_out[1]-lat_ctr_out[0];
+      lat_ctr_ncr_end=lat_ctr_out[lat_nbr_out-1]-lat_ctr_out[lat_nbr_out-2];
+      if(lat_ctr_ncr_srt == lat_ctr_ncr_end){
+	/* Type appears to be regular in latitude, check if it is consistent with regional equiangular grid */
+	if(lat_ctr_out[0]-lat_ctr_ncr_srt > -90.0 && lat_ctr_out[lat_nbr_out-1]+lat_ctr_ncr_end < 90.0){
+	  if((float)(lat_ctr_out[0]+((lat_nbr_out-1)*lat_ctr_ncr_srt)) == (float)lat_ctr_out[lat_nbr_out-1]){
+	    nco_grd_2D_typ=nco_grd_2D_ngl_eqi_pol;
+	    nco_grd_xtn=nco_grd_xtn_rgn;
+	  } /* !rct */
+	} /* !rgn */
+      } /* srt!=end */
     } /* !RRM */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
     const double dgr2rdn=M_PI/180.0;
+    double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
     switch(nco_grd_2D_typ){
     case nco_grd_2D_ngl_eqi_fst:
-      for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=cos(dgr2rdn*lat_ctr_out[idx]);
+      /* Manually normalize polar offset grid latitude weights to sum to 2.0 for global extent */
+      for(idx=0;idx<lat_nbr_out;idx++){
+	if(nco_grd_xtn == nco_grd_xtn_glb){
+	  lat_wgt_out[idx]=cos(dgr2rdn*lat_ctr_out[idx]);
+	  lat_wgt_ttl+=lat_wgt_out[idx];
+	  lat_wgt_out[idx]*=2.0/lat_wgt_ttl;
+	}else{ /* !glb */
+	  lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
+	} /* !glb */
+      } /* !idx */
       break;
     case nco_grd_2D_ngl_eqi_pol:
       for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
@@ -913,9 +941,28 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* end nco_grd_2D_typ switch */
     
     /* Fuzzy test of latitude weight normalization */
-    double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
+    double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
+    lat_wgt_ttl=0.0;
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
-    assert(1.0-lat_wgt_ttl/2.0 < 1.0e-14); /* [frc] Roundoff tolerance for sum of quadrature weights */
+    lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0]);
+    assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < 1.0e-14); /* [frc] Round-off tolerance for sum of quadrature weights */
+    
+    if(nco_grd_xtn == nco_grd_xtn_rgn){
+      /* 20150710: Tempest regionally refined grids like conus for ACME RRM may have area_out=0 */
+      if((bnd_nbr_out == 2 || bnd_nbr_out == 4) && nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol){ 
+	/* If area_out contains a zero... */
+	for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+	  for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	    if(area_out[lat_idx*lon_nbr_out+lon_idx] == 0.0) break;
+	if(lat_idx != lat_nbr_out || lon_idx != lon_nbr_out){
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Regional regular rectangular grid detected with zero-valued output area(s). Likely a TempestRemap regional output grid. Creating area_out from analystic formula.\n",nco_prg_nm_get());
+	  /* Regular quadrilaterals on equiangular grids have areas Mr. Enenstein taught us */
+	  for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+	    for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	      area_out[lat_idx*lon_nbr_out+lon_idx]=dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]));
+	} /* !zero */
+      } /* !quad */
+    } /* !rgn */
     
     if(nco_dbg_lvl_get() >= nco_dbg_sbr){
       (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
@@ -924,16 +971,16 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       area_out_ttl=0.0;
       for(idx=0;idx<lat_nbr_out;idx++)
 	lat_wgt_ttl+=lat_wgt_out[idx];
-      for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
-	for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+      for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+	for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
 	  area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_idx];
-      (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, area_ttl = %20.15f\n",lat_wgt_ttl,area_out_ttl);
+      (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, area_ttl = %20.15f, frc_lat_wgt = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,area_out_ttl,lat_wgt_ttl/2.0,area_out_ttl/(4.0*M_PI));
       for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
       for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
       for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li], wgt[%li] = %20.15f, %20.15f\n",idx,idx,lat_ctr_out[idx],lat_wgt_out[idx]);
       if(nco_dbg_lvl_get() > nco_dbg_crr)
-	for(long int lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
-	  for(long int lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+	  for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
 	    (void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
     } /* endif dbg */
   } /* !flg_grd_out_2D */
@@ -1509,7 +1556,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   if(flg_grd_out_2D){
     att_nm=strdup("long_name");
-    att_val=strdup("latitude quadrature weights (normalized to sum to 2.0)");
+    att_val=strdup("latitude quadrature weights (normalized to sum to 2.0 on global grids)");
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=lat_wgt_nm;
     aed_mtd.id=lat_wgt_id;
@@ -2080,6 +2127,7 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
 {
   /* Purpose: Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
+  case nco_grd_2D_nil: return "Unknown 2D grid type (possibly regional not global 2D grid?)";
   case nco_grd_2D_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
   case nco_grd_2D_ngl_eqi_pol: return "Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO";
   case nco_grd_2D_ngl_eqi_fst: return "Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
@@ -2089,6 +2137,22 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_grd_2D_sng() */
+
+const char * /* O [sng] String describing grid extent */
+nco_grd_xtn_sng /* [fnc] Convert two-dimensional grid-extent enum to string */
+(const nco_grd_xtn_enm nco_grd_xtn) /* I [enm] Grid-extent enum */
+{
+  /* Purpose: Convert grid-extent enum to string */
+  switch(nco_grd_xtn){
+  case nco_grd_xtn_nil: return "Unknown";
+  case nco_grd_xtn_glb: return "Global";
+  case nco_grd_xtn_rgn: return "Regional"; 
+  default: nco_dfl_case_generic_err(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_grd_xtn_sng() */
 
 const char * /* O [sng] String describing grid conversion */
 nco_rgr_grd_sng /* [fnc] Convert grid conversion enum to string */

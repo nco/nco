@@ -422,16 +422,18 @@ netcdf in_grp_3 {
    lat=2;
    variables:
    float lat(lat);
+   float lat_wgt(lat);
    data:
    lat=-90,90;
+   lat_wgt=1.,2.;
    
     group: g20g1 { 
      variables:
      float lat_cpy(lat);
-	 float lat_wgt(lat);
+     float lat_wgt(lat);
      data:
      lat_cpy=-90,90;
-	 lat_wgt=1.,2.;   
+     lat_wgt=1.,0.;
     } // end g20g1 
 
   } //g20
