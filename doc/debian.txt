@@ -29,18 +29,18 @@ apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy develo
 
 2. Debian build procedure recommends placing entire package source in
    subdirectory of main package. 
-   For starters, we wish to create .debs of tagged releases, e.g., nco-4.5.2-alpha1
-   First we create a clean source distribution of nco and place it in nco-4.5.2-alpha1
+   For starters, we wish to create .debs of tagged releases, e.g., nco-4.5.1
+   First we create a clean source distribution of nco and place it in nco-4.5.1
    Until we know what is necessary, however, we just copy a snapshot
    
    2.1 Clean all build files from development directory
 
 cd ~/nco;make distclean;cd bld;make clean;cd ~
 tar cvzf ./nco/nco.tar.gz ./nco/*
-cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-4.5.2-alpha1
-/bin/rm nco.tar.gz;tar cvzf nco-4.5.2-alpha1.tar.gz ./nco-4.5.2-alpha1/*
-cd ~/nco/nco-4.5.2-alpha1
-dh_make -e zender@uci.edu -f ../nco-4.5.2-alpha1.tar.gz
+cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-4.5.1
+/bin/rm nco.tar.gz;tar cvzf nco-4.5.1.tar.gz ./nco-4.5.1/*
+cd ~/nco/nco-4.5.1
+dh_make -e zender@uci.edu -f ../nco-4.5.1.tar.gz
 
     2.2 The preceding steps created template debian files for a .deb,
     Those files now reside in ~/nco/debian.
