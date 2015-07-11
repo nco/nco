@@ -1,8 +1,12 @@
 2015-07-11  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.2-alpha1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha1 final changes'
+	git tag -a 4.5.2-alpha1 -m 'Version 4.5.2-alpha1 tag: bump to alpha1';git push --tags
+
 	* NCO 4.5.1 release procedure:
  	Changes since nco-4.5.0: ncra --wgt=wgt_nm, ncap2 mibs/mabs/mebs, Tempest
-	cd ~/nco;git commit -a -m 'Version 4.5.1 release final changes'
+	cd ~/nco;git commit -a -m 'Version 4.5.1 release final changes';git push
 	git tag -d 4.5.1;git push origin :refs/tags/4.5.1
 	git tag -a 4.5.1 -m 'Version 4.5.1: Maxine';git push --tags
 
