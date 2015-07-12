@@ -1,7 +1,7 @@
 2015-07-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.2-alpha1 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha1 final changes'
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha1 final changes';git push
 	git tag -a 4.5.2-alpha1 -m 'Version 4.5.2-alpha1 tag: bump to alpha1';git push --tags
 
 	* NCO 4.5.1 release procedure:
