@@ -726,6 +726,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     col_nbr_out=0;
     lat_nbr_out=dmn_sz_out_int[lat_psn_dst];
     lon_nbr_out=dmn_sz_out_int[lon_psn_dst];
+    /* Sanity-check */
+    assert(lat_nbr_out*lon_nbr_out == rgr_map.dst_grid_size);
   } /* !dst_grid_rank */
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
@@ -890,6 +892,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       lat_ctr_tst_gss=rdn2dgr*asin(lat_sin_out[1]);
       /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr_out[1] = %g, lat_ctr_tst_gss = %g\n",nco_prg_nm_get(),fnc_nm,lat_ctr_out[1],lat_ctr_tst_gss);
       if((float)lat_ctr_out[1] == (float)lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
       if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
     } /* !Gaussian */

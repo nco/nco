@@ -7082,7 +7082,7 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
     wgt_trv=trv_tbl_var_nm_fll(wgt_nm,trv_tbl);
     (void)nco_inq_grp_full_ncid(nc_id,wgt_trv->grp_nm_fll,&grp_id);
     (void)nco_inq_varid(grp_id,wgt_trv->nm,&var_id);
-    /* Transfer from table to local variable  */
+    /* Transfer from table to local variable */
     wgt_var=nco_var_fll_trv(grp_id,var_id,wgt_trv,trv_tbl);
     /* Retrieve variable NB: use GTT version, that "knows" all limits */
     (void)nco_msa_var_get_trv(nc_id,wgt_var,trv_tbl);
@@ -7091,7 +7091,8 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
     /* Relative name given for weight. Must identify most-in-scope match... */
     int wgt_nbr=0; /* [nbr] Number of weight/mask variables in file */
     trv_sct **wgt_trv=NULL; /* [sct] Weight/mask list */
-    
+
+    /* Count matching weight names in order to allocate space */
     for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
       if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (!strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm))) wgt_nbr++;
 
@@ -7099,8 +7100,8 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
     wgt_trv=(trv_sct **)nco_malloc(wgt_nbr*sizeof(trv_sct *));
     idx_wgt=0;
 
+    /* Creat list of potential weight structures */
     for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-      /* Filter by name */
       if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && !strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm)){
         wgt_trv[idx_wgt]=&trv_tbl->lst[tbl_idx]; 
         idx_wgt++;
@@ -7114,7 +7115,8 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
 	 !strcmp(trv_tbl->lst[idx_var].nm_fll,var->nm_fll)){
 	trv_sct var_trv=trv_tbl->lst[idx_var];  
 
-	/* 20150711: This is buggy, at best it returns the last weight found, not the closest-in-scope */
+	/* 20150711: This is buggy, at best it returns last weight found, not closest-in-scope */
+	/* Which weight is closest-in-scope to variable? */
 	for(idx_wgt=0;idx_wgt<wgt_nbr;idx_wgt++){
 	  if(!strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){
 	    (void)nco_inq_grp_full_ncid(nc_id,wgt_trv[idx_wgt]->grp_nm_fll,&grp_id);

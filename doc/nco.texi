@@ -6001,9 +6001,10 @@ Options specific to regridding are described below.
 2D@result{}2D regridding for any unstructured 
 1D-grid and any rectangular 2D-grid.  
 This has been tested by converting among and between Gaussian,
-equiangular, @acronym{FV}, and unstructured cubed-sphere grids.
-Support for irregular 2D- and for regional grids (e.g., swath-like data)  
-is planned. 
+equiangular, @acronym{FV}, unstructured cubed-sphere grids, and
+regionally refined grids.
+Support for irregular 2D- and regional grids (e.g., swath-like data) is
+planned.  
 
 @cindex conservative regridding
 @cindex renormalized regridding
@@ -6238,19 +6239,20 @@ ncks --rgr bnd=vertices --rgr lat_bnd=lat_vrt --rgr lon_bnd=lon_vrt
 @end example
 The first command causes the regridder to associate the latitude and
 longitude dimensions with the dimension names @code{latitude} and
-@code{longitude} (instead of @code{lat} and @code{lon}).
+@code{longitude} (instead of the defaults, @code{lat} and @code{lon}). 
 The second command causes the regridder to associate the independent
 columns in an unstructured grid with the dimension name @code{column}
-(instead of @code{ncol}) and the variable containing latitude weights
-to be named @code{lat_wgt} (instead of @code{gw}).
+(instead of the default, @code{ncol}) and the variable containing
+latitude weights to be named @code{lat_wgt} (instead of the default,
+@code{gw}). 
 The third command associates the latitude and longitude bounds with the
-dimension @code{bounds} (instead of @code{nbnd}) and the variables
-@code{lat_bounds} and @code{lon_bounds} (instead of @code{lat_bnds} and 
-@code{lon_bnds}, respectively). 
+dimension @code{bounds} (instead of the default, @code{nbnd}) and the
+variables @code{lat_bounds} and @code{lon_bounds} (instead of the
+defaults, @code{lat_bnds} and  @code{lon_bnds}, respectively). 
 The fourth command associates the latitude and longitude bounds with the
-dimension @code{vertices} (instead of @code{nv}) and the variables
-@code{lat_vrt} and @code{lon_vrt} (instead of @code{lat_vertices} and 
-@code{lon_vertices}, respectively). 
+dimension @code{vertices} (instead of the default, @code{nv}) and the
+variables @code{lat_vrt} and @code{lon_vrt} (instead of the defaults,
+@code{lat_vertices} and @code{lon_vertices}, respectively). 
 
 When used with an identity remapping files, regridding can signficantly
 enhance the metadata and therefore the dataset usability.
@@ -6362,6 +6364,21 @@ obviate the need to place unstructured data on a rectangular grid.
 For example, statistics for regions that can be expressed as unions of 
 rectangular regions can now be performed on the native (unstructured)
 grid. 
+
+Here are some quick examples of regridding from common models.
+All examples require @samp{in.nc out.nc} at the end.
+@example
+@verbatim
+# Identity re-map ACME CAM-SE Cubed-Sphere output (to improve metadata)
+ncks --map==${DATA}/maps/map_ne30np4_to_ne30np4_aave.20150603.nc
+# Convert ACME CAM-SE Cubed Sphere output to rectangular lat/lon
+ncks --map==${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc
+# CLM3.0
+
+# Convert CAM3 T42 output to Cubed-Sphere grid
+ncks --map=${DATA}/maps/map_ne30np4_to_t42_aave.20150601.nc
+@end verbatim
+@end example
 
 @html
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
