@@ -1,5 +1,7 @@
 2015-07-13  Charlie Zender  <zender@uci.edu>
 
+	* Completed (though did not verify) first regridding to/from POP displaced-pole grid with SCRIP mapfile
+
 	* Valgrind emits "uninitialized value" warnings at first cosine cos() function in nco_lat_wgt_gss()---why?
 
 	* Implement true "destarea" normalization, support more aspects of dst_frac and dst_mask

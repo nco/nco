@@ -603,7 +603,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     rcd+=nco_inq_varid(in_id,"dst_grid_frac",&frc_dst_id); /* ESMF: frac_b */
     rcd+=nco_inq_varid(in_id,"dst_address",&row_dst_adr_id); /* ESMF: row */
     rcd+=nco_inq_varid(in_id,"src_address",&col_src_adr_id); /* ESMF: col */
-    rcd+=nco_inq_varid(in_id,"remap_matrix",&wgt_raw_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
+    rcd+=nco_inq_varid(in_id,"remap_matrix",&wgt_raw_id); /* NB: remap_matrix[num_links,num_wgts] != S[n_s] */
     break;
   case nco_rgr_mpf_ESMF:
   case nco_rgr_mpf_Tempest:
@@ -615,7 +615,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     rcd+=nco_inq_varid(in_id,"frac_b",&frc_dst_id); /* SCRIP: dst_grid_frac */
     rcd+=nco_inq_varid(in_id,"row",&row_dst_adr_id); /* SCRIP: dst_address */
     rcd+=nco_inq_varid(in_id,"col",&col_src_adr_id); /* SCRIP: src_address */
-    rcd+=nco_inq_varid(in_id,"S",&wgt_raw_id); /* fxm: remap_matrix[num_links,num_wgts] != S[n_s] */
+    rcd+=nco_inq_varid(in_id,"S",&wgt_raw_id); /* NB: remap_matrix[num_links,num_wgts] != S[n_s] */
     break;
   default:
     (void)fprintf(stderr,"%s: ERROR %s unknown map file type\n",nco_prg_nm_get(),fnc_nm);
@@ -1092,9 +1092,23 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Obtain remap matrix addresses and weights from map file */
   dmn_srt[0]=0L;
   dmn_cnt[0]=rgr_map.num_links;
-  rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,NC_DOUBLE);
   rcd=nco_get_vara(in_id,col_src_adr_id,dmn_srt,dmn_cnt,col_src_adr,NC_INT);
   rcd=nco_get_vara(in_id,row_dst_adr_id,dmn_srt,dmn_cnt,row_dst_adr,NC_INT);
+  dmn_srt[0]=0L;
+  dmn_cnt[0]=rgr_map.num_links;
+  if(nco_rgr_mpf_typ != nco_rgr_mpf_SCRIP){
+    rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,NC_DOUBLE);
+  }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
+    /* SCRIP mapfiles stored 2D weight array remap_matrix[num_links,num_wgts]
+       Apply only first weight for first-order conservative accuracy (i.e., area overlap)
+       Applying all three weights for second-order conservative accuracy (by including gradients from centroid to vertices) */
+    dmn_srd[0]=1L;
+    dmn_srt[1]=0L;
+    dmn_cnt[1]=1L;
+    dmn_srd[1]=rgr_map.num_wgts;
+    rcd=nco_get_vars(in_id,wgt_raw_id,dmn_srt,dmn_cnt,dmn_srd,wgt_raw,NC_DOUBLE);
+  } /* !SCRIP */
+
   /* Optimize row/column access by pre-subtracting one to account for Fortran index offset relative to C */
   size_t lnk_nbr; /* [nbr] Number of links */
   size_t lnk_idx; /* [idx] Link index */
