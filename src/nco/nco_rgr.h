@@ -75,6 +75,7 @@ extern "C" {
     nco_grd_2D_gss, /* Gaussian latitudes used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM */
     nco_grd_2D_ngl_eqi_pol, /* Equi-angle grid including poles, the FV scalar grid (lat[0]=-90): CAM FV, GEOS-CHEM, UCICTM, UKMO */
     nco_grd_2D_ngl_eqi_fst, /* Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
+    nco_grd_2D_unk, /* Unknown or unclassified, POP displaced-pole */
   } nco_grd_2D_typ_enm;
 
   typedef enum nco_grd_xtn_enm{ /* [enm] Grid-extent enum */
