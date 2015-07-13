@@ -940,7 +940,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       lat_ctr_tst_gss=rdn2dgr*asin(lat_sin_out[1]);
       /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr_out[1] = %g, lat_ctr_tst_gss = %g\n",nco_prg_nm_get(),fnc_nm,lat_ctr_out[1],lat_ctr_tst_gss);
+      if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr_out[1] = %g, lat_ctr_tst_gss = %g\n",nco_prg_nm_get(),fnc_nm,lat_ctr_out[1],lat_ctr_tst_gss);
       if((float)lat_ctr_out[1] == (float)lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
       if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
     } /* !Gaussian */
@@ -1046,20 +1046,17 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Test whether frc_out is ever zero... */
   for(idx=0;idx<rgr_map.dst_grid_size;idx++)
     if(frc_out[idx] == 0.0) break;
-  if(idx != rgr_map.dst_grid_size){
-    (void)fprintf(stdout,"%s: ERROR %s reports frc_out contains zero-element at 1D idx=%ld. Unsure how to proceed. Bailing...\n",nco_prg_nm_get(),fnc_nm,idx);
-    nco_exit(EXIT_FAILURE);
-  } /* !sometimes zero */
+  if(idx != rgr_map.dst_grid_size) (void)fprintf(stdout,"%s: INFO %s reports frc_out contains zero-elements (e.g., at 1D idx=%ld)\n",nco_prg_nm_get(),fnc_nm,idx);
   /* Test whether frc_out is always one... */
-  nco_bool flg_frc_out_one=False;
+  nco_bool flg_frc_out_one=True;
   for(idx=0;idx<rgr_map.dst_grid_size;idx++)
     if(frc_out[idx] != 1.0) break;
-  if(idx == rgr_map.dst_grid_size) flg_frc_out_one=True;
-  if(!flg_frc_out_one){
-    (void)fprintf(stdout,"%s: INFO %s reports frc_out contains first non-unity element at 1D idx=%ld. Likely other locations are non-unity, too. Will apply \'destarea\' normalization to all regridded arrays.\n",nco_prg_nm_get(),fnc_nm,idx);
-  } /* !sometimes non-unity */
+  if(idx != rgr_map.dst_grid_size) flg_frc_out_one=False;
   nco_bool flg_frc_nrm=False;
-  if(flg_frc_out_one && (nco_rgr_nrm_typ == nco_rgr_nrm_destarea || nco_rgr_nrm_typ == nco_rgr_nrm_none)) flg_frc_nrm=True;
+  if(!flg_frc_out_one && (nco_rgr_nrm_typ == nco_rgr_nrm_destarea || nco_rgr_nrm_typ == nco_rgr_nrm_none)) flg_frc_nrm=True;
+  if(flg_frc_nrm){
+    (void)fprintf(stdout,"%s: INFO %s reports global metadata specifies normalization with type = %s and frc_dst = dst_frac = frac_b = frc_out contains non-unity elements (e.g., frc_out[%ld] = %g, and likely other locations, too). Will apply \'destarea\' normalization to all regridded arrays.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ),idx,frc_out[idx]);
+  } /* !sometimes non-unity */
   if(flg_frc_nrm && rgr->flg_rnr){
     (void)fprintf(stdout,"%s: ERROR %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice may be an error, depending on intent of each. Call Charlie and tell him how NCO should handle this.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
     nco_exit(EXIT_FAILURE);
@@ -1951,12 +1948,11 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	    /* frc_dst = frc_out = dst_frac = frac_b contains non-unity elements and normalization type is "destarea" or "none"
 	       When this occurs, follow "destarea" normalization procedure
 	       See SCRIP manual p. 11 and http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03028000000000000000
-	       Above checks ensure this block is invoked iff frc_out != 0.0 for any element
 	       NB: Both frc_out and NCO's renormalization (below) could serve the same purpose
 	       Applying both could lead to double-normalizing by missing values
 	       fxm: Be sure this does not occur! */
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	      var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
+	      if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
 	  } /* flg_frc_out_one */
  
 	  /* NCL and ESMF treatment of weights and missing values described at
@@ -2070,7 +2066,9 @@ nco_bsl_zro /* Return Bessel function zeros */
     
   assert(bsl_zro_tbl_nbr_max == 51); /* 51 is original size of 50 plus extra value for Fortran offset */
 
-  for(bsl_idx=1;bsl_idx<=bsl_zro_nbr;bsl_idx++)
+  /* NB: Initialize bsl_zro[0] but never use it (in C)
+     This is necessary to avoid uninitialized memory warnings */
+  for(bsl_idx=0;bsl_idx<=bsl_zro_nbr;bsl_idx++)
     if(bsl_idx <= bsl_zro_tbl_nbr_max) bsl_zro[bsl_idx]=bsl_zro_tbl[bsl_idx];
 
   if(bsl_zro_nbr > bsl_zro_tbl_nbr_max)
@@ -2112,7 +2110,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   const double eps_rlt=1.0e-15; // Convergence criterion (NB: Threshold was 1.0d-27 in real*16, 1.0e-15 is for real*8)
   const double pi=M_PI; // [frc] 3
   const int itr_nbr_max=20; // [nbr] Maximum number of iterations
-  double c; // Constant combination
+  double c_cff; // Constant combination coefficient
   double lat_idx_dbl; // Latitude index, double precision
   double lat_nnr_idx_dbl; // Inner latitude index, double precision
   double lat_nbr_dbl; // [nbr] Number of latitudes, double precision
@@ -2122,6 +2120,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   double pkmrk; // Polynomial
   double sp; // Current iteration latitude increment
   double xz; // Abscissa estimate
+  double cos_arg; // Intermediate parameter introduced while attempting to eliminate valgrind "uninitialised value" warnings
   int itr_cnt; // Iteration counter
   int lat_idx; // [idx] Counting index (latitude)
   int lat_sym_idx; // [idx] Counting index (symmetric latitude)
@@ -2133,17 +2132,20 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   /* Main Code */
   if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: DEBUG Entering %s\n",nco_prg_nm_get(),fnc_nm);
     
-  /* Create arrays with Fortran indexing to keep numerical algorithm identical */
+  /* Arrays with Fortran indexing (indicated by "plus one" = "_p1") keep numerical algorithm in C identical to Fortran */
   lat_sin_p1=(double *)nco_malloc((lat_nbr+1)*sizeof(double)); // Sine of Gaussian latitudes double precision
   wgt_Gss_p1=(double *)nco_malloc((lat_nbr+1)*sizeof(double)); // Gaussian weights double precision
     
   /* Use Newton iteration to find abscissas */
-  c=0.25*(1.0-4.0/(pi*pi));
+  c_cff=0.25*(1.0-4.0/(pi*pi));
   lat_nbr_dbl=lat_nbr;
-  lat_nbr_rcp2=lat_nbr/2; // Integer arithmetic
+  lat_nbr_rcp2=lat_nbr/2; // NB: Integer arithmetic
   (void)nco_bsl_zro(lat_nbr_rcp2,lat_sin_p1);
-  for(lat_idx=1;lat_idx<=lat_nbr_rcp2;lat_idx++){
-    xz=cos(lat_sin_p1[lat_idx]/sqrt((lat_nbr_dbl+0.5)*(lat_nbr_dbl+0.5)+c));
+  for(lat_idx=1;lat_idx<=lat_nbr_rcp2;lat_idx++){ // NB: Loop starts at 1
+    // 20150713: Introduce intermediate parameter cos_arg in attempt to eliminate valgrind "uninitialised value" warnings emitted by cos() (actually __cos_sse())
+    // Warnings occur with gcc-compiled code, not with clang-compiled code
+    cos_arg=lat_sin_p1[lat_idx]/sqrt((lat_nbr_dbl+0.5)*(lat_nbr_dbl+0.5)+c_cff);
+    xz=cos(cos_arg);
     /* First approximation to xz */
     itr_cnt=0;
     /* goto label_73 */
@@ -2166,6 +2168,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     pkmrk=(lat_nbr_dbl*(pkm1-xz*pk))/(1.0-xz*xz);
     sp=pk/pkmrk;
     xz=xz-sp;
+    /* NB: Easy to introduce bug here by not replacing Fortran abs() with C fabs() */
     if(fabs(sp) > eps_rlt) goto label_73;
     lat_sin_p1[lat_idx]=xz;
     wgt_Gss_p1[lat_idx]=(2.0*(1.0-xz*xz))/((lat_nbr_dbl*pkm1)*(lat_nbr_dbl*pkm1));
