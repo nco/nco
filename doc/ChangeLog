@@ -2,6 +2,14 @@
 
 	* Implement true "destarea" normalization, support more aspects of dst_frac and dst_mask
 
+	* Ensure double normalization (with --rnr and "none" = imask) does not occur
+
+	* Convert input coordinates to degrees to handle POP grids
+
+	* Allow "fracarea" normalization which is, in my terminology, no normalization just weights
+	"fracarea" is what we were actually doing before, although technically all fields tested were "destarea"
+	But their dst_frac = frac_b was uniformly 1.0, so no difference	from "destarea"
+
 2015-07-12  Charlie Zender  <zender@uci.edu>
 
 	* Add sanity checks to ensure mapfile grid matches input data file grid
