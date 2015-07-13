@@ -385,6 +385,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   char *fl_in;
   char *fl_pth_lcl=NULL;
 
+  double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
+  double area_out_ttl=0.0; /* [frc] Exact sum of area */
+
   int in_id; /* I [id] Input netCDF file ID */
   int out_id; /* I [id] Output netCDF file ID */
   int md_open; /* [enm] Mode flag for nc_open() call */
@@ -398,6 +401,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   int src_grid_corners_id; /* [id] Source grid corners dimension ID */
   int src_grid_rank_id; /* [id] Source grid rank dimension ID */
   int src_grid_size_id; /* [id] Source grid size dimension ID */
+
+  long int lat_idx;
+  long int lon_idx;
 
   nco_bool FL_RTR_RMT_LCN;
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
@@ -728,7 +734,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     lon_nbr_out=dmn_sz_out_int[0];
   }else if(flg_grd_out_2D){
     bnd_nbr_out=2; /* NB: Assumes rectangular latitude and longitude and is invalid for other quadrilaterals */
-    col_nbr_out=0;
+    col_nbr_out=lat_nbr_out*lon_nbr_out;
     lat_nbr_out=dmn_sz_out_int[lat_psn_dst];
     lon_nbr_out=dmn_sz_out_int[lon_psn_dst];
     /* Sanity-check */
@@ -737,7 +743,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
     (void)fprintf(stderr,"%s: INFO %s grid conversion type = %s with expected input and prescribed output grid sizes: ",nco_prg_nm_get(),fnc_nm,nco_rgr_grd_sng(nco_rgr_grd_typ));
-    (void)fprintf(stderr,"lat_in = %li, lon_in  %li, col_in = %li, lat_out = %li, lon_out = %li, col_out = %li\n",lat_nbr_in,lon_nbr_in,col_nbr_in,lat_nbr_out,lon_nbr_out,col_nbr_out);
+    (void)fprintf(stderr,"lat_in = %li, lon_in = %li, col_in = %li, lat_out = %li, lon_out = %li, col_out = %li\n",lat_nbr_in,lon_nbr_in,col_nbr_in,lat_nbr_out,lon_nbr_out,col_nbr_out);
   } /* endif dbg */
 
   /* Allocate space for and obtain coordinates */
@@ -813,6 +819,18 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     rcd=nco_get_vars(in_id,dst_grd_crn_lat_id,dmn_srt,dmn_cnt,dmn_srd,lat_crn_out,crd_typ_out);
   } /* !flg_grd_out_2D */
     
+  /* Allocate space for and obtain area, fraction, and mask, which are needed for both 1D and 2D grids */
+  area_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
+  frc_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
+  msk_out=(int *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(NC_INT));
+  dmn_srt[0]=0L;
+  dmn_cnt[0]=rgr_map.dst_grid_size;
+  rcd=nco_get_vara(in_id,area_dst_id,dmn_srt,dmn_cnt,area_out,crd_typ_out);
+  rcd=nco_get_vara(in_id,frc_dst_id,dmn_srt,dmn_cnt,frc_out,crd_typ_out);
+  if(msk_dst_id != NC_MIN_INT){
+    rcd=nco_get_vara(in_id,msk_dst_id,dmn_srt,dmn_cnt,msk_out,crd_typ_out);
+  } /* !msk */
+  
   /* Derive 2D interface boundaries from lat and lon grid-center values
      NB: Procedures to derive interfaces from midpoints on rectangular grids are theoretically possible 
      However, ESMF often outputs interfaces values (e.g., yv_b) for midpoint coordinates (e.g., yc_b)
@@ -855,9 +873,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !flg_grd_out_2D */
   
   if(flg_grd_out_2D){
-    long int lat_idx;
-    long int lon_idx;
-
     if(nco_dbg_lvl_get() >= nco_dbg_crr){
       for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
       for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
@@ -911,7 +926,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
     const double dgr2rdn=M_PI/180.0;
-    double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
     switch(nco_grd_2D_typ){
     case nco_grd_2D_ngl_eqi_fst:
       /* Manually normalize polar offset grid latitude weights to sum to 2.0 for global extent */
@@ -943,18 +957,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
     lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0]);
     assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < 1.0e-14); /* [frc] Round-off tolerance for sum of quadrature weights */
-    
-    /* Allocate space for and obtain area, fraction, and mask */
-    area_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
-    frc_out=(double *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(crd_typ_out));
-    msk_out=(int *)nco_malloc(rgr_map.dst_grid_size*nco_typ_lng(NC_INT));
-    dmn_srt[0]=0L;
-    dmn_cnt[0]=rgr_map.dst_grid_size;
-    rcd=nco_get_vara(in_id,area_dst_id,dmn_srt,dmn_cnt,area_out,crd_typ_out);
-    rcd=nco_get_vara(in_id,frc_dst_id,dmn_srt,dmn_cnt,frc_out,crd_typ_out);
-    if(msk_dst_id != NC_MIN_INT){
-      rcd=nco_get_vara(in_id,msk_dst_id,dmn_srt,dmn_cnt,msk_out,crd_typ_out);
-    } /* !msk */
 
     /* When possible, ensure area_out is non-zero */
     if(nco_grd_xtn == nco_grd_xtn_rgn){
@@ -973,32 +975,34 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	} /* !zero */
       } /* !quad */
     } /* !rgn */
+  } /* !flg_grd_out_2D */
     
-    /* Verify area_out is always non-zero... */
-    for(idx=0;idx<rgr_map.dst_grid_size;idx++)
-      /* ESMF documentation says "The grid area array is only output when the conservative remapping option is used", although I have not noticed this to be the case */
-      if(area_out[idx] == 0.0) break;
-    if(idx != rgr_map.dst_grid_size){
-      (void)fprintf(stdout,"%s: ERROR %s reports area_out contains zero-element at 1D idx=%ld\n",nco_prg_nm_get(),fnc_nm,idx);
-      nco_exit(EXIT_FAILURE);
-    } /* zero */
+  /* Verify area_out is always non-zero */
+  for(idx=0;idx<rgr_map.dst_grid_size;idx++)
+    /* ESMF documentation says "The grid area array is only output when the conservative remapping option is used", although I have not noticed this to be the case */
+    if(area_out[idx] == 0.0) break;
+  if(idx != rgr_map.dst_grid_size){
+    (void)fprintf(stdout,"%s: ERROR %s reports area_out contains zero-element at 1D idx=%ld\n",nco_prg_nm_get(),fnc_nm,idx);
+    nco_exit(EXIT_FAILURE);
+  } /* zero */
       
-    /* Verify frc_out is sometimes non-zero... */
-    for(idx=0;idx<rgr_map.dst_grid_size;idx++)
-      if(frc_out[idx] != 0.0) break;
-    if(idx == rgr_map.dst_grid_size){
-      (void)fprintf(stdout,"%s: ERROR %s reports frc_out contains all zeros\n",nco_prg_nm_get(),fnc_nm);
-      nco_exit(EXIT_FAILURE);
-    } /* zero */
+  /* Verify frc_out is sometimes non-zero */
+  for(idx=0;idx<rgr_map.dst_grid_size;idx++)
+    if(frc_out[idx] != 0.0) break;
+  if(idx == rgr_map.dst_grid_size){
+    (void)fprintf(stdout,"%s: ERROR %s reports frc_out contains all zeros\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* zero */
     /* Test whether frc_out is always one... */
-    nco_bool flg_frc_out_one=False;
-    for(idx=0;idx<rgr_map.dst_grid_size;idx++)
-      if(frc_out[idx] != 1.0) break;
-    if(idx == rgr_map.dst_grid_size) flg_frc_out_one=True;
-      
+  nco_bool flg_frc_out_one=False;
+  for(idx=0;idx<rgr_map.dst_grid_size;idx++)
+    if(frc_out[idx] != 1.0) break;
+  if(idx == rgr_map.dst_grid_size) flg_frc_out_one=True;
+
+  /* Detailed summary of 2D grids now available including quality-checked coordinates and area */
+  if(flg_grd_out_2D){
     if(nco_dbg_lvl_get() >= nco_dbg_sbr){
       (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
-      double area_out_ttl=0.0; /* [frc] Exact sum of area */
       lat_wgt_ttl=0.0;
       area_out_ttl=0.0;
       for(idx=0;idx<lat_nbr_out;idx++)
@@ -1018,9 +1022,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !flg_grd_out_2D */
 
   /* Allocate space for and obtain weights and addresses */
-  wgt_raw=(double *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_DOUBLE),"Unable to malloc() value buffer for remapping weights",fnc_nm);
-  col_src_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),"Unable to malloc() value buffer for remapping addresses",fnc_nm);
-  row_dst_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),"Unable to malloc() value buffer for remapping addresses",fnc_nm);
+  wgt_raw=(double *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_DOUBLE),fnc_nm,"Unable to malloc() value buffer for remapping weights");
+  col_src_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
+  row_dst_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
 
   /* Obtain remap matrix addresses and weights from map file */
   dmn_srt[0]=0L;
@@ -1804,7 +1808,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  var_sz_in*=dmn_cnt[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
-	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),"Unable to malloc() input value buffer",fnc_nm);
+	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
 	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt,var_val_dbl_in,var_typ_rgr);
 
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
@@ -1812,7 +1816,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  var_sz_out*=dmn_cnt[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
-	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),"Unable to malloc() input value buffer",fnc_nm);
+	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
 	
 	lvl_nbr=1;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
@@ -1822,7 +1826,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	/* Missing value setup */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 	if(has_mss_val) tally=(int *)nco_calloc(var_sz_out,nco_typ_lng(NC_INT));
-	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),"Unable to malloc() input weight buffer",fnc_nm);
+	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input weight buffer");
 	if(has_mss_val && flg_rnr) 
 	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) wgt_vld_out[dst_idx]=0.0;
 

@@ -18,10 +18,8 @@
    nco_malloc_flg() prints warning for ENOMEM errors, then returns control to calling routine
    nco_malloc_flg() plug-in replacements are malloc() and nco_malloc() 
    
-   nco_malloc_dbg(): Use this for large memory requests when calling routine supplies
-   its name and useful supplemental error message
-   nco_malloc_dbg() prints name of calling function, supplemental error message, and then 
-   dies and exits for all error conditions.
+   nco_malloc_dbg(): Use this for large memory requests when calling routine supplies its name and useful supplemental error message
+   nco_malloc_dbg() prints name of calling function, supplemental error message, and then dies and exits for all error conditions.
    nco_malloc_dbg() has no plug-in replacements (since it requires two extra arguments)
    
    None of these routines call malloc() when sz == 0 */
