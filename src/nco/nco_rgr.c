@@ -689,11 +689,11 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
     /* Check-for and workaround faulty Tempest grid sizes */
     if(flg_grd_in_1D && (rgr_map.src_grid_size != dmn_sz_in_int[0])){
-      (void)fprintf(stdout,"%s: WARNING %s input grid dimension sizes disagree rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable in Tempest mapfile. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
+      (void)fprintf(stdout,"%s: WARNING %s reports input grid dimension sizes disagree rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable in Tempest mapfile. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
       dmn_sz_in_int[0]=rgr_map.src_grid_size;
     } /* !bug */
     if(flg_grd_out_1D && (rgr_map.dst_grid_size != dmn_sz_out_int[0])){
-      (void)fprintf(stdout,"%s: WARNING %s output grid dimension sizes disagree rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable in Tempest mapfile. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
+      (void)fprintf(stdout,"%s: WARNING %s reports output grid dimension sizes disagree rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable in Tempest mapfile. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
       dmn_sz_out_int[0]=rgr_map.dst_grid_size;
     } /* !bug */
   } /* !Tempest */
@@ -709,6 +709,8 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     col_nbr_in=0;
     lon_nbr_in=dmn_sz_in_int[lon_psn_src];
     lat_nbr_in=dmn_sz_in_int[lat_psn_src];
+    /* Sanity-check */
+    assert(lat_nbr_in*lon_nbr_in == rgr_map.src_grid_size);
   } /* !src_grid_rank */
 
   const int bnd_tm_nbr_out=2; /* [nbr] Number of boundaries for output time */
@@ -1023,6 +1025,33 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   in_id=rgr->in_id;
   out_id=rgr->out_id;
 
+  /* Sanity check that input data file matches expectations from mapfile */
+  char *col_nm=rgr->col_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
+  char *lat_nm=rgr->lat_nm; /* [sng] Name of dimension to recognize as latitude */
+  char *lon_nm=rgr->lon_nm; /* [sng] Name of dimension to recognize as longitude */
+  int dmn_id_col; /* [id] Dimension ID */
+  int dmn_id_lat; /* [id] Dimension ID */
+  int dmn_id_lon; /* [id] Dimension ID */
+  if(flg_grd_in_1D){
+    long col_nbr_in_dat; /* [nbr] Number of columns in input datafile */
+    rcd=nco_inq_dimid(in_id,col_nm,&dmn_id_col);
+    rcd=nco_inq_dimlen(in_id,dmn_id_col,&col_nbr_in_dat);
+    if(col_nbr_in != col_nbr_in_dat) (void)fprintf(stdout,"%s: ERROR %s reports mapfile and data file dimension sizes disagree: mapfile col_nbr_in = %ld != %ld = col_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,col_nbr_in,col_nbr_in_dat);
+    nco_exit(EXIT_FAILURE);
+  } /* !1D */
+  if(flg_grd_in_2D){
+    long lat_nbr_in_dat; /* [nbr] Number of latitudes in input datafile */
+    rcd=nco_inq_dimid(in_id,lat_nm,&dmn_id_lat);
+    rcd=nco_inq_dimlen(in_id,dmn_id_lat,&lat_nbr_in_dat);
+    if(lat_nbr_in != lat_nbr_in_dat) (void)fprintf(stdout,"%s: ERROR %s reports mapfile and data file dimension sizes disagree: mapfile lat_nbr_in = %ld != %ld = lat_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lat_nbr_in,lat_nbr_in_dat);
+    nco_exit(EXIT_FAILURE);
+    long lon_nbr_in_dat; /* [nbr] Number of longitudes in input datafile */
+    rcd=nco_inq_dimid(in_id,lon_nm,&dmn_id_lon);
+    rcd=nco_inq_dimlen(in_id,dmn_id_lon,&lon_nbr_in_dat);
+    if(lon_nbr_in != lon_nbr_in_dat) (void)fprintf(stdout,"%s: ERROR %s reports mapfile and data file dimension sizes disagree: mapfile lon_nbr_in = %ld != %ld = lon_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lon_nbr_in,lon_nbr_in_dat);
+    nco_exit(EXIT_FAILURE);
+  } /* !2D */
+    
   /* Do not extract extensive variables like lon, lat, and area
      If necessary, create them from scratch from remap data */
   const int var_xcl_lst_nbr=13; /* [nbr] Number of objects on exclusion list */
@@ -1045,9 +1074,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     } /* endif */
   } /* end loop */
   
-  char *col_nm=rgr->col_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
-  char *lat_nm=rgr->lat_nm; /* [sng] Name of dimension to recognize as latitude */
-  char *lon_nm=rgr->lon_nm; /* [sng] Name of dimension to recognize as longitude */
   char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
   int dmn_idx; /* [idx] Dimension index */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input variable */
@@ -1116,9 +1142,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   char *lat_wgt_nm;
   char *lon_bnd_nm_out;
   char *lon_nm_out;
-  int dmn_id_lat; /* [id] Dimension ID */
-  int dmn_id_col; /* [id] Dimension ID */
-  int dmn_id_lon; /* [id] Dimension ID */
   int dmn_id_bnd; /* [id] Dimension ID */
   int dmn_id_bnd_tm; /* [id] Dimension ID */
   int area_out_id; /* [id] Variable ID for area */
