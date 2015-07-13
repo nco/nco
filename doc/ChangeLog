@@ -1,5 +1,9 @@
 2015-07-13  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.2-alpha2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha2 final changes'';git push
+	git tag -a 4.5.2-alpha2 -m 'Version 4.5.2-alpha2 tag: Displaced-pole support, fracarea/destarea';git push --tags
+
 	* Completed (though did not verify) first regridding to/from POP displaced-pole grid with SCRIP mapfile
 
 	* Valgrind emits "uninitialized value" warnings at first cosine cos() function in nco_lat_wgt_gss()---why?
