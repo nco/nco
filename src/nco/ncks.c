@@ -156,9 +156,11 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_rgr=False; /* [flg] Regrid */
+  nco_bool flg_gaa=False; /* [flg] Global attribute add */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
+  char **gaa_arg=NULL; /* [sng] Global attribute arguments */
   char **grp_lst_in=NULL;
   char **rgr_arg=NULL; /* [sng] Regridding arguments */
   char **var_lst_in=NULL;
@@ -234,6 +236,7 @@ main(int argc,char **argv)
   int fl_nbr=0;
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
+  int gaa_nbr=0; /* [nbr] Number of global attributes to add */
   int grp_dpt_fl; /* [nbr] Maximum group depth (root = 0) */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int grp_nbr_fl;
@@ -359,6 +362,8 @@ main(int argc,char **argv)
       {"file_format",required_argument,0,0},
       {"fix_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
       {"no_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
+      {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
+      {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
@@ -498,6 +503,11 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
+        flg_gaa=True;
+        gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
+        gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
+      } /* endif "rgr" */
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

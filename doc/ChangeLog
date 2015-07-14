@@ -1,3 +1,7 @@
+2015-07-14  Charlie Zender  <zender@uci.edu>
+
+	* 
+
 2015-07-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.2-alpha2 release procedure:
@@ -12,10 +16,10 @@
 
 	* Ensure double normalization (with --rnr and "none" = imask) does not occur
 
-	* Convert input coordinates to degrees to handle POP grids
+	* Convert input coordinates from radians to degrees if necessary, handle POP grids
 
-	* Allow "fracarea" normalization which is, in my terminology, no normalization just weights
-	"fracarea" is what we were actually doing before, although technically all fields tested were "destarea"
+	* Allow SCRIP "fracarea" normalization which is, in my terminology, no normalization just weights
+	"fracarea" is what NCO actually did before, although technically all ESMF fields tested were "destarea"
 	But their dst_frac = frac_b was uniformly 1.0, so no difference	from "destarea"
 
 2015-07-12  Charlie Zender  <zender@uci.edu>
