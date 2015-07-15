@@ -292,7 +292,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     nco_exit(EXIT_FAILURE);
   } /* end for */
 
-  /* Revert to defaults for any not specified on command-line */
+  /* Revert to defaults for any names not specified on command-line */
   if(!rgr->area_nm) rgr->area_nm=(char *)strdup("area"); /* [sng] Name of variable containing gridcell area */
   if(!rgr->bnd_nm) rgr->bnd_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for spatial bounds */
   /* NB: CESM uses nbnd for temporal bounds. NCO defaults to nbnd for all bounds with two endpoints */

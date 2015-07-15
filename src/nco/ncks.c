@@ -507,7 +507,7 @@ main(int argc,char **argv)
         flg_gaa=True;
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
         gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
-      } /* endif "rgr" */
+      } /* endif "gaa" */
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -617,7 +617,7 @@ main(int argc,char **argv)
       } /* endif rgr_rnr */
       if(!strcmp(opt_crr,"rgr_var")) rgr_var=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nRegridding\t\t--rgr...\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */
@@ -972,11 +972,11 @@ main(int argc,char **argv)
 
       /* Copy Global Metadata */
       rgr_nfo->out_id=out_id;
-      //      out_id=rgr_nfo->out_id;
       nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
       (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
       /* Catenate time-stamped command line to "history" global attribute */
       if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+      if(flg_gaa) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
       if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
       if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
@@ -1013,6 +1013,7 @@ main(int argc,char **argv)
       /* Catenate time-stamped command line to "history" global attribute */
       if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
       if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
+      if(flg_gaa) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
       if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
 #ifdef ENABLE_MPI
       if(prc_rnk == rnk_mgr)

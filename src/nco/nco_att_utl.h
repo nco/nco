@@ -159,6 +159,12 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
  char * const * const rnm_arg); /* I [sng] Unstructured list of old, new names */
 
 void 
+nco_glb_att_add /* [fnc] Add global attributes */
+(const int out_id, /* I [id] netCDF output-file ID */
+ char **gaa_arg,  /* [sng] Global attribute arguments */
+ const int gaa_arg_nbr);  /* [nbr] Number of global attribute arguments */
+
+void 
 nco_thr_att_cat /* [fnc] Add threading global attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const int thr_nbr); /* I [nbr] Thread number */

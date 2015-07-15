@@ -1927,6 +1927,70 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
 } /* end nco_vrs_att_cat() */
 
 void 
+nco_glb_att_add /* [fnc] Add global attributes */
+(const int out_id, /* I [id] netCDF output-file ID */
+ char **gaa_arg,  /* [sng] Global attribute arguments */
+ const int gaa_arg_nbr)  /* [nbr] Number of global attribute arguments */
+{
+  /* Purpose: Decode arguments into attributes and add as global metadata to output file */
+  aed_sct gaa_aed;
+  char att_nm_nbr[]="nco_openmp_thread_number";
+  int gaa_idx;
+  int gaa_arg_idx;
+  int gaa_nbr=0;
+  kvm_sct *gaa_lst=NULL; /* [sct] List of all GAA specifications */
+  kvm_sct kvm;
+  nco_int thr_nbr_lng; /* [nbr] Thread number copy */
+  ptr_unn att_val;
+
+  gaa_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
+
+  /* Parse GAAs */
+  for(gaa_arg_idx=0;gaa_arg_idx<gaa_arg_nbr;gaa_arg_idx++){
+    if(!strstr(gaa_arg[gaa_arg_idx],"=")){
+      (void)fprintf(stdout,"%s: Invalid --gaa specification: %s. Must contain \"=\" sign, e.g., \"key=value\".\n",nco_prg_nm_get(),gaa_arg[gaa_arg_idx]);
+      if(gaa_lst) gaa_lst=(kvm_sct *)nco_free(gaa_lst);
+      nco_exit(EXIT_FAILURE);
+    } /* endif */
+    kvm=nco_sng2kvm(gaa_arg[gaa_arg_idx]);
+    /* nco_sng2kvm() converts argument "--gaa one,two=3" into kvm.key="one,two" and kvm.val=3
+       Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
+    if(kvm.key){
+      int att_idx; /* [idx] Index over attribute names in current GAA argument */
+      int att_nbr; /* [nbr] Number of attribute names in current GAA argument */
+      char **att_lst;
+      att_lst=nco_lst_prs_2D(kvm.key,",",&att_nbr);
+      for(att_idx=0;att_idx<att_nbr;att_idx++){ /* Expand multi-attribute-name specification */
+        gaa_lst[gaa_nbr].key=strdup(att_lst[att_idx]);
+        gaa_lst[gaa_nbr].val=strdup(kvm.val);
+        gaa_nbr++;
+      } /* end for */
+      att_lst=nco_sng_lst_free(att_lst,att_nbr);
+    } /* end if */
+  } /* end for */
+
+  for(gaa_idx=0;gaa_idx<gaa_nbr;gaa_idx++){
+    /* Insert attribute value */
+    att_val.cp=gaa_lst[gaa_idx].val;
+    /* Initialize attribute edit structure */
+    gaa_aed.att_nm=gaa_lst[gaa_idx].key;
+    gaa_aed.var_nm=NULL;
+    gaa_aed.id=NC_GLOBAL;
+    gaa_aed.type=NC_CHAR;
+    /* Insert value into attribute structure */
+    gaa_aed.val=att_val;
+    gaa_aed.sz=strlen(gaa_aed.val.cp);
+    gaa_aed.mode=aed_overwrite;
+    /* Write attribute to disk */
+    (void)nco_aed_prc(out_id,NC_GLOBAL,gaa_aed);
+  } /* !gaa_idx */
+  
+  /* Free kvms */
+  if(gaa_lst) gaa_lst=nco_kvm_lst_free(gaa_lst,gaa_nbr);
+
+} /* end nco_glb_att_add() */
+ 
+void 
 nco_thr_att_cat /* [fnc] Add threading global attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const int thr_nbr) /* I [nbr] Thread number */

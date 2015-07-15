@@ -2620,6 +2620,28 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+# ncks #108
+# ncks -h -O --gaa script=nco_climo.sh ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11    
+    $dsc_sng="Add single global attribute";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa script=nco_climo.sh $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'script' | cut -d ' ' -f 11";
+    $tst_cmd[2]="nco_climo.sh";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+# ncks #109
+# ncks -h -O --gaa foo=bar --gaa foo2,foo3=bar2 --gaa script='created by nco_climo.sh' ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
+    $dsc_sng="Add multiple global attributes";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar --gaa foo2,foo3=bar2 --gaa script='created by nco_climo.sh' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'script' | cut -d ' ' -f 11-13";
+    $tst_cmd[2]="created by nco_climo.sh";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
 } # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #####################
