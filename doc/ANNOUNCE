@@ -23,64 +23,31 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Regrid global datasets with TempestRemap mapfiles (in addition to
-   ESMF and SCRIP, which were already supported). Tempest mapfiles
-   use slightly different conventions than the other two, and this
-   release accounts for those differences. This capability makes
-   NCO's regridder a drop-in replacement for the Tempest program
-   ApplyOfflineMap with global (source and destination) maps.
-   The two produce the same results, modulo metadata.
+A. Regrid regional datasets with ESMF, SCRIP, and TempestRemap
+   mapfiles.
    Please give it a try and send us feedback!
-   # Regrid entire file, same output format as input:
+   # Regrid global file to regional domain
    ncks --map=map.nc in.nc out.nc
-   # Deflated netCDF4 output, threading, selected variables:
-   ncks -4 -L 1 -t 8 -v FS.?,T --map=map.nc in.nc out.nc
    http://nco.sf.net/nco.html#regrid
 
-B. ncatted now supports regular expressions in both the variable name 
-   AND the attribute name (simultaneously, too). Previously, ncatted
-   accepted regular expressions only in the variable name. The new
-   functionality simplifies sculpting metadata topiary from files with
-   baroque metadata annotations, since whole groups of attributes may
-   now be added/modified/deleted with a single command. For example,
-   delete all attributes whose names end in "_iso19115" from all
-   variables whose names contain "H2O".
-   ncatted -a '.?_iso19115$','^H2O*',d,, in.nc
-   http://nco.sf.net/nco.html#ncatted
-
-C. Add mibs/mabs/mebs methods and operators to ncap2. These are the
-   absolute-value analogues of min/max/mean, so that, e.g., mibs()
-   returns the minimum absolute-value of the operand.
-   tpt_max=temperature.max();
-   tpt_max=max(temperature);
-   tpt_mabs=temperature.mabs();
-   tpt_mabs=mabs(temperature);
-   http://nco.sf.net/nco.html#mibs
-   http://nco.sf.net/nco.html#ppc
-   http://nco.sf.net/nco.html#ncap2
-
-D. Prevent operators from repeating existing cell_methods attribute.
-   Previously NCO would append new operations, e.g., "time: mean" to
-   the existing cell_methods attribute, if any. Now it first checks
-   to see whether that method has been applied and, if so, declines
-   to write a duplicate operation.
-   http://nco.sf.net/nco.html#cll_mth
+A. All operators can now add user-specified global attributes to
+   output files using the --glb switch. The switch takes mandatory
+   arguments --glb att_nm=att_val where att_nm is the desired name of
+   the global attriute to add, and att_val is its value.
+   Currently only text attributes are supported (recorded as type
+   NC_CHAR, and regular expressions are not allowed (unlike ncatted). 
+   Multiple invocations simplify the annotation of output file at
+   creation (or modification) time, and incur no performance penalty.
+   Should users emit a loud hue and cry, we will consider ading the
+   the functionality of ncatted to the front-end of all operators,
+   i.e., accepting valid arguments to modify attributes of any type
+   and to apply regular expressions. 
+   ncra --glb machine=${HOSTNAME} --glb created_by=${USER} in*.nc out.nc
+   http://nco.sf.net/nco.html#glb
 
 BUG FIXES:
 
-A. Fix formatting of history_of_appended_files attribute when appended 
-   file had no history attribute.
-   http://nco.sf.net/nco.html#history
-
-B. Round-up to one rather than round-down to zero in chunking maps lfp
-   and rew. This fixes a bug that only appears on datasets with
-   certain shapes. 
-   http://nco.sf.net/nco.html#cnk
-
-C. Fix bug using min/max on coordinate variables in ncap2
-
-D. Initialize memory that appeared to cause zeros to be written
-   by regridder compiled by clang on MacOSX.
+A.
 
 KNOWN PROBLEMS DUE TO NCO:
 

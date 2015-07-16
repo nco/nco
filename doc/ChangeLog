@@ -1,3 +1,15 @@
+2015-07-16  Charlie Zender  <zender@uci.edu>
+
+	* Document --glb_att_add
+
+2015-07-15  Charlie Zender  <zender@uci.edu>
+
+	* Change --glb_mtd_spp to --no_glb_mtd so --glb can refer to --gaa
+
+	* Implement glb_att_add (gaa) in ncra
+
+	* Eliminate small leak in kvm loop in nco_glb_att_add(), nco_rgr_ini()
+
 2015-07-14  Charlie Zender  <zender@uci.edu>
 
 	* Implement glb_att_add (gaa) in ncks

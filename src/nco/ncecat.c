@@ -307,8 +307,8 @@ main(int argc,char **argv)
       {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
-      {"glb_mtd_spp",no_argument,0,'M'},
-      {"global_metadata_suppress",no_argument,0,'M'},
+      {"no_glb_mtd",no_argument,0,'M'},
+      {"suppress_global_metadata",no_argument,0,'M'},
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},

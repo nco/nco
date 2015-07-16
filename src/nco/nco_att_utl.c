@@ -1934,13 +1934,11 @@ nco_glb_att_add /* [fnc] Add global attributes */
 {
   /* Purpose: Decode arguments into attributes and add as global metadata to output file */
   aed_sct gaa_aed;
-  char att_nm_nbr[]="nco_openmp_thread_number";
   int gaa_idx;
   int gaa_arg_idx;
   int gaa_nbr=0;
   kvm_sct *gaa_lst=NULL; /* [sct] List of all GAA specifications */
   kvm_sct kvm;
-  nco_int thr_nbr_lng; /* [nbr] Thread number copy */
   ptr_unn att_val;
 
   gaa_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
@@ -1962,7 +1960,7 @@ nco_glb_att_add /* [fnc] Add global attributes */
       att_lst=nco_lst_prs_2D(kvm.key,",",&att_nbr);
       for(att_idx=0;att_idx<att_nbr;att_idx++){ /* Expand multi-attribute-name specification */
         gaa_lst[gaa_nbr].key=strdup(att_lst[att_idx]);
-        gaa_lst[gaa_nbr].val=strdup(kvm.val);
+	gaa_lst[gaa_nbr].val=strdup(kvm.val);
         gaa_nbr++;
       } /* end for */
       att_lst=nco_sng_lst_free(att_lst,att_nbr);

@@ -121,7 +121,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.2-alpha3
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 10 July 2015
+@set update-date 16 July 2015
 @set update-month July 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2567,6 +2567,7 @@ feature is automatic and cannot be controlled by the user.
 * Operation Types::
 * Type Conversion::
 * Batch Mode::
+* Global Attribute Addition::
 * History Attribute::
 * File List Attributes::
 * CF Conventions::
@@ -9833,7 +9834,7 @@ ncap2 -s 'tpt=short(tpt);prs=double(prs)' in.nc out.nc
 <a name="ovr"></a> <!-- http://nco.sf.net/nco.html#ovr -->
 <a name="-O"></a> <!-- http://nco.sf.net/nco.html#-O -->
 @end html
-@node Batch Mode, History Attribute, Type Conversion, Shared features
+@node Batch Mode, Global Attribute Addition, Type Conversion, Shared features
 @section Batch Mode
 @cindex batch mode
 @cindex overwriting files
@@ -9869,11 +9870,57 @@ NB: As of 20120515, @command{ncap2} is unable to append to files that
 already contain the appended dimensions. 
 
 @html
+<a name="gaa"></a> <!-- http://nco.sf.net/nco.html#gaa -->
+<a name="glb"></a> <!-- http://nco.sf.net/nco.html#glb -->
+<a name="glb_att_add"></a> <!-- http://nco.sf.net/nco.html#glb_att_add -->
+@end html
+@node Global Attribute Addition, History Attribute, Batch Mode, Shared features
+@section Global Attribute Addition
+@cindex global attributes
+@cindex attributes, global
+@cindex @code{--gaa}
+@cindex @code{--glb @var{att_nm}=@var{att_val}}
+@cindex @code{--glb}
+@cindex @code{--glb_att_add}
+@cindex @command{ncatted}
+@cartouche
+Availability: All operators@*
+Short options: None@*
+Long options: @samp{--glb}, @samp{--gaa}, @samp{--glb_att_add}@*
+@samp{--glb @var{att_nm}=@var{att_val}} (multiple invocations allowed)@*
+@end cartouche
+All operators can add user-specified global attributes to output files.
+As of @acronym{NCO} version 4.5.2 (July, 2015), @acronym{NCO} supports
+multiple uses of the @samp{--glb} (or equivalent @samp{--gaa} or
+@samp{--glb_att_add}) switch.
+The switch takes mandatory arguments 
+@samp{--glb @var{att_nm}=@var{att_val}}   
+where @var{att_nm} is the desired name of the global attriute to add, 
+and @var{att_val} is its value.
+Currently only text attributes are supported (recorded as type
+@code{NC_CHAR}), and regular expressions are not allowed (unlike
+@pxref{ncatted netCDF Attribute Editor}).    
+@example
+@verbatim
+ncra --glb machine=${HOSTNAME} --glb created_by=${USER} in*.nc out.nc
+@end verbatim
+@end example
+Multiple invocations simplify the annotation of output file at creation
+(or modification) time.
+
+This feature helps to avoid the performance penalty incurred by having
+to use @command{ncatted} separately to annotate large files.
+Should users emit a loud hue and cry, we will consider ading the
+the functionality of @command{ncatted} to the front-end of all
+operators, i.e., accepting valid @command{ncatted} arguments to
+modify attributes of any type and to apply regular expressions.
+
+@html
 <a name="hst"></a> <!-- http://nco.sf.net/nco.html#hst -->
 <a name="history"></a> <!-- http://nco.sf.net/nco.html#history -->
 <a name="-h"></a> <!-- http://nco.sf.net/nco.html#-h -->
 @end html
-@node History Attribute, File List Attributes, Batch Mode, Shared features
+@node History Attribute, File List Attributes, Global Attribute Addition, Shared features
 @section History Attribute
 @cindex @code{history}
 @cindex timestamp
@@ -10456,7 +10503,7 @@ in-depth examples of @command{ncap2} solutions to complex problems.
 SYNTAX
 @example
 ncap2 [-3] [-4] [-6] [-7] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] 
-[-D @var{dbg}] [-F] [-f] [-h] [--hdf] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}]
+[-D @var{dbg}] [-F] [-f] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}]
 [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
 @var{input-file} [@var{output-file}]  
@@ -14744,7 +14791,7 @@ SYNTAX
 ncbo [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl]
 [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
@@ -15171,7 +15218,7 @@ SYNTAX
 nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}] [--no_tmp_fl] [--nsm_fl|grp] [--nsm_sfx sfx]
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
@@ -15395,7 +15442,7 @@ SYNTAX
 ncecat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdf] [--hdr_pad @var{nbr}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
@@ -15518,7 +15565,8 @@ as positional arguments on the command line
 (@pxref{Large Numbers of Files}).
 
 @cindex @code{-M}
-@cindex @code{--glb_mtd_spp}
+@cindex @code{--no_glb_mtd}
+@cindex @code{--suppress_global_metadata}
 @cindex @code{history}
 @cindex provenance
 @cindex metadata, global 
@@ -15526,14 +15574,14 @@ Suppress global metadata copying.
 By default @acronym{NCO}'s multi-file operators copy the global metadata
 from the first input file into @var{output-file}.  
 This helps to preserve the provenance of the output data.
-However, the use of metadata is burgeoning and is not uncommon to
-encounter files with excessive amounts of extraneous metadata.
+However, the use of metadata is burgeoning and sometimes one
+encounters files with excessive amounts of extraneous metadata.
 Extracting small bits of data from such files leads to output files
 which are much larger than necessary due to the automatically copied
 metadata.
 @command{ncecat} supports turning off the default copying of global
 metadata via the @samp{-M} switch (or its long option equivalents,
-@samp{--glb_mtd_spp} and @samp{--global_metadata_suppress}). 
+@samp{--no_glb_mtd} and @samp{--suppress_global_metadata}). 
 
 @cindex climate model
 Consider five realizations, @file{85a.nc}, @file{85b.nc}, 
@@ -15655,7 +15703,7 @@ SYNTAX
 ncflint [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
-[-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
+[-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
 [-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
@@ -15917,10 +15965,11 @@ SYNTAX
 ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--grp_xtr_var_xcl] [-H] [-h] [--hdn] [--hdr_pad @var{nbr}]
-[-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--map @var{map-file}] [--md5_digest] [--mk_rec_dmn @var{dim}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
+[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}]
+[-M] [-m] [--map @var{map-file}] [--md5] [--mk_rec_dmn @var{dim}]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
-[-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rnr=wgt] [-s @var{format}] 
+[-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt] [-s @var{format}] 
 [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
 @var{input-file} [[@var{output-file}]]
 @end example
@@ -17119,7 +17168,7 @@ SYNTAX
 ncpdq [-3] [-4] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
-[-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}]
+[-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] [--ppc ...]
 [-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-U] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x]
@@ -17710,7 +17759,7 @@ SYNTAX
 ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
@@ -17862,7 +17911,7 @@ SYNTAX
 ncrcat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
@@ -18001,7 +18050,7 @@ SYNTAX
 @example
 ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
 [-d @var{old_name},@var{new_name}] [-d @dots{}] [-g @var{old_name},@var{new_name}] [-g @dots{}] 
-[-h] [--hdf] [--hdr_pad @var{nbr}] [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
+[--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-v @var{old_name},@var{new_name}] [-v @dots{}]
 @var{input-file} [[@var{output-file}]]
 @end example
@@ -18342,7 +18391,7 @@ SYNTAX
 ncwa [-3] [-4] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}] [-I]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}] [-I]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rth_dbl|flt]
 [-T @var{mask_comp}] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}]

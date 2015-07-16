@@ -110,54 +110,6 @@
 int 
 main(int argc,char **argv)
 {
-  nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
-  nco_bool CPY_GRP_METADATA; /* [flg] Copy group metadata (attributes) */
-  nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
-  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  nco_bool FL_RTR_RMT_LCN;
-  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  nco_bool FORCE_APPEND=False; /* Option A */
-  nco_bool FORCE_NOCLOBBER=False; /* Option no-clobber */
-  nco_bool FORCE_OVERWRITE=False; /* Option O */
-  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
-  nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
-  nco_bool GET_FILE_INFO=False; /* [flg] Get file information (#groups, #dimensions, #attributes, #variables) */
-  nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
-  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
-  nco_bool GRP_XTR_VAR_XCL=False; /* [flg] Extract matching groups, exclude matching variables */
-  nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
-  nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-  nco_bool PRN_CDL=False; /* [flg] Print CDL */
-  nco_bool PRN_HDN=False; /* [flg] Print hidden attributes */
-  nco_bool PRN_SRM=False; /* [flg] Print ncStream */
-  nco_bool PRN_JSN=False; /* [flg] Print JSON */
-  nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
-  nco_bool PRN_XML_LOCATION=True; /* [flg] Print XML location tag */
-  nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
-  nco_bool PRN_DMN_UNITS=True; /* [flg] Print dimensional units Option u */
-  nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
-  nco_bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
-  nco_bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
-  nco_bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
-  nco_bool PRN_MSS_VAL_BLANK=True; /* [flg] Print missing values as blanks */
-  nco_bool PRN_QUENCH=False; /* [flg] Quench (turn-off) all printing to screen */
-  nco_bool PRN_VAR_DATA=False; /* [flg] Print variable data */
-  nco_bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
-  nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
-  nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
-  nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
-  nco_bool PRN_NEW_FMT=False; /* [flg] Print using new print format */
-  nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
-  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
-  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
-  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
-  nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
-  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
-  nco_bool flg_rgr=False; /* [flg] Regrid */
-  nco_bool flg_gaa=False; /* [flg] Global attribute add */
-
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **gaa_arg=NULL; /* [sng] Global attribute arguments */
@@ -258,6 +210,54 @@ main(int argc,char **argv)
   kvm_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
+
+  nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
+  nco_bool CPY_GRP_METADATA; /* [flg] Copy group metadata (attributes) */
+  nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
+  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
+  nco_bool FL_RTR_RMT_LCN;
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_NOCLOBBER=False; /* Option no-clobber */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
+  nco_bool GET_FILE_INFO=False; /* [flg] Get file information (#groups, #dimensions, #attributes, #variables) */
+  nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
+  nco_bool GRP_XTR_VAR_XCL=False; /* [flg] Extract matching groups, exclude matching variables */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
+  nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+  nco_bool PRN_CDL=False; /* [flg] Print CDL */
+  nco_bool PRN_HDN=False; /* [flg] Print hidden attributes */
+  nco_bool PRN_SRM=False; /* [flg] Print ncStream */
+  nco_bool PRN_JSN=False; /* [flg] Print JSON */
+  nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
+  nco_bool PRN_XML_LOCATION=True; /* [flg] Print XML location tag */
+  nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
+  nco_bool PRN_DMN_UNITS=True; /* [flg] Print dimensional units Option u */
+  nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
+  nco_bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
+  nco_bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
+  nco_bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
+  nco_bool PRN_MSS_VAL_BLANK=True; /* [flg] Print missing values as blanks */
+  nco_bool PRN_QUENCH=False; /* [flg] Quench (turn-off) all printing to screen */
+  nco_bool PRN_VAR_DATA=False; /* [flg] Print variable data */
+  nco_bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
+  nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
+  nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
+  nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
+  nco_bool PRN_NEW_FMT=False; /* [flg] Print using new print format */
+  nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
+  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+  nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_gaa=False; /* [flg] Global attribute add */
+  nco_bool flg_rgr=False; /* [flg] Regrid */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
@@ -503,11 +503,6 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
-      if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
-        flg_gaa=True;
-        gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
-        gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
-      } /* endif "gaa" */
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -558,6 +553,11 @@ main(int argc,char **argv)
         rec_dmn_nm_fix=strdup(optarg);
       } /* endif fix_rec_dmn */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
+        flg_gaa=True;
+        gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
+        gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
+      } /* endif gaa */
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
       if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
