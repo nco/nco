@@ -152,18 +152,9 @@ main(int argc,char **argv)
 {
   aed_sct *aed_lst=NULL_CEWI;
 
-  nco_bool FL_RTR_RMT_LCN;
-  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  nco_bool FORCE_APPEND=False; /* Option A */
-  nco_bool FORCE_OVERWRITE=False; /* Option O */
-  nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool FL_OUT_NEW=False;
-  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
-  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
-  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
-
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
+  char **gaa_arg=NULL; /* [sng] Global attribute arguments */
   char *aed_arg[NC_MAX_ATTRS];
   char *cmd_ln;
   char *fl_in=NULL;
@@ -190,12 +181,23 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int fl_nbr=0;
+  int gaa_nbr=0; /* [nbr] Number of global attributes to add */
   int nbr_aed=0; /* Option a. NB: nbr_var_aed gets incremented */
   int nbr_var_fl;
   int nc_id;  
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
+
+  nco_bool FL_RTR_RMT_LCN;
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool FL_OUT_NEW=False;
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
@@ -211,8 +213,7 @@ main(int argc,char **argv)
   int prc_nbr=0; /* [nbr] Number of MPI processes */
 #endif /* !ENABLE_MPI */
   
-  static struct option opt_lng[]=
-  { /* Structure ordered by short option key if possible */
+  static struct option opt_lng[]={ /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
     {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
@@ -230,6 +231,8 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
+    {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
     /* Long options with short counterparts */
@@ -287,6 +290,10 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
+        gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
+        gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
+      } /* endif gaa */
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);

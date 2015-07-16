@@ -1054,7 +1054,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-g, --grp --group\told_grp,new_grp Group's old and new names\n");
     if(prg_lcl != ncrename) (void)fprintf(stdout,"-g, --grp grp1[,grp2[...]] Group(s) to process (regular expressions supported)\n");
   } /* end if */
-  if(strstr(opt_sng,"--glb")) (void)fprintf(stdout,"    --glb --gaa --glb_att_add name=value\t\tGlobal attribute to add\n");
+  if(strstr(opt_sng,"--glb")) (void)fprintf(stdout,"    --glb_att_add nm=val\tGlobal attribute to add\n");
   if(strstr(opt_sng,"--gxvx, --grp_xtr_var_xcl")) (void)fprintf(stdout,"    --gxvx, --grp_xtr_var_xcl\tGroup Extraction Variable Exclusion\n");
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-H]")){

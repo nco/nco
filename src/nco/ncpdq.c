@@ -90,31 +90,11 @@ main(int argc,char **argv)
   aed_sct *aed_lst_add_fst=NULL_CEWI;
   aed_sct *aed_lst_scl_fct=NULL_CEWI;
 
-  nco_bool dmn_rvr_rdr[NC_MAX_DIMS]; /* [flg] Reverse dimensions */
-  nco_bool CNV_CCM_CCSM_CF;
-  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
-  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  nco_bool FL_RTR_RMT_LCN;
-  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  nco_bool FORCE_APPEND=False; /* Option A */
-  nco_bool FORCE_OVERWRITE=False; /* Option O */
-  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
-  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
-  nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool IS_REORDER=False; /* Re-order mode */
-  nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
-  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
-  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
-  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
-  nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
-  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
-  nco_bool flg_dmn_prc_usr_spc=False; /* [flg] Processed dimensions specified on command line */
-
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
   char **dmn_rdr_lst_in_rvr=NULL_CEWI; /* Option a (same list, keep the '-' )*/
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
+  char **gaa_arg=NULL; /* [sng] Global attribute arguments */
   char **var_lst_in=NULL_CEWI;
   char **grp_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
@@ -180,6 +160,7 @@ main(int argc,char **argv)
   int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
+  int gaa_nbr=0; /* [nbr] Number of global attributes to add */
   int idx=int_CEWI;
   int idx_rdr=int_CEWI;
   int in_id;  
@@ -203,6 +184,27 @@ main(int argc,char **argv)
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
+
+  nco_bool dmn_rvr_rdr[NC_MAX_DIMS]; /* [flg] Reverse dimensions */
+  nco_bool CNV_CCM_CCSM_CF;
+  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
+  nco_bool FL_RTR_RMT_LCN;
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool IS_REORDER=False; /* Re-order mode */
+  nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
+  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+  nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_dmn_prc_usr_spc=False; /* [flg] Processed dimensions specified on command line */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
@@ -228,8 +230,7 @@ main(int argc,char **argv)
   int prc_nbr=0; /* [nbr] Number of MPI processes */
 #endif /* !ENABLE_MPI */
   
-  static struct option opt_lng[]=
-  { /* Structure ordered by short option key if possible */
+  static struct option opt_lng[]={ /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
     {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
@@ -274,6 +275,8 @@ main(int argc,char **argv)
     {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
     {"fl_fmt",required_argument,0,0},
     {"file_format",required_argument,0,0},
+    {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
+    {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
     {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
@@ -400,6 +403,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
+        gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
+        gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
+      } /* endif gaa */
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdf_upk") || !strcmp(opt_crr,"hdf_unpack")) nco_upk_cnv=nco_upk_HDF; /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
@@ -706,6 +713,7 @@ main(int argc,char **argv)
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
+  if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
   if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
@@ -738,6 +746,7 @@ main(int argc,char **argv)
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
+  if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
   if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 

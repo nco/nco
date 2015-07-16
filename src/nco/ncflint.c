@@ -112,6 +112,7 @@ main(int argc,char **argv)
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
+  char **gaa_arg=NULL; /* [sng] Global attribute arguments */
   char **ntp_lst_in;
   char **grp_lst_in=NULL_CEWI;
   char **var_lst_in=NULL_CEWI;
@@ -176,6 +177,7 @@ main(int argc,char **argv)
   int fl_in_fmt_2; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
+  int gaa_nbr=0; /* [nbr] Number of global attributes to add */
   int has_mss_val=False;
   int idx;
   int in_id_1;  
@@ -230,104 +232,105 @@ main(int argc,char **argv)
   int prc_nbr=0; /* [nbr] Number of MPI processes */
 #endif /* !ENABLE_MPI */
   
-  static struct option opt_lng[]=
-    { /* Structure ordered by short option key if possible */
-      /* Long options with no argument, no short option counterpart */
-      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
-      {"hdf_upk",no_argument,0,0}, /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
-      {"hdf_unpack",no_argument,0,0}, /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
-      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-      {"msa_user_order",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-      {"fix_rec_crd",no_argument,0,0}, /* [flg] Do not interpolate/multiply record coordinate variables */
-      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
-      {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
-      {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
-      {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
-      {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
-      {"intersection",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
-      {"nsx",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
-      {"union",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
-      {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
-      {"version",no_argument,0,0},
-      {"vrs",no_argument,0,0},
-      /* Long options with argument, no short option counterpart */
-      {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
-      {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
-      {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
-      {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
-      {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
-      {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
-      {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
-      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
-      {"cnk_min",required_argument,0,0}, /* [B] Minimize size of variable to chunk */
-      {"chunk_min",required_argument,0,0}, /* [B] Minimize size of variable to chunk */
-      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
-      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
-      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
-      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
-      {"fl_fmt",required_argument,0,0},
-      {"file_format",required_argument,0,0},
-      {"hdr_pad",required_argument,0,0},
-      {"header_pad",required_argument,0,0},
-      {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
-      {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
-      {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
-      /* Long options with short counterparts */
-      {"3",no_argument,0,'3'},
-      {"4",no_argument,0,'4'},
-      {"64bit",no_argument,0,'4'},
-      {"netcdf4",no_argument,0,'4'},
-      {"append",no_argument,0,'A'},
-      {"coords",no_argument,0,'c'},
-      {"crd",no_argument,0,'c'},
-      {"no-coords",no_argument,0,'C'},
-      {"no-crd",no_argument,0,'C'},
-      {"debug",required_argument,0,'D'},
-      {"nco_dbg_lvl",required_argument,0,'D'},
-      {"dimension",required_argument,0,'d'},
-      {"dmn",required_argument,0,'d'},
-      {"fortran",no_argument,0,'F'},
-      {"ftn",no_argument,0,'F'},
-      {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
-      {"grp",required_argument,0,'g'},
-      {"group",required_argument,0,'g'},
-      {"history",no_argument,0,'h'},
-      {"hst",no_argument,0,'h'},
-      {"interpolate",required_argument,0,'i'},
-      {"ntp",required_argument,0,'i'},
-      {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
-      {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
-      {"local",required_argument,0,'l'},
-      {"lcl",required_argument,0,'l'},
-      {"overwrite",no_argument,0,'O'},
-      {"ovr",no_argument,0,'O'},
-      {"output",required_argument,0,'o'},
-      {"fl_out",required_argument,0,'o'},
-      {"path",required_argument,0,'p'},
-      {"retain",no_argument,0,'R'},
-      {"rtn",no_argument,0,'R'},
-      {"revision",no_argument,0,'r'},
-      {"thr_nbr",required_argument,0,'t'},
-      {"threads",required_argument,0,'t'},
-      {"omp_num_threads",required_argument,0,'t'},
-      {"variable",required_argument,0,'v'},
-      {"weight",required_argument,0,'w'},
-      {"wgt_var",no_argument,0,'w'},
-      {"auxiliary",required_argument,0,'X'},
-      {"exclude",no_argument,0,'x'},
-      {"xcl",no_argument,0,'x'},
-      {"help",no_argument,0,'?'},
-      {"hlp",no_argument,0,'?'},
-      {0,0,0,0}
-    }; /* end opt_lng */
+  static struct option opt_lng[]={ /* Structure ordered by short option key if possible */
+    /* Long options with no argument, no short option counterpart */
+    {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
+    {"hdf_upk",no_argument,0,0}, /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
+    {"hdf_unpack",no_argument,0,0}, /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
+    {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    {"msa_user_order",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    {"fix_rec_crd",no_argument,0,0}, /* [flg] Do not interpolate/multiply record coordinate variables */
+    {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
+    {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
+    {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+    {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+    {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
+    {"intersection",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+    {"nsx",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+    {"union",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+    {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+    {"version",no_argument,0,0},
+    {"vrs",no_argument,0,0},
+    /* Long options with argument, no short option counterpart */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
+    {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
+    {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
+    {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
+    {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
+    {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
+    {"cnk_min",required_argument,0,0}, /* [B] Minimize size of variable to chunk */
+    {"chunk_min",required_argument,0,0}, /* [B] Minimize size of variable to chunk */
+    {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
+    {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+    {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
+    {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
+    {"fl_fmt",required_argument,0,0},
+    {"file_format",required_argument,0,0},
+    {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
+    {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
+    {"hdr_pad",required_argument,0,0},
+    {"header_pad",required_argument,0,0},
+    {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    /* Long options with short counterparts */
+    {"3",no_argument,0,'3'},
+    {"4",no_argument,0,'4'},
+    {"64bit",no_argument,0,'4'},
+    {"netcdf4",no_argument,0,'4'},
+    {"append",no_argument,0,'A'},
+    {"coords",no_argument,0,'c'},
+    {"crd",no_argument,0,'c'},
+    {"no-coords",no_argument,0,'C'},
+    {"no-crd",no_argument,0,'C'},
+    {"debug",required_argument,0,'D'},
+    {"nco_dbg_lvl",required_argument,0,'D'},
+    {"dimension",required_argument,0,'d'},
+    {"dmn",required_argument,0,'d'},
+    {"fortran",no_argument,0,'F'},
+    {"ftn",no_argument,0,'F'},
+    {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
+    {"grp",required_argument,0,'g'},
+    {"group",required_argument,0,'g'},
+    {"history",no_argument,0,'h'},
+    {"hst",no_argument,0,'h'},
+    {"interpolate",required_argument,0,'i'},
+    {"ntp",required_argument,0,'i'},
+    {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
+    {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
+    {"local",required_argument,0,'l'},
+    {"lcl",required_argument,0,'l'},
+    {"overwrite",no_argument,0,'O'},
+    {"ovr",no_argument,0,'O'},
+    {"output",required_argument,0,'o'},
+    {"fl_out",required_argument,0,'o'},
+    {"path",required_argument,0,'p'},
+    {"retain",no_argument,0,'R'},
+    {"rtn",no_argument,0,'R'},
+    {"revision",no_argument,0,'r'},
+    {"thr_nbr",required_argument,0,'t'},
+    {"threads",required_argument,0,'t'},
+    {"omp_num_threads",required_argument,0,'t'},
+    {"variable",required_argument,0,'v'},
+    {"weight",required_argument,0,'w'},
+    {"wgt_var",no_argument,0,'w'},
+    {"auxiliary",required_argument,0,'X'},
+    {"exclude",no_argument,0,'x'},
+    {"xcl",no_argument,0,'x'},
+    {"help",no_argument,0,'?'},
+    {"hlp",no_argument,0,'?'},
+    {0,0,0,0}
+  }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
   
   /* Start timer and save command line */ 
@@ -335,10 +338,10 @@ main(int argc,char **argv)
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-
+  
   /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
   nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
-
+  
 #ifdef ENABLE_MPI
   /* MPI Initialization */
   if(False) (void)fprintf(stdout,gettext("%s: WARNING Compiled with MPI\n"),nco_prg_nm);
@@ -354,7 +357,7 @@ main(int argc,char **argv)
     /* NB: access to opt_crr is only valid when long_opt is detected */
     if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
     opt_crr=(char *)strdup(opt_lng[opt_idx].name);
-
+    
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
@@ -392,6 +395,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fix_rec_crd")) FIX_REC_CRD=True; /* [flg] Do not interpolate/multiply record coordinate variables */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
+        gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
+        gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
+      } /* endif gaa */
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdf_upk") || !strcmp(opt_crr,"hdf_unpack")) nco_upk_cnv=nco_upk_HDF; /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
@@ -656,6 +663,7 @@ main(int argc,char **argv)
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in_1,in_id_1,out_id);
+  if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
   if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
