@@ -1,5 +1,7 @@
 2015-07-18  Charlie Zender  <zender@uci.edu>
 
+	* Migrate nco_rgr_esmf2() to user-specified destination grid
+
 	* Add structures for user-specified destination grid
 
 2015-07-16  Charlie Zender  <zender@uci.edu>

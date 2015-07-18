@@ -43,6 +43,10 @@ extern "C" {
   nco_rgr_esmf /* [fnc] Regrid using ESMF library */
   (rgr_sct * const rgr_nfo); /* I/O [sct] Regridding structure */
 
+  int /* O [enm] Return code */
+  nco_rgr_esmf2 /* [fnc] Regrid using ESMF library */
+  (rgr_sct * const rgr); /* I/O [sct] Regridding structure */
+
   const char * /* O [sng] String version of ESMC_StaggerLoc enum */
   nco_esmf_stg_lcn_sng /* [fnc] Convert ESMF stagger location enum to string */
   (const int nco_esmf_stg_lcn); /* I [enm] ESMF stagger location enum ESMC_StaggerLoc */
@@ -66,6 +70,10 @@ extern "C" {
   const char * /* O [sng] String version of ESMC_PoleMethod_Flag enum */
   nco_esmf_pll_mth_sng /* [fnc] Convert ESMF pole method type enum to string */
   (const int nco_esmf_pll_mth); /* I [enm] ESMF pole method type enum ESMC_PoleMethod_Flag */
+
+  const char * /* O [sng] String version of ESMC_PoleKind_Flag enum */
+  nco_esmf_pll_knd_sng /* [fnc] Convert ESMF pole type enum to string */
+  (const int nco_esmf_pll_knd); /* I [enm] ESMF pole type enum ESMC_PoleKind_Flag */
 
   const char * /* O [sng] String version of ESMC_Region_Flag enum */
   nco_esmf_rgn_flg_sng /* [fnc] Convert ESMF region flag enum to string */

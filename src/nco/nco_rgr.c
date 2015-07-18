@@ -111,21 +111,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 {
   /* Purpose: Initialize regridding structure */
      
-  /* Sample calls:
-     Debugging:
-     ncks -O -D 6 --rgr=Y ${DATA}/rgr/dstmch90_clm.nc ~/foo.nc
-
-     T62->T42 from scratch, minimal arguments:
-     ncks -O -D 6 --rgr=Y ${DATA}/rgr/dstmch90_clm.nc ~/foo.nc
-     T62->T42 from scratch, more arguments:
-     ncks -O -D 6 --rgr=Y --rgr_grd_dst=${DATA}/scrip/grids/remap_grid_T42.nc ${DATA}/rgr/dstmch90_clm.nc ~/foo.nc
-     T62->T42 from scratch, explicit arguments:
-     ncks -O --rgr=Y --rgr_grd_dst=${DATA}/scrip/grids/remap_grid_T42.nc --rgr_out=${DATA}/rgr/rgr_out.nc ${DATA}/rgr/dstmch90_clm.nc ~/foo.nc
-     T42->T42 from scratch:
-     ncks -O --rgr=Y --rgr_grd_src=${DATA}/scrip/grids/remap_grid_T42.nc --rgr_grd_dst=${DATA}/scrip/grids/remap_grid_T42.nc --rgr_out=${DATA}/rgr/rgr_out.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc
-     T42->POP43 from existing weights:
-     ncks -O --map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
-
   const char fnc_nm[]="nco_rgr_ini()";
   
   rgr_sct *rgr;
@@ -390,7 +375,10 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 
      Documentation:
      NCL special cases described in popRemap.ncl, e.g., at
-     https://github.com/yyr/ncl/blob/master/ni/src/examples/gsun/popRemap.ncl */
+     https://github.com/yyr/ncl/blob/master/ni/src/examples/gsun/popRemap.ncl
+
+     Sample regrid T42->POP43, SCRIP:
+     ncks -O --map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_rgr_map()"; /* [sng] Function name */
 
@@ -1006,7 +994,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
       if(wgt_Gss_out) wgt_Gss_out=(double *)nco_free(wgt_Gss_out);
     case nco_grd_2D_unk:
       for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=0.0;
-      (void)fprintf(stderr,"%s: WARNING %s reports unknown output latitude grid-type\n",nco_prg_nm_get(),fnc_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING %s reports unknown output latitude grid-type\n",nco_prg_nm_get(),fnc_nm);
       break;
     default:
       nco_dfl_case_generic_err(); break;
@@ -1058,7 +1046,9 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   /* Test whether frc_out is ever zero... */
   for(idx=0;idx<rgr_map.dst_grid_size;idx++)
     if(frc_out[idx] == 0.0) break;
-  if(idx != rgr_map.dst_grid_size) (void)fprintf(stdout,"%s: INFO %s reports frc_out contains zero-elements (e.g., at 1D idx=%ld)\n",nco_prg_nm_get(),fnc_nm,idx);
+  if(nco_dbg_lvl_get() >= nco_dbg_std)
+    if(idx != rgr_map.dst_grid_size)
+      (void)fprintf(stdout,"%s: INFO %s reports frc_out contains zero-elements (e.g., at 1D idx=%ld)\n",nco_prg_nm_get(),fnc_nm,idx);
   /* Test whether frc_out is always one... */
   nco_bool flg_frc_out_one=True;
   for(idx=0;idx<rgr_map.dst_grid_size;idx++)
