@@ -225,7 +225,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* end if */
   } /* end for */
 
-  /* NULL-initialize */
+  /* NULL-initialize required for string variables */
   rgr->area_nm=NULL; /* [sng] Name of variable containing gridcell area */
   rgr->bnd_nm=NULL; /* [sng] Name of dimension to employ for spatial bounds */
   rgr->bnd_tm_nm=NULL; /* [sng] Name of dimension to employ for temporal bounds */
@@ -239,6 +239,18 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for longitude */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
+  /* Initialize properties to be used in grid generation */
+  rgr->grd_typ=nco_grd_2D_ngl_eqi_fst; /* [enm] Destination grid type */
+  rgr->lat_typ=nco_grd_lat_ngl_eqi_fst; /* [enm] Latitude grid type */
+  rgr->lon_typ=nco_grd_lon_Grn_wst; /* [enm] Longitude grid type */
+  rgr->lat_nbr=180; /* [nbr] Number of latitudes in destination grid */
+  rgr->lon_nbr=360; /* [nbr] Number of longitudes in destination grid */
+  rgr->lat_srt=-89.5; /* [dgr] Latitude center at start of grid */
+  rgr->lon_srt=0.5; /* [dgr] Longitude center at start of grid */
+  rgr->lat_end=-89.5; /* [dgr] Latitude center at end of grid */
+  rgr->lon_end=359.5; /* [dgr] Longitude center at end of grid */
+  
+  /* Model-dependent labels users may wish to change */
   for(rgr_var_idx=0;rgr_var_idx<rgr_var_nbr;rgr_var_idx++){
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"area_nm")){
       rgr->area_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
@@ -440,7 +452,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nc_type att_typ;
 
   nco_rgr_mpf_typ_enm nco_rgr_mpf_typ=nco_rgr_mpf_nil; /* [enm] Type of remapping file */
-  nco_rgr_grd_typ_enm nco_rgr_grd_typ=nco_rgr_grd_nil; /* [enm] Type of grid conversion */
+  nco_rgr_typ_enm nco_rgr_typ=nco_rgr_grd_nil; /* [enm] Type of grid conversion */
   
   /* Look for map-type signature in Conventions attribute */
   cnv_sng=cnv_sng_UC;
@@ -563,20 +575,20 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !msk */
     
   /* Set type of grid conversion */
-  if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 1) nco_rgr_grd_typ=nco_rgr_grd_1D_to_1D;
-  if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 2) nco_rgr_grd_typ=nco_rgr_grd_1D_to_2D;
-  if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 1) nco_rgr_grd_typ=nco_rgr_grd_2D_to_1D;
-  if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 2) nco_rgr_grd_typ=nco_rgr_grd_2D_to_2D;
-  assert(nco_rgr_grd_typ != nco_rgr_grd_nil);
+  if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 1) nco_rgr_typ=nco_rgr_grd_1D_to_1D;
+  if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 2) nco_rgr_typ=nco_rgr_grd_1D_to_2D;
+  if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 1) nco_rgr_typ=nco_rgr_grd_2D_to_1D;
+  if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 2) nco_rgr_typ=nco_rgr_grd_2D_to_2D;
+  assert(nco_rgr_typ != nco_rgr_grd_nil);
   /* Save typing later */
   nco_bool flg_grd_in_1D=False;
   nco_bool flg_grd_in_2D=False;
   nco_bool flg_grd_out_1D=False;
   nco_bool flg_grd_out_2D=False;
-  if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_1D || nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D) flg_grd_in_1D=True;
-  if(nco_rgr_grd_typ == nco_rgr_grd_2D_to_1D || nco_rgr_grd_typ == nco_rgr_grd_2D_to_2D) flg_grd_in_2D=True;
-  if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_1D || nco_rgr_grd_typ == nco_rgr_grd_2D_to_1D) flg_grd_out_1D=True;
-  if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D || nco_rgr_grd_typ == nco_rgr_grd_2D_to_2D) flg_grd_out_2D=True;
+  if(nco_rgr_typ == nco_rgr_grd_1D_to_1D || nco_rgr_typ == nco_rgr_grd_1D_to_2D) flg_grd_in_1D=True;
+  if(nco_rgr_typ == nco_rgr_grd_2D_to_1D || nco_rgr_typ == nco_rgr_grd_2D_to_2D) flg_grd_in_2D=True;
+  if(nco_rgr_typ == nco_rgr_grd_1D_to_1D || nco_rgr_typ == nco_rgr_grd_2D_to_1D) flg_grd_out_1D=True;
+  if(nco_rgr_typ == nco_rgr_grd_1D_to_2D || nco_rgr_typ == nco_rgr_grd_2D_to_2D) flg_grd_out_2D=True;
 
   /* Obtain grid values necessary to compute output latitude and longitude coordinates */
   int area_dst_id; /* [id] Area variable ID */
@@ -746,7 +758,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   } /* !dst_grid_rank */
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
-    (void)fprintf(stderr,"%s: INFO %s grid conversion type = %s with expected input and prescribed output grid sizes: ",nco_prg_nm_get(),fnc_nm,nco_rgr_grd_sng(nco_rgr_grd_typ));
+    (void)fprintf(stderr,"%s: INFO %s grid conversion type = %s with expected input and prescribed output grid sizes: ",nco_prg_nm_get(),fnc_nm,nco_rgr_grd_sng(nco_rgr_typ));
     (void)fprintf(stderr,"lat_in = %li, lon_in = %li, col_in = %li, lat_out = %li, lon_out = %li, col_out = %li\n",lat_nbr_in,lon_nbr_in,col_nbr_in,lat_nbr_out,lon_nbr_out,col_nbr_out);
   } /* endif dbg */
 
@@ -1397,7 +1409,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    if(flg_grd_out_1D){
-	      if((nco_rgr_grd_typ == nco_rgr_grd_2D_to_1D) && (!strcmp(dmn_nm,lat_nm) || !strcmp(dmn_nm,lon_nm))){
+	      if((nco_rgr_typ == nco_rgr_grd_2D_to_1D) && (!strcmp(dmn_nm,lat_nm) || !strcmp(dmn_nm,lon_nm))){
 		/* Replace orthogonal horizontal dimensions by unstructured horizontal dimension already defined */
 		if(!strcmp(dmn_nm,lat_nm)){
 		  dmn_id_out[dmn_idx]=dmn_id_col;
@@ -1418,7 +1430,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
 	      } /* !lat && !lon */
 	    } /* !2D_to_1D */
 	    if(flg_grd_out_2D){
-	      if(nco_rgr_grd_typ == nco_rgr_grd_1D_to_2D && !strcmp(dmn_nm,col_nm)){
+	      if(nco_rgr_typ == nco_rgr_grd_1D_to_2D && !strcmp(dmn_nm,col_nm)){
 		/* Replace unstructured horizontal dimension by orthogonal horizontal dimensions already defined */
 		dmn_id_out[dmn_idx]=dmn_id_lat;
 		dmn_id_out[dmn_idx+1]=dmn_id_lon;
@@ -2302,6 +2314,41 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   return (char *)NULL;
 } /* end nco_grd_2D_sng() */
 
+const char * /* O [sng] String describing latitude grid-type */
+nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
+(const nco_grd_lat_typ_enm nco_grd_lat_typ) /* I [enm] Latitude grid-type enum */
+{
+  /* Purpose: Convert latitude grid-type enum to string */
+  switch(nco_grd_lat_typ){
+  case nco_grd_lat_unk: return "Unknown or unclassified latitude grid type (e.g., curvilinear)";
+  case nco_grd_lat_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
+  case nco_grd_lat_ngl_eqi_pol: return "Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO";
+  case nco_grd_lat_ngl_eqi_fst: return "Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
+  default: nco_dfl_case_generic_err(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_grd_lat_sng() */
+
+const char * /* O [sng] String describing longitude grid-type */
+nco_grd_lon_sng /* [fnc] Convert longitude grid-type enum to string */
+(const nco_grd_lon_typ_enm nco_grd_lon_typ) /* I [enm] Longitude grid-type enum */
+{
+  /* Purpose: Convert longitude grid-type enum to string */
+  switch(nco_grd_lon_typ){
+  case nco_grd_lon_unk: return "Unknown or unclassified longitude grid type (e.g., curvilinear)";
+  case nco_grd_lon_180_wst: return "Date line at west edge of first longitude cell";
+  case nco_grd_lon_180_ctr: return "Date line at center of first longitude cell";
+  case nco_grd_lon_Grn_wst: return "Greenwich at west edge of first longitude cell";
+  case nco_grd_lon_Grn_ctr: return "Greenwich at center of first longitude cell";
+  default: nco_dfl_case_generic_err(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_grd_lon_sng() */
+
 const char * /* O [sng] String describing grid extent */
 nco_grd_xtn_sng /* [fnc] Convert two-dimensional grid-extent enum to string */
 (const nco_grd_xtn_enm nco_grd_xtn) /* I [enm] Grid-extent enum */
@@ -2320,10 +2367,10 @@ nco_grd_xtn_sng /* [fnc] Convert two-dimensional grid-extent enum to string */
 
 const char * /* O [sng] String describing grid conversion */
 nco_rgr_grd_sng /* [fnc] Convert grid conversion enum to string */
-(const nco_rgr_grd_typ_enm nco_rgr_grd_typ) /* I [enm] Grid conversion enum */
+(const nco_rgr_typ_enm nco_rgr_typ) /* I [enm] Grid conversion enum */
 {
   /* Purpose: Convert grid conversion enum to string */
-  switch(nco_rgr_grd_typ){
+  switch(nco_rgr_typ){
   case nco_rgr_grd_1D_to_1D: return "1D_to_1D";
   case nco_rgr_grd_1D_to_2D: return "1D_to_2D";
   case nco_rgr_grd_2D_to_1D: return "2D_to_1D";

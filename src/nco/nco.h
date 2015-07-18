@@ -881,6 +881,32 @@ extern "C" {
     nco_bool PRN_VAR_METADATA; /* [flg] Print variable metadata */
   } prn_fmt_sct;
   
+  /* Types used in regrid structure */
+  typedef enum nco_grd_2D_typ_enm{ /* [enm] Two-dimensional grid-type enum */
+    nco_grd_2D_nil=0,
+    nco_grd_2D_gss, /* Gaussian latitudes used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM */
+    nco_grd_2D_ngl_eqi_pol, /* Equi-angle grid including poles, the FV scalar grid (lat[0]=-90): CAM FV, GEOS-CHEM, UCICTM, UKMO */
+    nco_grd_2D_ngl_eqi_fst, /* Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
+    nco_grd_2D_unk, /* Unknown or unclassified, POP displaced-pole */
+  } nco_grd_2D_typ_enm;
+
+  typedef enum nco_grd_lat_typ_enm{ /* [enm] Latitude grid-type enum */
+    nco_grd_lat_nil=0,
+    nco_grd_lat_unk, /* Unknown or unclassified latitude grid type (e.g., curvilinear) */ 
+    nco_grd_lat_gss, /* Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM */
+    nco_grd_lat_ngl_eqi_pol, /* Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO */
+    nco_grd_lat_ngl_eqi_fst, /* Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
+  } nco_grd_lat_typ_enm;
+
+  typedef enum nco_grd_lon_typ_enm{ /* [enm] Longitude grid-type enum */
+    nco_grd_lon_nil=0,
+    nco_grd_lon_unk, /* Unknown or unclassified longitude grid type (e.g., curvilinear) */
+    nco_grd_lon_180_wst, /* Date line at west edge of first longitude cell */
+    nco_grd_lon_180_ctr, /* Date line at center of first longitude cell */
+    nco_grd_lon_Grn_wst, /* Greenwich at west edge of first longitude cell */
+    nco_grd_lon_Grn_ctr, /* Greenwich at center of first longitude cell */
+  } nco_grd_lon_typ_enm;
+
   /* Regrid structure */
   typedef struct{ /* rgr_sct */
     // File names specifiable with individual command line switches
@@ -906,6 +932,17 @@ extern "C" {
     char *lon_nm; /* [sng] Name of dimension to recognize as longitude */
     char *lon_vrt_nm; /* [sng] Name of non-rectangular boundary variable for longitude */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
+    // User-specified grid properties
+    double lat_srt; /* [dgr] Latitude center at start of grid */
+    double lon_srt; /* [dgr] Longitude center at start of grid */
+    double lat_end; /* [dgr] Latitude center at end of grid */
+    double lon_end; /* [dgr] Longitude center at end of grid */
+    long lat_nbr; /* [nbr] Number of latitudes in destination grid */
+    long lon_nbr; /* [nbr] Number of longitudes in destination grid */
+    nco_grd_2D_typ_enm grd_typ; /* [enm] Destination grid-type enum */
+    nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
+    nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
+    // Other internal data and metadata 
     double wgt_vld_thr; /* [frc] Weight threshold for valid destination value */
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */

@@ -62,21 +62,13 @@ extern "C" {
     nco_rgr_mpf_Tempest,
   } nco_rgr_mpf_typ_enm;
 
-  typedef enum nco_rgr_grd_typ_enm{ /* [enm] Regrid type enum */
+  typedef enum nco_rgr_typ_enm{ /* [enm] Regrid type enum */
     nco_rgr_grd_nil=0,
     nco_rgr_grd_1D_to_1D,
     nco_rgr_grd_1D_to_2D,
     nco_rgr_grd_2D_to_1D,
     nco_rgr_grd_2D_to_2D,
-  } nco_rgr_grd_typ_enm;
-
-  typedef enum nco_grd_2D_typ_enm{ /* [enm] Two-dimensional grid-type enum */
-    nco_grd_2D_nil=0,
-    nco_grd_2D_gss, /* Gaussian latitudes used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM */
-    nco_grd_2D_ngl_eqi_pol, /* Equi-angle grid including poles, the FV scalar grid (lat[0]=-90): CAM FV, GEOS-CHEM, UCICTM, UKMO */
-    nco_grd_2D_ngl_eqi_fst, /* Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
-    nco_grd_2D_unk, /* Unknown or unclassified, POP displaced-pole */
-  } nco_grd_2D_typ_enm;
+  } nco_rgr_typ_enm;
 
   typedef enum nco_grd_xtn_enm{ /* [enm] Grid-extent enum */
     nco_grd_xtn_nil=0,
@@ -164,13 +156,21 @@ extern "C" {
   nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   (const nco_grd_2D_typ_enm nco_grd_2D_typ); /* I [enm] Two-dimensional grid-type enum */
 
+  const char * /* O [sng] String describing latitude grid-type */
+  nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
+  (const nco_grd_lat_typ_enm nco_grd_lat_typ); /* I [enm] Latitude grid-type enum */
+
+  const char * /* O [sng] String describing longitude grid-type */
+  nco_grd_lon_sng /* [fnc] Convert longitude grid-type enum to string */
+  (const nco_grd_lon_typ_enm nco_grd_lon_typ); /* I [enm] Longitude grid-type enum */
+
   const char * /* O [sng] String describing grid extent */
   nco_grd_xtn_sng /* [fnc] Convert two-dimensional grid-extent enum to string */
   (const nco_grd_xtn_enm nco_grd_xtn); /* I [enm] Grid-extent enum */
 
   const char * /* O [sng] String describing grid conversion */
   nco_rgr_grd_sng /* [fnc] Convert grid conversion enum to string */
-  (const nco_rgr_grd_typ_enm nco_rgr_grd_typ); /* I [enm] Grid conversion enum */
+  (const nco_rgr_typ_enm nco_rgr_typ); /* I [enm] Grid conversion enum */
 
   const char * /* O [sng] String describing regridding method */
   nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */

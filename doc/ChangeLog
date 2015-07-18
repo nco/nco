@@ -1,3 +1,7 @@
+2015-07-18  Charlie Zender  <zender@uci.edu>
+
+	* Add structures for user-specified destination grid
+
 2015-07-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.2-alpha3 release procedure:
