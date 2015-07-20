@@ -148,7 +148,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:w:X:xY:y:-:";
+  const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:Nn:Oo:p:P:rRt:v:w:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -250,6 +250,7 @@ main(int argc,char **argv)
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+  nco_bool NORMALIZE_BY_WEIGHT=True; /* [flg] Normalize by command-line weight */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool REC_APN=False; /* [flg] Append records directly to output file */
@@ -393,6 +394,8 @@ main(int argc,char **argv)
     {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
     {"local",required_argument,0,'l'},
     {"lcl",required_argument,0,'l'},
+    {"no-normalize-by-weight",no_argument,0,'N',},
+    {"no_nrm_by_wgt",no_argument,0,'N',},
     {"nintap",required_argument,0,'n'},
     {"overwrite",no_argument,0,'O'},
     {"ovr",no_argument,0,'O'},
@@ -602,6 +605,9 @@ main(int argc,char **argv)
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
       break;
+    case 'N':
+      NORMALIZE_BY_WEIGHT=False;
+      break;
     case 'n': /* NINTAP-style abbreviation of files to average */
       fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 5){
@@ -660,7 +666,8 @@ main(int argc,char **argv)
 	} /* end loop over elements */
 	wgt_avg_scl/=wgt_nbr;
 	assert(wgt_avg_scl != 0.0);
-	for(idx=0L;idx<wgt_nbr;idx++) wgt_arr[idx]/=wgt_avg_scl;
+	if(NORMALIZE_BY_WEIGHT)
+	  for(idx=0L;idx<wgt_nbr;idx++) wgt_arr[idx]/=wgt_avg_scl;
       } /* !wgt_nm */
       break;
     case 'X': /* Copy auxiliary coordinate argument for later processing */
@@ -1011,7 +1018,7 @@ main(int argc,char **argv)
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_MRO,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_MRO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 
@@ -1167,7 +1174,8 @@ main(int argc,char **argv)
 	      for(idx=0;idx<nbr_var_prc;idx++){
 		if(var_prc_out[idx]->is_crd_var || var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING) continue;
 		nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_avg_scv);
-		(void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
+		if(NORMALIZE_BY_WEIGHT)
+		  (void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
 	      } /* end loop over var */
 	    } /* !wgt_nm */
 
@@ -1347,7 +1355,7 @@ main(int argc,char **argv)
             (void)nco_msa_var_get_trv(in_id,var_prc[idx_prc],trv_tbl1);
 
             /* Convert char, short, long, int, and float types to doubles before arithmetic
-            Output variable type is "sticky" so only convert on first member */
+	       Output variable type is "sticky" so only convert on first member */
             if(fl_idx == 0 && idx_mbr == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
             var_prc[idx_prc]=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_prc[idx_prc]);
             /* Perform arithmetic operations: avg, min, max, ttl, ... */
@@ -1437,7 +1445,8 @@ main(int argc,char **argv)
       for(idx=0;idx<nbr_var_prc;idx++){
 	if(var_prc_out[idx]->is_crd_var || var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING) continue;
 	nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_avg_scv);
-	(void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
+	if(NORMALIZE_BY_WEIGHT)
+	  (void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
       } /* end loop over var */
     } /* !wgt_nm */
   } /* !FLG_BFR_NRM */

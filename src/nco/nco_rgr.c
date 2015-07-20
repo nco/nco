@@ -236,7 +236,13 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_end=359.5; /* [dgr] Longitude center at end of grid */
   
   /* Model-dependent labels users may wish to change */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   for(rgr_var_idx=0;rgr_var_idx<rgr_var_nbr;rgr_var_idx++){
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nbr")){
+      rgr->lat_nbr=(int)strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
+      continue;
+    } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"area_nm")){
       rgr->area_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;

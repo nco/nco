@@ -127,7 +127,7 @@ nco_typ_cnv_rth /* [fnc] Convert char, short, long, int, and float types to doub
   /* 20130906:
      Users have long been uncomfortable with not implicitly converting floats to doubles
      A new section of the manual that describes the advantages and disadvantages:
-     http://nco.sf.net/nco.html#fxm
+     http://nco.sf.net/nco.html#dbl
      Implementing --dbl switch on ncwa, ncra, nces (ncap2?) to force implicit conversion */
   if(nco_rth_cnv_get() == nco_rth_flt_flt){
 

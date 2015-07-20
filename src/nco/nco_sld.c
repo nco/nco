@@ -264,8 +264,10 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
      ${DATA}/esmf/src/Infrastructure/Field/tests/ESMC_FieldRegridUTest.C
      ${DATA}/esmf/src/Infrastructure/Field/tests/ESMC_FieldRegridCsrvUTest.C
 
-     Usage:
-     ncks -4 -O -C -v ppc_dbl --ppc /ppc_dbl=3 ~/nco/data/in.nc ~/foo.nc */
+     Sample call, T42->T42:
+     ncks -O --rgr_grd_src=${DATA}/scrip/grids/remap_grid_T42.nc --rgr_grd_dst=${DATA}/scrip/grids/remap_grid_T42.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc
+     ncks -O --rgr_var=LANDFRAC --rgr_grd_src=${DATA}/grids/T42.nc --rgr_grd_dst=${DATA}/grids/T62.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc
+     ncks -O --rgr lat_nbr=180 --rgr_grd_src=${DATA}/grids/T62.nc --rgr_grd_dst=${DATA}/grids/T42.nc ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
   
   const char fnc_nm[]="nco_rgr_esmf()"; /* [sng] Function name */
   const char fl_nm_esmf_log[]="nco_rgr_log_foo.txt"; /* [sng] Log file for ESMF routines */
@@ -839,13 +841,13 @@ nco_rgr_esmf2 /* [fnc] Regrid using ESMF library */
   /* Source: ${DATA}/esmf/src/Infrastructure/Util/interface/ESMC_Interface.C
      NB: ESMF is fragile in that dynamic memory provided as input to grids cannot be immediately freed
      In other words, ESMF copies the values of pointers but not the contents of pointers to provided arrays
-     To be concrete, the max_idx array provided below cannot be freed until after the ESMC_Finalize() is called */
+     To be concrete, the max_idx_dst array provided below cannot be freed until after the ESMC_Finalize() is called */
   grd_ntf_dst=ESMC_InterfaceIntCreate(max_idx_dst,dmn_nbr_grd_dst,&rcd_esmf);
   if(rcd_esmf != ESMF_SUCCESS) abort();
 
-  int flg_isSphere=1; /* [flg] Set to 1 for a spherical grid, or 0 for regional. Defaults to 1. */
-  int flg_addCornerStagger=0; /* [flg] Add corner stagger to grid. Defaults to 0. */
-  int flg_addUserArea=0; /* [flg] Read cell area from Grid file (instead of calculate it). Defaults to 0. */
+  int flg_isSphere=1; /* [flg] Set to 1 for spherical grid, or 0 for regional. Defaults to 1 (True). */
+  int flg_addCornerStagger=0; /* [flg] Add corner stagger to grid. Defaults to 0 (False). */
+  int flg_addUserArea=0; /* [flg] Read cell area from Grid file (instead of calculate it). Defaults to 0 (False). */
   int flg_addMask=0; /* [flg] Generate mask using missing value attribute in var_nm (iff GRIDSPEC) */
   /* 20150424: ESMF library bug at ESMCI_Grid.C line 365 means var_nm must non-NULL so set to blank name */
   char var_nm[]=""; /* [sng] Iff addMask == 1 use this variable's missing value attribute */
