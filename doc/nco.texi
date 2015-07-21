@@ -17760,7 +17760,7 @@ ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
-[-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
+[-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-N] [-n @var{loop}] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -17823,6 +17823,28 @@ per-file weight).
 One-dimensional weights apply to each corresponding record (i.e.,
 per-record weights), and are suitable for dynamically changing
 timesteps. 
+
+By default, any weights specified (whether by value or by variable name)
+are normalized to unity by dividing each specified weight by the sum of
+all the weights.
+This means, for example, that, @samp{-w 0.25,0.75} is equivalent to 
+@samp{-w 2.0,6.0} since both are equal when normalized.
+This behavior simplifies specifying weights based on countable items.
+For example, time-weighting monthly averages for March, April, and May
+to obtain a spring seasonal average can be done with 
+@samp{-w 31,30,31} instead of 
+@samp{-w 0.33695652173913043478,0.32608695652173913043,0.33695652173913043478}. 
+
+However, sometimes one wishes to use weights in ``dot-product mode'',
+i.e., multiply by the (non-normalized) weights.
+As of @acronym{NCO} @w{version 4.5.2}, released in July, 2015,
+@command{ncra} accepts the @samp{-N} (or long-option equivalent
+@samp{--no_nrm_by_wgt}) switch that prevents automatic weight
+normalization. 
+When this switch is used, the weights will not be normalized (unless the
+user provides them as normalized), and the numerator of the weighted
+average will not be divided by the sum of the weights (which is one for
+normalized weights).
 
 Bear these two exceptions in mind when weighting input:
 First, @command{ncra} only applies weights if the arithmetic operation
