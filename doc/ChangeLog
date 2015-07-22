@@ -1,5 +1,9 @@
 2015-07-22  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.2-alpha5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha5 final changes';git push
+	git tag -a 4.5.2-alpha5 -m 'Version 4.5.2-alpha5 tag: ncra -N, diagnose area if possible when area_out == 0.0 (bilinear interpolation)';git push --tags
+
 	* Diagnose (possibly approximate) area_out when area_out == 0.0	due to bilinear remapping
 
 	* Decriminalize mapfiles with area_out == 0.0, e.g., ESMF bilinear remapping (broken since 4.5.2-alpha1)
