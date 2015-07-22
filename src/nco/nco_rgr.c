@@ -392,6 +392,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   char *fl_pth_lcl=NULL;
 
   const double rdn2dgr=180.0/M_PI;
+  const double dgr2rdn=M_PI/180.0;
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
   double area_out_ttl=0.0; /* [frc] Exact sum of area */
 
@@ -415,6 +416,7 @@ nco_rgr_map /* [fnc] Regrid using external weights */
   nco_bool FL_RTR_RMT_LCN;
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+  nco_bool flg_dgn_area_out=False; /* [flg] Diagnose area_out from grid boundaries */
   
   nco_map_sct rgr_map;
 
@@ -977,7 +979,6 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
-    const double dgr2rdn=M_PI/180.0;
     switch(nco_grd_2D_typ){
     case nco_grd_2D_ngl_eqi_fst:
       /* Manually normalize polar offset grid latitude weights to sum to 2.0 for global extent */
@@ -1014,34 +1015,43 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     if(nco_grd_2D_typ != nco_grd_2D_unk)
       assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < 1.0e-14); /* [frc] Round-off tolerance for sum of quadrature weights */
 
-    /* When possible, ensure area_out is non-zero */
-    if(nco_grd_xtn == nco_grd_xtn_rgn){
-      /* 20150710: Tempest regionally refined grids like CONUS for ACME RRM may have area_out=0 */
-      if((bnd_nbr_out == 2 || bnd_nbr_out == 4) && nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol){ 
-	/* If area_out contains a zero... */
-	for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
-	  for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	    if(area_out[lat_idx*lon_nbr_out+lon_idx] == 0.0) break;
-	if(lat_idx != lat_nbr_out || lon_idx != lon_nbr_out){
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Regional regular rectangular grid detected with zero-valued output area(s). Likely a TempestRemap regional output grid. Creating area_out from analystic formula.\n",nco_prg_nm_get());
-	  /* Regular quadrilaterals on equiangular grids have areas Mr. Enenstein taught us */
-	  for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
-	    for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	      area_out[lat_idx*lon_nbr_out+lon_idx]=dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]));
-	} /* !zero */
-      } /* !quad */
-    } /* !rgn */
+    /* When possible, ensure area_out is non-zero
+       20150722: ESMF documentation says "The grid area array is only output when the conservative remapping option is used"
+       Actually, ESMF does (always?) output area, but area==0.0 unless conservative remapping is used
+       20150721: ESMF bilinear interpolation map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc has area==0.0
+       20150710: Tempest regionally refined grids like bilinearly interpolated CONUS for ACME RRM has area_out==0
+       Hence, must check whether NCO must diagnose and provide its own area_out */
+    /* If area_out contains any zero... */
+    for(idx=0;idx<rgr_map.dst_grid_size;idx++)
+      if(area_out[idx] == 0.0) break;
+    if(idx != rgr_map.dst_grid_size){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO 2D output grid detected with zero-valued output area(s) at idx = %ld (and likely others, too). Possibly a bilinearly interpolated output grid. Will try to create area_out from analytic formula.\n",nco_prg_nm_get(),idx);
+      if(nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol || flg_dgn_area_out == nco_grd_2D_ngl_eqi_fst)
+	flg_dgn_area_out=True;
+    } /* !quad */
   } /* !flg_grd_out_2D */
     
-  /* Verify area_out is always non-zero */
   for(idx=0;idx<rgr_map.dst_grid_size;idx++)
-    /* ESMF documentation says "The grid area array is only output when the conservative remapping option is used", although I have not noticed this to be the case */
-    if(area_out[idx] == 0.0) break;
-  if(idx != rgr_map.dst_grid_size){
-    (void)fprintf(stdout,"%s: ERROR %s reports area_out contains zero-element at 1D idx=%ld\n",nco_prg_nm_get(),fnc_nm,idx);
-    nco_exit(EXIT_FAILURE);
-  } /* zero */
+    if(area_out[idx] != 0.0) break;
+  if(idx == rgr_map.dst_grid_size){
+    (void)fprintf(stdout,"%s: INFO %s reports area_out from mapfile is everywhere zero. This is expected for non-conservative remapping methods such as bilinear interpolation. ",nco_prg_nm_get(),fnc_nm);
+    if(flg_grd_out_2D && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
+      (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will generate and output an area variable (named \"%s\") diagnosed from the destination gridcell boundaries. NCO diagnoses quadrilateral area from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs. To determine whether the diagnosed areas are fully consistent with output grid, one must know such exact details. If your grid has analytic areas that NCO could, but does not yet, incorporate, please contact us.\n",rgr->area_nm);
+      flg_dgn_area_out=True;
+    }else{
+      (void)fprintf(stdout,"However, NCO cannot find enough boundary information, or it is too stupid about spherical trigonometry, to diagnose area_out. NCO will output an area variable (named \"%s\") copied from the input mapfile. This area will be everywhere zero.\n",rgr->area_nm);
+    } /* !2D */
+  } /* !area */
       
+  if(flg_dgn_area_out){
+    /* Regular quadrilaterals on equiangular grids have areas Mr. Enenstein taught us
+       NB: Approximation neglects distinctions between great circle arcs and, e.g., lines of constant latitude
+       Also, this approximation produces an area only 0.998 of a full sphere with bounds from map_ne30np4_to_fv257x512_bilin */
+    for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+      for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	area_out[lat_idx*lon_nbr_out+lon_idx]=dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]));
+  } /* !flg_dgn_area_out */
+
   /* Verify frc_out is sometimes non-zero */
   for(idx=0;idx<rgr_map.dst_grid_size;idx++)
     if(frc_out[idx] != 0.0) break;
