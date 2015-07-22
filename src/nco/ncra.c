@@ -1173,7 +1173,7 @@ main(int argc,char **argv)
 	      for(idx=0;idx<nbr_var_prc;idx++){
 		if(var_prc_out[idx]->is_crd_var || var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING) continue;
 		nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_avg_scv);
-		(void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
+		if(NORMALIZE_BY_WEIGHT) (void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
 	      } /* end loop over var */
 	    } /* !wgt_nm */
 
@@ -1443,7 +1443,7 @@ main(int argc,char **argv)
       for(idx=0;idx<nbr_var_prc;idx++){
 	if(var_prc_out[idx]->is_crd_var || var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING) continue;
 	nco_scv_cnf_typ(var_prc_out[idx]->type,&wgt_avg_scv);
-	(void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
+	if(NORMALIZE_BY_WEIGHT) (void)nco_var_scv_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,&wgt_avg_scv);
       } /* end loop over var */
     } /* !wgt_nm */
   } /* !FLG_BFR_NRM */
