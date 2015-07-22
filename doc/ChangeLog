@@ -1,5 +1,7 @@
 2015-07-21  Charlie Zender  <zender@uci.edu>
 
+	* Change meaning of NORMALIZE_BY_WEIGHT to NORMALIZE_WEIGHTS
+
 	* NCO 4.5.2-alpha4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha4 final changes';git push
 	git tag -a 4.5.2-alpha4 -m 'Version 4.5.2-alpha4 tag: ncra -N';git push --tags
