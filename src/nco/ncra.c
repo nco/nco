@@ -664,10 +664,9 @@ main(int argc,char **argv)
 	  if(*sng_cnv_rcd) nco_sng_cnv_err(wgt_lst_in[idx],"strtod",sng_cnv_rcd);
 	  wgt_avg_scl+=wgt_arr[idx];
 	} /* end loop over elements */
-	wgt_avg_scl/=wgt_nbr;
+	if(NORMALIZE_BY_WEIGHT) wgt_avg_scl/=wgt_nbr; else wgt_avg_scl=1.0/wgt_nbr;
 	assert(wgt_avg_scl != 0.0);
-	if(NORMALIZE_BY_WEIGHT)
-	  for(idx=0L;idx<wgt_nbr;idx++) wgt_arr[idx]/=wgt_avg_scl;
+	for(idx=0L;idx<wgt_nbr;idx++) wgt_arr[idx]/=wgt_avg_scl;
       } /* !wgt_nm */
       break;
     case 'X': /* Copy auxiliary coordinate argument for later processing */
