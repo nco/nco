@@ -18,12 +18,14 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   int rcd=NCO_NOERR;
   const char fnc_nm[]="nco_rgr_ctl()";
 
+  nco_bool flg_grd=False; /* [flg] Create SCRIP-format grid file */
   nco_bool flg_map=False; /* [flg] Weight-based regridding */
   nco_bool flg_smf=False; /* [flg] ESMF regridding */
   nco_bool flg_tps=False; /* [flg] Tempest regridding */
 
   /* Main control branching occurs here
      Branching complexity and utility will increase as regridding features are added */
+  if(rgr->flg_grd) flg_grd=True;
   if(rgr->flg_map) flg_map=True;
   if(rgr->flg_grd_src && rgr->flg_grd_dst) flg_smf=True;
   if(rgr->drc_tps && !flg_map) flg_tps=True;
@@ -31,11 +33,14 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   assert(!(flg_smf && flg_tps));
   assert(!(flg_map && flg_tps));
   
+  if(flg_grd){
+    /* [fnc] Create SCRIP-format grid file */
+    rcd=nco_grd_mk(rgr);
+  } /* !flg_grd */
+
   if(flg_map){
     /* Regrid using external mapping weights */
     rcd=nco_rgr_map(rgr,trv_tbl);
-    /* [fnc] Create SCRIP-style output grid files */
-    if(False) nco_grd_mk(rgr);
   } /* !flg_map */
 
   if(flg_smf){
@@ -64,6 +69,8 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
 (rgr_sct *rgr) /* I/O [sct] Regridding structure */
 {
   /* Purpose: Free all dynamic memory in regridding structure */
+
+  /* free() standalone command-line arguments */
   if(rgr->fl_grd_src) rgr->fl_grd_src=(char *)nco_free(rgr->fl_grd_src);
   if(rgr->fl_grd_dst) rgr->fl_grd_dst=(char *)nco_free(rgr->fl_grd_dst);
   if(rgr->fl_in) rgr->fl_in=(char *)nco_free(rgr->fl_in);
@@ -71,6 +78,9 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_out_tmp) rgr->fl_out_tmp=(char *)nco_free(rgr->fl_out_tmp);
   if(rgr->fl_map) rgr->fl_map=(char *)nco_free(rgr->fl_map);
   if(rgr->var_nm) rgr->var_nm=(char *)nco_free(rgr->var_nm);
+
+  /* free() strings associated with grid properties */
+  if(rgr->fl_grd) rgr->fl_grd=(char *)nco_free(rgr->fl_grd);
 
   /* Tempest */
   if(rgr->drc_tps) rgr->drc_tps=(char *)nco_free(rgr->drc_tps);
@@ -120,7 +130,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Allocate */
   rgr=(rgr_sct *)nco_malloc(sizeof(rgr_sct));
   
-  /* Initialize */
+  /* Initialize variable directly or indirectly set via command-line (except for key-value arguments) */
   rgr->flg_usr_rqs=False; /* [flg] User requested regridding */
   rgr->out_id=int_CEWI; /* [id] Output netCDF file ID */
 
@@ -212,7 +222,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* end if */
   } /* end for */
 
-  /* NULL-initialize required for string variables */
+  /* NULL-initialize key-value properties required for string variables */
   rgr->area_nm=NULL; /* [sng] Name of variable containing gridcell area */
   rgr->bnd_nm=NULL; /* [sng] Name of dimension to employ for spatial bounds */
   rgr->bnd_tm_nm=NULL; /* [sng] Name of dimension to employ for temporal bounds */
@@ -226,7 +236,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for longitude */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
-  /* Initialize properties to be used in grid generation */
+  /* Initialize key-value properties used in grid generation */
+  rgr->fl_grd=NULL; /* [sng] Name of grid file to create */
+  rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->grd_typ=nco_grd_2D_ngl_eqi_fst; /* [enm] Destination grid type */
   rgr->lat_typ=nco_grd_lat_ngl_eqi_fst; /* [enm] Latitude grid type */
   rgr->lon_typ=nco_grd_lon_Grn_wst; /* [enm] Longitude grid type */
@@ -237,12 +249,46 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lat_end=-89.5; /* [dgr] Latitude center at end of grid */
   rgr->lon_end=359.5; /* [dgr] Longitude center at end of grid */
   
-  /* Model-dependent labels users may wish to change */
+  /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   for(rgr_var_idx=0;rgr_var_idx<rgr_var_nbr;rgr_var_idx++){
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"grid")){
+      rgr->fl_grd=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      rgr->flg_grd=True;
+      continue;
+    } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nbr")){
-      rgr->lat_nbr=(int)strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      rgr->lat_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_nbr")){
+      rgr->lon_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"ngl_eqi_pol"))
+	rgr->lat_typ=nco_grd_lat_ngl_eqi_pol;
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"ngl_eqi_fst"))
+	rgr->lat_typ=nco_grd_lat_ngl_eqi_fst;
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"gss"))
+	rgr->lat_typ=nco_grd_lat_gss;
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"GSC"))
+	rgr->lat_typ=nco_grd_lat_GSC;
+      else abort();
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_typ")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"180_wst"))
+	rgr->lon_typ=nco_grd_lon_180_wst;
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"180_ctr"))
+	rgr->lon_typ=nco_grd_lon_180_ctr;
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"Grn_wst"))
+	rgr->lon_typ=nco_grd_lon_Grn_wst;
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"Grn_ctr"))
+	rgr->lon_typ=nco_grd_lon_Grn_ctr;
+      else abort();
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"area_nm")){
@@ -2504,11 +2550,22 @@ nco_tps_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
   return (char *)NULL;
 } /* end nco_tps_cmd_sng() */
 
-void
-nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
+int /* O [enm] Return code */
+nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 (rgr_sct * const rgr) /* I/O [sct] Regridding structure */
 {
-  /* Purpose: Use grid information to create SCRIP-style grid file */
+  /* Purpose: Use grid information to create SCRIP-format grid file
+
+     ACME:
+     https://acme-svn2.ornl.gov/acme-repo/acme/mapping/grids
+     https://acme-svn2.ornl.gov/acme-repo/acme/inputdata/cpl/gridmaps
+
+     NCAR:
+     /glade/p/cesm/cseg/mapping/grids
+
+     Generate fv129x256 grid:
+     ncks -O -D 1 --rgr grid=${DATA}/grids/129x256_SCRIP.20150723.nco.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc */
+
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 
   const double rdn2dgr=180.0/M_PI;
@@ -2521,8 +2578,9 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   const nc_type crd_typ=NC_DOUBLE;
 
   char *fl_out_tmp=NULL_CEWI;
+  char *fl_out;
+  char area_nm[]="area";
   char dmn_sz_nm[]="grid_dims";
-  char fl_out[]="/data/zender/grids/grd_sld.nc";
   char grd_crn_lat_nm[]="grid_corner_lat";
   char grd_crn_lon_nm[]="grid_corner_lon";
   char grd_crn_nm[]="grid_corners";
@@ -2537,7 +2595,6 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   double *grd_crn_lat; /* [dgr] Latitude  corners of grid */
   double *grd_crn_lon; /* [dgr] Longitude corners of grid */
   double *area; /* [sr] Area of grid */
-  double *frc=NULL; /* [frc] Fraction of grid */
   double *lat_bnd=NULL_CEWI; /* [dgr] Latitude  boundaries of rectangular grid */
   double *lat_crn=NULL; /* [dgr] Latitude  corners of rectangular grid */
   double *lat_ctr=NULL_CEWI; /* [dgr] Latitude  centers of rectangular grid */
@@ -2549,12 +2606,12 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   double *lon_ntf=NULL; /* [dgr] Longitude interfaces of rectangular grid */
 
   double area_ttl=0.0; /* [frc] Exact sum of area */
-  double lat_end; /* [dgr] Latitude center at end of grid */
-  double lat_srt; /* [dgr] Latitude center at start of grid */
+  // double lat_end; /* [dgr] Latitude center at end of grid */
+  // double lat_srt; /* [dgr] Latitude center at start of grid */
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
-  double lon_end; /* [dgr] Longitude center at end of grid */
-  double lon_srt; /* [dgr] Longitude center at start of grid */
-  double lon_ncr; /* [dgr] Longitude increment */
+  // double lon_end; /* [dgr] Longitude center at end of grid */
+  // double lon_srt; /* [dgr] Longitude center at start of grid */
+   double lon_ncr; /* [dgr] Longitude increment */
   double lat_ncr; /* [dgr] Latitude increment */
   double *wgt_Gss=NULL; // [frc] Gaussian weights double precision
 
@@ -2564,7 +2621,6 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   int dmn_ids[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
 
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
-  int md_open; /* [enm] Mode flag for nc_open() call */
   int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;
 
@@ -2573,7 +2629,6 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   int dmn_id_grd_rnk; /* [id] Grid rank dimension ID */
   int dmn_id_grd_sz; /* [id] Grid size dimension ID */
   int dmn_sz_int_id; /* [id] Grid dimension sizes ID */
-  int frc_id; /* [id] Fraction variable ID */
   int grd_crn_lat_id; /* [id] Grid corner latitudes  variable ID */
   int grd_crn_lon_id; /* [id] Grid corner longitudes variable ID */
   int grd_ctr_lat_id; /* [id] Grid center latitudes  variable ID */
@@ -2600,23 +2655,27 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
+  nco_bool flg_grd_2D=False;
 
-  nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
+  //  nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
   nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
-  grd_typ=rgr->grd_typ; /* [enm] Grid type */
+  //grd_typ=rgr->grd_typ; /* [enm] Grid type */
+  fl_out=rgr->fl_grd;
   lat_typ=rgr->lat_typ; /* [enm] Latitude grid type */
   lon_typ=rgr->lon_typ; /* [enm] Longitude grid type */
   lat_nbr=rgr->lat_nbr; /* [nbr] Number of latitudes in grid */
   lon_nbr=rgr->lon_nbr; /* [nbr] Number of longitudes in grid */
-  lat_srt=rgr->lat_srt; /* [dgr] Latitude center at start of grid */
-  lon_srt=rgr->lon_srt; /* [dgr] Longitude center at start of grid */
-  lat_end=rgr->lat_end; /* [dgr] Latitude center at end of grid */
-  lon_end=rgr->lon_end; /* [dgr] Longitude center at end of grid */
+  //  lat_srt=rgr->lat_srt; /* [dgr] Latitude center at start of grid */
+  //  lon_srt=rgr->lon_srt; /* [dgr] Longitude center at start of grid */
+  //  lat_end=rgr->lat_end; /* [dgr] Latitude center at end of grid */
+  //  lon_end=rgr->lon_end; /* [dgr] Longitude center at end of grid */
 
+  /* Assume 2D grid */
+  flg_grd_2D=True;
   grd_rnk_nbr=dmn_nbr_2D;
   /* Assume quadrilaterals */
   grd_crn_nbr=4;
@@ -2639,9 +2698,6 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   
   area=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
   for(idx=0;idx<grd_sz_nbr;idx++) area[idx]=0.0;
-  
-  frc=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
-  for(idx=0;idx<grd_sz_nbr;idx++) frc[idx]=1.0;
   
   msk=(int *)nco_malloc(grd_sz_nbr*nco_typ_lng((nc_type)NC_INT));
   for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=0;
@@ -2736,7 +2792,25 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   for(idx=0;idx<lat_nbr;idx++) lat_crn[grd_crn_nbr*idx]=lat_ntf[idx];
   lat_crn[grd_crn_nbr*lat_nbr-1L]=lat_ntf[lat_nbr];
   
-  /* Stuff rectangular arrays into unrolled arrays */
+  for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+    for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
+      area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]));
+
+  if(flg_grd_2D){
+    if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+      (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
+      lat_wgt_ttl=0.0;
+      area_ttl=0.0;
+      for(idx=0;idx<lat_nbr;idx++)
+	lat_wgt_ttl+=lat_wgt[idx];
+      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
+	  area_ttl+=area[lat_idx*lon_nbr+lon_idx];
+      (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, area_ttl = %20.15f, frc_lat_wgt = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,area_ttl,lat_wgt_ttl/2.0,area_ttl/(4.0*M_PI));
+    } /* endif dbg */
+  } /* !flg_grd_2D */
+
+      /* Stuff rectangular arrays into unrolled arrays */
   for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
     for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
       idx=lat_idx*lon_nbr+lon_idx;
@@ -2750,7 +2824,7 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
     } /* !lon */
   } /* !lat */
   
-    /* Open grid file */
+  /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
@@ -2760,6 +2834,7 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   
   /* Define variables */
   (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id);
+  (void)nco_def_var(out_id,area_nm,(nc_type)crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&area_id);
   (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
   (void)nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lat_id);
   (void)nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lon_id);
@@ -2775,26 +2850,16 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   char *att_nm;
   char *att_val;
   
-  att_nm=strdup("units");
-  att_val=strdup("degrees");
+  att_nm=strdup("title");
+  att_val=strdup("TBD");
   aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=NULL;
+  aed_mtd.id=NC_GLOBAL;
   aed_mtd.sz=strlen(att_val);
   aed_mtd.type=NC_CHAR;
   aed_mtd.val.cp=att_val;
   aed_mtd.mode=aed_create;
-  /* Add same attribute to four different variables */
-  aed_mtd.var_nm=grd_ctr_lat_nm;
-  aed_mtd.id=grd_ctr_lat_id;
-  (void)nco_aed_prc(out_id,grd_ctr_lat_id,aed_mtd);
-  aed_mtd.var_nm=grd_ctr_lon_nm;
-  aed_mtd.id=grd_ctr_lon_id;
-  (void)nco_aed_prc(out_id,grd_ctr_lon_id,aed_mtd);
-  aed_mtd.var_nm=grd_crn_lat_nm;
-  aed_mtd.id=grd_crn_lat_id;
-  (void)nco_aed_prc(out_id,grd_crn_lat_id,aed_mtd);
-  aed_mtd.var_nm=grd_crn_lon_nm;
-  aed_mtd.id=grd_crn_lon_id;
-  (void)nco_aed_prc(out_id,grd_crn_lon_id,aed_mtd);
+  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
   
@@ -2824,19 +2889,6 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
   
-  att_nm=strdup("title");
-  att_val=strdup("TBD");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=NULL;
-  aed_mtd.id=NC_GLOBAL;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-  
   att_nm=strdup("date_created");
   att_val=strdup("TBD");
   aed_mtd.att_nm=att_nm;
@@ -2850,6 +2902,42 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
   
+  att_nm=strdup("units");
+  att_val=strdup("steradian");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=area_nm;
+  aed_mtd.id=area_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,area_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  att_nm=strdup("units");
+  att_val=strdup("degrees");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  /* Add same units attribute to four different variables */
+  aed_mtd.var_nm=grd_ctr_lat_nm;
+  aed_mtd.id=grd_ctr_lat_id;
+  (void)nco_aed_prc(out_id,grd_ctr_lat_id,aed_mtd);
+  aed_mtd.var_nm=grd_ctr_lon_nm;
+  aed_mtd.id=grd_ctr_lon_id;
+  (void)nco_aed_prc(out_id,grd_ctr_lon_id,aed_mtd);
+  aed_mtd.var_nm=grd_crn_lat_nm;
+  aed_mtd.id=grd_crn_lat_id;
+  (void)nco_aed_prc(out_id,grd_crn_lat_id,aed_mtd);
+  aed_mtd.var_nm=grd_crn_lon_nm;
+  aed_mtd.id=grd_crn_lon_id;
+  (void)nco_aed_prc(out_id,grd_crn_lon_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
   /* Begin data mode */
   (void)nco_enddef(out_id);
   
@@ -2857,6 +2945,9 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   dmn_srt[0]=0L;
   dmn_cnt[0]=grd_rnk_nbr;
   rcd=nco_put_vara(out_id,dmn_sz_int_id,dmn_srt,dmn_cnt,dmn_sz_int,(nc_type)NC_INT);
+  dmn_srt[0]=0L;
+  dmn_cnt[0]=grd_sz_nbr;
+  rcd=nco_put_vara(out_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
   dmn_srt[0]=0L;
   dmn_cnt[0]=grd_sz_nbr;
   rcd=nco_put_vara(out_id,msk_id,dmn_srt,dmn_cnt,msk,(nc_type)NC_INT);
@@ -2884,7 +2975,6 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   if(dmn_sz_int) dmn_sz_int=(int *)nco_free(dmn_sz_int);
   if(msk) msk=(int *)nco_free(msk);
   if(area) area=(double *)nco_free(area);
-  if(frc) frc=(double *)nco_free(frc);
   if(grd_ctr_lat) grd_ctr_lat=(double *)nco_free(grd_ctr_lat);
   if(grd_ctr_lon) grd_ctr_lon=(double *)nco_free(grd_ctr_lon);
   if(grd_crn_lat) grd_crn_lat=(double *)nco_free(grd_crn_lat);
@@ -2899,5 +2989,5 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   if(lon_ntf) lon_ntf=(double *)nco_free(lon_ntf);
   if(wgt_Gss) wgt_Gss=(double *)nco_free(wgt_Gss);
   
-  return;
+  return rcd;
 } /* !nco_grd_mk() */

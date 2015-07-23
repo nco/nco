@@ -114,9 +114,9 @@ extern "C" {
   nco_bsl_zro /*  Return Bessel function zeros */
   (const int bsl_zro_nbr, /* O [nbr] Order of Bessel function */
    double * const bsl_zro); /* O [frc] Bessel zero */
-  
-  void
-  nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
+
+  int /* O [enm] Return code */
+  nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   (rgr_sct * const rgr); /* I/O [sct] Regridding structure */
 
   void

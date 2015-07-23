@@ -935,6 +935,7 @@ extern "C" {
     char *lon_vrt_nm; /* [sng] Name of non-rectangular boundary variable for longitude */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
     // User-specified grid properties
+    char *fl_grd; /* [sng] Name of grid file to create */
     double lat_srt; /* [dgr] Latitude center at start of grid */
     double lon_srt; /* [dgr] Longitude center at start of grid */
     double lat_end; /* [dgr] Latitude center at end of grid */
@@ -952,6 +953,7 @@ extern "C" {
     nco_bool flg_usr_rqs; /* [flg] User requested regridding */
     nco_bool flg_grd_src; /* [flg] User-specified input grid */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
+    nco_bool flg_grd; /* [flg] Create SCRIP-format grid file */
     nco_bool flg_map; /* [flg] User-specified mapping weights */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
   } rgr_sct;
