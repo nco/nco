@@ -94,7 +94,7 @@ extern "C" {
     nco_rgr_mth_unknown, /* Tempest */
   } nco_rgr_mth_typ_enm;
 
-  typedef struct{ /* nco_map_sct */
+  typedef struct{ /* nco_mpf_sct */
     /* Contents of SCRIP-generated or -compliant remapping file */
     long int src_grid_size; /* [nbr] Source grid size (src_grid_size or n_a) */
     long int dst_grid_size; /* [nbr] Destination grid size (dst_grid_size or n_b) */
@@ -108,13 +108,17 @@ extern "C" {
     char *map_method; /* [sng] Remapping method */
     char *source_grid; /* [sng] Source grid */
     char *dest_grid; /* [sng] Destination grid */
-  } nco_map_sct;
+  } nco_mpf_sct;
   
   void
   nco_bsl_zro /*  Return Bessel function zeros */
   (const int bsl_zro_nbr, /* O [nbr] Order of Bessel function */
    double * const bsl_zro); /* O [frc] Bessel zero */
   
+  void
+  nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
+  (rgr_sct * const rgr); /* I/O [sct] Regridding structure */
+
   void
   nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their weights */
   (const int lat_nbr, /* I [nbr] Latitude number */
