@@ -2644,6 +2644,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   long grd_sz_nbr; /* [nbr] Number of gridcells in grid */
   long idx; /* [idx] Counting index for unrolled grids */
   long idx2; /* [idx] Counting index for unrolled grids */
+  long lat_idx2; /* [idx] Counting index for unrolled latitude */
+  long lon_idx2; /* [idx] Counting index for unrolled longitude */
   long crn_idx; /* [idx] Counting index for corners */
   long lat_idx;
   long lat_nbr; /* [nbr] Number of latitudes in grid */
@@ -2683,24 +2685,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   bnd_nbr=2;
   grd_sz_nbr=lat_nbr*lon_nbr;
 
-  /* Allocate space to hold dimension metadata for rectangular grid */
-  int lon_psn; /* [idx] Ordinal position of longitude size in rectangular grid */
-  int lat_psn; /* [idx] Ordinal position of latitude  size in rectangular grid */
-  if(grd_rnk_nbr == dmn_nbr_2D){
-    lon_psn=0;
-    lat_psn=1;
-  } /* !flg_grd_in_2D */
-
-  /* Define variable values */
-  dmn_sz_int=(int *)nco_malloc(grd_rnk_nbr*nco_typ_lng((nc_type)NC_INT));
-  dmn_sz_int[lon_psn]=lon_nbr;
-  dmn_sz_int[lat_psn]=lat_nbr;
-  
+  /* Allocate space for output data */
   area=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
-  for(idx=0;idx<grd_sz_nbr;idx++) area[idx]=0.0;
-  
+  dmn_sz_int=(int *)nco_malloc(grd_rnk_nbr*nco_typ_lng((nc_type)NC_INT));
   msk=(int *)nco_malloc(grd_sz_nbr*nco_typ_lng((nc_type)NC_INT));
-  for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=0;
   
   lat_bnd=(double *)nco_malloc(lat_nbr*bnd_nbr*nco_typ_lng(crd_typ));
   lat_crn=(double *)nco_malloc(lat_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
@@ -2716,6 +2704,18 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   grd_crn_lat=(double *)nco_malloc(grd_crn_nbr*grd_sz_nbr*nco_typ_lng(crd_typ));
   grd_crn_lon=(double *)nco_malloc(grd_crn_nbr*grd_sz_nbr*nco_typ_lng(crd_typ));
   
+  /* Define variable values */
+  int lon_psn; /* [idx] Ordinal position of longitude size in rectangular grid */
+  int lat_psn; /* [idx] Ordinal position of latitude  size in rectangular grid */
+  if(grd_rnk_nbr == dmn_nbr_2D){
+    lon_psn=0;
+    lat_psn=1;
+  } /* !flg_grd_in_2D */
+  dmn_sz_int[lon_psn]=lon_nbr;
+  dmn_sz_int[lat_psn]=lat_nbr;
+
+  for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=0;
+
   /* Compute rectangular arrays
      NB: Mostly a rewrite of map/map_grd.F90:map_grd_mk() */
   /* Support only maps that begin at longitude 0.0 or 180.0 degrees */
@@ -2787,10 +2787,32 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     lat_bnd[2*idx+1]=lat_ntf[idx+1];
   } /* end loop over latitude */
   
-  for(idx=0;idx<lon_nbr;idx++) lon_crn[grd_crn_nbr*idx]=lon_ntf[idx];
-  lon_crn[grd_crn_nbr*lon_nbr-(grd_crn_nbr-1L)]=lon_ntf[lon_nbr];
-  for(idx=0;idx<lat_nbr;idx++) lat_crn[grd_crn_nbr*idx]=lat_ntf[idx];
-  lat_crn[grd_crn_nbr*lat_nbr-1L]=lat_ntf[lat_nbr];
+  assert(grd_crn_nbr == 4);
+  for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+    idx=grd_crn_nbr*lon_idx;
+    lon_crn[idx]=lon_ntf[lon_idx];
+    lon_crn[idx+1]=lon_ntf[lon_idx+1];
+    lon_crn[idx+2]=lon_ntf[lon_idx+1];
+    lon_crn[idx+3]=lon_ntf[lon_idx];
+  } /* !lon_idx */
+  idx=grd_crn_nbr*lon_nbr;
+  lon_crn[idx]=lon_ntf[lon_nbr-1];
+  lon_crn[idx+1]=lon_ntf[lon_nbr];
+  lon_crn[idx+2]=lon_ntf[lon_nbr];
+  lon_crn[idx+3]=lon_ntf[lon_nbr-1];
+
+  for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+    idx=grd_crn_nbr*lat_idx;
+    lat_crn[idx]=lat_ntf[lat_idx];
+    lat_crn[idx+1]=lat_ntf[lat_idx+1];
+    lat_crn[idx+2]=lat_ntf[lat_idx+1];
+    lat_crn[idx+3]=lat_ntf[lat_idx];
+  } /* !lat_idx */
+  idx=grd_crn_nbr*lat_idx;
+  lat_crn[idx]=lat_ntf[lat_nbr-1];
+  lat_crn[idx+1]=lat_ntf[lat_nbr];
+  lat_crn[idx+2]=lat_ntf[lat_nbr];
+  lat_crn[idx+3]=lat_ntf[lat_nbr-1];
   
   for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
     for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
@@ -2818,8 +2840,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       grd_ctr_lon[idx]=lon_ctr[lon_idx];
       for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
 	idx2=grd_crn_nbr*idx+crn_idx;
-	grd_crn_lat[idx2]=lat_crn[lat_idx];
-	grd_crn_lon[idx2]=lon_crn[lon_idx];
+	lat_idx2=lat_idx*grd_crn_nbr+crn_idx;
+	lon_idx2=lon_idx*grd_crn_nbr+crn_idx;
+	grd_crn_lat[idx2]=lat_crn[lat_idx2];
+	grd_crn_lon[idx2]=lon_crn[lon_idx2];
       } /* !crn */
     } /* !lon */
   } /* !lat */
