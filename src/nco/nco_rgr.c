@@ -2883,21 +2883,21 @@ nco_grd_mk /* [fnc] Create SCRIP-style output grid files */
   /* Free memory associated with input file */
   if(dmn_sz_int) dmn_sz_int=(int *)nco_free(dmn_sz_int);
   if(msk) msk=(int *)nco_free(msk);
-  if(area) area=(int *)nco_free(area);
-  if(frc) frc=(int *)nco_free(frc);
-  if(grd_ctr_lat) grd_ctr_lat=(int *)nco_free(grd_ctr_lat);
-  if(grd_ctr_lon) grd_ctr_lon=(int *)nco_free(grd_ctr_lon);
-  if(grd_crn_lat) grd_crn_lat=(int *)nco_free(grd_crn_lat);
-  if(grd_crn_lon) grd_crn_lon=(int *)nco_free(grd_crn_lon);
-  if(lat_bnd) lat_bnd=(int *)nco_free(lat_bnd);
-  if(lat_crn) lat_crn=(int *)nco_free(lat_crn);
-  if(lat_ctr) lat_ctr=(int *)nco_free(lat_ctr);
-  if(lat_ntf) lat_ntf=(int *)nco_free(lat_ntf);
-  if(lon_bnd) lon_bnd=(int *)nco_free(lon_bnd);
-  if(lon_crn) lon_crn=(int *)nco_free(lon_crn);
-  if(lon_ctr) lon_ctr=(int *)nco_free(lon_ctr);
-  if(lon_ntf) lon_ntf=(int *)nco_free(lon_ntf);
-  if(wgt_Gss) wgt_Gss=(int *)nco_free(wgt_Gss);
+  if(area) area=(double *)nco_free(area);
+  if(frc) frc=(double *)nco_free(frc);
+  if(grd_ctr_lat) grd_ctr_lat=(double *)nco_free(grd_ctr_lat);
+  if(grd_ctr_lon) grd_ctr_lon=(double *)nco_free(grd_ctr_lon);
+  if(grd_crn_lat) grd_crn_lat=(double *)nco_free(grd_crn_lat);
+  if(grd_crn_lon) grd_crn_lon=(double *)nco_free(grd_crn_lon);
+  if(lat_bnd) lat_bnd=(double *)nco_free(lat_bnd);
+  if(lat_crn) lat_crn=(double *)nco_free(lat_crn);
+  if(lat_ctr) lat_ctr=(double *)nco_free(lat_ctr);
+  if(lat_ntf) lat_ntf=(double *)nco_free(lat_ntf);
+  if(lon_bnd) lon_bnd=(double *)nco_free(lon_bnd);
+  if(lon_crn) lon_crn=(double *)nco_free(lon_crn);
+  if(lon_ctr) lon_ctr=(double *)nco_free(lon_ctr);
+  if(lon_ntf) lon_ntf=(double *)nco_free(lon_ntf);
+  if(wgt_Gss) wgt_Gss=(double *)nco_free(wgt_Gss);
   
   return;
 } /* !nco_grd_mk() */
