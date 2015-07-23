@@ -1029,16 +1029,17 @@ nco_rgr_map /* [fnc] Regrid using external weights */
     
     switch(nco_grd_2D_typ){
     case nco_grd_2D_ngl_eqi_fst:
-      /* Manually normalize polar offset grid latitude weights to sum to 2.0 for global extent */
-      for(idx=0;idx<lat_nbr_out;idx++){
-	if(nco_grd_xtn == nco_grd_xtn_glb){
+      if(nco_grd_xtn == nco_grd_xtn_glb){
+	for(idx=0;idx<lat_nbr_out;idx++){
 	  lat_wgt_out[idx]=cos(dgr2rdn*lat_ctr_out[idx]);
 	  lat_wgt_ttl+=lat_wgt_out[idx];
-	  lat_wgt_out[idx]*=2.0/lat_wgt_ttl;
-	}else{ /* !glb */
+	} /* !idx */
+	/* Manually normalize polar offset grid latitude weights to sum to 2.0 for global extent */
+	for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]*=2.0/lat_wgt_ttl;
+      }else{ /* !glb */
+	for(idx=0;idx<lat_nbr_out;idx++)
 	  lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
-	} /* !glb */
-      } /* !idx */
+      } /* !glb */
       break;
     case nco_grd_2D_ngl_eqi_pol:
       for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
@@ -2694,10 +2695,12 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   lat_crn=(double *)nco_malloc(lat_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
   lat_ctr=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
   lat_ntf=(double *)nco_malloc((lat_nbr+1L)*nco_typ_lng(crd_typ));
+  lat_wgt=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
   lon_bnd=(double *)nco_malloc(lon_nbr*bnd_nbr*nco_typ_lng(crd_typ));
   lon_crn=(double *)nco_malloc(lon_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
   lon_ctr=(double *)nco_malloc(lon_nbr*nco_typ_lng(crd_typ));
   lon_ntf=(double *)nco_malloc((lon_nbr+1L)*nco_typ_lng(crd_typ));
+  wgt_Gss=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
   
   grd_ctr_lat=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
   grd_ctr_lon=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
@@ -2752,7 +2755,6 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     break;
   case nco_grd_lat_gss:
     lat_sin=(double *)nco_malloc(lat_nbr*sizeof(double));
-    wgt_Gss=(double *)nco_malloc(lat_nbr*sizeof(double));
     (void)nco_lat_wgt_gss(lat_nbr,lat_sin,wgt_Gss);
     for(lat_idx=0;lat_idx<=lat_nbr;lat_idx++)
       lat_ctr[lat_idx]=rdn2dgr*asin(lat_sin[lat_idx]);
@@ -2772,12 +2774,12 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   /* Ensure rounding errors do not produce unphysical grid */
   lat_ntf[lat_nbr]=90.0;
   
-  /* Define centers as midway between interfaces */
+  /* Define centers midway between interfaces: fxm may not work for Gaussian grids? */
   for(lon_idx=0;lon_idx<=lon_nbr-1;lon_idx++)
     lon_ctr[lon_idx]=0.5*(lon_ntf[lon_idx]+lon_ntf[lon_idx+1]);
   for(lat_idx=0;lat_idx<=lat_nbr-1;lat_idx++)
     lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1]);
-  
+
   for(idx=0;idx<lon_nbr;idx++){
     lon_bnd[2*idx]=lon_ntf[idx];
     lon_bnd[2*idx+1]=lon_ntf[idx+1];
@@ -2787,6 +2789,29 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     lat_bnd[2*idx+1]=lat_ntf[idx+1];
   } /* end loop over latitude */
   
+  /* Use centers and boundaries to diagnose latitude weights */  
+  switch(lat_typ){
+  case nco_grd_lat_ngl_eqi_pol:
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]);
+    break;
+  case nco_grd_lat_ngl_eqi_fst:
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+      lat_wgt[lat_idx]=cos(dgr2rdn*lat_ctr[lat_idx]);
+      lat_wgt_ttl+=lat_wgt[lat_idx];
+    } /* !lat_idx */
+    /* Manually normalize polar offset grid latitude weights to sum to 2.0 for global extent */
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]*=2.0/lat_wgt_ttl;
+    break;
+  case nco_grd_lat_gss:
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=wgt_Gss[lat_idx];
+    break;
+  case nco_grd_lat_GSC:
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=0.0;
+    break;
+  default:
+    nco_dfl_case_generic_err(); break;
+  } /* !lat_typ */
+
   assert(grd_crn_nbr == 4);
   for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
     idx=grd_crn_nbr*lon_idx;
@@ -2823,8 +2848,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
       lat_wgt_ttl=0.0;
       area_ttl=0.0;
-      for(idx=0;idx<lat_nbr;idx++)
-	lat_wgt_ttl+=lat_wgt[idx];
+      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+	lat_wgt_ttl+=lat_wgt[lat_idx];
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
 	  area_ttl+=area[lat_idx*lon_nbr+lon_idx];
@@ -3007,6 +3032,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   if(lat_crn) lat_crn=(double *)nco_free(lat_crn);
   if(lat_ctr) lat_ctr=(double *)nco_free(lat_ctr);
   if(lat_ntf) lat_ntf=(double *)nco_free(lat_ntf);
+  if(lat_wgt) lat_wgt=(double *)nco_free(lat_wgt);
   if(lon_bnd) lon_bnd=(double *)nco_free(lon_bnd);
   if(lon_crn) lon_crn=(double *)nco_free(lon_crn);
   if(lon_ctr) lon_ctr=(double *)nco_free(lon_ctr);
