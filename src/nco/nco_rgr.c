@@ -2581,9 +2581,15 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      /glade/p/cesm/cseg/mapping/grids
 
      Generate ACME grids:
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150724.nco.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150724.nco.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150724.nco.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc */
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150724.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150724.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150724.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+
+     Generate ACME maps:
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/129x256_SCRIP.20150724.nc -w ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150724.nc --method conserve
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/257x512_SCRIP.20150724.nc -w ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150724.nc --method bilinear
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/257x512_SCRIP.20150724.nc -w ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150724.nc --method conserve
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/801x1600_SCRIP.20150724.nc -w ${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150724.nc --method bilinear */
 
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 
@@ -2735,7 +2741,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   dmn_sz_int[lon_psn]=lon_nbr;
   dmn_sz_int[lat_psn]=lat_nbr;
 
-  for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=0;
+  for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
 
   /* Compute rectangular arrays
      NB: Mostly a rewrite of map/map_grd.F90:map_grd_mk() */
