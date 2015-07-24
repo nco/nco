@@ -287,8 +287,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 	rgr->lat_typ=nco_grd_lat_gss;
       else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"FV"))
 	rgr->lat_typ=nco_grd_lat_FV;
-      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"GSC"))
-	rgr->lat_typ=nco_grd_lat_GSC;
       else abort();
       continue;
     } /* endif */
@@ -2392,8 +2390,7 @@ nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
   case nco_grd_lat_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
   case nco_grd_lat_ngl_eqi_pol: return "Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO";
   case nco_grd_lat_ngl_eqi_fst: return "Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
-  case nco_grd_lat_FV: return "My attempt at FV grid";
-  case nco_grd_lat_GSC: return "Weird GEOS grid is uneven at Poles";
+  case nco_grd_lat_FV: return "FV-scalar grid (equi-angle polar grid, odd number of latitudes)";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -2579,7 +2576,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      /glade/p/cesm/cseg/mapping/grids
 
      Generate fv129x256 grid:
-     ncks -O -D 1 --rgr grd_ttl='FV 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150723.nco.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc */
+     ncks -O -D 1 --rgr grd_ttl='FV scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150723.nco.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 
@@ -2761,8 +2758,24 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   double *lat_sin; // [frc] Sine of Gaussian latitudes double precision
   lat_ntf[0]=-90.0;
   switch(lat_typ){
+  case nco_grd_lat_FV:
   case nco_grd_lat_ngl_eqi_pol:
+    /* Polar grids have an odd number of latitudes */
+    if(lat_nbr % 2 != 1){
+    (void)fprintf(stderr,"%s: ERROR %s reports user request for equi-angle latitude grid covering poles (aka FV-scalar grid) with %ld latitudes. However, the FV scalar grid must have an odd number of latitudes so that the centers of first and last latitude bands are on the poles.\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
+    nco_exit(EXIT_FAILURE);
+    } /* !odd */
+    lat_ncr=180.0/(lat_nbr-1);
+    lat_ntf[1]=lat_ntf[0]+0.5*lat_ncr;
+    for(lat_idx=2;lat_idx<lat_nbr;lat_idx++)
+      lat_ntf[lat_idx]=lat_ntf[1]+(lat_idx-1)*lat_ncr;
+    break;
   case nco_grd_lat_ngl_eqi_fst:
+    /* Offset grids have an even number of latitudes */
+    if(lat_nbr % 2 != 0){
+    (void)fprintf(stderr,"%s: ERROR %s reports user request for equi-angle offset latitude grid (aka FV staggered velocity grid) with %ld latitudes. However, the FV staggered grid must have an even number of latitudes so that the centers of first and last latitude bands are not on the poles.\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
+    nco_exit(EXIT_FAILURE);
+    } /* !odd */
     lat_ncr=180.0/lat_nbr;
     for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=lat_ntf[0]+(lat_idx-1)*lat_ncr;
@@ -2776,18 +2789,6 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=0.5*(lat_ctr[lat_idx-1]+lat_ctr[lat_idx]);
     break;
-  case nco_grd_lat_FV:
-    lat_ncr=180.0/(lat_nbr-1);
-    lat_ntf[1]=lat_ntf[0]+0.5*lat_ncr;
-    for(lat_idx=2;lat_idx<lat_nbr;lat_idx++)
-      lat_ntf[lat_idx]=lat_ntf[1]+(lat_idx-2)*lat_ncr;
-    break;
-  case nco_grd_lat_GSC:
-    lat_ncr=180.0/(lat_nbr-1);
-    lat_ntf[1]=lat_ntf[0]+0.5*lat_ncr;
-    for(lat_idx=2;lat_idx<lat_nbr;lat_idx++)
-      lat_ntf[lat_idx]=lat_ntf[1]+(lat_idx-2)*lat_ncr;
-    break;
   default:
     nco_dfl_case_generic_err(); break;
   } /* !lat_typ */
@@ -2798,11 +2799,12 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   for(lon_idx=0;lon_idx<=lon_nbr-1;lon_idx++)
     lon_ctr[lon_idx]=0.5*(lon_ntf[lon_idx]+lon_ntf[lon_idx+1]);
 
-  /* Regular latitudes are a myth (at least for FV and Gaussian grids) */
-  if(lat_typ != nco_grd_lat_FV){
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+  /* Many grids have center latitude equally spaced between interfaces */
+  for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
       lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1]);
-  }else{
+
+  /* Polar and FV grids excepted---they place centers of first/last gridcells at poles */
+  if(lat_typ == nco_grd_lat_FV || lat_typ == nco_grd_lat_ngl_eqi_pol){
     lat_ctr[0]=lat_ntf[0];
     for(lat_idx=1;lat_idx<lat_nbr-1;lat_idx++)
       lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1]);
@@ -2818,10 +2820,20 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     lat_bnd[2*idx+1]=lat_ntf[idx+1];
   } /* end loop over latitude */
   
-  /* Use centers and boundaries to diagnose latitude weights */  
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+    for(idx=0;idx<lat_nbr;idx++){
+    (void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr[idx]);
+    for(int bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
+      (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
+  } /* end loop over lat */
+  } /* endif dbg */
+
+    /* Use centers and boundaries to diagnose latitude weights */
   switch(lat_typ){
   case nco_grd_lat_ngl_eqi_pol:
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]);
+  case nco_grd_lat_FV:
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+      lat_wgt[lat_idx]=sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]);
     break;
   case nco_grd_lat_ngl_eqi_fst:
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
@@ -2834,15 +2846,17 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   case nco_grd_lat_gss:
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=wgt_Gss[lat_idx];
     break;
-  case nco_grd_lat_FV:
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=0.0;
-    break;
-  case nco_grd_lat_GSC:
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=0.0;
-    break;
   default:
     nco_dfl_case_generic_err(); break;
   } /* !lat_typ */
+
+    /* Fuzzy test of latitude weight normalization */
+  double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
+  lat_wgt_ttl=0.0;
+  for(idx=0;idx<lat_nbr;idx++) lat_wgt_ttl+=lat_wgt[idx];
+  lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1])-sin(dgr2rdn*lat_bnd[0]);
+  if(nco_grd_2D_typ != nco_grd_2D_unk)
+    assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < 1.0e-14); /* [frc] Round-off tolerance for sum of quadrature weights */
 
   assert(grd_crn_nbr == 4);
   for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){

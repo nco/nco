@@ -1,6 +1,12 @@
 2015-07-24  Charlie Zender  <zender@uci.edu>
 
- 	* nco_grd_mk() has fancy metadata annotations and almost generates correct FV grids
+	* Incorporate self-diagnostics (lat_wgt) in nco_grd_mk()
+
+	* Verify ACME FV-scalar SCRIP grids are missing meridional strip next to Greenwich
+
+	* Eliminate GSC gridtype (obscure name for FV-scalar), treat FV	and ngl_eqi_pol identically, leave names distinct
+
+ 	* nco_grd_mk() has fancy metadata annotations and generates correct FV-scalar grids
 
 2015-07-23  Charlie Zender  <zender@uci.edu>
 
