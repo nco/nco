@@ -279,15 +279,19 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
-      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"ngl_eqi_pol"))
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"ngl_eqi_pol")){
 	rgr->lat_typ=nco_grd_lat_ngl_eqi_pol;
-      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"ngl_eqi_fst"))
+	rgr->grd_typ=nco_grd_2D_ngl_eqi_pol;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"ngl_eqi_fst")){
 	rgr->lat_typ=nco_grd_lat_ngl_eqi_fst;
-      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"gss"))
+	rgr->grd_typ=nco_grd_2D_ngl_eqi_fst;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"gss")){
 	rgr->lat_typ=nco_grd_lat_gss;
-      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"FV"))
+	rgr->grd_typ=nco_grd_2D_gss;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"FV")){
 	rgr->lat_typ=nco_grd_lat_FV;
-      else abort();
+	rgr->grd_typ=nco_grd_2D_FV;
+      }else abort();
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_typ")){
@@ -2370,9 +2374,10 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   /* Purpose: Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
   case nco_grd_2D_unk: return "Unknown or unclassified 2D grid type (e.g., POP displaced-pole)";
-  case nco_grd_2D_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
-  case nco_grd_2D_ngl_eqi_pol: return "Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO";
-  case nco_grd_2D_ngl_eqi_fst: return "Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
+  case nco_grd_2D_gss: return "Gaussian latitude grid. Used by spectral transform models, e.g., CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM.";
+  case nco_grd_2D_ngl_eqi_pol: return "FV-scalar grid, an equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90). Used by CAM FV, GEOS-CHEM, UCICTM, UKMO.";
+  case nco_grd_2D_ngl_eqi_fst: return "FV-staggered velocity grid, an equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx). Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
+  case nco_grd_2D_FV: return "FV-scalar grid (equi-angle polar grid, odd number of latitudes)";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -2575,8 +2580,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      NCAR:
      /glade/p/cesm/cseg/mapping/grids
 
-     Generate fv129x256 grid:
-     ncks -O -D 1 --rgr grd_ttl='FV scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150723.nco.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc */
+     Generate ACME grids:
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150723.nco.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150723.nco.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150723.nco.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 
@@ -2671,13 +2678,13 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   nco_bool flg_grd_2D=False;
 
-  //  nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
+  nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
   nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
-  //grd_typ=rgr->grd_typ; /* [enm] Grid type */
+  grd_typ=rgr->grd_typ; /* [enm] Grid type */
   fl_out=rgr->fl_grd;
   lat_typ=rgr->lat_typ; /* [enm] Latitude grid type */
   lon_typ=rgr->lon_typ; /* [enm] Longitude grid type */
@@ -2855,7 +2862,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   lat_wgt_ttl=0.0;
   for(idx=0;idx<lat_nbr;idx++) lat_wgt_ttl+=lat_wgt[idx];
   lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1])-sin(dgr2rdn*lat_bnd[0]);
-  if(nco_grd_2D_typ != nco_grd_2D_unk)
+  if(grd_typ != nco_grd_2D_unk)
     assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < 1.0e-14); /* [frc] Round-off tolerance for sum of quadrature weights */
 
   assert(grd_crn_nbr == 4);
