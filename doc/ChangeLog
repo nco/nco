@@ -1,3 +1,19 @@
+2015-07-24  Charlie Zender  <zender@uci.edu>
+
+	* "mask" _is_ the mask for each point, not "whether to mask" each point. Change default from 0 to 1.
+
+	* NCO 4.5.2-alpha6 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha6 final changes';git push
+	git tag -a 4.5.2-alpha6 -m 'Version 4.5.2-alpha6 tag: create 2D rectangular SCRIP grids';git push --tags
+
+	* Incorporate self-diagnostics (lat_wgt) in nco_grd_mk()
+
+	* Verify ACME FV-scalar SCRIP grids are missing meridional strip next to Greenwich
+
+	* Eliminate GSC gridtype (obscure name for FV-scalar), treat FV	and ngl_eqi_pol identically, leave names distinct
+
+ 	* nco_grd_mk() has fancy metadata annotations and generates correct FV-scalar grids
+
 2015-07-23  Charlie Zender  <zender@uci.edu>
 
 	* Hook-up nco_grd_mk() to rgr front-end

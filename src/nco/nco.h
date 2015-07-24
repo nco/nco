@@ -299,14 +299,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 2
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE  "alpha5" /* May be blank */
+# define NCO_VERSION_NOTE  "alpha6" /* May be blank */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.5.2-alpha5"
+# define NCO_VERSION "4.5.2-alpha6"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -887,7 +887,7 @@ extern "C" {
     nco_grd_2D_gss, /* Gaussian latitudes used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM */
     nco_grd_2D_ngl_eqi_pol, /* Equi-angle grid including poles, the FV scalar grid (lat[0]=-90): CAM FV, GEOS-CHEM, UCICTM, UKMO */
     nco_grd_2D_ngl_eqi_fst, /* Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
-    nco_grd_2D_GSC, /* Weird GEOS grid is uneven at Poles */
+    nco_grd_2D_FV, /* FV-scalar grid (equi-angle polar grid, odd number of latitudes) */
     nco_grd_2D_unk, /* Unknown or unclassified, POP displaced-pole */
   } nco_grd_2D_typ_enm;
 
@@ -897,7 +897,7 @@ extern "C" {
     nco_grd_lat_gss, /* Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM */
     nco_grd_lat_ngl_eqi_pol, /* Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO */
     nco_grd_lat_ngl_eqi_fst, /* Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
-    nco_grd_lat_GSC, /* Weird GEOS grid is uneven at Poles */
+    nco_grd_lat_FV, /* FV-scalar grid (equi-angle polar grid, odd number of latitudes) */
   } nco_grd_lat_typ_enm;
 
   typedef enum nco_grd_lon_typ_enm{ /* [enm] Longitude grid-type enum */
@@ -936,6 +936,7 @@ extern "C" {
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
     // User-specified grid properties
     char *fl_grd; /* [sng] Name of grid file to create */
+    char *grd_ttl; /* [sng] Grid title */
     double lat_srt; /* [dgr] Latitude center at start of grid */
     double lon_srt; /* [dgr] Longitude center at start of grid */
     double lat_end; /* [dgr] Latitude center at end of grid */
@@ -946,6 +947,7 @@ extern "C" {
     nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
     nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
     // Other internal data and metadata 
+    char *cmd_ln; /* [sng] Command-line */
     double wgt_vld_thr; /* [frc] Weight threshold for valid destination value */
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */

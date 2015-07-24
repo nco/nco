@@ -137,7 +137,8 @@ extern "C" {
 
   rgr_sct * /* O [sct] Regridding structure */
   nco_rgr_ini /* [fnc] Initialize regridding structure */
-  (const int in_id, /* I [id] Input netCDF file ID */
+  (const char * const cmd_ln, /* I [sng] Command-line */
+   const int in_id, /* I [id] Input netCDF file ID */
    char **rgr_arg, /* [sng] Regridding arguments */
    const int rgr_nbr, /* [nbr] Number of regridding arguments */
    char * const rgr_in, /* I [sng] File containing fields to be regridded */
