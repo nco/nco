@@ -1,5 +1,9 @@
 2015-07-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.2-alpha6 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha6 final changes';git push
+	git tag -a 4.5.2-alpha6 -m 'Version 4.5.2-alpha6 tag: create 2D rectangular SCRIP grids';git push --tags
+
 	* Incorporate self-diagnostics (lat_wgt) in nco_grd_mk()
 
 	* Verify ACME FV-scalar SCRIP grids are missing meridional strip next to Greenwich
