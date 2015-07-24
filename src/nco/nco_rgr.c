@@ -2581,9 +2581,9 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      /glade/p/cesm/cseg/mapping/grids
 
      Generate ACME grids:
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150723.nco.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150723.nco.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150723.nco.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc */
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150724.nco.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150724.nco.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150724.nco.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 
