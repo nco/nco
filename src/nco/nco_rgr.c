@@ -19,7 +19,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   const char fnc_nm[]="nco_rgr_ctl()";
 
   nco_bool flg_grd=False; /* [flg] Create SCRIP-format grid file */
-  nco_bool flg_map=False; /* [flg] Weight-based regridding */
+  nco_bool flg_map=False; /* [flg] Regrid with external weights */
   nco_bool flg_smf=False; /* [flg] ESMF regridding */
   nco_bool flg_tps=False; /* [flg] Tempest regridding */
 
@@ -365,7 +365,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 } /* end nco_rgr_ini() */
   
 int /* O [enm] Return code */
-nco_rgr_map /* [fnc] Regrid using external weights */
+nco_rgr_map /* [fnc] Regrid with external weights */
 (rgr_sct * const rgr, /* I/O [sct] Regridding structure */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */
 {
