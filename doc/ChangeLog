@@ -1,3 +1,7 @@
+2015-07-24  Charlie Zender  <zender@uci.edu>
+
+ 	* nco_grd_mk() has fancy metadata annotations and almost generates correct FV grids
+
 2015-07-23  Charlie Zender  <zender@uci.edu>
 
 	* Hook-up nco_grd_mk() to rgr front-end
