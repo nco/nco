@@ -1,3 +1,15 @@
+2015-07-25  Charlie Zender  <zender@uci.edu>
+
+	* Generated Gaussian grids now have lat_ctr=Legendre zeros, and lat_ntf that define spherical zones that reproduce Gaussian weights
+
+	* Iterate interface location to agree with spherical annulus area
+
+	* Use Gaussian angles as latitude centers rather than bisecting interfaces
+
+	* Show that SCRIP and NCAR T42 grid/map files only accurate to 8 decimal places
+
+	* Verify Gaussian weights/angles are correct to 16 decimal places
+
 2015-07-24  Charlie Zender  <zender@uci.edu>
 
 	* "mask" _is_ the mask for each point, not "whether to mask" each point. Change default from 0 to 1.

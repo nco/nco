@@ -12767,7 +12767,7 @@ The function/wrapper returns a status flag.
 Zero indicates success. 
 
 @noindent Consider another array function @* 
-@code{int gsl_sf_legendre_Pl_array( int lmax, double x, double *result_array);}
+@code{int gsl_sf_legendre_Pl_array(int lmax, double x, double *result_array);}
 @cindex Legendre polynomial
 @findex gsl_sf_legendre_Pl
 @example

@@ -456,6 +456,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   const double rdn2dgr=180.0/M_PI;
   const double dgr2rdn=M_PI/180.0;
+  const double eps_rlt=1.0e-14; /* [frc] Round-off error tolerance */
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
   double area_out_ttl=0.0; /* [frc] Exact sum of area */
 
@@ -851,6 +852,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_get_att(in_id,dst_grd_ctr_lat_id,unt_sng,att_val,att_typ);
     /* NUL-terminate attribute before using strstr() */
     att_val[att_sz]='\0';
+    /* Match "radian" and "radians" */
     if(strstr(att_val,"radian")) flg_crd_in_rdn=True;
     if(att_val) att_val=(char *)nco_free(att_val);
   } /* end rcd && att_typ */
@@ -1076,8 +1078,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     lat_wgt_ttl=0.0;
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
     lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0]);
-    if(nco_grd_2D_typ != nco_grd_2D_unk)
-      assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < 1.0e-14); /* [frc] Round-off tolerance for sum of quadrature weights */
+    if(nco_grd_2D_typ != nco_grd_2D_unk) assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
 
     /* When possible, ensure area_out is non-zero
        20150722: ESMF documentation says "The grid area array is only output when the conservative remapping option is used"
@@ -1098,7 +1099,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   for(idx=0;idx<rgr_map.dst_grid_size;idx++)
     if(area_out[idx] != 0.0) break;
   if(idx == rgr_map.dst_grid_size){
-    (void)fprintf(stdout,"%s: INFO %s reports area_out from mapfile is everywhere zero. This is expected for non-conservative remapping methods such as bilinear interpolation. ",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: INFO %s reports area_out from mapfile is everywhere zero. This is expected for some non-conservative remapping methods such as bilinear interpolation. ",nco_prg_nm_get(),fnc_nm);
     if(flg_grd_out_2D && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
       (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will generate and output an area variable (named \"%s\") diagnosed from the destination gridcell boundaries. NCO diagnoses quadrilateral area from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs. To determine whether the diagnosed areas are fully consistent with output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
       flg_dgn_area_out=True;
@@ -1108,9 +1109,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* !area */
       
   if(flg_dgn_area_out){
-    /* Regular quadrilaterals on equiangular grids have areas Mr. Enenstein taught us
-       NB: Approximation neglects distinctions between great circle arcs and, e.g., lines of constant latitude
-       Also, this approximation produces an area only 0.998 of a full sphere with bounds from map_ne30np4_to_fv257x512_bilin */
+    /* Mr. Enenstein and George O. Abell taught me the area of spherical zones
+       Spherical zone area is exact and faithful to underlying rectangular equi-angular grid
+       However, ESMF and Tempest both appear to approximate at least some spherical quadrilaterals as great circle arcs
+       fxm: Distinguish spherical zone shapes (e.g., equi-angular) from great circle arcs (e.g., unstructured polygons) */
     for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
       for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
 	area_out[lat_idx*lon_nbr_out+lon_idx]=dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]));
@@ -1129,15 +1131,25 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(nco_dbg_lvl_get() >= nco_dbg_std)
     if(idx != rgr_map.dst_grid_size)
       (void)fprintf(stdout,"%s: INFO %s reports frc_out contains zero-elements (e.g., at 1D idx=%ld)\n",nco_prg_nm_get(),fnc_nm,idx);
-  /* Test whether frc_out is always one... */
+  /* Normalizing by frc_out is redundant iff frc_out == 1.0, so we can save time without sacrificing accuracy
+     However, frc_out is often (e.g., for CS <-> RLL maps) close but not equal to unity (an ESMF_Regrid_Weight_Gen issue?)
+     Hence, decide whether to normalize by frc_out by diagnosing the furthest excursion of frc_out from unity */
   nco_bool flg_frc_out_one=True;
-  for(idx=0;idx<rgr_map.dst_grid_size;idx++)
-    if(frc_out[idx] != 1.0) break;
-  if(idx != rgr_map.dst_grid_size) flg_frc_out_one=False;
+  double frc_out_dff_one; /* [frc] Deviation of frc_out from 1.0 */
+  double frc_out_dff_one_max=0.0; /* [frc] Maximum deviation of frc_out from 1.0 */
+  long idx_max_dvn; /* [idx] Index of maximum deviation from 1.0 */
+  for(idx=0;idx<rgr_map.dst_grid_size;idx++){
+    frc_out_dff_one=fabs(frc_out[idx]-1.0);
+    if(frc_out_dff_one > frc_out_dff_one_max){
+      frc_out_dff_one_max=frc_out_dff_one;
+      idx_max_dvn=idx;
+    } /* !max */
+  } /* !idx */
+  if(frc_out_dff_one_max > eps_rlt) flg_frc_out_one=False;
   nco_bool flg_frc_nrm=False;
   if(!flg_frc_out_one && (nco_rgr_nrm_typ == nco_rgr_nrm_destarea || nco_rgr_nrm_typ == nco_rgr_nrm_none)) flg_frc_nrm=True;
   if(flg_frc_nrm){
-    (void)fprintf(stdout,"%s: INFO %s reports global metadata specifies normalization with type = %s and frc_dst = dst_frac = frac_b = frc_out contains non-unity elements (e.g., frc_out[%ld] = %g, and likely other locations, too). Will apply \'destarea\' normalization to all regridded arrays.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ),idx,frc_out[idx]);
+    (void)fprintf(stdout,"%s: INFO %s reports global metadata specifies normalization with type = %s and frc_dst = dst_frac = frac_b = frc_out contains non-unity elements (maximum deviation of %g occurs for frc_out[%ld] = %g). Will apply \'destarea\' normalization to all regridded arrays.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ),frc_out_dff_one_max,idx_max_dvn,frc_out[idx_max_dvn]);
   } /* !sometimes non-unity */
   if(flg_frc_nrm && rgr->flg_rnr){
     (void)fprintf(stdout,"%s: ERROR %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice may be an error, depending on intent of each. Call Charlie and tell him how NCO should handle this.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
@@ -2200,10 +2212,11 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
      19970123 Modified by Jim Rosinski to use real*16 arithmetic in order to 
      achieve (nearly) identical weights and latitudes on all machines.
      ~2000: Converted to Fortran9X by C. Zender, changed all real*16 statements to double precision (real*8)
-     20150530: Converted to C99 by C. Zender */
+     20150530: Converted to C99 by C. Zender
+     20150725: Verified against tabulation at http://pomax.github.io/bezierinfo/legendre-gauss.html#n64 */
   
   const char fnc_nm[]="nco_lat_wgt_gss()"; /* [sng] Function name */
-  const double eps_rlt=1.0e-15; // Convergence criterion (NB: Threshold was 1.0d-27 in real*16, 1.0e-15 is for real*8)
+  const double eps_rlt=1.0e-16; // Convergence criterion (NB: Threshold was 1.0d-27 in real*16, 1.0e-15 fine for real*8, 1.0e-16 pushes double precision to the brink)
   const double pi=M_PI; // [frc] 3
   const int itr_nbr_max=20; // [nbr] Maximum number of iterations
   double c_cff; // Constant combination coefficient
@@ -2248,8 +2261,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   label_73:
     pkm2=1.0;
     pkm1=xz;
-    itr_cnt=itr_cnt+1;
-    if(itr_cnt > itr_nbr_max){
+    if(++itr_cnt > itr_nbr_max){
       (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %d\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
       nco_exit(EXIT_FAILURE);
     } /* endif */
@@ -2573,6 +2585,14 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 {
   /* Purpose: Use grid information to create SCRIP-format grid file
 
+     Spherical geometry terminology:
+     spherical cap = spherical dome = volume cut-off by plane
+     spherical lune = digon = area bounded by two half-great circles = base of spherical wedge
+     spherical segment = volume defined by cutting sphere with pair parallel planes
+     spherical sector = volume subtended by lat1
+     spherical wedge = ungula = volume subtended by lon2-lon1
+     spherical zone = area of sphereical segment excluding bases
+
      ACME:
      https://acme-svn2.ornl.gov/acme-repo/acme/mapping/grids
      https://acme-svn2.ornl.gov/acme-repo/acme/inputdata/cpl/gridmaps
@@ -2599,6 +2619,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_2D; /* [nbr] Maximum rank of grid variables */
+  const int itr_nbr_max=20; // [nbr] Maximum number of iterations
  
   const nc_type crd_typ=NC_DOUBLE;
 
@@ -2634,9 +2655,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   // double lat_end; /* [dgr] Latitude center at end of grid */
   // double lat_srt; /* [dgr] Latitude center at start of grid */
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
+  double lat_wgt_gss; /* [frc] Latitude weight estimated from interface latitudes */
   // double lon_end; /* [dgr] Longitude center at end of grid */
   // double lon_srt; /* [dgr] Longitude center at start of grid */
-   double lon_ncr; /* [dgr] Longitude increment */
+  double lon_ncr; /* [dgr] Longitude increment */
   double lat_ncr; /* [dgr] Latitude increment */
   double *wgt_Gss=NULL; // [frc] Gaussian weights double precision
 
@@ -2658,6 +2680,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   int grd_crn_lon_id; /* [id] Grid corner longitudes variable ID */
   int grd_ctr_lat_id; /* [id] Grid center latitudes  variable ID */
   int grd_ctr_lon_id; /* [id] Grid center longitudes variable ID */
+  int itr_cnt; /* Iteration counter */
   int msk_id; /* [id] Mask variable ID */
 
   long dmn_srt[dmn_nbr_grd_max];
@@ -2798,9 +2821,33 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     (void)nco_lat_wgt_gss(lat_nbr,lat_sin,wgt_Gss);
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
       lat_ctr[lat_idx]=rdn2dgr*asin(lat_sin[lat_idx]);
-    if(lat_sin) lat_sin=(double *)nco_free(lat_sin);
+    /* First guess for lat_ntf is midway between Gaussian abscissae */
     for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=0.5*(lat_ctr[lat_idx-1]+lat_ctr[lat_idx]);
+    /* Iterate guess until area between interfaces matches Gaussian weight */
+    for(lat_idx=1;lat_idx<lat_nbr;lat_idx++){
+      double fofx_at_x0; /* [frc] Function to iterate evaluated at current guess */
+      double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
+      const double eps_rlt=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
+      itr_cnt=0;
+      lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1]);
+      fofx_at_x0=wgt_Gss[lat_idx-1]-lat_wgt_gss;
+      while(fabs(fofx_at_x0) > eps_rlt){
+	/* Use Newton-Raphson method to iteratively improve interface location
+	   Let x=lat_ntf[lat_idx], y0=lat_ntf[lat_idx-1], gw = Gaussian weight (exact solution)
+	   f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0 
+	   dfdx(x)=dgr2rdn*(dgr2rdn*x)
+	   x_better=x0-f(x0)/f'(x0) */
+	dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
+	lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0;
+	lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1]);
+	fofx_at_x0=wgt_Gss[lat_idx-1]-lat_wgt_gss;
+	if(++itr_cnt > itr_nbr_max){
+	  (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
+	  nco_exit(EXIT_FAILURE);
+	} /* endif */
+      } /* !while */
+    } /* !lat */
     break;
   default:
     nco_dfl_case_generic_err(); break;
@@ -2823,6 +2870,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1]);
     lat_ctr[lat_nbr-1]=lat_ntf[lat_nbr];
   } /* !FV */
+  if(lat_typ == nco_grd_lat_gss){
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+      lat_ctr[lat_idx]=rdn2dgr*asin(lat_sin[lat_idx]);
+  } /* !Gaussian */
   
   for(idx=0;idx<lon_nbr;idx++){
     lon_bnd[2*idx]=lon_ntf[idx];
@@ -2841,12 +2892,12 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   } /* end loop over lat */
   } /* endif dbg */
 
-    /* Use centers and boundaries to diagnose latitude weights */
+  /* Use centers and boundaries to diagnose latitude weights */
   switch(lat_typ){
   case nco_grd_lat_ngl_eqi_pol:
   case nco_grd_lat_FV:
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
-      lat_wgt[lat_idx]=sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]);
+      lat_wgt[lat_idx]=sin(dgr2rdn*lat_ntf[lat_idx+1])-sin(dgr2rdn*lat_ntf[lat_idx]);
     break;
   case nco_grd_lat_ngl_eqi_fst:
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
@@ -2863,13 +2914,14 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     nco_dfl_case_generic_err(); break;
   } /* !lat_typ */
 
-    /* Fuzzy test of latitude weight normalization */
+  /* Fuzzy test of latitude weight normalization */
+  const double eps_rlt=1.0e-14; /* [frc] Round-off error tolerance */
   double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
   lat_wgt_ttl=0.0;
   for(idx=0;idx<lat_nbr;idx++) lat_wgt_ttl+=lat_wgt[idx];
   lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1])-sin(dgr2rdn*lat_bnd[0]);
   if(grd_typ != nco_grd_2D_unk)
-    assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < 1.0e-14); /* [frc] Round-off tolerance for sum of quadrature weights */
+    assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
 
   assert(grd_crn_nbr == 4);
   for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
@@ -3097,6 +3149,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   if(lat_crn) lat_crn=(double *)nco_free(lat_crn);
   if(lat_ctr) lat_ctr=(double *)nco_free(lat_ctr);
   if(lat_ntf) lat_ntf=(double *)nco_free(lat_ntf);
+  if(lat_sin) lat_sin=(double *)nco_free(lat_sin);
   if(lat_wgt) lat_wgt=(double *)nco_free(lat_wgt);
   if(lon_bnd) lon_bnd=(double *)nco_free(lon_bnd);
   if(lon_crn) lon_crn=(double *)nco_free(lon_crn);
