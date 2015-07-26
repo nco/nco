@@ -1,14 +1,18 @@
 2015-07-25  Charlie Zender  <zender@uci.edu>
 
-	* Generated Gaussian grids now have lat_ctr=Legendre zeros, and lat_ntf that define spherical zones that reproduce Gaussian weights
+	* NCO 4.5.2-alpha7 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha7 final changes';git push
+	git tag -a 4.5.2-alpha7 -m 'Version 4.5.2-alpha7 tag: Generate exact Gaussian grids';git push --tags
 
-	* Iterate interface location to agree with spherical annulus area
+	* Gaussian grids now have lat_ctr=Legendre zeros, and lat_ntf that define spherical zones that reproduce Gaussian weights
+
+	* Newton-Raphson iterate latitude interface location to agree with spherical zone area
 
 	* Use Gaussian angles as latitude centers rather than bisecting interfaces
 
-	* Show that SCRIP and NCAR T42 grid/map files only accurate to 8 decimal places
+	* Show that SCRIP and NCAR T42 grid/map files accurate to 8 decimal places (NCO to 16)
 
-	* Verify Gaussian weights/angles are correct to 16 decimal places
+	* Verify NCO Gaussian weights/angles accuracy to 16 decimal places
 
 2015-07-24  Charlie Zender  <zender@uci.edu>
 

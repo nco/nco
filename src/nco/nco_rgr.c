@@ -2839,7 +2839,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 	   dfdx(x)=dgr2rdn*(dgr2rdn*x)
 	   x_better=x0-f(x0)/f'(x0) */
 	dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
-	lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0;
+	lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0; /* NB: not sure why this is minus not plus but it works :) */
 	lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1]);
 	fofx_at_x0=wgt_Gss[lat_idx-1]-lat_wgt_gss;
 	if(++itr_cnt > itr_nbr_max){
