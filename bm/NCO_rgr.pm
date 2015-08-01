@@ -4107,9 +4107,61 @@ if(0){
     $dsc_sng="Test per-record weighting with --wgt=one_dmn_rec_wgt";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,,1 -v one_dmn_rec_wgt,one_dmn_rec_var_flt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncra -h -O $fl_fmt $nco_D_flg -w one_dmn_rec_wgt -v one_dmn_rec_var_flt %tmp_fl_00% %tmp_fl_01%";
+#    NB: verify test fails with missing values TODO nco1124
+#    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,,1 $in_pth_arg in.nc %tmp_fl_00%";
+#    $tst_cmd[1]="ncra -h -O $fl_fmt $nco_D_flg -w one_dmn_rec_wgt %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -H -s '%g' -v one_dmn_rec_var_flt %tmp_fl_01%";
     $tst_cmd[3]="1.33333";
     $tst_cmd[4]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
+# ncra #36
+# Test per-file weighting without missing values
+# Correct answer: 2.33333=(1*1+2*2+3*3)/(1+2+3)
+# Actual answer until 20150801: 2.33333 Yay!
+# ncks -O -C -d time,0 -v one_dmn_rec_var_flt ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -C -d time,1 -v one_dmn_rec_var_flt ~/nco/data/in.nc ~/foo2.nc
+# ncks -O -C -d time,2 -v one_dmn_rec_var_flt ~/nco/data/in.nc ~/foo3.nc
+# ncra -O -D 6 -w 1,2,3 ~/foo1.nc ~/foo2.nc ~/foo3.nc ~/foo.nc
+# ncks -C -H -s '%g' -v one_dmn_rec_var_flt ~/foo.nc
+    $dsc_sng="Test per-file weighting without missing values";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0 -v one_dmn_rec_var_flt $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,1 -v one_dmn_rec_var_flt $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,2 -v one_dmn_rec_var_flt $in_pth_arg in.nc %tmp_fl_02%";
+    $tst_cmd[3]="ncra -h -O $fl_fmt $nco_D_flg -w 1,2,3 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
+    $tst_cmd[4]="ncks -C -H -s '%g' -v one_dmn_rec_var_flt %tmp_fl_03%";
+    $tst_cmd[5]="2.33333";
+    $tst_cmd[6]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
+# ncra #37
+# Test per-file weighting with missing values
+# Correct answer: 2.6=(0*1+2*2+3*3)/(2+3) = (6/5)*(0*1+2*2+3*3)/(1+2+3) = ((0*1+2*2+3*3)/(1+2+3))/(5/6)
+# IOW: The reciprocal of the sum of the valid (non-missing), normalized weights times the answer
+# obtained by original method (which only works for non-missing values) always yields correct answer
+# New algorithm: 
+# If no missing value exists, use existing algorithm and change nothing
+# If missing value exists, declare and compute new double-precision, spatially conforming (i.e., all dimensions except record/time), normalized (to unity) weight structure member for each variable
+# Divide final answer by this (unity if no missing values encountered)
+# NB: This implies that wgt_nm option wgt_avg field must be full (non-scalar) variable
+# Current implementation as "crippled" scalar value is incorrect for missing values    
+# Actual (and incorrect) answer until 20150801: 3.25=3*(0*1+2*2+3*3)/(2*(1+2+3))
+# Theoretical (and incorrect) answer I thought algorithm produced on 20150731: 2.1666=(0*1+2*2+3*3)/(1+2+3)
+# ncks -O -C -d time,0 -v one_dmn_rec_var_flt_mss ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -C -d time,1 -v one_dmn_rec_var_flt_mss ~/nco/data/in.nc ~/foo2.nc
+# ncks -O -C -d time,2 -v one_dmn_rec_var_flt_mss ~/nco/data/in.nc ~/foo3.nc
+# ncra -O -D 6 -w 1,2,3 ~/foo1.nc ~/foo2.nc ~/foo3.nc ~/foo.nc
+# ncks -C -H -s '%g' -v one_dmn_rec_var_flt_mss ~/foo.nc
+    $dsc_sng="Test per-file weighting with missing values with --wgt 1,2,3";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0 -v one_dmn_rec_var_flt_mss $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,1 -v one_dmn_rec_var_flt_mss $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,2 -v one_dmn_rec_var_flt_mss $in_pth_arg in.nc %tmp_fl_02%";
+    $tst_cmd[3]="ncra -h -O $fl_fmt $nco_D_flg -w 1,2,3 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
+    $tst_cmd[4]="ncks -C -H -s '%g' -v one_dmn_rec_var_flt_mss %tmp_fl_03%";
+    $tst_cmd[5]="2.6";
+    $tst_cmd[6]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 

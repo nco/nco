@@ -134,7 +134,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
      20130112: The same logic applies to CF-style coordinates, e.g., 
      to variables matching CF "bounds", "climatology", and "coordinates" conventions */
   if(var_prc->is_crd_var){
-    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->wgt,var_prc->val,var_prc_out->val);
     return;
   } /* !var_prc->is_crd_var */
 
@@ -162,7 +162,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
        Following loops, do comparative maximum after taking absolute value */
     (void)nco_var_abs(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val);
     if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); 
-    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->wgt,var_prc->val,var_prc_out->val);
     break;	
   case nco_op_mibs: /* Mean absolute value */
     /* Always take the absolute value of the fresh input
@@ -182,14 +182,14 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
        (with nco_var_add_tll_ncra()) only check new addend (not running sum) against missing value.
        Hence (as of 20120521) nco_var_copy_tll() specifically resets sum to zero rather than to missing value
        Parent function (e.g., ncra.c) must post-process ttl buffers nco_op_ttl with nco_var_tll_zro_mss_val() */
-    if(idx_rec == 0) (void)nco_var_copy_tll(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val); else (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    if(idx_rec == 0) (void)nco_var_copy_tll(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val); else (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->wgt,var_prc->val,var_prc_out->val);
     break;
   case nco_op_avg: /* Average */
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
   case nco_op_sqravg: /* Square of the mean */
     /* These operations all require subsequent normalization, where degenerate tallies are accounted for
        Thus, they all call nco_var_add_tll_ncra() every iteration, without special treatment on first iteration */
-    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->wgt,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */
   case nco_op_rmssdn: /* Root mean square normalized by N-1 */
@@ -197,7 +197,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
     /* Square values in var_prc first */
     nco_var_mlt(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
     /* Sum the squares */
-    (void)nco_var_add_tll_ncra(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll_ncra(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->wgt,var_prc->val,var_prc_out->val);
     break;
   } /* end switch */
 } /* end nco_opr_drv() */

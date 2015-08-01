@@ -1099,6 +1099,10 @@ main(int argc,char **argv)
 		  nco_scv_cnf_typ(var_prc[idx]->type,&wgt_scv);
 		  if(nco_dbg_lvl > nco_dbg_std && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, idx = %li, typ = %s, wgt_val = %g, var_val=%g\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,idx_rec_crr_in,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->val.dp[0]);
 		  (void)nco_var_scv_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,&wgt_scv);
+		  if(wgt_nm && var_prc[idx]->has_mss_val){
+		    (void)fprintf(fp_stdout,"%s: ERROR %s -w wgt_nm does not yet work on variables that contain missing values and variable %s contains a missing value attribute. This is TODO nco1124. %s will now quit rather than compute possibly erroneous values. HINT: Restrict the %s -w wgt_nm operation to variables with no missing value attributes.\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get(),var_prc[idx]->nm,nco_prg_nm_get());
+		    nco_exit(EXIT_FAILURE);
+		  } /* !wgt_nm */
 		  /* Increment running total of wgt_out after its application to last processed variable */
 		  if(wgt_nm && (idx == nbr_var_prc-1)){
 		    if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,wgt_out,wgt_avg); else nco_opr_drv((long)1L,nco_op_typ,wgt_out,wgt_avg);

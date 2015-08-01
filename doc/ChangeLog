@@ -1,3 +1,7 @@
+2015-08-02  Charlie Zender  <zender@uci.edu>
+
+	* Add var->wgt infrastructure for running sum of per-file valid weights in ncra
+
 2015-07-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.2-alpha7 release procedure:
