@@ -1260,7 +1260,8 @@ extern "C" {
     char *nm; /* [sng] Variable name */
     char *nm_fll; /* [sng] Absolute variable name (needed for GTT search for object by full name) */
     char fmt[5]; /* [sng] Hint for printf()-style formatting */
-    double *wgt; /* [frc] Running sum of per-file weights (ncra/ncea only) */
+    double *wgt_sum; /* [frc] Running sum of per-file weights (ncra/ncea only) */
+    double wgt_crr; /* [frc] Weight of current record (ncra/ncea only) */
     dmn_sct **dim; /* [sct] Pointers to full dimension structures */
     int *dmn_id; /* [id] Contiguous vector of dimension IDs */
     int cid; /* [id] Dimension ID of associated coordinate, if any */

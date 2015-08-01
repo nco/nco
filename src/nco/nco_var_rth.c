@@ -635,7 +635,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [flg] Value of missing value */
  long * restrict const tally, /* I/O [nbr] Counter space */
- double * restrict const wgt, /* [frc] Running sum of per-file weights (ncra/ncea only) */
+ double * restrict const wgt_sum, /* [frc] Running sum of per-file weights (ncra/ncea only) */
  ptr_unn op1, /* I [val] Values of first operand */
  ptr_unn op2) /* I/O [val] Values of second operand (running sum) on input, values of new sum on output */
 {
@@ -687,6 +687,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt){
 	  op2.fp[idx]+=op1.fp[idx];
+	  wgt_sum[idx]+=0.0;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */

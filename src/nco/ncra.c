@@ -861,11 +861,10 @@ main(int argc,char **argv)
 
   /* Allocate and, if necesssary, initialize accumulation space for processed variables */
   for(idx=0;idx<nbr_var_prc;idx++){
-    if(nco_prg_id == ncra || nco_prg_id == ncrcat){
-      /* Allocate space for only one record */
-      var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
-    } /* endif */
+    /* Record operators only need space for one record, not entire variable */
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat) var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
     if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
+      if((wgt_arr || wgt_nm) && var_prc[idx]->has_mss_val) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double));
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
       var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
       if(nco_prg_id == ncfe || nco_prg_id == ncge){
@@ -1503,12 +1502,10 @@ main(int argc,char **argv)
     } /* end loop over idx */
   } /* end if ncfe and ncge */
 
-  /* Free averaging and tally buffers */
+  /* Free averaging, tally, and weight buffers */
   if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
-#ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(nbr_var_prc,nco_op_typ,var_prc,var_prc_out)
-#endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){
+      if((wgt_arr || wgt_nm) && var_prc[idx]->has_mss_val) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_free(var_prc[idx]->wgt_sum);
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_free(var_prc[idx]->tally);
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     } /* end loop over idx */

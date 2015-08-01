@@ -854,9 +854,9 @@ nco_var_dpl /* [fnc] Duplicate input variable */
     var_cpy->tally=(long *)nco_malloc_dbg(var_cpy->sz*sizeof(long),"Unable to malloc() tally buffer in variable deep-copy",fnc_nm);
     (void)memcpy((void *)(var_cpy->tally),(void *)(var->tally),var_cpy->sz*sizeof(long));
   } /* end if */
-  if(var->wgt){
-    var_cpy->wgt=(long *)nco_malloc_dbg(var_cpy->sz*sizeof(long),"Unable to malloc() wgt buffer in variable deep-copy",fnc_nm);
-    (void)memcpy((void *)(var_cpy->wgt),(void *)(var->wgt),var_cpy->sz*sizeof(long));
+  if(var->wgt_sum){
+    var_cpy->wgt_sum=(double *)nco_malloc_dbg(var_cpy->sz*sizeof(double),"Unable to malloc() wgt_sum buffer in variable deep-copy",fnc_nm);
+    (void)memcpy((void *)(var_cpy->wgt_sum),(void *)(var->wgt_sum),var_cpy->sz*sizeof(double));
   } /* end if */
   if(var->dim){
     var_cpy->dim=(dmn_sct **)nco_malloc(var_cpy->nbr_dim*sizeof(dmn_sct *));
@@ -1016,7 +1016,7 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
   var->nm_fll=(char *)nco_free(var->nm_fll);
   var->mss_val.vp=nco_free(var->mss_val.vp);
   var->tally=(long *)nco_free(var->tally);
-  var->wgt=(long *)nco_free(var->wgt);
+  var->wgt_sum=(double *)nco_free(var->wgt_sum);
   var->dmn_id=(int *)nco_free(var->dmn_id);
   var->cnk_sz=(size_t *)nco_free(var->cnk_sz);
   var->dim=(dmn_sct **)nco_free(var->dim);
@@ -1079,7 +1079,8 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->mss_val.vp=NULL;
   var->val.vp=NULL;
   var->tally=NULL;
-  var->wgt=NULL; /* [frc] Running sum of per-file weights (ncra/ncea only) */
+  var->wgt_sum=NULL; /* [frc] Running sum of per-file weights (ncra/ncea only) */
+  var->wgt_crr=0.0; /* [frc] Weight of current record (ncra/ncea only) */
   var->xrf=NULL;
   var->nbr_dim=-1;
   var->nbr_att=-1;
