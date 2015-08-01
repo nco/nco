@@ -2210,6 +2210,99 @@ nco_var_nrm_sdn /* [fnc] Normalize value of first operand by count-1 in tally ar
 } /* end of nco_var_nrm_sdn */
 
 void
+nco_var_nrm_wgt /* [fnc] Normalize value of first operand by weight array */
+(const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] Size (in elements) of operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ const long * const tally, /* I [nbr] Counter to normalize by */
+ const double * const wgt, /* I [nbr] Weight to normalize by */
+ ptr_unn op1) /* I/O [val] Values of first operand on input, normalized result on output */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Normalize value of first operand by value in weight array 
+     Routine is only called by ncra/ncea for variables that have missing values and weights */
+  
+  /* Normalization is currently defined as op1:=op1/wgt */  
+  
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:
+    {
+      const float mss_val_flt=*mss_val.fp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.fp[idx]/=wgt[idx]; else op1.fp[idx]=mss_val_flt;
+    }
+    break;
+  case NC_DOUBLE:
+    {
+      const double mss_val_dbl=*mss_val.dp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.dp[idx]/=wgt[idx]; else op1.dp[idx]=mss_val_dbl;
+    }
+    break;
+  case NC_INT:
+    {
+      const nco_int mss_val_ntg=*mss_val.ip;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ip[idx]/=wgt[idx]; else op1.ip[idx]=mss_val_ntg;
+    }
+    break;
+  case NC_SHORT:
+    {
+      const nco_short mss_val_short=*mss_val.sp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=wgt[idx]; else op1.sp[idx]=mss_val_short;
+    }
+    break;
+  case NC_USHORT:
+    {
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.usp[idx]/=wgt[idx]; else op1.usp[idx]=mss_val_ushort;
+    }
+    break;
+  case NC_UINT:
+    {
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.uip[idx]/=wgt[idx]; else op1.uip[idx]=mss_val_uint;
+    }
+    break;
+  case NC_INT64:
+    {
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.i64p[idx]/=wgt[idx]; else op1.i64p[idx]=mss_val_int64;
+    }
+    break;
+  case NC_UINT64:
+    {
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ui64p[idx]/=wgt[idx]; else op1.ui64p[idx]=mss_val_uint64;
+    }
+    break;
+  case NC_BYTE:
+    {
+      const nco_byte mss_val_byte=*mss_val.bp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.bp[idx]/=wgt[idx]; else op1.bp[idx]=mss_val_byte;
+    }
+    break;
+  case NC_UBYTE:
+    {
+      const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ubp[idx]/=wgt[idx]; else op1.ubp[idx]=mss_val_ubyte;
+    }
+    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end nco_var_nrm_wgt() */
+
+void
 nco_var_pwr /* [fnc] Raise first operand to power of second operand */
 (const nc_type type, /* I [type] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of operands */

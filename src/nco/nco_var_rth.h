@@ -178,6 +178,16 @@ extern "C" {
    ptr_unn op1); /* I/O [val] Values of first operand on input, normalized result on output */
   
   void
+  nco_var_nrm_wgt /* [fnc] Normalize value of first operand by weight array */
+  (const nc_type type, /* I [enm] netCDF type of operand */
+   const long sz, /* I [nbr] Size (in elements) of operand */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [val] Value of missing value */
+   const long * const tally, /* I [nbr] Counter to normalize by */
+   const double * const wgt, /* I [nbr] Weight to normalize by */
+   ptr_unn op1); /* I/O [val] Values of first operand on input, normalized result on output */
+    
+  void
   nco_var_pwr /* [fnc] Raise first operand to power of second operand */
   (const nc_type type, /* I [type] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of operands */
