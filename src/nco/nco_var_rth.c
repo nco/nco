@@ -688,7 +688,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt){
 	  op2.fp[idx]+=op1.fp[idx];
-	  wgt_sum[idx]+=0.0;
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -705,6 +705,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl){
 	  op2.dp[idx]+=op1.dp[idx];
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -721,6 +722,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.ip[idx] != mss_val_ntg){
 	  op2.ip[idx]+=op1.ip[idx];
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -737,6 +739,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_short){
 	  op2.sp[idx]+=op1.sp[idx];
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -753,6 +756,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.usp[idx] != mss_val_ushort){
 	  op2.usp[idx]+=op1.usp[idx];
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -769,6 +773,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.uip[idx] != mss_val_uint){
 	  op2.uip[idx]+=op1.uip[idx];
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -785,6 +790,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.i64p[idx] != mss_val_int64){
 	  op2.i64p[idx]+=op1.i64p[idx];
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -801,6 +807,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.ui64p[idx] != mss_val_uint64){
 	  op2.ui64p[idx]+=op1.ui64p[idx];
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -817,6 +824,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.bp[idx] != mss_val_byte){
 	  op2.bp[idx]+=op1.bp[idx];
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -833,6 +841,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       for(idx=0;idx<sz;idx++){
 	if(op1.ubp[idx] != mss_val_ubyte){
 	  op2.ubp[idx]+=op1.ubp[idx];
+	  if(wgt_sum) wgt_sum[idx]+=wgt_crr;
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
