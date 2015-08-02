@@ -4139,6 +4139,8 @@ if(0){
 # ncra #37
 # Test per-file weighting with missing values
 # Correct answer: 2.6=(0*1+2*2+3*3)/(2+3) = (6/5)*(0*1+2*2+3*3)/(1+2+3) = ((0*1+2*2+3*3)/(1+2+3))/(5/6)
+# Actual (and incorrect) answer until 20150801: 3.25=3*(0*1+2*2+3*3)/(2*(1+2+3))
+# Theoretical (and incorrect) answer I thought algorithm produced on 20150731: 2.1666=(0*1+2*2+3*3)/(1+2+3)
 # IOW: The reciprocal of the sum of the valid (non-missing), normalized weights times the answer
 # obtained by original method (which only works for non-missing values) always yields correct answer
 # New algorithm: 
@@ -4147,8 +4149,6 @@ if(0){
 # Divide final answer by this (unity if no missing values encountered)
 # NB: This implies that wgt_nm option wgt_avg field must be full (non-scalar) variable
 # Current implementation as "crippled" scalar value is incorrect for missing values    
-# Actual (and incorrect) answer until 20150801: 3.25=3*(0*1+2*2+3*3)/(2*(1+2+3))
-# Theoretical (and incorrect) answer I thought algorithm produced on 20150731: 2.1666=(0*1+2*2+3*3)/(1+2+3)
 # ncks -O -C -d time,0 -v one_dmn_rec_var_flt_mss ~/nco/data/in.nc ~/foo1.nc
 # ncks -O -C -d time,1 -v one_dmn_rec_var_flt_mss ~/nco/data/in.nc ~/foo2.nc
 # ncks -O -C -d time,2 -v one_dmn_rec_var_flt_mss ~/nco/data/in.nc ~/foo3.nc
