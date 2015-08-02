@@ -1164,7 +1164,6 @@ main(int argc,char **argv)
             (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,lmt_rec[idx_rec]->nm_fll,trv_tbl);
             FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
 
-	    //	    if(False){
 	    for(idx=0;idx<nbr_var_prc;idx++){
 	      if(var_prc[idx]->wgt_sum){
 		if(NORMALIZE_BY_WEIGHT) (void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
@@ -1441,6 +1440,12 @@ main(int argc,char **argv)
   if(FLG_BFR_NRM){
     (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,(char *)NULL,(trv_tbl_sct *)NULL);
     
+    for(idx=0;idx<nbr_var_prc;idx++){
+      if(var_prc[idx]->wgt_sum){
+	if(NORMALIZE_BY_WEIGHT) (void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
+      } /* !wgt_sum */
+    } /* !idx */
+
     if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
       /* Compute mean of per-record weight, by normalizing running sum of weight by tally
 	 Then normalize all numerical record variables by mean of per-record weight
