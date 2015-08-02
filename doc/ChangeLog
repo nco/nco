@@ -1,5 +1,9 @@
 2015-08-02  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.2-alpha8 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha8 final changes';git push
+	git tag -a 4.5.2-alpha8 -m 'Version 4.5.2-alpha8 tag: fix missing value normalizaion with ncra -w wgt';git push --tags
+
 	* Add var->wgt infrastructure for running sum of per-file valid weights in ncra
 
 2015-07-25  Charlie Zender  <zender@uci.edu>
