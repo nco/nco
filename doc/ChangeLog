@@ -1,14 +1,18 @@
 2015-08-03  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.2-alpha8 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha8 final changes';git push
+	git tag -a 4.5.2-alpha8 -m 'Version 4.5.2-alpha8 tag: fix missing value normalizaion with ncra -w wgt';git push --tags
+
+	* Re-tag 4.5.2-alpha8
+
+	* Normalize wgt_sum by tally
+
 	* Add new normalization test case
 
 	* Test against actual ne30 data found that wgt_avg_scl normalization not needed
 
 2015-08-02  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.5.2-alpha8 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha8 final changes';git push
-	git tag -a 4.5.2-alpha8 -m 'Version 4.5.2-alpha8 tag: fix missing value normalizaion with ncra -w wgt';git push --tags
 
 	* Add var->wgt infrastructure for running sum of per-file valid weights in ncra
 

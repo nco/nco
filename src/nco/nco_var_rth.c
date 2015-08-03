@@ -2235,61 +2235,61 @@ nco_var_nrm_wgt /* [fnc] Normalize value of first operand by weight array */
   case NC_FLOAT:
     {
       const float mss_val_flt=*mss_val.fp;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.fp[idx]/=wgt[idx]; else op1.fp[idx]=mss_val_flt;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.fp[idx]*=tally[idx]/wgt[idx]; else op1.fp[idx]=mss_val_flt;
     }
     break;
   case NC_DOUBLE:
     {
       const double mss_val_dbl=*mss_val.dp;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.dp[idx]/=wgt[idx]; else op1.dp[idx]=mss_val_dbl;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.dp[idx]*=tally[idx]/wgt[idx]; else op1.dp[idx]=mss_val_dbl;
     }
     break;
   case NC_INT:
     {
       const nco_int mss_val_ntg=*mss_val.ip;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ip[idx]/=wgt[idx]; else op1.ip[idx]=mss_val_ntg;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ip[idx]*=tally[idx]/wgt[idx]; else op1.ip[idx]=mss_val_ntg;
     }
     break;
   case NC_SHORT:
     {
       const nco_short mss_val_short=*mss_val.sp;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=wgt[idx]; else op1.sp[idx]=mss_val_short;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]*=tally[idx]/wgt[idx]; else op1.sp[idx]=mss_val_short;
     }
     break;
   case NC_USHORT:
     {
       const nco_ushort mss_val_ushort=*mss_val.usp;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.usp[idx]/=wgt[idx]; else op1.usp[idx]=mss_val_ushort;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.usp[idx]*=tally[idx]/wgt[idx]; else op1.usp[idx]=mss_val_ushort;
     }
     break;
   case NC_UINT:
     {
       const nco_uint mss_val_uint=*mss_val.uip;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.uip[idx]/=wgt[idx]; else op1.uip[idx]=mss_val_uint;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.uip[idx]*=tally[idx]/wgt[idx]; else op1.uip[idx]=mss_val_uint;
     }
     break;
   case NC_INT64:
     {
       const nco_int64 mss_val_int64=*mss_val.i64p;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.i64p[idx]/=wgt[idx]; else op1.i64p[idx]=mss_val_int64;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.i64p[idx]*=tally[idx]/wgt[idx]; else op1.i64p[idx]=mss_val_int64;
     }
     break;
   case NC_UINT64:
     {
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ui64p[idx]/=wgt[idx]; else op1.ui64p[idx]=mss_val_uint64;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ui64p[idx]*=tally[idx]/wgt[idx]; else op1.ui64p[idx]=mss_val_uint64;
     }
     break;
   case NC_BYTE:
     {
       const nco_byte mss_val_byte=*mss_val.bp;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.bp[idx]/=wgt[idx]; else op1.bp[idx]=mss_val_byte;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.bp[idx]*=tally[idx]/wgt[idx]; else op1.bp[idx]=mss_val_byte;
     }
     break;
   case NC_UBYTE:
     {
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ubp[idx]/=wgt[idx]; else op1.ubp[idx]=mss_val_ubyte;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ubp[idx]*=tally[idx]/wgt[idx]; else op1.ubp[idx]=mss_val_ubyte;
     }
     break;
   case NC_CHAR: break; /* Do nothing */
