@@ -4166,6 +4166,28 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
+# ncra #38
+# Test per-file weighting with missing values
+# Correct answer: 1.0=(3*1+2*0+1*0)/3 = (6/3)*(3*1+2*0+1*0)/(1+2+3) = ((3*1+2*0+1*0)/(1+2+3))/(3/6)
+# Actual (and incorrect) answer until 20150802: 1.1667=
+# ncks -O -C -d time,0 -v one_dmn_rec_var_flt ~/nco/data/in.nc ~/foo1.nc
+# ncrename -O -v one_dmn_rec_var_flt,one_dmn_rec_var_flt_mss ~/foo1.nc
+# ncks -O -C -d time,0 -v one_dmn_rec_var_flt_mss ~/nco/data/in.nc ~/foo2.nc
+# ncks -O -C -d time,0 -v one_dmn_rec_var_flt_mss ~/nco/data/in.nc ~/foo3.nc
+# ncra -O -D 6 -w 3,2,1 ~/foo1.nc ~/foo2.nc ~/foo3.nc ~/foo.nc
+# ncks -C -H -s '%g' -v one_dmn_rec_var_flt_mss ~/foo.nc
+    $dsc_sng="Test per-file weighting with missing values with --wgt 3,2,1";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0 -v one_dmn_rec_var_flt $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrename -h -O $nco_D_flg -v one_dmn_rec_var_flt,one_dmn_rec_var_flt_mss %tmp_fl_00%";
+    $tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0 -v one_dmn_rec_var_flt_mss $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[3]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0 -v one_dmn_rec_var_flt_mss $in_pth_arg in.nc %tmp_fl_02%";
+    $tst_cmd[4]="ncra -h -O $fl_fmt $nco_D_flg -w 3,2,1 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
+    $tst_cmd[5]="ncks -C -H -s '%g' -v one_dmn_rec_var_flt_mss %tmp_fl_03%";
+    $tst_cmd[6]="2.6";
+    $tst_cmd[7]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
 ####################
 #### ncwa tests #### OK!
 ####################

@@ -1,3 +1,9 @@
+2015-08-03  Charlie Zender  <zender@uci.edu>
+
+	* Add new normalization test case
+
+	* Test against actual ne30 data found that wgt_avg_scl normalization not needed
+
 2015-08-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.2-alpha8 release procedure:

@@ -1095,7 +1095,7 @@ main(int argc,char **argv)
 		    wgt_scv.type=wgt_out->type;
 		    wgt_scv.val.d=wgt_out->val.dp[0]; /* Per-record weight */
 		  } /* !wgt_nm */
-		  if(var_prc[idx]->wgt_sum) var_prc[idx]->wgt_crr=wgt_scv.val.d/(wgt_avg_scl*wgt_avg_scl);
+		  if(var_prc[idx]->wgt_sum) var_prc[idx]->wgt_crr=wgt_scv.val.d;
 		  nco_scv_cnf_typ(var_prc[idx]->type,&wgt_scv);
 		  if(nco_dbg_lvl > nco_dbg_std && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, idx = %li, typ = %s, wgt_val = %g, wgt_crr = %g, var_val=%g\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,idx_rec_crr_in,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->wgt_crr,var_prc[idx]->val.dp[0]);
 		  (void)nco_var_scv_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,&wgt_scv);
