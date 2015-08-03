@@ -4141,8 +4141,9 @@ if(0){
 # Correct answer: 2.6=(0*1+2*2+3*3)/(2+3) = (6/5)*(0*1+2*2+3*3)/(1+2+3) = ((0*1+2*2+3*3)/(1+2+3))/(5/6)
 # Actual (and incorrect) answer until 20150801: 3.25=3*(0*1+2*2+3*3)/(2*(1+2+3))
 # Theoretical (and incorrect) answer I thought algorithm produced on 20150731: 2.1666=(0*1+2*2+3*3)/(1+2+3)
-# IOW: The reciprocal of the sum of the valid (non-missing), normalized weights times the answer
-# obtained by original method (which only works for non-missing values) always yields correct answer
+# IOW: To obtain the correct answer for the missing value case, 
+# divide the answer obtained by original method (which is correct only for non-missing values) 
+# by the sum of the valid (non-missing), normalized weights.
 # New algorithm: 
 # If no missing value exists, use existing algorithm and change nothing
 # If missing value exists, declare and compute new double-precision, spatially conforming (i.e., all dimensions except record/time), normalized (to unity) weight structure member for each variable
