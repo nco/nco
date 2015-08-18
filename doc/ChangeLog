@@ -1,5 +1,9 @@
 2015-08-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.2-alpha9 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-alpha9 final changes';git push
+	git tag -a 4.5.2-alpha9 -m 'Version 4.5.2-alpha9 tag: Work with 2D grids in either lon/lat or lat/lon (old Tempest) src/dst_grid_dims order';git push --tags
+
 	* nco_rgr_map() determines Tempest 2D grid ordering with [src/dst]_grid_dims "name0" attribute
 
 2015-08-03  Charlie Zender  <zender@uci.edu>

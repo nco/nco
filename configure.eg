@@ -269,9 +269,13 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on hopper:
+module load netcdf
+module load szip
+module load gsl
+module load udunits
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/opt/cray/netcdf/4.3.0' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT='/usr' CC='gcc' CXX='g++' GSL_ROOT='/usr/common/usg/gsl/1.16/pgi' NETCDF_ROOT='/opt/cray/netcdf/4.3.2/GNU/49' UDUNITS2_PATH='/usr/common/usg/udunits/2.2.18/pgi' ./configure --prefix=${HOME} --bindir=${HOME}/bin --datadir=${HOME}/nco/data --libdir=${HOME}/lib --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
@@ -290,6 +294,9 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
+# Commands used for Configure builds with gcc/++ on rhea
+fxm
+
 # icc/icpc Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
 export GNU_TRP=`~/nco/autobld/config.guess`
 # Commands used for Makefile builds
@@ -301,7 +308,7 @@ export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3/lib:/sw/red
 export NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' 
 cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' SZ=Y SZ_LIB='/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D OMP=Y allinone;cd -
 
-# Commands used for Configure builds
+# Commands used for Configure builds with icc/icpc on rhea
 module add intel gsl netcdf
 export LDFLAGS="${NETCDF_CLIB} ${GSL_LIB} ${SZIP_POST_LINK_OPTS}"
 export CPPFLAGS="-I${NETCDF_DIR}/include ${GSL_INCLUDE_OPTS} ${SZIP_INCLUDE_OPTS}"
