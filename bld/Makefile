@@ -150,28 +150,28 @@ NCOXX_SRC_DIR := ${MY_SRC_DIR}/../nco++
 
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make OMP=Y
-ifndef ${ABI}
+ifndef ABI
 # 32- vs. 64-bit ABI: 32=32-bit mode, 64=64-bit mode (default) if available
  ABI := 64
 endif # endif ABI
-ifndef ${CCACHE}
+ifndef CCACHE
  CCACHE := N
 endif # CCACHE
 ifndef CNK
 # Use newer netCDF4.1 chunking API
  CNK := Y
 endif # endif CNK
-ifndef ${CUDA}
+ifndef CUDA
  CUDA := N
 endif # CUDA
 ifndef DAP
  DAP := Y
 endif # DAP
-ifndef ${DBG}
+ifndef DBG
 # Debugging token N=No (default) Y=Yes
  DBG := N
 endif # endif DBG
-ifndef ${DPKG}
+ifndef DPKG
 # Debian hardening tokens
  DPKG := N
 endif # endif DPKG
@@ -201,17 +201,17 @@ ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
  MK_DPN_CXX = ${CXX} -M # NB: Recursive expansion required
 endif # endif MK_DPN
-ifndef ${MPI} # MPI
+ifndef MPI # MPI
  MPI := N
 endif # endif MPI
-ifndef ${MPI_FAKE} # MPI
+ifndef MPI_FAKE # MPI
  MPI_FAKE := N
 endif # endif MPI_FAKE
 ifndef NCO_VRS
 # Used for RPM building
  NCO_VRS := $(shell cat ${MY_DOC_DIR}/VERSION)
 endif
-ifndef ${NETCDF4} # netCDF4 support
+ifndef NETCDF4 # netCDF4 support
  NETCDF4 := Y
 endif # endif NETCDF4
 ifndef NETCDF_ROOT
@@ -243,7 +243,7 @@ endif
 ifndef PGI_RCH_ARG
  PGI_RCH_ARG :=
 endif # endif PGI_RCH_ARG
-ifndef ${PNETCDF} # pnetCDF support
+ifndef PNETCDF # pnetCDF support
  PNETCDF := N
 endif # endif PNETCDF
 ifndef PSC_RCH_ARG
@@ -260,7 +260,7 @@ ifndef SZ
 # Link to Szip library
  SZ := N
 endif
-ifndef ${UDUNITS}
+ifndef UDUNITS
 # Use UDUnits functionality
  UDUNITS := Y
 endif
@@ -275,7 +275,7 @@ ifndef VRS_SNG
 # 20150622
  VRS_SNG := $(shell git describe --abbrev=7 --dirty --always --tags)
 endif # endif VRS_SNG
-ifndef ${ZNETCDF} # znetcdf support
+ifndef ZNETCDF # znetcdf support
  ZNETCDF := N
 endif # endif ZNETCDF
 # Derived-tokens based on primary tokens
