@@ -137,7 +137,9 @@ print "\n";
     $#tst_cmd=0; # Reset array
 # printf("paused @ [%s:%d] - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
     } # endif false
-    
+
+# ncap2 -O -v -s 'tpt_mod=tpt%273.0f' ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H -v tpt_mod -s '%.1f' ~/foo.nc
     $dsc_sng="Testing float modulo float";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'tpt_mod=tpt%273.0f' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v tpt_mod -s '%.1f ' %tmp_fl_00%";
