@@ -2716,12 +2716,12 @@ nco_var_zero /* [fnc] Zero value of first operand */
 {
   /* Purpose: Zero value of first operand */
   
-  /* fxm: According to hjm, floats and ints all use same bit pattern for zero
+  /* NB: Floats and integers all use same bit pattern for zero
+     Confirm this with 
      ccc --tst=bnr --int_foo=0 
-     and
      ccc --dbg=0 --tst=gsl --gsl_a=0.0 
-     confirm this.
-     Hence, it may be faster to use memset() system call to zero memory 
+     Hence, it is fast to use memset() rather than explicit loop to zero memory
+     calloc() would also work if interactions with NC_CHAR and NC_STRING were predictable
      Same approach is used in nco_zero_long() */
   
   size_t sz_byt; /* [B] Number of bytes in variable buffer */

@@ -865,12 +865,8 @@ main(int argc,char **argv)
     if(nco_prg_id == ncra || nco_prg_id == ncrcat) var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
     if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
       if((wgt_arr || wgt_nm) && var_prc[idx]->has_mss_val) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double));
-      var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
-      var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
-      if(nco_prg_id == ncfe || nco_prg_id == ncge){
-        (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-        (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
-      } /* end if ncfe || ncge */
+      var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_calloc(var_prc_out[idx]->sz,sizeof(long));
+      var_prc_out[idx]->val.vp=(void *)nco_calloc(var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type));
     } /* end if */
   } /* end loop over idx */
 
