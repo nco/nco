@@ -475,7 +475,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_dgn_area_out=False; /* [flg] Diagnose area_out from grid boundaries */
+  nco_bool flg_bnd_1D_usable=False; /* [flg] Usable 1D cell vertices exist */
   
+  nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
+
   nco_mpf_sct rgr_map;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
@@ -904,9 +907,22 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	lat_bnd_out[idx]*=rdn2dgr;
       } /* !idx */
     } /* !rdn */
+    /* Is 1D interface information usable? Yes, unless if all interfaces are zeros
+       NB: Better algorithm for "usable" is that not all interfaces any cell are equal */
+    flg_bnd_1D_usable=True;
+    for(idx=0;idx<col_nbr_out*bnd_nbr_out;idx++)
+      if(lon_bnd_out[idx] != 0.0) break;
+    if(idx == col_nbr_out*bnd_nbr_out){
+      flg_bnd_1D_usable=False;
+    }else{
+      for(idx=0;idx<col_nbr_out*bnd_nbr_out;idx++)
+	if(lat_bnd_out[idx] != 0.0) break;
+      if(idx == col_nbr_out*bnd_nbr_out) flg_bnd_1D_usable=False;
+    } /* !usable */
+      
     if(nco_dbg_lvl_get() >= nco_dbg_crr){
       for(idx=0;idx<lon_nbr_out;idx++){
-	(void)fprintf(stdout,"lon[%li] = %g, vertices = ", idx,lon_ctr_out[idx]);
+	(void)fprintf(stdout,"lon[%li] = %g, vertices = ",idx,lon_ctr_out[idx]);
 	for(int bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lon_bnd_out[bnd_nbr_out*idx+bnd_idx],bnd_idx == bnd_nbr_out-1 ? "]\n" : ", ");
       } /* end loop over lon */
@@ -1011,7 +1027,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* endif dbg */
 
     /* Diagnose type of two-dimensional output grid by testing second latitude center against formulae */
-    nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
     nco_grd_xtn_enm nco_grd_xtn=nco_grd_xtn_glb; /* [enm] Extent of grid */
     const double lat_ctr_tst_ngl_eqi_pol=-90.0+180.0/(lat_nbr_out-1);
     const double lat_ctr_tst_ngl_eqi_fst=-90.0+180.0*1.5/lat_nbr_out;
@@ -1055,7 +1070,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       } /* srt!=end */
     } /* !nil */
     if(nco_grd_2D_typ == nco_grd_2D_nil){
-      /* If still of unknown type, this 2D grid may weird
+      /* If still of unknown type, this 2D grid may be weird
 	 This occurs, e.g., with the POP3 destination grid
 	 Change gridtype from nil (which means not-yet-set) to unknown (which means none of the others matched) */
       nco_grd_2D_typ=nco_grd_2D_unk;
@@ -1086,43 +1101,53 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
     lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0]);
     if(nco_grd_2D_typ != nco_grd_2D_unk) assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
-
-    /* When possible, ensure area_out is non-zero
-       20150722: ESMF documentation says "The grid area array is only output when the conservative remapping option is used"
-       Actually, ESMF does (always?) output area, but area==0.0 unless conservative remapping is used
-       20150721: ESMF bilinear interpolation map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc has area==0.0
-       20150710: Tempest regionally refined grids like bilinearly interpolated CONUS for ACME RRM has area_out==0
-       Hence, must check whether NCO must diagnose and provide its own area_out */
-    /* If area_out contains any zero... */
-    for(idx=0;idx<rgr_map.dst_grid_size;idx++)
-      if(area_out[idx] == 0.0) break;
-    if(idx != rgr_map.dst_grid_size){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO 2D output grid detected with zero-valued output area(s) at idx = %ld (and likely others, too). Possibly a bilinearly interpolated output grid. Will try to create area_out from analytic formula.\n",nco_prg_nm_get(),idx);
-      if(nco_grd_2D_typ == nco_grd_2D_ngl_eqi_pol || flg_dgn_area_out == nco_grd_2D_ngl_eqi_fst)
-	flg_dgn_area_out=True;
-    } /* !quad */
   } /* !flg_grd_out_2D */
     
+  /* When possible, ensure area_out is non-zero
+     20150722: ESMF documentation says "The grid area array is only output when the conservative remapping option is used"
+     Actually, ESMF does (always?) output area, but area==0.0 unless conservative remapping is used
+     20150721: ESMF bilinear interpolation map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc has area==0.0
+     20150710: Tempest regionally refined grids like bilinearly interpolated CONUS for ACME RRM has area_out==0
+     20150821: ESMF always outputs area_out=0.0 for bilinear interpolation
+     Check whether NCO must diagnose and provide its own area_out */
+  /* If area_out contains any zero... */
+  for(idx=0;idx<rgr_map.dst_grid_size;idx++)
+    if(area_out[idx] == 0.0) break;
+  if(idx != rgr_map.dst_grid_size){
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid detected with zero-valued output area(s) at idx = %ld (and likely others, too).\n",nco_prg_nm_get(),idx);
+  } /* !zero */
+
   for(idx=0;idx<rgr_map.dst_grid_size;idx++)
     if(area_out[idx] != 0.0) break;
   if(idx == rgr_map.dst_grid_size){
-    (void)fprintf(stdout,"%s: INFO %s reports area_out from mapfile is everywhere zero. This is expected for some non-conservative remapping methods such as bilinear interpolation. ",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: INFO %s reports area_out from mapfile is everywhere zero. This is expected for bilinearly interpolated output maps produced by ESMF_RegridWeightGen. ",nco_prg_nm_get(),fnc_nm);
     if(flg_grd_out_2D && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
-      (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will generate and output an area variable (named \"%s\") diagnosed from the destination gridcell boundaries. NCO diagnoses quadrilateral area from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs. To determine whether the diagnosed areas are fully consistent with output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
+      (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will generate and output an area variable (named \"%s\") diagnosed from the destination gridcell boundaries. NCO diagnoses quadrilateral area for rectangular output grids from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs (usedby, e.g., ESMF_RegridWeightGen and Tempest). To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
       flg_dgn_area_out=True;
-    }else{
+    }else if(flg_grd_out_1D && flg_bnd_1D_usable){
+      (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will generate and output an area variable (named \"%s\") diagnosed from the destination gridcell boundaries. NCO diagnoses spherical polygon area for unstructured output grids from a formula that assumes that cell boundaries follow great circle arcs (as do, e.g., ESMFRegridWeightGen and Tempest). This differs from the area of cells with boundaries that follow lines of constant latitude or longitude. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
+      flg_dgn_area_out=True;
+    }else{ /* !1D */
       (void)fprintf(stdout,"However, NCO cannot find enough boundary information, or it is too stupid about spherical trigonometry, to diagnose area_out. NCO will output an area variable (named \"%s\") copied from the input mapfile. This area will be everywhere zero.\n",rgr->area_nm);
     } /* !2D */
   } /* !area */
       
   if(flg_dgn_area_out){
-    /* Mr. Enenstein and George O. Abell taught me the area of spherical zones
-       Spherical zone area is exact and faithful to underlying rectangular equi-angular grid
-       However, ESMF and Tempest both appear to approximate at least some spherical quadrilaterals as great circle arcs
-       fxm: Distinguish spherical zone shapes (e.g., equi-angular) from great circle arcs (e.g., unstructured polygons) */
-    for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
-      for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	area_out[lat_idx*lon_nbr_out+lon_idx]=dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]));
+    if(flg_grd_out_1D && flg_bnd_1D_usable){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"INFO: Diagnosing area_out for 1D grid\n");
+      for(idx=0;idx<col_nbr_out;idx++){
+	area_out[idx]=0.0;
+      } /* !idx */
+    } /* !1D */
+    if(flg_grd_out_2D && nco_grd_2D_typ != nco_grd_2D_unk){
+      /* Mr. Enenstein and George O. Abell taught me the area of spherical zones
+	 Spherical zone area is exact and faithful to underlying rectangular equi-angular grid
+	 However, ESMF and Tempest both appear to always approximate spherical polygons as connected by great circle arcs
+	 fxm: Distinguish spherical zone shapes (e.g., equi-angular) from great circle arcs (e.g., unstructured polygons) */
+      for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+	for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	  area_out[lat_idx*lon_nbr_out+lon_idx]=dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]));
+    } /* !spherical zones */
   } /* !flg_dgn_area_out */
 
   /* Verify frc_out is sometimes non-zero */
