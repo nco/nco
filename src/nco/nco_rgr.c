@@ -1065,18 +1065,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     
     switch(nco_grd_2D_typ){
     case nco_grd_2D_ngl_eqi_fst:
-      if(nco_grd_xtn == nco_grd_xtn_glb){
-	for(idx=0;idx<lat_nbr_out;idx++){
-	  lat_wgt_out[idx]=cos(dgr2rdn*lat_ctr_out[idx]);
-	  lat_wgt_ttl+=lat_wgt_out[idx];
-	} /* !idx */
-	/* Manually normalize polar offset grid latitude weights to sum to 2.0 for global extent */
-	for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]*=2.0/lat_wgt_ttl;
-      }else{ /* !glb */
-	for(idx=0;idx<lat_nbr_out;idx++)
-	  lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
-      } /* !glb */
-      break;
     case nco_grd_2D_ngl_eqi_pol:
       for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
       break;
@@ -2424,8 +2412,8 @@ nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
   switch(nco_grd_lat_typ){
   case nco_grd_lat_unk: return "Unknown or unclassified latitude grid type (e.g., curvilinear)";
   case nco_grd_lat_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
-  case nco_grd_lat_ngl_eqi_pol: return "Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO";
-  case nco_grd_lat_ngl_eqi_fst: return "Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
+  case nco_grd_lat_ngl_eqi_pol: return "Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV-scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO";
+  case nco_grd_lat_ngl_eqi_fst: return "Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV-staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
   case nco_grd_lat_FV: return "FV-scalar grid (equi-angle polar grid, odd number of latitudes)";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
@@ -2621,6 +2609,11 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
      Generate normal RLL grids:
      ncks -O -D 1 --rgr grd_ttl='Offset grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150820.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=ngl_eqi_fst --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Offset grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150820.nc --rgr lat_nbr=90 --rgr lon_nbr=180 --rgr lat_typ=ngl_eqi_fst --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+
+     Generate maps for normal RLL grids:
+     ESMF_RegridWeightGen -s ${DATA}/grids/180x360_SCRIP.20150820.nc -d ${DATA}/grids/90x180_SCRIP.20150820.nc -w ${DATA}/maps/map_180x360_to_90x180.20150820.nc --method conserve # fails
+     ESMF_RegridWeightGen -s ${DATA}/grids/90x180_SCRIP.20150820.nc -d ${DATA}/grids/180x360_SCRIP.20150820.nc -w ${DATA}/maps/map_90x180_to_180x360.20150820.nc --method conserve # fails
 
      Generate ACME grids:
      ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150724.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
@@ -2820,7 +2813,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   case nco_grd_lat_ngl_eqi_pol:
     /* Polar grids have an odd number of latitudes */
     if(lat_nbr % 2 != 1){
-    (void)fprintf(stderr,"%s: ERROR %s reports user request for equi-angle latitude grid covering poles (aka FV-scalar grid) with %ld latitudes. However, the FV scalar grid must have an odd number of latitudes so that the centers of first and last latitude bands are on the poles.\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
+    (void)fprintf(stderr,"%s: ERROR %s reports user request for equi-angle latitude grid covering poles (aka FV-scalar grid) with %ld latitudes. However, the FV-scalar grid must have an odd number of latitudes so that the centers of first and last latitude bands are on the poles.\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
     nco_exit(EXIT_FAILURE);
     } /* !odd */
     lat_ncr=180.0/(lat_nbr-1);
@@ -2831,7 +2824,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   case nco_grd_lat_ngl_eqi_fst:
     /* Offset grids have an even number of latitudes */
     if(lat_nbr % 2 != 0){
-    (void)fprintf(stderr,"%s: ERROR %s reports user request for equi-angle offset latitude grid (aka FV staggered velocity grid) with %ld latitudes. However, the FV staggered grid must have an even number of latitudes so that the centers of first and last latitude bands are not on the poles.\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
+    (void)fprintf(stderr,"%s: ERROR %s reports user request for equi-angle offset latitude grid (aka FV-staggered velocity grid) with %ld latitudes. However, the FV-staggered grid must have an even number of latitudes so that the centers of first and last latitude bands are not on the poles.\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
     nco_exit(EXIT_FAILURE);
     } /* !odd */
     lat_ncr=180.0/lat_nbr;
@@ -2916,18 +2909,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
   /* Use centers and boundaries to diagnose latitude weights */
   switch(lat_typ){
+  case nco_grd_lat_ngl_eqi_fst:
   case nco_grd_lat_ngl_eqi_pol:
   case nco_grd_lat_FV:
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
-      lat_wgt[lat_idx]=sin(dgr2rdn*lat_ntf[lat_idx+1])-sin(dgr2rdn*lat_ntf[lat_idx]);
-    break;
-  case nco_grd_lat_ngl_eqi_fst:
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
-      lat_wgt[lat_idx]=cos(dgr2rdn*lat_ctr[lat_idx]);
-      lat_wgt_ttl+=lat_wgt[lat_idx];
-    } /* !lat_idx */
-    /* Manually normalize polar offset grid latitude weights to sum to 2.0 for global extent */
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]*=2.0/lat_wgt_ttl;
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=sin(dgr2rdn*lat_ntf[lat_idx+1])-sin(dgr2rdn*lat_ntf[lat_idx]);
     break;
   case nco_grd_lat_gss:
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=wgt_Gss[lat_idx];

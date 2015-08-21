@@ -1,5 +1,8 @@
 2015-08-21  Charlie Zender  <zender@uci.edu>
 
+	* Change polar offset grid latitude weights from continuum formula
+	(cos(lat)) to exact discretized formula, same as polar centered grid
+
 	* NULL-initialize lat_sin in nco_grd_mk() to prevent invalid free()
 
 2015-08-18  Charlie Zender  <zender@uci.edu>
