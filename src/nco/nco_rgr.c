@@ -33,19 +33,15 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   assert(!(flg_smf && flg_tps));
   assert(!(flg_map && flg_tps));
   
-  if(flg_grd){
-    /* [fnc] Create SCRIP-format grid file */
-    rcd=nco_grd_mk(rgr);
-  } /* !flg_grd */
+  /* Create SCRIP-format grid file */
+  if(flg_grd) rcd=nco_grd_mk(rgr);
 
-  if(flg_map){
-    /* Regrid using external mapping weights */
-    rcd=nco_rgr_map(rgr,trv_tbl);
-  } /* !flg_map */
+  /* Regrid using external mapping weights */
+  if(flg_map) rcd=nco_rgr_map(rgr,trv_tbl);
 
+  /* Regrid using ESMF library */
   if(flg_smf){
 #ifdef ENABLE_ESMF
-    /* Regrid using ESMF library */
     (void)fprintf(stderr,"%s: %s calling nco_rgr_esmf() to generate and apply regridding map\n",nco_prg_nm_get(),fnc_nm);
     rcd=nco_rgr_esmf(rgr);
     /* Close output and free dynamic memory */
@@ -56,10 +52,8 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
 #endif /* !ENABLE_ESMF */
 } /* !flg_smf */
   
-  if(flg_tps){
-    /* Regrid using Tempest regridding */
-    rcd=nco_rgr_tps(rgr);
-  } /* !flg_map */
+  /* Regrid using Tempest regridding */
+  if(flg_tps) rcd=nco_rgr_tps(rgr);
 
   return rcd;
 } /* end nco_rgr_ctl() */
@@ -708,7 +702,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   }else{ /* !SCRIP */
     msk_dst_id=NC_MIN_INT;
   } /* !Tempest */
-  /* Obtain fields whose name is independent of mapfile type */
+  /* Obtain fields whose names are independent of mapfile type */
   rcd+=nco_inq_varid(in_id,"src_grid_dims",&dmn_sz_in_int_id);
   rcd+=nco_inq_varid(in_id,"dst_grid_dims",&dmn_sz_out_int_id);
 
@@ -723,8 +717,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       /* Until 20150814, Tempest stored [src/dst]_grid_dims as [lat,lon] unlike SCRIP's [lon,lat] order
 	 Newer behavior follows SCRIP [lon,lat] order
 	 Challenge: Support both older and newer Tempest mapfiles
-	 Tempest (unlike SCRIP and ESMF) does annotate [src/dst]_grid_dims with attributes that identify axis to which each element of [src/dst]_grid_dims refers
-	 Use Tempest [src/dst]_grid_dims attributes "name0" and "name1" to determine if axes' positions follow old order */
+	 Tempest (unlike SCRIP and ESMF) annotates [src/dst]_grid_dims with attributes that identify axis to which each element of [src/dst]_grid_dims refers
+	 Solution: Use Tempest [src/dst]_grid_dims attributes "name0" and/or "name1" to determine if axes' positions follow old order */
       rcd=nco_inq_att_flg(in_id,dmn_sz_in_int_id,name0_sng,&att_typ,&att_sz);
       if(rcd == NC_NOERR && att_typ == NC_CHAR){
 	att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
@@ -2616,7 +2610,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      spherical segment = volume defined by cutting sphere with pair parallel planes
      spherical sector = volume subtended by lat1
      spherical wedge = ungula = volume subtended by lon2-lon1
-     spherical zone = area of sphereical segment excluding bases
+     spherical zone = area of spherical segment excluding bases
 
      ACME:
      https://acme-svn2.ornl.gov/acme-repo/acme/mapping/grids
@@ -2624,6 +2618,9 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
      NCAR:
      /glade/p/cesm/cseg/mapping/grids
+
+     Generate normal RLL grids:
+     ncks -O -D 1 --rgr grd_ttl='Offset grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150820.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=ngl_eqi_fst --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
 
      Generate ACME grids:
      ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150724.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
@@ -2816,7 +2813,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   lon_ntf[lon_nbr]=lon_ntf[0]+360.0;
   
   /* Support only maps that begin at southernmost latitude */ 
-  double *lat_sin; // [frc] Sine of Gaussian latitudes double precision
+  double *lat_sin=NULL; // [frc] Sine of Gaussian latitudes double precision
   lat_ntf[0]=-90.0;
   switch(lat_typ){
   case nco_grd_lat_FV:

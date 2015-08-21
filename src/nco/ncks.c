@@ -980,7 +980,7 @@ main(int argc,char **argv)
       if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
       if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
-      /* Regrid fields */
+      /* Regrid fields or generate grids */
       rcd=nco_rgr_ctl(rgr_nfo,trv_tbl);
       /* Change from NCO_NOERR to NC_NOERR */
       rcd=NC_NOERR;

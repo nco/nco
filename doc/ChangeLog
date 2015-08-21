@@ -1,3 +1,7 @@
+2015-08-21  Charlie Zender  <zender@uci.edu>
+
+	* NULL-initialize lat_sin in nco_grd_mk() to prevent invalid free()
+
 2015-08-18  Charlie Zender  <zender@uci.edu>
 
 	* Install on hopper.nersc.gov

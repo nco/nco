@@ -2654,6 +2654,18 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+# ncks #110
+# NB: This tests whether the output file has global metadata, and that provides (circumstantial) evidence that there were no major problems in the intervening routines of grid generation
+# ncks -O -v one -D 5 -t 1 --rgr grd_ttl='FV-scalar grid' --rgr grid=~/65x128_SCRIP.nc --rgr lat_nbr=65 --rgr lon_nbr=128 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep "julian" | cut -d ' ' -f 4
+    $dsc_sng="Generate RLL grid";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg -v one --rgr grd_ttl='FV-scalar grid' --rgr grid=~/65x128_SCRIP.nc --rgr lat_nbr=65 --rgr lon_nbr=128 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'julian' | cut -d ' ' -f 4";
+    $tst_cmd[2]="julian_day,";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
 } # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
 #####################
