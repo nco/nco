@@ -2608,12 +2608,12 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      /glade/p/cesm/cseg/mapping/grids
 
      Generate normal RLL grids:
-     ncks -O -D 1 --rgr grd_ttl='Offset grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150820.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=ngl_eqi_fst --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='Offset grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150820.nc --rgr lat_nbr=90 --rgr lon_nbr=180 --rgr lat_typ=ngl_eqi_fst --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Offset grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150820.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=ngl_eqi_fst --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Offset grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150820.nc --rgr lat_nbr=90 --rgr lon_nbr=180 --rgr lat_typ=ngl_eqi_fst --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
      Generate maps for normal RLL grids:
-     ESMF_RegridWeightGen -s ${DATA}/grids/180x360_SCRIP.20150820.nc -d ${DATA}/grids/90x180_SCRIP.20150820.nc -w ${DATA}/maps/map_180x360_to_90x180.20150820.nc --method conserve # fails
-     ESMF_RegridWeightGen -s ${DATA}/grids/90x180_SCRIP.20150820.nc -d ${DATA}/grids/180x360_SCRIP.20150820.nc -w ${DATA}/maps/map_90x180_to_180x360.20150820.nc --method conserve # fails
+     ESMF_RegridWeightGen -s ${DATA}/grids/180x360_SCRIP.20150820.nc -d ${DATA}/grids/90x180_SCRIP.20150820.nc -w ${DATA}/maps/map_180x360_to_90x180.20150820.nc --method conserve
+     ESMF_RegridWeightGen -s ${DATA}/grids/90x180_SCRIP.20150820.nc -d ${DATA}/grids/180x360_SCRIP.20150820.nc -w ${DATA}/maps/map_90x180_to_180x360.20150820.nc --method conserve
 
      Generate ACME grids:
      ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150724.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=ngl_eqi_pol --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
@@ -2805,8 +2805,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   /* Ensure rounding errors do not produce unphysical grid */
   lon_ntf[lon_nbr]=lon_ntf[0]+360.0;
   
-  /* Support only maps that begin at southernmost latitude */ 
   double *lat_sin=NULL; // [frc] Sine of Gaussian latitudes double precision
+  /* Support (for now) only global maps that begin at southernmost latitude */ 
   lat_ntf[0]=-90.0;
   switch(lat_typ){
   case nco_grd_lat_FV:
@@ -2829,7 +2829,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     } /* !odd */
     lat_ncr=180.0/lat_nbr;
     for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
-      lat_ntf[lat_idx]=lat_ntf[0]+(lat_idx-1)*lat_ncr;
+      lat_ntf[lat_idx]=lat_ntf[0]+lat_idx*lat_ncr;
     break;
   case nco_grd_lat_gss:
     lat_sin=(double *)nco_malloc(lat_nbr*sizeof(double));

@@ -1,5 +1,7 @@
 2015-08-21  Charlie Zender  <zender@uci.edu>
 
+	* Fix interface latitudes for offset grids
+
 	* Change polar offset grid latitude weights from continuum formula
 	(cos(lat)) to exact discretized formula, same as polar centered grid
 
