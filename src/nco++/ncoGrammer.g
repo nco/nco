@@ -1856,6 +1856,11 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
             if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,sa);
  
             var1=out(att2->getNextSibling());
+            // we dont need missing values in ATT right !!
+            if(var1->has_mss_val){
+              var1->has_mss_val=False;
+	          var1->mss_val.vp=(void*)nco_free(var1->mss_val.vp);
+            }   
 
             // if RHS is a non scalar variable then loose superfluous dimension data 
             if( var1->nbr_dim >0){
