@@ -1135,6 +1135,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(flg_dgn_area_out){
     if(flg_grd_out_1D && flg_bnd_1D_usable){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"INFO: Diagnosing area_out for 1D grid\n");
+      /* Use L'Huilier's Theorem not Girard's Formula
+	 http://mathworld.wolfram.com/LHuiliersTheorem.html
+	 Girard's formula depends on pi-angle and angle is usually quite small in our applications so precision would be lost
+	 L'Huilier's theorem depends only on angles (a,b,c) and semi-perimeter (s) and is well-conditioned for small angles
+	 Spherical Excess (SE) difference between the sum of the angles of a spherical triangle area and a planar triangle area with same interior angles (which has sum equal to pi)
+	 SE is also the solid angle subtended by the spherical triangle */
+      
       for(idx=0;idx<col_nbr_out;idx++){
 	area_out[idx]=0.0;
       } /* !idx */
