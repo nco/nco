@@ -1,7 +1,15 @@
 2015-08-24  Charlie Zender  <zender@uci.edu>
 
-	* NCO-diagnosed ne30 global area exactly equals original (native grid) ne30 global area
-	Both these areas equal 4*pi to fractional tolerance of 1.0e-11
+	* NCO 4.5.2-beta1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.2-beta1 final changes';git push
+	git tag -a 4.5.2-beta1 -m 'Version 4.5.2-beta1 tag: Diagnose area on bilinearly-interpolated 1D grids with L\'Huillier\'s formula';git push --tags
+
+	* Areas of random gridcell (ncol=0) from raw native grid output
+	and NCO diagnosis are 4.39677373284e-05 and 4.39677373279e-05, respectively.
+	Relative agreement to tolerance of 1.0e-10.
+
+	* NCO-diagnosed ne30 global area exactly equals original (native grid) ne30 global area = 12.5663706144 sr
+	These global areas equal 4*pi = 12.5663706128 to fractional tolerance of 1.0e-09.
 
 	* Optimize area calculation to recycle information from previous triangles
 
