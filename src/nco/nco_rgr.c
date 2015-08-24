@@ -1214,6 +1214,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	idx_a=bnd_nbr_out*col_idx; 
 	/* Start search for B at next vertice */
 	bnd_idx=1;
+	/* fxm 
+	   1. utilize shared info from previous triangle for next triangle
+	   2. diagnose troublesome triangles where two sides equal half the third side, e.g., a = b = ~0.5*c
+	      use formula with two edges and included angle instead on those */
 	while(bnd_idx<bnd_nbr_out-1){
 	  /* bnd_idx labels offset from point A of potential location of triangle points B and C 
 	     We know bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr_out-1, bnd_idx(C) < bnd_nbr_out */
