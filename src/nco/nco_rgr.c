@@ -471,6 +471,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   long int lat_idx;
   long int lon_idx;
 
+  short int bnd_idx;
+
   nco_bool FL_RTR_RMT_LCN;
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -923,12 +925,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_crr){
       for(idx=0;idx<lon_nbr_out;idx++){
 	(void)fprintf(stdout,"lon[%li] = %g, vertices = ",idx,lon_ctr_out[idx]);
-	for(int bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
+	for(bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lon_bnd_out[bnd_nbr_out*idx+bnd_idx],bnd_idx == bnd_nbr_out-1 ? "]\n" : ", ");
       } /* end loop over lon */
       for(idx=0;idx<lat_nbr_out;idx++){
 	(void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr_out[idx]);
-	for(int bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
+	for(bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd_out[bnd_nbr_out*idx+bnd_idx],bnd_idx == bnd_nbr_out-1 ? "]\n" : ", ");
       } /* end loop over lat */
     } /* endif dbg */
@@ -1122,10 +1124,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(idx == rgr_map.dst_grid_size){
     (void)fprintf(stdout,"%s: INFO %s reports area_out from mapfile is everywhere zero. This is expected for bilinearly interpolated output maps produced by ESMF_RegridWeightGen. ",nco_prg_nm_get(),fnc_nm);
     if(flg_grd_out_2D && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
-      (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will generate and output an area variable (named \"%s\") diagnosed from the destination gridcell boundaries. NCO diagnoses quadrilateral area for rectangular output grids from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs (usedby, e.g., ESMF_RegridWeightGen and Tempest). To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
+      (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable named \"%s\") from the destination gridcell boundaries. NCO diagnoses quadrilateral area for rectangular output grids from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs (used by, e.g., ESMF_RegridWeightGen and Tempest). To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
       flg_dgn_area_out=True;
     }else if(flg_grd_out_1D && flg_bnd_1D_usable){
-      (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will generate and output an area variable (named \"%s\") diagnosed from the destination gridcell boundaries. NCO diagnoses spherical polygon area for unstructured output grids from a formula that assumes that cell boundaries follow great circle arcs (as do, e.g., ESMFRegridWeightGen and Tempest). This differs from the area of cells with boundaries that follow lines of constant latitude or longitude. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
+      (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable name \"%s\") from the destination gridcell boundaries. NCO diagnoses spherical polygon area for unstructured output grids from formulae that assume that cell boundaries follow great circle arcs (as do, e.g., ESMFRegridWeightGen and Tempest). This differs from the area of cells with boundaries that follow lines of constant latitude or longitude. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
       flg_dgn_area_out=True;
     }else{ /* !1D */
       (void)fprintf(stdout,"However, NCO cannot find enough boundary information, or it is too stupid about spherical trigonometry, to diagnose area_out. NCO will output an area variable (named \"%s\") copied from the input mapfile. This area will be everywhere zero.\n",rgr->area_nm);
@@ -1139,12 +1141,135 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	 http://mathworld.wolfram.com/LHuiliersTheorem.html
 	 Girard's formula depends on pi-angle and angle is usually quite small in our applications so precision would be lost
 	 L'Huilier's theorem depends only on angles (a,b,c) and semi-perimeter (s) and is well-conditioned for small angles
+	 semi-perimeter = half-perimeter of triangle = 0.5*(a+b+c)
 	 Spherical Excess (SE) difference between the sum of the angles of a spherical triangle area and a planar triangle area with same interior angles (which has sum equal to pi)
-	 SE is also the solid angle subtended by the spherical triangle */
-      
-      for(idx=0;idx<col_nbr_out;idx++){
-	area_out[idx]=0.0;
+	 SE is also the solid angle subtended by the spherical triangle and that's, well, astonishing and pretty cool
+	 Wikipedia shows a better SE formula for triangles which are ill-conditions L'Huillier's formula because a = b ~ 0.5c
+	 https://en.wikipedia.org/wiki/Spherical_trigonometry#Area_and_spherical_excess 
+	 So-called "proper" spherical triangle are those for which all angles are less than pi, so a+b+c<3*pi
+	 Cartesian coordinates of (lat,lon)=(theta,phi) are (x,y,z)=(cos(theta)*cos(phi),cos(theta)*sin(phi),sin(theta)) 
+	 Dot-product rule for vectors gives interior angle/arc length between two points:
+	 cos(a)=u dot v=cos(theta1)*cos(phi1)*cos(theta2)*cos(phi2)+cos(theta1)*sin(phi1)*cos(theta2)*sin(phi2)+sin(theta1)*sin(theta2)
+	 Spherical law of cosines relates interior angles/arc-lengths (a,b,c) to surface angles (A,B,C) in spherical triangle:
+	 https://en.wikipedia.org/wiki/Spherical_law_of_cosines
+	 cos(a)=cos(b)*cos(c)+sin(b)*sin(c)*cos(A)
+	 cos(b)=cos(c)*cos(a)+sin(c)*sin(a)*cos(B)
+	 cos(c)=cos(a)*cos(b)+sin(a)*sin(b)*cos(C)
+	 cos(A)=[cos(a)-cos(b)*cos(c)]/[sin(b)*sin(c)]
+	 cos(B)=[cos(b)-cos(c)*cos(a)]/[sin(c)*sin(a)]
+	 cos(C)=[cos(c)-cos(a)*cos(b)]/[sin(a)*sin(b)]
+	 Bounds information on unstructured grids will use bounds_nbr=maximum(vertice_nbr)
+	 Unused vertices are stored as either repeated points (ACME does this) or, conceiveably, as missing values
+	 Given (lat,lon) for N-points algorithm to find area of spherical polygon is:
+	 1. Girard method:
+	   A. Find interior angles/arc-lengths (a,b,c,d...) using spherical law of cosines along each edge
+	      
+	   B. Apply generalized Girard formula SE_n = Sum(A_n) - (N-2) - pi
+	 2. L'Huillier method
+	   A. First three non-identical points form first triangle with sides A,B,C (first+second point define A, etc.)
+	      i. First vertice anchors all triangles
+	     ii. Last vertice of preceding triangle becomes second vertice of next triangle
+	    iii. Next non-identical point becomes last vertice of next triangle
+	     iv. Side C of previous triangle is side A of next triangle
+	   B. For each triangle, compute area with L'Huillier formula unless A = B ~ 0.5*C */
+      double *lat_bnd_rdn=NULL_CEWI; /* [rdn] Latitude  boundaries of rectangular destination grid */
+      double *lon_bnd_rdn=NULL_CEWI; /* [rdn] Longitude boundaries of rectangular destination grid */
+      double *lat_bnd_sin=NULL_CEWI; /* [frc] Sine of latitude  boundaries of rectangular destination grid */
+      double *lon_bnd_sin=NULL_CEWI; /* [frc] Sine of longitude boundaries of rectangular destination grid */
+      double *lat_bnd_cos=NULL_CEWI; /* [frc] Cosine of latitude  boundaries of rectangular destination grid */
+      double *lon_bnd_cos=NULL_CEWI; /* [frc] Cosine of longitude boundaries of rectangular destination grid */
+      lon_bnd_rdn=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+      lat_bnd_rdn=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+      lon_bnd_cos=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+      lat_bnd_cos=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+      lon_bnd_sin=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+      lat_bnd_sin=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+      memcpy(lat_bnd_rdn,lat_bnd_out,col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+      memcpy(lon_bnd_rdn,lon_bnd_out,col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
+      for(idx=0;idx<col_nbr_out*bnd_nbr_out;idx++){
+	lon_bnd_rdn[idx]*=dgr2rdn;
+	lat_bnd_rdn[idx]*=dgr2rdn;
+	lon_bnd_cos[idx]=cos(lon_bnd_rdn[idx]);
+	lat_bnd_cos[idx]=cos(lat_bnd_rdn[idx]);
+	lon_bnd_sin[idx]=sin(lon_bnd_rdn[idx]);
+	lat_bnd_sin[idx]=sin(lat_bnd_rdn[idx]);
       } /* !idx */
+      double cos_a; /* [frc] Cosine interior angle/great circle arc a */
+      double cos_b; /* [frc] Cosine interior angle/great circle arc b */
+      double cos_c; /* [frc] Cosine interior angle/great circle arc c */
+      double ngl_a; /* [rdn] Interior angle/great circle arc a */
+      double ngl_b; /* [rdn] Interior angle/great circle arc b */
+      double ngl_c; /* [rdn] Interior angle/great circle arc c */
+      double prm_smi; /* [rdn] Semi-perimeter of triangle */
+      double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
+      double xcs_sph; /* [sr] Spherical excess */
+      int tri_nbr; /* [nbr] Number of triangles in polygon */
+      long idx_a; /* [idx] Point A 1-D index */
+      long idx_b; /* [idx] Point B 1-D index */
+      long idx_c; /* [idx] Point C 1-D index */
+      for(unsigned int col_idx=0;col_idx<col_nbr_out;col_idx++){
+	area_out[col_idx]=0.0;
+	tri_nbr=0;
+	/* A is always first vertice */
+	idx_a=bnd_nbr_out*col_idx; 
+	/* Start search for B at next vertice */
+	bnd_idx=1;
+	while(bnd_idx<bnd_nbr_out-1){
+	  /* bnd_idx labels offset from point A of potential location of triangle points B and C 
+	     We know bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr_out-1, bnd_idx(C) < bnd_nbr_out */
+	  while(lon_bnd_out[idx_a] == lon_bnd_out[idx_a+bnd_idx] && lat_bnd_out[idx_a] == lat_bnd_out[idx_a+bnd_idx]){
+	    /* Search for B at next vertice */
+	    bnd_idx++;
+	    /* If there is no room for C then no more triangles exist */
+	    if(bnd_idx == bnd_nbr_out-1) break;
+	  } /* !while */
+	  /* Jump to next column when no more triangles exist */
+	  if(bnd_idx == bnd_nbr_out-1) break;
+	  idx_b=idx_a+bnd_idx;
+	  /* Search for C at next vertice */
+	  bnd_idx++;
+	  while(lon_bnd_out[idx_b] == lon_bnd_out[idx_a+bnd_idx] && lat_bnd_out[idx_b] == lat_bnd_out[idx_a+bnd_idx]){
+	    /* Search for C at next vertice */
+	    bnd_idx++;
+	    /* If there is no room for C then no more triangles exist */
+	    if(bnd_idx == bnd_nbr_out) break;
+	  } /* !while */
+	  /* Jump to next column when no more triangles exist */
+	  if(bnd_idx == bnd_nbr_out) break;
+	  idx_c=idx_a+bnd_idx;
+	  /* Vertices of triangle are known and labeled */
+	  tri_nbr++;
+	  /* Interior angle/great circle arc a */
+	  cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
+	    lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
+	    lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];
+	  ngl_a=acos(cos_a);
+	  /* Interior angle/great circle arc b */
+	  cos_b=lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*lon_bnd_cos[idx_c]+
+	    lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]*lat_bnd_cos[idx_c]*lon_bnd_sin[idx_c]+
+	    lat_bnd_sin[idx_b]*lat_bnd_sin[idx_c];
+	  ngl_b=acos(cos_b);
+	  /* Interior angle/great circle arc c */
+	  cos_c=lat_bnd_cos[idx_c]*lon_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]+
+	    lat_bnd_cos[idx_c]*lon_bnd_sin[idx_c]*lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]+
+	    lat_bnd_sin[idx_c]*lat_bnd_sin[idx_a];
+	  ngl_c=acos(cos_c);
+	  /* Semi-perimeter */
+	  prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
+	  xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
+	  xcs_sph=4.0*atan(xcs_sph_qtr_tan);
+	  area_out[col_idx]+=xcs_sph;
+	  /* Begin search for next B at current C */
+	  bnd_idx=idx_c-idx_a;
+	} /* !tri_idx */
+	if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %u has %d triangles\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+      } /* !col_idx */
+      if(lat_bnd_rdn) lat_bnd_rdn=(double *)nco_free(lat_bnd_rdn);
+      if(lon_bnd_rdn) lon_bnd_rdn=(double *)nco_free(lon_bnd_rdn);
+      if(lat_bnd_cos) lat_bnd_cos=(double *)nco_free(lat_bnd_cos);
+      if(lon_bnd_cos) lon_bnd_cos=(double *)nco_free(lon_bnd_cos);
+      if(lat_bnd_sin) lat_bnd_sin=(double *)nco_free(lat_bnd_sin);
+      if(lon_bnd_sin) lon_bnd_sin=(double *)nco_free(lon_bnd_sin);
     } /* !1D */
     if(flg_grd_out_2D && nco_grd_2D_typ != nco_grd_2D_unk){
       /* Mr. Enenstein and George O. Abell taught me the area of spherical zones

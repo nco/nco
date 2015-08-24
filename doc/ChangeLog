@@ -1,3 +1,7 @@
+2015-08-23  Charlie Zender  <zender@uci.edu>
+
+	* Diagnose area on bilinearly-interpolated 1D grids with L'Huillier's formula
+
 2015-08-21  Charlie Zender  <zender@uci.edu>
 
 	* Start infrastructure to diagnose area on bilinearly-interpolated 1D grids
