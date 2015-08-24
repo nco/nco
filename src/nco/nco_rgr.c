@@ -1214,40 +1214,46 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	idx_a=bnd_nbr_out*col_idx; 
 	/* Start search for B at next vertice */
 	bnd_idx=1;
-	/* fxm 
-	   1. utilize shared info from previous triangle for next triangle
-	   2. diagnose troublesome triangles where two sides equal half the third side, e.g., a = b = ~0.5*c
-	      use formula with two edges and included angle instead on those */
+	/* bnd_idx labels offset from point A of potential location of triangle points B and C 
+	   We know bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr_out-1, bnd_idx(C) < bnd_nbr_out */
 	while(bnd_idx<bnd_nbr_out-1){
-	  /* bnd_idx labels offset from point A of potential location of triangle points B and C 
-	     We know bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr_out-1, bnd_idx(C) < bnd_nbr_out */
-	  while(lon_bnd_out[idx_a] == lon_bnd_out[idx_a+bnd_idx] && lat_bnd_out[idx_a] == lat_bnd_out[idx_a+bnd_idx]){
-	    /* Search for B at next vertice */
-	    bnd_idx++;
-	    /* If there is no room for C then no more triangles exist */
+	  /* Only first triangle must search for B, subsequent triangles recycle previous C as current B */
+	  if(tri_nbr == 0){
+	    /* Skip repeated points that must occur when polygon has fewer than allowed vertices */
+	    while(lon_bnd_out[idx_a] == lon_bnd_out[idx_a+bnd_idx] && lat_bnd_out[idx_a] == lat_bnd_out[idx_a+bnd_idx]){
+	      /* Next vertice may not duplicate A */
+	      bnd_idx++;
+	      /* If there is no room for C then all triangles found */
+	      if(bnd_idx == bnd_nbr_out-1) break;
+	    } /* !while */
+	    /* Jump to next column when all triangles found */
 	    if(bnd_idx == bnd_nbr_out-1) break;
-	  } /* !while */
-	  /* Jump to next column when no more triangles exist */
-	  if(bnd_idx == bnd_nbr_out-1) break;
+	  } /* !tri_nbr */
 	  idx_b=idx_a+bnd_idx;
 	  /* Search for C at next vertice */
 	  bnd_idx++;
 	  while(lon_bnd_out[idx_b] == lon_bnd_out[idx_a+bnd_idx] && lat_bnd_out[idx_b] == lat_bnd_out[idx_a+bnd_idx]){
-	    /* Search for C at next vertice */
+	    /* Next vertice may not duplicate B */
 	    bnd_idx++;
-	    /* If there is no room for C then no more triangles exist */
+	    /* If there is no room for C then all triangles found */
 	    if(bnd_idx == bnd_nbr_out) break;
 	  } /* !while */
-	  /* Jump to next column when no more triangles exist */
+	  /* Jump to next column when all triangles found */
 	  if(bnd_idx == bnd_nbr_out) break;
 	  idx_c=idx_a+bnd_idx;
-	  /* Vertices of triangle are known and labeled */
+	  /* Valid triangle, vertices are known and labeled */
 	  tri_nbr++;
-	  /* Interior angle/great circle arc a */
-	  cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
-	    lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
-	    lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];
-	  ngl_a=acos(cos_a);
+	  /* Compute interior angle/great circle arc a for first triangle; subsequent triangles recycle previous arc c */
+	  if(tri_nbr == 1){
+	    /* Interior angle/great circle arc a */
+	    cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
+	      lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
+	      lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];
+	    ngl_a=acos(cos_a);
+	  }else{
+	    cos_a=cos_c;
+	    ngl_a=ngl_c;
+	  } /* !tri_nbr */
 	  /* Interior angle/great circle arc b */
 	  cos_b=lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*lon_bnd_cos[idx_c]+
 	    lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]*lat_bnd_cos[idx_c]*lon_bnd_sin[idx_c]+
@@ -1258,8 +1264,15 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	    lat_bnd_cos[idx_c]*lon_bnd_sin[idx_c]*lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]+
 	    lat_bnd_sin[idx_c]*lat_bnd_sin[idx_a];
 	  ngl_c=acos(cos_c);
+	  /* Ill-conditioned? */
+	  if(((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) || /* c is half a and b */
+	     ((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) || /* a is half b and c */
+	     ((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b))){  /* b is half c and a */
+	    (void)fprintf(stdout,"%s: WARNING %s reports col_idx = %u triangle %d is ill-conditioned. Spherical excess and thus cell area are likely inaccurate. Ask Charlie to implement SAS formula...\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+	  } /* !ill */
 	  /* Semi-perimeter */
 	  prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
+	  /* L'Huillier's formula */
 	  xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
 	  xcs_sph=4.0*atan(xcs_sph_qtr_tan);
 	  area_out[col_idx]+=xcs_sph;
