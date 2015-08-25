@@ -2347,16 +2347,14 @@ nco_bsl_zro /* Return Bessel function zeros */
     121.7377420880, 124.8793089132, 128.0208770059, 131.1624462752, 
     134.3040166383, 137.4455880203, 140.5871603528, 143.7287335737, 
     146.8703076258, 150.0118824570, 153.1534580192, 156.2950342685};
-  const int bsl_zro_tbl_nbr_max=sizeof(bsl_zro_tbl)/sizeof(double); /* [nbr] */
+  const int bsl_zro_tbl_nbr_max=50; /* [nbr] */
   int bsl_idx; /* [idx] Counting index */
     
   /* Main Code */
   if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: DEBUG Entering %s\n",nco_prg_nm_get(),fnc_nm);
     
-  assert(bsl_zro_tbl_nbr_max == 51); /* 51 is original size of 50 plus extra value for Fortran offset */
-
-  /* NB: Initialize bsl_zro[0] but never use it (in C)
-     This is necessary to avoid uninitialized memory warnings */
+  /* NB: Initialize bsl_zro[0] but (in C) never use it
+     Initialization prevents uninitialized memory warnings */
   for(bsl_idx=0;bsl_idx<=bsl_zro_nbr;bsl_idx++)
     if(bsl_idx <= bsl_zro_tbl_nbr_max) bsl_zro[bsl_idx]=bsl_zro_tbl[bsl_idx];
 
@@ -3017,11 +3015,11 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     for(lat_idx=1;lat_idx<lat_nbr;lat_idx++){
       double fofx_at_x0; /* [frc] Function to iterate evaluated at current guess */
       double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
-      const double eps_rlt=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
+      const double eps_rlt_cnv=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
       itr_cnt=0;
       lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1]);
       fofx_at_x0=wgt_Gss[lat_idx-1]-lat_wgt_gss;
-      while(fabs(fofx_at_x0) > eps_rlt){
+      while(fabs(fofx_at_x0) > eps_rlt_cnv){
 	/* Use Newton-Raphson method to iteratively improve interface location
 	   Let x=lat_ntf[lat_idx], y0=lat_ntf[lat_idx-1], gw = Gaussian weight (exact solution)
 	   f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0 
@@ -3096,13 +3094,15 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   } /* !lat_typ */
 
   /* Fuzzy test of latitude weight normalization */
-  const double eps_rlt=1.0e-14; /* [frc] Round-off error tolerance */
+  const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance */
   double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
   lat_wgt_ttl=0.0;
   for(idx=0;idx<lat_nbr;idx++) lat_wgt_ttl+=lat_wgt[idx];
   lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1])-sin(dgr2rdn*lat_bnd[0]);
-  if(grd_typ != nco_grd_2D_unk)
-    assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
+  if(grd_typ != nco_grd_2D_unk && 1.0-lat_wgt_ttl/lat_wgt_ttl_xpc > eps_rlt_max){
+    (void)fprintf(stdout,"%s: ERROR %s reports grid normalization does not meet precision tolerance eps_rlt_max = %20.15f\nlat_wgt_ttl = %20.15f, lat_wgt_ttl_xpc = %20.15f, lat_wgt_frc = %20.15f, eps_rlt = %20.15f\n",nco_prg_nm_get(),fnc_nm,eps_rlt_max,lat_wgt_ttl,lat_wgt_ttl_xpc,lat_wgt_ttl/lat_wgt_ttl_xpc,1.0-lat_wgt_ttl/lat_wgt_ttl_xpc);
+    nco_exit(EXIT_FAILURE);
+  } /* !imprecise */
 
   assert(grd_crn_nbr == 4);
   for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){

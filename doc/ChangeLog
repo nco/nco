@@ -1,5 +1,7 @@
 2015-08-25  Charlie Zender  <zender@uci.edu>
 
+	* Fix off-by-one error in nco_bsl_zro() that broke spectral grids when lat_nbr > 100
+
 	* Change rgr metadata mapping_file -> map_file and source_file -> input_file
 
 2015-08-24  Charlie Zender  <zender@uci.edu>
