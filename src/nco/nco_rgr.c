@@ -241,13 +241,13 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
   rgr->grd_typ=nco_grd_2D_ngl_eqi_fst; /* [enm] Grid type */
   rgr->lat_typ=nco_grd_lat_ngl_eqi_fst; /* [enm] Latitude grid type */
-  rgr->lon_typ=nco_grd_lon_Grn_wst; /* [enm] Longitude grid type */
+  rgr->lon_typ=nco_grd_lon_Grn_ctr; /* [enm] Longitude grid type */
   rgr->lat_nbr=180; /* [nbr] Number of latitudes in destination grid */
   rgr->lon_nbr=360; /* [nbr] Number of longitudes in destination grid */
   rgr->lat_srt=-89.5; /* [dgr] Latitude center at start of grid */
-  rgr->lon_srt=0.5; /* [dgr] Longitude center at start of grid */
-  rgr->lat_end=-89.5; /* [dgr] Latitude center at end of grid */
-  rgr->lon_end=359.5; /* [dgr] Longitude center at end of grid */
+  rgr->lon_srt=0.0; /* [dgr] Longitude center at start of grid */
+  rgr->lat_end=89.5; /* [dgr] Latitude center at end of grid */
+  rgr->lon_end=359.0; /* [dgr] Longitude center at end of grid */
   
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -270,6 +270,26 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_nbr")){
       rgr->lon_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_srt")){
+      rgr->lat_srt=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_srt")){
+      rgr->lon_srt=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_end")){
+      rgr->lat_end=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_end")){
+      rgr->lon_end=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
@@ -1215,7 +1235,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	/* Start search for B at next vertice */
 	bnd_idx=1;
 	/* bnd_idx labels offset from point A of potential location of triangle points B and C 
-	   We know bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr_out-1, bnd_idx(C) < bnd_nbr_out */
+	   We know that bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr_out-1, bnd_idx(C) < bnd_nbr_out */
 	while(bnd_idx<bnd_nbr_out-1){
 	  /* Only first triangle must search for B, subsequent triangles recycle previous C as current B */
 	  if(tri_nbr == 0){

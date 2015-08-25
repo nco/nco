@@ -121,7 +121,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.2-beta1
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 24 August 2015
+@set update-date 25 August 2015
 @set update-month August 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1052,7 +1052,7 @@ We implement the symbolic links and synonyms by the executing the
 following @acronym{UNIX} commands in the directory where the
 @acronym{NCO} executables are installed.
 @example
-ln -s -f ncbo ncdiff    # ncbo --op_typ='+'
+ln -s -f ncbo ncdiff    # ncbo --op_typ='-'
 ln -s -f ncra nces      # ncra --pseudonym='nces'
 ln -s -f ncra ncrcat    # ncra --pseudonym='ncrcat'
 ln -s -f ncbo ncadd     # ncbo --op_typ='+'
