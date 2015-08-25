@@ -1,5 +1,7 @@
 2015-08-24  Charlie Zender  <zender@uci.edu>
 
+	* Transfer ownership to new NCO GitHub Organization http://github.com/nco/nco.git
+
 	* NCO 4.5.2-beta1 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.2-beta1 final changes';git push
 	git tag -a 4.5.2-beta1 -m 'Version 4.5.2-beta1 tag: Diagnose area on bilinearly-interpolated 1D grids with LHuillier's formula';git push --tags
