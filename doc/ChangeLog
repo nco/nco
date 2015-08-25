@@ -1,3 +1,7 @@
+2015-08-25  Charlie Zender  <zender@uci.edu>
+
+	* Change rgr metadata mapping_file -> map_file and source_file -> input_file
+
 2015-08-24  Charlie Zender  <zender@uci.edu>
 
 	* Transfer ownership to new NCO GitHub Organization http://github.com/nco/nco.git

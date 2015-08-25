@@ -1,11 +1,19 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.2-alpha7 are ready. 
+The netCDF Operators NCO version 4.5.2-beta1 are ready. 
 
-http://nco.sf.net (Homepage)
-http://dust.ess.uci.edu/nco (Homepage "mirror")
+http://nco.sf.net (Homepage, Mailing lists)
+http://github.com/nco (Source Code, Releases, Developers)
 
-This release improves regridding features, ncra weighting, and
+First, NCO now resides at http://github.com/nco, i.e., it is a
+GitHub organization. We are pleased to cohabit with the pyNCO
+project of Joe Hamman who has produced NCO Python bindings.
+Please check 'em out. All GitHub paths with "czender" instead of
+"nco" as the username will still work, but should be updated.
+Change your local copy of the repository with:
+git remote set-url origin https://github.com/nco/nco.git
+
+This NCO release improves regridding features, ncra weighting, and
 ncatted flexibility, and contains a raft of minor fixes and tunings.
 Notably, most implementation-specific dimension/variable names
 involved in regridding can be specified at the command line, and

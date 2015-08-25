@@ -51,7 +51,7 @@ Try to disable Spammers' machines:
 <a href="http://sf.net/p/nco/discussion/9830">Help</a> /
 <a href="#RTFM">Manual</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
-<a href="https://github.com/czender/nco/tree/master/src/nco">Source</a> /
+<a href="https://github.com/nco/nco/tree/master/src/nco">Source</a> /
 </td>
 
 <td align="right" valign="top">
@@ -658,9 +658,9 @@ San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
 <h2>Release Highlights</h2>
 Stable releases receive unique tags and their tarballs are stored  
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
-<a href="https://github.com/czender/nco/releases">here</a> at GitHub.
+<a href="https://github.com/nco/nco/releases">here</a> at GitHub.
 You may also retrieve the source of tagged versions directly
-<a name="#Source">with <tt>git clone -b 4.5.1 http://github.com/czender/nco.git nco-4.5.1</tt></a>.
+<a name="#Source">with <tt>git clone -b 4.5.1 http://github.com/nco/nco.git nco-4.5.1</tt></a>.
 <ul>
 <li><b>NCO 4.5.4</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
@@ -842,7 +842,7 @@ the directory index <a href="src">here</a>.
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
 <ul> <!-- http://nco.sf.net/src/nco-4.2.5.aix53.tar.gz -->
 <li><a href="src/nco-4.2.5.aix53.tar.gz">nco-4.2.5.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.2.5.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.2.5.aix53.tar.gz"-->). Maintained by NCO Project.</li>
-Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="https://github.com/czender/nco/tree/master/doc/beta.txt">here</a>.
+Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="https://github.com/nco/nco/tree/master/doc/beta.txt">here</a>.
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
 
@@ -858,7 +858,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
 NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
-Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/czender/nco/tree/master/doc/beta.txt">here</a>.
+Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/nco/nco/tree/master/doc/beta.txt">here</a>.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.5.1-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_4.5.1-1_amd64.deb">nco_4.5.1-1_amd64.deb</a> (<!--#fsize file="src/nco_4.5.1-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.5.1-1_amd64.deb"-->)</li>
 <li><a href="src/nco_4.5.1-1.dsc">nco_4.5.1-1.dsc</a> (<!--#fsize file="src/nco_4.5.1-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.5.1-1.dsc"-->)</li>
@@ -1116,7 +1116,7 @@ The simplest way to acquire the source is to download the compressed tarball:
      http://svn.unidata.ucar.edu/repos/netcdf/trunk/ncdump/nccopy.c -->
 <p>The best way to acquire the source and occasionally update to the
 latest features is with <a href="http://git-scm.com/book/en/v2">Git</a>. 
-The browsable <a href="https://github.com/czender/nco/tree/master">Repository</a> 
+The browsable <a href="https://github.com/nco/nco/tree/master">Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
 synchronized with NCO features.
 Updating NCO source requires some familiarity with development tools,
@@ -1128,10 +1128,10 @@ You may retrieve any NCO distribution you wish from
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
 then checks out NCO version <tt>4.5.1</tt>:
-<p><tt>git clone https://github.com/czender/nco.git;cd nco;git checkout -b 4.5.1</tt></p>
+<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout -b 4.5.1</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
-<p><tt>git clone https://github.com/czender/nco.git ~/nco</tt></p>
+<p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p>
 Track changes to the development version using
 <p><tt>cd ~/nco;git pull</tt></p>
 One difference between running a "tagged" release 
@@ -1269,7 +1269,7 @@ Users should instead first download and install the Antlr found <a href="http://
   then build the latest stable NCO and install it in,
   e.g., <tt>/usr/local</tt> with: 
 <tt>
-<dt>wget https://github.com/czender/nco/archive/4.5.1.tar.gz</dt>
+<dt>wget https://github.com/nco/nco/archive/4.5.1.tar.gz</dt>
 <dt>tar xvzf 4.5.1.tar.gz</dt>
 <dt>cd nco-4.5.1</dt>
 <dt>./configure --prefix=/usr/local</dt>
@@ -1665,7 +1665,7 @@ community.
 <a href="http://sf.net/p/nco/discussion/9830">Help</a> /
 <a href="#RTFM">Manual</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
-<a href="https://github.com/czender/nco/tree/master/src/nco/">Source</a> /
+<a href="https://github.com/nco/nco/tree/master/src/nco/">Source</a> /
 </td>
 
 <td align="right" valign="top">

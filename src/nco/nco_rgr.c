@@ -1989,7 +1989,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
   } /* !flg_grd_out_2D */
   
-  att_nm=strdup("mapping_file");
+  att_nm=strdup("map_file");
   att_val=strdup(fl_in);
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=NULL;
@@ -2002,7 +2002,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
-  att_nm=strdup("source_file");
+  att_nm=strdup("input_file");
   att_val=strdup(rgr->fl_in);
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=NULL;

@@ -28,7 +28,7 @@
    University of California, Irvine
    Irvine, CA 92697-3100 */
 
-/* URL: https://github.com/czender/nco/tree/master/src/nco/ncks.c
+/* URL: https://github.com/nco/nco/tree/master/src/nco/ncks.c
 
    Usage:
    ncks ~/nco/data/in.nc 
