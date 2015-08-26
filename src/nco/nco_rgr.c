@@ -244,10 +244,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_typ=nco_grd_lon_Grn_ctr; /* [enm] Longitude grid type */
   rgr->lat_nbr=180; /* [nbr] Number of latitudes in destination grid */
   rgr->lon_nbr=360; /* [nbr] Number of longitudes in destination grid */
-  rgr->lat_srt=-89.5; /* [dgr] Latitude center at start of grid */
-  rgr->lon_srt=0.0; /* [dgr] Longitude center at start of grid */
-  rgr->lat_end=89.5; /* [dgr] Latitude center at end of grid */
-  rgr->lon_end=359.0; /* [dgr] Longitude center at end of grid */
+  rgr->lat_sth=NC_MAX_DOUBLE; /* [dgr] Latitude of southern edge of grid */
+  rgr->lon_wst=NC_MAX_DOUBLE; /* [dgr] Longitude of western edge of grid */
+  rgr->lat_nrt=NC_MAX_DOUBLE; /* [dgr] Latitude of northern edge of grid */
+  rgr->lon_est=NC_MAX_DOUBLE; /* [dgr] Longitude of eastern edge of grid */
   
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -272,23 +272,23 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
     } /* endif */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_srt")){
-      rgr->lat_srt=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_sth")){
+      rgr->lat_sth=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* endif */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_srt")){
-      rgr->lon_srt=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_wst")){
+      rgr->lon_wst=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* endif */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_end")){
-      rgr->lat_end=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nrt")){
+      rgr->lat_nrt=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* endif */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_end")){
-      rgr->lon_end=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_est")){
+      rgr->lon_est=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* endif */
@@ -2859,12 +2859,12 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   double *lon_ntf=NULL; /* [dgr] Longitude interfaces of rectangular grid */
 
   double area_ttl=0.0; /* [frc] Exact sum of area */
-  // double lat_end; /* [dgr] Latitude center at end of grid */
-  // double lat_srt; /* [dgr] Latitude center at start of grid */
+  double lat_nrt; /* [dgr] Latitude of northern edge of grid */
+  double lat_sth; /* [dgr] Latitude of southern edge of grid */
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
   double lat_wgt_gss; /* [frc] Latitude weight estimated from interface latitudes */
-  // double lon_end; /* [dgr] Longitude center at end of grid */
-  // double lon_srt; /* [dgr] Longitude center at start of grid */
+  double lon_est; /* [dgr] Longitude of eastern edge of grid */
+  double lon_wst; /* [dgr] Longitude of western edge of grid */
   double lon_ncr; /* [dgr] Longitude increment */
   double lat_ncr; /* [dgr] Latitude increment */
   double *wgt_Gss=NULL; // [frc] Gaussian weights double precision
@@ -2926,10 +2926,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   lon_typ=rgr->lon_typ; /* [enm] Longitude grid type */
   lat_nbr=rgr->lat_nbr; /* [nbr] Number of latitudes in grid */
   lon_nbr=rgr->lon_nbr; /* [nbr] Number of longitudes in grid */
-  //  lat_srt=rgr->lat_srt; /* [dgr] Latitude center at start of grid */
-  //  lon_srt=rgr->lon_srt; /* [dgr] Longitude center at start of grid */
-  //  lat_end=rgr->lat_end; /* [dgr] Latitude center at end of grid */
-  //  lon_end=rgr->lon_end; /* [dgr] Longitude center at end of grid */
+  lat_sth=rgr->lat_sth; /* [dgr] Latitude of southern edge of grid */
+  lon_wst=rgr->lon_wst; /* [dgr] Longitude of western edge of grid */
+  lat_nrt=rgr->lat_nrt; /* [dgr] Latitude of northern edge of grid */
+  lon_est=rgr->lon_est; /* [dgr] Longitude of eastern edge of grid */
 
   /* Assume 2D grid */
   flg_grd_2D=True;
@@ -2975,23 +2975,50 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
   /* Compute rectangular arrays
      NB: Mostly a rewrite of map/map_grd.F90:map_grd_mk() */
-  /* Support only maps that begin at longitude 0.0 or 180.0 degrees */
-  lon_ncr=360.0/lon_nbr;
-  switch(lon_typ){
-  case nco_grd_lon_Grn_ctr:
-  case nco_grd_lon_Grn_wst:
-    lon_ntf[0]=0.0;
-    break;
-  case nco_grd_lon_180_ctr:
-  case nco_grd_lon_180_wst:
-    lon_ntf[0]=-180.0;
-    break;
-  default:
-    nco_dfl_case_generic_err(); break;
-  } /* !lon_typ */
-  /* Whether 0.0 or 180.0 refers to cell center or Western edge is specified with map_lon_ctr_typ argument */   
+  if(lat_sth == NC_MAX_DOUBLE) lat_sth=-90.0;
+  if(lat_nrt == NC_MAX_DOUBLE) lat_nrt=90.0; /* [dgr] Latitude of northern edge of grid */
+  if(lon_wst == NC_MAX_DOUBLE) lon_wst=0.0; /* [dgr] Longitude of western edge of grid */
+  if(lon_est == NC_MAX_DOUBLE) lon_est=360.0; /* [dgr] Longitude of eastern edge of grid */
+
+  if(lon_wst == NC_MAX_DOUBLE){
+    /* Precomputed longitude grids begin with longitude 0.0 or -180.0 degrees */
+    switch(lon_typ){
+    case nco_grd_lon_Grn_ctr:
+    case nco_grd_lon_Grn_wst:
+      lon_wst=0.0;
+      break;
+    case nco_grd_lon_180_ctr:
+    case nco_grd_lon_180_wst:
+      lon_wst=-180.0;
+      break;
+    default:
+      nco_dfl_case_generic_err(); break;
+    } /* !lon_typ */
+  } /* !lon */
+  lon_ntf[0]=lon_wst;
+
+
+
+  /* Whether lon_wst refers to cell center or Western edge, respectively, is specified with map_lon_ctr_typ argument */   
   if((lon_typ == nco_grd_lon_Grn_ctr) || (lon_typ == nco_grd_lon_180_ctr)) lon_ntf[0]=lon_ntf[0]-(lon_ncr/2.0);
   
+  if(lon_est == NC_MAX_DOUBLE){
+    /* Precomputed longitude grids end with longitude 360.0 or 180.0 degrees */
+    switch(lon_typ){
+    case nco_grd_lon_Grn_ctr:
+    case nco_grd_lon_Grn_wst:
+      lon_est=360.0;
+      break;
+    case nco_grd_lon_180_ctr:
+    case nco_grd_lon_180_wst:
+      lon_est=180.0;
+      break;
+    default:
+      nco_dfl_case_generic_err(); break;
+    } /* !lon_typ */
+  } /* !lon */
+  lon_ntf[lon_nbr]=lon_est;
+
   for(lon_idx=1;lon_idx<lon_nbr;lon_idx++)
     lon_ntf[lon_idx]=lon_ntf[0]+lon_idx*lon_ncr;
   /* Ensure rounding errors do not produce unphysical grid */

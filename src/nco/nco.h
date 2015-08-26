@@ -937,10 +937,10 @@ extern "C" {
     // User-specified grid properties
     char *fl_grd; /* [sng] Name of grid file to create */
     char *grd_ttl; /* [sng] Grid title */
-    double lat_srt; /* [dgr] Latitude center at start of grid */
-    double lon_srt; /* [dgr] Longitude center at start of grid */
-    double lat_end; /* [dgr] Latitude center at end of grid */
-    double lon_end; /* [dgr] Longitude center at end of grid */
+    double lat_sth; /* [dgr] Latitude of southern edge of grid */
+    double lon_wst; /* [dgr] Longitude of western edge of grid */
+    double lat_nrt; /* [dgr] Latitude of northern edge of grid */
+    double lon_est; /* [dgr] Longitude of eastern edge of grid */
     long lat_nbr; /* [nbr] Number of latitudes in destination grid */
     long lon_nbr; /* [nbr] Number of longitudes in destination grid */
     nco_grd_2D_typ_enm grd_typ; /* [enm] Destination grid-type enum */

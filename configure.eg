@@ -268,6 +268,22 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
+# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on edison:
+# Used 20150825-
+module load szip
+module load gsl
+module load udunits
+module load cray-netcdf
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+ANTLR_ROOT='/usr' CC='gcc' CXX='g++' GSL_ROOT='/usr/common/usg/gsl/1.16/pgi' NETCDF_INC='/opt/cray/netcdf/4.3.2/PGI/141/include' NETCDF_LIB='/opt/cray/netcdf/4.3.2/PGI/141/lib' NETCDF_ROOT='/opt/cray/netcdf/4.3.2' UDUNITS2_PATH='/usr/common/usg/udunits/2.2.18/pgi' ./configure --prefix=${HOME} --bindir=${HOME}/bin --datadir=${HOME}/nco/data --libdir=${HOME}/lib --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
+/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
+make clean;make > nco.make.${GNU_TRP}.foo 2>&1
+make check >> nco.make.${GNU_TRP}.foo 2>&1
+make install >> nco.make.${GNU_TRP}.foo 2>&1
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on hopper:
 # Used 20150824-
 module load szip
