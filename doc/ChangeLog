@@ -1,8 +1,12 @@
-2015-08-25  Charlie Zender  <zender@uci.edu>
+2015-08-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.2-beta2 release procedure: (not done yet)
 	cd ~/nco;git commit -a -m 'Version 4.5.2-beta2 final changes';git push
 	git tag -a 4.5.2-beta2 -m 'Version 4.5.2-beta2 tag: New metadata names, Gaussian fix, GitHub relocation';git push --tags
+
+	* Add regional grid-generation capability (lon_wst,lon_est,lat_sth,lat_nrt)
+
+2015-08-25  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncdiff typo in manual thanks to Dave Allured
 

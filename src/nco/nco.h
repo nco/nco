@@ -907,6 +907,7 @@ extern "C" {
     nco_grd_lon_180_ctr, /* Date line at center of first longitude cell */
     nco_grd_lon_Grn_wst, /* Greenwich at west edge of first longitude cell */
     nco_grd_lon_Grn_ctr, /* Greenwich at center of first longitude cell */
+    nco_grd_lon_bb, /* Longitude grid determined by bounding box (lon_wst/lon_est) and gridcell number (lon_nbr) */
   } nco_grd_lon_typ_enm;
 
   /* Regrid structure */

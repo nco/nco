@@ -276,7 +276,7 @@ module load udunits
 module load cray-netcdf
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT='/usr' CC='gcc' CXX='g++' GSL_ROOT='/usr/common/usg/gsl/1.16/pgi' NETCDF_INC='/opt/cray/netcdf/4.3.2/PGI/141/include' NETCDF_LIB='/opt/cray/netcdf/4.3.2/PGI/141/lib' NETCDF_ROOT='/opt/cray/netcdf/4.3.2' UDUNITS2_PATH='/usr/common/usg/udunits/2.2.18/pgi' ./configure --prefix=${HOME} --bindir=${HOME}/bin --datadir=${HOME}/nco/data --libdir=${HOME}/lib --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT='/usr' CC='icc' CXX='icpc' GSL_ROOT='/usr/common/usg/gsl/1.16/intel' NETCDF_INC='/opt/cray/netcdf/4.3.2/INTEL/140/include' NETCDF_LIB='/opt/cray/netcdf/4.3.2/INTEL/140/lib' NETCDF_ROOT='/opt/cray/netcdf/4.3.2' UDUNITS2_PATH='/usr/common/usg/udunits/2.1.24/intel' ./configure --prefix=${HOME} --bindir=${HOME}/bin --datadir=${HOME}/nco/data --libdir=${HOME}/lib --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1

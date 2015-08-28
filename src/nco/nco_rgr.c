@@ -275,21 +275,25 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_sth")){
       rgr->lat_sth=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
+      //      rgr->lat_typ=nco_grd_lat_bb;
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_wst")){
       rgr->lon_wst=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
+      rgr->lon_typ=nco_grd_lon_bb;
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nrt")){
       rgr->lat_nrt=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
+      //rgr->lat_typ=nco_grd_lat_bb;
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_est")){
       rgr->lon_est=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
+      rgr->lon_typ=nco_grd_lon_bb;
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
@@ -1183,7 +1187,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	 Given (lat,lon) for N-points algorithm to find area of spherical polygon is:
 	 1. Girard method:
 	   A. Find interior angles/arc-lengths (a,b,c,d...) using spherical law of cosines along each edge
-	      
 	   B. Apply generalized Girard formula SE_n = Sum(A_n) - (N-2) - pi
 	 2. L'Huillier method
 	   A. First three non-identical points form first triangle with sides A,B,C (first+second point define A, etc.)
@@ -2625,6 +2628,7 @@ nco_grd_lon_sng /* [fnc] Convert longitude grid-type enum to string */
   case nco_grd_lon_180_ctr: return "Date line at center of first longitude cell";
   case nco_grd_lon_Grn_wst: return "Greenwich at west edge of first longitude cell";
   case nco_grd_lon_Grn_ctr: return "Greenwich at center of first longitude cell";
+  case nco_grd_lon_bb: return "Longitude grid determined by bounding box (lon_wst/lon_est) and gridcell number (lon_nbr)";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -2867,6 +2871,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   double lon_wst; /* [dgr] Longitude of western edge of grid */
   double lon_ncr; /* [dgr] Longitude increment */
   double lat_ncr; /* [dgr] Latitude increment */
+  double lon_spn; /* [dgr] Longitude span */
+  double lat_spn; /* [dgr] Latitude span */
   double *wgt_Gss=NULL; // [frc] Gaussian weights double precision
 
   int *msk=NULL; /* [flg] Mask of grid */
@@ -2974,15 +2980,34 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
 
   /* Compute rectangular arrays
-     NB: Mostly a rewrite of map/map_grd.F90:map_grd_mk() */
-  if(lat_sth == NC_MAX_DOUBLE) lat_sth=-90.0;
-  if(lat_nrt == NC_MAX_DOUBLE) lat_nrt=90.0; /* [dgr] Latitude of northern edge of grid */
-  if(lon_wst == NC_MAX_DOUBLE) lon_wst=0.0; /* [dgr] Longitude of western edge of grid */
-  if(lon_est == NC_MAX_DOUBLE) lon_est=360.0; /* [dgr] Longitude of eastern edge of grid */
+     NB: Much is a more-generic rewrite of map/map_grd.F90:map_grd_mk() */
 
+  /* 20150827: 
+     Old rule: Longitude grid was entirely specified by one of four longitude map tokens: Grn_ctr,Grn_wst,180_ctr,180_wst
+     New rule: User may specify bounds (lon_wst,lon_est,lat_sth,lat_nrt) independently of grid token
+     Such bounds ALWAYS refer bounding box interface edges, NEVER to centers of first last gridcells
+     Bounds and number of gridcells completely determine uniform grid so former longitude-type tokens have no effect when bounds specified (so letting grid-type tokens affect grid would over-determine grid and lead to errors)
+     Hence, grid-type tokens may be used as short-hand to specify grids but may not be required to exist later (because regional grids would not have specified them)
+     Grid grid-type tokens lon_bb/lat_bb imply bounding box was originally used to specify bounds
+     1x1 degree global grid with first longitude centered at Greenwich:
+     --lon_nbr=360 --lon_typ Grn_ctr
+     --lon_nbr=360 --lon_wst=-0.5 --lon_est=359.5
+     1x1 degree global grid with Greenwich at west edge of first longitude:
+     --lon_nbr=360 --lon_typ Grn_wst
+     --lon_nbr=360 --lon_wst=0.0 --lon_est=360.0
+     1x1 degree regional grid, total size 9x9 degrees, Greenwich at center of middle gridcell:
+     --lon_nbr=9 --lon_wst=-4.5 --lon_est=4.5
+     1x1 degree regional grid, total size 10x10 degrees, Greenwich at east/west edges of middle two gridcells
+     --lon_nbr=10 --lon_wst=-5.0 --lon_est=5.0 */
+  
+  /* Were east/west longitude bounds set explicitly or implicitly?
+     NB: This is redundant since it was done in nco_rgr_ini(), but better safe than sorry */
+  if(lon_wst != NC_MAX_DOUBLE || lon_est != NC_MAX_DOUBLE) lon_typ=rgr->lon_typ=nco_grd_lon_bb;
+  
   if(lon_wst == NC_MAX_DOUBLE){
     /* Precomputed longitude grids begin with longitude 0.0 or -180.0 degrees */
     switch(lon_typ){
+    case nco_grd_lon_bb:
     case nco_grd_lon_Grn_ctr:
     case nco_grd_lon_Grn_wst:
       lon_wst=0.0;
@@ -2995,16 +3020,11 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       nco_dfl_case_generic_err(); break;
     } /* !lon_typ */
   } /* !lon */
-  lon_ntf[0]=lon_wst;
 
-
-
-  /* Whether lon_wst refers to cell center or Western edge, respectively, is specified with map_lon_ctr_typ argument */   
-  if((lon_typ == nco_grd_lon_Grn_ctr) || (lon_typ == nco_grd_lon_180_ctr)) lon_ntf[0]=lon_ntf[0]-(lon_ncr/2.0);
-  
   if(lon_est == NC_MAX_DOUBLE){
     /* Precomputed longitude grids end with longitude 360.0 or 180.0 degrees */
     switch(lon_typ){
+    case nco_grd_lon_bb:
     case nco_grd_lon_Grn_ctr:
     case nco_grd_lon_Grn_wst:
       lon_est=360.0;
@@ -3017,16 +3037,42 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       nco_dfl_case_generic_err(); break;
     } /* !lon_typ */
   } /* !lon */
+
+  /* Determine longitude increment from span of pre-centered bounding box (centering will not change span) */
+  lon_spn=lon_est-lon_wst;
+  lon_ncr=lon_spn/lon_nbr;
+
+  /* Centering: If user did not set explicit longitude bounds then... */
+  if(lon_typ != nco_grd_lon_bb)
+    /* map_lon_ctr_typ determines whether lon_wst refers to cell center or Western edge */
+    if((lon_typ == nco_grd_lon_Grn_ctr) || (lon_typ == nco_grd_lon_180_ctr)) lon_wst=lon_wst-(lon_ncr/2.0);
+
+  /* Re-derive lon_est from lon_wst and lon_nbr (more fundamental properties) */
+  lon_est=lon_wst+lon_ncr*lon_nbr;
+
+  /* lon_wst and lon_est have been set and will not change */
+  lon_ntf[0]=lon_wst;
   lon_ntf[lon_nbr]=lon_est;
 
   for(lon_idx=1;lon_idx<lon_nbr;lon_idx++)
     lon_ntf[lon_idx]=lon_ntf[0]+lon_idx*lon_ncr;
   /* Ensure rounding errors do not produce unphysical grid */
-  lon_ntf[lon_nbr]=lon_ntf[0]+360.0;
+  lon_ntf[lon_nbr]=lon_ntf[0]+lon_spn;
   
+  /* Finished with longitude, now tackle latitude */
+  
+  /* Were south/north latitude bounds set explicitly or implicitly? */
+  //  if(lat_sth != NC_MAX_DOUBLE || lat_nrt != NC_MAX_DOUBLE) lon_typ=rgr->lat_typ=nco_grd_lat_bb;
+  if(lat_sth == NC_MAX_DOUBLE) lat_sth=-90.0;
+  if(lat_nrt == NC_MAX_DOUBLE) lat_nrt=90.0;
+  
+  /* Determine latitude increment from span of pre-centered bounding box (centering will not change span) */
+  lat_spn=lat_nrt-lat_sth;
+  lat_ncr=lat_spn/lat_nbr;
+
   double *lat_sin=NULL; // [frc] Sine of Gaussian latitudes double precision
   /* Support (for now) only global maps that begin at southernmost latitude */ 
-  lat_ntf[0]=-90.0;
+  lat_ntf[0]=lat_sth;
   switch(lat_typ){
   case nco_grd_lat_FV:
   case nco_grd_lat_ngl_eqi_pol:
@@ -3035,7 +3081,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     (void)fprintf(stderr,"%s: ERROR %s reports user request for equi-angle latitude grid covering poles (aka FV-scalar grid) with %ld latitudes. However, the FV-scalar grid must have an odd number of latitudes so that the centers of first and last latitude bands are on the poles.\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
     nco_exit(EXIT_FAILURE);
     } /* !odd */
-    lat_ncr=180.0/(lat_nbr-1);
+    lat_ncr=lat_spn/(lat_nbr-1);
     lat_ntf[1]=lat_ntf[0]+0.5*lat_ncr;
     for(lat_idx=2;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=lat_ntf[1]+(lat_idx-1)*lat_ncr;
@@ -3046,7 +3092,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     (void)fprintf(stderr,"%s: ERROR %s reports user request for equi-angle offset latitude grid (aka FV-staggered velocity grid) with %ld latitudes. However, the FV-staggered grid must have an even number of latitudes so that the centers of first and last latitude bands are not on the poles.\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
     nco_exit(EXIT_FAILURE);
     } /* !odd */
-    lat_ncr=180.0/lat_nbr;
+    lat_ncr=lat_spn/lat_nbr;
     for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=lat_ntf[0]+lat_idx*lat_ncr;
     break;
@@ -3067,7 +3113,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1]);
       fofx_at_x0=wgt_Gss[lat_idx-1]-lat_wgt_gss;
       while(fabs(fofx_at_x0) > eps_rlt_cnv){
-	/* Use Newton-Raphson method to iteratively improve interface location
+	/* Newton-Raphson iteration:
 	   Let x=lat_ntf[lat_idx], y0=lat_ntf[lat_idx-1], gw = Gaussian weight (exact solution)
 	   f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0 
 	   dfdx(x)=dgr2rdn*(dgr2rdn*x)
@@ -3087,7 +3133,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     nco_dfl_case_generic_err(); break;
   } /* !lat_typ */
   /* Ensure rounding errors do not produce unphysical grid */
-  lat_ntf[lat_nbr]=90.0;
+  lat_ntf[lat_nbr]=lat_nrt;
   
   /* Always define longitude centers midway between interfaces */
   for(lon_idx=0;lon_idx<=lon_nbr-1;lon_idx++)
@@ -3104,6 +3150,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1]);
     lat_ctr[lat_nbr-1]=lat_ntf[lat_nbr];
   } /* !FV */
+  /* Gaussian grids centerpoints are defined by solutions to Legendre polynomials */
   if(lat_typ == nco_grd_lat_gss){
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
       lat_ctr[lat_idx]=rdn2dgr*asin(lat_sin[lat_idx]);
