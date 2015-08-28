@@ -955,7 +955,8 @@ Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin 
 <a name="python"></a> <!-- http://nco.sf.net#python -->
 <a name="NCOpy"></a> <!-- http://nco.sf.net#NCOpy -->
 <a name="pyt"></a> <!-- http://nco.sf.net#pyt -->
-<h3><a href="http://www.python.org">Python</a> Bindings <a href="https://github.com/jhamman/nco-bindings">Source</a> and <a href="http://www.hydro.washington.edu/~jhamman/hydro-logic/blog/2014/01/29/NCOpy">Documentation</a>
+<a name="pynco"></a> <!-- http://nco.sf.net#pyt -->
+<h3><a href="http://www.python.org">Python</a> Bindings <a href="https://github.com/nco/pynco">Source</a> and <a href="http://pynco.readthedocs.org">Documentation</a>
 
 <hr></p>
 <!-- End http://nco.sf.net#bnr -->
