@@ -299,14 +299,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 2
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE  "beta1" /* May be blank */
+# define NCO_VERSION_NOTE  "beta2" /* May be blank */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.5.2-beta1"
+# define NCO_VERSION "4.5.2-beta2"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -885,9 +885,8 @@ extern "C" {
   typedef enum nco_grd_2D_typ_enm{ /* [enm] Two-dimensional grid-type enum */
     nco_grd_2D_nil=0,
     nco_grd_2D_gss, /* Gaussian latitudes used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM */
-    nco_grd_2D_ngl_eqi_pol, /* Equi-angle grid including poles, the FV scalar grid (lat[0]=-90): CAM FV, GEOS-CHEM, UCICTM, UKMO */
-    nco_grd_2D_ngl_eqi_fst, /* Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
-    nco_grd_2D_FV, /* FV-scalar grid (equi-angle polar grid, odd number of latitudes) */
+    nco_grd_2D_fv, /* Equi-angle grid including poles, the FV scalar grid (lat[0]=-90): CAM FV, GEOS-CHEM, UCICTM, UKMO */
+    nco_grd_2D_rgl, /* Equi-angle offset grid, FV staggered velocity grid (lat[0]=-89.X)): CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
     nco_grd_2D_unk, /* Unknown or unclassified, POP displaced-pole */
   } nco_grd_2D_typ_enm;
 
@@ -895,9 +894,8 @@ extern "C" {
     nco_grd_lat_nil=0,
     nco_grd_lat_unk, /* Unknown or unclassified latitude grid type (e.g., curvilinear) */ 
     nco_grd_lat_gss, /* Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM */
-    nco_grd_lat_ngl_eqi_pol, /* Equi-angle latitude grid with odd number of latitudes so poles are at centers of first and last gridcells (i.e., lat_ctr[0]=-90), aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO */
-    nco_grd_lat_ngl_eqi_fst, /* Equi-angle latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx), aka FV staggered velocity grid: CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
-    nco_grd_lat_FV, /* FV-scalar grid (equi-angle polar grid, odd number of latitudes) */
+    nco_grd_lat_fv, /* FV latitude grid. Equi-angle (except at poles) latitude grid with odd number of latitudes so poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the regular latitude increment, aka FV scalar grid: CAM FV, GEOS-CHEM, UCICTM, UKMO */
+    nco_grd_lat_rgl, /* Regular latitude grid. Equi-angle (everywhere) latitude grid with even number of latitudes so poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx). AKA FV-staggered velocity grid. Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI */
   } nco_grd_lat_typ_enm;
 
   typedef enum nco_grd_lon_typ_enm{ /* [enm] Longitude grid-type enum */

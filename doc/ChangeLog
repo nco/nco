@@ -2,7 +2,7 @@
 
 	* NCO 4.5.2-beta2 release procedure: (not done yet)
 	cd ~/nco;git commit -a -m 'Version 4.5.2-beta2 final changes';git push
-	git tag -a 4.5.2-beta2 -m 'Version 4.5.2-beta2 tag: New metadata names, Gaussian fix, GitHub relocation';git push --tags
+	git tag -a 4.5.2-beta2 -m 'Version 4.5.2-beta2 tag: New metadata names for climo, new typenames for grid generation, Gaussian fix, GitHub relocation';git push --tags
 
 	* Add regional grid-generation capability (lon_wst,lon_est,lat_sth,lat_nrt)
 
