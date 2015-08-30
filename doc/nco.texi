@@ -121,7 +121,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.2-beta2
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 25 August 2015
+@set update-date 28 August 2015
 @set update-month August 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2552,6 +2552,7 @@ feature is automatic and cannot be controlled by the user.
 * Multislabs::
 * Wrapped Coordinates::
 * Auxiliary Coordinates::
+* Grid Generation::
 * Regridding::
 * UDUnits Support::
 * Rebasing Time Coordinate::
@@ -5777,7 +5778,7 @@ values (@pxref{Hyperslabs}).
 <a name="std_nm"></a> <!-- http://nco.sf.net/nco.html#std_nm -->
 <a name="standard_name"></a> <!-- http://nco.sf.net/nco.html#standard_name -->
 @end html
-@node Auxiliary Coordinates, Regridding, Wrapped Coordinates, Shared features
+@node Auxiliary Coordinates, Grid Generation, Wrapped Coordinates, Shared features
 @section Auxiliary Coordinates
 @cindex @code{-X}
 @cindex @code{--auxiliary}
@@ -5919,6 +5920,177 @@ We recommend always using decimal points with @samp{-X} arguments
 to avoid confusion.
 
 @html
+<a name="scrip"></a> <!-- http://nco.sf.net/nco.html#scrip -->
+<a name="grid"></a> <!-- http://nco.sf.net/nco.html#grid -->
+<a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
+@end html
+@node Grid Generation, Regridding, Auxiliary Coordinates, Shared features
+@section Grid Generation
+@cindex Gaussian grid
+@cindex Regular grid
+@cindex FV grid
+@cindex gridfile
+@cindex @code{--map}
+@cindex @acronym{ESMF}
+@cindex @acronym{SCRIP}
+@cindex @code{--rgr @var{key}=@var{val}}
+@cartouche
+Availability: @command{ncks}@* 
+Short options: None@*
+Long options: 
+@samp{--rgr @var{key}=@var{val}} (multiple invocations allowed)@*
+@end cartouche
+
+As of @acronym{NCO} version 4.5.2 (August, 2015), @command{ncks}
+generates accurate and complete SCRIP-format gridfiles for select grid 
+types, including FV and regular rectangular, Gaussian latitude/longitude 
+grids. 
+The grids are stored in an external @var{grid-file}.
+
+All options pertinent to the grid geometry and metadata are passed to
+@acronym{NCO} via key-value pairs prefixed by the @samp{--rgr} option.
+Pass at least six key-value pair arguments to create a fully
+explicitly specified, well-annotated grid.
+The six arguments, and their corresponding keys, are: grid title
+(@var{grd_ttl}), grid filename (@var{grid}), number of latitudes
+(@var{lat_nbr}), number of longitudes (@var{lon_nbr}), latitude
+grid-type (@var{lat_typ}), and longitude grid-type (@var{lon_typ}). 
+Four other arguments (the North/South/East/West bounding box) are
+necessary to construct regular regional (non-global) grids, described
+later. 
+
+The six arguments, and their corresponding keys, are: 
+@enumerate
+@cindex @var{grd_ttl}
+@cindex @samp{--rgr grd_ttl=@var{grd_ttl}}
+@item It is surprisingly difficult to discern the geometric
+configuration of a grid from the coordinates of a @acronym{SCRIP}-format
+gridfile.  
+A human-readable grid description should be placed in @var{grd_ttl}.
+Examples include ``FV-scalar grid 129x256'' and ``T42 Gaussian grid''. 
+
+@cindex @var{grid}
+@cindex @samp{--rgr grid=@var{grid}}
+@item The grid-generation @acronym{API} was bolted-on to @acronym{NCO}
+and is somewhat primitive, e.g., having to repeat the @samp{--rgr}
+option. 
+Another aspect of this is that the output grid filename is distinct
+from the output filename of the host @command{ncks} command. 
+Specify the output gridfile name with @var{grid}, e.g., 
+@file{t42_SCRIP.20150901.nc}.
+It is conventional to include a datestamp in the gridfile name.
+This helps users identify up-to-date and out-of-date grids.
+Any valid netCDF file may be named as the source (e.g., @file{in.nc}). 
+It will not be altered. 
+The destination file (e.g., @file{foo.nc}) will be overwritten. 
+Its contents are immaterial. 
+
+@cindex @var{lat_grd}
+@cindex @var{lon_grd}
+@cindex @samp{--rgr lon_grd=@var{lon_grd}}
+@cindex @samp{--rgr lat_grd=@var{lat_grd}}
+@item The keys that hold the longitude and latitude gridtypes (which
+are, by the way, independent of eachother) are @var{lon_grd} and
+@var{lat_grd}. 
+The @var{lat_typ} options for global grids are @samp{fv} for Finite
+Volume, @samp{rgl} for Regular (aka equiangular), and @samp{gss} for
+Gaussian. 
+These values are all case-independent, so @samp{FV} and @samp{Gss} work
+just as well.
+
+The Regular (aka equiangular) grid may have any number of latitudes. 
+As its name suggests, Regular grid latitudes are uniformly spaced.
+Because of their simplicity and familiarity, Regular grids are often
+used to visualize and exchange data. 
+However, because they have poor mathematical properties (convergence
+and excessive resolution at the poles), Regular grids are not often used
+for dynamics in global models.
+For a Regular grid to serve as an @acronym{FV}-offset (aka
+@acronym{FV}-velocity @acronym{FV}-dynamics) grid, it must have an even
+number of latitudes (because an @acronym{FV} grid itself has an odd
+number). 
+For example, a 128x256 Regular grid is the offset of a 129x256
+@acronym{FV} grid (assuming the longitude grids are also offset).
+
+An @acronym{FV} grid differs from a Regular grid in many ways:
+First, @acronym{FV} grids are 2D-representations of numerical grids with 
+caps instead of singularities at the poles. 
+The rectangular 2D-representation of this contains gridcells shaped like
+sharp teeth that converge at the poles similar to the Regular grid, 
+but the @acronym{FV} gridcells are often aggregated into a single cell
+centered at the pole in a dynamical transport algorithm. 
+In other words, the polar teeth are a convenient way to encode a
+non-rectangular grid in memory into a rectangular array on disk.  
+Hence @acronym{FV} grids have the unusual property that the poles are
+labeled as being both the centers and the outer interfaces of all polar
+gridcells. 
+Second, @acronym{FV} grids are equiangular except at the poles, where
+the latitudes span half the meridional range of the rest of the
+gridcells. 
+Some call the @acronym{FV} grid an equiangular because the information
+contained at the poles is aggregated in memory to span twice the range
+of a single polar gridcell (which has half the normal width). 
+Nevertheless, the @acronym{FV} meridional angle between interfaces at
+the poles is one half the meridional angle on the rest of the grid, so
+@acronym{NCO} does not refer to it as equiangular.
+Finally, as implied by the irregular meridional angle spacing at the
+poles, @acronym{FV} grids must have an odd number of latitudes.
+
+Finally, Gaussian grids are the Cartesian representation of global
+spectral transform models. 
+Gaussian grids do not have points at the poles, and must have an even
+number of latitudes. 
+
+The @var{lon_typ} options for global grids are @samp{grn_ctr} and
+@samp{180_ctr} for the first gridcell centered at Greenwich or 
+@w{180 degrees}, respecitvely.   
+And @samp{grn_wst} and @samp{180_wst} for Greenwich or @w{180 degress}
+lying on the western edge of the first gridcell.
+Many global models use the @samp{grn_ctr} longitude grid as their
+``scalar grid'' (where, e.g., temperature, humidity, and other scalars
+are defined).
+The ``staggered'' or ``offset'' grid (where often the dynamics variables
+are defined) then must have the @samp{grn_wst} longitude convention.
+That way the centers of the scalar grid are the vertices of the offset
+grid, and visa versa.
+
+@cindex @var{lat_nbr}
+@cindex @var{lon_nbr}
+@cindex @samp{--rgr lon_nbr=@var{lon_nbr}}
+@cindex @samp{--rgr lat_nbr=@var{lat_nbr}}
+@item The number of gridcells in the horizontal spatial dimensions
+are @var{lat_nbr} and @var{lon_nbr}, respectively.
+There are no restrictions on @var{lon_nbr} for any gridtype.
+Latitude grids do place some restrictions on @var{lat_nbr} (see above). 
+@end enumerate
+
+Generating commonly used grids:
+@example
+@verbatim
+# 180x360 (1x1 degree) Regular grid, first longitude centered at Greenwich
+ncks --rgr grd_ttl='Regular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc \
+     --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=rgl --rgr lon_typ=grn_ctr \
+     ~zender/nco/data/in.nc ~/foo.nc
+
+# 129x256 FV grid, first longitude centered at Greenwich
+ncks --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150901.nc \
+     --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=fv --rgr lon_typ=grn_ctr \
+     ~zender/nco/data/in.nc ~/foo.nc
+
+# 128x256 Regular grid, Greenwich west edge of first longitude
+# This is the FV-offset grid for the 129x256 FV grid above
+ncks --rgr grd_ttl='Regular grid 128x256' --rgr grid=${DATA}/grids/128x256_SCRIP.20150901.nc \
+     --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=rgl --rgr lon_typ=grn_wst \
+     ~zender/nco/data/in.nc ~/foo.nc
+
+# T42 Gaussian grid, first longitude centered at Greenwich
+ncks --rgr grd_ttl='T42 Gaussian grid' --rgr grid=${DATA}/grids/t42_SCRIP.20150901.nc \
+     --rgr lat_nbr=64 --rgr lon_nbr=128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr \
+     ~zender/nco/data/in.nc ~/foo.nc
+@end verbatim
+@end example
+
+@html
 <a name="map"></a> <!-- http://nco.sf.net/nco.html#map -->
 <a name="esmf"></a> <!-- http://nco.sf.net/nco.html#esmf -->
 <a name="scrip"></a> <!-- http://nco.sf.net/nco.html#scrip -->
@@ -5926,7 +6098,7 @@ to avoid confusion.
 <a name="rgr_map"></a> <!-- http://nco.sf.net/nco.html#rgr_map -->
 <a name="regrid"></a> <!-- http://nco.sf.net/nco.html#regrid -->
 @end html
-@node Regridding, UDUnits Support, Auxiliary Coordinates, Shared features
+@node Regridding, UDUnits Support, Grid Generation, Shared features
 @section Regridding
 @cindex map
 @cindex regridding
@@ -6371,11 +6543,9 @@ All examples require @samp{in.nc out.nc} at the end.
 @example
 @verbatim
 # Identity re-map ACME CAM-SE Cubed-Sphere output (to improve metadata)
-ncks --map==${DATA}/maps/map_ne30np4_to_ne30np4_aave.20150603.nc
+ncks --map=${DATA}/maps/map_ne30np4_to_ne30np4_aave.20150603.nc
 # Convert ACME CAM-SE Cubed Sphere output to rectangular lat/lon
-ncks --map==${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc
-# CLM3.0
-
+ncks --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc
 # Convert CAM3 T42 output to Cubed-Sphere grid
 ncks --map=${DATA}/maps/map_ne30np4_to_t42_aave.20150601.nc
 @end verbatim
@@ -12356,7 +12526,6 @@ ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
 @end example
 
 @html
-<a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
