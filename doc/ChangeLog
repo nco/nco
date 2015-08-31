@@ -1,3 +1,7 @@
+2015-08-31  Charlie Zender  <zender@uci.edu>
+
+	* Change from spherical law of cosines to haversine formula for	great circle arc length
+
 2015-08-30  Charlie Zender  <zender@uci.edu>
 
 	* Change output grid area name from "area" to "grid_area" for ESMF_RegridWeightGen

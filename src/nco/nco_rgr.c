@@ -1214,9 +1214,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	lon_bnd_sin[idx]=sin(lon_bnd_rdn[idx]);
 	lat_bnd_sin[idx]=sin(lat_bnd_rdn[idx]);
       } /* !idx */
-      double cos_a; /* [frc] Cosine interior angle/great circle arc a */
-      double cos_b; /* [frc] Cosine interior angle/great circle arc b */
-      double cos_c; /* [frc] Cosine interior angle/great circle arc c */
+      double lon_dlt; /* [rdn] Longitudinal difference */
+      double lat_dlt; /* [rdn] Latitudinal difference */
+      double sin_hlf_lat_dlt_sqr; /* [frc] Square of sine of half latitudinal  difference */
+      double sin_hlf_lon_dlt_sqr; /* [frc] Square of sine of half longitudinal difference */
+      double sin_hlf_tht; /* [frc] Sine of half angle/great circle arc theta connecting two points */
       double ngl_a; /* [rdn] Interior angle/great circle arc a */
       double ngl_b; /* [rdn] Interior angle/great circle arc b */
       double ngl_c; /* [rdn] Interior angle/great circle arc c */
@@ -1265,30 +1267,49 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  tri_nbr++;
 	  /* Compute interior angle/great circle arc a for first triangle; subsequent triangles recycle previous arc c */
 	  if(tri_nbr == 1){
-	    /* Interior angle/great circle arc a */
-	    cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
-	      lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
-	      lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];
-	    ngl_a=acos(cos_a);
-	  }else{
-	    cos_a=cos_c;
+            /* Computing great circle arcs over small arcs requires care since the central angle is near 0 degrees
+	       Cosine small angles changes slowly for such angles, and leads to precision loss
+	       Use haversine formula instead of sphereical law of cosines formula
+	       https://en.wikipedia.org/wiki/Great-circle_distance */
+            /* Interior angle/great circle arc a, spherical law of cosines formula (loses precision):
+	       cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
+	       lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
+	       lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];ngl_a=acos(cos_a); */
+	    /* Interior angle/great circle arc a, haversine formula: */
+	    lon_dlt=fabs(lon_bnd_rdn[idx_a]-lon_bnd_rdn[idx_b]);
+	    lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
+	    sin_hlf_lat_dlt_sqr=sin(0.5*lat_dlt);
+	    sin_hlf_lat_dlt_sqr*=sin_hlf_lat_dlt_sqr;
+	    sin_hlf_lon_dlt_sqr=sin(0.5*lon_dlt);
+	    sin_hlf_lon_dlt_sqr*=sin_hlf_lon_dlt_sqr;
+	    sin_hlf_tht=sqrt(sin_hlf_lat_dlt_sqr+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*sin_hlf_lon_dlt_sqr);
+	    ngl_a=2.0*asin(sin_hlf_tht);
+          }else{
 	    ngl_a=ngl_c;
 	  } /* !tri_nbr */
 	  /* Interior angle/great circle arc b */
-	  cos_b=lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*lon_bnd_cos[idx_c]+
-	    lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]*lat_bnd_cos[idx_c]*lon_bnd_sin[idx_c]+
-	    lat_bnd_sin[idx_b]*lat_bnd_sin[idx_c];
-	  ngl_b=acos(cos_b);
+	  lon_dlt=fabs(lon_bnd_rdn[idx_b]-lon_bnd_rdn[idx_c]);
+	  lat_dlt=fabs(lat_bnd_rdn[idx_b]-lat_bnd_rdn[idx_c]);
+	  sin_hlf_lat_dlt_sqr=sin(0.5*lat_dlt);
+	  sin_hlf_lat_dlt_sqr*=sin_hlf_lat_dlt_sqr;
+	  sin_hlf_lon_dlt_sqr=sin(0.5*lon_dlt);
+	  sin_hlf_lon_dlt_sqr*=sin_hlf_lon_dlt_sqr;
+	  sin_hlf_tht=sqrt(sin_hlf_lat_dlt_sqr+lat_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*sin_hlf_lon_dlt_sqr);
+	  ngl_b=2.0*asin(sin_hlf_tht);
 	  /* Interior angle/great circle arc c */
-	  cos_c=lat_bnd_cos[idx_c]*lon_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]+
-	    lat_bnd_cos[idx_c]*lon_bnd_sin[idx_c]*lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]+
-	    lat_bnd_sin[idx_c]*lat_bnd_sin[idx_a];
-	  ngl_c=acos(cos_c);
+	  lon_dlt=fabs(lon_bnd_rdn[idx_c]-lon_bnd_rdn[idx_a]);
+	  lat_dlt=fabs(lat_bnd_rdn[idx_c]-lat_bnd_rdn[idx_a]);
+	  sin_hlf_lat_dlt_sqr=sin(0.5*lat_dlt);
+	  sin_hlf_lat_dlt_sqr*=sin_hlf_lat_dlt_sqr;
+	  sin_hlf_lon_dlt_sqr=sin(0.5*lon_dlt);
+	  sin_hlf_lon_dlt_sqr*=sin_hlf_lon_dlt_sqr;
+	  sin_hlf_tht=sqrt(sin_hlf_lat_dlt_sqr+lat_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*sin_hlf_lon_dlt_sqr);
+	  ngl_c=2.0*asin(sin_hlf_tht);
 	  /* Ill-conditioned? */
 	  if(((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) || /* c is half a and b */
-	     ((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) || /* a is half b and c */
-	     ((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b))){  /* b is half c and a */
-	    (void)fprintf(stdout,"%s: WARNING %s reports col_idx = %u triangle %d is ill-conditioned. Spherical excess and thus cell area are likely inaccurate. Ask Charlie to implement SAS formula...\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+          ((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) || /* a is half b and c */
+          ((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b))){  /* b is half c and a */
+          (void)fprintf(stdout,"%s: WARNING %s reports col_idx = %u triangle %d is ill-conditioned. Spherical excess and thus cell area are likely inaccurate. Ask Charlie to implement SAS formula...\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
 	  } /* !ill */
 	  /* Semi-perimeter */
 	  prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
