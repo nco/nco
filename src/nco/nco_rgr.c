@@ -1216,8 +1216,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       } /* !idx */
       double lon_dlt; /* [rdn] Longitudinal difference */
       double lat_dlt; /* [rdn] Latitudinal difference */
-      double sin_hlf_lat_dlt_sqr; /* [frc] Square of sine of half latitudinal  difference */
-      double sin_hlf_lon_dlt_sqr; /* [frc] Square of sine of half longitudinal difference */
       double sin_hlf_tht; /* [frc] Sine of half angle/great circle arc theta connecting two points */
       double ngl_a; /* [rdn] Interior angle/great circle arc a */
       double ngl_b; /* [rdn] Interior angle/great circle arc b */
@@ -1267,7 +1265,19 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  tri_nbr++;
 	  /* Compute interior angle/great circle arc a for first triangle; subsequent triangles recycle previous arc c */
 	  if(tri_nbr == 1){
-            /* Computing great circle arcs over small arcs requires care since the central angle is near 0 degrees
+           /* 20150831: Test by computing ncol=0 area in conus chevrons grid:
+	      ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_aave.20150823.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
+	      ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/dogfood.nc
+	      ncks -H -s %20.15e -v area -d ncol,0 ${DATA}/ne30/rgr/dogfood.nc
+	      ncks -H -s %20.15e -v grid_area -d grid_size,0 ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc
+
+	      ncol=0 on conus chevrons file:
+	      3.653857995295246e-05 raw GLL weight
+	      3.653857995294302e-05 matlab N-2 triangles
+	      3.653857995294301e-05 matlab N   triangles
+	      3.653857995294258e-05 new NCO (haversine)
+	      3.653857995289623e-05 old NCO (acos) */
+           /* Computing great circle arcs over small arcs requires care since the central angle is near 0 degrees
 	       Cosine small angles changes slowly for such angles, and leads to precision loss
 	       Use haversine formula instead of sphereical law of cosines formula
 	       https://en.wikipedia.org/wiki/Great-circle_distance */
@@ -1278,11 +1288,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	    /* Interior angle/great circle arc a, haversine formula: */
 	    lon_dlt=fabs(lon_bnd_rdn[idx_a]-lon_bnd_rdn[idx_b]);
 	    lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
-	    sin_hlf_lat_dlt_sqr=sin(0.5*lat_dlt);
-	    sin_hlf_lat_dlt_sqr*=sin_hlf_lat_dlt_sqr;
-	    sin_hlf_lon_dlt_sqr=sin(0.5*lon_dlt);
-	    sin_hlf_lon_dlt_sqr*=sin_hlf_lon_dlt_sqr;
-	    sin_hlf_tht=sqrt(sin_hlf_lat_dlt_sqr+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*sin_hlf_lon_dlt_sqr);
+	    sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
 	    ngl_a=2.0*asin(sin_hlf_tht);
           }else{
 	    ngl_a=ngl_c;
@@ -1290,20 +1296,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  /* Interior angle/great circle arc b */
 	  lon_dlt=fabs(lon_bnd_rdn[idx_b]-lon_bnd_rdn[idx_c]);
 	  lat_dlt=fabs(lat_bnd_rdn[idx_b]-lat_bnd_rdn[idx_c]);
-	  sin_hlf_lat_dlt_sqr=sin(0.5*lat_dlt);
-	  sin_hlf_lat_dlt_sqr*=sin_hlf_lat_dlt_sqr;
-	  sin_hlf_lon_dlt_sqr=sin(0.5*lon_dlt);
-	  sin_hlf_lon_dlt_sqr*=sin_hlf_lon_dlt_sqr;
-	  sin_hlf_tht=sqrt(sin_hlf_lat_dlt_sqr+lat_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*sin_hlf_lon_dlt_sqr);
+          sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*pow(sin(0.5*lon_dlt),2));
 	  ngl_b=2.0*asin(sin_hlf_tht);
 	  /* Interior angle/great circle arc c */
 	  lon_dlt=fabs(lon_bnd_rdn[idx_c]-lon_bnd_rdn[idx_a]);
 	  lat_dlt=fabs(lat_bnd_rdn[idx_c]-lat_bnd_rdn[idx_a]);
-	  sin_hlf_lat_dlt_sqr=sin(0.5*lat_dlt);
-	  sin_hlf_lat_dlt_sqr*=sin_hlf_lat_dlt_sqr;
-	  sin_hlf_lon_dlt_sqr=sin(0.5*lon_dlt);
-	  sin_hlf_lon_dlt_sqr*=sin_hlf_lon_dlt_sqr;
-	  sin_hlf_tht=sqrt(sin_hlf_lat_dlt_sqr+lat_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*sin_hlf_lon_dlt_sqr);
+          sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*pow(sin(0.5*lon_dlt),2));
 	  ngl_c=2.0*asin(sin_hlf_tht);
 	  /* Ill-conditioned? */
 	  if(((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) || /* c is half a and b */
