@@ -239,8 +239,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_grd=NULL; /* [sng] Name of grid file to create */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
-  rgr->grd_typ=nco_grd_2D_rgl; /* [enm] Grid type */
-  rgr->lat_typ=nco_grd_lat_rgl; /* [enm] Latitude grid type */
+  rgr->grd_typ=nco_grd_2D_eqa; /* [enm] Grid type */
+  rgr->lat_typ=nco_grd_lat_eqa; /* [enm] Latitude grid type */
   rgr->lon_typ=nco_grd_lon_Grn_ctr; /* [enm] Longitude grid type */
   rgr->lat_nbr=180; /* [nbr] Number of latitudes in destination grid */
   rgr->lon_nbr=360; /* [nbr] Number of longitudes in destination grid */
@@ -300,9 +300,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"fv")){
 	rgr->lat_typ=nco_grd_lat_fv;
 	rgr->grd_typ=nco_grd_2D_fv;
-      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"rgl")){
-	rgr->lat_typ=nco_grd_lat_rgl;
-	rgr->grd_typ=nco_grd_2D_rgl;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"eqa")){
+	rgr->lat_typ=nco_grd_lat_eqa;
+	rgr->grd_typ=nco_grd_2D_eqa;
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"gss")){
 	rgr->lat_typ=nco_grd_lat_gss;
 	rgr->grd_typ=nco_grd_2D_gss;
@@ -1052,13 +1052,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     /* Diagnose type of two-dimensional output grid by testing second latitude center against formulae */
     nco_grd_xtn_enm nco_grd_xtn=nco_grd_xtn_glb; /* [enm] Extent of grid */
     const double lat_ctr_tst_fv=-90.0+180.0/(lat_nbr_out-1);
-    const double lat_ctr_tst_rgl=-90.0+180.0*1.5/lat_nbr_out;
+    const double lat_ctr_tst_eqa=-90.0+180.0*1.5/lat_nbr_out;
     double lat_ctr_tst_gss;
     /* In diagnosing grids, agreement with input to single-precision is "good enough for government work"
        Hence some comparisons cast from double to float before comparison
        20150526: T42 grid from SCRIP and related maps
        20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006 */
-    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_rgl) nco_grd_2D_typ=nco_grd_2D_rgl;
+    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_eqa) nco_grd_2D_typ=nco_grd_2D_eqa;
     if((float)lat_ctr_out[1] == (float)lat_ctr_tst_fv) nco_grd_2D_typ=nco_grd_2D_fv;
     double *wgt_Gss_out=NULL; // [frc] Gaussian weights double precision
     if(nco_grd_2D_typ == nco_grd_2D_nil){
@@ -1076,14 +1076,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !Gaussian */
     if(nco_grd_2D_typ == nco_grd_2D_nil){
       /* If still of unknown type, this 2D grid may be regional (not global) and rectangular
-	 This occurs, e.g., with the RRM CONUS regional equiangular destination grid
+	 This occurs, e.g., with the RRM CONUS regional equi-angular destination grid
 	 Find latitude increment, check if apparently constant throughout grid */
       double lat_ctr_ncr_srt; /* [dgr] First latitude increment */
       double lat_ctr_ncr_end; /* [dgr] Last latitude increment */
       lat_ctr_ncr_srt=lat_ctr_out[1]-lat_ctr_out[0];
       lat_ctr_ncr_end=lat_ctr_out[lat_nbr_out-1]-lat_ctr_out[lat_nbr_out-2];
       if(lat_ctr_ncr_srt == lat_ctr_ncr_end){
-	/* Type appears to be regular in latitude, check if it is consistent with regional equiangular grid */
+	/* Type appears to be equi-angular in latitude, check if it is consistent with regional equi-angular grid */
 	if(lat_ctr_out[0]-lat_ctr_ncr_srt > -90.0 && lat_ctr_out[lat_nbr_out-1]+lat_ctr_ncr_end < 90.0){
 	  if((float)(lat_ctr_out[0]+((lat_nbr_out-1)*lat_ctr_ncr_srt)) == (float)lat_ctr_out[lat_nbr_out-1]){
 	    nco_grd_2D_typ=nco_grd_2D_fv;
@@ -1102,7 +1102,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
     switch(nco_grd_2D_typ){
-    case nco_grd_2D_rgl:
+    case nco_grd_2D_eqa:
     case nco_grd_2D_fv:
       for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
       break;
@@ -2586,8 +2586,8 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
   case nco_grd_2D_unk: return "Unknown or unclassified 2D grid type (e.g., POP displaced-pole)";
   case nco_grd_2D_gss: return "Gaussian latitude grid. Used by spectral transform models, e.g., CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM.";
-  case nco_grd_2D_fv: return "FV grid. Equi-angle (except at poles) latitude grid with odd number of latitudes so poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the regular latitude increment. AKA FV-scalar grid. Used by CAM FV, GEOS-CHEM, UCICTM, UKMO.";
-  case nco_grd_2D_rgl: return "Regular latitude grid. Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx). When global and even number of latitudes forms valid FV-staggered AKA FV velocity grid. Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
+  case nco_grd_2D_fv: return "FV grid. Equi-angle (except at poles) latitude grid with odd number of latitudes so poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the equi-angular latitude increment. AKA FV-scalar grid. Used by CAM FV, GEOS-CHEM, UCICTM, UKMO.";
+  case nco_grd_2D_eqa: return "Equi-Angular latitude grid. Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx). When global and even number of latitudes forms valid FV-staggered AKA FV velocity grid. Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -2603,8 +2603,8 @@ nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
   switch(nco_grd_lat_typ){
   case nco_grd_lat_unk: return "Unknown or unclassified latitude grid type (e.g., curvilinear)";
   case nco_grd_lat_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
-  case nco_grd_lat_fv: return "FV latitude grid. Equi-angle (except at poles) latitude grid with odd number of latitudes so poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the regular latitude increment. AKA FV-scalar grid. Used by: CAM FV, GEOS-CHEM, UCICTM, UKMO";
-  case nco_grd_lat_rgl: return "Regular latitude grid. Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (e.g., lat_ctr[0]=-89.xxx). When global and even number of latitudes, forms a valid FV-staggered grid AKA FV velocity grid. Used by: CAM, CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
+  case nco_grd_lat_fv: return "FV latitude grid. Equi-angle (except at poles) latitude grid with odd number of latitudes so poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the equi-angular latitude increment. AKA FV-scalar grid. Used by: CAM FV, GEOS-CHEM, UCICTM, UKMO";
+  case nco_grd_lat_eqa: return "Equi-Angular latitude grid. Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (e.g., lat_ctr[0]=-89.xxx). When global and even number of latitudes, forms a valid FV-staggered grid AKA FV velocity grid. Used by: CAM, CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -2799,8 +2799,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      /glade/p/cesm/cseg/mapping/grids
 
      Generate normal RLL grids:
-     ncks -O -D 1 --rgr grd_ttl='Offset grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150820.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=rgl --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='Offset grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150820.nc --rgr lat_nbr=90 --rgr lon_nbr=180 --rgr lat_typ=rgl --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150820.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150820.nc --rgr lat_nbr=90 --rgr lon_nbr=180 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
      Generate maps for normal RLL grids:
      ESMF_RegridWeightGen -s ${DATA}/grids/180x360_SCRIP.20150820.nc -d ${DATA}/grids/90x180_SCRIP.20150820.nc -w ${DATA}/maps/map_180x360_to_90x180.20150820.nc --method conserve
@@ -2831,7 +2831,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
   char *fl_out_tmp=NULL_CEWI;
   char *fl_out;
-  char area_nm[]="area";
+  char area_nm[]="grid_area"; /* 20150830: NB ESMF_RegridWeightGen --user_areas looks for variable named "grid_area" */
   char dmn_sz_nm[]="grid_dims";
   char grd_crn_lat_nm[]="grid_corner_lat";
   char grd_crn_lon_nm[]="grid_corner_lon";
@@ -3080,8 +3080,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     for(lat_idx=2;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=lat_ntf[1]+(lat_idx-1)*lat_ncr;
     break;
-  case nco_grd_lat_rgl:
-    /* Regular grids may have any number of latitudes (must be even, though, to form an FV-staggered grid) */
+  case nco_grd_lat_eqa:
+    /* Equi-Angular grids may have any number of latitudes (must be even, though, to form an FV-staggered grid) */
     lat_ncr=lat_spn/lat_nbr;
     for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=lat_ntf[0]+lat_idx*lat_ncr;
@@ -3165,7 +3165,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
   /* Use centers and boundaries to diagnose latitude weights */
   switch(lat_typ){
-  case nco_grd_lat_rgl:
+  case nco_grd_lat_eqa:
   case nco_grd_lat_fv:
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=sin(dgr2rdn*lat_ntf[lat_idx+1])-sin(dgr2rdn*lat_ntf[lat_idx]);
     break;

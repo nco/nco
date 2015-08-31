@@ -1,6 +1,10 @@
+2015-08-30  Charlie Zender  <zender@uci.edu>
+
+	* Change output grid area name from "area" to "grid_area" for ESMF_RegridWeightGen
+
 2015-08-27  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.5.2-beta2 release procedure: (not done yet)
+	* NCO 4.5.2-beta2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.2-beta2 final changes';git push
 	git tag -a 4.5.2-beta2 -m 'Version 4.5.2-beta2 tag: New metadata names for climo, new typenames for grid generation, Gaussian fix, GitHub relocation';git push --tags
 

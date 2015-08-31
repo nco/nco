@@ -117,8 +117,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.2-beta2
-@set doc-edition 4.5.2-beta2
+@set nco-edition 4.5.2-beta3
+@set doc-edition 4.5.2-beta3
 @set copyright-years 1995--2015
 @set update-year 2015
 @set update-date 28 August 2015
@@ -5927,8 +5927,11 @@ to avoid confusion.
 @node Grid Generation, Regridding, Auxiliary Coordinates, Shared features
 @section Grid Generation
 @cindex Gaussian grid
-@cindex Regular grid
+@cindex Equi-Angular grid
 @cindex FV grid
+@cindex grid, FV
+@cindex grid, Equi-Angular
+@cindex grid, Gaussian
 @cindex gridfile
 @cindex @code{--map}
 @cindex @acronym{ESMF}
@@ -5943,7 +5946,7 @@ Long options:
 
 As of @acronym{NCO} version 4.5.2 (August, 2015), @command{ncks}
 generates accurate and complete SCRIP-format gridfiles for select grid 
-types, including FV and regular rectangular, Gaussian latitude/longitude 
+types, including FV and equi-angular rectangular, Gaussian latitude/longitude 
 grids. 
 The grids are stored in an external @var{grid-file}.
 
@@ -5956,7 +5959,7 @@ The six arguments, and their corresponding keys, are: grid title
 (@var{lat_nbr}), number of longitudes (@var{lon_nbr}), latitude
 grid-type (@var{lat_typ}), and longitude grid-type (@var{lon_typ}). 
 Four other arguments (the North/South/East/West bounding box) are
-necessary to construct regular regional (non-global) grids, described
+necessary to construct equi-angular regional (non-global) grids, described
 later. 
 
 The six arguments, and their corresponding keys, are: 
@@ -5992,31 +5995,55 @@ Its contents are immaterial.
 @item The keys that hold the longitude and latitude gridtypes (which
 are, by the way, independent of eachother) are @var{lon_grd} and
 @var{lat_grd}. 
-The @var{lat_typ} options for global grids are @samp{fv} for Finite
-Volume, @samp{rgl} for Regular (aka equiangular), and @samp{gss} for
-Gaussian. 
+The @var{lat_typ} options for global grids are @samp{eqa} for
+Equi-Angular, @samp{fv} for Finite Volume, and @samp{gss} for Gaussian.  
 These values are all case-independent, so @samp{FV} and @samp{Gss} work
 just as well.
 
-The Regular (aka equiangular) grid may have any number of latitudes. 
-As its name suggests, Regular grid latitudes are uniformly spaced.
-Because of their simplicity and familiarity, Regular grids are often
-used to visualize and exchange data. 
-However, because they have poor mathematical properties (convergence
-and excessive resolution at the poles), Regular grids are not often used
-for dynamics in global models.
-For a Regular grid to serve as an @acronym{FV}-offset (aka
-@acronym{FV}-velocity @acronym{FV}-dynamics) grid, it must have an even
-number of latitudes (because an @acronym{FV} grid itself has an odd
-number). 
-For example, a 128x256 Regular grid is the offset of a 129x256
-@acronym{FV} grid (assuming the longitude grids are also offset).
+The Equi-Angular grid may have any number of latitudes. 
+As the name suggests, Equi-Angular grid latitudes are uniformly spaced
+@footnote{
+@acronym{NCO} reserves the term Equi-Distant or ``eqd'' for grids that 
+are uniformly spaced in distance, not angle.
+Equi-Distant grids are more often used in Cartesian than Spherical
+coordinates. 
+Both Equi-Angular and Equi-Distant gridtypes are ``regular'' in that
+they are uniformly spaced.  
+@acronym{NCO} also sometimes uses the term Regular grid when the
+referenced property applies both the Equi-angular and Equi-distant grids}.
+Equi-Angular grids are intuitive, easy to visualize, and simple to program.
+Hence their popularity in data exchange, visualization, and archives.
+Moreover, regional grids (unless they include the poles), are free
+of polar singularities, and thus are well-suited to storage on Equi-Angular
+grids. 
 
-An @acronym{FV} grid differs from a Regular grid in many ways:
+Their mathematical properties (convergence and excessive resolution at
+the poles, which can appear as singularities) make Equi-Angular grids fraught
+for use in global models. 
+One purpose equi-angular grids serve in modeling is as ``offset'' or
+``staggered'' grids, meaning grids whose centers are the interfaces of
+another grid. 
+By convention in climate-related fields, Finite-Volume @acronym{FV} 
+dynamics treatments evaluate scalar (i.e., non-vector) fields
+(e.g., temperature, water vapor) at gridcell centers of what is
+therefore called the scalar grid. 
+@acronym{FV} models that employ an Arakawa C-grid formulation define
+velocities on the edges of the scalar grid.
+This @acronym{FV}-velocity grid is therefore ``staggered'' or ``offset''
+from the scalar grid by one-half gridcell. 
+For a Equi-Angular grid to serve as an @acronym{FV}-''offset'' or
+``staggered'' version of the scalar grid, it must have an even number of
+latitudes (because the scalar @acronym{FV} grid has an odd number of
+latitudes).  
+For example, a 128x256 Equi-Angular grid is the offset or staggered version
+of a 129x256 @acronym{FV}-grid (assuming the longitude grids are also
+offset). 
+
+An @acronym{FV} grid differs from a Equi-Angular grid in many ways:
 First, @acronym{FV} grids are 2D-representations of numerical grids with 
 caps instead of singularities at the poles. 
 The rectangular 2D-representation of this contains gridcells shaped like
-sharp teeth that converge at the poles similar to the Regular grid, 
+sharp teeth that converge at the poles similar to the Equi-Angular grid, 
 but the @acronym{FV} gridcells are often aggregated into a single cell
 centered at the pole in a dynamical transport algorithm. 
 In other words, the polar teeth are a convenient way to encode a
@@ -6064,11 +6091,11 @@ There are no restrictions on @var{lon_nbr} for any gridtype.
 Latitude grids do place some restrictions on @var{lat_nbr} (see above). 
 @end enumerate
 
-Generating commonly used grids:
+Generating common grids:
 @example
 @verbatim
-# 180x360 (1x1 degree) Regular grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='Regular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc \
+# 180x360 (1x1 degree) Equi-Angular grid, first longitude centered at Greenwich
+ncks --rgr grd_ttl='Equi-Angular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc \
      --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=rgl --rgr lon_typ=grn_ctr \
      ~zender/nco/data/in.nc ~/foo.nc
 
@@ -6077,10 +6104,10 @@ ncks --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCR
      --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=fv --rgr lon_typ=grn_ctr \
      ~zender/nco/data/in.nc ~/foo.nc
 
-# 128x256 Regular grid, Greenwich west edge of first longitude
+# 128x256 Equi-Angular grid, Greenwich west edge of first longitude
 # This is the FV-offset grid for the 129x256 FV grid above
-ncks --rgr grd_ttl='Regular grid 128x256' --rgr grid=${DATA}/grids/128x256_SCRIP.20150901.nc \
-     --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=rgl --rgr lon_typ=grn_wst \
+ncks --rgr grd_ttl='Equi-Angular grid 128x256' --rgr grid=${DATA}/grids/128x256_SCRIP.20150901.nc \
+     --rgr lat_nbr=128 --rgr lon_nbr=256 --rgr lat_typ=rgl --rgr lon_typ=grn_wst \
      ~zender/nco/data/in.nc ~/foo.nc
 
 # T42 Gaussian grid, first longitude centered at Greenwich
