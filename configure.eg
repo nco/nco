@@ -337,16 +337,18 @@ module avail
 . ~/.bashrc
 # module add intel gsl netcdf # No! netcdf/hdf from modules causes unresolved linker error
 module add intel gsl
-export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib':${LD_LIBRARY_PATH}
-export NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' 
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.1.3/rhel6.4_intel13.1.3' SZ=Y SZ_LIB='/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D OMP=Y allinone;cd -
+module add climate/netcdf/4.3.3.1
+export LD_LIBRARY_PATH='/ccs/proj/cli900/sw/redhat/netcdf/4.3.3.1/rhel6.6_intel-14.0.4--with-dap+hdf4/lib':${LD_LIBRARY_PATH}
+export NETCDF_ROOT='/ccs/proj/cli900/sw/redhat/netcdf/4.3.3.1/rhel6.6_intel-14.0.4--with-dap+hdf4' 
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/ccs/proj/cli900/sw/redhat/netcdf/4.3.3.1/rhel6.6_intel-14.0.4--with-dap+hdf4' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D OMP=Y allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/ccs/proj/cli900/sw/redhat/netcdf/4.3.3.1/rhel6.6_intel-14.0.4--with-dap+hdf4' SZ=Y SZ_LIB='/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D OMP=Y allinone;cd -
 
 # Commands used for Configure builds with icc/icpc on rhea
-module add intel gsl netcdf
+module add intel gsl udunits climate/netcdf/4.3.3.1
 export LDFLAGS="${NETCDF_CLIB} ${GSL_LIB} ${SZIP_POST_LINK_OPTS}"
 export CPPFLAGS="-I${NETCDF_DIR}/include ${GSL_INCLUDE_OPTS} ${SZIP_INCLUDE_OPTS}"
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='icc' CXX='icpc' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='icc' CXX='icpc' NETCDF_ROOT='/ccs/proj/cli900/sw/redhat/netcdf/4.3.3.1/rhel6.6_intel-14.0.4--with-dap+hdf4' UDUNITS2_PATH='/sw/rhea/udunits/2.1.24/rhel6.6_gnu4.4.7' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1

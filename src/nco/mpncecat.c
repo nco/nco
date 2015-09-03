@@ -410,7 +410,7 @@ main(int argc,char **argv)
       break;
     case 'n': /* NINTAP-style abbreviation of files to process */
       fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
-      if(abb_arg_nbr < 1 || abb_arg_nbr > 5){
+      if(abb_arg_nbr < 1 || abb_arg_nbr > 6){
 	(void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",nco_prg_nm);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);

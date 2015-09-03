@@ -1217,8 +1217,11 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
   static int fl_nm_nbr_max;
   static int fl_nm_nbr_min;
   static int fl_nm_nbr_ttl;
+  static int mm_crr;
+  static int yyyy_crr;
 
   static nco_bool FIRST_INVOCATION=True;
+  static nco_bool flg_yyyymm=False;
 
   /* Free any old filename space */
   fl_nm=(char *)nco_free(fl_nm);
@@ -1263,14 +1266,22 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 	fl_nm_nbr_min=1;
       } /* end if */
 
-      /* Is there a .nc, .cdf, .hdf, or .hd5 suffix? */
-      if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3) == 0)
+      if(abb_arg_nbr > 5){
+	if(!strcmp(fl_lst_abb[5],"yyyymm")) flg_yyyymm=True;
+      } /* end if */
+
+      /* Is there a .nc, .h5, .cdf, .hdf, .hd5, or .he5 suffix? */
+      if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3))
 	fl_nm_sfx_lng=3;
-      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".cdf",4) == 0)
+      if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".h5",3))
+	fl_nm_sfx_lng=3;
+      else if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".cdf",4))
 	fl_nm_sfx_lng=4;
-      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hdf",4) == 0)
+      else if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hdf",4))
 	fl_nm_sfx_lng=4;
-      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hd5",4) == 0)
+      else if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hd5",4))
+	fl_nm_sfx_lng=4;
+      else if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".he5",4))
 	fl_nm_sfx_lng=4;
 
       /* Initialize static information useful for future invocations */
@@ -1280,7 +1291,15 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       fl_nm_nbr_sng[fl_nm_nbr_dgt]='\0';
       fl_nm_nbr_crr=(int)strtol(fl_nm_nbr_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(fl_nm_nbr_sng,"strtol",sng_cnv_rcd);
-      (void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
+
+      if(flg_yyyymm){
+	yyyy_crr=fl_nm_nbr_crr/100;
+	mm_crr=fl_nm_nbr_crr%12;
+	mm_crr=fl_nm_nbr_crr-yyyy_crr*100;
+	(void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd%%02d",fl_nm_nbr_dgt-2);
+      }else{
+	(void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
+      } /* !flg_yyyymm */
 
       /* First filename is always specified on command line anyway... */
       fl_nm=(char *)strdup(fl_lst_in[0]);
@@ -1291,10 +1310,23 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
     }else{ /* end if FIRST_INVOCATION */
       /* Create current filename from previous filename */
       fl_nm_nbr_crr+=fl_nm_nbr_ncr;
-      if(fl_nm_nbr_max)
-	if(fl_nm_nbr_crr > fl_nm_nbr_max)
-	  fl_nm_nbr_crr=fl_nm_nbr_min;
-      (void)sprintf(fl_nm_nbr_sng,fl_nm_nbr_sng_fmt,fl_nm_nbr_crr);
+      if(fl_nm_nbr_max){
+	if(flg_yyyymm){
+	  /* String contains dates (months) in YYYYMM format so increment left-most four digits (year) by one when  
+	     right-most two digits exceed fl_nm_nbr_max */
+	  mm_crr+=fl_nm_nbr_ncr;
+	  if(mm_crr > fl_nm_nbr_max){
+	    mm_crr=fl_nm_nbr_min;
+	    yyyy_crr++;
+	  } /* !mm_crr */
+	  (void)sprintf(fl_nm_nbr_sng,fl_nm_nbr_sng_fmt,yyyy_crr,mm_crr);
+	}else{
+	  if(fl_nm_nbr_crr > fl_nm_nbr_max) fl_nm_nbr_crr=fl_nm_nbr_min;
+	  (void)sprintf(fl_nm_nbr_sng,fl_nm_nbr_sng_fmt,fl_nm_nbr_crr);
+	} /* !flg_yyyymm */
+      }else{ /* !fl_nm_nbr_max */
+	(void)sprintf(fl_nm_nbr_sng,fl_nm_nbr_sng_fmt,fl_nm_nbr_crr);
+      } /* !fl_nm_nbr_max */
       fl_nm=(char *)strdup(fl_lst_in[0]);
       (void)strncpy(fl_nm+(fl_nm_1st_dgt-fl_lst_in[0]),fl_nm_nbr_sng,(size_t)fl_nm_nbr_dgt);
       if(fl_idx == fl_nm_nbr_ttl-1) fl_nm_nbr_sng=(char *)nco_free(fl_nm_nbr_sng);

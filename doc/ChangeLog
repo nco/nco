@@ -1,3 +1,7 @@
+2015-09-03  Charlie Zender  <zender@uci.edu>
+
+	* Add hackish sixth argument 'yyyymm' to -n option to generate filenames in YYYYMM format
+
 2015-08-31  Charlie Zender  <zender@uci.edu>
 
 	* Change from spherical law of cosines to haversine formula for	great circle arc length

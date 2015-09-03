@@ -2934,7 +2934,7 @@ The @acronym{CCM} Processor was custom-written Fortran code maintained
 for many years by Lawrence Buja at @acronym{NCAR}, and phased-out in 
 the late 1990s.
 @acronym{NCO} stole some ideas, like @code{NINTAP}-functionality,
-from the @acronym{CCM} Processor capabilities.}.
+from @acronym{CCM} Processor capabilities.}.
 @cindex multi-file operators
 @cindex files, multiple
 This option is only available with the @dfn{multi-file operators}:
@@ -6000,8 +6000,8 @@ Equi-Angular, @samp{fv} for Finite Volume, and @samp{gss} for Gaussian.
 These values are all case-independent, so @samp{FV} and @samp{Gss} work
 just as well.
 
-The Equi-Angular grid may have any number of latitudes. 
-As the name suggests, Equi-Angular grid latitudes are uniformly spaced
+As its name suggests, the latitudes in an Equi-Angular grid are
+uniformly spaced 
 @footnote{
 @acronym{NCO} reserves the term Equi-Distant or ``eqd'' for grids that 
 are uniformly spaced in distance, not angle.
@@ -6010,12 +6010,21 @@ coordinates.
 Both Equi-Angular and Equi-Distant gridtypes are ``regular'' in that
 they are uniformly spaced.  
 @acronym{NCO} also sometimes uses the term Regular grid when the
-referenced property applies both the Equi-angular and Equi-distant grids}.
+referenced property applies both the Equi-angular and Equi-distant grids.}.
+The Equi-Angular grid may have any number of latitudes. 
 Equi-Angular grids are intuitive, easy to visualize, and simple to program.
 Hence their popularity in data exchange, visualization, and archives.
 Moreover, regional grids (unless they include the poles), are free
 of polar singularities, and thus are well-suited to storage on Equi-Angular
 grids. 
+Note that in common usage ``equi-angular'' refers to grids where the
+latitudes and longitudes are both uniform and of the same size as
+eachother, e.g., 1@textdegree{}x1@textdegree{} or
+2@textdegree{}x2@textdegree{}. 
+The @acronym{NCO} usage is looser. 
+Equi-angular refers to grids where the latitude angles are uniformly
+spaced. 
+Whether the longitude angles are the same does not matter.
 
 Their mathematical properties (convergence and excessive resolution at
 the poles, which can appear as singularities) make Equi-Angular grids fraught
