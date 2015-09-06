@@ -117,12 +117,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.2-beta3
-@set doc-edition 4.5.2-beta3
+@set nco-edition 4.5.2
+@set doc-edition 4.5.2
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 28 August 2015
-@set update-month August 2015
+@set update-date 5 September 2015
+@set update-month September 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -2953,7 +2953,7 @@ For example, in the file @file{ccm3_h0001.nc}, we have
 
 @acronym{NCO} decodes lists of such filenames encoded using the
 @samp{-n} syntax. 
-The simpler (3-argument) @samp{-n} usage takes the form 
+The simpler (three-argument) @samp{-n} usage takes the form 
 @code{-n @var{file_number},@var{digit_number},@var{numeric_increment}}
 where @var{file_number} is the number of files, @var{digit_number} is
 the fixed number of numeric digits comprising the @var{numeric_suffix},
@@ -2966,8 +2966,8 @@ file name @file{85.nc} tells @acronym{NCO} to
 construct five (5) filenames identical to the template @file{85.nc}
 except that the final two (2) digits are a numeric suffix to be
 incremented by one (1) for each successive file.
-Currently @var{filetype} may be either be empty, @file{nc},
-@file{cdf}, @file{hdf}, or @file{hd5}. 
+Currently @var{filetype} may be either be empty, @file{nc}, @file{h5},
+@file{cdf}, @file{hdf}, @file{hd5}, or @file{he5}.
 If present, these @var{filetype} suffixes (and the preceding @file{.})
 are ignored by @acronym{NCO} as it uses the @samp{-n} arguments to
 locate, evaluate, and compute the @var{numeric_suffix} component of
@@ -3013,6 +3013,38 @@ The default minimum filename suffix @w{is 1,} which is formatted as
 Thus the second and third examples have the same effect, that is, they
 automatically generate, in order, the filenames @file{85_12.nc},
 @file{85_01.nc}, and @file{85_02.nc} as input to @acronym{NCO}.
+
+As of @acronym{NCO} version 4.5.2 (September, 2015), @acronym{NCO}
+supports an optional sixth argument to @samp{-n}, the month-indicator. 
+The month-indicator affirms to @acronym{NCO} that the right-most digits
+being manipulated in the generated filenames correspond to month numbers 
+(with January formatted as @file{01} and December as @file{12}). 
+Moreover, it assumes digits to the left of the month are the year.
+The full (six-argument) @samp{-n} usage takes the form 
+@code{-n @var{file_number},@var{digit_number},@var{month_increment},@var{max_month},@var{min_month},@samp{yyyymm}}.
+The @samp{yyyymm} string is a clunky way (can you think of a clearer
+way?) to tell @acronym{NCO} to enumerate files in year-month mode.
+When present, @samp{yyyymm} string causes @acronym{NCO} to automatically
+generate series of filenames whose right-most two digits increment from
+@var{min_month} by @var{month_increment} up to @var{max_month} and then
+the leftmost digits (i.e., the year) increment by one, and the whole
+process is reapeated until the @var{file_number} filenames are
+generated. 
+@example
+ncrcat -n 3,6,1,12,1         198512.nc 198512_198502.nc
+ncrcat -n 3,6,1,12,1,yyyymm  198512.nc 198512_198602.nc
+ncrcat -n 3,6,1,12,12,yyyymm 198512.nc 198512_198712.nc
+@end example
+The first command concatenates three files (@file{198512.nc},
+@file{198501.nc}, @file{198502.nc}) into the output file.
+The second command concatenates three files (@file{198512.nc},
+@file{198601.nc}, @file{198602.nc}).
+The @samp{yyyymm}-indicator causes the left-most digits to
+increment each time the right-most two digits reach their
+maximum and then wrap.
+The first command does not have the indicator so it is always 1985.  
+The third command concatenates three files (@file{198512.nc},
+@file{198612.nc}, @file{198712.nc}).
 
 @html
 <a name="fl_out"></a> <!-- http://nco.sf.net/nco.html#fl_out -->
@@ -5666,7 +5698,7 @@ eastern hemisphere, although they are stored in the opposite order in
 the input file. 
 
 With this background, one sees that the following commands suffice to
-rotate the input file by 180 degrees longitude:
+rotate the input file by @w{180 degrees} longitude:
 @example
 % ncks -O -v LatLon --msa -d Lon,0.,180. -d Lon,-180.,-1.0 in.nc out.nc
 % ncap2 -O -s 'where(Lon < 0) Lon=Lon+360' out.nc out.nc

@@ -2605,8 +2605,8 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
   case nco_grd_2D_unk: return "Unknown or unclassified 2D grid type (e.g., POP displaced-pole)";
   case nco_grd_2D_gss: return "Gaussian latitude grid. Used by spectral transform models, e.g., CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM.";
-  case nco_grd_2D_fv: return "FV grid. Equi-angle (except at poles) latitude grid with odd number of latitudes so poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the equi-angular latitude increment. AKA FV-scalar grid. Used by CAM FV, GEOS-CHEM, UCICTM, UKMO.";
-  case nco_grd_2D_eqa: return "Equi-Angular latitude grid. Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx). When global and even number of latitudes forms valid FV-staggered AKA FV velocity grid. Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
+  case nco_grd_2D_fv: return "Cap grid. Uniform/Equi-angle (except at poles) latitude grid with poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the equi-angular latitude increment. AKA FV-scalar grid (in Lin-Rood representation). Used by CAM FV, GEOS-CHEM, UCICTM, UKMO.";
+  case nco_grd_2D_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx). When global forms valid FV-staggered AKA FV velocity grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -2622,8 +2622,8 @@ nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
   switch(nco_grd_lat_typ){
   case nco_grd_lat_unk: return "Unknown or unclassified latitude grid type (e.g., curvilinear)";
   case nco_grd_lat_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
-  case nco_grd_lat_fv: return "FV latitude grid. Equi-angle (except at poles) latitude grid with odd number of latitudes so poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the equi-angular latitude increment. AKA FV-scalar grid. Used by: CAM FV, GEOS-CHEM, UCICTM, UKMO";
-  case nco_grd_lat_eqa: return "Equi-Angular latitude grid. Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (e.g., lat_ctr[0]=-89.xxx). When global and even number of latitudes, forms a valid FV-staggered grid AKA FV velocity grid. Used by: CAM, CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
+  case nco_grd_lat_fv: return "Cap-latitude grid. Uniform/Equi-angle (except at poles) latitude grid with poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the equi-angular latitude increment. AKA FV-scalar grid (in Lin-Rood representation). Used by: CAM FV, GEOS-CHEM, UCICTM, UKMO";
+  case nco_grd_lat_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (e.g., lat_ctr[0]=-89.xxx). When global can be latitude-component of a valid FV-staggered grid AKA FV velocity grid (for Lin-Rood representation). Used by: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -3435,3 +3435,4 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   
   return rcd;
 } /* !nco_grd_mk() */
+
