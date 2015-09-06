@@ -4,7 +4,7 @@
  	Changes since nco-4.5.0: ncra --wgt nrm, --grid, --glb, Newton Gaussian
 	cd ~/nco;git commit -a -m 'Version 4.5.2 release final changes';git push
 	git tag -d 4.5.2;git push origin :refs/tags/4.5.2
-	git tag -a 4.5.2 -m 'Version 4.5.2: Maxine';git push --tags
+	git tag -a 4.5.2 -m 'Version 4.5.2: Parenthood';git push --tags
 
 	* Change grid descriptions to match final 4.5.2 nomenclature
 
