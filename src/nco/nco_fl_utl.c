@@ -689,7 +689,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
   /* Does file exist on local system? */
   if(!DAP_URL) rcd_stt=stat(fl_nm_lcl,&stat_sct);
-  if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #1 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
+  if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"\n%s: INFO stat() #1 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
 
   /* If not, check if file exists on local system under same path interpreted relative to current working directory */
   if(rcd_stt == -1){

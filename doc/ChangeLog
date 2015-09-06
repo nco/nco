@@ -1,3 +1,7 @@
+2015-09-05  Charlie Zender  <zender@uci.edu>
+
+	* Remove constraint that FV grids must have odd-number of latitudes
+
 2015-09-03  Charlie Zender  <zender@uci.edu>
 
 	* Add hackish sixth argument 'yyyymm' to -n option to generate filenames in YYYYMM format

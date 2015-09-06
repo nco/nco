@@ -5929,6 +5929,8 @@ to avoid confusion.
 @cindex Gaussian grid
 @cindex Equi-Angular grid
 @cindex FV grid
+@cindex grid, Fixed
+@cindex grid, Offset
 @cindex grid, FV
 @cindex grid, Equi-Angular
 @cindex grid, Gaussian
@@ -5946,8 +5948,8 @@ Long options:
 
 As of @acronym{NCO} version 4.5.2 (August, 2015), @command{ncks}
 generates accurate and complete SCRIP-format gridfiles for select grid 
-types, including FV and equi-angular rectangular, Gaussian latitude/longitude 
-grids. 
+types, including uniform, capped and Gaussian rectangular
+latitude/longitude grids.  
 The grids are stored in an external @var{grid-file}.
 
 All options pertinent to the grid geometry and metadata are passed to
@@ -5995,87 +5997,97 @@ Its contents are immaterial.
 @item The keys that hold the longitude and latitude gridtypes (which
 are, by the way, independent of eachother) are @var{lon_grd} and
 @var{lat_grd}. 
-The @var{lat_typ} options for global grids are @samp{eqa} for
-Equi-Angular, @samp{fv} for Finite Volume, and @samp{gss} for Gaussian.  
-These values are all case-independent, so @samp{FV} and @samp{Gss} work
-just as well.
+The @var{lat_typ} options for global grids are @samp{uni} for
+Uniform, @samp{cap} (or @samp{fv}) for Capped (equivalent to
+@acronym{FV}), and @samp{gss} for Gaussian.  
+These values are all case-independent, so @samp{Gss} and @samp{gss} both 
+work. 
 
-As its name suggests, the latitudes in an Equi-Angular grid are
-uniformly spaced 
+As its name suggests, the latitudes in a Uniform-latitude grid are
+uniformly spaced  
 @footnote{
-@acronym{NCO} reserves the term Equi-Distant or ``eqd'' for grids that 
-are uniformly spaced in distance, not angle.
-Equi-Distant grids are more often used in Cartesian than Spherical
-coordinates. 
-Both Equi-Angular and Equi-Distant gridtypes are ``regular'' in that
-they are uniformly spaced.  
-@acronym{NCO} also sometimes uses the term Regular grid when the
-referenced property applies both the Equi-angular and Equi-distant grids.}.
-The Equi-Angular grid may have any number of latitudes. 
-Equi-Angular grids are intuitive, easy to visualize, and simple to program.
+A Uniform grid in latitude could be called ``equi-angular'' in
+latitude, but @acronym{NCO} reserves the term Equi-angular or ``eqa'' 
+for grids that have the same uniform spacing in both latitude and
+longitude, e.g., 1@textdegree{}x1@textdegree{} or
+2@textdegree{}x2@textdegree{}. 
+@acronym{NCO} reserves the term Regular to refer to grids that are
+monotonic and rectangular grids. 
+Confusingly, the angular spacing in a Regular grid need not be uniform,  
+it could be irregular, such as in a Gaussian grid.
+The term Regular is not too useful in grid-generation, because so many
+other parameters (spacing, centering) are necessary to disambiuate it.}. 
+The Uniform-latitude grid may have any number of latitudes. 
+@acronym{NCO} can only generate longitude grids (below) that are
+uniformly spaced, so the Uniform-latitude grids we describe are
+also uniform in the 2D sense.
+Uniform grids are intuitive, easy to visualize, and simple to program.
 Hence their popularity in data exchange, visualization, and archives.
 Moreover, regional grids (unless they include the poles), are free
-of polar singularities, and thus are well-suited to storage on Equi-Angular
+of polar singularities, and thus are well-suited to storage on Uniform 
 grids. 
-Note that in common usage ``equi-angular'' refers to grids where the
-latitudes and longitudes are both uniform and of the same size as
-eachother, e.g., 1@textdegree{}x1@textdegree{} or
-2@textdegree{}x2@textdegree{}. 
-The @acronym{NCO} usage is looser. 
-Equi-angular refers to grids where the latitude angles are uniformly
-spaced. 
-Whether the longitude angles are the same does not matter.
+Theoretically, a Uniform-latitude grid could have non-uniform
+longitudes, but @acronym{NCO} currently does not implement non-uniform
+longitude grids.
 
 Their mathematical properties (convergence and excessive resolution at
-the poles, which can appear as singularities) make Equi-Angular grids fraught
-for use in global models. 
-One purpose equi-angular grids serve in modeling is as ``offset'' or
-``staggered'' grids, meaning grids whose centers are the interfaces of
+the poles, which can appear as singularities) make Uniform grids fraught
+for use in global models.  
+One purpose Uniform grids serve in modeling is as ``offset'' or
+``staggered'' grids, meaning grids whose centers are the interfaces of 
 another grid. 
-By convention in climate-related fields, Finite-Volume @acronym{FV} 
-dynamics treatments evaluate scalar (i.e., non-vector) fields
-(e.g., temperature, water vapor) at gridcell centers of what is
+The Finite-Volume (@acronym{FV}) method is often used to represent 
+and solve the equations of motion in climate-related fields.
+Many @acronym{FV} solutions (including the popular Lin-Rood method as
+used in the @acronym{CESM} model) evaluate scalar (i.e., non-vector)
+fields (e.g., temperature, water vapor) at gridcell centers of what is 
 therefore called the scalar grid. 
-@acronym{FV} models that employ an Arakawa C-grid formulation define
-velocities on the edges of the scalar grid.
-This @acronym{FV}-velocity grid is therefore ``staggered'' or ``offset''
+@acronym{FV} methods (like Lin-Rood) that employ an Arakawa C-grid or
+D-grid formulation define velocities on the edges of the scalar grid.
+This @acronym{FV}-velocity grid is therefore ``staggered'' or ``offset'' 
 from the scalar grid by one-half gridcell. 
-For a Equi-Angular grid to serve as an @acronym{FV}-''offset'' or
-``staggered'' version of the scalar grid, it must have an even number of
-latitudes (because the scalar @acronym{FV} grid has an odd number of
-latitudes).  
-For example, a 128x256 Equi-Angular grid is the offset or staggered version
-of a 129x256 @acronym{FV}-grid (assuming the longitude grids are also
-offset). 
+The Lin-Rood @acronym{FV}-scalar latitude grid has gridpoints (the
+``caps'') centered on each pole to avoid singularities.
+The offset of a Cap-grid is a Uniform-grid, so the Uniform grid is 
+often called an @acronym{FV}-''offset'' or ``staggered'' grid.
+Hence an @acronym{NCO} Uniform grid is equivalent to an @acronym{NCL}  
+``Fixed Offset'' grid.
+For example, a 128x256 Uniform grid is the offset or staggered version
+of a 129x256 Cap grid (aka @acronym{FV}-grid).
 
-An @acronym{FV} grid differs from a Equi-Angular grid in many ways:
-First, @acronym{FV} grids are 2D-representations of numerical grids with 
-caps instead of singularities at the poles. 
-The rectangular 2D-representation of this contains gridcells shaped like
-sharp teeth that converge at the poles similar to the Equi-Angular grid, 
-but the @acronym{FV} gridcells are often aggregated into a single cell
-centered at the pole in a dynamical transport algorithm. 
+Owing the ``cap''-points at the poles, @acronym{NCO} uses the term Cap
+grid to describe the latitude portion of the @acronym{FV}-scalar grid as
+used by the @acronym{CESM} Lin-Rood dynamics formulation.
+@acronym{NCO} treats the shorthand (and more memorable) @acronym{FV} as
+a synonym for Cap.   
+A Cap-latitude grid differs from a Uniform-latitude grid in many ways:
+Most importantly, Cap grids are 2D-representations of numerical grids
+with cap-midpoints instead of zonal-teeth convergence at the poles.  
+The rectangular 2D-representation of each cap contains gridcells shaped
+like sharp teeth that converge at the poles similar to the Uniform grid,  
+but the Cap gridcells are meant to be aggregated into a single cell
+centered at the pole in a dynamical transport algorithm.  
 In other words, the polar teeth are a convenient way to encode a
 non-rectangular grid in memory into a rectangular array on disk.  
-Hence @acronym{FV} grids have the unusual property that the poles are
-labeled as being both the centers and the outer interfaces of all polar
-gridcells. 
-Second, @acronym{FV} grids are equiangular except at the poles, where
-the latitudes span half the meridional range of the rest of the
-gridcells. 
-Some call the @acronym{FV} grid an equiangular because the information
-contained at the poles is aggregated in memory to span twice the range
-of a single polar gridcell (which has half the normal width). 
-Nevertheless, the @acronym{FV} meridional angle between interfaces at
-the poles is one half the meridional angle on the rest of the grid, so
-@acronym{NCO} does not refer to it as equiangular.
-Finally, as implied by the irregular meridional angle spacing at the
-poles, @acronym{FV} grids must have an odd number of latitudes.
+Hence Cap grids have the unusual property that the poles are labeled as
+being both the centers and the outer interfaces of all polar gridcells. 
+Second, Cap grids are uniform in angle except at the poles, where the
+latitudes span half the meridional range of the rest of the gridcells. 
+Even though in the host dynamical model the Cap grid polar points are
+melded into caps uniform (in angle) with the rest of the grid, the disk
+representation on disk is not uniform.
+Nevertheless, some call the Cap grid a uniform-angle grid because the
+information contained at the poles is aggregated in memory to span twice
+the range of a single polar gridcell (which has half the normal width). 
+The @acronym{NCL} uses the term ``Fixed grid'' for a Cap grid.
+The ``Fixed'' terminology seems broken.
 
 Finally, Gaussian grids are the Cartesian representation of global
 spectral transform models. 
 Gaussian grids do not have points at the poles, and must have an even
 number of latitudes. 
+All three latitude grid-type supported by @acronym{NCO} (Uniform, Cap, 
+and Gaussian) are Regular grids in that they are monotonic. 
 
 The @var{lon_typ} options for global grids are @samp{grn_ctr} and
 @samp{180_ctr} for the first gridcell centered at Greenwich or 

@@ -297,10 +297,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
-      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"fv")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"cap") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fv") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fix")){
 	rgr->lat_typ=nco_grd_lat_fv;
 	rgr->grd_typ=nco_grd_2D_fv;
-      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"eqa")){
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"eqa") || !strcasecmp(rgr_lst[rgr_var_idx].val,"rgl") || !strcasecmp(rgr_lst[rgr_var_idx].val,"unf") || !strcasecmp(rgr_lst[rgr_var_idx].val,"uni")){
 	rgr->lat_typ=nco_grd_lat_eqa;
 	rgr->grd_typ=nco_grd_2D_eqa;
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"gss")){
@@ -2826,9 +2826,9 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ESMF_RegridWeightGen -s ${DATA}/grids/90x180_SCRIP.20150820.nc -d ${DATA}/grids/180x360_SCRIP.20150820.nc -w ${DATA}/maps/map_90x180_to_180x360.20150820.nc --method conserve
 
      Generate ACME grids:
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150724.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=FV --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150724.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=FV --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150724.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=FV --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150724.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150724.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150724.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
 
      Generate ACME maps:
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/129x256_SCRIP.20150724.nc -w ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150724.nc --method conserve
@@ -3085,22 +3085,15 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   lat_ncr=lat_spn/lat_nbr;
 
   double *lat_sin=NULL; // [frc] Sine of Gaussian latitudes double precision
-  /* Support (for now) only global maps that begin at southernmost latitude */ 
   lat_ntf[0]=lat_sth;
   switch(lat_typ){
   case nco_grd_lat_fv:
-    /* FV grids must have an odd number of latitudes */
-    if(lat_nbr % 2 != 1){
-    (void)fprintf(stderr,"%s: ERROR %s reports user request for equi-angle latitude grid covering poles (aka FV-scalar grid) with %ld latitudes. However, the FV-scalar grid must have an odd number of latitudes so that the centers of first and last latitude bands are on the poles.\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
-    nco_exit(EXIT_FAILURE);
-    } /* !odd */
     lat_ncr=lat_spn/(lat_nbr-1);
     lat_ntf[1]=lat_ntf[0]+0.5*lat_ncr;
     for(lat_idx=2;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=lat_ntf[1]+(lat_idx-1)*lat_ncr;
     break;
   case nco_grd_lat_eqa:
-    /* Equi-Angular grids may have any number of latitudes (must be even, though, to form an FV-staggered grid) */
     lat_ncr=lat_spn/lat_nbr;
     for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=lat_ntf[0]+lat_idx*lat_ncr;
@@ -3152,13 +3145,13 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
       lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1]);
 
-  /* FV grids excepted---they place centers of first/last gridcells at poles */
+  /* Cap grids excepted---they place centers of first/last gridcells at poles */
   if(lat_typ == nco_grd_lat_fv){
     lat_ctr[0]=lat_ntf[0];
     for(lat_idx=1;lat_idx<lat_nbr-1;lat_idx++)
       lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1]);
     lat_ctr[lat_nbr-1]=lat_ntf[lat_nbr];
-  } /* !FV */
+  } /* !cap */
   /* Gaussian grids centerpoints are defined by solutions to Legendre polynomials */
   if(lat_typ == nco_grd_lat_gss){
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
