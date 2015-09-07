@@ -1,32 +1,38 @@
-nco (4.5.2-1) unstable; urgency=low
+nco (4.5.3-1) unstable; urgency=low
 
   * new upstream version fxm
 
- -- Charlie Zender <zender@uci.edu>  Fri, 24 Jul 2014 12:25:10 -0700
+ -- Charlie Zender <zender@uci.edu>  Fri, 07 Oct 2015 12:25:11 -0700
+
+nco (4.5.2-1) unstable; urgency=low
+
+  * new upstream version ncra --wgt nrm, --grid, --glb, Newton Gaussian
+
+ -- Charlie Zender <zender@uci.edu>  Sun, 06 Sep 2015 12:25:10 -0700
 
 nco (4.5.1-1) unstable; urgency=low
 
   * new upstream version ncra --wgt=wgt_nm, ncap2 mibs/mabs/mebs, Tempest
 
- -- Charlie Zender <zender@uci.edu>  Fri, 10 Jul 2014 12:25:09 -0700
+ -- Charlie Zender <zender@uci.edu>  Fri, 10 Jul 2015 12:25:09 -0700
 
 nco (4.5.0-1) unstable; urgency=low
 
   * new upstream version --map, --rnr=wgt, -A provenance, [date/time]_written, ncdismember
 
- -- Charlie Zender <zender@uci.edu>  Thu, 11 Jun 2014 12:25:08 -0700
+ -- Charlie Zender <zender@uci.edu>  Thu, 11 Jun 2015 12:25:08 -0700
 
 nco (4.4.9-1) unstable; urgency=low
 
   * new upstream version (git, -x warn, crd att, cnk nco lfp, shuffle on, MM3->MM4 off, ncecat fix, climatology, ncra wgt)
 
- -- Charlie Zender <zender@uci.edu>  Thu, 21 May 2014 12:25:07 -0700
+ -- Charlie Zender <zender@uci.edu>  Thu, 21 May 2015 12:25:07 -0700
 
 nco (4.4.8-1) unstable; urgency=low
 
   * new upstream version (-A warn, PPC, cnk nco=rew+lfp, mabs/mebs/mibs())
 
- -- Charlie Zender <zender@uci.edu>  Mon, 09 Feb 2014 12:25:05 -0700
+ -- Charlie Zender <zender@uci.edu>  Mon, 09 Feb 2015 12:25:05 -0700
 
 nco (4.4.7-1) unstable; urgency=low
 

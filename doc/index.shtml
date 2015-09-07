@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.5.1 last updated on <!--#flastmod file="VERSION"-->
+Current NCO version is 4.5.2 last updated on <!--#flastmod file="VERSION"-->
 </h2>
 
 <table border=0 width=100%>
@@ -330,6 +330,33 @@ influence of your monetary donations on NCO development:
 <dt>NCO features &ldquo;incentivized&rdquo; by these donations: More emoticons in the documentation :)</dt>
 <hr></p>
 
+<a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
+<dt><a name="prp_e3"></a></dt> <!-- http://nco.sf.net#prp_e3 -->
+<h2>NSF EarthCube Project</h2>
+<img src="nsf.png" height=180 width=180 align=right>
+<p>
+The National Science Foundation Grant
+<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=1541031">NSF ICER-1541031</a>
+funded the Unidata-led
+<a href="http://dust.ess.uci.edu/prp/prp_e3/prp_e3.pdf">EarthCube Project</a>,
+&ldquo;EarthCube IA: Collaborative Proposal: Advancing netCDF-CF for the Geoscience Community&rdquo;
+from 20150901&ndash;20170831 as part of the 
+Integrative and Collaborative Education and Research
+(<a href="http://www.nsf.gov/div/index.jsp?org=ICER">ICER</a>)
+program. 
+This URL,
+<a href="http://nco.sf.net#prp_e3"><tt>http://nco.sf.net#prp_e3</tt></a>,
+points to the most up-to-date information on the EarthCube proposal.</p>
+
+<p>UCI's primary role is to help extend CF to cover hierarchical data structures, aka groups.
+Groups are the Group-Oriented Data Analysis and Distribution
+(<a href="http://nco.sf.net/nco.html#godad">GODAD</a>) paradigm we
+are developing for geoscience data analysis.
+We will convene workshops for interested stakeholders in 2016 and 2017.
+Be on the lookout for announcements!
+<hr></p>
+<!-- End http://nco.sf.net#nsf -->
+
 <a name="doe"></a> <!-- http://nco.sf.net#doe -->
 <a name="DOE"></a> <!-- http://nco.sf.net#DOE -->
 <a name="ACME"></a> <!-- http://nco.sf.net#ACME -->
@@ -395,7 +422,8 @@ See the ads for more details.
  <a href="http://dust.ess.uci.edu/hire/prg_anl_06_adv.txt">TXT</a>).
 <hr></p>
 
-<dt><a name="prp_access"></a></dt> <!-- http://nco.sf.net#prp_access -->
+<!--
+<dt><a name="prp_access"></a></dt>
 <h2>NASA ACCESS 2011 Project</h2>
 <img src="nasa.png" height=180 width=180 align=right>
 <p>
@@ -451,11 +479,10 @@ the most important problems real-world researchers encounter in
 evaluating GCMs against satellite data.</p>  
 </ul>
 <hr></p>
+-->
 
-<a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
-<a name="sdo"></a> <!-- http://nco.sf.net#sdo -->
-<a name="sei"></a> <!-- http://nco.sf.net#sei -->
-<dt><a name="prp_sei"></a></dt> <!-- http://nco.sf.net#prp_sei -->
+<!--
+<dt><a name="prp_sei"></a></dt>
 <h2>NSF SEI Project</h2>
 <img src="nsf.png" height=180 width=180 align=right>
 <p>
@@ -524,6 +551,7 @@ climate prediction scenarios for the same model, and among different
 climate models (see <a href="#pub">publications</a>).</p> 
 </ul>
 <hr></p>
+-->
 
 <!-- http://nco.sf.net#pub -->
 <!-- http://nco.sf.net#pubs -->
@@ -661,7 +689,7 @@ Stable releases receive unique tags and their tarballs are stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
 <a href="https://github.com/nco/nco/releases">here</a> at GitHub.
 You may also retrieve the source of tagged versions directly
-<a name="#Source">with <tt>git clone -b 4.5.1 http://github.com/nco/nco.git nco-4.5.1</tt></a>.
+<a name="#Source">with <tt>git clone -b 4.5.2 http://github.com/nco/nco.git nco-4.5.2</tt></a>.
 <ul>
 <li><b>NCO 4.5.4</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
@@ -853,7 +881,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.5.1</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.5.2</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/natty/nco">Ubuntu NCO</a> homepages.
@@ -861,12 +889,12 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/nco/nco/tree/master/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.5.1-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_4.5.1-1_amd64.deb">nco_4.5.1-1_amd64.deb</a> (<!--#fsize file="src/nco_4.5.1-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.5.1-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.5.1-1.dsc">nco_4.5.1-1.dsc</a> (<!--#fsize file="src/nco_4.5.1-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.5.1-1.dsc"-->)</li>
-<li><a href="src/nco_4.5.1-1_amd64.changes">nco_4.5.1-1_amd64.changes</a> (<!--#fsize file="src/nco_4.5.1-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.5.1-1_amd64.changes"-->)</li>
-<li><a href="src/nco_4.5.1.orig.tar.gz">nco_4.5.1.orig.tar.gz</a> (<!--#fsize file="src/nco_4.5.1.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.5.1.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.5.1-1.diff.gz">nco_4.5.1-1.diff.gz</a> (<!--#fsize file="src/nco_4.5.1-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.5.1-1_amd64.changes"-->)</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.5.2-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_4.5.2-1_amd64.deb">nco_4.5.2-1_amd64.deb</a> (<!--#fsize file="src/nco_4.5.2-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.5.2-1_amd64.deb"-->)</li>
+<li><a href="src/nco_4.5.2-1.dsc">nco_4.5.2-1.dsc</a> (<!--#fsize file="src/nco_4.5.2-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.5.2-1.dsc"-->)</li>
+<li><a href="src/nco_4.5.2-1_amd64.changes">nco_4.5.2-1_amd64.changes</a> (<!--#fsize file="src/nco_4.5.2-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.5.2-1_amd64.changes"-->)</li>
+<li><a href="src/nco_4.5.2.orig.tar.gz">nco_4.5.2.orig.tar.gz</a> (<!--#fsize file="src/nco_4.5.2.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.5.2.orig.tar.gz"-->)</li>
+<li><a href="src/nco_4.5.2-1.diff.gz">nco_4.5.2-1.diff.gz</a> (<!--#fsize file="src/nco_4.5.2-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.5.2-1_amd64.changes"-->)</li>
 Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -913,10 +941,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # Mac OS X 10.10 (Yosemite) systems (aerosol):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-4.5.1.macosx.10.10.tar.gz nc*;scp ${DATA}/nco-4.5.1.macosx.10.10.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.5.2.macosx.10.10.tar.gz nc*;scp ${DATA}/nco-4.5.2.macosx.10.10.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.5.1.macosx.10.10.tar.gz">nco-4.5.1.macosx.10.10.tar.gz</a> (<!--#fsize file="src/nco-4.5.1.macosx.10.10.tar.gz"-->): Executables MacOSX 10.10-compatible (last updated <!--#flastmod file="src/nco-4.5.1.macosx.10.10.tar.gz"-->). 
+<li><a href="src/nco-4.5.2.macosx.10.10.tar.gz">nco-4.5.2.macosx.10.10.tar.gz</a> (<!--#fsize file="src/nco-4.5.2.macosx.10.10.tar.gz"-->): Executables MacOSX 10.10-compatible (last updated <!--#flastmod file="src/nco-4.5.2.macosx.10.10.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
@@ -1108,11 +1136,11 @@ site.</li>
 The simplest way to acquire the source is to download the compressed tarball:
 <ul>
 <li>
-<!-- scp ${DATA}/nco-4.5.1.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
-<a href="src/nco-4.5.1.tar.gz">nco-4.5.1.tar.gz</a> 
-(<!--#fsize file="src/nco-4.5.1.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.5.1.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.5.1.tar.gz"--> 
+<!-- scp ${DATA}/nco-4.5.2.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
+<a href="src/nco-4.5.2.tar.gz">nco-4.5.2.tar.gz</a> 
+(<!--#fsize file="src/nco-4.5.2.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.5.2.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.5.2.tar.gz"--> 
 </li>
 </ul>
 
@@ -1131,17 +1159,17 @@ You may retrieve any NCO distribution you wish from
 <a href="https://help.github.com">GitHub</a>. 
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
-then checks out NCO version <tt>4.5.1</tt>:
-<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout -b 4.5.1</tt></p>
+then checks out NCO version <tt>4.5.2</tt>:
+<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout -b 4.5.2</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p>
 Track changes to the development version using
 <p><tt>cd ~/nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>4.5.1</tt>) and the development version is that the
+(e.g., <tt>4.5.2</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.5.1</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.5.2</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1273,9 +1301,9 @@ Users should instead first download and install the Antlr found <a href="http://
   then build the latest stable NCO and install it in,
   e.g., <tt>/usr/local</tt> with: 
 <tt>
-<dt>wget https://github.com/nco/nco/archive/4.5.1.tar.gz</dt>
-<dt>tar xvzf 4.5.1.tar.gz</dt>
-<dt>cd nco-4.5.1</dt>
+<dt>wget https://github.com/nco/nco/archive/4.5.2.tar.gz</dt>
+<dt>tar xvzf 4.5.2.tar.gz</dt>
+<dt>cd nco-4.5.2</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>

@@ -1,5 +1,9 @@
 2015-09-06  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.3-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha01 final changes';git push
+	git tag -a 4.5.3-alpha01 -m 'Version 4.5.3-alpha01 tag: bump versions';git push --tags
+
 	* NCO 4.5.2 release procedure:
  	Changes since nco-4.5.0: ncra --wgt nrm, --grid, --glb, Newton Gaussian
 	cd ~/nco;git commit -a -m 'Version 4.5.2 release final changes';git push

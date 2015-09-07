@@ -3216,10 +3216,14 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     lat_crn[idx+3]=lat_ntf[lat_idx+1];
   } /* !lat_idx */
   
+  /* 20150906: Half-angle formulae for better conditioning improve area normalization for 801x1600 by 2.0e-15 
+     area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*2.0*(sin(0.5*dgr2rdn*lat_bnd[2*lat_idx+1])*cos(0.5*dgr2rdn*lat_bnd[2*lat_idx+1])-sin(0.5*dgr2rdn*lat_bnd[2*lat_idx])*cos(0.5*dgr2rdn*lat_bnd[2*lat_idx])); 
+     Gain not worth the extra complexity */
+
   for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
     for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
       area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]));
-
+  
   if(flg_grd_2D){
     if(nco_dbg_lvl_get() >= nco_dbg_sbr){
       (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
