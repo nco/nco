@@ -119,6 +119,10 @@ extern "C" {
   nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   (rgr_sct * const rgr); /* I/O [sct] Regridding structure */
 
+  int /* O [enm] Return code */
+  nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from data file */
+  (rgr_sct * const rgr); /* I/O [sct] Regridding structure */
+
   void
   nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their weights */
   (const int lat_nbr, /* I [nbr] Latitude number */

@@ -1,3 +1,9 @@
+2015-09-08  Charlie Zender  <zender@uci.edu>
+
+	* Add infrastructure for NASA AXS/SLD project in nco_grd_nfr()
+
+	* Change remote scp repository for regridding from givre to glace
+
 2015-09-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.3-alpha01 release procedure:

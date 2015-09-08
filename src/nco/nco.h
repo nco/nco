@@ -955,6 +955,7 @@ extern "C" {
     nco_bool flg_grd_src; /* [flg] User-specified input grid */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
     nco_bool flg_grd; /* [flg] Create SCRIP-format grid file */
+    nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_map; /* [flg] User-specified mapping weights */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
   } rgr_sct;
