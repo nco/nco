@@ -1065,7 +1065,6 @@ print "\n";
 	
 #nces #17
 # ncra -Y ncge -h -O -G /gpe_grp mdl_1.nc ~/foo.nc
-	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g /gpe_grp/ecmwf -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) GPE 1 file mdl_1.cdl ensemble";
@@ -1076,7 +1075,6 @@ print "\n";
 	
 #nces #18
 #ncra -Y ncge -O mdl_1.nc mdl_2.nc ~/foo.nc
- 
     $dsc_sng="(Groups) Two-file ensembles";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc mdl_2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -g ecmwf -v tas1 %tmp_fl_00%";
@@ -1090,7 +1088,6 @@ print "\n";
 # ncra -Y ncge -h -O mdl_1.nc ~/foo.nc
 # ncks -g cesm -v time ~/foo.nc
 # NB: This test succeeds when it fails, i.e., the NCO command fails as it should because the input files do not conform
-	
     $dsc_sng="(Groups) Ensemble record coordinate variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m --cdl -g cesm -v time %tmp_fl_00% | grep UNLIMITED";
@@ -4200,6 +4197,18 @@ if(0){
     $tst_cmd[5]="ncks -C -H -s '%g' -v one_dmn_rec_var_flt_mss %tmp_fl_03%";
     $tst_cmd[6]="1.0";
     $tst_cmd[7]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
+# ncra #39
+# Test MSA running averages
+# ncra -O -C -v one_dmn_rec_var -d time,0,0 -d time,1,1 ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H -s '%g' -v one_dmn_rec_var ~/foo.nc
+    $dsc_sng="Test MSA running average";
+    $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -C -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g' -v one_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[2]="1.5";
+    $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 

@@ -1,5 +1,7 @@
 2015-09-08  Charlie Zender  <zender@uci.edu>
 
+	* Add regression test for MSA averages in ncra problem reported by Christine Smit
+
 	* Add infrastructure for NASA AXS/SLD project in nco_grd_nfr()
 
 	* Change remote scp repository for regridding from givre to glace
