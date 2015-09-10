@@ -1,5 +1,11 @@
 2015-09-10  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.3-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha02 final changes';git push
+	git tag -a 4.5.3-alpha02 -m 'Version 4.5.3-alpha02 tag: SLD regrid sort-of works for AIRS';git push --tags
+
+	* nco_grd_nfr() produces reasonable numbers for AIRS test case!
+
 	* Fix area output and improve metadata output in nco_grd_nfr()
 
 2015-09-09  Charlie Zender  <zender@uci.edu>
