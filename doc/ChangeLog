@@ -1,3 +1,7 @@
+2015-09-10  Charlie Zender  <zender@uci.edu>
+
+	* Fix area output and improve metadata output in nco_grd_nfr()
+
 2015-09-09  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_nfr() produces useful gridfile from AIRS test-data

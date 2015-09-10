@@ -957,16 +957,16 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !usable */
       
     if(nco_dbg_lvl_get() >= nco_dbg_crr){
-      for(idx=0;idx<lon_nbr_out;idx++){
-	(void)fprintf(stdout,"lon[%li] = %g, vertices = ",idx,lon_ctr_out[idx]);
-	for(bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
-	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lon_bnd_out[bnd_nbr_out*idx+bnd_idx],bnd_idx == bnd_nbr_out-1 ? "]\n" : ", ");
-      } /* end loop over lon */
       for(idx=0;idx<lat_nbr_out;idx++){
 	(void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr_out[idx]);
 	for(bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd_out[bnd_nbr_out*idx+bnd_idx],bnd_idx == bnd_nbr_out-1 ? "]\n" : ", ");
       } /* end loop over lat */
+      for(idx=0;idx<lon_nbr_out;idx++){
+	(void)fprintf(stdout,"lon[%li] = %g, vertices = ",idx,lon_ctr_out[idx]);
+	for(bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
+	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lon_bnd_out[bnd_nbr_out*idx+bnd_idx],bnd_idx == bnd_nbr_out-1 ? "]\n" : ", ");
+      } /* end loop over lon */
     } /* endif dbg */
   } /* !flg_grd_out_1D */
 
@@ -2616,7 +2616,7 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
 {
   /* Purpose: Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
-  case nco_grd_2D_unk: return "Unknown or unclassified 2D grid type (e.g., POP displaced-pole)";
+  case nco_grd_2D_unk: return "Unknown or unclassified 2D grid type (e.g., curvilinear, POP displaced-pole)";
   case nco_grd_2D_gss: return "Gaussian latitude grid. Used by spectral transform models, e.g., CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM.";
   case nco_grd_2D_fv: return "Cap grid. Uniform/Equi-angle (except at poles) latitude grid with poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the equi-angular latitude increment. AKA FV-scalar grid (in Lin-Rood representation). Used by CAM FV, GEOS-CHEM, UCICTM, UKMO.";
   case nco_grd_2D_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx). When global forms valid FV-staggered AKA FV velocity grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
@@ -3334,6 +3334,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   if(att_val) att_val=(char *)nco_free(att_val);
   
   (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
+  (void)nco_vrs_att_cat(out_id);
 
   att_nm=strdup("latitude_grid_type");
   att_val=strdup(nco_grd_lat_sng(lat_typ));
@@ -3460,8 +3461,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Purpose: Use grid information and guesswork to create SCRIP-format grid file from input data file
 
      Test SLD grids:
-     ncks -O -D 1 --rgr nfr=y --rgr grid=~/grd_airs.nc ${DATA}/rgr/sld/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.nc ~/foo.nc
-     ncks -O -D 1 --rgr nfr=y --rgr grid=~/grd_airs.nc ${DATA}/rgr/sld/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc */
+     ncks -O -D 1 --rgr nfr=y --rgr grid=~/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.nc ~/foo.nc
+     ncks -O -D 1 --rgr nfr=y --rgr grid=~/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_nfr()"; /* [sng] Function name */
 
@@ -3553,6 +3554,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long dmn_srt[dmn_nbr_grd_max];
   long dmn_cnt[dmn_nbr_grd_max];
 
+  long bnd_idx;
   long bnd_nbr; /* [nbr] Number of bounds in gridcell */
   long dmn_sz; /* [nbr] Size of current dimension */
   long grd_crn_nbr; /* [nbr] Number of corners in gridcell */
@@ -3768,6 +3770,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   dmn_sz_int[lon_psn]=lon_nbr;
   dmn_sz_int[lat_psn]=lat_nbr;
 
+  /* fxm: Interfaces (ntf) only valid for rectangular grids */
   lat_ntf[0]=lat_ctr[0]-0.5*(lat_ctr[1]-lat_ctr[0]);
   for(lat_idx=0;lat_idx<lat_nbr-1;lat_idx++)
     lat_ntf[lat_idx+1]=0.5*(lat_ctr[lat_idx]+lat_ctr[lat_idx+1]);
@@ -3778,6 +3781,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lon_ntf[lon_idx+1]=0.5*(lon_ctr[lon_idx]+lon_ctr[lon_idx+1]);
   lon_ntf[lon_nbr]=lon_ctr[lon_nbr-1]+0.5*(lon_ctr[lon_nbr-1]-lon_ctr[lon_nbr-2]);
   
+  /* fxm: do not overwrite bounds (bnd), if any, from input file */
   for(idx=0;idx<lon_nbr;idx++){
     lon_bnd[2*idx]=lon_ntf[idx];
     lon_bnd[2*idx+1]=lon_ntf[idx+1];
@@ -3787,14 +3791,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lat_bnd[2*idx+1]=lat_ntf[idx+1];
   } /* end loop over latitude */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_crr){
-    for(idx=0;idx<lat_nbr;idx++){
-    (void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr[idx]);
-    for(int bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
-      (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
-    } /* end loop over lat */
-  } /* endif dbg */
-
   if(flg_grd_2D){
     /* Diagnose type of two-dimensional input grid by testing second latitude center against formulae */
     nco_grd_xtn_enm nco_grd_xtn=nco_grd_xtn_glb; /* [enm] Extent of grid */
@@ -3916,8 +3912,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=wgt_Gss[lat_idx];
       break;
     case nco_grd_lat_unk:
-      for(idx=0;idx<lat_nbr;idx++) lat_wgt[idx]=0.0;
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING %s reports unknown input latitude grid-type. Unable to guess what latitude weights should be.\n",nco_prg_nm_get(),fnc_nm);
+      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=sin(dgr2rdn*lat_ntf[lat_idx+1])-sin(dgr2rdn*lat_ntf[lat_idx]);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING %s reports unknown input latitude grid-type. Guessing that weights for grid of rectangles is OK.\n",nco_prg_nm_get(),fnc_nm);
       break;
     default:
       nco_dfl_case_generic_err(); break;
@@ -3942,6 +3938,19 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
 
   } /* !flg_grd_2D */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+    for(idx=0;idx<lat_nbr;idx++){
+      (void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr[idx]);
+      for(bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
+	(void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
+    } /* end loop over lat */
+    for(idx=0;idx<lon_nbr;idx++){
+      (void)fprintf(stdout,"lon[%li] = %g, vertices = ",idx,lon_ctr[idx]);
+      for(bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
+	(void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lon_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
+    } /* end loop over lon */
+  } /* endif dbg */
 
   /* Fuzzy test of latitude weight normalization */
   const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance */
@@ -3972,7 +3981,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !lat_idx */
 
   /* Diagnose area if necessary */
-  if(area_id != NC_MIN_INT)
+  if(area_id == NC_MIN_INT)
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
 	area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]));
@@ -4020,9 +4029,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Define variables */
   (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id);
   (void)nco_def_var(out_id,area_nm,(nc_type)crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&area_id);
-  if(msk_id != NC_MIN_INT){
-    (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
-  } /* !msk */
+  if(msk_id != NC_MIN_INT) (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
   (void)nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lat_id);
   (void)nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lon_id);
   dmn_ids[0]=dmn_id_grd_sz;
@@ -4038,7 +4045,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *att_val;
   
   att_nm=strdup("title");
-  att_val=strdup(rgr->grd_ttl);
+  if(strstr(rgr->grd_ttl,"None given")){
+    att_val=strdup("Grid inferred by NCO from input file %s");
+    att_val=(char *)nco_realloc(att_val,(strlen(att_val)+strlen(rgr->fl_in)+1L)*sizeof(char));
+    sprintf(att_val,att_val,rgr->fl_in);
+  }else{
+    att_val=strdup(rgr->grd_ttl);
+  } /* !grd_ttl */
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=NULL;
   aed_mtd.id=NC_GLOBAL;
@@ -4078,6 +4091,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(att_val) att_val=(char *)nco_free(att_val);
   
   (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
+  (void)nco_vrs_att_cat(out_id);
 
   att_nm=strdup("latitude_grid_type");
   att_val=strdup(nco_grd_lat_sng(lat_typ));
