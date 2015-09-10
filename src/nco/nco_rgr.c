@@ -1483,14 +1483,26 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* !1D */
   if(flg_grd_in_2D){
     long lat_nbr_in_dat; /* [nbr] Number of latitudes in input datafile */
-    rcd=nco_inq_dimid(in_id,lat_nm,&dmn_id_lat);
+    rcd=nco_inq_dimid_flg(in_id,lat_nm,&dmn_id_lat);
+    if(rcd != NC_NOERR){
+      if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("latitude");
+      else if((rcd=nco_inq_dimid_flg(in_id,"lat",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("lat");
+      else if((rcd=nco_inq_dimid_flg(in_id,"Latitude",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("Latitude");
+      else if((rcd=nco_inq_dimid_flg(in_id,"Lat",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("Lat");
+    } /* !rcd */
     rcd=nco_inq_dimlen(in_id,dmn_id_lat,&lat_nbr_in_dat);
     if(lat_nbr_in != lat_nbr_in_dat){
       (void)fprintf(stdout,"%s: ERROR %s reports mapfile and data file dimension sizes disagree: mapfile lat_nbr_in = %ld != %ld = lat_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lat_nbr_in,lat_nbr_in_dat);
       nco_exit(EXIT_FAILURE);
     } /* !err */
     long lon_nbr_in_dat; /* [nbr] Number of longitudes in input datafile */
-    rcd=nco_inq_dimid(in_id,lon_nm,&dmn_id_lon);
+    rcd=nco_inq_dimid_flg(in_id,lon_nm,&dmn_id_lon);
+    if(rcd != NC_NOERR){
+      if((rcd=nco_inq_dimid_flg(in_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("longitude");
+      else if((rcd=nco_inq_dimid_flg(in_id,"lon",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("lon");
+      else if((rcd=nco_inq_dimid_flg(in_id,"Longitude",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("Longitude");
+      else if((rcd=nco_inq_dimid_flg(in_id,"Lon",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("Lon");
+    } /* !rcd */
     rcd=nco_inq_dimlen(in_id,dmn_id_lon,&lon_nbr_in_dat);
     if(lon_nbr_in != lon_nbr_in_dat){
       (void)fprintf(stdout,"%s: ERROR %s reports mapfile and data file dimension sizes disagree: mapfile lon_nbr_in = %ld != %ld = lon_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lon_nbr_in,lon_nbr_in_dat);
@@ -1606,10 +1618,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   bnd_tm_nm_out=rgr->bnd_tm_nm;
   col_nm_out=rgr->col_nm;
   lat_bnd_nm_out=rgr->lat_bnd_nm;
-  lat_nm_out=rgr->lat_nm;
   lat_wgt_nm=rgr->lat_wgt_nm;
   lon_bnd_nm_out=rgr->lon_bnd_nm;
-  lon_nm_out=rgr->lon_nm;
+  /* Use names discovered by fuzzing */
+  lat_nm_out=lat_nm;
+  lon_nm_out=lon_nm;
   if(flg_grd_out_1D){
     bnd_nm_out=rgr->vrt_nm;
     lat_bnd_nm_out=rgr->lat_vrt_nm;
@@ -2830,11 +2843,11 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      NCAR:
      /glade/p/cesm/cseg/mapping/grids
 
-     Generate normal RLL grids:
+     Generate global RLL grids:
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150820.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150820.nc --rgr lat_nbr=90 --rgr lon_nbr=180 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
-     Generate maps for normal RLL grids:
+     Generate maps for global RLL grids:
      ESMF_RegridWeightGen -s ${DATA}/grids/180x360_SCRIP.20150820.nc -d ${DATA}/grids/90x180_SCRIP.20150820.nc -w ${DATA}/maps/map_180x360_to_90x180.20150820.nc --method conserve
      ESMF_RegridWeightGen -s ${DATA}/grids/90x180_SCRIP.20150820.nc -d ${DATA}/grids/180x360_SCRIP.20150820.nc -w ${DATA}/maps/map_90x180_to_180x360.20150820.nc --method conserve
 
@@ -2847,7 +2860,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/129x256_SCRIP.20150724.nc -w ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150724.nc --method conserve
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/257x512_SCRIP.20150724.nc -w ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150724.nc --method bilinear
      ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/257x512_SCRIP.20150724.nc -w ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150724.nc --method conserve
-     ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/801x1600_SCRIP.20150724.nc -w ${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150724.nc --method bilinear */
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/801x1600_SCRIP.20150724.nc -w ${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150724.nc --method bilinear
+
+     Generate regional RLL grids:
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr lat_nbr=100 --rgr lon_nbr=100 --rgr lat_sth=30.0 --rgr lat_nrt=70.0 --rgr lon_wst=-120.0 --rgr lon_est=-90.0 ~/nco/data/in.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 
@@ -3078,6 +3094,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   lon_est=lon_wst+lon_ncr*lon_nbr;
 
   /* lon_wst and lon_est have been set and will not change */
+  assert(lon_wst < lon_est);
   lon_ntf[0]=lon_wst;
   lon_ntf[lon_nbr]=lon_est;
 
@@ -3185,7 +3202,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     (void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr[idx]);
     for(int bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
       (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
-  } /* end loop over lat */
+    } /* end loop over lat */
   } /* endif dbg */
 
   /* Use centers and boundaries to diagnose latitude weights */
@@ -3248,6 +3265,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
 	  area_ttl+=area[lat_idx*lon_nbr+lon_idx];
       (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, frc_lat_wgt = %20.15f, area_ttl = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,lat_wgt_ttl/2.0,area_ttl,area_ttl/(4.0*M_PI));
+      assert(area_ttl > 0.0);
+      assert(area_ttl <= 4.0*M_PI);
     } /* endif dbg */
   } /* !flg_grd_2D */
 
@@ -3461,8 +3480,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Purpose: Use grid information and guesswork to create SCRIP-format grid file from input data file
 
      Test SLD grids:
-     ncks -O -D 1 --rgr nfr=y --rgr grid=~/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.nc ~/foo.nc
-     ncks -O -D 1 --rgr nfr=y --rgr grid=~/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc */
+     ncks -O -D 1 --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.nc ~/foo.nc
+     ncks -O -D 1 --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_nfr()"; /* [sng] Function name */
 
@@ -3614,13 +3633,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   /* Locate dimensions that must be present */
   if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("latitude");
-  else if((rcd=nco_inq_dimid_flg(in_id,"Latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("Latitude");
   else if((rcd=nco_inq_dimid_flg(in_id,"lat",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("lat");
+  else if((rcd=nco_inq_dimid_flg(in_id,"Latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("Latitude");
   else if((rcd=nco_inq_dimid_flg(in_id,"Lat",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("Lat");
 
   if((rcd=nco_inq_dimid_flg(in_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("longitude");
-  else if((rcd=nco_inq_dimid_flg(in_id,"Longitude",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("Longitude");
   else if((rcd=nco_inq_dimid_flg(in_id,"lon",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("lon");
+  else if((rcd=nco_inq_dimid_flg(in_id,"Longitude",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("Longitude");
   else if((rcd=nco_inq_dimid_flg(in_id,"Lon",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("Lon");
 
   if(!lat_dmn_nm || !lon_dmn_nm){
@@ -3655,6 +3674,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Allocate space for output data */
   dmn_sz_int=(int *)nco_malloc(grd_rnk_nbr*nco_typ_lng((nc_type)NC_INT));
   area=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
+  msk=(int *)nco_malloc(grd_sz_nbr*nco_typ_lng((nc_type)NC_INT));
   
   lat_bnd=(double *)nco_malloc(lat_nbr*bnd_nbr*nco_typ_lng(crd_typ));
   lat_crn=(double *)nco_malloc(lat_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
@@ -3696,8 +3716,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   if((rcd=nco_inq_varid_flg(in_id,"area",&area_id)) == NC_NOERR) area_nm_in=strdup("area");
   else if((rcd=nco_inq_varid_flg(in_id,"Area",&area_id)) == NC_NOERR) area_nm_in=strdup("Area");
+  else if((rcd=nco_inq_varid_flg(in_id,"grid_area",&area_id)) == NC_NOERR) area_nm_in=strdup("grid_area");
   if((rcd=nco_inq_varid_flg(in_id,"mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask");
   else if((rcd=nco_inq_varid_flg(in_id,"Mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("Mask");
+  else if((rcd=nco_inq_varid_flg(in_id,"grid_imask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("grid_imask");
 
   if(flg_grd_2D){
     int lon_psn_in; /* [idx] Ordinal position of longitude size in rectangular grid */
@@ -3740,7 +3762,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(msk_id != NC_MIN_INT){
       var_id=msk_id;
       rcd=nco_inq_vardimid(in_id,var_id,dmn_ids);
-      msk=(int *)nco_malloc(grd_sz_nbr*nco_typ_lng((nc_type)NC_INT));
       dmn_srt[lat_psn_in]=0L;
       dmn_cnt[lat_psn_in]=lat_nbr;
       dmn_srt[lon_psn_in]=0L;
@@ -3980,6 +4001,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lat_crn[idx+3]=lat_ntf[lat_idx+1];
   } /* !lat_idx */
 
+  /* Default mask if necessary */
+  if(msk_id == NC_MIN_INT)
+    for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
+
   /* Diagnose area if necessary */
   if(area_id == NC_MIN_INT)
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
@@ -3999,8 +4024,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, frc_lat_wgt = %20.15f, area_ttl = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,lat_wgt_ttl/2.0,area_ttl,area_ttl/(4.0*M_PI));
     } /* endif dbg */
   } /* !flg_grd_2D */
-
-  /* fxm: logic got to here */  
 
   /* Stuff rectangular arrays into unrolled arrays */
   for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
@@ -4029,7 +4052,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Define variables */
   (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id);
   (void)nco_def_var(out_id,area_nm,(nc_type)crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&area_id);
-  if(msk_id != NC_MIN_INT) (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
+  (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
   (void)nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lat_id);
   (void)nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lon_id);
   dmn_ids[0]=dmn_id_grd_sz;
