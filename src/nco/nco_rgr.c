@@ -3849,8 +3849,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       grd_typ=nco_grd_2D_unk;
       lat_typ=nco_grd_lat_unk;
     } /* !nil */
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lat_sng(grd_typ));
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
     /* Diagnose latitude interfaces as necessary */
     lat_sth=lat_ntf[0];
@@ -3937,6 +3935,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       else if((float)lon_ctr[1] == (float)(lon_ctr[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_bb;
       else lon_typ=nco_grd_lon_unk;
     } /* !lon_typ */
+
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input 2D grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(grd_typ));
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lat_sng(lat_typ));
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input longitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(lon_typ));
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
+
   } /* !flg_grd_2D */
 
   /* Fuzzy test of latitude weight normalization */
