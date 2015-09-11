@@ -1,3 +1,9 @@
+2015-09-11  Henry Butowsky  <henryb@hush.com>
+	* mods to ncap_var_lgcl() - original version convered all var type to NC_SHORT and then evaluated boolean 
+	  problem with this is that when reducing precision say from float to short a large _FillValue say 9.9e20f 
+	  would be converted to 0s. This leads propblems in if()
+	  New version  evaluates for each type 
+
 2015-09-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.3-alpha02 release procedure:
