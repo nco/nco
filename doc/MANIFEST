@@ -116,6 +116,7 @@ nco/data/netcdf4.nco	Sample input script for netCDF4-enabled ncap2
 nco/data/obs.cdl 	CDL file to test group broadcasting
 nco/data/psd.nco	Sample ncap2 script that computes particle size distributions
 nco/data/psd_wrf.nco	Sample ncap2 script that computes WRF particle size distributions
+nco/data/sld_nco.sh	NCO script to process (regrid) Swath-Like Data (SLD)
 nco/data/swamp.sh	Demonstrate SWAMP usage
 nco/data/tst.nco	Sample ncap script that computes geophysical quantities
 nco/data/udunits.dat	UDUnits database for Debian compatibility
