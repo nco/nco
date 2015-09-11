@@ -1855,7 +1855,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
 }
 
 bool            /* O [flg] true if all var elemenst are true */
-ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
+ncap_var_lgcl1   /* [fnc] calculate a aggregate bool value from a variable */
 (var_sct* var)  /* I [sct] input variable */
 {
   int idx;
@@ -1888,6 +1888,141 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
   
   return bret;
 }
+
+bool            /* O [flg] true if all var elemenst are true */
+ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
+(var_sct* var)  /* I [sct] input variable */
+{
+  int idx;
+  int sz;
+  nc_type type;
+  bool bret=true;
+  ptr_unn op1;
+  
+  type=var->type;
+  sz = var->sz;
+  op1=var->val;
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(var->has_mss_val) (void)cast_void_nctype(type,&var->mss_val);
+  
+
+  if(!var->has_mss_val){
+  
+    switch(type){
+    case NC_FLOAT:
+      for(idx=0;idx<sz;idx++) if(!op1.fp[idx]) break;
+      break;
+    case NC_DOUBLE:
+      for(idx=0;idx<sz;idx++) if(!op1.dp[idx]) break;
+      break;
+    case NC_INT:
+      for(idx=0;idx<sz;idx++) if(!op1.ip[idx]) break;
+      break;
+    case NC_SHORT:
+      for(idx=0;idx<sz;idx++) if(!op1.sp[idx]) break;
+      break;
+    case NC_USHORT:
+      for(idx=0;idx<sz;idx++) if(!op1.usp[idx]) break;
+      break;
+    case NC_UINT:
+      for(idx=0;idx<sz;idx++) if(!op1.uip[idx]) break;
+      break;
+    case NC_INT64:
+      for(idx=0;idx<sz;idx++) if(!op1.i64p[idx]) break;
+      break;
+    case NC_UINT64:
+      for(idx=0;idx<sz;idx++) if(!op1.ui64p[idx]) break;
+      break;
+    case NC_BYTE:
+      for(idx=0;idx<sz;idx++) if(!op1.bp[idx]) break;
+      break;
+    case NC_UBYTE:
+      for(idx=0;idx<sz;idx++) if(!op1.ubp[idx]) break;
+      break;
+    case NC_CHAR: break; /* Do nothing */
+    case NC_STRING: break; /* Do nothing */
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+     
+    bret = (idx==sz) ? true: false;
+
+  } // end no missing
+
+  if(var->has_mss_val){
+ 
+    switch(type){
+    case NC_FLOAT:
+      { float mss=var->mss_val.fp[0]; 
+        for(idx=0;idx<sz;idx++) if(!op1.fp[idx] && op1.fp[idx]!=mss) break;
+      }
+      break;
+    case NC_DOUBLE:
+      { double mss=var->mss_val.dp[0]; 
+	for(idx=0;idx<sz;idx++) if(!op1.dp[idx] && op1.dp[idx]!=mss) break;
+      }  
+      break;
+    case NC_INT:
+      { nco_int mss=var->mss_val.ip[0]; 
+	for(idx=0;idx<sz;idx++) if(!op1.ip[idx] && op1.ip[idx]!=mss ) break;
+      } 
+      break;
+    case NC_SHORT:
+      { short mss=var->mss_val.sp[0]; 
+	for(idx=0;idx<sz;idx++) if(!op1.sp[idx] && op1.sp[idx]!=mss ) break;
+      } 
+      break;
+    case NC_USHORT:
+      { nco_ushort mss=var->mss_val.usp[0];  
+	for(idx=0;idx<sz;idx++) if(!op1.usp[idx]&& op1.usp[idx]!=mss) break;
+      }
+      break;
+    case NC_UINT:
+      { nco_uint mss=var->mss_val.uip[0];  
+	for(idx=0;idx<sz;idx++) if(!op1.uip[idx] && !op1.uip[idx]!=mss) break;
+      } 
+      break;
+    case NC_INT64:
+      { nco_int64 mss=var->mss_val.i64p[0];  
+	for(idx=0;idx<sz;idx++) if(!op1.i64p[idx] && op1.i64p[idx]!=mss) break;
+      } 
+      break;
+    case NC_UINT64:
+      { nco_uint64  mss=var->mss_val.i64p[0];  
+	for(idx=0;idx<sz;idx++) if(!op1.ui64p[idx] && op1.ui64p[idx]!=mss) break;
+      }
+      break;
+    case NC_BYTE:
+      { nco_byte mss=var->mss_val.bp[0];  
+	for(idx=0;idx<sz;idx++) if(!op1.bp[idx] && op1.bp[idx]!=mss ) break;
+      } 
+      break;
+    case NC_UBYTE:
+      { nco_ubyte mss=var->mss_val.ubp[0];  
+        for(idx=0;idx<sz;idx++) if(!op1.ubp[idx] && op1.ubp[idx]!=mss) break;
+      }  
+      break;
+    case NC_CHAR: break; /* Do nothing */
+    case NC_STRING: break; /* Do nothing */
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+     
+    bret = (idx==sz) ? true: false;
+
+  } // end missing
+
+
+ if(var->has_mss_val) 
+    (void)cast_nctype_void(type,&var->mss_val);
+
+ (void)cast_void_nctype(type,&op1);
+  
+  
+  return bret;
+}
+
+
+
 
 var_sct* /* O [sct] casting variable has its own private dims */ 
 ncap_cst_mk  /* [fnc] create casting var from a list of dims */
