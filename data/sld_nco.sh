@@ -33,6 +33,7 @@ fnt_rvr=`tput smso` # Reverse
 dbg_lvl=0 # [nbr] Debugging level
 drc_in="${DATA}/sld/raw" # [sng] Input file directory
 drc_out="${DATA}/sld/rgr" # [sng] Output file directory
+esmf_opt='> /dev/null' # [sng] ESMF_RegridWeightGen options
 fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
 gaa_sng="--gaa sld_script=${spt_nm} --gaa sld_hostname=${HOSTNAME} --gaa sld_version=${nco_version}" # [sng] Global attributes to add
 grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
@@ -41,7 +42,8 @@ grd_sng='' # [sng] Grid string
 grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source) 
 hdr_pad='1000' # [B] Pad at end of header section
 map_fl='' # [sng] Map-file
-nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
+nco_opt='-O -t 1 --no_tmp_fl' # [sng] NCO defaults (e.g., '-O -6 -t 1')
+nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 par_typ='bck' # [sng] Parallelism type
 rgr_fl='' # [sng] Regridded file
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid')
@@ -99,7 +101,7 @@ while getopts :d:f:g:G:h:i:m:n:o:p:R:r:s:v:x: OPT; do
 	G) grd_sng=${OPTARG} ;; # Grid generation string
 	i) drc_in=${OPTARG} ;; # Input directory
 	m) map_fl=${OPTARG} ;; # Map-file
-	n) nco_opt=${OPTARG} ;; # NCO options
+	n) nco_usr=${OPTARG} ;; # NCO options
 	o) drc_out=${OPTARG} ;; # Output directory
 	p) par_typ=${OPTARG} ;; # Parallelism type
 	r) rgr_fl=${OPTARG} ;; # Regridded file
@@ -119,6 +121,9 @@ out_nm=${sld_fl}
 if [ -n "${fml_nm}" ]; then 
     out_nm="${fml_nm}"
 fi # !fml_nm
+if [ -n "${nco_usr}" ]; then 
+    nco_opt="${nco_usr} ${nco_opt}"
+fi # !var_lst
 if [ -n "${gaa_sng}" ]; then 
     nco_opt="${nco_opt} ${gaa_sng}"
 fi # !var_lst
@@ -149,7 +154,7 @@ else
     grd_dst=${grd_dst_dfl} # [sng] Grid-file default
 fi # !grd_fl
 if [ -z "${grd_sng}" ]; then 
-    grd_sng_dfl="--rgr grd_ttl="Default internally-generated grid" --rgr grid=${grd_dst_dfl} --rgr lat_nbr=100 --rgr lon_nbr=100 --rgr lat_sth=30.0 --rgr lat_nrt=70.0 --rgr lon_wst=-120.0 --rgr lon_est=-90.0" # [sng] Grid string default
+    grd_sng_dfl="--rgr grd_ttl='Default internally-generated grid' --rgr grid=${grd_dst_dfl} --rgr lat_nbr=100 --rgr lon_nbr=100 --rgr lat_sth=30.0 --rgr lat_nrt=70.0 --rgr lon_wst=-120.0 --rgr lon_est=-90.0" # [sng] Grid string default
     grd_sng="${grd_sng_dfl}"
 fi # !grd_sng
 if [ -n "${map_fl}" ]; then 
@@ -213,10 +218,10 @@ date_srt=$(date +"%s")
 printf "Started SLD processing for file pattern ${sld_fl} at `date`.\n"
 printf "Source grid inferred from SLD file and stored as ${grd_src}\n"
 if [ "${grd_usr_flg}" = 'Yes' ]; then 
-    printf "Destination grid-file supplied as ${grd_dst}\n"
+    printf "Destination grid-file supplied by user as ${grd_dst}\n"
 else
-    printf "Destination grid-file generated internally and stored as ${grd_dst}\n"
-    if [ ${dbg_lvl} -ge 1 ]; then
+    printf "Destination grid-file to be generated internally and stored as ${grd_dst}\n"
+    if [ ${dbg_lvl} -ge 0 ]; then
 	printf "Destination grid characteristics: ${grd_sng}\n"
     fi # !dbg
 fi # !grd_usr_flg
@@ -230,10 +235,10 @@ printf "NCO version is ${nco_version}\n"
 
 # Block 1: Destination grid
 if [ "${grd_usr_flg}" != 'Yes' ]; then 
-    printf "Generating destination grid...\n"
+    printf "Generate destination grid...\n"
     # Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
     clm_idx=1
-    cmd_clm[${clm_idx}]="ncks -O -D 1 -t 1 ${grd_sng} ~/nco/data/in.nc ~/foo.nc"
+    cmd_clm[${clm_idx}]="ncks ${nco_opt} ${grd_sng} ~/nco/data/in.nc ~/foo.nc"
 
     # Block 1 Loop 2: Execute and/or echo commands
     for ((clm_idx=1;clm_idx<=1;clm_idx++)); do
@@ -250,13 +255,13 @@ wait
 
 # Block 2: Source grid(s)
 # Block 2 Loop 1: Source gridfile commands
-printf "Generating source grids...\n"
+printf "Generate source grids...\n"
 clm_idx=2
-cmd_clm[${clm_idx}]="ncks -O -D 1 -t 1 --rgr nfr=y --rgr grid=${grd_src} ${sld_fl} ~/foo.nc"
+cmd_clm[${clm_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${drc_in}/${sld_fl} ~/foo.nc"
 
 # Block 2 Loop 2: Execute and/or echo commands
 for ((clm_idx=2;clm_idx<=2;clm_idx++)); do
-    printf "Generate source grid #${clm_idx} ...\n"
+    printf "Source grid-file #${clm_idx} ...\n"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_clm[${clm_idx}]}
     fi # !dbg
@@ -269,13 +274,13 @@ wait
 # Block 3: Source->destination maps
 if [ "${map_usr_flg}" != 'Yes' ]; then 
     # Block 3 Loop 1: Mapfile commands
-    printf "Generating source->destination maps...\n"
+    printf "Generate source->destination mapping weights...\n"
     clm_idx=3
-    cmd_clm[${clm_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_fl} -w ${map_fl} --method bilinear --src_regional --dst_regional --ignore_unmapped"
+    cmd_clm[${clm_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_fl} -w ${map_fl} --method bilinear --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
 
     # Block 3 Loop 2: Execute and/or echo commands
     for ((clm_idx=3;clm_idx<=3;clm_idx++)); do
-	printf "Generate source->destination map #${clm_idx} ...\n"
+	printf "Map-file #${clm_idx} ...\n"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_clm[${clm_idx}]}
 	fi # !dbg
@@ -289,7 +294,7 @@ wait
 # Block 4: Regrid
 printf "Regridding...\n"
 clm_idx=4
-cmd_clm[${clm_idx}]="ncks -D 5 -O -t 1 --map=${map_fl} ${drc_in}/${sld_fl} ${rgr_fl}"
+cmd_clm[${clm_idx}]="ncks ${nco_opt} --map=${map_fl} ${drc_in}/${sld_fl} ${rgr_fl}"
 
 # Block 4 Loop 2: Execute and/or echo commands
 for ((clm_idx=4;clm_idx<=4;clm_idx++)); do
@@ -302,3 +307,11 @@ for ((clm_idx=4;clm_idx<=4;clm_idx++)); do
     fi # !dbg
 done # !clm_idx
 wait
+
+date_end=$(date +"%s")
+printf "Completed processing for SLD file ${sld_fl} at `date`.\n"
+date_dff=$((date_end-date_srt))
+echo "Quick plots of results: ncview ${rgr_fl} &"
+echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
+
+exit 0
