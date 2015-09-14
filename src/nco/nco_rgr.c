@@ -515,6 +515,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   
   nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
   nco_grd_lat_typ_enm nco_grd_lat_typ=nco_grd_lat_nil; /* [enm] Latitude grid-type enum */
+  nco_grd_lon_typ_enm nco_grd_lon_typ=nco_grd_lon_nil; /* [enm] Longitude grid-type enum */
 
   nco_mpf_sct rgr_map;
 
@@ -1040,12 +1041,17 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      lat_ntf_out[lat_nbr_out]=lat_ctr_out[lat_nbr_out-1]+0.5*(lat_ctr_out[lat_nbr_out-1]-lat_ctr_out[lat_nbr_out-2]); */
 
   if(flg_grd_out_2D){
+    double lon_spn; /* [dgr] Longitude span */
+    double lat_spn; /* [dgr] Latitude span */
+
     /* Obtain 1-D rectangular interfaces from unrolled 1-D vertice arrays */
     for(idx=0;idx<lon_nbr_out;idx++) lon_ntf_out[idx]=lon_crn_out[rgr_map.dst_grid_corners*idx];
     lon_ntf_out[lon_nbr_out]=lon_crn_out[rgr_map.dst_grid_corners*lon_nbr_out-(rgr_map.dst_grid_corners-1L)];
+    lon_spn=lon_ntf_out[lon_nbr_out]-lon_ntf_out[0];
     for(idx=0;idx<lat_nbr_out;idx++) lat_ntf_out[idx]=lat_crn_out[rgr_map.dst_grid_corners*idx];
     lat_ntf_out[lat_nbr_out]=lat_crn_out[rgr_map.dst_grid_corners*lat_nbr_out-1L];
-    
+    lat_spn=lat_ntf_out[lat_nbr_out]-lat_ntf_out[0];
+
     /* Place 1-D rectangular interfaces into 2-D coordinate boundaries */
     for(idx=0;idx<lon_nbr_out;idx++){
       lon_bnd_out[2*idx]=lon_ntf_out[idx];
@@ -1055,18 +1061,18 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       lat_bnd_out[2*idx]=lat_ntf_out[idx];
       lat_bnd_out[2*idx+1]=lat_ntf_out[idx+1];
     } /* end loop over latitude */
-  } /* !flg_grd_out_2D */
-  
-  if(flg_grd_out_2D){
+
     if(nco_dbg_lvl_get() >= nco_dbg_crr){
       for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
       for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
     } /* endif dbg */
 
-    /* Diagnose type of two-dimensional output grid by testing second latitude center against formulae */
-    nco_grd_xtn_enm nco_grd_xtn=nco_grd_xtn_glb; /* [enm] Extent of grid */
-    const double lat_ctr_tst_fv=-90.0+180.0/(lat_nbr_out-1);
-    const double lat_ctr_tst_eqa=-90.0+180.0*1.5/lat_nbr_out;
+    /* Global or regional grid? */
+    nco_grd_xtn_enm nco_grd_xtn; /* [enm] Extent of grid */
+    if(lon_spn == 360.0 && lat_spn == 180.0) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
+    /* Diagnose type of latitude output grid by testing second latitude center against formulae */
+    const double lat_ctr_tst_fv=lat_ntf_out[0]+lat_spn/(lat_nbr_out-1);
+    const double lat_ctr_tst_eqa=lat_ntf_out[0]+lat_spn*1.5/lat_nbr_out;
     double lat_ctr_tst_gss;
     /* In diagnosing grids, agreement with input to single-precision is "good enough for government work"
        Hence some comparisons cast from double to float before comparison
@@ -1089,36 +1095,30 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
     } /* !Gaussian */
     if(nco_grd_lat_typ == nco_grd_lat_nil){
-      /* If still of unknown type, this 2D grid may be regional (not global) and rectangular
-	 This occurs, e.g., with the RRM CONUS regional equi-angular destination grid
-	 Find latitude increment, check if apparently constant throughout grid */
-      double lat_ctr_ncr_srt; /* [dgr] First latitude increment */
-      double lat_ctr_ncr_end; /* [dgr] Last latitude increment */
-      lat_ctr_ncr_srt=lat_ctr_out[1]-lat_ctr_out[0];
-      lat_ctr_ncr_end=lat_ctr_out[lat_nbr_out-1]-lat_ctr_out[lat_nbr_out-2];
-      if(lat_ctr_ncr_srt == lat_ctr_ncr_end){
-	/* Type appears to be equi-angular in latitude, check if it is consistent with regional equi-angular grid */
-	if(lat_ctr_out[0]-lat_ctr_ncr_srt > -90.0 && lat_ctr_out[lat_nbr_out-1]+lat_ctr_ncr_end < 90.0){
-	  if((float)(lat_ctr_out[0]+((lat_nbr_out-1)*lat_ctr_ncr_srt)) == (float)lat_ctr_out[lat_nbr_out-1]){
-	    nco_grd_lat_typ=nco_grd_lat_fv;
-	    nco_grd_xtn=nco_grd_xtn_rgn;
-	  } /* !rct */
-	} /* !rgn */
-      } /* srt!=end */
-    } /* !nil */
-    if(nco_grd_lat_typ == nco_grd_lat_nil){
       /* If still of unknown type, this 2D grid may be weird
 	 This occurs, e.g., with POP3 destination grid
 	 Change gridtype from nil (which means not-yet-set) to unknown (which means none of the others matched) */
       nco_grd_lat_typ=nco_grd_lat_unk;
     } /* !nil */
+
     /* Currently grd_lat_typ and grd_2D_typ are equivalent, thought that may be relaxed in future */
     if(nco_grd_lat_typ == nco_grd_lat_unk) nco_grd_2D_typ=nco_grd_2D_unk;
     else if(nco_grd_lat_typ == nco_grd_lat_gss) nco_grd_2D_typ=nco_grd_2D_gss;
     else if(nco_grd_lat_typ == nco_grd_lat_fv) nco_grd_2D_typ=nco_grd_2D_fv;
     else if(nco_grd_lat_typ == nco_grd_lat_eqa) nco_grd_2D_typ=nco_grd_2D_eqa;
     else assert(False);
+
+    if(nco_grd_lon_typ == nco_grd_lon_nil){
+      if(     (float)lon_ctr_out[0] ==   0.0 && (float)lon_ctr_out[1] == (float)(lon_ctr_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_Grn_ctr;
+      else if((float)lon_ctr_out[0] == 180.0 && (float)lon_ctr_out[1] == (float)(lon_ctr_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_180_ctr;
+      else if((float)lon_ntf_out[0] ==   0.0 && (float)lon_ntf_out[1] == (float)(lon_ntf_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_Grn_wst;
+      else if((float)lon_ntf_out[0] == 180.0 && (float)lon_ntf_out[1] == (float)(lon_ntf_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_180_wst;
+      else if((float)lon_ctr_out[1] == (float)(lon_ctr_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_bb;
+      else nco_grd_lon_typ=nco_grd_lon_unk;
+    } /* !nco_grd_lon_typ */
+
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lat_sng(nco_grd_lat_typ));
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input longitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(nco_grd_lon_typ));
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
     switch(nco_grd_lat_typ){
@@ -3803,11 +3803,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   for(lat_idx=0;lat_idx<lat_nbr-1;lat_idx++)
     lat_ntf[lat_idx+1]=0.5*(lat_ctr[lat_idx]+lat_ctr[lat_idx+1]);
   lat_ntf[lat_nbr]=lat_ctr[lat_nbr-1]+0.5*(lat_ctr[lat_nbr-1]-lat_ctr[lat_nbr-2]);
+  lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
   
   lon_ntf[0]=lon_ctr[0]-0.5*(lon_ctr[1]-lon_ctr[0]);
   for(lon_idx=0;lon_idx<lon_nbr-1;lon_idx++)
     lon_ntf[lon_idx+1]=0.5*(lon_ctr[lon_idx]+lon_ctr[lon_idx+1]);
   lon_ntf[lon_nbr]=lon_ctr[lon_nbr-1]+0.5*(lon_ctr[lon_nbr-1]-lon_ctr[lon_nbr-2]);
+  lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
   
   /* fxm: do not overwrite bounds (bnd), if any, from input file */
   for(idx=0;idx<lon_nbr;idx++){
@@ -3822,8 +3824,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(flg_grd_2D){
     /* Diagnose type of two-dimensional input grid by testing second latitude center against formulae */
     nco_grd_xtn_enm nco_grd_xtn=nco_grd_xtn_glb; /* [enm] Extent of grid */
-    const double lat_ctr_tst_fv=-90.0+180.0/(lat_nbr-1);
-    const double lat_ctr_tst_eqa=-90.0+180.0*1.5/lat_nbr;
+    const double lat_ctr_tst_fv=lat_ntf[0]+lat_spn/(lat_nbr-1);
+    const double lat_ctr_tst_eqa=lat_ntf[0]+lat_spn*1.5/lat_nbr;
     double lat_ctr_tst_gss;
     /* In diagnosing grids, agreement with input to single-precision is "good enough for government work"
        Hence some comparisons cast from double to float before comparison
@@ -3877,6 +3879,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Diagnose latitude interfaces as necessary */
     lat_sth=lat_ntf[0];
     lat_nrt=lat_ntf[lat_nbr];
+    lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
     switch(lat_typ){
     case nco_grd_lat_fv:
       lat_ncr=lat_spn/(lat_nbr-1);
