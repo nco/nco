@@ -12,11 +12,11 @@
 
 # Production usage:
 # chmod a+x ~/sld_nco.sh
-# sld_nco.sh -c AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr
+# sld_nco.sh -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr
 
 # Debugging and Benchmarking:
 # sld_nco.sh > ~/sld_nco.txt 2>&1 &
-# sld_nco.sh -c AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr > ~/sld_nco.txt 2>&1 &
+# sld_nco.sh -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr > ~/sld_nco.txt 2>&1 &
 
 # Set script name and run directory
 spt_nm=`basename ${0}` # [sng] Script name
@@ -31,7 +31,7 @@ fnt_rvr=`tput smso` # Reverse
 # Modify these defaults to save typing later
 #caseid='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] Case ID
 dbg_lvl=0 # [nbr] Debugging level
-drc_in="${DATA}/sld/raw" # [sng] Input file directory
+drc_in='' # [sng] Input file directory
 drc_out="${DATA}/sld/rgr" # [sng] Output file directory
 esmf_opt='> /dev/null' # [sng] ESMF_RegridWeightGen options
 fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
@@ -42,6 +42,7 @@ grd_sng='' # [sng] Grid string
 grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source) 
 hdr_pad='1000' # [B] Pad at end of header section
 map_fl='' # [sng] Map-file
+mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='-O -t 1 --no_tmp_fl' # [sng] NCO defaults (e.g., '-O -6 -t 1')
 nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 par_typ='bck' # [sng] Parallelism type
@@ -193,6 +194,7 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: rgr_fl   = ${rgr_fl}\n"
+    printf "dbg: sld_fl   = ${sld_fl}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
 #    printf "dbg: yyyy_end = ${yyyy_end}\n"
@@ -206,6 +208,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
 fi # !dbg
 
 # Create output directory, go to working directory
+drc_pwd=${PWD}
 mkdir -p ${drc_out}
 cd ${drc_out}
 
@@ -257,7 +260,18 @@ wait
 # Block 2 Loop 1: Source gridfile commands
 printf "Generate source grids...\n"
 clm_idx=2
-cmd_clm[${clm_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${drc_in}/${sld_fl} ~/foo.nc"
+if [ "${drc_in}" = '' ]; then
+    drc_in="${drc_pwd}"
+fi # !drc_in
+if [ $(basename ${sld_fl}) = "${sld_fl}" ]; then
+    sld_fl_in="${drc_in}/${sld_fl}"
+fi # !basename
+if [ ! -e "${sld_fl_in}" ]; then
+    echo "ERROR: Unable to find SLD file ${sld_fl_in}"
+    echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
+    exit 1
+fi # ! -e
+cmd_clm[${clm_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${sld_fl_in} ~/foo.nc"
 
 # Block 2 Loop 2: Execute and/or echo commands
 for ((clm_idx=2;clm_idx<=2;clm_idx++)); do
@@ -294,7 +308,7 @@ wait
 # Block 4: Regrid
 printf "Regridding...\n"
 clm_idx=4
-cmd_clm[${clm_idx}]="ncks ${nco_opt} --map=${map_fl} ${drc_in}/${sld_fl} ${rgr_fl}"
+cmd_clm[${clm_idx}]="ncks ${nco_opt} --map=${map_fl} ${sld_fl_in} ${rgr_fl}"
 
 # Block 4 Loop 2: Execute and/or echo commands
 for ((clm_idx=4;clm_idx<=4;clm_idx++)); do
