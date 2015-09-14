@@ -1,3 +1,7 @@
+2015-09-14  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up sld_nco.sh, better segregate nco_2d_grd_typ from nco_lat_grd_typ
+
 2015-09-11  Charlie Zender  <zender@uci.edu>
 
 	* Add sld_nco.sh script for Swath-Like Data processing to nco/data

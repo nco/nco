@@ -514,6 +514,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   nco_bool flg_bnd_1D_usable=False; /* [flg] Usable 1D cell vertices exist */
   
   nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
+  nco_grd_lat_typ_enm nco_grd_lat_typ=nco_grd_lat_nil; /* [enm] Latitude grid-type enum */
 
   nco_mpf_sct rgr_map;
 
@@ -1071,10 +1072,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        Hence some comparisons cast from double to float before comparison
        20150526: T42 grid from SCRIP and related maps are only accurate to ~eight digits
        20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006 */
-    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_eqa) nco_grd_2D_typ=nco_grd_2D_eqa;
-    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_fv) nco_grd_2D_typ=nco_grd_2D_fv;
+    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_eqa) nco_grd_lat_typ=nco_grd_lat_eqa;
+    if((float)lat_ctr_out[1] == (float)lat_ctr_tst_fv) nco_grd_lat_typ=nco_grd_lat_fv;
     double *wgt_Gss_out=NULL; // [frc] Gaussian weights double precision
-    if(nco_grd_2D_typ == nco_grd_2D_nil){
+    if(nco_grd_lat_typ == nco_grd_lat_nil){
       /* Check for Gaussian grid */
       double *lat_sin_out; // [frc] Sine of Gaussian latitudes double precision
       lat_sin_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
@@ -1084,10 +1085,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
       if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr_out[1] = %g, lat_ctr_tst_gss = %g\n",nco_prg_nm_get(),fnc_nm,lat_ctr_out[1],lat_ctr_tst_gss);
-      if((float)lat_ctr_out[1] == (float)lat_ctr_tst_gss) nco_grd_2D_typ=nco_grd_2D_gss;
+      if((float)lat_ctr_out[1] == (float)lat_ctr_tst_gss) nco_grd_lat_typ=nco_grd_lat_gss;
       if(lat_sin_out) lat_sin_out=(double *)nco_free(lat_sin_out);
     } /* !Gaussian */
-    if(nco_grd_2D_typ == nco_grd_2D_nil){
+    if(nco_grd_lat_typ == nco_grd_lat_nil){
       /* If still of unknown type, this 2D grid may be regional (not global) and rectangular
 	 This occurs, e.g., with the RRM CONUS regional equi-angular destination grid
 	 Find latitude increment, check if apparently constant throughout grid */
@@ -1099,44 +1100,50 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	/* Type appears to be equi-angular in latitude, check if it is consistent with regional equi-angular grid */
 	if(lat_ctr_out[0]-lat_ctr_ncr_srt > -90.0 && lat_ctr_out[lat_nbr_out-1]+lat_ctr_ncr_end < 90.0){
 	  if((float)(lat_ctr_out[0]+((lat_nbr_out-1)*lat_ctr_ncr_srt)) == (float)lat_ctr_out[lat_nbr_out-1]){
-	    nco_grd_2D_typ=nco_grd_2D_fv;
+	    nco_grd_lat_typ=nco_grd_lat_fv;
 	    nco_grd_xtn=nco_grd_xtn_rgn;
 	  } /* !rct */
 	} /* !rgn */
       } /* srt!=end */
     } /* !nil */
-    if(nco_grd_2D_typ == nco_grd_2D_nil){
+    if(nco_grd_lat_typ == nco_grd_lat_nil){
       /* If still of unknown type, this 2D grid may be weird
 	 This occurs, e.g., with POP3 destination grid
 	 Change gridtype from nil (which means not-yet-set) to unknown (which means none of the others matched) */
-      nco_grd_2D_typ=nco_grd_2D_unk;
+      nco_grd_lat_typ=nco_grd_lat_unk;
     } /* !nil */
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(nco_grd_2D_typ));
+    /* Currently grd_lat_typ and grd_2D_typ are equivalent, thought that may be relaxed in future */
+    if(nco_grd_lat_typ == nco_grd_lat_unk) nco_grd_2D_typ=nco_grd_2D_unk;
+    else if(nco_grd_lat_typ == nco_grd_lat_gss) nco_grd_2D_typ=nco_grd_2D_gss;
+    else if(nco_grd_lat_typ == nco_grd_lat_fv) nco_grd_2D_typ=nco_grd_2D_fv;
+    else if(nco_grd_lat_typ == nco_grd_lat_eqa) nco_grd_2D_typ=nco_grd_2D_eqa;
+    else assert(False);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lat_sng(nco_grd_lat_typ));
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
-    switch(nco_grd_2D_typ){
-    case nco_grd_2D_eqa:
-    case nco_grd_2D_fv:
+    switch(nco_grd_lat_typ){
+    case nco_grd_lat_eqa:
+    case nco_grd_lat_fv:
       for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
       break;
-    case nco_grd_2D_gss:
+    case nco_grd_lat_gss:
       for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=wgt_Gss_out[idx];
       if(wgt_Gss_out) wgt_Gss_out=(double *)nco_free(wgt_Gss_out);
       break;
-    case nco_grd_2D_unk:
+    case nco_grd_lat_unk:
       for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=0.0;
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING %s reports unknown output latitude grid-type. Unable to guess what latitude weights should be.\n",nco_prg_nm_get(),fnc_nm);
       break;
     default:
       nco_dfl_case_generic_err(); break;
-    } /* end nco_grd_2D_typ switch */
+    } /* end nco_grd_lat_typ switch */
     
     /* Fuzzy test of latitude weight normalization */
     double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
     lat_wgt_ttl=0.0;
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
     lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0]);
-    if(nco_grd_2D_typ != nco_grd_2D_unk) assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
+    if(nco_grd_lat_typ != nco_grd_lat_unk) assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
   } /* !flg_grd_out_2D */
     
   /* When possible, ensure area_out is non-zero
