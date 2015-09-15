@@ -22,6 +22,7 @@
 # sld_nco.sh -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr > ~/sld_nco.txt 2>&1 &
 
 # Set script name and run directory
+drc_pwd=${PWD}
 spt_nm=`basename ${0}` # [sng] Script name
 nco_version=$(ncks --version 2>&1 >/dev/null | grep NCO | awk '{print $5}')
 
@@ -124,7 +125,7 @@ done
 shift $((OPTIND-1)) # Advance one argument
 
 # Derived variables
-if [ "${drc_in}" = '' ]; then
+if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
 fi # !drc_in
 out_nm=${sld_fl}
@@ -137,15 +138,15 @@ fi # !var_lst
 if [ -n "${gaa_sng}" ]; then 
     nco_opt="${nco_opt} ${gaa_sng}"
 fi # !var_lst
+if [ -n "${hdr_pad}" ]; then 
+    nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
+fi # !hdr_pad
 if [ -n "${var_lst}" ]; then 
     nco_opt="${nco_opt} -v ${var_lst}"
 fi # !var_lst
 if [ -n "${xtn_var}" ]; then 
     rgr_opt="${rgr_opt} --xtn=${xtn_var}"
 fi # !var_lst
-if [ -n "${hdr_pad}" ]; then 
-    nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
-fi # !hdr_pad
 if [ ${par_typ} = 'bck' ]; then 
     par_opt=' &'
     par_opt_cf=''
@@ -229,7 +230,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
 fi # !dbg
 
 # Create output directory, go to working directory
-drc_pwd=${PWD}
 mkdir -p ${drc_out}
 cd ${drc_out}
 
