@@ -386,6 +386,8 @@ main(int argc,char **argv)
     {"tst_udunits",required_argument,0,0},
     {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
     {"xml_spr_nmr",required_argument,0,0}, /* [flg] Separator for XML numeric types */
+    {"xtn_var_lst",required_argument,0,0}, /* [sng] Extensive variables */
+    {"extensive",required_argument,0,0}, /* [sng] Extensive variables */
     /* Long options with short counterparts */
     {"3",no_argument,0,'3'},
     {"4",no_argument,0,'4'},

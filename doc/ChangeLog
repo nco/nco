@@ -1,5 +1,9 @@
 2015-09-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.3-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha03 final changes';git push
+	git tag -a 4.5.3-alpha03 -m 'Version 4.5.3-alpha03 tag: --xtn --extensive';git push --tags
+
 	* Diagnosed lat, lon, 2D grid-types now self-consistent for regional grids
 
 	* Clean-up sld_nco.sh, better segregate nco_2d_grd_typ from nco_lat_grd_typ
@@ -43,7 +47,7 @@
 	git tag -a 4.5.3-alpha01 -m 'Version 4.5.3-alpha01 tag: bump versions';git push --tags
 
 	* NCO 4.5.2 release procedure:
- 	Changes since nco-4.5.0: ncra --wgt nrm, --grid, --glb, Newton Gaussian
+ 	Changes since nco-4.5.1: ncra --wgt nrm, --grid, --glb, Newton Gaussian
 	cd ~/nco;git commit -a -m 'Version 4.5.2 release final changes';git push
 	git tag -d 4.5.2;git push origin :refs/tags/4.5.2
 	git tag -a 4.5.2 -m 'Version 4.5.2: Parenthood';git push --tags

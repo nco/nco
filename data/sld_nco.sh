@@ -6,13 +6,16 @@
 # Author: C. Zender
 # Created: 20150909
 
-# Source: fxm
+# Source: https://github.com/nco/nco/tree/master/data/sld_nco.c
 
 # Additional Documentation:
 
 # Production usage:
 # chmod a+x ~/sld_nco.sh
+# sld_nco.sh -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
 # sld_nco.sh -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr
+# sld_nco.sh -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
+# sld_nco.sh -x TSurfStd_ct -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
 
 # Debugging and Benchmarking:
 # sld_nco.sh > ~/sld_nco.txt 2>&1 &
@@ -133,7 +136,7 @@ if [ -n "${var_lst}" ]; then
     nco_opt="${nco_opt} -v ${var_lst}"
 fi # !var_lst
 if [ -n "${xtn_var}" ]; then 
-    rgr_opt="${rgr_opt} --xtn ${xtn_var}"
+    rgr_opt="${rgr_opt} --xtn=${xtn_var}"
 fi # !var_lst
 if [ -n "${hdr_pad}" ]; then 
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
@@ -223,11 +226,11 @@ if [ ${dbg_lvl} -ge 1 ]; then
 fi # !dbg
 date_srt=$(date +"%s")
 printf "Started SLD processing for file pattern ${sld_fl} at `date`.\n"
-printf "Source grid inferred from SLD file and stored as ${grd_src}\n"
+printf "Source grid will be inferred from SLD file and stored as ${grd_src}\n"
 if [ "${grd_usr_flg}" = 'Yes' ]; then 
     printf "Destination grid-file supplied by user as ${grd_dst}\n"
 else
-    printf "Destination grid-file to be generated internally and stored as ${grd_dst}\n"
+    printf "Destination grid-file will be generated internally and stored as ${grd_dst}\n"
     if [ ${dbg_lvl} -ge 0 ]; then
 	printf "Destination grid characteristics: ${grd_sng}\n"
     fi # !dbg
@@ -235,9 +238,9 @@ fi # !grd_usr_flg
 if [ "${map_usr_flg}" = 'Yes' ]; then 
     printf "Map-file supplied as ${map_fl}\n"
 else
-    printf "Map-file generated internally and stored as ${map_fl}\n"
+    printf "Map-file will be generated internally and stored as ${map_fl}\n"
 fi # !map_usr_flg
-printf "Regridded file stored as ${rgr_fl}\n"
+printf "Regridded file will be stored as ${rgr_fl}\n"
 printf "NCO version is ${nco_version}\n"
 
 # Block 1: Destination grid
@@ -267,15 +270,15 @@ clm_idx=2
 if [ "${drc_in}" = '' ]; then
     drc_in="${drc_pwd}"
 fi # !drc_in
-if [ $(basename ${sld_fl}) = "${sld_fl}" ]; then
-    sld_fl_in="${drc_in}/${sld_fl}"
+if [ "$(basename ${sld_fl})" = "${sld_fl}" ]; then
+    sld_fl="${drc_in}/${sld_fl}"
 fi # !basename
-if [ ! -e "${sld_fl_in}" ]; then
-    echo "ERROR: Unable to find SLD file ${sld_fl_in}"
+if [ ! -e "${sld_fl}" ]; then
+    echo "ERROR: Unable to find SLD file ${sld_fl}"
     echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
     exit 1
 fi # ! -e
-cmd_clm[${clm_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${sld_fl_in} ~/foo.nc"
+cmd_clm[${clm_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${sld_fl} ~/foo.nc"
 
 # Block 2 Loop 2: Execute and/or echo commands
 for ((clm_idx=2;clm_idx<=2;clm_idx++)); do
@@ -312,7 +315,7 @@ wait
 # Block 4: Regrid
 printf "Regridding...\n"
 clm_idx=4
-cmd_clm[${clm_idx}]="ncks ${nco_opt} ${rgr_opt} --map=${map_fl} ${sld_fl_in} ${rgr_fl}"
+cmd_clm[${clm_idx}]="ncks ${nco_opt} ${rgr_opt} --map=${map_fl} ${sld_fl} ${rgr_fl}"
 
 # Block 4 Loop 2: Execute and/or echo commands
 for ((clm_idx=4;clm_idx<=4;clm_idx++)); do

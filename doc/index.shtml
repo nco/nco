@@ -150,7 +150,7 @@ and
 
 <ul>
 <li>2015 Oct&nbsp;??: 4.5.3 (<i>In progress</i>)
-<li>2015 Sep&nbsp;06: 4.5.2 (Generate SCRIP grids)
+<li>2015 Sep&nbsp;06: 4.5.2 (Generate SCRIP)
 <li>2015 Jul&nbsp;10: 4.5.1 (Stability)
 <li>2015 Jun&nbsp;11: 4.5.0 (Regridding)
 <li>2015 May&nbsp;21: 4.4.9 (<tt>ncra</tt> weights)
@@ -698,7 +698,7 @@ extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.5.3</b>: (<i>In Progress, features in-progress or completed include</i>)
-<tt>ncks</tt> better support regional grids;</li>
+<tt>ncks</tt> infers rectangular and curvilinear grids;</li>
 <li><b>NCO 4.5.2</b>: (<i>Current Stable Release</i>)
 All operators support <tt>--glb_att_add</tt>;
 <tt>ncks</tt> better support for <tt>fracarea</tt>, <tt>mask</tt>, and displaced-pole grids;

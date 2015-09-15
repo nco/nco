@@ -34,6 +34,11 @@ A. Generate 2-D regional grids in SCRIP format.
    ncks --map map_conusx4v1_to_fv0.1x0.1_US_bilin.nc in.nc out.nc
    http://nco.sf.net/nco.html#regrid
 
+A. Use --xtn_var or --extensive to specify extensive variables.
+   Extensive variables are summed not averaged during regridding. 
+   ncks --xtn count --map map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#regrid
+
 BUG FIXES:
 
 A. ncap2 now evaluates logical expressions with a method that does
