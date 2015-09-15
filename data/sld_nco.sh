@@ -189,6 +189,11 @@ fi # !rgr_fl
 if [ "$(basename ${sld_fl})" = "${sld_fl}" ]; then
     sld_fl="${drc_in}/${sld_fl}"
 fi # !basename
+if [ "${sld_fl}" = "${rgr_fl}" ]; then
+    echo "ERROR: SLD file = Regridded file = ${sld_fl}"
+    echo "HINT: To prevent inadvertent data loss, ${spt_nm} insists that SLD file and regridded file be different"
+    exit 1
+fi # !basename
 
 # Print initial state
 if [ ${dbg_lvl} -ge 1 ]; then

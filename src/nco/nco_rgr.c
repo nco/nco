@@ -1124,7 +1124,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !nco_grd_lon_typ */
 
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lat_sng(nco_grd_lat_typ));
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input longitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(nco_grd_lon_typ));
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output longitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(nco_grd_lon_typ));
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
     switch(nco_grd_lat_typ){
@@ -2280,6 +2280,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	if(has_mss_val && flg_rnr) 
 	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) wgt_vld_out[dst_idx]=0.0;
 
+	  /* 20150914: Intensive variables require normalization, extensive do not
+	     Intensive variables (temperature, wind speed, mixing ratio) do not depend on gridcell boundaries
+	     Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
+	     Extensive variables are the exception in models, yet are commonly used for sampling information, e.g., 
+	     number of photons, number of overpasses 
+	     Pass NCO the list of extensive variables with, e.g., --xtn=TSurfStd_ct,... */
+	  
 	/* Apply weights */
 	if(!has_mss_val){
 	  if(lvl_nbr == 1){
@@ -2336,14 +2343,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	      if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
 	  } /* flg_frc_out_one */
  
-	  /* 20150914: Intensive variables require normalization, extensive do not
-	     Intensive variables (temperature, wind speed, mixing ratio) do not depend on gridcell boundaries
-	     Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
-	     Extensive variables are the exception in models, yet are commonly used for sampling information, e.g., 
-	     number of photons, number of overpasses 
-	     Pass NCO a list of extensive variables, if any, with the --xtn switch */
-	  
-	  
 	  /* NCL and ESMF treatment of weights and missing values described at
 	     https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
 	     http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000
@@ -2366,6 +2365,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 		if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
 	    } /* !wgt_vld_thr */
 	  } /* !flg_rnr */
+
+	  /* 20150914: fxm extensive block */
+	  if(trv.flg_xtn){
+	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+	      if(tally[dst_idx] > 0) var_val_dbl_out[dst_idx]*=wgt_vld_out[dst_idx];
+	  } /* !flg_xtn */
+
 	} /* !has_mss_val */
 	
 #pragma omp critical
@@ -4110,9 +4116,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     const char att_fmt[]="Grid inferred by NCO from input file %s";
     att_val=(char *)nco_malloc((strlen(att_fmt)+strlen(rgr->fl_in)+1L)*sizeof(char));
     sprintf(att_val,att_fmt,rgr->fl_in);
-    //    att_val=strdup("Grid inferred by NCO from input file %s");
-    //    att_val=(char *)nco_realloc(att_val,(strlen(att_val)+strlen(rgr->fl_in)+1L)*sizeof(char));
-    //    sprintf(att_val,att_val,rgr->fl_in);
   }else{
     att_val=strdup(rgr->grd_ttl);
   } /* !grd_ttl */
