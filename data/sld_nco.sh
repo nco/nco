@@ -52,6 +52,7 @@ sld_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] SLD 
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
+xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 yyyy_srt='1980' # [yyyy] Start year
 yyyy_end='1983' # [yyyy] End year
 
@@ -75,7 +76,7 @@ function fnc_usg_prn {
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regridding options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm})"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}sld_fl${fnt_nrm}   SLD file (mandatory) (default ${fnt_bld}${sld_fl}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
-    echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xpt_flg${fnt_nrm}  Xperimental switch (for developers) (default ${fnt_bld}${xpt_flg}${fnt_nrm})"
+    echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -s ${sld_fl} -g ${grd_dst_dfl} -i ${drc_in} -o ${drc_out} ${fnt_nrm}\n"
     exit 1
@@ -109,7 +110,7 @@ while getopts :d:f:g:G:h:i:m:n:o:p:R:r:s:v:x: OPT; do
 	R) rgr_opt=${OPTARG} ;; # Regridding options
 	s) sld_fl=${OPTARG} ;; # SLD file
 	v) var_lst=${OPTARG} ;; # Variables
-	x) xpt_flg=${OPTARG} ;; # Experiment flag
+	x) xtn_var=${OPTARG} ;; # Extensive variables
 	\?) # Unrecognized option
 	    printf "\nERROR: Option ${fnt_bld}-$OPTARG${fnt_nrm} not allowed"
 	    fnc_usg_prn ;;
@@ -130,6 +131,9 @@ if [ -n "${gaa_sng}" ]; then
 fi # !var_lst
 if [ -n "${var_lst}" ]; then 
     nco_opt="${nco_opt} -v ${var_lst}"
+fi # !var_lst
+if [ -n "${xtn_var}" ]; then 
+    rgr_opt="${rgr_opt} --xtn ${xtn_var}"
 fi # !var_lst
 if [ -n "${hdr_pad}" ]; then 
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
@@ -308,7 +312,7 @@ wait
 # Block 4: Regrid
 printf "Regridding...\n"
 clm_idx=4
-cmd_clm[${clm_idx}]="ncks ${nco_opt} --map=${map_fl} ${sld_fl_in} ${rgr_fl}"
+cmd_clm[${clm_idx}]="ncks ${nco_opt} ${rgr_opt} --map=${map_fl} ${sld_fl_in} ${rgr_fl}"
 
 # Block 4 Loop 2: Execute and/or echo commands
 for ((clm_idx=4;clm_idx<=4;clm_idx++)); do

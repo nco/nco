@@ -79,6 +79,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_out_tmp) rgr->fl_out_tmp=(char *)nco_free(rgr->fl_out_tmp);
   if(rgr->fl_map) rgr->fl_map=(char *)nco_free(rgr->fl_map);
   if(rgr->var_nm) rgr->var_nm=(char *)nco_free(rgr->var_nm);
+  if(rgr->xtn_var) rgr->xtn_var=(char **)nco_sng_lst_free(rgr->xtn_var,rgr->xtn_nbr);
 
   /* free() strings associated with grid properties */
   if(rgr->fl_grd) rgr->fl_grd=(char *)nco_free(rgr->fl_grd);
@@ -121,7 +122,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
  char * const rgr_grd_dst, /* I [sng] File containing destination grid */
  char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
  char * const rgr_var, /* I [sng] Variable for special regridding treatment */
- const double wgt_vld_thr) /* I [frc] Weight threshold for valid destination value */
+ const double wgt_vld_thr, /* I [frc] Weight threshold for valid destination value */
+ char **xtn_var, /* [sng] I Extensive variables */
+ const int xtn_nbr) /* [nbr] I Number of extensive variables */
 {
   /* Purpose: Initialize regridding structure */
      
@@ -159,6 +162,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
+  rgr->xtn_var=xtn_var; /* [sng] Extensive variables */
+  rgr->xtn_nbr=xtn_nbr; /* [nbr] Number of extensive variables */
+
   /* Did user explicitly request regridding? */
   if(rgr_arg_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr->flg_usr_rqs=True;
 
@@ -1525,6 +1531,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
   int var_crt_nbr=0; /* [nbr] Number of created variables */
+  int var_xtn_nbr=0; /* [nbr] Number of extensive variables */
   unsigned int idx_tbl; /* [idx] Counter for traversal table */
   const unsigned int trv_nbr=trv_tbl->nbr; /* [idx] Number of traversal table entries */
   for(idx=0;idx<var_xcl_lst_nbr;idx++){
@@ -1547,7 +1554,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   nco_bool has_lat; /* [flg] Contains latitude dimension */
   trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
   /* Define regridding flag for each variable */
-  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
     dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
@@ -1588,6 +1595,19 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* end idx_tbl */
   if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria. The regridder expects something to regrid, and variables not regridded are copied straight to output. HINT: If the name(s) of the input horizontal spatial dimensions to be regridded (e.g., latitude and longitude or column) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"latitude\", \"longitude\", and \"ncol\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr col=lndgrid --rgr lat=north ...\".\n",nco_prg_nm_get(),fnc_nm);
   
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv=trv_tbl->lst[idx_tbl];
+    if(trv.flg_rgr){
+      for(int xtn_idx=0;xtn_idx<rgr->xtn_nbr;xtn_idx++){
+        if(!strcmp(trv.nm,rgr->xtn_var[xtn_idx])){
+          trv_tbl->lst[idx_tbl].flg_xtn=True;
+	  var_xtn_nbr++;
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Variable %s will be treated as extensive (summed not averaged)\n",nco_prg_nm_get(),trv.nm_fll);
+	} /* !strcmp */
+      } /* !xtn_idx */
+    } /* !flg_rgr */
+  } /* !idx_tbl */
+    
   if(nco_dbg_lvl_get() >= nco_dbg_sbr){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
       trv=trv_tbl->lst[idx_tbl];
@@ -2316,6 +2336,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	      if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
 	  } /* flg_frc_out_one */
  
+	  /* 20150914: Intensive variables require normalization, extensive do not
+	     Intensive variables (temperature, wind speed, mixing ratio) do not depend on gridcell boundaries
+	     Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
+	     Extensive variables are the exception in models, yet are commonly used for sampling information, e.g., 
+	     number of photons, number of overpasses 
+	     Pass NCO a list of extensive variables, if any, with the --xtn switch */
+	  
+	  
 	  /* NCL and ESMF treatment of weights and missing values described at
 	     https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
 	     http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000
@@ -2363,7 +2391,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !xtr */
   } /* end (OpenMP parallel for) loop over idx_tbl */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report. Variables regridded = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report. Variables regridded = %d (%d extensive), copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_xtn_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
   
   /* Free memory allocated for grid reading/writing */
   if(area_out) area_out=(double *)nco_free(area_out);
@@ -2385,7 +2413,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(wgt_raw) wgt_raw=(double *)nco_free(wgt_raw);
   
   return rcd;
-} /* nco_rgr_map() */
+} /* end nco_rgr_map() */
 
 void
 nco_bsl_zro /* Return Bessel function zeros */

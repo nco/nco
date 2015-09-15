@@ -946,11 +946,13 @@ extern "C" {
     nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
     nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
     // Other internal data and metadata 
+    char **xtn_var; /* [sng] Extensive variables */
     char *cmd_ln; /* [sng] Command-line */
     double wgt_vld_thr; /* [frc] Weight threshold for valid destination value */
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */
     int rgr_nbr; /* [nbr] Number of regridding arguments */
+    int xtn_nbr; /* [nbr] Number of extensive variables */
     nco_bool flg_usr_rqs; /* [flg] User requested regridding */
     nco_bool flg_grd_src; /* [flg] User-specified input grid */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
@@ -1122,6 +1124,7 @@ extern "C" {
     nco_bool flg_nsx;                 /* [flg] Object matches intersection criteria */
     nco_bool flg_rcr;                 /* [flg] Extract group recursively */
     nco_bool flg_rgr;                 /* [flg] Regrid variable */ 
+    nco_bool flg_xtn;                 /* [flg] Extensive variable */ 
     nco_bool flg_unn;                 /* [flg] Object matches union criteria */
     nco_bool flg_vfp;                 /* [flg] Variable matches full path specification */
     nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */

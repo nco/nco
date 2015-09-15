@@ -116,6 +116,7 @@ main(int argc,char **argv)
   char **grp_lst_in=NULL;
   char **rgr_arg=NULL; /* [sng] Regridding arguments */
   char **var_lst_in=NULL;
+  char **xtn_lst_in=NULL; /* [sng] Extensive variables */
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
   char *cnk_arg[NC_MAX_DIMS];
@@ -205,6 +206,7 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
   int var_nbr_fl;
   int var_ntm_fl;
+  int xtn_nbr=0; /* [nbr] Number of extensive variables */
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
 
   kvm_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
@@ -665,6 +667,13 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"xml_no_location") || !strcmp(opt_crr,"ncml_no_location")){PRN_XML_LOCATION=False;PRN_XML=True;} /* [flg] Print XML location tag */
       if(!strcmp(opt_crr,"xml_spr_chr")){spr_chr=(char *)strdup(optarg);PRN_XML=True;} /* [flg] Separator for XML character types */
       if(!strcmp(opt_crr,"xml_spr_nmr")){spr_nmr=(char *)strdup(optarg);PRN_XML=True;} /* [flg] Separator for XML numeric types */
+      if(!strcmp(opt_crr,"xtn_var_lst") || !strcmp(opt_crr,"extensive")){
+	/* Extensive variables */
+	optarg_lcl=(char *)strdup(optarg);
+	(void)nco_rx_comma2hash(optarg_lcl);
+	xtn_lst_in=nco_lst_prs_2D(optarg_lcl,",",&xtn_nbr);
+	optarg_lcl=(char *)nco_free(optarg_lcl);
+      } /* !xtn */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -967,7 +976,7 @@ main(int argc,char **argv)
       /* Initialize regridding structure */
       rgr_in=(char *)strdup(fl_in);
       rgr_out=(char *)strdup(fl_out);
-      rgr_nfo=nco_rgr_ini(cmd_ln,in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,wgt_vld_thr);
+      rgr_nfo=nco_rgr_ini(cmd_ln,in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,wgt_vld_thr,xtn_lst_in,xtn_nbr);
       rgr_nfo->fl_out_tmp=nco_fl_out_open(rgr_nfo->fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
       /* Copy Global Metadata */
