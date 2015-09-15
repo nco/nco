@@ -4107,9 +4107,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   
   att_nm=strdup("title");
   if(strstr(rgr->grd_ttl,"None given")){
-    att_val=strdup("Grid inferred by NCO from input file %s");
-    att_val=(char *)nco_realloc(att_val,(strlen(att_val)+strlen(rgr->fl_in)+1L)*sizeof(char));
-    sprintf(att_val,att_val,rgr->fl_in);
+    const char att_fmt[]="Grid inferred by NCO from input file %s";
+    att_val=(char *)nco_malloc((strlen(att_fmt)+strlen(rgr->fl_in)+1L)*sizeof(char));
+    sprintf(att_val,att_fmt,rgr->fl_in);
+    //    att_val=strdup("Grid inferred by NCO from input file %s");
+    //    att_val=(char *)nco_realloc(att_val,(strlen(att_val)+strlen(rgr->fl_in)+1L)*sizeof(char));
+    //    sprintf(att_val,att_val,rgr->fl_in);
   }else{
     att_val=strdup(rgr->grd_ttl);
   } /* !grd_ttl */
