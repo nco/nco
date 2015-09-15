@@ -267,7 +267,6 @@ if [ "${grd_usr_flg}" != 'Yes' ]; then
 
     # Block 1 Loop 2: Execute and/or echo commands
     for ((clm_idx=1;clm_idx<=1;clm_idx++)); do
-	printf "Generate destination grid #${clm_idx} ...\n"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_clm[${clm_idx}]}
 	fi # !dbg
@@ -291,7 +290,6 @@ cmd_clm[${clm_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${sld_fl}
 
 # Block 2 Loop 2: Execute and/or echo commands
 for ((clm_idx=2;clm_idx<=2;clm_idx++)); do
-    printf "Source grid-file #${clm_idx} ...\n"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_clm[${clm_idx}]}
     fi # !dbg
@@ -310,7 +308,6 @@ if [ "${map_usr_flg}" != 'Yes' ]; then
 
     # Block 3 Loop 2: Execute and/or echo commands
     for ((clm_idx=3;clm_idx<=3;clm_idx++)); do
-	printf "Map-file #${clm_idx} ...\n"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_clm[${clm_idx}]}
 	fi # !dbg
@@ -328,7 +325,6 @@ cmd_clm[${clm_idx}]="ncks ${nco_opt} ${rgr_opt} --map=${map_fl} ${sld_fl} ${rgr_
 
 # Block 4 Loop 2: Execute and/or echo commands
 for ((clm_idx=4;clm_idx<=4;clm_idx++)); do
-    printf "Regrid file #${clm_idx} ...\n"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_clm[${clm_idx}]}
     fi # !dbg

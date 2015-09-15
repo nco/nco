@@ -2269,6 +2269,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	} /* end loop over dimensions */
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
 	
+	/* Compute number and size of non-lat/lon dimensions (e.g., level, time, species, wavelength)
+	   Denote their convolution by level or 'lvl' for shorthand
+	   There are lvl_nbr elements for each lat/lon position
+	   Assume lat/lon are two most-rapidly varying dimensions */
 	lvl_nbr=1;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
 
@@ -2306,15 +2310,28 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  } /* lvl_nbr > 1 */
 	}else{ /* has_mss_val */
 	  if(lvl_nbr == 1){
-	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-	      idx_in=col_src_adr[lnk_idx];
-	      idx_out=row_dst_adr[lnk_idx];
-	      if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
-		var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
-		if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
-		tally[idx_out]++;
-	      } /* endif */
-	    } /* end loop over link */
+	    if(trv.flg_xtn){
+	      /* 20150914: fxm extensive block */
+	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		idx_in=col_src_adr[lnk_idx];
+		idx_out=row_dst_adr[lnk_idx];
+		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		  var_val_dbl_out[idx_out]+=var_val_crr;
+		  if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
+		  tally[idx_out]++;
+		} /* endif */
+	      } /* end loop over link */
+	    }else{
+	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		idx_in=col_src_adr[lnk_idx];
+		idx_out=row_dst_adr[lnk_idx];
+		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		  var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		  if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
+		  tally[idx_out]++;
+		} /* endif */
+	      } /* end loop over link */
+	    } /* !flg_xtn */
 	  }else{ /* lvl_nbr > 1 */
 	    val_in_fst=0L;
 	    val_out_fst=0L;
@@ -2368,7 +2385,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  } /* !flg_rnr */
 
 	  /* 20150914: fxm extensive block */
-	  if(trv.flg_xtn){
+	  if(flg_rnr && trv.flg_xtn){
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++){
 	      if(tally[dst_idx] > 0){
 		if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"Extensive variable %s: dst_idx = %li, tally = %d, val_out_b4 = %g, wgt_vld_out = %g, val_out_after = %g\n",trv.nm,dst_idx,tally[dst_idx],var_val_dbl_out[dst_idx],wgt_vld_out[dst_idx],var_val_dbl_out[dst_idx]*wgt_vld_out[dst_idx]);
