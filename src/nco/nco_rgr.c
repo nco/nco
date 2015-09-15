@@ -2371,7 +2371,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  if(trv.flg_xtn){
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++){
 	      if(tally[dst_idx] > 0){
-		if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"Extensive variable %s: dst_idx = %li, tally = %d, val_out_b4 = %g, wgt_vld_out = %g, val_out_after = %g\n",trv.nm,dst_idx,tally[dst_idx],var_val_dbl_out[dst_idx],wgt_vld_out[dst_idx],var_val_dbl_out[dst_idx]*wgt_vld_out[dst_idx]);
+		if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"Extensive variable %s: dst_idx = %li, tally = %d, val_out_b4 = %g, wgt_vld_out = %g, val_out_after = %g\n",trv.nm,dst_idx,tally[dst_idx],var_val_dbl_out[dst_idx],wgt_vld_out[dst_idx],var_val_dbl_out[dst_idx]*wgt_vld_out[dst_idx]);
 		var_val_dbl_out[dst_idx]*=wgt_vld_out[dst_idx];
 	      } /* !tally */
 	    } /* !dst_idx */

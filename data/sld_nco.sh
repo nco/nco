@@ -85,6 +85,7 @@ function fnc_usg_prn {
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -s ${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -x TSurfStd_ct -s ${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
     exit 1
 } # end fnc_usg_prn()
 
