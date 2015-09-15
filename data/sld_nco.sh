@@ -122,6 +122,9 @@ done
 shift $((OPTIND-1)) # Advance one argument
 
 # Derived variables
+if [ "${drc_in}" = '' ]; then
+    drc_in="${drc_pwd}"
+fi # !drc_in
 out_nm=${sld_fl}
 if [ -n "${fml_nm}" ]; then 
     out_nm="${fml_nm}"
@@ -179,9 +182,13 @@ fi # !map_fl
 if [ -n "${rgr_fl}" ]; then 
     rgr_usr_flg='Yes'
 else
-    rgr_fl_dfl="${drc_out}/${sld_fl}" # [sng] Map-file default
-    rgr_fl=${rgr_fl_dfl}
+    rgr_fl="${drc_out}/$(basename ${sld_fl})" # [sng] Map-file default
 fi # !rgr_fl
+
+# Doubly-derived fields
+if [ "$(basename ${sld_fl})" = "${sld_fl}" ]; then
+    sld_fl="${drc_in}/${sld_fl}"
+fi # !basename
 
 # Print initial state
 if [ ${dbg_lvl} -ge 1 ]; then
@@ -267,12 +274,6 @@ wait
 # Block 2 Loop 1: Source gridfile commands
 printf "Generate source grids...\n"
 clm_idx=2
-if [ "${drc_in}" = '' ]; then
-    drc_in="${drc_pwd}"
-fi # !drc_in
-if [ "$(basename ${sld_fl})" = "${sld_fl}" ]; then
-    sld_fl="${drc_in}/${sld_fl}"
-fi # !basename
 if [ ! -e "${sld_fl}" ]; then
     echo "ERROR: Unable to find SLD file ${sld_fl}"
     echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
