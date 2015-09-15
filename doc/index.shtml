@@ -699,6 +699,7 @@ netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.5.3</b>: (<i>In Progress, features in-progress or completed include</i>)
 <tt>ncks</tt> infers rectangular and curvilinear grids;</li>
+<tt>ncks --xtn</tt> specifies extensive variables;</li>
 <li><b>NCO 4.5.2</b>: (<i>Current Stable Release</i>)
 All operators support <tt>--glb_att_add</tt>;
 <tt>ncks</tt> better support for <tt>fracarea</tt>, <tt>mask</tt>, and displaced-pole grids;

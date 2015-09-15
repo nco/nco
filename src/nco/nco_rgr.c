@@ -1523,8 +1523,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !err */
   } /* !2D */
     
-  /* Do not extract extensive variables like lon, lat, and area
-     If necessary, create them from scratch from remap data */
+  /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
+     If necessary, create them from scratch from remap data
+     Other extensive variables (like counts, population) will be extracted and summed not averaged */
   const int var_xcl_lst_nbr=13; /* [nbr] Number of objects on exclusion list */
   const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/lat","/latitude","/lat_bnds","/lat_vertices","/bounds_lat","/lon","/longitude","/lon_bnds","/lon_vertices","/bounds_lon"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
@@ -2368,8 +2369,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
 	  /* 20150914: fxm extensive block */
 	  if(trv.flg_xtn){
-	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	      if(tally[dst_idx] > 0) var_val_dbl_out[dst_idx]*=wgt_vld_out[dst_idx];
+	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++){
+	      if(tally[dst_idx] > 0){
+		if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"Extensive variable %s: dst_idx = %li, tally = %d, val_out_b4 = %g, wgt_vld_out = %g, val_out_after = %g\n",trv.nm,dst_idx,tally[dst_idx],var_val_dbl_out[dst_idx],wgt_vld_out[dst_idx],var_val_dbl_out[dst_idx]*wgt_vld_out[dst_idx]);
+		var_val_dbl_out[dst_idx]*=wgt_vld_out[dst_idx];
+	      } /* !tally */
+	    } /* !dst_idx */
 	  } /* !flg_xtn */
 
 	} /* !has_mss_val */

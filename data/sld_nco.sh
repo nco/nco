@@ -39,10 +39,8 @@ drc_out="${DATA}/sld/rgr" # [sng] Output file directory
 esmf_opt='> /dev/null' # [sng] ESMF_RegridWeightGen options
 fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
 gaa_sng="--gaa sld_script=${spt_nm} --gaa sld_hostname=${HOSTNAME} --gaa sld_version=${nco_version}" # [sng] Global attributes to add
-grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
 grd_fl='' # [sng] Grid-file
 grd_sng='' # [sng] Grid string
-grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source) 
 hdr_pad='1000' # [B] Pad at end of header section
 map_fl='' # [sng] Map-file
 mpi_flg='No' # [sng] Parallelize over nodes
@@ -59,6 +57,10 @@ xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 yyyy_srt='1980' # [yyyy] Start year
 yyyy_end='1983' # [yyyy] End year
 
+# Derived defaults
+grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
+grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source) 
+
 function fnc_usg_prn {
     # Print usage
     printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (read script for more thorough explanations)\n\n"
@@ -70,7 +72,7 @@ function fnc_usg_prn {
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm})"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_fl${fnt_nrm}   Grid-file (destination) (empty means generate internally) (default ${fnt_bld}${grd_fl}${fnt_nrm})"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm})"
-    echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm})"
+    echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means look in current directory) (default ${fnt_bld}${drc_in}${fnt_nrm})"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm})"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm})"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm})"
@@ -81,7 +83,7 @@ function fnc_usg_prn {
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
     printf "\n"
-    printf "Examples: ${fnt_bld}$spt_nm -s ${sld_fl} -g ${grd_dst_dfl} -i ${drc_in} -o ${drc_out} ${fnt_nrm}\n"
+    printf "Examples: ${fnt_bld}$spt_nm -s ${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
     exit 1
 } # end fnc_usg_prn()
 
