@@ -60,6 +60,7 @@ yyyy_end='1983' # [yyyy] End year
 
 # Derived defaults
 grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
+grd_dst_glb="${DATA}/grids/180x360_SCRIP.20150901.nc" # [sng] Grid-file (destination) global
 grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source) 
 
 function fnc_usg_prn {
@@ -86,6 +87,11 @@ function fnc_usg_prn {
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -s ${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -x TSurfStd_ct -s ${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -v TSurfAir -s ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -v CloudFrc_A -s ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -s ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -s ${DATA}/hdf/OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5 -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -v T -s ${DATA}/hdf/wrfout_v2_Lambert.nc -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
     exit 1
 } # end fnc_usg_prn()
 
