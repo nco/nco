@@ -1,5 +1,7 @@
 2015-09-15  Charlie Zender  <zender@uci.edu>
 
+	* Implement SLD stubs in nco_grd_nfr()
+
 	* Check return codes in sld_nco.sh
 
 	* Fix grid infer problem caused by segregating lat_typ from grd_typ
