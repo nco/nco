@@ -23,7 +23,7 @@
 
 # Set script name and run directory
 drc_pwd=${PWD}
-spt_nm=`basename ${0}` # [sng] Script name
+spt_nm=$(basename ${0}) # [sng] Script name
 nco_version=$(ncks --version 2>&1 >/dev/null | grep NCO | awk '{print $5}')
 
 # Set fonts for legibility
@@ -273,7 +273,7 @@ if [ "${grd_usr_flg}" != 'Yes' ]; then
 	if [ ${dbg_lvl} -le 1 ]; then
 	    eval ${cmd_clm[${clm_idx}]}
 	    if [ $? -ne 0 ]; then
-		printf "ERROR: Failed to generate destination grid\n"
+		printf "${spt_nm}: ERROR Failed to generate destination grid\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
@@ -286,7 +286,7 @@ wait
 printf "Generate source grids...\n"
 clm_idx=2
 if [ ! -e "${sld_fl}" ]; then
-    echo "ERROR: Unable to find SLD file ${sld_fl}"
+    echo "${spt_nm}: ERROR Unable to find SLD file ${sld_fl}"
     echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
     exit 1
 fi # ! -e
@@ -300,7 +300,7 @@ for ((clm_idx=2;clm_idx<=2;clm_idx++)); do
     if [ ${dbg_lvl} -le 1 ]; then
 	eval ${cmd_clm[${clm_idx}]}
 	if [ $? -ne 0 ]; then
-	    printf "ERROR: Failed to generate source grid\n"
+	    printf "${spt_nm}: ERROR Failed to generate source grid\n"
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -322,7 +322,7 @@ if [ "${map_usr_flg}" != 'Yes' ]; then
 	if [ ${dbg_lvl} -le 1 ]; then
 	    eval ${cmd_clm[${clm_idx}]}
 	    if [ $? -ne 0 ]; then
-		printf "ERROR: Failed to generate mapfile\n"
+		printf "${spt_nm}: ERROR Failed to generate mapfile\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
@@ -343,7 +343,7 @@ for ((clm_idx=4;clm_idx<=4;clm_idx++)); do
     if [ ${dbg_lvl} -le 1 ]; then
 	eval ${cmd_clm[${clm_idx}]}
 	if [ $? -ne 0 ]; then
-	    printf "ERROR: Failed to regrid\n"
+	    printf "${spt_nm}: ERROR Failed to regrid\n"
 	    exit 1
 	fi # !err
     fi # !dbg
