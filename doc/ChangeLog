@@ -1,5 +1,9 @@
 2015-09-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.3-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha03 final changes';git push
+	git tag -a 4.5.3-alpha03 -m 'Version 4.5.3-alpha03 tag: --xtn --extensive, ncks HINT, ncecat --gag fix';git push --tags
+
 	* Add regression test (the first one!) for ncecat --gag
 
 	* Reset rcd in ncecat after checking for group existence. Caused ncecat --gag to die. Problem introduced in 4.4.9 on 20150515, and reported by Huan Wu.
@@ -15,10 +19,6 @@
 	* Fix grid infer problem caused by segregating lat_typ from grd_typ
 
 2015-09-14  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.5.3-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha03 final changes';git push
-	git tag -a 4.5.3-alpha03 -m 'Version 4.5.3-alpha03 tag: --xtn --extensive';git push --tags
 
 	* Diagnosed lat, lon, 2D grid-types now self-consistent for regional grids
 
