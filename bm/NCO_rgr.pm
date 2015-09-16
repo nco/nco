@@ -1295,6 +1295,18 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
     
+#ncecat #14
+# Test --gag
+# ncecat -O --gag -v one,lat -p ~/nco/data in.nc in.nc in.nc ~/foo.nc
+# ncks -C -H -v one ~/foo.nc
+    $dsc_sng="Test group aggregation with --gag";
+    $tst_cmd[0]="ncecat -h -O $fl_fmt $nco_D_flg --gag -v one,lat $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks $fl_fmt $nco_D_flg -C -H -v one %tmp_fl_00%";
+    $tst_cmd[2]="one = 1";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+    
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
 #####################

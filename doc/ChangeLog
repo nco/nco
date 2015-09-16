@@ -1,6 +1,8 @@
 2015-09-16  Charlie Zender  <zender@uci.edu>
 
-	* Reset rcd in ncecat after checking for group existence. Caused ncecat --gag to die. Problem reported by Huan Wu.
+	* Add regression test (the first one!) for ncecat --gag
+
+	* Reset rcd in ncecat after checking for group existence. Caused ncecat --gag to die. Problem introduced in 4.4.9 on 20150515, and reported by Huan Wu.
 
 	* ncks exit with error when regridding specified without output file
 

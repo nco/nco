@@ -48,6 +48,12 @@ A. ncap2 now evaluates logical expressions with a method that does
    The solution is to upgrade to 4.5.3. Thanks to Maxim Petrenko for 
    reporting this problem, and to Henry Butowsky for fixing it.
 
+A. ncecat version 4.4.9 introduced a problem that could cause it
+   to fail when using --gag mode on a single file. This problem
+   has been fixed. The solution is to upgrade to 4.5.3, or to use
+   versions 4.4.8 and prior if you encounter this problem.
+   Thanks to Huan Wu for reporting this problem.
+
 KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
