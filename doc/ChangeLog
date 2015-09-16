@@ -1,3 +1,7 @@
+2015-09-16  Charlie Zender  <zender@uci.edu>
+
+	* Exit with error when regridding speicified without output file
+
 2015-09-15  Charlie Zender  <zender@uci.edu>
 
 	* Implement SLD stubs in nco_grd_nfr()
