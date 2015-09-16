@@ -272,6 +272,10 @@ if [ "${grd_usr_flg}" != 'Yes' ]; then
 	fi # !dbg
 	if [ ${dbg_lvl} -le 1 ]; then
 	    eval ${cmd_clm[${clm_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "ERROR: Failed to generate destination grid\n"
+		exit 1
+	    fi # !err
 	fi # !dbg
     done # !clm_idx
 fi # !grd_usr_flg
@@ -295,6 +299,10 @@ for ((clm_idx=2;clm_idx<=2;clm_idx++)); do
     fi # !dbg
     if [ ${dbg_lvl} -le 1 ]; then
 	eval ${cmd_clm[${clm_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "ERROR: Failed to generate source grid\n"
+	    exit 1
+	fi # !err
     fi # !dbg
 done # !clm_idx
 wait
@@ -313,6 +321,10 @@ if [ "${map_usr_flg}" != 'Yes' ]; then
 	fi # !dbg
 	if [ ${dbg_lvl} -le 1 ]; then
 	    eval ${cmd_clm[${clm_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "ERROR: Failed to generate mapfile\n"
+		exit 1
+	    fi # !err
 	fi # !dbg
     done # !clm_idx
 fi # !map_usr_flg
@@ -330,6 +342,10 @@ for ((clm_idx=4;clm_idx<=4;clm_idx++)); do
     fi # !dbg
     if [ ${dbg_lvl} -le 1 ]; then
 	eval ${cmd_clm[${clm_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "ERROR: Failed to regrid\n"
+	    exit 1
+	fi # !err
     fi # !dbg
 done # !clm_idx
 wait

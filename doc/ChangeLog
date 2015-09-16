@@ -1,5 +1,7 @@
 2015-09-15  Charlie Zender  <zender@uci.edu>
 
+	* Check return codes in sld_nco.sh
+
 	* Fix grid infer problem caused by segregating lat_typ from grd_typ
 
 2015-09-14  Charlie Zender  <zender@uci.edu>
