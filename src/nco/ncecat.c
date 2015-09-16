@@ -777,7 +777,7 @@ main(int argc,char **argv)
         /* GPE arguments derived from filenames check for existence of path in output file */
         rcd=nco_inq_grp_full_ncid_flg(out_id,gpe_arg,&gpe_id);
         /* Existence implies current file may overwrite contents of previous file */
-        if(rcd == NC_NOERR) (void)fprintf(stderr,"%s: WARNING GAG path \"%s\" automatically derived from stub of filename %s conflicts with existing path in output file. Any input data with same absolute path names as contents of a previous input file will be overwritten. Is the same input file specified multiple times? Is this intentional?\nHINT: To distribute copies of a single input file into different groups, use GPE to generate distinct output group names, e.g., %s -G copy in.nc in.nc out.nc\n",nco_prg_nm_get(),gpe_arg,fl_in,nco_prg_nm_get());
+        if(rcd == NC_NOERR) (void)fprintf(stderr,"%s: WARNING GAG path \"%s\" automatically derived from stub of filename %s conflicts with existing path in output file. Any input data with same absolute path names as contents of a previous input file will be overwritten. Is the same input file specified multiple times? Is this intentional?\nHINT: To distribute copies of a single input file into different groups, use GPE to generate distinct output group names, e.g., %s -G copy in.nc in.nc out.nc\n",nco_prg_nm_get(),gpe_arg,fl_in,nco_prg_nm_get()); else rcd=NC_NOERR;
       } /* !grp_out */
       /* Free old structure, if any, before re-use */
       if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);

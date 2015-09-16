@@ -1,6 +1,8 @@
 2015-09-16  Charlie Zender  <zender@uci.edu>
 
-	* Exit with error when regridding speicified without output file
+	* Reset rcd in ncecat after checking for group existence. Caused ncecat --gag to die. Problem reported by Huan Wu.
+
+	* ncks exit with error when regridding specified without output file
 
 2015-09-15  Charlie Zender  <zender@uci.edu>
 
