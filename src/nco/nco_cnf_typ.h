@@ -99,6 +99,10 @@ ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if n
 (var_sct ** const var, /* I/O [sct] Variable */
  scv_sct * const scv); /* I/O [sct] Scalar value */
 
+nco_bool /* O [flg] Input is integer type */
+nco_typ_ntg /* [fnc] Identify integer types */
+(const nc_type typ_in); /* I [enm] Type to check for integer-ness */
+
 nco_bool /* O [flg] Input is signed type */
 nco_typ_sgn /* [fnc] Identify signed types */
 (const nc_type typ_in); /* I [enm] Type to check for signedness */

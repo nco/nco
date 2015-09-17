@@ -1,3 +1,7 @@
+2015-09-17  Charlie Zender  <zender@uci.edu>
+
+	* round() integer-type extensive variables
+
 2015-09-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.3-alpha03 release procedure:

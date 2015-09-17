@@ -2350,6 +2350,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	    } /* end loop over lvl */
 	  } /* lvl_nbr > 1 */
 
+	  /* Rounding can be important for integer-type extensive variables */
+	  if(trv.flg_xtn)
+	    if(nco_typ_ntg(var_typ_out))
+	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+		var_val_dbl_out[dst_idx]=round(var_val_dbl_out[dst_idx]);
+
 	  if(!flg_frc_nrm){
 	    /* frc_dst = frc_out = dst_frac = frac_b contains non-unity elements and normalization type is "destarea" or "none"
 	       When this occurs, follow "destarea" normalization procedure
