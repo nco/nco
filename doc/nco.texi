@@ -5986,17 +5986,33 @@ The grids are stored in an external @var{grid-file}.
 
 All options pertinent to the grid geometry and metadata are passed to
 @acronym{NCO} via key-value pairs prefixed by the @samp{--rgr} option.
-Pass at least six key-value pair arguments to create a fully
-explicitly specified, well-annotated grid.
-The six arguments, and their corresponding keys, are: grid title
-(@var{grd_ttl}), grid filename (@var{grid}), number of latitudes
-(@var{lat_nbr}), number of longitudes (@var{lon_nbr}), latitude
-grid-type (@var{lat_typ}), and longitude grid-type (@var{lon_typ}). 
-Four other arguments (the North/South/East/West bounding box) are
-necessary to construct equi-angular regional (non-global) grids, described
-later. 
+Perhaps the two most important key-value pair arguments are 
+The text strings that describe the grid and name the file are important 
+aids to convey the grid geometry to other users.
+These arguments, and their corresponding keys, are the grid title
+(@var{grd_ttl}), and grid filename (@var{grid}), respectively.
+The numbers of latitudes (@var{lat_nbr}) and longitudes (@var{lon_nbr})  
+are independent, and together determine the grid storage size.
+These four options should be considered mandatory, although
+@acronym{NCO} provides defaults for any arguments omitted.
 
-The six arguments, and their corresponding keys, are: 
+The remaining arguments depend on the whether the grid is global or
+regional.
+For global grids, one should specify only two more arguments, the
+latitude (@var{lat_typ}) and longitude (@var{lon_typ}) grid-types.
+These types are chosen as described below from a small selection of
+options that together define the most common rectangular global grids.
+For regional grids, one must specify the bounding box, i.e., the edges
+of the rectangular grid on the North (@var{lat_nrt}), South (@var{lat_sth}), 
+East (@var{lat_est}), and West (@var{lat_nrt}) sides. 
+Specifying a bounding box for global grids is redundant and will cause
+an error to ensure the user intends a global grid.
+@acronym{NCO} assumes that regional grids are uniform, though it will 
+attempt to produce regional grids of other types if the user specifies
+latitude (@var{lat_typ}) and longitude (@var{lon_typ}) grid-types.
+
+The full description of grid-generation arguments, and their
+corresponding keys, is:
 @enumerate
 @cindex @var{grd_ttl}
 @cindex @samp{--rgr grd_ttl=@var{grd_ttl}}
@@ -6142,6 +6158,20 @@ grid, and visa versa.
 are @var{lat_nbr} and @var{lon_nbr}, respectively.
 There are no restrictions on @var{lon_nbr} for any gridtype.
 Latitude grids do place some restrictions on @var{lat_nbr} (see above). 
+
+@cindex @var{lat_nrt}
+@cindex @var{lat_sth}
+@cindex @var{lat_est}
+@cindex @var{lat_wst}
+@cindex @samp{--rgr lat_nrt=@var{lat_nrt}}
+@cindex @samp{--rgr lat_nbr=@var{lat_nbr}}
+@item The outer edges of a regional rectangular grid are specified by
+the North (@var{lat_nrt}), South (@var{lat_sth}), East (@var{lat_est}),
+and West (@var{lat_nrt}) sides. 
+Latitudes and longigudes must be specified in degrees (not radians).
+Latitude edges must be between @w{-90 and 90}.
+Longitude edges may be positive or negative and separated by no more
+than 360 degrees.
 @end enumerate
 
 Generating common grids:

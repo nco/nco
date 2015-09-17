@@ -1,5 +1,8 @@
 2015-09-17  Charlie Zender  <zender@uci.edu>
 
+	* Document regional features NSEW in nco.texi
+
+
 	* round() integer-type extensive variables
 
 2015-09-16  Charlie Zender  <zender@uci.edu>
