@@ -1893,7 +1893,7 @@ bool            /* O [flg] true if all var elemenst are true */
 ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
 (var_sct* var)  /* I [sct] input variable */
 {
-  int idx;
+  int idx=0;;
   int sz;
   nc_type type;
   bool bret=true;
@@ -1979,7 +1979,7 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
       break;
     case NC_UINT:
       { nco_uint mss=var->mss_val.uip[0];  
-	for(idx=0;idx<sz;idx++) if(!op1.uip[idx] && !op1.uip[idx]!=mss) break;
+	for(idx=0;idx<sz;idx++) if(!op1.uip[idx] && op1.uip[idx]!=mss) break;
       } 
       break;
     case NC_INT64:
