@@ -1,7 +1,8 @@
 2015-09-17  Charlie Zender  <zender@uci.edu>
 
-	* Document regional features NSEW in nco.texi
+	* Add skeleton output grid capability with --rgr skl=fl_skl
 
+	* Document regional features NSEW in nco.texi
 
 	* round() integer-type extensive variables
 

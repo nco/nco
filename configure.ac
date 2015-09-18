@@ -1190,9 +1190,8 @@ else
 fi
 AC_SUBST(NCO_CXX)
 
-#if the antlr library was not found just don't build ncap2
-if test "${enable_ncoxx}" = 'yes'  \
-    && test "${HAVE_ANTLR}" != 'no' ; then
+# Build ncap2 only if ANTLR library was found
+if test "${enable_ncoxx}" = 'yes'  && test "${HAVE_ANTLR}" != 'no' ; then
     AC_CONFIG_FILES(src/nco++/Makefile)
     NCOXX="nco++"
 else
@@ -1203,6 +1202,12 @@ fi
 AC_SUBST(NCOXX)
 
 # Conditional build of doc/Makefile
+# Only build docs if makeinfo is found
+# More complex MacOS:
+# 20140130: nco.texi uses @textdegree
+# Mac OS X 10.8, 10.9, 10.10 ships with TeXInfo/makeinfo 4.8 (released 20050103)
+# @textdegree is in TeXInfo/makeinfo 4.12 (released 20080420)
+# MacPorts ships with modern TeXInfo/makeinfo 5.2 (released 20130926)
 if test "${HAVE_MAKEINFO}" = 'yes' ; then
     AC_CONFIG_FILES(doc/Makefile)
     DOC_FOLDER="doc"

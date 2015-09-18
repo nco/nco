@@ -935,6 +935,7 @@ extern "C" {
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
     // User-specified grid properties
     char *fl_grd; /* [sng] Name of grid file to create */
+    char *fl_skl; /* [sng] Name of skeleton data file to create */
     char *grd_ttl; /* [sng] Grid title */
     double lat_sth; /* [dgr] Latitude of southern edge of grid */
     double lon_wst; /* [dgr] Longitude of western edge of grid */
