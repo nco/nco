@@ -1601,7 +1601,12 @@ ncap_var_var_op   /* [fnc] Add two variables */
     // and second operand is a var
     if( (var1->nm[0]=='~') && (var2->nm[0]!='~') ){
       swp_nm=var1->nm; var1->nm=var2->nm; var2->nm=swp_nm; 
-    }  
+    }
+
+    // force var1 & var2 share the same missing value   
+    // nb this function is expensive 
+    nco_mss_val_cnf(var1,var2); 
+  
     // var & att
   }else  if( !vb1 && vb2 ){ 
     var2=nco_var_cnf_typ(var1->type,var2);
