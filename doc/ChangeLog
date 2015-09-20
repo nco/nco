@@ -1,3 +1,12 @@
+2015-09-20  Henry Butowsky  <henryb@hush.com>
+	* mods to ncap_var_var_op() -  so that missing value in both operands are the same .
+	nb this can be expensive as all the missing values in one operands data may have to be replaced.
+	So for example if v1 and v2 have different mss_val then  diff1=diff2 
+
+        diff1=total((v1-v2)^2); 
+        diff2=total((v2-v1)^2); 
+
+
 2015-09-17  Charlie Zender  <zender@uci.edu>
 
 	* Add skeleton output grid capability with --rgr skl=fl_skl
