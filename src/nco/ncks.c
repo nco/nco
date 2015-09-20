@@ -3,7 +3,7 @@
 /* ncks -- netCDF Kitchen Sink */
 
 /* Purpose: Extract (subsets of) variables from a netCDF file 
-   Print them to screen, or copy them to a new file, or both */
+   Print them to screen, copy them to another file, or regrid them */
 
 /* Copyright (C) 1995--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.

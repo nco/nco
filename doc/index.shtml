@@ -62,7 +62,7 @@ Try to disable Spammers' machines:
 [<a href="http://www.gnu.org/software/gsl">GSL</a>]
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
-[<a href="http://swamp.googlecode.com">SWAMP</a>] 
+[<a href="http://github.com/nco/swamp">SWAMP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 
@@ -1675,7 +1675,7 @@ solutions for geoscience workflows
 discover and exploit parallelism in scripted workflows.
 2.&nbsp;Resource management in combined computation-data service environments.
 3.&nbsp;Design and implement 
-<a href="http://swamp.googlecode.com">SWAMP</a> to provide
+<a href="http://github.com/nco/swamp">SWAMP</a> to provide
 automated server-side data analysis capabilities to the geoscience 
 community. 
 <i>Other Interests</i>: Large data, data management, programming languages and practice.
@@ -1709,7 +1709,7 @@ community.
 [<a href="http://www.gnu.org/software/gsl">GSL</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
-[<a href="http://swamp.googlecode.com">SWAMP</a>]
+[<a href="http://github.com/nco/swamp">SWAMP</a>]
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 

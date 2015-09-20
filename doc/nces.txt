@@ -1,0 +1,105 @@
+nces: netCDF Ensemble Statistics
+a familiar operator with new features for group-level ensembles
+
+nces goal: exploit parallelism of ensembles stored in group hierarchies
+
+nces backward-compatible user migration:
+deprecate ncea for nces=netCDF ensemble statistics?
+deprecate ncra for ncrs=netCDF record   statistics?
+give nces two personalities:
+where --nsm_grp collapses group ensembles across files into statistics in parent group in output file
+      --nsm_fl  collapses file  ensembles              into statistics                 in output file
+or use --clp ("collapse"), or ... ?
+current ncea becomes synonomous with nces --nsm_fl
+optional argument --nsm_sfx="sng" store statistics at same level as members in new group named nsm_nm+"sng"
+e.g., nsm_sfx="_avg" or nsm_sfx="_min"
+
+nces design assumptions (some could be relaxed later):
+ensemble members are leaf groups
+ensemble has at least two members
+members of a given ensemble contain identical variables/dimensions/ranks/sizes
+different ensembles may have completely different variables
+group can be parent of only one ensemble
+group can be more distant ancestor (e.g., grandparent) of multiple ensembles
+ensemble has one template (tpl) member to set ensemble output definitions/metadata
+choice of template member is arbitrary---use first group returned in grp_id list
+nsm_nbr and nsm_nm are identical in all following files
+mbr_nbr and mbr_nm may _change_ in following files
+
+nces new variables/structure members:
+
+New structure members for variables and groups when prg==ncga:
+char *nsm_nm; /* [sng] Ensemble parent group name */ i.e., full path to ensemble parent
+nco_bool flg_nsm_tpl; /* [flg] Group is, or variable is in, template member group */
+nco_bool flg_nsm_mbr; /* [flg] Group is, or variable is in, ensemble member group */
+nco_bool flg_nsm_prn; /* [flg] Group is, or variable is in, ensemble parent group */
+
+New structure members for groups when prg==ncga:
+int mbr_nbr; /* [nbr] Number of members of ensemble */ i.e., number in this ensemble in this file
+char **mbr_nm; /* [sng] List of member group names */ (size is mbr_nbr)
+
+New structure members for top-levle trv_tbl when prg==ncga:
+int nsm_nbr; /* [nbr] Number of ensembles */ i.e., number in first file
+char **nsm_nm; /* [sng] List of ensemble parent group names */ (size is nsm_nbr)
+
+nces code flow (details on changes follow):
+
+nco_bld_trv_tbl(): room for new fields. no other changes
+nco_bld_nsm(): new. fill-in nsm/mbr/tpl fields
+nco_fll_var_trv(): ncga vars in ensembles get only one structure
+nco_var_lst_dvd(): ncga rules depend heavily on flg_nsm_tpl
+nco_var_prc_fix_trv(): no changes?
+nco_xtr_dfn(): ensemble statistics by default defined in grp_nsm_prn
+nco_cpy_fix_var_trv(): ncga output group name depends on flg_nsm_tpl
+
+and then main loops like this:
+
+fl_idx=0,fl_nbr-1
+  nsm_idx=0,nsm_nbr-1
+    nco_nsm_rfr(): new. refresh mbr_nbr, mbr_nm for this ensemble
+    mbr_idx=0,mbr_nbr-1
+      OpenMP over var loop:
+      var_idx=0,nbr_var_prc-1
+        if(var->nsm_nm == nsm_nm[nsm_idx]){ensemble statistics}; else skip/continue;
+
+---or---
+
+fl_idx=0,fl_nbr-1
+  nco_nsm_rfr(): new. refresh mbr_nbr, mbr_nm for all ensembles
+  OpenMP over var loop:
+  var_idx=0,nbr_var_prc-1
+    mbr_idx=0,mbr_nbr[var_idx]-1
+      ensemble statistics (same as ncea)
+
+nces code change details:
+
+nco_bld_trv_tbl() first include/exclude -g -v --unn options. few if any changes.
+
+multiple (nsm_nbr) copies of each output ensemble member are now flagged with flg_xtr
+
+before nco_fll_var_trv() implement new function nco_bld_nsm(), similar to nco_bld_rec_dmn()
+
+nco_bld_nsm() crawls trv_tbl and identifies similar leaf groups as ensemble members
+their common parent group is the ensemble parent
+
+nco_bld_nsm() sets flags/variables/arrays in member and parent groups/variables: 
+
+nco_fll_var_trv() exports, for ncga, var list containing only
+variables with (!flg_mbr && flg_xtr) and (flg_mbr && flg_nsm_tpl).
+
+nco_var_lst_dvd() for ncga: 
+as usual coordinates are typ_fix
+variables with flg_nsm_tpl are typ_prc
+variables without flg_nsm_tpl are typ_fix. 
+
+nco_xtr_dfn() for ncga:
+if !flg_nsm_tpl then grp_nm_fll_out=gpe(grp_nm_fll_in) (same as usual)
+if flg_nsm_tpl then grp_nm_fll_out=gpe(grp_nm_nsm_prn)=gpe(grp_nm_fll_in-grp_nm_in)=gpe(grp_nm_fll_in,:-1)
+
+nco_cpy_fix_var_trv() for ncga: 
+if !flg_nsm_tpl grp_nm_fll_out=gpe(grp_nm_fll_in) (same as usual)
+if flg_nsm_tpl grp_nm_fll_out=gpe(grp_nm_nsm_prn)=gpe(grp_nm_fll_in-grp_nm_in)=gpe(grp_nm_fll_in,:-1)
+
+nco_nsm_rfr(): 
+nsm_nbr and nsm_nm never change
+for these ensembles, refresh mbr_nbr, mbr_nm once per file
