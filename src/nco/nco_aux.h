@@ -65,10 +65,10 @@ void
 nco_aux_prs
 (const char *bnd_bx_sng, 
  const char *units, 
- float *lon_min, 
- float *lon_max, 
- float *lat_min, 
- float *lat_max);
+ double *lon_min, 
+ double *lon_max, 
+ double *lat_min, 
+ double *lat_max);
 
 lmt_sct **                           /* O [lst] Auxiliary coordinate limits */
 nco_aux_evl_trv

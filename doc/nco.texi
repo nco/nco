@@ -121,7 +121,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.3-alpha03
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 10 September 2015
+@set update-date 21 September 2015
 @set update-month September 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6289,6 +6289,11 @@ regionally refined grids.
 Support for irregular 2D- and regional grids (e.g., swath-like data) is
 planned.  
 
+@html
+<a name="rnr"></a> <!-- http://nco.sf.net/nco.html#rnr -->
+<a name="renormalize"></a> <!-- http://nco.sf.net/nco.html#renormalize -->
+<a name="rgr_rnr"></a> <!-- http://nco.sf.net/nco.html#rgr_rnr -->
+@end html
 @cindex conservative regridding
 @cindex renormalized regridding
 @cindex missing values

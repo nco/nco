@@ -164,10 +164,10 @@ nco_aux_evl
   double lat_crr; /* [dgr] Current cell latitude */
   double lon_crr; /* [dgr] Current cell longitude */
 
-  float lat_min; /* [dgr] Lower left latitude of bounding rectangle */
-  float lat_max; /* [dgr] Upper right longitude of bounding rectangle */
-  float lon_min; /* [dgr] Lower left longitude of bounding rectangle */
-  float lon_max; /* [dgr] Upper right latitude of bounding rectangle */
+  double lat_min; /* [dgr] Lower left latitude of bounding rectangle */
+  double lat_max; /* [dgr] Upper right longitude of bounding rectangle */
+  double lon_min; /* [dgr] Lower left longitude of bounding rectangle */
+  double lon_max; /* [dgr] Upper right latitude of bounding rectangle */
 
   int aux_idx; /* [idx] Index over user -X options */
   int cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
@@ -325,10 +325,10 @@ void
 nco_aux_prs
 (const char *bnd_bx_sng,
  const char *units,
- float *lon_min,
- float *lon_max,
- float *lat_min,
- float *lat_max)
+ double *lon_min,
+ double *lon_max,
+ double *lat_min,
+ double *lat_max)
 {
   /* Purpose: Parse command-line arguments of form:
      lon_min,lon_max,lat_min,lat_max */
@@ -337,20 +337,20 @@ nco_aux_prs
   
   bnd_bx_sng_tmp=strdup(bnd_bx_sng);
   
-  sscanf(bnd_bx_sng,"%f,%f,%f,%f",lon_min,lon_max,lat_min,lat_max);
+  sscanf(bnd_bx_sng,"%lf,%lf,%lf,%lf",lon_min,lon_max,lat_min,lat_max);
   crd_tkn=strtok(bnd_bx_sng_tmp,", ");
-  if(crd_tkn) sscanf(crd_tkn,"%f",lon_min); else nco_err_exit(0,"nco_aux_prs(): Problem with LL longitude string");
+  if(crd_tkn) sscanf(crd_tkn,"%lf",lon_min); else nco_err_exit(0,"nco_aux_prs(): Problem with LL longitude string");
   crd_tkn=strtok(NULL,", ");
-  if(crd_tkn) sscanf(crd_tkn,"%f",lon_max); else nco_err_exit(0,"nco_aux_prs(): Problem with UR longitude string");
+  if(crd_tkn) sscanf(crd_tkn,"%lf",lon_max); else nco_err_exit(0,"nco_aux_prs(): Problem with UR longitude string");
   crd_tkn=strtok(NULL,", ");
-  if(crd_tkn) sscanf(crd_tkn,"%f",lat_min); else nco_err_exit(0,"nco_aux_prs(): Problem with LL latitude string");
+  if(crd_tkn) sscanf(crd_tkn,"%lf",lat_min); else nco_err_exit(0,"nco_aux_prs(): Problem with LL latitude string");
   crd_tkn=strtok(NULL,", ");
-  if(crd_tkn) sscanf(crd_tkn,"%f",lat_max); else nco_err_exit(0,"nco_aux_prs(): Problem with UR latitude string");
+  if(crd_tkn) sscanf(crd_tkn,"%lf",lat_max); else nco_err_exit(0,"nco_aux_prs(): Problem with UR latitude string");
   
   if(bnd_bx_sng_tmp) bnd_bx_sng_tmp=(char *)nco_free(bnd_bx_sng_tmp);
   
   if(!strcmp(units,"radians")){
-    const float dgr2rdn=M_PI/180.0;
+    const double dgr2rdn=M_PI/180.0;
     *lon_min*=dgr2rdn;
     *lon_max*=dgr2rdn;
     *lat_min*=dgr2rdn;
@@ -389,10 +389,10 @@ nco_aux_evl_trv
   double lat_crr; /* [dgr] Current cell latitude */
   double lon_crr; /* [dgr] Current cell longitude */
 
-  float lat_min; /* [dgr] Lower left latitude of bounding rectangle */
-  float lat_max; /* [dgr] Upper right longitude of bounding rectangle */
-  float lon_min; /* [dgr] Lower left longitude of bounding rectangle */
-  float lon_max; /* [dgr] Upper right latitude of bounding rectangle */
+  double lat_min; /* [dgr] Lower left latitude of bounding rectangle */
+  double lat_max; /* [dgr] Upper right longitude of bounding rectangle */
+  double lon_min; /* [dgr] Lower left longitude of bounding rectangle */
+  double lon_max; /* [dgr] Upper right latitude of bounding rectangle */
 
   int aux_idx; /* [idx] Index over user -X options */
   int cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
@@ -490,8 +490,7 @@ nco_aux_evl_trv
     for(cll_idx=0;cll_idx<dmn_sz;cll_idx++){
       if(lat.type == NC_FLOAT) lat_crr=((float *)vp_lat)[cll_idx]; else lat_crr=((double *)vp_lat)[cll_idx];
       if(lon.type == NC_FLOAT) lon_crr=((float *)vp_lon)[cll_idx]; else lon_crr=((double *)vp_lon)[cll_idx];
-      if(lon_crr >= lon_min && lon_crr <= lon_max &&
-        lat_crr >= lat_min && lat_crr <= lat_max){
+      if(lon_crr >= lon_min && lon_crr <= lon_max && lat_crr >= lat_min && lat_crr <= lat_max){
           if(cll_idx_min == -1){
             /* First cell within current bounding box */
             cll_idx_min=cll_idx;
