@@ -39,6 +39,7 @@ M-x texinfo-multiple-files-update
 Usage: 
 export TEX='tex --src-specials'
 cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --ifinfo --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
@@ -52,14 +53,10 @@ texi2dvi --output=nco.dvi nco.texi
 texi2dvi --pdf --output=nco.pdf nco.texi
 texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
-cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
 # 20130806 Copy CMIP5 images (takes additional time)
 cd ~/nco/doc/xmp;/usr/bin/scp fgr*.png fgr*.eps zender,nco@web.sf.net:/home/project-web/nco/htdocs/xmp;cd -
-cd ~/nco/doc/xmp;/usr/bin/scp fgr*.png fgr*.eps dust.ess.uci.edu:/var/www/html/nco/xmp;cd -
 # 20120203 Copy all nco.html PNG images (takes additional time)
 cd ~/nco/doc;/usr/bin/scp nco_*.png zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
-cd ~/nco/doc;scp -p nco_*.png dust.ess.uci.edu:/var/www/html/nco;cd -
 # 20130801 Copy nco.texi to Ubuntu machine for quick build-tests
 scp ~/nco/doc/nco.texi givre.ess.uci.edu:nco/doc
 
@@ -6009,7 +6006,10 @@ Specifying a bounding box for global grids is redundant and will cause
 an error to ensure the user intends a global grid.
 @acronym{NCO} assumes that regional grids are uniform, though it will 
 attempt to produce regional grids of other types if the user specifies
-latitude (@var{lat_typ}) and longitude (@var{lon_typ}) grid-types.
+other latitude (@var{lat_typ}) and longitude (@var{lon_typ}) grid-types,
+e.g., Gaussian or Cap.
+Edges of a regional bounding box may be specified individually, or in
+the single-argument forms.
 
 The full description of grid-generation arguments, and their
 corresponding keys, is:
@@ -6163,6 +6163,10 @@ Latitude grids do place some restrictions on @var{lat_nbr} (see above).
 @cindex @var{lat_sth}
 @cindex @var{lat_est}
 @cindex @var{lat_wst}
+@cindex @var{wesn}
+@cindex @var{snwe}
+@cindex @samp{--rgr wesn=@var{lon_wst},@var{lon_est},@var{lat_sth},@var{lon_nrt}}
+@cindex @samp{--rgr snwe=@var{lat_sth},@var{lat_nrt},@var{lon_wst},@var{lon_est}}
 @cindex @samp{--rgr lat_nrt=@var{lat_nrt}}
 @cindex @samp{--rgr lat_nbr=@var{lat_nbr}}
 @item The outer edges of a regional rectangular grid are specified by
@@ -6172,6 +6176,15 @@ Latitudes and longigudes must be specified in degrees (not radians).
 Latitude edges must be between @w{-90 and 90}.
 Longitude edges may be positive or negative and separated by no more
 than 360 degrees.
+The edges may be specified individually with four arguments, or together
+in one list to the options @samp{wesn} or @samp{snwe}.
+These two specifications are equivalent:
+@example
+@verbatim
+ncks ... --rgr lat_sth=30.0 --rgr lat_nrt=70.0 --rgr lon_wst=-120.0 --rgr lon_est=-90.0 ...
+ncks ... --rgr snwe=30.0,70.0,-120.0,-90.0 ...
+@end verbatim
+@end example
 @end enumerate
 
 Generating common grids:
