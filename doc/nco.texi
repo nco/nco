@@ -6090,14 +6090,14 @@ another grid.
 The Finite-Volume (@acronym{FV}) method is often used to represent 
 and solve the equations of motion in climate-related fields.
 Many @acronym{FV} solutions (including the popular Lin-Rood method as
-used in the @acronym{CESM} model) evaluate scalar (i.e., non-vector)
-fields (e.g., temperature, water vapor) at gridcell centers of what is 
-therefore called the scalar grid. 
+used in the @acronym{CESM} @acronym{CAM-FV} atmospheric model) evaluate
+scalar (i.e., non-vector) fields (e.g., temperature, water vapor) at
+gridcell centers of what is therefore called the scalar grid. 
 @acronym{FV} methods (like Lin-Rood) that employ an Arakawa C-grid or
 D-grid formulation define velocities on the edges of the scalar grid.
-This @acronym{FV}-velocity grid is therefore ``staggered'' or ``offset'' 
-from the scalar grid by one-half gridcell. 
-The Lin-Rood @acronym{FV}-scalar latitude grid has gridpoints (the
+This @acronym{CAM-FV} velocity grid is therefore ``staggered'' or
+``offset'' from the @acronym{CAM-FV} scalar grid by one-half gridcell.  
+The @acronym{CAM-FV}-scalar latitude grid has gridpoints (the
 ``caps'') centered on each pole to avoid singularities.
 The offset of a Cap-grid is a Uniform-grid, so the Uniform grid is 
 often called an @acronym{FV}-''offset'' or ``staggered'' grid.
@@ -6454,7 +6454,7 @@ These annotations include
 @cindex @var{lon_bnd_nm}
 @cindex @samp{--rgr lat_bnd=@var{lat_bnd_nm}}
 @cindex @samp{--rgr lon_bnd=@var{lon_bnd_nm}}
-@item Structured Grid Bounds Variables
+@item Structured Grid Bounds Variables: @var{bnd}, @var{lat_bnd}, @var{lon_bnd}
     Structured grids with 1D-coordinates use the dimension
     @var{bnd_nm} (which defaults to @code{nbnd}) with the spatial bounds
     variables in @var{lat_bnd_nm} and @var{lon_bnd_nm} which default to
@@ -6473,7 +6473,7 @@ These annotations include
 @cindex @code{lon_vertices}
 @cindex @code{nv}
 @cindex @code{bounds}
-@item Unstructured Grid Bounds Variables
+@item Unstructured Grid Bounds Variables: @var{bnd}, @var{lat_bnd}, @var{lon_bnd} 
     Unstructured grids with 1D-coordinates use the dimension
     @var{bnd_nm} (which defaults to @code{nv}, number of vertices) 
     for the spatial bounds variables @var{lat_bnd_nm} and
