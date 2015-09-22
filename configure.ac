@@ -1173,14 +1173,24 @@ if test "${enable_static}" = 'yes'; then
 fi
 # End Static
 
+# Begin Doc
+# Mac OS X has outdated TeXInfo, and fails build docs (unless MacPorts is installed)
+AC_ARG_ENABLE(doc,AS_HELP_STRING([--enable-doc],[Build NCO documentation [[default=yes]]]),enable_doc=${enableval},enable_doc=yes)
+# Enable doc-building unless told not to
+if (test "x${enable_doc}" != 'xno'); then
+    AC_DEFINE([ENABLE_DOC],[1],[Build NCO documentation (requires TeXInfo version 4.12, released 20080420, or later)])
+    AC_MSG_NOTICE([Documentation support enabled])
+fi
+# End Doc
+
 # 20120705 Test for makeinfo; if not present, do not build doc/Makefile
 # Note: Debian install with 'sudo apt-get install texinfo'
 # AC_CHECK_PROGS (variable, program-to-check-for, [value-if-not-found], [path]
 AC_CHECK_PROG(HAVE_MAKEINFO,makeinfo,yes,no,${PATH}) 
 
 # Begin config
-#AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
-AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile])
+#AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile doc/Makefile])
+AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile])
 if test "${ac_cv_cxx_have_valarray}" = 'yes' \
     && test "${enable_nco_cxx}" = 'yes' ; then
     AC_CONFIG_FILES(src/nco_c++/Makefile)

@@ -6013,10 +6013,11 @@ the single-argument forms.
 
 The full description of grid-generation arguments, and their
 corresponding keys, is:
-@enumerate
+@table @dfn
 @cindex @var{grd_ttl}
 @cindex @samp{--rgr grd_ttl=@var{grd_ttl}}
-@item It is surprisingly difficult to discern the geometric
+@item Grid Title: @var{grd_ttl}
+It is surprisingly difficult to discern the geometric
 configuration of a grid from the coordinates of a @acronym{SCRIP}-format
 gridfile.  
 A human-readable grid description should be placed in @var{grd_ttl}.
@@ -6024,7 +6025,8 @@ Examples include ``FV-scalar grid 129x256'' and ``T42 Gaussian grid''.
 
 @cindex @var{grid}
 @cindex @samp{--rgr grid=@var{grid}}
-@item The grid-generation @acronym{API} was bolted-on to @acronym{NCO}
+@item Grid File: @var{grid}
+The grid-generation @acronym{API} was bolted-on to @acronym{NCO}
 and is somewhat primitive, e.g., having to repeat the @samp{--rgr}
 option. 
 Another aspect of this is that the output grid filename is distinct
@@ -6042,7 +6044,8 @@ Its contents are immaterial.
 @cindex @var{lon_grd}
 @cindex @samp{--rgr lon_grd=@var{lon_grd}}
 @cindex @samp{--rgr lat_grd=@var{lat_grd}}
-@item The keys that hold the longitude and latitude gridtypes (which
+@item Grid Types: @var{lat_grd}, @var{lon_grd}
+The keys that hold the longitude and latitude gridtypes (which
 are, by the way, independent of eachother) are @var{lon_grd} and
 @var{lat_grd}. 
 The @var{lat_typ} options for global grids are @samp{uni} for
@@ -6154,7 +6157,8 @@ grid, and visa versa.
 @cindex @var{lon_nbr}
 @cindex @samp{--rgr lon_nbr=@var{lon_nbr}}
 @cindex @samp{--rgr lat_nbr=@var{lat_nbr}}
-@item The number of gridcells in the horizontal spatial dimensions
+@item Grid Resolution: @var{lat_nbr}, @var{lon_nbr}
+The number of gridcells in the horizontal spatial dimensions
 are @var{lat_nbr} and @var{lon_nbr}, respectively.
 There are no restrictions on @var{lon_nbr} for any gridtype.
 Latitude grids do place some restrictions on @var{lat_nbr} (see above). 
@@ -6169,7 +6173,8 @@ Latitude grids do place some restrictions on @var{lat_nbr} (see above).
 @cindex @samp{--rgr snwe=@var{lat_sth},@var{lat_nrt},@var{lon_wst},@var{lon_est}}
 @cindex @samp{--rgr lat_nrt=@var{lat_nrt}}
 @cindex @samp{--rgr lat_nbr=@var{lat_nbr}}
-@item The outer edges of a regional rectangular grid are specified by
+@item Grid Edges: @var{lon_wst}, @var{lon_est}, @var{lat_sth}, @var{lat_nrt}
+The outer edges of a regional rectangular grid are specified by
 the North (@var{lat_nrt}), South (@var{lat_sth}), East (@var{lat_est}),
 and West (@var{lat_nrt}) sides. 
 Latitudes and longigudes must be specified in degrees (not radians).
@@ -6185,25 +6190,25 @@ ncks ... --rgr lat_sth=30.0 --rgr lat_nrt=70.0 --rgr lon_wst=-120.0 --rgr lon_es
 ncks ... --rgr snwe=30.0,70.0,-120.0,-90.0 ...
 @end verbatim
 @end example
-@end enumerate
+@end table
 
 Generating common grids:
 @example
 @verbatim
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='Equi-Angular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc \
-     --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=rgl --rgr lon_typ=grn_ctr \
+     --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=uni --rgr lon_typ=grn_ctr \
      ~zender/nco/data/in.nc ~/foo.nc
 
-# 129x256 FV grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150901.nc \
+# 129x256 CAM-FV grid, first longitude centered at Greenwich
+ncks --rgr grd_ttl='CAM-FV scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150901.nc \
      --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=fv --rgr lon_typ=grn_ctr \
      ~zender/nco/data/in.nc ~/foo.nc
 
 # 128x256 Equi-Angular grid, Greenwich west edge of first longitude
-# This is the FV-offset grid for the 129x256 FV grid above
+# This is the CAM-FV offset grid for the 129x256 CAM-FV scalar grid above
 ncks --rgr grd_ttl='Equi-Angular grid 128x256' --rgr grid=${DATA}/grids/128x256_SCRIP.20150901.nc \
-     --rgr lat_nbr=128 --rgr lon_nbr=256 --rgr lat_typ=rgl --rgr lon_typ=grn_wst \
+     --rgr lat_nbr=128 --rgr lon_nbr=256 --rgr lat_typ=uni --rgr lon_typ=grn_wst \
      ~zender/nco/data/in.nc ~/foo.nc
 
 # T42 Gaussian grid, first longitude centered at Greenwich
@@ -6378,12 +6383,13 @@ algorithm.
 @acronym{NCO} automatically annotates the output with relevant metadata
 such as coordinate bounds, axes, and vertices (@w{@`{a} la} @acronym{CF}). 
 These annotations include
-@enumerate
+@table @dfn
 @cindex @var{lat_nm}
 @cindex @var{lon_nm}
 @cindex @samp{--rgr lon=@var{lon_nm}}
 @cindex @samp{--rgr lat=@var{lat_nm}}
-@item The name of the horizontal spatial dimensions assumed to represent
+@item Horizontal Dimension Names: @var{lat}, @var{lon}
+    The name of the horizontal spatial dimensions assumed to represent
     latitude and longitude in 2D rectangular input files are
     @var{lat_nm} and @var{lon_nm}, which default to @code{lat} and
     @code{lon}, respectively.  
@@ -6402,7 +6408,8 @@ These annotations include
 @cindex @code{ncol}
 @cindex @var{col_nm}
 @cindex @samp{--rgr col=@var{col_nm}}
-@item The name of the horizontal spatial dimension assumed to delineate
+@item Unstructured Dimension Name: @var{col}
+    The name of the horizontal spatial dimension assumed to delineate
     an unstructured grid is @var{col_nm}, which defaults to @code{ncol}
     (number of columns).
     Variables that contain the @var{col_nm}-dimension on an
@@ -6426,7 +6433,8 @@ These annotations include
 @cindex @code{X} axis
 @cindex @code{Y} axis
 @cindex auxiliary coordinates
-@item Longitude and latitude coordinates (both regular and auxiliary,
+@item Structured Grid Standard Names and Units
+    Longitude and latitude coordinates (both regular and auxiliary,
     i.e., for unstructured grids) receive @acronym{CF}
     @code{standard_name} values of @code{latitude} and @code{longitude},
     @acronym{CF} @code{axes} attributes with values @code{X} and
@@ -6434,7 +6442,8 @@ These annotations include
     @code{degrees_east} and @code{degrees_north}, respectively.
 @cindex @code{lat}
 @cindex @code{lon}
-@item Unstructured grid auxiliary coordinates for longitude and latitude
+@item Unstructured Grid Auxiliary Coordinates
+    Unstructured grid auxiliary coordinates for longitude and latitude
     receive @acronym{CF} @code{coordinates} attributes with values
     @code{lon} and @code{lat}, respectively.
 @cindex @code{lon_bnds}
@@ -6445,7 +6454,8 @@ These annotations include
 @cindex @var{lon_bnd_nm}
 @cindex @samp{--rgr lat_bnd=@var{lat_bnd_nm}}
 @cindex @samp{--rgr lon_bnd=@var{lon_bnd_nm}}
-@item Structured grids with 1D-coordinates use the dimension
+@item Structured Grid Bounds Variables
+    Structured grids with 1D-coordinates use the dimension
     @var{bnd_nm} (which defaults to @code{nbnd}) with the spatial bounds
     variables in @var{lat_bnd_nm} and @var{lon_bnd_nm} which default to
     @code{lon_bnds} and @code{lat_bnds}, respectively.
@@ -6463,7 +6473,8 @@ These annotations include
 @cindex @code{lon_vertices}
 @cindex @code{nv}
 @cindex @code{bounds}
-@item Unstructured grids with 1D-coordinates use the dimension
+@item Unstructured Grid Bounds Variables
+    Unstructured grids with 1D-coordinates use the dimension
     @var{bnd_nm} (which defaults to @code{nv}, number of vertices) 
     for the spatial bounds variables @var{lat_bnd_nm} and
     @var{lon_bnd_nm} which default to @code{lat_vertices} and
@@ -6490,7 +6501,8 @@ These annotations include
 @cindex @acronym{SI}
 @cindex solid angle
 @cindex extensive variable
-@item The variable @var{area_nm} (which defaults to @code{area}) is
+@item Gridcell Area: @var{area}
+    The variable @var{area_nm} (which defaults to @code{area}) is
     always (re-)created in the @var{output_file} to hold the gridcell
     area in steradians.     
     To store the area in a different variable, use the option
@@ -6507,24 +6519,26 @@ These annotations include
 @cindex @samp{--rgr lat_weight=@var{lat_wgt_nm}}
 @cindex @var{lat_wgt_nm}
 @cindex Gaussian weight
-@item Rectangular 2D-grids use the variable @var{lat_wgt_nm}, which
+@item Latitude weights: @var{lat_wgt}
+    Rectangular 2D-grids use the variable @var{lat_wgt_nm}, which
     defaults to @code{gw} (originally for ``Gaussian weight''), to store 
     the 1D-weight appropriate for area-weighting the latitude grid.
     To store the latitude weight in a different variable, use the option
     @samp{--rgr lat_wgt=@var{lat_wgt_nm}}.
     The @var{lat_wgt_nm} variable will not appear in 1D-grid output.
-    Weighting statistics by latitude (i.e., by @var{lat_wgt_nm}will
+    Weighting statistics by latitude (i.e., by @var{lat_wgt_nm} will
     produce the same answers (up-to round-off error) as weighting by
-    area (i.e., by @var{area_nm}) in grids which have both variables.
+    area (i.e., by @var{area_nm}) in grids that have both variables.
     The former requires less memory because @var{lat_wgt_nm} is 1D), 
     whereas the latter is more general because @var{area_nm} works on
     @emph{any} grid.
 @cindex @code{mapping_file}
 @cindex @code{source_file}
-@item The @var{map-file} and @var{input-file} names are stored in the
+@item Provenance Attributes
+    The @var{map-file} and @var{input-file} names are stored in the
     @var{output-file} global attributes @code{mapping_file} and
     @code{source_file}, respectively.
-@end enumerate
+@end table
 
 One may supply muliple @samp{--rgr @var{key}=@var{value}} options
 to simultaneously customize multiple grid-field names.
