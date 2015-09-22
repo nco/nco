@@ -6112,6 +6112,7 @@ used by the @acronym{CESM} Lin-Rood dynamics formulation.
 @acronym{NCO} treats the shorthand (and more memorable) @acronym{FV} as
 a synonym for Cap.   
 A Cap-latitude grid differs from a Uniform-latitude grid in many ways:
+
 Most importantly, Cap grids are 2D-representations of numerical grids
 with cap-midpoints instead of zonal-teeth convergence at the poles.  
 The rectangular 2D-representation of each cap contains gridcells shaped
