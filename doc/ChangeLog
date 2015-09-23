@@ -1,3 +1,7 @@
+2015-09-22  Charlie Zender  <zender@uci.edu>
+
+	* Implement configure --enable_doc option, attempt and fail to override this if makeinfo version < 4.8
+
 2015-09-20  Charlie Zender  <zender@uci.edu>
 
 	* Change auxiliary coordinate input from float to double

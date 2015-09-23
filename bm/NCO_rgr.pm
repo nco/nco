@@ -89,7 +89,7 @@ sub tst_rgr {
     if($? == -1){
 	print "failed to execute: ncks --lbr_rcd: $!\n";
     }else{
-    # system() runs a command and returns exit status information as a 16 bit value 
+    # system() runs command and returns exit status information as 16-bit value 
     # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
     my $exit_value=$? >> 8;
     

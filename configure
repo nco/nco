@@ -639,9 +639,9 @@ am__EXEEXT_TRUE
 LTLIBOBJS
 LFLAGS
 DOC_FOLDER
+HAVE_MAKEINFO
 NCOXX
 NCO_CXX
-HAVE_MAKEINFO
 PATH_TO_NCGEN
 UDUNITS2_PATH
 ENABLE_GSL_FALSE
@@ -828,6 +828,7 @@ enable_udunits2
 enable_debug_custom
 enable_debug_symbols
 enable_optimize_custom
+enable_doc
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1520,6 +1521,7 @@ Optional Features:
                           Activate all known, helpful switches for fastest
                           possible run-time performance (slowest compilation)
                           [[default=no]]
+  --enable-doc            Build NCO documentation [[default=yes]]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -19046,7 +19048,6 @@ fi
 
 # AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
 # Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)
-#AC_CHECK_PROGS(HAVE_ANTLR,[runantlr antlr],[],[],${PATH})
 for ac_prog in runantlr antlr
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -19281,10 +19282,9 @@ else
 fi
 
 if test "${enable_esmf}" != 'yes'; then
-
     enable_esmf='no'
-
 fi
+
 # Check for ESMF libraries unless told not to
 # Linking to ESMF library requires six more libraries to fully resolve on Linux:
 # -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
@@ -20779,9 +20779,51 @@ $as_echo "#define ENABLE_STATIC 1" >>confdefs.h
 fi
 # End Static
 
+# Begin config
+# Treat essential and man files now, defer doc files (that rely on makeinfo) to below
+ac_config_files="$ac_config_files Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile"
+
+if test "${ac_cv_cxx_have_valarray}" = 'yes' && test "${enable_nco_cxx}" = 'yes' ; then
+    ac_config_files="$ac_config_files src/nco_c++/Makefile"
+
+    NCO_CXX="nco_c++"
+else
+    NCO_CXX=
+fi
+
+
+# Build ncap2 only if ANTLR library was found
+if test "${enable_ncoxx}" = 'yes'  && test "${HAVE_ANTLR}" != 'no' ; then
+    ac_config_files="$ac_config_files src/nco++/Makefile"
+
+    NCOXX="nco++"
+else
+    NCOXX=""
+fi
+
+
+# Begin Doc
+# Mac OS X has outdated TeXInfo, and fails build docs (unless MacPorts is installed)
+# Enable doc-building by default (subject to later checks) unless told otherwise
+# Check whether --enable-doc was given.
+if test "${enable_doc+set}" = set; then :
+  enableval=$enable_doc; enable_doc=${enableval}
+else
+  enable_doc=yes
+fi
+
+# End Doc
+
+# Conditional build of doc/Makefile
+# Build docs iff makeinfo exists and is recent enough
+# This is complex on MacOS:
+# nco.texi uses @textdegree since 20140130
+# @textdegree appeared by TeXInfo/makeinfo 4.12 (released ~20080420)
+# Mac OS X 10.8, 10.9, 10.10 still ship with TeXInfo/makeinfo 4.8 (released ~20050103)
+# MacPorts installs modern TeXInfo/makeinfo 5.2 and 6.0 (released ~20130926, ~2015, respectively)
+
 # 20120705 Test for makeinfo; if not present, do not build doc/Makefile
-# Note: Debian install with 'sudo apt-get install texinfo'
-# AC_CHECK_PROGS (variable, program-to-check-for, [value-if-not-found], [path]
+# This prevents failed builds on many server distributions that by default not to install makeinfo, e.g., RHEL and CentOS
 # Extract the first word of "makeinfo", so it can be a program name with args.
 set dummy makeinfo; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -20820,43 +20862,27 @@ $as_echo "no" >&6; }
 fi
 
 
+DOC_FOLDER=""
+if test "x${enable_doc}" = 'xyes' && test "x${HAVE_MAKEINFO}" = 'xyes' ; then
+    # Ensure makeinfo is recent enough, i.e., version 4.12 or later
+    MAKEINFO_VERSION="`makeinfo --version` | grep makeinfo | cut -d ' ' -f 4"
+    echo "MAKEINFO_VERSION=${MAKEINFO_VERSION}"
 
-# Begin config
-#AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
-ac_config_files="$ac_config_files Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile"
+$as_echo "#define MAKEINFO_VERSION \${MAKEINFO_VERSION}" >>confdefs.h
 
-if test "${ac_cv_cxx_have_valarray}" = 'yes' \
-    && test "${enable_nco_cxx}" = 'yes' ; then
-    ac_config_files="$ac_config_files src/nco_c++/Makefile"
+#    test_result=m4_version_compare([${MAKEINFO_VERSION}],[4.8])
+    test_result='1'
+    if test "${test_result}" = '1'; then
 
-    NCO_CXX="nco_c++"
-else
-    NCO_CXX=
+$as_echo "#define ENABLE_DOC 1" >>confdefs.h
+
+	DOC_FOLDER="doc"
+	ac_config_files="$ac_config_files doc/Makefile"
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: Documentation support enabled" >&5
+$as_echo "$as_me: Documentation support enabled" >&6;}
+    fi
 fi
-
-
-#if the antlr library was not found just don't build ncap2
-if test "${enable_ncoxx}" = 'yes'  \
-    && test "${HAVE_ANTLR}" != 'no' ; then
-    ac_config_files="$ac_config_files src/nco++/Makefile"
-
-    NCOXX="nco++"
-else
-    NCOXX=""
-fi
-#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
-
-
-
-# Conditional build of doc/Makefile
-if test "${HAVE_MAKEINFO}" = 'yes' ; then
-    ac_config_files="$ac_config_files doc/Makefile"
-
-    DOC_FOLDER="doc"
-else
-    DOC_FOLDER=""
-fi
-
 
 
 # End config

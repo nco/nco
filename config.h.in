@@ -15,6 +15,10 @@
 /* Debugging symbols: Produce symbols for debuggers (e.g., dbx, gdb) */
 #undef ENABLE_DEBUG_SYMBOLS
 
+/* Build NCO documentation (requires TeXInfo version 4.12, released 20080420,
+   or later) */
+#undef ENABLE_DOC
+
 /* Compile operators with ESMF support */
 #undef ENABLE_ESMF
 
@@ -410,6 +414,9 @@
 
 /* Compatibility pvmgetarch token for Apple Mac OSX */
 #undef MACOSX
+
+/* Building TeXInfo documentation requires version greater than 4.8 */
+#undef MAKEINFO_VERSION
 
 /* GSL minor version number */
 #undef NCO_GSL_MINOR_VERSION

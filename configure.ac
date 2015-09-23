@@ -433,7 +433,6 @@ fi
 
 # AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
 # Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)
-#AC_CHECK_PROGS(HAVE_ANTLR,[runantlr antlr],[],[],${PATH})
 AC_CHECK_PROGS(HAVE_ANTLR,[runantlr antlr],no,${PATH},[]) 
 
 #echo "DEBUG: HAVE_ANTLR  = ${HAVE_ANTLR}"
@@ -534,10 +533,9 @@ nco_LIBS_no_ESMF="${LIBS}"
 nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
 AC_ARG_ENABLE(esmf,AS_HELP_STRING([--enable-esmf],[Build-in ESMF support if possible [[default=yes]]]),enable_esmf=${enableval},enable_esmf=yes)
 if test "${enable_esmf}" != 'yes'; then
-
     enable_esmf='no'
-
 fi
+
 # Check for ESMF libraries unless told not to
 # Linking to ESMF library requires six more libraries to fully resolve on Linux:
 # -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
@@ -1173,26 +1171,10 @@ if test "${enable_static}" = 'yes'; then
 fi
 # End Static
 
-# Begin Doc
-# Mac OS X has outdated TeXInfo, and fails build docs (unless MacPorts is installed)
-AC_ARG_ENABLE(doc,AS_HELP_STRING([--enable-doc],[Build NCO documentation [[default=yes]]]),enable_doc=${enableval},enable_doc=yes)
-# Enable doc-building unless told not to
-if (test "x${enable_doc}" != 'xno'); then
-    AC_DEFINE([ENABLE_DOC],[1],[Build NCO documentation (requires TeXInfo version 4.12, released 20080420, or later)])
-    AC_MSG_NOTICE([Documentation support enabled])
-fi
-# End Doc
-
-# 20120705 Test for makeinfo; if not present, do not build doc/Makefile
-# Note: Debian install with 'sudo apt-get install texinfo'
-# AC_CHECK_PROGS (variable, program-to-check-for, [value-if-not-found], [path]
-AC_CHECK_PROG(HAVE_MAKEINFO,makeinfo,yes,no,${PATH}) 
-
 # Begin config
-#AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile doc/Makefile])
+# Treat essential and man files now, defer doc files (that rely on makeinfo) to below
 AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile])
-if test "${ac_cv_cxx_have_valarray}" = 'yes' \
-    && test "${enable_nco_cxx}" = 'yes' ; then
+if test "${ac_cv_cxx_have_valarray}" = 'yes' && test "${enable_nco_cxx}" = 'yes' ; then
     AC_CONFIG_FILES(src/nco_c++/Makefile)
     NCO_CXX="nco_c++"
 else
@@ -1207,24 +1189,40 @@ if test "${enable_ncoxx}" = 'yes'  && test "${HAVE_ANTLR}" != 'no' ; then
 else
     NCOXX=""
 fi
-#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
-
 AC_SUBST(NCOXX)
 
-# Conditional build of doc/Makefile
-# Only build docs if makeinfo is found
-# More complex MacOS:
-# 20140130: nco.texi uses @textdegree
-# Mac OS X 10.8, 10.9, 10.10 ships with TeXInfo/makeinfo 4.8 (released 20050103)
-# @textdegree is in TeXInfo/makeinfo 4.12 (released 20080420)
-# MacPorts ships with modern TeXInfo/makeinfo 5.2 (released 20130926)
-if test "${HAVE_MAKEINFO}" = 'yes' ; then
-    AC_CONFIG_FILES(doc/Makefile)
-    DOC_FOLDER="doc"
-else
-    DOC_FOLDER=""
-fi
+# Begin Doc
+# Mac OS X has outdated TeXInfo, and fails build docs (unless MacPorts is installed)
+# Enable doc-building by default (subject to later checks) unless told otherwise
+AC_ARG_ENABLE(doc,AS_HELP_STRING([--enable-doc],[Build NCO documentation [[default=yes]]]),enable_doc=${enableval},enable_doc=yes)
+# End Doc
 
+# Conditional build of doc/Makefile
+# Build docs iff makeinfo exists and is recent enough
+# This is complex on MacOS:
+# nco.texi uses @textdegree since 20140130
+# @textdegree appeared by TeXInfo/makeinfo 4.12 (released ~20080420)
+# Mac OS X 10.8, 10.9, 10.10 still ship with TeXInfo/makeinfo 4.8 (released ~20050103)
+# MacPorts installs modern TeXInfo/makeinfo 5.2 and 6.0 (released ~20130926, ~2015, respectively)
+
+# 20120705 Test for makeinfo; if not present, do not build doc/Makefile
+# This prevents failed builds on many server distributions that by default not to install makeinfo, e.g., RHEL and CentOS
+AC_CHECK_PROG(HAVE_MAKEINFO,makeinfo,yes,no,${PATH}) 
+DOC_FOLDER=""
+if test "x${enable_doc}" = 'xyes' && test "x${HAVE_MAKEINFO}" = 'xyes' ; then
+    # Ensure makeinfo is recent enough, i.e., version 4.12 or later
+    MAKEINFO_VERSION="`makeinfo --version` | grep makeinfo | cut -d ' ' -f 4"
+    echo "MAKEINFO_VERSION=${MAKEINFO_VERSION}"
+    AC_DEFINE(MAKEINFO_VERSION,${MAKEINFO_VERSION},Building TeXInfo documentation requires version greater than 4.8)
+#    test_result=m4_version_compare([${MAKEINFO_VERSION}],[4.8])
+    test_result='1'
+    if test "${test_result}" = '1'; then
+	AC_DEFINE([ENABLE_DOC],[1],[Build NCO documentation (requires TeXInfo version 4.12, released 20080420, or later)])
+	DOC_FOLDER="doc"
+	AC_CONFIG_FILES(doc/Makefile)
+	AC_MSG_NOTICE([Documentation support enabled])
+    fi
+fi
 AC_SUBST(DOC_FOLDER)
 
 # End config
