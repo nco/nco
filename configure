@@ -1521,8 +1521,8 @@ Optional Features:
                           Activate all known, helpful switches for fastest
                           possible run-time performance (slowest compilation)
                           [[default=no]]
-  --enable-doc            Build and install NCO documentation (man pages, info
-                          hierarchy, PDF/HTML Users Guide)[[default=yes]]
+  --enable-doc            Build/install NCO TexInfo-based documentation (info
+                          hierarchy and PDF/HTML Users Guide)[[default=yes]]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -20877,9 +20877,9 @@ $as_echo "#define MAKEINFO_VERSION \${MAKEINFO_VERSION}" >>confdefs.h
 
 $as_echo "#define ENABLE_DOC 1" >>confdefs.h
 
-	DOC_FOLDER="doc"
 	ac_config_files="$ac_config_files doc/Makefile"
 
+	DOC_FOLDER="doc"
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: Documentation support enabled" >&5
 $as_echo "$as_me: Documentation support enabled" >&6;}
     fi

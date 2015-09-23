@@ -15,8 +15,8 @@
 /* Debugging symbols: Produce symbols for debuggers (e.g., dbx, gdb) */
 #undef ENABLE_DEBUG_SYMBOLS
 
-/* Build NCO documentation (man pages, info hierarchy, PDF/HTML Users Guide)
-   */
+/* Build/install NCO TexInfo-based documentation (info hierarchy and PDF/HTML
+   Users Guide) */
 #undef ENABLE_DOC
 
 /* Compile operators with ESMF support */

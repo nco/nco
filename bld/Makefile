@@ -21,11 +21,12 @@
 # neige.ess.uci.edu  : NCO          Makefile  All else GCC
 # glace.ess.uci.edu  : NCO          Configure All else GCC
 # grele.ess.uci.edu  : NCO          Makefile  All else GCC
-# dust.ess.uci.edu   : -            -         All
 # yellowstone.ucar.e : -            Makefile  All else Intel
-# rhea.ccs.ornl.gov  : NCO          Makefile  All else 
+# rhea.ccs.ornl.gov  : NCO          Makefile  All else GCC
 # cooley.alcf.anl.g  : NCO          Configure All else GCC
 # edison.nersc.gov   : NCO          Configure All else Intel
+# travis CI          : NCO          Configure All else gcc,llvm,g++
+
 
 # Usage (testing):
 # make tst                           # Vanilla regression test
