@@ -330,7 +330,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
-      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"cap") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fv") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fix")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"cap") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fv") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fix") || !strcasecmp(rgr_lst[rgr_var_idx].val,"yarmulke")){
 	rgr->lat_typ=nco_grd_lat_fv;
 	rgr->grd_typ=nco_grd_2D_fv;
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"eqa") || !strcasecmp(rgr_lst[rgr_var_idx].val,"rgl") || !strcasecmp(rgr_lst[rgr_var_idx].val,"unf") || !strcasecmp(rgr_lst[rgr_var_idx].val,"uni")){

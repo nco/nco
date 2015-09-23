@@ -5958,9 +5958,11 @@ to avoid confusion.
 @cindex Gaussian grid
 @cindex Equi-Angular grid
 @cindex FV grid
+@cindex CAM-FV grid
 @cindex grid, Fixed
 @cindex grid, Offset
 @cindex grid, FV
+@cindex grid, CAM-FV
 @cindex grid, Equi-Angular
 @cindex grid, Gaussian
 @cindex gridfile
@@ -6021,7 +6023,7 @@ It is surprisingly difficult to discern the geometric
 configuration of a grid from the coordinates of a @acronym{SCRIP}-format
 gridfile.  
 A human-readable grid description should be placed in @var{grd_ttl}.
-Examples include ``FV-scalar grid 129x256'' and ``T42 Gaussian grid''. 
+Examples include ``CAM-FV scalar grid 129x256'' and ``T42 Gaussian grid''. 
 
 @cindex @var{grid}
 @cindex @samp{--rgr grid=@var{grid}}
@@ -6097,7 +6099,7 @@ gridcell centers of what is therefore called the scalar grid.
 D-grid formulation define velocities on the edges of the scalar grid.
 This @acronym{CAM-FV} velocity grid is therefore ``staggered'' or
 ``offset'' from the @acronym{CAM-FV} scalar grid by one-half gridcell.  
-The @acronym{CAM-FV}-scalar latitude grid has gridpoints (the
+The @acronym{CAM-FV} scalar latitude grid has gridpoints (the
 ``caps'') centered on each pole to avoid singularities.
 The offset of a Cap-grid is a Uniform-grid, so the Uniform grid is 
 often called an @acronym{FV}-''offset'' or ``staggered'' grid.
@@ -6106,11 +6108,12 @@ Hence an @acronym{NCO} Uniform grid is equivalent to an @acronym{NCL}
 For example, a 128x256 Uniform grid is the offset or staggered version
 of a 129x256 Cap grid (aka @acronym{FV}-grid).
 
-Owing the ``cap''-points at the poles, @acronym{NCO} uses the term Cap
-grid to describe the latitude portion of the @acronym{FV}-scalar grid as
-used by the @acronym{CESM} Lin-Rood dynamics formulation.
-@acronym{NCO} treats the shorthand (and more memorable) @acronym{FV} as
-a synonym for Cap.   
+Referring the saucer-like cap-points at the poles, @acronym{NCO} uses
+the term ``Cap grid'' to describe the latitude portion of the
+@acronym{FV}-scalar grid as used by the @acronym{CAM-FV} Lin-Rood
+dynamics formulation. 
+@acronym{NCO} accepts the shorthand @acronym{FV}, and the more
+descriptive ``Yarmulke'', as synonyms for Cap. 
 A Cap-latitude grid differs from a Uniform-latitude grid in many ways:
 
 Most importantly, Cap grids are 2D-representations of numerical grids
