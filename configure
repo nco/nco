@@ -1521,7 +1521,8 @@ Optional Features:
                           Activate all known, helpful switches for fastest
                           possible run-time performance (slowest compilation)
                           [[default=no]]
-  --enable-doc            Build NCO documentation [[default=yes]]
+  --enable-doc            Build and install NCO documentation (man pages, info
+                          hierarchy, PDF/HTML Users Guide)[[default=yes]]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -20870,7 +20871,7 @@ if test "x${enable_doc}" = 'xyes' && test "x${HAVE_MAKEINFO}" = 'xyes' ; then
 
 $as_echo "#define MAKEINFO_VERSION \${MAKEINFO_VERSION}" >>confdefs.h
 
-#    test_result=m4_version_compare([${MAKEINFO_VERSION}],[4.8])
+    #    test_result=m4_version_compare([${MAKEINFO_VERSION}],[4.8])
     test_result='1'
     if test "${test_result}" = '1'; then
 

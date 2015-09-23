@@ -1,3 +1,6 @@
+# $Header$ -*-makefile-*-
+
+# fxm: 20150923 Allow for building documentation (man pages) without TeXInfo
 info_TEXINFOS = nco.texi
 EXTRA_DIST = nco nco.dvi nco.html nco.pdf nco.ps nco.xml VERSION
 

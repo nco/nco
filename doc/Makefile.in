@@ -13,6 +13,8 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+# $Header$ -*-makefile-*-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -340,6 +342,8 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+# fxm: 20150923 Allow for building documentation (man pages) without TeXInfo
 info_TEXINFOS = nco.texi
 EXTRA_DIST = nco nco.dvi nco.html nco.pdf nco.ps nco.xml VERSION
 

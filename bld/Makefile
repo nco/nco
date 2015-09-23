@@ -15,15 +15,17 @@
 # Machine build parameters
 #                         Source     Method   Packages Compiler
 # aerosol.ess.uci.edu: NCO          Configure All else LLVM
+# firn.ess.uci.edu   : NCO          Configure All else LLVM
 # givre.ess.uci.edu  : NCO + netCDF Makefile  All else LLVM
 # roulee.ess.uci.edu : NCO + netCDF Makefile  All else GCC
 # neige.ess.uci.edu  : NCO          Makefile  All else GCC
-# dust.ess.uci.edu   : -            -         All
 # glace.ess.uci.edu  : NCO          Configure All else GCC
 # grele.ess.uci.edu  : NCO          Makefile  All else GCC
-# tephra.ess.uci.edu : NCO          Makefile  All else
+# dust.ess.uci.edu   : -            -         All
 # yellowstone.ucar.e : -            Makefile  All else Intel
 # rhea.ccs.ornl.gov  : NCO          Makefile  All else 
+# cooley.alcf.anl.g  : NCO          Configure All else GCC
+# edison.nersc.gov   : NCO          Configure All else Intel
 
 # Usage (testing):
 # make tst                           # Vanilla regression test

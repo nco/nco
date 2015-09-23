@@ -1194,7 +1194,7 @@ AC_SUBST(NCOXX)
 # Begin Doc
 # Mac OS X has outdated TeXInfo, and fails build docs (unless MacPorts is installed)
 # Enable doc-building by default (subject to later checks) unless told otherwise
-AC_ARG_ENABLE(doc,AS_HELP_STRING([--enable-doc],[Build NCO documentation [[default=yes]]]),enable_doc=${enableval},enable_doc=yes)
+AC_ARG_ENABLE(doc,AS_HELP_STRING([--enable-doc],[Build and install NCO documentation (man pages, info hierarchy, PDF/HTML Users Guide)[[default=yes]]]),enable_doc=${enableval},enable_doc=yes)
 # End Doc
 
 # Conditional build of doc/Makefile
@@ -1214,10 +1214,10 @@ if test "x${enable_doc}" = 'xyes' && test "x${HAVE_MAKEINFO}" = 'xyes' ; then
     MAKEINFO_VERSION="`makeinfo --version` | grep makeinfo | cut -d ' ' -f 4"
     echo "MAKEINFO_VERSION=${MAKEINFO_VERSION}"
     AC_DEFINE(MAKEINFO_VERSION,${MAKEINFO_VERSION},Building TeXInfo documentation requires version greater than 4.8)
-#    test_result=m4_version_compare([${MAKEINFO_VERSION}],[4.8])
+    #    test_result=m4_version_compare([${MAKEINFO_VERSION}],[4.8])
     test_result='1'
     if test "${test_result}" = '1'; then
-	AC_DEFINE([ENABLE_DOC],[1],[Build NCO documentation (requires TeXInfo version 4.12, released 20080420, or later)])
+	AC_DEFINE([ENABLE_DOC],[1],[Build NCO documentation (man pages, info hierarchy, PDF/HTML Users Guide)])
 	DOC_FOLDER="doc"
 	AC_CONFIG_FILES(doc/Makefile)
 	AC_MSG_NOTICE([Documentation support enabled])
