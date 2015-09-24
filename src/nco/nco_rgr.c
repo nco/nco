@@ -3997,6 +3997,28 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_dimid_flg(in_id,"nbnd",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nbnd"); /* CAM-FV, CAM-SE */
   else if((rcd=nco_inq_dimid_flg(in_id,"tbnd",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("tbnd"); /* CAM3 */
   
+  /* Locate fields that must be present in input file */
+  if((rcd=nco_inq_varid_flg(in_id,"latitude",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("latitude");
+  else if((rcd=nco_inq_varid_flg(in_id,"Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("Latitude");
+  else if((rcd=nco_inq_varid_flg(in_id,"lat",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("lat");
+  else if((rcd=nco_inq_varid_flg(in_id,"Lat",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("Lat");
+
+  if((rcd=nco_inq_varid_flg(in_id,"longitude",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("longitude");
+  else if((rcd=nco_inq_varid_flg(in_id,"Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("Longitude");
+  else if((rcd=nco_inq_varid_flg(in_id,"lon",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("lon");
+  else if((rcd=nco_inq_varid_flg(in_id,"Lon",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("Lon");
+
+  /* Try SLD variable names */
+  if(flg_grd_SLD && (!lat_nm || !lon_nm)){
+    if((rcd=nco_inq_varid_flg(in_id,"XLAT",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("XLAT");
+    if((rcd=nco_inq_varid_flg(in_id,"XLONG",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("XLONG");
+  } /* !lat_nm */
+
+  if(!lat_nm || !lon_nm){
+    (void)fprintf(stdout,"%s: ERROR %s unable to identify latitude and/or longitude variable.\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !lat_nm */
+    
   /* Use dimension IDs to get dimension sizes and grid size*/
   rcd+=nco_inq_dimlen(in_id,dmn_id_lat,&lat_nbr);
   rcd+=nco_inq_dimlen(in_id,dmn_id_lon,&lon_nbr);
@@ -4035,50 +4057,33 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   area=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
   msk=(int *)nco_malloc(grd_sz_nbr*nco_typ_lng((nc_type)NC_INT));
   
-  lat_bnd=(double *)nco_malloc(lat_nbr*bnd_nbr*nco_typ_lng(crd_typ));
-  lat_crn=(double *)nco_malloc(lat_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
-  lat_ctr=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
-  lat_ntf=(double *)nco_malloc((lat_nbr+1L)*nco_typ_lng(crd_typ));
-  lat_wgt=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
-  lon_bnd=(double *)nco_malloc(lon_nbr*bnd_nbr*nco_typ_lng(crd_typ));
-  lon_crn=(double *)nco_malloc(lon_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
-  lon_ctr=(double *)nco_malloc(lon_nbr*nco_typ_lng(crd_typ));
-  lon_ntf=(double *)nco_malloc((lon_nbr+1L)*nco_typ_lng(crd_typ));
+  if(flg_grd_SLD){
+    lat_bnd=(double *)nco_malloc(lat_nbr*bnd_nbr*nco_typ_lng(crd_typ));
+    lat_crn=(double *)nco_malloc(lat_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+    lat_ctr=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
+    lat_ntf=(double *)nco_malloc((lat_nbr+1L)*nco_typ_lng(crd_typ));
+    lat_wgt=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
+    lon_bnd=(double *)nco_malloc(lon_nbr*bnd_nbr*nco_typ_lng(crd_typ));
+    lon_crn=(double *)nco_malloc(lon_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+    lon_ctr=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
+    lon_ntf=(double *)nco_malloc((lon_nbr+1L)*nco_typ_lng(crd_typ));
+  }else{ /* !flg_grd_SLD */
+    lat_bnd=(double *)nco_malloc(lat_nbr*bnd_nbr*nco_typ_lng(crd_typ));
+    lat_crn=(double *)nco_malloc(lat_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+    lat_ctr=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
+    lat_ntf=(double *)nco_malloc((lat_nbr+1L)*nco_typ_lng(crd_typ));
+    lat_wgt=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
+    lon_bnd=(double *)nco_malloc(lon_nbr*bnd_nbr*nco_typ_lng(crd_typ));
+    lon_crn=(double *)nco_malloc(lon_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+    lon_ctr=(double *)nco_malloc(lon_nbr*nco_typ_lng(crd_typ));
+    lon_ntf=(double *)nco_malloc((lon_nbr+1L)*nco_typ_lng(crd_typ));
+  } /* !flg_grd_SLD */
   
   grd_ctr_lat=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
   grd_ctr_lon=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
   grd_crn_lat=(double *)nco_malloc(grd_crn_nbr*grd_sz_nbr*nco_typ_lng(crd_typ));
   grd_crn_lon=(double *)nco_malloc(grd_crn_nbr*grd_sz_nbr*nco_typ_lng(crd_typ));
   
-  /* Locate fields that must be present in input file */
-  if((rcd=nco_inq_varid_flg(in_id,"latitude",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("latitude");
-  else if((rcd=nco_inq_varid_flg(in_id,"Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("Latitude");
-  else if((rcd=nco_inq_varid_flg(in_id,"lat",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("lat");
-  else if((rcd=nco_inq_varid_flg(in_id,"Lat",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("Lat");
-
-  if((rcd=nco_inq_varid_flg(in_id,"longitude",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("longitude");
-  else if((rcd=nco_inq_varid_flg(in_id,"Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("Longitude");
-  else if((rcd=nco_inq_varid_flg(in_id,"lon",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("lon");
-  else if((rcd=nco_inq_varid_flg(in_id,"Lon",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("Lon");
-
-  /* Try SLD variable names */
-  if(flg_grd_SLD && (!lat_nm || !lon_nm)){
-    if((rcd=nco_inq_varid_flg(in_id,"XLAT",&lat_ctr_id)) == NC_NOERR) lat_nm=strdup("XLAT");
-    if((rcd=nco_inq_varid_flg(in_id,"XLONG",&lon_ctr_id)) == NC_NOERR) lon_nm=strdup("XLONG");
-  } /* !lat_nm */
-
-  if(!lat_nm || !lon_nm){
-    (void)fprintf(stdout,"%s: ERROR %s unable to identify latitude and/or longitude variable.\n",nco_prg_nm_get(),fnc_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* !lat_nm */
-    
-  if(flg_grd_SLD){
-    /* WRF SLD grid: 
-       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert.nc ~/foo.nc */
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports SLD grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* !flg_grd_SLD */
-
   /* Locate fields that may be present in input file */
   /* fxm: free() all these variable names that are strdup'd */
   if((rcd=nco_inq_varid_flg(in_id,"lat_bnds",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("lat_bnds");
@@ -4092,6 +4097,23 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if((rcd=nco_inq_varid_flg(in_id,"mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask");
   else if((rcd=nco_inq_varid_flg(in_id,"Mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("Mask");
   else if((rcd=nco_inq_varid_flg(in_id,"grid_imask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("grid_imask");
+
+  if(flg_grd_SLD){
+    /* Obtain fields that must be present in input file */
+    dmn_srt[0]=0L;
+    dmn_srt[1]=0L;
+    dmn_cnt[0]=lat_nbr;
+    dmn_cnt[1]=lon_nbr;
+    rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
+    dmn_srt[0]=0L;
+    dmn_srt[1]=0L;
+    dmn_cnt[0]=lat_nbr;
+    dmn_cnt[1]=lon_nbr;
+    rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
+
+    /* 20150923: fxm also input area, mask, if present in SLD file */
+    
+  } /* !flg_grd_SLD */
 
   if(flg_grd_2D){
     int lon_psn_in; /* [idx] Ordinal position of longitude size in rectangular grid */
@@ -4163,28 +4185,53 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   dmn_sz_int[lon_psn]=lon_nbr;
   dmn_sz_int[lat_psn]=lat_nbr;
 
-  /* fxm: Interfaces (ntf) only valid for rectangular grids */
-  lat_ntf[0]=lat_ctr[0]-0.5*(lat_ctr[1]-lat_ctr[0]);
-  for(lat_idx=0;lat_idx<lat_nbr-1;lat_idx++)
-    lat_ntf[lat_idx+1]=0.5*(lat_ctr[lat_idx]+lat_ctr[lat_idx+1]);
-  lat_ntf[lat_nbr]=lat_ctr[lat_nbr-1]+0.5*(lat_ctr[lat_nbr-1]-lat_ctr[lat_nbr-2]);
-  lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
-  
-  lon_ntf[0]=lon_ctr[0]-0.5*(lon_ctr[1]-lon_ctr[0]);
-  for(lon_idx=0;lon_idx<lon_nbr-1;lon_idx++)
-    lon_ntf[lon_idx+1]=0.5*(lon_ctr[lon_idx]+lon_ctr[lon_idx+1]);
-  lon_ntf[lon_nbr]=lon_ctr[lon_nbr-1]+0.5*(lon_ctr[lon_nbr-1]-lon_ctr[lon_nbr-2]);
-  lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
-  
-  /* fxm: do not overwrite bounds (bnd), if any, from input file */
-  for(idx=0;idx<lon_nbr;idx++){
-    lon_bnd[2*idx]=lon_ntf[idx];
-    lon_bnd[2*idx+1]=lon_ntf[idx+1];
-  } /* end loop over longitude */
-  for(idx=0;idx<lat_nbr;idx++){
-    lat_bnd[2*idx]=lat_ntf[idx];
-    lat_bnd[2*idx+1]=lat_ntf[idx+1];
-  } /* end loop over latitude */
+  if(flg_grd_SLD){
+    /* 20150923: This currently replicated the rectangular code, must generalize for SLD */
+    /* Interfaces (ntf) for SLD grids are essentially grid corners */
+    lat_ntf[0]=lat_ctr[0]-0.5*(lat_ctr[1]-lat_ctr[0]);
+    for(lat_idx=0;lat_idx<lat_nbr-1;lat_idx++)
+      lat_ntf[lat_idx+1]=0.5*(lat_ctr[lat_idx]+lat_ctr[lat_idx+1]);
+    lat_ntf[lat_nbr]=lat_ctr[lat_nbr-1]+0.5*(lat_ctr[lat_nbr-1]-lat_ctr[lat_nbr-2]);
+    lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
+    
+    lon_ntf[0]=lon_ctr[0]-0.5*(lon_ctr[1]-lon_ctr[0]);
+    for(lon_idx=0;lon_idx<lon_nbr-1;lon_idx++)
+      lon_ntf[lon_idx+1]=0.5*(lon_ctr[lon_idx]+lon_ctr[lon_idx+1]);
+    lon_ntf[lon_nbr]=lon_ctr[lon_nbr-1]+0.5*(lon_ctr[lon_nbr-1]-lon_ctr[lon_nbr-2]);
+    lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
+  } /* !flg_grd_SLD */
+
+  if(flg_grd_SLD){
+    /* WRF SLD grid: 
+       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert.nc ~/foo.nc */
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports SLD grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !flg_grd_SLD */
+
+  if(flg_grd_2D){
+    /* Interfaces (ntf) assume rectangular grids */
+    lat_ntf[0]=lat_ctr[0]-0.5*(lat_ctr[1]-lat_ctr[0]);
+    for(lat_idx=0;lat_idx<lat_nbr-1;lat_idx++)
+      lat_ntf[lat_idx+1]=0.5*(lat_ctr[lat_idx]+lat_ctr[lat_idx+1]);
+    lat_ntf[lat_nbr]=lat_ctr[lat_nbr-1]+0.5*(lat_ctr[lat_nbr-1]-lat_ctr[lat_nbr-2]);
+    lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
+    
+    lon_ntf[0]=lon_ctr[0]-0.5*(lon_ctr[1]-lon_ctr[0]);
+    for(lon_idx=0;lon_idx<lon_nbr-1;lon_idx++)
+      lon_ntf[lon_idx+1]=0.5*(lon_ctr[lon_idx]+lon_ctr[lon_idx+1]);
+    lon_ntf[lon_nbr]=lon_ctr[lon_nbr-1]+0.5*(lon_ctr[lon_nbr-1]-lon_ctr[lon_nbr-2]);
+    lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
+    
+    /* fxm: do not overwrite bounds (bnd), if any, from input file */
+    for(idx=0;idx<lon_nbr;idx++){
+      lon_bnd[2*idx]=lon_ntf[idx];
+      lon_bnd[2*idx+1]=lon_ntf[idx+1];
+    } /* end loop over longitude */
+    for(idx=0;idx<lat_nbr;idx++){
+      lat_bnd[2*idx]=lat_ntf[idx];
+      lat_bnd[2*idx+1]=lat_ntf[idx+1];
+    } /* end loop over latitude */
+  } /* !flg_grd_2D */
   
   if(flg_grd_2D){
     /* Diagnose type of two-dimensional input grid by testing second latitude center against formulae */
