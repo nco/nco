@@ -1,3 +1,7 @@
+2015-09-25  Charlie Zender  <zender@uci.edu>
+
+	* Apply Tempest src/dst_grid_dims bug workaround to all maps (solves MPAS Ocean problem)
+
 2015-09-22  Charlie Zender  <zender@uci.edu>
 
 	* Implement configure --enable_doc option, attempt and fail to override this if makeinfo version < 4.8

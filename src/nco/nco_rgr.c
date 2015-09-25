@@ -854,17 +854,17 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   dmn_sz_out_int=(int *)nco_malloc(rgr_map.dst_grid_rank*nco_typ_lng((nc_type)NC_INT));
   rcd=nco_get_vara(in_id,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
 
-  if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
+  //if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
     /* Check-for and workaround faulty Tempest grid sizes */
     if(flg_grd_in_1D && (rgr_map.src_grid_size != dmn_sz_in_int[0])){
-      (void)fprintf(stdout,"%s: WARNING %s reports input grid dimension sizes disagree rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable in Tempest mapfile. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
+      (void)fprintf(stdout,"%s: WARNING %s reports input grid dimension sizes disagree rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known problem in some Tempest mapfiles prior to 20150901, and in some ESMF mapfiles for MPAS. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
       dmn_sz_in_int[0]=rgr_map.src_grid_size;
     } /* !bug */
     if(flg_grd_out_1D && (rgr_map.dst_grid_size != dmn_sz_out_int[0])){
-      (void)fprintf(stdout,"%s: WARNING %s reports output grid dimension sizes disagree rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable in Tempest mapfile. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
+      (void)fprintf(stdout,"%s: WARNING %s reports output grid dimension sizes disagree rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known problem in some Tempest mapfiles prior to 20150901, and in some ESMF mapfiles for MPAS. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
       dmn_sz_out_int[0]=rgr_map.dst_grid_size;
     } /* !bug */
-  } /* !Tempest */
+    //} /* !Tempest */
  
   long col_nbr_in; /* [idx] Number of columns in source grid */
   long lon_nbr_in; /* [idx] Number of longitudes in rectangular source grid */

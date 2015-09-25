@@ -6390,8 +6390,8 @@ These annotations include
 @table @dfn
 @cindex @var{lat_nm}
 @cindex @var{lon_nm}
-@cindex @samp{--rgr lon=@var{lon_nm}}
-@cindex @samp{--rgr lat=@var{lat_nm}}
+@cindex @samp{--rgr lon_nm=@var{lon_nm}}
+@cindex @samp{--rgr lat_nm=@var{lat_nm}}
 @item Horizontal Dimension Names: @var{lat}, @var{lon}
     The name of the horizontal spatial dimensions assumed to represent
     latitude and longitude in 2D rectangular input files are
@@ -6404,14 +6404,14 @@ These annotations include
     and variables regridded to a 1D-unstructured output grid will have
     @var{lat_nm} and @var{lon_nm} as auxiliary coordinate variables.
     To treat different dimensions and variables as latitude and
-    longitude, use the options @samp{--rgr lat=@var{lat_nm}} and 
-    @samp{--rgr lon=@var{lon_nm}}.  
+    longitude, use the options @samp{--rgr lat_nm=@var{lat_nm}} and 
+    @samp{--rgr lon_nm=@var{lon_nm}}.  
     Note that, for now at least, @var{lat_nm} and @var{lon_nm} indicate
     both the variable names associated @emph{and}, where applicable
     (i.e., on 2D-grids), the dimensions of the horizontal coordinates.
 @cindex @code{ncol}
 @cindex @var{col_nm}
-@cindex @samp{--rgr col=@var{col_nm}}
+@cindex @samp{--rgr col_nm=@var{col_nm}}
 @item Unstructured Dimension Name: @var{col}
     The name of the horizontal spatial dimension assumed to delineate
     an unstructured grid is @var{col_nm}, which defaults to @code{ncol}
@@ -6421,7 +6421,7 @@ These annotations include
     written to an unstructured output grid will all contain the 
     @var{col_nm}-dimension.
     To treat a different dimension as unstructured, use the option
-    @samp{--rgr col=@var{col_nm}}. 
+    @samp{--rgr col_nm=@var{col_nm}}. 
     Note: Often there is no coordinate variable for the
     @var{col_nm}-dimension, i.e., there is no variable named
     @var{col_nm}, although such a coordinate could contain useful
@@ -6456,8 +6456,8 @@ These annotations include
 @cindex @code{time_bnds}
 @cindex @var{lat_bnd_nm}
 @cindex @var{lon_bnd_nm}
-@cindex @samp{--rgr lat_bnd=@var{lat_bnd_nm}}
-@cindex @samp{--rgr lon_bnd=@var{lon_bnd_nm}}
+@cindex @samp{--rgr lat_bnd_nm=@var{lat_bnd_nm}}
+@cindex @samp{--rgr lon_bnd_nm=@var{lon_bnd_nm}}
 @item Structured Grid Bounds Variables: @var{bnd}, @var{lat_bnd}, @var{lon_bnd}
     Structured grids with 1D-coordinates use the dimension
     @var{bnd_nm} (which defaults to @code{nbnd}) with the spatial bounds
@@ -6469,10 +6469,10 @@ These annotations include
     Bounds are attached to the horizontal spatial dimensions via their
     @code{bounds} attributes. 
     Change the spatial bounds dimension with the option 
-    @samp{--rgr bnd=@var{bnd_nm}}.
+    @samp{--rgr bnd_nm=@var{bnd_nm}}.
     Rename the spatial bounds variables with the options 
-    @samp{--rgr lat_bnd=@var{lat_bnd_nm}} and 
-    @samp{--rgr lon_bnd=@var{lon_bnd_nm}}.
+    @samp{--rgr lat_bnd_nm=@var{lat_bnd_nm}} and 
+    @samp{--rgr lon_bnd_nm=@var{lon_bnd_nm}}.
 @cindex @code{lat_vertices}
 @cindex @code{lon_vertices}
 @cindex @code{nv}
@@ -6490,10 +6490,10 @@ These annotations include
     These bounds are attached to the horizontal spatial dimensions
     via their @code{bounds} attributes.
     Change the spatial bounds dimension with the option 
-    @samp{--rgr bnd=@var{bnd_nm}}.
+    @samp{--rgr bnd_nm=@var{bnd_nm}}.
     Rename the spatial bounds variables with the options 
-    @samp{--rgr lat_bnd=@var{lat_bnd_nm}} and
-    @samp{--rgr lon_bnd=@var{lon_bnd_nm}}.
+    @samp{--rgr lat_bnd_nm=@var{lat_bnd_nm}} and
+    @samp{--rgr lon_bnd_nm=@var{lon_bnd_nm}}.
     The temporal bounds dimension in unstructured grid output remains as
     in the @var{input-file}, usually @code{nbnd}.
 @cindex @code{area}
@@ -6550,10 +6550,10 @@ The following examples may all be assumed to end with the standard
 options @samp{--map=map.nc in.nc out.nc}.
 @example
 @verbatim
-ncks --rgr lat=latitude --rgr lon=longitude
-ncks --rgr col=column --rgr lat_wgt=lat_wgt
-ncks --rgr bnd=bounds --rgr lat_bnd=lat_bounds --rgr lon_bnd=lon_bounds
-ncks --rgr bnd=vertices --rgr lat_bnd=lat_vrt --rgr lon_bnd=lon_vrt
+ncks --rgr lat_nm=latitude --rgr lon_nm=longitude
+ncks --rgr col_nm=column --rgr lat_wgt=lat_wgt
+ncks --rgr bnd_nm=bounds --rgr lat_bnd_nm=lat_bounds --rgr lon_bnd_nm=lon_bounds
+ncks --rgr bnd_nm=vertices --rgr lat_bnd_nm=lat_vrt --rgr lon_bnd_nm=lon_vrt
 @end verbatim
 @end example
 The first command causes the regridder to associate the latitude and
