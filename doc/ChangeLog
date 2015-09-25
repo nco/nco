@@ -1,5 +1,7 @@
 2015-09-25  Charlie Zender  <zender@uci.edu>
 
+	* Regridding works on MPAS-O 2D bottomDepth but not 3D temperature
+
 	* Apply Tempest src/dst_grid_dims bug workaround to all maps (solves MPAS Ocean problem)
 
 2015-09-22  Charlie Zender  <zender@uci.edu>
