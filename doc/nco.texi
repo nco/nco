@@ -18613,7 +18613,7 @@ Unforunately while this bug and the related coordinate renaming bug
 were fixed in 4.3.1-rc5 (released in December, 2013), a new and related
 bug was discovered in October 2014.
 
-Another netCDF bug that causes unintended side-effects with
+Another netCDF4 bug that causes unintended side-effects with
 @command{ncrename} affects (at least) versions 4.3.1--4.3.2 and all 
 snapshots of the netCDF4 library until January, 2015.
 This bug (fixed in 4.3.3 in February, 2015) corrupts values or renamed
@@ -18638,10 +18638,11 @@ version 4.3.3 or later, or convert the file to netCDF3 first, then
 rename as intended, then convert back.  
 This bug does not affect renaming of groups or of attributes.
 
-The final netCDF bug that causes unintended side-effects with
+Yet another netCDF4 bug that causes unintended side-effects with
 @command{ncrename} affects only snapshots from January--February, 2015,
 and released version 4.3.3 (February, 2015).
-It was fixed in netCDF version 4.3.3.1 (March, 2015).
+It was fixed in (and was the reason for releasing) netCDF version
+4.3.3.1 (March, 2015). 
 This bug causes renamed attributes of coordinate variables in netCDF4 
 to files to disappear: 
 @example
@@ -18653,6 +18654,23 @@ ncks -v /g1/lon ~/foo.nc # Shows units and new_units are both gone
 @end example
 As of netCDF version 4.3.3.1 (March, 2015) there are no known renaming
 bugs. 
+
+Clearly, renaming dimensions in netCDF4 files is non-trivial.
+The latest chapter in this saga is a netCDF4 bug discovered in
+September, 2015.
+This bug causes @command{ncrename} to create corrupted output files
+when attempting to rename two dimensions simultaneously.
+The workaround is to rename the dimensions sequentially, in two separate 
+@command{ncrename} calls.
+@example
+@verbatim
+# Demonstate bug in netCDF4/HDF5 library netCDF-4.3.3.1
+ncrename -d y,rlat -d x,rlon dayclim_withoutpr.nc dayclim2.nc
+ncdump dayclim2.nc # File is unreadable
+@end verbatim
+@end example
+Yet another netCDF4 bug that causes unintended side-effects with
+@command{ncrename} affects only snapshots from January--February, 2015,
 
 @cindex global attributes
 @cindex group attributes
