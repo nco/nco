@@ -6415,7 +6415,10 @@ These annotations include
 @item Unstructured Dimension Name: @var{col}
     The name of the horizontal spatial dimension assumed to delineate
     an unstructured grid is @var{col_nm}, which defaults to @code{ncol}
-    (number of columns).
+    (number of columns), the name @acronym{CAM} employs.
+    Other common names for the columns in an unstructured grid include
+    @code{lndgrid} (used by @acronym{CLM}), and @code{nCells} (used by 
+    @acronym{MPAS-O}). 
     Variables that contain the @var{col_nm}-dimension on an
     unstructured input grid will be regridded, and regridded variables
     written to an unstructured output grid will all contain the 

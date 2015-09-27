@@ -854,17 +854,15 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   dmn_sz_out_int=(int *)nco_malloc(rgr_map.dst_grid_rank*nco_typ_lng((nc_type)NC_INT));
   rcd=nco_get_vara(in_id,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
 
-  //if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
-    /* Check-for and workaround faulty Tempest grid sizes */
-    if(flg_grd_in_1D && (rgr_map.src_grid_size != dmn_sz_in_int[0])){
-      (void)fprintf(stdout,"%s: WARNING %s reports input grid dimension sizes disagree rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known problem in some Tempest mapfiles prior to ~20150901, and in some ESMF mapfiles for MPAS-O. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
+  /* Check-for and workaround faulty Tempest and MPAS-O grid sizes */
+  if(flg_grd_in_1D && (rgr_map.src_grid_size != dmn_sz_in_int[0])){
+    (void)fprintf(stdout,"%s: WARNING %s reports input grid dimension sizes disagree rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known issue with some Tempest mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
       dmn_sz_in_int[0]=rgr_map.src_grid_size;
-    } /* !bug */
-    if(flg_grd_out_1D && (rgr_map.dst_grid_size != dmn_sz_out_int[0])){
-      (void)fprintf(stdout,"%s: WARNING %s reports output grid dimension sizes disagree rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known problem in some Tempest mapfiles prior to ~20150901, and in some ESMF mapfiles for MPAS-O. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
-      dmn_sz_out_int[0]=rgr_map.dst_grid_size;
-    } /* !bug */
-    //} /* !Tempest */
+  } /* !bug */
+  if(flg_grd_out_1D && (rgr_map.dst_grid_size != dmn_sz_out_int[0])){
+    (void)fprintf(stdout,"%s: WARNING %s reports output grid dimension sizes disagree rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known issue with some Tempest mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
+    dmn_sz_out_int[0]=rgr_map.dst_grid_size;
+  } /* !bug */
  
   long col_nbr_in; /* [idx] Number of columns in source grid */
   long lon_nbr_in; /* [idx] Number of longitudes in rectangular source grid */
@@ -1541,7 +1539,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* !2D */
     
   /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
-     If necessary, create them from scratch from remap data
+     If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
   const int var_xcl_lst_nbr=13; /* [nbr] Number of objects on exclusion list */
   const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/lat","/latitude","/lat_bnds","/lat_vertices","/bounds_lat","/lon","/longitude","/lon_bnds","/lon_vertices","/bounds_lon"};
@@ -1805,6 +1803,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	    if(flg_grd_out_2D){
 	      if(nco_rgr_typ == nco_rgr_grd_1D_to_2D && !strcmp(dmn_nm,col_nm)){
 		/* Replace unstructured horizontal dimension by orthogonal horizontal dimensions already defined */
+		if(dmn_idx != dmn_nbr_in-1){
+		  (void)fprintf(stdout,"%s: ERROR %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. NCO regridder currently requires spatial dimension(s) to be last dimension(s) of input variable.\nHINT: Consider re-arranging dimensions in input file to accomplish this with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling regridder\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
+		  nco_exit(EXIT_FAILURE);
+		} /* !dmn_idx */
 		dmn_id_out[dmn_idx]=dmn_id_lat;
 		dmn_id_out[dmn_idx+1]=dmn_id_lon;
 		dmn_cnt[dmn_idx]=lat_nbr_out;

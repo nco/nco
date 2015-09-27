@@ -1,8 +1,12 @@
+2015-09-27  Charlie Zender  <zender@uci.edu>
+
+	* Verified that MPAS-O regridding is not yet conservative--masking problem?
+
 2015-09-25  Charlie Zender  <zender@uci.edu>
 
-	* Regridding works on MPAS-O 2D bottomDepth but not 3D temperature
+	* Regridding appears to work on MPAS-O fields once nCells is last dimension
 
-	* Apply Tempest src/dst_grid_dims bug workaround to all maps (solves MPAS Ocean problem)
+	* Apply Tempest src_grid_dims workaround to faulty MPAS-O src_grid_dims (solves MPAS Ocean problem)
 
 2015-09-22  Charlie Zender  <zender@uci.edu>
 
