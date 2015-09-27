@@ -238,6 +238,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->bnd_nm=NULL; /* [sng] Name of dimension to employ for spatial bounds */
   rgr->bnd_tm_nm=NULL; /* [sng] Name of dimension to employ for temporal bounds */
   rgr->col_nm=NULL; /* [sng] Name of horizontal spatial dimension on unstructured grid */
+  rgr->frc_nm=NULL; /* [sng] Name of variable containing gridcell fraction */
   rgr->lat_bnd_nm=NULL; /* [sng] Name of rectangular boundary variable for latitude */
   rgr->lat_nm=NULL; /* [sng] Name of dimension to recognize as latitude */
   rgr->lat_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for latitude */
@@ -370,6 +371,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->col_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"frc_nm")){
+      rgr->frc_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_bnd_nm")){
       rgr->lat_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -415,6 +420,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* NB: CESM uses nbnd for temporal bounds. NCO defaults to nbnd for all bounds with two endpoints */
   if(!rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for spatial bounds */
   if(!rgr->col_nm) rgr->col_nm=(char *)strdup("ncol"); /* [sng] Name of horizontal spatial dimension on unstructured grid */
+  if(!rgr->frc_nm) rgr->frc_nm=(char *)strdup("frac_b"); /* [sng] Name of variable containing gridcell fraction */
   if(!rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)strdup("lat_bnds"); /* [sng] Name of rectangular boundary variable for latitude */
   if(!rgr->lat_nm) rgr->lat_nm=(char *)strdup("lat"); /* [sng] Name of dimension to recognize as latitude */
   if(!rgr->lat_vrt_nm) rgr->lat_vrt_nm=(char *)strdup("lat_vertices"); /* [sng] Name of non-rectangular boundary variable for latitude */
@@ -451,7 +457,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#sec:fileformat:scrip
 
      Conventions:
-     grid_size: Number of grid cells (product of lat*lon)
+     grid_size: Number of gridcells (product of lat*lon)
      address: Source and destination index for each link pair
      num_links: Number of unique address pairs in remapping, i.e., size of sparse matrix
      num_wgts: Number of weights per vertice for given remapping
@@ -496,6 +502,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      Documentation:
      NCL special cases described in popRemap.ncl, e.g., at
      https://github.com/yyr/ncl/blob/master/ni/src/examples/gsun/popRemap.ncl
+
+     ESMF Regridding Status:
+     http://www.earthsystemmodeling.org/esmf_releases/last/regridding_status.html
 
      Sample regrid T42->POP43, SCRIP:
      ncks -O --map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
@@ -1379,7 +1388,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !spherical zones */
   } /* !flg_dgn_area_out */
 
-  /* Verify frc_out is sometimes non-zero */
+  /* Verify frc_out is sometimes non-zero
+     ESMF: "For bilinear and patch remapping, the destination grid frac array [brac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero." */
   for(idx=0;idx<rgr_map.dst_grid_size;idx++)
     if(frc_out[idx] != 0.0) break;
   if(idx == rgr_map.dst_grid_size){
@@ -1396,6 +1406,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      However, frc_out is often (e.g., for CS <-> RLL maps) close but not equal to unity (an ESMF_Regrid_Weight_Gen issue?)
      Hence, decide whether to normalize by frc_out by diagnosing the furthest excursion of frc_out from unity */
   nco_bool flg_frc_out_one=True;
+  nco_bool flg_frc_out_wrt=False;
   double frc_out_dff_one; /* [frc] Deviation of frc_out from 1.0 */
   double frc_out_dff_one_max=0.0; /* [frc] Maximum deviation of frc_out from 1.0 */
   long idx_max_dvn; /* [idx] Index of maximum deviation from 1.0 */
@@ -1407,10 +1418,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !max */
   } /* !idx */
   if(frc_out_dff_one_max > eps_rlt) flg_frc_out_one=False;
-  nco_bool flg_frc_nrm=False;
-  if(!flg_frc_out_one && (nco_rgr_nrm_typ == nco_rgr_nrm_destarea || nco_rgr_nrm_typ == nco_rgr_nrm_none)) flg_frc_nrm=True;
-  if(flg_frc_nrm){
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports global metadata specifies normalization with type = %s and frc_dst = dst_frac = frac_b = frc_out contains non-unity elements (maximum deviation of %g occurs for frc_out[%ld] = %g). Will apply \'destarea\' normalization to all regridded arrays.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ),frc_out_dff_one_max,idx_max_dvn,frc_out[idx_max_dvn]);
+  nco_bool flg_frc_nrm=False; /* [flg] Must normalize by frc_out because frc_out is not always unity and specified normalization is destarea or none */
+  if(!flg_frc_out_one && nco_rgr_mth_typ == nco_rgr_mth_conservative && (nco_rgr_nrm_typ == nco_rgr_nrm_destarea || nco_rgr_nrm_typ == nco_rgr_nrm_none)){
+    flg_frc_nrm=True;
+    flg_frc_out_wrt=True;
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports global metadata specifies conservative remapping with normalization of type = %s. Furthermore, destination fractions frc_dst = dst_frac = frac_b = frc_out contain non-unity elements (maximum deviation of %g occurs for frc_out[%ld] = %g). Thus normalization issues cannot be ignored. Will apply \'destarea\' normalization (i.e., divide by non-zero frc_out[dst_idx]) to all regridded arrays.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ),frc_out_dff_one_max,idx_max_dvn,frc_out[idx_max_dvn]);
   } /* !sometimes non-unity */
   if(flg_frc_nrm && rgr->flg_rnr){
     (void)fprintf(stdout,"%s: ERROR %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice may be an error, depending on intent of each. Call Charlie and tell him how NCO should handle this.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
@@ -1638,6 +1650,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   char *bnd_nm_out;
   char *bnd_tm_nm_out;
   char *col_nm_out;
+  char *frc_nm_out;
   char *lat_bnd_nm_out;
   char *lat_nm_out;
   char *lat_wgt_nm;
@@ -1646,6 +1659,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int dmn_id_bnd; /* [id] Dimension ID */
   int dmn_id_bnd_tm; /* [id] Dimension ID */
   int area_out_id; /* [id] Variable ID for area */
+  int frc_out_id; /* [id] Variable ID for fraction */
   int lon_out_id; /* [id] Variable ID for longitude */
   int lat_out_id; /* [id] Variable ID for latitude */
   int lat_wgt_id; /* [id] Variable ID for latitude weight */
@@ -1655,11 +1669,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   long dmn_srt_out[dmn_nbr_grd_max];
   long dmn_cnt_out[dmn_nbr_grd_max];
 
-  /* Name output dimensions */
+  /* Name output dimensions/variables */
   area_nm_out=rgr->area_nm;
   bnd_nm_out=rgr->bnd_nm;
   bnd_tm_nm_out=rgr->bnd_tm_nm;
   col_nm_out=rgr->col_nm;
+  frc_nm_out=rgr->frc_nm;
   lat_bnd_nm_out=rgr->lat_bnd_nm;
   lat_wgt_nm=rgr->lat_wgt_nm;
   lon_bnd_nm_out=rgr->lon_bnd_nm;
@@ -1731,6 +1746,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     var_crt_nbr++;
     (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&area_out_id);
     var_crt_nbr++;
+    if(flg_frc_out_wrt){
+      (void)nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&frc_out_id);
+      var_crt_nbr++;
+    } /* !flg_frc_out_wrt */
   } /* !flg_grd_out_1D */
   if(flg_grd_out_2D){
     (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_out_id);
@@ -1751,6 +1770,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_ids_out[1]=dmn_id_lon;
     (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
     var_crt_nbr++;
+    if(flg_frc_out_wrt){
+      dmn_ids_out[0]=dmn_id_lat;
+      dmn_ids_out[1]=dmn_id_lon;
+      (void)nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
+      var_crt_nbr++;
+    } /* !flg_frc_out_wrt */
   } /* !flg_grd_out_2D */
 
   /* Pre-allocate dimension ID and cnt/srt space */
@@ -1854,7 +1879,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Define new metadata in regridded file */
   att_nm=strdup("long_name");
-  att_val=strdup("solid angle subtended by grid cell");
+  att_val=strdup("solid angle subtended by gridcell");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=area_nm_out;
   aed_mtd.id=area_out_id;
@@ -1905,6 +1930,34 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
+  if(flg_frc_out_wrt){
+    att_nm=strdup("long_name");
+    att_val=strdup("fraction of gridcell valid on destination grid");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=frc_nm_out;
+    aed_mtd.id=frc_out_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,frc_out_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+    
+    att_nm=strdup("cell_methods");
+    att_val=strdup("lat, lon: sum");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=frc_nm_out;
+    aed_mtd.id=frc_out_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,frc_out_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+  } /* !flg_frc_out_wrt */
+  
   att_nm=strdup("long_name");
   att_val=strdup("latitude");
   aed_mtd.att_nm=att_nm;
@@ -2131,8 +2184,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(flg_grd_out_1D){
     aed_mtd_crd.var_nm=area_nm_out;
     aed_mtd_crd.id=area_out_id;
-    (void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
-    
+    (void)nco_aed_prc(out_id,area_out_id,aed_mtd_crd);
+
+    if(flg_frc_out_wrt){
+      aed_mtd_crd.var_nm=frc_nm_out;
+      aed_mtd_crd.id=frc_out_id;
+      (void)nco_aed_prc(out_id,frc_out_id,aed_mtd_crd);
+    } /* !flg_frc_out_wrt */
+
     aed_mtd_crd.var_nm=lat_nm_out;
     aed_mtd_crd.id=lat_out_id;
     (void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
@@ -2191,6 +2250,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_cnt_out[0]=lat_nbr_out;
     dmn_cnt_out[1]=lon_nbr_out;
     (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
+    if(flg_frc_out_wrt){
+      dmn_srt_out[0]=dmn_srt_out[1]=0L;
+      dmn_cnt_out[0]=lat_nbr_out;
+      dmn_cnt_out[1]=lon_nbr_out;
+      (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_out,frc_out,crd_typ_out);
+    } /* !flg_frc_out_wrt */
   } /* !flg_grd_out_2D */
 
   /* Regrid or copy variable values */
@@ -2375,10 +2440,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 		var_val_dbl_out[dst_idx]=round(var_val_dbl_out[dst_idx]);
 
-	  if(!flg_frc_nrm){
+	  if(flg_frc_nrm){
 	    /* frc_dst = frc_out = dst_frac = frac_b contains non-unity elements and normalization type is "destarea" or "none"
-	       When this occurs, follow "destarea" normalization procedure
+	       When this occurs for conservative remapping, follow "destarea" normalization procedure
 	       See SCRIP manual p. 11 and http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03028000000000000000
+	       NB: Non-conservative interpolation methods (e.g., bilinear) should NOT apply this normalization (theoretically there is no danger in doing so because frc_out == 1 always for all gridcells that participate in bilinear remapping and frc_out == 0 otherwise, but still, best not to tempt the Fates)
 	       NB: Both frc_out and NCO's renormalization (below) could serve the same purpose
 	       Applying both could lead to double-normalizing by missing values
 	       fxm: Be sure this does not occur! */

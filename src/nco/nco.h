@@ -925,6 +925,7 @@ extern "C" {
     char *bnd_nm; /* [sng] Name of dimension to employ for spatial bounds */
     char *bnd_tm_nm; /* [sng] Name of dimension to employ for temporal bounds */
     char *col_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
+    char *frc_nm; /* [sng] Name of variable containing gridcell fraction */
     char *lat_bnd_nm; /* [sng] Name of rectangular boundary variable for latitude */
     char *lat_nm; /* [sng] Name of dimension to recognize as latitude */
     char *lat_vrt_nm; /* [sng] Name of non-rectangular boundary variable for latitude */
