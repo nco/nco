@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.3-alpha03
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 21 September 2015
+@set update-date 27 September 2015
 @set update-month September 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6503,7 +6503,7 @@ These annotations include
 @cindex @code{cell_methods}
 @cindex @code{cell_area}
 @cindex @code{steradian}
-@cindex @samp{--rgr area=@var{area_nm}}
+@cindex @samp{--rgr area_nm=@var{area_nm}}
 @cindex @var{area_nm}
 @cindex @acronym{SI}
 @cindex solid angle
@@ -6521,6 +6521,26 @@ These annotations include
     which indicates that @var{area_nm} is @dfn{extensive}, meaning 
     that its value depends on the gridcell boundaries.  
     Since @var{area_nm} is a property of the grid, it is read directly
+    from the @var{map-file} rather than regridded itself. 
+@cindex @code{frc}
+@cindex @samp{--rgr frc_nm=@var{frc_nm}}
+@cindex @var{frc_nm}
+@cindex extensive variable
+@item Gridcell Fraction: @var{frc}
+    The variable @var{frc_nm} (which defaults to @code{frac_b}) is
+    automatically copied to the @var{output_file} to hold the valid
+    fraction of each gridcell when certain conditions are met.
+    First, the regridding method must be conservative.
+    Second, at least one value of @var{frc_nm} must be non-unity.
+    These conditions ensure that whenever fractional gridcells affect
+    the regridding, they are also placed in the output file.
+    To store the fraction in a different variable, use the option
+    @samp{--rgr frc_nm=@var{frc_nm}}.
+    The @var{frc_nm} variable receives a @code{cell_methods} attribute
+    with value @code{lat, lon: sum}, which indicates that @var{frc_nm}
+    is @dfn{extensive}, meaning that its value depends on the gridcell
+    boundaries.   
+    Since @var{frc_nm} is a property of the grid, it is read directly
     from the @var{map-file} rather than regridded itself. 
 @cindex @code{gw}
 @cindex @samp{--rgr lat_weight=@var{lat_wgt_nm}}
