@@ -4380,7 +4380,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_rl=lat_idx*lon_nbr+lon_idx;
 	idx_fk=lat_idx_fk*(lon_nbr+2)+lon_idx_fk;
 
-	/* Equation is for index into fake array (valid everywhere it is applied) 
+	/* Determine index into fake array (valid everywhere it is applied) 
 	   Comments after each equation are formula for real index (valid only at grid interiors) */
 	idx_fk_crn_ll_ctr_ll=idx_fk-(lon_nbr+2)-1; // (lat_idx-1)*lon_nbr+lon_idx-1
 	idx_fk_crn_ll_ctr_lr=idx_fk-(lon_nbr+2); // (lat_idx-1)*lon_nbr+lon_idx
@@ -4403,17 +4403,17 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk_crn_ul_ctr_ul=idx_fk+(lon_nbr+2)-1; // (lat_idx+1)*lon_nbr+lon_idx-1;
 	
 	idx_crn_ll=grd_crn_nbr*idx+0;
-	lat_crn[idx_crn_ll]=0.25*(lat_ctr[idx_fk_crn_ll_ctr_ll]+lat_ctr[idx_fk_crn_ll_ctr_lr]+lat_ctr[idx_fk_crn_ll_ctr_ur]+lat_ctr[idx_fk_crn_ll_ctr_ul]);
-	lon_crn[idx_crn_ll]=0.25*(lon_ctr[idx_fk_crn_ll_ctr_ll]+lon_ctr[idx_fk_crn_ll_ctr_lr]+lon_ctr[idx_fk_crn_ll_ctr_ur]+lon_ctr[idx_fk_crn_ll_ctr_ul]);
+	lat_crn[idx_crn_ll]=0.25*(lat_ctr_fk[idx_fk_crn_ll_ctr_ll]+lat_ctr_fk[idx_fk_crn_ll_ctr_lr]+lat_ctr_fk[idx_fk_crn_ll_ctr_ur]+lat_ctr_fk[idx_fk_crn_ll_ctr_ul]);
+	lon_crn[idx_crn_ll]=0.25*(lon_ctr_fk[idx_fk_crn_ll_ctr_ll]+lon_ctr_fk[idx_fk_crn_ll_ctr_lr]+lon_ctr_fk[idx_fk_crn_ll_ctr_ur]+lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
 	idx_crn_lr=grd_crn_nbr*idx+1;
-	lat_crn[idx_crn_lr]=0.25*(lat_ctr[idx_fk_crn_lr_ctr_ll]+lat_ctr[idx_fk_crn_lr_ctr_lr]+lat_ctr[idx_fk_crn_lr_ctr_ur]+lat_ctr[idx_fk_crn_lr_ctr_ul]);
-	lon_crn[idx_crn_lr]=0.25*(lon_ctr[idx_fk_crn_lr_ctr_ll]+lon_ctr[idx_fk_crn_lr_ctr_lr]+lon_ctr[idx_fk_crn_lr_ctr_ur]+lon_ctr[idx_fk_crn_lr_ctr_ul]);
+	lat_crn[idx_crn_lr]=0.25*(lat_ctr_fk[idx_fk_crn_lr_ctr_ll]+lat_ctr_fk[idx_fk_crn_lr_ctr_lr]+lat_ctr_fk[idx_fk_crn_lr_ctr_ur]+lat_ctr_fk[idx_fk_crn_lr_ctr_ul]);
+	lon_crn[idx_crn_lr]=0.25*(lon_ctr_fk[idx_fk_crn_lr_ctr_ll]+lon_ctr_fk[idx_fk_crn_lr_ctr_lr]+lon_ctr_fk[idx_fk_crn_lr_ctr_ur]+lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
 	idx_crn_ur=grd_crn_nbr*idx+2;
-	lat_crn[idx_crn_ur]=0.25*(lat_ctr[idx_fk_crn_ur_ctr_ll]+lat_ctr[idx_fk_crn_ur_ctr_lr]+lat_ctr[idx_fk_crn_ur_ctr_ur]+lat_ctr[idx_fk_crn_ur_ctr_ul]);
-	lon_crn[idx_crn_ur]=0.25*(lon_ctr[idx_fk_crn_ur_ctr_ll]+lon_ctr[idx_fk_crn_ur_ctr_lr]+lon_ctr[idx_fk_crn_ur_ctr_ur]+lon_ctr[idx_fk_crn_ur_ctr_ul]);
+	lat_crn[idx_crn_ur]=0.25*(lat_ctr_fk[idx_fk_crn_ur_ctr_ll]+lat_ctr_fk[idx_fk_crn_ur_ctr_lr]+lat_ctr_fk[idx_fk_crn_ur_ctr_ur]+lat_ctr_fk[idx_fk_crn_ur_ctr_ul]);
+	lon_crn[idx_crn_ur]=0.25*(lon_ctr_fk[idx_fk_crn_ur_ctr_ll]+lon_ctr_fk[idx_fk_crn_ur_ctr_lr]+lon_ctr_fk[idx_fk_crn_ur_ctr_ur]+lon_ctr_fk[idx_fk_crn_ur_ctr_ul]);
 	idx_crn_ul=grd_crn_nbr*idx+3;
-	lat_crn[idx_crn_ul]=0.25*(lat_ctr[idx_fk_crn_ul_ctr_ll]+lat_ctr[idx_fk_crn_ul_ctr_lr]+lat_ctr[idx_fk_crn_ul_ctr_ur]+lat_ctr[idx_fk_crn_ul_ctr_ul]);
-	lon_crn[idx_crn_ul]=0.25*(lon_ctr[idx_fk_crn_ul_ctr_ll]+lon_ctr[idx_fk_crn_ul_ctr_lr]+lon_ctr[idx_fk_crn_ul_ctr_ur]+lon_ctr[idx_fk_crn_ul_ctr_ul]);
+	lat_crn[idx_crn_ul]=0.25*(lat_ctr_fk[idx_fk_crn_ul_ctr_ll]+lat_ctr_fk[idx_fk_crn_ul_ctr_lr]+lat_ctr_fk[idx_fk_crn_ul_ctr_ur]+lat_ctr_fk[idx_fk_crn_ul_ctr_ul]);
+	lon_crn[idx_crn_ul]=0.25*(lon_ctr_fk[idx_fk_crn_ul_ctr_ll]+lon_ctr_fk[idx_fk_crn_ul_ctr_lr]+lon_ctr_fk[idx_fk_crn_ul_ctr_ur]+lon_ctr_fk[idx_fk_crn_ul_ctr_ul]);
       } /* !lon */
     } /* !lat */
     if(lat_ctr_fk) lat_ctr_fk=(double *)nco_free(lat_ctr_fk);
@@ -4429,10 +4429,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lon_min=lon_crn[0];
     lat_min=lat_crn[0];
     for(idx=1;idx<grd_sz_nbr*grd_crn_nbr;idx++){
-      lat_max=lat_crn[idx] > lat_max ? lat_crn[idx] : lat_max;
-      lon_max=lon_crn[idx] > lon_max ? lon_crn[idx] : lon_max;
-      lat_min=lat_crn[idx] < lat_min ? lat_crn[idx] : lat_min;
-      lon_min=lon_crn[idx] < lon_min ? lon_crn[idx] : lon_min;
+      lat_max=(lat_crn[idx] > lat_max) ? lat_crn[idx] : lat_max;
+      lon_max=(lon_crn[idx] > lon_max) ? lon_crn[idx] : lon_max;
+      lat_min=(lat_crn[idx] < lat_min) ? lat_crn[idx] : lat_min;
+      lon_min=(lon_crn[idx] < lon_min) ? lon_crn[idx] : lon_min;
     } /* !idx */
     lat_spn=lat_max-lat_min;
     lon_spn=lon_max-lon_min;
@@ -4441,7 +4441,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   if(flg_grd_SLD){
     /* WRF SLD grid: 
-       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert.nc ~/foo.nc */
+       ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc
+       ncwa -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc
+       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports SLD grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !flg_grd_SLD */

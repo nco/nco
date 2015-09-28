@@ -1,5 +1,7 @@
 2015-09-27  Charlie Zender  <zender@uci.edu>
 
+	* Temporarily change regression scp location from givre to glace
+
 	* First stab at inferring curvilinear grid from input file
 
 	* Change sense of normalization when frac_b contains non-unity elements (could interfere with flg_rnr?)
