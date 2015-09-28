@@ -1,7 +1,6 @@
 # Git-ignore patterns for ~/nco
 
 # Autoconf/Automake
-
 Makefile.in
 .deps
 .libs
