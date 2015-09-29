@@ -1,5 +1,9 @@
 2015-09-28  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.3-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha04 final changes';git push
+	git tag -a 4.5.3-alpha04 -m 'Version 4.5.3-alpha04 tag: nfr SLD, skl, disable-doc, MPAS-O, snwe, wesn';git push --tags
+
 	* nco_grd_nfr() appears to correctly infer SLD grids from grid centers, cannot verify until nco_rgr_map() reads SLD files
 
 	* Add idx_dbg point-debugging feature for SLD

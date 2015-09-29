@@ -955,7 +955,7 @@ main(int argc,char **argv)
           (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
         } /* !REC_APN */
 
-        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>(%ld)\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz);                    
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(fp_stdout,"%s: DEBUG record %d id %d name %s rec_dmn_sz %ld\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz);                    
         /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
         if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
         if(lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
