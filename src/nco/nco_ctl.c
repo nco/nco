@@ -28,10 +28,10 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   /* Testing for GCC macros early is dangerous because some compilers, 
      including Intel's, define GCC macros for compatibility */
 #if defined(__GNUG__)
-  static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
+  static const char cmp_nm[]="g++"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __GNUG__ defined in nco_cmp_get(). Compiled with GNU g++ (or a compiler that emulates g++)."; /* [sng] Compiler string */
 #else /* !__GNUG__ */
-  static const char cmp_nm[]="g++"; /* [sng] Compiler name */
+  static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(). Compiled with GNU gcc (or a compiler that emulates gcc)."; /* [sng] Compiler string */
 #endif /* !__GNUG__ */
   static const char cmp_vrs[]=TKN2SNG(__VERSION__); // [sng] Compiler version
