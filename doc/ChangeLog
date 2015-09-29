@@ -1,5 +1,7 @@
 2015-09-28  Charlie Zender  <zender@uci.edu>
 
+	* nco_grd_nfr() appears to correctly infer SLD grids from grid centers, cannot verify until nco_rgr_map() reads SLD files
+
 	* Add idx_dbg point-debugging feature for SLD
 
 2015-09-27  Charlie Zender  <zender@uci.edu>

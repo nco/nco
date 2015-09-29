@@ -4114,9 +4114,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Assume SLD grid (e.g., WRF) */
     flg_grd_2D=False;
     grd_rnk_nbr=dmn_nbr_2D;
-    grd_typ=nco_grd_2D_nil;
-    lat_typ=nco_grd_lat_nil;
-    lon_typ=nco_grd_lon_nil;
+    grd_typ=nco_grd_2D_unk;
+    lat_typ=nco_grd_lat_unk;
+    lon_typ=nco_grd_lon_unk;
     /* Assume quadrilaterals */
     if(dmn_id_bnd == NC_MIN_INT) grd_crn_nbr=4;
     /* Assume quadrilaterals are quadrilaterals (e.g., rhomboids) not necessarily rectangles */
@@ -4908,7 +4908,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* WRF SLD grid: 
        ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc
        ncwa -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc
-       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc */
+       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc
+    */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports SLD grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !flg_grd_SLD */

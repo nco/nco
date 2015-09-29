@@ -91,7 +91,7 @@ function fnc_usg_prn {
     printf "          ${fnt_bld}$spt_nm -v CloudFrc_A -s ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -s ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -s ${DATA}/hdf/OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5 -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -v T -s ${DATA}/hdf/wrfout_v2_Lambert.nc -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
     exit 1
 } # end fnc_usg_prn()
 
