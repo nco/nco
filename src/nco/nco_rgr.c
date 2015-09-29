@@ -1,6 +1,6 @@
 /* $Header$ */
 
-/* Purpose: NCO utilities for regridding */
+/* Purpose: NCO regridding utilities */
 
 /* Copyright (C) 2015--2015 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.

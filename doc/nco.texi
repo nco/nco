@@ -6223,6 +6223,75 @@ ncks --rgr grd_ttl='T42 Gaussian grid' --rgr grid=${DATA}/grids/t42_SCRIP.201509
 @end example
 
 @html
+<a name="nfr"></a> <!-- http://nco.sf.net/nco.html#nfr -->
+<a name="infer"></a> <!-- http://nco.sf.net/nco.html#infer -->
+@end html
+@cindex infer
+@cindex @code{--rgr nfr}
+Often researchers face the problem not of generating a known, idealized
+grid but of understanding an unknown, possibly irregular or curvilinear
+grid underlying a dataset produced elsewhere.
+@acronym{NCO} will @dfn{infer} the grid of a datafile by examining its
+coordinates (and boundaries, if available), reformat that information
+as necessary to diagnose gridcell areas, and output the results in
+@acronym{SCRIP} format.
+As of @acronym{NCO} @w{version 4.5.3}, released in October, 2015,
+the @samp{--rgr nfr='y'} switch activates the machinery to infer the grid
+rather than construct the grid from other user-specified switches.
+To infer the grid properties, @acronym{NCO} interrogates
+@var{input-file} for horizontal coordinate information, such as the
+presence of dimension names rooted in latitude/longitude-naming
+traditions and conventions. 
+Once @acronym{NCO} identifies the likely horizontal dimensions it looks
+for horizontal coordinates and bounds.
+If bounds are not found, @acronym{NCO} assumes the underlying grid
+comprises quadrilateral cells whose edges are midway between cell
+centers, for both rectilinear and curvilinear grids. 
+@example
+@verbatim
+# Infer the grid of the AIRS swath from input, write it to grd_airs.nc
+ncks --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_airs.nc \
+     ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.nc ~/foo.nc
+@end verbatim
+@end example
+When inferring grids, the grid file (@file{grd_airs.nc}) is written,
+the input file (@file{AIRS...nc}) is read, and the output file
+(@file{foo.nc}) is overwritten (its contents are immaterial).
+
+@html
+<a name="skl"></a> <!-- http://nco.sf.net/nco.html#skl -->
+<a name="skeleton"></a> <!-- http://nco.sf.net/nco.html#skeleton -->
+@end html
+@cindex skeleton
+@cindex @code{--rgr skl}
+Another task that arises in regridding is characterizing new grids.
+In such cases it can be helpful to have a ``skeleton'' version of a
+dataset on the grid, so that grid center and interfaces locations can be
+assessed, continental outlines can be examined, or the skeleton can be
+manually populated with data rather than relying on a model.
+@acronym{SCRIP} files can be difficult to visualize and manipulate, so 
+@acronym{NCO} will provide, if requested, a so-called skeleton file on
+the user-specified grid.
+As of @acronym{NCO} @w{version 4.5.3}, released in October, 2015,
+the @samp{--rgr skl=@var{fl_skl}} switch outputs the skeleton file to
+@var{fl_skl}.
+The skeleton file may then be examined in a dataset viewer, populated
+with data, and generally serve as a template for what to expect from
+datasets of the same geometry.
+@example
+@verbatim
+# Generate T42 Gaussian grid file t42_SCRIP.nc and skeleton file t42_skl.nc
+ncks --rgr skl=${DATA}/grids/t42_skl.nc --rgr grid=${DATA}/grids/t42_SCRIP.nc \
+     --rgr lat_nbr=64 --rgr lon_nbr=128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr \
+     ~zender/nco/data/in.nc ~/foo.nc
+@end verbatim
+@end example
+When generating skeleton files, both the grid file (@file{t42_SCRIP.nc})
+and the skeleton file (@file{t42_skl.nc}) are written, the input file
+(@file{in.nc}) is ignored, and the output file (@file{foo.nc}) is
+overwritten (its contents are immaterial). 
+
+@html
 <a name="map"></a> <!-- http://nco.sf.net/nco.html#map -->
 <a name="esmf"></a> <!-- http://nco.sf.net/nco.html#esmf -->
 <a name="scrip"></a> <!-- http://nco.sf.net/nco.html#scrip -->
