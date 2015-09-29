@@ -955,6 +955,7 @@ extern "C" {
     int out_id; /* [id] Output netCDF file ID */
     int rgr_nbr; /* [nbr] Number of regridding arguments */
     int xtn_nbr; /* [nbr] Number of extensive variables */
+    long idx_dbg; /* [idx] Index of gridcell for debugging */
     nco_bool flg_usr_rqs; /* [flg] User requested regridding */
     nco_bool flg_grd_src; /* [flg] User-specified input grid */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
