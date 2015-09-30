@@ -1,3 +1,13 @@
+2015-09-29  Charlie Zender  <zender@uci.edu>
+
+	* Hand-correcting curvilinear algorithm...
+
+	* ERWG and Tempest flag problems with inferred curvilinear SCRIP grids
+
+	* nco_rgr_map() tests output grid for curvilinearity
+
+	* Document regridding skl and nfr switches
+
 2015-09-28  Charlie Zender  <zender@uci.edu>
 
 	* Fix compiler diagnosis for gcc/g++

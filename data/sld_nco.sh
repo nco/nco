@@ -318,7 +318,7 @@ if [ "${map_usr_flg}" != 'Yes' ]; then
     # Block 3 Loop 1: Mapfile commands
     printf "Generate source->destination mapping weights...\n"
     clm_idx=3
-    cmd_clm[${clm_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_fl} -w ${map_fl} --method bilinear --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
+    cmd_clm[${clm_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method bilinear --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
 
     # Block 3 Loop 2: Execute and/or echo commands
     for ((clm_idx=3;clm_idx<=3;clm_idx++)); do
