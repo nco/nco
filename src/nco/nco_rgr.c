@@ -962,7 +962,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        ncwa -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
        ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
        ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
-       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve # Template map
+       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional # Template map
        ncks -O -D 1 -t 1 -v T --rgr map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
        sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
        GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
@@ -4345,8 +4345,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lon_ctr_fk=(double *)nco_malloc((lat_nbr+2)*(lon_nbr+2)*sizeof(double));
     long int idx_rl; /* [idx] Index into real unrolled array */
     long int idx_fk; /* [idx] Index into fake unrolled array */
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
-      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){ /* lat idx on real grid */
+      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){ /* lon idx on real grid */
 	idx_rl=lat_idx*lon_nbr+lon_idx;
 	idx_fk=(lat_idx+1)*(lon_nbr+2)+lon_idx+1;
 	/* Copy real grid to interior of fake grid */
@@ -4355,34 +4355,34 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !lon */
     } /* !lat */
     /* Bottom row */
-    lat_idx=0;
-    for(lon_idx=1;lon_idx<lon_nbr+1;lon_idx++){
-      idx_fk=lat_idx*(lon_nbr+2)+lon_idx;
-      idx_rl=lat_idx*lon_nbr+lon_idx-1;
+    lat_idx=0; /* lat idx of extrapolated point on fake grid */
+    for(lon_idx=1;lon_idx<lon_nbr+1;lon_idx++){ /* lon idx of extrapolated point on fake grid */
+      idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on bottom row of fake grid */
+      idx_rl=lat_idx*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on bottom row of real grid */
       lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-0.5*(lat_ctr[idx_rl+lon_nbr]-lat_ctr[idx_rl]);
       lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-0.5*(lon_ctr[idx_rl+lon_nbr]-lon_ctr[idx_rl]);
     } /* !lon */
     /* Top row */
-    lat_idx=lat_nbr+1;
-    for(lon_idx=1;lon_idx<lon_nbr+1;lon_idx++){
-      idx_fk=lat_idx*(lon_nbr+2)+lon_idx;
-      idx_rl=(lat_idx-2)*lon_nbr+lon_idx-1;
+    lat_idx=lat_nbr+1; /* lat idx of extrapolated point on fake grid */
+    for(lon_idx=1;lon_idx<lon_nbr+1;lon_idx++){ /* lon idx of extrapolated point on fake grid */
+      idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on top row of fake grid */
+      idx_rl=(lat_nbr-1)*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on top row of real grid */
       lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+0.5*(lat_ctr[idx_rl]-lat_ctr[idx_rl-lon_nbr]);
       lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+0.5*(lon_ctr[idx_rl]-lon_ctr[idx_rl-lon_nbr]);
     } /* !lon */
     /* Left side */
-    lon_idx=0;
-    for(lat_idx=1;lat_idx<lat_nbr+1;lat_idx++){
-      idx_fk=lat_idx*(lon_nbr+2)+lon_idx;
-      idx_rl=(lat_idx-1)*lon_nbr+lon_idx;
+    lon_idx=0; /* lon idx of extrapolated point on fake grid */
+    for(lat_idx=1;lat_idx<lat_nbr+1;lat_idx++){ /* lat idx of extrapolated point on fake grid */
+      idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on left side of fake grid */
+      idx_rl=(lat_idx-1)*lon_nbr+lon_idx; /* 1D-offset of neighboring point on left side of real grid */
       lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-0.5*(lat_ctr[idx_rl+1]-lat_ctr[idx_rl]);
       lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-0.5*(lon_ctr[idx_rl+1]-lon_ctr[idx_rl]);
     } /* !lat */
     /* Right side */
-    lon_idx=lon_nbr+1;
-    for(lat_idx=1;lat_idx<lat_nbr+1;lat_idx++){
-      idx_fk=lat_idx*(lon_nbr+2)+lon_idx;
-      idx_rl=(lat_idx-1)*lon_nbr+lon_idx-2;
+    lon_idx=lon_nbr+1; /* lon idx of extrapolated point on fake grid */
+    for(lat_idx=1;lat_idx<lat_nbr+1;lat_idx++){ /* lat idx of extrapolated point on fake grid */
+      idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on right side of fake grid */
+      idx_rl=(lat_idx-1)*lon_nbr+lon_idx-2; /* 1D-offset of neighboring point on right side of real grid */
       lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+0.5*(lat_ctr[idx_rl]-lat_ctr[idx_rl-1]);
       lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+0.5*(lon_ctr[idx_rl]-lon_ctr[idx_rl-1]);
     } /* !lat */
@@ -4393,10 +4393,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lat_ctr_fk[lon_nbr+1]=lat_ctr_fk[2*(lon_nbr+2)-1]-0.5*(lat_ctr_fk[3*(lon_nbr+2)-1]-lat_ctr_fk[2*(lon_nbr+2)-1]);
     lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+0.5*(lon_ctr_fk[lon_nbr]-lon_ctr_fk[lon_nbr-1]);
     /* UR */
-    lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)+lon_nbr+1]=lat_ctr_fk[lat_nbr*(lon_nbr+2)+lon_nbr+1]+0.5*(lat_ctr_fk[lat_nbr*(lon_nbr+2)+lon_nbr+1]-lat_ctr_fk[(lat_nbr-1)*(lon_nbr+2)+lon_nbr+1]);
-    lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)+lon_nbr+1]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+lon_nbr]+0.5*(lon_ctr_fk[lat_nbr*(lon_nbr+2)+lon_nbr]-lon_ctr_fk[lat_nbr*(lon_nbr+2)+lon_nbr-1]);
+    lat_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]+0.5*(lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]-lat_ctr_fk[lat_nbr*(lon_nbr+2)-1]);
+    lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+0.5*(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]-lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
     /* UL */
-    lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lat_ctr_fk[(lat_nbr-1)*(lon_nbr+2)]+0.5*(lat_ctr_fk[(lat_nbr-1)*(lon_nbr+2)]-lat_ctr_fk[(lat_nbr-2)*(lon_nbr+2)]);
+    lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lat_ctr_fk[lat_nbr*(lon_nbr+2)]+0.5*(lat_ctr_fk[lat_nbr*(lon_nbr+2)]-lat_ctr_fk[(lat_nbr-1)*(lon_nbr+2)]);
     lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-0.5*(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2]-lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
 
     long int lat_idx_fk; /* [idx] Index into fake (extrapolated) latitude  array */

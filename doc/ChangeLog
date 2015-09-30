@@ -1,3 +1,7 @@
+2015-09-30  Charlie Zender  <zender@uci.edu>
+
+	* Corrected UL corner, but SCRIP file still appears to be invalid
+
 2015-09-29  Charlie Zender  <zender@uci.edu>
 
 	* Hand-correcting curvilinear algorithm...
