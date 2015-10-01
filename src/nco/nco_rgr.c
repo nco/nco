@@ -3799,8 +3799,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     if(flg_grd_crv){
       dmn_ids[0]=dmn_id_lat;
       dmn_ids[1]=dmn_id_lon;
-      (void)nco_def_var(out_id,lat_nm,crd_typ,dmn_nbr_2D,&dmn_id_lat,&lat_id);
-      (void)nco_def_var(out_id,lon_nm,crd_typ,dmn_nbr_2D,&dmn_id_lon,&lon_id);
+      (void)nco_def_var(out_id,lat_nm,crd_typ,dmn_nbr_2D,dmn_ids,&lat_id);
+      (void)nco_def_var(out_id,lon_nm,crd_typ,dmn_nbr_2D,dmn_ids,&lon_id);
       (void)nco_def_var(out_id,area_nm,crd_typ,dmn_nbr_2D,dmn_ids,&area_id);
       dmn_ids[0]=dmn_id_lat;
       dmn_ids[1]=dmn_id_lon;
@@ -3954,15 +3954,15 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       dmn_srt[0]=dmn_srt[1]=0L;
       dmn_cnt[0]=lat_nbr;
       dmn_cnt[1]=lon_nbr;
-      (void)nco_put_vara(out_id,lat_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
-      (void)nco_put_vara(out_id,lon_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
+      (void)nco_put_vara(out_id,lat_id,dmn_srt,dmn_cnt,grd_ctr_lat,crd_typ);
+      (void)nco_put_vara(out_id,lon_id,dmn_srt,dmn_cnt,grd_ctr_lon,crd_typ);
       (void)nco_put_vara(out_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
       dmn_srt[0]=dmn_srt[1]=0L;
       dmn_cnt[0]=lat_nbr;
       dmn_cnt[1]=lon_nbr;
       dmn_cnt[2]=bnd_nbr;
-      (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
-      (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
+      (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt,dmn_cnt,grd_crn_lat,crd_typ);
+      (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt,dmn_cnt,grd_crn_lon,crd_typ);
     }else if(flg_grd_2D){
       dmn_srt[0]=0L;
       dmn_cnt[0]=lat_nbr;

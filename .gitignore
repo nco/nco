@@ -17,8 +17,9 @@ Makefile.in
 /missing
 /Makefile
 
-# Odd files
+# Odd files, litter
 gmon.out
+PET0.RegridWeightGen.Log
 
 # Editors
 
