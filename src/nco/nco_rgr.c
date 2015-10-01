@@ -3957,7 +3957,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       (void)nco_put_vara(out_id,lat_id,dmn_srt,dmn_cnt,grd_ctr_lat,crd_typ);
       (void)nco_put_vara(out_id,lon_id,dmn_srt,dmn_cnt,grd_ctr_lon,crd_typ);
       (void)nco_put_vara(out_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
-      dmn_srt[0]=dmn_srt[1]=0L;
+      dmn_srt[0]=dmn_srt[1]=0L;dmn_srt[2]=0L;
       dmn_cnt[0]=lat_nbr;
       dmn_cnt[1]=lon_nbr;
       dmn_cnt[2]=bnd_nbr;
@@ -4031,7 +4031,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
-  const int dmn_nbr_grd_max=dmn_nbr_2D; /* [nbr] Maximum rank of grid variables */
+  const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
+  const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
   const int itr_nbr_max=20; // [nbr] Maximum number of iterations
  
   const nc_type crd_typ=NC_DOUBLE;
