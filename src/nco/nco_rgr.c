@@ -260,6 +260,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_typ=nco_grd_lon_Grn_ctr; /* [enm] Longitude grid type */
   rgr->lat_nbr=180; /* [nbr] Number of latitudes in destination grid */
   rgr->lon_nbr=360; /* [nbr] Number of longitudes in destination grid */
+  rgr->lat_crv=0.0; /* [dgr] Latitudinal  curvilinearity */
+  rgr->lon_crv=0.0; /* [dgr] Longitudinal curvilinearity */
   rgr->lat_sth=NC_MAX_DOUBLE; /* [dgr] Latitude of southern edge of grid */
   rgr->lon_wst=NC_MAX_DOUBLE; /* [dgr] Longitude of western edge of grid */
   rgr->lat_nrt=NC_MAX_DOUBLE; /* [dgr] Latitude of northern edge of grid */
@@ -310,6 +312,16 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"wesn")){
       cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%lf,%lf,%lf,%lf",&rgr->lon_wst,&rgr->lon_est,&rgr->lat_sth,&rgr->lat_nrt);
       assert(cnv_nbr == 4);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_crv")){
+      rgr->lat_crv=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
+      continue;
+    } /* endif */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_crv")){
+      rgr->lon_crv=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* endif */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_sth")){
@@ -962,7 +974,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        ncwa -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
        ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
        ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
-       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional # Template map
+       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
        ncks -O -D 1 -t 1 -v T --rgr map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
        sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
        GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
@@ -3071,22 +3083,24 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ESMF_RegridWeightGen -s ${DATA}/grids/90x180_SCRIP.20150901.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/maps/map_90x180_to_180x360.20150901.nc --method conserve
 
      Generate ACME grids:
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150724.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150724.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150724.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150910.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150910.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150910.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
 
      Generate ACME maps:
-     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/129x256_SCRIP.20150724.nc -w ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150724.nc --method conserve
-     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/257x512_SCRIP.20150724.nc -w ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150724.nc --method bilinear
-     ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/257x512_SCRIP.20150724.nc -w ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150724.nc --method conserve
-     ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/801x1600_SCRIP.20150724.nc -w ${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150724.nc --method bilinear
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/129x256_SCRIP.20150910.nc -w ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150910.nc --method conserve
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/257x512_SCRIP.20150910.nc -w ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150910.nc --method bilinear
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/257x512_SCRIP.20150910.nc -w ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150910.nc --method conserve
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/801x1600_SCRIP.20150910.nc -w ${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150910.nc --method bilinear
 
      Generate regional RLL grids:
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr lat_nbr=100 --rgr lon_nbr=100 --rgr lat_sth=30.0 --rgr lat_nrt=70.0 --rgr lon_wst=-120.0 --rgr lon_est=-90.0 ~/nco/data/in.nc ~/foo.nc
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr lat_nbr=100 --rgr lon_nbr=100 --rgr snwe=30.0,70.0,-120.0,-90.0 ~/nco/data/in.nc ~/foo.nc
 
      Generate global RLL skeleton:
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc */
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+
+     Generate curvilinear grids:
+     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20' --rgr lon_crv=1.0 --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr lat_nbr=10 --rgr lon_nbr=20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 
@@ -3095,7 +3109,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
-  const int dmn_nbr_grd_max=dmn_nbr_2D; /* [nbr] Maximum rank of grid variables */
+  const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
+  const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
   const int itr_nbr_max=20; // [nbr] Maximum number of iterations
  
   const nc_type crd_typ=NC_DOUBLE;
@@ -3129,6 +3144,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   double *lon_ntf=NULL; /* [dgr] Longitude interfaces of rectangular grid */
 
   double area_ttl=0.0; /* [frc] Exact sum of area */
+  double lat_crv; /* [dgr] Latitudinal  curvilinearity */
+  double lon_crv; /* [dgr] Longitudinal curvilinearity */
   double lat_nrt; /* [dgr] Latitude of northern edge of grid */
   double lat_sth; /* [dgr] Latitude of southern edge of grid */
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
@@ -3187,6 +3204,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   nco_bool flg_grd_1D=False;
   nco_bool flg_grd_2D=False;
+  nco_bool flg_grd_crv=False;
 
   nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
@@ -3200,10 +3218,14 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   lon_typ=rgr->lon_typ; /* [enm] Longitude grid type */
   lat_nbr=rgr->lat_nbr; /* [nbr] Number of latitudes in grid */
   lon_nbr=rgr->lon_nbr; /* [nbr] Number of longitudes in grid */
+  lat_crv=rgr->lat_crv; /* [dgr] Latitude  curvilinearity */
+  lon_crv=rgr->lon_crv; /* [dgr] Longitude curvilinearity */
   lat_sth=rgr->lat_sth; /* [dgr] Latitude of southern edge of grid */
   lon_wst=rgr->lon_wst; /* [dgr] Longitude of western edge of grid */
   lat_nrt=rgr->lat_nrt; /* [dgr] Latitude of northern edge of grid */
   lon_est=rgr->lon_est; /* [dgr] Longitude of eastern edge of grid */
+
+  if(lat_crv != 0.0 || lon_crv != 0.0) flg_grd_crv=True;
 
   /* Assume 2D grid */
   flg_grd_2D=True;
@@ -3512,6 +3534,31 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     } /* !lon */
   } /* !lat */
   
+  if(flg_grd_crv){
+    /* Impose curvilinearity by adding lat_crv offset to each row relative to previous row, and lon_crv offset to each column relative to previous column */
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+	idx=lat_idx*lon_nbr+lon_idx;
+	grd_ctr_lat[idx]=lat_ctr[lat_idx]+lat_idx*lat_ncr;
+	grd_ctr_lon[idx]=lon_ctr[lon_idx]+lon_idx*lat_ncr;
+	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
+	  idx2=grd_crn_nbr*idx+crn_idx;
+	  lat_idx2=lat_idx*grd_crn_nbr+crn_idx;
+	  lon_idx2=lon_idx*grd_crn_nbr+crn_idx;
+	  grd_crn_lat[idx2]=lat_crn[lat_idx2];
+	  grd_crn_lon[idx2]=lon_crn[lon_idx2];
+	  if(crn_idx == 0 || crn_idx == 1){
+	    grd_crn_lat[idx2]+=lat_idx*lat_ncr; /* LL, LR */
+	    grd_crn_lon[idx2]+=lat_idx*lon_ncr; /* LL, LR */
+	  }else if(crn_idx == 2 || crn_idx == 3){
+	    grd_crn_lat[idx2]+=(lat_idx+1)*lat_ncr; /* UL, UR */
+	    grd_crn_lon[idx2]+=(lat_idx+1)*lon_ncr; /* UL, UR */
+	  } /* !crn */
+	} /* !crn */
+      } /* !lon */
+    } /* !lat */
+  } /* !flg_grd_crv */
+
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
@@ -3749,7 +3796,18 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       (void)nco_def_var(out_id,lon_bnd_nm,crd_typ,dmn_nbr_2D,dmn_ids,&lon_bnd_id);
       (void)nco_def_var(out_id,area_nm,crd_typ,dmn_nbr_1D,&dmn_id_col,&area_id);
     } /* !flg_grd_1D */
-    if(flg_grd_2D){
+    if(flg_grd_crv){
+      dmn_ids[0]=dmn_id_lat;
+      dmn_ids[1]=dmn_id_lon;
+      (void)nco_def_var(out_id,lat_nm,crd_typ,dmn_nbr_2D,&dmn_id_lat,&lat_id);
+      (void)nco_def_var(out_id,lon_nm,crd_typ,dmn_nbr_2D,&dmn_id_lon,&lon_id);
+      (void)nco_def_var(out_id,area_nm,crd_typ,dmn_nbr_2D,dmn_ids,&area_id);
+      dmn_ids[0]=dmn_id_lat;
+      dmn_ids[1]=dmn_id_lon;
+      dmn_ids[2]=dmn_id_bnd;
+      (void)nco_def_var(out_id,lat_bnd_nm,crd_typ,dmn_nbr_3D,dmn_ids,&lat_bnd_id);
+      (void)nco_def_var(out_id,lon_bnd_nm,crd_typ,dmn_nbr_3D,dmn_ids,&lon_bnd_id);
+    }else if(flg_grd_2D){
       (void)nco_def_var(out_id,lat_nm,crd_typ,dmn_nbr_1D,&dmn_id_lat,&lat_id);
       (void)nco_def_var(out_id,lon_nm,crd_typ,dmn_nbr_1D,&dmn_id_lon,&lon_id);
       dmn_ids[0]=dmn_id_lat;
@@ -3892,7 +3950,20 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       dmn_cnt[0]=col_nbr;
       (void)nco_put_vara(out_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
     } /* !flg_grd_1D */
-    if(flg_grd_2D){
+    if(flg_grd_crv){
+      dmn_srt[0]=dmn_srt[1]=0L;
+      dmn_cnt[0]=lat_nbr;
+      dmn_cnt[1]=lon_nbr;
+      (void)nco_put_vara(out_id,lat_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
+      (void)nco_put_vara(out_id,lon_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
+      (void)nco_put_vara(out_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
+      dmn_srt[0]=dmn_srt[1]=0L;
+      dmn_cnt[0]=lat_nbr;
+      dmn_cnt[1]=lon_nbr;
+      dmn_cnt[2]=bnd_nbr;
+      (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
+      (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
+    }else if(flg_grd_2D){
       dmn_srt[0]=0L;
       dmn_cnt[0]=lat_nbr;
       (void)nco_put_vara(out_id,lat_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
@@ -4425,7 +4496,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	/* Generic template valid only in region interior
 	   Read variables idx_crn_ll_ctr_ul as "index of upper left gridcell center that contributes to lower-left gridcell corner"
-	   Algorithms executed in counter-clockwise (CCW) direction: lower-left, lower-right, upper-right, upper-left
+	   Algorithms execute in counter-clockwise (CCW) direction: lower-left, lower-right, upper-right, upper-left
 	   lat_idx and lon_idx are true indices and are used to write into grd_crn_lat/lon arrays
 	   lat_idx_fk and lon_idx_fk are indices into fake arrays with extrapolated boundaries and are used to read data from fake arrays */
 	lon_idx_fk=lon_idx+1;

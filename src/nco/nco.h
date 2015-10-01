@@ -938,6 +938,8 @@ extern "C" {
     char *fl_grd; /* [sng] Name of grid file to create */
     char *fl_skl; /* [sng] Name of skeleton data file to create */
     char *grd_ttl; /* [sng] Grid title */
+    double lat_crv; /* [dgr] Latitudinal  curvilinearity */
+    double lon_crv; /* [dgr] Longitudinal curvilinearity */
     double lat_sth; /* [dgr] Latitude of southern edge of grid */
     double lon_wst; /* [dgr] Longitude of western edge of grid */
     double lat_nrt; /* [dgr] Latitude of northern edge of grid */
