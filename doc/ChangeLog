@@ -1,3 +1,9 @@
+2015-10-02  Charlie Zender  <zender@uci.edu>
+
+	* Fix (relatively bad) bug introduced in 4.5.1 where blank attribute names dump core rather than expanding into all attribute names
+
+	* Add ncatted regression test for deleting all attributes
+
 2015-10-01  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_mk() constructs correct degenerate SLD grids (verified area, corners)
