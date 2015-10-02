@@ -1,5 +1,7 @@
 2015-10-02  Charlie Zender  <zender@uci.edu>
 
+	* Re-establish dust.ess.uci.edu as regression test server for scp
+
 	* Add ncrename regression test simultaneously renaming multiple dimensions
 
 	* NCO 4.5.3-alpha05 release procedure:
