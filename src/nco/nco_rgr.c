@@ -251,6 +251,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Initialize key-value properties used in grid generation */
   rgr->fl_grd=NULL; /* [sng] Name of grid file to create */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
+  rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
@@ -274,80 +275,84 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->fl_grd=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_grd=True;
       continue;
-    } /* endif */
+    } /* !grid */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"skl")){
       rgr->fl_skl=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_grd=True;
       continue;
-    } /* endif */
+    } /* !skl */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"curvilinear") || !strcasecmp(rgr_lst[rgr_var_idx].key,"crv")){
+      rgr->flg_crv=True;
+      continue;
+    } /* !curvilinear */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"infer") || !strcasecmp(rgr_lst[rgr_var_idx].key,"nfr")){
       rgr->flg_nfr=True;
       continue;
-    } /* endif */
+    } /* !infer */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"grd_ttl")){
       if(rgr->grd_ttl) rgr->grd_ttl=(char *)nco_free(rgr->grd_ttl);
       rgr->grd_ttl=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !grd_ttl */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"idx_dbg")){
       rgr->idx_dbg=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
-    } /* endif */
+    } /* !idx_dbg */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nbr")){
       rgr->lat_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
-    } /* endif */
+    } /* !lat_nbr */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_nbr")){
       rgr->lon_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
-    } /* endif */
+    } /* !lon_nbr */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"snwe")){
       cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%lf,%lf,%lf,%lf",&rgr->lat_sth,&rgr->lat_nrt,&rgr->lon_wst,&rgr->lon_est);
       assert(cnv_nbr == 4);
       continue;
-    } /* endif */
+    } /* !snwe */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"wesn")){
       cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%lf,%lf,%lf,%lf",&rgr->lon_wst,&rgr->lon_est,&rgr->lat_sth,&rgr->lat_nrt);
       assert(cnv_nbr == 4);
       continue;
-    } /* endif */
+    } /* !wesn */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_crv")){
       rgr->lat_crv=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
-    } /* endif */
+    } /* !lat_crv */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_crv")){
       rgr->lon_crv=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
-    } /* endif */
+    } /* !lon_crv */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_sth")){
       rgr->lat_sth=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       //      rgr->lat_typ=nco_grd_lat_bb;
       continue;
-    } /* endif */
+    } /* !lat_sth */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_wst")){
       rgr->lon_wst=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       rgr->lon_typ=nco_grd_lon_bb;
       continue;
-    } /* endif */
+    } /* !lon_wst */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nrt")){
       rgr->lat_nrt=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       //rgr->lat_typ=nco_grd_lat_bb;
       continue;
-    } /* endif */
+    } /* !lat_nrt */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_est")){
       rgr->lon_est=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       rgr->lon_typ=nco_grd_lon_bb;
       continue;
-    } /* endif */
+    } /* !lon_est */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"cap") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fv") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fix") || !strcasecmp(rgr_lst[rgr_var_idx].val,"yarmulke")){
 	rgr->lat_typ=nco_grd_lat_fv;
@@ -360,7 +365,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 	rgr->grd_typ=nco_grd_2D_gss;
       }else abort();
       continue;
-    } /* endif */
+    } /* !lat_typ */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_typ")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"180_wst"))
 	rgr->lon_typ=nco_grd_lon_180_wst;
@@ -372,59 +377,59 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 	rgr->lon_typ=nco_grd_lon_Grn_ctr;
       else abort();
       continue;
-    } /* endif */
+    } /* !lon_typ */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"area_nm")){
       rgr->area_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !area_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"bnd_nm")){
       rgr->bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !bnd_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"bnd_tm_nm")){
       rgr->bnd_tm_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !bnd_tm_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"col_nm")){
       rgr->col_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !col_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"frc_nm")){
       rgr->frc_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !frc_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_bnd_nm")){
       rgr->lat_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !lat_bnd_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nm")){
       rgr->lat_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !lat_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_vrt_nm")){
       rgr->lat_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !lat_vrt_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_wgt_nm")){
       rgr->lat_wgt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !lat_wgt_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_bnd_nm")){
       rgr->lon_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !lon_bnd_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_nm")){
       rgr->lon_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !lon_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_vrt_nm")){
       rgr->lon_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !lon_vrt_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* endif */
+    } /* !vrt_nm */
     (void)fprintf(stderr,"%s: ERROR %s reports unrecognized key-value option to --rgr switch: %s\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key);
     nco_exit(EXIT_FAILURE);
   } /* end for */
@@ -3254,7 +3259,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   lat_nrt=rgr->lat_nrt; /* [dgr] Latitude of northern edge of grid */
   lon_est=rgr->lon_est; /* [dgr] Longitude of eastern edge of grid */
 
-  if(lat_crv != 0.0 || lon_crv != 0.0) flg_grd_crv=True;
+  /* Use curvilinear coordinates (lat and lon are 2D arrays) if flg_crv already set or it lat_crv or lon_crv set */
+  if(lat_crv != 0.0 || lon_crv != 0.0 || rgr->flg_crv) flg_grd_crv=True;
 
   /* Assume 2D grid */
   flg_grd_2D=True;
@@ -3553,16 +3559,30 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 	  grd_crn_lat[idx2]=lat_crn[lat_idx2];
 	  grd_crn_lon[idx2]=lon_crn[lon_idx2];
 	  if(crn_idx == 0 || crn_idx == 1){
-	    grd_crn_lat[idx2]+=lat_idx*lat_ncr; /* LL, LR */
-	    grd_crn_lon[idx2]+=lat_idx*lon_ncr; /* LL, LR */
+	    grd_crn_lat[idx2]+=lat_idx*lat_crv; /* LL, LR */
+	    grd_crn_lon[idx2]+=lat_idx*lon_crv; /* LL, LR */
 	  }else if(crn_idx == 2 || crn_idx == 3){
-	    grd_crn_lat[idx2]+=(lat_idx+1)*lat_ncr; /* UL, UR */
-	    grd_crn_lon[idx2]+=(lat_idx+1)*lon_ncr; /* UL, UR */
+	    grd_crn_lat[idx2]+=(lat_idx+1)*lat_crv; /* UL, UR */
+	    grd_crn_lon[idx2]+=(lat_idx+1)*lon_crv; /* UL, UR */
 	  } /* !crn */
 	} /* !crn */
       } /* !lon */
     } /* !lat */
   } /* !flg_grd_crv */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    long int idx_crn_ll;
+    long int idx_crn_lr;
+    long int idx_crn_ur;
+    long int idx_crn_ul;
+    long idx_dbg;
+    idx_dbg=rgr->idx_dbg;
+    idx_crn_ll=grd_crn_nbr*idx_dbg+0;
+    idx_crn_lr=grd_crn_nbr*idx_dbg+1;
+    idx_crn_ur=grd_crn_nbr*idx_dbg+2;
+    idx_crn_ul=grd_crn_nbr*idx_dbg+3;
+    (void)fprintf(stderr,"%s: INFO %s idx_dbg = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_dbg,grd_ctr_lat[idx_dbg],grd_ctr_lon[idx_dbg],grd_crn_lat[idx_crn_ll],grd_crn_lon[idx_crn_ll],grd_crn_lat[idx_crn_lr],grd_crn_lon[idx_crn_lr],grd_crn_lat[idx_crn_ur],grd_crn_lon[idx_crn_ur],grd_crn_lat[idx_crn_ul],grd_crn_lon[idx_crn_ul]);
+  } /* !dbg */
 
   if(flg_grd_crv){
     /* Area of arbitrary curvilinear grids requires spherical trigonometry */
@@ -3577,21 +3597,21 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 	area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]));
   } /* !flg_grd_2D */
 
-  if(flg_grd_2D){
-    if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+    lat_wgt_ttl=0.0;
+    area_ttl=0.0;
+    if(flg_grd_2D){
       (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
-      lat_wgt_ttl=0.0;
-      area_ttl=0.0;
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
 	lat_wgt_ttl+=lat_wgt[lat_idx];
-      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
-	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
-	  area_ttl+=area[lat_idx*lon_nbr+lon_idx];
-      (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, frc_lat_wgt = %20.15f, area_ttl = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,lat_wgt_ttl/2.0,area_ttl,area_ttl/(4.0*M_PI));
-      assert(area_ttl > 0.0);
-      assert(area_ttl <= 4.0*M_PI);
-    } /* endif dbg */
-  } /* !flg_grd_2D */
+    } /* !flg_grd_2D */
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
+	area_ttl+=area[lat_idx*lon_nbr+lon_idx];
+    (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, frc_lat_wgt = %20.15f, area_ttl = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,lat_wgt_ttl/2.0,area_ttl,area_ttl/(4.0*M_PI));
+    assert(area_ttl > 0.0);
+    assert(area_ttl <= 4.0*M_PI);
+  } /* endif dbg */
 
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
