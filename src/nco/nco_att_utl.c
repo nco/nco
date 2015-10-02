@@ -26,75 +26,19 @@ nco_aed_prc_wrp /* [fnc] Expand regular expressions then pass attribute edits to
 {
   /* Purpose: Wrapper for nco_aed_prc(), which processes single attribute edit for single variable
      This wrapper passes its arguments straight throught to nco_aed_prc() with one exception---
-     it unrolls attribute name that are regular expression into multiple calls to nco_aed_prc() */
+     it unrolls attribute names that are regular expressions into multiple calls to nco_aed_prc() */
   const char fnc_nm[]="nco_aed_prc_wrp()"; /* [sng] Function name */
   nco_bool flg_chg=False; /* [flg] Attribute was altered */
 
-  if(!strpbrk(aed.att_nm,".*^$\\[]()<>+?|{}")){
+  if(aed.att_nm && !strpbrk(aed.att_nm,".*^$\\[]()<>+?|{}")){
     // const char foo[]="foo {{";
     /* NB: previous line confuses Emacs C-mode indenter. Restore with isolated parenthesis? */
     /* If attribute name is not regular expression, call single attribute routine then return */
     flg_chg|=nco_aed_prc(nc_id,var_id,aed);
     return flg_chg; /* [flg] Attribute was altered */
   } /* !rx */
-  
-#ifndef NCO_HAVE_REGEX_FUNCTIONALITY
-  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to attributes) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),aed.att_nm);
-  nco_exit(EXIT_FAILURE);
-#else /* NCO_HAVE_REGEX_FUNCTIONALITY */
-  /* aed.att_nm is regular expression */
 
   aed_sct aed_swp; /* [sct] Attribute-edit information */
-
-  char *rx_sng; /* [sng] Regular expression pattern */
-
-  int err_id;
-  int flg_cmp; /* Comparison flags */
-  int flg_exe; /* Execution flages */
-  int mch_nbr=0;
-  
-  regex_t *rx;
-  regmatch_t *result;
-
-  size_t rx_prn_sub_xpr_nbr;
-
-  rx_sng=aed.att_nm;
-  rx=(regex_t *)nco_malloc(sizeof(regex_t));
-
-  /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
-  flg_cmp=(REG_EXTENDED | REG_NEWLINE);
-  /* Set execution flags */
-  flg_exe=0;
-
-  /* Compile regular expression */
-  if((err_id=regcomp(rx,rx_sng,flg_cmp))){ /* Compile regular expression */
-    char const * rx_err_sng;  
-    /* POSIX regcomp return error codes */
-    switch(err_id){
-    case REG_BADPAT: rx_err_sng="Invalid pattern"; break;  
-    case REG_ECOLLATE: rx_err_sng="Not implemented"; break;
-    case REG_ECTYPE: rx_err_sng="Invalid character class name"; break;
-    case REG_EESCAPE: rx_err_sng="Trailing backslash"; break;
-    case REG_ESUBREG: rx_err_sng="Invalid back reference"; break;
-    case REG_EBRACK: rx_err_sng="Unmatched left bracket"; break;
-    case REG_EPAREN: rx_err_sng="Parenthesis imbalance"; break;
-    case REG_EBRACE: rx_err_sng="Unmatched {"; break;
-    case REG_BADBR: rx_err_sng="Invalid contents of { }"; break;
-    case REG_ERANGE: rx_err_sng="Invalid range end"; break;
-    case REG_ESPACE: rx_err_sng="Ran out of memory"; break;
-    case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
-    default: rx_err_sng="Invalid pattern"; break;  
-    } /* end switch */
-    (void)fprintf(stdout,"%s: ERROR %s error in regular expression \"%s\" %s\n",nco_prg_nm_get(),fnc_nm,rx_sng,rx_err_sng); 
-    nco_exit(EXIT_FAILURE);
-  } /* end if err */
-
-  rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
-
-  /* Search string */
-  result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
-
-  /* Regular expression is ready to use */
   char **att_nm_lst;
   int att_idx;
   int att_nbr;
@@ -104,34 +48,104 @@ nco_aed_prc_wrp /* [fnc] Expand regular expressions then pass attribute edits to
   (void)nco_inq_varnatts(grp_id,var_id,&att_nbr);
 
   /* 20150629: Read in all attribute names before any editing 
-     This is because creation or deletion of attributes can change their number
-     According to the netCDF documentation, "The number of an attribute is more volatile than the name, since it can change when other attributes of the same variable are deleted. This is why an attribute number is not called an attribute ID." */
+     This is because creation and deletion of attributes changes their number
+     According to netCDF documentation, "The number of an attribute is more volatile than the name, since it can change when other attributes of the same variable are deleted. This is why an attribute number is not called an attribute ID." */
   att_nm_lst=(char **)nco_malloc(att_nbr*sizeof(char *));
   for(att_idx=0;att_idx<att_nbr;att_idx++){
     att_nm_lst[att_idx]=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(char));
     nco_inq_attname(grp_id,var_id,att_idx,att_nm_lst[att_idx]);
   } /* !att */
 
-  /* Check each attribute for match to rx */
-  for(att_idx=0;att_idx<att_nbr;att_idx++){
-    if(!regexec(rx,att_nm_lst[att_idx],rx_prn_sub_xpr_nbr,result,flg_exe)){
-      mch_nbr++;
+  if(!aed.att_nm){
+
+    /* Attribute name is blank, meaning intent is to edit all attributes for this variable/group */
+    for(att_idx=0;att_idx<att_nbr;att_idx++){
       /* Swap original attibute name (the regular expression) with its current match */
       aed_swp=aed;
       aed_swp.att_nm=att_nm_lst[att_idx];
       flg_chg|=nco_aed_prc(nc_id,var_id,aed_swp);
-    } /* !mch */
-  } /* !att */
+    } /* !att */
 
-  if(att_nm_lst) att_nm_lst=nco_sng_lst_free(att_nm_lst,att_nbr);
-  if(!mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any attribute\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",nco_prg_nm_get(),aed.att_nm); 
+  }else{
+    
+#ifndef NCO_HAVE_REGEX_FUNCTIONALITY
+    (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to attributes) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),aed.att_nm);
+    nco_exit(EXIT_FAILURE);
+#else /* NCO_HAVE_REGEX_FUNCTIONALITY */
+    /* aed.att_nm is regular expression */
+    
+    char *rx_sng; /* [sng] Regular expression pattern */
+    
+    int err_id;
+    int flg_cmp; /* Comparison flags */
+    int flg_exe; /* Execution flages */
+    int mch_nbr=0;
+    
+    regex_t *rx;
+    regmatch_t *result;
+    
+    size_t rx_prn_sub_xpr_nbr;
+    
+    rx_sng=aed.att_nm;
+    rx=(regex_t *)nco_malloc(sizeof(regex_t));
+    
+    /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
+    flg_cmp=(REG_EXTENDED | REG_NEWLINE);
+    /* Set execution flags */
+    flg_exe=0;
+    
+    /* Compile regular expression */
+    if((err_id=regcomp(rx,rx_sng,flg_cmp))){ /* Compile regular expression */
+      char const * rx_err_sng;  
+      /* POSIX regcomp return error codes */
+      switch(err_id){
+      case REG_BADPAT: rx_err_sng="Invalid pattern"; break;  
+      case REG_ECOLLATE: rx_err_sng="Not implemented"; break;
+      case REG_ECTYPE: rx_err_sng="Invalid character class name"; break;
+      case REG_EESCAPE: rx_err_sng="Trailing backslash"; break;
+      case REG_ESUBREG: rx_err_sng="Invalid back reference"; break;
+      case REG_EBRACK: rx_err_sng="Unmatched left bracket"; break;
+      case REG_EPAREN: rx_err_sng="Parenthesis imbalance"; break;
+      case REG_EBRACE: rx_err_sng="Unmatched {"; break;
+      case REG_BADBR: rx_err_sng="Invalid contents of { }"; break;
+      case REG_ERANGE: rx_err_sng="Invalid range end"; break;
+      case REG_ESPACE: rx_err_sng="Ran out of memory"; break;
+      case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
+      default: rx_err_sng="Invalid pattern"; break;  
+      } /* end switch */
+      (void)fprintf(stdout,"%s: ERROR %s error in regular expression \"%s\" %s\n",nco_prg_nm_get(),fnc_nm,rx_sng,rx_err_sng); 
+      nco_exit(EXIT_FAILURE);
+    } /* end if err */
 
-  regfree(rx); /* Free regular expression data structure */
-  rx=(regex_t *)nco_free(rx);
-  result=(regmatch_t *)nco_free(result);
+    rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
+
+    /* Search string */
+    result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
+    
+    /* Regular expression is ready to use */
+    
+    /* Check each attribute for match to rx */
+    for(att_idx=0;att_idx<att_nbr;att_idx++){
+      if(!regexec(rx,att_nm_lst[att_idx],rx_prn_sub_xpr_nbr,result,flg_exe)){
+	mch_nbr++;
+	/* Swap original attibute name (the regular expression) with its current match */
+	aed_swp=aed;
+	aed_swp.att_nm=att_nm_lst[att_idx];
+	flg_chg|=nco_aed_prc(nc_id,var_id,aed_swp);
+      } /* !mch */
+    } /* !att */
+    
+    if(!mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any attribute\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",nco_prg_nm_get(),aed.att_nm); 
+
+    regfree(rx); /* Free regular expression data structure */
+    rx=(regex_t *)nco_free(rx);
+    result=(regmatch_t *)nco_free(result);
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+  } /* !aed.att_nm */
   
- return flg_chg; /* [flg] Attribute was altered */
+  if(att_nm_lst) att_nm_lst=nco_sng_lst_free(att_nm_lst,att_nbr);
+
+  return flg_chg; /* [flg] Attribute was altered */
 } /* end nco_aed_prc() */
 
  nco_bool /* [flg] Attribute was changed */
