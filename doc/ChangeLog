@@ -1,3 +1,7 @@
+2015-10-01  Charlie Zender  <zender@uci.edu>
+
+	* Functinonalize spherical polygon area calculation into nco_sph_plg_area()
+
 2015-09-30  Charlie Zender  <zender@uci.edu>
 
 	* Corrected UL corner, but SCRIP file still appears to be invalid

@@ -1277,174 +1277,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(flg_dgn_area_out){
     if(flg_grd_out_1D && flg_bnd_1D_usable){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"INFO: Diagnosing area_out for 1D grid\n");
-      /* Use L'Huilier's Theorem not Girard's Formula
-	 http://mathworld.wolfram.com/LHuiliersTheorem.html
-	 Girard's formula depends on pi-angle and angle is usually quite small in our applications so precision would be lost
-	 L'Huilier's theorem depends only on angles (a,b,c) and semi-perimeter (s) and is well-conditioned for small angles
-	 semi-perimeter = half-perimeter of triangle = 0.5*(a+b+c)
-	 Spherical Excess (SE) difference between the sum of the angles of a spherical triangle area and a planar triangle area with same interior angles (which has sum equal to pi)
-	 SE is also the solid angle subtended by the spherical triangle and that's, well, astonishing and pretty cool
-	 Wikipedia shows a better SE formula for triangles which are ill-conditions L'Huillier's formula because a = b ~ 0.5c
-	 https://en.wikipedia.org/wiki/Spherical_trigonometry#Area_and_spherical_excess 
-	 So-called "proper" spherical triangle are those for which all angles are less than pi, so a+b+c<3*pi
-	 Cartesian coordinates of (lat,lon)=(theta,phi) are (x,y,z)=(cos(theta)*cos(phi),cos(theta)*sin(phi),sin(theta)) 
-	 Dot-product rule for vectors gives interior angle/arc length between two points:
-	 cos(a)=u dot v=cos(theta1)*cos(phi1)*cos(theta2)*cos(phi2)+cos(theta1)*sin(phi1)*cos(theta2)*sin(phi2)+sin(theta1)*sin(theta2)
-	 Spherical law of cosines relates interior angles/arc-lengths (a,b,c) to surface angles (A,B,C) in spherical triangle:
-	 https://en.wikipedia.org/wiki/Spherical_law_of_cosines
-	 cos(a)=cos(b)*cos(c)+sin(b)*sin(c)*cos(A)
-	 cos(b)=cos(c)*cos(a)+sin(c)*sin(a)*cos(B)
-	 cos(c)=cos(a)*cos(b)+sin(a)*sin(b)*cos(C)
-	 cos(A)=[cos(a)-cos(b)*cos(c)]/[sin(b)*sin(c)]
-	 cos(B)=[cos(b)-cos(c)*cos(a)]/[sin(c)*sin(a)]
-	 cos(C)=[cos(c)-cos(a)*cos(b)]/[sin(a)*sin(b)]
-	 Bounds information on unstructured grids will use bounds_nbr=maximum(vertice_nbr)
-	 Unused vertices are stored as either repeated points (ACME does this) or, conceiveably, as missing values
-	 Given (lat,lon) for N-points algorithm to find area of spherical polygon is:
-	 1. Girard method:
-	   A. Find interior angles/arc-lengths (a,b,c,d...) using spherical law of cosines along each edge
-	   B. Apply generalized Girard formula SE_n = Sum(A_n) - (N-2) - pi
-	 2. L'Huillier method
-	   A. First three non-identical points form first triangle with sides A,B,C (first+second point define A, etc.)
-	      i. First vertice anchors all triangles
-	     ii. Last vertice of preceding triangle becomes second vertice of next triangle
-	    iii. Next non-identical point becomes last vertice of next triangle
-	     iv. Side C of previous triangle is side A of next triangle
-	   B. For each triangle, compute area with L'Huillier formula unless A = B ~ 0.5*C */
-      double *lat_bnd_rdn=NULL_CEWI; /* [rdn] Latitude  boundaries of rectangular destination grid */
-      double *lon_bnd_rdn=NULL_CEWI; /* [rdn] Longitude boundaries of rectangular destination grid */
-      double *lat_bnd_sin=NULL_CEWI; /* [frc] Sine of latitude  boundaries of rectangular destination grid */
-      double *lon_bnd_sin=NULL_CEWI; /* [frc] Sine of longitude boundaries of rectangular destination grid */
-      double *lat_bnd_cos=NULL_CEWI; /* [frc] Cosine of latitude  boundaries of rectangular destination grid */
-      double *lon_bnd_cos=NULL_CEWI; /* [frc] Cosine of longitude boundaries of rectangular destination grid */
-      lon_bnd_rdn=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-      lat_bnd_rdn=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-      lon_bnd_cos=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-      lat_bnd_cos=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-      lon_bnd_sin=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-      lat_bnd_sin=(double *)nco_malloc(col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-      memcpy(lat_bnd_rdn,lat_bnd_out,col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-      memcpy(lon_bnd_rdn,lon_bnd_out,col_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-      for(idx=0;idx<col_nbr_out*bnd_nbr_out;idx++){
-	lon_bnd_rdn[idx]*=dgr2rdn;
-	lat_bnd_rdn[idx]*=dgr2rdn;
-	lon_bnd_cos[idx]=cos(lon_bnd_rdn[idx]);
-	lat_bnd_cos[idx]=cos(lat_bnd_rdn[idx]);
-	lon_bnd_sin[idx]=sin(lon_bnd_rdn[idx]);
-	lat_bnd_sin[idx]=sin(lat_bnd_rdn[idx]);
-      } /* !idx */
-      double lon_dlt; /* [rdn] Longitudinal difference */
-      double lat_dlt; /* [rdn] Latitudinal difference */
-      double sin_hlf_tht; /* [frc] Sine of half angle/great circle arc theta connecting two points */
-      double ngl_a; /* [rdn] Interior angle/great circle arc a */
-      double ngl_b; /* [rdn] Interior angle/great circle arc b */
-      double ngl_c; /* [rdn] Interior angle/great circle arc c */
-      double prm_smi; /* [rdn] Semi-perimeter of triangle */
-      double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
-      double xcs_sph; /* [sr] Spherical excess */
-      int tri_nbr; /* [nbr] Number of triangles in polygon */
-      long idx_a; /* [idx] Point A 1-D index */
-      long idx_b; /* [idx] Point B 1-D index */
-      long idx_c; /* [idx] Point C 1-D index */
-      for(unsigned int col_idx=0;col_idx<col_nbr_out;col_idx++){
-	area_out[col_idx]=0.0;
-	tri_nbr=0;
-	/* A is always first vertice */
-	idx_a=bnd_nbr_out*col_idx; 
-	/* Start search for B at next vertice */
-	bnd_idx=1;
-	/* bnd_idx labels offset from point A of potential location of triangle points B and C 
-	   We know that bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr_out-1, bnd_idx(C) < bnd_nbr_out */
-	while(bnd_idx<bnd_nbr_out-1){
-	  /* Only first triangle must search for B, subsequent triangles recycle previous C as current B */
-	  if(tri_nbr == 0){
-	    /* Skip repeated points that must occur when polygon has fewer than allowed vertices */
-	    while(lon_bnd_out[idx_a] == lon_bnd_out[idx_a+bnd_idx] && lat_bnd_out[idx_a] == lat_bnd_out[idx_a+bnd_idx]){
-	      /* Next vertice may not duplicate A */
-	      bnd_idx++;
-	      /* If there is no room for C then all triangles found */
-	      if(bnd_idx == bnd_nbr_out-1) break;
-	    } /* !while */
-	    /* Jump to next column when all triangles found */
-	    if(bnd_idx == bnd_nbr_out-1) break;
-	  } /* !tri_nbr */
-	  idx_b=idx_a+bnd_idx;
-	  /* Search for C at next vertice */
-	  bnd_idx++;
-	  while(lon_bnd_out[idx_b] == lon_bnd_out[idx_a+bnd_idx] && lat_bnd_out[idx_b] == lat_bnd_out[idx_a+bnd_idx]){
-	    /* Next vertice may not duplicate B */
-	    bnd_idx++;
-	    /* If there is no room for C then all triangles found */
-	    if(bnd_idx == bnd_nbr_out) break;
-	  } /* !while */
-	  /* Jump to next column when all triangles found */
-	  if(bnd_idx == bnd_nbr_out) break;
-	  idx_c=idx_a+bnd_idx;
-	  /* Valid triangle, vertices are known and labeled */
-	  tri_nbr++;
-	  /* Compute interior angle/great circle arc a for first triangle; subsequent triangles recycle previous arc c */
-	  if(tri_nbr == 1){
-           /* 20150831: Test by computing ncol=0 area in conus chevrons grid:
-	      ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_aave.20150823.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
-	      ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/dogfood.nc
-	      ncks -H -s %20.15e -v area -d ncol,0 ${DATA}/ne30/rgr/dogfood.nc
-	      ncks -H -s %20.15e -v grid_area -d grid_size,0 ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc
-
-	      ncol=0 on conus chevrons file:
-	      3.653857995295246e-05 raw GLL weight
-	      3.653857995294302e-05 matlab N-2 triangles
-	      3.653857995294301e-05 matlab N   triangles
-	      3.653857995294258e-05 new NCO (haversine)
-	      3.653857995289623e-05 old NCO (acos) */
-           /* Computing great circle arcs over small arcs requires care since the central angle is near 0 degrees
-	       Cosine small angles changes slowly for such angles, and leads to precision loss
-	       Use haversine formula instead of sphereical law of cosines formula
-	       https://en.wikipedia.org/wiki/Great-circle_distance */
-            /* Interior angle/great circle arc a, spherical law of cosines formula (loses precision):
-	       cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
-	       lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
-	       lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];ngl_a=acos(cos_a); */
-	    /* Interior angle/great circle arc a, haversine formula: */
-	    lon_dlt=fabs(lon_bnd_rdn[idx_a]-lon_bnd_rdn[idx_b]);
-	    lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
-	    sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
-	    ngl_a=2.0*asin(sin_hlf_tht);
-          }else{
-	    ngl_a=ngl_c;
-	  } /* !tri_nbr */
-	  /* Interior angle/great circle arc b */
-	  lon_dlt=fabs(lon_bnd_rdn[idx_b]-lon_bnd_rdn[idx_c]);
-	  lat_dlt=fabs(lat_bnd_rdn[idx_b]-lat_bnd_rdn[idx_c]);
-          sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*pow(sin(0.5*lon_dlt),2));
-	  ngl_b=2.0*asin(sin_hlf_tht);
-	  /* Interior angle/great circle arc c */
-	  lon_dlt=fabs(lon_bnd_rdn[idx_c]-lon_bnd_rdn[idx_a]);
-	  lat_dlt=fabs(lat_bnd_rdn[idx_c]-lat_bnd_rdn[idx_a]);
-          sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*pow(sin(0.5*lon_dlt),2));
-	  ngl_c=2.0*asin(sin_hlf_tht);
-	  /* Ill-conditioned? */
-	  if(((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) || /* c is half a and b */
-          ((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) || /* a is half b and c */
-          ((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b))){  /* b is half c and a */
-          (void)fprintf(stdout,"%s: WARNING %s reports col_idx = %u triangle %d is ill-conditioned. Spherical excess and thus cell area are likely inaccurate. Ask Charlie to implement SAS formula...\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
-	  } /* !ill */
-	  /* Semi-perimeter */
-	  prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
-	  /* L'Huillier's formula */
-	  xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
-	  xcs_sph=4.0*atan(xcs_sph_qtr_tan);
-	  area_out[col_idx]+=xcs_sph;
-	  /* Begin search for next B at current C */
-	  bnd_idx=idx_c-idx_a;
-	} /* !tri_idx */
-	if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %u has %d triangles\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
-      } /* !col_idx */
-      if(lat_bnd_rdn) lat_bnd_rdn=(double *)nco_free(lat_bnd_rdn);
-      if(lon_bnd_rdn) lon_bnd_rdn=(double *)nco_free(lon_bnd_rdn);
-      if(lat_bnd_cos) lat_bnd_cos=(double *)nco_free(lat_bnd_cos);
-      if(lon_bnd_cos) lon_bnd_cos=(double *)nco_free(lon_bnd_cos);
-      if(lat_bnd_sin) lat_bnd_sin=(double *)nco_free(lat_bnd_sin);
-      if(lon_bnd_sin) lon_bnd_sin=(double *)nco_free(lon_bnd_sin);
+      nco_sph_plg_area(lat_bnd_out,lon_bnd_out,col_nbr_out,bnd_nbr_out,area_out);
     } /* !1D */
     if(flg_grd_out_2D && nco_grd_2D_typ != nco_grd_2D_unk){
       /* Mr. Enenstein and George O. Abell taught me the area of spherical zones
@@ -3494,14 +3327,20 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     lat_crn[idx+3]=lat_ntf[lat_idx+1];
   } /* !lat_idx */
   
-  /* 20150906: Half-angle formulae for better conditioning improve area normalization for 801x1600 by 2.0e-15 
-     area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*2.0*(sin(0.5*dgr2rdn*lat_bnd[2*lat_idx+1])*cos(0.5*dgr2rdn*lat_bnd[2*lat_idx+1])-sin(0.5*dgr2rdn*lat_bnd[2*lat_idx])*cos(0.5*dgr2rdn*lat_bnd[2*lat_idx])); 
-     Gain not worth the extra complexity */
+  if(flg_grd_crv){
+    /* Area of arbitrary curvilinear grids requires spherical trigonometry */
+    ;
+    //nco_sph_plg_area(lat_bnd,lon_bnd,grd_sz_nbr,bnd_nbr,area_out);
+  }else{
+    /* Area of rectangular spherical zones from elementary calculus results
+       20150906: Half-angle formulae for better conditioning improve area normalization for 801x1600 by 2.0e-15 
+       area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*2.0*(sin(0.5*dgr2rdn*lat_bnd[2*lat_idx+1])*cos(0.5*dgr2rdn*lat_bnd[2*lat_idx+1])-sin(0.5*dgr2rdn*lat_bnd[2*lat_idx])*cos(0.5*dgr2rdn*lat_bnd[2*lat_idx])); 
+       Gain not worth the extra complexity */
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
+	area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]));
+  } /* !flg_grd_2D */
 
-  for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
-    for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
-      area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]));
-  
   if(flg_grd_2D){
     if(nco_dbg_lvl_get() >= nco_dbg_sbr){
       (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
@@ -3535,12 +3374,12 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   } /* !lat */
   
   if(flg_grd_crv){
-    /* Impose curvilinearity by adding lat_crv offset to each row relative to previous row, and lon_crv offset to each column relative to previous column */
+    /* Impose curvilinearity by adding lon_crv offset to each row relative to previous row, and lat_crv offset to each column relative to previous column */
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	idx=lat_idx*lon_nbr+lon_idx;
-	grd_ctr_lat[idx]=lat_ctr[lat_idx]+lat_idx*lat_ncr;
-	grd_ctr_lon[idx]=lon_ctr[lon_idx]+lon_idx*lat_ncr;
+	grd_ctr_lat[idx]+=lon_idx*lat_crv;
+	grd_ctr_lon[idx]+=lat_idx*lon_crv;
 	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
 	  idx2=grd_crn_nbr*idx+crn_idx;
 	  lat_idx2=lat_idx*grd_crn_nbr+crn_idx;
@@ -5027,3 +4866,188 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   return rcd;
 
 } /* !nco_grd_nfr() */
+
+void
+nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
+(const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
+ const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
+ const long col_nbr, /* [nbr] Number of columns in grid */
+ const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
+ double * const area) /* [sr] Gridcell area */
+{
+  /* Purpose: Compute area of spherical polygon */
+  /* Use L'Huilier's Theorem not Girard's Formula
+     http://mathworld.wolfram.com/LHuiliersTheorem.html
+     Girard's formula depends on pi-minus-angle and angle is usually quite small in our applications so precision would be lost
+     L'Huilier's theorem depends only on angles (a,b,c) and semi-perimeter (s) and is well-conditioned for small angles
+     semi-perimeter = half-perimeter of triangle = 0.5*(a+b+c)
+     Spherical Excess (SE) difference between the sum of the angles of a spherical triangle area and a planar triangle area with same interior angles (which has sum equal to pi)
+     SE is also the solid angle subtended by the spherical triangle and that's, well, astonishing and pretty cool
+     Wikipedia shows a better SE formula for triangles which are ill-conditioned for L'Huillier's formula because a = b ~ 0.5c
+     https://en.wikipedia.org/wiki/Spherical_trigonometry#Area_and_spherical_excess 
+     So-called "proper" spherical triangle are those for which all angles are less than pi, so a+b+c<3*pi
+     Cartesian coordinates of (lat,lon)=(theta,phi) are (x,y,z)=(cos(theta)*cos(phi),cos(theta)*sin(phi),sin(theta)) 
+     Dot-product rule for vectors gives interior angle/arc length between two points:
+     cos(a)=u dot v=cos(theta1)*cos(phi1)*cos(theta2)*cos(phi2)+cos(theta1)*sin(phi1)*cos(theta2)*sin(phi2)+sin(theta1)*sin(theta2)
+     Spherical law of cosines relates interior angles/arc-lengths (a,b,c) to surface angles (A,B,C) in spherical triangle:
+     https://en.wikipedia.org/wiki/Spherical_law_of_cosines
+     cos(a)=cos(b)*cos(c)+sin(b)*sin(c)*cos(A)
+     cos(b)=cos(c)*cos(a)+sin(c)*sin(a)*cos(B)
+     cos(c)=cos(a)*cos(b)+sin(a)*sin(b)*cos(C)
+     cos(A)=[cos(a)-cos(b)*cos(c)]/[sin(b)*sin(c)]
+     cos(B)=[cos(b)-cos(c)*cos(a)]/[sin(c)*sin(a)]
+     cos(C)=[cos(c)-cos(a)*cos(b)]/[sin(a)*sin(b)]
+     Bounds information on unstructured grids will use bounds_nbr=maximum(vertice_nbr)
+     Unused vertices are stored as either repeated points (ACME does this) or, conceiveably, as missing values
+     Given (lat,lon) for N-points algorithm to find area of spherical polygon is:
+     1. Girard method:
+     A. Find interior angles/arc-lengths (a,b,c,d...) using spherical law of cosines along each edge
+     B. Apply generalized Girard formula SE_n = Sum(A_n) - (N-2) - pi
+     2. L'Huillier method
+     A. First three non-identical points form first triangle with sides A,B,C (first+second point define A, etc.)
+     i. First vertice anchors all triangles
+     ii. Last vertice of preceding triangle becomes second vertice of next triangle
+     iii. Next non-identical point becomes last vertice of next triangle
+     iv. Side C of previous triangle is side A of next triangle
+     B. For each triangle, compute area with L'Huillier formula unless A = B ~ 0.5*C */
+  const char fnc_nm[]="nco_sph_plg_area()";
+  const double dgr2rdn=M_PI/180.0;
+  short int bnd_idx;
+  long idx; /* [idx] Counting index for unrolled grids */
+
+  double *lat_bnd_rdn=NULL_CEWI; /* [rdn] Latitude  boundaries of rectangular destination grid */
+  double *lon_bnd_rdn=NULL_CEWI; /* [rdn] Longitude boundaries of rectangular destination grid */
+  double *lat_bnd_sin=NULL_CEWI; /* [frc] Sine of latitude  boundaries of rectangular destination grid */
+  double *lon_bnd_sin=NULL_CEWI; /* [frc] Sine of longitude boundaries of rectangular destination grid */
+  double *lat_bnd_cos=NULL_CEWI; /* [frc] Cosine of latitude  boundaries of rectangular destination grid */
+  double *lon_bnd_cos=NULL_CEWI; /* [frc] Cosine of longitude boundaries of rectangular destination grid */
+  lon_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
+  lat_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
+  lon_bnd_cos=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
+  lat_bnd_cos=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
+  lon_bnd_sin=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
+  lat_bnd_sin=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
+  memcpy(lat_bnd_rdn,lat_bnd,col_nbr*bnd_nbr*sizeof(double));
+  memcpy(lon_bnd_rdn,lon_bnd,col_nbr*bnd_nbr*sizeof(double));
+  for(idx=0;idx<col_nbr*bnd_nbr;idx++){
+    lon_bnd_rdn[idx]*=dgr2rdn;
+    lat_bnd_rdn[idx]*=dgr2rdn;
+    lon_bnd_cos[idx]=cos(lon_bnd_rdn[idx]);
+    lat_bnd_cos[idx]=cos(lat_bnd_rdn[idx]);
+    lon_bnd_sin[idx]=sin(lon_bnd_rdn[idx]);
+    lat_bnd_sin[idx]=sin(lat_bnd_rdn[idx]);
+  } /* !idx */
+  double lon_dlt; /* [rdn] Longitudinal difference */
+  double lat_dlt; /* [rdn] Latitudinal difference */
+  double sin_hlf_tht; /* [frc] Sine of half angle/great circle arc theta connecting two points */
+  double ngl_a; /* [rdn] Interior angle/great circle arc a */
+  double ngl_b; /* [rdn] Interior angle/great circle arc b */
+  double ngl_c; /* [rdn] Interior angle/great circle arc c */
+  double prm_smi; /* [rdn] Semi-perimeter of triangle */
+  double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
+  double xcs_sph; /* [sr] Spherical excess */
+  int tri_nbr; /* [nbr] Number of triangles in polygon */
+  long idx_a; /* [idx] Point A 1-D index */
+  long idx_b; /* [idx] Point B 1-D index */
+  long idx_c; /* [idx] Point C 1-D index */
+  for(unsigned int col_idx=0;col_idx<col_nbr;col_idx++){
+    area[col_idx]=0.0;
+    tri_nbr=0;
+    /* A is always first vertice */
+    idx_a=bnd_nbr*col_idx; 
+    /* Start search for B at next vertice */
+    bnd_idx=1;
+    /* bnd_idx labels offset from point A of potential location of triangle points B and C 
+       We know that bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr-1, bnd_idx(C) < bnd_nbr */
+    while(bnd_idx<bnd_nbr-1){
+      /* Only first triangle must search for B, subsequent triangles recycle previous C as current B */
+      if(tri_nbr == 0){
+	/* Skip repeated points that must occur when polygon has fewer than allowed vertices */
+	while(lon_bnd[idx_a] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_a] == lat_bnd[idx_a+bnd_idx]){
+	  /* Next vertice may not duplicate A */
+	  bnd_idx++;
+	  /* If there is no room for C then all triangles found */
+	  if(bnd_idx == bnd_nbr-1) break;
+	} /* !while */
+	/* Jump to next column when all triangles found */
+	if(bnd_idx == bnd_nbr-1) break;
+      } /* !tri_nbr */
+      idx_b=idx_a+bnd_idx;
+      /* Search for C at next vertice */
+      bnd_idx++;
+      while(lon_bnd[idx_b] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_b] == lat_bnd[idx_a+bnd_idx]){
+	/* Next vertice may not duplicate B */
+	bnd_idx++;
+	/* If there is no room for C then all triangles found */
+	if(bnd_idx == bnd_nbr) break;
+      } /* !while */
+      /* Jump to next column when all triangles found */
+      if(bnd_idx == bnd_nbr) break;
+      idx_c=idx_a+bnd_idx;
+      /* Valid triangle, vertices are known and labeled */
+      tri_nbr++;
+      /* Compute interior angle/great circle arc a for first triangle; subsequent triangles recycle previous arc c */
+      if(tri_nbr == 1){
+	/* 20150831: Test by computing ncol=0 area in conus chevrons grid:
+	   ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_aave.20150823.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
+	   ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/dogfood.nc
+	   ncks -H -s %20.15e -v area -d ncol,0 ${DATA}/ne30/rgr/dogfood.nc
+	   ncks -H -s %20.15e -v grid_area -d grid_size,0 ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc
+	   
+	   ncol=0 on conus chevrons file:
+	   3.653857995295246e-05 raw GLL weight
+	   3.653857995294302e-05 matlab N-2 triangles
+	   3.653857995294301e-05 matlab N   triangles
+	   3.653857995294258e-05 new NCO (haversine)
+	   3.653857995289623e-05 old NCO (acos) */
+	/* Computing great circle arcs over small arcs requires care since the central angle is near 0 degrees
+	   Cosine small angles changes slowly for such angles, and leads to precision loss
+	   Use haversine formula instead of sphereical law of cosines formula
+	   https://en.wikipedia.org/wiki/Great-circle_distance */
+	/* Interior angle/great circle arc a, spherical law of cosines formula (loses precision):
+	   cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
+	   lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
+	   lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];ngl_a=acos(cos_a); */
+	/* Interior angle/great circle arc a, haversine formula: */
+	lon_dlt=fabs(lon_bnd_rdn[idx_a]-lon_bnd_rdn[idx_b]);
+	lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
+	sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
+	ngl_a=2.0*asin(sin_hlf_tht);
+      }else{
+	ngl_a=ngl_c;
+      } /* !tri_nbr */
+      /* Interior angle/great circle arc b */
+      lon_dlt=fabs(lon_bnd_rdn[idx_b]-lon_bnd_rdn[idx_c]);
+      lat_dlt=fabs(lat_bnd_rdn[idx_b]-lat_bnd_rdn[idx_c]);
+      sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*pow(sin(0.5*lon_dlt),2));
+      ngl_b=2.0*asin(sin_hlf_tht);
+      /* Interior angle/great circle arc c */
+      lon_dlt=fabs(lon_bnd_rdn[idx_c]-lon_bnd_rdn[idx_a]);
+      lat_dlt=fabs(lat_bnd_rdn[idx_c]-lat_bnd_rdn[idx_a]);
+      sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*pow(sin(0.5*lon_dlt),2));
+      ngl_c=2.0*asin(sin_hlf_tht);
+      /* Ill-conditioned? */
+      if(((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) || /* c is half a and b */
+	 ((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) || /* a is half b and c */
+	 ((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b))){  /* b is half c and a */
+	(void)fprintf(stdout,"%s: WARNING %s reports col_idx = %u triangle %d is ill-conditioned. Spherical excess and thus cell area are likely inaccurate. Ask Charlie to implement SAS formula...\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+      } /* !ill */
+      /* Semi-perimeter */
+      prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
+      /* L'Huillier's formula */
+      xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
+      xcs_sph=4.0*atan(xcs_sph_qtr_tan);
+      area[col_idx]+=xcs_sph;
+      /* Begin search for next B at current C */
+      bnd_idx=idx_c-idx_a;
+    } /* !tri_idx */
+    if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %u has %d triangles\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+      } /* !col_idx */
+  if(lat_bnd_rdn) lat_bnd_rdn=(double *)nco_free(lat_bnd_rdn);
+  if(lon_bnd_rdn) lon_bnd_rdn=(double *)nco_free(lon_bnd_rdn);
+  if(lat_bnd_cos) lat_bnd_cos=(double *)nco_free(lat_bnd_cos);
+  if(lon_bnd_cos) lon_bnd_cos=(double *)nco_free(lon_bnd_cos);
+  if(lat_bnd_sin) lat_bnd_sin=(double *)nco_free(lat_bnd_sin);
+  if(lon_bnd_sin) lon_bnd_sin=(double *)nco_free(lon_bnd_sin);
+
+} /* !nco_sph_plg_area() */

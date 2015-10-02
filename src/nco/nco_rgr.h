@@ -124,6 +124,14 @@ extern "C" {
   (rgr_sct * const rgr); /* I/O [sct] Regridding structure */
 
   void
+  nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
+  (const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
+   const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
+   const long grd_sz_nbr, /* [nbr] Number of gridcells in grid */
+   const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
+   double * const area_out); /* [sr] Gridcell area */
+
+  void
   nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their weights */
   (const int lat_nbr, /* I [nbr] Latitude number */
    double * const lat_sin, /* O [frc] Sine of latitudes */
