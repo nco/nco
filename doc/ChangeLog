@@ -1,5 +1,7 @@
 2015-10-02  Charlie Zender  <zender@uci.edu>
 
+	* Add ncrename regression test simultaneously renaming multiple dimensions
+
 	* NCO 4.5.3-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha05 final changes';git push
 	git tag -a 4.5.3-alpha05 -m 'Version 4.5.3-alpha05 tag: ncatted, mk crv, lon_crv, sph_plg';git push --tags

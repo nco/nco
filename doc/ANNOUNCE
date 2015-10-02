@@ -113,13 +113,14 @@ A. NOT YET FIXED (netCDF4 or HDF5 problem?)
    Workaround #2: Convert file to netCDF3 first, then use stride
 
 B. NOT YET FIXED (netCDF4 library bug?)
-   Simultaneously renaming two dimensions in netCDF4 file can corrupt output.
+   Simultaneously renaming multiple dimensions in netCDF4 file can corrupt output
 
    Demonstration:
-   ncrename -O -h -d y,rlat -d x,rlon ~/Downloads/dayclim_withoutpr.nc ~/dayclim2.nc # completes but file is unreadable
-   ncdump ~/dayclim2.nc
+   ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc # Completes but file is unreadable
+   ncks -v one ~/foo.nc
 
    20150922: Confirmed problem reported by Isabelle Dast, reported to Unidata
+   20150924: Unidata confirmed problem
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
 
