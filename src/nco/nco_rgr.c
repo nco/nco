@@ -299,6 +299,16 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
     } /* !idx_dbg */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"latlon")){
+      cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%ld,%ld",&rgr->lat_nbr,&rgr->lon_nbr);
+      assert(cnv_nbr == 2);
+      continue;
+    } /* !latlon */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lonlat")){
+      cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%ld,%ld",&rgr->lon_nbr,&rgr->lat_nbr);
+      assert(cnv_nbr == 2);
+      continue;
+    } /* !lonlat */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nbr")){
       rgr->lat_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
