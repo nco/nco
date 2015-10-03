@@ -4914,15 +4914,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   
   /* Define variables */
   (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id);
-  (void)nco_def_var(out_id,area_nm,(nc_type)crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&area_id);
+  (void)nco_def_var(out_id,area_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&area_id);
   (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
   (void)nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lat_id);
   (void)nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lon_id);
   dmn_ids[0]=dmn_id_grd_sz;
   dmn_ids[1]=dmn_id_grd_crn;
   (void)nco_def_var(out_id,grd_crn_lat_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lat_id);
-  dmn_ids[0]=dmn_id_grd_sz;
-  dmn_ids[1]=dmn_id_grd_crn;
   (void)nco_def_var(out_id,grd_crn_lon_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lon_id);
   
   /* Define "units" attributes */
