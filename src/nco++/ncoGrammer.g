@@ -741,21 +741,124 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
      return nbr_dmn;
 } 
 
-int 
+bool
+lmt_var_mk(
+int nbr_dmn,
+RefAST lmt,
+NcapVector<lmt_sct*> &lmt_vtr ) 
+{
+	int idx;
+	int jdx;
+	int sz;   
+    int dmn_sz;     
+    ptr_unn op1;
+	var_sct *var;
+	std::string fnc_nm="lmt_var_mk"; 
+	
+	dbg_prn(fnc_nm,"start\n"); 
+	
+	// calculate variables
+	var=out(lmt->getFirstChild()->getFirstChild());
+	// convert result to type int
+	var=nco_var_cnf_typ(NC_UINT64,var);    
+	(void)cast_void_nctype((nc_type)NC_UINT64,&var->val);
+	sz=var->sz;
+	dmn_sz=var->sz / nbr_dmn;
+	
+    
+
+    // shape of var must be (nbr_dmn) or (nbr_dmn,2) or (nbr_dmn,3) 
+    if( dmn_sz * nbr_dmn != sz )
+	{
+	  var=nco_var_free(var);
+      return false;  
+    }
+
+    
+	
+    for(idx=0; idx<sz;idx+=dmn_sz)
+	 {
+
+		// fill out lmt structure
+		// use same logic as nco_lmt_prs 
+		lmt_sct* lmt_ptr=(lmt_sct*)nco_calloc((size_t)1,sizeof(lmt_sct));
+		lmt_ptr->nm=NULL;
+		//lmt_ptr->lmt_typ=-1;
+		lmt_ptr->is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
+		lmt_ptr->min_sng=NULL;
+		lmt_ptr->max_sng=NULL;
+		lmt_ptr->srd_sng=NULL;
+		lmt_ptr->is_usr_spc_min=False;
+		lmt_ptr->is_usr_spc_max=False;
+		/* rec_skp_ntl_spf is used for record dimension in multi-file operators */
+		lmt_ptr->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
+
+	   
+       for(jdx=0;jdx<dmn_sz;jdx++)
+		{     
+		  
+         nco_uint64 uival= var->val.ui64p[idx+jdx];
+         switch(jdx){
+           case 0: 
+             lmt_ptr->is_usr_spc_min=True;
+             lmt_ptr->srt=uival;
+             break;
+           case 1: //end
+             lmt_ptr->is_usr_spc_max=True;
+             lmt_ptr->end=uival;
+             break;
+           case 2: //srd
+             lmt_ptr->srd_sng=strdup("~fill_in");
+             lmt_ptr->srd=uival;
+             break;			
+	       }
+
+		}
+		/* need to deal with situation where only start is defined -- ie picking only a single value */
+		if( lmt_ptr->is_usr_spc_min==True && lmt_ptr->is_usr_spc_max==False && lmt_ptr->srd_sng==NULL)
+		{
+			lmt_ptr->is_usr_spc_max=True;
+			lmt_ptr->end=lmt_ptr->srt; 
+       }    
+
+       lmt_vtr.push_back(lmt_ptr);		
+	}
+	 
+	cast_nctype_void((nc_type)NC_UINT64,&var->val);
+	var=nco_var_free(var);  
+	
+   return true;
+
+}
+
+
+
+bool 
 lmt_mk(
+int nbr_dmn,
 RefAST lmt,
 NcapVector<lmt_sct*> &lmt_vtr ) 
 {   
-int nbr_dmn;
+
 int idx;
 int jdx;
+int sz;
 lmt_sct *lmt_ptr;
 RefAST aRef;
-
 vector<ast_lmt_sct> ast_lmt_vtr;
 
+// deal with a single expression containing all indicies
+if(lmt->getNumberOfChildren()==1 && 
+   lmt->getFirstChild()->getNumberOfChildren()==1 &&
+   lmt->getFirstChild()->getFirstChild()->getType() != COLON)
+{
+   return lmt_var_mk(nbr_dmn,lmt,lmt_vtr);   ;            
+}
+
+
 // populate ast_lmt_vtr
-nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
+if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
+  return false;	
 
   for(idx=0 ; idx <nbr_dmn ; idx++){
 
@@ -816,7 +919,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
     lmt_vtr.push_back(lmt_ptr);
   } // end idx
 
-   return nbr_dmn;
+   return true;;
 } /* end lmt_mk */
 
 /* Legacy run -- will remove soon
@@ -1577,7 +1680,7 @@ var=NULL_CEWI;
                   nbr_dmn=var_lhs->nbr_dim;
 
                   // Now populate lmt_vtr;
-                  if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
+                  if( lmt_mk(nbr_dmn, lmt_Ref,lmt_vtr) == false)
                     err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ var_nm);
                   
                  if( lmt_vtr.size() != nbr_dmn)
@@ -1638,7 +1741,7 @@ var=NULL_CEWI;
                nbr_dmn=var_lhs->nbr_dim;
 
                // Now populate lmt_vtr;
-               if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
+               if( lmt_mk(nbr_dmn, lmt_Ref,lmt_vtr) == false)
                   err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ var_nm);
                
                if( lmt_vtr.size() != nbr_dmn)
@@ -2103,6 +2206,18 @@ out returns [var_sct *var]
         
      // Variable with argument list 
     | (#(VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
+		
+		    // fxm: 4 Oct 2015
+			/*
+			  the following is valid syntx var_nm(array_var)-
+			  array_var now contains all the indices - that is 
+			  srt vectors  
+			  srt & end vectors
+			  srt,end,srd vectors
+			
+			  so for now indexing into a multi-dmensional var using a single index has
+			  temporarily been disabled
+			
            // see if hyperslab limit is a single value
            if(lmt->getNumberOfChildren()==1 && 
               lmt->getFirstChild()->getNumberOfChildren()==1 &&
@@ -2111,7 +2226,10 @@ out returns [var_sct *var]
               var=var_lmt_one(vid);
            else   
                var=var_lmt(vid);
-
+           */
+           var=var_lmt(vid);  
+     
+             
     }
 
     // plain Variable
@@ -2293,11 +2411,13 @@ NcapVar *Nvar;
           //do attribute inheritance
 
           Nvar=prs_arg->var_vtr.find(var_nm_s);
-
           if( !Nvar || Nvar->flg_stt==1 ) 
-               ncap_att_cpy(var_nm_s,var_nm_s,prs_arg);
+             ncap_att_cpy(var_nm_s,var_nm_s,prs_arg);
 
           var=prs_arg->ncap_var_init(var_nm_s,true);
+
+
+
           if(var== NULL_CEWI){
                nco_exit(EXIT_FAILURE);
           }
@@ -2742,6 +2862,7 @@ end0:       var_nbr=nco_var_free(var_nbr);
 
 //Calculate scalar LHS hyperslab where there is a single limit for a possibly
 // multi-dimensional variable
+
 var_lmt_one_lhs[bool bram] returns [var_sct *var]
 {
 const std::string fnc_nm("var_lmt_one_lhs");
@@ -2894,6 +3015,7 @@ var_sct *var_nbr;
 }
 ;
 
+
 //Calculate var with limits
 var_lmt returns [var_sct *var]
 {
@@ -2940,11 +3062,11 @@ var=NULL_CEWI;
             }
             // Temporarily change mode 
             prs_arg->ntl_scn=False;
-            lmt_mk(lRef,lmt_vtr);
+            lmt_mk(nbr_dmn,lRef,lmt_vtr);
             prs_arg->ntl_scn=True; 
 
           }else{
-            lmt_mk(lRef,lmt_vtr);
+            lmt_mk(nbr_dmn,lRef,lmt_vtr);
            }
 
          if( lmt_vtr.size() != nbr_dmn)
@@ -3139,3 +3261,8 @@ var=NULL_CEWI;
           end2: var_rhs=nco_var_free(var_rhs); 
     }
 ;
+
+
+
+
+
