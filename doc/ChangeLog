@@ -1,3 +1,10 @@
+2015-10-04  Henry Butowsky  <henryb@hush.com>
+	* added lmt_var_mk() to grammar file - creates hyperslab indices from a variable
+	  lmt_mk() and lmt_var_mk() now have signature  bool (fnc)(int,RefAST,lmt_vtr &) 
+
+	* TODO lmt_var_mk() only works on final scan - need to make it work on initial scan
+	  if indices can be normalized
+
 2015-10-01  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_mk() constructs correct degenerate SLD grids (verified area, corners)
