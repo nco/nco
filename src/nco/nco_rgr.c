@@ -990,7 +990,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
        ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
        ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
-       ncks -O -D 1 -t 1 -v T --rgr map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
+       ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
        sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
        GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
     if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO %s reports SLD grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
@@ -4177,8 +4177,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int lon_rnk; /* [nbr] Rank of longitude coordinate */
   int lat_ctr_id; /* [id] Latitude centers of rectangular grid variable ID */
   int lon_ctr_id; /* [id] Longitude centers of rectangular grid variable ID */
-  int lat_bnd_id; /* [id] Latitude centers of rectangular grid variable ID */
-  int lon_bnd_id; /* [id] Longitude centers of rectangular grid variable ID */
+  int lat_bnd_id=NC_MIN_INT; /* [id] Latitude centers of rectangular grid variable ID */
+  int lon_bnd_id=NC_MIN_INT; /* [id] Longitude centers of rectangular grid variable ID */
   int msk_id=NC_MIN_INT; /* [id] Mask variable ID */
   int var_id; /* [id] Current variable ID */
 
@@ -4380,12 +4380,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     dmn_cnt[0]=lat_nbr;
     dmn_cnt[1]=lon_nbr;
     rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
-    dmn_srt[0]=dmn_srt[1]=0L;
-    dmn_cnt[0]=lat_nbr;
-    dmn_cnt[1]=lon_nbr;
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
 
     /* 20150923: fxm also input corners, area, mask, if present in SLD file */
+    if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
     
   } /* !flg_grd_SLD */
 
@@ -4620,6 +4618,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(lat_ctr_fk) lat_ctr_fk=(double *)nco_free(lat_ctr_fk);
     if(lon_ctr_fk) lon_ctr_fk=(double *)nco_free(lon_ctr_fk);
 
+    /* Copy inferred corners into empty output array */
+    if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
+      for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
+	grd_crn_lat[idx]=lat_crn[idx];
+	grd_crn_lon[idx]=lon_crn[idx];
+      } /* !idx */
+    } /* end else */
+      
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       long idx_dbg;
       idx_dbg=rgr->idx_dbg;

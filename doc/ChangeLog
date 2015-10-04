@@ -1,3 +1,7 @@
+2015-10-04  Charlie Zender  <zender@uci.edu>
+
+	* Saw "The Maritan". Psyched to do NASA work. nco_grd_nfr() now	correctly infers WRF.
+
 2015-10-02  Charlie Zender  <zender@uci.edu>
 
 	* Re-establish dust.ess.uci.edu as regression test server for scp
