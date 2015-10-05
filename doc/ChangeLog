@@ -1,3 +1,9 @@
+2015-10-05  Charlie Zender  <zender@uci.edu>
+
+	* Introduce flg_grd_out_crv in nco_rgr_map()
+
+	* Update maps to 20150901 versions in NCO regression tests, everything passes on dust
+
 2015-10-04  Charlie Zender  <zender@uci.edu>
 
 	* Saw "The Maritan". Psyched to do NASA work. nco_grd_nfr() now	correctly infers WRF.
