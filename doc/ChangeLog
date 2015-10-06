@@ -2,6 +2,8 @@
 
 	* Moving end-of-the-line for curvilinear
 
+	* Wow, curvilinear grids now actually run, though flg_grd_out_crv only reaches half-way to the end of nco_rgr_map()
+
 	* Introduce flg_grd_out_crv in nco_rgr_map()
 
 	* Update maps to 20150901 versions in NCO regression tests, everything passes on dust

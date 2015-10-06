@@ -1482,7 +1482,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"lon",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("lon");
       else if((rcd=nco_inq_dimid_flg(in_id,"Longitude",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("Longitude");
       else if((rcd=nco_inq_dimid_flg(in_id,"Lon",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("Lon");
-      else if((rcd=nco_inq_dimid_flg(in_id,"south_north",&dmn_id_lat)) == NC_NOERR) lon_nm=strdup("south_north");
+      else if((rcd=nco_inq_dimid_flg(in_id,"west_east",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("west_east");
+      else{
+	(void)fprintf(stdout,"%s: ERROR %s reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of longitude dimension name with --rgr lon_nm=name\n",nco_prg_nm_get(),fnc_nm);
+	nco_exit(EXIT_FAILURE);
+      } /* !lat */
     } /* !rcd */
     rcd=nco_inq_dimlen(in_id,dmn_id_lon,&lon_nbr_in_dat);
     if(lon_nbr_in != lon_nbr_in_dat){
