@@ -859,7 +859,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* !flg_grd_out_2D */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
-  const int dmn_nbr_grd_max=dmn_nbr_2D; /* [nbr] Maximum rank of grid variables */
+  const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
+  const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
   double *area_out; /* [sr] Area of destination grid */
   double *frc_out=NULL; /* [frc] Fraction of destination grid */
   double *lat_bnd_out=NULL_CEWI; /* [dgr] Latitude  boundaries of rectangular destination grid */
@@ -1512,13 +1513,16 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
-  const int var_xcl_lst_nbr=13; /* [nbr] Number of objects on exclusion list */
+  const int var_xcl_lst_nbr=15; /* [nbr] Number of objects on exclusion list */
   /* Exception list source:
      CAM: gw, lat, lat_bnds, lon, lon_bnds
      CAM-SE: area
+     ESMF: gridcell_area
      MPAS-O: areaCell, latCell, lonCell
-     UV-CDAT regridder: bounds_lat, bounds_lon */
-  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/lat","/latitude","/lat_bnds","/lat_vertices","/bounds_lat","/lon","/longitude","/lon_bnds","/lon_vertices","/bounds_lon"};
+     NCO: lat_vertices
+     UV-CDAT regridder: bounds_lat, bounds_lon
+     WRF: XLAT, XLONG */
+  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/lat","/latitude","/XLAT","/lat_bnds","/lat_vertices","/bounds_lat","/lon","/longitude","/XLONG","/lon_bnds","/lon_vertices","/bounds_lon"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -1720,7 +1724,28 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
   } /* !flg_grd_out_1D */
-  if(flg_grd_out_2D){
+  if(flg_grd_out_crv){
+    dmn_ids_out[0]=dmn_id_lat;
+    dmn_ids_out[1]=dmn_id_lon;
+    (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_out_id);
+    var_crt_nbr++;
+    (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_out_id);
+    var_crt_nbr++;
+    (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
+    var_crt_nbr++;
+    if(flg_frc_out_wrt){
+      (void)nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
+      var_crt_nbr++;
+    } /* !flg_frc_out_wrt */
+    dmn_ids_out[0]=dmn_id_lat;
+    dmn_ids_out[1]=dmn_id_lon;
+    dmn_ids_out[2]=dmn_id_bnd;
+    (void)nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_3D,dmn_ids_out,&lat_bnd_id);
+    var_crt_nbr++;
+    (void)nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_3D,dmn_ids_out,&lon_bnd_id);
+    var_crt_nbr++;
+  } /* !flg_grd_out_crv */
+  if(flg_grd_out_rct){
     (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_out_id);
     var_crt_nbr++;
     (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon,&lon_out_id);
@@ -1740,12 +1765,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
     var_crt_nbr++;
     if(flg_frc_out_wrt){
-      dmn_ids_out[0]=dmn_id_lat;
-      dmn_ids_out[1]=dmn_id_lon;
       (void)nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
-  } /* !flg_grd_out_2D */
+  } /* !flg_grd_out_rct */
 
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
@@ -2197,7 +2220,24 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_cnt_out[0]=col_nbr_out;
     (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
   } /* !flg_grd_out_1D */
-  if(flg_grd_out_2D){
+  if(flg_grd_out_crv){
+    dmn_srt_out[0]=dmn_srt_out[1]=0L;
+    dmn_cnt_out[0]=lat_nbr_out;
+    dmn_cnt_out[1]=lon_nbr_out;
+    (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_out,lat_ctr_out,crd_typ_out);
+    (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_out,lon_ctr_out,crd_typ_out);
+    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
+    if(flg_frc_out_wrt){
+      (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_out,frc_out,crd_typ_out);
+    } /* !flg_frc_out_wrt */
+    dmn_srt_out[0]=dmn_srt_out[1]=dmn_srt_out[2]=0L;
+    dmn_cnt_out[0]=lat_nbr_out;
+    dmn_cnt_out[1]=lon_nbr_out;
+    dmn_cnt_out[2]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_out,lat_bnd_out,crd_typ_out);
+    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
+  } /* !flg_grd_out_crv */
+  if(flg_grd_out_rct){
     dmn_srt_out[0]=0L;
     dmn_cnt_out[0]=lat_nbr_out;
     (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_out,lat_ctr_out,crd_typ_out);
@@ -2220,12 +2260,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_cnt_out[1]=lon_nbr_out;
     (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
     if(flg_frc_out_wrt){
-      dmn_srt_out[0]=dmn_srt_out[1]=0L;
-      dmn_cnt_out[0]=lat_nbr_out;
-      dmn_cnt_out[1]=lon_nbr_out;
       (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_out,frc_out,crd_typ_out);
     } /* !flg_frc_out_wrt */
-  } /* !flg_grd_out_2D */
+  } /* !flg_grd_out_rct */
 
   /* Regrid or copy variable values */
   const double wgt_vld_thr=rgr->wgt_vld_thr; /* [frc] Weight threshold for valid destination value */
