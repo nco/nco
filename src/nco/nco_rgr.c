@@ -1319,20 +1319,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !spherical zones */
   } /* !flg_dgn_area_out */
 
-  if(flg_grd_out_crv){
-    /* WRF curvilinear grid: 
-       ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc # Interrogate file
-       ncwa -O -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
-       ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
-       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
-       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
-       ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
-       sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
-       GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* !flg_grd_out_crv */
-
   /* Verify frc_out is sometimes non-zero
      ESMF: "For bilinear and patch remapping, the destination grid frac array [brac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero." */
   for(idx=0;idx<grd_sz_out;idx++)
@@ -1375,26 +1361,30 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* !flg_rnr */
 
   /* Detailed summary of 2D grids now available including quality-checked coordinates and area */
-  if(flg_grd_out_2D){
-    if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+    lat_wgt_ttl=0.0;
+    area_out_ttl=0.0;
+    if(flg_grd_out_rct){
       (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
-      lat_wgt_ttl=0.0;
-      area_out_ttl=0.0;
       for(idx=0;idx<lat_nbr_out;idx++)
 	lat_wgt_ttl+=lat_wgt_out[idx];
-      for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
-	for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	  area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_idx];
-      (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, frc_lat_wgt = %20.15f, area_ttl = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,lat_wgt_ttl/2.0,area_out_ttl,area_out_ttl/(4.0*M_PI));
+    } /* !flg_grd_out_rct */
+    for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+      for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	area_out_ttl+=area_out[lat_idx*lon_nbr_out+lon_idx];
+    (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, frc_lat_wgt = %20.15f, area_ttl = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,lat_wgt_ttl/2.0,area_out_ttl,area_out_ttl/(4.0*M_PI));
+    if(flg_grd_out_rct){
       for(idx=0;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2*idx],lon_ctr_out[idx],lon_bnd_out[2*idx+1]);
       for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2*idx],lat_ctr_out[idx],lat_bnd_out[2*idx+1]);
       for(idx=0;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li], wgt[%li] = %20.15f, %20.15f\n",idx,idx,lat_ctr_out[idx],lat_wgt_out[idx]);
-      if(nco_dbg_lvl_get() > nco_dbg_crr)
-	for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
-	  for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	    (void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
-    } /* endif dbg */
-  } /* !flg_grd_out_2D */
+    } /* !flg_grd_out_rct */
+    if(nco_dbg_lvl_get() > nco_dbg_crr)
+      for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
+	for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
+	  (void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
+    assert(area_out_ttl > 0.0);
+    assert(area_out_ttl <= 4.0*M_PI);
+  } /* endif dbg */
 
   /* Allocate space for and obtain weights and addresses */
   wgt_raw=(double *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_DOUBLE),fnc_nm,"Unable to malloc() value buffer for remapping weights");
@@ -1471,9 +1461,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd=nco_inq_dimid_flg(in_id,lat_nm,&dmn_id_lat);
     if(rcd != NC_NOERR){
       if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("latitude");
-      else if((rcd=nco_inq_dimid_flg(in_id,"lat",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("lat");
+      else if((rcd=nco_inq_dimid_flg(in_id,"lat",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("lat"); /* CAM */
       else if((rcd=nco_inq_dimid_flg(in_id,"Latitude",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("Latitude");
       else if((rcd=nco_inq_dimid_flg(in_id,"Lat",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("Lat");
+      else if((rcd=nco_inq_dimid_flg(in_id,"south_north",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("south_north");
+      else{
+	(void)fprintf(stdout,"%s: ERROR %s reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of latitude dimension name with --rgr lat_nm=name\n",nco_prg_nm_get(),fnc_nm);
+	nco_exit(EXIT_FAILURE);
+      } /* !lat */
     } /* !rcd */
     rcd=nco_inq_dimlen(in_id,dmn_id_lat,&lat_nbr_in_dat);
     if(lat_nbr_in != lat_nbr_in_dat){
@@ -1487,6 +1482,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"lon",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("lon");
       else if((rcd=nco_inq_dimid_flg(in_id,"Longitude",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("Longitude");
       else if((rcd=nco_inq_dimid_flg(in_id,"Lon",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("Lon");
+      else if((rcd=nco_inq_dimid_flg(in_id,"south_north",&dmn_id_lat)) == NC_NOERR) lon_nm=strdup("south_north");
     } /* !rcd */
     rcd=nco_inq_dimlen(in_id,dmn_id_lon,&lon_nbr_in_dat);
     if(lon_nbr_in != lon_nbr_in_dat){
@@ -1495,6 +1491,20 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !err */
   } /* !2D */
     
+  if(flg_grd_out_crv){
+    /* WRF curvilinear grid: 
+       ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc # Interrogate file
+       ncwa -O -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
+       ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
+       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
+       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
+       ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
+       sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
+       GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !flg_grd_out_crv */
+
   /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
