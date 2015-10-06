@@ -1466,6 +1466,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"Latitude",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("Latitude");
       else if((rcd=nco_inq_dimid_flg(in_id,"Lat",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("Lat");
       else if((rcd=nco_inq_dimid_flg(in_id,"south_north",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("south_north");
+      else if((rcd=nco_inq_dimid_flg(in_id,"south_north_stag",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("south_north_stag");
       else{
 	(void)fprintf(stdout,"%s: ERROR %s reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of latitude dimension name with --rgr lat_nm=name\n",nco_prg_nm_get(),fnc_nm);
 	nco_exit(EXIT_FAILURE);
@@ -1484,6 +1485,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"Longitude",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("Longitude");
       else if((rcd=nco_inq_dimid_flg(in_id,"Lon",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("Lon");
       else if((rcd=nco_inq_dimid_flg(in_id,"west_east",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("west_east");
+      else if((rcd=nco_inq_dimid_flg(in_id,"west_east_stag",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("west_east_stag");
       else{
 	(void)fprintf(stdout,"%s: ERROR %s reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of longitude dimension name with --rgr lon_nm=name\n",nco_prg_nm_get(),fnc_nm);
 	nco_exit(EXIT_FAILURE);
@@ -1496,20 +1498,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !err */
   } /* !2D */
     
-  if(flg_grd_out_crv){
-    /* WRF curvilinear grid: 
-       ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc # Interrogate file
-       ncwa -O -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
-       ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
-       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
-       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
-       ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
-       sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
-       GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* !flg_grd_out_crv */
-
   /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
@@ -1550,7 +1538,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   nco_bool has_lat; /* [flg] Contains latitude dimension */
   trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
   /* Define regridding flag for each variable */
-    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
     dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
@@ -1578,10 +1566,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	/* Not regridded, so must be omitted or copied... */
 	if(flg_grd_in_2D && (has_lon || has_lat)){
 	/* Single spatial dimensional variables on 2D input grids are likely extensive (e.g., grd_mrd_lng from bds)
-	   They can only be salvaged with explicit rules or implicit assumptions */
+	   These could be salvaged with explicit rules or implicit assumptions */
 	  trv_tbl->lst[idx_tbl].flg_xtr=False;
 	  var_xcl_nbr++;
-	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) extensive-seeming (i.e., 1D spatial variable in 2D input grid) variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) extensive-seeming (e.g., 1D spatial variable in 2D input grid, or 2D spatial variable without primary grid dimensions from multi-grid file (e.g., west_east_stag or south_north_stag instead of west_east or south_north)) variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
 	}else{ /* !omitted */
 	  /* Copy all variables that are not regridded or omitted */
 	  var_cpy_nbr++;
@@ -2535,6 +2523,20 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(row_dst_adr) row_dst_adr=(int *)nco_free(row_dst_adr);
   if(wgt_raw) wgt_raw=(double *)nco_free(wgt_raw);
   
+  if(False && flg_grd_out_crv){
+    /* WRF curvilinear grid: 
+       ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc # Interrogate file
+       ncwa -O -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
+       ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
+       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
+       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
+       ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
+       sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
+       GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !flg_grd_out_crv */
+
   return rcd;
 } /* end nco_rgr_map() */
 
@@ -4335,9 +4337,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   /* Try known curvilinear dimension names */
   if(!lat_dmn_nm || !lon_dmn_nm){
-    if((rcd=nco_inq_dimid_flg(in_id,"south_north",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("south_north");
-    if((rcd=nco_inq_dimid_flg(in_id,"west_east",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("west_east");
-    flg_grd_crv=True;
+    if(!lat_dmn_nm){
+      if((rcd=nco_inq_dimid_flg(in_id,"south_north",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("south_north"); /* WRF */
+      else if((rcd=nco_inq_dimid_flg(in_id,"YDim:location",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("YDim:location"); /* AIRS */
+    } /* !lat_dmn_nm */
+    if(!lon_dmn_nm){
+      if((rcd=nco_inq_dimid_flg(in_id,"west_east",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("west_east"); /* WRF */
+      else if((rcd=nco_inq_dimid_flg(in_id,"XDim:location",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("XDim:location"); /* AIRS */
+    } /* !lon_dmn_nm */
+    if(lat_dmn_nm && lon_dmn_nm) flg_grd_crv=True;
   } /* !lat_dmn_nm */
 
   if(!lat_dmn_nm || !lon_dmn_nm){
@@ -4379,6 +4387,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   rcd+=nco_inq_varndims(in_id,lat_ctr_id,&lat_rnk);
   rcd+=nco_inq_varndims(in_id,lon_ctr_id,&lon_rnk);
   if(lat_rnk == dmn_nbr_2D || lon_rnk == dmn_nbr_2D) flg_grd_crv=True;
+  if(lat_rnk > dmn_nbr_2D || lon_rnk > dmn_nbr_2D){
+    (void)fprintf(stdout,"%s: ERROR %s reports an identified grid variable (%s and/or %s) has rank %d---grid variables current must have rank 1 or 2. HINT: If grid variables do not vary in time, then temporally average them prior to inferring grid with, e.g., ncwa -a time in.nc out.nc\n",nco_prg_nm_get(),fnc_nm,lat_nm,lon_nm,lat_rnk);
+    nco_exit(EXIT_FAILURE);
+  } /* !3D */
   if(lat_rnk*lon_rnk != 1 && lat_rnk*lon_rnk != 4) assert(False);
   
   if(flg_grd_crv){
