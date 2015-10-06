@@ -936,18 +936,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     /* Sanity-check */
     assert(col_nbr_out == grd_sz_out);
   }else if(flg_grd_out_2D){
-    bnd_nbr_out=2; /* NB: Assumes rectangular latitude and longitude and is invalid for other quadrilaterals. fxm: relax this assumption for curvilinear */
     col_nbr_out=lat_nbr_out*lon_nbr_out;
     lat_nbr_out=dmn_sz_out_int[lat_psn_dst];
     lon_nbr_out=dmn_sz_out_int[lon_psn_dst];
     /* Sanity-check */
     assert(lat_nbr_out*lon_nbr_out == grd_sz_out);
   } /* !dst_grid_rank */
-
-  if(nco_dbg_lvl_get() >= nco_dbg_scl){
-    (void)fprintf(stderr,"%s: INFO %s grid conversion type = %s with expected input and prescribed output grid sizes: ",nco_prg_nm_get(),fnc_nm,nco_rgr_grd_sng(nco_rgr_typ));
-    (void)fprintf(stderr,"lat_in = %li, lon_in = %li, col_in = %li, lat_out = %li, lon_out = %li, col_out = %li\n",lat_nbr_in,lon_nbr_in,col_nbr_in,lat_nbr_out,lon_nbr_out,col_nbr_out);
-  } /* endif dbg */
 
   /* Ensure coordinates are in degrees not radians for simplicity and CF-compliance
      NB: ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc has [xy]?_a in degrees and [xy]?_b in radians! */
@@ -964,9 +958,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
   } /* end rcd && att_typ */
 
-  nco_bool flg_grd_out_crv; /* [flg] Curvilinear coordinates */
-  nco_bool flg_grd_out_rct; /* [flg] Rectangular coordinates */
-  flg_grd_out_crv=rgr->flg_crv;
+  nco_bool flg_grd_out_crv=False; /* [flg] Curvilinear coordinates */
+  nco_bool flg_grd_out_rct=False; /* [flg] Rectangular coordinates */
   const nc_type crd_typ_out=NC_DOUBLE;
   if(flg_grd_out_2D){
     lon_ctr_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ_out));
@@ -985,6 +978,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd=nco_get_vara(in_id,dst_grd_crn_lat_id,dmn_srt,dmn_cnt,lat_crn_out,crd_typ_out);
 
     /* User may specify curvilinear grid (with --rgr crv='y'). If not specified, manually test output grid for curvilinearity... */
+    flg_grd_out_crv=rgr->flg_crv; /* [flg] Curvilinear coordinates */
     if(flg_grd_out_crv){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid specified to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
     }else{
@@ -995,11 +989,18 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	// (void)fprintf(stdout,"%s: DEBUG lat_ctr_out[%li] = %g, lat_ctr_out[%li] = %g\n",nco_prg_nm_get(),idx,lat_ctr_out[idx],idx_tst,lat_ctr_out[idx_tst]);
 	/* fxm: also test lon */
       } /* !rectangular */
-      if(idx != grd_sz_out) flg_grd_out_crv=True;
+      if(idx != grd_sz_out) flg_grd_out_crv=True; else flg_grd_out_rct=True;
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid detected to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
     } /* !flg_grd_out_crv */
+
+    if(flg_grd_out_crv) bnd_nbr_out=rgr_map.dst_grid_corners;
+    if(flg_grd_out_rct) bnd_nbr_out=2; /* NB: Assumes rectangular latitude and longitude and is invalid for other quadrilaterals */
   } /* !flg_grd_out_2D */
-  flg_grd_out_rct=!flg_grd_out_crv;
+
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+    (void)fprintf(stderr,"%s: INFO %s grid conversion type = %s with expected input and prescribed output grid sizes: ",nco_prg_nm_get(),fnc_nm,nco_rgr_grd_sng(nco_rgr_typ));
+    (void)fprintf(stderr,"lat_in = %li, lon_in = %li, col_in = %li, lat_out = %li, lon_out = %li, col_out = %li\n",lat_nbr_in,lon_nbr_in,col_nbr_in,lat_nbr_out,lon_nbr_out,col_nbr_out);
+  } /* endif dbg */
 
   /* Allocate space for and obtain coordinates */
   if(flg_grd_out_1D){
@@ -1023,7 +1024,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     lat_ntf_out=(double *)nco_malloc((lat_nbr_out+1L)*nco_typ_lng(crd_typ_out));
     lon_bnd_out=(double *)nco_malloc(lon_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
     lat_bnd_out=(double *)nco_malloc(lat_nbr_out*bnd_nbr_out*nco_typ_lng(crd_typ_out));
-  } /* !flg_grd_out_2D */
+  } /* !flg_grd_out_rct */
 
   /* Arrays unroll into all longitudes for first latitude, then second latitude, ...
      Obtain longitudes by reading first block contiguously (unstrided)
@@ -1080,7 +1081,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* endif dbg */
   } /* !flg_grd_out_1D */
 
-  if(flg_grd_out_2D){
+  if(flg_grd_out_rct){
+    /* fxm: sub-sample these from the already-read ctr/crn arrays */
     dmn_srt[0]=0L;
     dmn_cnt[0]=lon_nbr_out;
     rcd=nco_get_vara(in_id,dst_grd_ctr_lon_id,dmn_srt,dmn_cnt,lon_ctr_out,crd_typ_out);
@@ -1105,7 +1107,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       for(idx=0;idx<lon_nbr_out*rgr_map.dst_grid_corners;idx++) lon_crn_out[idx]*=rdn2dgr;
       for(idx=0;idx<lat_nbr_out*rgr_map.dst_grid_corners;idx++) lat_crn_out[idx]*=rdn2dgr;
     } /* !rdn */
-  } /* !flg_grd_out_2D */
+  } /* !flg_grd_out_rct */
     
   if(flg_grd_out_crv){
     if(flg_crd_rdn){
@@ -1134,20 +1136,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd=nco_get_vara(in_id,msk_dst_id,dmn_srt,dmn_cnt,msk_out,NC_INT);
   } /* !msk */
   
-  if(flg_grd_out_crv){
-    /* WRF curvilinear grid: 
-       ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc # Interrogate file
-       ncwa -O -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
-       ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
-       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
-       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
-       ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
-       sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
-       GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* !flg_grd_out_crv */
-
   /* Derive 2D interface boundaries from lat and lon grid-center values
      NB: Procedures to derive interfaces from midpoints on rectangular grids are theoretically possible 
      However, ESMF often outputs interfaces values (e.g., yv_b) for midpoint coordinates (e.g., yc_b)
@@ -1171,7 +1159,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      lon_ntf_out[lon_nbr_out]=lon_ntf_out[0]+360.0;
      lat_ntf_out[lat_nbr_out]=lat_ctr_out[lat_nbr_out-1]+0.5*(lat_ctr_out[lat_nbr_out-1]-lat_ctr_out[lat_nbr_out-2]); */
 
-  if(flg_grd_out_2D){
+  if(flg_grd_out_rct){
     double lon_spn; /* [dgr] Longitude span */
     double lat_spn; /* [dgr] Latitude span */
 
@@ -1275,14 +1263,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
     lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0]);
     if(nco_grd_lat_typ != nco_grd_lat_unk) assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
-  } /* !flg_grd_out_2D */
+  } /* !flg_grd_out_rct */
     
   /* When possible, ensure area_out is non-zero
      20150722: ESMF documentation says "The grid area array is only output when the conservative remapping option is used"
-     Actually, ESMF does (always?) output area, but area==0.0 unless conservative remapping is used
-     20150721: ESMF bilinear interpolation map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc has area==0.0
-     20150710: Tempest regionally refined grids like bilinearly interpolated CONUS for ACME RRM has area_out==0
-     20150821: ESMF always outputs area_out=0.0 for bilinear interpolation
+     Actually, ESMF does (always?) output area, but area == 0.0 unless conservative remapping is used
+     20150721: ESMF bilinear interpolation map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc has area == 0.0
+     20150710: Tempest regionally refined grids like bilinearly interpolated CONUS for ACME RRM has area_out == 0
+     20150821: ESMF always outputs area_out == 0.0 for bilinear interpolation
      Check whether NCO must diagnose and provide its own area_out */
   /* If area_out contains any zero... */
   for(idx=0;idx<grd_sz_out;idx++)
@@ -1295,8 +1283,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(area_out[idx] != 0.0) break;
   if(idx == grd_sz_out){
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports area_out from mapfile is everywhere zero. This is expected for bilinearly interpolated output maps produced by ESMF_RegridWeightGen. ",nco_prg_nm_get(),fnc_nm);
-    if(flg_grd_out_2D && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
+    if(flg_grd_out_2D && flg_grd_out_rct && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable named \"%s\") from the destination gridcell boundaries. NCO diagnoses quadrilateral area for rectangular output grids from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs (used by, e.g., ESMF_RegridWeightGen and Tempest). To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
+      flg_dgn_area_out=True;
+    }else if(flg_grd_out_2D && flg_grd_out_crv && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable named \"%s\") from the destination gridcell boundaries. NCO diagnoses quadrilateral area for curvilinear output grids from formulae that assume that cell boundaries follow great circle arcs (as do, e.g., ESMF_RegridWeightGen and Tempest). This differs from the area of cells with boundaries that follow lines of constant latitude or longitude. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
       flg_dgn_area_out=True;
     }else if(flg_grd_out_1D && flg_bnd_1D_usable){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable name \"%s\") from the destination gridcell boundaries. NCO diagnoses spherical polygon area for unstructured output grids from formulae that assume that cell boundaries follow great circle arcs (as do, e.g., ESMFRegridWeightGen and Tempest). This differs from the area of cells with boundaries that follow lines of constant latitude or longitude. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
@@ -1309,10 +1300,15 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(flg_dgn_area_out){
     if(flg_grd_out_1D && flg_bnd_1D_usable){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"INFO: Diagnosing area_out for 1D grid\n");
-      /* Area of arbitrary curvilinear grids requires spherical trigonometry */
+      /* Area of unstructured grids requires spherical trigonometry */
       nco_sph_plg_area(lat_bnd_out,lon_bnd_out,col_nbr_out,bnd_nbr_out,area_out);
     } /* !1D */
-    if(flg_grd_out_2D && nco_grd_2D_typ != nco_grd_2D_unk){
+    if(flg_grd_out_crv){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"INFO: Diagnosing area_out for curvilinear grid\n");
+      /* Area of curvilinear grids requires spherical trigonometry */
+      nco_sph_plg_area(lat_crn_out,lon_crn_out,grd_sz_out,bnd_nbr_out,area_out);
+    } /* !flg_grd_out_crv */
+    if(flg_grd_out_rct && nco_grd_2D_typ != nco_grd_2D_unk){
       /* Mr. Enenstein and George O. Abell taught me the area of spherical zones
 	 Spherical zone area is exact and faithful to underlying rectangular equi-angular grid
 	 However, ESMF and Tempest both appear to always approximate spherical polygons as connected by great circle arcs
@@ -1322,6 +1318,20 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  area_out[lat_idx*lon_nbr_out+lon_idx]=dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]));
     } /* !spherical zones */
   } /* !flg_dgn_area_out */
+
+  if(flg_grd_out_crv){
+    /* WRF curvilinear grid: 
+       ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc # Interrogate file
+       ncwa -O -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
+       ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
+       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
+       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
+       ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
+       sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
+       GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !flg_grd_out_crv */
 
   /* Verify frc_out is sometimes non-zero
      ESMF: "For bilinear and patch remapping, the destination grid frac array [brac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero." */
