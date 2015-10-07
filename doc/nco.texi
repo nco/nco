@@ -8025,9 +8025,9 @@ However, always zeroing the non-significant bits results in quantized
 numbers that never exceed the exact number.
 This would produce a negative bias in statistical quantities (e.g., the
 average) subsequently derived from the quantized numbers. 
-To avoid this bias, @acronym{NSD} rounds non-significant bits down (to
-zero) or up (to one) in an alternating fashion when processing array
-data.
+To avoid this bias, our @acronym{NSD} implementation rounds
+non-significant bits down (to zero) or up (to one) in an alternating
+fashion when processing array data.
 In general, the first element is rounded down, the second up, and so
 on. 
 This results in a mean bias quite close to zero.
