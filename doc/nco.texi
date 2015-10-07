@@ -8200,7 +8200,8 @@ $$
 \pslmax = {\rm max}(\xxx_{\idx} - \qqq_{\idx})\qquad\hbox{and}\qquad
 \pslmin = {\rm min}(\xxx_{\idx} - \qqq_{\idx})
 $$
-while the maximum and minimum absolute errors $\pslmabs$ are positive-definite.
+while the maximum and minimum absolute errors $\pslmabs$ and $\pslmibs$
+are positive-definite. 
 $$
 \pslmabs = {\rm max}|\xxx_{\idx} - \qqq_{\idx}| = {\rm max}(|\pslmax|,|\pslmin|)
 $$
