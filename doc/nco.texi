@@ -7829,9 +7829,9 @@ The other @acronym{PPC} algorithm preserves the number of
 @dfn{Decimal Significant Digits} (@acronym{DSD}), i.e., the number of
 significant digits following (positive, by convention) or preceding
 (negative) the decimal point.  
-For example, ``0.008'' and ``800'' have, respectively, three and
+For example, @samp{0.008} and @samp{800} have, respectively, three and 
 negative two digits digits following the decimal point, corresponding 
-@math{@var{dsd=3}} and @math{@var{dsd=-2}}. 
+to @math{@var{dsd=3}} and @math{@var{dsd=-2}}. 
 
 The only justifiable @acronym{NSD} for a given value depends on 
 intrinsic accuracy and error characteristics of the model or
@@ -7894,7 +7894,7 @@ when more precision is requested.
 @cindex bitmask
 @cindex significand
 @cindex @w{@acronym{IEEE} 754}
-The time penalty for compressing and uncompressing data varies according 
+The time-penalty for compressing and uncompressing data varies according 
 to the algorithm.
 The Number of Significant Digit (@acronym{NSD}) algorithm quantizes by
 bitmasking, and employs no floating point math.

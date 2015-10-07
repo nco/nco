@@ -1349,12 +1349,12 @@ These are usually built from a recent tagged-version of NCO (e.g.,
 is usually untagged.
 
 <ul>
-<li>ANL ALCF Cooley <tt></tt>: <tt>~zender/bin</tt></li>
+<li>ANL ALCF Cooley <tt>cooley.alcf.anl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>NCAR CISL <tt>yellowstone.ucar.edu</tt>: <tt>~zender/bin</tt></li>
 <li>NCAR CISL <tt>mirage0.ucar.edu</tt>: <tt>~zender/bin</tt></li>
-<li>NERSC Edison <tt></tt>: <tt>~zender/bin</tt> or <tt>module load nco/4.5.2</li>
-<li>ORNL OLCF Pileus <tt></tt>: <tt>~zender/bin</tt></li>
-<li>ORNL OLCF Rhea <tt></tt>: <tt>~zender/bin</tt></li>
+<li>NERSC Edison <tt>edison.nersc.gov</tt>: <tt>~zender/bin</tt> or <tt>module load nco/4.5.2</tt></li>
+<li>ORNL OLCF Pileus <tt>pileus-login01.ornl.gov</tt>: <tt>~zender/bin</tt></li>
+<li>ORNL OLCF Rhea <tt>rhea.ccs.ornl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>UCI ESS <tt>greenplanet.ps.uci.edu</tt>: <tt>~zender/bin</tt></li>
 </ul>
 <hr></p>
