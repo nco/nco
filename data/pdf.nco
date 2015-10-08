@@ -32,7 +32,7 @@ var_max[bin]=var_grd(1:bin_nbr); // [m s-1] Maximum speed
 *bin_flg[time,lat,lon]=0s; // [flg] Wind speed within current bin
 
 // bin_cnt is a RAM variable so use set_miss() to set missing value
-set_miss(bin_cnt,PRECT@_FillValue);
+set_miss(bin_cnt,-16000s);
 
 for(*bin_idx=0;bin_idx<bin_nbr;bin_idx++){
   bin_flg=(PRECT >= var_min(bin_idx) && PRECT < var_max(bin_idx));
