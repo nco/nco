@@ -921,7 +921,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     lon_nbr_in=dmn_sz_in_int[lon_psn_src];
     lat_nbr_in=dmn_sz_in_int[lat_psn_src];
     /* Sanity-check */
-    assert(lat_nbr_in*lon_nbr_in == grd_sz_in);
+    assert(lat_nbr_in*lon_nbr_in == (long)grd_sz_in);
   } /* !src_grid_rank */
 
   const int bnd_tm_nbr_out=2; /* [nbr] Number of boundaries for output time */
@@ -935,13 +935,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     lat_nbr_out=dmn_sz_out_int[0];
     lon_nbr_out=dmn_sz_out_int[0];
     /* Sanity-check */
-    assert(col_nbr_out == grd_sz_out);
+    assert(col_nbr_out == (long)grd_sz_out);
   }else if(flg_grd_out_2D){
     col_nbr_out=lat_nbr_out*lon_nbr_out;
     lat_nbr_out=dmn_sz_out_int[lat_psn_dst];
     lon_nbr_out=dmn_sz_out_int[lon_psn_dst];
     /* Sanity-check */
-    assert(lat_nbr_out*lon_nbr_out == grd_sz_out);
+    assert(lat_nbr_out*lon_nbr_out == (long)grd_sz_out);
   } /* !dst_grid_rank */
 
   /* Ensure coordinates are in degrees not radians for simplicity and CF-compliance
@@ -984,7 +984,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid specified to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
     }else{
       long idx_tst; /* [idx] Index of first latitude or longitude */
-      for(idx=0;idx<grd_sz_out;idx++){
+      for(idx=0;idx<(long)grd_sz_out;idx++){
 	if(idx%lon_nbr_out == 0) idx_tst=idx;
 	if(lat_ctr_out[idx] != lat_ctr_out[idx_tst]) break;
 	// (void)fprintf(stdout,"%s: DEBUG lat_ctr_out[%li] = %g, lat_ctr_out[%li] = %g\n",nco_prg_nm_get(),idx,lat_ctr_out[idx],idx_tst,lat_ctr_out[idx_tst]);
