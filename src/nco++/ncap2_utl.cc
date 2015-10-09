@@ -193,10 +193,6 @@ ncap_att_gnrl
   
   if(location == 1) fl_id=prs_arg->in_id;  
   if(location == 2) fl_id=prs_arg->out_id;  
-
-  (void)fprintf(stderr,"%s:ncap_att_gnrl() src=%s dst=%s\n",nco_prg_nm_get(),s_src.c_str(), s_dst.c_str() );
-  
-  // get );
   
   // get var_id
   rcd=nco_inq_varid_flg(fl_id,s_src.c_str(),&var_id);

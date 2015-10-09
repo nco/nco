@@ -962,9 +962,6 @@ main(int argc,char **argv)
       att_item.type=var_vtr[idx]->var->type;
       att_item.val=var_vtr[idx]->var->val;
       att_item.mode=aed_overwrite;
-      if( att_item.type==2) 
-          printf("ncap2: at write %s:%s sz=%ld type=%d val=%s\n",att_item.var_nm, att_item.att_nm, att_item.sz, att_item.type, (char*)att_item.val.vp);
-         if( att_item.val.vp ==(void*)NULL) goto cln_up;
     } /* endif ncap_att */
 
     if(!strcmp(att_item.var_nm,"global")){

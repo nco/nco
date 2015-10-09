@@ -142,12 +142,10 @@ weight(0)=weight(0)+10;
 // its elements are incremented by one and then the result is
 // written to the output file and subsequently then assigned to i2
 // i2 is then written to file
-//i2=++time;
-i2=time;
+i2=++time;
 // time in the output is now decremented by one
 // and ALL elements of of i2 & i3 are equal
-//i3=time--;
-i3=time;
+i3=time--;
 if(i2==i3) i2@equal=1; else i2@equal=0;
 // can string together operators
 i4=i5=i6=0;
