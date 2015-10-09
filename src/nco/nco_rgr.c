@@ -990,7 +990,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	// (void)fprintf(stdout,"%s: DEBUG lat_ctr_out[%li] = %g, lat_ctr_out[%li] = %g\n",nco_prg_nm_get(),idx,lat_ctr_out[idx],idx_tst,lat_ctr_out[idx_tst]);
 	/* fxm: also test lon */
       } /* !rectangular */
-      if(idx != grd_sz_out) flg_grd_out_crv=True; else flg_grd_out_rct=True;
+      if(idx != (long)grd_sz_out) flg_grd_out_crv=True; else flg_grd_out_rct=True;
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid detected to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
     } /* !flg_grd_out_crv */
 
@@ -1112,10 +1112,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     
   if(flg_grd_out_crv){
     if(flg_crd_rdn){
-      for(idx=0;idx<grd_sz_out;idx++) lon_ctr_out[idx]*=rdn2dgr;
-      for(idx=0;idx<grd_sz_out;idx++) lat_ctr_out[idx]*=rdn2dgr;
-      for(idx=0;idx<grd_sz_out*rgr_map.dst_grid_corners;idx++) lon_crn_out[idx]*=rdn2dgr;
-      for(idx=0;idx<grd_sz_out*rgr_map.dst_grid_corners;idx++) lat_crn_out[idx]*=rdn2dgr;
+      for(idx=0;idx<(long)grd_sz_out;idx++) lon_ctr_out[idx]*=rdn2dgr;
+      for(idx=0;idx<(long)grd_sz_out;idx++) lat_ctr_out[idx]*=rdn2dgr;
+      for(idx=0;idx<(long)grd_sz_out*rgr_map.dst_grid_corners;idx++) lon_crn_out[idx]*=rdn2dgr;
+      for(idx=0;idx<(long)grd_sz_out*rgr_map.dst_grid_corners;idx++) lat_crn_out[idx]*=rdn2dgr;
     } /* !rdn */
   } /* !flg_grd_out_crv */
 
@@ -1277,15 +1277,15 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      20150821: ESMF always outputs area_out == 0.0 for bilinear interpolation
      Check whether NCO must diagnose and provide its own area_out */
   /* If area_out contains any zero... */
-  for(idx=0;idx<grd_sz_out;idx++)
+  for(idx=0;idx<(long)grd_sz_out;idx++)
     if(area_out[idx] == 0.0) break;
-  if(idx != grd_sz_out){
+  if(idx != (long)grd_sz_out){
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid detected with zero-valued output area(s) at idx = %ld (and likely others, too).\n",nco_prg_nm_get(),idx);
   } /* !zero */
 
-  for(idx=0;idx<grd_sz_out;idx++)
+  for(idx=0;idx<(long)grd_sz_out;idx++)
     if(area_out[idx] != 0.0) break;
-  if(idx == grd_sz_out){
+  if(idx == (long)grd_sz_out){
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports area_out from mapfile is everywhere zero. This is expected for bilinearly interpolated output maps produced by ESMF_RegridWeightGen. ",nco_prg_nm_get(),fnc_nm);
     if(flg_grd_out_2D && flg_grd_out_rct && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable named \"%s\") from the destination gridcell boundaries. NCO diagnoses quadrilateral area for rectangular output grids from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs (used by, e.g., ESMF_RegridWeightGen and Tempest). To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
@@ -1325,17 +1325,17 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Verify frc_out is sometimes non-zero
      ESMF: "For bilinear and patch remapping, the destination grid frac array [brac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero." */
-  for(idx=0;idx<grd_sz_out;idx++)
+  for(idx=0;idx<(long)grd_sz_out;idx++)
     if(frc_out[idx] != 0.0) break;
-  if(idx == grd_sz_out){
+  if(idx == (long)grd_sz_out){
     (void)fprintf(stdout,"%s: ERROR %s reports frc_out contains all zeros\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !always zero */
   /* Test whether frc_out is ever zero... */
-  for(idx=0;idx<grd_sz_out;idx++)
+  for(idx=0;idx<(long)grd_sz_out;idx++)
     if(frc_out[idx] == 0.0) break;
   if(nco_dbg_lvl_get() >= nco_dbg_std)
-    if(idx != grd_sz_out)
+    if(idx != (long)grd_sz_out)
       (void)fprintf(stdout,"%s: INFO %s reports frc_out contains zero-elements (e.g., at 1D idx=%ld)\n",nco_prg_nm_get(),fnc_nm,idx);
   /* Normalizing by frc_out is redundant iff frc_out == 1.0, so we can save time without sacrificing accuracy
      However, frc_out is often (e.g., for CS <-> RLL maps) close but not equal to unity (an ESMF_Regrid_Weight_Gen issue?)
@@ -1345,7 +1345,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   double frc_out_dff_one; /* [frc] Deviation of frc_out from 1.0 */
   double frc_out_dff_one_max=0.0; /* [frc] Maximum deviation of frc_out from 1.0 */
   long idx_max_dvn; /* [idx] Index of maximum deviation from 1.0 */
-  for(idx=0;idx<grd_sz_out;idx++){
+  for(idx=0;idx<(long)grd_sz_out;idx++){
     frc_out_dff_one=fabs(frc_out[idx]-1.0);
     if(frc_out_dff_one > frc_out_dff_one_max){
       frc_out_dff_one_max=frc_out_dff_one;
@@ -2538,7 +2538,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
        sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
        GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
+    if(False) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !flg_grd_out_crv */
 
@@ -4226,12 +4226,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   double area_ttl=0.0; /* [frc] Exact sum of area */
   double lat_nrt; /* [dgr] Latitude of northern edge of grid */
-  double lat_sth; /* [dgr] Latitude of southern edge of grid */
+  //double lat_sth; /* [dgr] Latitude of southern edge of grid */
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
   double lat_wgt_gss; /* [frc] Latitude weight estimated from interface latitudes */
-  double lon_est; /* [dgr] Longitude of eastern edge of grid */
-  double lon_wst; /* [dgr] Longitude of western edge of grid */
-  double lon_ncr; /* [dgr] Longitude increment */
+  //  double lon_est; /* [dgr] Longitude of eastern edge of grid */
+  //  double lon_wst; /* [dgr] Longitude of western edge of grid */
+  //  double lon_ncr; /* [dgr] Longitude increment */
   double lat_ncr; /* [dgr] Latitude increment */
   double lon_spn; /* [dgr] Longitude span */
   double lat_spn; /* [dgr] Latitude span */
@@ -4824,7 +4824,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else assert(False);
 
     /* Diagnose latitude interfaces as necessary */
-    lat_sth=lat_ntf[0];
+    //    lat_sth=lat_ntf[0];
     lat_nrt=lat_ntf[lat_nbr];
     lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
     switch(lat_typ){
