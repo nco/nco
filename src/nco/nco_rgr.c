@@ -1470,6 +1470,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"Lat",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("Lat");
       else if((rcd=nco_inq_dimid_flg(in_id,"south_north",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("south_north");
       else if((rcd=nco_inq_dimid_flg(in_id,"south_north_stag",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("south_north_stag");
+      else if((rcd=nco_inq_dimid_flg(in_id,"YDim:location",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("YDim:location");
+      else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lat)) == NC_NOERR) lat_nm=strdup("GeoTrack:L2_Standard_atmospheric&surface_product");
       else{
 	(void)fprintf(stdout,"%s: ERROR %s reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of latitude dimension name with --rgr lat_nm=name\n",nco_prg_nm_get(),fnc_nm);
 	nco_exit(EXIT_FAILURE);
@@ -1489,6 +1491,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"Lon",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("Lon");
       else if((rcd=nco_inq_dimid_flg(in_id,"west_east",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("west_east");
       else if((rcd=nco_inq_dimid_flg(in_id,"west_east_stag",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("west_east_stag");
+      else if((rcd=nco_inq_dimid_flg(in_id,"XDim:location",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("XDim:location");
+      else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lon)) == NC_NOERR) lon_nm=strdup("GeoXTrack:L2_Standard_atmospheric&surface_product");
       else{
 	(void)fprintf(stdout,"%s: ERROR %s reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of longitude dimension name with --rgr lon_nm=name\n",nco_prg_nm_get(),fnc_nm);
 	nco_exit(EXIT_FAILURE);
@@ -4344,14 +4348,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(!lat_dmn_nm || !lon_dmn_nm){
     if(!lat_dmn_nm){
       if((rcd=nco_inq_dimid_flg(in_id,"south_north",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("south_north"); /* WRF */
-      else if((rcd=nco_inq_dimid_flg(in_id,"YDim:location",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("YDim:location"); /* AIRS */
+      else if((rcd=nco_inq_dimid_flg(in_id,"YDim:location",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("YDim:location"); /* AIRS L3 */
+      else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("GeoTrack:L2_Standard_atmospheric&surface_product"); /* AIRS L2 */
       else if((rcd=nco_inq_dimid_flg(in_id,"phony_dim_0",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("phony_dim_0"); /* OMI */
       else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("phony_dim_0"); /* MAR */
       else if((rcd=nco_inq_dimid_flg(in_id,"lat2d",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("phony_dim_0"); /* RACMO */
     } /* !lat_dmn_nm */
     if(!lon_dmn_nm){
       if((rcd=nco_inq_dimid_flg(in_id,"west_east",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("west_east"); /* WRF */
-      else if((rcd=nco_inq_dimid_flg(in_id,"XDim:location",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("XDim:location"); /* AIRS */
+      else if((rcd=nco_inq_dimid_flg(in_id,"XDim:location",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("XDim:location"); /* AIRS L3 */
+      else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("GeoXTrack:L2_Standard_atmospheric&surface_product"); /* AIRS L2 */
       else if((rcd=nco_inq_dimid_flg(in_id,"phony_dim_1",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("phony_dim_1"); /* OMI */
       else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("phony_dim_1"); /* MAR */
       else if((rcd=nco_inq_dimid_flg(in_id,"lon2d",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("phony_dim_1"); /* RACMO */
@@ -4403,7 +4409,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     (void)fprintf(stdout,"%s: ERROR %s reports an identified grid variable (%s and/or %s) has rank %d---grid variables current must have rank 1 or 2. HINT: If grid variables do not vary in time, then temporally average them (with, e.g., ncwa -a time in.nc out.nc) prior to inferring grid\n",nco_prg_nm_get(),fnc_nm,lat_nm,lon_nm,lat_rnk);
     nco_exit(EXIT_FAILURE);
   } /* !3D */
-  if(lat_rnk*lon_rnk != 1 || lat_rnk*lon_rnk != 4) assert(False);
+  if(lat_rnk*lon_rnk != 1 && lat_rnk*lon_rnk != 4) assert(False);
   
   if(flg_grd_crv){
     /* Assume curvilinear grid (e.g., WRF) */
