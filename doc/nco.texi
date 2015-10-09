@@ -114,12 +114,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.3-alpha05
-@set doc-edition 4.5.3-alpha05
+@set nco-edition 4.5.3-alpha06
+@set doc-edition 4.5.3-alpha06
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 28 September 2015
-@set update-month September 2015
+@set update-date 5 October 2015
+@set update-month October 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -5990,7 +5990,7 @@ The text strings that describe the grid and name the file are important
 aids to convey the grid geometry to other users.
 These arguments, and their corresponding keys, are the grid title
 (@var{grd_ttl}), and grid filename (@var{grid}), respectively.
-The numbers of latitudes (@var{lat_nbr}) and longitudes (@var{lon_nbr})  
+The numbers of latitudes (@var{lat_nbr}) and longitudes (@var{lon_nbr})   
 are independent, and together determine the grid storage size.
 These four options should be considered mandatory, although
 @acronym{NCO} provides defaults for any arguments omitted.
@@ -6159,6 +6159,7 @@ grid, and visa versa.
 
 @cindex @var{lat_nbr}
 @cindex @var{lon_nbr}
+@cindex @samp{--rgr latlon=@var{lat_nbr},@var{lon_nbr}}
 @cindex @samp{--rgr lon_nbr=@var{lon_nbr}}
 @cindex @samp{--rgr lat_nbr=@var{lat_nbr}}
 @item Grid Resolution: @var{lat_nbr}, @var{lon_nbr}
@@ -6166,6 +6167,10 @@ The number of gridcells in the horizontal spatial dimensions
 are @var{lat_nbr} and @var{lon_nbr}, respectively.
 There are no restrictions on @var{lon_nbr} for any gridtype.
 Latitude grids do place some restrictions on @var{lat_nbr} (see above). 
+As of @acronym{NCO} @w{version 4.5.3}, released in October, 2015,
+the @samp{--rgr latlon=@var{lat_nbr},@var{lon_nbr}} switch may be
+used to simultaneously specify both latitude and longitude, e.g., 
+@samp{--rgr latlon=180,360}.
 
 @cindex @var{lat_nrt}
 @cindex @var{lat_sth}
@@ -6201,24 +6206,20 @@ Generating common grids:
 @verbatim
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='Equi-Angular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc \
-     --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=uni --rgr lon_typ=grn_ctr \
-     ~zender/nco/data/in.nc ~/foo.nc
+     --rgr latlon=180,360 --rgr lat_typ=uni --rgr lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
 
 # 129x256 CAM-FV grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='CAM-FV scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150901.nc \
-     --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=fv --rgr lon_typ=grn_ctr \
-     ~zender/nco/data/in.nc ~/foo.nc
+     --rgr latlon=129,256 --rgr lat_typ=fv --rgr lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
 
 # 128x256 Equi-Angular grid, Greenwich west edge of first longitude
 # This is the CAM-FV offset grid for the 129x256 CAM-FV scalar grid above
 ncks --rgr grd_ttl='Equi-Angular grid 128x256' --rgr grid=${DATA}/grids/128x256_SCRIP.20150901.nc \
-     --rgr lat_nbr=128 --rgr lon_nbr=256 --rgr lat_typ=uni --rgr lon_typ=grn_wst \
-     ~zender/nco/data/in.nc ~/foo.nc
+     --rgr latlon=128,256 --rgr lat_typ=uni --rgr lon_typ=grn_wst ~zender/nco/data/in.nc ~/foo.nc
 
 # T42 Gaussian grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='T42 Gaussian grid' --rgr grid=${DATA}/grids/t42_SCRIP.20150901.nc \
-     --rgr lat_nbr=64 --rgr lon_nbr=128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr \
-     ~zender/nco/data/in.nc ~/foo.nc
+     --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~zender/nco/data/in.nc ~/foo.nc
 @end verbatim
 @end example
 
@@ -6282,7 +6283,7 @@ datasets of the same geometry.
 @verbatim
 # Generate T42 Gaussian grid file t42_SCRIP.nc and skeleton file t42_skl.nc
 ncks --rgr skl=${DATA}/grids/t42_skl.nc --rgr grid=${DATA}/grids/t42_SCRIP.nc \
-     --rgr lat_nbr=64 --rgr lon_nbr=128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr \
+     --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr \
      ~zender/nco/data/in.nc ~/foo.nc
 @end verbatim
 @end example
@@ -7828,9 +7829,9 @@ The other @acronym{PPC} algorithm preserves the number of
 @dfn{Decimal Significant Digits} (@acronym{DSD}), i.e., the number of
 significant digits following (positive, by convention) or preceding
 (negative) the decimal point.  
-For example, ``0.008'' and ``800'' have, respectively, three and
+For example, @samp{0.008} and @samp{800} have, respectively, three and 
 negative two digits digits following the decimal point, corresponding 
-@math{@var{dsd=3}} and @math{@var{dsd=-2}}. 
+to @math{@var{dsd=3}} and @math{@var{dsd=-2}}. 
 
 The only justifiable @acronym{NSD} for a given value depends on 
 intrinsic accuracy and error characteristics of the model or
@@ -7893,7 +7894,7 @@ when more precision is requested.
 @cindex bitmask
 @cindex significand
 @cindex @w{@acronym{IEEE} 754}
-The time penalty for compressing and uncompressing data varies according 
+The time-penalty for compressing and uncompressing data varies according 
 to the algorithm.
 The Number of Significant Digit (@acronym{NSD}) algorithm quantizes by
 bitmasking, and employs no floating point math.
@@ -8024,9 +8025,9 @@ However, always zeroing the non-significant bits results in quantized
 numbers that never exceed the exact number.
 This would produce a negative bias in statistical quantities (e.g., the
 average) subsequently derived from the quantized numbers. 
-To avoid this bias, @acronym{NSD} rounds non-significant bits down (to
-zero) or up (to one) in an alternating fashion when processing array
-data.
+To avoid this bias, our @acronym{NSD} implementation rounds
+non-significant bits down (to zero) or up (to one) in an alternating
+fashion when processing array data.
 In general, the first element is rounded down, the second up, and so
 on. 
 This results in a mean bias quite close to zero.
@@ -8199,7 +8200,8 @@ $$
 \pslmax = {\rm max}(\xxx_{\idx} - \qqq_{\idx})\qquad\hbox{and}\qquad
 \pslmin = {\rm min}(\xxx_{\idx} - \qqq_{\idx})
 $$
-while the maximum and minimum absolute errors $\pslmabs$ are positive-definite.
+while the maximum and minimum absolute errors $\pslmabs$ and $\pslmibs$
+are positive-definite. 
 $$
 \pslmabs = {\rm max}|\xxx_{\idx} - \qqq_{\idx}| = {\rm max}(|\pslmax|,|\pslmin|)
 $$

@@ -1,0 +1,46 @@
+// $Header$ -*-C++-*-
+
+// Purpose: Compute PDF of timeseries at each spatial point
+
+// /* Usage: 
+//    ncap2 -O -v -S ~/nco/data/pdf.nco ~/nco/data/in.nc ~/foo.nc
+//    ncap2 -D 1 -O -v -S ~/nco/data/pdf.nco /scratch2/scratchdirs/zender/ne30/clm/prect.nc ~/foo.nc
+//    ncks -v 'bin.?' ~/foo.nc | /bin/more */
+
+// Declare various flags as RAM variable or they will clutter output file
+*flg_dbg=0s; // [flg] Debug mode
+
+if(flg_dbg) *bin_nbr=3; else *bin_nbr=100;
+defdim("bin",bin_nbr); // [nbr] Bin dimension
+defdim("bin_grd",bin_nbr+1); // [nbr] Bin grid dimension
+
+*var_max_max=max(PRECT);
+*var_min_min=0.0;
+
+// Set bin boundaries
+var_grd=array(0.0f,var_max_max/bin_nbr,$bin_grd);
+var_min[bin]=var_grd(0:bin_nbr-1); // [m s-1] Minimum value in bin
+var_max[bin]=var_grd(1:bin_nbr); // [m s-1] Maximum value in bin
+
+// Initialize loop variables as RAM variables 
+*bin_cnt[lat,lon,bin]=0s; // [nbr] Number of values in bin
+*bin_flg[time,lat,lon]=0s; // [flg] Value is within current bin
+
+// bin_cnt is RAM variable so use set_miss() to set missing value
+set_miss(bin_cnt,-32768s);
+
+for(*bin_idx=0;bin_idx<bin_nbr;bin_idx++){
+  bin_flg=(PRECT >= var_min(bin_idx) && PRECT < var_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time);
+} // !bin_idx
+
+ram_write(bin_cnt);
+if(flg_dbg){
+  // Write bin_flg and bin_idx only in debug mode
+  ram_write(bin_flg);
+  ram_write(bin_idx);
+ }else{
+  // Delete RAM variables to conserve memory if script grows (good practice, not required)
+  ram_delete(bin_flg);
+  ram_delete(bin_idx);
+ } // end if dbg

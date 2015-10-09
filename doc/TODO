@@ -675,7 +675,8 @@ nco1122. cnk slowdown Barry McInnes 3/9
 nco1123. ESGF access
       ncks -M http://esgf-data2.ceda.ac.uk/thredds/dodsC/cmip5.output1.MOHC.HadGEM2-ES.rcp85.mon.ocean.Omon.r1i1p1.uo.20111014.aggregation.1
 nco1124. ncra fix ncra --wgt_nm to work (i.e., correctly normalize) with missing values
-nco1125. 
+nco1125. ncpdq add option for user-specified scale_factor/add_offset
+nco1126. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
