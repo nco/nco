@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.5.2 last updated on <!--#flastmod file="VERSION"-->
+Current stable NCO version is 4.5.2 released <!--#flastmod file="src/nco-4.5.2.tar.gz"-->
 </h2>
 
 <table border=0 width=100%>
