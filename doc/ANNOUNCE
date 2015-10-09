@@ -55,6 +55,13 @@ A. ncecat version 4.4.9 introduced a problem that could cause it
    versions 4.4.8 and prior if you encounter this problem.
    Thanks to Huan Wu for reporting this problem.
 
+A. ncatted version 4.5.1 introduced a bug that dumps core when
+   attribute deletion is requested without a specific attribute name,
+   i.e., whenever all attributes are to be deleted. The workaround is
+   to specify the attribute name(s) to be deleted, to use versions
+   4.5.0 and earlier, or to upgrade to 4.5.3. Thanks to Richard Strub
+   for reporting this problem.
+
 KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
@@ -106,13 +113,14 @@ A. NOT YET FIXED (netCDF4 or HDF5 problem?)
    Workaround #2: Convert file to netCDF3 first, then use stride
 
 B. NOT YET FIXED (netCDF4 library bug?)
-   Simultaneously renaming two dimensions in netCDF4 file can corrupt output.
+   Simultaneously renaming multiple dimensions in netCDF4 file can corrupt output
 
    Demonstration:
-   ncrename -O -h -d y,rlat -d x,rlon ~/Downloads/dayclim_withoutpr.nc ~/dayclim2.nc # completes but file is unreadable
-   ncdump ~/dayclim2.nc
+   ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc # Completes but file is unreadable
+   ncks -v one ~/foo.nc
 
    20150922: Confirmed problem reported by Isabelle Dast, reported to Unidata
+   20150924: Unidata confirmed problem
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
 

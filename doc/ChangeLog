@@ -5,6 +5,21 @@
 	* TODO lmt_var_mk() only works on final scan - need to make it work on initial scan
 	  if indices can be normalized
 
+2015-10-02  Charlie Zender  <zender@uci.edu>
+
+	* Re-establish dust.ess.uci.edu as regression test server for scp
+
+	* Add ncrename regression test simultaneously renaming multiple dimensions
+
+	* NCO 4.5.3-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha05 final changes';git push
+	git tag -a 4.5.3-alpha05 -m 'Version 4.5.3-alpha05 tag: ncatted, mk crv, lon_crv, sph_plg';git push --tags
+
+	* Fix (relatively bad) bug introduced in 4.5.1 where blank attribute names dump core rather than expanding into all attribute names
+
+	* Add ncatted regression test for deleting all attributes
+
+
 2015-10-01  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_mk() constructs correct degenerate SLD grids (verified area, corners)
