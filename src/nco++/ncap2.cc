@@ -516,6 +516,8 @@ main(int argc,char **argv)
   cnv_cls cnv_obj(true);
   // Aggregate functions
   agg_cls agg_obj(true);
+    // Aggregate  index functions
+  agg_idx_cls agg_idx_obj(true);
   // Utility Functions 
   utl_cls utl_obj(true);
   // Maths Functions
@@ -546,6 +548,7 @@ main(int argc,char **argv)
   // Populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
   (void)pop_fmc_vtr(fmc_vtr,&agg_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&agg_idx_obj);
   (void)pop_fmc_vtr(fmc_vtr,&utl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&mth_obj);
   (void)pop_fmc_vtr(fmc_vtr,&mth2_obj);
