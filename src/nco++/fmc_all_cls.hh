@@ -171,6 +171,20 @@ public:
   var_sct *imap_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
 };
 
+// min/max index functions /****************************************/
+// returns the hyperslab indices of the min or max
+
+class agg_idx_cls: public vtl_cls {
+private:
+  enum { PMIN, PMAX};
+   bool _flg_dbg;
+public:
+  agg_idx_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+};
+
+
+
 //Unary Function /****************************************/
 class unr_cls: public vtl_cls {
 private:

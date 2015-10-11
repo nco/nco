@@ -107,4 +107,80 @@ T inc;
  
 }
 
+template<typename T>
+long ncap_min_index(var_sct *var)
+{
+bool bmss=false;
+long idx;
+long min_idx=0L;
+long sz=var->sz;
+    
+T* tp;    
+T tmin;
+T tmss=T(0);
+
+
+  
+tp=(T*)var->val.vp;  
+tmin=tp[0];
+ 
+if(var->has_mss_val) {
+    bmss=true;  
+    tmss=((T*)(var->mss_val.vp))[0];
+}    
+
+if(bmss)
+   for(idx=1;idx<sz;idx++) 
+      if(tp[idx]< tmin && tp[idx]!=tmss ) { min_idx=idx; tmin=tp[idx]; }
+
+ 
+if(!bmss)
+   for(idx=1;idx<sz;idx++) 
+      if(tp[idx]< tmin ) { min_idx=idx; tmin=tp[idx]; }
+
+
+return min_idx;   
+}
+
+template<typename T>
+long ncap_max_index(var_sct *var)
+{
+bool bmss=false;
+long idx;
+long max_idx=0L;
+long sz=var->sz;
+    
+T* tp;    
+T tmax;
+T tmss=T(0);
+
+  
+tp=(T*)var->val.vp;  
+tmax=tp[0];
+ 
+if(var->has_mss_val) {
+    bmss=true;  
+    tmss=((T*)(var->mss_val.vp))[0];
+}    
+
+if(bmss)
+   for(idx=1;idx<sz;idx++) 
+      if(tp[idx] > tmax && tp[idx]!=tmss ) { max_idx=idx; tmax=tp[idx]; }
+
+ 
+if(!bmss)
+   for(idx=1;idx<sz;idx++) 
+      if(tp[idx] >tmax ) { max_idx=idx; tmax=tp[idx]; }
+
+
+return max_idx;   
+}
+
+
+
+
+
+
+
+
 #endif

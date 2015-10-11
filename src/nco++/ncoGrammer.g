@@ -755,7 +755,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 	var_sct *var;
 	std::string fnc_nm="lmt_var_mk"; 
 	
-	dbg_prn(fnc_nm,"start\n"); 
 	
 	// calculate variables
 	var=out(lmt->getFirstChild()->getFirstChild());
