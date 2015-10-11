@@ -927,7 +927,8 @@ extern "C" {
     char *col_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
     char *frc_nm; /* [sng] Name of variable containing gridcell fraction */
     char *lat_bnd_nm; /* [sng] Name of rectangular boundary variable for latitude */
-    char *lat_nm; /* [sng] Name of dimension to recognize as latitude */
+    char *lat_nm_in; /* [sng] Name of input dimension to recognize as latitude */
+    char *lat_nm_out; /* [sng] Name of output dimension for latitude */
     char *lat_vrt_nm; /* [sng] Name of non-rectangular boundary variable for latitude */
     char *lat_wgt_nm; /* [sng] Name of variable containing latitude weights */
     char *lon_bnd_nm; /* [sng] Name of rectangular boundary variable for longitude */

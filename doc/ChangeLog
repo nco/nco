@@ -1,3 +1,11 @@
+2015-10-11  Charlie Zender  <zender@uci.edu>
+
+	* disambiguate lat_nm into lat_nm_in, lat_nm_out (so regridded output need not use, e.g., GeoTrack as name)
+
+2015-10-10  Charlie Zender  <zender@uci.edu>
+
+	* Warn in all situations when horizontal spatial dimensions are	not last dimensions of input file
+
 2015-10-09  Charlie Zender  <zender@uci.edu>
 
 	* Hard-code AIRS L2 dimension names: Geo[X]Track:L2_Standard_atmospheric&surface_product
