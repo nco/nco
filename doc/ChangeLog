@@ -1,3 +1,7 @@
+2015-10-11  Henry Butowsky  <henryb@hush.com>
+	* first cut tof the methods min_index() & max_index()
+	* they return the indices as an attribute of thie min or max in the variable
+
 2015-10-09  Charlie Zender  <zender@uci.edu>
 
 	* Hard-code AIRS L2 dimension names: Geo[X]Track:L2_Standard_atmospheric&surface_product
