@@ -1858,6 +1858,227 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 } // end srt_cls::mst_fnd()  
 
 
+// MIN & MAX INDEX Functions /***********************************/
+  agg_idx_cls::agg_idx_cls(bool flg_dbg){
+    //Populate only on  constructor call
+    if(fmc_vtr.empty()){
+          fmc_vtr.push_back( fmc_cls("min_index" , this,PMIN)); 
+          fmc_vtr.push_back( fmc_cls("max_index" , this,PMAX)); 
+			     		      
+    }
+  }
+
+
+  var_sct *agg_idx_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+    const std::string fnc_nm("agg__idx_cls::fnd");
+		int fdx;
+		int nbr_args;
+		int idx;
+		int nbr_dim;
+        
+       long sz_dim=1L;
+       long my_index=0L;
+       
+		dmn_sct **dim;
+		dmn_sct **dim_nw=NULL_CEWI;  
+		var_sct *var=NULL_CEWI;
+		var_sct *var_out=NULL_CEWI;
+           
+	    std::string susg;
+	    std::string sfnm=fmc_obj.fnm();
+
+		RefAST aRef;
+		RefAST tr;
+		std::vector<RefAST> vtr_args; 
+       
+		nc_type mp_typ=NC_INT;
+		
+            
+		// de-reference 
+		prs_cls *prs_arg=walker.prs_arg;
+
+		fdx=fmc_obj.fdx();
+ 
+ 
+		// Put args into vector 
+		if(expr)
+			vtr_args.push_back(expr);
+
+		if(tr=fargs->getFirstChild()) {
+			do  
+			  vtr_args.push_back(tr);
+			while(tr=tr->getNextSibling());    
+		} 
+      
+		nbr_args=vtr_args.size();  
+
+		susg="usage: var_out="+sfnm+"(var_in)";
+
+		if(nbr_args==0)
+			err_prn(sfnm, " Function has been called with no arguments\n"+susg); 
+
+
+		var=walker.out(vtr_args[0]);
+		
+
+
+
+    
+
+	if(prs_arg->ntl_scn)
+	{		
+	   if(var->undefined )
+		{
+		  var_out=ncap_var_udf("~dot_methods");
+		}   		
+		else
+		{	
+       // create empty var to return
+       var_out=ncap_sclr_var_mk("~agg_idx_cls@methods",mp_typ,false);          
+	    var_out->sz=var->nbr_dim;
+		}
+       nco_var_free(var);
+	   return var_out; 
+	}
+		
+    nbr_dim=var->nbr_dim;       
+	// create return attribute/var	
+	var_out=ncap_sclr_var_mk("~zz@value_list",NC_UINT64,true);          
+	ncap_att_stretch(var_out, nbr_dim); 
+    cast_void_nctype(NC_UINT64,&var_out->val); 
+
+    cast_void_nctype(var->type,&var->val);  
+    // now do heavy lifting 
+    
+    if(fdx==PMIN)
+    {    
+    
+      switch (var->type) {
+          case NC_DOUBLE: 
+            my_index=ncap_min_index<double>(var);    
+            break;  
+          case NC_FLOAT: 
+            my_index=ncap_min_index<float>(var);    
+            break;  
+          case NC_INT: 
+            my_index=ncap_min_index<nco_int>(var);    
+            break;  
+          case NC_SHORT: 
+            my_index=ncap_min_index<nco_short>(var);    
+            break;  
+          case NC_USHORT: 
+            my_index=ncap_min_index<nco_ushort>(var);    
+            break;  
+          case NC_UINT: 
+            my_index=ncap_min_index<nco_uint>(var);    
+            break;  
+          case NC_INT64: 
+            my_index=ncap_min_index<nco_int64>(var);    
+            break;  
+          case NC_UINT64: 
+            my_index=ncap_min_index<nco_uint64>(var);    
+            break;  
+          case NC_BYTE: 
+            my_index=ncap_min_index<nco_byte>(var);    
+            break;  
+          case NC_UBYTE: 
+            my_index=ncap_min_index<nco_ubyte>(var);    
+            break;  
+          case NC_CHAR: 
+            my_index=ncap_min_index<nco_char>(var);    
+            break;  
+           case NC_STRING: break; /* Do nothing */
+             
+           default: nco_dfl_case_nc_type_err(); break;
+            
+        } // end big switch
+
+    
+    }
+    
+    
+    if(fdx==PMAX)
+    {    
+      switch (var->type) {
+          case NC_DOUBLE: 
+            my_index=ncap_max_index<double>(var);    
+            break;  
+          case NC_FLOAT: 
+            my_index=ncap_max_index<float>(var);    
+            break;  
+          case NC_INT: 
+            my_index=ncap_max_index<nco_int>(var);    
+            break;  
+          case NC_SHORT: 
+            my_index=ncap_max_index<nco_short>(var);    
+            break;  
+          case NC_USHORT: 
+            my_index=ncap_max_index<nco_ushort>(var);    
+            break;  
+          case NC_UINT: 
+            my_index=ncap_max_index<nco_uint>(var);    
+            break;  
+          case NC_INT64: 
+            my_index=ncap_max_index<nco_int64>(var);    
+            break;  
+          case NC_UINT64: 
+            my_index=ncap_max_index<nco_uint64>(var);    
+            break;  
+          case NC_BYTE: 
+            my_index=ncap_max_index<nco_byte>(var);    
+            break;  
+          case NC_UBYTE: 
+            my_index=ncap_max_index<nco_ubyte>(var);    
+            break;  
+          case NC_CHAR: 
+            my_index=ncap_max_index<nco_char>(var);    
+            break;  
+           case NC_STRING: break; /* Do nothing */
+             
+           default: nco_dfl_case_nc_type_err(); break;
+            
+        } // end big switch
+    
+    }
+    
+    
+    
+   sz_dim=1L;  
+   // convert idx_min into multiple indices  
+   for(idx=0;idx<nbr_dim;idx++)
+      sz_dim*= var->cnt[idx]; 
+
+   for(idx=0; idx<nbr_dim; idx++){                   
+      sz_dim/=var->cnt[idx];
+      var_out->val.ui64p[idx]=my_index/sz_dim; 
+      my_index-=var_out->val.ui64p[idx]*sz_dim;
+    }
+
+    cast_nctype_void(NC_UINT64,&var_out->val);
+    
+    mp_typ=NC_INT;
+    #ifdef ENABLE_NETCDF4
+    { /* scope for fl_fmt temporary */
+        int fl_fmt; 
+        (void)nco_inq_format(walker.prs_arg->out_id,&fl_fmt);
+        if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC)
+            mp_typ=NC_UINT64;
+        else    
+            mp_typ=NC_INT;   
+     } /* end scope */
+
+     #endif 
+
+     if(var_out->type != mp_typ) 
+         nco_var_cnf_typ(mp_typ,var_out); 
+
+     nco_var_free(var);
+    
+    
+	    
+	return var_out;
+
+  }
 
 
 
