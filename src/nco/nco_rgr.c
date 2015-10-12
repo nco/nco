@@ -2406,16 +2406,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	} /* end loop over dimensions */
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 	
-	/* Compute number and size of non-lat/lon dimensions (e.g., level, time, species, wavelength)
+	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, species, wavelength)
 	   Denote their convolution by level or 'lvl' for shorthand
-	   There are lvl_nbr elements for each lat/lon position
-	   Assume lat/lon are two most-rapidly varying dimensions
-	   fxm: relax assumption that lat/lon are MRV since MPAS-O and AIRS violate it */
+	   There are lvl_nbr elements for each lat/lon or col position
+	   20151011: Until today assume lat/lon and col are most-rapidly varying dimensions 
+	   20151011: Until today lvl_nbr missed last non-spatial dimension for 1D output */
 	lvl_nbr=1;
-	if(trv.flg_mrv){
-	  /* fxm: This fails for 1D output, right? */
-	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
-	}else{
+	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
+	if(!trv.flg_mrv)
 	  /* fxm: 20151011 generalize for non-MRV input */
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
 	} /* !flg_mrv */

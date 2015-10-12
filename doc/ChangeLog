@@ -1,6 +1,6 @@
 2015-10-11  Charlie Zender  <zender@uci.edu>
 
-	* Adjust lvl_nbr correctly for 1D output grids
+	* Fix lvl_nbr for 1D output grids (underestimated lvl_nbr by factor of last non-spatial dimension)
 
 	* Allow non-MRV variables to be defined in output and sent to regridding
 
