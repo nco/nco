@@ -903,6 +903,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int *msk_out=NULL; /* [flg] Mask of destination grid */
   int *dmn_sz_in_int; /* [nbr] Array of dimension sizes of source grid */
   int *dmn_sz_out_int; /* [nbr] Array of dimension sizes of destination grid */
+  long *dmn_cnt_in=NULL;
+  long *dmn_cnt_out=NULL;
   long *dmn_cnt=NULL;
   long *dmn_srt=NULL;
   long *dmn_srd=NULL;
@@ -1440,7 +1442,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd=nco_get_vars(in_id,wgt_raw_id,dmn_srt,dmn_cnt,dmn_srd,wgt_raw,NC_DOUBLE);
   } /* !SCRIP */
 
-  /* Optimize row/column access by pre-subtracting one to account for Fortran index offset relative to C */
+  /* Pre-subtract one from row/column addresses (stored, by convention, as Fortran indices) to optimize access with C indices */
   size_t lnk_nbr; /* [nbr] Number of links */
   size_t lnk_idx; /* [idx] Link index */
   lnk_nbr=rgr_map.num_links;
@@ -1662,7 +1664,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int lat_bnd_id; /* [id] Variable ID for lat_bnds/lat_vertices */
   int dmn_ids_out[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
   long dmn_srt_out[dmn_nbr_grd_max];
-  long dmn_cnt_out[dmn_nbr_grd_max];
+  long dmn_cnt_tuo[dmn_nbr_grd_max];
 
   /* Name output dimensions/variables */
   area_nm_out=rgr->area_nm;
@@ -1794,7 +1796,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
-  int dmn_in_fst; /* [idx] Offset of input relative to output dimension due to non-MRV dimension insertion */
+  int dmn_in_fst; /* [idx] Offset of input- relative to output-dimension due to non-MRV dimension insertion */
   rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
   dmn_nbr_max++; /* Safety in case regridding adds dimension */
   dmn_id_in=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
@@ -2252,64 +2254,64 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Write new coordinates and variables to regridded file */
   if(flg_grd_out_1D){
     dmn_srt_out[0]=0L;
-    dmn_cnt_out[0]=col_nbr_out;
-    (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_out,lat_ctr_out,crd_typ_out);
+    dmn_cnt_tuo[0]=col_nbr_out;
+    (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_tuo,lat_ctr_out,crd_typ_out);
     dmn_srt_out[0]=0L;
-    dmn_cnt_out[0]=col_nbr_out;
-    (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_out,lon_ctr_out,crd_typ_out);
+    dmn_cnt_tuo[0]=col_nbr_out;
+    (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_tuo,lon_ctr_out,crd_typ_out);
     dmn_srt_out[0]=dmn_srt_out[1]=0L;
-    dmn_cnt_out[0]=col_nbr_out;
-    dmn_cnt_out[1]=bnd_nbr_out;
-    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_out,lat_bnd_out,crd_typ_out);
+    dmn_cnt_tuo[0]=col_nbr_out;
+    dmn_cnt_tuo[1]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_tuo,lat_bnd_out,crd_typ_out);
     dmn_srt_out[0]=dmn_srt_out[1]=0L;
-    dmn_cnt_out[0]=col_nbr_out;
-    dmn_cnt_out[1]=bnd_nbr_out;
-    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
+    dmn_cnt_tuo[0]=col_nbr_out;
+    dmn_cnt_tuo[1]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_tuo,lon_bnd_out,crd_typ_out);
     dmn_srt_out[0]=0L;
-    dmn_cnt_out[0]=col_nbr_out;
-    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
+    dmn_cnt_tuo[0]=col_nbr_out;
+    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
   } /* !flg_grd_out_1D */
   if(flg_grd_out_crv){
     dmn_srt_out[0]=dmn_srt_out[1]=0L;
-    dmn_cnt_out[0]=lat_nbr_out;
-    dmn_cnt_out[1]=lon_nbr_out;
-    (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_out,lat_ctr_out,crd_typ_out);
-    (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_out,lon_ctr_out,crd_typ_out);
-    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
+    dmn_cnt_tuo[0]=lat_nbr_out;
+    dmn_cnt_tuo[1]=lon_nbr_out;
+    (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_tuo,lat_ctr_out,crd_typ_out);
+    (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_tuo,lon_ctr_out,crd_typ_out);
+    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
     if(flg_frc_out_wrt){
-      (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_out,frc_out,crd_typ_out);
+      (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_tuo,frc_out,crd_typ_out);
     } /* !flg_frc_out_wrt */
     dmn_srt_out[0]=dmn_srt_out[1]=dmn_srt_out[2]=0L;
-    dmn_cnt_out[0]=lat_nbr_out;
-    dmn_cnt_out[1]=lon_nbr_out;
-    dmn_cnt_out[2]=bnd_nbr_out;
-    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_out,lat_bnd_out,crd_typ_out);
-    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
+    dmn_cnt_tuo[0]=lat_nbr_out;
+    dmn_cnt_tuo[1]=lon_nbr_out;
+    dmn_cnt_tuo[2]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_tuo,lat_bnd_out,crd_typ_out);
+    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_tuo,lon_bnd_out,crd_typ_out);
   } /* !flg_grd_out_crv */
   if(flg_grd_out_rct){
     dmn_srt_out[0]=0L;
-    dmn_cnt_out[0]=lat_nbr_out;
-    (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_out,lat_ctr_out,crd_typ_out);
+    dmn_cnt_tuo[0]=lat_nbr_out;
+    (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_tuo,lat_ctr_out,crd_typ_out);
     dmn_srt_out[0]=0L;
-    dmn_cnt_out[0]=lon_nbr_out;
-    (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_out,lon_ctr_out,crd_typ_out);
+    dmn_cnt_tuo[0]=lon_nbr_out;
+    (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_tuo,lon_ctr_out,crd_typ_out);
     dmn_srt_out[0]=0L;
-    dmn_cnt_out[0]=lat_nbr_out;
-    (void)nco_put_vara(out_id,lat_wgt_id,dmn_srt_out,dmn_cnt_out,lat_wgt_out,crd_typ_out);
+    dmn_cnt_tuo[0]=lat_nbr_out;
+    (void)nco_put_vara(out_id,lat_wgt_id,dmn_srt_out,dmn_cnt_tuo,lat_wgt_out,crd_typ_out);
     dmn_srt_out[0]=dmn_srt_out[1]=0L;
-    dmn_cnt_out[0]=lat_nbr_out;
-    dmn_cnt_out[1]=bnd_nbr_out;
-    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_out,lat_bnd_out,crd_typ_out);
+    dmn_cnt_tuo[0]=lat_nbr_out;
+    dmn_cnt_tuo[1]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_tuo,lat_bnd_out,crd_typ_out);
     dmn_srt_out[0]=dmn_srt_out[1]=0L;
-    dmn_cnt_out[0]=lon_nbr_out;
-    dmn_cnt_out[1]=bnd_nbr_out;
-    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_out,lon_bnd_out,crd_typ_out);
+    dmn_cnt_tuo[0]=lon_nbr_out;
+    dmn_cnt_tuo[1]=bnd_nbr_out;
+    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_tuo,lon_bnd_out,crd_typ_out);
     dmn_srt_out[0]=dmn_srt_out[1]=0L;
-    dmn_cnt_out[0]=lat_nbr_out;
-    dmn_cnt_out[1]=lon_nbr_out;
-    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_out,area_out,crd_typ_out);
+    dmn_cnt_tuo[0]=lat_nbr_out;
+    dmn_cnt_tuo[1]=lon_nbr_out;
+    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
     if(flg_frc_out_wrt){
-      (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_out,frc_out,crd_typ_out);
+      (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_tuo,frc_out,crd_typ_out);
     } /* !flg_frc_out_wrt */
   } /* !flg_grd_out_rct */
 
@@ -2355,12 +2357,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-# pragma omp parallel for default(none) firstprivate(dmn_cnt,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,wgt_raw,wgt_vld_thr)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(dmn_cnt,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 # else /* !old g++ */
-#  pragma omp parallel for default(none) firstprivate(dmn_cnt,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,wgt_raw)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -2388,20 +2390,21 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
 	dmn_id_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
 	dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long)); /* max() for both input and output grids */
-	dmn_cnt=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+	dmn_cnt_in=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+	dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
 	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_id_out);
 	rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
-	  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
-	  var_sz_in*=dmn_cnt[dmn_idx];
+	  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_in+dmn_idx);
+	  var_sz_in*=dmn_cnt_in[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
-	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt,var_val_dbl_in,var_typ_rgr);
+	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
 
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt+dmn_idx);
-	  var_sz_out*=dmn_cnt[dmn_idx];
+	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt_out+dmn_idx);
+	  var_sz_out*=dmn_cnt_out[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
@@ -2412,10 +2415,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	   20151011: Until today assume lat/lon and col are most-rapidly varying dimensions 
 	   20151011: Until today lvl_nbr missed last non-spatial dimension for 1D output */
 	lvl_nbr=1;
-	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
+	/* Simple estimate of lvl_nbr works when horizontal dimension(s) is/are MRV */
+	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
 	if(!trv.flg_mrv){
 	  /* fxm: 20151011 generalize for non-MRV input */
-	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
 	} /* !flg_mrv */
 	
 	/* Initialize output */
@@ -2427,12 +2431,37 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	if(has_mss_val && flg_rnr) 
 	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) wgt_vld_out[dst_idx]=0.0;
 
-	  /* 20150914: Intensive variables require normalization, extensive do not
-	     Intensive variables (temperature, wind speed, mixing ratio) do not depend on gridcell boundaries
-	     Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
-	     Extensive variables are the exception in models, yet are commonly used for sampling information, e.g., 
-	     number of photons, number of overpasses 
-	     Pass NCO the extensive variable list with, e.g., --xtn=TSurfStd_ct,... */
+	int dmn_idx_in; /* [idx] Index to input dimensions */
+	int dmn_idx_out; /* [idx] Index to output dimensions */
+	long dmn_map_in[dmn_nbr_in]; /* [idx] Map for each dimension of input variable */
+	long dmn_map_out[dmn_nbr_out]; /* [idx] Map for each dimension of output variable */
+	long dmn_sbs_in[dmn_nbr_in]; /* [idx] Dimension subscripts into N-D input array */
+	long dmn_sbs_out[dmn_nbr_out]; /* [idx] Dimension subscripts into N-D output array */
+	const int dmn_nbr_in_m1=dmn_nbr_in-1; /* [nbr] Number of input dimensions less one (fast) */
+	const int dmn_nbr_out_m1=dmn_nbr_out-1; /* [nbr] Number of output dimensions less one (fast) */
+	  
+	if(has_mss_val && !trv.flg_mrv){
+	  /* 20151012: Juggle indices to extent possible before main weight loop */
+	  
+	  /* Map for each dimension of input variable */
+	  for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in;dmn_idx_in++) dmn_map_in[dmn_idx_in]=1L;
+	  for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in-1;dmn_idx_in++)
+	    for(dmn_idx=dmn_idx_in+1;dmn_idx<dmn_nbr_in;dmn_idx++)
+	      dmn_map_in[dmn_idx_in]*=dmn_cnt_in[dmn_idx];
+  
+	  /* Map for each dimension of output variable */
+	  for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++) dmn_map_out[dmn_idx_out]=1L;
+	  for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out-1;dmn_idx_out++)
+	    for(dmn_idx=dmn_idx_out+1;dmn_idx<dmn_nbr_out;dmn_idx++)
+	      dmn_map_out[dmn_idx_out]*=dmn_cnt_out[dmn_idx];
+	} /* !flg_mrv */
+	      
+	/* 20150914: Intensive variables require normalization, extensive do not
+	   Intensive variables (temperature, wind speed, mixing ratio) do not depend on gridcell boundaries
+	   Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
+	   Extensive variables are the exception in models, yet are commonly used for sampling information, e.g., 
+	   number of photons, number of overpasses 
+	   Pass NCO the extensive variable list with, e.g., --xtn=TSurfStd_ct,... */
 	  
 	/* Apply weights */
 	if(!has_mss_val){
@@ -2493,21 +2522,32 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	      } /* end loop over lvl */
 	    }else{ /* !flg_mrv */
 	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"INFO: Non-MRV variable %s: lvl_nbr = %d\n",trv.nm,lvl_nbr);
-	      /* Algorithm to regrid non-MRV variables:
-		 Outer loop over links */
-	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-		  idx_in=col_src_adr[lnk_idx]+val_in_fst;
-		  idx_out=row_dst_adr[lnk_idx]+val_out_fst;
-		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
-		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
-		    if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
-		    tally[idx_out]++;
-		  } /* endif */
-		} /* end loop over link */
-		val_in_fst+=grd_sz_in;
-		val_out_fst+=grd_sz_out;
-	      } /* end loop over lvl */
+	      /* Algorithm to regrid non-MRV variables */
+	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		/* Translate col_src/row_dst addresses (which are 1-D offsets) into lon/lat/col indices in src/dst arrays */
+		idx_in=col_src_adr[lnk_idx];
+		idx_out=row_dst_adr[lnk_idx];
+
+		/* dmn_sbs_in are corresponding indices (subscripts) into N-D array */
+		dmn_sbs_in[dmn_nbr_in_m1]=idx_in%dmn_cnt_in[dmn_nbr_in_m1];
+		for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in_m1;dmn_idx_in++){
+		  dmn_sbs_in[dmn_idx_in]=(long int)(idx_in/dmn_map_in[dmn_idx_in]);
+		  dmn_sbs_in[dmn_idx_in]%=dmn_cnt_in[dmn_idx_in];
+		} /* end loop over dimensions */
+		
+		/* dmn_sbs_out are corresponding indices (subscripts) into N-D array */
+		dmn_sbs_out[dmn_nbr_out_m1]=idx_out%dmn_cnt_out[dmn_nbr_out_m1];
+		for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out_m1;dmn_idx_out++){
+		  dmn_sbs_out[dmn_idx_out]=(long int)(idx_out/dmn_map_out[dmn_idx_out]);
+		  dmn_sbs_out[dmn_idx_out]%=dmn_cnt_out[dmn_idx_out];
+		} /* end loop over dimensions */
+		
+		/* Map variable's N-D array indices to get 1-D index into output data */
+		idx_out=0L;
+		for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++) 
+		  //		  idx_out+=dmn_sbs_in[dmn_idx_out_in[dmn_idx_out]]*dmn_map_out[dmn_idx_out];
+		  idx_out+=0;
+	      } /* end loop over link */
 	    } /* !flg_mrv */
 	  } /* lvl_nbr > 1 */
 
@@ -2566,13 +2606,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	
 #pragma omp critical
 	{ /* begin OpenMP critical */
-	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt,var_val_dbl_out,var_typ_rgr);
+	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
 	} /* end OpenMP critical */
 	
 	if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);
 	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
 	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
-	if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
+	if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
+	if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
 	if(tally) tally=(int *)nco_free(tally);
 	if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
 	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);

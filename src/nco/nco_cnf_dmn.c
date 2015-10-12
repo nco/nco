@@ -792,7 +792,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
        Reversal maps element k to element N-1-k=N-k-1 
        Enhance speed by using that all elements along dimension share reversal */
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
-      if(dmn_rvr_in[dmn_in_idx]) dmn_in_sbs[dmn_in_idx]=var_in_cnt[dmn_in_idx]-dmn_in_sbs[dmn_in_idx]-1;
+      if(dmn_rvr_in[dmn_in_idx]) dmn_in_sbs[dmn_in_idx]=var_in_cnt[dmn_in_idx]-dmn_in_sbs[dmn_in_idx]-1L;
 
     /* Map variable's N-D array indices to get 1-D index into output data */
     var_out_lmn=0L;

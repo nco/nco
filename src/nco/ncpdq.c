@@ -609,14 +609,11 @@ main(int argc,char **argv)
 
     for(int idx_dmn=0;idx_dmn<NC_MAX_DIMS;idx_dmn++) dmn_rvr_rdr[idx_dmn]=-1; 
 
-    /* Loop table */
     for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
-      /* Is variable to extract */
       if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-        /* Loop variable dimensions */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
 
           /* Loop input -a names */
@@ -633,10 +630,10 @@ main(int argc,char **argv)
             } /* !flg_is_rvr */  
             idx_dmn_rdr_nbr_trv++;
 
-          } /* Loop input -a names */
-        } /* Loop variable dimensions */
-      } /* Is variable to extract */
-    } /* Loop table */
+          } /* !idx_rdr */
+        } /* !idx_dmn */
+      } /* !flg_xtr */
+    } /* !idx_tbl */
 
     /* Strip all '-' */
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
@@ -645,9 +642,9 @@ main(int argc,char **argv)
         optarg_lcl=dmn_rdr_lst_in[idx_rdr];
         dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1L);
         optarg_lcl=(char *)nco_free(optarg_lcl);
-      } /* endif */
-    } /* Strip all '-' */
-  } /* Create reversed dimension list */
+      } /* !'-' */
+    } /* !idx_rdr */
+  } /* !dmn_rdr_nbr_in */
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);

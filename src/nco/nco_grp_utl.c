@@ -5377,40 +5377,34 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
   nco_bool *dmn_rvr_in;            /* [flg] Reverse dimension  (Stored in GTT ) */
 
-  /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
     /* Match by full variable name  */
-    if(strcmp(var_out->nm_fll,var_trv.nm_fll) == 0){
+    if(!strcmp(var_out->nm_fll,var_trv.nm_fll)){
 
       assert(var_trv.nco_typ == nco_obj_typ_var);
       assert(var_trv.flg_xtr); 
       assert(var_trv.nbr_dmn==var_out->nbr_dim);
 
       /* Transfer dimension structures to be re-ordered *from* GTT */
-
       dmn_idx_out_in=(int *)nco_malloc(var_trv.nbr_dmn*sizeof(int));
       dmn_rvr_in=(nco_bool *)nco_malloc(var_trv.nbr_dmn*sizeof(nco_bool));
 
-      /* Loop variable dimensions */
       for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-
-        /* Transfer */
         dmn_idx_out_in[idx_dmn]=trv_tbl->lst[idx_var].dmn_idx_out_in[idx_dmn];
         dmn_rvr_in[idx_dmn]=trv_tbl->lst[idx_var].dmn_rvr_in[idx_dmn];
-
-      } /* Loop variable dimensions */
+      } /* !idx_dmn */
 
       /* Initialize variables to reduce indirection */
       /* NB: Number of input and output dimensions are equal for pure re-orders
-      However, keep dimension numbers in separate variables to ease relax this rule in future */
+	 However, keep dimension numbers in separate variables to ease relax this rule in future */
       dmn_in_nbr=var_in->nbr_dim;
       dmn_out_nbr=var_out->nbr_dim;
 
       /* On entry to this section of code, we assume:
-      1. var_out metadata are re-ordered
-      2. var_out->val buffer has been allocated (calling routine must do this) */
+	 1. var_out metadata are re-ordered
+	 2. var_out->val buffer has been allocated (calling routine must do this) */
 
       /* Get ready to re-order */
       /* dmn_id_out=var_out->dmn_id; */
@@ -5483,24 +5477,24 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
           dmn_out_map[dmn_out_idx]*=var_out->cnt[dmn_idx];
 
       /* There is more than one method to re-order dimensions
-      Output dimensionality is known in advance, unlike nco_var_avg()
-      Hence outer loop may be over dimensions or over elements
-      Method 1: Loop over input elements 
-      1a. Loop over 1-D input array offsets
-      1b. Invert 1-D input array offset to get N-D input subscripts
-      1c. Turn N-D input subscripts into N-D output subscripts
-      1d. Map N-D output subscripts to get 1-D output element
-      1e. Copy input element to output element
-      This method is simplified from method used in nco_var_avg()
-      Method 2: Loop over input dimensions
-      1a. Loop over input dimensions, from slowest to fastest varying
-      1b. 
+	 Output dimensionality is known in advance, unlike nco_var_avg()
+	 Hence outer loop may be over dimensions or over elements
+	 Method 1: Loop over input elements 
+	 1a. Loop over 1-D input array offsets
+	 1b. Invert 1-D input array offset to get N-D input subscripts
+	 1c. Turn N-D input subscripts into N-D output subscripts
+	 1d. Map N-D output subscripts to get 1-D output element
+	 1e. Copy input element to output element
+	 This method is simplified from method used in nco_var_avg()
+	 Method 2: Loop over input dimensions
+	 1a. Loop over input dimensions, from slowest to fastest varying
+	 1b. 
       */
-
+      
       /* Begin Method 1: Loop over input elements */
       /* var_in_lmn is offset into 1-D array */
       for(var_in_lmn=0;var_in_lmn<var_sz;var_in_lmn++){
-
+	
         /* dmn_in_sbs are corresponding indices (subscripts) into N-D array */
         dmn_in_sbs[dmn_in_nbr_m1]=var_in_lmn%var_in_cnt[dmn_in_nbr_m1];
         for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr_m1;dmn_in_idx++){
@@ -5509,13 +5503,13 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
         } /* end loop over dimensions */
 
         /* Dimension reversal:
-        Reversing a dimension changes subscripts along that dimension
-        Consider dimension of size N indexed by [0,1,2,...k-1,k,k+1,...,N-2,N-1] 
-        Reversal maps element k to element N-1-k=N-k-1 
-        Enhance speed by using that all elements along dimension share reversal */
+	   Reversing a dimension changes subscripts along that dimension
+	   Consider dimension of size N indexed by [0,1,2,...k-1,k,k+1,...,N-2,N-1] 
+	   Reversal maps element k to element N-1-k=N-k-1 
+	   Enhance speed by using that all elements along dimension share reversal */
         for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
-          if(dmn_rvr_in[dmn_in_idx]) dmn_in_sbs[dmn_in_idx]=var_in_cnt[dmn_in_idx]-dmn_in_sbs[dmn_in_idx]-1;
-
+          if(dmn_rvr_in[dmn_in_idx]) dmn_in_sbs[dmn_in_idx]=var_in_cnt[dmn_in_idx]-dmn_in_sbs[dmn_in_idx]-1L;
+	
         /* Map variable's N-D array indices to get 1-D index into output data */
         var_out_lmn=0L;
         for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++) 
@@ -5533,7 +5527,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
       dmn_rvr_in=(nco_bool *)nco_free(dmn_rvr_in);
 
     } /* Match by full variable name  */
-  } /* Loop table */
+  } /* !idx_tbl */
 
   return;
 
