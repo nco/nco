@@ -2413,7 +2413,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	   20151011: Until today lvl_nbr missed last non-spatial dimension for 1D output */
 	lvl_nbr=1;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
-	if(!trv.flg_mrv)
+	if(!trv.flg_mrv){
 	  /* fxm: 20151011 generalize for non-MRV input */
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
 	} /* !flg_mrv */
