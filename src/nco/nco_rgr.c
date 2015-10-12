@@ -2398,7 +2398,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	/* Compute number and size of non-lat/lon dimensions (e.g., level, time, species, wavelength)
 	   Denote their convolution by level or 'lvl' for shorthand
 	   There are lvl_nbr elements for each lat/lon position
-	   Assume lat/lon are two most-rapidly varying dimensions */
+	   Assume lat/lon are two most-rapidly varying dimensions
+	   fxm: relax assumption that lat/lon are MRV since MPAS-O and AIRS violate it */
 	lvl_nbr=1;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-2;dmn_idx++) lvl_nbr*=dmn_cnt[dmn_idx];
 
@@ -2416,7 +2417,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	     Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
 	     Extensive variables are the exception in models, yet are commonly used for sampling information, e.g., 
 	     number of photons, number of overpasses 
-	     Pass NCO the list of extensive variables with, e.g., --xtn=TSurfStd_ct,... */
+	     Pass NCO the extensive variable list with, e.g., --xtn=TSurfStd_ct,... */
 	  
 	/* Apply weights */
 	if(!has_mss_val){
@@ -2437,7 +2438,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	}else{ /* has_mss_val */
 	  if(lvl_nbr == 1){
 	    if(trv.flg_xtn){
-	      /* 20150914: fxm extensive block */
+	      /* 20150914: fxm extensive block needs work and once debugged, must be implemented in !has_mss_val branch and in lvl_nbr > 1 branch */
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		idx_in=col_src_adr[lnk_idx];
 		idx_out=row_dst_adr[lnk_idx];

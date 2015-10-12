@@ -1,5 +1,9 @@
 2015-10-11  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.3-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha07 final changes';git push
+	git tag -a 4.5.3-alpha07 -m 'Version 4.5.3-alpha07 tag:	lat/lon/col_nm_in/out, min/max_index(), ';git push --tags
+
 	* Disambiguate lat/lon/col_nm into lat/lon/col_nm_in, lat/lon/col_nm_out (so regridded output need not use, e.g., GeoTrack as name)
 
 2015-10-11  Henry Butowsky  <henryb@hush.com>
