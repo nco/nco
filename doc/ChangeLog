@@ -1,5 +1,7 @@
 2015-10-11  Charlie Zender  <zender@uci.edu>
 
+	* Adjust lvl_nbr correctly for 1D output grids
+
 	* Allow non-MRV variables to be defined in output and sent to regridding
 
 	* NCO 4.5.3-alpha07 release procedure:
