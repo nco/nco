@@ -1,5 +1,7 @@
 2015-10-11  Charlie Zender  <zender@uci.edu>
 
+	* Allow non-MRV variables to be defined in output and sent to regridding
+
 	* NCO 4.5.3-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha07 final changes';git push
 	git tag -a 4.5.3-alpha07 -m 'Version 4.5.3-alpha07 tag:	lat/lon/col_nm_in/out, min/max_index(), ';git push --tags

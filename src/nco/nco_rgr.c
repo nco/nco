@@ -1792,6 +1792,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
+  int dmn_in_fst; /* [idx] Offset of input relative to output dimension due to non-MRV dimension insertion */
   rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
   dmn_nbr_max++; /* Safety in case regridding adds dimension */
   dmn_id_in=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
@@ -1801,6 +1802,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Define regridded and copied variables in output file */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv_tbl->lst[idx_tbl].flg_mrv=True;
     trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       var_nm=trv.nm;
@@ -1814,42 +1816,48 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	if(trv.flg_rgr){
 	  /* Regrid */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	  dmn_in_fst=0;
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
-	    /* Ensure horizontal dimension is a trailing dimension */
+	    /* Is horizontal dimension last, i.e., most-rapidly-varying? */
 	    if(flg_grd_in_1D && !strcmp(dmn_nm,col_nm_in)){
 	      if(dmn_idx != dmn_nbr_in-1){
 		/* NB: Expect this error with MPAS-O native grid dimension-ordering */
-		(void)fprintf(stdout,"%s: ERROR %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. NCO regridder currently requires unstructured spatial dimension to be last dimension of input variable.\nHINT: Consider re-arranging dimensions in input file to accomplish this with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling regridder\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
-		nco_exit(EXIT_FAILURE);
+		(void)fprintf(stdout,"%s: WARNING %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. NCO regridder has only experimental support for unstructured spatial dimensions that are not the last dimension of input variable.\nHINT: Consider re-arranging input file dimensions to place horizontal dimension(s) last with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling regridder\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
+		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
 	    } /* !flg_grd_in_1D */
 	    if(flg_grd_in_2D && (!strcmp(dmn_nm,lat_nm_in) || !strcmp(dmn_nm,lon_nm_in))){
+	      /* Are horizontal dimensions the most-rapidly-varying? */
 	      if(dmn_idx != dmn_nbr_in-1 && dmn_idx != dmn_nbr_in-2){
 		/* NB: Expect this error with AIRS L2 grid dimension-ordering */
-		(void)fprintf(stdout,"%s: ERROR %s reports lat-lon grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. NCO regridder currently requires lat-lon dimension(s) to be last two dimensions of input variable.\nHINT: Consider re-arranging dimensions in input file to accomplish this with, e.g., \'ncpdq -a time,lev,lat,lon in.nc out.nc\' prior to calling regridder\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in);
-		nco_exit(EXIT_FAILURE);
+		(void)fprintf(stdout,"%s: WARNING %s reports lat-lon grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. NCO regridder has only experimental support for lat-lon dimension(s) that are not last two dimensions of input variable.\nHINT: Consider re-arranging input file dimensions to place horizontal dimensions last with, e.g., \'ncpdq -a time,lev,lat,lon in.nc out.nc\' prior to calling regridder\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in);
+		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
 	    } /* !flg_grd_in_2D */	      
 	    if(flg_grd_out_1D){
 	      if((nco_rgr_typ == nco_rgr_grd_2D_to_1D) && (!strcmp(dmn_nm,lat_nm_in) || !strcmp(dmn_nm,lon_nm_in))){
 		/* Replace orthogonal horizontal dimensions by unstructured horizontal dimension already defined */
 		if(!strcmp(dmn_nm,lat_nm_in)){
+		  /* Replace lat with col */
 		  dmn_id_out[dmn_idx]=dmn_id_col;
 		  dmn_cnt[dmn_idx]=col_nbr_out;
 		} /* endif lat */
 		if(!strcmp(dmn_nm,lon_nm_in)){
+		  /* Assume non-MRV dimensions are ordered lat/lon. Replace lat with col. Shift MRV dimensions to left after deleting lon. */
 		  dmn_id_out[dmn_idx]=NC_MIN_INT;
 		  dmn_cnt[dmn_idx]=NC_MIN_INT;
 		  dmn_nbr_out--;
+		  /* Reduce output dimension position of all subsequent input dimensions by one */
+		  if(!trv_tbl->lst[idx_tbl].flg_mrv) dmn_in_fst=-1; 
 		} /* endif lon */
 	      }else{
 		/* Dimension col_nm_in has already been defined as col_nm_out, replicate all other dimensions */
 		if(!strcmp(dmn_nm,col_nm_in)) rcd=nco_inq_dimid_flg(out_id,col_nm_out,dmn_id_out+dmn_idx);
-		else rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
+		else rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx+dmn_in_fst);
 		if(rcd != NC_NOERR){
-		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
-		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx+dmn_in_fst);
+		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx+dmn_in_fst],dmn_id_out+dmn_idx+dmn_in_fst);
 		} /* !rcd */
 	      } /* !lat && !lon */
 	    } /* !flg_grd_out_1D */
@@ -1860,16 +1868,17 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 		dmn_id_out[dmn_idx+1]=dmn_id_lon;
 		dmn_cnt[dmn_idx]=lat_nbr_out;
 		dmn_cnt[dmn_idx+1]=lon_nbr_out;
-		dmn_idx++;
 		dmn_nbr_out++;
+		/* Increase output dimension position of all subsequent input dimensions by one */
+		if(!trv_tbl->lst[idx_tbl].flg_mrv) dmn_in_fst=1; 
 	      }else{
 		/* Dimensions lat/lon_nm_in have already been defined as lat/lon_nm_out, replicate all other dimensions */
 		if(!strcmp(dmn_nm,lat_nm_in)) rcd=nco_inq_dimid_flg(out_id,lat_nm_out,dmn_id_out+dmn_idx);
 		else if(!strcmp(dmn_nm,lon_nm_in)) rcd=nco_inq_dimid_flg(out_id,lon_nm_out,dmn_id_out+dmn_idx);
-		else rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
+		else rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx+dmn_in_fst);
 		if(rcd != NC_NOERR){
-		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
-		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx+dmn_in_fst);
+		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx+dmn_in_fst],dmn_id_out+dmn_idx+dmn_in_fst);
 		} /* !rcd */
 	      } /* !col */
 	    } /* !1D_to_2D */
@@ -2462,19 +2471,36 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  }else{ /* lvl_nbr > 1 */
 	    val_in_fst=0L;
 	    val_out_fst=0L;
-	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-		idx_in=col_src_adr[lnk_idx]+val_in_fst;
-		idx_out=row_dst_adr[lnk_idx]+val_out_fst;
-		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
-		  var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
-		  if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
-		  tally[idx_out]++;
-		} /* endif */
-	      } /* end loop over link */
-	      val_in_fst+=grd_sz_in;
-	      val_out_fst+=grd_sz_out;
-	    } /* end loop over lvl */
+	    if(trv.flg_mrv){
+	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		  idx_in=col_src_adr[lnk_idx]+val_in_fst;
+		  idx_out=row_dst_adr[lnk_idx]+val_out_fst;
+		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		    if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
+		    tally[idx_out]++;
+		  } /* endif */
+		} /* end loop over link */
+		val_in_fst+=grd_sz_in;
+		val_out_fst+=grd_sz_out;
+	      } /* end loop over lvl */
+	    }else{ /* !flg_mrv */
+	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"INFO: Non-MRV variable %s: lvl_nbr = %d\n",trv.nm,lvl_nbr);
+	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		  idx_in=col_src_adr[lnk_idx]+val_in_fst;
+		  idx_out=row_dst_adr[lnk_idx]+val_out_fst;
+		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		    if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
+		    tally[idx_out]++;
+		  } /* endif */
+		} /* end loop over link */
+		val_in_fst+=grd_sz_in;
+		val_out_fst+=grd_sz_out;
+	      } /* end loop over lvl */
+	    } /* !flg_mrv */
 	  } /* lvl_nbr > 1 */
 
 	  /* Rounding can be important for integer-type extensive variables */

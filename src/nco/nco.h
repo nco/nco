@@ -1134,6 +1134,7 @@ extern "C" {
     nco_bool flg_rcr;                 /* [flg] Extract group recursively */
     nco_bool flg_rgr;                 /* [flg] Regrid variable */ 
     nco_bool flg_xtn;                 /* [flg] Extensive variable */ 
+    nco_bool flg_mrv;                 /* [flg] Most-Rapidly-Varying horizontal dimensions variable */ 
     nco_bool flg_unn;                 /* [flg] Object matches union criteria */
     nco_bool flg_vfp;                 /* [flg] Variable matches full path specification */
     nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */

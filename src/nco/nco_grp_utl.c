@@ -2168,6 +2168,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_nsx=False;                /* [flg] Object matches intersection criteria */
   trv_tbl->lst[idx].flg_rgr=False;                /* [flg] Regrid variable */
   trv_tbl->lst[idx].flg_xtn=False;                /* [flg] Extensive variable */
+  trv_tbl->lst[idx].flg_mrv=False;                /* [flg] Most-Rapidly-Varying horizontal dimensions variable */ 
   trv_tbl->lst[idx].flg_rcr=False;                /* [flg] Extract group recursively */
   trv_tbl->lst[idx].flg_unn=False;                /* [flg] Object matches union criteria */
   trv_tbl->lst[idx].flg_vfp=False;                /* [flg] Variable matches full path specification */
@@ -2272,6 +2273,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_rcr=False; 
     trv_tbl->lst[idx].flg_rgr=False; 
     trv_tbl->lst[idx].flg_xtn=False; 
+    trv_tbl->lst[idx].flg_mrv=False;
     trv_tbl->lst[idx].flg_unn=False; 
     trv_tbl->lst[idx].flg_vfp=False; 
     trv_tbl->lst[idx].flg_vsg=False; 
