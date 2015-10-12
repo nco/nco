@@ -1,6 +1,6 @@
 2015-10-11  Charlie Zender  <zender@uci.edu>
 
-	* Disambiguate lat_nm into lat_nm_in, lat_nm_out (so regridded output need not use, e.g., GeoTrack as name)
+	* Disambiguate lat/lon/col_nm into lat/lon/col_nm_in, lat/lon/col_nm_out (so regridded output need not use, e.g., GeoTrack as name)
 
 2015-10-11  Henry Butowsky  <henryb@hush.com>
 

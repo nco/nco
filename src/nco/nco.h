@@ -924,7 +924,8 @@ extern "C" {
     char *area_nm; /* [sng] Name of variable containing gridcell area */
     char *bnd_nm; /* [sng] Name of dimension to employ for spatial bounds */
     char *bnd_tm_nm; /* [sng] Name of dimension to employ for temporal bounds */
-    char *col_nm; /* [sng] Name of horizontal spatial dimension on unstructured grid */
+    char *col_nm_in; /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
+    char *col_nm_out; /* [sng] Name of horizontal spatial output dimension on unstructured grid */
     char *frc_nm; /* [sng] Name of variable containing gridcell fraction */
     char *lat_bnd_nm; /* [sng] Name of rectangular boundary variable for latitude */
     char *lat_nm_in; /* [sng] Name of input dimension to recognize as latitude */
@@ -932,7 +933,8 @@ extern "C" {
     char *lat_vrt_nm; /* [sng] Name of non-rectangular boundary variable for latitude */
     char *lat_wgt_nm; /* [sng] Name of variable containing latitude weights */
     char *lon_bnd_nm; /* [sng] Name of rectangular boundary variable for longitude */
-    char *lon_nm; /* [sng] Name of dimension to recognize as longitude */
+    char *lon_nm_in; /* [sng] Name of dimension to recognize as longitude */
+    char *lon_nm_out; /* [sng] Name of output dimension for longitude */
     char *lon_vrt_nm; /* [sng] Name of non-rectangular boundary variable for longitude */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
     // User-specified grid properties
