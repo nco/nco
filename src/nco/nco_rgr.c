@@ -1959,7 +1959,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("cell_methods");
-  att_val=strdup("lat, lon: sum");
+  att_val=(char *)nco_calloc((strlen(lat_nm_out)+strlen(lon_nm_out)+8L),sizeof(char));
+  (void)sprintf(att_val,"%s, %s: sum",lat_nm_out,lon_nm_out);
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=area_nm_out;
   aed_mtd.id=area_out_id;
@@ -1986,7 +1987,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
     
     att_nm=strdup("cell_methods");
-    att_val=strdup("lat, lon: sum");
+    att_val=(char *)nco_calloc((strlen(lat_nm_out)+strlen(lon_nm_out)+8L),sizeof(char));
+    (void)sprintf(att_val,"%s, %s: sum",lat_nm_out,lon_nm_out);
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=frc_nm_out;
     aed_mtd.id=frc_out_id;
