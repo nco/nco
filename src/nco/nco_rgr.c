@@ -1797,6 +1797,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
   int dmn_in_fst; /* [idx] Offset of input- relative to output-dimension due to non-MRV dimension insertion */
+  //int dmn_idx_in_out_pre_rgr[dmn_nbr_max];
   rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
   dmn_nbr_max++; /* Safety in case regridding adds dimension */
   dmn_id_in=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
@@ -1823,18 +1824,19 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  dmn_in_fst=0;
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
+	    //dmn_idx_in_out_pre_rgr[dmn_idx]=dmn_idx;
 	    /* Is horizontal dimension last, i.e., most-rapidly-varying? */
 	    if(flg_grd_in_1D && !strcmp(dmn_nm,col_nm_in)){
 	      if(dmn_idx != dmn_nbr_in-1){
-		/* NB: Expect this error with MPAS-O native grid dimension-ordering */
+		/* Unstructured input grid has col in non-MRV location (expect this with, e.g., MPAS-O native grid dimension-ordering */
 		(void)fprintf(stdout,"%s: WARNING %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. NCO regridder has only experimental support for unstructured spatial dimensions that are not the last dimension of input variable.\nHINT: Consider re-arranging input file dimensions to place horizontal dimension(s) last with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling regridder\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
 		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
 	    } /* !flg_grd_in_1D */
 	    if(flg_grd_in_2D && (!strcmp(dmn_nm,lat_nm_in) || !strcmp(dmn_nm,lon_nm_in))){
-	      /* Are horizontal dimensions the most-rapidly-varying? */
+	      /* Are horizontal dimensions most-rapidly-varying? */
 	      if(dmn_idx != dmn_nbr_in-1 && dmn_idx != dmn_nbr_in-2){
-		/* NB: Expect this error with AIRS L2 grid dimension-ordering */
+		/* NB: Lat/lon input grid has lat/lon in non-MRV location (expect this with, e.g., AIRS L2 grid dimension-ordering */
 		(void)fprintf(stdout,"%s: WARNING %s reports lat-lon grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. NCO regridder has only experimental support for lat-lon dimension(s) that are not last two dimensions of input variable.\nHINT: Consider re-arranging input file dimensions to place horizontal dimensions last with, e.g., \'ncpdq -a time,lev,lat,lon in.nc out.nc\' prior to calling regridder\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in);
 		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
@@ -2409,19 +2411,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	} /* end loop over dimensions */
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 	
-	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, species, wavelength)
-	   Denote their convolution by level or 'lvl' for shorthand
-	   There are lvl_nbr elements for each lat/lon or col position
-	   20151011: Until today assume lat/lon and col are most-rapidly varying dimensions 
-	   20151011: Until today lvl_nbr missed last non-spatial dimension for 1D output */
-	lvl_nbr=1;
-	/* Simple estimate of lvl_nbr works when horizontal dimension(s) is/are MRV */
-	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
-	if(!trv.flg_mrv){
-	  /* fxm: 20151011 generalize for non-MRV input */
-	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
-	} /* !flg_mrv */
-	
 	/* Initialize output */
 	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
 	/* Missing value setup */
@@ -2433,15 +2422,20 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
 	int dmn_idx_in; /* [idx] Index to input dimensions */
 	int dmn_idx_out; /* [idx] Index to output dimensions */
+	int dmn_idx_out_in[dmn_nbr_out]; /* [idx] Dimension correspondence, output->input */
 	long dmn_map_in[dmn_nbr_in]; /* [idx] Map for each dimension of input variable */
 	long dmn_map_out[dmn_nbr_out]; /* [idx] Map for each dimension of output variable */
 	long dmn_sbs_in[dmn_nbr_in]; /* [idx] Dimension subscripts into N-D input array */
 	long dmn_sbs_out[dmn_nbr_out]; /* [idx] Dimension subscripts into N-D output array */
 	const int dmn_nbr_in_m1=dmn_nbr_in-1; /* [nbr] Number of input dimensions less one (fast) */
 	const int dmn_nbr_out_m1=dmn_nbr_out-1; /* [nbr] Number of output dimensions less one (fast) */
-	  
-	if(has_mss_val && !trv.flg_mrv){
+	char *var_val_cp_in=NULL; /* [] Non-MRV input values permuted into MRV order */
+	char *var_val_cp_out=NULL; /* [] Non-MRV output values permuted into MRV order */
+	
+	if(!trv.flg_mrv){
 	  /* 20151012: Juggle indices to extent possible before main weight loop */
+	  for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++)
+	    dmn_idx_out_in[dmn_idx_out]=-73;
 	  
 	  /* Map for each dimension of input variable */
 	  for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in;dmn_idx_in++) dmn_map_in[dmn_idx_in]=1L;
@@ -2456,6 +2450,58 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	      dmn_map_out[dmn_idx_out]*=dmn_cnt_out[dmn_idx];
 	} /* !flg_mrv */
 	      
+	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, species, wavelength)
+	   Denote their convolution by level or 'lvl' for shorthand
+	   There are lvl_nbr elements for each lat/lon or col position
+	   20151011: Until today assume lat/lon and col are most-rapidly varying dimensions 
+	   20151011: Until today lvl_nbr missed last non-spatial dimension for 1D output */
+	lvl_nbr=1;
+	/* Simple prescription of lvl_nbr works when horizontal dimension(s) is/are MRV */
+	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
+	if(!trv.flg_mrv){
+	  /* fxm: 20151011 generalize for non-MRV input */
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
+	} /* !flg_mrv */
+	
+	if(!trv.flg_mrv){
+	  /* Nomenclature for var_val_cp buffers is confusing because _in and _out both refer to pre- and post-permutation */
+	  char *var_val_cp_in=NULL; /* Non-MRV input buffer accessible as char * for memcpy() */
+	  char *var_val_cp_out=NULL; /* Non-MRV input values permuted into MRV order for regridding */
+	  var_val_cp_in=(char *)var_val_dbl_in;
+	  var_val_cp_out=(char *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() permuted output value buffer");
+	
+	  for(idx_in=0;idx_in<var_sz_in;idx_in++){
+
+	    /* dmn_sbs_in are corresponding indices (subscripts) into N-D array */
+	    dmn_sbs_in[dmn_nbr_in_m1]=idx_in%dmn_cnt_in[dmn_nbr_in_m1];
+	    for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in_m1;dmn_idx_in++){
+	      dmn_sbs_in[dmn_idx_in]=(long int)(idx_in/dmn_map_in[dmn_idx_in]);
+	      dmn_sbs_in[dmn_idx_in]%=dmn_cnt_in[dmn_idx_in];
+	    } /* end loop over dimensions */
+	    
+	    /* dmn_sbs_out are corresponding indices (subscripts) into N-D array */
+	    dmn_sbs_out[dmn_nbr_out_m1]=idx_out%dmn_cnt_out[dmn_nbr_out_m1];
+	    for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out_m1;dmn_idx_out++){
+	      dmn_sbs_out[dmn_idx_out]=(long int)(idx_out/dmn_map_out[dmn_idx_out]);
+	      dmn_sbs_out[dmn_idx_out]%=dmn_cnt_out[dmn_idx_out];
+	    } /* end loop over dimensions */
+	    
+	    /* Map variable's N-D array indices to get 1-D index into output data */
+	    idx_out=0L;
+	    for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++) 
+	      //	      idx_out+=dmn_sbs_in[dmn_idx_out_in[dmn_idx_out]]*dmn_map_out[dmn_idx_out];
+	      idx_out+=0;
+	    
+	    /* Copy current input element into its slot in output array */
+	    (void)memcpy(var_val_cp_out+idx_out*sizeof(double),var_val_cp_in+idx_in*sizeof(double),(size_t)sizeof(double));
+	  } /* end loop over idx_in */
+
+	  /* Free non-MRV input buffer */
+	  if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
+	  /* Point input buffer to MRV var_val_cp_out, then regrid that */
+	  var_val_dbl_in=(double *)var_val_cp_out;
+	} /* !flg_mrv */
+	
 	/* 20150914: Intensive variables require normalization, extensive do not
 	   Intensive variables (temperature, wind speed, mixing ratio) do not depend on gridcell boundaries
 	   Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
@@ -2522,31 +2568,16 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	      } /* end loop over lvl */
 	    }else{ /* !flg_mrv */
 	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"INFO: Non-MRV variable %s: lvl_nbr = %d\n",trv.nm,lvl_nbr);
-	      /* Algorithm to regrid non-MRV variables */
+	      /* Algorithm to regrid non-MRV variables:
+		 Permute input data until horizontal coordinates are MRV
+		 Regrid as usual
+		 Permute output data into original non-MRV order */
+
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		/* Translate col_src/row_dst addresses (which are 1-D offsets) into lon/lat/col indices in src/dst arrays */
 		idx_in=col_src_adr[lnk_idx];
 		idx_out=row_dst_adr[lnk_idx];
 
-		/* dmn_sbs_in are corresponding indices (subscripts) into N-D array */
-		dmn_sbs_in[dmn_nbr_in_m1]=idx_in%dmn_cnt_in[dmn_nbr_in_m1];
-		for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in_m1;dmn_idx_in++){
-		  dmn_sbs_in[dmn_idx_in]=(long int)(idx_in/dmn_map_in[dmn_idx_in]);
-		  dmn_sbs_in[dmn_idx_in]%=dmn_cnt_in[dmn_idx_in];
-		} /* end loop over dimensions */
-		
-		/* dmn_sbs_out are corresponding indices (subscripts) into N-D array */
-		dmn_sbs_out[dmn_nbr_out_m1]=idx_out%dmn_cnt_out[dmn_nbr_out_m1];
-		for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out_m1;dmn_idx_out++){
-		  dmn_sbs_out[dmn_idx_out]=(long int)(idx_out/dmn_map_out[dmn_idx_out]);
-		  dmn_sbs_out[dmn_idx_out]%=dmn_cnt_out[dmn_idx_out];
-		} /* end loop over dimensions */
-		
-		/* Map variable's N-D array indices to get 1-D index into output data */
-		idx_out=0L;
-		for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++) 
-		  //		  idx_out+=dmn_sbs_in[dmn_idx_out_in[dmn_idx_out]]*dmn_map_out[dmn_idx_out];
-		  idx_out+=0;
 	      } /* end loop over link */
 	    } /* !flg_mrv */
 	  } /* lvl_nbr > 1 */

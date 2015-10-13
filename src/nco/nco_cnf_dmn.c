@@ -526,9 +526,8 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   } /* end loop over dmn_rdr */
   
   /* Map permanent list of reversed dimensions to input variable */
-  for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++){
+  for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
     dmn_rvr_in[dmn_idx_shr_in[dmn_shr_idx]]=dmn_rvr_rdr[dmn_idx_shr_rdr[dmn_shr_idx]];
-  }
   
   /* No dimension re-ordering is necessary if dmn_in and dmn_rdr share fewer than two dimensions
      Dimension reversal must be done with even one shared dimension
@@ -569,9 +568,8 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
      Remember: dmn_in has dimension IDs relative to input file 
      Copy dmn_in->xrf to get dimension IDs relative to output file (once they are defined) 
      Oh come on, it only seems like cheating! */
-  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
+  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
     dmn_out[dmn_out_idx]=dmn_in[dmn_idx_out_in[dmn_out_idx]]->xrf;
-  }
   
   /* Re-ordered output dimension list dmn_out now comprises correctly ordered but 
      otherwise verbatim copies of dmn_out structures in calling routine */
