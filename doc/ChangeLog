@@ -1,3 +1,7 @@
+2015-10-14  Charlie Zender  <zender@uci.edu>
+
+	* Implement --rgr tst=val as a generic key for testing, use it to test climo failure mode
+
 2015-10-13  Charlie Zender  <zender@uci.edu>
 
 	* Use lat_nm_out,lon_nm_out instead of "lat","lon" in cell_methods

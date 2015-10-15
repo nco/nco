@@ -273,6 +273,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_wst=NC_MAX_DOUBLE; /* [dgr] Longitude of western edge of grid */
   rgr->lat_nrt=NC_MAX_DOUBLE; /* [dgr] Latitude of northern edge of grid */
   rgr->lon_est=NC_MAX_DOUBLE; /* [dgr] Longitude of eastern edge of grid */
+  rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
   
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -454,6 +455,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->lon_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lon_vrt_nm */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"tst")){
+      rgr->tst=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
+      continue;
+    } /* !tst */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -1349,6 +1355,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  area_out[lat_idx*lon_nbr_out+lon_idx]=dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]));
     } /* !spherical zones */
   } /* !flg_dgn_area_out */
+
+  if(rgr->tst == -1){
+    /* Passing --rgr tst=-1 causes regridder to fail here 
+       This failure should cause host climo script to abort */
+    (void)fprintf(stdout,"%s: ERROR %s reports regridder instructed to fail here. This tests failure mode in climo scripts...\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !tst */
 
   /* Verify frc_out is sometimes non-zero
      ESMF: "For bilinear and patch remapping, the destination grid frac array [brac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero." */
