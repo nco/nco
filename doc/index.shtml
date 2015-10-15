@@ -1161,7 +1161,7 @@ You may retrieve any NCO distribution you wish from
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
 then checks out NCO version <tt>4.5.2</tt>:
-<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout -b 4.5.2</tt></p>
+<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.5.2</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p>
