@@ -46,7 +46,7 @@ typedef std::map<std::string,var_mtd_sct,std::less<std::string> > sng2var_mtd_ma
 
 int main(int argc,char **argv)
 {
-  const std::string fl_in("in.nc"); // [sng] Input file
+  const std::string fl_in("../../data/in.nc"); // [sng] Input file
   const std::string fl_out("out.nc"); // [sng] Output file
   int rcd(0); // [rcd] Return success code
   long bnd_nbr(1); // [nbr] Number of bands

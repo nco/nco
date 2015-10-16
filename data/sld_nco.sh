@@ -194,7 +194,7 @@ else
     grd_dst=${grd_dst_dfl} # [sng] Grid-file default
 fi # !grd_fl
 if [ -z "${grd_sng}" ]; then 
-    grd_sng_dfl="--rgr grd_ttl='Default internally-generated grid' --rgr grid=${grd_dst_dfl} --rgr lat_nbr=100 --rgr lon_nbr=100 --rgr lat_sth=30.0 --rgr lat_nrt=70.0 --rgr lon_wst=-130.0 --rgr lon_est=-90.0" # [sng] Grid string default
+    grd_sng_dfl="--rgr grd_ttl='Default internally-generated grid' --rgr grid=${grd_dst_dfl} --rgr lat_nbr=100 --rgr lon_nbr=100 --rgr snwe=30.0,70.0,-130.0,-90.0" # [sng] Grid string default
     grd_sng="${grd_sng_dfl}"
 fi # !grd_sng
 if [ -n "${map_fl}" ]; then 

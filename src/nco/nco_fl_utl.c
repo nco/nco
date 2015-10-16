@@ -9,11 +9,6 @@
 
 #include "nco_fl_utl.h" /* File manipulation */
 
-#ifdef _MSC_VER
-# define WIN32_LEAN_AND_MEAN
-# include <windows.h> /* MSVC sleep() */
-#endif /* !_MSC_VER */
-
 int /* O [enm] Mode flag for nco_create() call */
 nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format */
 (const int md_clobber, /* I [enm] Clobber mode (NC_CLOBBER or NC_NOCLOBBER) */
@@ -1069,7 +1064,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
           } /* end if */
         }else{
           /* This is appropriate place to insert invocation of shell command
-          to retrieve file asynchronously and then to return status to NCO synchronously. */
+	     to retrieve file asynchronously and then to return status to NCO synchronously. */
 
           int fl_sz_crr=-2;
           int fl_sz_ntl=-1;

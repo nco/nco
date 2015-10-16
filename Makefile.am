@@ -1,6 +1,6 @@
 # $Header$ -*-makefile-*-
 
-#SUBDIRS = data src man doc
+# 20151001: Sub-folder is by default, and not when configure --disable-docs is invoked
 SUBDIRS = data src man @DOC_FOLDER@
 
 # Separately add desired files from nco/bld/ to distribution

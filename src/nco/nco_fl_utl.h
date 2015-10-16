@@ -34,6 +34,7 @@
 #endif /* !_MSC_VER */
 #ifdef _MSC_VER
 # include <process.h> /* MSVC getpid() */
+# include <windows.h> /* MSVC Sleep() */
 typedef int pid_t;
 #endif /* !_MSC_VER */
 
