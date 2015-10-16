@@ -1,5 +1,7 @@
 2015-10-16  Charlie Zender  <zender@uci.edu>
 
+	* Hard-code GeoTrack and GeoXTrack dimension names (translated from longer originals by DAP server)
+
 	* Provide defaults for HOSTNAME and DATA in sld_nco.sh
 
 2015-10-14  Charlie Zender  <zender@uci.edu>
