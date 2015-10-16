@@ -1,3 +1,7 @@
+2015-10-16  Charlie Zender  <zender@uci.edu>
+
+	* Provide defaults for HOSTNAME and DATA in sld_nco.sh
+
 2015-10-14  Charlie Zender  <zender@uci.edu>
 
 	* Implement --rgr tst=val as a generic key for testing, use it to test climo failure mode

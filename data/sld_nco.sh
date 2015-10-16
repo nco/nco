@@ -10,6 +10,25 @@
 
 # Additional Documentation:
 
+# Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
+if [ -z "${HOSTNAME}" ]; then
+    if [ -f /bin/hostname ] && [ -x /bin/hostname ] ; then
+	export HOSTNAME=`/bin/hostname`
+    elif [ -f /usr/bin/hostname ] && [ -x /usr/bin/hostname ] ; then
+	export HOSTNAME=`/usr/bin/hostname`
+    fi # !hostname
+fi # HOSTNAME
+# Default input and output directory is ${DATA}
+if [ -z "${DATA}" ]; then
+    case "${HOSTNAME}" in 
+	cooley* | cc* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN
+	edison* | hopper* | nid* ) DATA="${SCRATCH}" ; ;; # NERSC edison compute nodes named nidNNNNN
+	pileus* ) DATA="/lustre/atlas/proj-shared/cli115/${USER}" ; ;; # OLCF CADES
+	rhea* ) DATA="/lustre/atlas/proj-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN
+	* ) DATA='/tmp' ; ;; # Other
+    esac # !HOSTNAME
+fi # DATA
+
 # Production usage:
 # chmod a+x ~/sld_nco.sh
 # sld_nco.sh -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
