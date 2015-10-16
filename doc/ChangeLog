@@ -1,5 +1,7 @@
 2015-10-16  Charlie Zender  <zender@uci.edu>
 
+	* Automake is not building *.nc files in data before compilingsrc, causes breakage on tests
+
 	* Deprecate WIN32_LEAN_AND_MEAN, move MSC_VER headers to nco_fl_utl.h
 
 	* Hard-code GeoTrack and GeoXTrack dimension names (translated from longer originals by DAP server)
