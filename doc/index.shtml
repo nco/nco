@@ -149,7 +149,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2015 Oct&nbsp;??: 4.5.3 (<i>In progress</i>)
+<li>2015 Nov&nbsp;??: 4.5.4 (<i>In progress</i>)
+<li>2015 Oct&nbsp;18: 4.5.3 (Curvilinear)
 <li>2015 Sep&nbsp;06: 4.5.2 (Generate SCRIP)
 <li>2015 Jul&nbsp;10: 4.5.1 (Stability)
 <li>2015 Jun&nbsp;11: 4.5.0 (Regridding)
@@ -691,16 +692,22 @@ Stable releases receive unique tags and their tarballs are stored
 You may also retrieve the source of tagged versions directly
 <a name="#Source">with <tt>git clone -b 4.5.2 http://github.com/nco/nco.git nco-4.5.2</tt></a>.
 <ul>
-<li><b>NCO 4.5.4</b>: (<i>Future</i>) 
+<li><b>NCO 4.5.5</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
-<li><b>NCO 4.5.3</b>: (<i>In Progress, features in-progress or completed include</i>)
-<tt>ncks</tt> infers rectangular and curvilinear grids;</li>
-<tt>ncks --xtn</tt> specifies extensive variables;</li>
-<li><b>NCO 4.5.2</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.5.4</b>: (<i>In Progress, features in-progress or completed include</i>)
+<tt>ncks</tt> regridder uses CF to find coordinates;
+<tt>ncks --xtn</tt> better extensive variable treatment;</li>
+<li><b>NCO 4.5.3</b>: (<i>Current Stable Release</i>)
+<tt>ncatted</tt> fix deletion of all attributes;
+<tt>ncecat</tt> fix <tt>gag</tt> mode;
+<tt>ncks</tt> infers rectangular and curvilinear grids;
+<tt>ncks --xtn</tt> specifies extensive variables;
+<tt>ncks</tt> regridder fix multi-level field normalization;</li>
+<li><b>NCO 4.5.2</b>: 
 All operators support <tt>--glb_att_add</tt>;
 <tt>ncks</tt> better support for <tt>fracarea</tt>, <tt>mask</tt>, and displaced-pole grids;
 <tt>ncks</tt> diagnoses <tt>area</tt> for bilinear remapping and when area_b equals 0.0;

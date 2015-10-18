@@ -1,5 +1,9 @@
 2015-10-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.3-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.3-beta01 final changes';git push
+	git tag -a 4.5.3-beta01 -m 'Version 4.5.3-beta01 tag: nfr skl crv snwe frc_out bugs airs ncecat gag ncatted del';git push --tags
+
 	* NCO 4.5.3-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha08 final changes';git push
 	git tag -a 4.5.3-alpha08 -m 'Version 4.5.3-alpha08 tag:	frc_out	nrm bugs';git push --tags

@@ -1,22 +1,40 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.3-alpha04 are ready. 
+The netCDF Operators NCO version 4.5.3-beta01 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 The release includes many new features related to regridding.
+Support for curvilinear regridding is the primary advance.
+Latitude and longitude may now be two-dimensional coordinates.
+The best (IMHO) feature is that NCO will infer the two-dimensional
+grid from most (well-behaved) input data files, so regridding
+arbitrary swath-like data (SLD) granules just became a lot easier. 
+The ~/nco/data/sld_nco.sh script integrates the most common regridding
+tasks into a (hopefully) turnkey solution. Feedback welcome! 
 
-Work on NCO 4.5.4 has commenced and will better support regional
-regridding, masks, threading, CF-checking and easier builds on
-computer systems that use modules.  
+Work on NCO 4.5.4 has commenced and will better support identifying
+latitude/longitude coordinates using the CF "coordinates" convention,
+regridding variables whose horizontal dimensions are not the
+most-rapidly-varying, masks, threading, CF-checking and easier builds
+on computer systems that use modules.  
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncks --rgr nfr reads any/all grid information from input files,
+A. NCO's new configure --disable-doc switch allows NCO (but not its
+   documentation) to build on vanilla OSX again.  It has long been
+   possible to build/install NCO on MacOSX with a common packaging
+   system, e.g., MacPorts, Fink, etc.  However, it recently become
+   important to build NCO from source on vanilla MacOSX without any
+   packaging system. Apple has not updated some GNU tools (like
+   Texinfo) for over 10 years, so we have given up maintaining
+   backwards compatibility of the documentation on OSX.
+
+B. ncks --rgr nfr reads any/all grid information from input files,
    infers any necessary but missing information (e.g., estimates cell
    interface locations from cell midpoints), and outputs the gridfile
    in SCRIP-format for easy use by offline regridders. The procedure
@@ -24,38 +42,60 @@ A. ncks --rgr nfr reads any/all grid information from input files,
    ncks --rgr nfr --rgr grid=infer.nc in.nc out.nc
    http://nco.sf.net/nco.html#grid
 
-A. Generate 2-D regional grids in SCRIP format.
-   Specify the bounding box edges with
+C. ncks --rgr skl='y' creates a "skeleton" version of a data file
+   with the specified geometry. This skeleton file contains grid
+   center and interfaces locations and gridcell area. These can be
+   more easily be assessed, and continental outlines examined, than
+   with the corresponding SCRIP file. The skeleton can also be
+   manually populated with data rather than relying on a model. 
+   # Generate T42 Gaussian grid file t42_SCRIP.nc and skeleton file t42_skl.nc
+   ncks --rgr skl=${DATA}/grids/t42_skl.nc --rgr grid=${DATA}/grids/t42_SCRIP.nc \
+     --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr \
+     ~zender/nco/data/in.nc ~/foo.nc
+   http://nco.sf.net/nco.html#skl
+
+D. Generate 2-D regional grids in SCRIP format, and, in conjunction
+   with a mapfile, regrid to/from regional bounding boxes.
+   During grid generation, specify bounding box edges with
    --rgr wesn=lon_wst,lon_est,lat_sth,lat_nrt or
    --rgr snwe=lat_sth,lat_nrt,lon_wst,lon_est
    This feature debuted 4.5.2 but was not announced because it 
    was not yet documented.
-   Please give it a try and send us feedback!
    # Regrid global file to regional domain
-   ncks --map map_conusx4v1_to_fv0.1x0.1_US_bilin.nc in.nc out.nc
+   ncks --map map_global_to_regional_bilin.nc in.nc out.nc
+   http://nco.sf.net/nco.html#grid
    http://nco.sf.net/nco.html#regrid
 
-A. Use --xtn_var or --extensive to specify extensive variables.
+E. Use --xtn_var or --extensive to specify extensive variables.
    Extensive variables are summed not averaged during regridding. 
+   The support for extensive variables is not yet robust, yet we
+   are ready to receive feedback from early adopters.
    ncks --xtn count --map map.nc in.nc out.nc
    http://nco.sf.net/nco.html#regrid
 
 BUG FIXES:
 
-A. ncap2 now evaluates logical expressions with a method that does
+A. ncks fixes two newly uncovered regridder bugs that were exposed by 
+   multi-level fields that contain missing values and underwent
+   non-conservative (e.g., bilinear) regridding. The bugs were in
+   threaded code and show up in compiler-specific ways. 
+   The solution is to upgrade to 4.5.3.
+   Thanks to PNNL for first reporting problems.
+
+B. ncap2 now evaluates logical expressions with a method that does
    not convert the type of the arguments to lesser precision. 
    This fixes incorrect results that could occur when an argument
    could not be represented by the lesser precision.
    The solution is to upgrade to 4.5.3. Thanks to Maxim Petrenko for 
    reporting this problem, and to Henry Butowsky for fixing it.
 
-A. ncecat version 4.4.9 introduced a problem that could cause it
+C. ncecat version 4.4.9 introduced a problem that could cause it
    to fail when using --gag mode on a single file. This problem
    has been fixed. The solution is to upgrade to 4.5.3, or to use
    versions 4.4.8 and prior if you encounter this problem.
    Thanks to Huan Wu for reporting this problem.
 
-A. ncatted version 4.5.1 introduced a bug that dumps core when
+D. ncatted version 4.5.1 introduced a bug that dumps core when
    attribute deletion is requested without a specific attribute name,
    i.e., whenever all attributes are to be deleted. The workaround is
    to specify the attribute name(s) to be deleted, to use versions
@@ -66,7 +106,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.5.3-alpha04 built/tested with netCDF
+   These problems occur with NCO 4.5.3-beta01 built/tested with netCDF
    4.4.0-development (20150818) on top of HDF5 hdf5-1.8.13 with:
 
    cd ~/nco;./configure # Configure mechanism -or-
