@@ -2617,9 +2617,19 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	       NB: Both frc_out and NCO's renormalization (below) could serve the same purpose
 	       Applying both could lead to double-normalizing by missing values
 	       fxm: Be sure this does not occur! */
-	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	      if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
-	  } /* flg_frc_out_one */
+	    if(lvl_nbr == 1){
+	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
+		if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
+	    }else{
+	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+		if(frc_out[dst_idx] != 0.0){
+		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		    var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]/=frc_out[dst_idx];
+		  } /* !lvl_idx */
+		} /* !frc_out */
+	      } /* !dst_idx */
+	    } /* lvl_nbr > 1 */
+	  } /* flg_frc_nrm */
 	} /* !has_mss_val */
  
 	if(has_mss_val){
