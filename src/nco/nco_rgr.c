@@ -96,6 +96,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)nco_free(rgr->bnd_tm_nm);
   if(rgr->col_nm_in) rgr->col_nm_in=(char *)nco_free(rgr->col_nm_in);
   if(rgr->col_nm_out) rgr->col_nm_out=(char *)nco_free(rgr->col_nm_out);
+  if(rgr->frc_nm) rgr->frc_nm=(char *)nco_free(rgr->frc_nm);
   if(rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)nco_free(rgr->lat_bnd_nm);
   if(rgr->lat_nm_in) rgr->lat_nm_in=(char *)nco_free(rgr->lat_nm_in);
   if(rgr->lat_nm_out) rgr->lat_nm_out=(char *)nco_free(rgr->lat_nm_out);
@@ -1158,9 +1159,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   dmn_cnt[0]=grd_sz_out;
   rcd=nco_get_vara(in_id,area_dst_id,dmn_srt,dmn_cnt,area_out,crd_typ_out);
 
+  frc_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ_out));
   dmn_srt[0]=0L;
   dmn_cnt[0]=grd_sz_out;
-  frc_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ_out));
   rcd=nco_get_vara(in_id,frc_dst_id,dmn_srt,dmn_cnt,frc_out,crd_typ_out);
 
   if(msk_dst_id != NC_MIN_INT){
@@ -2343,8 +2344,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   double mss_val_dbl;
   double var_val_crr;
   int *tally=NULL; /* [nbr] Number of valid (non-missing) values */
-  int idx_in; /* [idx] Input grid index */
-  int idx_out; /* [idx] Output grid index */
+  size_t idx_in; /* [idx] Input grid index */
+  size_t idx_out; /* [idx] Output grid index */
   int lvl_idx; /* [idx] Level index */
   int lvl_nbr; /* [nbr] Number of levels */
   int thr_idx; /* [idx] Thread index */
@@ -2482,8 +2483,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	
 	if(!trv.flg_mrv){
 	  /* Nomenclature for var_val_cp buffers is confusing because _in and _out both refer to pre- and post-permutation */
-	  char *var_val_cp_in=NULL; /* Non-MRV input buffer accessible as char * for memcpy() */
-	  char *var_val_cp_out=NULL; /* Non-MRV input values permuted into MRV order for regridding */
 	  var_val_cp_in=(char *)var_val_dbl_in;
 	  var_val_cp_out=(char *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() permuted output value buffer");
 	
@@ -2506,8 +2505,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	    /* Map variable's N-D array indices to get 1-D index into output data */
 	    idx_out=0L;
 	    for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++) 
-	      //	      idx_out+=dmn_sbs_in[dmn_idx_out_in[dmn_idx_out]]*dmn_map_out[dmn_idx_out];
-	      idx_out+=0;
+	      // fxm
+	      idx_out+=0*(dmn_sbs_in[dmn_idx_out_in[dmn_idx_out]]*dmn_map_out[dmn_idx_out]);
 	    
 	    /* Copy current input element into its slot in output array */
 	    (void)memcpy(var_val_cp_out+idx_out*sizeof(double),var_val_cp_in+idx_in*sizeof(double),(size_t)sizeof(double));
