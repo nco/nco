@@ -2363,9 +2363,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* OpenMP notes:
      default(): None
-     firstprivate(): Pointers that could inadvertently be free()'d if they lost their NULL-initialization
+     firstprivate(): Pointers that could be inadvertently free()'d if they lost their NULL-initialization
      private(): Almost everything else
-     shared(): uggh...
+     shared(): uggh...shared clause depends on both compiler and compiler-version
      1. All const variables are default shared for gcc >= 4.9.2,
      2. fnc_nm (only!) must be explicit shared for g++ 4.6.3 (travis)
      3. flg_rnr,fnc_nm,wgt_vld_thr must be explicit shared for icc 13.1.3 (rhea) */
