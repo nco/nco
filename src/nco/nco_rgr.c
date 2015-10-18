@@ -960,7 +960,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   const int bnd_tm_nbr_out=2; /* [nbr] Number of boundaries for output time */
   int bnd_nbr_out=int_CEWI; /* [nbr] Number of boundaries for output time and rectangular grid coordinates, and number of vertices for output non-rectangular grid coordinates */
-  long col_nbr_out; /* [nbr] Number of columns in destination grid */
+  long col_nbr_out=long_CEWI; /* [nbr] Number of columns in destination grid */
   long lon_nbr_out=long_CEWI; /* [nbr] Number of longitudes in rectangular destination grid */
   long lat_nbr_out=long_CEWI; /* [nbr] Number of latitudes  in rectangular destination grid */
   if(flg_grd_out_1D){
@@ -1017,7 +1017,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(flg_grd_out_crv){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid specified to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
     }else{
-      long idx_tst; /* [idx] Index of first latitude or longitude */
+      long idx_tst=long_CEWI; /* [idx] Index of first latitude or longitude */
       for(idx=0;idx<(long)grd_sz_out;idx++){
 	if(idx%lon_nbr_out == 0) idx_tst=idx;
 	if(lat_ctr_out[idx] != lat_ctr_out[idx_tst]) break;
@@ -2488,6 +2488,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	
 	  for(idx_in=0;idx_in<var_sz_in;idx_in++){
 
+	    /* fxm CEWI fixes uninitialized warning*/
+	    idx_out=73;
+	    
 	    /* dmn_sbs_in are corresponding indices (subscripts) into N-D array */
 	    dmn_sbs_in[dmn_nbr_in_m1]=idx_in%dmn_cnt_in[dmn_nbr_in_m1];
 	    for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in_m1;dmn_idx_in++){
@@ -2597,7 +2600,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	      } /* end loop over link */
 	    } /* !flg_mrv */
 	  } /* lvl_nbr > 1 */
+	} /* !has_mss_val */
 
+	if(!has_mss_val){
 	  /* Rounding can be important for integer-type extensive variables */
 	  if(trv.flg_xtn)
 	    if(nco_typ_ntg(var_typ_out))
@@ -2615,7 +2620,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 	      if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
 	  } /* flg_frc_out_one */
+	} /* !has_mss_val */
  
+	if(has_mss_val){
 	  /* NCL and ESMF treatment of weights and missing values described at
 	     https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
 	     http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000
@@ -2993,6 +3000,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   long idx_b; /* [idx] Point B 1-D index */
   long idx_c; /* [idx] Point C 1-D index */
   for(unsigned int col_idx=0;col_idx<col_nbr;col_idx++){
+    ngl_c=double_CEWI; /* Otherwise compiler unsure ngl_c is initialized first use */
     area[col_idx]=0.0;
     tri_nbr=0;
     /* A is always first vertice */
@@ -4968,7 +4976,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006 */
     if((float)lat_ctr[1] == (float)lat_ctr_tst_eqa) lat_typ=nco_grd_lat_eqa;
     if((float)lat_ctr[1] == (float)lat_ctr_tst_fv) lat_typ=nco_grd_lat_fv;
-    double *lat_sin; // [frc] Sine of Gaussian latitudes double precision
+    double *lat_sin=NULL_CEWI; // [frc] Sine of Gaussian latitudes double precision
     double *wgt_Gss=NULL; // [frc] Gaussian weights double precision
     if(lat_typ == nco_grd_lat_nil){
       /* Check for Gaussian grid */
