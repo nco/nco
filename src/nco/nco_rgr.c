@@ -2602,21 +2602,30 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  } /* lvl_nbr > 1 */
 	} /* !has_mss_val */
 
-	if(!has_mss_val){
-	  /* Rounding can be important for integer-type extensive variables */
-	  if(trv.flg_xtn)
-	    if(nco_typ_ntg(var_typ_out))
+	/* Rounding can be important for integer-type extensive variables */
+	if(trv.flg_xtn){
+	  if(nco_typ_ntg(var_typ_out)){
+	    if(!has_mss_val){
 	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 		var_val_dbl_out[dst_idx]=round(var_val_dbl_out[dst_idx]);
-
+	    }else{ /* has_mss_val */
+	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+		if(tally[dst_idx]) var_val_dbl_out[dst_idx]=round(var_val_dbl_out[dst_idx]);
+	    } /* !has_mss_val */
+	  } /* !nco_typ_ntg */
+	} /* !flg_xtn */
+	  
+	if(!has_mss_val){
 	  if(flg_frc_nrm){
 	    /* frc_dst = frc_out = dst_frac = frac_b contains non-unity elements and normalization type is "destarea" or "none"
 	       When this occurs for conservative remapping, follow "destarea" normalization procedure
 	       See SCRIP manual p. 11 and http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03028000000000000000
 	       NB: Non-conservative interpolation methods (e.g., bilinear) should NOT apply this normalization (theoretically there is no danger in doing so because frc_out == 1 always for all gridcells that participate in bilinear remapping and frc_out == 0 otherwise, but still, best not to tempt the Fates)
 	       NB: Both frc_out and NCO's renormalization (below) could serve the same purpose
-	       Applying both could lead to double-normalizing by missing values
-	       fxm: Be sure this does not occur! */
+	       Applying both could lead to double-normalizing by missing values!
+	       20151018: Be sure this does not occur! current this is done by only executing flg_frc_nrm block when !has_mss_val
+	       and having a separate normalization block for has_mss_val
+	       fxm: Use better logic and more metadata information to determine code path */
 	    if(lvl_nbr == 1){
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];

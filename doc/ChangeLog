@@ -1,3 +1,24 @@
+2015-10-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.3-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.3-alpha08 final changes';git push
+	git tag -a 4.5.3-alpha08 -m 'Version 4.5.3-alpha08 tag:	frc_out	nrm bugs';git push --tags
+
+	* Index frc_out by grd_sz_out not var_sz_out to prevent accessing out-of-range values
+	This bug affected non-conservative regridding of multi-level fields
+	It was present in 4.5.2 though only for flg_frc_nrm, whose truth condition was quite narrow
+	In 4.5.2 it might affect multi-level fields that have no missing values
+
+	* Sometime post 4.5.2, I inadvertently changed the flg_frc_nrm block from
+	only operating when !has_mss_val to only operating when	has_mss_val.
+	Block had no missing_value checks so missing_values could be used
+	arithmetically, and then converted to non-missing_values, and then
+	renormalized in the regular normalization loop for missing_values.
+	This only affected non-conservative interpolation maps, i.e., bilinear maps.
+	Users reported NC_ERANGE errors. Once this and above problem
+	(which was logically separated, but compounded issues) were fixed,
+	valgrind was clean and all tests pass.
+
 2015-10-16  Charlie Zender  <zender@uci.edu>
 
 	* Automake stopped building *.nc files in data before compiling src, causes breakage on tests
