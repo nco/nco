@@ -2440,17 +2440,24 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
 	int dmn_idx_in; /* [idx] Index to input dimensions */
 	int dmn_idx_out; /* [idx] Index to output dimensions */
-	int dmn_idx_out_in[dmn_nbr_out]; /* [idx] Dimension correspondence, output->input */
-	long dmn_map_in[dmn_nbr_in]; /* [idx] Map for each dimension of input variable */
-	long dmn_map_out[dmn_nbr_out]; /* [idx] Map for each dimension of output variable */
-	long dmn_sbs_in[dmn_nbr_in]; /* [idx] Dimension subscripts into N-D input array */
-	long dmn_sbs_out[dmn_nbr_out]; /* [idx] Dimension subscripts into N-D output array */
+	int *dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input */
+	long *dmn_map_in=NULL; /* [idx] Map for each dimension of input variable */
+	long *dmn_map_out=NULL; /* [idx] Map for each dimension of output variable */
+	long *dmn_sbs_in=NULL; /* [idx] Dimension subscripts into N-D input array */
+	long *dmn_sbs_out=NULL; /* [idx] Dimension subscripts into N-D output array */
+
 	const int dmn_nbr_in_m1=dmn_nbr_in-1; /* [nbr] Number of input dimensions less one (fast) */
 	const int dmn_nbr_out_m1=dmn_nbr_out-1; /* [nbr] Number of output dimensions less one (fast) */
 	char *var_val_cp_in=NULL; /* [] Non-MRV input values permuted into MRV order */
 	char *var_val_cp_out=NULL; /* [] Non-MRV output values permuted into MRV order */
 	
 	if(!trv.flg_mrv){
+	  dmn_idx_out_in=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
+	  dmn_map_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
+	  dmn_map_out=(long *)nco_malloc(dmn_nbr_out*sizeof(long));
+	  dmn_sbs_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
+	  dmn_sbs_out=(long *)nco_malloc(dmn_nbr_out*sizeof(long));
+
 	  /* 20151012: Juggle indices to extent possible before main weight loop */
 	  for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++)
 	    dmn_idx_out_in[dmn_idx_out]=-73;
@@ -2519,6 +2526,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
 	  /* Point input buffer to MRV var_val_cp_out, then regrid that */
 	  var_val_dbl_in=(double *)var_val_cp_out;
+
+	  if(dmn_idx_out_in) dmn_idx_out_in=(int *)nco_free(dmn_idx_out_in);
+	  if(dmn_map_in) dmn_map_in=(long *)nco_free(dmn_map_in);
+	  if(dmn_map_out) dmn_map_out=(long *)nco_free(dmn_map_out);
+	  if(dmn_sbs_in) dmn_sbs_in=(long *)nco_free(dmn_sbs_in);
+	  if(dmn_sbs_out) dmn_sbs_out=(long *)nco_free(dmn_sbs_out);
+
 	} /* !flg_mrv */
 	
 	/* 20150914: Intensive variables require normalization, extensive do not
