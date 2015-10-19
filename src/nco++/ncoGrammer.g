@@ -266,7 +266,7 @@ expr:   ass_expr
         
     
 primary_exp
-    : FLOAT    
+    : NCO_FLOAT
     | DOUBLE
     | INT
     | BYTE
