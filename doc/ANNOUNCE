@@ -152,7 +152,7 @@ A. NOT YET FIXED (netCDF4 or HDF5 problem?)
    Workaround #1: Use NCO 4.4.6 or later (avoids nc_var_gets())
    Workaround #2: Convert file to netCDF3 first, then use stride
 
-B. NOT YET FIXED (netCDF4 library bug?)
+B. NOT YET FIXED (netCDF4 library bug)
    Simultaneously renaming multiple dimensions in netCDF4 file can corrupt output
 
    Demonstration:
@@ -163,6 +163,7 @@ B. NOT YET FIXED (netCDF4 library bug?)
    20150924: Unidata confirmed problem
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
+   More details: http://nco.sf.net/nco.html#ncrename_crd
 
 C. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
@@ -195,19 +196,12 @@ D. NOT YET FIXED (would require DAP protocol change)
 
 "Sticky" reminders:
 
-A. Pre-built Debian Sid & Ubuntu packages:
-   http://nco.sf.net#debian
-
-B. Pre-built Fedora and CentOS RPMs:
-   http://nco.sf.net#rpm
-
-C. Pre-built Mac binaries:
-   http://nco.sf.net#mac
-
-D. Pre-built Windows (native) and Cygwin binaries:
-   http://nco.sf.net#windows
-
-E. Reminder that NCO works on most HDF4 and HDF5 datasets, e.g., 
+A. Reminder that NCO works on most HDF4 and HDF5 datasets, e.g., 
    HDF4: AMSR MERRA MODIS ...
    HDF5: GLAS ICESat Mabel SBUV ...
    HDF-EOS5: AURA HIRDLS OMI ...
+
+B. Pre-built executables for many OS's at:
+   http://nco.sf.net#bnr
+
+

@@ -1354,7 +1354,10 @@ personal directories shown below.
 These are usually built from a recent tagged-version of NCO (e.g.,
 4.5.X-alphaY) not from the &ldquo;bleeding-edge&rdquo; of master which
 is usually untagged.
-
+  One way to use these pre-built executables is to prepend them to
+  your executable and library search paths, e.g., 
+  <tt>export PATH="~zender/bin:${PATH}"</tt>,
+  <tt>export LD_LIBRARY_PATH="~zender/lib:${LD_LIBRARY_PATH}"</tt>
 <ul>
 <li>ANL ALCF Cooley <tt>cooley.alcf.anl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>NCAR CISL <tt>yellowstone.ucar.edu</tt>: <tt>~zender/bin</tt></li>

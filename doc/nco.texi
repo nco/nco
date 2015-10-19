@@ -18754,7 +18754,7 @@ The latest chapter in this saga is a netCDF4 bug discovered in
 September, 2015.
 This bug causes @command{ncrename} to create corrupted output files
 when attempting to rename two dimensions simultaneously.
-The workaround is to rename the dimensions sequentially, in two separate 
+The workaround is to rename the dimensions sequentially, in two separate  
 @command{ncrename} calls.
 @example
 @verbatim
