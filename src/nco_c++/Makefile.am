@@ -5,6 +5,7 @@ test_data = in.nc
 all: ${test_data}
 
 in.nc:
+	cd ../../data;make;cd -
 	ln -f -s ../../data/in.nc in.nc
 
 lib_LTLIBRARIES = libnco_c++.la

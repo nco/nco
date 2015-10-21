@@ -1,3 +1,13 @@
+2015-10-20  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.3 release procedure:
+ 	Changes since nco-4.5.2: nfr skl crv snwe frc_out bugs airs ncecat gag ncatted del
+	cd ~/nco;git commit -a -m 'Version 4.5.3 release final changes';git push
+	git tag -d 4.5.3;git push origin :refs/tags/4.5.3
+	git tag -a 4.5.3 -m 'Version 4.5.3 tag: Mad Men';git push --tags
+
+	* Hardwire 'make tst' in nco_c++ to build in.nc before running nco_c++/tst...
+
 2015-10-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.3-beta01 release procedure:

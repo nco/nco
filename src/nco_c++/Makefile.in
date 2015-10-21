@@ -1130,6 +1130,7 @@ uninstall-am: uninstall-includeHEADERS uninstall-libLTLIBRARIES
 all: ${test_data}
 
 in.nc:
+	cd ../../data;make;cd -
 	ln -f -s ../../data/in.nc in.nc
 
 test: check
