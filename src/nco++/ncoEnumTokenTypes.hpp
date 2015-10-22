@@ -1,7 +1,7 @@
 #ifndef INC_ncoEnumTokenTypes_hpp_
 #define INC_ncoEnumTokenTypes_hpp_
 
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoEnumTokenTypes.hpp"$ */
+/* $ANTLR 2.7.7 (20141120): "ncoGrammer.g" -> "ncoEnumTokenTypes.hpp"$ */
 
 #ifndef CUSTOM_API
 # define CUSTOM_API
@@ -87,16 +87,16 @@
 		MINUS_ASSIGN = 79,
 		TIMES_ASSIGN = 80,
 		DIVIDE_ASSIGN = 81,
-		FLOAT = 82,
-		DOUBLE = 83,
-		INT = 84,
-		BYTE = 85,
-		UBYTE = 86,
-		SHORT = 87,
-		USHORT = 88,
-		UINT = 89,
-		INT64 = 90,
-		UINT64 = 91,
+		NCAP_FLOAT = 82,
+		NCAP_DOUBLE = 83,
+		NCAP_INT = 84,
+		NCAP_BYTE = 85,
+		NCAP_UBYTE = 86,
+		NCAP_SHORT = 87,
+		NCAP_USHORT = 88,
+		NCAP_UINT = 89,
+		NCAP_INT64 = 90,
+		NCAP_UINT64 = 91,
 		N4STRING = 92,
 		DIM_ID_SIZE = 93,
 		NRootAST = 94,

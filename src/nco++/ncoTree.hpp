@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.7 (20141120): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -174,7 +174,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 	var_sct *var;
 	std::string fnc_nm="lmt_var_mk"; 
 	
-	dbg_prn(fnc_nm,"start\n"); 
 	
 	// calculate variables
 	var=out(lmt->getFirstChild()->getFirstChild());
@@ -184,7 +183,7 @@ NcapVector<lmt_sct*> &lmt_vtr )
 	sz=var->sz;
 	dmn_sz=var->sz / nbr_dmn;
 	
-    dbg_prn(fnc_nm,"step 1\n");   
+    
 
     // shape of var must be (nbr_dmn) or (nbr_dmn,2) or (nbr_dmn,3) 
     if( dmn_sz * nbr_dmn != sz )
@@ -193,7 +192,7 @@ NcapVector<lmt_sct*> &lmt_vtr )
       return false;  
     }
 
-    dbg_prn(fnc_nm,"step 2\n");   
+    
 	
     for(idx=0; idx<sz;idx+=dmn_sz)
 	 {
@@ -212,11 +211,9 @@ NcapVector<lmt_sct*> &lmt_vtr )
 		/* rec_skp_ntl_spf is used for record dimension in multi-file operators */
 		lmt_ptr->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
 
-       dbg_prn(fnc_nm,"step loop idx="+ nbr2sng(idx)+"\n");   
 	   
        for(jdx=0;jdx<dmn_sz;jdx++)
 		{     
-		  dbg_prn(fnc_nm,"step loop jdx="+ nbr2sng(jdx)+"\n");   	
 		  
          nco_uint64 uival= var->val.ui64p[idx+jdx];
          switch(jdx){
@@ -247,7 +244,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 	 
 	cast_nctype_void((nc_type)NC_UINT64,&var->val);
 	var=nco_var_free(var);  
-	dbg_prn(fnc_nm,"end\n"); 
 	
    return true;
 

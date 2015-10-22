@@ -264,18 +264,18 @@ ass_expr: cond_expr ( ( ASSIGN^
 expr:   ass_expr
     ;    
         
-    
+// 20151021 csz Prefixed some tokens with NCO_ to prevent namespace conflicts with MSVC definitions in windef.h    
 primary_exp
-    : FLOAT
-    | DOUBLE
-    | INT
-    | BYTE
-    | UBYTE    
-    | SHORT
-    | USHORT
-    | UINT
-    | INT64
-    | UINT64
+    : NCAP_FLOAT
+    | NCAP_DOUBLE
+    | NCAP_INT
+    | NCAP_BYTE
+    | NCAP_UBYTE    
+    | NCAP_SHORT
+    | NCAP_USHORT
+    | NCAP_UINT
+    | NCAP_INT64
+    | NCAP_UINT64
     | NSTRING
     | N4STRING    
     | DIM_ID_SIZE
@@ -499,28 +499,28 @@ C_COMMENT options {paraphrase="a C-style comment"; }
 // csz: Treat "l" or "L" following decimal point as "long double" as per C++
 NUMBER_DOT options {paraphrase="a floating point number"; } 
     :
-      '.' (DGT)+ (XPN)? { $setType(DOUBLE); }  
-      ( ('D'|'d')!     {  $setType(DOUBLE);}
-       |('F'|'f')!     {  $setType(FLOAT);}
-       |('L'|'l')!     {  $setType(DOUBLE);}
+      '.' (DGT)+ (XPN)? { $setType(NCAP_DOUBLE); }  
+      ( ('D'|'d')!     {  $setType(NCAP_DOUBLE);}
+       |('F'|'f')!     {  $setType(NCAP_FLOAT);}
+       |('L'|'l')!     {  $setType(NCAP_DOUBLE);}
       )?        
     ;
 
 NUMBER:
-	(DGT)+	{ $setType(INT); }
-	( ( '.'  (DGT)* ((XPN)? | ('L'|'l')! )) { $setType(DOUBLE); } // 3.14e0, 3.14L, 3.14l
-       | (XPN)         { $setType(DOUBLE);} // 3e0
-       | ('L'|'l')!    { $setType(INT);   } // 3l, 3L
-       | ('S'|'s')!    { $setType(SHORT); } // 3s, 3S
-       | ('B'|'b')!    { $setType(BYTE);  } // 3b, 3B
-       | ("UB"|"ub")!  { $setType(UBYTE); } // 3ub, 3UB
-       | ("US"|"us")!  { $setType(USHORT); } // 3us, 3US
-       | ('U'|'u'|"UL"|"ul")!    { $setType(UINT); } // 3u, 3U, 3ul, 3UL
-       | ("LL"|"ll")!  { $setType(INT64); } // 3ll, 3LL
-       | ("ULL"|"ull")!  { $setType(UINT64); } // 3ull, 3ULL
+	(DGT)+	{ $setType(NCAP_INT); }
+	( ( '.'  (DGT)* ((XPN)? | ('L'|'l')! )) { $setType(NCAP_DOUBLE); } // 3.14e0, 3.14L, 3.14l
+       | (XPN)         { $setType(NCAP_DOUBLE);} // 3e0
+       | ('L'|'l')!    { $setType(NCAP_INT);   } // 3l, 3L
+       | ('S'|'s')!    { $setType(NCAP_SHORT); } // 3s, 3S
+       | ('B'|'b')!    { $setType(NCAP_BYTE);  } // 3b, 3B
+       | ("UB"|"ub")!  { $setType(NCAP_UBYTE); } // 3ub, 3UB
+       | ("US"|"us")!  { $setType(NCAP_USHORT); } // 3us, 3US
+       | ('U'|'u'|"UL"|"ul")!    { $setType(NCAP_UINT); } // 3u, 3U, 3ul, 3UL
+       | ("LL"|"ll")!  { $setType(NCAP_INT64); } // 3ll, 3LL
+       | ("ULL"|"ull")!  { $setType(NCAP_UINT64); } // 3ull, 3ULL
     )?
-    (    ('F'|'f')!    { $setType(FLOAT); } // 3F, 3f
-       | ('D'|'d')!    { $setType(DOUBLE);} // 3D, 3d
+    (    ('F'|'f')!    { $setType(NCAP_FLOAT); } // 3F, 3f
+       | ('D'|'d')!    { $setType(NCAP_DOUBLE);} // 3D, 3d
     )?        
 ;
 
@@ -2338,32 +2338,32 @@ out returns [var_sct *var]
         }
 
         // Naked numbers: Cast is not applied to these numbers
-    |   val_float:FLOAT        
+    |   val_float:NCAP_FLOAT  
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),(nc_type)NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(val_float->getText().c_str(),(char **)NULL)));} // end FLOAT
-    |   val_double:DOUBLE        
+    |   val_double:NCAP_DOUBLE        
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),(nc_type)NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(val_double->getText().c_str(),(char **)NULL));} // end DOUBLE
-	|	val_int:INT			
+	|	val_int:NCAP_INT
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),(nc_type)NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<nco_int>(std::strtol(val_int->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end INT
-	|	val_short:SHORT			
+	|	val_short:NCAP_SHORT
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),(nc_type)NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(val_short->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end SHORT
-    |	val_byte:BYTE			
+    |	val_byte:NCAP_BYTE		
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),(nc_type)NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(val_byte->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end BYTE
 // fxm TODO nco851: How to add ENABLE_NETCDF4 #ifdefs to ncoGrammer.g?
 // Workaround (permanent?) is to add stub netCDF4 forward compatibility prototypes to netCDF3 libnco
 // #ifdef ENABLE_NETCDF4
-	|	val_ubyte:UBYTE			
+	|	val_ubyte:NCAP_UBYTE
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),(nc_type)NC_UBYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),static_cast<nco_ubyte>(std::strtoul(val_ubyte->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end UBYTE
         // NB: sng2nbr converts "255" into nco_ubtye=2. This is not good.
         //        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),(nc_type)NC_UBYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),sng2nbr(val_ubyte->getText(),nco_ubyte_CEWI));} // end UBYTE
-	|	val_ushort:USHORT			
+	|	val_ushort:NCAP_USHORT
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),(nc_type)NC_USHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),static_cast<nco_ushort>(std::strtoul(val_ushort->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end USHORT
-	|	val_uint:UINT			
+	|	val_uint:NCAP_UINT	
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),(nc_type)NC_UINT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),static_cast<nco_uint>(std::strtoul(val_uint->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end UINT
-	|	val_int64:INT64			
+	|	val_int64:NCAP_INT64
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),sng2nbr(val_int64->getText(),nco_int64_CEWI));} // end INT64
         // std::strtoll() and std::strtoull() are not (yet) ISO C++ standard
         //{if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),static_cast<nco_int64>(std::strtoll(val_int64->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end INT64
-	|	val_uint64:UINT64
+	|	val_uint64:NCAP_UINT64
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),sng2nbr(val_uint64->getText(),nco_uint64_CEWI));} // end UINT64
         // std::strtoll() and std::strtoull() are not (yet) ISO C++ standard
         // {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),static_cast<nco_uint64>(std::strtoull(val_uint64->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end UINT64

@@ -1,3 +1,7 @@
+2015-10-21  Charlie Zender  <zender@uci.edu>
+
+	* Change ncap2 token names to, e.g., NCAP_FLOAT, NCAP_INT, etc to prevent namespace clashes with MSVC windef.h
+
 2015-10-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.3 release procedure:
