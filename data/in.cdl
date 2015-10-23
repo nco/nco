@@ -1100,6 +1100,7 @@ variables:
 	float four_dmn_rec_var(time,lat,lev,lon);
 	four_dmn_rec_var:long_name = "four dimensional record variable";
 	four_dmn_rec_var:units = "watt meter-2";
+	four_dmn_rec_var:coordinates = "time lat lev lon";
 
 //	double three_double_dmn(time,lon,lon);
 	
