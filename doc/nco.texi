@@ -9063,7 +9063,9 @@ Most files originally written in @acronym{HDF} format use the
 This algorithm is incompatible with the netCDF packing algorithm 
 described above.   
 The unpacking component of the @acronym{HDF} algorithm (described
-@uref{http://www.hdfgroup.org/HDF5/doc/UG/UG_frame10Datasets.html, here}) is
+@uref{http://www.hdfgroup.org/HDF5/doc/UG/UG_frame10Datasets.html, here}
+and in Section 3.10.6 of the HDF4 Users Guide
+@uref{http://www.hdfgroup.org/release4/doc/UsrGuide_html/UG_PDF.pdf, here}) is
 @tex
 $$
 \rm
