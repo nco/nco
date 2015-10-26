@@ -58,13 +58,13 @@ function fnc_usg_prn {
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}cf_chk${fnt_nrm}   CF checker to use (empty means none) (default ${fnt_bld}${cf_chk}${fnt_nrm})"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debugging level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fl_in${fnt_nrm}    Input file (default ${fnt_bld}${fl_in}${fnt_nrm})"
-    echo "${fnt_rvr}-h${fnt_nrm}          Help message (no further actions)"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory ${fnt_bld}drc_in${fnt_nrm} (default ${fnt_bld}${drc_in}${fnt_nrm})"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm})"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm})"
-    echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}cf_vrs${fnt_nrm}  Version of CF to use (default ${fnt_bld}${cf_vrs}${fnt_nrm})"
+    echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}cf_vrs${fnt_nrm}   Version of CF to use (default ${fnt_bld}${cf_vrs}${fnt_nrm})"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -c ${caseid} -s ${yyyy_srt} -e ${yyyy_end} -i ${drc_in} -o ${drc_out} ${fnt_nrm}\n"
+    printf "\n\n"
     exit 1
 } # end fnc_usg_prn()
 
@@ -107,6 +107,8 @@ fi # !cf_chk
 
 # Print initial state
 if [ ${dbg_lvl} -ge 1 ]; then
+    printf "dbg: chk_dck  = ${chk_dck}\n"
+    printf "dbg: chk_nerc = ${chk_nerc}\n"
     printf "dbg: cf_chk   = ${cf_chk}\n"
     printf "dbg: cf_flg   = ${cf_flg}\n"
     printf "dbg: cf_vrs   = ${cf_vrs}\n"
