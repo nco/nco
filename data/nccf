@@ -1,0 +1,190 @@
+#!/bin/sh
+
+# Purpose: CF-check netCDF3/netCDF4/HDF4/HDF5 files
+# Dismember them first if necessary or requested
+# Dismembering places each input file group in separate netCDF3 output file 
+# Described in NCO User Guide at http://nco.sf.net/nco.html#nccf
+# Originally incarnated as ncdismember in NCO 4.3.6, September 2013 
+# Re-incarnated with getopt as nccf in NCO 4.5.1, July 2015
+# Requirements: NCO 4.3.x+, UNIX shell utilities awk, grep, sed
+# Optional: Decker CFchecker https://bitbucket.org/mde_/cfchecker
+
+# Usage:
+# nccf -c cf_chk -f fl_in -i drc_in -o drc_out -n nco_opt -v cf_vrs
+# where fl_in is input file/URL to check/dismember, drc_in/out are
+# input and output directories, respectively
+# CF-compliance check is performed by default, unless -c 'no' is given
+# Default checker is Decker's cfchecker installed locally
+# Specify cf_chk=nerc for smallified uploads to NERC checker
+# Option cf_vrs is CF version to check
+# Option nco_opt passes straight-through to ncks
+# Arguments must not use shell expansion/globbing
+# NB: nccf does not clean-up output directory, so user must
+# chmod a+x ~/sh/nccf
+# Examples:
+# nccf ~/nco/data/mdl_1.nc /data/zender/tmp
+# nccf http://dust.ess.uci.edu/nco/mdl_1.nc /tmp
+# nccf http://thredds-test.ucar.edu/thredds/dodsC/testdods/foo.nc /tmp
+# nccf ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf
+# nccf ~/nco/data/mdl_1.nc /data/zender/nco/tmp nerc
+# nccf ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf 1.3
+# nccf ~/nco/data/mdl_1.nc /data/zender/nco/tmp cf 1.5 --fix_rec_dmn=all
+
+# Set script name
+spt_nm=`basename ${0}` # [sng] Script name
+
+# Set fonts for legibility
+fnt_nrm=`tput sgr0` # Normal
+fnt_bld=`tput bold` # Bold
+fnt_rvr=`tput smso` # Reverse
+
+# Command-line argument defaults
+fl_in="${HOME}/nco/data/mdl_1.nc" # [sng] Input file to dismember/check
+drc_in='' # [sng] Input directory
+drc_out="${DATA}/nco/tmp" # [sng] Output directory
+#cf_chk='dck' # [sng] Checker
+cf_chk='nerc' # [sng] Checker
+cf_flg='Yes' # [flg] CF-check files?
+cf_vrs='1.5' # [sng] Compliance-check this CF version (e.g., '1.5')
+opt='' # [flg] Additional ncks options (e.g., '--fix_rec_dmn=all')
+# Use single quotes to pass multiple arguments to opt=${5}
+# Otherwise arguments would be seen as ${5}, ${6}, ${7} ...
+
+function fnc_usg_prn {
+    # Print usage
+    printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (read script for more thorough explanation)\n\n"
+    printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -c cf_chk -f fl_in -o drc_out${fnt_nrm}\n\n"
+    echo "Command-line options:"
+    echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}cf_chk${fnt_nrm}   CF checker to use (empty means none) (default ${fnt_bld}${cf_chk}${fnt_nrm})"
+    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debugging level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
+    echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fl_in${fnt_nrm}    Input file (default ${fnt_bld}${fl_in}${fnt_nrm})"
+    echo "${fnt_rvr}-h${fnt_nrm}          Help message (no further actions)"
+    echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory ${fnt_bld}drc_in${fnt_nrm} (default ${fnt_bld}${drc_in}${fnt_nrm})"
+    echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm})"
+    echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm})"
+    echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}cf_vrs${fnt_nrm}  Version of CF to use (default ${fnt_bld}${cf_vrs}${fnt_nrm})"
+    printf "\n"
+    printf "Examples: ${fnt_bld}$spt_nm -c ${caseid} -s ${yyyy_srt} -e ${yyyy_end} -i ${drc_in} -o ${drc_out} ${fnt_nrm}\n"
+    exit 1
+} # end fnc_usg_prn()
+
+# Check argument number and complain accordingly
+arg_nbr=$#
+#echo -e \\n"dbg: Number of arguments: ${arg_nbr}"
+if [ ${arg_nbr} -eq 0 ]; then
+  fnc_usg_prn
+fi # !arg_nbr
+
+# Parse command-line options:
+cmd_ln="${@}"
+while getopts :c:d:f:hi:n:o::v: OPT; do
+    case ${OPT} in
+	c) cf_chk=${OPTARG} ;; # Checker to use
+	d) dbg_lvl=${OPTARG} ;; # Debugging level
+	f) fl_in=${OPTARG} ;; # Input file 
+	i) drc_in=${OPTARG} ;; # Input directory
+	n) nco_opt=${OPTARG} ;; # NCO options
+	o) drc_out=${OPTARG} ;; # Output directory
+	v) cf_vrs=${OPTARG} ;; # CF Version
+	h) fnc_usg_prn ;; # Help
+	\?) # Unrecognized option
+	    echo -e \\n"Option -${fnt_bld}$OPTARG${fnt_nrm} not allowed."
+	    fnc_usg_prn ;;
+    esac
+done
+shift $((OPTIND-1)) # Advance one argument
+
+# Derived variables
+chk_dck='n'
+chk_nrc='n'
+if [ ${cf_chk} = 'nerc' ]; then
+    chk_nrc='y'
+fi # chk_nrc
+if [ ${cf_chk} != '0' ] && [ ${cf_chk} != 'nerc' ]; then
+    chk_dck='y'
+    hash cfchecker 2>/dev/null || { echo >&2 "Local cfchecker command not found, will smallify and upload to NERC checker instead"; chk_nrc='y'; chk_dck='n'; }
+fi # !cf_chk
+
+# Print initial state
+if [ ${dbg_lvl} -ge 1 ]; then
+    printf "dbg: cf_chk   = ${cf_chk}\n"
+    printf "dbg: cf_flg   = ${cf_flg}\n"
+    printf "dbg: cf_vrs   = ${cf_vrs}\n"
+    printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
+    printf "dbg: drc_in   = ${drc_in}\n"
+    printf "dbg: drc_out  = ${drc_out}\n"
+    printf "dbg: mdl_nm   = ${mdl_nm}\n"
+    printf "dbg: nco_opt  = ${nco_opt}\n"
+fi # !dbg
+
+# Human-readable summary
+echo "Checking and/or dismembering file ${fl_in}"
+if [ ${dbg_lvl} -ge 1 ]; then
+    printf "${spt_nm} invoked with command:\n"
+    echo "${spt_nm} ${cmd_ln}"
+fi # !dbg
+date_srt=$(date +"%s")
+printf "Started at `date`.\n"
+
+# Prepare and move-to output directory
+fl_stb=$(basename ${fl_in})
+drc_out=${drc_out}/${fl_stb}
+mkdir -p ${drc_out}
+cd ${drc_out}
+
+# Obtain group list
+grp_lst=`ncks --cdl -m ${fl_in} | grep '// group' | awk '{$1=$2=$3="";sub(/^  */,"",$0);print}'`
+IFS=$'\n' # Change Internal-Field-Separator from <Space><Tab><Newline> to <Newline>
+for grp_in in ${grp_lst} ; do
+    # Replace slashes by dots for output group filenames
+    grp_out=`echo ${grp_in} | sed 's/\///' | sed 's/\//./g'`
+    if [ "${grp_out}" = '' ]; then grp_out='root' ; fi
+    # Tell older NCO/netCDF if HDF4 with --hdf4 switch (signified by .hdf/.HDF suffix)
+    hdf4=`echo ${fl_in} | awk '{if(match(tolower($1),".hdf$")) hdf4="--hdf4"; print hdf4}'`
+    # Flatten to netCDF3, anchor, no history, no temporary file, padding, HDF4 flag, options
+    cmd="ncks -O -3 -G : -g ${grp_in}/ -h --no_tmp_fl --hdr_pad=40 ${hdf4} ${opt} ${fl_in} ${drc_out}/${grp_out}.nc"
+    # Use eval in case ${opt} contains multiple arguments separated by whitespace
+    eval ${cmd}
+    if [ ${chk_dck} = 'y' ]; then
+       # Decker checker needs Conventions <= 1.6
+       no_bck_sls=`echo ${drc_out}/${grp_out} | sed 's/\\\ / /g'`
+       ncatted -h -a Conventions,global,o,c,CF-${cf_vrs} ${no_bck_sls}.nc
+    else # !chk_dck
+       echo ${drc_out}/${grp_out}.nc
+    fi # !chk_dck
+done
+if [ ${chk_dck} = 'y' ]; then
+    echo 'Decker CFchecker reports CF-compliance of each group in flat netCDF3 format'
+    cfchecker -c ${cf_vrs} *.nc
+fi
+if [ ${chk_nrc} = 'y' ]; then
+    # Smallification and NERC upload from qdcf script by Phil Rasch (PJR)
+    echo 'Using remote CFchecker http://puma.nerc.ac.uk/cgi-bin/cf-checker.pl'
+    cf_lcn='http://puma.nerc.ac.uk/cgi-bin/cf-checker.pl'
+    for fl in ${drc_out}/*.nc ; do
+	fl_sml=${fl}
+	cf_out=${fl%.nc}.html
+	dmns=`ncdump -h ${fl_in} | sed -n -e '/dimensions/,/variables/p' | grep = | sed -e 's/=.*//'`
+	hyp_sml=''
+	for dmn in ${dmns}; do
+	    dmn_lc=`echo ${dmn} | tr "[:upper:]" "[:lower:]"`
+	    if [ ${dmn_lc} = 'lat' ] || [ ${dmn_lc} = 'latitude' ] || [ ${dmn_lc} = 'lon' ] || [ ${dmn_lc} = 'longitude' ] || [ ${dmn_lc} = 'time' ]; then
+		hyp_sml=`echo ${hyp_sml}" -d ${dmn},0"`
+	    fi # !dmn_lc
+	done
+	# Create small version of input file by sampling only first element of lat, lon, time
+	ncks -O ${hyp_sml} ${fl} ${fl_sml}
+	# Send small file to NERC checker
+	curl --form cfversion=1.6 --form upload=@${fl_sml} --form press="Check%20file" ${cf_lcn} -o ${cf_out}
+	# Strip most HTML to improve readability
+	cat ${cf_out} | sed -e "s/<[^>]*>//g" -e "/DOCTYPE/,/\]\]/d" -e "s/CF-Convention//g" -e "s/Output of//g" -e "s/Compliance Checker//g" -e "s/Check another//g" -e "s/CF-Checker follows//g" -e "s/Received//g" -e "s/for NetCDF//g" -e "s/NetCDF format//g" -e "s/against CF version 1//g" -e "s/\.\.\.//g"
+	echo "Full NERC compliance-check log for ${fl} in ${cf_out}"
+    done
+fi # !nerc
+
+date_end=$(date +"%s")
+printf "Completed climatology generation for model-run ${caseid} at `date`.\n"
+date_dff=$((date_end-date_srt))
+echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
+
+exit 0
