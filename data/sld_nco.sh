@@ -257,7 +257,6 @@ fi # !dbg
 
 # Create output directory, go to working directory
 mkdir -p ${drc_out}
-cd ${drc_out}
 
 # Human-readable summary
 if [ ${dbg_lvl} -ge 1 ]; then
@@ -287,92 +286,93 @@ printf "NCO version is ${nco_version}\n"
 if [ "${grd_usr_flg}" != 'Yes' ]; then 
     printf "Generate destination grid...\n"
     # Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
-    clm_idx=1
-    cmd_clm[${clm_idx}]="ncks ${nco_opt} ${grd_sng} ~/nco/data/in.nc ~/foo.nc"
+    rgr_idx=1
+    cmd_rgr[${rgr_idx}]="ncks ${nco_opt} ${grd_sng} ~/nco/data/in.nc ~/foo.nc"
 
     # Block 1 Loop 2: Execute and/or echo commands
-    for ((clm_idx=1;clm_idx<=1;clm_idx++)); do
+    for ((rgr_idx=1;rgr_idx<=1;rgr_idx++)); do
 	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_clm[${clm_idx}]}
+	    echo ${cmd_rgr[${rgr_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -le 1 ]; then
-	    eval ${cmd_clm[${clm_idx}]}
+	    eval ${cmd_rgr[${rgr_idx}]}
 	    if [ $? -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to generate destination grid\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
-    done # !clm_idx
+    done # !rgr_idx
 fi # !grd_usr_flg
 wait
 
 # Block 2: Source grid(s)
 # Block 2 Loop 1: Source gridfile commands
 printf "Generate source grids...\n"
-clm_idx=2
+rgr_idx=2
 if [ ! -e "${sld_fl}" ]; then
     echo "${spt_nm}: ERROR Unable to find SLD file ${sld_fl}"
     echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
     exit 1
 fi # ! -e
-cmd_clm[${clm_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${sld_fl} ~/foo.nc"
+cmd_rgr[${rgr_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${sld_fl} ~/foo.nc"
 
 # Block 2 Loop 2: Execute and/or echo commands
-for ((clm_idx=2;clm_idx<=2;clm_idx++)); do
+for ((rgr_idx=2;rgr_idx<=2;rgr_idx++)); do
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_clm[${clm_idx}]}
+	echo ${cmd_rgr[${rgr_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -le 1 ]; then
-	eval ${cmd_clm[${clm_idx}]}
+	eval ${cmd_rgr[${rgr_idx}]}
 	if [ $? -ne 0 ]; then
 	    printf "${spt_nm}: ERROR Failed to generate source grid\n"
 	    exit 1
 	fi # !err
     fi # !dbg
-done # !clm_idx
+done # !rgr_idx
 wait
 
 # Block 3: Source->destination maps
 if [ "${map_usr_flg}" != 'Yes' ]; then 
     # Block 3 Loop 1: Mapfile commands
     printf "Generate source->destination mapping weights...\n"
-    clm_idx=3
-    cmd_clm[${clm_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method bilinear --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
+    rgr_idx=3
+    cmd_rgr[${rgr_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method bilinear --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
 
     # Block 3 Loop 2: Execute and/or echo commands
-    for ((clm_idx=3;clm_idx<=3;clm_idx++)); do
+    for ((rgr_idx=3;rgr_idx<=3;rgr_idx++)); do
 	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_clm[${clm_idx}]}
+	    echo ${cmd_rgr[${rgr_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -le 1 ]; then
-	    eval ${cmd_clm[${clm_idx}]}
+	    eval ${cmd_rgr[${rgr_idx}]}
 	    if [ $? -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to generate mapfile\n"
+		printf "${spt_nm}: HINT When ESMF fails to generate mapfiles, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
-    done # !clm_idx
+    done # !rgr_idx
 fi # !map_usr_flg
 wait
 
 # Block 4: Regrid
 printf "Regridding...\n"
-clm_idx=4
-cmd_clm[${clm_idx}]="ncks ${nco_opt} ${rgr_opt} --map=${map_fl} ${sld_fl} ${rgr_fl}"
+rgr_idx=4
+cmd_rgr[${rgr_idx}]="ncks ${nco_opt} ${rgr_opt} --map=${map_fl} ${sld_fl} ${rgr_fl}"
 
 # Block 4 Loop 2: Execute and/or echo commands
-for ((clm_idx=4;clm_idx<=4;clm_idx++)); do
+for ((rgr_idx=4;rgr_idx<=4;rgr_idx++)); do
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_clm[${clm_idx}]}
+	echo ${cmd_rgr[${rgr_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -le 1 ]; then
-	eval ${cmd_clm[${clm_idx}]}
+	eval ${cmd_rgr[${rgr_idx}]}
 	if [ $? -ne 0 ]; then
 	    printf "${spt_nm}: ERROR Failed to regrid\n"
 	    exit 1
 	fi # !err
     fi # !dbg
-done # !clm_idx
+done # !rgr_idx
 wait
 
 date_end=$(date +"%s")
