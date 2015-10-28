@@ -1,3 +1,8 @@
+2015-10-27  Charlie Zender  <zender@uci.edu>
+
+	* Ensure dim[idx].val.vp is NULL-initialized (and thus not inadvertently free'd) when PRN_DMN_IDX_CRD_VAL is False
+	Fixes GitHub issue #18 reported by Pat Nichols
+
 2015-10-21  Charlie Zender  <zender@uci.edu>
 
 	* Change ncap2 token names to, e.g., NCAP_FLOAT, NCAP_INT, etc to prevent namespace clashes with FLOAT, INT, ... in MSVC windef.h

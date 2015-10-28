@@ -1777,6 +1777,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     /* Allocate space for dimension information */
     dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
+    /* Ensure val.vp is NULL-initialized (and thus not inadvertently free'd) when PRN_DMN_IDX_CRD_VAL is False */
+    for(int idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=NULL; 
     dmn_sbs_ram=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     dmn_sbs_dsk=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     mod_map_cnt=(long *)nco_malloc(var.nbr_dim*sizeof(long));
