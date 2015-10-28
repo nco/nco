@@ -699,6 +699,7 @@ extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.5.4</b>: (<i>In Progress, features in-progress or completed include</i>)
+<tt>ncks -V</tt> bugfix;
 <tt>ncks</tt> regridder uses CF to find coordinates;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
 <li><b>NCO 4.5.3</b>: (<i>Current Stable Release</i>)
