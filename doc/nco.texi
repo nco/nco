@@ -7772,8 +7772,8 @@ The three lossy compression algorithms are Packing
 Packing quantizes data of a higher precision type into a lower precision 
 type (often @code{NC_SHORT}) that thus stores a fewer (though constant)
 number of bytes per value. 
-Packed data almost unpacks into a (much) smaller dynamic range than
-the floating-point data can represent. 
+Packed data unpacks into a (much) smaller dynamic range than the
+floating-point data can represent.  
 The type-conversion and reduced dynamic range of the data allows packing
 to eliminate bits typically used to store an exponent, thus improving 
 its packing efficiency.
@@ -15046,14 +15046,15 @@ positive infinity and negative infinity
 return False, contrary to the behavior of all other numbers.
 This is difficult to inuit, yet is the behavior defined for NaN by
 @w{@acronym{IEEE} 754}.
-Using NaN for the missing value in datasets is legal.
-We strongly discourage it.}. 
+Although using NaN for the missing value in datasets is legal, 
+we strongly discourage it.}. 
 One way to work-around this problem is to change @acronym{IEEE} NaNs to
 normal missing values. 
 As of @acronym{NCO} 4.1.0 (March, 2012), @command{ncatted} works with
 NaNs.
 First set the missing value (i.e., the value of the @code{_FillValue}
-attribute) for the variable(s) in question to the @acronym{IEEE} NaN value. 
+attribute) for the variable(s) in question to the @acronym{IEEE} NaN
+value.  
 @example
 ncatted -a _FillValue,,o,f,NaN in.nc
 @end example
