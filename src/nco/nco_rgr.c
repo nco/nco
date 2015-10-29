@@ -27,6 +27,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   /* Main control branching occurs here
      Branching complexity and utility will increase as regridding features are added */
   if(rgr->flg_grd) flg_grd=True;
+
   if(rgr->flg_nfr) flg_nfr=True;
   if(rgr->flg_map) flg_map=True;
   if(rgr->flg_grd_src && rgr->flg_grd_dst) flg_smf=True;

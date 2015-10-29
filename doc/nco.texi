@@ -4819,7 +4819,6 @@ if [ ${chk_nrc} = 'y' ]; then
 	echo "Full NERC compliance-check log for ${fl} in ${cf_out}"
     done
 fi # !nerc
-
 EOF
 chmod 755 ~/ncdismember # Make command executable
 /bin/mv -f ~/ncdismember ~/sh # Store in location on $PATH, e.g., /usr/local/bin
