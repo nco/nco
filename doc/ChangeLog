@@ -1,4 +1,4 @@
-2015-10-29  Charlie Zender  <zender@uci.edu>
+2015-10-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.4-alpha01 final changes';git push
