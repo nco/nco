@@ -1,10 +1,10 @@
-2015-10-29  Charlie Zender  <zender@uci.edu>
+2015-10-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.4-alpha01 final changes';git push
 	git tag -a 4.5.4-alpha01 -m 'Version 4.5.4-alpha01 tag:	100% Geometry';git push --tags
 
-qqq	* Check-for and if found, retain, record dimension property during regridding
+	* Check-for and if found, retain, record dimension property during regridding
 
 2015-10-27  Charlie Zender  <zender@uci.edu>
 
