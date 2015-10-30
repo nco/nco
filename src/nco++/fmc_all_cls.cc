@@ -1920,6 +1920,16 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 		var=walker.out(vtr_args[0]);
 		
+        #ifdef ENABLE_NETCDF4
+        { /* scope for fl_fmt temporary */
+            int fl_fmt; 
+            (void)nco_inq_format(walker.prs_arg->out_id,&fl_fmt);
+            if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC)
+                mp_typ=NC_UINT64;
+            else    
+                mp_typ=NC_INT;   
+        } /* end scope */
+        #endif 
 
 
 
@@ -1934,7 +1944,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 		else
 		{	
        // create empty var to return
-       var_out=ncap_sclr_var_mk("~agg_idx_cls@methods",mp_typ,false);          
+       var_out=ncap_sclr_var_mk(static_cast<std::string>("~zz@value_list"),mp_typ,false);          
 	    var_out->sz=var->nbr_dim;
 		}
        nco_var_free(var);
@@ -1943,7 +1953,9 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 		
     nbr_dim=var->nbr_dim;       
 	// create return attribute/var	
-	var_out=ncap_sclr_var_mk("~zz@value_list",NC_UINT64,true);          
+	var_out=ncap_sclr_var_mk(static_cast<std::string>("~zz@value_list"),NC_UINT64,true);          
+    var_out->has_dpl_dmn=-1;
+ 
 	ncap_att_stretch(var_out, nbr_dim); 
     cast_void_nctype(NC_UINT64,&var_out->val); 
 
@@ -2044,7 +2056,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     
     
    sz_dim=1L;  
-   // convert idx_min into multiple indices  
+   // convert my_index into multiple indices  
    for(idx=0;idx<nbr_dim;idx++)
       sz_dim*= var->cnt[idx]; 
 
@@ -2055,21 +2067,8 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     }
 
     cast_nctype_void(NC_UINT64,&var_out->val);
-    
-    mp_typ=NC_INT;
-    #ifdef ENABLE_NETCDF4
-    { /* scope for fl_fmt temporary */
-        int fl_fmt; 
-        (void)nco_inq_format(walker.prs_arg->out_id,&fl_fmt);
-        if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC)
-            mp_typ=NC_UINT64;
-        else    
-            mp_typ=NC_INT;   
-     } /* end scope */
 
-     #endif 
-
-     if(var_out->type != mp_typ) 
+    if(var_out->type != mp_typ) 
          nco_var_cnf_typ(mp_typ,var_out); 
 
      nco_var_free(var);
