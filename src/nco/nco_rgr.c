@@ -1915,9 +1915,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 		if(rcd != NC_NOERR){
 		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx+dmn_in_fst);
 		  /* Check-for and, if found, retain record dimension property */
-		  //for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
-		  //if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
-		  //dmn_cnt[dmn_idx+dmn_in_fst]=NC_UNLIMITED;
+		  for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
+		    if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
+		      dmn_cnt[dmn_idx+dmn_in_fst]=NC_UNLIMITED;
 		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx+dmn_in_fst],dmn_id_out+dmn_idx+dmn_in_fst);
 		} /* !rcd */
 	      } /* !col */
