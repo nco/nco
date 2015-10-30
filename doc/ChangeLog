@@ -1,8 +1,12 @@
-2015-10-27  Charlie Zender  <zender@uci.edu>
+2015-10-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.4-alpha01 final changes';git push
 	git tag -a 4.5.4-alpha01 -m 'Version 4.5.4-alpha01 tag:	100% Geometry';git push --tags
+
+	* Check-for and if found, retain, record dimension property during regridding
+
+2015-10-27  Charlie Zender  <zender@uci.edu>
 
 	* Ensure dim[idx].val.vp is NULL-initialized (and thus not inadvertently free'd) when PRN_DMN_IDX_CRD_VAL is False
 	Fixes GitHub issue #18 reported by Pat Nichols
