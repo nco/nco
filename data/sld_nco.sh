@@ -1,7 +1,12 @@
 #!/bin/sh
 
-# Purpose: Regridding script tailored for Swath-Like-Data (SLD)
-# This script regrids all input SLD files to specified output grid
+# Purpose: Regridding script
+# This script regrids all input files to specified output grid
+# Script runs in one of two modes, freewill or predestination
+# A. Free-will mode: Infer source grid from input file, create mapfile using that source plus supplied destination grid, apply mapfile, (by default) delete intermediate source grid and mapfile, proceed to next input file
+# B. Predestination: Apply supplied mapfile to all input files
+# Free-will mode is useful for processing Swath-Like-Data (SLD) where each input may be a granule on a new grid, yet all inputs are to be regridded to the same output grid
+# Predestination mode is useful for post-processing models or analyses where all files are converted from the same source grid to the same destination grid
 
 # Author: C. Zender
 # Created: 20150909
@@ -58,7 +63,7 @@ drc_in='' # [sng] Input file directory
 drc_out="${DATA}/sld/rgr" # [sng] Output file directory
 esmf_opt='> /dev/null' # [sng] ESMF_RegridWeightGen options
 fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
-gaa_sng="--gaa sld_script=${spt_nm} --gaa sld_hostname=${HOSTNAME} --gaa sld_version=${nco_version}" # [sng] Global attributes to add
+gaa_sng="--gaa rgr_script=${spt_nm} --gaa rgr_hostname=${HOSTNAME} --gaa rgr_version=${nco_version}" # [sng] Global attributes to add
 grd_fl='' # [sng] Grid-file
 grd_sng='' # [sng] Grid string
 hdr_pad='1000' # [B] Pad at end of header section
@@ -69,7 +74,8 @@ nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 par_typ='bck' # [sng] Parallelism type
 rgr_fl='' # [sng] Regridded file
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid')
-sld_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] SLD file
+sld_fl='' # [sng] SLD file
+#sld_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] SLD file
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
@@ -154,10 +160,6 @@ shift $((OPTIND-1)) # Advance one argument
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
 fi # !drc_in
-out_nm=${sld_fl}
-if [ -n "${fml_nm}" ]; then 
-    out_nm="${fml_nm}"
-fi # !fml_nm
 if [ -n "${nco_usr}" ]; then 
     nco_opt="${nco_usr} ${nco_opt}"
 fi # !var_lst
@@ -182,6 +184,22 @@ elif [ ${par_typ} = 'mpi' ]; then
     par_opt_cf=''
 fi # !par_typ
 
+if [ ! -n "${sld_fl}" ]; then
+    # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
+    if [ -t 0 ]; then 
+	fl_nbr=0
+	while read line; do
+	    fl_in[${fl_nbr}]=${line}
+	    echo "Asked to regrid file ${fl_nbr}: ${fl_in[${fl_nbr}]}"
+	    let fl_nbr=${fl_nbr}+1
+	done < /dev/stdin
+	sld_fl=${fl_in[0]}
+    else
+	echo "ERROR: Must specify input file with -s or with stdin"
+	echo "HINT: Send file list to script with, e.g., 'ls *.nc | ${spt_nm}'"
+	exit 1
+    fi # stdin
+fi # !grd_fl
 if [ -n "${grd_fl}" ]; then 
     if [ ! -e "${grd_fl}" ]; then
 	echo "ERROR: Unable to find specified grid-file ${grd_fl}"
