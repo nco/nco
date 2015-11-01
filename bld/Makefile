@@ -27,7 +27,6 @@
 # edison.nersc.gov   : NCO          Configure All else Intel
 # travis CI          : NCO          Configure All else gcc,clang,g++
 
-
 # Usage (testing):
 # make tst                           # Vanilla regression test
 # make FL_FMT=netcdf4 tst            # netCDF4 regression test

@@ -1890,9 +1890,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 		if(rcd != NC_NOERR){
 		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx+dmn_in_fst);
 		  /* Check-for and, if found, retain record dimension property */
-		  //for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
-		  //if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
-		  //dmn_cnt[dmn_idx+dmn_in_fst]=NC_UNLIMITED;
+		  for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
+		    if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
+		      dmn_cnt[dmn_idx+dmn_in_fst]=NC_UNLIMITED;
 		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx+dmn_in_fst],dmn_id_out+dmn_idx+dmn_in_fst);
 		} /* !rcd */
 	      } /* !lat && !lon */
@@ -1915,9 +1915,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 		if(rcd != NC_NOERR){
 		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx+dmn_in_fst);
 		  /* Check-for and, if found, retain record dimension property */
-		  //for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
-		  //if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
-		  //dmn_cnt[dmn_idx+dmn_in_fst]=NC_UNLIMITED;
+		  for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
+		    if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
+		      dmn_cnt[dmn_idx+dmn_in_fst]=NC_UNLIMITED;
 		  rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx+dmn_in_fst],dmn_id_out+dmn_idx+dmn_in_fst);
 		} /* !rcd */
 	      } /* !col */
@@ -1932,9 +1932,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	    if(rcd != NC_NOERR){
 	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
 	      /* Check-for and, if found, retain record dimension property */
-	      //for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
-	      //if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
-	      //dmn_cnt[dmn_idx]=NC_UNLIMITED;
+	      for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
+		if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
+		  dmn_cnt[dmn_idx]=NC_UNLIMITED;
 	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
 	    } /* !rcd */
 	  } /* !dmn_idx */
@@ -2447,6 +2447,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt_out+dmn_idx);
+	  if(dmn_cnt_out[dmn_idx] == 0L){
+	    /* No records have been written, so overwrite zero output record size with input record size */
+	    char dmn_rec_nm[NC_MAX_NAME]; /* [sng] Record dimension name */
+	    int dmn_rec_id_in;
+	    rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_rec_nm);
+	    rcd=nco_inq_dimid(in_id,dmn_rec_nm,&dmn_rec_id_in);
+	    rcd=nco_inq_dimlen(in_id,dmn_rec_id_in,dmn_cnt_out+dmn_idx);
+	  } /* !dmn_cnt_out */
 	  var_sz_out*=dmn_cnt_out[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
