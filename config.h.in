@@ -418,6 +418,9 @@
 /* Building TeXInfo documentation requires version greater than 4.8 */
 #undef MAKEINFO_VERSION
 
+/* GSL major version number */
+#undef NCO_GSL_MAJOR_VERSION
+
 /* GSL minor version number */
 #undef NCO_GSL_MINOR_VERSION
 
