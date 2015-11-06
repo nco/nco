@@ -2755,11 +2755,11 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #pvn20151105: changed test so that it handles netCDF4 case (output string differs by 'chunksize = 2')
 #ncks -4 in.nc in4.nc
 #ncpdq -h -O -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 in4.nc out2.nc
-#ncks -v three_dmn_var_dbl out2.nc | grep 'three_dmn_var_dbl dimension 0: lat, size = 2' | cut -d ' ' -f 11-13
+#ncks -v three_dmn_var_dbl out2.nc | grep 'dimension 0' | grep 'Record' | cut -d ' ' -f 1
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -v three_dmn_var_dbl %tmp_fl_00% | grep 'three_dmn_var_dbl dimension 0: lat, size = 2' | cut -d ' ' -f 11-13";
+    $tst_cmd[1]="ncks -v three_dmn_var_dbl %tmp_fl_00% | grep 'dimension 0' | grep 'Record' | cut -d ' ' -f 1 three_dmn_var_dbl";
     $dsc_sng="Re-order 3D variable with MSA -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3";
-    $tst_cmd[2]="(Record non-coordinate dimension)";
+    $tst_cmd[2]="three_dmn_var_dbl";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
