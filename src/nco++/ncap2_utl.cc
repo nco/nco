@@ -964,7 +964,6 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	  //(void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  //nco_exit(EXIT_FAILURE);
 	}else{
-	  if(nco_dbg_lvl_get() >= 1) 
 	    wrn_prn(fnc_nm,std::string(var_lsr->nm)+ " and " +std::string(var_gtr->nm) +" share no dimensions. Attempting to convolve..."); 
 	  //(void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
@@ -1021,8 +1020,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
   if(var_lsr_out == NULL_CEWI && CONVOLVE){
     /* Convolve variables by returned stretched variables with minimum possible number of dimensions */
     int dmn_nbr; /* Number of dimensions in convolution */
-    if(nco_dbg_lvl_get() >= 1) 
-      dbg_prn(fnc_nm,"Convolution not yet implemented, results of operation between " +std::string(var_lsr->nm) 
+    dbg_prn(fnc_nm,"Convolution not yet implemented, results of operation between " +std::string(var_lsr->nm) 
               + " and "+std::string(var_gtr->nm) + "are unpredictable");
     //(void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
     /* Dimensions in convolution are union of dimensions in variables */
