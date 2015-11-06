@@ -2757,7 +2757,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncpdq -h -O -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 in4.nc out2.nc
 #ncks -v three_dmn_var_dbl out2.nc | grep 'dimension 0' | grep 'Record' | cut -d ' ' -f 1
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -v three_dmn_var_dbl %tmp_fl_00% | grep 'dimension 0' | grep 'Record' | cut -d ' ' -f 1 three_dmn_var_dbl";
+    $tst_cmd[1]="ncks -v three_dmn_var_dbl %tmp_fl_00% | grep 'dimension 0' | grep 'Record' | cut -d ' ' -f 1";
     $dsc_sng="Re-order 3D variable with MSA -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3";
     $tst_cmd[2]="three_dmn_var_dbl";
     $tst_cmd[3]="SS_OK";
