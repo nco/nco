@@ -2749,18 +2749,22 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
  
-#NEW NCO 4.3.2 
+#NCO 4.3.2 
 #ncpdq #6 (same run as #5) 
 #make sure first dimension is record
+#pvn20151105: changed test so that it handles netCDF4 case (output string differs by 'chunksize = 2')
+#ncks -4 in.nc in4.nc
+#ncpdq -h -O -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 in4.nc out2.nc
+#ncks -v three_dmn_var_dbl out2.nc | grep 'dimension 0' | grep 'Record' | cut -d ' ' -f 1
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -v three_dmn_var_dbl %tmp_fl_00% | grep  'three_dmn_var_dbl dimension 0: lat, size = 2 (Record non-coordinate dimension)'";
+    $tst_cmd[1]="ncks -v three_dmn_var_dbl %tmp_fl_00% | grep 'dimension 0' | grep 'Record' | cut -d ' ' -f 1";
     $dsc_sng="Re-order 3D variable with MSA -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3";
-    $tst_cmd[2]="three_dmn_var_dbl dimension 0: lat, size = 2 (Record non-coordinate dimension)";
+    $tst_cmd[2]="three_dmn_var_dbl";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
     
-#NEW NCO 4.3.2 
+#NCO 4.3.2 
 #ncpdq #7 MSA stride
 #ncpdq -h -O -a lat,lon,time -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl in.nc ~/foo.nc 
 #ncks -C -H -v three_dmn_var_dbl -d lat,0,0 -d lon,1,1 -d time,0 ~/foo.nc
@@ -2791,7 +2795,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
     
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #10
 # two_dmn_var (lat,lev) no change
 # ncpdq -O -C -a lat,lev -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
@@ -2805,7 +2809,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array
     
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #11
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
@@ -2818,7 +2822,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array   
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #12
 # two_dmn_var (lat,lev) no MSA (associated coordinates)
 # ncpdq -O -a lev,lat -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
@@ -2832,7 +2836,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array     
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #13
 # two_dmn_var (lat,lev) -C, MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
@@ -2845,7 +2849,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array   
   
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #14
 # two_dmn_var (lat,lev) MSA (associated coordinates)
 # ncpdq -O -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var ~/nco/data/in.nc ~/foo.nc
@@ -2858,7 +2862,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array  
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #15
 # two_dmn_rec_var(time,lev) 2D variable with record  (-C, no MSA)
 # ncpdq -O -C -a lev,time -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
@@ -2872,7 +2876,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
   $#tst_cmd=0; # Reset array  
 
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #16
 # two_dmn_rec_var(time,lev) 2D variable with record  (no MSA)
 # ncpdq -O -a lev,time -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
@@ -2885,7 +2889,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array  
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #17
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
 # ncpdq -O -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
@@ -2898,7 +2902,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array   
   
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #18
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
 # ncpdq -O -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
@@ -2911,7 +2915,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array  
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #19
 #three_dmn_var_dbl(time,lat,lon);
 #ncpdq -h -O -a lat,time -v three_dmn_var -d time,1,1 -d lat,1,1 -d lon,1,1 in.nc ~/foo.nc
@@ -2923,7 +2927,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
     
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #20
 #three_dmn_rec_var(time,lat,lon);
 #ty(time,lat);
@@ -2936,7 +2940,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array   
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #21 (same run as #20)
 #three_dmn_rec_var(time,lat,lon);
 #ty(time,lat);
@@ -2949,7 +2953,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array         
   
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #22
 #three_dmn_rec_var(time,lat,lon); MSA
 #ty(time,lat);
@@ -2962,7 +2966,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array 
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #23 (same run as #22)
 #three_dmn_rec_var(time,lat,lon); MSA
 #ty(time,lat);
@@ -2975,7 +2979,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #24 (same run as #22) check if output is the right record
 #three_dmn_rec_var(time,lat,lon); 
 #ty(time,lat);
@@ -2988,7 +2992,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #25 (same run as #22) check if output is the right record
 #three_dmn_rec_var(time,lat,lon); 
 #ty(time,lat);
@@ -3001,7 +3005,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
 
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #26
 #four_dmn_rec_var(time,lat,lev,lon); MSA
 #ncpdq -h -O -a lev,time,-lon,-lat -v four_dmn_rec_var -d time,1,6,2 -d lat,1,1 -d lon,1,1 -d lev,1,1 in.nc ~/foo.nc
@@ -3014,7 +3018,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
     
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #27 : reorder 2 variables with -a lat,time and check a variable that only has 1 (lat)
 #PS(time,lat,lon)
 #three_dmn_var_crd(lev,lat,lon);
@@ -3028,7 +3032,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
  
-#NEW NCO 4.3.2
+#NCO 4.3.2
 #ncpdq #28 
 #ncpdq -h -O -a lat,time -d time,1,6,2 -d lat,1,1 in.nc ~/foo.nc
 #ncks -C -H -v -d time,2,2 four_dmn_rec_var ~/foo.nc
