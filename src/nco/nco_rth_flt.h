@@ -20,9 +20,6 @@
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
 
-#ifdef _MSC_VER
-# include <float.h> /* isfinite(), isinf(), isnan() */
-#endif /* !_MSC_VER */
 /* fxm stdio only needed for TODO ncap57 on UNIX */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
@@ -49,46 +46,6 @@ rnd_nbrf /* [fnc] Generate random fraction in [0,1] */
 (float); /* I [frc] Immaterial */
 
 /* Remaining definitions are system-dependent */
-
-/* MSVC does not define isnormal(), isnan(), isinf(), isfinite()
-   http://stackoverflow.com/questions/2249110/how-do-i-make-a-portable-isnan-isinf-function */
-#ifdef _MSC_VER
-  /* isnormal() may be in MSVC 2012 with header amp_math.h. fxm: verify and utilize if true. */
-# define isnormal
-  /* Following functions are in MSVC 2008+ and require float.h */
-# define isnan(x) _isnan(x)
-# define isfinite(x) _finite(x)
-# define isinf(x) (!_finite(x))
-#endif /* !_MSC_VER */
-
-#ifdef _MSC_VER
-  /* _snprintf() is in MSVC 2005+ and requires stdio.h */
-# define snprintf _snprintf
-#endif /* !_MSC_VER */
-
-/* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer, halfway cases round away from 0
-   MSVC does not define lrint(), lrintf(), lrintl(), llrint(), llrintf(), llrintl(): Round to nearest even integer, raise exceptions
-   Summary of POSIX, ISO, and MSVC math intrinsics at http://www.johndcook.com/math_h.html */
-#ifdef _MSC_VER
-  long long int llrint(double x);
-  long long int llrintf(float x);
-  long int lrint(double x);
-  long int lrintf(float x);
-  long long int llround(double x);
-  long long int llroundf(float x);
-  long int lround(double x);
-  long int lroundf(float x);
-#endif /* !_MSC_VER */ 
-
-#ifdef _MSC_VER
-  /* 20130227: Hard-code these because MSVC does not have access to config.h
-     Lack of double-precision version implies lack of single-precision version
-     Hence single-precision ("float") tokens are set in double-precision prototypes below */
-# define NEED_RINT
-# define NEED_NEARBYINT
-# define NEED_ROUND
-# define NEED_TRUNC
-#endif /* !_MSC_VER */
 
 #ifdef NEED_RINT
 # define NEED_RINTF
@@ -118,7 +75,7 @@ trunc /* [fnc] Truncate x to nearest integer not larger in absolute value */
 (double x); /* I [frc] Value to truncate */
 #endif /* !NEED_TRUNC */
 
-#if !defined(HPUX) && !defined(__INTEL_COMPILER) && !defined(LINUXAMD64)
+#if !defined(HPUX) && !defined(__INTEL_COMPILER) && !defined(LINUXAMD64) && !defined(_MSC_VER)
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX
      20040708: HP-UX does not like these 
      20090223: Intel compilers version 11.x complains about these

@@ -35,6 +35,12 @@
 # endif /* !HAVE_UDUNITS2_H */
 #endif /* !ENABLE_UDUNITS */
 
+#ifdef _MSC_VER
+#undef snprintf
+/* udunits2 defines snprintf as c99_snprintf, so the above is required  */
+#define snprintf _snprintf
+#endif
+
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */

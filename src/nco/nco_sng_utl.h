@@ -25,10 +25,7 @@
 #endif /* !HAVE_STRINGS_H */
 
 #ifdef _MSC_VER
-/* 20150203 C99 supplies isblank() and isspace() in ctype.h
-   MSVC 2010 has ctype.h and supplies isspace() but lacks isblank() 
-   MSVC 2012+ (apparently) supplies everything expected in ctype.h? */
-# define NEED_ISBLANK
+# define NEED_STRCASECMP
 # define NEED_STRCASESTR
 #endif /* !_MSC_VER */
 
@@ -44,6 +41,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
 
 #ifdef NEED_ISBLANK
   int /* O [flg] Character is a space or horizontal tab */
