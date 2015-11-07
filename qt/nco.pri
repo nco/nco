@@ -1,41 +1,29 @@
-# common NCO Qt dependency library settings for all NCO operators
-# gcc settings to use C99
-# HDF5 and netCDF LIB order is important
-# _BSD_SOURCE and _POSIX_SOURCE needed
+CONFIG += console 
+CONFIG += static
+CONFIG -= qt
+
 unix {
+ CONFIG += largefile
  DEFINES += HAVE_CONFIG_H
  INCLUDEPATH += ../../
  DEFINES += _BSD_SOURCE
  DEFINES += _POSIX_SOURCE
  QMAKE_CFLAGS += -std=c99
- #INCLUDEPATH += /usr/local/include
- #INCLUDEPATH += /usr/local
- INCLUDEPATH += /home/pvicente/install/netcdf-c-4.3.1.1/include
- LIBS += -L/home/pvicente/install/netcdf-c-4.3.1.1/lib -lnetcdf
- LIBS += -lhdf5_hl -lhdf5 -lgsl -lgslcblas -lm
+ LIBS += -L/usr/local/lib/
+ LIBS += -lhdf5_hl -lhdf5 -lgsl -lgslcblas -lnetcdf -lm
  LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/i386-linux-gnu/ -lz -ludunits2 -lexpat
- # Mac Ports netCDF locations
- LIBS += -L/opt/local/lib
- INCLUDEPATH += /opt/local/include 
- # Mac Ports udunits locations
- INCLUDEPATH += /opt/local/include/udunits2
- #RHEL
- INCLUDEPATH += /SNS/users/pvicente/libs/install/netcdf-4.3.1-rc2/include
- INCLUDEPATH += /SNS/users/pvicente/libs/install/udunits-2.1.24/include
- LIBS += -L/SNS/users/pvicente/libs/install/netcdf-4.3.1-rc2/lib
- LIBS += -L/SNS/users/pvicente/libs/install/udunits-2.1.24/lib
 }
 
-CONFIG -= qt
-#CONFIG += netcdf3
-
 win32{
- CONFIG += console 
+ QMAKE_CFLAGS_RELEASE += /MT
+ QMAKE_CXXFLAGS_RELEASE += /MT
+ QMAKE_CFLAGS_DEBUG += /MTd
+ QMAKE_CXXFLAGS_DEBUG += /MTd
+ QMAKE_CXXFLAGS += /TP 
  DEFINES += _CRT_SECURE_NO_WARNINGS
  DEFINES += _CRT_NONSTDC_NO_DEPRECATE
- DEFINES += NEED_STRCASECMP
- # gsl
- INCLUDEPATH += $(HEADER_GSL)
+ DEFINES += ENABLE_UDUNITS
+ DEFINES += HAVE_UDUNITS2_H
  DEFINES += ENABLE_GSL
  DEFINES += ENABLE_DAP
 }
@@ -54,8 +42,11 @@ win32{
  DEFINES += ENABLE_NETCDF4
  DEFINES += HAVE_NETCDF4_H
 }
-
+ INCLUDEPATH += $(HEADER_GSL)
+ INCLUDEPATH += $(HEADER_UDUNITS)
  LIBS += $(LIB_GSL)
+ LIBS += $(LIB_UDUNITS)
+ LIBS += $(LIB_EXPAT)
  LIBS += $(LIB_CURL)
 }
 

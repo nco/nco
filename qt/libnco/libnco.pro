@@ -1,24 +1,15 @@
-# template type is library
 TEMPLATE = lib
-# name of library
 TARGET = libnco
-# the library is a static library
 CONFIG += staticlib
-
 CONFIG -= qt
 CONFIG += debug_and_release
 
-# NCO library
 unix:CONFIG( debug, debug|release ) {
-    # debug
         DESTDIR = ./debug
 } else {
-    # release
         DESTDIR = ./release
 }
 
-# netCDF library
-# gcc settings to use C99
 unix {
  DEFINES += HAVE_CONFIG_H
  INCLUDEPATH += ../../
@@ -30,13 +21,10 @@ unix {
  QMAKE_CFLAGS += -std=c99
 }
 
-# common NCO settings
 include (../nco.pri)
 
 SOURCES += ../../src/nco/nco_getopt.c
 HEADERS += ../../src/nco/nco_getopt.h
-
-# header files
 HEADERS += ../../src/nco/libnco.h \
 ../../src/nco/ncap.h \
 ../../src/nco/nco.h \
@@ -84,7 +72,6 @@ HEADERS += ../../src/nco/libnco.h \
 ../../src/nco/nco_var_scv.h \
 ../../src/nco/nco_var_utl.h
 
-# source files
 SOURCES += ../../src/nco/nco_att_utl.c \
 ../../src/nco/nco_att_utl.c \
 ../../src/nco/nco_aux.c \
