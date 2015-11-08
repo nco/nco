@@ -40,11 +40,11 @@
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
 
-#ifndef NCO_GSL_MINOR_VERSION
+#ifndef NCO_GSL_VERSION
 #ifdef _MSC_VER
-# define NCO_GSL_MINOR_VERSION 7
+# define NCO_GSL_VERSION 107
 #else
-# define NCO_GSL_MINOR_VERSION 12
+# define NCO_GSL_VERSION 112
 #endif // _MSC_VER
 #endif // NCO_GSL_MINOR_VERSION
 

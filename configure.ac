@@ -651,13 +651,19 @@ if test "${enable_gsl}" != 'no'; then
     elif test "${enable_gsl}" = 'yes'; then
 # Assumes GSL version in form 1.[0-9]+  extract minor version only   
 	GSL_VER="`${GSL_CONFIG} --version`" 
-	GSL_VER=`echo "${GSL_VER}" | sed -e 's/^1\.//'`  
+	GSL_MAJOR="`echo "${GSL_VER}" | cut -d '.' -f 1`"
+	GSL_MINOR="`echo "${GSL_VER}" | cut -d '.' -f 2`"
+        GSL_VER=`expr $GSL_MAJOR \* 100 + $GSL_MINOR`  
 	if test "x${GSL_VER}" = 'x'; then
 	    # 20100115: Fix for machines like bluefire that lack gsl-config
-	    GSL_VER='4' 
+	    GSL_VER='104' 
+            GSL_MAJOR='1'
+            GSL_MINOR='4'
 	fi
 	AC_DEFINE(ENABLE_GSL,1,Compile operators with GSL support)
-	AC_DEFINE_UNQUOTED(NCO_GSL_MINOR_VERSION,${GSL_VER},GSL minor version number)
+	AC_DEFINE_UNQUOTED(NCO_GSL_MINOR_VERSION,${GSL_MINOR},GSL minor version number)
+	AC_DEFINE_UNQUOTED(NCO_GSL_MAJOR_VERSION,${GSL_MAJOR},GSL major version number)
+	AC_DEFINE_UNQUOTED(NCO_GSL_VERSION,${GSL_VER},GSL version number)
 	AC_MSG_NOTICE([GSL support enabled])
     fi
 fi

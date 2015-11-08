@@ -421,6 +421,12 @@
 /* GSL minor version number */
 #undef NCO_GSL_MINOR_VERSION
 
+/* GSL MAJOR version number */
+#undef NCO_GSL_MAJOR_VERSION
+
+/* this is -100*GSL_MAJOR+ GSL_MINOR */
+#undef NCO_GSL_VERSION
+
 /* POSIX extended regular expressions available */
 #undef NCO_HAVE_REGEX_FUNCTIONALITY
 

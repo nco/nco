@@ -200,13 +200,17 @@ nbr_err_ttl=0;
 
   // d2,d3 identical
   d2=gsl_sf_legendre_Plm(time.int()-1,0,0.7);
-  d3=time;
-  gsl_sf_legendre_Plm_array(9,0,0.7,&d3);
+
+    
+  // not in gsl 2.0
+  //gsl_sf_legendre_Plm_array(9,0,0.7,&d3);
 
   // d4,d5 identical
   d4=gsl_sf_legendre_sphPlm(leg,0,0.7);
-  d5=leg.double();
-  gsl_sf_legendre_sphPlm_array(3,0,0.7,&d5);
+  
+
+  // not in gsl 2.0
+  // gsl_sf_legendre_sphPlm_array(3,0,0.7,&d5);
 
 
   if( fabs(d0.total()-d1.total() ) >0.01){
@@ -214,14 +218,14 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
-
-  if( fabs(d2.total()-d3.total() ) >0.01){
+  
+  if( fabs(d2.total()- 1.56887  ) >0.01){
      print("ERROR: d2:Legendre functions\n");
      nbr_err++;	
   }
 
 
-  if( fabs(d4.avg()-d5.avg() ) >0.01){
+  if( fabs(d4.ttl()- 0.628677 ) >0.01){
      print("ERROR: d4:Legendre functions\n");
      nbr_err++;	
   }
