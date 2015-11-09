@@ -19770,17 +19770,31 @@ $as_echo "$as_me: WARNING: GSL support disabled (missing/unusable library or hea
     elif test "${enable_gsl}" = 'yes'; then
 # Assumes GSL version in form 1.[0-9]+  extract minor version only
 	GSL_VER="`${GSL_CONFIG} --version`"
-	GSL_VER=`echo "${GSL_VER}" | sed -e 's/^1\.//'`
+	GSL_MAJOR="`echo "${GSL_VER}" | cut -d '.' -f 1`"
+	GSL_MINOR="`echo "${GSL_VER}" | cut -d '.' -f 2`"
+        GSL_VER=`expr $GSL_MAJOR \* 100 + $GSL_MINOR`
 	if test "x${GSL_VER}" = 'x'; then
 	    # 20100115: Fix for machines like bluefire that lack gsl-config
-	    GSL_VER='4'
+	    GSL_VER='104'
+            GSL_MAJOR='1'
+            GSL_MINOR='4'
 	fi
 
 $as_echo "#define ENABLE_GSL 1" >>confdefs.h
 
 
 cat >>confdefs.h <<_ACEOF
-#define NCO_GSL_MINOR_VERSION ${GSL_VER}
+#define NCO_GSL_MINOR_VERSION ${GSL_MINOR}
+_ACEOF
+
+
+cat >>confdefs.h <<_ACEOF
+#define NCO_GSL_MAJOR_VERSION ${GSL_MAJOR}
+_ACEOF
+
+
+cat >>confdefs.h <<_ACEOF
+#define NCO_GSL_VERSION ${GSL_VER}
 _ACEOF
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: GSL support enabled" >&5
