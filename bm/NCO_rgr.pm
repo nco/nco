@@ -1708,11 +1708,11 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
-#ncks #26 groups: Extract "bounds" variables (extract /g8/ilev)
+#ncks #26 groups: Extract "bounds" variables (extract /g8/lev_bnd)
     $dsc_sng="(Groups) Extract 'bounds' variables";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -a -O -H -s '%g' %tmp_fl_00% ";    
-    $tst_cmd[2]="1005001000";
+    $tst_cmd[1]="ncks -O -H -s '%g' %tmp_fl_00% ";    
+    $tst_cmd[2]="03003007507501013.25";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -1750,9 +1750,9 @@ print "\n";
     
 #ncks #30 2D variable definition
     $dsc_sng="2D variable definition";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v ilev $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v lev_bnd $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00%";
-    $tst_cmd[2]="lev[2] vrt_nbr[1] ilev[5]=1013.25";
+    $tst_cmd[2]="lev[2] vrt_nbr[1] lev_bnd[5]=1013.25";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array   
@@ -1920,19 +1920,19 @@ print "\n";
     $#tst_cmd=0; # Reset array 		
 	
 #ncks #47 Extract CF 'bounds' variables (netCDF4 file)
-#lev:bounds = "ilev";
+#lev:bounds = "lev_bnd";
     $dsc_sng="(Groups) Extract CF 'bounds' variables (netCDF4 file)";
-    $tst_cmd[0]="ncks $nco_D_flg -g g8 -v lev $in_pth_arg in_grp_3.nc | grep -w /g8/ilev";
-    $tst_cmd[1]="/g8/ilev";
+    $tst_cmd[0]="ncks $nco_D_flg -g g8 -v lev $in_pth_arg in_grp_3.nc | grep -w /g8/lev_bnd";
+    $tst_cmd[1]="/g8/lev_bnd";
     $tst_cmd[2]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	
 #ncks #48 Extract CF 'bounds' variables (netCDF3 file)
-#lev:bounds = "ilev";
+#lev:bounds = "lev_bnd";
     $dsc_sng="Extract CF 'bounds' variables (netCDF3 file)";
-    $tst_cmd[0]="ncks $nco_D_flg -v lev $in_pth_arg in.nc | grep -o -w ilev";
-    $tst_cmd[1]="ilev";
+    $tst_cmd[0]="ncks $nco_D_flg -v lev $in_pth_arg in.nc | grep -o -w lev_bnd";
+    $tst_cmd[1]="lev_bnd";
     $tst_cmd[2]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			

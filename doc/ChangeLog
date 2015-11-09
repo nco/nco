@@ -1,10 +1,13 @@
+2015-11-08  Charlie Zender  <zender@uci.edu>
+
+	* Add hyai, hybi to in.cdl and prs_dlt example to manual
+
 2015-11-08  Henry Butowsky  <henryb@hush.com>
-	
-	* Added config support for gsl library 2.xx 
-	  mods to configure.ac, config.h.in
-          #deined  NCO_GSL_VERSION = 100 * NCO_GSL_MAJOR_VERSION + NCO_GSL_MINOR_VERSION
-	  
-	* downstream mods to fmc_gsl_cls.cc, fmc_gsl_cls.hh
+
+	* Support GSL library version 2.x. Modify configure.ac, config.h.in. Add tokens:
+          #define NCO_GSL_VERSION = 100 * NCO_GSL_MAJOR_VERSION + NCO_GSL_MINOR_VERSION
+
+	* Downstream GSL mods in fmc_gsl_cls.cc, fmc_gsl_cls.hh
 
 2015-10-30  Charlie Zender  <zender@uci.edu>
 

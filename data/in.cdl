@@ -63,7 +63,7 @@
 
 netcdf in {
 dimensions:
-  dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,Lon=4,Lat=2,time=unlimited;
+  dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,Lon=4,Lat=2,time=unlimited;
 variables:
   :Conventions = "CF-1.5";
   :history = "History global attribute.\nTextual attributes like history often have embedded newlines like this.\nSuch newlines should serve as linebreaks on the screen to enhance legibility like this.\nFriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings where each embedded delimiter marks a linebreak. This makes poetry embedded in CDL much nicer to read:\n\nA POET by Hafiz\n\nA poet is someone\nWho can pour light into a cup,\nThen raise it to nourish\nYour beautiful parched, holy mouth\n";
@@ -139,18 +139,35 @@ variables:
 
 	float lev(lev);
 	lev:purpose = "Monotonically increasing coordinate pressure";
-	lev:units = "hybrid_sigma_pressure";
+	lev:long_name = "hybrid level at midpoints (1000*(A+B))";
+	lev:units = "hPa";
 	lev:positive = "down";
 	lev:A_var = "hyam";
 	lev:B_var = "hybm";
 	lev:P0_var = "P0";
 	lev:PS_var = "PS";
-	lev:bounds = "ilev";
+	lev:bounds = "lev_bnd";
+        lev:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate";
+        lev:formula_terms = "a: hyam b: hybm p0: P0 ps: PS";
+        lev:formula_readable = "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm";
 
-	float ilev(lev,vrt_nbr);
-	ilev:purpose = "Cell boundaries for lev coordinate";
+	float ilev(ilev);
+	ilev:purpose = "Monotonically increasing coordinate pressure";
+	ilev:long_name = "hybrid level at interfaces (1000*(A+B))";
+	ilev:units = "hPa";
+	ilev:positive = "down";
+	ilev:A_var = "hyai";
+	ilev:B_var = "hybi";
+	ilev:P0_var = "P0";
+	ilev:PS_var = "PS";
+        ilev:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate";
+        ilev:formula_terms = "a: hyai b: hybi p0: P0 ps: PS";
+        ilev:formula_readable = "prs_ntf[time,lat,lon,ilev]=P0*hyai+PS*hybi";
 
-	float rlev(rlev);
+	float lev_bnd(lev,vrt_nbr);
+	lev_bnd:purpose = "Cell boundaries for lev coordinate";
+
+ 	float rlev(rlev);
 	rlev:purpose = "Monotonically decreasing coordinate pressure";
 
 	float lon(lon);
@@ -258,6 +275,12 @@ variables:
 
 	float hybm(lev);
 	hybm:long_name = "hybrid B coefficient at layer midpoints";
+
+	float hyai(ilev);
+	hyai:long_name = "hybrid A coefficient at layer interfaces";
+
+	float hybi(ilev);
+	hybi:long_name = "hybrid B coefficient at layer interfaces";
 
 	float P0;
 	P0:long_name = "reference pressure";
@@ -1204,8 +1227,10 @@ data:
 	g=9.8;
 	gw=10.,10.;
 	gw_T42=-87.863799,-85.096527,-82.312913,-79.525607,-76.736900,-73.947515,-71.157752,-68.367756,-65.577607,-62.787352,-59.997020,-57.206632,-54.416200,-51.625734,-48.835241,-46.044727,-43.254195,-40.463648,-37.673090,-34.882521,-32.091944,-29.301360,-26.510769,-23.720174,-20.929574,-18.138971,-15.348365,-12.557756,-9.767146,-6.976534,-4.185921,-1.395307,1.395307,4.185921,6.976534,9.767146,12.557756,15.348365,18.138971,20.929574,23.720174,26.510769,29.301360,32.091944,34.882521,37.673090,40.463648,43.254195,46.044727,48.835241,51.625734,54.416200,57.206632,59.997020,62.787352,65.577607,68.367756,71.157752,73.947515,76.736900,79.525607,82.312913,85.096527,87.863799;
-	hyam=0.0802583,0.0438226,0.0;
-	hybm=0.0187849,0.457453,0.992528;
+	hyam=0.0036,0.0019894,0.0;
+	hyai=0.002255,0.0438226,0.0,0.0;
+	hybm=0.0,0.52,0.992;
+	hybi=0.0,0.457453,0.985,1.0;
 	P0=100000;
 	gds_crd=0,1,2,3,4,5,6,7;
 	gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
@@ -1246,7 +1271,8 @@ data:
 	lat_T42=-88.240089,-85.092445,-82.311981,-79.525253,-76.736732,-73.947418,-71.157700,-68.367722,-65.577576,-62.787331,-59.997005,-57.206619,-54.416191,-51.625729,-48.835236,-46.044724,-43.254192,-40.463646,-37.673088,-34.882519,-32.091942,-29.301357,-26.510769,-23.720173,-20.929573,-18.138969,-15.348364,-12.557755,-9.767145,-6.976533,-4.185921,-1.395307,1.395307,4.185921,6.976533,9.767145,12.557755,15.348364,18.138969,20.929573,23.720173,26.510769,29.301357,32.091942,34.882519,37.673088,40.463646,43.254192,46.044724,48.835236,51.625729,54.416191,57.206619,59.997005,62.787331,65.577576,68.367722,71.157700,73.947418,76.736732,79.525253,82.311981,85.092445,88.240089;
 	lsmlev=0.05,0.1,0.2,0.5,1.0,3.0;
 	lev=100,500,1000;
-	ilev=0,300,300,750,750,1013.25;
+	ilev=50,200,750,1005;
+	lev_bnd=0,300,300,750,750,1013.25;
 	lev_cpy=100,500,1000;
 	lev_var=100.,500.,1000.;
 	lev_wgt=10,2,1;

@@ -11398,6 +11398,33 @@ ncap2 -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' in.nc out.nc
 Manipulating the four fields which define the pressure in a hybrid
 coordinate system is easy with left hand casting.
 
+Finally, we show how to use interface quantities to define midpoint
+quantities.
+In particular, we will define interface pressures using the standard
+@acronym{CESM} output hybrid coordinate parameters, and then difference
+those interface pressures to obtain the pressure difference between
+the interfaces. 
+The pressure difference is necessary obtain gridcell mass path
+and density (which are midpoint quantities).
+This exercise employs both left-hand casting and array notation.
+Definitions are is in the above example, with new variables
+@var{hyai} and @var{hybi} that are defined at grid cell vertical
+interfaces (rather than midpoints like @var{hyam} and @var{hybm}).
+@example
+@verbatim
+cat > ~/pdel.nco << 'EOF'
+*prs_ntf[time,lat,lon,ilev]=P0*hyai+PS*hybi;
+// Why doesn't this line work?
+// prs_dlt[time,lat,lon,lev]=prs_ntf[:,:,:,1:$ilev.size-1]-prs_ntf[:,:,:,0:$ilev.size-2];
+// Instead must break into two commands:
+prs_dlt[time,lat,lon,lev]=P0;
+prs_dlt=prs_ntf[:,:,:,1:$ilev.size-1]-prs_ntf[:,:,:,0:$ilev.size-2];
+EOF
+ncap2 -O -v -S ~/pdel.nco ~/nco/data/in.nc ~/foo.nc
+ncks -O -C -v prs_dlt ~/foo.nc
+@end verbatim
+@end example
+
 @html
 <a name="ncap_arr"></a> <!-- http://nco.sf.net/nco.html#ncap_arr -->
 @end html

@@ -110,19 +110,19 @@ netcdf in_grp_3 {
     
     //coordinate variable (/g8/lev)
     float lev(lev); 
-    lev:bounds = "ilev";
+    lev:bounds = "lev_bnd";
     
     //coordinate variable (/g8/vrt_nbr)
     float vrt_nbr(vrt_nbr);
     
-    float ilev(lev,vrt_nbr);
+    float lev_bnd(lev,vrt_nbr);
 	float lev_wgt(lev);
   data:
     lon=-180,0; 
     lev=100,500,1000;
-    ilev=0,300,300,750,750,1013.25;
+    lev_bnd=0,300,300,750,750,1013.25;
     vrt_nbr=1,2;
-	lev_wgt=9,2,1;
+    lev_wgt=9,2,1;
   } // end g8
   
  
