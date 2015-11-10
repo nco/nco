@@ -371,7 +371,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
 
     /* Check syntax */
     if(arg_nbr < 2){ /* Need more than just dimension name */
-      msg_sng=strdup("Need more than just dimension name");
+      msg_sng=strdup("Hyperslab options must specify at least two arguments (the first argument is the dimension name, the second is the minimum index, etc.)");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr > 6){ /* Too much information */
       msg_sng=strdup("Too many (more than 6) arguments");
