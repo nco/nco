@@ -340,17 +340,7 @@ if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
    return true;;
 } /* end lmt_mk */
 
-/* Legacy run -- will remove soon
-public:
-    void run(RefAST tr){
-        while(tr) {
-          (void)statements(tr);   
-          tr=tr->getNextSibling();   
-        }
-    }
-*/
 
-public:
     void run_dbl(RefAST tr,int icnt){
      int idx=0;
      RefAST ntr=tr;
@@ -365,7 +355,17 @@ public:
         err_prn("run_dbl"," REPORTS given a null AST Refrence\n");
             
      //small list dont bother with double parsing     
-     if(icnt <4) goto small;
+     if(icnt <4) {
+         idx=0;
+         ntr=tr;
+         //Final scan
+         prs_arg->ntl_scn=False;
+         while(idx++ < icnt){
+             (void)statements(ntr);   
+             ntr=ntr->getNextSibling();   
+         }
+         return; 
+     }
 
      //Initial scan
      prs_arg->ntl_scn=True;
@@ -396,28 +396,10 @@ public:
       // Evaluate expressions (execute)
       (void)ncap_omp_exe(all_ast_vtr,wlk_vtr,0);  
       
-      /*  
-      for(unsigned vtr_idx=0 ; vtr_idx<all_ast_vtr.size(); vtr_idx++)
-        for(unsigned jdx=0 ; jdx<all_ast_vtr[vtr_idx].size(); jdx++)
-	     (void)statements(all_ast_vtr[vtr_idx][jdx]);
-      */
-      
-    goto end;
-    } //end if
+    }
 
-small: 
-     idx=0;
-     ntr=tr;
-     //Final scan
-     prs_arg->ntl_scn=False;
-     while(idx++ < icnt){
-       (void)statements(ntr);   
-       ntr=ntr->getNextSibling();   
-     }
-end: ;
-   }
-
-public:
+    }
+ 
     int run_exe(RefAST tr, int nbr_dpt){
     // number of statements in block
     int nbr_stmt=0;
@@ -476,7 +458,6 @@ exit: return iret;
 
     } // end run_exe
 
-public:
 RefAST nco_dupList(RefAST tr){
       RefAST otr;  
       // nb astFactory is protected- must call from within class
