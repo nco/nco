@@ -962,11 +962,11 @@ if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
     // see if below does anything ? 
     (void)nco_sync(prs_arg->out_id); 
 
+    //Final scan
     if(!prs_arg->NCAP_MPI_SORT)
     { 
       idx=0;
       ntr=tr;
-      //Final scan
       prs_arg->ntl_scn=False;
       while(idx++ < icnt){
         (void)statements(ntr);   
@@ -3217,10 +3217,12 @@ var=NULL_CEWI;
               // free var  
               (void)nco_var_free(var);    
                 
-              /* Casting a hyperslab --this makes my brain  hurt!!! */
-              if(bcst)
-                var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
-
+              /* Casting a hyperslab --this makes my brain  hurt!!! 
+              if the var is already the correct size then do nothing 
+               what not even dimension reordering ?  */  
+              if(bcst && var1->sz != var_cst->sz)
+                 var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
+              
               var=var1;
                 
            }else{
