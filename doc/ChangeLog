@@ -1,3 +1,7 @@
+2015-11-12  Charlie Zender  <zender@uci.edu>
+
+	* Remove "l" suffix from NC_LONG integer constants (which are deprecated) so buggy ncgen 4.4.0 can parse in.cdl
+
 2015-11-09  Charlie Zender  <zender@uci.edu>
 
 	* Thoroughly run autoconf to propagate GSL changes

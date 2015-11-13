@@ -702,7 +702,7 @@ variables:
 	att_var:char_att = "Sentence one.\nSentence two.\n";
 	att_var:short_att = 37s;
 	att_var:int_att = 73;
-	att_var:long_att = 73l;
+	att_var:long_att = 73;
         att_var:float_att = 73.0f,72.0f,71.0f,70.010f,69.0010f,68.010000f,67.01000100f;
 	att_var:double_att = 73.0,72.0,71.0,70.010,69.0010,68.010000,67.01000100;
 
@@ -711,7 +711,7 @@ variables:
 	bnd_var:char_att = "Sentence one.\nSentence two.\n";
 	bnd_var:short_att = 37s;
 	bnd_var:int_att = 73;
-	bnd_var:long_att = 73l;
+	bnd_var:long_att = 73;
 	bnd_var:float_att = 73.f;
 	bnd_var:double_att = 73.d;
 
