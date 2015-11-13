@@ -2981,13 +2981,12 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 #NCO 4.3.2
 #ncpdq #24 (same run as #22) check if output is the right record
-#three_dmn_rec_var(time,lat,lon); 
-#ty(time,lat);
-#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
+#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var ~/nco/data/in.nc out1.nc
+#ncks -m -C -v three_dmn_rec_var out1.nc | grep 'Record' |  cut -d ' ' -f 1-7 #NB: the 'cut' call handles netCDF3/4 common output part
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m -C -v three_dmn_rec_var %tmp_fl_00% | grep 'three_dmn_rec_var dimension 0: lat, size = 2 NC_FLOAT (Record coordinate is lat)'";
+    $tst_cmd[1]="ncks -m -C -v three_dmn_rec_var %tmp_fl_00% | grep 'Record' | cut -d ' ' -f 1-7";
     $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var Test3 check record for lat";
-    $tst_cmd[2]="three_dmn_rec_var dimension 0: lat, size = 2 NC_FLOAT (Record coordinate is lat)";
+    $tst_cmd[2]="three_dmn_rec_var dimension 0: lat, size = 2";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
