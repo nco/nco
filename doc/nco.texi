@@ -11417,8 +11417,8 @@ cat > ~/pdel.nco << 'EOF'
 // Why doesn't this line work?
 // prs_dlt[time,lat,lon,lev]=prs_ntf[:,:,:,1:$ilev.size-1]-prs_ntf[:,:,:,0:$ilev.size-2];
 // Instead must break into two commands:
-prs_dlt[time,lat,lon,lev]=P0;
-prs_dlt=prs_ntf[:,:,:,1:$ilev.size-1]-prs_ntf[:,:,:,0:$ilev.size-2];
+prs_dlt(time,lat,lon,lev)=P0;
+prs_dlt=prs_ntf(:,:,:,1:$ilev.size-1)-prs_ntf(:,:,:,0:$ilev.size-2);
 EOF
 ncap2 -O -v -S ~/pdel.nco ~/nco/data/in.nc ~/foo.nc
 ncks -O -C -v prs_dlt ~/foo.nc
