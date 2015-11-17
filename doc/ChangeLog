@@ -1,5 +1,7 @@
 2015-11-17  Charlie Zender  <zender@uci.edu>
 
+	* Add latt_bounds, latu_bounds, lont_bounds, lonu_bounds to regrid exclusion list (for CICE) as per Wenshan
+
 	* Initialize lat/lon/col_nm_out in nco_grd_mk() skeleton code (broken in 4.5.3?)
 
 2015-11-12  Charlie Zender  <zender@uci.edu>

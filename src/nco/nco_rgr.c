@@ -1555,18 +1555,19 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
-  const int var_xcl_lst_nbr=17; /* [nbr] Number of objects on exclusion list */
+  const int var_xcl_lst_nbr=21; /* [nbr] Number of objects on exclusion list */
   /* Exception list source:
      CAM, CERES, CMIP5: lat, lon
      CAM, CMIP5: gw, lat_bnds, lon_bnds
      CAM-SE: area
+     CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds
      ESMF: gridcell_area
      MAR: LAT, LON
      MPAS-O: areaCell, latCell, lonCell
      NCO: lat_vertices, lon_vertices
      UV-CDAT regridder: bounds_lat, bounds_lon
      WRF: XLAT, XLONG */
-  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LAT","/lat","/latitude","/XLAT","/lat_bnds","/lat_vertices","/bounds_lat","/LON","/lon","/longitude","/XLONG","/lon_bnds","/lon_vertices","/bounds_lon"};
+  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LAT","/lat","/latitude","/XLAT","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/bounds_lat","/LON","/lon","/longitude","/XLONG","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/bounds_lon"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */

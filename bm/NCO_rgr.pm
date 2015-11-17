@@ -317,7 +317,32 @@ print "\n";
 	$tst_cmd[6]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
-    } # !CSZ
+
+	$dsc_sng="Generate 180x360 gridfile";
+	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr grid=%tmp_fl_00% --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~zender/nco/data/in.nc ~/foo.nc $in_pth_arg in.nc %tmp_fl_02%";
+	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %g -d grid_size,0 -v grid_center_lat %tmp_fl_00%";
+	$tst_cmd[2]="-87.8637988392";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+
+	$dsc_sng="Generate 180x360 grid skeleton file";
+	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr skl=%tmp_fl_01% --rgr grid=%tmp_fl_00% --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~zender/nco/data/in.nc ~/foo.nc $in_pth_arg in.nc %tmp_fl_02%";
+	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %g -d lat,0 -v gw %tmp_fl_01%";
+	$tst_cmd[2]="0.00178328";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+
+	$dsc_sng="Infer 180x360 gridfile (uses SSH/scp to dust.ess.uci.edu)";
+	$tst_cmd[0]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_2D.nc .";
+	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg --rgr nfr=y --rgr grid=%tmp_fl_00% $in_pth_arg in.nc %tmp_fl_01%";
+	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %g -d grid_size,0 -v grid_center_lat %tmp_fl_00%";
+	$tst_cmd[3]="-87.8637988392";
+	$tst_cmd[4]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+    } # !zender
     
     if($dodap eq "FALSE"){
 ####################
