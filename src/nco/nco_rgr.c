@@ -113,7 +113,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr) rgr=(rgr_sct *)nco_free(rgr);
 
   return rgr;
-} /* end nco_rfr_free() */
+} /* end nco_rgr_free() */
   
 rgr_sct * /* O [sct] Regridding structure */
 nco_rgr_ini /* [fnc] Initialize regridding structure */
@@ -491,6 +491,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   /* Derived from defaults and command-line arguments */
   // On second thought, do no strdup() these here. This way, NULL means user never specified lon/lat-out names
+  //  if(!rgr->col_nm_out) rgr->col_nm_out=(char *)strdup("ncol"); /* [sng] Name of dimension to output as horizontal spatial dimension on unstructured grid */
+  //  if(!rgr->lat_nm_out) rgr->lat_nm_out=(char *)strdup("lat"); /* [sng] Name of dimension to output as latitude */
+  //  if(!rgr->lon_nm_out) rgr->lon_nm_out=(char *)strdup("lon"); /* [sng] Name of dimension to output as longitude */
   //  if(!rgr->lat_nm_out) rgr->lat_nm_out=(char *)strdup(rgr_lat_nm_in); /* [sng] Name of output dimension for latitude */
   //  if(!rgr->lon_nm_out) rgr->lon_nm_out=(char *)strdup(rgr_lon_nm_in); /* [sng] Name of output dimension for longitude */
 
@@ -4138,13 +4141,15 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     int lon_bnd_id; /* [id] Variable ID for lon_bnds/lon_vertices */
     int lon_id; /* [id] Variable ID for longitude */
     
-    /* Name output dimensions */
+    /* Use explicitly specified output names, if any, otherwise use input names (either explicitly specified or discovered by fuzzing) */
+    if(rgr->lat_nm_out) lat_nm_out=rgr->lat_nm_out; else lat_nm_out=(char *)strdup("lat");
+    if(rgr->lon_nm_out) lon_nm_out=rgr->lon_nm_out; else lon_nm_out=(char *)strdup("lon");
+    if(rgr->col_nm_out) col_nm_out=rgr->col_nm_out; else col_nm_out=(char *)strdup("ncol");
+
+  /* Name output dimensions */
     area_nm=rgr->area_nm;
     bnd_nm=rgr->bnd_nm;
     //bnd_tm_nm=rgr->bnd_tm_nm;
-    col_nm_out=rgr->col_nm_out;
-    lat_nm_out=rgr->lat_nm_out;
-    lon_nm_out=rgr->lon_nm_out;
     lat_bnd_nm=rgr->lat_bnd_nm;
     lat_wgt_nm=rgr->lat_wgt_nm;
     lon_bnd_nm=rgr->lon_bnd_nm;

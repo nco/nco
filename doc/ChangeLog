@@ -1,3 +1,7 @@
+2015-11-17  Charlie Zender  <zender@uci.edu>
+
+	* Initialize lat/lon/col_nm_out in nco_grd_mk() skeleton code (broken in 4.5.3?)
+
 2015-11-12  Charlie Zender  <zender@uci.edu>
 
 	* Remove "l" suffix from NC_LONG integer constants (which are deprecated) so buggy ncgen 4.4.0 can parse in.cdl
