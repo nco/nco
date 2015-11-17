@@ -6041,14 +6041,14 @@ It will not be altered.
 The destination file (e.g., @file{foo.nc}) will be overwritten. 
 Its contents are immaterial. 
 
-@cindex @var{lat_grd}
-@cindex @var{lon_grd}
-@cindex @samp{--rgr lon_grd=@var{lon_grd}}
-@cindex @samp{--rgr lat_grd=@var{lat_grd}}
-@item Grid Types: @var{lat_grd}, @var{lon_grd}
+@cindex @var{lat_typ}
+@cindex @var{lon_typ}
+@cindex @samp{--rgr lon_typ=@var{lon_typ}}
+@cindex @samp{--rgr lat_typ=@var{lat_typ}}
+@item Grid Types: @var{lat_typ}, @var{lon_typ}
 The keys that hold the longitude and latitude gridtypes (which
-are, by the way, independent of eachother) are @var{lon_grd} and
-@var{lat_grd}. 
+are, by the way, independent of eachother) are @var{lon_typ} and
+@var{lat_typ}. 
 The @var{lat_typ} options for global grids are @samp{uni} for
 Uniform, @samp{cap} (or @samp{fv}) for Capped (equivalent to
 @acronym{FV}), and @samp{gss} for Gaussian.  
@@ -11406,24 +11406,38 @@ those interface pressures to obtain the pressure difference between
 the interfaces. 
 The pressure difference is necessary obtain gridcell mass path
 and density (which are midpoint quantities).
-This exercise employs both left-hand casting and array notation.
-Definitions are is in the above example, with new variables
-@var{hyai} and @var{hybi} that are defined at grid cell vertical
+Definitions are as in the above example, with new variables
+@var{hyai} and @var{hybi} defined at grid cell vertical
 interfaces (rather than midpoints like @var{hyam} and @var{hybm}).
+The approach naturally fits into two lines:
 @example
 @verbatim
 cat > ~/pdel.nco << 'EOF'
 *prs_ntf[time,lat,lon,ilev]=P0*hyai+PS*hybi;
-// Why doesn't this line work?
-// prs_dlt[time,lat,lon,lev]=prs_ntf[:,:,:,1:$ilev.size-1]-prs_ntf[:,:,:,0:$ilev.size-2];
-// Instead must break into two commands:
-prs_dlt(time,lat,lon,lev)=P0;
-prs_dlt=prs_ntf(:,:,:,1:$ilev.size-1)-prs_ntf(:,:,:,0:$ilev.size-2);
+// Requires NCO 4.5.4 and later:
+prs_dlt[time,lat,lon,lev]=prs_ntf(:,:,:,1:$ilev.size-1)-prs_ntf(:,:,:,0:$ilev.size-2);
+// Derived variable that require pressure thickness:
+// Divide by gravity to obtain total mass path in layer aka mpl [kg m-2] 
+mpl=prs_dlt/grv_sfc;
+// Multiply by mass mixing ratio to obtain mass path of constituent
+// Everything up to here works fine. The following line (commented-out) breaks the script.
+// However, it breaks it silently, no error is printed. Please try to fix this.
+//mpl_CO2=mpl*mmr_CO2;
 EOF
 ncap2 -O -v -S ~/pdel.nco ~/nco/data/in.nc ~/foo.nc
 ncks -O -C -v prs_dlt ~/foo.nc
 @end verbatim
 @end example
+The first line defines the four-dimensional interface pressures 
+@code{prs_ntf} as a @acronym{RAM} variable because those are not desired 
+in the output file. 
+The second differences each pressure level from the pressure above it
+to obtain the pressure difference. 
+This line employs both left-hand casting and array hyperslabbing.
+However, this syntax only works with @acronym{NCO} version 4.5.4
+(November, 2015) and later because earlier versions require that 
+@acronym{LHS} and @acronym{RHS} dimension names (not just sizes) match. 
+From the pressure differences, one can obtain the mass path in each layer
 
 @html
 <a name="ncap_arr"></a> <!-- http://nco.sf.net/nco.html#ncap_arr -->

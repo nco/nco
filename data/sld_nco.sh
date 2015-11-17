@@ -1,17 +1,17 @@
 #!/bin/sh
 
 # Purpose: Regridding script
-# This script regrids all input files to specified output grid
-# Script runs in one of two modes, freewill or predestination
-# A. Free-will mode: Infer source grid from input file, create mapfile using that source plus supplied destination grid, apply mapfile, (by default) delete intermediate source grid and mapfile, proceed to next input file
-# B. Predestination: Apply supplied mapfile to all input files
-# Free-will mode is useful for processing Swath-Like-Data (SLD) where each input may be a granule on a new grid, yet all inputs are to be regridded to the same output grid
-# Predestination mode is useful for post-processing models or analyses where all files are converted from the same source grid to the same destination grid
+# This script regrids all input files (possibly on different grids) to a single specified output grid
+# Script runs in one of two modes, free-will or predestination:
+# A. Free-will mode infers source grid from input file, creates mapfile using that source plus supplied destination grid, applies mapfile, (by default) deletes intermediate source grid and mapfile, proceeds to next input file
+# B. Predestination mode applies supplied mapfile to all input files
+# Use free-will mode to process Swath-Like-Data (SLD) where each input may be a granule on a new grid, yet all inputs are to be regridded to the same output grid
+# Use predestination mode to post-process models or analyses where all files are converted from the same source grid to the same destination grid
 
 # Author: C. Zender
 # Created: 20150909
 
-# Source: https://github.com/nco/nco/tree/master/data/sld_nco.c
+# Source: https://github.com/nco/nco/tree/master/data/sld_nco.sh
 
 # Additional Documentation:
 
@@ -59,7 +59,8 @@ fnt_rvr=`tput smso` # Reverse
 # Modify these defaults to save typing later
 #caseid='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] Case ID
 dbg_lvl=0 # [nbr] Debugging level
-drc_in='' # [sng] Input file directory
+drc_in="${drc_pwd}" # [sng] Input file directory
+#drc_in='' # [sng] Input file directory
 drc_out="${DATA}/sld/rgr" # [sng] Output file directory
 esmf_opt='> /dev/null' # [sng] ESMF_RegridWeightGen options
 fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
@@ -74,8 +75,8 @@ nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 par_typ='bck' # [sng] Parallelism type
 rgr_fl='' # [sng] Regridded file
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid')
-sld_fl='' # [sng] SLD file
-#sld_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] SLD file
+#sld_fl='' # [sng] SLD file
+sld_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] SLD file
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
@@ -111,6 +112,8 @@ function fnc_usg_prn {
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -s ${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -g ${grd_dst_dfl} -o ${drc_out} < ls ${drc_in}/*.1980*nc ${fnt_nrm}\n"
+    printf "          ${fnt_bld}ls ${drc_in}/*.1980*nc | $spt_nm -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -x TSurfStd_ct -s ${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -v TSurfAir -s ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -v CloudFrc_A -s ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
@@ -187,8 +190,9 @@ fi # !par_typ
 if [ ! -n "${sld_fl}" ]; then
     # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
     if [ -t 0 ]; then 
+	# Input awaits on unit 0, i.e., on stdin
 	fl_nbr=0
-	while read line; do
+	while read -r line; do # NeR05 p. 179
 	    fl_in[${fl_nbr}]=${line}
 	    echo "Asked to regrid file ${fl_nbr}: ${fl_in[${fl_nbr}]}"
 	    let fl_nbr=${fl_nbr}+1
