@@ -89,7 +89,7 @@ grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
 grd_dst_glb="${DATA}/grids/180x360_SCRIP.20150901.nc" # [sng] Grid-file (destination) global
 grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source) 
 
-function fnc_usg_prn {
+fnc_usg_prn (){ # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
     printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (read script for more thorough explanations)\n\n"
     printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -s sld_fl -g grd_fl -i drc_in -o drc_out${fnt_nrm}\n\n"

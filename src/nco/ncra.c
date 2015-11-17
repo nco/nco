@@ -826,7 +826,7 @@ main(int argc,char **argv)
   if(nco_prg_id == ncra){
     dmn_sct **dmn=NULL_CEWI;
     int nbr_dmn=nbr_rec;
-    /* Allocate  */
+    /* Allocate */
     dmn=(dmn_sct **)nco_malloc(nbr_dmn*sizeof(dmn_sct *));
     /* Make dimension array from limit records array */
     (void)nco_dmn_lmt(lmt_rec,nbr_dmn,&dmn);
