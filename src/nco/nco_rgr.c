@@ -4650,7 +4650,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   rcd+=nco_inq_varndims(in_id,lon_ctr_id,&lon_rnk);
   if(lat_rnk == dmn_nbr_2D || lon_rnk == dmn_nbr_2D) flg_grd_crv=True;
   if(lat_rnk > dmn_nbr_2D || lon_rnk > dmn_nbr_2D){
-    (void)fprintf(stdout,"%s: ERROR %s reports an identified grid variable (%s and/or %s) has rank %d---grid variables current must have rank 1 or 2. HINT: If grid variables do not vary in time, then temporally average them (with, e.g., ncwa -a time in.nc out.nc) prior to inferring grid\n",nco_prg_nm_get(),fnc_nm,lat_nm_in,lon_nm_in,lat_rnk);
+    (void)fprintf(stdout,"%s: ERROR %s reports an identified grid variable (%s and/or %s) has rank %d---grid variables currently must have rank 1 or 2. HINT: If grid variables do not vary in time, then temporally average them (with, e.g., ncwa -a time in.nc out.nc) prior to inferring grid\n",nco_prg_nm_get(),fnc_nm,lat_nm_in,lon_nm_in,lat_rnk);
     nco_exit(EXIT_FAILURE);
   } /* !3D */
   if(lat_rnk*lon_rnk != 1 && lat_rnk*lon_rnk != 4) assert(False);
