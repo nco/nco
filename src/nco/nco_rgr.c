@@ -1516,6 +1516,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"south_north",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("south_north");
       else if((rcd=nco_inq_dimid_flg(in_id,"south_north_stag",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("south_north_stag");
       else if((rcd=nco_inq_dimid_flg(in_id,"YDim:location",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("YDim:location");
+      else if((rcd=nco_inq_dimid_flg(in_id,"nj",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nj"); /* CICE */
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack");
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack:L2_Standard_atmospheric&surface_product");
       else{
@@ -1538,6 +1539,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"west_east",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("west_east");
       else if((rcd=nco_inq_dimid_flg(in_id,"west_east_stag",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("west_east_stag");
       else if((rcd=nco_inq_dimid_flg(in_id,"XDim:location",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("XDim:location");
+      else if((rcd=nco_inq_dimid_flg(in_id,"ni",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("ni"); /* CICE */
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("GeoXTrack");
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("GeoXTrack:L2_Standard_atmospheric&surface_product");
       else{
@@ -4596,6 +4598,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       else if((rcd=nco_inq_dimid_flg(in_id,"phony_dim_0",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("phony_dim_0"); /* OMI */
       else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("phony_dim_0"); /* MAR */
       else if((rcd=nco_inq_dimid_flg(in_id,"lat2d",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("phony_dim_0"); /* RACMO */
+      else if((rcd=nco_inq_dimid_flg(in_id,"nj",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("nj"); /* CICE */
     } /* !lat_dmn_nm */
     if(!lon_dmn_nm){
       if((rcd=nco_inq_dimid_flg(in_id,"west_east",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("west_east"); /* WRF */
@@ -4605,6 +4608,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       else if((rcd=nco_inq_dimid_flg(in_id,"phony_dim_1",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("phony_dim_1"); /* OMI */
       else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("phony_dim_1"); /* MAR */
       else if((rcd=nco_inq_dimid_flg(in_id,"lon2d",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("phony_dim_1"); /* RACMO */
+      else if((rcd=nco_inq_dimid_flg(in_id,"ni",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("ni"); /* CICE */
     } /* !lon_dmn_nm */
     if(lat_dmn_nm && lon_dmn_nm) flg_grd_crv=True;
   } /* !lat_dmn_nm */
@@ -4626,6 +4630,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"Lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("Lat");
   else if((rcd=nco_inq_varid_flg(in_id,"XLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("XLAT"); /* WRF */
   else if((rcd=nco_inq_varid_flg(in_id,"LAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LAT"); /* MAR */
+  else if((rcd=nco_inq_varid_flg(in_id,"TLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("TLAT"); /* CICE */
+  else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE */
 
   if((rcd=nco_inq_varid_flg(in_id,"longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("longitude");
   else if((rcd=nco_inq_varid_flg(in_id,"Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("Longitude");
@@ -4633,6 +4639,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"Lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("Lon");
   else if((rcd=nco_inq_varid_flg(in_id,"XLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG"); /* WRF */
   else if((rcd=nco_inq_varid_flg(in_id,"LON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LON"); /* MAR */
+  else if((rcd=nco_inq_varid_flg(in_id,"TLON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLON"); /* CICE */
+  else if((rcd=nco_inq_varid_flg(in_id,"ULON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULON"); /* CICE */
 
   if(!lat_nm_in || !lon_nm_in){
     (void)fprintf(stdout,"%s: ERROR %s unable to identify latitude and/or longitude variable.\n",nco_prg_nm_get(),fnc_nm);
