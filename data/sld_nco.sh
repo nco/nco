@@ -69,6 +69,7 @@ esmf_opt='> /dev/null' # [sng] ESMF_RegridWeightGen options
 fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
 gaa_sng="--gaa rgr_script=${spt_nm} --gaa rgr_hostname=${HOSTNAME} --gaa rgr_version=${nco_version}" # [sng] Global attributes to add
 grd_fl='' # [sng] Grid-file
+grd_dst_glb="${DATA}/grids/180x360_SCRIP.20150901.nc" # [sng] Grid-file (destination) global
 grd_sng='' # [sng] Grid string
 hdr_pad='1000' # [B] Pad at end of header section
 map_fl='' # [sng] Map-file
@@ -87,9 +88,8 @@ xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 yyyy_srt='1980' # [yyyy] Start year
 yyyy_end='1983' # [yyyy] End year
 
-# Derived defaults
+# Derived defaults (to print working examples)
 grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
-grd_dst_glb="${DATA}/grids/180x360_SCRIP.20150901.nc" # [sng] Grid-file (destination) global
 grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source) 
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
@@ -163,6 +163,8 @@ done
 shift $((OPTIND-1)) # Advance one argument
 
 # Derived variables
+grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
+grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source) 
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
 fi # !drc_in
@@ -280,7 +282,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     fi # !mpi
 fi # !dbg
 
-# Create output directory, go to working directory
+# Create output directory
 mkdir -p ${drc_out}
 
 # Human-readable summary
