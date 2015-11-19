@@ -26,7 +26,7 @@ A. ncap2 now conforms arrays by hyperslabbed dimension size rather
    prs_ntf[time,lat,lon,ilev]=P0*hyai+PS*hybi; // Interface pressures
    prs_dlt[time,lat,lon,lev]=prs_ntf(:,:,:,1:$ilev.size-1)-prs_ntf(:,:,:,0:$ilev.size-2);
    http://nco.sf.net/nco.html#pdel
-o   Thanks to Philip Cameron-Smith for suggesting and to Henry Butowsky
+   Thanks to Philip Cameron-Smith for suggesting and to Henry Butowsky
    for implementing this new feature.
 
 BUG FIXES:
