@@ -334,7 +334,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     dmn_nbr_mch=0;
     flg_dpl=False;
 
-    /* cell_methods format: blank-separated phrases of form "dmn1[, dmn2[...]]: op_typ" */ 
+    /* cell_methods format: blank-separated phrases of form "dmn1[, dmn2[...]]: op_typ", e.g., "lat, lon: mean" */ 
     for(dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
       for(dmn_idx_rdc=0;dmn_idx_rdc<dmn_nbr_rdc;dmn_idx_rdc++){
         assert(dmn_rdc[dmn_idx_rdc]->nm_fll);
@@ -449,8 +449,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     strcpy(aed.att_nm,"coordinates");
     rcd=nco_inq_att_flg(grp_out_id,var_out_id,aed.att_nm,&att_typ,&att_lng);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
-      /* Remove reduced dimensions from coordinates string */
-      /* coordinates format: blank-separated names of form "dmn1 [dmn2 [...]] dmnN" */ 
+      /* Remove reduced dimensions from coordinates string
+	 coordinates format: blank-separated names of form "dmn1 [dmn2 [...]] dmnN", e.g., "time lat lon" */ 
       /* Add room for NUL-terminator */
       att_val=(char *)nco_malloc((att_lng+1L)*sizeof(char));
       rcd=nco_get_att(grp_out_id,var_out_id,aed.att_nm,att_val,att_typ);
@@ -481,12 +481,15 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 		dmn_sng_lng=strlen(dmn_rdc[dmn_idx_rdc]->nm);
 		sbs_sng_lng=(size_t)(sbs_ptr-att_val);
 		aed.mode=aed_overwrite;
+		/* If dimension to excise is trailed by a space, also remove the space, i.e., count it as part of dimension string
+		   True for all dimensions except final dimension (trailed by a NUL, not a space) */
+		if(sbs_ptr[dmn_sng_lng] == ' ') dmn_sng_lng++;
 		aed.sz=att_lng-dmn_sng_lng;
+		/* Add one for NUL-terminator */
 		aed.val.cp=(char *)nco_realloc(aed.val.cp,(aed.sz+1L)*sizeof(char));
 		strncpy(aed.val.cp,att_val,sbs_sng_lng);
 		aed.val.cp[sbs_sng_lng]='\0';
-		/* Allow for one space-separator */
-		if((sbs_ptr+dmn_sng_lng)[0] == ' ') strcat(aed.val.cp,sbs_ptr+dmn_sng_lng+1L); else strcat(aed.val.cp,sbs_ptr+dmn_sng_lng);
+		strcat(aed.val.cp,sbs_ptr+dmn_sng_lng);
 	      } /* endelse scalar */
 	      /* Edit attribute */
 	      (void)nco_aed_prc(grp_out_id,var_out_id,aed);

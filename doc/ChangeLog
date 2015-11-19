@@ -1,3 +1,8 @@
+2015-11-19  Charlie Zender  <zender@uci.edu>
+
+	* Correct whitespace when excising dimension names from "coordinates" attribute
+	in nco_cnv_cf_cll_mth_add() after dimension reduction operations
+
 2015-11-18  Charlie Zender  <zender@uci.edu>
 
 	* Expose interpolation algorithm to sld_nco.sh with -a (bilinear|patch|neareststod|nearestdtos|conserve)
