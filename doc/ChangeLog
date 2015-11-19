@@ -1,7 +1,10 @@
 2015-11-19  Charlie Zender  <zender@uci.edu>
 
-	* Correct whitespace when excising dimension names from "coordinates" attribute
-	in nco_cnv_cf_cll_mth_add() after dimension reduction operations
+	* NCO 4.5.4-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.4-alpha02 final changes';git push
+	git tag -a 4.5.4-alpha02 -m 'Version 4.5.4-alpha02 new features: ncatted crd xcs, skl bug, GSL2';git push --tags
+
+	* Correct whitespace when excising dimension names from "coordinates" attribute	in nco_cnv_cf_cll_mth_add() after dimension reduction operations
 
 2015-11-18  Charlie Zender  <zender@uci.edu>
 

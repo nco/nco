@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.4-alpha01 are ready. 
+The netCDF Operators NCO version 4.5.4-alpha02 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -15,13 +15,35 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Hi
+A. ncap2 now conforms arrays by hyperslabbed dimension size rather
+   than by dimension name. This mean, e.g., that hyperslabs from
+   one dimension can be used to fill-in other dimensions.
+   A prototypical example is determining pressure thickness of layers
+   as the difference between interface pressure levels.
+   For hybrid coordinate system models like CAM, this is now a
+   (relatively) simple two-step command with a mixture of different
+   dimensions on the LHS and RHS:
+   prs_ntf[time,lat,lon,ilev]=P0*hyai+PS*hybi; // Interface pressures
+   prs_dlt[time,lat,lon,lev]=prs_ntf(:,:,:,1:$ilev.size-1)-prs_ntf(:,:,:,0:$ilev.size-2);
+   http://nco.sf.net/nco.html#pdel
+o   Thanks to Philip Cameron-Smith for suggesting and to Henry Butowsky
+   for implementing this new feature.
 
 BUG FIXES:
 
-A. ncks -V in (at least) versions 4.5.1--4.5.3 could segfault. The
-   workaround is not use -V, and the solution is to upgrade to 4.5.4.  
+A. ncks -V in (at least) versions 4.5.1--4.5.3 could segfault.
+   NB: This is the "-V" (uppercase) not "-v" (lowercase) option. 
+   The workaround is not to use -V, solution is to upgrade to 4.5.4. 
    Thanks to Patrick Nichols for reporting the problem.
+
+A. After dimension reduction operations, ncra and ncwa excise the
+   reduced dimensions from the CF "coordinates" attribute, if any.
+   Versions 4.4.9--4.5.3 could, under certain circumstances involving
+   multiple dimensions, retain extra whitespace in "coordinates".
+   A workaround is to dump (ncks --cdl in.nc > out.cdl) then
+   regenerate (ncgen -b out.nc out.cdl) the file.
+   The solution is to upgrade to 4.5.4.
+   Thanks to Richard Strub for reporting the problem.
 
 KNOWN PROBLEMS DUE TO NCO:
 

@@ -114,12 +114,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.4-alpha01
-@set doc-edition 4.5.4-alpha01
+@set nco-edition 4.5.4-alpha02
+@set doc-edition 4.5.4-alpha02
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 18 October 2015
-@set update-month October 2015
+@set update-date 19 November 2015
+@set update-month November 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -11377,6 +11377,9 @@ Without @acronym{LHS} casting, the dimensional ordering of @var{lat_lon}
 would be undefined and, hopefully, @command{ncap2} would print an error
 message. 
 
+@html
+<a name="prs_mdp"></a> <!-- http://nco.sf.net/nco.html#prs_mdp -->
+@end html
 Consider now a slightly more complex example.
 In geophysical models, a coordinate system based on 
 a blend of terrain-following and density-following surfaces is 
@@ -11398,6 +11401,10 @@ ncap2 -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' in.nc out.nc
 Manipulating the four fields which define the pressure in a hybrid
 coordinate system is easy with left hand casting.
 
+@html
+<a name="pdel"></a> <!-- http://nco.sf.net/nco.html#pdel -->
+<a name="prs_ntf"></a> <!-- http://nco.sf.net/nco.html#prs_ntf -->
+@end html
 Finally, we show how to use interface quantities to define midpoint
 quantities.
 In particular, we will define interface pressures using the standard
@@ -11422,7 +11429,7 @@ mpl=prs_dlt/grv_sfc;
 // Multiply by mass mixing ratio to obtain mass path of constituent
 // Everything up to here works fine. The following line (commented-out) breaks the script.
 // However, it breaks it silently, no error is printed. Please try to fix this.
-//mpl_CO2=mpl*mmr_CO2;
+mpl_CO2=mpl*mmr_CO2;
 EOF
 ncap2 -O -v -S ~/pdel.nco ~/nco/data/in.nc ~/foo.nc
 ncks -O -C -v prs_dlt ~/foo.nc
@@ -11437,7 +11444,8 @@ This line employs both left-hand casting and array hyperslabbing.
 However, this syntax only works with @acronym{NCO} version 4.5.4
 (November, 2015) and later because earlier versions require that 
 @acronym{LHS} and @acronym{RHS} dimension names (not just sizes) match. 
-From the pressure differences, one can obtain the mass path in each layer
+From the pressure differences, one can obtain the mass path in each
+layer as shown.
 
 @html
 <a name="ncap_arr"></a> <!-- http://nco.sf.net/nco.html#ncap_arr -->

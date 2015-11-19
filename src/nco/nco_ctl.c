@@ -842,8 +842,8 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
-     Always Include terminal \n so mnemonic does not dangle */
-  return "Kurios\n";
+     Always include terminal \n so mnemonic does not dangle */
+  return "Polyna\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
