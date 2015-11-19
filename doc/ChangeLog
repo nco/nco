@@ -1,4 +1,14 @@
+2015-11-18  Charlie Zender  <zender@uci.edu>
+
+	* Expose interpolation algorithm to sld_nco.sh with -a (bilinear|patch|neareststod|nearestdtos|conserve)
+
+	* Only pass variable list to ncks in regridding phase of sld_nco.sh
+
+	* Add nTimes and nXtrack to usual suspect list for lat/lon to support OMI L2 data
+
 2015-11-17  Charlie Zender  <zender@uci.edu>
+
+	* Merge Wenshan's patch to accept CICE dimensions TLAT,ULAT,TLONG,ULONG
 
 	* Add latt_bounds, latu_bounds, lont_bounds, lonu_bounds to regrid exclusion list (for CICE) as per Wenshan
 

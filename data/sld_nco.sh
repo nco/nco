@@ -61,6 +61,7 @@ fnt_rvr=`tput smso` # Reverse
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 #caseid='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] Case ID
+alg_typ='bilinear' # [nbr] Algorithm for interpolation (bilinear|patch|neareststod|nearestdtos|conserve)
 dbg_lvl=0 # [nbr] Debugging level
 drc_in="${drc_pwd}" # [sng] Input file directory
 #drc_in='' # [sng] Input file directory
@@ -97,6 +98,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (read script for more thorough explanations)\n\n"
     printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -s sld_fl -g grd_fl -i drc_in -o drc_out${fnt_nrm}\n\n"
     echo "Command-line options:"
+    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm})"
 #    echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm})"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debugging level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
 #    echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yyyy_end${fnt_nrm} Ending year in YYYY format (default ${fnt_bld}${yyyy_end}${fnt_nrm})"
@@ -114,10 +116,12 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
     printf "\n"
-    printf "Examples: ${fnt_bld}$spt_nm -s ${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
+    printf "Examples: ${fnt_bld}$spt_nm -s ${sld_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a bilinear -s ${sld_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a conserve -s ${sld_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -g ${grd_dst_dfl} -o ${drc_out} < ls ${drc_in}/*.1980*nc ${fnt_nrm}\n"
     printf "          ${fnt_bld}ls ${drc_in}/*.1980*nc | $spt_nm -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -x TSurfStd_ct -s ${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -x TSurfStd_ct -s ${DATA}/sld/raw/${sld_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -v TSurfAir -s ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -v CloudFrc_A -s ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -s ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
@@ -137,8 +141,9 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${@}"
-while getopts :d:f:g:G:h:i:m:n:o:p:R:r:s:v:x: OPT; do
+while getopts :a:d:f:g:G:h:i:m:n:o:p:R:r:s:v:x: OPT; do
     case ${OPT} in
+	a) alg_typ=${OPTARG} ;; # Algorithm
 #	c) caseid=${OPTARG} ;; # CASEID
 	d) dbg_lvl=${OPTARG} ;; # Debugging level
 #	e) yyyy_end=${OPTARG} ;; # End year
@@ -165,6 +170,18 @@ shift $((OPTIND-1)) # Advance one argument
 # Derived variables
 grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
 grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source) 
+if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bln' ] ; then 
+    # ESMF options are bilinear|patch|neareststod|nearestdtos|conserve
+    alg_opt='bilinear'
+elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] ; then 
+    alg_opt='conserve'
+elif [ ${alg_typ} = 'nearestdtos' ] || [ ${alg_typ} = 'nds' ] || [ ${alg_typ} = 'dtos' ] ; then 
+    alg_opt='nearestdtos'
+elif [ ${alg_typ} = 'neareststod' ] || [ ${alg_typ} = 'nsd' ] || [ ${alg_typ} = 'stod' ] ; then 
+    alg_opt='nearestdtos'
+elif [ ${alg_typ} = 'patch' ] || [ ${alg_typ} = 'pch' ] || [ ${alg_typ} = 'ptc' ] ; then 
+    alg_opt='patch'
+fi # !alg_typ
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
 fi # !drc_in
@@ -178,7 +195,7 @@ if [ -n "${hdr_pad}" ]; then
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
 fi # !hdr_pad
 if [ -n "${var_lst}" ]; then 
-    nco_opt="${nco_opt} -v ${var_lst}"
+    nco_var_lst="-v ${var_lst}"
 fi # !var_lst
 if [ -n "${xtn_var}" ]; then 
     rgr_opt="${rgr_opt} --xtn=${xtn_var}"
@@ -232,7 +249,7 @@ if [ -n "${map_fl}" ]; then
     fi # ! -e
     map_usr_flg='Yes'
 else
-    map_fl_dfl="${drc_out}/map_src_to_dst_bilin.nc" # [sng] Map-file default
+    map_fl_dfl="${drc_out}/map_src_to_dst_${alg_opt}.nc" # [sng] Map-file default
     map_fl=${map_fl_dfl}
 fi # !map_fl
 if [ -n "${rgr_fl}" ]; then 
@@ -253,6 +270,7 @@ fi # !basename
 
 # Print initial state
 if [ ${dbg_lvl} -ge 1 ]; then
+    printf "dbg: alg_opt  = ${alg_opt}\n"
 #    printf "dbg: caseid   = ${caseid}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
     printf "dbg: drc_in   = ${drc_in}\n"
@@ -305,6 +323,7 @@ if [ "${map_usr_flg}" = 'Yes' ]; then
     printf "Map-file supplied as ${map_fl}\n"
 else
     printf "Map-file will be generated internally and stored as ${map_fl}\n"
+    printf "Algorithm used to generate weights is: ${alg_opt}\n"
 fi # !map_usr_flg
 printf "Regridded file will be stored as ${rgr_fl}\n"
 printf "NCO version is ${nco_version}\n"
@@ -332,9 +351,9 @@ if [ "${grd_usr_flg}" != 'Yes' ]; then
 fi # !grd_usr_flg
 wait
 
-# Block 2: Source grid(s)
-# Block 2 Loop 1: Source gridfile commands
-printf "Generate source grids...\n"
+# Block 2: Source grid
+# Block 2 Loop 1: Source gridfile command
+printf "Generate source grid...\n"
 rgr_idx=2
 if [ ! -e "${sld_fl}" ]; then
     echo "${spt_nm}: ERROR Unable to find SLD file ${sld_fl}"
@@ -363,7 +382,7 @@ if [ "${map_usr_flg}" != 'Yes' ]; then
     # Block 3 Loop 1: Mapfile commands
     printf "Generate source->destination mapping weights...\n"
     rgr_idx=3
-    cmd_rgr[${rgr_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method bilinear --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
+    cmd_rgr[${rgr_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
 
     # Block 3 Loop 2: Execute and/or echo commands
     for ((rgr_idx=3;rgr_idx<=3;rgr_idx++)); do
@@ -385,7 +404,7 @@ wait
 # Block 4: Regrid
 printf "Regridding...\n"
 rgr_idx=4
-cmd_rgr[${rgr_idx}]="ncks ${nco_opt} ${rgr_opt} --map=${map_fl} ${sld_fl} ${rgr_fl}"
+cmd_rgr[${rgr_idx}]="ncks ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${sld_fl} ${rgr_fl}"
 
 # Block 4 Loop 2: Execute and/or echo commands
 for ((rgr_idx=4;rgr_idx<=4;rgr_idx++)); do
