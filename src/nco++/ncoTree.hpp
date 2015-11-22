@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -355,18 +355,17 @@ if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
         err_prn("run_dbl"," REPORTS given a null AST Refrence\n");
             
      //small list dont bother with double parsing     
-     if(icnt <4) {
-         idx=0;
-         ntr=tr;
-         //Final scan
-         prs_arg->ntl_scn=False;
-         while(idx++ < icnt){
-             (void)statements(ntr);   
-             ntr=ntr->getNextSibling();   
-         }
-         return; 
+     // just do a final parse
+     if(icnt <4){
+       //Final scan
+       prs_arg->ntl_scn=False;
+       while(idx++ < icnt){
+          (void)statements(ntr);   
+          ntr=ntr->getNextSibling();   
+       }
+       return; 
      }
-
+     
      //Initial scan
      prs_arg->ntl_scn=True;
      while(idx++ < icnt){
@@ -382,21 +381,37 @@ if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
     // see if below does anything ? 
     (void)nco_sync(prs_arg->out_id); 
 
-
+    //Final scan
+    if(!prs_arg->NCAP_MPI_SORT)
+    { 
+      idx=0;
+      ntr=tr;
+      prs_arg->ntl_scn=False;
+      while(idx++ < icnt){
+        (void)statements(ntr);   
+        ntr=ntr->getNextSibling();   
+      }
+    }
+    else
+    {  
     // Sort expressions - MPI preparation
-    if(prs_arg->NCAP_MPI_SORT){  
        prs_arg->ntl_scn=False;
       // nb A vector of vectors
       std::vector< std::vector<RefAST> > all_ast_vtr;
       ncoTree **wlk_vtr=(ncoTree**)NULL; 
 
       // Populate and sort  vector 
-      (void)ncap_mpi_srt(tr,icnt,all_ast_vtr,prs_arg);
-       
+      (void)ncap_mpi_srt(tr,icnt,all_ast_vtr,prs_arg);   
       // Evaluate expressions (execute)
       (void)ncap_omp_exe(all_ast_vtr,wlk_vtr,0);  
-      
+
+      /*  
+      for(unsigned vtr_idx=0 ; vtr_idx<all_ast_vtr.size(); vtr_idx++)
+        for(unsigned jdx=0 ; jdx<all_ast_vtr[vtr_idx].size(); jdx++)
+	     (void)statements(all_ast_vtr[vtr_idx][jdx]);
+      */
     }
+    return; 
 
     }
  
