@@ -1,3 +1,9 @@
+2015-11-29  Charlie Zender  <zender@uci.edu>
+
+	* Restrict grid to real latitudes and to the 360-degree range detected from input cell-centers
+
+	* nco_grd_nfr() sanity-check for extrapolated corners outside [-90.0,90.0], [-180.0,360.0]
+
 2015-11-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.4-alpha02 release procedure:

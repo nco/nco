@@ -4830,11 +4830,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Hence we keep lat_ctr, lon_ctr, lat_crn, lon_crn with same order (likely lat x lon) as data file from which we infer grid
        Always use input order to write skeleton file
        Change that order, if necessary, to write SCRIP grid file
-       In the interior of a curvilinear grid, nine points contribute to the four corners of a quadrilater surrounding each center point
+       In the interior of a curvilinear grid, nine points contribute to the four corners of a quadrilateral surrounding each center point
        These are the three points above the point, the three points at the same latitude, and the three points beneath the point
-       In other words, a nine-point stencil is required to define the four corners inferred from about each gridcell center
-       It is cleanest to use this stencil only once for all cells, including those on the edges, not the interior
-       For this to work we must define an enlarged grid where we pre-copy the values that to the desired extrapolation at the edges
+       In other words, a nine-point stencil is required to define the four corners inferred around each gridcell center
+       It is cleanest to use this stencil only once for all cells in the "real"-grid, including those on the edges, not the interior
+       For this to work cleanly we define an enlarged "fake"-grid where we pre-copy the values that lead to the desired extrapolation on "real"-grid edges
        Inspired by array-based solutions to integration of PDEs on meshes in Juri Toomre's class */
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
@@ -4945,7 +4945,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx_fk*(lon_nbr+2)+lon_idx_fk;
 
 	/* Determine index into fake array (valid everywhere it is applied) 
-	   Comments after each equation are formula for real index (valid only at grid interiors) */
+	   Comments after each equation are formula for real index (valid only at interior gridcells) */
 	idx_fk_crn_ll_ctr_ll=idx_fk-(lon_nbr+2)-1; // (lat_idx-1)*lon_nbr+lon_idx-1
 	idx_fk_crn_ll_ctr_lr=idx_fk-(lon_nbr+2); // (lat_idx-1)*lon_nbr+lon_idx
 	idx_fk_crn_ll_ctr_ur=idx_fk; // lat_idx*lon_nbr+lon_idx
@@ -4983,8 +4983,46 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(lat_ctr_fk) lat_ctr_fk=(double *)nco_free(lat_ctr_fk);
     if(lon_ctr_fk) lon_ctr_fk=(double *)nco_free(lon_ctr_fk);
 
-    /* Copy inferred corners into empty output array */
+    /* Use all that hard work? */
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
+      /* First, a sanity check
+	 20151129: Above extrapolation technique yields corners outside [-90.0,90.0], [-180.0,360.0]
+	 Also, it may assume input is ascending swath and fail for descending swaths
+	 Complications not fully addressed :
+	 Swaths may (verify this) turn from ascending to descending, or visa-versa, when satellite crosses latitude extrema
+	 Swaths may cross the date-line (and back!) */
+
+      /* Determine numeric bounds of input coordinate system */
+      double lon_min_min;
+      double lon_max_max;
+      nco_bool NCO_LON_0_TO_360=True;
+      for(idx=0;idx<grd_sz_nbr;idx++)
+	if(lon_ctr[idx] < 0.0) break;
+      if(idx != grd_sz_nbr) NCO_LON_0_TO_360=False;
+      if(NCO_LON_0_TO_360){
+	lon_min_min=0.0;
+	lon_max_max=360.0;
+      }else{
+	lon_min_min=-180.0;
+	lon_max_max=180.0;
+      } /* !NCO_LON_0_TO_360 */
+      for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
+	if(lat_crn[idx] < -90.0 || lat_crn[idx] > 90.0 || lon_crn[idx] < lon_min_min || lon_crn[idx] > lon_max_max){
+	  long idx_ctr;
+	  idx_ctr=idx/grd_crn_nbr;
+	  idx_crn_ll=grd_crn_nbr*idx_ctr+0;
+	  idx_crn_lr=grd_crn_nbr*idx_ctr+1;
+	  idx_crn_ur=grd_crn_nbr*idx_ctr+2;
+	  idx_crn_ul=grd_crn_nbr*idx_ctr+3;
+	  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s Extrapolation issue at idx = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_ctr,lat_ctr[idx_ctr],lon_ctr[idx_ctr],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
+	  /* Restrict grid to real latitudes and to the 360-degree range detected from input cell-centers */
+	  if(lat_crn[idx] < -90.0) lat_crn[idx]=-90.0;
+	  if(lat_crn[idx] >  90.0) lat_crn[idx]=90.0;
+	  if(lon_crn[idx] < lon_min_min) lon_crn[idx]+=360.0;
+	  if(lon_crn[idx] > lon_max_max) lon_crn[idx]-=360.0;
+	} /* !sanity */
+      } /* !idx */
+      /* Copy inferred, sanity-checked corners into empty output array */
       for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
 	grd_crn_lat[idx]=lat_crn[idx];
 	grd_crn_lon[idx]=lon_crn[idx];
