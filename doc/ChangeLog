@@ -1,3 +1,9 @@
+2015-12-01  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.4-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.4-alpha03 final changes';git push
+	git tag -a 4.5.4-alpha03 -m 'Version 4.5.4-alpha03 new features: nfr crv dateline swaths';git push --tags
+
 2015-11-29  Charlie Zender  <zender@uci.edu>
 
 	* Restrict grid to real latitudes and to the 360-degree range detected from input cell-centers
