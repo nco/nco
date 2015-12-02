@@ -4749,6 +4749,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
     /* 20150923: fxm also input corners, area, mask, if present in curvilinear file */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
+    /* 20151201: fxm may die if mask is float (CICE), int elsewhere */
+    if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk,NC_INT);
     
   } /* !flg_grd_crv */
 
