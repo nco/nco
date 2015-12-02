@@ -4550,6 +4550,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
   nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
 
+  nc_type msk_typ;
+
+  ptr_unn msk_unn;
+
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
   /* Algorithm:
@@ -4738,6 +4742,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if((rcd=nco_inq_varid_flg(in_id,"mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask");
   else if((rcd=nco_inq_varid_flg(in_id,"Mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("Mask");
   else if((rcd=nco_inq_varid_flg(in_id,"grid_imask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("grid_imask");
+  else if((rcd=nco_inq_varid_flg(in_id,"tmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("tmask"); /* CICE */
+
+  /* 20151201: All models define mask as NC_INT except CICE which uses NC_FLOAT */
+  if(msk_id != NC_MIN_INT){
+    rcd=nco_inq_vartype(in_id,msk_id,&msk_typ);
+    msk_unn.vp=(void *)nco_malloc(grd_sz_nbr*nco_typ_lng(msk_typ));
+  } /* !msk */
 
   if(flg_grd_crv){
     /* Obtain fields that must be present in input file */
@@ -4747,11 +4758,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
 
-    /* 20150923: fxm also input corners, area, mask, if present in curvilinear file */
+    /* 20150923: fxm also input, if present in curvilinear file, corners, area, and mask */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
-    /* 20151201: fxm may die if mask is float (CICE), int elsewhere */
-    if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk,NC_INT);
-    
+    if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
@@ -4799,11 +4808,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       dmn_cnt[lat_psn_in]=lat_nbr;
       dmn_srt[lon_psn_in]=0L;
       dmn_cnt[lon_psn_in]=lon_nbr;
-      rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk,NC_INT);
+      rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     } /* !msk */
 
   } /* !flg_grd_2D */
-    
+
   /* Close input netCDF file */
   nco_close(in_id);
 
@@ -5264,10 +5273,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !lat_idx */
   } /* !flg_grd_2D */
 
-  /* Default mask if necessary */
-  if(msk_id == NC_MIN_INT)
-    for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
-
   /* Diagnose area if necessary */
   if(area_id == NC_MIN_INT){
     /* Not absolutely necessary to diagnose area because ERWG will diagnose and output area itself */
@@ -5280,6 +5285,30 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1])-sin(dgr2rdn*lat_bnd[2*lat_idx]));
     } /* !flg_grd_2D */
   } /* !area_id */
+
+  /* Input mask can be any type and output mask will always be NC_INT */
+  if(msk_id == NC_MIN_INT){
+    /* Default mask if necessary */
+    for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
+  }else{
+    switch(msk_typ){
+    case NC_FLOAT:
+      for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.fp[idx];
+      break;
+    case NC_DOUBLE:
+      for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.dp[idx];
+      break;
+    case NC_INT:
+      for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.ip[idx];
+      break;
+    default:
+      (void)fprintf(stderr,"%s: ERROR %s unknown mask type\n",nco_prg_nm_get(),fnc_nm);
+      nco_dfl_case_generic_err();
+      return NCO_ERR;
+      break;
+    } /* !msk_typ */
+    if(msk_unn.vp) msk_unn.vp=(void *)nco_free(msk_unn.vp);
+  } /* !msk_id */
 
   if(nco_dbg_lvl_get() >= nco_dbg_sbr){
     lat_wgt_ttl=0.0;

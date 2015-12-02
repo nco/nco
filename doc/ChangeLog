@@ -1,5 +1,9 @@
 2015-12-01  Charlie Zender  <zender@uci.edu>
 
+	* Allow input masks of any type in nco_grd_nfr() (CICE has tmask as NC_FLOAT) and always convert output to NC_INT
+
+	* Add tmask as usual suspect for mask in nco_grd_nfr()
+
 	* NCO 4.5.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.4-alpha03 final changes';git push
 	git tag -a 4.5.4-alpha03 -m 'Version 4.5.4-alpha03 new features: nfr crv dateline swaths';git push --tags
