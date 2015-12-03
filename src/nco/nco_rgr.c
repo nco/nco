@@ -4695,7 +4695,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Convention is to archive only two bounds for rectangular grids (since sides are identical)
        Non-quadrilateral rectangular grids are untested */
     if(grd_crn_nbr == 4) bnd_nbr=2; else assert(False);
-    } /* !flg_grd_2D */
+  } /* !flg_grd_2D */
     
   /* Allocate space for output data */
   grd_sz_nbr=lat_nbr*lon_nbr;
