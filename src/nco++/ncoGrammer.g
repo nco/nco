@@ -58,6 +58,7 @@ tokens {
     BLOCK;
     ARG_LIST;
     DMN_LIST;
+    DMN_LIST_P;
     DMN_ARG_LIST;
     LMT_LIST;
     VALUE_LIST;
@@ -159,10 +160,17 @@ lmt_list: LPAREN! lmt (COMMA! lmt)*  RPAREN!
 // Use vars in dimension list so dims in [] can
 // be used with or with out $ prefix. ie "$lon" or "lon" 
 // So parser is compatible with ncap1
-dmn_list:
+dmn_list_p:
    LSQUARE! (VAR_ID|DIM_ID) (COMMA! (VAR_ID|DIM_ID))* RSQUARE!
+      { #dmn_list_p = #( [DMN_LIST_P, "dmn_list_p"], #dmn_list_p ); }
+    ;
+
+dmn_list:
+   LPAREN! DIM_ID (COMMA! DIM_ID)* RPAREN!
       { #dmn_list = #( [DMN_LIST, "dmn_list"], #dmn_list ); }
     ;
+
+
 
 // list of dims eg /$Lat,$time,$0,$1/
 dmn_arg_list:
@@ -182,7 +190,7 @@ func_arg:  LPAREN! (arg_list)? (COMMA! arg_list)*   RPAREN!
       { #func_arg = #( [FUNC_ARG, "func_arg"], #func_arg ); }
      ;   
 
-hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list|dmn_list)?
+hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list|dmn_list|dmn_list_p)?
      ;
 
 // call by reference - prefix &
@@ -1480,7 +1488,7 @@ var=NULL_CEWI;
                }
         }                    
  
-        | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
+        | (#(VAR_ID (DMN_LIST|DMN_LIST_P) ))=> #(vid1:VAR_ID dmn:.){   
                                
               int idx;
               std::string var_nm;
@@ -1807,7 +1815,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
         } // end action
 
         // Deal with LHS casting 
-        | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
+        | (#(VAR_ID (DMN_LIST|DMN_LIST_P) ))=> #(vid1:VAR_ID dmn:.){   
 
               var_sct *var1;
               std::vector<std::string> str_vtr;

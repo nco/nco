@@ -2,7 +2,7 @@
 #define INC_ncoParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoParser.hpp"$ */
+/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ncoParserTokenTypes.hpp"
@@ -53,7 +53,7 @@
 #line 54 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
-#line 83 "ncoGrammer.g"
+#line 84 "ncoGrammer.g"
 
 
 public:
@@ -90,6 +90,7 @@ public:
 	public: void block();
 	public: void lmt();
 	public: void lmt_list();
+	public: void dmn_list_p();
 	public: void dmn_list();
 	public: void dmn_arg_list();
 	public: void value_list();
@@ -123,10 +124,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 116;
+	static const int NUM_TOKENS = 117;
 #else
 	enum {
-		NUM_TOKENS = 116
+		NUM_TOKENS = 117
 	};
 #endif
 	
@@ -138,6 +139,8 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_2;
 	static const unsigned long _tokenSet_3_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_3;
+	static const unsigned long _tokenSet_4_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_4;
 };
 
 #endif /*INC_ncoParser_hpp_*/
