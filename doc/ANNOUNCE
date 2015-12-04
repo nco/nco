@@ -15,6 +15,10 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. ncap2 now accepts [] and () syntax interchangeably.
+   Expressions which formerly had to use one or the other can now
+   use either. Brought to you by Henry.
+
 A. ncap2 now conforms arrays by hyperslabbed dimension size rather
    than by dimension name. This mean, e.g., that hyperslabs from
    one dimension can be used to fill-in other dimensions.
