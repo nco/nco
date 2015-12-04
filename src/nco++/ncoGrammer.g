@@ -2677,8 +2677,6 @@ var_sct *var_rhs;
     long jdx;
     long sz;
     size_t slb_sz;
-    bool b_vp=false;
-    char *mss_cp;
 
     sz=var_lhs->sz;
     slb_sz=nco_typ_lng(var_lhs->type);
@@ -2690,50 +2688,22 @@ var_sct *var_rhs;
     cp_out=( char*)(var_lhs->val.vp);
     cp_in=( char*)(var_rhs->val.vp);
 
-    if(var_lhs->has_mss_val) {
-       mss_cp=( char*)var_lhs->mss_val.vp;
-       b_vp=true;
-    } else if(var_rhs->has_mss_val){
-       mss_cp=( char*)var_rhs->mss_val.vp;
-       b_vp=true;                 
-    }        
-    // missing values    
-    if(b_vp) {
-      if(var_rhs->sz==1L){ 
 
-        for(idx=0; idx<sz; idx++) {
-         if(sp[idx] && memcmp(cp_out,mss_cp,slb_sz))
-          (void)memcpy(cp_out,cp_in,slb_sz);       
-         cp_out+=slb_sz;
-        } 
-      } else {  
-        for(idx=0; idx<sz; idx++) {
-          if(sp[idx]&& memcmp(cp_out,mss_cp,slb_sz) 
-                    && memcmp(cp_in,mss_cp,slb_sz))
-            (void)memcpy(cp_out,cp_in,slb_sz);      
-          cp_out+=slb_sz;
-         cp_in+=slb_sz;
-        }
-      } 
-     // no missing values                
-     } else { 
-
-      if(var_rhs->sz==1L){ 
-
-        for(idx=0; idx<sz; idx++) {
-         if(sp[ idx])
+    if(var_rhs->sz==1L){ 
+      for(idx=0; idx<sz; idx++) {
+        if(sp[ idx])
           (void)memcpy(cp_out,cp_in,slb_sz);       
         cp_out+=slb_sz;
         } 
-      } else {  
+    }else{  
         for(idx=0; idx<sz; idx++) {
           if(sp[idx])
             (void)memcpy(cp_out,cp_in,slb_sz);      
           cp_out+=slb_sz;
          cp_in+=slb_sz;
         }
-      } 
-    }             
+    } 
+                    
 
    (void)cast_nctype_void(NC_SHORT,&var_msk->val); 
 
