@@ -476,7 +476,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Revert to defaults for any names not specified on command-line */
   if(!rgr->area_nm) rgr->area_nm=(char *)strdup("area"); /* [sng] Name of variable containing gridcell area */
   if(!rgr->bnd_nm) rgr->bnd_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for spatial bounds */
-  /* NB: CESM uses nbnd for temporal bounds. NCO defaults to nbnd for all bounds with two endpoints */
+  /* NB: CESM uses nbnd and ilev for temporal and vertical bounds, respectively (CESM outputs no horizontal spatial bounds). NCO defaults to nbnd for all bounds with two endpoints */
   if(!rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for spatial bounds */
   if(!rgr->col_nm_in) rgr->col_nm_in=(char *)strdup("ncol"); /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
   if(!rgr->frc_nm) rgr->frc_nm=(char *)strdup("frac_b"); /* [sng] Name of variable containing gridcell fraction */
@@ -4579,7 +4579,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *lon_nm_in=NULL_CEWI; /* [sng] Name of variable to recognize as longitude */
   char *lat_bnd_nm=NULL_CEWI; /* [sng] Name of latitude  boundary variable */
   char *lon_bnd_nm=NULL_CEWI; /* [sng] Name of longitude boundary variable */
-  int dmn_id_bnd=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_bnd=NC_MIN_INT; /* [id] Dimension ID for spatial bounds */
+  int dmn_id_bnd_tm=NC_MIN_INT; /* [id] Dimension ID for time bounds */
   int dmn_id_lat; /* [id] Dimension ID */
   int dmn_id_lon; /* [id] Dimension ID */
 
@@ -4626,7 +4627,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     nco_exit(EXIT_FAILURE);
   } /* !lat_dmn_nm */
     
-  /* Locate dimensions that may be present */
+  /* Locate spatial dimensions that may be present */
   if((rcd=nco_inq_dimid_flg(in_id,"nv",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nv"); /* fxm */
   else if((rcd=nco_inq_dimid_flg(in_id,"nbnd",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nbnd"); /* CAM-FV, CAM-SE */
   else if((rcd=nco_inq_dimid_flg(in_id,"tbnd",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("tbnd"); /* CAM3 */
@@ -4694,7 +4695,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(dmn_id_bnd == NC_MIN_INT) grd_crn_nbr=4;
     /* Convention is to archive only two bounds for rectangular grids (since sides are identical)
        Non-quadrilateral rectangular grids are untested */
-    if(grd_crn_nbr == 4) bnd_nbr=2; else assert(False);
+    if(grd_crn_nbr == 4) bnd_nbr=2;
   } /* !flg_grd_2D */
     
   /* Allocate space for output data */
