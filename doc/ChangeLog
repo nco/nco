@@ -1,3 +1,13 @@
+2015-12-04  Henry Butowsky  <henryb@hush.com> 
+	* mods to parser so can now cast variables with ()
+	 eg temp($time,lev,$lat,$lon)=0.0; is equivalent to
+	    temp[$time,lev,$lat,$lon]=0.0
+
+	* In the conflict between a function call and a cast the function call wins e.g
+	tally=three_dmn_var_int.total($time,$lat,$lon) is valid
+	and 
+	total($time,$lat,$lon)=1.0d in invalid
+
 2015-12-01  Charlie Zender  <zender@uci.edu>
 
 	* Allow input masks of any type in nco_grd_nfr() (CICE has tmask as NC_FLOAT) and always convert output to NC_INT
