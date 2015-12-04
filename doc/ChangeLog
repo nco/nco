@@ -1,4 +1,8 @@
 2015-12-04  Henry Butowsky  <henryb@hush.com> 
+	* mods to where statment such that the assign statment in where body is NOT
+	  missing value aware
+
+2015-12-04  Henry Butowsky  <henryb@hush.com> 
 	* mods to parser so can now cast variables with ()
 	 eg temp($time,lev,$lat,$lon)=0.0; is equivalent to
 	    temp[$time,lev,$lat,$lon]=0.0
