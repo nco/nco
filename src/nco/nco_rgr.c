@@ -4486,6 +4486,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double lon_spn; /* [dgr] Longitude span */
   double lat_spn; /* [dgr] Latitude span */
   double mss_val_ctr_dbl;
+  double mss_val_msk_dbl;
   
   int *msk=NULL; /* [flg] Mask of grid */
   int *dmn_sz_int; /* [nbr] Array of dimension sizes of grid */
@@ -4546,7 +4547,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   nco_bool flg_grd_2D=False;
   nco_bool flg_grd_crv=False;
-  nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
+  nco_bool has_mss_val_ctr;
+  nco_bool has_mss_val_msk;
 
   nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
@@ -4766,12 +4768,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
     /* CICE lists missing value for lat/lon_ctr arrays (TLAT, TLON) and reuses that for bounds arrays */
-    has_mss_val=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
+    has_mss_val_ctr=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
 
     /* 20150923: Also input, if present in curvilinear file, corners, area, and mask
        area and mask are same size as lat and lon */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
-    if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
+    if(msk_id != NC_MIN_INT){
+      rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
+      has_mss_val_msk=nco_mss_val_get_dbl(in_id,msk_id,&mss_val_msk_dbl);
+    } /* !msk */
     /* Corners are on curvilinear corner grid
        Rectangular boundaries (i.e., lat_bnd=[lat_nbr,2]) DNE for curvilinear grids 
        Read-in *_crn arrays in curvilinear grids, and *_bnd arrays for rectilinear grids */
@@ -4856,6 +4861,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(flg_grd_crv){
     /* For curvilinear grids first, if necessary, infer corner boundaries
        Then perform sanity check using same code on inferred and copied grids */
+    long int idx_ctr;
     long int idx_crn_ll;
     long int idx_crn_lr;
     long int idx_crn_ur;
@@ -5030,8 +5036,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     double lon_min_min;
     double lon_max_max;
     nco_bool NCO_LON_0_TO_360=True;
-    for(idx=0;idx<grd_sz_nbr;idx++)
-      if(lon_ctr[idx] < 0.0) break;
+    if(has_mss_val_ctr){
+      for(idx=0;idx<grd_sz_nbr;idx++)
+	if(lon_ctr[idx] != mss_val_ctr_dbl && lon_ctr[idx] < 0.0) break;
+    }else{
+      for(idx=0;idx<grd_sz_nbr;idx++)
+	if(lon_ctr[idx] < 0.0) break;
+    } /* !has_mss_val_ctr */
     if(idx != grd_sz_nbr) NCO_LON_0_TO_360=False;
     if(NCO_LON_0_TO_360){
       lon_min_min=0.0;
@@ -5041,19 +5052,21 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       lon_max_max=180.0;
     } /* !NCO_LON_0_TO_360 */
     for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
+      idx_ctr=idx/grd_crn_nbr;
+      if(has_mss_val_ctr)
+	if(lat_ctr[idx_ctr] == mss_val_ctr_dbl)
+	  continue;
       if(lat_crn[idx] < -90.0 || lat_crn[idx] > 90.0 || lon_crn[idx] < lon_min_min || lon_crn[idx] > lon_max_max){
-	long idx_ctr;
-	idx_ctr=idx/grd_crn_nbr;
-	idx_crn_ll=grd_crn_nbr*idx_ctr+0;
-	idx_crn_lr=grd_crn_nbr*idx_ctr+1;
-	idx_crn_ur=grd_crn_nbr*idx_ctr+2;
-	idx_crn_ul=grd_crn_nbr*idx_ctr+3;
-	if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s Curvilinear corner issue (from %s corners) at idx = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,(lat_bnd_id == NC_MIN_INT) ? "inferred" : "copied",idx_ctr,lat_ctr[idx_ctr],lon_ctr[idx_ctr],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
-	/* Restrict grid to real latitudes and to the 360-degree range detected from input cell-centers */
-	if(lat_crn[idx] < -90.0) lat_crn[idx]=-90.0;
-	if(lat_crn[idx] >  90.0) lat_crn[idx]=90.0;
-	if(lon_crn[idx] < lon_min_min) lon_crn[idx]+=360.0;
-	if(lon_crn[idx] > lon_max_max) lon_crn[idx]-=360.0;
+	  idx_crn_ll=grd_crn_nbr*idx_ctr+0;
+	  idx_crn_lr=grd_crn_nbr*idx_ctr+1;
+	  idx_crn_ur=grd_crn_nbr*idx_ctr+2;
+	  idx_crn_ul=grd_crn_nbr*idx_ctr+3;
+	  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s Curvilinear corner issue (from %s corners) at idx = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,(lat_bnd_id == NC_MIN_INT) ? "inferred" : "copied",idx_ctr,lat_ctr[idx_ctr],lon_ctr[idx_ctr],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
+	  /* Restrict grid to real latitudes and to the 360-degree range detected from input cell-centers */
+	  if(lat_crn[idx] < -90.0) lat_crn[idx]=-90.0;
+	  if(lat_crn[idx] >  90.0) lat_crn[idx]=90.0;
+	  if(lon_crn[idx] < lon_min_min) lon_crn[idx]+=360.0;
+	  if(lon_crn[idx] > lon_max_max) lon_crn[idx]-=360.0;
       } /* !sanity */
     } /* !idx */
 
@@ -5078,11 +5091,21 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     double lat_min; /* [dgr] Minimum latitude */
     double lon_max; /* [dgr] Maximum longitude */
     double lon_min; /* [dgr] Minimum longitude */
-    lon_max=lon_crn[0];
-    lat_max=lat_crn[0];
-    lon_min=lon_crn[0];
-    lat_min=lat_crn[0];
+    idx_ctr=0;
+    if(has_mss_val_ctr){
+      /* Find first non-missing value corners */
+      for(idx=0;idx<grd_sz_nbr;idx++){
+	if(lat_ctr[idx_ctr] == mss_val_ctr_dbl) continue;
+      } /* !grd_sz_nbr */
+      assert(idx_ctr != grd_sz_nbr);
+    } /* !has_mss_val_ctr */
+    lon_max=lon_crn[idx_ctr*grd_sz_nbr];
+    lat_max=lat_crn[idx_ctr*grd_sz_nbr];
+    lon_min=lon_crn[idx_ctr*grd_sz_nbr];
+    lat_min=lat_crn[idx_ctr*grd_sz_nbr];
     for(idx=1;idx<grd_sz_nbr*grd_crn_nbr;idx++){
+      idx_ctr=idx/grd_crn_nbr;
+      if(lat_ctr[idx_ctr] == mss_val_ctr_dbl) continue;
       lat_max=(lat_crn[idx] > lat_max) ? lat_crn[idx] : lat_max;
       lon_max=(lon_crn[idx] > lon_max) ? lon_crn[idx] : lon_max;
       lat_min=(lat_crn[idx] < lat_min) ? lat_crn[idx] : lat_min;
@@ -5316,11 +5339,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   }else{
     /* Change missing value mask points to 0 integer mask for SCRIP grids, which have no missing value convention
        Application: CICE mask is NC_FLOAT and uses NC_FLOAT missing value */
-    double mss_val_msk_dbl;
-    has_mss_val=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_msk_dbl);
     switch(msk_typ){
     case NC_FLOAT:
-      if(has_mss_val){
+      if(has_mss_val_msk){
 	const float mss_val_flt=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
 	  if(msk_unn.fp[idx] == mss_val_flt) msk[idx]=0; else msk[idx]=msk_unn.fp[idx];
@@ -5329,7 +5350,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !mss_val */
       break;
     case NC_DOUBLE:
-      if(has_mss_val){
+      if(has_mss_val_msk){
 	const float mss_val_dbl=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
 	  if(msk_unn.dp[idx] == mss_val_dbl) msk[idx]=0; else msk[idx]=msk_unn.dp[idx];
@@ -5338,7 +5359,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !mss_val */
       break;
     case NC_INT:
-      if(has_mss_val){
+      if(has_mss_val_msk){
 	const float mss_val_int=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
 	  if(msk_unn.ip[idx] == mss_val_int) msk[idx]=0; else msk[idx]=msk_unn.ip[idx];

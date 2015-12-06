@@ -1,5 +1,7 @@
 2015-12-06  Charlie Zender  <zender@uci.edu>
 
+	* Account for missing values in curvilinear coordinate center and mask grids when diagnosing extrapolation issues and grid span
+
 	* In nco_grd_nfr(), convert input mask values that are missing value to integer zero for output
 
 2015-12-05  Charlie Zender  <zender@uci.edu>
