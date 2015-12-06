@@ -4485,7 +4485,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double lat_ncr; /* [dgr] Latitude increment */
   double lon_spn; /* [dgr] Longitude span */
   double lat_spn; /* [dgr] Latitude span */
-
+  double mss_val_dbl;
+  
   int *msk=NULL; /* [flg] Mask of grid */
   int *dmn_sz_int; /* [nbr] Array of dimension sizes of grid */
 
@@ -4545,6 +4546,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   nco_bool flg_grd_2D=False;
   nco_bool flg_grd_crv=False;
+  nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
 
   nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
@@ -4763,18 +4765,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     dmn_cnt[1]=lon_nbr;
     rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
+    /* CICE lists missing value for lat/lon_ctr arrays (TLAT, TLON) and reuses that for bounds arrays */
+    has_mss_val=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_dbl);
 
     /* 20150923: Also input, if present in curvilinear file, corners, area, and mask
        area and mask are same size as lat and lon */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
     if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
-    /* Corners are on corner grid */
+    /* Corners are on curvilinear corner grid
+       Rectangular boundaries (i.e., lat_bnd=[lat_nbr,2]) DNE for curvilinear grids 
+       Read-in *_crn arrays in curvilinear grids, and *_bnd arrays for rectilinear grids */
     dmn_srt[0]=dmn_srt[1]=dmn_srt[2]=0L;
     dmn_cnt[0]=lat_nbr;
     dmn_cnt[1]=lon_nbr;
     dmn_cnt[2]=grd_crn_nbr;
-    if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
-    if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
+    if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
+    if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
@@ -5308,15 +5314,37 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Default mask if necessary */
     for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
   }else{
+    /* Change missing value mask points to 0 integer mask for SCRIP grids, which have no missing value convention
+       Application: CICE mask is NC_FLOAT and uses NC_FLOAT missing value */
+    double mss_val_msk_dbl;
+    has_mss_val=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_msk_dbl);
     switch(msk_typ){
     case NC_FLOAT:
-      for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.fp[idx];
+      if(has_mss_val){
+	const float mss_val_flt=mss_val_msk_dbl;
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.fp[idx] == mss_val_flt) msk[idx]=0; else msk[idx]=msk_unn.fp[idx];
+      }else{
+	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.fp[idx];
+      } /* !mss_val */
       break;
     case NC_DOUBLE:
-      for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.dp[idx];
+      if(has_mss_val){
+	const float mss_val_dbl=mss_val_msk_dbl;
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.dp[idx] == mss_val_dbl) msk[idx]=0; else msk[idx]=msk_unn.dp[idx];
+      }else{
+	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.dp[idx];
+      } /* !mss_val */
       break;
     case NC_INT:
-      for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.ip[idx];
+      if(has_mss_val){
+	const float mss_val_int=mss_val_msk_dbl;
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.ip[idx] == mss_val_int) msk[idx]=0; else msk[idx]=msk_unn.ip[idx];
+      }else{
+	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.ip[idx];
+      } /* !mss_val */
       break;
     default:
       (void)fprintf(stderr,"%s: ERROR %s unknown mask type\n",nco_prg_nm_get(),fnc_nm);

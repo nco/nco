@@ -1,3 +1,7 @@
+2015-12-06  Charlie Zender  <zender@uci.edu>
+
+	* In nco_grd_nfr(), convert input mask values that are missing value to integer zero for output
+
 2015-12-05  Charlie Zender  <zender@uci.edu>
 
 	* Improve nco_grd_mk() and nco_grd_nfr() regression tests, and make them passable, finally
