@@ -4584,7 +4584,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *lat_bnd_nm=NULL_CEWI; /* [sng] Name of latitude  boundary variable */
   char *lon_bnd_nm=NULL_CEWI; /* [sng] Name of longitude boundary variable */
   int dmn_id_bnd=NC_MIN_INT; /* [id] Dimension ID for spatial bounds */
-  int dmn_id_bnd_tm=NC_MIN_INT; /* [id] Dimension ID for time bounds */
   int dmn_id_lat; /* [id] Dimension ID */
   int dmn_id_lon; /* [id] Dimension ID */
 
