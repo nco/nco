@@ -4632,13 +4632,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !lat_dmn_nm */
     
   /* Locate spatial dimensions that may be present
-     NB: bounds dimensions present a special problem
-     CAM-FV uses nbnd for spatial bounds while CICE uses nbnd for temporal bounds and nvertices for spatial bounds 
+     NB: bounds dimensions may present a special problem
+     CAM-FV and CAM-SE use nbnd for temporal bounds and have no spatial bounds dimension
+     CAM3 uses tbnd for temporal bounds and has no spatial bounds dimension
+     CICE uses d2 for temporal bounds and nvertices for spatial bounds 
      Hence search for nvertices before nbnd to ensure spatial bound is found first */
   if((rcd=nco_inq_dimid_flg(in_id,"nv",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nv"); /* fxm */
   else if((rcd=nco_inq_dimid_flg(in_id,"nvertices",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nvertices"); /* CICE */
-  else if((rcd=nco_inq_dimid_flg(in_id,"nbnd",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nbnd"); /* CAM-FV, CAM-SE */
-  else if((rcd=nco_inq_dimid_flg(in_id,"tbnd",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("tbnd"); /* CAM3 */
   
   /* Locate fields that must be present in input file */
   if((rcd=nco_inq_varid_flg(in_id,"latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latitude");
