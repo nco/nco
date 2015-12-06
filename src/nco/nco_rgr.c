@@ -4737,8 +4737,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"latu_bounds",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("latu_bounds");
   else if((rcd=nco_inq_varid_flg(in_id,"lat_ntf",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("lat_ntf");
   if((rcd=nco_inq_varid_flg(in_id,"lon_bnds",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lon_bnds");
-  else if((rcd=nco_inq_varid_flg(in_id,"lont_bounds",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("lont_bounds");
-  else if((rcd=nco_inq_varid_flg(in_id,"lonu_bounds",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("lonu_bounds");
+  else if((rcd=nco_inq_varid_flg(in_id,"lont_bounds",&lat_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lont_bounds");
+  else if((rcd=nco_inq_varid_flg(in_id,"lonu_bounds",&lat_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lonu_bounds");
   else if((rcd=nco_inq_varid_flg(in_id,"lon_ntf",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lon_ntf");
 
   if((rcd=nco_inq_varid_flg(in_id,"area",&area_id)) == NC_NOERR) area_nm_in=strdup("area");
@@ -4769,9 +4769,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
     if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     /* Corners are on corner grid */
-    dmn_srt[0]=dmn_srt[1]=0L;
-    dmn_cnt[0]=grd_sz_nbr;
-    dmn_cnt[1]=grd_crn_nbr;
+    dmn_srt[0]=dmn_srt[1]=dmn_srt[2]=0L;
+    dmn_cnt[0]=lat_nbr;
+    dmn_cnt[1]=lon_nbr;
+    dmn_cnt[2]=grd_crn_nbr;
     if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
     if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
   } /* !flg_grd_crv */
@@ -4847,211 +4848,215 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   dmn_sz_int[lat_psn]=lat_nbr;
 
   if(flg_grd_crv){
-    /* Interfaces (ntf) and boundaries (bnd) for curvilinear grids are ill-defined since sides need not follow latitudes nor meridians 
-       Simplest representation that contains equivalent information to interfaces/boundaries is grid corners array
-       Diagnose grid corners from midpoints
-       Most curvilinear data (e.g., WRF) is dimensioned lat x lon unlike SCRIP which uses lon x lat 
-       Hence we keep lat_ctr, lon_ctr, lat_crn, lon_crn with same order (likely lat x lon) as data file from which we infer grid
-       Always use input order to write skeleton file
-       Change that order, if necessary, to write SCRIP grid file
-       In the interior of a curvilinear grid, nine points contribute to the four corners of a quadrilateral surrounding each center point
-       These are the three points above the point, the three points at the same latitude, and the three points beneath the point
-       In other words, a nine-point stencil is required to define the four corners inferred around each gridcell center
-       It is cleanest to use this stencil only once for all cells in the "real"-grid, including those on the edges, not the interior
-       For this to work cleanly we define an enlarged "fake"-grid where we pre-copy the values that lead to the desired extrapolation on "real"-grid edges
-       Inspired by array-based solutions to integration of PDEs on meshes in Juri Toomre's class */
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
-      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
-	idx=lat_idx*lon_nbr+lon_idx;
-	grd_ctr_lat[idx]=lat_ctr[idx];
-	grd_ctr_lon[idx]=lon_ctr[idx];
-      } /* !lon */
-    } /* !lat */
-    double *lat_ctr_fk; /* [dgr] Latitude  grid with extrapolated boundaries necessary for 9-point template to find four grid corners for each real center */
-    double *lon_ctr_fk; /* [dgr] Longitude grid with extrapolated boundaries necessary for 9-point template to find four grid corners for each real center */
-    lat_ctr_fk=(double *)nco_malloc((lat_nbr+2)*(lon_nbr+2)*sizeof(double));
-    lon_ctr_fk=(double *)nco_malloc((lat_nbr+2)*(lon_nbr+2)*sizeof(double));
-    long int idx_rl; /* [idx] Index into real unrolled array */
-    long int idx_fk; /* [idx] Index into fake unrolled array */
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){ /* lat idx on real grid */
-      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){ /* lon idx on real grid */
-	idx_rl=lat_idx*lon_nbr+lon_idx;
-	idx_fk=(lat_idx+1)*(lon_nbr+2)+lon_idx+1;
-	/* Copy real grid to interior of fake grid */
-	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl];
-	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl];
-      } /* !lon */
-    } /* !lat */
-    /* Bottom row */
-    lat_idx=0; /* lat idx of extrapolated point on fake grid */
-    for(lon_idx=1;lon_idx<lon_nbr+1;lon_idx++){ /* lon idx of extrapolated point on fake grid */
-      idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on bottom row of fake grid */
-      idx_rl=lat_idx*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on bottom row of real grid */
-      lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+lon_nbr]-lat_ctr[idx_rl]);
-      lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+lon_nbr]-lon_ctr[idx_rl]);
-    } /* !lon */
-    /* Top row */
-    lat_idx=lat_nbr+1; /* lat idx of extrapolated point on fake grid */
-    for(lon_idx=1;lon_idx<lon_nbr+1;lon_idx++){ /* lon idx of extrapolated point on fake grid */
-      idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on top row of fake grid */
-      idx_rl=(lat_nbr-1)*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on top row of real grid */
-      lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-lon_nbr]);
-      lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-lon_nbr]);
-    } /* !lon */
-    /* Left side */
-    lon_idx=0; /* lon idx of extrapolated point on fake grid */
-    for(lat_idx=1;lat_idx<lat_nbr+1;lat_idx++){ /* lat idx of extrapolated point on fake grid */
-      idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on left side of fake grid */
-      idx_rl=(lat_idx-1)*lon_nbr+lon_idx; /* 1D-offset of neighboring point on left side of real grid */
-      lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+1]-lat_ctr[idx_rl]);
-      lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+1]-lon_ctr[idx_rl]);
-    } /* !lat */
-    /* Right side */
-    lon_idx=lon_nbr+1; /* lon idx of extrapolated point on fake grid */
-    for(lat_idx=1;lat_idx<lat_nbr+1;lat_idx++){ /* lat idx of extrapolated point on fake grid */
-      idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on right side of fake grid */
-      idx_rl=(lat_idx-1)*lon_nbr+lon_idx-2; /* 1D-offset of neighboring point on right side of real grid */
-      lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-1]);
-      lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-1]);
-    } /* !lat */
-    /* LL */
-    lat_ctr_fk[0]=lat_ctr_fk[lon_nbr+2]-(lat_ctr_fk[2*(lon_nbr+2)]-lat_ctr_fk[lon_nbr+2]);
-    lon_ctr_fk[0]=lon_ctr_fk[1]-(lon_ctr_fk[2]-lon_ctr_fk[1]);
-    /* LR */
-    lat_ctr_fk[lon_nbr+1]=lat_ctr_fk[2*(lon_nbr+2)-1]-(lat_ctr_fk[3*(lon_nbr+2)-1]-lat_ctr_fk[2*(lon_nbr+2)-1]);
-    lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+(lon_ctr_fk[lon_nbr]-lon_ctr_fk[lon_nbr-1]);
-    /* UR */
-    lat_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]+(lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]-lat_ctr_fk[lat_nbr*(lon_nbr+2)-1]);
-    lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]-lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
-    /* UL */
-    lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lat_ctr_fk[lat_nbr*(lon_nbr+2)]+(lat_ctr_fk[lat_nbr*(lon_nbr+2)]-lat_ctr_fk[(lat_nbr-1)*(lon_nbr+2)]);
-    lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2]-lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
-
-    if(nco_dbg_lvl_get() >= nco_dbg_std){
-      long idx_dbg;
-      idx_dbg=rgr->idx_dbg;
-      (void)fprintf(stderr,"%s: INFO %s idx_dbg = %li, Fake Center [lat,lon]=[%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_dbg,lat_ctr_fk[idx_dbg],lon_ctr_fk[idx_dbg]);
-    } /* !dbg */
-
-    long int lat_idx_fk; /* [idx] Index into fake (extrapolated) latitude  array */
-    long int lon_idx_fk; /* [idx] Index into fake (extrapolated) longitude array */
-    long int idx_fk_crn_ll_ctr_ll;
-    long int idx_fk_crn_ll_ctr_lr;
-    long int idx_fk_crn_ll_ctr_ur;
-    long int idx_fk_crn_ll_ctr_ul;
-    long int idx_fk_crn_lr_ctr_ll;
-    long int idx_fk_crn_lr_ctr_lr;
-    long int idx_fk_crn_lr_ctr_ur;
-    long int idx_fk_crn_lr_ctr_ul;
-    long int idx_fk_crn_ur_ctr_ll;
-    long int idx_fk_crn_ur_ctr_lr;
-    long int idx_fk_crn_ur_ctr_ur;
-    long int idx_fk_crn_ur_ctr_ul;
-    long int idx_fk_crn_ul_ctr_ll;
-    long int idx_fk_crn_ul_ctr_lr;
-    long int idx_fk_crn_ul_ctr_ur;
-    long int idx_fk_crn_ul_ctr_ul;
+    /* For curvilinear grids first, if necessary, infer corner boundaries
+       Then perform sanity check using same code on inferred and copied grids */
     long int idx_crn_ll;
     long int idx_crn_lr;
     long int idx_crn_ur;
     long int idx_crn_ul;
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
-      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
-	/* 9-point template valid at all interior (non-edge) points in real grid, and at all points (including edges) in fake grid
-	   Read variables idx_crn_ll_ctr_ul as "index of upper left gridcell center that contributes to lower-left gridcell corner"
-	   Algorithms execute in counter-clockwise (CCW) direction: lower-left, lower-right, upper-right, upper-left
-	   lat_idx and lon_idx are true indices and are used to write into grd_crn_lat/lon arrays
-	   lat_idx_fk and lon_idx_fk are indices into fake arrays with extrapolated boundaries and are used to read data from fake arrays */
-	lon_idx_fk=lon_idx+1;
-	lat_idx_fk=lat_idx+1;
-	
-	idx_rl=lat_idx*lon_nbr+lon_idx;
-	idx_fk=lat_idx_fk*(lon_nbr+2)+lon_idx_fk;
-
-	/* Determine index into fake array (valid everywhere it is applied) 
-	   Comments after each equation are formula for real index (valid only at interior gridcells) */
-	idx_fk_crn_ll_ctr_ll=idx_fk-(lon_nbr+2)-1; // (lat_idx-1)*lon_nbr+lon_idx-1
-	idx_fk_crn_ll_ctr_lr=idx_fk-(lon_nbr+2); // (lat_idx-1)*lon_nbr+lon_idx
-	idx_fk_crn_ll_ctr_ur=idx_fk; // lat_idx*lon_nbr+lon_idx
-	idx_fk_crn_ll_ctr_ul=idx_fk-1; // lat_idx*lon_nbr+lon_idx-1;
-
-	idx_fk_crn_lr_ctr_ll=idx_fk-(lon_nbr+2); // (lat_idx-1)*lon_nbr+lon_idx
-	idx_fk_crn_lr_ctr_lr=idx_fk-(lon_nbr+2)+1; // (lat_idx-1)*lon_nbr+lon_idx+1
-	idx_fk_crn_lr_ctr_ur=idx_fk+1; // lat_idx*lon_nbr+lon_idx+1
-	idx_fk_crn_lr_ctr_ul=idx_fk; // lat_idx*lon_nbr+lon_idx;
-
-	idx_fk_crn_ur_ctr_ll=idx_fk; // lat_idx*lon_nbr+lon_idx
-	idx_fk_crn_ur_ctr_lr=idx_fk+1; // lat_idx*lon_nbr+lon_idx+1
-	idx_fk_crn_ur_ctr_ur=idx_fk+(lon_nbr+2)+1; // (lat_idx+1)*lon_nbr+lon_idx+1
-	idx_fk_crn_ur_ctr_ul=idx_fk+(lon_nbr+2); // (lat_idx+1)*lon_nbr+lon_idx;
-	
-	idx_fk_crn_ul_ctr_ll=idx_fk-1; // lat_idx*lon_nbr+lon_idx-1
-	idx_fk_crn_ul_ctr_lr=idx_fk; // lat_idx*lon_nbr+lon_idx
-	idx_fk_crn_ul_ctr_ur=idx_fk+(lon_nbr+2); // (lat_idx+1)*lon_nbr+lon_idx
-	idx_fk_crn_ul_ctr_ul=idx_fk+(lon_nbr+2)-1; // (lat_idx+1)*lon_nbr+lon_idx-1;
-	
-	idx_crn_ll=grd_crn_nbr*idx_rl+0;
-	lat_crn[idx_crn_ll]=0.25*(lat_ctr_fk[idx_fk_crn_ll_ctr_ll]+lat_ctr_fk[idx_fk_crn_ll_ctr_lr]+lat_ctr_fk[idx_fk_crn_ll_ctr_ur]+lat_ctr_fk[idx_fk_crn_ll_ctr_ul]);
-	lon_crn[idx_crn_ll]=0.25*(lon_ctr_fk[idx_fk_crn_ll_ctr_ll]+lon_ctr_fk[idx_fk_crn_ll_ctr_lr]+lon_ctr_fk[idx_fk_crn_ll_ctr_ur]+lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
-	idx_crn_lr=grd_crn_nbr*idx_rl+1;
-	lat_crn[idx_crn_lr]=0.25*(lat_ctr_fk[idx_fk_crn_lr_ctr_ll]+lat_ctr_fk[idx_fk_crn_lr_ctr_lr]+lat_ctr_fk[idx_fk_crn_lr_ctr_ur]+lat_ctr_fk[idx_fk_crn_lr_ctr_ul]);
-	lon_crn[idx_crn_lr]=0.25*(lon_ctr_fk[idx_fk_crn_lr_ctr_ll]+lon_ctr_fk[idx_fk_crn_lr_ctr_lr]+lon_ctr_fk[idx_fk_crn_lr_ctr_ur]+lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
-	idx_crn_ur=grd_crn_nbr*idx_rl+2;
-	lat_crn[idx_crn_ur]=0.25*(lat_ctr_fk[idx_fk_crn_ur_ctr_ll]+lat_ctr_fk[idx_fk_crn_ur_ctr_lr]+lat_ctr_fk[idx_fk_crn_ur_ctr_ur]+lat_ctr_fk[idx_fk_crn_ur_ctr_ul]);
-	lon_crn[idx_crn_ur]=0.25*(lon_ctr_fk[idx_fk_crn_ur_ctr_ll]+lon_ctr_fk[idx_fk_crn_ur_ctr_lr]+lon_ctr_fk[idx_fk_crn_ur_ctr_ur]+lon_ctr_fk[idx_fk_crn_ur_ctr_ul]);
-	idx_crn_ul=grd_crn_nbr*idx_rl+3;
-	lat_crn[idx_crn_ul]=0.25*(lat_ctr_fk[idx_fk_crn_ul_ctr_ll]+lat_ctr_fk[idx_fk_crn_ul_ctr_lr]+lat_ctr_fk[idx_fk_crn_ul_ctr_ur]+lat_ctr_fk[idx_fk_crn_ul_ctr_ul]);
-	lon_crn[idx_crn_ul]=0.25*(lon_ctr_fk[idx_fk_crn_ul_ctr_ll]+lon_ctr_fk[idx_fk_crn_ul_ctr_lr]+lon_ctr_fk[idx_fk_crn_ul_ctr_ur]+lon_ctr_fk[idx_fk_crn_ul_ctr_ul]);
-      } /* !lon */
-    } /* !lat */
-    if(lat_ctr_fk) lat_ctr_fk=(double *)nco_free(lat_ctr_fk);
-    if(lon_ctr_fk) lon_ctr_fk=(double *)nco_free(lon_ctr_fk);
-
-    /* As of 20151205, use same sanity check for both inferred and copied grids */
+    
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
-      /* 20151129: Above extrapolation technique yields corners outside [-90.0,90.0], [-180.0,360.0]
-	 Also, it may assume input is ascending swath and fail for descending swaths
-	 Complications not fully addressed:
-	 Swaths may (verify this) turn from ascending to descending, or visa-versa, when satellite crosses latitude extrema
-	 Swaths may cross the date-line (and back!) */
+      /* Interfaces (ntf) and boundaries (bnd) for curvilinear grids are ill-defined since sides need not follow latitudes nor meridians 
+	 Simplest representation that contains equivalent information to interfaces/boundaries is grid corners array
+	 Diagnose grid corners from midpoints
+	 Most curvilinear data (e.g., WRF) is dimensioned lat x lon unlike SCRIP which uses lon x lat 
+	 Hence we keep lat_ctr, lon_ctr, lat_crn, lon_crn with same order (likely lat x lon) as data file from which we infer grid
+	 Always use input order to write skeleton file
+	 Change that order, if necessary, to write SCRIP grid file
+	 In the interior of a curvilinear grid, nine points contribute to the four corners of a quadrilateral surrounding each center point
+	 These are the three points above the point, the three points at the same latitude, and the three points beneath the point
+	 In other words, a nine-point stencil is required to define the four corners inferred around each gridcell center
+	 It is cleanest to use this stencil only once for all cells in the "real"-grid, including those on the edges, not the interior
+	 For this to work cleanly we define an enlarged "fake"-grid where we pre-copy the values that lead to the desired extrapolation on "real"-grid edges
+	 Inspired by array-based solutions to integration of PDEs on meshes in Juri Toomre's class */
+      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+	  idx=lat_idx*lon_nbr+lon_idx;
+	  grd_ctr_lat[idx]=lat_ctr[idx];
+	  grd_ctr_lon[idx]=lon_ctr[idx];
+	} /* !lon */
+      } /* !lat */
+      double *lat_ctr_fk; /* [dgr] Latitude  grid with extrapolated boundaries necessary for 9-point template to find four grid corners for each real center */
+      double *lon_ctr_fk; /* [dgr] Longitude grid with extrapolated boundaries necessary for 9-point template to find four grid corners for each real center */
+      lat_ctr_fk=(double *)nco_malloc((lat_nbr+2)*(lon_nbr+2)*sizeof(double));
+      lon_ctr_fk=(double *)nco_malloc((lat_nbr+2)*(lon_nbr+2)*sizeof(double));
+      long int idx_rl; /* [idx] Index into real unrolled array */
+      long int idx_fk; /* [idx] Index into fake unrolled array */
+      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){ /* lat idx on real grid */
+	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){ /* lon idx on real grid */
+	  idx_rl=lat_idx*lon_nbr+lon_idx;
+	  idx_fk=(lat_idx+1)*(lon_nbr+2)+lon_idx+1;
+	  /* Copy real grid to interior of fake grid */
+	  lat_ctr_fk[idx_fk]=lat_ctr[idx_rl];
+	  lon_ctr_fk[idx_fk]=lon_ctr[idx_rl];
+	} /* !lon */
+      } /* !lat */
+      /* Bottom row */
+      lat_idx=0; /* lat idx of extrapolated point on fake grid */
+      for(lon_idx=1;lon_idx<lon_nbr+1;lon_idx++){ /* lon idx of extrapolated point on fake grid */
+	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on bottom row of fake grid */
+	idx_rl=lat_idx*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on bottom row of real grid */
+	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+lon_nbr]-lat_ctr[idx_rl]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+lon_nbr]-lon_ctr[idx_rl]);
+      } /* !lon */
+      /* Top row */
+      lat_idx=lat_nbr+1; /* lat idx of extrapolated point on fake grid */
+      for(lon_idx=1;lon_idx<lon_nbr+1;lon_idx++){ /* lon idx of extrapolated point on fake grid */
+	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on top row of fake grid */
+	idx_rl=(lat_nbr-1)*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on top row of real grid */
+	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-lon_nbr]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-lon_nbr]);
+      } /* !lon */
+      /* Left side */
+      lon_idx=0; /* lon idx of extrapolated point on fake grid */
+      for(lat_idx=1;lat_idx<lat_nbr+1;lat_idx++){ /* lat idx of extrapolated point on fake grid */
+	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on left side of fake grid */
+	idx_rl=(lat_idx-1)*lon_nbr+lon_idx; /* 1D-offset of neighboring point on left side of real grid */
+	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+1]-lat_ctr[idx_rl]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+1]-lon_ctr[idx_rl]);
+      } /* !lat */
+      /* Right side */
+      lon_idx=lon_nbr+1; /* lon idx of extrapolated point on fake grid */
+      for(lat_idx=1;lat_idx<lat_nbr+1;lat_idx++){ /* lat idx of extrapolated point on fake grid */
+	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on right side of fake grid */
+	idx_rl=(lat_idx-1)*lon_nbr+lon_idx-2; /* 1D-offset of neighboring point on right side of real grid */
+	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-1]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-1]);
+      } /* !lat */
+      /* LL */
+      lat_ctr_fk[0]=lat_ctr_fk[lon_nbr+2]-(lat_ctr_fk[2*(lon_nbr+2)]-lat_ctr_fk[lon_nbr+2]);
+      lon_ctr_fk[0]=lon_ctr_fk[1]-(lon_ctr_fk[2]-lon_ctr_fk[1]);
+      /* LR */
+      lat_ctr_fk[lon_nbr+1]=lat_ctr_fk[2*(lon_nbr+2)-1]-(lat_ctr_fk[3*(lon_nbr+2)-1]-lat_ctr_fk[2*(lon_nbr+2)-1]);
+      lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+(lon_ctr_fk[lon_nbr]-lon_ctr_fk[lon_nbr-1]);
+      /* UR */
+      lat_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]+(lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]-lat_ctr_fk[lat_nbr*(lon_nbr+2)-1]);
+      lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]-lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
+      /* UL */
+      lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lat_ctr_fk[lat_nbr*(lon_nbr+2)]+(lat_ctr_fk[lat_nbr*(lon_nbr+2)]-lat_ctr_fk[(lat_nbr-1)*(lon_nbr+2)]);
+      lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2]-lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
 
-      /* Determine numeric bounds of input coordinate system */
-      double lon_min_min;
-      double lon_max_max;
-      nco_bool NCO_LON_0_TO_360=True;
-      for(idx=0;idx<grd_sz_nbr;idx++)
-	if(lon_ctr[idx] < 0.0) break;
-      if(idx != grd_sz_nbr) NCO_LON_0_TO_360=False;
-      if(NCO_LON_0_TO_360){
-	lon_min_min=0.0;
-	lon_max_max=360.0;
-      }else{
-	lon_min_min=-180.0;
-	lon_max_max=180.0;
-      } /* !NCO_LON_0_TO_360 */
-      for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
-	if(lat_crn[idx] < -90.0 || lat_crn[idx] > 90.0 || lon_crn[idx] < lon_min_min || lon_crn[idx] > lon_max_max){
-	  long idx_ctr;
-	  idx_ctr=idx/grd_crn_nbr;
-	  idx_crn_ll=grd_crn_nbr*idx_ctr+0;
-	  idx_crn_lr=grd_crn_nbr*idx_ctr+1;
-	  idx_crn_ur=grd_crn_nbr*idx_ctr+2;
-	  idx_crn_ul=grd_crn_nbr*idx_ctr+3;
-	  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s Curvilinear corner issue (from %s corners) at idx = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,(lat_bnd_id == NC_MIN_INT) ? "inferred" : "copied",idx_ctr,lat_ctr[idx_ctr],lon_ctr[idx_ctr],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
-	  /* Restrict grid to real latitudes and to the 360-degree range detected from input cell-centers */
-	  if(lat_crn[idx] < -90.0) lat_crn[idx]=-90.0;
-	  if(lat_crn[idx] >  90.0) lat_crn[idx]=90.0;
-	  if(lon_crn[idx] < lon_min_min) lon_crn[idx]+=360.0;
-	  if(lon_crn[idx] > lon_max_max) lon_crn[idx]-=360.0;
-	} /* !sanity */
-      } /* !idx */
-      /* Copy inferred or copied sanity-checked corners into empty output array */
-      for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
-	grd_crn_lat[idx]=lat_crn[idx];
-	grd_crn_lon[idx]=lon_crn[idx];
-      } /* !idx */
-    } /* end else */
+      if(nco_dbg_lvl_get() >= nco_dbg_std){
+	long idx_dbg;
+	idx_dbg=rgr->idx_dbg;
+	(void)fprintf(stderr,"%s: INFO %s idx_dbg = %li, Fake Center [lat,lon]=[%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_dbg,lat_ctr_fk[idx_dbg],lon_ctr_fk[idx_dbg]);
+      } /* !dbg */
       
+      long int lat_idx_fk; /* [idx] Index into fake (extrapolated) latitude  array */
+      long int lon_idx_fk; /* [idx] Index into fake (extrapolated) longitude array */
+      long int idx_fk_crn_ll_ctr_ll;
+      long int idx_fk_crn_ll_ctr_lr;
+      long int idx_fk_crn_ll_ctr_ur;
+      long int idx_fk_crn_ll_ctr_ul;
+      long int idx_fk_crn_lr_ctr_ll;
+      long int idx_fk_crn_lr_ctr_lr;
+      long int idx_fk_crn_lr_ctr_ur;
+      long int idx_fk_crn_lr_ctr_ul;
+      long int idx_fk_crn_ur_ctr_ll;
+      long int idx_fk_crn_ur_ctr_lr;
+      long int idx_fk_crn_ur_ctr_ur;
+      long int idx_fk_crn_ur_ctr_ul;
+      long int idx_fk_crn_ul_ctr_ll;
+      long int idx_fk_crn_ul_ctr_lr;
+      long int idx_fk_crn_ul_ctr_ur;
+      long int idx_fk_crn_ul_ctr_ul;
+      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+	  /* 9-point template valid at all interior (non-edge) points in real grid, and at all points (including edges) in fake grid
+	     Read variables idx_crn_ll_ctr_ul as "index of upper left gridcell center that contributes to lower-left gridcell corner"
+	     Algorithms execute in counter-clockwise (CCW) direction: lower-left, lower-right, upper-right, upper-left
+	     lat_idx and lon_idx are true indices and are used to write into grd_crn_lat/lon arrays
+	     lat_idx_fk and lon_idx_fk are indices into fake arrays with extrapolated boundaries and are used to read data from fake arrays */
+	  lon_idx_fk=lon_idx+1;
+	  lat_idx_fk=lat_idx+1;
+	  
+	  idx_rl=lat_idx*lon_nbr+lon_idx;
+	  idx_fk=lat_idx_fk*(lon_nbr+2)+lon_idx_fk;
+	  
+	  /* Determine index into fake array (valid everywhere it is applied) 
+	     Comments after each equation are formula for real index (valid only at interior gridcells) */
+	  idx_fk_crn_ll_ctr_ll=idx_fk-(lon_nbr+2)-1; // (lat_idx-1)*lon_nbr+lon_idx-1
+	  idx_fk_crn_ll_ctr_lr=idx_fk-(lon_nbr+2); // (lat_idx-1)*lon_nbr+lon_idx
+	  idx_fk_crn_ll_ctr_ur=idx_fk; // lat_idx*lon_nbr+lon_idx
+	  idx_fk_crn_ll_ctr_ul=idx_fk-1; // lat_idx*lon_nbr+lon_idx-1;
+	  
+	  idx_fk_crn_lr_ctr_ll=idx_fk-(lon_nbr+2); // (lat_idx-1)*lon_nbr+lon_idx
+	  idx_fk_crn_lr_ctr_lr=idx_fk-(lon_nbr+2)+1; // (lat_idx-1)*lon_nbr+lon_idx+1
+	  idx_fk_crn_lr_ctr_ur=idx_fk+1; // lat_idx*lon_nbr+lon_idx+1
+	  idx_fk_crn_lr_ctr_ul=idx_fk; // lat_idx*lon_nbr+lon_idx;
+	  
+	  idx_fk_crn_ur_ctr_ll=idx_fk; // lat_idx*lon_nbr+lon_idx
+	  idx_fk_crn_ur_ctr_lr=idx_fk+1; // lat_idx*lon_nbr+lon_idx+1
+	  idx_fk_crn_ur_ctr_ur=idx_fk+(lon_nbr+2)+1; // (lat_idx+1)*lon_nbr+lon_idx+1
+	  idx_fk_crn_ur_ctr_ul=idx_fk+(lon_nbr+2); // (lat_idx+1)*lon_nbr+lon_idx;
+	  
+	  idx_fk_crn_ul_ctr_ll=idx_fk-1; // lat_idx*lon_nbr+lon_idx-1
+	  idx_fk_crn_ul_ctr_lr=idx_fk; // lat_idx*lon_nbr+lon_idx
+	  idx_fk_crn_ul_ctr_ur=idx_fk+(lon_nbr+2); // (lat_idx+1)*lon_nbr+lon_idx
+	  idx_fk_crn_ul_ctr_ul=idx_fk+(lon_nbr+2)-1; // (lat_idx+1)*lon_nbr+lon_idx-1;
+	  
+	  idx_crn_ll=grd_crn_nbr*idx_rl+0;
+	  lat_crn[idx_crn_ll]=0.25*(lat_ctr_fk[idx_fk_crn_ll_ctr_ll]+lat_ctr_fk[idx_fk_crn_ll_ctr_lr]+lat_ctr_fk[idx_fk_crn_ll_ctr_ur]+lat_ctr_fk[idx_fk_crn_ll_ctr_ul]);
+	  lon_crn[idx_crn_ll]=0.25*(lon_ctr_fk[idx_fk_crn_ll_ctr_ll]+lon_ctr_fk[idx_fk_crn_ll_ctr_lr]+lon_ctr_fk[idx_fk_crn_ll_ctr_ur]+lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
+	  idx_crn_lr=grd_crn_nbr*idx_rl+1;
+	  lat_crn[idx_crn_lr]=0.25*(lat_ctr_fk[idx_fk_crn_lr_ctr_ll]+lat_ctr_fk[idx_fk_crn_lr_ctr_lr]+lat_ctr_fk[idx_fk_crn_lr_ctr_ur]+lat_ctr_fk[idx_fk_crn_lr_ctr_ul]);
+	  lon_crn[idx_crn_lr]=0.25*(lon_ctr_fk[idx_fk_crn_lr_ctr_ll]+lon_ctr_fk[idx_fk_crn_lr_ctr_lr]+lon_ctr_fk[idx_fk_crn_lr_ctr_ur]+lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
+	  idx_crn_ur=grd_crn_nbr*idx_rl+2;
+	  lat_crn[idx_crn_ur]=0.25*(lat_ctr_fk[idx_fk_crn_ur_ctr_ll]+lat_ctr_fk[idx_fk_crn_ur_ctr_lr]+lat_ctr_fk[idx_fk_crn_ur_ctr_ur]+lat_ctr_fk[idx_fk_crn_ur_ctr_ul]);
+	  lon_crn[idx_crn_ur]=0.25*(lon_ctr_fk[idx_fk_crn_ur_ctr_ll]+lon_ctr_fk[idx_fk_crn_ur_ctr_lr]+lon_ctr_fk[idx_fk_crn_ur_ctr_ur]+lon_ctr_fk[idx_fk_crn_ur_ctr_ul]);
+	  idx_crn_ul=grd_crn_nbr*idx_rl+3;
+	  lat_crn[idx_crn_ul]=0.25*(lat_ctr_fk[idx_fk_crn_ul_ctr_ll]+lat_ctr_fk[idx_fk_crn_ul_ctr_lr]+lat_ctr_fk[idx_fk_crn_ul_ctr_ur]+lat_ctr_fk[idx_fk_crn_ul_ctr_ul]);
+	  lon_crn[idx_crn_ul]=0.25*(lon_ctr_fk[idx_fk_crn_ul_ctr_ll]+lon_ctr_fk[idx_fk_crn_ul_ctr_lr]+lon_ctr_fk[idx_fk_crn_ul_ctr_ur]+lon_ctr_fk[idx_fk_crn_ul_ctr_ul]);
+	} /* !lon */
+      } /* !lat */
+      if(lat_ctr_fk) lat_ctr_fk=(double *)nco_free(lat_ctr_fk);
+      if(lon_ctr_fk) lon_ctr_fk=(double *)nco_free(lon_ctr_fk);
+    } /* !(lat_bnd_id && lon_bnd_id) */
+    
+    /* As of 20151205, use same sanity check for both inferred and copied curvilinear grids
+       20151129: Above extrapolation technique yields corners outside [-90.0,90.0], [-180.0,360.0]
+       Also, it may assume input is ascending swath and fail for descending swaths
+       Complications not fully addressed:
+       Swaths may (verify this) turn from ascending to descending, or visa-versa, when satellite crosses latitude extrema
+       Swaths may cross the date-line (and back!) */
+
+    /* Determine numeric bounds of input coordinate system */
+    double lon_min_min;
+    double lon_max_max;
+    nco_bool NCO_LON_0_TO_360=True;
+    for(idx=0;idx<grd_sz_nbr;idx++)
+      if(lon_ctr[idx] < 0.0) break;
+    if(idx != grd_sz_nbr) NCO_LON_0_TO_360=False;
+    if(NCO_LON_0_TO_360){
+      lon_min_min=0.0;
+      lon_max_max=360.0;
+    }else{
+      lon_min_min=-180.0;
+      lon_max_max=180.0;
+    } /* !NCO_LON_0_TO_360 */
+    for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
+      if(lat_crn[idx] < -90.0 || lat_crn[idx] > 90.0 || lon_crn[idx] < lon_min_min || lon_crn[idx] > lon_max_max){
+	long idx_ctr;
+	idx_ctr=idx/grd_crn_nbr;
+	idx_crn_ll=grd_crn_nbr*idx_ctr+0;
+	idx_crn_lr=grd_crn_nbr*idx_ctr+1;
+	idx_crn_ur=grd_crn_nbr*idx_ctr+2;
+	idx_crn_ul=grd_crn_nbr*idx_ctr+3;
+	if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s Curvilinear corner issue (from %s corners) at idx = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,(lat_bnd_id == NC_MIN_INT) ? "inferred" : "copied",idx_ctr,lat_ctr[idx_ctr],lon_ctr[idx_ctr],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
+	/* Restrict grid to real latitudes and to the 360-degree range detected from input cell-centers */
+	if(lat_crn[idx] < -90.0) lat_crn[idx]=-90.0;
+	if(lat_crn[idx] >  90.0) lat_crn[idx]=90.0;
+	if(lon_crn[idx] < lon_min_min) lon_crn[idx]+=360.0;
+	if(lon_crn[idx] > lon_max_max) lon_crn[idx]-=360.0;
+      } /* !sanity */
+    } /* !idx */
+
+    /* Copy inferred or copied sanity-checked corners into empty output array */
+    for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
+      grd_crn_lat[idx]=lat_crn[idx];
+      grd_crn_lon[idx]=lon_crn[idx];
+    } /* !idx */
+  
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       long idx_dbg;
       idx_dbg=rgr->idx_dbg;
@@ -5079,7 +5084,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !idx */
     lat_spn=lat_max-lat_min;
     lon_spn=lon_max-lon_min;
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid is %li x %li spanning %g x %g degrees: [%g <= lat <= %g], [%g <= lon <= %g]\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_spn,lon_spn,lat_min,lat_max,lon_min,lon_max);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid resolution %li x %li, spans %g x %g degrees: [%g <= lat <= %g], [%g <= lon <= %g]\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_spn,lon_spn,lat_min,lat_max,lon_min,lon_max);
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
