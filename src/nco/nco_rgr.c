@@ -4631,8 +4631,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     nco_exit(EXIT_FAILURE);
   } /* !lat_dmn_nm */
     
-  /* Locate spatial dimensions that may be present */
+  /* Locate spatial dimensions that may be present
+     NB: bounds dimensions present a special problem
+     CAM-FV uses nbnd for spatial bounds while CICE uses nbnd for temporal bounds and nvertices for spatial bounds 
+     Hence search for nvertices before nbnd to ensure spatial bound is found first */
   if((rcd=nco_inq_dimid_flg(in_id,"nv",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nv"); /* fxm */
+  else if((rcd=nco_inq_dimid_flg(in_id,"nvertices",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nvertices"); /* CICE */
   else if((rcd=nco_inq_dimid_flg(in_id,"nbnd",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nbnd"); /* CAM-FV, CAM-SE */
   else if((rcd=nco_inq_dimid_flg(in_id,"tbnd",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("tbnd"); /* CAM3 */
   
@@ -4880,7 +4884,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	 In other words, a nine-point stencil is required to define the four corners inferred around each gridcell center
 	 It is cleanest to use this stencil only once for all cells in the "real"-grid, including those on the edges, not the interior
 	 For this to work cleanly we define an enlarged "fake"-grid where we pre-copy the values that lead to the desired extrapolation on "real"-grid edges
-	 Inspired by array-based solutions to integration of PDEs on meshes in Juri Toomre's class */
+	 Inspired by array-based solutions to integration of PDEs on meshes in Juri Toomre's class
+	 NB: implementation is not robust to missing value points in interior of grid. Hopefully grids have no missing values in coordinate variables, although they may have missing values in non-grid fields (e.g., mask, temperature) */
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	  idx=lat_idx*lon_nbr+lon_idx;
