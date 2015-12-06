@@ -1,6 +1,5 @@
 #!/usr/bin/env perl
-# Shebang line above may have to be set explicitly to /usr/local/bin/perl
-# on ESMF when running in queue. Otherwise it may pick up older perl
+# Shebang line above may have to be set explicitly to /usr/local/bin/perl on ESMF when running in queue. Otherwise it may pick up older perl.
 
 # $Header$
 
