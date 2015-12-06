@@ -4764,11 +4764,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
 
+    /* 20150923: Also input, if present in curvilinear file, corners, area, and mask
+       area and mask are same size as lat and lon */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
     if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
-    /* 20150923: fxm also input, if present in curvilinear file, corners, area, and mask */
-    // if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
-    // if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
+    /* Corners are on corner grid */
+    dmn_srt[0]=dmn_srt[1]=0L;
+    dmn_cnt[0]=grd_sz_nbr;
+    dmn_cnt[1]=grd_crn_nbr;
+    if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
+    if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
@@ -5002,12 +5007,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(lat_ctr_fk) lat_ctr_fk=(double *)nco_free(lat_ctr_fk);
     if(lon_ctr_fk) lon_ctr_fk=(double *)nco_free(lon_ctr_fk);
 
-    /* Use all that hard work? */
+    /* As of 20151205, use same sanity check for both inferred and copied grids */
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
-      /* First, a sanity check
-	 20151129: Above extrapolation technique yields corners outside [-90.0,90.0], [-180.0,360.0]
+      /* 20151129: Above extrapolation technique yields corners outside [-90.0,90.0], [-180.0,360.0]
 	 Also, it may assume input is ascending swath and fail for descending swaths
-	 Complications not fully addressed :
+	 Complications not fully addressed:
 	 Swaths may (verify this) turn from ascending to descending, or visa-versa, when satellite crosses latitude extrema
 	 Swaths may cross the date-line (and back!) */
 
@@ -5033,7 +5037,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  idx_crn_lr=grd_crn_nbr*idx_ctr+1;
 	  idx_crn_ur=grd_crn_nbr*idx_ctr+2;
 	  idx_crn_ul=grd_crn_nbr*idx_ctr+3;
-	  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s Extrapolation issue at idx = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_ctr,lat_ctr[idx_ctr],lon_ctr[idx_ctr],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
+	  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s Curvilinear corner issue (from %s corners) at idx = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,(lat_bnd_id == NC_MIN_INT) ? "inferred" : "copied",idx_ctr,lat_ctr[idx_ctr],lon_ctr[idx_ctr],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
 	  /* Restrict grid to real latitudes and to the 360-degree range detected from input cell-centers */
 	  if(lat_crn[idx] < -90.0) lat_crn[idx]=-90.0;
 	  if(lat_crn[idx] >  90.0) lat_crn[idx]=90.0;
@@ -5041,7 +5045,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  if(lon_crn[idx] > lon_max_max) lon_crn[idx]-=360.0;
 	} /* !sanity */
       } /* !idx */
-      /* Copy inferred, sanity-checked corners into empty output array */
+      /* Copy inferred or copied sanity-checked corners into empty output array */
       for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
 	grd_crn_lat[idx]=lat_crn[idx];
 	grd_crn_lon[idx]=lon_crn[idx];

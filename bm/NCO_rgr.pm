@@ -320,16 +320,17 @@ print "\n";
 
 # ncks -O --rgr grid=~/foo_grid.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 # ncks -O -H -u -C -s %18.15f -d grid_size,0 -v grid_center_lat ~/foo_grid.nc
+# 20151205: using %tmp_fl_00% in arguments like "--rgr grid=%tmp_fl_00%" leads to epic fail, so hard code those filenames
 	$dsc_sng="Generate T42 gridfile";
-	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr grid=%tmp_fl_00% --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_01%";
-	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %18.15f -d grid_size,0 -v grid_center_lat %tmp_fl_00%";
+	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr grid=foo_grid.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_01%";
+	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %18.15f -d grid_size,0 -v grid_center_lat foo_grid.nc";
 	$tst_cmd[2]="-87.863798839232629";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Generate 180x360 grid skeleton file";
-	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr skl=%tmp_fl_01% --rgr grid=%tmp_fl_00% --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_02%";
+	$dsc_sng="Generate T42-grid skeleton file";
+	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr skl=%tmp_fl_01% --rgr grid=foo_grid.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_02%";
 	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %g -d lat,0 -v gw %tmp_fl_01%";
 	$tst_cmd[2]="0.00178328";
 	$tst_cmd[3]="SS_OK";
@@ -338,10 +339,11 @@ print "\n";
 
 # ncks -O --rgr nfr=y --rgr grid=~/foo_grid.nc ~/nco/data/ne30_2D.nc ~/foo.nc
 # ncks -O -H -u -C -s %8.5f -d grid_size,256 -v grid_center_lat ~/foo_grid.nc
-	$dsc_sng="Infer 180x360 gridfile (uses SSH/scp to dust.ess.uci.edu)";
+# 20151205: using %tmp_fl_00% in arguments like "--rgr grid=%tmp_fl_00%" leads to epic fail, so hard code those filenames
+	$dsc_sng="Infer 129x256 FV gridfile (uses SSH/scp to dust.ess.uci.edu)";
 	$tst_cmd[0]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_2D.nc .";
-	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg --rgr nfr=y --rgr grid=%tmp_fl_00% ne30_2D.nc %tmp_fl_01%";
-	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %g -d grid_size,256 -v grid_center_lat %tmp_fl_00%";
+	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg --rgr nfr=y --rgr grid=foo_grid.nc ne30_2D.nc %tmp_fl_01%";
+	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %8.5f -d grid_size,256 -v grid_center_lat foo_grid.nc";
 	$tst_cmd[3]="-88.59375";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
@@ -703,7 +705,6 @@ print "\n";
 # ncbo -O -y add -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 # ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var ~/foo.nc
 # /g4/one_dmn_rec_var
-
     $dsc_sng="(Groups) Addition with limits -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -716,7 +717,6 @@ print "\n";
 # ncbo -O -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 # ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var ~/foo.nc
 # /g4/one_dmn_rec_var
-
     $dsc_sng="(Groups) Subtraction -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,1,1,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -729,7 +729,6 @@ print "\n";
 # ncbo -O -y mlt -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 # ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var ~/foo.nc
 # /g4/one_dmn_rec_var
-
     $dsc_sng="(Groups) Multiplication with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,2,2,1 -y mlt -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -742,8 +741,6 @@ print "\n";
 # ncbo -O -y mlt -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc ~/foo.nc
 # ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var ~/foo.nc
 # /g4/one_dmn_rec_var
-
-
     $dsc_sng="(Groups) Division with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,2,2,1 -y dvd -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -759,7 +756,6 @@ print "\n";
 # Absolute match test
 # ncbo #21
 # ncbo -O in_grp_1.nc in_grp_2.nc ~/foo.nc
-
     $dsc_sng="(Groups) Process absolute match variables -v var1 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -v var1 %tmp_fl_00%";
@@ -771,7 +767,6 @@ print "\n";
 
 # ncbo #22
 # ncbo -O -v var1 in_grp_1.nc in_grp_2.nc ~/foo.nc
-
     $dsc_sng="(Groups) Process absolute match variables -v var1 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var1 $in_pth_arg in_grp_1.nc in_grp_2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C %tmp_fl_00%";
@@ -785,7 +780,6 @@ print "\n";
 #ncbo -O --op_typ=add  mdl_1.nc mdl_2.nc ~/foo.nc
 #ncks -C -g cesm_01 -v tas1 ~/foo.nc
 # 544.4 = (file 1 tas1) 272.1 + (file 2 tas1) 272.3
-
     $dsc_sng="(Groups) Process ensembles in both files mdl_1.nc mdl_2.nc";
     $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc mdl_2.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -g cesm_01 -v tas1 %tmp_fl_00%";
@@ -797,7 +791,6 @@ print "\n";
 # ncbo #24
 #ncbo -O mdl_1.nc mdl_2.nc ~/foo.nc
 #ncks -g cesm_01 -v time ~/foo.nc
-
     $dsc_sng="(Groups) Process ensembles in both files mdl_1.nc mdl_2.nc (check fixed variables)";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc mdl_2.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -g cesm_01 -v time %tmp_fl_00%";
@@ -810,7 +803,6 @@ print "\n";
 #ncbo -O --op_typ=add  mdl_1.nc obs.nc ~/foo.nc
 #ncks -C -g cesm_01 -v tas1 ~/foo.nc
 # 544.1 = (file 1 tas1) 272.1 + (file 2 tas1) 273.0
-
     $dsc_sng="(Groups) Process ensembles in file 1 with common variable at root in file 2";
     $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc obs.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -g cesm_01 -v tas1 %tmp_fl_00%";
@@ -822,7 +814,6 @@ print "\n";
 # ncbo #26
 #ncbo -O mdl_1.nc obs.nc ~/foo.nc
 #ncks -g ecmwf_01 -v time
-
     $dsc_sng="(Groups) Process ensembles in file 1 with common variable at root in file 2 (check fixed variables)";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg mdl_1.nc obs.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -g ecmwf_01 -v time %tmp_fl_00%";
@@ -840,7 +831,6 @@ print "\n";
 #FXM ncbo group broadcasting, "time" dimension is created at root because conflicting logic in nco_prc_cmn() uses 
 # both RNK_1_GTR and table flag of file 1 or 2
 # result is time[3] instead of time[3]=4
-
     if(0) {
     $dsc_sng="(Groups) Process ensembles in file 2 with common variable at root in file 1";
     $tst_cmd[0]="ncbo -O --op_typ=add $fl_fmt $nco_D_flg $in_pth_arg obs.nc mdl_1.nc  %tmp_fl_00%";
@@ -855,7 +845,6 @@ print "\n";
 #ncbo -O cmip5.nc obs.nc ~/foo.nc
 #ncks -C -g ecmwf -v tas1 ~/foo.nc
 # obs.nc tas1=273, cmip5.nc giss tas1=274
-
     $dsc_sng="(Groups) Process relative matches, first file greater (cmip5.nc obs.nc)";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -g giss -v tas1 %tmp_fl_00%";
@@ -868,7 +857,6 @@ print "\n";
 #ncbo -O  obs.nc cmip5.nc ~/foo.nc
 #ncks -C -g ecmwf -v tas1 ~/foo.nc
 # obs.nc tas1=273, cmip5.nc giss tas1=274
-
     $dsc_sng="(Groups) Process relative matches, second file greater (obs.nc cmip5.nc)";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -g giss -v tas1 %tmp_fl_00%";
@@ -890,7 +878,6 @@ print "\n";
 #time[0]=1 tas1[0]=272.1
 #result =
 # 544.25 = 272.15 + 272.1
-
     $dsc_sng="(Groups) Ensemble with 1 member (mdl_3.nc)";
 	$tst_cmd[0]="ncra -Y ncge -O $fl_fmt $nco_D_flg $in_pth_arg mdl_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncbo --op_typ=add -O $fl_fmt $nco_D_flg %tmp_fl_00% $in_pth/mdl_3.nc %tmp_fl_01%";
@@ -910,7 +897,6 @@ print "\n";
 ####################
     
 #nces #01	
-	
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var -d time,4 $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="ensemble mean of int across two files";
