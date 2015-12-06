@@ -3024,7 +3024,6 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var Test4 check non-record dim is time";
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v three_dmn_rec_var %tmp_fl_00% | grep 'three_dmn_rec_var dimension 1' | rev ";
-!1551
     $tst_cmd[2]=")emit si etanidrooC(";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
