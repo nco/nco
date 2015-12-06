@@ -1,5 +1,7 @@
 2015-12-05  Charlie Zender  <zender@uci.edu>
 
+	* Improve nco_grd_mk() and nco_grd_nfr() regression tests
+
 	* Regression tests for ncpdq now work for netCDF4 in.nc by checking answers independent of chunking text
 
 2015-12-04  Henry Butowsky  <henryb@hush.com>
