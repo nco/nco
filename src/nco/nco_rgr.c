@@ -4485,7 +4485,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double lat_ncr; /* [dgr] Latitude increment */
   double lon_spn; /* [dgr] Longitude span */
   double lat_spn; /* [dgr] Latitude span */
-  double mss_val_dbl;
+  double mss_val_ctr_dbl;
   
   int *msk=NULL; /* [flg] Mask of grid */
   int *dmn_sz_int; /* [nbr] Array of dimension sizes of grid */
@@ -4766,7 +4766,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
     /* CICE lists missing value for lat/lon_ctr arrays (TLAT, TLON) and reuses that for bounds arrays */
-    has_mss_val=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_dbl);
+    has_mss_val=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
 
     /* 20150923: Also input, if present in curvilinear file, corners, area, and mask
        area and mask are same size as lat and lon */
