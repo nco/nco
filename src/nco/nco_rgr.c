@@ -4885,13 +4885,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	 For this to work cleanly we define an enlarged "fake"-grid where we pre-copy the values that lead to the desired extrapolation on "real"-grid edges
 	 Inspired by array-based solutions to integration of PDEs on meshes in Juri Toomre's class
 	 NB: implementation is not robust to missing value points in interior of grid. Hopefully grids have no missing values in coordinate variables, although they may have missing values in non-grid fields (e.g., mask, temperature) */
-      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
-	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
-	  idx=lat_idx*lon_nbr+lon_idx;
-	  grd_ctr_lat[idx]=lat_ctr[idx];
-	  grd_ctr_lon[idx]=lon_ctr[idx];
-	} /* !lon */
-      } /* !lat */
       double *lat_ctr_fk; /* [dgr] Latitude  grid with extrapolated boundaries necessary for 9-point template to find four grid corners for each real center */
       double *lon_ctr_fk; /* [dgr] Longitude grid with extrapolated boundaries necessary for 9-point template to find four grid corners for each real center */
       lat_ctr_fk=(double *)nco_malloc((lat_nbr+2)*(lon_nbr+2)*sizeof(double));
@@ -5074,7 +5067,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !sanity */
     } /* !idx */
 
-    /* Copy inferred or copied sanity-checked corners into empty output array */
+    /* Copy centers into empty output array */
+    for(idx=0;idx<grd_sz_nbr;idx++){
+      grd_ctr_lat[idx]=lat_ctr[idx];
+      grd_ctr_lon[idx]=lon_ctr[idx];
+    } /* !idx */
+    /* Copy inferred or copied (from input) sanity-checked corners into empty output array */
     for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
       grd_crn_lat[idx]=lat_crn[idx];
       grd_crn_lon[idx]=lon_crn[idx];
