@@ -15,6 +15,7 @@
 
 /* Standard header files */
 #include <ctype.h> /* isalnum(), isdigit(), tolower() */
+#include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp() */
@@ -27,6 +28,14 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_sng_utl.h" /* String utilities */
+
+/* 20151207: Reports that Cygwin math.h does not define M_LN10 or M_LN2 */
+#ifndef M_LN10
+# define M_LN10      2.30258509299404568401799145468436421   /* loge(10)       */
+#endif /* M_LN10 */
+#ifndef M_LN2
+# define M_LN2       0.693147180559945309417232121458176568  /* loge(2)        */
+#endif /* M_LN2 */
 
 /* Minimum number of explicit significand bits to preserve when zeroing/bit-masking floating point values
    Codes will preserve at least two explicit bits, IEEE significand representation contains one implicit bit

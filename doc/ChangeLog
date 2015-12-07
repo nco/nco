@@ -1,3 +1,7 @@
+2015-12-07  Charlie Zender  <zender@uci.edu>
+
+	* Define M_LN10 and M_LN2 for Cygwin so PPC compiles. Update M_PI.
+
 2015-12-06  Charlie Zender  <zender@uci.edu>
 
 	* Account for missing values in curvilinear coordinate center and mask grids when diagnosing extrapolation issues and grid span
