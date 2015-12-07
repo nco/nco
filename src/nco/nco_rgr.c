@@ -4583,7 +4583,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *col_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as column */
   char *lat_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as latitude */
   char *lon_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as longitude */
-  char *col_nm_in=NULL_CEWI; /* [sng] Name of variable to recognize as column */
   char *lat_nm_in=NULL_CEWI; /* [sng] Name of variable to recognize as latitude */
   char *lon_nm_in=NULL_CEWI; /* [sng] Name of variable to recognize as longitude */
   char *lat_bnd_nm=NULL_CEWI; /* [sng] Name of latitude  boundary variable */
@@ -5702,6 +5701,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(lon_ntf) lon_ntf=(double *)nco_free(lon_ntf);
 
   /* Free strings */
+  if(col_dmn_nm) col_dmn_nm=(char *)nco_free(col_dmn_nm);
   if(lat_dmn_nm) lat_dmn_nm=(char *)nco_free(lat_dmn_nm);
   if(lon_dmn_nm) lon_dmn_nm=(char *)nco_free(lon_dmn_nm);
   if(bnd_dmn_nm) bnd_dmn_nm=(char *)nco_free(bnd_dmn_nm);
