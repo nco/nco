@@ -4637,7 +4637,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(lat_dmn_nm && lon_dmn_nm) flg_grd_crv=True;
   } /* !lat_dmn_nm */
 
-  if(!(lat_dmn_nm && lon_dmn_nm) || !col_dmn_nm){
+  if(!(lat_dmn_nm && lon_dmn_nm) && !col_dmn_nm){
     (void)fprintf(stdout,"%s: ERROR %s unable to identify latitude and/or longitude dimension and/or column dimension.\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !col_dmn_nm !lat_dmn_nm !lon_dmn_nm */
