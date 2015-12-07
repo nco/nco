@@ -320,7 +320,7 @@ print "\n";
 
 # ncks -O --rgr grid=~/foo_grid.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 # ncks -O -H -u -C -s %18.15f -d grid_size,0 -v grid_center_lat ~/foo_grid.nc
-# 20151205: using %tmp_fl_00% in arguments like "--rgr grid=%tmp_fl_00%" leads to epic fail, so hard code those filenames
+# 20151205: using %tmp_fl_00% in arguments like "--rgr grid=%tmp_fl_00%" leads to epic fail, so hard-code filenames that are arguments
 	$dsc_sng="Generate T42 gridfile";
 	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr grid=foo_grid.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_01%";
 	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %18.15f -d grid_size,0 -v grid_center_lat foo_grid.nc";
@@ -339,7 +339,7 @@ print "\n";
 
 # ncks -O --rgr nfr=y --rgr grid=~/foo_grid.nc ~/nco/data/ne30_2D.nc ~/foo.nc
 # ncks -O -H -u -C -s %8.5f -d grid_size,256 -v grid_center_lat ~/foo_grid.nc
-# 20151205: using %tmp_fl_00% in arguments like "--rgr grid=%tmp_fl_00%" leads to epic fail, so hard code those filenames
+# 20151205: using %tmp_fl_00% in arguments like "--rgr grid=%tmp_fl_00%" leads to epic fail, so hard-code filenames that are arguments
 	$dsc_sng="Infer 129x256 FV gridfile (uses SSH/scp to dust.ess.uci.edu)";
 	$tst_cmd[0]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_2D.nc .";
 	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg --rgr nfr=y --rgr grid=foo_grid.nc ne30_2D.nc %tmp_fl_01%";

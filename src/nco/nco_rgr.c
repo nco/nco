@@ -5249,8 +5249,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if(lat_typ == nco_grd_lat_eqa) grd_typ=nco_grd_2D_eqa;
     else assert(False);
 
-    /* Diagnose latitude interfaces as necessary */
-    //    lat_sth=lat_ntf[0];
+    /* Diagnose latitude interfaces from gridcell centers (if boundaries not provided) or from provided boundaries */
+    /* fxm: 20151207 */
     lat_nrt=lat_ntf[lat_nbr];
     lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
     switch(lat_typ){
@@ -5372,6 +5372,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(flg_grd_2D){
     assert(grd_crn_nbr == 4);
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
+      /* If interfaces were diagnosed from centers, copy corners from interfaces */
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	idx=grd_crn_nbr*lon_idx;
 	lon_crn[idx]=lon_ntf[lon_idx]; /* LL */
@@ -5387,6 +5388,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	lat_crn[idx+3]=lat_ntf[lat_idx+1]; /* UL */
       } /* !lat_idx */
     }else{ /* !lat_bnd_id */
+      /* If boundaries were provided in input dataset, copy corners from boundaries */
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	idx=grd_crn_nbr*lon_idx;
 	lon_crn[idx]=lon_bnd[2*lon_idx]; /* LL */
