@@ -4678,9 +4678,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Use dimension IDs to get dimension sizes and grid size */
   if(flg_grd_1D){
     rcd+=nco_inq_dimlen(in_id,dmn_id_col,&col_nbr);
+    lat_nbr=lon_nbr=col_nbr;
   }else{
     rcd+=nco_inq_dimlen(in_id,dmn_id_lat,&lat_nbr);
     rcd+=nco_inq_dimlen(in_id,dmn_id_lon,&lon_nbr);
+    col_nbr=NC_MIN_INT;
   } /* !flg_grd_1D */
   if(dmn_id_bnd != NC_MIN_INT) rcd+=nco_inq_dimlen(in_id,dmn_id_bnd,&grd_crn_nbr);
   if(dmn_id_bnd != NC_MIN_INT) rcd+=nco_inq_dimlen(in_id,dmn_id_bnd,&bnd_nbr);
@@ -4740,7 +4742,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   area=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
   msk=(int *)nco_malloc(grd_sz_nbr*nco_typ_lng((nc_type)NC_INT));
   
-  if(flg_grd_crv){
+  if(flg_grd_1D){
     lat_bnd=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
     lat_crn=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
     lat_ctr=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
@@ -4750,7 +4752,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lon_crn=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
     lon_ctr=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
     lon_ntf=(double *)nco_malloc((lon_nbr+1L)*nco_typ_lng(crd_typ));
-  }else{ /* !flg_grd_crv */
+  }else if(flg_grd_2D){ /* !flg_grd_1D */
     lat_bnd=(double *)nco_malloc(lat_nbr*bnd_nbr*nco_typ_lng(crd_typ));
     lat_crn=(double *)nco_malloc(lat_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
     lat_ctr=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
@@ -4759,6 +4761,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lon_bnd=(double *)nco_malloc(lon_nbr*bnd_nbr*nco_typ_lng(crd_typ));
     lon_crn=(double *)nco_malloc(lon_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
     lon_ctr=(double *)nco_malloc(lon_nbr*nco_typ_lng(crd_typ));
+    lon_ntf=(double *)nco_malloc((lon_nbr+1L)*nco_typ_lng(crd_typ));
+  }else if(flg_grd_crv){ /* !flg_grd_2D */
+    lat_bnd=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+    lat_crn=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+    lat_ctr=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
+    lat_ntf=(double *)nco_malloc((lat_nbr+1L)*nco_typ_lng(crd_typ));
+    lat_wgt=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
+    lon_bnd=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+    lon_crn=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+    lon_ctr=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
     lon_ntf=(double *)nco_malloc((lon_nbr+1L)*nco_typ_lng(crd_typ));
   } /* !flg_grd_crv */
   
