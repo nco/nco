@@ -1517,6 +1517,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"south_north_stag",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("south_north_stag");
       else if((rcd=nco_inq_dimid_flg(in_id,"YDim:location",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("YDim:location");
       else if((rcd=nco_inq_dimid_flg(in_id,"nj",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nj");
+      else if((rcd=nco_inq_dimid_flg(in_id,"nlat",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nlat");
       else if((rcd=nco_inq_dimid_flg(in_id,"nTimes",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nTimes");
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack");
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack:L2_Standard_atmospheric&surface_product");
@@ -1541,6 +1542,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"west_east_stag",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("west_east_stag");
       else if((rcd=nco_inq_dimid_flg(in_id,"XDim:location",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("XDim:location");
       else if((rcd=nco_inq_dimid_flg(in_id,"ni",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("ni");
+      else if((rcd=nco_inq_dimid_flg(in_id,"nlon",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("nlon");
       else if((rcd=nco_inq_dimid_flg(in_id,"nXtrack",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("nXtrack");
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("GeoXTrack");
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("GeoXTrack:L2_Standard_atmospheric&surface_product");
@@ -4622,6 +4624,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("phony_dim_0"); /* MAR */
       else if((rcd=nco_inq_dimid_flg(in_id,"lat2d",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("phony_dim_0"); /* RACMO */
       else if((rcd=nco_inq_dimid_flg(in_id,"nj",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("nj"); /* CICE */
+      else if((rcd=nco_inq_dimid_flg(in_id,"nlat",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("nlat"); /* POP */
     } /* !lat_dmn_nm */
     if(!lon_dmn_nm){
       if((rcd=nco_inq_dimid_flg(in_id,"west_east",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("west_east"); /* WRF */
@@ -4633,6 +4636,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("phony_dim_1"); /* MAR */
       else if((rcd=nco_inq_dimid_flg(in_id,"lon2d",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("phony_dim_1"); /* RACMO */
       else if((rcd=nco_inq_dimid_flg(in_id,"ni",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("ni"); /* CICE */
+      else if((rcd=nco_inq_dimid_flg(in_id,"nlon",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("nlon"); /* POP */
     } /* !lon_dmn_nm */
     if(lat_dmn_nm && lon_dmn_nm) flg_grd_crv=True;
   } /* !lat_dmn_nm */
@@ -4658,8 +4662,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"Lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("Lat");
   else if((rcd=nco_inq_varid_flg(in_id,"XLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("XLAT"); /* WRF */
   else if((rcd=nco_inq_varid_flg(in_id,"LAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LAT"); /* MAR */
-  else if((rcd=nco_inq_varid_flg(in_id,"TLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("TLAT"); /* CICE */
-  else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE */
+  else if((rcd=nco_inq_varid_flg(in_id,"TLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("TLAT"); /* CICE, POP */
+  else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE, POP */
   else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
 
   if((rcd=nco_inq_varid_flg(in_id,"longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("longitude");
@@ -4668,8 +4672,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"Lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("Lon");
   else if((rcd=nco_inq_varid_flg(in_id,"XLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG"); /* WRF */
   else if((rcd=nco_inq_varid_flg(in_id,"LON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LON"); /* MAR */
-  else if((rcd=nco_inq_varid_flg(in_id,"TLON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLON"); /* CICE */
-  else if((rcd=nco_inq_varid_flg(in_id,"ULON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULON"); /* CICE */
+  else if((rcd=nco_inq_varid_flg(in_id,"TLON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLON"); /* CICE, POP */
+  else if((rcd=nco_inq_varid_flg(in_id,"ULON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULON"); /* CICE, POP */
   else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I */
 
   if(!lat_nm_in || !lon_nm_in){
@@ -4835,7 +4839,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     dmn_cnt[1]=lon_nbr;
     rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
-    /* CICE lists missing value for lat/lon_ctr arrays (TLAT, TLON) and reuses that for bounds arrays */
+    /* CICE lists missing value for lat/lon_ctr arrays (TLAT, TLON) and re-uses that for bounds arrays */
     has_mss_val_ctr=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
 
     /* 20150923: Also input, if present in curvilinear file, corners, area, and mask
