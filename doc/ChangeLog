@@ -1,5 +1,9 @@
 2015-12-07  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.4-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.4-alpha04 final changes';git push
+	git tag -a 4.5.4-alpha04 -m 'Version 4.5.4-alpha04 new features: nfr POP CICE, nfr 1D, XML _Unsigned att, ncap2';git push --tags
+
 	* Print XML "_Unsigned" attribute to denote unsigned attribute types as per Aleksandar Jelenak and Ed Armstrong
 
 	* Patches to correctly infer grids for POP, CICE, CLM2 files
