@@ -15,6 +15,15 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. ncks prints XML "_Unsigned" attribute to denote unsigned attribute
+   types. Formerly, ncks did not preserve the signedness of attributes.
+   Thanks to Aleksandar Jelenak and Ed Armstrong for this suggestion.
+   % ncks -v att_var --xml ~/nco/data/in_4.nc | grep Unsigned
+    <attribute name="ubyte_att" type="byte" isUnsigned="true" value="0 1 2 127 128 254 255 0" />
+    <attribute name="ushort_att" type="short" isUnsigned="true" value="37" />
+    <attribute name="uint64_att" type="long" isUnsigned="true" value="0" />
+   http://nco.sf.net/nco.html#xml
+
 A. ncap2 now accepts [] and () syntax interchangeably.
    Expressions which formerly had to use one or the other can now
    use either. Brought to you by Henry.
