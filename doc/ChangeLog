@@ -1,5 +1,9 @@
 2015-12-07  Charlie Zender  <zender@uci.edu>
 
+	* Patches to correctly infer grids for POP, CICE, CLM2 files
+
+	* Allow corners not to be inferred for unstructured grids
+
 	* Define M_LN10 and M_LN2 for Cygwin so PPC compiles. Update M_PI.
 
 2015-12-06  Charlie Zender  <zender@uci.edu>

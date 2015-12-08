@@ -4716,6 +4716,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(dmn_id_bnd == NC_MIN_INT){
       (void)fprintf(stdout,"%s: WARNING %s reports an unstructured grid without spatial boundary information. NCO can copy but not infer spatial boundaries from unstructured grids. Thus NCO will not write spatial bounds to the gridfile inferred from this input file. Instead, the weight generator that ingests this gridfile must generate weights for gridcells with unknown spatial extent. This is feasible for grids and mappings where weights masquerade as areas and are determined by underlying grid and interpolation type (e.g., conservative remapping of spectral element grid).\n",nco_prg_nm_get(),fnc_nm);
       flg_wrt_crn=False;
+      /* Bounds will not be diagnosed so safe to set grd_crn_nbr to harmless (though weird) value like 4 */
+      grd_crn_nbr=4;
     } /* !dmn_id_bnd */
   }else if(flg_grd_2D){ /* !flg_grd_1D */
     /* Assume 2D grid of uninitialized type */
@@ -5203,21 +5205,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
-    /* Interfaces (ntf) assume rectangular grids */
-    lat_ntf[0]=lat_ctr[0]-0.5*(lat_ctr[1]-lat_ctr[0]);
-    for(lat_idx=0;lat_idx<lat_nbr-1;lat_idx++)
-      lat_ntf[lat_idx+1]=0.5*(lat_ctr[lat_idx]+lat_ctr[lat_idx+1]);
-    lat_ntf[lat_nbr]=lat_ctr[lat_nbr-1]+0.5*(lat_ctr[lat_nbr-1]-lat_ctr[lat_nbr-2]);
-    lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
-    
-    lon_ntf[0]=lon_ctr[0]-0.5*(lon_ctr[1]-lon_ctr[0]);
-    for(lon_idx=0;lon_idx<lon_nbr-1;lon_idx++)
-      lon_ntf[lon_idx+1]=0.5*(lon_ctr[lon_idx]+lon_ctr[lon_idx+1]);
-    lon_ntf[lon_nbr]=lon_ctr[lon_nbr-1]+0.5*(lon_ctr[lon_nbr-1]-lon_ctr[lon_nbr-2]);
-    lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
-    
-    /* Do not overwrite bounds (bnd), if any, from input file */
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
+      /* Derive interfaces (ntf) and bounds (bnd) from midpoints approximation applied to center data
+	 NB: Simplistically derived interfaces (ntf) only valid on some rectangular grids (not on Gaussian grids)
+	 These inferred-from-midpoint interfaces/bounds are overwritten in next block once lat grid is known */
+      lat_ntf[0]=lat_ctr[0]-0.5*(lat_ctr[1]-lat_ctr[0]);
+      for(lat_idx=0;lat_idx<lat_nbr-1;lat_idx++)
+	lat_ntf[lat_idx+1]=0.5*(lat_ctr[lat_idx]+lat_ctr[lat_idx+1]);
+      lat_ntf[lat_nbr]=lat_ctr[lat_nbr-1]+0.5*(lat_ctr[lat_nbr-1]-lat_ctr[lat_nbr-2]);
+      lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
+      
+      lon_ntf[0]=lon_ctr[0]-0.5*(lon_ctr[1]-lon_ctr[0]);
+      for(lon_idx=0;lon_idx<lon_nbr-1;lon_idx++)
+	lon_ntf[lon_idx+1]=0.5*(lon_ctr[lon_idx]+lon_ctr[lon_idx+1]);
+      lon_ntf[lon_nbr]=lon_ctr[lon_nbr-1]+0.5*(lon_ctr[lon_nbr-1]-lon_ctr[lon_nbr-2]);
+      lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
+      
       for(idx=0;idx<lon_nbr;idx++){
 	lon_bnd[2*idx]=lon_ntf[idx];
 	lon_bnd[2*idx+1]=lon_ntf[idx+1];
@@ -5226,7 +5229,19 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	lat_bnd[2*idx]=lat_ntf[idx];
 	lat_bnd[2*idx+1]=lat_ntf[idx+1];
       } /* !idx */
-    } /* !lat_bnd_id */
+    }else{ /* !(lat_bnd_id && lon_bnd_id) */
+      /* Derive interfaces (ntf) and bounds (bnd) from corner data on disk */
+      for(idx=0;idx<lon_nbr;idx++){
+	lon_ntf[idx]=lon_bnd[2*idx];
+	lon_ntf[idx+1]=lon_bnd[2*idx+1];
+      } /* !idx */
+      for(idx=0;idx<lat_nbr;idx++){
+	lat_ntf[idx]=lat_bnd[2*idx];
+	lat_ntf[idx+1]=lat_bnd[2*idx+1];
+      } /* !idx */
+      lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
+      lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
+    } /* !(lat_bnd_id && lon_bnd_id) */
   } /* !flg_grd_2D */
   
   if(flg_grd_2D){
@@ -5268,62 +5283,63 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if(lat_typ == nco_grd_lat_eqa) grd_typ=nco_grd_2D_eqa;
     else assert(False);
 
-    /* Diagnose latitude interfaces from gridcell centers (if boundaries not provided) or from provided boundaries */
-    /* fxm: 20151207 */
-    lat_nrt=lat_ntf[lat_nbr];
-    lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
-    switch(lat_typ){
-    case nco_grd_lat_fv:
-      lat_ncr=lat_spn/(lat_nbr-1);
-      lat_ntf[1]=lat_ntf[0]+0.5*lat_ncr;
-      for(lat_idx=2;lat_idx<lat_nbr;lat_idx++)
-	lat_ntf[lat_idx]=lat_ntf[1]+(lat_idx-1)*lat_ncr;
-      break;
-    case nco_grd_lat_eqa:
-      lat_ncr=lat_spn/lat_nbr;
-      for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
-	lat_ntf[lat_idx]=lat_ntf[0]+lat_idx*lat_ncr;
-      break;
-    case nco_grd_lat_gss:
-      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
-	lat_ctr[lat_idx]=rdn2dgr*asin(lat_sin[lat_idx]);
-      /* First guess for lat_ntf is midway between Gaussian abscissae */
-      for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
-	lat_ntf[lat_idx]=0.5*(lat_ctr[lat_idx-1]+lat_ctr[lat_idx]);
-      /* Iterate guess until area between interfaces matches Gaussian weight */
-      for(lat_idx=1;lat_idx<lat_nbr;lat_idx++){
-	double fofx_at_x0; /* [frc] Function to iterate evaluated at current guess */
-	double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
-	const double eps_rlt_cnv=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
-	itr_cnt=0;
-	lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1]);
-	fofx_at_x0=wgt_Gss[lat_idx-1]-lat_wgt_gss;
-	while(fabs(fofx_at_x0) > eps_rlt_cnv){
-	  /* Newton-Raphson iteration:
-	     Let x=lat_ntf[lat_idx], y0=lat_ntf[lat_idx-1], gw = Gaussian weight (exact solution)
-	     f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0 
-	     dfdx(x)=dgr2rdn*(dgr2rdn*x)
-	     x_better=x0-f(x0)/f'(x0) */
-	  dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
-	  lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0; /* NB: not sure why this is minus not plus but it works :) */
+    /* Diagnose latitude interfaces from gridcell centers (if boundaries not provided) */
+    if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
+      lat_nrt=lat_ntf[lat_nbr];
+      lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
+      switch(lat_typ){
+      case nco_grd_lat_fv:
+	lat_ncr=lat_spn/(lat_nbr-1);
+	lat_ntf[1]=lat_ntf[0]+0.5*lat_ncr;
+	for(lat_idx=2;lat_idx<lat_nbr;lat_idx++)
+	  lat_ntf[lat_idx]=lat_ntf[1]+(lat_idx-1)*lat_ncr;
+	break;
+      case nco_grd_lat_eqa:
+	lat_ncr=lat_spn/lat_nbr;
+	for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
+	  lat_ntf[lat_idx]=lat_ntf[0]+lat_idx*lat_ncr;
+	break;
+      case nco_grd_lat_gss:
+	for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
+	  lat_ctr[lat_idx]=rdn2dgr*asin(lat_sin[lat_idx]);
+	/* First guess for lat_ntf is midway between Gaussian abscissae */
+	for(lat_idx=1;lat_idx<lat_nbr;lat_idx++)
+	  lat_ntf[lat_idx]=0.5*(lat_ctr[lat_idx-1]+lat_ctr[lat_idx]);
+	/* Iterate guess until area between interfaces matches Gaussian weight */
+	for(lat_idx=1;lat_idx<lat_nbr;lat_idx++){
+	  double fofx_at_x0; /* [frc] Function to iterate evaluated at current guess */
+	  double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
+	  const double eps_rlt_cnv=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
+	  itr_cnt=0;
 	  lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1]);
 	  fofx_at_x0=wgt_Gss[lat_idx-1]-lat_wgt_gss;
-	  if(++itr_cnt > itr_nbr_max){
-	    (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
-	    nco_exit(EXIT_FAILURE);
-	  } /* endif */
-	} /* !while */
-      } /* !lat */
-      if(lat_sin) lat_sin=(double *)nco_free(lat_sin);
-      break;
-    case nco_grd_lat_unk:
-      /* No generic formula exists so use interfaces already read or diagnosed as midpoints between centers */
-      break;
-    default:
-      nco_dfl_case_generic_err(); break;
-    } /* !lat_typ */
-    /* Ensure rounding errors do not produce unphysical grid */
-    lat_ntf[lat_nbr]=lat_nrt;
+	  while(fabs(fofx_at_x0) > eps_rlt_cnv){
+	    /* Newton-Raphson iteration:
+	       Let x=lat_ntf[lat_idx], y0=lat_ntf[lat_idx-1], gw = Gaussian weight (exact solution)
+	       f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0 
+	       dfdx(x)=dgr2rdn*(dgr2rdn*x)
+	       x_better=x0-f(x0)/f'(x0) */
+	    dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
+	    lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0; /* NB: not sure why this is minus not plus but it works :) */
+	    lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1]);
+	    fofx_at_x0=wgt_Gss[lat_idx-1]-lat_wgt_gss;
+	    if(++itr_cnt > itr_nbr_max){
+	      (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
+	      nco_exit(EXIT_FAILURE);
+	    } /* endif */
+	  } /* !while */
+	} /* !lat */
+	if(lat_sin) lat_sin=(double *)nco_free(lat_sin);
+	break;
+      case nco_grd_lat_unk:
+	/* No generic formula exists so use interfaces already read or diagnosed as midpoints between centers */
+	break;
+      default:
+	nco_dfl_case_generic_err(); break;
+      } /* !lat_typ */
+      /* Ensure rounding errors do not produce unphysical grid */
+      lat_ntf[lat_nbr]=lat_nrt;
+    } /* !(lat_bnd_id && lon_bnd_id) */
     
     /* Use centers and boundaries to diagnose latitude weights */
     switch(lat_typ){
@@ -5425,11 +5441,42 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !lat_bnd_id */
   } /* !flg_grd_2D */
 
+  /* lat/lon_crn will not change anymore so stuff rectangular arrays into unrolled arrays */
+  if(flg_grd_1D){
+    for(idx=0;idx<grd_sz_nbr;idx++){
+      grd_ctr_lat[idx]=lat_ctr[idx];
+      grd_ctr_lon[idx]=lon_ctr[idx];
+      if(flg_wrt_crn){
+	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
+	  idx2=grd_crn_nbr*idx+crn_idx;
+	  grd_crn_lat[idx2]=lat_crn[idx2];
+	  grd_crn_lon[idx2]=lon_crn[idx2];
+	} /* !crn */
+      } /* !flg_wrt_crn */
+    } /* !col */
+  } /* !flg_grd_1D */
+  if(flg_grd_2D){
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+	idx=lat_idx*lon_nbr+lon_idx;
+	grd_ctr_lat[idx]=lat_ctr[lat_idx];
+	grd_ctr_lon[idx]=lon_ctr[lon_idx];
+	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
+	  idx2=grd_crn_nbr*idx+crn_idx;
+	  lat_idx2=lat_idx*grd_crn_nbr+crn_idx;
+	  lon_idx2=lon_idx*grd_crn_nbr+crn_idx;
+	  grd_crn_lat[idx2]=lat_crn[lat_idx2];
+	  grd_crn_lon[idx2]=lon_crn[lon_idx2];
+	} /* !crn */
+      } /* !lon */
+    } /* !lat */
+  } /* !flg_grd_2D */
+  
   /* Diagnose area if necessary */
-  if(area_id == NC_MIN_INT){
+  if(area_id == NC_MIN_INT && flg_wrt_crn){
     /* Not absolutely necessary to diagnose area because ERWG will diagnose and output area itself */
-    if(flg_grd_crv){
-      /* Area of arbitrary curvilinear grids requires spherical trigonometry */
+    if(flg_grd_crv || flg_grd_1D){
+      /* Area of arbitrary unstructured or curvilinear grids requires spherical trigonometry */
       nco_sph_plg_area(grd_crn_lat,grd_crn_lon,grd_sz_nbr,grd_crn_nbr,area);
     }else if(flg_grd_2D){
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
@@ -5498,42 +5545,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     assert(area_ttl <= 4.0*M_PI);
   } /* endif dbg */
 
-  /* Stuff rectangular arrays into unrolled arrays */
-  if(flg_grd_1D){
-    for(idx=0;idx<grd_sz_nbr;idx++){
-      grd_ctr_lat[idx]=lat_ctr[idx];
-      grd_ctr_lon[idx]=lon_ctr[idx];
-      for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
-	idx2=grd_crn_nbr*idx+crn_idx;
-	grd_crn_lat[idx2]=lat_crn[idx2];
-	grd_crn_lon[idx2]=lon_crn[idx2];
-      } /* !crn */
-    } /* !col */
-  } /* !flg_grd_1D */
-  if(flg_grd_2D){
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
-      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
-	idx=lat_idx*lon_nbr+lon_idx;
-	grd_ctr_lat[idx]=lat_ctr[lat_idx];
-	grd_ctr_lon[idx]=lon_ctr[lon_idx];
-	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
-	  idx2=grd_crn_nbr*idx+crn_idx;
-	  lat_idx2=lat_idx*grd_crn_nbr+crn_idx;
-	  lon_idx2=lon_idx*grd_crn_nbr+crn_idx;
-	  grd_crn_lat[idx2]=lat_crn[lat_idx2];
-	  grd_crn_lon[idx2]=lon_crn[lon_idx2];
-	} /* !crn */
-      } /* !lon */
-    } /* !lat */
-  } /* !flg_grd_2D */
-  
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-  /* fxm: got to here with unstructured grids */
-
   /* Define dimensions */
-  rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_id_grd_crn);
+  if(flg_wrt_crn) rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_id_grd_crn);
   rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_id_grd_sz);
   rcd=nco_def_dim(out_id,grd_rnk_nm,grd_rnk_nbr,&dmn_id_grd_rnk);
   
