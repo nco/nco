@@ -4889,7 +4889,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	} /* !lat */
 	if(!strcmp(dmn_nm,lon_dmn_nm)){
 	  assert(dmn_sz == lon_nbr);
-	  assert(dmn_idx == 0);
+	  assert(dmn_idx == 1);
 	  lon_psn_in=dmn_idx;
 	} /* !lon */
       } /* !dmn_idx */

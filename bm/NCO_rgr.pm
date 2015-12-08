@@ -329,9 +329,11 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
+# ncks -O -D 1 --rgr skl=~/foo_skl.nc --rgr grid=~/foo_grid.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+# ncks -O -H -u -C -s %g -d lat,0 -v gw ~/foo_skl.nc
 	$dsc_sng="Generate T42-grid skeleton file";
-	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr skl=%tmp_fl_01% --rgr grid=foo_grid.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_02%";
-	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %g -d lat,0 -v gw %tmp_fl_01%";
+	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr skl=foo_skl.nc --rgr grid=foo_grid.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_02%";
+	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %g -d lat,0 -v gw foo_skl.nc";
 	$tst_cmd[2]="0.00178328";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
