@@ -1559,7 +1559,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
-  const int var_xcl_lst_nbr=21; /* [nbr] Number of objects on exclusion list */
+  const int var_xcl_lst_nbr=24; /* [nbr] Number of objects on exclusion list */
   /* Exception list source:
      CAM, CERES, CMIP5: lat, lon
      CAM, CMIP5: gw, lat_bnds, lon_bnds
@@ -1567,11 +1567,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds
      ESMF: gridcell_area
      MAR: LAT, LON
-     MPAS-O: areaCell, latCell, lonCell
+     MPAS-O/I: areaCell, latCell, lonCell
      NCO: lat_vertices, lon_vertices
      UV-CDAT regridder: bounds_lat, bounds_lon
      WRF: XLAT, XLONG */
-  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LAT","/lat","/latitude","/XLAT","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/bounds_lat","/LON","/lon","/longitude","/XLONG","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/bounds_lon"};
+  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/latitude","/XLAT","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/bounds_lat","/LON","/lon","/lonCell","/longitude","/XLONG","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/bounds_lon"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -4660,6 +4660,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"LAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LAT"); /* MAR */
   else if((rcd=nco_inq_varid_flg(in_id,"TLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("TLAT"); /* CICE */
   else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE */
+  else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
 
   if((rcd=nco_inq_varid_flg(in_id,"longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("longitude");
   else if((rcd=nco_inq_varid_flg(in_id,"Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("Longitude");
@@ -4669,6 +4670,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"LON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LON"); /* MAR */
   else if((rcd=nco_inq_varid_flg(in_id,"TLON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLON"); /* CICE */
   else if((rcd=nco_inq_varid_flg(in_id,"ULON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULON"); /* CICE */
+  else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I */
 
   if(!lat_nm_in || !lon_nm_in){
     (void)fprintf(stdout,"%s: ERROR %s unable to identify latitude and/or longitude variable.\n",nco_prg_nm_get(),fnc_nm);
@@ -4793,6 +4795,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   if((rcd=nco_inq_varid_flg(in_id,"area",&area_id)) == NC_NOERR) area_nm_in=strdup("area");
   else if((rcd=nco_inq_varid_flg(in_id,"Area",&area_id)) == NC_NOERR) area_nm_in=strdup("Area");
+  else if((rcd=nco_inq_varid_flg(in_id,"areaCell",&area_id)) == NC_NOERR) area_nm_in=strdup("areaCell"); /* MPAS-O/I */
   else if((rcd=nco_inq_varid_flg(in_id,"grid_area",&area_id)) == NC_NOERR) area_nm_in=strdup("grid_area");
   else if((rcd=nco_inq_varid_flg(in_id,"tarea",&area_id)) == NC_NOERR) area_nm_in=strdup("tarea"); /* CICE */
   else if((rcd=nco_inq_varid_flg(in_id,"uarea",&area_id)) == NC_NOERR) area_nm_in=strdup("uarea"); /* CICE */
