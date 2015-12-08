@@ -3237,7 +3237,7 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
 {
   /* Purpose: Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
-  case nco_grd_2D_unk: return "Unknown or unclassified 2D grid type (e.g., curvilinear, POP displaced-pole)";
+  case nco_grd_2D_unk: return "Unknown, unclassified, or unrepresentable 2D grid type (e.g., unstructured, curvilinear, POP displaced-pole)";
   case nco_grd_2D_gss: return "Gaussian latitude grid. Used by spectral transform models, e.g., CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM.";
   case nco_grd_2D_fv: return "Cap grid. Uniform/Equi-angle (except at poles) latitude grid with poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the equi-angular latitude increment. AKA FV-scalar grid (in Lin-Rood representation). Used by CAM FV, GEOS-CHEM, UCICTM, UKMO.";
   case nco_grd_2D_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx). When global forms valid FV-staggered AKA FV velocity grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
@@ -3254,7 +3254,7 @@ nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
 {
   /* Purpose: Convert latitude grid-type enum to string */
   switch(nco_grd_lat_typ){
-  case nco_grd_lat_unk: return "Unknown or unclassified latitude grid type (e.g., curvilinear, POP3)";
+  case nco_grd_lat_unk: return "Unknown, unclassified, or unrepresentable latitude grid type (e.g., unstructured, curvilinear, POP3)";
   case nco_grd_lat_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM";
   case nco_grd_lat_fv: return "Cap-latitude grid. Uniform/Equi-angle (except at poles) latitude grid with poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90), and those polar gridcells span half the equi-angular latitude increment. AKA FV-scalar grid (in Lin-Rood representation). Used by: CAM FV, GEOS-CHEM, UCICTM, UKMO";
   case nco_grd_lat_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (e.g., lat_ctr[0]=-89.xxx). When global can be latitude-component of a valid FV-staggered grid AKA FV velocity grid (for Lin-Rood representation). Used by: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
@@ -3271,7 +3271,7 @@ nco_grd_lon_sng /* [fnc] Convert longitude grid-type enum to string */
 {
   /* Purpose: Convert longitude grid-type enum to string */
   switch(nco_grd_lon_typ){
-  case nco_grd_lon_unk: return "Unknown or unclassified longitude grid type (e.g., curvilinear)";
+  case nco_grd_lon_unk: return "Unknown, unclassified, or unrepresentable longitude grid type (e.g., unstructured, curvilinear)";
   case nco_grd_lon_180_wst: return "Date line at west edge of first longitude cell";
   case nco_grd_lon_180_ctr: return "Date line at center of first longitude cell";
   case nco_grd_lon_Grn_wst: return "Greenwich at west edge of first longitude cell";
@@ -4703,12 +4703,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(flg_grd_1D){
     /* Unstructured grid (e.g., CAM-SE) */
     grd_rnk_nbr=dmn_nbr_1D;
-    grd_typ=nco_grd_2D_nil;
-    lat_typ=nco_grd_lat_nil;
-    lon_typ=nco_grd_lon_nil;
+    grd_typ=nco_grd_2D_unk;
+    lat_typ=nco_grd_lat_unk;
+    lon_typ=nco_grd_lon_unk;
     /* 1D grids without their own boundaries are at the mercy of the weight generator */
     if(dmn_id_bnd == NC_MIN_INT){
-      (void)fprintf(stdout,"%s: WARNING %s reports an unstructured grid without spatial boundary information. NCO can copy but not infer spatial boundaries from unstructured grids. Thus NCO will not write spatial bounds to the gridfile inferred from this input file. Instead, the weight generator that ingests this gridfile must generate weights without knowing the spatial extent of the gridcells. This is feasible for grids and mappings where the weights masquerade as areas and are determined by the underlying grid types and resolution (e.g., spectral element of a given resolution).\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: WARNING %s reports an unstructured grid without spatial boundary information. NCO can copy but not infer spatial boundaries from unstructured grids. Thus NCO will not write spatial bounds to the gridfile inferred from this input file. Instead, the weight generator that ingests this gridfile must generate weights for gridcells with unknown spatial extent. This is feasible for grids and mappings where weights masquerade as areas and are determined by underlying grid and interpolation type (e.g., conservative remapping of spectral element grid).\n",nco_prg_nm_get(),fnc_nm);
       flg_wrt_crn=False;
     } /* !dmn_id_bnd */
   }else if(flg_grd_2D){ /* !flg_grd_1D */
