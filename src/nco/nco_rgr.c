@@ -5184,16 +5184,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     double lon_min; /* [dgr] Minimum longitude */
     idx_ctr=0;
     if(has_mss_val_ctr){
-      /* Find first non-missing value corners */
-      for(idx=0;idx<grd_sz_nbr;idx++){
-	if(lat_ctr[idx_ctr] == mss_val_ctr_dbl) continue;
+      /* Find first non-missing value centers and thus corners */
+      for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
+	if(lat_ctr[idx_ctr] != mss_val_ctr_dbl) break;
       } /* !grd_sz_nbr */
       assert(idx_ctr != grd_sz_nbr);
     } /* !has_mss_val_ctr */
-    lon_max=lon_crn[idx_ctr*grd_sz_nbr];
-    lat_max=lat_crn[idx_ctr*grd_sz_nbr];
-    lon_min=lon_crn[idx_ctr*grd_sz_nbr];
-    lat_min=lat_crn[idx_ctr*grd_sz_nbr];
+    lon_max=lon_crn[idx_ctr*grd_crn_nbr];
+    lat_max=lat_crn[idx_ctr*grd_crn_nbr];
+    lon_min=lon_crn[idx_ctr*grd_crn_nbr];
+    lat_min=lat_crn[idx_ctr*grd_crn_nbr];
     for(idx=1;idx<grd_sz_nbr*grd_crn_nbr;idx++){
       idx_ctr=idx/grd_crn_nbr;
       if(lat_ctr[idx_ctr] == mss_val_ctr_dbl) continue;
