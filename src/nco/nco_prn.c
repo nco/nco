@@ -274,7 +274,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     spr_sng=cma_sng; /* [sng] Output separator string */
     if(XML){
       /* Official NcML XML Schema is here:
-	 http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/ncml/v2.2/AnnotatedSchema4.html
+	 http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/ncml/AnnotatedSchema4.html // 2015
+	 http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/ncml/v2.2/AnnotatedSchema4.html // older
 	 http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd */
 
       (void)fprintf(stdout,"%*s<attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
@@ -284,15 +285,18 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
       /* Print type of non-string variables
 	 NB: Take or lose this opportunity to distinguish char from string?
-	 NcML does not preserve unsigned types, so why not turn char attributes into strings? 
+	 Until ~2014 NcML did not preserve unsigned types, so why not turn char attributes into strings? 
 	 Can turn char into string here just by omitting "type=char" attribute
 	 toolsui NcML does not print "type=char" for for char attributes
 	 Hence neither does ncks */
-      if(att[idx].type != NC_STRING && att[idx].type != NC_CHAR) (void)fprintf(stdout," type=\"%s\"",xml_typ_nm(att[idx].type));
+      if(att[idx].type != NC_STRING && att[idx].type != NC_CHAR){
+	(void)fprintf(stdout," type=\"%s\"",xml_typ_nm(att[idx].type));
+	/* Print hidden attributes */
+	/* Until ~2014 toolsui showed no way to indicate unsigned types for attributes
+	   20151207 Aleksander Jelenak and Ed Armstrong request "_Unsigned" attributes to denote unsigned attribute types */
+	if(nco_xml_typ_rqr_nsg_att(att[idx].type)) (void)fprintf(stdout," isUnsigned=\"true\"");
+      } /* endif */
       
-      /* Print hidden attributes */
-      // if(nco_xml_typ_rqr_nsg_att(att[idx].type)) (void)fprintf(stdout,""); /* toolsui shows no way to indicate unsigned types for attributes? */
-
       /* Print separator element for non-whitespace separators */
       if((att[idx].sz == 1L && att[idx].type == NC_STRING) || att[idx].sz > 1L){ 
 	/* Ensure string attribute value does not contain separator string */

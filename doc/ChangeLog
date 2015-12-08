@@ -1,5 +1,7 @@
 2015-12-07  Charlie Zender  <zender@uci.edu>
 
+	* Print XML "_Unsigned" attribute to denote unsigned attribute types as per Aleksandar Jelenak and Ed Armstrong
+
 	* Patches to correctly infer grids for POP, CICE, CLM2 files
 
 	* Allow corners not to be inferred for unstructured grids
