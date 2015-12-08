@@ -1566,12 +1566,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      CAM, CERES, CMIP5: lat, lon
      CAM, CMIP5: gw, lat_bnds, lon_bnds
      CAM-SE: area
-     CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (yes, CICE uses TLON but POP uses TLONG)
+     CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (NB: CICE uses ?LON and POP uses ?LONG)
      ESMF: gridcell_area
      MAR: LAT, LON
      MPAS-O/I: areaCell, latCell, lonCell
      NCO: lat_vertices, lon_vertices
-     POP: TLAT, TLONG, ULAT, ULONG
+     POP: TLAT, TLONG, ULAT, ULONG  (NB: CICE uses ?LON and POP uses ?LONG) (POP does not archive spatial bounds)
      UV-CDAT regridder: bounds_lat, bounds_lon
      WRF: XLAT, XLONG */
   const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/latitude","/TLAT","/ULAT","/XLAT","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/bounds_lat","/LON","/lon","/lonCell","/longitude","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/bounds_lon"};
