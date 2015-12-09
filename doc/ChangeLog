@@ -1,5 +1,7 @@
 2015-12-08  Charlie Zender  <zender@uci.edu>
 
+	* sld_nco.sh now infers destination grid from -d dst_fl
+
 	* Ignore masked values diagnostic grid span for curvilinear grids
 
 2015-12-07  Charlie Zender  <zender@uci.edu>
