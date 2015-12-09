@@ -6,7 +6,7 @@
 # Author: C. Zender
 # Created: 20150909
 
-# Source: https://github.com/nco/nco/tree/master/data/sld_nco.sh
+# Source: https://github.com/nco/nco/tree/master/data/ncremap
 
 # Prerequisites: Bash, NCO, ESMF_RegridWeightGen
 # Script could use other shells, e.g., dash (Debian default) after rewriting function definition and looping constructs
@@ -39,16 +39,15 @@ if [ -z "${DATA}" ]; then
 fi # DATA
 
 # Production usage:
-# chmod a+x ~/sld_nco.sh
-# sld_nco.sh -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
-# sld_nco.sh -v StepTwoO3 -s $DATA/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc -d $DATA/hdf/cam_time.nc -o $DATA/sld/rgr
-# sld_nco.sh -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr
-# sld_nco.sh -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
-# sld_nco.sh -x TSurfStd_ct -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
+# ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
+# ncremap -v StepTwoO3 -s $DATA/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc -d $DATA/hdf/cam_time.nc -o $DATA/sld/rgr
+# ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr
+# ncremap -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
+# ncremap -x TSurfStd_ct -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
 
 # Debugging and Benchmarking:
-# sld_nco.sh > ~/sld_nco.txt 2>&1 &
-# sld_nco.sh -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr > ~/sld_nco.txt 2>&1 &
+# ncremap > ~/sld_nco.txt 2>&1 &
+# ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr > ~/sld_nco.txt 2>&1 &
 
 # Set script name and run directory
 drc_pwd=${PWD}
