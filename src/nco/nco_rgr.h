@@ -34,11 +34,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/* WIN32 math.h does not define M_PI, needed for dgr2rdn and rdn2dgr */
-#ifndef M_PI
-# define M_PI        3.14159265358979323846264338327950288   /* pi             */
-#endif /* M_PI */
-
   typedef enum nco_rgr_cmd_typ_enm{ /* [enm] Tempest remap type enum */
     nco_rgr_AAA_nil=0,
     nco_rgr_ApplyOfflineMap,

@@ -30,11 +30,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/* WIN32 math.h does not define M_PI, needed for dgr2rdn and rdn2dgr */
-#ifndef M_PI
-# define M_PI        3.14159265358979323846264338327950288   /* pi             */
-#endif /* M_PI */
-
 lmt_sct **
 nco_aux_evl
 (int in_id, 
