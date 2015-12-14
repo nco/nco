@@ -1,3 +1,7 @@
+2015-12-14  Charlie Zender  <zender@uci.edu>
+
+	* Fix typo in AIRS HDF dimension name
+
 2015-12-08  Charlie Zender  <zender@uci.edu>
 
 	* sld_nco.sh now infers destination grid from -d dst_fl
