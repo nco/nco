@@ -15,6 +15,16 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. ncremap: A new netCDF operator for regridding.
+   ncremap is a shell script that wraps ncks to produce a friendlier
+   interface to the regridding. Without any external dependencies,
+   ncremap will apply weights from a pre-exisiting mapfile to a source
+   data file to produce a regrided dataset. Source and destination
+   datasets may be on any Curvilinear, Rectangular, or Unstructured
+   Data (CRUD) grid. ncremap will also use external programs, when
+   necessary, to generate weights, and use those to regrid.
+   Prequisites for this are ESMF_RegridWeightGen and/or TempestRemap. 
+
 A. ncks prints XML "_Unsigned" attribute to denote unsigned attribute
    types. Formerly, ncks did not preserve the signedness of attributes.
    Thanks to Aleksandar Jelenak and Ed Armstrong for this suggestion.
