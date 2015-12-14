@@ -170,8 +170,6 @@ dmn_list:
       { #dmn_list = #( [DMN_LIST, "dmn_list"], #dmn_list ); }
     ;
 
-
-
 // list of dims eg /$Lat,$time,$0,$1/
 dmn_arg_list:
     DIVIDE! (DIM_ID|DIM_MTD_ID) (COMMA! (DIM_ID|DIM_MTD_ID))*  DIVIDE!
@@ -550,6 +548,10 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribut
                  bDoSearch=false;
                  $setType(ATT_ID);
                  break;    
+               case '[':
+                 bDoSearch=false;
+                 $setType(VAR_ID); 
+                 break;   
                default: 
                  bDoSearch=false;
                  $setType(VAR_ID);
@@ -1558,33 +1560,48 @@ var=NULL_CEWI;
             }
 
           | vid2:VAR_ID {   
-              
+
+              var_sct *var_lhs=(var_sct*)NULL;              
+              var_sct *var_rhs=(var_sct*)NULL;              
               std::string var_nm;
               
               var_nm=vid2->getText();
 
               if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
+      
+              // Set class wide variables           
+              bcst=false;
+              var_cst=NULL_CEWI; 
+              
+              // get shape from RHS
+              var_rhs=out(vid2->getNextSibling());
+           
+              // use init_chk() to avoid warning from ncap_var_init() if var not present  
+              if(prs_arg->ncap_var_init_chk(var_nm)) 
+                var_lhs=prs_arg->ncap_var_init(var_nm,false); 
 
-               var_sct *var1;
-               
-               // Set class wide variables           
-               bcst=false;
-               var_cst=NULL_CEWI; 
-             
-               // get shape from RHS
-               var1=out(vid2->getNextSibling());
-               (void)nco_free(var1->nm);                
-               var1->nm =strdup(var_nm.c_str());
-
-               //Copy return variable
-               var=nco_var_dpl(var1);
-                
-               // Write var to int_vtr
-               // if var already in int_vtr or var_vtr then write call does nothing
-               (void)prs_arg->ncap_var_write(var1,bram);
-               //(void)ncap_var_write_omp(var1,bram,prs_arg);
-        
-           } // end action
+              if(var_lhs)
+              {
+                 var=nco_var_dpl(var_lhs);
+                 (void)prs_arg->ncap_var_write(var_lhs,bram);
+                 nco_var_free(var_rhs); 
+              }
+              else if(var_rhs)
+              {
+                 //Copy return variable
+                 (void)nco_free(var_rhs->nm);                
+                 var_rhs->nm =strdup(var_nm.c_str());
+                 //Copy return variable
+                var=nco_var_dpl(var_rhs);
+                // Write var to int_vtr
+                // if var already in int_vtr or var_vtr then write call does nothing
+                (void)prs_arg->ncap_var_write(var_rhs,bram);
+              }   
+              else 
+              {               
+                var=ncap_var_udf(var_nm.c_str());   
+              }  
+        } // end action
        
    |   (#(ATT_ID LMT_LIST))=> #(att:ATT_ID LMT_LIST){
         ;
@@ -1896,49 +1913,64 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
            
           | vid2:VAR_ID {   
                // Set class wide variables
-               var_sct *var1;
+               var_sct *var_lhs=(var_sct*)NULL;
+               var_sct *var_rhs=(var_sct*)NULL;
                NcapVar *Nvar;
                std::string var_nm;
  
                var_nm=vid2->getText();       
 
-              if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
+               if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
                
                bcst=false;
                var_cst=NULL_CEWI; 
               
-               var1=out(vid2->getNextSibling());
+               var_rhs=out(vid2->getNextSibling());
                
                // Save name 
-               std::string s_var_rhs(var1->nm);
-               (void)nco_free(var1->nm);                
-               var1->nm =strdup(var_nm.c_str());
+               std::string s_var_rhs(var_rhs->nm);
 
-               // Do attribute propagation only if
-               // var doesn't already exist or is defined but NOT
-               // populated
-               Nvar=prs_arg->var_vtr.find(vid2->getText());
-               //rcd=nco_inq_varid_flg(prs_arg->out_id,var1->nm ,&var_id);
+               Nvar=prs_arg->var_vtr.find(var_nm);
 
                if(!Nvar || (Nvar && Nvar->flg_stt==1))
-                 (void)ncap_att_cpy(var_nm,s_var_rhs,prs_arg);
-               
-                // var is defined and populated &  RHS is scalar -then stretch var to match
-               if(Nvar && Nvar->flg_stt==2) 
-                  if(var1->sz ==1 && Nvar->var->sz >1){
-                    var1=nco_var_cnf_typ(Nvar->var->type,var1);  
-                    (void)ncap_att_stretch(var1,Nvar->var->sz);
-                    
-                    // this is a special case -- if the RHS scalar has
-                    // no missing value then retain LHS missing value
-                    // else LHS missing value gets over written by RHS
-                    if(!var1->has_mss_val)
-                      (void)nco_mss_val_cp(Nvar->var,var1);   
-                  }
+                   (void)ncap_att_cpy(var_nm,s_var_rhs,prs_arg);
+
+               if(Nvar)
+                 var_lhs=nco_var_dpl(Nvar->var);
+               // use init_chk() to avoid warning from ncap_var_init() if var not present  
+               else if(prs_arg->ncap_var_init_chk(var_nm))
+                  var_lhs=prs_arg->ncap_var_init(var_nm,false); 
  
-               // Write var to disk
-               (void)prs_arg->ncap_var_write(var1,bram);
-               //(void)ncap_var_write_omp(var1,bram,prs_arg);
+               if(var_lhs)
+               {
+                   // var is defined and populated &  RHS is scalar -then stretch var to match
+                   var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);   
+                   if(var_rhs->sz ==1 && var_lhs->sz >1)
+                   {
+                       (void)ncap_att_stretch(var_rhs,var_lhs->sz);
+                        // this is a special case -- if the RHS scalar has
+                        // no missing value then retain LHS missing value
+                        // else LHS missing value gets over written by RHS
+                        if(!var_rhs->has_mss_val)
+                         (void)nco_mss_val_cp(var_lhs,var_rhs);   
+                    }   
+
+                   if( var_rhs->sz != var_lhs->sz) 
+                       err_prn(fnc_nm,"regular assign - var size missmatch between \""+var_nm+"\" and RHS of expression");                        
+
+                   var_lhs->val.vp=var_rhs->val.vp;
+               
+                   var_rhs->val.vp=(void*)NULL;                
+                   nco_var_free(var_rhs);  
+                   // Write var to disk
+                   (void)prs_arg->ncap_var_write(var_lhs,bram);
+               }
+               else
+               {
+                   nco_free(var_rhs->nm);
+                   var_rhs->nm=strdup(var_nm.c_str());  
+                   (void)prs_arg->ncap_var_write(var_rhs,bram);  
+               }  
 
                 // See If we have to return something
                if(vid2->getFirstChild() && vid2->getFirstChild()->getType()==NORET)

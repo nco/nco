@@ -1,3 +1,10 @@
+2015-12-14  Henry Butowsky  <henryb@hush.com>
+
+	* fixed situation in assign in which var is in input but not read during assign action
+	  e.g time=10;   
+	  ncap2 -O -v -s 'one_dmn_rec_var=0' in.nc foo.nc;ncks -v one_dmn_rec_var -C -m -H foo.nc 
+
+
 2015-12-08  Charlie Zender  <zender@uci.edu>
 
 	* sld_nco.sh now infers destination grid from -d dst_fl
