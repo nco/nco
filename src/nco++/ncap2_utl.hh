@@ -24,7 +24,7 @@
 #include <string.h> /* strcmp. . . */
 #include <time.h> /* machine time */
 #ifndef _MSC_VER
-# include <unistd.h> /* POSIX stuff */
+#include <unistd.h> /* POSIX stuff */
 #endif
 #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
 #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t
@@ -62,6 +62,9 @@
 /* Don't know what Charlies done to the bools */
 /* Temporary fix for now !!*/
 #define nco_bool int
+
+// Compress  code a little
+#define SCS(x)  static_cast<std::string>(x)     
 
 /* Used to do an pre-mpi sort */
  typedef struct exp_sct_tag { 

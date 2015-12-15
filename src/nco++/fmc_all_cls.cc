@@ -171,7 +171,7 @@
                 var=ncap_var_udf("~dot_methods");  
                 // deal with average over all dims or scalar var
                 else if( nbr_dim==0 || dmn_vtr.size()== 0 || dmn_vtr.size()==nbr_dim)  
-                var=ncap_sclr_var_mk(static_cast<std::string>("~dot_methods"),var1->type,false);    
+                var=ncap_sclr_var_mk(SCS("~dot_methods"),var1->type,false);    
                 else {
                     // cast a variable with the correct dims in the correct order
                     dim=var1->dim;
@@ -412,7 +412,7 @@
       // Initial scan
       if(prs_arg->ntl_scn) 
         if(var_tmp)  
-	  var_ret= ncap_sclr_var_mk(static_cast<std::string>
+	  var_ret= ncap_sclr_var_mk(SCS
 ("~utility_function"),var_tmp->type,false);
         else
 	  var_ret=ncap_var_udf("~utility_function");
@@ -423,7 +423,7 @@
            // nb ncap_sclr_var_mk() calls nco_mss_val_mk() and fills var_ret with the default fill value
            // for that type.  So if the var has no missing value then this is the value returned 
            // Default fill  values are defined in  netcdf.h . 
-           var_ret=ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,true);
+           var_ret=ncap_sclr_var_mk(SCS("~utility_function"),var_tmp->type,true);
            if(var_tmp->has_mss_val)
              (void)memcpy(var_ret->val.vp, var_tmp->mss_val.vp,nco_typ_lng(var_tmp->type)); 
         }else{          
@@ -441,7 +441,7 @@
 
     if(prs_arg->ntl_scn) {
       if(var) var=nco_var_free(var);
-      return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,false);  
+      return ncap_sclr_var_mk(SCS("~utility_function"),(nc_type)NC_INT,false);  
     }
 
 
@@ -449,7 +449,7 @@
     if(!Nvar ){
        wrn_prn(fnc_nm,sfnm+" unable to find variable: "+va_nm); 
        if(var) var=nco_var_free(var);
-       return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_int)rval);        
+       return ncap_sclr_var_mk(SCS("~utility_function"),(nco_int)rval);        
     }
 
 
@@ -556,7 +556,7 @@
 
     }// end switch
 
-    return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_int)rval);        
+    return ncap_sclr_var_mk(SCS("~utility_function"),(nco_int)rval);        
 
   }// end function
 
@@ -592,7 +592,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
 
     if(prs_arg->ntl_scn){
        nco_var_free(var);     
-       return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),styp,false);         
+       return ncap_sclr_var_mk(SCS("~utility_function"),styp,false);         
     }  
 
     // from now on dealing with a final scan !!
@@ -616,9 +616,9 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
     nco_var_free(var); 
 
     if(styp==NC_UINT64) 
-       return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_uint64)icnt);
+       return ncap_sclr_var_mk(SCS("~utility_function"),(nco_uint64)icnt);
     else 
-      return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_int)icnt);
+      return ncap_sclr_var_mk(SCS("~utility_function"),(nco_int)icnt);
 }  
     
 
@@ -709,7 +709,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       var1=walker.out(tr) ;
       var1=nco_var_free(var1);
       }
-      return ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nc_type)NC_INT,false);        
+      return ncap_sclr_var_mk(SCS("~basic_function"),(nc_type)NC_INT,false);        
     }
        
     // from here on dealing with final scan
@@ -738,7 +738,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       }   
       
       if(var1) nco_var_free(var1);    
-      return ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_int)iret);
+      return ncap_sclr_var_mk(SCS("~basic_function"),(nco_int)iret);
     }
 
      
@@ -751,15 +751,15 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       switch(fdx){ 
            case PSIZE:
              if(mp_typ==NC_UINT64) 
-               var=ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_uint64)var1->sz);
+               var=ncap_sclr_var_mk(SCS("~basic_function"),(nco_uint64)var1->sz);
              else 
-               var=ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_int)var1->sz);
+               var=ncap_sclr_var_mk(SCS("~basic_function"),(nco_int)var1->sz);
              break;
            case PTYPE:
-             var=ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_int)var1->type);
+             var=ncap_sclr_var_mk(SCS("~basic_function"),(nco_int)var1->type);
              break;
            case PNDIMS:
-             var=ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_int)var1->nbr_dim);            
+             var=ncap_sclr_var_mk(SCS("~basic_function"),(nco_int)var1->nbr_dim);            
 
       } // end switch        
       
@@ -1105,7 +1105,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
 		std::vector<std::string> cst_vtr;
 
                 for(idx=0 ; idx<nbr_dim ; idx++)
-                  cst_vtr.push_back( static_cast<std::string>((dmn_vtr[idx]->nm)));
+                  cst_vtr.push_back( SCS((dmn_vtr[idx]->nm)));
 
                 var_out=ncap_cst_mk(cst_vtr,prs_arg);
                 var_out=nco_var_cnf_typ(var_in->type,var_out);
@@ -1944,7 +1944,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 		else
 		{	
        // create empty var to return
-       var_out=ncap_sclr_var_mk(static_cast<std::string>("~zz@value_list"),mp_typ,false);          
+       var_out=ncap_sclr_var_mk(SCS("~zz@value_list"),mp_typ,false);          
 	    var_out->sz=var->nbr_dim;
 		}
        nco_var_free(var);
@@ -1953,7 +1953,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 		
     nbr_dim=var->nbr_dim;       
 	// create return attribute/var	
-	var_out=ncap_sclr_var_mk(static_cast<std::string>("~zz@value_list"),NC_UINT64,true);          
+	var_out=ncap_sclr_var_mk(SCS("~zz@value_list"),NC_UINT64,true);          
     var_out->has_dpl_dmn=-1;
  
 	ncap_att_stretch(var_out, nbr_dim); 
@@ -2881,7 +2881,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   if(prs_arg->ntl_scn  ){
     nco_var_free(var1);
     nco_var_free(var2);
-    return ncap_sclr_var_mk(static_cast<std::string>("~coord_function"),(nc_type)NC_INT,false);  ;
+    return ncap_sclr_var_mk(SCS("~coord_function"),(nc_type)NC_INT,false);  ;
   }
 
 
@@ -2937,7 +2937,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   nco_var_free(var1);   
   nco_var_free(var2);
 
-  return ncap_sclr_var_mk(static_cast<std::string>("~coord_function"),(nco_int)lret);        
+  return ncap_sclr_var_mk(SCS("~coord_function"),(nco_int)lret);        
   }
 
 

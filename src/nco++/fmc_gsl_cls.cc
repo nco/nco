@@ -1165,7 +1165,7 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     else     
       (void)prs_arg->ncap_var_write(var_out,false); 
     
-    return ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nc_type)NC_INT,false); 
+    return ncap_sclr_var_mk(SCS("~gsl_function"),(nc_type)NC_INT,false); 
   }
   
   // Do the real thing 
@@ -1233,7 +1233,7 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     // Free args                
     for(idx=0;idx<3;idx++) (void)nco_var_free(var_arr[idx]);
     
-    var_tmp=ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nco_int)status);
+    var_tmp=ncap_sclr_var_mk(SCS("~gsl_function"),(nco_int)status);
   }  
   // return status
   return var_tmp;
@@ -1291,7 +1291,7 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
     else     
       (void)prs_arg->ncap_var_write(var_out,false); 
     
-    return ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nc_type)NC_INT,false);   
+    return ncap_sclr_var_mk(SCS("~gsl_function"),(nc_type)NC_INT,false);   
   } 
   
   // Do the real thing 
@@ -1348,7 +1348,7 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
     (void)nco_var_free(var_arr[0]);
     (void)nco_var_free(var_arr[1]);
     
-    var_tmp=ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nco_int)status);
+    var_tmp=ncap_sclr_var_mk(SCS("~gsl_function"),(nco_int)status);
   }  
   return var_tmp;
 } // end function hnd_fnc_idpd
@@ -3060,7 +3060,7 @@ var_sct *gsl_cls::hnd_fnc_stat1(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
  var[0]=nco_var_free(var[0]);
 
 
- return ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt2_function"),r_val);  
+ return ncap_sclr_var_mk(SCS("~gsl_stt2_function"),r_val);  
 }
 
 
@@ -3194,7 +3194,7 @@ var_sct *gsl_cls::hnd_fnc_stat2(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     var_arr[idx]=nco_var_free(var_arr[idx]);
    
 
- return ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt2_function"),r_val);  
+ return ncap_sclr_var_mk(SCS("~gsl_stt2_function"),r_val);  
 
 }
 
@@ -3340,7 +3340,7 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 #endif /* !ENABLE_NETCDF4 */
      default: nco_dfl_case_nc_type_err(); break;    
     } 
-    var_ret=ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt3_function"),r_val);    
+    var_ret=ncap_sclr_var_mk(SCS("~gsl_stt3_function"),r_val);    
    } break;  
    
     
@@ -3372,7 +3372,7 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 #endif /* !ENABLE_NETCDF4 */
      default: nco_dfl_case_nc_type_err(); break;    
      } 
-    var_ret=ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt3_function"),r_val);    
+    var_ret=ncap_sclr_var_mk(SCS("~gsl_stt3_function"),r_val);    
    } break;  
    
     
@@ -3741,7 +3741,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     var_arr[idx]=nco_var_free(var_arr[idx]);
 
 
-  return ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt2_function"),r_val);  
+  return ncap_sclr_var_mk(SCS("~gsl_stt2_function"),r_val);  
 
 
 }
@@ -3804,7 +3804,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
       switch(fdx) {
        case  PGSL_RNG_MIN:
        case  PGSL_RNG_MAX:
-        return ncap_sclr_var_mk(static_cast<std::string>("~gsl2_functions"),(nc_type)NC_DOUBLE,false);        
+        return ncap_sclr_var_mk(SCS("~gsl2_functions"),(nc_type)NC_DOUBLE,false);        
         break;
       
        case PGSL_RNG_NAME:
@@ -3821,14 +3821,14 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     switch(fdx){ 
            case PGSL_RNG_MIN:
              vlng= gsl_rng_min(ncap_rng);
-             var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_function"),(double)(vlng));
+             var=ncap_sclr_var_mk(SCS("~gsl2_function"),(double)(vlng));
              break;
            case PGSL_RNG_MAX:
              vlng= gsl_rng_max(ncap_rng);
-             var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_function"),(double)(vlng));
+             var=ncap_sclr_var_mk(SCS("~gsl2_function"),(double)(vlng));
              break;
            case PGSL_RNG_NAME:
-	    //var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_functions"),(nco_int)var1->nbr_dim);            
+	    //var=ncap_sclr_var_mk(SCS("~gsl2_functions"),(nco_int)var1->nbr_dim);            
 	    break;
 
     }// end switch        
@@ -4178,7 +4178,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
 
 
-    return ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt2_function"),r_val);  
+    return ncap_sclr_var_mk(SCS("~gsl_stt2_function"),r_val);  
 
 }
 
