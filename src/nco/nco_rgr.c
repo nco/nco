@@ -4535,6 +4535,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long grd_sz_nbr; /* [nbr] Number of gridcells in grid */
   long idx2; /* [idx] Counting index for unrolled grids */
   long idx; /* [idx] Counting index for unrolled grids */
+  long idx_ctr;
   long lat_idx2; /* [idx] Counting index for unrolled latitude */
   long lat_idx;
   long lat_nbr; /* [nbr] Number of latitudes in grid */
@@ -4953,7 +4954,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(flg_grd_crv){
     /* For curvilinear grids first, if necessary, infer corner boundaries
        Then perform sanity check using same code on inferred and copied grids */
-    long int idx_ctr;
     long int idx_crn_ll;
     long int idx_crn_lr;
     long int idx_crn_ur;
@@ -5176,35 +5176,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       idx_crn_ul=grd_crn_nbr*idx_dbg+3;
       (void)fprintf(stderr,"%s: INFO %s idx_dbg = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_dbg,lat_ctr[idx_dbg],lon_ctr[idx_dbg],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
     } /* !dbg */
-
-    /* Find span of curvilinear grid */
-    double lat_max; /* [dgr] Maximum latitude */
-    double lat_min; /* [dgr] Minimum latitude */
-    double lon_max; /* [dgr] Maximum longitude */
-    double lon_min; /* [dgr] Minimum longitude */
-    idx_ctr=0;
-    if(has_mss_val_ctr){
-      /* Find first non-missing value centers and thus corners */
-      for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
-	if(lat_ctr[idx_ctr] != mss_val_ctr_dbl) break;
-      } /* !grd_sz_nbr */
-      assert(idx_ctr != grd_sz_nbr);
-    } /* !has_mss_val_ctr */
-    lon_max=lon_crn[idx_ctr*grd_crn_nbr];
-    lat_max=lat_crn[idx_ctr*grd_crn_nbr];
-    lon_min=lon_crn[idx_ctr*grd_crn_nbr];
-    lat_min=lat_crn[idx_ctr*grd_crn_nbr];
-    for(idx=1;idx<grd_sz_nbr*grd_crn_nbr;idx++){
-      idx_ctr=idx/grd_crn_nbr;
-      if(lat_ctr[idx_ctr] == mss_val_ctr_dbl) continue;
-      lat_max=(lat_crn[idx] > lat_max) ? lat_crn[idx] : lat_max;
-      lon_max=(lon_crn[idx] > lon_max) ? lon_crn[idx] : lon_max;
-      lat_min=(lat_crn[idx] < lat_min) ? lat_crn[idx] : lat_min;
-      lon_min=(lon_crn[idx] < lon_min) ? lon_crn[idx] : lon_min;
-    } /* !idx */
-    lat_spn=lat_max-lat_min;
-    lon_spn=lon_max-lon_min;
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid resolution %li x %li, spans %g x %g degrees: [%g <= lat <= %g], [%g <= lon <= %g]\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_spn,lon_spn,lat_min,lat_max,lon_min,lon_max);
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
@@ -5477,6 +5448,37 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !lat */
   } /* !flg_grd_2D */
   
+  /* Find span of any grid that has boundaries */
+  if(flg_wrt_crn){
+    double lat_max; /* [dgr] Maximum latitude */
+    double lat_min; /* [dgr] Minimum latitude */
+    double lon_max; /* [dgr] Maximum longitude */
+    double lon_min; /* [dgr] Minimum longitude */
+    idx_ctr=0;
+    if(has_mss_val_ctr){
+      /* Find first non-missing value center and thus corners */
+      for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
+	if(grd_ctr_lat[idx_ctr] != mss_val_ctr_dbl) break;
+      } /* !grd_sz_nbr */
+      assert(idx_ctr != grd_sz_nbr);
+    } /* !has_mss_val_ctr */
+    lon_max=grd_crn_lon[idx_ctr*grd_crn_nbr];
+    lat_max=grd_crn_lat[idx_ctr*grd_crn_nbr];
+    lon_min=grd_crn_lon[idx_ctr*grd_crn_nbr];
+    lat_min=grd_crn_lat[idx_ctr*grd_crn_nbr];
+    for(idx=1;idx<grd_sz_nbr*grd_crn_nbr;idx++){
+      idx_ctr=idx/grd_crn_nbr;
+      if(grd_ctr_lat[idx_ctr] == mss_val_ctr_dbl) continue;
+      lat_max=(grd_crn_lat[idx] > lat_max) ? grd_crn_lat[idx] : lat_max;
+      lon_max=(grd_crn_lon[idx] > lon_max) ? grd_crn_lon[idx] : lon_max;
+      lat_min=(grd_crn_lat[idx] < lat_min) ? grd_crn_lat[idx] : lat_min;
+      lon_min=(grd_crn_lon[idx] < lon_min) ? grd_crn_lon[idx] : lon_min;
+    } /* !idx */
+    lat_spn=lat_max-lat_min;
+    lon_spn=lon_max-lon_min;
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports grid resolution %li x %li, spans %g x %g degrees: [%g <= lat <= %g], [%g <= lon <= %g]\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_spn,lon_spn,lat_min,lat_max,lon_min,lon_max);
+  } /* !flg_wrt_crn */
+
   /* Diagnose area if necessary */
   if(area_id == NC_MIN_INT && flg_wrt_crn){
     /* Not absolutely necessary to diagnose area because ERWG will diagnose and output area itself */

@@ -1,5 +1,7 @@
 2015-12-16  Charlie Zender  <zender@uci.edu>
 
+	* Move grid-span check from curvilinear code to work for all grids
+
 	* Restrict inferred rectangular lat boundaries to [-90.0,90.0] when extrapolating from grid centers
 
 	* Propagate 20151214 commit *.g changes into *.[ch]pp files
