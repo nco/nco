@@ -1,5 +1,9 @@
 2015-12-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.4-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.4-beta01 final changes';git push
+	git tag -a 4.5.4-beta01 -m 'Version 4.5.4-beta01 new features: fix nfr cap grd; ncremap';git push --tags
+
 	* Move grid-span check from curvilinear code to work for all grids
 
 	* Restrict inferred rectangular lat boundaries to [-90.0,90.0] when extrapolating from grid centers
