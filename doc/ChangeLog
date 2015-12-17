@@ -1,3 +1,7 @@
+2015-12-17  Charlie Zender  <zender@uci.edu>
+
+	* Free var.val.sngp[:] before freeing var.val.vp in nco_prn.c (patch from Pedro)
+
 2015-12-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.4-beta01 release procedure:

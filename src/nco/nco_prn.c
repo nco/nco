@@ -2082,6 +2082,9 @@ lbl_chr_prn:
   } /* end if variable has more than one dimension */
 
   /* Free value buffer */
+  if(var.type == NC_STRING)
+      for(lmn=0;lmn<var.sz;lmn++)
+	if(var.val.sngp[lmn]) var.val.sngp[lmn]=(nco_string)nco_free(var.val.sngp[lmn]);
   var.val.vp=nco_free(var.val.vp);
   var.mss_val.vp=nco_free(var.mss_val.vp);
   var.nm=(char *)nco_free(var.nm);
