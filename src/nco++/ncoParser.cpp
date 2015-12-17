@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoParser.cpp"$ */
+/* $ANTLR 2.7.7 (20151030): "ncoGrammer.g" -> "ncoParser.cpp"$ */
 #include "ncoParser.hpp"
 #include <antlr/NoViableAltException.hpp>
 #include <antlr/SemanticException.hpp>
@@ -913,7 +913,7 @@ void ncoParser::dmn_arg_list() {
 	} // ( ... )*
 	match(DIVIDE);
 	dmn_arg_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 178 "ncoGrammer.g"
+#line 176 "ncoGrammer.g"
 	dmn_arg_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(DMN_ARG_LIST,"dmn_arg_list"))->add(dmn_arg_list_AST)));
 #line 919 "ncoParser.cpp"
 	currentAST.root = dmn_arg_list_AST;
@@ -951,7 +951,7 @@ void ncoParser::value_list() {
 	} // ( ... )*
 	match(RCURL);
 	value_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 183 "ncoGrammer.g"
+#line 181 "ncoGrammer.g"
 	value_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(VALUE_LIST,"value_list"))->add(value_list_AST)));
 #line 957 "ncoParser.cpp"
 	currentAST.root = value_list_AST;
@@ -1144,7 +1144,7 @@ void ncoParser::func_arg() {
 	} // ( ... )*
 	match(RPAREN);
 	func_arg_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 190 "ncoGrammer.g"
+#line 188 "ncoGrammer.g"
 	func_arg_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(FUNC_ARG,"func_arg"))->add(func_arg_AST)));
 #line 1150 "ncoParser.cpp"
 	currentAST.root = func_arg_AST;
@@ -1457,7 +1457,7 @@ void ncoParser::unaryleft_exp() {
 		in_AST = astFactory->create(in);
 		astFactory->makeASTRoot(currentAST, in_AST);
 		match(INC);
-#line 207 "ncoGrammer.g"
+#line 205 "ncoGrammer.g"
 		in_AST->setType(POST_INC);
 		in_AST->setText("POST_INC");
 #line 1464 "ncoParser.cpp"
@@ -1469,7 +1469,7 @@ void ncoParser::unaryleft_exp() {
 		de_AST = astFactory->create(de);
 		astFactory->makeASTRoot(currentAST, de_AST);
 		match(DEC);
-#line 209 "ncoGrammer.g"
+#line 207 "ncoGrammer.g"
 		de_AST->setType(POST_DEC);
 		de_AST->setText("POST_DEC");
 #line 1476 "ncoParser.cpp"
@@ -1578,7 +1578,7 @@ void ncoParser::unary_exp() {
 			ur_AST = astFactory->create(ur);
 			astFactory->makeASTRoot(currentAST, ur_AST);
 			match(TIMES);
-#line 222 "ncoGrammer.g"
+#line 220 "ncoGrammer.g"
 			ur_AST->setType(UTIMES);ur_AST->setText("UTIMES");
 #line 1584 "ncoParser.cpp"
 			break;

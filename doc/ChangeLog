@@ -1,3 +1,7 @@
+2015-12-16  Charlie Zender  <zender@uci.edu>
+
+	* Propagate 20151214 commit *.g changes into *.[ch]pp files
+
 2015-12-14  Charlie Zender  <zender@uci.edu>
 
 	* Fix typo in AIRS HDF dimension name
