@@ -5213,9 +5213,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	 NB: Simplistically derived interfaces (ntf) only valid on some rectangular grids (not on Gaussian grids)
 	 These inferred-from-midpoint interfaces/bounds are overwritten in next block once lat grid is known */
       lat_ntf[0]=lat_ctr[0]-0.5*(lat_ctr[1]-lat_ctr[0]);
+      if(lat_ntf[0] < -90.0) lat_ntf[0]=-90.0; /* NB: lat_ntf[0] can be same as lat_ctr[0] for cap grid */
       for(lat_idx=0;lat_idx<lat_nbr-1;lat_idx++)
 	lat_ntf[lat_idx+1]=0.5*(lat_ctr[lat_idx]+lat_ctr[lat_idx+1]);
       lat_ntf[lat_nbr]=lat_ctr[lat_nbr-1]+0.5*(lat_ctr[lat_nbr-1]-lat_ctr[lat_nbr-2]);
+      if(lat_ntf[lat_nbr] > 90.0) lat_ntf[lat_nbr]=90.0; /* NB: lat_ntf[lat_nbr] can be same as lat_ctr[lat_nbr-1] for cap grid */
       lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
       
       lon_ntf[0]=lon_ctr[0]-0.5*(lon_ctr[1]-lon_ctr[0]);
