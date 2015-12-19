@@ -1,3 +1,7 @@
+2015-12-18  Charlie Zender  <zender@uci.edu>
+
+	* Use ignore environment to protect comments from PDF documentation (which ignores @c comment sentinels!)
+
 2015-12-17  Charlie Zender  <zender@uci.edu>
 
 	* Free var.val.sngp[:] before freeing var.val.vp in nco_prn.c (patch from Pedro)

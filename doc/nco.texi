@@ -9432,19 +9432,21 @@ Therefore when @code{-y rmssdn} is requested and weights are specified,
 @command{nces} and @command{ncra}, which do not allow weights to be
 specified, always implement the @code{rmssdn} procedure when asked.
 
-@c 20130827: Fedora Core 19 (FC19) broke here with "./nco.texi:6394: Missing dollarsign inserted."
-@c Ubuntu always built nco.texi fine
-@c Adding a dollarsign character right here breaks Ubuntu builds too
-@c Hence I must carefully spell-out the word dollarsign instead
-@c 20130829: Making many smaller TeX environments does not solve problem
-@c 20130910: Using latest texinfo.tex from GNU does not solve problem
-@c 20130910: Karl Berry solved problem by fixing bug in texinfo.tex
-@c Bug was triggered in Fedora by apostrophe in "User's Guide" (manual title)
-@c Bug not present in texinfo.tex version 2008-04-18.10 (used by Ubuntu 13.04)
-@c Bug     present in texinfo.tex version 2013-02-01.11 (used by FC19)
-@c Bug just fixed  in texinfo.tex version 2013-09-11 (committed by Karl)
-@c nco/autobld/texinfo.tex now contains fixed version
-@c Breakage always occurs near here
+@ignore
+20130827: Fedora Core 19 (FC19) broke here with "./nco.texi:6394: Missing dollarsign inserted."
+Ubuntu always built nco.texi fine
+Adding a dollarsign character right here breaks Ubuntu builds too
+Hence I must carefully spell-out the word dollarsign instead
+20130829: Making many smaller TeX environments does not solve problem
+20130910: Using latest texinfo.tex from GNU does not solve problem
+20130910: Karl Berry solved problem by fixing bug in texinfo.tex
+Bug was triggered in Fedora by apostrophe in "User's Guide" (manual title)
+Bug not present in texinfo.tex version 2008-04-18.10 (used by Ubuntu 13.04)
+Bug     present in texinfo.tex version 2013-02-01.11 (used by FC19)
+Bug just fixed  in texinfo.tex version 2013-09-11 (committed by Karl)
+nco/autobld/texinfo.tex now contains fixed version
+Breakage always occurs near here
+@end ignore
 The square root of the mean of~$\xxx$ (@code{-y sqrt}) is 
 $$
 \bar \xxx_{\jjj} = \sqrt{ {\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}

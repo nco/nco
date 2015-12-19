@@ -3127,7 +3127,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   3.653857995289623e-05 old NCO (acos) */
 	/* Computing great circle arcs over small arcs requires care since the central angle is near 0 degrees
 	   Cosine small angles changes slowly for such angles, and leads to precision loss
-	   Use haversine formula instead of sphereical law of cosines formula
+	   Use haversine formula instead of spherical law of cosines formula
 	   https://en.wikipedia.org/wiki/Great-circle_distance */
 	/* Interior angle/great circle arc a, spherical law of cosines formula (loses precision):
 	   cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
