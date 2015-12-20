@@ -1,5 +1,9 @@
 2015-12-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.4-beta02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.4-beta02 final changes';git push
+	git tag -a 4.5.4-beta02 -m 'Version 4.5.4-beta02 new features: fix nfr lon 180; free nc_string patch';git push --tags
+
 	* Check for lon == -180 not lon == 180 when inferring longitude	grid-type lon_typ
 
 2015-12-18  Charlie Zender  <zender@uci.edu>
