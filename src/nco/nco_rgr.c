@@ -1270,10 +1270,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       /* NB: Longitude grid diagnosis is susceptible to mistakes when input mapfile embeds common faulty grids, e.g., ACME *150418* FV maps
 	 map_ne30np4_to_fv129x256_aave.150418.nc is diagnosed as regional grid of unknown type because of input grid flaws
 	 map_ne30np4_to_fv129x256_aave.20150901.nc is (correctly) diagnosed as global grid of with lon_Grn_ctr */
-      if(     (float)lon_ctr_out[0] ==   0.0 && (float)lon_ctr_out[1] == (float)(lon_ctr_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_Grn_ctr;
-      else if((float)lon_ctr_out[0] == 180.0 && (float)lon_ctr_out[1] == (float)(lon_ctr_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_180_ctr;
-      else if((float)lon_ntf_out[0] ==   0.0 && (float)lon_ntf_out[1] == (float)(lon_ntf_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_Grn_wst;
-      else if((float)lon_ntf_out[0] == 180.0 && (float)lon_ntf_out[1] == (float)(lon_ntf_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_180_wst;
+      if(     (float)lon_ctr_out[0] ==    0.0 && (float)lon_ctr_out[1] == (float)(lon_ctr_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_Grn_ctr;
+      else if((float)lon_ctr_out[0] == -180.0 && (float)lon_ctr_out[1] == (float)(lon_ctr_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_180_ctr;
+      else if((float)lon_ntf_out[0] ==    0.0 && (float)lon_ntf_out[1] == (float)(lon_ntf_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_Grn_wst;
+      else if((float)lon_ntf_out[0] == -180.0 && (float)lon_ntf_out[1] == (float)(lon_ntf_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_180_wst;
       else if((float)lon_ctr_out[1] == (float)(lon_ctr_out[0]+lon_spn/lon_nbr_out)) nco_grd_lon_typ=nco_grd_lon_bb;
       else nco_grd_lon_typ=nco_grd_lon_unk;
     } /* !nco_grd_lon_typ */
@@ -5339,10 +5339,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
     if(lon_spn != 360.0 || lat_spn != 180.0) nco_grd_xtn=nco_grd_xtn_rgn;
     if(lon_typ == nco_grd_lon_nil){
-      if(     (float)lon_ctr[0] ==   0.0 && (float)lon_ctr[1] == (float)(lon_ctr[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_Grn_ctr;
-      else if((float)lon_ctr[0] == 180.0 && (float)lon_ctr[1] == (float)(lon_ctr[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_180_ctr;
-      else if((float)lon_ntf[0] ==   0.0 && (float)lon_ntf[1] == (float)(lon_ntf[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_Grn_wst;
-      else if((float)lon_ntf[0] == 180.0 && (float)lon_ntf[1] == (float)(lon_ntf[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_180_wst;
+      if(     (float)lon_ctr[0] ==    0.0 && (float)lon_ctr[1] == (float)(lon_ctr[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_Grn_ctr;
+      else if((float)lon_ctr[0] == -180.0 && (float)lon_ctr[1] == (float)(lon_ctr[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_180_ctr;
+      else if((float)lon_ntf[0] ==    0.0 && (float)lon_ntf[1] == (float)(lon_ntf[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_Grn_wst;
+      else if((float)lon_ntf[0] == -180.0 && (float)lon_ntf[1] == (float)(lon_ntf[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_180_wst;
       else if((float)lon_ctr[1] == (float)(lon_ctr[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_bb;
       else lon_typ=nco_grd_lon_unk;
     } /* !lon_typ */

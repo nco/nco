@@ -1,3 +1,7 @@
+2015-12-20  Charlie Zender  <zender@uci.edu>
+
+	* Check for lon == -180 not lon == 180 when inferring longitude	grid-type lon_typ
+
 2015-12-18  Charlie Zender  <zender@uci.edu>
 
 	* Use ignore environment to protect comments from PDF documentation (which ignores @c comment sentinels!)
