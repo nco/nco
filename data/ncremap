@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Purpose: Regridding script
+# Purpose: NCO Regridding operator/script
 # Regrid all input files (possibly on different grids) to a single specified output grid
 
 # Author: C. Zender
@@ -49,6 +49,12 @@ fi # DATA
 # ncremap > ~/sld_nco.txt 2>&1 &
 # ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr > ~/sld_nco.txt 2>&1 &
 
+# dbg_lvl: 0 = Quiet, print basic status during evaluation
+#          1 = Print configuration, full commands, and status to output during evaluation
+#          2 = As in dbg_lvl=1, but do not evaluate commands
+#          3 = As in dbg_lvl=2, with additional information (mainly for batch queues)
+# thr_nbr: Thread number to use in NCO regridder, '-t 1' for one thread, '-t 2' for two threads...
+
 # Set script name and run directory
 drc_pwd=${PWD}
 spt_nm=$(basename ${0}) # [sng] Script name
@@ -77,7 +83,7 @@ grd_sng='' # [sng] Grid string
 hdr_pad='1000' # [B] Pad at end of header section
 map_fl='' # [sng] Map-file
 mpi_flg='No' # [sng] Parallelize over nodes
-nco_opt='-O -t 1 --no_tmp_fl' # [sng] NCO defaults (e.g., '-O -6 -t 1')
+nco_opt='-O --no_tmp_fl' # [sng] NCO defaults (e.g., '-O -6 -t 1')
 nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 par_typ='bck' # [sng] Parallelism type
 rgr_fl='' # [sng] Regridded file
@@ -116,6 +122,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_fl${fnt_nrm}   Regridded-file (empty copies Source filename) (default ${fnt_bld}${rgr_fl}${fnt_nrm})"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regridding options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm})"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}src_fl${fnt_nrm}   Source file (mandatory) (default ${fnt_bld}${src_fl}${fnt_nrm})"
+    echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
     printf "\n"
@@ -171,6 +178,7 @@ while getopts :a:D:d:f:g:G:h:i:m:n:o:p:R:r:s:v:x: OPT; do
 	r) rgr_fl=${OPTARG} ;; # Regridded file
 	R) rgr_opt=${OPTARG} ;; # Regridding options
 	s) src_fl=${OPTARG} ;; # Source file
+	t) thr_usr=${OPTARG} ;; # Thread number
 	v) var_lst=${OPTARG} ;; # Variables
 	x) xtn_var=${OPTARG} ;; # Extensive variables
 	\?) # Unrecognized option
@@ -198,6 +206,9 @@ fi # !alg_typ
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
 fi # !drc_in
+if [ ${dbg_lvl} -ge 1 ]; then
+    nco_opt="-D ${dbg_lvl} ${nco_opt}"
+fi # !dbg_lvl
 if [ -n "${nco_usr}" ]; then 
     nco_opt="${nco_usr} ${nco_opt}"
 fi # !var_lst
@@ -221,6 +232,9 @@ elif [ ${par_typ} = 'mpi' ]; then
     par_opt=' &'
     par_opt_cf=''
 fi # !par_typ
+if [ -n "${thr_usr}" ]; then 
+    thr_nbr="${thr_usr}"
+fi # !thr_usr
 
 if [ ! -n "${src_fl}" ]; then
     # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
@@ -439,7 +453,7 @@ wait
 # Block 4: Regrid
 printf "Regridding...\n"
 rgr_idx=4
-cmd_rgr[${rgr_idx}]="ncks ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${src_fl} ${rgr_fl}"
+cmd_rgr[${rgr_idx}]="ncks -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${src_fl} ${rgr_fl}"
 
 # Block 4 Loop 2: Execute and/or echo commands
 for ((rgr_idx=4;rgr_idx<=4;rgr_idx++)); do
