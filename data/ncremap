@@ -51,8 +51,8 @@ fi # DATA
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
-#          2 = As in dbg_lvl=1, but do not evaluate commands
-#          3 = As in dbg_lvl=2, with additional information (mainly for batch queues)
+#          2 = As in dbg_lvl=1, but _do not evaluate commands_
+#          3 = As in dbg_lvl=1, and pass debug level through to NCO/ncks
 # thr_nbr: Thread number to use in NCO regridder, '-t 1' for one thread, '-t 2' for two threads...
 
 # Set script name and run directory
@@ -206,7 +206,7 @@ fi # !alg_typ
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
 fi # !drc_in
-if [ ${dbg_lvl} -ge 1 ]; then
+if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="-D ${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
 if [ -n "${nco_usr}" ]; then 
@@ -389,7 +389,7 @@ if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_usr_flg}" != 'Yes' ]; then
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_rgr[${rgr_idx}]}
 	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
+	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_rgr[${rgr_idx}]}
 	    if [ $? -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to generate destination grid\n"
@@ -416,7 +416,7 @@ for ((rgr_idx=2;rgr_idx<=2;rgr_idx++)); do
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_rgr[${rgr_idx}]}
     fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
+    if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_rgr[${rgr_idx}]}
 	if [ $? -ne 0 ]; then
 	    printf "${spt_nm}: ERROR Failed to generate source grid\n"
@@ -438,7 +438,7 @@ if [ "${map_usr_flg}" != 'Yes' ]; then
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_rgr[${rgr_idx}]}
 	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
+	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_rgr[${rgr_idx}]}
 	    if [ $? -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to generate mapfile\n"
@@ -460,7 +460,7 @@ for ((rgr_idx=4;rgr_idx<=4;rgr_idx++)); do
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_rgr[${rgr_idx}]}
     fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
+    if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_rgr[${rgr_idx}]}
 	if [ $? -ne 0 ]; then
 	    printf "${spt_nm}: ERROR Failed to regrid\n"
