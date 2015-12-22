@@ -39,15 +39,15 @@ if [ -z "${DATA}" ]; then
 fi # DATA
 
 # Production usage:
-# ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
-# ncremap -v StepTwoO3 -s $DATA/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc -d $DATA/hdf/cam_time.nc -o $DATA/sld/rgr
-# ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr
-# ncremap -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
-# ncremap -x TSurfStd_ct -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -o ${DATA}/sld/rgr
+# ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -O ${DATA}/sld/rgr
+# ncremap -v StepTwoO3 -s $DATA/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc -d $DATA/hdf/cam_time.nc -O $DATA/sld/rgr
+# ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -O ${DATA}/sld/rgr
+# ncremap -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -O ${DATA}/sld/rgr
+# ncremap -x TSurfStd_ct -s ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -O ${DATA}/sld/rgr
 
 # Debugging and Benchmarking:
 # ncremap > ~/sld_nco.txt 2>&1 &
-# ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -o ${DATA}/sld/rgr > ~/sld_nco.txt 2>&1 &
+# ncremap -s AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -i ${DATA}/sld/raw -O ${DATA}/sld/rgr > ~/sld_nco.txt 2>&1 &
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -104,7 +104,7 @@ grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source)
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
     printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (read script for more thorough explanations)\n\n"
-    printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -s src_fl -g grd_fl -i drc_in -o drc_out${fnt_nrm}\n\n"
+    printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -s src_fl -g grd_fl -i drc_in -O drc_out${fnt_nrm}\n\n"
     echo "Command-line options:"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm})"
 #    echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm})"
@@ -117,27 +117,27 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means look in current directory) (default ${fnt_bld}${drc_in}${fnt_nrm})"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm})"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm})"
-    echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm})"
+    echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm})"
+    echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}rgr_fl${fnt_nrm}   Regridded-file (empty copies Source filename) (default ${fnt_bld}${rgr_fl}${fnt_nrm})"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm})"
-    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_fl${fnt_nrm}   Regridded-file (empty copies Source filename) (default ${fnt_bld}${rgr_fl}${fnt_nrm})"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regridding options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm})"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}src_fl${fnt_nrm}   Source file (mandatory) (default ${fnt_bld}${src_fl}${fnt_nrm})"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
     printf "\n"
-    printf "Examples: ${fnt_bld}$spt_nm -s ${src_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -s ${src_fl} -d ${dst_fl} -i ${DATA}/sld/raw -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -a bilinear -s ${src_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -a conserve -s ${src_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -g ${grd_dst_dfl} -o ${drc_out} < ls ${drc_in}/*.1980*nc ${fnt_nrm}\n"
-    printf "          ${fnt_bld}ls ${drc_in}/*.1980*nc | $spt_nm -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -x TSurfStd_ct -s ${DATA}/sld/raw/${src_fl} -g ${grd_dst_dfl} -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -v TSurfAir -s ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -v CloudFrc_A -s ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -s ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -s ${DATA}/hdf/OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5 -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${grd_dst_glb} -o ${drc_out} ${fnt_nrm}\n"
+    printf "Examples: ${fnt_bld}$spt_nm -s ${src_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -s ${src_fl} -d ${dst_fl} -i ${DATA}/sld/raw -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a bilinear -s ${src_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a conserve -s ${src_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -g ${grd_dst_dfl} -O ${drc_out} < ls ${drc_in}/*.1980*nc ${fnt_nrm}\n"
+    printf "          ${fnt_bld}ls ${drc_in}/*.1980*nc | $spt_nm -g ${grd_dst_dfl} -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -x TSurfStd_ct -s ${DATA}/sld/raw/${src_fl} -g ${grd_dst_dfl} -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -v TSurfAir -s ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${grd_dst_glb} -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -v CloudFrc_A -s ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${grd_dst_glb} -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -s ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${grd_dst_glb} -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -s ${DATA}/hdf/OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5 -g ${grd_dst_glb} -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${grd_dst_glb} -O ${drc_out} ${fnt_nrm}\n"
     exit 1
 } # end fnc_usg_prn()
 
@@ -160,7 +160,7 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${@}"
-while getopts :a:D:d:f:g:G:h:i:m:n:o:p:R:r:s:v:x: OPT; do
+while getopts :a:D:d:f:g:G:h:i:m:n:O:o:p:R:s:v:x: OPT; do
     case ${OPT} in
 	a) alg_typ=${OPTARG} ;; # Algorithm
 #	c) caseid=${OPTARG} ;; # CASEID
@@ -173,9 +173,9 @@ while getopts :a:D:d:f:g:G:h:i:m:n:o:p:R:r:s:v:x: OPT; do
 	i) drc_in=${OPTARG} ;; # Input directory
 	m) map_fl=${OPTARG} ;; # Map-file
 	n) nco_usr=${OPTARG} ;; # NCO options
-	o) drc_out=${OPTARG} ;; # Output directory
+	O) drc_out=${OPTARG} ;; # Output directory
+	o) rgr_fl=${OPTARG} ;; # Regridded file
 	p) par_typ=${OPTARG} ;; # Parallelism type
-	r) rgr_fl=${OPTARG} ;; # Regridded file
 	R) rgr_opt=${OPTARG} ;; # Regridding options
 	s) src_fl=${OPTARG} ;; # Source file
 	t) thr_usr=${OPTARG} ;; # Thread number

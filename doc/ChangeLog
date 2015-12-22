@@ -1,8 +1,14 @@
+2015-12-22  Charlie Zender  <zender@uci.edu>
+
+	* Re-assign some ncremap switches to be more heuristic
+
+	* Add ncremap to documentation
+
 2015-12-21  Charlie Zender  <zender@uci.edu>
 
 	* Compare grid spans and interfaces in single-precision (e.g., to 180.0f, 360.0f) to be more error-tolerant
 
-	* ncremap pass through dbgl_lvl >= 3 to ncks, enable user-defined thr_nbr
+	* ncremap pass through dbg_lvl >= 3 to ncks, enable user-defined thr_nbr
 
 2015-12-20  Charlie Zender  <zender@uci.edu>
 

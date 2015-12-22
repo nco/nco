@@ -5,10 +5,21 @@ The netCDF Operators NCO version 4.5.4-beta02 are ready.
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
-Work on NCO 4.5.4 has commenced and will better support eliciting
-latitude/longitude coordinates using the CF "coordinates" convention,
-regridding variables whose horizontal dimensions are not the
-most-rapidly-varying.
+We are pleased to introduce ncremap, a new operator for regridding. 
+ncremap is a shell script that wraps ncks to produce a friendly
+interface to regridding features. Without any external dependencies,
+ncremap applies weights from a pre-exisiting mapfile to a source
+data file to produce a regridded dataset. Source and destination
+datasets may be on any Curvilinear, Rectangular, or Unstructured
+Data (CRUD) grid. When necessary ncremap calls ESMF_RegridWeightGen to
+generate weights and uses those to regrid. ncremap hides the
+complexity of regridding from the user, who can know next-to-nothing
+about regridding.
+
+Work on NCO 4.5.5 has commenced and will better support eliciting
+latitude/longitude coordinates using the CF "coordinates" convention
+and regridding variables whose horizontal dimensions are not the
+most-rapidly-varying, and ncremap support for calling TempestRemap.  
 
 Enjoy,
 Charlie
@@ -16,14 +27,17 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. ncremap: A new netCDF operator for regridding.
-   ncremap is a shell script that wraps ncks to produce a friendlier
-   interface to the regridding. Without any external dependencies,
+   ncremap is a shell script that wraps ncks to produce a friendly
+   interface to regridding features. Without any external dependencies,
    ncremap will apply weights from a pre-exisiting mapfile to a source
    data file to produce a regrided dataset. Source and destination
    datasets may be on any Curvilinear, Rectangular, or Unstructured
    Data (CRUD) grid. ncremap will also use external programs, when
    necessary, to generate weights, and use those to regrid.
    Prequisites for this are ESMF_RegridWeightGen and/or TempestRemap. 
+   ncremap -s src.nc -d dst.nc -o out.nc
+   http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf # AGU Poster
+   http://nco.sf.net/nco.html#ncremap
 
 A. ncks prints XML "_Unsigned" attribute to denote unsigned attribute
    types. Formerly, ncks did not preserve the signedness of attributes.
@@ -59,7 +73,7 @@ A. ncks -V in (at least) versions 4.5.1--4.5.3 could segfault.
    The workaround is not to use -V, solution is to upgrade to 4.5.4. 
    Thanks to Patrick Nichols for reporting the problem.
 
-A. After dimension reduction operations, ncra and ncwa excise the
+B. After dimension reduction operations, ncra and ncwa excise the
    reduced dimensions from the CF "coordinates" attribute, if any.
    Versions 4.4.9--4.5.3 could, under certain circumstances involving
    multiple dimensions, retain extra whitespace in "coordinates".
@@ -127,6 +141,7 @@ B. NOT YET FIXED (netCDF4 library bug)
 
    20150922: Confirmed problem reported by Isabelle Dast, reported to Unidata
    20150924: Unidata confirmed problem
+   20151221: Verified problem still exists in netCDF library
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd

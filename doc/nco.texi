@@ -10878,6 +10878,7 @@ described in any detail in the sections below.
 * ncpdq netCDF Permute Dimensions Quickly::
 * ncra netCDF Record Averager::
 * ncrcat netCDF Record Concatenator::
+* ncremap netCDF Remapper::
 * ncrename netCDF Renamer::
 * ncwa netCDF Weighted Averager::
 @end menu
@@ -18383,7 +18384,7 @@ weighted mean statistics.
 @html
 <a name="ncrcat"></a> <!-- http://nco.sf.net/nco.html#ncrcat -->
 @end html
-@node ncrcat netCDF Record Concatenator, ncrename netCDF Renamer, ncra netCDF Record Averager, Reference Manual
+@node ncrcat netCDF Record Concatenator, ncremap netCDF Remapper, ncra netCDF Record Averager, Reference Manual
 @section @command{ncrcat} netCDF Record Concatenator
 @cindex concatenation
 @cindex record concatenation
@@ -18515,9 +18516,60 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 
 @page
 @html
+<a name="ncremap"></a> <!-- http://nco.sf.net/nco.html#ncremap -->
+@end html
+@node ncremap netCDF Remapper, ncrename netCDF Renamer, ncrcat netCDF Record Concatenator, Reference Manual
+@section @command{ncremap} netCDF Remapper
+@cindex remap
+@cindex regrid
+@findex ncremap
+
+@noindent
+SYNTAX
+@example
+ncremap [-a @var{alg_typ}] [-D @var{dbg}] [-d @var{dst_fl}] 
+[-G @var{grd_sng}] [-g @var{grd_dst}] [-i @var{drc_in}]
+[-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
+[-R @var{rgr_opt}] [-s @var{src_fl}]
+[-v @var{var}[,@dots{}]] [-x @var{xtn_var}[,@dots{}]] 
+@end example
+
+@noindent
+DESCRIPTION
+
+@command{ncremap} remaps the data in @var{src_fl} to the grid specified
+by (in descending order of precedence) @var{map_fl}, @var{grd_dst}, or
+@var{dst_fl} and stores the result in @var{output-file}.
+
+@noindent
+@html
+<a name="xmp_ncrcat"></a> <!-- http://nco.sf.net/nco.html#xmp_ncrcat -->
+@end html
+EXAMPLES
+
+Regrid file @file{src.nc} to the spatial grid in file @file{dst.nc}:
+@example
+ncremap -s src.nc -d dst.nc -o out.nc
+ncremap -s src.nc -d dst.nc -O regrid
+ncremap -s src.nc -d dst.nc -O regrid -o out.nc
+ncremap -s src.nc -d dst.nc -o regrid/out.nc
+@end example
+@noindent
+@acronym{NCO} infers the destination spatial grid from @file{dst.nc} by
+reading its coordinate variables and @acronym{CF} attributes.
+In the first example, @command{ncremap} places the output in
+@file{out.nc}.
+In the second example, @command{ncremap} places the output in the
+specified output directory, @file{regrid}.  
+Since no output filename is provided, the output file will be named
+@file{regrid/src.nc}.
+In the third and fourth examples, the output file is @file{regrid/out.nc}.
+
+@page
+@html
 <a name="ncrename"></a> <!-- http://nco.sf.net/nco.html#ncrename -->
 @end html
-@node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncrcat netCDF Record Concatenator, Reference Manual
+@node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncremap netCDF Remapper, Reference Manual
 @section @command{ncrename} netCDF Renamer
 @cindex renaming variables
 @cindex renaming groups
