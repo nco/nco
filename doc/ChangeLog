@@ -1,5 +1,9 @@
 2015-12-22  Charlie Zender  <zender@uci.edu>
 
+	* Backward-compatible definitions of new tokens in netCDF 4.4.0 including NC_FORMATX_* tokens and NC_FORMAT_64BIT_[DATA/OFFSET] for CDF5
+
+	* Add XLAT_M, XLONG_M coordinates to regridder database of usual suspects
+
 	* Re-assign some ncremap switches to be more heuristic
 
 	* Add ncremap to documentation
