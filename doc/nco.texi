@@ -18541,6 +18541,38 @@ DESCRIPTION
 by (in descending order of precedence) @var{map_fl}, @var{grd_dst}, or
 @var{dst_fl} and stores the result in @var{output-file}.
 
+@command{ncremap} was introduced to @acronym{NCO} in version 4.5.4
+(December, 2015). 
+As the newest operator, its interface is still evolving to respond to
+user needs, feedback, and new features.
+To achieve its full functionality, @command{ncremap} sometimes calls
+external programs to generate regridding weights. 
+These programs require separate installation. 
+
+@cindex @command{ncremap}
+@cindex @command{ESMF_RegridWeightGen}
+@cindex @acronym{ERWG}
+@cindex @acronym{NCL}
+@command{ncremap} is a script, not a compiled binary.
+@command{ncremap} is a shell script that wraps @command{ncks} and 
+external executables to produce a friendly interface to regridding
+features. 
+Without any external dependencies, @command{ncremap} will apply weights
+from a pre-exisiting mapfile to a source data file to produce a regrided
+dataset. 
+Source and destination datasets may be on any Curvilinear, Rectangular,
+or Unstructured Data (@acronym{CRUD}) grid. 
+@command{ncremap} will also, when necessary, use the external program
+@command{ESMF_RegridWeightGen} (@acronym{ERWG}) to generate weights, 
+and use those weights to regrid. 
+@acronym{ERWG} is distributed in binary format with @acronym{NCL}, which
+many (most?) users already have on their system. 
+Or @acronym{ERWG} may be installed from source:
+@url{https://earthsystemcog.org/projects/esmf/download_last_public}.
+@command{ncremap} can also utilize (though not yet generate)
+TempestRemap mapfiles:
+@url{https://github.com/ClimateGlobalChange/tempestremap}.
+
 @noindent
 @html
 <a name="xmp_ncrcat"></a> <!-- http://nco.sf.net/nco.html#xmp_ncrcat -->

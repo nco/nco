@@ -32,9 +32,16 @@ A. ncremap: A new netCDF operator for regridding.
    ncremap will apply weights from a pre-exisiting mapfile to a source
    data file to produce a regrided dataset. Source and destination
    datasets may be on any Curvilinear, Rectangular, or Unstructured
-   Data (CRUD) grid. ncremap will also use external programs, when
-   necessary, to generate weights, and use those to regrid.
-   Prequisites for this are ESMF_RegridWeightGen and/or TempestRemap. 
+   Data (CRUD) grid. ncremap will also, when necessary, use the
+   external program ESMF_RegridWeightGen (ERWG) to generate weights,
+   and use those to regrid. ERWG is distributed in binary format with
+   NCL, which many (most?) users already have on their system.
+   Or ERWG may be installed from source:
+   https://earthsystemcog.org/projects/esmf/download_last_public 
+   ncremap can also utilize (though not yet generate) TempestRemap
+   mapfiles:
+   https://github.com/ClimateGlobalChange/tempestremap
+   Examples:
    ncremap -s src.nc -d dst.nc -o out.nc
    http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf # AGU Poster
    http://nco.sf.net/nco.html#ncremap
