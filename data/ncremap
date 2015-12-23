@@ -11,6 +11,9 @@
 # Prerequisites: Bash, NCO, ESMF_RegridWeightGen
 # Script could use other shells, e.g., dash (Debian default) after rewriting function definition and looping constructs
 
+# Autoconf/automake instructions for scripts:
+# https://www.gnu.org/software/automake/manual/html_node/Scripts.html
+
 # Script runs in one of two modes, free-will or pre-destination:
 # A. Free-will mode infers source grid from input file, creates mapfile using that source plus supplied destination grid, applies mapfile, (by default) deletes intermediate source grid and mapfile, proceeds to next input file
 # B. Pre-Destination mode applies supplied mapfile to all input files

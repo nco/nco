@@ -1,5 +1,7 @@
 2015-12-23  Charlie Zender  <zender@uci.edu>
 
+	* Add ncremap script to bin directory in Makefile.am, bld/Makefile
+
 	* Simplify broken ncpdq handling of dimension reversal list. Change dmn_rvr_rdr from static to dynamic array.
 	Prevent writing past end of dmn_rvr_rdr. Index dmn_rvr_rdr same as dmn_rdr. Fixes Feng Ding's command:
 	ncpdq -O -a StdPressureLev,GeoTrack,GeoXTrack ${DATA}/hdf/AIRS.2014.10.01.202.L2.RetStd.v6.0.11.0.G14275134307.hdf.nc ~/foo.nc

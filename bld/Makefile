@@ -521,6 +521,7 @@ CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 # Variables having to do with binary executables created by module
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 MDL_BIN_SYM_LNK := ncdiff ncea nces ncrcat # Symbolic links
+MDL_BIN_SPT := ncremap # Scripts
 ifeq (${MPI},Y)
 # MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
  MDL_MPI_TRG := # MPI binary targets
@@ -533,7 +534,7 @@ ifeq (${MPI},Y)
  MDL_BIN_TRG += ${MDL_MPI_TRG} # NCO binary targets
  MDL_BIN_SYM_LNK += ${MDL_MPI_SYM_LNK} # Symbolic links
 endif # endif MPI
-MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
+MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SPT} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
 
 # Variables having to do with header files created by module
@@ -1969,9 +1970,9 @@ src_cln:
 	rm -f ${MDL_NCAP}
 # Targets in /usr/local
 sys: ${MDL_BIN_TRG}
-	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} ncap2 /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea nces ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea;  sudo ln -s -f ncra nces; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ${HOME}/nco/src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
+	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} ${MDL_BIN_SPT} ncap2 /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea nces ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra nces; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ${HOME}/nco/src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
 sys_cln:
-	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG}
+	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG} ${MDL_BIN_SPT} ${MDL_BIN_SYM_LNK}
 
 # Housekeeping
 clean: cln
@@ -2018,6 +2019,9 @@ dbg:
 	@printf "LIB_NCAR = ${LIB_NCAR}\n"
 	@printf "LINUX_CC = ${LINUX_CC}\n"
 	@printf "LINUX_CXX = ${LINUX_CXX}\n"
+	@printf "MDL_BIN = ${MDL_BIN}\n"
+	@printf "MDL_BIN_SPT = ${MDL_BIN_SPT}\n"
+	@printf "MDL_BIN_SYM_LNK = ${MDL_BIN_SYM_LNK}\n"
 	@printf "MDL_BIN_TRG = ${MDL_BIN_TRG}\n"
 	@printf "MDL_DPN = ${MDL_DPN}\n"
 	@printf "MDL_MAN = ${MDL_MAN}\n"
