@@ -91,7 +91,6 @@ main(int argc,char **argv)
   aed_sct *aed_lst_scl_fct=NULL_CEWI;
 
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
-  char **dmn_rdr_lst_in_rvr=NULL_CEWI; /* Option a (same list, keep the '-' )*/
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
   char **gaa_arg=NULL; /* [sng] Global attribute arguments */
@@ -185,7 +184,7 @@ main(int argc,char **argv)
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
-  nco_bool dmn_rvr_rdr[NC_MAX_DIMS]; /* [flg] Reverse dimensions */
+  nco_bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimensions */
   nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
@@ -452,7 +451,6 @@ main(int argc,char **argv)
     case 'a': /* Re-order dimensions */
       flg_dmn_prc_usr_spc=True;
       dmn_rdr_lst_in=nco_lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
-      dmn_rdr_lst_in_rvr=nco_lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
       dmn_rdr_nbr=dmn_rdr_nbr_in;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
@@ -603,45 +601,17 @@ main(int argc,char **argv)
 
   /* Create reversed dimension list */
   if(dmn_rdr_nbr_in > 0){
-
-    int dmn_rdr_nbr_trv=0;     /* [nbr] Number of dimensions in all variables to extract that match -a names  */
-    int idx_dmn_rdr_nbr_trv=0; /* [nbr] Index to number of dimensions in all variables to extract that match -a names  */
-
-    for(int idx_dmn=0;idx_dmn<NC_MAX_DIMS;idx_dmn++) dmn_rvr_rdr[idx_dmn]=-1; 
-
-    for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-      trv_sct var_trv=trv_tbl->lst[idx_tbl];
-
-      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
-
-        for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-
-          /* Loop input -a names */
-          for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
-
-            /* Is dimension to be reversed? i.e., does it have a '-'? */
-            if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
-              optarg_lcl=(char *)strdup(dmn_rdr_lst_in[idx_rdr]+1L);
-	      if(!strcmp(optarg_lcl,var_trv.var_dmn[idx_dmn].dmn_nm)) dmn_rdr_nbr_trv++;
-              optarg_lcl=(char *)nco_free(optarg_lcl); 
-              dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=True;
-	    }else{
-              dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=False;
-            } /* !flg_is_rvr */  
-            idx_dmn_rdr_nbr_trv++;
-
-          } /* !idx_rdr */
-        } /* !idx_dmn */
-      } /* !flg_xtr */
-    } /* !idx_tbl */
-
-    /* Strip all '-' */
+    dmn_rvr_rdr=(nco_bool *)nco_malloc(dmn_rdr_nbr_in*sizeof(nco_bool));
+    /* Is dimension to be reversed? i.e., does string begin with minus-sign '-'? */
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
       if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
-        /* Copy string to new memory one past negative sign to avoid losing byte */
+	dmn_rvr_rdr[idx_rdr]=True;
+        /* Strip-out '-': Copy string to new memory one past negative sign to avoid losing byte */
         optarg_lcl=dmn_rdr_lst_in[idx_rdr];
         dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1L);
         optarg_lcl=(char *)nco_free(optarg_lcl);
+      }else{
+	dmn_rvr_rdr[idx_rdr]=False;
       } /* !'-' */
     } /* !idx_rdr */
   } /* !dmn_rdr_nbr_in */
@@ -822,9 +792,8 @@ main(int argc,char **argv)
         /* Change dimensionionality of values */
         (void)nco_var_dmn_rdr_val_trv(var_prc[idx],var_prc_out[idx],trv_tbl);
 
-        /* Re-ordering required two value buffers, time to free input buffer */
+        /* Re-ordering required two value buffers, time to free() input buffer */
         var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-
       } /* IS_REORDER */
 
       /* Edit group name for output */
@@ -946,10 +915,8 @@ main(int argc,char **argv)
   if(flg_cln){
     /* ncpdq-specific memory cleanup */
     if(dmn_rdr_nbr > 0){
-      if(dmn_rdr_nbr_in > 0){
-        dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
-        dmn_rdr_lst_in_rvr=nco_sng_lst_free(dmn_rdr_lst_in_rvr,dmn_rdr_nbr_in);
-      } /* endif */
+      if(dmn_rdr_nbr_in > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
+      dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
       /* Free dimension list pointers */
       dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
       /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */
