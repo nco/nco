@@ -1585,10 +1585,10 @@ CXXCPPFLAGS := ${CPPFLAGS} -I${NCO_CXX_SRC_DIR}
 libnco := ${MY_LIB_DIR}/libnco
 
 # Default targets
-all: dir lib ${MDL_BIN_TRG} data
-non_ncap: dir lib $(filter-out ncap,${MDL_BIN_TRG}) data
+all: dir lib ${MDL_BIN_TRG} ${MDL_BIN_SPT} data
+non_ncap: dir lib $(filter-out ncap,${MDL_BIN_TRG}) ${MDL_BIN_SPT} data
 # .PHONY tells make to remake the following non-file targets 
-.PHONY: all cln dst_cln dbg ${MDL_BIN_TRG}
+.PHONY: all cln dst_cln dbg ${MDL_BIN_TRG} ${MDL_BIN_SPT}
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
 # Define suffixes that matter
@@ -1691,6 +1691,9 @@ ${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o lib
 	cd ${MY_BIN_DIR}; rm -f ncea; ln -s -f ncra ncea
 	cd ${MY_BIN_DIR}; rm -f nces; ln -s -f ncra nces
 	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -s -f ncra ncrcat
+ncremap:   ${MY_BIN_DIR}/ncremap
+${MY_BIN_DIR}/ncremap:	${MY_DAT_DIR}/ncremap
+	/bin/cp -f ${MY_DAT_DIR}/ncremap ${MY_BIN_DIR}
 ncrename:   ${MY_BIN_DIR}/ncrename
 ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
 	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
@@ -1698,12 +1701,12 @@ ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
 ncwa:   ${MY_BIN_DIR}/ncwa
 ${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
 ifeq (${MSVC},TRUE)
-	${CC} -o $@${BNR_SFX} $<  ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 else
-	${CC} -o $@${BNR_SFX} $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
 endif
 	chmod 755 $@${BNR_SFX}
-bin: ${MDL_BIN_TRG}
+bin: ${MDL_BIN_TRG} ${MDL_BIN_SPT}
 binclean: bin_cln
 bin_cln: 
 	rm -f ${MDL_BIN}
@@ -1969,7 +1972,7 @@ src: ${MDL_NCAP}
 src_cln:
 	rm -f ${MDL_NCAP}
 # Targets in /usr/local
-sys: ${MDL_BIN_TRG}
+sys: ${MDL_BIN_TRG} ${MDL_BIN_SPT}
 	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} ${MDL_BIN_SPT} ncap2 /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea nces ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra nces; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ${HOME}/nco/src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
 sys_cln:
 	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG} ${MDL_BIN_SPT} ${MDL_BIN_SYM_LNK}
