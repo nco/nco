@@ -1,12 +1,12 @@
 .\" $Header$ -*-nroff-*-
-.\" Purpose: ROFF man page for ncrename
+.\" Purpose: ROFF man page for ncremap
 .\" Usage:
-.\" nroff -man ~/nco/man/ncrename.1 | less
-.TH NCRENAME 1
+.\" nroff -man ~/nco/man/ncremap.1 | less
+.TH NCREMAP 1
 .SH NAME
-ncrename \- netCDF Renamer
+ncremap \- netCDF Renamer
 .SH SYNTAX
-ncrename [\-a 
+ncremap [\-a 
 .IR old_name,new_name ]
 [\-a
 \ .\|.\|.\ ] [\-D] 
@@ -30,7 +30,7 @@ ncrename [\-a
 .IR output-file ]
 .SH DESCRIPTION
 .PP
-.B ncrename
+.B ncremap
 renames dimensions, variables, and attributes in a
 netCDF file.  
 Each object that has a name in the list of old names is renamed using
@@ -45,17 +45,17 @@ Thus, if an old name is specified without the the
 prefix and is
 not present in 
 .IR input-file ,
-.B ncrename
+.B ncremap
 will abort. 
 .PP
-.B ncrename
+.B ncremap
 is the exception to the normal rules that the user will
 be interactively prompted before an existing file is changed, and that a
 temporary copy of an output file is constructed during the operation.
 If only 
 .I input-file
 is specified, then 
-.B ncrename
+.B ncremap
 will change
 the names of the 
 .I input-file
@@ -69,7 +69,7 @@ The
 can easily be changed back to 
 .I old_name
 by using 
-.B ncrename
+.B ncremap
 one more time.
 .PP
 Note that renaming a dimension to the name of a dependent variable can
@@ -141,7 +141,7 @@ This option may be specified more than once.
 .TP
 .B \-i 
 Interactive. 
-.B ncrename
+.B ncremap
 will prompt for confirmation before overwriting an
 existing file. 
 .SH EXAMPLES
@@ -159,22 +159,22 @@ in netCDF
 In this case 
 .B p
 must exist in the input file (or 
-.B ncrename
+.B ncremap
 will
 abort), but the presence of 
 .B t
 is optional:
 .RS
-ncrename \-v p,pressure \-v .t,temperature in.nc
+ncremap \-v p,pressure \-v .t,temperature in.nc
 .RE
-.B ncrename
+.B ncremap
 does not automatically attach dimensions to variables of
 the same name.
 If you want to rename a coordinate variable so that it remains a
 coordinate variable, you must separately rename both the dimension and
 the variable: 
 .RS
-ncrename \-d lon,longitude \-v lon,longitude in.nc
+ncremap \-d lon,longitude \-v lon,longitude in.nc
 .RE
 .PP
 Create netCDF 
@@ -191,7 +191,7 @@ which possess it) and the global attribute
 is changed to
 .BR Congo :
 .RS
-ncrename \-a _FillValue,missing_value \-a Zaire,Congo in.nc out.nc 
+ncremap \-a _FillValue,missing_value \-a Zaire,Congo in.nc out.nc 
 .RE
 
 .\" NB: Append man_end.txt here

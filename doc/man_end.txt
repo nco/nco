@@ -57,6 +57,7 @@ TeX-intensive portions.
 .BR ncpdq (1), 
 .BR ncra (1), 
 .BR ncrcat (1), 
+.BR ncremap (1), 
 .BR ncrename (1), 
 .BR ncwa (1) 
 
