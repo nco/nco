@@ -4242,7 +4242,7 @@ if(0){
 # Test MSA running averages
 # ncra -O -C -v one_dmn_rec_var -d time,0,0 -d time,1,1 ~/nco/data/in.nc ~/foo.nc
 # ncks -C -H -s '%g' -v one_dmn_rec_var ~/foo.nc
-    $dsc_sng="Test MSA running average";
+    $dsc_sng="Test MSA running average (expect failure TODO nco1126)";
     $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -C -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="1.5";

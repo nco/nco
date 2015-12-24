@@ -1,5 +1,7 @@
 2015-12-23  Charlie Zender  <zender@uci.edu>
 
+	* Note ncra test #39 is expected to fail due to TODO nco1126
+
 	* Add ncremap script to bin directory in data/Makefile.am, bld/Makefile, man/Makefile.am, man/man1
 
 	* Simplify broken ncpdq handling of dimension reversal list. Change dmn_rvr_rdr from static to dynamic array.
