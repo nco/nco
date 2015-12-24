@@ -1,5 +1,9 @@
 2015-12-23  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.4-beta03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.4-beta03 final changes';git push
+	git tag -a 4.5.4-beta03 -m 'Version 4.5.4-beta03 new features: ncremap in autotools;ncpdq bug;netCDF 4.4.0 tokens';git push --tags
+
 	* Finish minimal ncremap.1 man page
 
 	* Note ncra test #39 is expected to fail due to TODO nco1126
