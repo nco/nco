@@ -6,193 +6,51 @@
 .SH NAME
 ncremap \- netCDF Renamer
 .SH SYNTAX
-ncremap [\-a 
-.IR old_name,new_name ]
+ncremap
+\-s 
+.IR src_fl
+\-d 
+.IR dst_fl
 [\-a
-\ .\|.\|.\ ] [\-D] 
-[\-d 
-.IR old_name,new_name ]
-[\-d
-\ .\|.\|.\ ] [\-g 
-.IR old_name,new_name ] 
-[\-g \ .\|.\|.\ ]
-[\-\-glb
-.IR att_name=
-.IR att_val ]]
-[\-h] [\-\-hdr_pad
-.IR sz ]
-[\-l path] [\-O] [\-p path]
-[\-R] [\-r] [\-\-ram_all] [\-v 
-.IR old_name,new_name ]
-[\-v \ .\|.\|.\ ]
-.I input-file
-[
-.IR output-file ]
+.IR alg_typ ]
+[\-D
+.IR dbg_lvl ] 
+[\-G
+.IR grd_sng ] 
+[\-g
+.IR grd_fl ] 
+[\-i
+.IR drc_in ] 
+[\-m
+.IR map_fl ] 
+[\-n
+.IR nco_usr ] 
+[\-O
+.IR drc_out ] 
+[\-o
+.IR output-file ] 
+[\-R
+.IR rgr_opt ] 
+[\-t
+.IR thr_nbr ] 
+[\-v
+.IR var_lst ] 
+[\-x
+.IR xtn_var ] 
+
 .SH DESCRIPTION
 .PP
 .B ncremap
-renames dimensions, variables, and attributes in a
-netCDF file.  
-Each object that has a name in the list of old names is renamed using
-the corresponding name in the list of new names. 
-All the new names must be unique. 
-Every old name must exist in the input file, unless the name is preceded
-by the character 
-.BR . .
-The validity of the old names is not checked prior to the renaming. 
-Thus, if an old name is specified without the the 
-.B .
-prefix and is
-not present in 
-.IR input-file ,
-.B ncremap
-will abort. 
-.PP
-.B ncremap
-is the exception to the normal rules that the user will
-be interactively prompted before an existing file is changed, and that a
-temporary copy of an output file is constructed during the operation.
-If only 
+remaps the data in
 .I input-file
-is specified, then 
-.B ncremap
-will change
-the names of the 
-.I input-file
-in place without prompting and without
-creating a temporary copy of 
-.BR input-file .
-This is because the renaming operation is considered reversible if the
-user makes a mistake.
-The 
-.I new_name
-can easily be changed back to 
-.I old_name
-by using 
-.B ncremap
-one more time.
-.PP
-Note that renaming a dimension to the name of a dependent variable can
-be used to invert the relationship between an independent coordinate
-variable and a dependent variable. 
-In this case, the named dependent variable must be one-dimensional and
-should have no missing values. 
-Such a variable will become a coordinate variable.
-.PP
-According to the netCDF User's Guide, renaming properties in
-netCDF files does not incur the penalty of recopying the entire file
-when the 
-.I new_name
-is shorter than the 
-.IR old_name .
-.SH OPTIONS
-.PP
-.TP
-.B \-a 
-.IR old_name ,
-.I "new_name"
-Attribute renaming. 
-The old and new names of the attribute are specified by the associated
-.I old_name
-and 
-.I new_name
-values. 
-Global attributes are treated no differently than variable attributes.
-This option may be specified more than once.
-You cannot change the attribute name for one particular variable (unless
-it is uniquely named); all occurrences of the attribute of a given name
-will be renamed. 
-This is considered an oversight and will be addressed in a future
-version of NCO.
-.PP
-.TP
-.B \-d 
-.IR old_name ,
-.I "new_name"
-Dimension renaming. 
-The old and new names of the dimension are specified by the associated
-.I old_name
-and 
-.I new_name
-values. 
-This option may be specified more than once.
-.TP
-.B \-g 
-.IR old_name ,
-.I "new_name"
-Group renaming. 
-The old and new names of the group are specified by the associated
-.I old_name
-and 
-.I new_name
-values. 
-This option may be specified more than once.
-.TP
-.B \-v 
-.IR old_name ,
-.I "new_name"
-Variable renaming. 
-The old and new names of the variable are specified by the associated
-.I old_name
-and 
-.I new_name
-values. 
-This option may be specified more than once.
-.TP
-.B \-i 
-Interactive. 
-.B ncremap
-will prompt for confirmation before overwriting an
-existing file. 
-.SH EXAMPLES
-.PP
-Rename the variable 
-.B p
-to 
-.B pressure
-and 
-.B t
-to
-.B temperature
-in netCDF 
-.BR in.nc .
-In this case 
-.B p
-must exist in the input file (or 
-.B ncremap
-will
-abort), but the presence of 
-.B t
-is optional:
-.RS
-ncremap \-v p,pressure \-v .t,temperature in.nc
-.RE
-.B ncremap
-does not automatically attach dimensions to variables of
-the same name.
-If you want to rename a coordinate variable so that it remains a
-coordinate variable, you must separately rename both the dimension and
-the variable: 
-.RS
-ncremap \-d lon,longitude \-v lon,longitude in.nc
-.RE
-.PP
-Create netCDF 
-.B out.nc
-identical to 
-.B in.nc
-except the attribute
-.B _FillValue
-is changed to 
-.B missing_value
-(in all variables
-which possess it) and the global attribute 
-.B Zaire
-is changed to
-.BR Congo :
-.RS
-ncremap \-a _FillValue,missing_value \-a Zaire,Congo in.nc out.nc 
-.RE
+to the grid specified by (in descending order of precedence)
+.I map_fl ,
+.I grd_dst,
+or 
+.I dst_fl
+and stores the result in
+.I output-file .
+
 
 .\" NB: Append man_end.txt here
 .\" $Header$ -*-nroff-*-
