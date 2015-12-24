@@ -3307,8 +3307,8 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #NEW NCO 4.3.2patch
 #ncpdq #41
 # same as ncpdq #30
-#ncpdq -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 in_grp_3.nc ~/foo.nc
-#ncks -g g19g4 -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 ~/foo.nc
+# ncpdq -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 in_grp_3.nc ~/foo.nc
+# ncks -g g19g4 -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 ~/foo.nc
 #$tst_cmd[2]="7";
 # same as #30 but with group
    $dsc_sng="(Groups) Unpack 1D variable with MSA -C P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6";
