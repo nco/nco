@@ -1,21 +1,45 @@
 #!/bin/bash
 
-# Purpose: NCO Regridding operator/script
-# Regrid all input files (possibly on different grids) to a single specified output grid
+# Purpose: Regrid (subsets of) variables from netCDF files
+# Regrids all input files (possibly on different grids) to a single specified output grid
 
-# Author: C. Zender
-# Created: 20150909
+# Copyright (C) 2015-2016 Charlie Zender
+# This file is part of NCO, the netCDF Operators. NCO is free software.
+# You may redistribute and/or modify NCO under the terms of the 
+# GNU General Public License (GPL) Version 3.
+
+# As a special exception to the terms of the GPL, you are permitted 
+# to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
+# libraries and to distribute the resulting executables under the terms 
+# of the GPL, but in addition obeying the extra stipulations of the 
+# HDF, netCDF, OPeNDAP, and UDUnits licenses.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+# See the GNU General Public License for more details.
+
+# The original author of this software, Charlie Zender, seeks to improve
+# it with your suggestions, contributions, bug-reports, and patches.
+# Please contact the NCO project at http://nco.sf.net or write to
+# Charlie Zender
+# Department of Earth System Science
+# University of California, Irvine
+# Irvine, CA 92697-3100
 
 # Source: https://github.com/nco/nco/tree/master/data/ncremap
 
 # Prerequisites: Bash, NCO, ESMF_RegridWeightGen
 # Script could use other shells, e.g., dash (Debian default) after rewriting function definition and looping constructs
 
-# Script runs in one of two modes, free-will or pre-destination:
-# A. Free-will mode infers source grid from input file, creates mapfile using that source plus supplied destination grid, applies mapfile, (by default) deletes intermediate source grid and mapfile, proceeds to next input file
-# B. Pre-Destination mode applies supplied mapfile to all input files
-# Use free-will mode to process Swath-Like-Data (SLD) where each input may be a granule on a new grid, yet all inputs are to be regridded to the same output grid
-# Use pre-destination mode to post-process models or analyses where all files are converted from the same source grid to the same destination grid
+# Script runs in one of four modes:
+# 1. Free-will: Infer source and destination grids to generate mapfile, then regrid
+# 2. Old Grid: Use known-good destination grid to generate mapfile then regrid
+# 3. New Grid: Generate source-grid from ncks parameter string
+# 4. Pre-Destination: Apply supplied mapfile to all input files
+# By default, ncremap deletes any intermediate grids and mapfile that it generates
+# Use Free-Will, Old-Grid, or New-Grid mode to process Swath-Like-Data (SLD) where each input may be a granule on a new grid, yet all inputs are to be regridded to the same output grid
+# Use Pre-Destination mode to post-process models or analyses where all files are converted from the same source grid to the same destination grid so the mapfile can be pre-generated and never change
 
 # Additional Documentation:
 
@@ -103,7 +127,7 @@ grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source)
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
-    printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (read script for more thorough explanations)\n\n"
+    printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (more at http://nco.sf.net/nco.html#ncremap)\n\n"
     printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -s src_fl -g grd_fl -i drc_in -O drc_out${fnt_nrm}\n\n"
     echo "Command-line options:"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm})"
