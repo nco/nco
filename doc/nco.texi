@@ -118,7 +118,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.4-beta03
 @set copyright-years 1995--2015
 @set update-year 2015
-@set update-date 16 December 2015
+@set update-date 24 December 2015
 @set update-month December 2015
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9365,10 +9365,9 @@ $$
 Thus the minimum and maximum absolute values are determined after any weights are applied.
 The mean absolute value of~$\xxx$ (@code{-y mebs}) is 
 $$
-\bar \xxx_{\jjj} = \left( {\sum_{\idx=1}^{\idx=\lmnnbr}
+\bar \xxx_{\jjj} = {\sum_{\idx=1}^{\idx=\lmnnbr}
 \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx} |\xxx_{\idx}| \over
 \sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx}} 
-\right)^{2}    
 $$
 
 The square of the mean value of~$\xxx$ (@code{-y sqravg}) is 
@@ -18545,15 +18544,14 @@ by (in descending order of precedence) @var{map_fl}, @var{grd_dst}, or
 (December, 2015). 
 As the newest operator, its interface is still evolving to respond to
 user needs, feedback, and new features.
-To achieve its full functionality, @command{ncremap} sometimes calls
-external programs to generate regridding weights. 
-These programs require separate installation. 
 
 @cindex @command{ncremap}
 @cindex @command{ESMF_RegridWeightGen}
 @cindex @acronym{ERWG}
+@cindex TempestRemap
 @cindex @acronym{NCL}
-@command{ncremap} is a script, not a compiled binary.
+Unlike the rest of @acronym{NCO}, @command{ncremap} is a script, not a
+compiled binary. 
 @command{ncremap} is a shell script that wraps @command{ncks} and 
 external executables to produce a friendly interface to regridding
 features. 
@@ -18570,8 +18568,74 @@ many (most?) users already have on their system.
 Or @acronym{ERWG} may be installed from source:
 @url{https://earthsystemcog.org/projects/esmf/download_last_public}.
 @command{ncremap} can also utilize (though not yet generate)
-TempestRemap mapfiles:
+mapfiles created by TempestRemap,
 @url{https://github.com/ClimateGlobalChange/tempestremap}.
+
+@unnumberedsubsec Options specific to @command{ncremap}
+
+The following summarizes features unique to @command{ncremap}.  
+Features common to many operators are described in 
+@ref{Shared features}. 
+
+@table @samp
+
+@html
+<a name="alg_typ"></a> <!-- http://nco.sf.net/nco.html#alg_typ -->
+@end html
+@cindex @code{-a @var{alg_typ}}
+@item -a @var{alg_typ}
+Specifies the interpolation algorithm for weight-generation for use by
+@command{ESMF_RegridWeightGen}.
+The @var{alg_typ} argument must be one of @acronym{ERWG}'s five
+interpolation algorithms: 
+@code{bilinear} (default, acceptable abbreviations are @code{bln}), 
+@code{conserve} (or @code{conservative} or @code{cns}), 
+@code{nearestdtos} (or @code{nds} or @code{dtos}), 
+@code{neareststod} (or @code{nds} or @code{stod}), 
+and @code{patch} (or @code{pch} or @code{ptc}). 
+See @acronym{ERWG} documentation
+@uref{http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03020000000000000000, here}
+for detailed descriptions of each algorithm. 
+
+@html
+<a name="dst_fl"></a> <!-- http://nco.sf.net/nco.html#dst_fl -->
+@end html
+@cindex @code{-d @var{dst_fl}}
+@item -d @var{dst_fl}
+Specifies a file containing data on the destination grid.
+Currently @var{dst_fl} must be a data file (not a gridfile,
+@acronym{SCRIP} or otherwise) from which @acronym{NCO} can
+infer the destination grid. 
+The more coordinate and boundary information and metadata 
+the better @acronym{NCO} will do at inferring the grid.
+If @var{dst_fl} has only cell-center coordinates (and no edges),
+then @acronym{NCO} guess at or interpolate the edges.
+If @var{dst_fl} has cell boundaries then @acronym{NCO} will use those.
+@acronym{NCO} only reads coordinate and grid data and metadata from
+@var{dst_fl}. 
+@var{dst_fl} is not modified, and may have read-only permissions.
+
+@html
+<a name="src_fl"></a> <!-- http://nco.sf.net/nco.html#src_fl -->
+@end html
+@cindex @code{-s @var{src_fl}}
+@item -s @var{src_fl}
+Specifies the file containing data to be remapped.
+These data are assumed to be on the source grid.
+Currently @var{src_fl} must be a data file (not a gridfile,
+@acronym{SCRIP} or otherwise).
+When provided with the optional @var{map_fl}, @command{ncremap} 
+only reads data from @var{src_fl} in order to regrid it.
+Otherwise it must infer the source grid from @var{src_fl}, and so
+must read coordinate and metatdata information from @var{src_fl}.
+In this case the more coordinate and boundary information and metadata  
+the better @acronym{NCO} will do at inferring the source grid.
+If @var{src_fl} has only cell-center coordinates (and no edges),
+then @acronym{NCO} guess at or interpolate the edges.
+If @var{src_fl} has cell boundaries then @acronym{NCO} will use those. 
+@var{src_fl} is not modified, and may have read-only permissions.
+
+@end table
 
 @noindent
 @html

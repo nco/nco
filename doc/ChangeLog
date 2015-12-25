@@ -1,3 +1,9 @@
+2015-12-24  Charlie Zender  <zender@uci.edu>
+
+	* Improve ncremap documentation in nco.texi
+
+	* Fix mebs formula in nco.texi
+
 2015-12-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.4-beta03 release procedure:
