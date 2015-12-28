@@ -3449,14 +3449,16 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      spherical zone = area of spherical segment excluding bases
      spherical quadrangle = area of intersection of spherical zone and lune (i.e., area of 
 
+     bearing = angle from true north
      geodesic = shortest path between points on a surface
      great circle = orthodrome = "straight path" = geodesic of the sphere
      convergency = difference (in azimuth?) between great circle tracks at two different positions
      conversion angle = angle between geodesic and rhumb line 
-     rhumb line = loxodrome = "oblique path" = line of constant azimuth
+     rhumb line = loxodrome = "oblique (or slanted) path" = line of constant azimuth
      
-     Formulae (javascript):
-     http://www.movable-type.co.uk/scripts/latlong.html
+     Formulae:
+     http://www.movable-type.co.uk/scripts/latlong.html # On-line Javascript implementation
+     http://williams.best.vwh.net/avform.htm
 
      ACME:
      https://acme-svn2.ornl.gov/acme-repo/acme/mapping/grids
