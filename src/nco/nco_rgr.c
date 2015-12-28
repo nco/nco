@@ -3447,6 +3447,16 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      spherical sector = volume subtended by lat1
      spherical wedge = ungula = volume subtended by lon2-lon1
      spherical zone = area of spherical segment excluding bases
+     spherical quadrangle = area of intersection of spherical zone and lune (i.e., area of 
+
+     geodesic = shortest path between points on a surface
+     great circle = orthodrome = "straight path" = geodesic of the sphere
+     convergency = difference (in azimuth?) between great circle tracks at two different positions
+     conversion angle = angle between geodesic and rhumb line 
+     rhumb line = loxodrome = "oblique path" = line of constant azimuth
+     
+     Formulae (javascript):
+     http://www.movable-type.co.uk/scripts/latlong.html
 
      ACME:
      https://acme-svn2.ornl.gov/acme-repo/acme/mapping/grids
@@ -3456,17 +3466,17 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      /glade/p/cesm/cseg/mapping/grids
 
      Generate global RLL grids:
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150901.nc --rgr lat_nbr=90 --rgr lon_nbr=180 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150901.nc --rgr latlon=90,180 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
      Generate maps for global RLL grids:
      ESMF_RegridWeightGen -s ${DATA}/grids/180x360_SCRIP.20150901.nc -d ${DATA}/grids/90x180_SCRIP.20150901.nc -w ${DATA}/maps/map_180x360_to_90x180.20150901.nc --method conserve
      ESMF_RegridWeightGen -s ${DATA}/grids/90x180_SCRIP.20150901.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/maps/map_90x180_to_180x360.20150901.nc --method conserve
 
      Generate ACME grids:
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150910.nc --rgr lat_nbr=129 --rgr lon_nbr=256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150910.nc --rgr lat_nbr=257 --rgr lon_nbr=512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150910.nc --rgr lat_nbr=801 --rgr lon_nbr=1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150910.nc --rgr latlon=129,256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150910.nc --rgr latlon=257,512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150910.nc --rgr latlon=801,1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
 
      Generate ACME maps:
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/129x256_SCRIP.20150910.nc -w ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150910.nc --method conserve
@@ -3475,13 +3485,13 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/801x1600_SCRIP.20150910.nc -w ${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150910.nc --method bilinear
 
      Generate regional RLL grids:
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr lat_nbr=100 --rgr lon_nbr=100 --rgr snwe=30.0,70.0,-120.0,-90.0 ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-120.0,-90.0 ~/nco/data/in.nc ~/foo.nc
 
      Generate global RLL skeleton:
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr lat_nbr=180 --rgr lon_nbr=360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
      Generate curvilinear grids:
-     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20' --rgr lon_crv=1.0 --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr lat_nbr=10 --rgr lon_nbr=20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc */
+     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20' --rgr lon_crv=1.0 --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 
