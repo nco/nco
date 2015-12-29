@@ -5911,7 +5911,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
  dmn_sct ***dmn_avg,                   /* O [sct] Array of dimensions to average */
  int *nbr_dmn_avg)                     /* O [nbr] Number of dimensions to average (size of above array) */
 {
-  /* Purpose: Create list of dimensions from list of dimension name strings (function based in nco_xtr_mk() ) */
+  /* Purpose: Create list of dimensions from list of dimension name strings. Function based on nco_xtr_mk(). */
 
   /* Dimensions to average/not average are built using these 3 functions:
      
@@ -6055,7 +6055,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
     } /* Loop table */
   } /* Loop input dimension name list */
   
-    /* Export */
+  /* Export */
   *nbr_dmn_avg=nbr_avg_dmn;
   
   if(nco_dbg_lvl_get() >= nco_dbg_var){ 

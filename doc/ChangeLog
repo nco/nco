@@ -1,3 +1,7 @@
+2015-12-28  Charlie Zender  <zender@uci.edu>
+
+	* Restructure ncremap to use -m map_fl and allow stdin
+
 2015-12-24  Charlie Zender  <zender@uci.edu>
 
 	* Improve ncremap documentation in nco.texi

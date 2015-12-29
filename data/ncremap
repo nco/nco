@@ -112,8 +112,8 @@ nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 par_typ='bck' # [sng] Parallelism type
 rgr_fl='' # [sng] Regridded file
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid')
-#src_fl='' # [sng] Source file
-src_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] Source file
+src_fl='' # [sng] Source file
+#src_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] Source file
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
@@ -262,7 +262,14 @@ fi # !thr_usr
 
 if [ ! -n "${src_fl}" ]; then
     # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
+    # Test stdin:
+    # ls ${DATA}/ne30/raw/famipc5*1979*.nc | ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
+    # ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr < ls ${DATA}/ne30/raw/famipc5*1979*.nc
     if [ -t 0 ]; then 
+	echo "ERROR: Must specify input file with -s or with stdin"
+	echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+	exit 1
+    else
 	# Input awaits on unit 0, i.e., on stdin
 	fl_nbr=0
 	while read -r line; do # NeR05 p. 179
@@ -270,11 +277,6 @@ if [ ! -n "${src_fl}" ]; then
 	    echo "Asked to regrid file ${fl_nbr}: ${fl_in[${fl_nbr}]}"
 	    let fl_nbr=${fl_nbr}+1
 	done < /dev/stdin
-	src_fl=${fl_in[0]}
-    else
-	echo "ERROR: Must specify input file with -s or with stdin"
-	echo "HINT: Send file list to script with, e.g., 'ls *.nc | ${spt_nm}'"
-	exit 1
     fi # stdin
 fi # !src_fl
 if [ -n "${dst_fl}" ]; then 
@@ -370,88 +372,99 @@ if [ ${dbg_lvl} -ge 1 ]; then
 fi # !dbg
 date_srt=$(date +"%s")
 printf "Started processing for file pattern ${src_fl} at `date`.\n"
-printf "Source grid will be inferred from Source file and stored as ${grd_src}\n"
+if [ "${map_usr_flg}" = 'Yes' ]; then 
+    printf "Source and destination grids will be read from mapfile ${map_fl}\n"
+else # !map_usr_flg
+    printf "Map-file will be generated internally and stored as ${map_fl}\n"
+    printf "Algorithm used to generate weights is: ${alg_opt}\n"
+fi # !map_usr_flg
 if [ "${dst_usr_flg}" = 'Yes' ]; then 
+    if [ "${map_usr_flg}" = 'Yes' ]; then 
+	printf "${spt_nm}: ERROR Specify either dst_fl or map_fl not both\n"
+	exit 1
+    fi # !map_usr_flg
     printf "Destination grid-file will be inferred from ${dst_fl}\n"
     printf "Destination grid-file will be stored as ${grd_dst}\n"
 else # !dst_usr_flg
     if [ "${grd_usr_flg}" = 'Yes' ]; then 
+	if [ "${map_usr_flg}" = 'Yes' ]; then 
+	    printf "${spt_nm}: ERROR Specify either grd_dst or map_fl not both\n"
+	    exit 1
+	fi # !map_usr_flg
 	printf "Destination grid-file supplied by user as ${grd_dst}\n"
     else
-	printf "Destination grid-file will be generated internally and stored as ${grd_dst}\n"
-	if [ ${dbg_lvl} -ge 0 ]; then
-	    printf "Destination grid characteristics: ${grd_sng}\n"
-	fi # !dbg
+	if [ "${map_usr_flg}" != 'Yes' ]; then 
+	    printf "${spt_nm}: ERROR Must provide one of dst_fl, grd_fl, or map_fl\n"
+	    exit 1
+	fi # !map_usr_flg
     fi # !grd_usr_flg
 fi # !dst_usr_flg
-if [ "${map_usr_flg}" = 'Yes' ]; then 
-    printf "Map-file supplied as ${map_fl}\n"
-else # !map_usr_flg
+if [ "${map_usr_flg}" != 'Yes' ]; then 
     printf "Map-file will be generated internally and stored as ${map_fl}\n"
     printf "Algorithm used to generate weights is: ${alg_opt}\n"
 fi # !map_usr_flg
 printf "Regridded file will be stored as ${rgr_fl}\n"
 printf "NCO version is ${nco_version}\n"
 
-# Block 1: Destination grid
-# Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
-# Currently we require user to know (and specify) means by which destination grid is provided
-rgr_idx=1
-if [ "${dst_usr_flg}" = 'Yes' ]; then 
-# Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
-    # Infer destination grid-file from data file
-    cmd_rgr[${rgr_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_dst} ${dst_fl} ~/foo.nc"
-else # !dst_usr_flg
-    if [ "${grd_usr_flg}" != 'Yes' ]; then 
-	cmd_rgr[${rgr_idx}]="ncks ${nco_opt} ${grd_sng} ~/nco/data/in.nc ~/foo.nc"
-    fi # !grd_usr_flg
-fi # !dst_usr_flg
-if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_usr_flg}" != 'Yes' ]; then 
-    # Block 1 Loop 2: Execute and/or echo commands
-    printf "Generate destination grid...\n"
-    for ((rgr_idx=1;rgr_idx<=1;rgr_idx++)); do
+if [ "${map_usr_flg}" != 'Yes' ]; then 
+    # Block 1: Destination grid
+    # Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
+    # Currently we require user to know (and specify) means by which destination grid is provided
+    rgr_idx=1
+    if [ "${dst_usr_flg}" != 'Yes' ]; then 
+	# Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
+	# Infer destination grid-file from data file
+	cmd_rgr[${rgr_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_dst} ${dst_fl} ~/foo.nc"
+    else # !dst_usr_flg
+	if [ "${grd_usr_flg}" != 'Yes' ]; then 
+	    cmd_rgr[${rgr_idx}]="ncks ${nco_opt} ${grd_sng} ~/nco/data/in.nc ~/foo.nc"
+	fi # !grd_usr_flg
+    fi # !dst_usr_flg
+    if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_usr_flg}" != 'Yes' ]; then 
+	# Block 1 Loop 2: Execute and/or echo commands
+	printf "Generate destination grid...\n"
+	for ((rgr_idx=1;rgr_idx<=1;rgr_idx++)); do
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_rgr[${rgr_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_rgr[${rgr_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to generate destination grid\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	done # !rgr_idx
+    fi # !dst_usr_flg || grd_usr_flg
+    wait
+    
+    # Block 2: Source grid
+    # Block 2 Loop 1: Source gridfile command
+    printf "Generate source grid...\n"
+    rgr_idx=2
+    if [ ! -e "${src_fl}" ]; then
+	echo "${spt_nm}: ERROR Unable to find Source file ${src_fl}"
+	echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
+	exit 1
+    fi # ! -e
+    cmd_rgr[${rgr_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${src_fl} ~/foo.nc"
+    
+    # Block 2 Loop 2: Execute and/or echo commands
+    for ((rgr_idx=2;rgr_idx<=2;rgr_idx++)); do
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_rgr[${rgr_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_rgr[${rgr_idx}]}
 	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to generate destination grid\n"
+		printf "${spt_nm}: ERROR Failed to generate source grid\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
     done # !rgr_idx
-fi # !dst_usr_flg || grd_usr_flg
-wait
-
-# Block 2: Source grid
-# Block 2 Loop 1: Source gridfile command
-printf "Generate source grid...\n"
-rgr_idx=2
-if [ ! -e "${src_fl}" ]; then
-    echo "${spt_nm}: ERROR Unable to find Source file ${src_fl}"
-    echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
-    exit 1
-fi # ! -e
-cmd_rgr[${rgr_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${src_fl} ~/foo.nc"
-
-# Block 2 Loop 2: Execute and/or echo commands
-for ((rgr_idx=2;rgr_idx<=2;rgr_idx++)); do
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_rgr[${rgr_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_rgr[${rgr_idx}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR Failed to generate source grid\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-done # !rgr_idx
-wait
-
-# Block 3: Source->destination maps
-if [ "${map_usr_flg}" != 'Yes' ]; then 
+    wait
+    
+    # Block 3: Source->destination maps
     # Block 3 Loop 1: Mapfile commands
     printf "Generate source->destination mapping weights...\n"
     rgr_idx=3
@@ -471,8 +484,8 @@ if [ "${map_usr_flg}" != 'Yes' ]; then
 	    fi # !err
 	fi # !dbg
     done # !rgr_idx
+    wait
 fi # !map_usr_flg
-wait
 
 # Block 4: Regrid
 printf "Regridding...\n"
