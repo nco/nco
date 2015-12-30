@@ -1,5 +1,7 @@
 2015-12-30  Charlie Zender  <zender@uci.edu>
 
+	* Add MODIS L2 coordinate information to usual suspects database
+
 	* Introduce basic background parallelism and PID-based status checking into ncremap
 
 	* Note that inferred ACME grids are unusable by ERWG due to lack of corner information
