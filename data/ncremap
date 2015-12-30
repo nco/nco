@@ -94,12 +94,13 @@ fnt_rvr=`tput smso` # Reverse
 #caseid='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] Case ID
 alg_typ='bilinear' # [nbr] Algorithm for interpolation (bilinear|patch|neareststod|nearestdtos|conserve)
 dbg_lvl=0 # [nbr] Debugging level
-drc_in="${drc_pwd}" # [sng] Input file directory
-#drc_in='' # [sng] Input file directory
+#drc_in="${drc_pwd}" # [sng] Input file directory
+drc_in='' # [sng] Input file directory
 drc_out="${DATA}/sld/rgr" # [sng] Output file directory
 dst_fl='' # [sng] Destination file
 esmf_opt='> /dev/null' # [sng] ESMF_RegridWeightGen options
 fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
+fl_nbr=0 # [nbr] Number of files to remap
 gaa_sng="--gaa rgr_script=${spt_nm} --gaa rgr_hostname=${HOSTNAME} --gaa rgr_version=${nco_version}" # [sng] Global attributes to add
 grd_fl='' # [sng] Grid-file
 grd_dst_glb="${DATA}/grids/180x360_SCRIP.20150901.nc" # [sng] Grid-file (destination) global
@@ -128,7 +129,7 @@ grd_src="${drc_out}/grd_src.nc" # [sng] Grid-file (source)
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
     printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (more at http://nco.sf.net/nco.html#ncremap)\n\n"
-    printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -s src_fl -g grd_fl -i drc_in -O drc_out${fnt_nrm}\n\n"
+    printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -s src_fl -d dst_fl -o out_fl${fnt_nrm}\n\n"
     echo "Command-line options:"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm})"
 #    echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm})"
@@ -138,7 +139,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm})"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_fl${fnt_nrm}   Grid-file (destination) (empty means generate internally) (default ${fnt_bld}${grd_fl}${fnt_nrm})"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm})"
-    echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means look in current directory) (default ${fnt_bld}${drc_in}${fnt_nrm})"
+    echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm})"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm})"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm})"
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm})"
@@ -154,8 +155,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "          ${fnt_bld}$spt_nm -s ${src_fl} -d ${dst_fl} -i ${DATA}/sld/raw -O ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -a bilinear -s ${src_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -O ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -a conserve -s ${src_fl} -g ${grd_dst_dfl} -i ${DATA}/sld/raw -O ${drc_out} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -g ${grd_dst_dfl} -O ${drc_out} < ls ${drc_in}/*.1980*nc ${fnt_nrm}\n"
-    printf "          ${fnt_bld}ls ${drc_in}/*.1980*nc | $spt_nm -g ${grd_dst_dfl} -O ${drc_out} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}ls ${drc_pwd}/*.1980*nc | $spt_nm -g ${grd_dst_dfl} -O ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -x TSurfStd_ct -s ${DATA}/sld/raw/${src_fl} -g ${grd_dst_dfl} -O ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -v TSurfAir -s ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${grd_dst_glb} -O ${drc_out} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -v CloudFrc_A -s ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${grd_dst_glb} -O ${drc_out} ${fnt_nrm}\n"
@@ -229,6 +229,8 @@ elif [ ${alg_typ} = 'patch' ] || [ ${alg_typ} = 'pch' ] || [ ${alg_typ} = 'ptc' 
 fi # !alg_typ
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
+else # !drc_in
+    drc_in_usr_flg='Yes'
 fi # !drc_in
 if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="-D ${dbg_lvl} ${nco_opt}"
@@ -256,25 +258,38 @@ elif [ ${par_typ} = 'mpi' ]; then
     par_opt=' &'
     par_opt_cf=''
 fi # !par_typ
+if [ -n "${rgr_fl}" ]; then 
+    rgr_usr_flg='Yes'
+fi # !rgr_fl
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
 fi # !thr_usr
 
-if [ ! -n "${src_fl}" ]; then
+if [ -n "${src_fl}" ]; then
+    # Single file argument
+    fl_in[${fl_nbr}]=${src_fl}
+    let fl_nbr=${fl_nbr}+1
+else # !src_fl
+    # Detecting input on stdin:
     # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
-    # Test stdin:
     # ls ${DATA}/ne30/raw/famipc5*1979*.nc | ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
-    # ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr < ls ${DATA}/ne30/raw/famipc5*1979*.nc
     if [ -t 0 ]; then 
-	echo "ERROR: Must specify input file with -s or with stdin"
-	echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
-	exit 1
+	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
+	    for fl in "${drc_in}"/* ; do
+		if [ -f "${fl}" ]; then
+		    fl_in[${fl_nbr}]=${fl}
+		    let fl_nbr=${fl_nbr}+1
+		fi # !file
+	    done
+	else # !drc_in
+	    echo "ERROR: Must specify input file with -s or with stdin"
+	    echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+	    exit 1
+	fi # !drc_in
     else
 	# Input awaits on unit 0, i.e., on stdin
-	fl_nbr=0
 	while read -r line; do # NeR05 p. 179
 	    fl_in[${fl_nbr}]=${line}
-	    echo "Asked to regrid file ${fl_nbr}: ${fl_in[${fl_nbr}]}"
 	    let fl_nbr=${fl_nbr}+1
 	done < /dev/stdin
     fi # stdin
@@ -313,21 +328,6 @@ else
     map_fl_dfl="${drc_out}/map_src_to_dst_${alg_opt}.nc" # [sng] Map-file default
     map_fl=${map_fl_dfl}
 fi # !map_fl
-if [ -n "${rgr_fl}" ]; then 
-    rgr_usr_flg='Yes'
-else
-    rgr_fl="${drc_out}/$(basename ${src_fl})" # [sng] Regridded-file default
-fi # !rgr_fl
-
-# Doubly-derived fields
-if [ "$(basename ${src_fl})" = "${src_fl}" ]; then
-    src_fl="${drc_in}/${src_fl}"
-fi # !basename
-if [ "${src_fl}" = "${rgr_fl}" ]; then
-    echo "ERROR: Source file = Regridded file = ${src_fl}"
-    echo "HINT: To prevent inadvertent data loss, ${spt_nm} insists that Source file and regridded file be different"
-    exit 1
-fi # !basename
 
 # Print initial state
 if [ ${dbg_lvl} -ge 1 ]; then
@@ -353,6 +353,10 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
 #    printf "dbg: yyyy_end = ${yyyy_end}\n"
+    printf "Asked to regrid ${fl_nbr} files:\n"
+    for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
+	printf "${fl_in[${fl_idx}]}\n"
+    done # !fl_idx
 fi # !dbg
 if [ ${dbg_lvl} -ge 2 ]; then
     if [ ${mpi_flg} = 'Yes' ]; then
@@ -403,109 +407,131 @@ if [ "${map_usr_flg}" != 'Yes' ]; then
     printf "Map-file will be generated internally and stored as ${map_fl}\n"
     printf "Algorithm used to generate weights is: ${alg_opt}\n"
 fi # !map_usr_flg
-printf "Regridded file will be stored as ${rgr_fl}\n"
 printf "NCO version is ${nco_version}\n"
 
-if [ "${map_usr_flg}" != 'Yes' ]; then 
-    # Block 1: Destination grid
-    # Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
-    # Currently we require user to know (and specify) means by which destination grid is provided
-    rgr_idx=1
-    if [ "${dst_usr_flg}" != 'Yes' ]; then 
-	# Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
-	# Infer destination grid-file from data file
-	cmd_rgr[${rgr_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_dst} ${dst_fl} ~/foo.nc"
-    else # !dst_usr_flg
-	if [ "${grd_usr_flg}" != 'Yes' ]; then 
-	    cmd_rgr[${rgr_idx}]="ncks ${nco_opt} ${grd_sng} ~/nco/data/in.nc ~/foo.nc"
-	fi # !grd_usr_flg
-    fi # !dst_usr_flg
-    if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_usr_flg}" != 'Yes' ]; then 
-	# Block 1 Loop 2: Execute and/or echo commands
-	printf "Generate destination grid...\n"
-	for ((rgr_idx=1;rgr_idx<=1;rgr_idx++)); do
+# Begin loop over input files
+for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
+    src_fl=${fl_in[${fl_idx}]}
+    if [ "$(basename ${src_fl})" = "${src_fl}" ]; then
+	src_fl="${drc_pwd}/${src_fl}"
+    fi # !basename
+    if [ "${rgr_usr_flg}" = 'Yes' ]; then 
+	if [ ${fl_nbr} -ge 2 ]; then 
+	    echo "ERROR: Single output filename specified with -o for multiple input files"
+	    echo "HINT: For multiple input files use -O option to specify output directory and do not use -o option. Regridded files will have same name as input files, but will be in different directory."
+	    exit 1
+	fi 
+    else # !rgr_usr_flg
+	rgr_fl="${drc_out}/$(basename ${src_fl})" # [sng] Regridded-file default
+    fi # !rgr_fl
+    if [ "${src_fl}" = "${rgr_fl}" ]; then
+	echo "ERROR: Source file = Regridded file = ${src_fl}"
+	echo "HINT: To prevent inadvertent data loss, ${spt_nm} insists that Source file and regridded file be different"
+	exit 1
+    fi # !basename
+    printf "Regridded file will be stored as ${rgr_fl}\n"
+    
+    if [ "${map_usr_flg}" != 'Yes' ]; then 
+	# Block 1: Destination grid
+	# Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
+	# Currently we require user to know (and specify) means by which destination grid is provided
+	rgr_idx=1
+	if [ "${dst_usr_flg}" != 'Yes' ]; then 
+	    # Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
+	    # Infer destination grid-file from data file
+	    cmd_rgr[${rgr_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_dst} ${dst_fl} ~/foo.nc"
+	else # !dst_usr_flg
+	    if [ "${grd_usr_flg}" != 'Yes' ]; then 
+		cmd_rgr[${rgr_idx}]="ncks ${nco_opt} ${grd_sng} ~/nco/data/in.nc ~/foo.nc"
+	    fi # !grd_usr_flg
+	fi # !dst_usr_flg
+	if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_usr_flg}" != 'Yes' ]; then 
+	    # Block 1 Loop 2: Execute and/or echo commands
+	    printf "Generate destination grid...\n"
+	    for ((rgr_idx=1;rgr_idx<=1;rgr_idx++)); do
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_rgr[${rgr_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -ne 2 ]; then
+		    eval ${cmd_rgr[${rgr_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR Failed to generate destination grid\n"
+			exit 1
+		    fi # !err
+		fi # !dbg
+	    done # !rgr_idx
+	fi # !dst_usr_flg || grd_usr_flg
+	wait
+	
+	# Block 2: Source grid
+	# Block 2 Loop 1: Source gridfile command
+	printf "Generate source grid...\n"
+	rgr_idx=2
+	if [ ! -e "${src_fl}" ]; then
+	    echo "${spt_nm}: ERROR Unable to find Source file ${src_fl}"
+	    echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
+	    exit 1
+	fi # ! -e
+	cmd_rgr[${rgr_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${src_fl} ~/foo.nc"
+	
+	# Block 2 Loop 2: Execute and/or echo commands
+	for ((rgr_idx=2;rgr_idx<=2;rgr_idx++)); do
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${rgr_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_rgr[${rgr_idx}]}
 		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR Failed to generate destination grid\n"
+		    printf "${spt_nm}: ERROR Failed to generate source grid\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
 	done # !rgr_idx
-    fi # !dst_usr_flg || grd_usr_flg
-    wait
+	wait
+	
+	# Block 3: Source->destination maps
+	# Block 3 Loop 1: Mapfile commands
+	printf "Generate source->destination mapping weights...\n"
+	rgr_idx=3
+	cmd_rgr[${rgr_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
+	
+	# Block 3 Loop 2: Execute and/or echo commands
+	for ((rgr_idx=3;rgr_idx<=3;rgr_idx++)); do
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_rgr[${rgr_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_rgr[${rgr_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to generate mapfile\n"
+		    printf "${spt_nm}: HINT When ESMF fails to generate mapfiles, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	done # !rgr_idx
+	wait
+    fi # !map_usr_flg
     
-    # Block 2: Source grid
-    # Block 2 Loop 1: Source gridfile command
-    printf "Generate source grid...\n"
-    rgr_idx=2
-    if [ ! -e "${src_fl}" ]; then
-	echo "${spt_nm}: ERROR Unable to find Source file ${src_fl}"
-	echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
-	exit 1
-    fi # ! -e
-    cmd_rgr[${rgr_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${src_fl} ~/foo.nc"
+    # Block 4: Regrid
+    printf "Regridding...\n"
+    rgr_idx=4
+    cmd_rgr[${rgr_idx}]="ncks -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${src_fl} ${rgr_fl}"
     
-    # Block 2 Loop 2: Execute and/or echo commands
-    for ((rgr_idx=2;rgr_idx<=2;rgr_idx++)); do
+    # Block 4 Loop 2: Execute and/or echo commands
+    for ((rgr_idx=4;rgr_idx<=4;rgr_idx++)); do
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_rgr[${rgr_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_rgr[${rgr_idx}]}
 	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to generate source grid\n"
+		printf "${spt_nm}: ERROR Failed to regrid\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
     done # !rgr_idx
     wait
-    
-    # Block 3: Source->destination maps
-    # Block 3 Loop 1: Mapfile commands
-    printf "Generate source->destination mapping weights...\n"
-    rgr_idx=3
-    cmd_rgr[${rgr_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
-
-    # Block 3 Loop 2: Execute and/or echo commands
-    for ((rgr_idx=3;rgr_idx<=3;rgr_idx++)); do
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_rgr[${rgr_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_rgr[${rgr_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to generate mapfile\n"
-		printf "${spt_nm}: HINT When ESMF fails to generate mapfiles, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    done # !rgr_idx
-    wait
-fi # !map_usr_flg
-
-# Block 4: Regrid
-printf "Regridding...\n"
-rgr_idx=4
-cmd_rgr[${rgr_idx}]="ncks -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${src_fl} ${rgr_fl}"
-
-# Block 4 Loop 2: Execute and/or echo commands
-for ((rgr_idx=4;rgr_idx<=4;rgr_idx++)); do
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_rgr[${rgr_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_rgr[${rgr_idx}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR Failed to regrid\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-done # !rgr_idx
-wait
+done # !fl_idx
 
 date_end=$(date +"%s")
 printf "Completed processing for Source file ${src_fl} at `date`.\n"

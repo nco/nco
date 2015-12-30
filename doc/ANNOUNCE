@@ -73,6 +73,14 @@ D. ncap2 now conforms arrays by hyperslabbed dimension size rather
    Thanks to Philip Cameron-Smith for suggesting and to Henry Butowsky
    for implementing this new feature.
 
+E. NCO now treats variables named wgt_* as weights and avoids
+   performing math on them when possible. E.g., ncbo will preserve
+   (and not difference) the variable wgt_1. This is the same behavior
+   that NCO uses for coordinates, "gw", and masks (named with msk_*.)
+   The idea is that weights are a property of the grid and should not
+   be differenced, averaged, etc., unless necesssary.
+   http://nco.sf.net/nco.html#prc_xcp
+
 BUG FIXES:
 
 A. ncks -V in (at least) versions 4.5.1--4.5.3 could segfault.

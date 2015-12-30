@@ -9547,8 +9547,8 @@ The procedure to compute the variance is identical except for the use of
 @command{ncap2} can also compute statistics like standard deviations.
 Brute-force implementation of formulae is one option, e.g.,
 @example
-ncap2 -s 'prs_sfc_sdn=sqrt((prs_sfc-prs_sfc.avg($time)^2).total($time)/($time.size-1))'
-      in.nc out.nc
+ncap2 -s 'prs_sfc_sdn=sqrt((prs_sfc-prs_sfc.avg($time)^2). \
+      total($time)/($time.size-1))' in.nc out.nc
 @end example
 The operation may, of course, be broken into multiple steps in order  
 to archive intermediate quantities, such as the time-anomalies
@@ -9572,26 +9572,39 @@ ncwa -O -v prs_sfc,gw -a lat,lon -w gw in.nc out.nc
 ncbo -O -v prs_sfc,gw in.nc out.nc out.nc
 ncwa -O -y rmssdn -v prs_sfc -a lat,lon -w gw out.nc out.nc
 @end example
-First the appropriately weighted (with @samp{-w gw}) spatial mean values
-are written to the output file.  
-This example includes the use of a weighted variable specified with
-@samp{-w gw}. 
+First the spatially weighted (by @samp{-w gw}) mean values
+are written to the output file, as are the mean weights.
+The initial output file is then overwritten with the gridpoint
+deviations from the spatial mean.
+It is important that the output file after the second line contain
+the original, non-averaged weights.
+This will be the case if the weights are named so that @acronym{NCO}
+treats them like a coordinate (@pxref{CF Conventions}).
+One such name is @code{gw}, and any variable whose name begins with
+@code{msk_} (for ``mask'') or @code{wgt_} (for ``weight'') will likewise
+be treated as a coordinate, and will be copied (not differenced)
+straight from @file{in.nc} to @file{out.nc} in the second step.
 When using weights to compute standard deviations one must remember to
 include the weights in the initial output files so that they may be used
 again in the final step. 
-The initial output file is then overwritten with the gridpoint
-deviations from the spatial mean.
 Finally the root-mean-square of the appropriately weighted spatial
 deviations is taken.  
 
-The @command{ncap2} solution to the spatially-weighted standard
-deviation problem is 
+No elegant @command{ncap2} solution exists to compute weighted standard
+deviations.  
+Those brave of heart may try to formulate one.
+A general formula should allow weights to have fewer than and variables
+to have more than the minimal spatial dimensions (latitude and
+longitude). 
+@ignore
+@c Until 20151229 ncap2 example was FUBAR, and did not handle weights in denominator
 @example
-ncap2 -s 'prs_sfc_sdn=(prs_sfc*gw-prs_sfc*gw.avg($lat,$lon)).rmssdn($lat,$lon)' \
-      in.nc out.nc
+ncap2 -s 'prs_sfc_sdn=((gw*(prs_sfc-((gw*prs_sfc).ttl($lat,$lon)/gw.ttl($lat,$lon)))^2).ttl($lat,$lon)/ \ 
+      gw.ttl()).sqrt()' in.nc out.nc
 @end example
-Be sure to multiply the variable by the weight prior to computing the
+Note how the weight multiplies the variable prior to computing the
 the anomalies and the standard deviation.
+@end ignore
 
 The procedure to compute the standard deviation of a time-series across
 multiple files involves one extra step since all the input must first be
@@ -10574,7 +10587,8 @@ pack, etc.) the following variables:
 @code{hybm}, 
 @code{lat_bnds}, 
 @code{lon_bnds},
-@code{msk_*}.
+@code{msk_*},
+@code{wgt_*}.
 These variables represent Gaussian weights, land/sea masks,
 time fields, hybrid pressure coefficients, and latititude/longitude
 boundaries.
@@ -10586,9 +10600,10 @@ Users usually want @emph{all} grid properties to remain unaltered in the
 output file. 
 To be treated as a grid property, the variable name must @emph{exactly}
 match a name in the above list, or be a coordinate variable. 
-The handling of @code{msk_*} is exceptional in that @emph{any} variable 
-name beginning with the string @code{msk_} is considered to be a
-``mask'' and is thus preserved (not operated on arithmetically).
+Handling of @code{msk_*} and @code{wgt_*} is exceptional in that
+@emph{any} variable whose name starts with @code{msk_} or @code{wgt_} 
+is considered to be a ``mask'' or a ``weight'' and is thus preserved
+(not operated on when arithmetic can be avoided). 
 
 As of @acronym{NCO} version 4.5.0 (June, 2015), @acronym{NCO} began
 to support behavior required for the @acronym{DOE} @acronym{ACME}

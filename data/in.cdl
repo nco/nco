@@ -371,7 +371,7 @@ variables:
 
 	float lon_wgt(lon);
 	lon_wgt:long_name = "Gaussian weights";
-	lon_wgt:purpose = "Gaussian weights which sum to two for n = 4. These weights are all have floor of 0.0 so should cause SIGFPE when applied to integer types in weighted average.";
+	lon_wgt:purpose = "Gaussian weights which sum to two for n = 4. These weights all have floor of 0.0 so should cause SIGFPE when applied to integer types in weighted average.";
 
 	double ppc_dbl(time);
         ppc_dbl:long_name = "Precision-Preserving Compression, double precision";
