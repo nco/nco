@@ -4733,9 +4733,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lon_typ=nco_grd_lon_unk;
     /* 1D grids without their own boundaries are at the mercy of the weight generator */
     if(dmn_id_bnd == NC_MIN_INT){
-      (void)fprintf(stdout,"%s: WARNING %s reports an unstructured grid without spatial boundary information. NCO can copy but not infer spatial boundaries from unstructured grids. Thus NCO will not write spatial bounds to the gridfile inferred from this input file. Instead, the weight generator that ingests this gridfile must generate weights for gridcells with unknown spatial extent. This is feasible for grids and mappings where weights masquerade as areas and are determined by underlying grid and interpolation type (e.g., conservative remapping of spectral element grid).\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: WARNING %s reports an unstructured grid without spatial boundary information. NCO can copy but not infer spatial boundaries from unstructured grids. Thus NCO will not write spatial bounds to the gridfile inferred from this input file. Instead, the weight generator that ingests this gridfile must generate weights for gridcells with unknown spatial extent. This is feasible for grids and mappings where weights masquerade as areas and are determined by underlying grid and interpolation type (e.g., bilinear remapping of spectral element grid). Unfortunately, the ESMF_RegridWeightGen (ERWG) program requires cell interfaces in both grid files, so ERWG will break on this gridfile. Other weight generators such as TempestRemap may be more successful with this SCRIP file.\n",nco_prg_nm_get(),fnc_nm);
       flg_wrt_crn=False;
-      /* Bounds will not be diagnosed so safe to set grd_crn_nbr to harmless (though weird) value like 4 */
+      /* Input could actually be from grid with no polygonal definition, e.g., CAM-SE 
+	 Corner number is non-deterministic since, e.g., CAM-SE dual grid can be fit to quadrilaterals, pentagons, chevrons, etc.
+	 Bounds will not be diagnosed so safe to set grd_crn_nbr to harmless (though weird) value like 4
+	 However, ERWG requires presence of valid corner dimension "grid_corners" and arrays in input SCRIP file 
+	 So ERWG will break when reading this SCRIP file regardless of whether it contains arrays (with bogus values) 
+	 By default do not write grid corner values */
       grd_crn_nbr=4;
     } /* !dmn_id_bnd */
   }else if(flg_grd_2D){ /* !flg_grd_1D */
@@ -5443,6 +5448,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  grd_crn_lat[idx2]=lat_crn[idx2];
 	  grd_crn_lon[idx2]=lon_crn[idx2];
 	} /* !crn */
+      }else{ /* !flg_wrt_crn */
+	/* Defaults for ERWG when corners are unknown */
+	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
+	  idx2=grd_crn_nbr*idx+crn_idx;
+	  grd_crn_lat[idx2]=0.0;
+	  grd_crn_lon[idx2]=0.0;
+	} /* !crn */
       } /* !flg_wrt_crn */
     } /* !col */
   } /* !flg_grd_1D */
@@ -5571,6 +5583,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
+  /* 20151230 ERWG appears to require presence of corner arrays in grid file even when they are not used (e.g., bilinear)
+     But ERWG will break when corner values are bad. Default is do not write bad corner values. Uncomment next line to write bad corner values. */
+  /* flg_wrt_crn=True; */
   if(flg_wrt_crn) rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_id_grd_crn);
   rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_id_grd_sz);
   rcd=nco_def_dim(out_id,grd_rnk_nm,grd_rnk_nbr,&dmn_id_grd_rnk);
