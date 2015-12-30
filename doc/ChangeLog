@@ -1,6 +1,8 @@
 2015-12-30  Charlie Zender  <zender@uci.edu>
 
-	* Add note about inferred ACME grids being unusable by ERWG due to lack of corner information
+	* Introduce basic background parallelism and PID-based status checking into ncremap
+
+	* Note that inferred ACME grids are unusable by ERWG due to lack of corner information
 
 2015-12-29  Charlie Zender  <zender@uci.edu>
 
