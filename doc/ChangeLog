@@ -1,5 +1,9 @@
 2015-12-30  Charlie Zender  <zender@uci.edu>
 
+	* Support specifying source grid instead of inferring from source file
+
+	* Re-arrange ncremap options again, use -i for in_fl, -s for src_grd
+
 	* Add MODIS L2 coordinate information to usual suspects database
 
 	* Introduce basic background parallelism and PID-based status checking into ncremap
