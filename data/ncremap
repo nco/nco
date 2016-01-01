@@ -31,16 +31,16 @@
 
 # Prerequisites: Bash, NCO, ESMF_RegridWeightGen
 # Script could use other shells, e.g., dash (Debian default) after re-writing function definition and looping constructs
-# Script could use other weight-generators, e.g., TempestRemap by re-writing mapfile command
+# Script could use other weight-generators, e.g., TempestRemap by re-writing map-file command
 
 # Script runs in one of four modes:
-# 1. Free-will: Infer source and destination grids to generate mapfile, then regrid
-# 2. Old Grid: Use known-good destination grid to generate mapfile then regrid
+# 1. Free-will: Infer source and destination grids to generate map-file, then regrid
+# 2. Old Grid: Use known-good destination grid to generate map-file then regrid
 # 3. New Grid: Generate source-grid from ncks parameter string
-# 4. Pre-Destination: Apply supplied mapfile to all input files
-# By default, ncremap deletes any intermediate grids and mapfile that it generates
+# 4. Pre-Destination: Apply supplied map-file to all input files
+# By default, ncremap deletes any intermediate grids and map-file that it generates
 # Use Free-Will, Old-Grid, or New-Grid mode to process Swath-Like-Data (SLD) where each input may be a granule on a new grid, yet all inputs are to be regridded to the same output grid
-# Use Pre-Destination mode to post-process models or analyses where all files are converted from the same source grid to the same destination grid so the mapfile can be pre-generated and never change
+# Use Pre-Destination mode to post-process models or analyses where all files are converted from the same source grid to the same destination grid so the map-file can be pre-generated and never change
 
 # Additional Documentation:
 
@@ -63,23 +63,33 @@ if [ -z "${DATA}" ]; then
     esac # !HOSTNAME
 fi # DATA
 
-# Production usage (examples for Charlie's machines):
+# Test cases (examples for Charlie's machines):
 # ls ${DATA}/sld/raw/*.nc | ncremap -a conserve -D 0 -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
 # ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
 # ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
 # ncremap -a conserve -v FSNT -I ${DATA}/ -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
-# ncremap -i AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/rgr/dst_1x1.nc -O ${DATA}/sld/rgr
+# ncremap -i AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
 # ncremap -v TSurfAir -i ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v CloudFrc_A -i ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/hdf/OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5 -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v T -i ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
-# ncremap -v StepTwoO3 -i ${DATA}/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc -d ${DATA}/hdf/cam_time.nc -O ${DATA}/sld/rgr
+# ncremap -v StepTwoO3 -i ${DATA}/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc -d ${DATA}/hdf/cam_time.nc -O ~/rgr
 # ncremap -v TSurfStd -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -G "--rgr grd_ttl='Default internally-generated grid' --rgr grid=~/rgr/grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-130.0,-90.0" -O ~/rgr
 # ncremap -x TSurfStd_ct -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
+# ncremap -i ${DATA}/hdf/cice_hi_flt.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
+# ncremap -i ${DATA}/hdf/cam_time.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
+# CESM & ACME
+# ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.cam.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
+# ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.clm2.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
+# ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.cice.h.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
+# ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.pop.h.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
+# ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.rtm.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
+# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m map_ne30np4_to_fv129x256_aave.150418.nc -O ~/rgr
+# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 
 # Debugging and Benchmarking:
-# ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/rgr/dst_1x1.nc -O ${DATA}/sld/rgr > ~/ncremap.out 2>&1 &
+# ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr > ~/ncremap.out 2>&1 &
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -99,7 +109,7 @@ fnt_rvr=`tput smso` # Reverse
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
-alg_typ='bilinear' # [nbr] Algorithm for interpolation (bilinear|patch|neareststod|nearestdtos|conserve)
+alg_typ='conserve' # [nbr] Algorithm for ESMF interpolation (bilinear|patch|neareststod|nearestdtos|conserve)
 dbg_lvl=0 # [nbr] Debugging level
 #drc_in="${drc_pwd}" # [sng] Input file directory
 drc_in='' # [sng] Input file directory
@@ -108,8 +118,8 @@ drc_out="${drc_pwd}" # [sng] Output file directory
 drc_out_xmp="~/rgr" # [sng] Output file directory for examples
 dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
-esmf_opt='> /dev/null' # [sng] ESMF_RegridWeightGen options
-tempest_opt='> /dev/null' # [sng] TempestRemap options
+#esmf_opt='--src_regional --dst_regional --ignore_unmapped' # [sng] ESMF_RegridWeightGen options
+esmf_opt='--ignore_unmapped' # [sng] ESMF_RegridWeightGen options
 fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
 fl_nbr=0 # [nbr] Number of files to remap
 gaa_sng="--gaa rgr_script=${spt_nm} --gaa rgr_hostname=${HOSTNAME} --gaa rgr_version=${nco_version}" # [sng] Global attributes to add
@@ -134,6 +144,7 @@ out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='' # [sng] Parallelism type
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid')
+tps_opt='' # [sng] TempestRemap options
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 tmp_out_fl='ncremap_tmp_foo.nc' # [sng] Temporary output file
@@ -147,15 +158,16 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (more at http://nco.sf.net/nco.html#ncremap)\n\n"
     printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -i in_fl -d dst_fl -o out_fl${fnt_nrm}\n\n"
     echo "Command-line options:"
-    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm})"
+    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for ESMF weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm})"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Destination file (empty means auto-generate) (default ${fnt_bld}${dst_fl}${fnt_nrm})"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debugging level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
+    echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}esmf_opt${fnt_nrm} ESMF ESMF_RegridWeightGen options (default ${fnt_bld}${esmf_opt}${fnt_nrm})"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm})"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means infer, use map_fl, or generate internally) (default ${fnt_bld}${grd_dst}${fnt_nrm})"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation argument string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm})"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm})"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means use stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm})"
-    echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one mapfile per input file)"
+    echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file)"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm})"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm})"
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm})"
@@ -164,6 +176,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regridding options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm})"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}grd_src${fnt_nrm}  Grid-file (source) (empty means infer or use map_fl) (default ${fnt_bld}${grd_src}${fnt_nrm})"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm})"
+    echo "${fnt_rvr}-T${fnt_nrm} ${fnt_bld}tps_opt${fnt_nrm}  TempestRemap GenerateOfflineMap options (default ${fnt_bld}${tps_opt}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_gnr${fnt_nrm}  Weight-generator (default ${fnt_bld}${wgt_gnr}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
@@ -205,11 +218,12 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${@}"
-while getopts :a:D:d:f:g:G:h:I:i:Mm:n:O:o:p:R:s:v:w:x: OPT; do
+while getopts :a:D:d:E:f:g:G:h:I:i:Mm:n:O:o:p:R:s:T:t:v:w:x: OPT; do
     case ${OPT} in
 	a) alg_typ=${OPTARG} ;; # Algorithm
 	D) dbg_lvl=${OPTARG} ;; # Debugging level
 	d) dst_fl=${OPTARG} ;; # Destination file
+	E) esmf_opt=${OPTARG} ;; # ESMF options
 	f) fml_nm=${OPTARG} ;; # Family name
 	g) grd_dst=${OPTARG} ;; # Destination grid-file
 	G) grd_sng=${OPTARG} ;; # Grid generation string
@@ -223,6 +237,7 @@ while getopts :a:D:d:f:g:G:h:I:i:Mm:n:O:o:p:R:s:v:w:x: OPT; do
 	p) par_typ=${OPTARG} ;; # Parallelism type
 	R) rgr_opt=${OPTARG} ;; # Regridding options
 	s) grd_src=${OPTARG} ;; # Source grid-file
+	T) tps_opt=${OPTARG} ;; # Tempest options
 	t) thr_usr=${OPTARG} ;; # Thread number
 	v) var_lst=${OPTARG} ;; # Variables
 	w) wgt_gnr=${OPTARG} ;; # Weight-generator
@@ -239,7 +254,7 @@ grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
 grd_src_dfl="${drc_out}/grd_src.nc" # [sng] Grid-file (source) default
 tmp_out_fl="${drc_out}/${tmp_out_fl}" # [sng] Temporary output file
 if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bln' ] ; then 
-    # ESMF options are bilinear|patch|neareststod|nearestdtos|conserve
+    # ESMF algorithms are bilinear|patch|neareststod|nearestdtos|conserve
     alg_opt='bilinear'
 elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] ; then 
     alg_opt='conserve'
@@ -468,7 +483,7 @@ fi # !dst_usr_flg
 # Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
 # Currently we require user to know (and specify) means by which destination grid is provided
 if [ "${map_usr_flg}" = 'Yes' ]; then 
-    printf "Source and destination grids will both be read from supplied mapfile ${map_fl}\n"
+    printf "Source and destination grids will both be read from supplied map-file ${map_fl}\n"
 else # !map_usr_flg
     fl_idx=0 # [idx] Current file index
     if [ "${dst_usr_flg}" = 'Yes' ]; then 
@@ -515,32 +530,32 @@ else # !map_usr_flg
     fi # !tempest
     if [ ${fl_nbr} -ge 2 ]; then 
 	if [ "${mlt_map_flg}" = 'Yes' ]; then 
-	    printf "Input files assumed to use unique input grids, one mapfile will be generated per input file\n"
+	    printf "Input files assumed to use unique input grids, one map-file will be generated per input file\n"
 	else # !mlt_map_flg
-	    printf "Input files assumed to use same input grid, only one mapfile will be generated\n"
+	    printf "Input files assumed to use same input grid, only one map-file will be generated\n"
 	fi # !mlt_map_flg
     fi # !fl_nbr
 fi # !map_usr
 
 # If user provides source gridfile, assume it applies to every input file
 # Do not infer source gridfiles from input files within file loop
-# Generate mapfile once outside of file loop, and re-use it for every input file
+# Generate map-file once outside of file loop, and re-use it for every input file
 if [ "${grd_src_usr_flg}" = 'Yes' ]; then
     printf "Source grid supplied by user as ${grd_src}\n"
     fl_idx=0
     if [ "${wgt_gnr}" = 'esmf' ]; then 
-	cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
+	cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${esmf_opt} > /dev/null"
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
-	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} ${tempest_opt}"
-	cmd_map[${fl_idx}]="GenerateOfflinemap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tempest_opt}"
+	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} > /dev/null"
+	cmd_map[${fl_idx}]="GenerateOfflineMap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tps_opt} > /dev/null"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_msh[${fl_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_msh[${fl_idx}]}
 	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to generate meshfile. Debug this:\n${cmd_msh[${fl_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to generate mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
@@ -551,9 +566,9 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_map[${fl_idx}]}
 	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR Failed to generate mapfile. Debug this:\n${cmd_map[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
 	    if [ "${wgt_gnr}" = 'esmf' ]; then 
-		printf "${spt_nm}: HINT When ESMF fails to generate mapfiles, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
+		printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
 	    fi # !esmf
 	    exit 1
 	fi # !err
@@ -608,24 +623,24 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	
 	# Block 3: Source->destination maps
-	# Block 3 Loop 1: Mapfile commands
+	# Block 3 Loop 1: Map-file commands
 	printf "Grid(src): ${grd_src}\n"
 	printf "Grid(dst): ${grd_dst}\n"
-	printf "Mapfile  : ${map_fl}\n"
+	printf "Map-File : ${map_fl}\n"
 	if [ "${wgt_gnr}" = 'esmf' ]; then 
-	    cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
+	    cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${esmf_opt} > /dev/null"
 	fi # !esmf
 	if [ "${wgt_gnr}" = 'tempest' ]; then 
-	    printf "Meshfile : ${msh_fl}\n"
-	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} ${tempest_opt}"
-	    cmd_map[${fl_idx}]="GenerateOfflinemap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tempest_opt}"
+	    printf "Mesh-File: ${msh_fl}\n"
+	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} ${tps_opt} > /dev/null"
+	    cmd_map[${fl_idx}]="GenerateOfflinemap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tps_opt} > /dev/null"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_msh[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_msh[${fl_idx}]}
 		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR Failed to generate meshfile. Debug this:\n${cmd_msh[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to generate mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
@@ -638,15 +653,15 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_map[${fl_idx}]}
 	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to generate mapfile. Debug this:\n${cmd_map[${fl_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
 		if [ "${wgt_gnr}" = 'esmf' ]; then 
-		    printf "${spt_nm}: HINT When ESMF fails to generate mapfiles, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
+		    printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
 		fi # !esmf
 		exit 1
 	    fi # !err
 	fi # !dbg
 
-	# Prevent creating new source gridfile and mapfile after first iteration
+	# Prevent creating new source gridfile and map-file after first iteration
 	if [ "${mlt_map_flg}" = 'No' ] && [ ${fl_idx} -eq 0 ] ; then 
 	    map_usr_flg='Yes'
 	fi # !mlt_map_flg
@@ -691,7 +706,9 @@ fi # !par_typ
 date_end=$(date +"%s")
 printf "Completed processing of ${fl_nbr} file(s) at `date`.\n"
 date_dff=$((date_end-date_srt))
-echo "Quick plots of results from last regridded file: ncview ${out_fl} &"
+echo "Quick plots of results from last regridded file:"
+echo "ncview  ${out_fl} &"
+echo "panoply ${out_fl} &"
 echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 
 exit 0

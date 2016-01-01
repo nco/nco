@@ -18599,7 +18599,11 @@ Features common to many operators are described in
 @cindex @code{-a @var{alg_typ}}
 @item -a @var{alg_typ}
 Specifies the interpolation algorithm for weight-generation for use by
-@command{ESMF_RegridWeightGen}.
+@command{ESMF_RegridWeightGen} (@acronym{ERWG}).
+@command{ncremap} unbundles this algorithm choice from the rest of
+the @acronym{ERWG} invocation syntax because interpolation algorithms
+are more frequently change by users than other @acronym{ERWG} options
+(that can be changed with @samp{-E @var{esmf_opt}}).
 The @var{alg_typ} argument must be one of @acronym{ERWG}'s five
 interpolation algorithms: 
 @code{bilinear} (default, acceptable abbreviations are @code{bln}), 
@@ -18610,6 +18614,7 @@ and @code{patch} (or @code{pch} or @code{ptc}).
 See @acronym{ERWG} documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03020000000000000000, here}
 for detailed descriptions of each algorithm. 
+This option currently has no effect on TempestRemap weight-generation. 
 
 @html
 <a name="dbg_lvl"></a> <!-- http://nco.sf.net/nco.html#dbg_lvl -->
