@@ -1,5 +1,7 @@
 2016-01-01  Charlie Zender  <zender@uci.edu>
 
+	* ncremap recover gracefully from Tempest failures (false negative return codes)
+
 	* Implement -E and -T for ESMF and TempestRemap options
 
 	* Remove --src/dst_regional switches from ESMF default
