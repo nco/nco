@@ -65,6 +65,9 @@ fi # DATA
 
 # Production usage (examples for Charlie's machines):
 # ls ${DATA}/sld/raw/*.nc | ncremap -a conserve -D 0 -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
+# ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
+# ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
+# ncremap -a conserve -v FSNT -I ${DATA}/ -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
 # ncremap -i AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/rgr/dst_1x1.nc -O ${DATA}/sld/rgr
 # ncremap -v TSurfAir -i ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v CloudFrc_A -i ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
@@ -106,6 +109,7 @@ drc_out_xmp="~/rgr" # [sng] Output file directory for examples
 dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
 esmf_opt='> /dev/null' # [sng] ESMF_RegridWeightGen options
+tempest_opt='> /dev/null' # [sng] TempestRemap options
 fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
 fl_nbr=0 # [nbr] Number of files to remap
 gaa_sng="--gaa rgr_script=${spt_nm} --gaa rgr_hostname=${HOSTNAME} --gaa rgr_version=${nco_version}" # [sng] Global attributes to add
@@ -123,6 +127,7 @@ map_fl='' # [sng] Map-file
 map_xmp='map.nc' # [sng] Map-file for examples
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
+msh_fl='' # [sng] Mesh-file (for Tempest)
 nco_opt='-O --no_tmp_fl' # [sng] NCO defaults (e.g., '-O -6 -t 1')
 nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 out_fl='' # [sng] Output file
@@ -134,6 +139,7 @@ thr_nbr=2 # [nbr] Thread number for regridder
 tmp_out_fl='ncremap_tmp_foo.nc' # [sng] Temporary output file
 var_lst='' # [sng] Variables to process (empty means all)
 var_xmp='FSNT' # [sng] Variable list for examples
+wgt_gnr='esmf' # [sng] Weight-generator program
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
@@ -159,6 +165,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}grd_src${fnt_nrm}  Grid-file (source) (empty means infer or use map_fl) (default ${fnt_bld}${grd_src}${fnt_nrm})"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
+    echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_gnr${fnt_nrm}  Weight-generator (default ${fnt_bld}${wgt_gnr}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -i ${in_xmp} -m ${map_xmp} -o ${out_xmp} ${fnt_nrm}\n"
@@ -198,7 +205,7 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${@}"
-while getopts :a:D:d:f:g:G:h:I:i:Mm:n:O:o:p:R:s:v:x: OPT; do
+while getopts :a:D:d:f:g:G:h:I:i:Mm:n:O:o:p:R:s:v:w:x: OPT; do
     case ${OPT} in
 	a) alg_typ=${OPTARG} ;; # Algorithm
 	D) dbg_lvl=${OPTARG} ;; # Debugging level
@@ -218,6 +225,7 @@ while getopts :a:D:d:f:g:G:h:I:i:Mm:n:O:o:p:R:s:v:x: OPT; do
 	s) grd_src=${OPTARG} ;; # Source grid-file
 	t) thr_usr=${OPTARG} ;; # Thread number
 	v) var_lst=${OPTARG} ;; # Variables
+	w) wgt_gnr=${OPTARG} ;; # Weight-generator
 	x) xtn_var=${OPTARG} ;; # Extensive variables
 	\?) # Unrecognized option
 	    printf "\nERROR: Option ${fnt_bld}-$OPTARG${fnt_nrm} not allowed"
@@ -284,6 +292,11 @@ fi # !out_fl
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
 fi # !thr_usr
+if [ "${wgt_gnr}" != 'esmf' ] && [ "${wgt_gnr}" != 'tempest' ] ; then 
+	    echo "ERROR: Invalid -w wgt_gnr option = ${wgt_gnr}"
+	    echo "HINT: Valid wgt_gnr arguments are 'esmf' and 'tempest'"
+	    exit 1
+fi # !wgt_gnr
 
 if [ -n "${in_fl}" ]; then
     # Single file argument
@@ -355,7 +368,14 @@ if [ -n "${map_fl}" ]; then
     fi # ! -e
     map_usr_flg='Yes'
 else
-    map_fl_dfl="${drc_out}/map_src_to_dst_${alg_opt}.nc" # [sng] Map-file default
+    if [ "${wgt_gnr}" = 'esmf' ]; then 
+	map_fl_dfl="${drc_out}/map_src_to_dst_${alg_opt}.nc" # [sng] Map-file default
+    fi # !esmf
+    if [ "${wgt_gnr}" = 'tempest' ]; then 
+	map_fl_dfl="${drc_out}/map_src_to_dst_tempest.nc" # [sng] Map-file default
+	msh_fl_dfl="${drc_out}/msh_src_to_dst_tempest.g" # [sng] Mesh-file default
+	msh_fl=${msh_fl_dfl}
+    fi # !tempest
     map_fl=${map_fl_dfl}
 fi # !map_fl
 
@@ -485,8 +505,14 @@ else # !map_usr_flg
 	    fi # !grd_sng_usr_flg
 	fi # !dbg
     fi # !dst_usr_flg || grd_dst_usr_flg
-    printf "Map-file will be generated internally and stored as ${map_fl}\n"
-    printf "Algorithm used to generate weights in map-file is: ${alg_opt}\n"
+    printf "Weight-generation type: ${wgt_gnr}\n"
+    if [ "${wgt_gnr}" = 'esmf' ]; then 
+	printf "ESMF's ESMF_RegridWeightGen will generate map-file internally and store it as ${map_fl}\n"
+	printf "Algorithm used to generate weights in map-file is: ${alg_opt}\n"
+    fi # !esmf
+    if [ "${wgt_gnr}" = 'tempest' ]; then 
+	printf "TempestRemap's GenerateOverlapMesh and GenerateOfflineMap will generate map-file internally and store it as ${map_fl}\n"
+    fi # !tempest
     if [ ${fl_nbr} -ge 2 ]; then 
 	if [ "${mlt_map_flg}" = 'Yes' ]; then 
 	    printf "Input files assumed to use unique input grids, one mapfile will be generated per input file\n"
@@ -498,11 +524,27 @@ fi # !map_usr
 
 # If user provides source gridfile, assume it applies to every input file
 # Do not infer source gridfiles from input files within file loop
-# Generate mapfile outside of file loop, and re-use it for every input file
+# Generate mapfile once outside of file loop, and re-use it for every input file
 if [ "${grd_src_usr_flg}" = 'Yes' ]; then
     printf "Source grid supplied by user as ${grd_src}\n"
-    cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
     fl_idx=0
+    if [ "${wgt_gnr}" = 'esmf' ]; then 
+	cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
+    fi # !esmf
+    if [ "${wgt_gnr}" = 'tempest' ]; then 
+	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} ${tempest_opt}"
+	cmd_map[${fl_idx}]="GenerateOfflinemap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tempest_opt}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_msh[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_msh[${fl_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to generate meshfile. Debug this:\n${cmd_msh[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    fi # !tempest
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_map[${fl_idx}]}
     fi # !dbg
@@ -510,7 +552,9 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
 	eval ${cmd_map[${fl_idx}]}
 	if [ $? -ne 0 ]; then
 	    printf "${spt_nm}: ERROR Failed to generate mapfile. Debug this:\n${cmd_map[${fl_idx}]}\n"
-	    printf "${spt_nm}: HINT When ESMF fails to generate mapfiles, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
+	    if [ "${wgt_gnr}" = 'esmf' ]; then 
+		printf "${spt_nm}: HINT When ESMF fails to generate mapfiles, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
+	    fi # !esmf
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -568,7 +612,24 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	printf "Grid(src): ${grd_src}\n"
 	printf "Grid(dst): ${grd_dst}\n"
 	printf "Mapfile  : ${map_fl}\n"
-	cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
+	if [ "${wgt_gnr}" = 'esmf' ]; then 
+	    cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} --src_regional --dst_regional --ignore_unmapped ${esmf_opt}"
+	fi # !esmf
+	if [ "${wgt_gnr}" = 'tempest' ]; then 
+	    printf "Meshfile : ${msh_fl}\n"
+	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} ${tempest_opt}"
+	    cmd_map[${fl_idx}]="GenerateOfflinemap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tempest_opt}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_msh[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_msh[${fl_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to generate meshfile. Debug this:\n${cmd_msh[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !tempest
 	
 	# Block 3 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -578,7 +639,9 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    eval ${cmd_map[${fl_idx}]}
 	    if [ $? -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to generate mapfile. Debug this:\n${cmd_map[${fl_idx}]}\n"
-		printf "${spt_nm}: HINT When ESMF fails to generate mapfiles, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
+		if [ "${wgt_gnr}" = 'esmf' ]; then 
+		    printf "${spt_nm}: HINT When ESMF fails to generate mapfiles, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
+		fi # !esmf
 		exit 1
 	    fi # !err
 	fi # !dbg

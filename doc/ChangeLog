@@ -1,5 +1,7 @@
 2015-12-31  Charlie Zender  <zender@uci.edu>
 
+	* Add ncremap TempestRemap option with -w 'tempest'
+
 	* NCO 4.5.4-beta04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.4-beta04 final changes';git push
 	git tag -a 4.5.4-beta04 -m 'Version 4.5.4-beta04 new features: ncremap solidity';git push --tags

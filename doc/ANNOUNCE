@@ -43,11 +43,12 @@ A. ncremap: A new netCDF operator for regridding.
    Please try ncremap and send us your feedback and suggestions.
    Examples:
    ncremap -i src.nc -d dst.nc -o out.nc
+   ls gcm14*cam*0007*.nc | ncremap -a conserve -M -d dst_1x1.nc -O ~/rgr
    http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf # AGU Poster
    http://nco.sf.net/nco.html#ncremap
 
-B. ncks prints XML "_Unsigned" attribute to denote unsigned attribute
-   types. Formerly, ncks did not preserve the signedness of attributes.
+B. ncks prints XML "_Unsigned" attribute for unsigned attribute types.
+   Formerly, ncks did not preserve the signedness of attributes.
    Thanks to Aleksandar Jelenak and Ed Armstrong for this suggestion.
    % ncks -v att_var --xml ~/nco/data/in_4.nc | grep Unsigned
     <attribute name="ubyte_att" type="byte" isUnsigned="true" value="0 1 2 127 128 254 255 0" />
