@@ -633,7 +633,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ "${wgt_gnr}" = 'tempest' ]; then 
 	    printf "Mesh-File: ${msh_fl}\n"
 	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} ${tps_opt} > /dev/null"
-	    cmd_map[${fl_idx}]="GenerateOfflinemap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tps_opt} > /dev/null"
+	    cmd_map[${fl_idx}]="GenerateOfflineMap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tps_opt} > /dev/null"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_msh[${fl_idx}]}
 	    fi # !dbg
