@@ -369,11 +369,11 @@ if [ -n "${map_fl}" ]; then
     map_usr_flg='Yes'
 else
     if [ "${wgt_gnr}" = 'esmf' ]; then 
-	map_fl_dfl="${drc_out}/map_src_to_dst_${alg_opt}.nc" # [sng] Map-file default
+	map_fl_dfl="${drc_out}/map_src_to_dst_${wgt_gnr}_${alg_opt}.nc" # [sng] Map-file default
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
-	map_fl_dfl="${drc_out}/map_src_to_dst_tempest.nc" # [sng] Map-file default
-	msh_fl_dfl="${drc_out}/msh_src_to_dst_tempest.g" # [sng] Mesh-file default
+	map_fl_dfl="${drc_out}/map_src_to_dst_${wgt_gnr}.nc" # [sng] Map-file default
+	msh_fl_dfl="${drc_out}/msh_src_to_dst_${wgt_gnr}.g" # [sng] Mesh-file default
 	msh_fl=${msh_fl_dfl}
     fi # !tempest
     map_fl=${map_fl_dfl}
