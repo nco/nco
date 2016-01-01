@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.4-beta03 are ready. 
+The netCDF Operators NCO version 4.5.4-beta04 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -29,20 +29,20 @@ NEW FEATURES (full details always in ChangeLog):
 A. ncremap: A new netCDF operator for regridding.
    ncremap is a shell script that wraps ncks to produce a friendly
    interface to regridding features. Without any external dependencies,
-   ncremap will apply weights from a pre-exisiting mapfile to a source
-   data file to produce a regrided dataset. Source and destination
+   ncremap applies weights from a pre-exisiting mapfile to input data
+   file(s) to produce a regrided dataset(s). Source and destination 
    datasets may be on any Curvilinear, Rectangular, or Unstructured
    Data (CRUD) grid. ncremap will also, when necessary, use the
    external program ESMF_RegridWeightGen (ERWG) to generate weights,
    and use those to regrid. ERWG is distributed in binary format with
-   NCL, which many (most?) users already have on their system.
+   NCL, which many (most?) users already have on their system.  
    Or ERWG may be installed from source:
    https://earthsystemcog.org/projects/esmf/download_last_public 
-   ncremap can also utilize (though not yet generate) TempestRemap
-   mapfiles:
+   ncremap can utilize (though not generate) TempestRemap mapfiles: 
    https://github.com/ClimateGlobalChange/tempestremap
+   Please try ncremap and send us your feedback and suggestions.
    Examples:
-   ncremap -s src.nc -d dst.nc -o out.nc
+   ncremap -i src.nc -d dst.nc -o out.nc
    http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf # AGU Poster
    http://nco.sf.net/nco.html#ncremap
 

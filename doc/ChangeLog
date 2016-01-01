@@ -1,6 +1,10 @@
 2015-12-31  Charlie Zender  <zender@uci.edu>
 
-	* Barrage of tweaks to make ncremap have sensible defaults on non-CSZ machines
+	* NCO 4.5.4-beta04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.4-beta04 final changes';git push
+	git tag -a 4.5.4-beta04 -m 'Version 4.5.4-beta04 new features: ncremap solidity';git push --tags
+
+	* Barrage of tweaks to give ncremap sensible defaults on non-CSZ machines
 
 	* Add ncremap -M mlt_map_flg toggle switch, clean-up examples, finish documentation
 
