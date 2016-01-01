@@ -1,3 +1,9 @@
+2015-12-31  Charlie Zender  <zender@uci.edu>
+
+	* Barrage of tweaks to make ncremap have sensible defaults on non-CSZ machines
+
+	* Add ncremap -M mlt_map_flg toggle switch, clean-up examples, finish documentation
+
 2015-12-30  Charlie Zender  <zender@uci.edu>
 
 	* Support specifying source grid instead of inferring from source file
