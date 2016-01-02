@@ -670,7 +670,11 @@ nco1123. ESGF access
       ncks -M http://esgf-data2.ceda.ac.uk/thredds/dodsC/cmip5.output1.MOHC.HadGEM2-ES.rcp85.mon.ocean.Omon.r1i1p1.uo.20111014.aggregation.1
 nco1124. ncra fix ncra --wgt_nm to work (i.e., correctly normalize) with missing values
 nco1125. ncpdq add option for user-specified scale_factor/add_offset
-nco1126. 
+nco1126. ncra segfault with MSA christine smit regardless of presence of scale_factor, add_offset. appears that ncra does not play well with MSA on record dimension. leads to free() error.
+      ncra -O -d time,1,1 -d time,3,3 ~/christine.nc ~/foo.nc # borken
+      ncra -O -C -v one_dmn_rec_var -d time,0,0 -d time,2,2 ~/nco/data/in.nc ~/foo.nc # borken
+      ncra -O -C -v one_dmn_rec_var -d time,0,0 -d time,1,1 ~/nco/data/in.nc ~/foo.nc # works
+nco1127. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

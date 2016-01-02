@@ -299,14 +299,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 3
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE  "beta02" /* Blank for final versions, non-blank (e.g., "beta37") for pre-release versions */
+# define NCO_VERSION_NOTE  "beta04" /* Blank for final versions, non-blank (e.g., "beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.5.4-beta02"
+# define NCO_VERSION "4.5.4-beta04"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -317,10 +317,13 @@ extern "C" {
 # define NC_MPIIO    0x2000 /* Turn on MPI I/O. Mode flag for both nc_create() and nc_open(). */
 #endif
 #ifndef NC_MPIPOSIX
-# define NC_MPIPOSIX 0x4000 /* Turn on MPI POSIX I/O. Mode flag for both nc_create() and nc_open(). */
+# define NC_MPIPOSIX 0x4000 /* Turn on MPI POSIX I/O. Mode flag for both nc_create() and nc_open(). Deprecated as of libhdf5 1.8.13. */
+#endif
+#ifndef NC_INMEMORY
+# define NC_INMEMORY  0x8000 /* Read from memory. Mode flag for nc_open() or nc_create() */
 #endif
 #ifndef NC_PNETCDF
-# define NC_PNETCDF  0x8000 /* Use parallel-netcdf library. Mode flag for nc_open(). */
+# define NC_PNETCDF  (NC_MPIIO) /* Use parallel-netcdf library. Alias for NC_MPIIO */
 #endif
 /* Use these with nc_var_par_access(). */
 #ifndef NC_INDEPENDENT
@@ -358,7 +361,10 @@ extern "C" {
 #endif
 
 /* Six compatibility tokens not all available until netCDF 3.6.1 netcdf.h
-   NC_64BIT_OFFSET is used (so far) only in nco_fl_utl.c */
+   NC_64BIT_OFFSET is used (so far) only in nco_fl_utl.c
+   20151222: Introduction of CDF5 in netCDF 4.4.0-RC4 netcdf.h makes original NC_FORMAT_64BIT token ambiguous
+   Type introduced as NC_FORMAT_64BIT in netCDF 3.X is now properly called NC_FORMAT_64BIT_OFFSET (64-bit offsets/pointers NOT data)
+   Type introduced as CDF5 (from pnetCDF) in netCDF 4.4.0 is properly called NC_FORMAT_64BIT_DATA (64-bit offsets/pointers AND data) */
 #ifndef NC_CLASSIC_MODEL
 # define NC_CLASSIC_MODEL 0x0100 /**< Enforce classic model. Mode flag for nc_create(). */
 #endif
@@ -371,8 +377,11 @@ extern "C" {
 #ifndef NC_FORMAT_CLASSIC
 # define NC_FORMAT_CLASSIC (1)
 #endif
+#ifndef NC_FORMAT_64BIT_OFFSET
+# define NC_FORMAT_64BIT_OFFSET   (2)
+#endif
 #ifndef NC_FORMAT_64BIT
-# define NC_FORMAT_64BIT   (2)
+# define NC_FORMAT_64BIT (NC_FORMAT_64BIT_OFFSET)
 #endif
 #ifndef NC_FORMAT_NETCDF4
 # define NC_FORMAT_NETCDF4 (3)
@@ -380,8 +389,14 @@ extern "C" {
 #ifndef NC_FORMAT_NETCDF4_CLASSIC
 # define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
 #endif
+#ifndef NC_FORMAT_64BIT_DATA
+# define NC_FORMAT_64BIT_DATA   (5)
+#endif
 
-  /* Seven compatibility tokens introduced 20131222 in netCDF 4.3.1-rc7 netcdf.h */
+  /* 20131222: Seven compatibility tokens introduced in netCDF 4.3.1-rc7 netcdf.h
+     20151222: Tokens are superseded in netCDF 4.4.0-RC4 netcdf.h by same tokens with "FORMATX" instead of "FORMAT"
+     This disambiguates extended format (FORMATX) flags returned by nc_inq_format_extended() from format flags (e.g., NC_FORMAT_CLASSIC) returned by nco_inq_format()
+     Also added NC_FORMAT_NC4 as alias to NC_FORMAT_NC_HDF5 */
 #ifndef NC_FORMAT_UNDEFINED
 # define NC_FORMAT_UNDEFINED (0)
 #else
@@ -391,10 +406,13 @@ extern "C" {
 # define NC_FORMAT_NC3     (1)
 #endif
 #ifndef NC_FORMAT_NC_HDF5
-# define NC_FORMAT_NC_HDF5 (2) /*cdf 4 subset of HDF5 */
+# define NC_FORMAT_NC_HDF5 (2) /* netCDF-4 subset of HDF5 */
+#endif
+#ifndef NC_FORMAT_NC4
+# define NC_FORMAT_NC4 NC_FORMAT_NC_HDF5 /* alias */
 #endif
 #ifndef NC_FORMAT_NC_HDF4
-# define NC_FORMAT_NC_HDF4 (3) /* netcdf 4 subset of HDF4 */
+# define NC_FORMAT_NC_HDF4 (3) /* netCDF-4 subset of HDF4 */
 #endif
 #ifndef NC_FORMAT_PNETCDF
 # define NC_FORMAT_PNETCDF (4)
@@ -404,6 +422,32 @@ extern "C" {
 #endif
 #ifndef NC_FORMAT_DAP4
 # define NC_FORMAT_DAP4    (6)
+#endif
+#ifndef NC_FORMATX_UNDEFINED
+# define NC_FORMATX_UNDEFINED (0)
+#else
+# define NC_HAVE_INQ_FORMATX_EXTENDED
+#endif
+#ifndef NC_FORMATX_NC3
+# define NC_FORMATX_NC3     (1)
+#endif
+#ifndef NC_FORMATX_NC_HDF5
+# define NC_FORMATX_NC_HDF5 (2) /* netCDF4 subset of HDF5 */
+#endif
+#ifndef NC_FORMATX_NC4
+# define NC_FORMATX_NC4 NC_FORMATX_NC_HDF5 /* alias */
+#endif
+#ifndef NC_FORMATX_NC_HDF4
+# define NC_FORMATX_NC_HDF4 (3) /* netcdf4 subset of HDF4 */
+#endif
+#ifndef NC_FORMATX_PNETCDF
+# define NC_FORMATX_PNETCDF (4)
+#endif
+#ifndef NC_FORMATX_DAP2
+# define NC_FORMATX_DAP2    (5)
+#endif
+#ifndef NC_FORMATX_DAP4
+# define NC_FORMATX_DAP4    (6)
 #endif
 
   /* Three compatibility tokens from pnetcdf.h introduced to NCO 20140604 

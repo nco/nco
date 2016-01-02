@@ -1,8 +1,85 @@
+2016-01-01  Charlie Zender  <zender@uci.edu>
+
+	* Complete ncremap documentation, including limitations
+
+	* ncremap recover gracefully from Tempest failures (false negative return codes)
+
+	* Implement -E and -T for ESMF and TempestRemap options
+
+	* Remove --src/dst_regional switches from ESMF default
+
+	* Change default ESMF interpolation algorithm from bilinear to conserve
+
+2015-12-31  Charlie Zender  <zender@uci.edu>
+
+	* Add ncremap TempestRemap option with -w 'tempest'
+
+	* NCO 4.5.4-beta04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.4-beta04 final changes';git push
+	git tag -a 4.5.4-beta04 -m 'Version 4.5.4-beta04 new features: ncremap solidity';git push --tags
+
+	* Barrage of tweaks to give ncremap sensible defaults on non-CSZ machines
+
+	* Add ncremap -M mlt_map_flg toggle switch, clean-up examples, finish documentation
+
+2015-12-30  Charlie Zender  <zender@uci.edu>
+
+	* Support specifying source grid instead of inferring from source file
+
+	* Re-arrange ncremap options again, use -i for in_fl, -s for src_grd
+
+	* Add MODIS L2 coordinate information to usual suspects database
+
+	* Introduce basic background parallelism and PID-based status checking into ncremap
+
+	* Note that inferred ACME grids are unusable by ERWG due to lack of corner information
+
+2015-12-29  Charlie Zender  <zender@uci.edu>
+
+	* Treat variables named wgt_* like coordinates (and gw and msk_*): avoid math when possible
+
+2015-12-28  Charlie Zender  <zender@uci.edu>
+
+	* Restructure ncremap to use -m map_fl and allow stdin
+
+2015-12-24  Charlie Zender  <zender@uci.edu>
+
+	* Improve ncremap documentation in nco.texi
+
+	* Fix mebs formula in nco.texi
+
+2015-12-23  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.4-beta03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.4-beta03 final changes';git push
+	git tag -a 4.5.4-beta03 -m 'Version 4.5.4-beta03 new features: ncremap in autotools;ncpdq bug;netCDF 4.4.0 tokens';git push --tags
+
+	* Finish minimal ncremap.1 man page
+
+	* Note ncra test #39 is expected to fail due to TODO nco1126
+
+	* Add ncremap script to bin directory in data/Makefile.am, bld/Makefile, man/Makefile.am, man/man1
+
+	* Simplify broken ncpdq handling of dimension reversal list. Change dmn_rvr_rdr from static to dynamic array.
+	Prevent writing past end of dmn_rvr_rdr. Index dmn_rvr_rdr same as dmn_rdr. Fixes Feng Ding's command:
+	ncpdq -O -a StdPressureLev,GeoTrack,GeoXTrack ${DATA}/hdf/AIRS.2014.10.01.202.L2.RetStd.v6.0.11.0.G14275134307.hdf.nc ~/foo.nc
+	Breaks regression test ncpdq #41
+
+2015-12-22  Charlie Zender  <zender@uci.edu>
+
+	* Backward-compatible definitions of new tokens in netCDF 4.4.0 including NC_FORMATX_* tokens and NC_FORMAT_64BIT_[DATA/OFFSET] for CDF5
+
+	* Add XLAT_M, XLONG_M coordinates to regridder database of usual suspects
+
+	* Re-assign some ncremap switches to be more heuristic
+
+	* Add ncremap to documentation
+
 2015-12-21  Charlie Zender  <zender@uci.edu>
 
 	* Compare grid spans and interfaces in single-precision (e.g., to 180.0f, 360.0f) to be more error-tolerant
 
-	* ncremap pass through dbgl_lvl >= 3 to ncks, enable user-defined thr_nbr
+	* ncremap pass through dbg_lvl >= 3 to ncks, enable user-defined thr_nbr
 
 2015-12-20  Charlie Zender  <zender@uci.edu>
 

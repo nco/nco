@@ -78,6 +78,7 @@ techniques for climate data analysis:
 | `ncpdq` | netCDF Permute Dimensions Quickly, Pack Data Quietly | [here](http://nco.sf.net/nco.html#ncpdq) |
 | `ncra` | netCDF Record Averager       | [here](http://nco.sf.net/nco.html#ncra) |
 | `ncrcat` | netCDF Record conCATenator | [here](http://nco.sf.net/nco.html#ncrcat) |
+| `ncremap` | netCDF REMAPer          | [here](http://nco.sf.net/nco.html#ncremap) |
 | `ncrename` | netCDF RENAMEer          | [here](http://nco.sf.net/nco.html#ncrename) |
 | `ncwa` | netCDF Weighted Averager     | [here](http://nco.sf.net/nco.html#ncwa) |
 

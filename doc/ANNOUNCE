@@ -1,14 +1,25 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.4-beta02 are ready. 
+The netCDF Operators NCO version 4.5.4-beta04 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
-Work on NCO 4.5.4 has commenced and will better support eliciting
-latitude/longitude coordinates using the CF "coordinates" convention,
-regridding variables whose horizontal dimensions are not the
-most-rapidly-varying.
+We are pleased to introduce ncremap, a new operator for regridding. 
+ncremap is a shell script that wraps ncks to produce a friendly
+interface to regridding features. Without any external dependencies,
+ncremap applies weights from a pre-exisiting mapfile to a source
+data file to produce a regridded dataset. Source and destination
+datasets may be on any Curvilinear, Rectangular, or Unstructured
+Data (CRUD) grid. When necessary ncremap calls ESMF_RegridWeightGen to
+generate weights and uses those to regrid. ncremap hides the
+complexity of regridding from the user, who can know next-to-nothing
+about regridding.
+
+Work on NCO 4.5.5 has commenced and will better support eliciting
+latitude/longitude coordinates using the CF "coordinates" convention
+and regridding variables whose horizontal dimensions are not the
+most-rapidly-varying, and ncremap support for calling TempestRemap.  
 
 Enjoy,
 Charlie
@@ -16,17 +27,26 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. ncremap: A new netCDF operator for regridding.
-   ncremap is a shell script that wraps ncks to produce a friendlier
-   interface to the regridding. Without any external dependencies,
-   ncremap will apply weights from a pre-exisiting mapfile to a source
-   data file to produce a regrided dataset. Source and destination
+   ncremap is a shell script that wraps ncks to produce a friendly
+   interface to regridding features. Without any external dependencies,
+   ncremap applies weights from a pre-exisiting mapfile to input data
+   file(s) to produce a regrided dataset(s). Source and destination 
    datasets may be on any Curvilinear, Rectangular, or Unstructured
-   Data (CRUD) grid. ncremap will also use external programs, when
-   necessary, to generate weights, and use those to regrid.
-   Prequisites for this are ESMF_RegridWeightGen and/or TempestRemap. 
+   Data (CRUD) grid. ncremap will also, when necessary, use external
+   programs (ESMF's ESMF_RegridWeightGen (ERWG), or TempestRemap's
+   GenerateOverlapMesh/GenerateOfflineMap) to generate weights and
+   mapfiles and use those to regrid. ERWG is distributed in binary
+   format with NCL, which many (most?) users already have on their
+   system. Or ERWG and TempestRemap may be installed from source. 
+   Please try ncremap and send us your feedback and suggestions.
+   Examples:
+   ncremap -i src.nc -d dst.nc -o out.nc
+   ls gcm14*cam*0007*.nc | ncremap -a conserve -M -d dst_1x1.nc -O ~/rgr
+   http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf # AGU Poster
+   http://nco.sf.net/nco.html#ncremap
 
-A. ncks prints XML "_Unsigned" attribute to denote unsigned attribute
-   types. Formerly, ncks did not preserve the signedness of attributes.
+B. ncks prints XML "_Unsigned" attribute for unsigned attribute types.
+   Formerly, ncks did not preserve the signedness of attributes.
    Thanks to Aleksandar Jelenak and Ed Armstrong for this suggestion.
    % ncks -v att_var --xml ~/nco/data/in_4.nc | grep Unsigned
     <attribute name="ubyte_att" type="byte" isUnsigned="true" value="0 1 2 127 128 254 255 0" />
@@ -34,11 +54,11 @@ A. ncks prints XML "_Unsigned" attribute to denote unsigned attribute
     <attribute name="uint64_att" type="long" isUnsigned="true" value="0" />
    http://nco.sf.net/nco.html#xml
 
-A. ncap2 now accepts [] and () syntax interchangeably.
+C. ncap2 now accepts [] and () syntax interchangeably.
    Expressions which formerly had to use one or the other can now
    use either. Brought to you by Henry.
 
-A. ncap2 now conforms arrays by hyperslabbed dimension size rather
+D. ncap2 now conforms arrays by hyperslabbed dimension size rather
    than by dimension name. This mean, e.g., that hyperslabs from
    one dimension can be used to fill-in other dimensions.
    A prototypical example is determining pressure thickness of layers
@@ -52,6 +72,14 @@ A. ncap2 now conforms arrays by hyperslabbed dimension size rather
    Thanks to Philip Cameron-Smith for suggesting and to Henry Butowsky
    for implementing this new feature.
 
+E. NCO now treats variables named wgt_* as weights and avoids
+   performing math on them when possible. E.g., ncbo will preserve
+   (and not difference) the variable wgt_1. This is the same behavior
+   that NCO uses for coordinates, "gw", and masks (named with msk_*.)
+   The idea is that weights are a property of the grid and should not
+   be differenced, averaged, etc., unless necesssary.
+   http://nco.sf.net/nco.html#prc_xcp
+
 BUG FIXES:
 
 A. ncks -V in (at least) versions 4.5.1--4.5.3 could segfault.
@@ -59,7 +87,7 @@ A. ncks -V in (at least) versions 4.5.1--4.5.3 could segfault.
    The workaround is not to use -V, solution is to upgrade to 4.5.4. 
    Thanks to Patrick Nichols for reporting the problem.
 
-A. After dimension reduction operations, ncra and ncwa excise the
+B. After dimension reduction operations, ncra and ncwa excise the
    reduced dimensions from the CF "coordinates" attribute, if any.
    Versions 4.4.9--4.5.3 could, under certain circumstances involving
    multiple dimensions, retain extra whitespace in "coordinates".
@@ -73,7 +101,7 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.5.3 built/tested with netCDF
-   4.4.0-development (20151024) on top of HDF5 hdf5-1.8.13 with:
+   4.4.0-development (20160101) on top of HDF5 hdf5-1.8.13 with:
 
    cd ~/nco;./configure # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
@@ -127,6 +155,7 @@ B. NOT YET FIXED (netCDF4 library bug)
 
    20150922: Confirmed problem reported by Isabelle Dast, reported to Unidata
    20150924: Unidata confirmed problem
+   20151221: Verified problem still exists in netCDF library
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd

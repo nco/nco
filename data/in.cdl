@@ -371,7 +371,7 @@ variables:
 
 	float lon_wgt(lon);
 	lon_wgt:long_name = "Gaussian weights";
-	lon_wgt:purpose = "Gaussian weights which sum to two for n = 4. These weights are all have floor of 0.0 so should cause SIGFPE when applied to integer types in weighted average.";
+	lon_wgt:purpose = "Gaussian weights which sum to two for n = 4. These weights all have floor of 0.0 so should cause SIGFPE when applied to integer types in weighted average.";
 
 	double ppc_dbl(time);
         ppc_dbl:long_name = "Precision-Preserving Compression, double precision";
@@ -859,6 +859,26 @@ variables:
 	var_msk:long_name = "Float field for testing masks and wheres";
 	var_msk:units = "fraction";
 
+	float var_mss_nil(lon);
+        var_mss_nil:purpose = "Test mismatched missing values in variables, masks, and weights. Missing no elements.";
+	var_mss_nil:_FillValue = 1.0e36f;
+
+	float var_mss_0(lon);
+        var_mss_0:purpose = "Test mismatched missing values in variables, masks, and weights. Missing element index 0.";
+	var_mss_0:_FillValue = 1.0e36f;
+
+	float var_mss_1(lon);
+        var_mss_1:purpose = "Test mismatched missing values in variables, masks, and weights. Missing element index 1.";
+	var_mss_1:_FillValue = 1.0e36f;
+
+	float var_mss_2(lon);
+        var_mss_2:purpose = "Test mismatched missing values in variables, masks, and weights. Missing element index 2.";
+	var_mss_2:_FillValue = 1.0e36f;
+	
+	float var_mss_3(lon);
+        var_mss_3:purpose = "Test mismatched missing values in variables, masks, and weights. Missing element index 3.";
+	var_mss_3:_FillValue = 1.0e36f;
+	
 	float mask(lat,lon);
 	mask:long_name = "Purpose is to mask a variable like ORO";
 	mask:units = "fraction";
@@ -1311,6 +1331,12 @@ data:
 	ppc_zro_flt=0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0;
 	ppc_zro_dbl=0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0;
 	ppc_zro_int=0,0,0,0,0,0,0,0,0,0;
+	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
+	var_mss_nil=0.,1.,2.,3.;
+	var_mss_0=_,1.,2.,3.;
+	var_mss_1=0.,_,2.,3.;
+	var_mss_2=0.,1.,_,3.;
+	var_mss_3=0.,1.,2.,_;
 	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
 	ORO=0.,1.,0.,0.,1.,1.,0.,2.;
 	mask=0.,1.,0.,0.,1.,1.,0.,2.;

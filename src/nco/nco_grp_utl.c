@@ -4930,17 +4930,18 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
  const nco_bool *dmn_rvr_rdr)         /* I [flg] Reverse dimension */
 {
   /* Purpose: Determine and set new dimensionality in metadata of each re-ordered variable
-     Based in nco_var_dmn_rdr_mtd(). LIMITATION: the first record dimension for the object variable is used
-     Test case : ncpdq -O -a lev,time -v two_dmn_rec_var in.nc out.nc
-     Mark lev as record and un-mark time as record (by setting the record name as lev) */
+     Based in nco_var_dmn_rdr_mtd(). 
+     NB: first record dimension for object variable is used
+     Test case: ncpdq -O -a lev,time -v two_dmn_rec_var in.nc out.nc
+     Mark lev as record and un-mark time as record (by setting record name to lev) */
 
   char *rec_dmn_nm_out_crr; /* [sng] Name of record dimension, if any, required by re-order */
   char *rec_dmn_nm_in; /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out; /* [sng] Record dimension name, re-ordered */
-  int dmn_idx_out_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
+  int dmn_idx_out_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, output->input (Stored in GTT) */
   int nco_prg_id; /* [enm] Program ID */
   nco_bool REDEFINED_RECORD_DIMENSION; /* [flg] Re-defined record dimension */
-  nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension  (Stored in GTT ) */
+  nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension (Stored in GTT) */
   nm_lst_sct *rec_dmn_nm; /* [sct] Record dimension names array */
 
   /* Get Program ID */
@@ -4991,7 +4992,7 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
     } /* end loop over dimensions */
 
     /* If record dimension required by current variable re-order...
-    ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
+       ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
     if(rec_dmn_nm_in && rec_dmn_nm_out_crr && var_prc_out[idx_var_prc]->nbr_dim > 1){
       /* ...differs from input and current output record dimension(s)... */
       if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_in) && strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
@@ -5910,7 +5911,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
  dmn_sct ***dmn_avg,                   /* O [sct] Array of dimensions to average */
  int *nbr_dmn_avg)                     /* O [nbr] Number of dimensions to average (size of above array) */
 {
-  /* Purpose: Create list of dimensions from list of dimension name strings (function based in nco_xtr_mk() ) */
+  /* Purpose: Create list of dimensions from list of dimension name strings. Function based on nco_xtr_mk(). */
 
   /* Dimensions to average/not average are built using these 3 functions:
      
@@ -6054,7 +6055,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
     } /* Loop table */
   } /* Loop input dimension name list */
   
-    /* Export */
+  /* Export */
   *nbr_dmn_avg=nbr_avg_dmn;
   
   if(nco_dbg_lvl_get() >= nco_dbg_var){ 

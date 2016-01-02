@@ -69,6 +69,10 @@ mdl_3.nc : mdl_3.cdl
 
 all: ${test_data} ${test_data_netCDF4}
 
+# Autoconf/automake instructions for scripts:
+# https://www.gnu.org/software/automake/manual/html_node/Scripts.html
+dist_bin_SCRIPTS = ncremap
+
 EXTRA_DIST = big.cdl dsm.cdl hdn.cdl mrd.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_grp_4.cdl in_grp_5.cdl in_grp_6.cdl in_grp_7.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl_1.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 
 # Automake manual section 14:
