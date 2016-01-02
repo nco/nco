@@ -149,7 +149,10 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2015 Nov&nbsp;??: 4.5.4 (<i>In progress</i>)
+<li>2015 Jan&nbsp;??: 4.5.5 (<i>In progress</i>)
+<li>2015 Jan&nbsp;??: 4.5.4 (<tt>ncremap</tt>)
+<li>2015 Dec&nbsp;16: <a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">Poster</a> at Fall AGU, San Francisco, California</li>
+<li>2015 Nov&nbsp;04: <a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">Talk</a> at DOE ACME, Albuquerque, New Mexico</li>
 <li>2015 Oct&nbsp;20: 4.5.3 (Curvilinear)
 <li>2015 Sep&nbsp;06: 4.5.2 (Generate SCRIP)
 <li>2015 Jul&nbsp;10: 4.5.1 (Stability)
@@ -164,7 +167,7 @@ and
 <li>2014 May&nbsp;29: 4.4.4 (Stability)
 <li>2014 Apr&nbsp;02: 4.4.3 (Stability)
 <li>2014 Mar&nbsp;27: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">Talk</a> at NASA GSFC, Greenbelt, Maryland</li>
-<li>2014 Mar&nbsp;25: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
+<li>2014 Mar&nbsp;25: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> at NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2014 Feb&nbsp;20: 4.4.2 (Stability)
 <li>2014 Jan&nbsp;29: 4.4.1 (Stability)
 <li>2014 Jan&nbsp;09: 4.4.0 (Stability)
@@ -172,7 +175,7 @@ and
 <li>2013 Dec&nbsp;02: 4.3.9 (new operator, <tt>nces</tt>)
 <li>2013 Nov&nbsp;06: 4.3.8 (<tt>ncatted</tt> groups)
 <li>2013 Oct&nbsp;17: 4.3.7 (HDF4, XML, <tt>ncrename</tt> groups)
-<li>2013 Oct&nbsp;02: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201310.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
+<li>2013 Oct&nbsp;02: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201310.pdf">Poster</a> at NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2013 Sep&nbsp;27: 4.3.6 (<tt>--dbl</tt> default, <tt>ncdismember</tt>)
 <li>2013 Sep&nbsp;20: 4.3.5 (<tt>nces</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups)
 <li>2013 Aug&nbsp;01: 4.3.4 (<tt>ncpdq</tt> bugfix, HDF unpacking)
@@ -707,7 +710,7 @@ Optimize diskless files?;</li>
 <tt>ncap2</tt> syntax simplification/fixes;
 <tt>ncks -V</tt> bugfix;
 <tt>ncks</tt> XML <tt>_Unsigned</tt> attribute;
-<tt>ncremap</tt> introduced;
+<tt>ncremap</tt> debues;
 <tt>ncwa</tt> fix whitespace in <tt>coordinates</tt> attribute;</li>
 <li><b>NCO 4.5.3</b>: 
 <tt>ncatted</tt> fix deletion of all attributes;
