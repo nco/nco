@@ -75,18 +75,21 @@ fi # DATA
 # ncremap -i ${DATA}/hdf/OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5 -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v T -i ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v StepTwoO3 -i ${DATA}/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc -d ${DATA}/hdf/cam_time.nc -O ~/rgr
-# ncremap -v TSurfStd -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -G "--rgr grd_ttl='Default internally-generated grid' --rgr grid=~/rgr/grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-130.0,-90.0" -O ~/rgr
+# ncremap -v TSurfStd -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -G "--rgr grd_ttl='Default internally-generated grid' --rgr grid=~/rgr/ncremap_tmp_grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-130.0,-90.0" -O ~/rgr
 # ncremap -x TSurfStd_ct -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/hdf/cice_hi_flt.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/hdf/cam_time.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
-# CESM & ACME
+# CESM & ACME:
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.cam.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.clm2.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.cice.h.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.pop.h.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.rtm.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
-# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m map_ne30np4_to_fv129x256_aave.150418.nc -O ~/rgr
+# ACME benchmarks:
+# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m map_ne30np4_to_fv129x256_aave.150418.nc   -O ~/rgr
 # ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
+# ncremap -v FSNT,AODVIS -w esmf    -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
+# ncremap -v FSNT,AODVIS -w tempest -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
 
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr > ~/ncremap.out 2>&1 &
@@ -120,7 +123,7 @@ dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
 #esmf_opt='--src_regional --dst_regional --ignore_unmapped' # [sng] ESMF_RegridWeightGen options
 esmf_opt='--ignore_unmapped' # [sng] ESMF_RegridWeightGen options
-fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
+#fml_nm='' # [sng] Family name (e.g., 'amip', 'control', 'experiment')
 fl_nbr=0 # [nbr] Number of files to remap
 gaa_sng="--gaa rgr_script=${spt_nm} --gaa rgr_hostname=${HOSTNAME} --gaa rgr_version=${nco_version}" # [sng] Global attributes to add
 grd_dst='' # [sng] Destination grid-file
@@ -147,7 +150,7 @@ rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options (
 tps_opt='' # [sng] TempestRemap options
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
-tmp_out_fl='ncremap_tmp_foo.nc' # [sng] Temporary output file
+tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
 var_lst='' # [sng] Variables to process (empty means all)
 var_xmp='FSNT' # [sng] Variable list for examples
 wgt_gnr='esmf' # [sng] Weight-generator program
@@ -162,7 +165,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Destination file (empty means auto-generate) (default ${fnt_bld}${dst_fl}${fnt_nrm})"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debugging level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
     echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}esmf_opt${fnt_nrm} ESMF ESMF_RegridWeightGen options (default ${fnt_bld}${esmf_opt}${fnt_nrm})"
-    echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm})"
+#    echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm})"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means infer, use map_fl, or generate internally) (default ${fnt_bld}${grd_dst}${fnt_nrm})"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation argument string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm})"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm})"
@@ -186,6 +189,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "          ${fnt_bld}$spt_nm -i ${in_xmp} -g ${grd_dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -a bilinear -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -a conserve -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -w tempest  -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -v ${var_xmp} -i ${in_xmp} -m ${map_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -I ${drc_in_xmp} -m ${map_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -M -I ${drc_in_xmp} -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
@@ -194,8 +198,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "          ${fnt_bld}$spt_nm -I ${drc_in_xmp} -s ${grd_src_xmp} -g ${grd_dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -I ${drc_in_xmp} -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -I ${drc_in_xmp} -g ${grd_dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}ls ${drc_pwd}/*.1980*nc | $spt_nm -m ${map_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}ls ${drc_pwd}/*.1980*nc | $spt_nm -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}ls mdl*2005*nc | $spt_nm -m ${map_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}ls mdl*2005*nc | $spt_nm -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     exit 1
 } # end fnc_usg_prn()
 
@@ -224,7 +228,7 @@ while getopts :a:D:d:E:f:g:G:h:I:i:Mm:n:O:o:p:R:s:T:t:v:w:x: OPT; do
 	D) dbg_lvl=${OPTARG} ;; # Debugging level
 	d) dst_fl=${OPTARG} ;; # Destination file
 	E) esmf_opt=${OPTARG} ;; # ESMF options
-	f) fml_nm=${OPTARG} ;; # Family name
+#	f) fml_nm=${OPTARG} ;; # Family name
 	g) grd_dst=${OPTARG} ;; # Destination grid-file
 	G) grd_sng=${OPTARG} ;; # Grid generation string
 	I) drc_in=${OPTARG} ;; # Input directory
@@ -240,7 +244,7 @@ while getopts :a:D:d:E:f:g:G:h:I:i:Mm:n:O:o:p:R:s:T:t:v:w:x: OPT; do
 	T) tps_opt=${OPTARG} ;; # Tempest options
 	t) thr_usr=${OPTARG} ;; # Thread number
 	v) var_lst=${OPTARG} ;; # Variables
-	w) wgt_gnr=${OPTARG} ;; # Weight-generator
+	w) wgt_usr=${OPTARG} ;; # Weight-generator
 	x) xtn_var=${OPTARG} ;; # Extensive variables
 	\?) # Unrecognized option
 	    printf "\nERROR: Option ${fnt_bld}-$OPTARG${fnt_nrm} not allowed"
@@ -250,8 +254,8 @@ done
 shift $((OPTIND-1)) # Advance one argument
 
 # Derived variables
-grd_dst_dfl="${drc_out}/grd_dst.nc" # [sng] Grid-file (destination) default
-grd_src_dfl="${drc_out}/grd_src.nc" # [sng] Grid-file (source) default
+grd_dst_dfl="${drc_out}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
+grd_src_dfl="${drc_out}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
 tmp_out_fl="${drc_out}/${tmp_out_fl}" # [sng] Temporary output file
 if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bln' ] ; then 
     # ESMF algorithms are bilinear|patch|neareststod|nearestdtos|conserve
@@ -307,6 +311,9 @@ fi # !out_fl
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
 fi # !thr_usr
+if [ -n "${wgt_usr}" ]; then 
+    wgt_gnr="${wgt_usr}"
+fi # !wgt_usr    
 if [ "${wgt_gnr}" != 'esmf' ] && [ "${wgt_gnr}" != 'tempest' ] ; then 
 	    echo "ERROR: Invalid -w wgt_gnr option = ${wgt_gnr}"
 	    echo "HINT: Valid wgt_gnr arguments are 'esmf' and 'tempest'"
@@ -384,11 +391,11 @@ if [ -n "${map_fl}" ]; then
     map_usr_flg='Yes'
 else
     if [ "${wgt_gnr}" = 'esmf' ]; then 
-	map_fl_dfl="${drc_out}/map_src_to_dst_${wgt_gnr}_${alg_opt}.nc" # [sng] Map-file default
+	map_fl_dfl="${drc_out}/ncremap_tmp_map_${wgt_gnr}_${alg_opt}.nc" # [sng] Map-file default
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
-	map_fl_dfl="${drc_out}/map_src_to_dst_${wgt_gnr}.nc" # [sng] Map-file default
-	msh_fl_dfl="${drc_out}/msh_src_to_dst_${wgt_gnr}.g" # [sng] Mesh-file default
+	map_fl_dfl="${drc_out}/ncremap_tmp_map_${wgt_gnr}.nc" # [sng] Map-file default
+	msh_fl_dfl="${drc_out}/ncremap_tmp_msh_ovr_${wgt_gnr}.g" # [sng] Mesh-file default
 	msh_fl=${msh_fl_dfl}
     fi # !tempest
     map_fl=${map_fl_dfl}
@@ -401,7 +408,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: drc_in   = ${drc_in}\n"
     printf "dbg: drc_out  = ${drc_out}\n"
     printf "dbg: dst_fl   = ${dst_fl}\n"
-    printf "dbg: fml_nm   = ${fml_nm}\n"
+#    printf "dbg: fml_nm   = ${fml_nm}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: grd_dst  = ${grd_dst}\n"
     printf "dbg: grd_sng  = ${grd_sng}\n"
@@ -446,6 +453,10 @@ if [ -f 'PET0.RegridWeightGen.Log' ]; then
 fi # !PETO
 printf "Started processing at `date`.\n"
 printf "NCO version is ${nco_version}\n"
+if [ "${map_usr_flg}" = 'Yes' ] && [ -n "${wgt_usr}" ] ; then
+    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_gnr' is not allowed (the weight-generator is unnecessary)\n"
+    exit 1
+fi # wgt_usr
 if [ "${grd_src_usr_flg}" = 'Yes' ]; then
     if [ "${map_usr_flg}" = 'Yes' ]; then 
 	printf "${spt_nm}: ERROR Specifying both '-s grd_src' and '-m map_fl' is ambiguous and forbidden\n"

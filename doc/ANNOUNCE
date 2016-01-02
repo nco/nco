@@ -32,14 +32,12 @@ A. ncremap: A new netCDF operator for regridding.
    ncremap applies weights from a pre-exisiting mapfile to input data
    file(s) to produce a regrided dataset(s). Source and destination 
    datasets may be on any Curvilinear, Rectangular, or Unstructured
-   Data (CRUD) grid. ncremap will also, when necessary, use the
-   external program ESMF_RegridWeightGen (ERWG) to generate weights,
-   and use those to regrid. ERWG is distributed in binary format with
-   NCL, which many (most?) users already have on their system.  
-   Or ERWG may be installed from source:
-   https://earthsystemcog.org/projects/esmf/download_last_public 
-   ncremap can utilize (though not generate) TempestRemap mapfiles: 
-   https://github.com/ClimateGlobalChange/tempestremap
+   Data (CRUD) grid. ncremap will also, when necessary, use external
+   programs (ESMF's ESMF_RegridWeightGen (ERWG), or TempestRemap's
+   GenerateOverlapMesh/GenerateOfflineMap) to generate weights and
+   mapfiles and use those to regrid. ERWG is distributed in binary
+   format with NCL, which many (most?) users already have on their
+   system. Or ERWG and TempestRemap may be installed from source. 
    Please try ncremap and send us your feedback and suggestions.
    Examples:
    ncremap -i src.nc -d dst.nc -o out.nc
@@ -103,7 +101,7 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.5.3 built/tested with netCDF
-   4.4.0-development (20151112) on top of HDF5 hdf5-1.8.13 with:
+   4.4.0-development (20160101) on top of HDF5 hdf5-1.8.13 with:
 
    cd ~/nco;./configure # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism

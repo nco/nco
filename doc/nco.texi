@@ -116,10 +116,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 4.5.4-beta04
 @set doc-edition 4.5.4-beta04
-@set copyright-years 1995--2015
+@set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 31 December 2015
-@set update-month December 2015
+@set update-date 1 January 2016
+@set update-month January 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -18541,11 +18541,11 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] 
+ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_opt}]
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}]
 [-M] [-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
-[-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [-t @var{thr_nbr}]
-[-v @var{var_lst}[,@dots{}]] [-x @var{xtn_lst}[,@dots{}]] 
+[-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [-T @var{tempest_opt}] [-t @var{thr_nbr}]
+[-v @var{var_lst}[,@dots{}]] [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
 
 @noindent
@@ -18562,6 +18562,8 @@ user needs, feedback, and new features.
 
 @cindex @command{ncremap}
 @cindex @command{ESMF_RegridWeightGen}
+@cindex @command{GenerateOfflineMap}
+@cindex @command{GenerateOverlapMesh}
 @cindex @acronym{ERWG}
 @cindex TempestRemap
 @cindex @acronym{NCL}
@@ -18574,16 +18576,21 @@ from a pre-exisiting mapfile to a source data file to produce a
 regridded dataset. 
 Source and destination datasets may be on any Curvilinear, Rectangular,
 or Unstructured Data (@acronym{CRUD}) grid. 
-@command{ncremap} will also, when necessary, use the external program
-@command{ESMF_RegridWeightGen} (@acronym{ERWG}) to generate weights, 
-and use those weights to regrid. 
+@command{ncremap} will also, when necessary, use external programs
+@acronym{ESMF}'s @command{ESMF_RegridWeightGen} or 
+TempestRemap's
+@command{GenerateOverlapMesh}/@command{GenerateOfflineMap}) to
+generate weights and mapfiles.
 @acronym{ERWG} is distributed in binary format with @acronym{NCL}, which
 many (most?) users already have on their system. 
-Or @acronym{ERWG} may be installed from source:
+@acronym{ERWG} may be installed from source:
 @url{https://earthsystemcog.org/projects/esmf/download_last_public}.
-@command{ncremap} can also utilize (though not yet generate)
-mapfiles created by TempestRemap,
+@command{ncremap} can also generate and utilize mapfiles created by
+TempestRemap, 
 @url{https://github.com/ClimateGlobalChange/tempestremap}.
+Please contact those projects for support on building and installing
+their software, which @acronym{NCO} is happy to acknowledge and leverage
+to make @command{ncremap} more functional and friendly.
 
 @unnumberedsubsec Options specific to @command{ncremap}
 
@@ -18597,6 +18604,7 @@ Features common to many operators are described in
 <a name="alg_typ"></a> <!-- http://nco.sf.net/nco.html#alg_typ -->
 @end html
 @cindex @code{-a @var{alg_typ}}
+@cindex @var{alg_typ}
 @item -a @var{alg_typ}
 Specifies the interpolation algorithm for weight-generation for use by
 @command{ESMF_RegridWeightGen} (@acronym{ERWG}).
@@ -18620,6 +18628,7 @@ This option currently has no effect on TempestRemap weight-generation.
 <a name="dbg_lvl"></a> <!-- http://nco.sf.net/nco.html#dbg_lvl -->
 @end html
 @cindex @code{-D @var{dbg_lvl}}
+@cindex @var{dbg_lvl}
 @item -D @var{dbg_lvl}
 Specifies a debugging level similar to the rest of @acronym{NCO}.
 If @math{@var{dbg_lvl} = 1}, @command{ncremap} prints more extensive
@@ -18635,6 +18644,7 @@ level to the regridder (@command{ncks}) for additional diagnostics.
 <a name="dst_fl"></a> <!-- http://nco.sf.net/nco.html#dst_fl -->
 @end html
 @cindex @code{-d @var{dst_fl}}
+@cindex @var{dst_fl}
 @item -d @var{dst_fl}
 Specifies a data file on the destination grid.
 Currently @var{dst_fl} must be a data file (not a gridfile,
@@ -18650,9 +18660,23 @@ If @var{dst_fl} has cell boundaries then @acronym{NCO} will use those.
 @var{dst_fl} is not modified, and may have read-only permissions.
 
 @html
+<a name="esmf_opt"></a> <!-- http://nco.sf.net/nco.html#esmf_opt -->
+@end html
+@cindex @code{-E @var{esmf_opt}}
+@cindex @var{esmf_opt}
+@item -E @var{esmf_opt}
+@command{ncremap} passes @var{esmf_opt} directly through to
+@acronym{ERWG}. 
+The user-specified contents of @var{esmf_opt} supercede its default
+contents (@samp{--ignore_unmapped}).
+Sometimes users may wish @acronym{ERWG} to assume regional grids,
+in which case @var{esmf_opt} could be @samp{-r --ignore_upmapped}.
+
+@html
 <a name="grd_dst"></a> <!-- http://nco.sf.net/nco.html#grd_dst -->
 @end html
 @cindex @code{-g @var{grd_dst}}
+@cindex @var{grd_dst}
 @item -g @var{grd_dst}
 Specifies the destination gridfile in @acronym{SCRIP} format. 
 @acronym{NCO} will use @acronym{ERWG} to combine @var{grd_dst} with a
@@ -18686,6 +18710,7 @@ and inspecting the results.
 <a name="in_drc"></a> <!-- http://nco.sf.net/nco.html#in_drc -->
 @end html
 @cindex @code{-I @var{in_drc}}
+@cindex @var{in_drc}
 @item -I @var{in_drc}
 Specifies the input directory, i.e., the directory which contains
 the input file(s).
@@ -18707,6 +18732,7 @@ input piped through standard input, e.g., @samp{ls *.nc | ncremap ...}.
 <a name="in_fl"></a> <!-- http://nco.sf.net/nco.html#in_fl -->
 @end html
 @cindex @code{-i @var{in_fl}}
+@cindex @var{in_fl}
 @item -i @var{in_fl}
 Specifies the file containing data on the source grid to be remapped
 to the destination grid.
@@ -18728,6 +18754,7 @@ If @var{in_fl} has cell boundaries then @acronym{NCO} will use those.
 <a name="map_fl"></a> <!-- http://nco.sf.net/nco.html#map_fl -->
 @end html
 @cindex @code{-m @var{map_fl}}
+@cindex @var{map_fl}
 @item -m @var{map_fl}
 Specifies a pre-computed mapfile to remap the source to destination grid.
 The @var{map_fl} must be in @acronym{SCRIP} format, although it may have
@@ -18762,6 +18789,7 @@ tedious, and unnecessary when batch processing data on the same grids.
 <a name="nco_opt"></a> <!-- http://nco.sf.net/nco.html#nco_opt -->
 @end html
 @cindex @code{-n @var{nco_opt}}
+@cindex @var{nco_opt}
 @item -n @var{nco_opt}
 Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
@@ -18771,6 +18799,7 @@ Specifies a string of options to pass-through unaltered to
 <a name="out_drc"></a> <!-- http://nco.sf.net/nco.html#out_drc -->
 @end html
 @cindex @code{-O @var{out_drc}}
+@cindex @var{out_drc}
 @item -O @var{out_drc}
 Specifies the output directory, i.e., the directory name to contain 
 the output file(s).
@@ -18798,6 +18827,7 @@ using @samp{-I @var{in_drc}} or standard input) generates an error
 <a name="par_typ"></a> <!-- http://nco.sf.net/nco.html#par_typ -->
 @end html
 @cindex @code{-p @var{par_typ}}
+@cindex @var{par_typ}
 @item -p @var{par_typ}
 Specifies the parallelism mode desired.
 Parallelism accelerate throughput when regridding multiple files in one 
@@ -18818,11 +18848,15 @@ Typically both parallel modes scale well with sufficent @acronym{CPU}s
 until I/O contention becomes the bottleneck. 
 Currently there is no way to limit the number of regridding commands 
 spawned in parallel mode, so be sure not to overwhelm your system.
+Furthermore, a naming conflict among intermediate files still exists
+(see Limitations, below) so parallel mode is currently only supported
+when all source files share the same grid.
 
 @html
 <a name="rgr_opt"></a> <!-- http://nco.sf.net/nco.html#rgr_opt -->
 @end html
 @cindex @code{-R @var{rgr_opt}}
+@cindex @var{rgr_opt}
 @item -R @var{rgr_opt}
 @command{ncremap} passes @var{rgr_opt} directly through to the
 regridder.  
@@ -18835,6 +18869,7 @@ i.e., by default @command{ncremap} always names latitude and longitude
 <a name="grd_src"></a> <!-- http://nco.sf.net/nco.html#grd_src -->
 @end html
 @cindex @code{-s @var{grd_src}}
+@cindex @var{grd_src}
 @item -s @var{grd_src}
 Specifies the source gridfile in @acronym{SCRIP} format. 
 @acronym{NCO} will use @acronym{ERWG} to combine this with a destination
@@ -18853,9 +18888,24 @@ Thus @acronym{NCO} will call @acronym{ERWG} only once, and will use that
 @var{map_fl} to regrid every @var{input-file}.
 
 @html
+<a name="tempest_opt"></a> <!-- http://nco.sf.net/nco.html#tempest_opt -->
+@end html
+@cindex @code{-T @var{tempest_opt}}
+@cindex @var{tempest_opt}
+@item -T @var{tempest_opt}
+@command{ncremap} passes @var{tempest_opt} directly through to
+@command{GenerateOfflineMap} (not to @command{GenerateOverlapMesh}).
+The user-specified contents of @var{tempest_opt} supercede its default
+contents, which are currently empty.
+For example, to cause @command{GenerateOfflineMap} to use a
+@code{_FillValue} of @math{-1}, pass 
+@samp{-T "--fillvalue -1.0"} to @command{ncremap}.
+
+@html
 <a name="thr_nbr"></a> <!-- http://nco.sf.net/nco.html#thr_nbr -->
 @end html
 @cindex @code{-t @var{thr_nbr}}
+@cindex @var{thr_nbr}
 @item -t @var{thr_nbr}
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
@@ -18865,6 +18915,7 @@ The @acronym{NCO} regridder scales well up to 8--16 threads.
 <a name="var_lst"></a> <!-- http://nco.sf.net/nco.html#var_lst -->
 @end html
 @cindex @code{-v @var{var_lst}}
+@cindex @var{var_lst}
 @item -v @var{var_lst}
 The @samp{-v} option causes @command{ncremap} to regrid only the
 variables in @var{var_lst}. 
@@ -18872,9 +18923,24 @@ It behaves like subsetting (@pxref{Subsetting Files}) in the rest of
 @acronym{NCO}.   
 
 @html
+<a name="wgt_gnr"></a> <!-- http://nco.sf.net/nco.html#wgt_gnr -->
+@end html
+@cindex @code{-w @var{wgt_gnr}}
+@cindex @var{wgt_gnr}
+@item -w @var{wgt_gnr}
+Specifies the weight-generator to use when a map-file is not provided. 
+The @var{wgt_gnr} argument must be @code{esmf} for @acronym{ESMF}'s
+@command{ESMF_RegridWeightGen} (@acronym{ERWG}), or 
+@code{tempest} for TempestRemaps's
+@command{GenerateOverlapMesh} and @command{GenerateOfflineMap}.
+Specifying @var{wgt_gnr} and supplying (with @samp{-m}) a map-file
+is not permitted (since the weight-generator would not be used).
+
+@html
 <a name="xtn_lst"></a> <!-- http://nco.sf.net/nco.html#xtn_lst -->
 @end html
 @cindex @code{-v @var{xtn_lst}}
+@cindex @var{xtn_lst}
 @item -x @var{xtn_lst}
 The @samp{-x} option causes @command{ncremap} to treat the variables in
 @var{xtn_lst} as @dfn{extensive}, meaning that their value depends on
@@ -18882,6 +18948,81 @@ the gridcell boundaries.
 Support for extensive variables during regridding is nascent.
 Currently variables marked as extensive are summed, not regridded.
 @end table
+
+@unnumberedsubsec Limitatations to @command{ncremap}
+
+There are three significant limitations to @command{ncremap} that we
+hope to remove in the coming year.
+First, the fields to be regridded must have latitude and longitude as
+the final two dimension in @var{in_fl}. 
+Fields with other dimension orders (e.g., @samp{lat,lev,lon}) will not
+regrid properly. 
+To workaround this limitation for the time-being, please employ 
+@command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly})
+to permute the dimensions before (and un-permute them after) regridding.
+For example
+@example
+# AIRS Level2 vertical profiles
+ncpdq -a StdPressureLev,GeoTrack,GeoXTrack AIRS_L2.hdf AIRS_L2.ncpdq.nc
+ncremap -i AIRS_L2.ncpdq.nc -d dst_1x1.nc -O ~/rgr
+# MPAS-O fields
+ncpdq -a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells mpas.nc mpas_ncpdq.nc
+ncremap -R "--rgr col_nm=nCells" -i mpas_ncpdq.nc -m mpas120_to_t62.nc -O ~/rgr
+@end example
+@noindent
+
+The second limitation is that @command{ncremap} does not yet follow
+@acronym{CF} conventions to identify coordinate variables.
+Instead, @command{ncremap} uses an internal database of ``usual
+suspects'' to identify latitude and longitude coordinate variables.
+Hence even if the @var{input-file} is completely @acronym{CF}-compliant,
+@command{ncremap} may not automatically identify the spatial dimensions.
+To workaround this limitation, supply @command{ncremap} with the names
+of the horizontal spatial dimensions 
+@example
+ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr
+@end example
+@noindent
+
+The third limitation is that @command{ncremap} currently must read
+weights from a mapfile, it cannot compute weights itself in memory.
+This makes @command{ncremap} an ``offline regridder'' and unnecessarily
+slow compared to a program  an ``integrated regridder'' that computes
+weights and immediately applies them in @acronym{RAM} without any
+map-file.   
+In practice, the difference is most noticeable when the weights are 
+easily computable ``on the fly'', e.g., rectangular-to-rectangular
+mappings. 
+Otherwise the weight-generation takes much more time than the
+weight-application, at which @command{ncremap} is quite fast.
+To workaround this limitation, build @command{ESMF_RegridWeightGen} 
+with parallel capabilities and ask me to enhance @command{ncremap} 
+to call @acronym{ERWG} with the options to exploit those capabilities. 
+
+A side-effect of @command{ncremap} being an offline regridder is that,
+when necessary, it generates intermediate files to store grids and maps.  
+(No intermediate files are generated when the map-file is provided).
+These files are named, by default, 
+@file{ncremap_tmp_grd_dst.nc},
+@file{ncremap_tmp_grd_src.nc},   
+@file{ncremap_tmp_gnr_out.nc},  
+@file{ncremap_tmp_map_*.nc}, and
+@file{ncremap_tmp_msh_ovr_*.nc}.
+They are placed in @var{drc_out}, which is the current working directory
+unless otherwise specified.
+Should they proliferate and/or annoy you, locate and/or remove all
+intermediate files under the current directory with 
+@example
+find . -name 'ncremap_tmp*'
+rm `find . -name 'ncremap_tmp*'`
+@end example
+@noindent
+When @command{ncremap} is run in parallel mode, the intermediate files
+can interfere with one-another, and must be uniquely named.
+We have not yet addressed this issue, so parallel mode is supported when 
+all input files are on the same grid, and unsupported otherwise.
+If this limitation affects your workflow, please let us know and we will
+increase the priority of addressing it.
 
 @noindent
 @html
