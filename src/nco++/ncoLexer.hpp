@@ -2,7 +2,7 @@
 #define INC_ncoLexer_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
+/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
 #include <antlr/CommonToken.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>
@@ -146,6 +146,8 @@ public:
 	public: void mNUMBER(bool _createToken);
 	public: void mVAR_ATT(bool _createToken);
 	public: void mVAR_ATT_QT(bool _createToken);
+	public: void mSTR_ATT_ID(bool _createToken);
+	public: void mSTR_ATT_QT(bool _createToken);
 	public: void mDIM_QT(bool _createToken);
 	public: void mDIM_VAL(bool _createToken);
 	public: void mDIM_MTD_ID(bool _createToken);

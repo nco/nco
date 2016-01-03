@@ -75,6 +75,7 @@
       fmc_vtr.push_back( fmc_cls("sqravg",this,(int)PSQRAVG));
       fmc_vtr.push_back( fmc_cls("total",this,(int)PTTL));
       fmc_vtr.push_back( fmc_cls("ttl",this,(int)PTTL));
+      fmc_vtr.push_back( fmc_cls("sum",this,(int)PTTL));
     }
   }		      
 		      
@@ -3323,6 +3324,242 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
     return var_out;
   } // end  
 
+
+
+  vlist_cls::vlist_cls(bool flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+      fmc_vtr.push_back( fmc_cls("join",this,(int)PJOIN));
+    }
+  }
+
+
+  var_sct *vlist_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("vlist_cls::fnd");
+  int idx;
+  int fdx;
+  int nbr_args;
+  int nbr_dim;         
+  char *cstr;
+  std::string susg;
+  std::string sfnm=fmc_obj.fnm();
+  var_sct *var;
+  var_sct *var_att;
+
+
+  RefAST aRef;
+  RefAST tr;
+  std::vector<RefAST> vtr_args; 
+  prs_cls *prs_arg=walker.prs_arg;
+  std::vector<std::string> str_vtr;
+          
+  fdx=fmc_obj.fdx();
+
+
+  // Put args into vector 
+  if(expr)
+    vtr_args.push_back(expr);
+
+  if(tr=fargs->getFirstChild())
+  {
+    do  
+      vtr_args.push_back(tr);
+    while(tr=tr->getNextSibling());    
+  } 
+            
+  nbr_args=vtr_args.size();  
+
+  susg="usage: att_out="+sfnm+"(att_id, att_nm|var_nm|string)";
+
+  if(nbr_args!=2)
+    err_prn(sfnm, " Function has been called with wrong number of arguments arguments\n"+susg); 
+
+
+  // inital scan just return udf
+  if(prs_arg->ntl_scn)
+  {
+   var=ncap_var_udf("~zz@join_methods");  
+   return var;
+  }
+
+  var_att=walker.out(vtr_args[0]);
+
+  if(!var_att )
+     err_prn(sfnm, " first argument has evaluated to null\n"+susg); 
+
+  if( var_att->type != NC_STRING && var_att->type != NC_CHAR )
+    err_prn(sfnm, " first argument must be of character string type and NOT("+nbr2sng(var_att->type)+")\n"+susg); 
+
+
+  ncap_att_str(var_att, str_vtr); 
+  
+  // deal with second argument    
+  aRef=vtr_args[1];
+  switch(aRef->getType())
+  {
+    case VAR_ID:
+      str_vtr.push_back(aRef->getText());
+      break;
+
+    case ATT_ID: 
+      {
+	var_sct *var_arg;
+        var_arg=walker.out(aRef); 
+        ncap_att_str(var_arg, str_vtr); 
+        nco_var_free(var_arg);    
+      }
+      break;
+
+    case NSTRING:
+    case N4STRING:
+      str_vtr.push_back(aRef->getText());
+      break;  
+   
+    default:
+       err_prn(sfnm, " problem with second argument, must be a var_nm or a string or a string in an attribute  "+susg);      
+    
+  }
+
+  // create output attribute
+  var=ncap_sclr_var_mk("~zz@join_methods",(nc_type)NC_STRING,true);
+
+  // stretch att if necessary
+  if(str_vtr.size() >1 )
+     ncap_att_stretch(var, str_vtr.size()); 
+  
+  (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
+
+  for(idx=0;idx<str_vtr.size();idx++)
+  { 
+    cstr=strdup(str_vtr[idx].c_str());
+    var->val.sngp[idx]=cstr;  
+  }
+
+  (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
+
+  
+  nco_var_free(var_att);
+
+  return var;
+
+}
+
+
+//Derived Aggregate Functions /************************************************/
+
+  aggd_cls::aggd_cls(bool flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+      fmc_vtr.push_back( fmc_cls("ncap_stats_wvariance",this,(int)PWVARIANCE));
+    }
+  }		      
+
+  var_sct *aggd_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("aggd_cls::fnd");
+  int fdx;
+  int nbr_args;
+  int idx;
+  int nbr_dim;
+  int avg_nbr_dim; 
+           
+  std::string susg;
+  std::string sfnm=fmc_obj.fnm();
+  std::vector<RefAST> vtr_args;             
+  RefAST aRef;
+  RefAST tr;
+
+  // de-reference 
+  ddra_info_sct ddra_info;        
+  prs_cls *prs_arg=walker.prs_arg;
+  var_sct *var_weight;
+  var_sct *var_weight_sum;
+  var_sct *var_weight_avg;
+  var_sct *var_in;
+  var_sct *var_out;
+
+  fdx=fmc_obj.fdx();
+ 
+ 
+  // Put args into vector 
+  if(expr)
+    vtr_args.push_back(expr);
+
+  if(tr=fargs->getFirstChild()) {
+    do  
+      vtr_args.push_back(tr);
+    while(tr=tr->getNextSibling());    
+  } 
+      
+  nbr_args=vtr_args.size();  
+
+  susg="usage var_out="+sfnm+"(var, weight)";
+
+  if(nbr_args!=2)
+    err_prn(sfnm, " Function has been called with no arguments\n"+susg); 
+
+          
+  var_in=walker.out(vtr_args[0]);   
+  var_weight=walker.out(vtr_args[1]);   
+
+  // deal with initial scan
+  if(prs_arg->ntl_scn)
+  {
+    if(var_in->undefined)
+       var_out=ncap_var_udf("~aggd_methods");   
+    else
+       var_out=ncap_sclr_var_mk(SCS("~aggd_methods"),var_in->type,false);       
+  
+    nco_var_free(var_in);
+    nco_var_free(var_weight);  
+    return var_out; 
+     
+  }
+  
+  /* nco stript we are implementing 
+  
+     (S1)  sum_weights = weights2.ttl();
+     (S2)  weighted_avg = (weights2*var).ttl()/sum_weights;
+     (S3)  anomaly = var - weighted_avg;
+     (S3)  numerator = (weights2*anomaly*anomaly).ttl();
+     (s4)  variance = numerator/sum_weights;
+     std = variance.sqrt();
+  */
+
+
+  // make weight same type as var_in
+  var_weight=nco_var_cnf_typ(var_in->type,var_weight);         
+
+  // [S1] single value - duplicate is destroyed
+  var_weight_sum=nco_var_avg(nco_var_dpl(var_weight),var_weight->dim,var_weight->nbr_dim ,nco_op_ttl,False,&ddra_info);
+
+  // [S2] single value - duplicate is destroyed
+  var_weight_avg = nco_var_avg(  ncap_var_var_stc( nco_var_dpl(var_weight), var_in, TIMES), var_weight->dim, var_weight->nbr_dim, nco_op_ttl,False,&ddra_info);
+
+  // [S2] single value
+  var_weight_avg = ncap_var_var_stc ( var_weight_avg, var_weight_sum, DIVIDE);  
+
+
+  // [S2a] stretch var_weight_avg so it CONFORMS to var_in
+  (void)ncap_att_stretch(var_weight_avg, var_in->sz);
+  
+  // [S3] var_weight destroyed in this operation
+  var_out = nco_var_avg( ncap_var_var_stc( var_weight, ncap_var_var_stc( ncap_var_var_stc(var_in,var_weight_avg,MINUS), NULL_CEWI, VSQR2 ), TIMES ), var_weight->dim, var_weight->nbr_dim, nco_op_ttl,False,&ddra_info);
+
+  // [S4]
+  var_out= ncap_var_var_stc( var_out, var_weight_sum, DIVIDE);       
+                                 
+  nco_var_free(var_weight_avg);
+  nco_var_free(var_weight_sum);
+  nco_var_free(var_in);
+
+  return var_out;
+
+ }
+
+
+
+
+
 /* ncap2 functions and methods */
 
 /* To avoid confusion when I say FUNC (uppercase) I mean a custom ncap2 function.
@@ -3412,3 +3649,6 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
  It takes two fragments of the the parse tree ( expr, fargs) and returns a var_sct. 
  
  If expr is null then it is A FUNC else its a METHOD */
+
+
+

@@ -581,6 +581,17 @@ VAR_ATT_QT :( '\''!)
              ('\''!)
    ;     
 
+// return a STR_ATT_ID
+STR_ATT_ID:  '@'(LPH)(LPH|DGT)* {$setType(STR_ATT_ID);}
+;
+
+// Return a quoted STR_ATT_ID
+STR_ATT_QT :( '\''!)
+              '@' VAR_NM_QT {$setType(STR_ATT_ID);}
+             ('\''!)
+;     
+
+
 //Return a quoted dim
 DIM_QT: ( '\''!)
            ('$'! VAR_NM_QT {$setType(DIM_ID);})
@@ -773,7 +784,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 	(void)cast_void_nctype((nc_type)NC_UINT64,&var->val);
 	sz=var->sz;
 	dmn_sz=var->sz / nbr_dmn;
-	
     
 
     // shape of var must be (nbr_dmn) or (nbr_dmn,2) or (nbr_dmn,3) 

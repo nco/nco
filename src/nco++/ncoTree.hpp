@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -51,7 +51,7 @@
 #line 52 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 646 "ncoGrammer.g"
+#line 657 "ncoGrammer.g"
 
 
 private:
@@ -182,7 +182,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 	(void)cast_void_nctype((nc_type)NC_UINT64,&var->val);
 	sz=var->sz;
 	dmn_sz=var->sz / nbr_dmn;
-	
     
 
     // shape of var must be (nbr_dmn) or (nbr_dmn,2) or (nbr_dmn,3) 
@@ -535,10 +534,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 117;
+	static const int NUM_TOKENS = 119;
 #else
 	enum {
-		NUM_TOKENS = 117
+		NUM_TOKENS = 119
 	};
 #endif
 	

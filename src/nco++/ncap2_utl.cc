@@ -143,9 +143,9 @@ ncap_att_stretch /* stretch a single valued attribute from 1 to sz */
     (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
     
     for(idx=0;idx<nw_sz;idx++)
-      sng_cp[idx]=strdup(var->val.sngp[0]);    
+      sng_cp[idx]=(char*)NC_FILL_STRING;    
     
-    nco_free(var->val.sngp[0]);  
+    //nco_free(var->val.sngp[0]);  
     (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
     vp=(void*)sng_cp;
     
@@ -363,6 +363,44 @@ ncap_att_prn     /* [fnc] Print a single attribute*/
   (void)fflush(stdout);
   
 } /* end ncap_att_prn() */
+
+
+int          /* number appended */ 
+ncap_att_str /* extract string(s) from a NC_CHAR or NC_STRING type attribute */
+(var_sct *var_att, 
+ std::vector<std::string> &str_vtr)
+{
+  int idx;
+  int srt_size=str_vtr.size();  
+  char *cstr;
+  
+  (void)cast_void_nctype((nc_type)var_att->type,&var_att->val);
+
+  if(var_att->type==NC_STRING)
+  {
+
+    for(idx=0;idx<var_att->sz;idx++)
+    {  
+      cstr=var_att->val.sngp[idx];
+      str_vtr.push_back(cstr);
+    }     
+
+  }
+
+  if(var_att->type==NC_CHAR)
+  { 
+    char buffer[NC_MAX_NAME+1];
+    strncpy(buffer, var_att->val.cp, var_att->sz);        
+    buffer[var_att->sz+1]='\0'; 
+    str_vtr.push_back(buffer);
+  } 
+  (void)cast_nctype_void((nc_type)var_att->type,&var_att->val);
+  
+  return (str_vtr.size() - srt_size);  
+
+
+
+}
 
 var_sct * /* O [sct] Remainder of modulo operation of input variables (var1%var2) */
 ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
