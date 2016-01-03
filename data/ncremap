@@ -64,11 +64,11 @@ if [ -z "${DATA}" ]; then
 fi # DATA
 
 # Test cases (examples for Charlie's machines):
-# ls ${DATA}/sld/raw/*.nc | ncremap -a conserve -D 0 -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
-# ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
-# ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
-# ncremap -a conserve -v FSNT -I ${DATA}/ -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
-# ncremap -i AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr
+# ls ${DATA}/sld/raw/*.nc | ncremap -a conserve -D 0 -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
+# ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
+# ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
+# ncremap -a conserve -v FSNT -I ${DATA}/ -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
+# ncremap -i AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ncremap -v TSurfAir -i ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v CloudFrc_A -i ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
@@ -92,7 +92,7 @@ fi # DATA
 # ncremap -v FSNT,AODVIS -w tempest -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
 
 # Debugging and Benchmarking:
-# ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/rgr/dst_1x1.nc -O ~/rgr > ~/ncremap.out 2>&1 &
+# ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr > ~/ncremap.out 2>&1 &
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -162,11 +162,11 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -i in_fl -d dst_fl -o out_fl${fnt_nrm}\n\n"
     echo "Command-line options:"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for ESMF weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm})"
-    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Destination file (empty means auto-generate) (default ${fnt_bld}${dst_fl}${fnt_nrm})"
+    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm})"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debugging level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
     echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}esmf_opt${fnt_nrm} ESMF ESMF_RegridWeightGen options (default ${fnt_bld}${esmf_opt}${fnt_nrm})"
 #    echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm})"
-    echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means infer, use map_fl, or generate internally) (default ${fnt_bld}${grd_dst}${fnt_nrm})"
+    echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use grd_sng or map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm})"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation argument string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm})"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm})"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means use stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm})"

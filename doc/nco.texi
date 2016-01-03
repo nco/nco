@@ -6311,7 +6311,7 @@ overwritten (its contents are immaterial).
 @cindex @code{--rgr_map}
 @cindex @var{--map-file}
 @cartouche
-Availability: @command{ncks}@* 
+Availability: @command{ncks}, @command{ncremap}@*
 Short options: None@*
 Long options: 
 @samp{--map @var{map-file}} or @samp{--rgr_map @var{map-file}}@*
@@ -18559,6 +18559,11 @@ DESCRIPTION
 (December, 2015). 
 As the newest operator, its interface is still evolving to respond to
 user needs, feedback, and new features.
+@command{ncremap} orchestrates the regridding features of several
+different programs.
+Under the hood, @acronym{NCO} generates and infers grids, and calls
+external programs to generate the remapping weights that @acronym{NCO}
+then applies.  
 
 @cindex @command{ncremap}
 @cindex @command{ESMF_RegridWeightGen}
@@ -19190,8 +19195,8 @@ whose attributes are to be renamed.
 <a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
 @end html
 @cartouche
-Caveat lector: Unforunately from 2007--present (October, 2014) the
-netCDF library (versions 4.0.0--4.3.2) contained bugs or limitations
+Caveat lector: Unforunately from 2007--present (January, 2016) the
+netCDF library (versions 4.0.0--4.4.0-rc5) contained bugs or limitations
 that sometimes prevent @acronym{NCO} from correctly renaming coordinate
 variables, dimensions, and groups in netCDF4 files. 
 (To our knowledge the netCDF library calls for renaming always work
@@ -19423,12 +19428,11 @@ ncrename -O -h -a /g1/lon@units,new_units ~/nco/data/in_grp.nc ~/foo.nc
 ncks -v /g1/lon ~/foo.nc # Shows units and new_units are both gone
 @end verbatim
 @end example
-As of netCDF version 4.3.3.1 (March, 2015) there are no known renaming
-bugs. 
 
 Clearly, renaming dimensions in netCDF4 files is non-trivial.
 The latest chapter in this saga is a netCDF4 bug discovered in
-September, 2015.
+September, 2015, and present in version 4.3.3.1 (and possibly earlier
+versions too).  
 This bug causes @command{ncrename} to create corrupted output files
 when attempting to rename two dimensions simultaneously.
 The workaround is to rename the dimensions sequentially, in two separate  
@@ -19440,8 +19444,6 @@ ncrename -d y,rlat -d x,rlon dayclim_withoutpr.nc dayclim2.nc
 ncdump dayclim2.nc # File is unreadable
 @end verbatim
 @end example
-Yet another netCDF4 bug that causes unintended side-effects with
-@command{ncrename} affects only snapshots from January--February, 2015,
 
 @cindex global attributes
 @cindex group attributes
