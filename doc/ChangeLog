@@ -1,11 +1,16 @@
-2015-01-04  Henry Butowsky  <henryb@hush.com>
-	* added sum() as a synomn for total()  in the nap2 aggregate methods
-	* modified the ncap2 method "ncap_stats_wvariance( var,weight)" 
-	  so that "weight" var  is made to conform to "var" 
+2016-01-04  Charlie Zender  <zender@uci.edu>
 
-2015-01-03  Henry Butowsky  <henryb@hush.com>
-	* first cut of custom method weighted variance for Christine smit 
-	* usage v=ncap_stats_wvariance( var,weight)
+	* Change copyright year to 2016
+
+2016-01-04  Henry Butowsky  <henryb@hush.com>
+
+	* Add sum() as synonym for total() in ncap2 aggregate methods
+
+	* ncap2 method ncap_stats_wvariance(var,weight)	conforms wgt to var
+
+2016-01-03  Henry Butowsky  <henryb@hush.com>
+
+	* First-cut of custom method weighted variance for Christine smit v=ncap_stats_wvariance(var,weight)
 
 2016-01-01  Charlie Zender  <zender@uci.edu>
 
