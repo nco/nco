@@ -239,4 +239,29 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
 
+
+// var list class /*********************************************************/
+class vlist_cls: public vtl_cls {
+private:
+   enum {PJOIN };
+   bool _flg_dbg;
+public:
+  vlist_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+};
+
+
+// derived aggregate Functions /***************************************/
+class aggd_cls: public vtl_cls {
+private:
+  enum{ PWVARIANCE};
+  bool _flg_dbg;
+public:
+  aggd_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+};
+
+
+
+
 #endif // FMC_ALL_CLS_HH

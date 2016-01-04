@@ -127,6 +127,11 @@ ncap_att_prn
 (var_sct *var, 
  char *const att_in_sng);
 
+int                 /* number appended */ 
+ncap_att_str        /* extract string(s) from a NC_CHAR or NC_STRING type attribute */
+(var_sct *var_att,  /* I [sct] input attribute */
+ std::vector<std::string> &str_vtr);
+
 var_sct *   /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
 ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
 (var_sct *var_1, /* I [sc,t] Variable structure containing field */
