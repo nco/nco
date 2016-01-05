@@ -2,7 +2,7 @@
 
 /* Purpose: NCO utilities for Swath-Like Data (SLD) */
 
-/* Copyright (C) 2015--2015 Charlie Zender
+/* Copyright (C) 2015--2016 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */

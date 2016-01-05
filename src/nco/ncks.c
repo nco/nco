@@ -5,7 +5,7 @@
 /* Purpose: Extract (subsets of) variables from a netCDF file 
    Print them to screen, copy them to another file, or regrid them */
 
-/* Copyright (C) 1995--2015 Charlie Zender
+/* Copyright (C) 1995--2016 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3.

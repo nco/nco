@@ -2,7 +2,7 @@
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
-/* Copyright (C) 1995--2015 Charlie Zender
+/* Copyright (C) 1995--2016 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
@@ -3528,6 +3528,10 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
   // make weight same type as var_in
   var_weight=nco_var_cnf_typ(var_in->type,var_weight);         
+  
+  // make vars conform or die 
+  if( !ncap_var_stretch(&var_in,&var_weight) )
+    err_prn(sfnm ,"unable to make weight var conform to input var");
 
   // [S1] single value - duplicate is destroyed
   var_weight_sum=nco_var_avg(nco_var_dpl(var_weight),var_weight->dim,var_weight->nbr_dim ,nco_op_ttl,False,&ddra_info);
