@@ -18582,20 +18582,20 @@ regridded dataset.
 Source and destination datasets may be on any Curvilinear, Rectangular,
 or Unstructured Data (@acronym{CRUD}) grid. 
 @command{ncremap} will also, when necessary, use external programs
-@acronym{ESMF}'s @command{ESMF_RegridWeightGen} or 
+@acronym{ESMF}'s @command{ESMF_RegridWeightGen} (@acronym{ERWG}) or 
 TempestRemap's
 @command{GenerateOverlapMesh}/@command{GenerateOfflineMap}) to
 generate weights and mapfiles.
 @acronym{ERWG} is distributed in binary format with @acronym{NCL}, which
-many (most?) users already have on their system. 
-@acronym{ERWG} may be installed from source:
+many (most?) @acronym{NCO} users already have on their system(s). 
+@acronym{ERWG} may also be installed from source:
 @url{https://earthsystemcog.org/projects/esmf/download_last_public}.
 @command{ncremap} can also generate and utilize mapfiles created by
 TempestRemap, 
 @url{https://github.com/ClimateGlobalChange/tempestremap}.
 Please contact those projects for support on building and installing
-their software, which @acronym{NCO} is happy to acknowledge and leverage
-to make @command{ncremap} more functional and friendly.
+their software, which makes @command{ncremap} more functional and
+user-friendly.
 
 @unnumberedsubsec Options specific to @command{ncremap}
 
