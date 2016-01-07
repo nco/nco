@@ -979,7 +979,7 @@ The most up-to-date binaries are probably those in the tarball below. Those unfa
 <a name="mvs"></a> <!-- http://nco.sf.net#mvs -->
 <a name="windows"></a> <!-- http://nco.sf.net#windows -->
 <h3><a href="http://www.microsoft.com">Microsoft Windows</a>
-(native build, compiled with <a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express">Visual Studio 2010</a>, use this if unsure)</h3>
+(native build, compiled with <a href="https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx">Visual Studio 2013</a>, use this if unsure)</h3>
 These native Windows executables should be stand-alone, i.e., not
 require users to have any additional software. 
 This is a new feature as of 20120615, please send us feedback. 
@@ -987,10 +987,10 @@ To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.5.2.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.5.4.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.4.5.win32.cygwin.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.5.2.windows.mvs.exe">nco-4.5.2.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.5.2.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.5.2.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+<li><a href="src/nco-4.5.4.windows.mvs.exe">nco-4.5.4.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.5.4.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.5.4.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
