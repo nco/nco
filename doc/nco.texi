@@ -6,7 +6,6 @@
 @c Hyper-text systems (texi2html, makeinfo) do not require texinfo.tex
 
 @ignore
-
 $Header$
 
 Purpose: TeXInfo documentation for netCDF Operators (NCO)
@@ -114,8 +113,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.4-beta04
-@set doc-edition 4.5.4-beta04
+@set nco-edition 4.5.4
+@set doc-edition 4.5.4
 @set copyright-years 1995--2016
 @set update-year 2015
 @set update-date 1 January 2016

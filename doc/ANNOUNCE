@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.4-beta04 are ready. 
+The netCDF Operators NCO version 4.5.4 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -11,10 +11,10 @@ interface to regridding features. Without any external dependencies,
 ncremap applies weights from a pre-exisiting mapfile to a source
 data file to produce a regridded dataset. Source and destination
 datasets may be on any Curvilinear, Rectangular, or Unstructured
-Data (CRUD) grid. When necessary ncremap calls ESMF_RegridWeightGen to
-generate weights and uses those to regrid. ncremap hides the
-complexity of regridding from the user, who can know next-to-nothing
-about regridding.
+Data (CRUD) grid. When necessary ncremap calls ESMF_RegridWeightGen
+or TempestRemap to generate weights and uses those to regrid. ncremap
+hides the complexity of regridding from the user, who can know
+next-to-nothing about regridding.
 
 Work on NCO 4.5.5 has commenced and will better support eliciting
 latitude/longitude coordinates using the CF "coordinates" convention
@@ -79,6 +79,13 @@ E. NCO now treats variables named wgt_* as weights and avoids
    The idea is that weights are a property of the grid and should not
    be differenced, averaged, etc., unless necesssary.
    http://nco.sf.net/nco.html#prc_xcp
+
+F. ncap2 now accepts "sum" as a synonym for "total" in its methods.
+   Additionally, ncap2 has a new function,
+   ncap_stats_wvariance(var,wgt) to computed weighted standard
+   deviations where missing values may be present.
+   Additionally, ncap2 now builds with GSL 2.x. All thanks to Henry.
+   http://nco.sf.net/nco.html#ncap2
 
 BUG FIXES:
 

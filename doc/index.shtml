@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current stable NCO version is 4.5.3 released <!--#flastmod file="src/nco-4.5.3.tar.gz"-->
+Current stable NCO version is 4.5.4 released <!--#flastmod file="src/nco-4.5.4.tar.gz"-->
 </h2>
 
 <table border=0 width=100%>
@@ -150,7 +150,7 @@ and
 
 <ul>
 <li>2015 Jan&nbsp;??: 4.5.5 (<i>In progress</i>)
-<li>2015 Jan&nbsp;??: 4.5.4 (<tt>ncremap</tt>)
+<li>2015 Jan&nbsp;07: 4.5.4 (<tt>ncremap</tt>)
 <li>2015 Dec&nbsp;16: <a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">Poster</a> at Fall AGU, San Francisco, California</li>
 <li>2015 Nov&nbsp;04: <a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">Talk</a> at DOE ACME, Albuquerque, New Mexico</li>
 <li>2015 Oct&nbsp;20: 4.5.3 (Curvilinear)
@@ -699,18 +699,19 @@ You may also retrieve the source of tagged versions directly
 <li><b>NCO 4.5.6</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
+<tt>ncks</tt> prints human-legible ISO8601 dates;
 extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.5.5</b>: (<i>In Progress, features in-progress or completed include</i>)
-<tt>ncks</tt> prints human-legible ISO8601 dates;
 <tt>ncks</tt> regridder uses CF to find coordinates;
-<tt>ncks --xtn</tt> better extensive variable treatment;</li>
+<tt>ncks --xtn</tt> better extensive variable treatment;
+<tt>ncpdq</tt> fix permutation with multiple groups;</li>
 <li><b>NCO 4.5.4</b>: (<i>Current Stable Release</i>)
 <tt>ncap2</tt> syntax simplification/fixes;
 <tt>ncks -V</tt> bugfix;
 <tt>ncks</tt> XML <tt>_Unsigned</tt> attribute;
-<tt>ncremap</tt> debues;
+<tt>ncremap</tt> debuts;
 <tt>ncwa</tt> fix whitespace in <tt>coordinates</tt> attribute;</li>
 <li><b>NCO 4.5.3</b>: 
 <tt>ncatted</tt> fix deletion of all attributes;
@@ -960,10 +961,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # Mac OS X 10.11 (El Capitan) systems (aerosol):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-4.5.3.macosx.10.11.tar.gz nc*;scp ${DATA}/nco-4.5.3.macosx.10.11.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.5.4.macosx.10.11.tar.gz nc*;scp ${DATA}/nco-4.5.4.macosx.10.11.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.5.3.macosx.10.11.tar.gz">nco-4.5.3.macosx.10.11.tar.gz</a> (<!--#fsize file="src/nco-4.5.3.macosx.10.11.tar.gz"-->): Executables MacOSX 10.11-compatible (last updated <!--#flastmod file="src/nco-4.5.3.macosx.10.11.tar.gz"-->). 
+<li><a href="src/nco-4.5.4.macosx.10.11.tar.gz">nco-4.5.4.macosx.10.11.tar.gz</a> (<!--#fsize file="src/nco-4.5.4.macosx.10.11.tar.gz"-->): Executables MacOSX 10.11-compatible (last updated <!--#flastmod file="src/nco-4.5.4.macosx.10.11.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
