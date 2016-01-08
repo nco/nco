@@ -1,3 +1,9 @@
+2016-01-08  Henry Butowsky  <henryb@hush.com>
+
+	* ncap2 method ncap_stats_wvariance(var,weight)	
+	  after conformance missing values are set in weight  that correspond to missing values
+	  in var;
+
 2016-01-07  Charlie Zender  <zender@uci.edu>
 
 	* Fix typos caught by Debian lint from Bas Couwenberg
