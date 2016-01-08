@@ -1,5 +1,7 @@
 2016-01-07  Charlie Zender  <zender@uci.edu>
 
+	* Fix typos caught by Debian lint from Bas Couwenberg
+
 	* NCO 4.5.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.4 final changes';git push
 	git tag -a 4.5.4 -m 'Version 4.5.4 new features: ncremap fix ncpdq nfr cap, XML _Unsigned, crv dateline, GSL2';git push --tags
