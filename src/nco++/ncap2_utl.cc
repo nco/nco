@@ -1620,7 +1620,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
     if( (var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn==-1) && var1->sz >1 && var2->sz>1){  
       if(var1->sz != var2->sz) {
 	std::ostringstream os;
-	os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<" have differnet number of elements, so cannot perform arithmetic operation.";
+	os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<" have different number of elements, so cannot perform arithmetic operation.";
 	err_prn(fnc_nm,os.str());
       }
       if( nco_shp_chk(var1,var2)==False){ 
