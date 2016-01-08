@@ -158,7 +158,7 @@ xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
-    printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (more at http://nco.sf.net/nco.html#ncremap)\n\n"
+    printf "\nComplete documentation for ${fnt_bld}${spt_nm}${fnt_nrm} at http://nco.sf.net/nco.html#ncremap\n\n"
     printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -i in_fl -d dst_fl -o out_fl${fnt_nrm}\n\n"
     echo "Command-line options:"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for ESMF weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm})"
