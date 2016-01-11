@@ -1,4 +1,12 @@
+2016-01-08  Henry Butowsky  <henryb@hush.com>
+
+	* ncap2 method ncap_stats_wvariance(var,weight)	
+	  after conformance missing values are set in weight  that correspond to missing values
+	  in var;
+
 2016-01-07  Charlie Zender  <zender@uci.edu>
+
+	* Fix typos caught by Debian lint from Bas Couwenberg
 
 	* NCO 4.5.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.4 final changes';git push
@@ -4768,7 +4776,7 @@
 	Eliminate pre-emptive check in nco_var_dmn_rdr_mtd() for condition
 	which was not illegal yet led to exit() anyway.
 	All that was necessary was to eliminate the exit() call.
-	False-postive errors were produced for variables that were record
+	False-positive errors were produced for variables that were record
 	in input, fixed in output, and themselves lacked the record
 	dimension, i.e., they became fixed (were neutered?) because record
 	dimension had to be fixed to satisfy re-ordering of other variables.
