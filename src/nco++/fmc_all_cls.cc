@@ -3532,33 +3532,47 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   // make vars conform or die 
   if( !ncap_var_stretch(&var_in,&var_weight) )
     err_prn(sfnm ,"unable to make weight var conform to input var");
+  
 
   
+
+  // make sure missing value is same is same in both vars
+  // copy missing datums in var_in to var_weight
   if(var_in->has_mss_val)
   {
-    int idx;
-    int sz=var_in->sz;
+    long idx;
+    long sz=var_in->sz;
     char *cp_in=(char*)var_in->val.vp;
     char *cp_out=(char*)var_weight->val.vp;
-    char  *cp_miss=(char*)var_in->mss_val.vp;
+    char  *cp_miss_var;
+    char  *cp_miss_weight;
     size_t slb_sz=nco_typ_lng(var_in->type);
 
-    // make sure mssing values the same in both vars
-    nco_mss_val_cnf(var_in, var_weight);
+    if(!var_weight->has_mss_val)
+       nco_mss_val_cp(var_in,var_weight);
+  
+    cp_miss_var=(char*)var_in->mss_val.vp;
+    cp_miss_weight=(char*)var_weight->mss_val.vp;
+  
+
 
     for(idx=0;idx<sz;idx++)
     {
-      if( !memcmp(cp_in, cp_miss, slb_sz) )       
-	 memcpy(cp_out, cp_miss, slb_sz);   
+      if( !memcmp(cp_in, cp_miss_var, slb_sz) || !memcmp(cp_out, cp_miss_weight, slb_sz) )
+	 memcpy(cp_out, cp_miss_var, slb_sz);   
 
       cp_in+=slb_sz;
       cp_out+=slb_sz;
     }
+    
+    memcpy(cp_miss_weight, cp_miss_var, slb_sz);   
   }
+ 
 
   // [S1] single value - duplicate is destroyed
   var_weight_sum=nco_var_avg(nco_var_dpl(var_weight),var_weight->dim,var_weight->nbr_dim ,nco_op_ttl,False,&ddra_info);
-
+  
+  // return var_weight_sum;
   // [S2] single value - duplicate is destroyed
   var_weight_avg = nco_var_avg(  ncap_var_var_stc( nco_var_dpl(var_weight), var_in, TIMES), var_weight->dim, var_weight->nbr_dim, nco_op_ttl,False,&ddra_info);
 
