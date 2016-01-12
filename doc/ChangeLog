@@ -1,8 +1,6 @@
 2016-01-08  Henry Butowsky  <henryb@hush.com>
 
-	* ncap2 method ncap_stats_wvariance(var,weight)	
-	  after conformance missing values are set in weight  that correspond to missing values
-	  in var;
+	* ncap2 ncap_stats_wvariance(var,weight) set mss_val in weight to missing values in var
 
 2016-01-07  Charlie Zender  <zender@uci.edu>
 
