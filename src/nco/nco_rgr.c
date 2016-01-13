@@ -4843,6 +4843,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"grid_area",&area_id)) == NC_NOERR) area_nm_in=strdup("grid_area");
   else if((rcd=nco_inq_varid_flg(in_id,"tarea",&area_id)) == NC_NOERR) area_nm_in=strdup("tarea"); /* CICE */
   else if((rcd=nco_inq_varid_flg(in_id,"uarea",&area_id)) == NC_NOERR) area_nm_in=strdup("uarea"); /* CICE */
+
   if((rcd=nco_inq_varid_flg(in_id,"mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask");
   else if((rcd=nco_inq_varid_flg(in_id,"Mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("Mask");
   else if((rcd=nco_inq_varid_flg(in_id,"grid_imask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("grid_imask");
@@ -5539,7 +5540,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
   }else{
     /* Change missing value mask points to 0 integer mask for SCRIP grids, which have no missing value convention
-       Application: CICE mask is NC_FLOAT and uses NC_FLOAT missing value */
+       Applications: 
+       CICE mask is NC_FLOAT and uses NC_FLOAT missing value
+       AMSR mask is NC_SHORT and has no missing value */
     switch(msk_typ){
     case NC_FLOAT:
       if(has_mss_val_msk){
@@ -5566,6 +5569,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  if(msk_unn.ip[idx] == mss_val_int) msk[idx]=0; else msk[idx]=msk_unn.ip[idx];
       }else{
 	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.ip[idx];
+      } /* !mss_val */
+      break;
+    case NC_SHORT:
+      if(has_mss_val_msk){
+	const float mss_val_sht=mss_val_msk_dbl;
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.sp[idx] == mss_val_sht) msk[idx]=0; else msk[idx]=msk_unn.sp[idx];
+      }else{
+	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.sp[idx];
       } /* !mss_val */
       break;
     default:
