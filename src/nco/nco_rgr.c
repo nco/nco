@@ -4617,9 +4617,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int dmn_id_lon; /* [id] Dimension ID */
 
   /* Locate dimensions that must be present in unstructured files */
-  if((rcd=nco_inq_dimid_flg(in_id,"ncol",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("ncol"); 
-  else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("lndgrid");
-  else if((rcd=nco_inq_dimid_flg(in_id,"nCells",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("nCells");
+  if((rcd=nco_inq_dimid_flg(in_id,"ncol",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("ncol"); /* CAM */
+  else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("lndgrid"); /* CLM */
+  else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("sounding_id"); /* OCO2 */
   if(col_dmn_nm) flg_grd_1D=True;
 
   /* Locate dimensions that must be present in rectangular files */
