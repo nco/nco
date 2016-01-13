@@ -1740,11 +1740,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Define new horizontal dimensions before all else */
   if(flg_grd_out_1D){
-    rcd=nco_def_dim(out_id,col_nm_out,col_nbr_out,&dmn_id_col);
+    rcd+=nco_def_dim(out_id,col_nm_out,col_nbr_out,&dmn_id_col);
   } /* !flg_grd_out_1D */
   if(flg_grd_out_2D){
-    rcd=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
-    rcd=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
+    rcd+=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
+    rcd+=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
   } /* !flg_grd_out_2D */
   rcd=nco_inq_dimid_flg(out_id,bnd_tm_nm_out,&dmn_id_bnd_tm);
   /* If dimension has not been defined, define it */
@@ -1765,67 +1765,67 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Define new coordinates and variables in regridded file */
   if(flg_grd_out_1D){
-    (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&lat_out_id);
+    rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&lat_out_id);
     var_crt_nbr++;
-    (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&lon_out_id);
-    var_crt_nbr++;
-    dmn_ids_out[0]=dmn_id_col;
-    dmn_ids_out[1]=dmn_id_bnd;
-    (void)nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
+    rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&lon_out_id);
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_col;
     dmn_ids_out[1]=dmn_id_bnd;
-    (void)nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
+    rcd+=nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
     var_crt_nbr++;
-    (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&area_out_id);
+    dmn_ids_out[0]=dmn_id_col;
+    dmn_ids_out[1]=dmn_id_bnd;
+    rcd+=nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
+    var_crt_nbr++;
+    rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&area_out_id);
     var_crt_nbr++;
     if(flg_frc_out_wrt){
-      (void)nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&frc_out_id);
+      rcd+=nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&frc_out_id);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
   } /* !flg_grd_out_1D */
   if(flg_grd_out_crv){
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_lon;
-    (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_out_id);
+    rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_out_id);
     var_crt_nbr++;
-    (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_out_id);
+    rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_out_id);
     var_crt_nbr++;
-    (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
+    rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
     var_crt_nbr++;
     if(flg_frc_out_wrt){
-      (void)nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
+      rcd+=nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_lon;
     dmn_ids_out[2]=dmn_id_bnd;
-    (void)nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_3D,dmn_ids_out,&lat_bnd_id);
+    rcd+=nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_3D,dmn_ids_out,&lat_bnd_id);
     var_crt_nbr++;
-    (void)nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_3D,dmn_ids_out,&lon_bnd_id);
+    rcd+=nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_3D,dmn_ids_out,&lon_bnd_id);
     var_crt_nbr++;
   } /* !flg_grd_out_crv */
   if(flg_grd_out_rct){
-    (void)nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_out_id);
+    rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_out_id);
     var_crt_nbr++;
-    (void)nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon,&lon_out_id);
+    rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon,&lon_out_id);
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_bnd;
-    (void)nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
+    rcd+=nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_lon;
     dmn_ids_out[1]=dmn_id_bnd;
-    (void)nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
+    rcd+=nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
     var_crt_nbr++;
-    (void)nco_def_var(out_id,lat_wgt_nm,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_wgt_id);
+    rcd+=nco_def_var(out_id,lat_wgt_nm,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_wgt_id);
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_lon;
-    (void)nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
+    rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
     var_crt_nbr++;
     if(flg_frc_out_wrt){
-      (void)nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
+      rcd+=nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
   } /* !flg_grd_out_rct */
