@@ -5145,16 +5145,20 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	     If, say, LL longitude is 179.0 and LR longitude is -179.0 then their sum and average are zero, not 180.0 or -180.0 as desired */
 	  idx_crn_ll=grd_crn_nbr*idx_rl+0;
 	  lat_crn[idx_crn_ll]=0.25*(lat_ctr_fk[idx_fk_crn_ll_ctr_ll]+lat_ctr_fk[idx_fk_crn_ll_ctr_lr]+lat_ctr_fk[idx_fk_crn_ll_ctr_ur]+lat_ctr_fk[idx_fk_crn_ll_ctr_ul]);
-	  lon_crn[idx_crn_ll]=0.25*(lon_ctr_fk[idx_fk_crn_ll_ctr_ll]+lon_ctr_fk[idx_fk_crn_ll_ctr_lr]+lon_ctr_fk[idx_fk_crn_ll_ctr_ur]+lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
+	  //lon_crn[idx_crn_ll]=0.25*(lon_ctr_fk[idx_fk_crn_ll_ctr_ll]+lon_ctr_fk[idx_fk_crn_ll_ctr_lr]+lon_ctr_fk[idx_fk_crn_ll_ctr_ur]+lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
+	  lon_crn[idx_crn_ll]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ll_ctr_ll],lon_ctr_fk[idx_fk_crn_ll_ctr_lr],lon_ctr_fk[idx_fk_crn_ll_ctr_ur],lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
 	  idx_crn_lr=grd_crn_nbr*idx_rl+1;
 	  lat_crn[idx_crn_lr]=0.25*(lat_ctr_fk[idx_fk_crn_lr_ctr_ll]+lat_ctr_fk[idx_fk_crn_lr_ctr_lr]+lat_ctr_fk[idx_fk_crn_lr_ctr_ur]+lat_ctr_fk[idx_fk_crn_lr_ctr_ul]);
-	  lon_crn[idx_crn_lr]=0.25*(lon_ctr_fk[idx_fk_crn_lr_ctr_ll]+lon_ctr_fk[idx_fk_crn_lr_ctr_lr]+lon_ctr_fk[idx_fk_crn_lr_ctr_ur]+lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
+	  //lon_crn[idx_crn_lr]=0.25*(lon_ctr_fk[idx_fk_crn_lr_ctr_ll]+lon_ctr_fk[idx_fk_crn_lr_ctr_lr]+lon_ctr_fk[idx_fk_crn_lr_ctr_ur]+lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
+	  lon_crn[idx_crn_lr]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_lr_ctr_ll],lon_ctr_fk[idx_fk_crn_lr_ctr_lr],lon_ctr_fk[idx_fk_crn_lr_ctr_ur],lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
 	  idx_crn_ur=grd_crn_nbr*idx_rl+2;
 	  lat_crn[idx_crn_ur]=0.25*(lat_ctr_fk[idx_fk_crn_ur_ctr_ll]+lat_ctr_fk[idx_fk_crn_ur_ctr_lr]+lat_ctr_fk[idx_fk_crn_ur_ctr_ur]+lat_ctr_fk[idx_fk_crn_ur_ctr_ul]);
-	  lon_crn[idx_crn_ur]=0.25*(lon_ctr_fk[idx_fk_crn_ur_ctr_ll]+lon_ctr_fk[idx_fk_crn_ur_ctr_lr]+lon_ctr_fk[idx_fk_crn_ur_ctr_ur]+lon_ctr_fk[idx_fk_crn_ur_ctr_ul]);
+	  //lon_crn[idx_crn_ur]=0.25*(lon_ctr_fk[idx_fk_crn_ur_ctr_ll]+lon_ctr_fk[idx_fk_crn_ur_ctr_lr]+lon_ctr_fk[idx_fk_crn_ur_ctr_ur]+lon_ctr_fk[idx_fk_crn_ur_ctr_ul]);
+	  lon_crn[idx_crn_ur]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ur_ctr_ll],lon_ctr_fk[idx_fk_crn_ur_ctr_lr],lon_ctr_fk[idx_fk_crn_ur_ctr_ur],lon_ctr_fk[idx_fk_crn_ur_ctr_ul]);
 	  idx_crn_ul=grd_crn_nbr*idx_rl+3;
 	  lat_crn[idx_crn_ul]=0.25*(lat_ctr_fk[idx_fk_crn_ul_ctr_ll]+lat_ctr_fk[idx_fk_crn_ul_ctr_lr]+lat_ctr_fk[idx_fk_crn_ul_ctr_ur]+lat_ctr_fk[idx_fk_crn_ul_ctr_ul]);
-	  lon_crn[idx_crn_ul]=0.25*(lon_ctr_fk[idx_fk_crn_ul_ctr_ll]+lon_ctr_fk[idx_fk_crn_ul_ctr_lr]+lon_ctr_fk[idx_fk_crn_ul_ctr_ur]+lon_ctr_fk[idx_fk_crn_ul_ctr_ul]);
+	  //lon_crn[idx_crn_ul]=0.25*(lon_ctr_fk[idx_fk_crn_ul_ctr_ll]+lon_ctr_fk[idx_fk_crn_ul_ctr_lr]+lon_ctr_fk[idx_fk_crn_ul_ctr_ur]+lon_ctr_fk[idx_fk_crn_ul_ctr_ul]);
+	  lon_crn[idx_crn_ul]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ul_ctr_ll],lon_ctr_fk[idx_fk_crn_ul_ctr_lr],lon_ctr_fk[idx_fk_crn_ul_ctr_ur],lon_ctr_fk[idx_fk_crn_ul_ctr_ul]);
 	} /* !lon */
       } /* !lat */
       if(lat_ctr_fk) lat_ctr_fk=(double *)nco_free(lat_ctr_fk);
@@ -5840,14 +5844,56 @@ nco_lon_dff_brnch /* [fnc] Subtract longitudes with branch-cut rules */
 {
   /* Purpose: Return difference of two longitudes in degrees
      Assume longitudes are within 180 degrees of eachother
-     Default orientation is monitonically increasing longitude from left to right */
+     Default orientation is monotonically increasing longitude from left to right */
   const char fnc_nm[]="nco_lon_dff_brnch()";
-  double lon_dff; /* [dgr] Longitude difference (lon_r-lon_l) */
-  //  if(lon_r < lon_l) lon_r+=360.0;
-  lon_dff=lon_r-lon_l;
-  if(True) return lon_dff;
-  if(fabs(lon_dff) < 180.0) return lon_dff;
-  (void)fprintf(stdout,"%s: ERROR %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
-  nco_exit(EXIT_FAILURE);
-  return lon_dff; /* Avoid compiler warning about reaching end of non-void function */
+  const double lon_dff=lon_r-lon_l; /* [dgr] Longitude difference (lon_r-lon_l) */
+  if(lon_dff >= 180.0){
+    (void)fprintf(stdout,"%s: WARNING %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
+    return lon_dff-360.0;
+  }else if(lon_dff <= -180.0){
+    return lon_dff+360.0;
+  } /* !lon_dff */
+
+  return lon_dff;
 } /* !nco_lon_dff_brnch() */
+
+double /* O [dgr] Longitude average (lon_r-lon_l) */
+nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut rules */
+(double lon_ll, /* I [dgr] Longitude at lower left  of gridcell */
+ double lon_lr, /* I [dgr] Longitude at lower right of gridcell */
+ double lon_ur, /* I [dgr] Longitude at upper right of gridcell */
+ double lon_ul) /* I [dgr] Longitude at upper left  of gridcell */
+{
+  /* Purpose: Return average of four corner longitudes of quadrilateral
+     Assume longitudes are within 180 degrees of eachother
+     Default orientation is monotonically increasing longitude from left to right 
+     WLOG, adjust all longitudes to be on same branch as lon_ll */
+  const char fnc_nm[]="nco_lon_crn_avg_brnch()";
+  double lon_dff; /* [dgr] Longitude difference */
+
+  lon_dff=lon_lr-lon_ll;
+  if(lon_dff >= 180.0){
+    (void)fprintf(stdout,"%s: INFO %s reports lon_lr, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_lr,lon_ll,lon_dff);
+    lon_lr-=360.0;
+  }else if(lon_dff <= -180.0){
+    lon_lr+=360.0;
+  } /* !lon_dff */
+
+  lon_dff=lon_ur-lon_ll;
+  if(lon_dff >= 180.0){
+    (void)fprintf(stdout,"%s: INFO %s reports lon_ur, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_ur,lon_ll,lon_dff);
+    lon_ur-=360.0;
+  }else if(lon_dff <= -180.0){
+    lon_ur+=360.0;
+  } /* !lon_dff */
+
+  lon_dff=lon_ul-lon_ll;
+  if(lon_dff >= 180.0){
+    (void)fprintf(stdout,"%s: INFO %s reports lon_ul, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_ul,lon_ll,lon_dff);
+    lon_ul-=360.0;
+  }else if(lon_dff <= -180.0){
+    lon_ul+=360.0;
+  } /* !lon_dff */
+  
+  return 0.25*(lon_ll+lon_lr+lon_ur+lon_ul);
+} /* !nco_lon_crn_avg_brnch() */

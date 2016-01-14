@@ -1,3 +1,8 @@
+2016-01-14  Charlie Zender  <zender@uci.edu>
+
+	* Implement full branch-cut patch in nco_grd_nfr(), keeps curvilinear grids from generating concave gridcells
+	in 3/4 of Feng's five-failure parade, and causes 2/4 of those to work "perfectly". Remaining two have other bugs in conserve mode.
+
 2016-01-13  Charlie Zender  <zender@uci.edu>
 
 	* Account for branch-cuts in extrapolating longitude from template

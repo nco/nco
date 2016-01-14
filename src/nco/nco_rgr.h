@@ -211,6 +211,13 @@ extern "C" {
   (double lon_r, /* I [dgr] Longitude on right of gridcell (subtractor) */
    double lon_l); /* I [dgr] Longitude on  left of gridcell (subtractee) */
 
+  double /* O [dgr] Longitude average (lon_r-lon_l) */
+  nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut rules */
+  (double lon_ll, /* I [dgr] Longitude at lower left  of gridcell */
+   double lon_lr, /* I [dgr] Longitude at lower right of gridcell */
+   double lon_ur, /* I [dgr] Longitude at upper right of gridcell */
+   double lon_ul); /* I [dgr] Longitude at upper left  of gridcell */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
