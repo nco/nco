@@ -1,5 +1,9 @@
 2016-01-13  Charlie Zender  <zender@uci.edu>
 
+	* Account for branch-cuts in extrapolating longitude from template
+
+	* Implement kludge for AMSR mask variable
+
 	* Add new lat,lon,col dimension and coordinate names for TRMM, GPM, AMSR, OCO2:
 	sounding_id,Latitude,Longitude,nscan,npix,npixel,S1_Latitude,S1_Longitude
 

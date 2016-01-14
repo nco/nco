@@ -4851,7 +4851,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   /* Mask field requires special handling for non-conformant models */
   if(msk_id != NC_MIN_INT){
-    /* 20151201: All models tested define mask as NC_INT except CICE which uses NC_FLOAT */
+    /* 20151201: All models tested define mask as NC_INT except CICE which uses NC_FLOAT
+       20160111: No observations tested define mask except AMSR which uses NC_SHORT to store bitmasks. Bitmask is 1 for missing data, and up to 128 for various quality levels of valid data. Hence, almost better to ignore AMSR mask variable. */
     rcd=nco_inq_vartype(in_id,msk_id,&msk_typ);
     msk_unn.vp=(void *)nco_malloc(grd_sz_nbr*nco_typ_lng(msk_typ));
   } /* !msk */
@@ -5024,13 +5025,18 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  lon_ctr_fk[idx_fk]=lon_ctr[idx_rl];
 	} /* !lon */
       } /* !lat */
+      /* Formulae to extrapolate sides and corners of fake grid are written as a starting lat/lon plus or minus adjustment
+	 Adjustment is positive-definite if grid monotonically increases in latitude and longitude from LL to UR 
+	 20160111: Use macros/functions to determine longitude adjustments that are always less than 180
+	 This ensures all longitudes contributing to extrapolated longitude are from same branch cut */
       /* Bottom row */
       lat_idx=0; /* lat idx of extrapolated point on fake grid */
       for(lon_idx=1;lon_idx<lon_nbr+1;lon_idx++){ /* lon idx of extrapolated point on fake grid */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on bottom row of fake grid */
 	idx_rl=lat_idx*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on bottom row of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+lon_nbr]-lat_ctr[idx_rl]);
-	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+lon_nbr]-lon_ctr[idx_rl]);
+	//lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+lon_nbr]-lon_ctr[idx_rl]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-nco_lon_dff_brnch(lon_ctr[idx_rl+lon_nbr],lon_ctr[idx_rl]);
       } /* !lon */
       /* Top row */
       lat_idx=lat_nbr+1; /* lat idx of extrapolated point on fake grid */
@@ -5038,7 +5044,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on top row of fake grid */
 	idx_rl=(lat_nbr-1)*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on top row of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-lon_nbr]);
-	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-lon_nbr]);
+	//lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-lon_nbr]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+nco_lon_dff_brnch(lon_ctr[idx_rl],lon_ctr[idx_rl-lon_nbr]);
       } /* !lon */
       /* Left side */
       lon_idx=0; /* lon idx of extrapolated point on fake grid */
@@ -5046,7 +5053,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on left side of fake grid */
 	idx_rl=(lat_idx-1)*lon_nbr+lon_idx; /* 1D-offset of neighboring point on left side of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+1]-lat_ctr[idx_rl]);
-	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+1]-lon_ctr[idx_rl]);
+	//lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+1]-lon_ctr[idx_rl]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-nco_lon_dff_brnch(lon_ctr[idx_rl+1],lon_ctr[idx_rl]);
       } /* !lat */
       /* Right side */
       lon_idx=lon_nbr+1; /* lon idx of extrapolated point on fake grid */
@@ -5054,20 +5062,25 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on right side of fake grid */
 	idx_rl=(lat_idx-1)*lon_nbr+lon_idx-2; /* 1D-offset of neighboring point on right side of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-1]);
-	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-1]);
+	//lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-1]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+nco_lon_dff_brnch(lon_ctr[idx_rl],lon_ctr[idx_rl-1]);
       } /* !lat */
       /* LL */
       lat_ctr_fk[0]=lat_ctr_fk[lon_nbr+2]-(lat_ctr_fk[2*(lon_nbr+2)]-lat_ctr_fk[lon_nbr+2]);
-      lon_ctr_fk[0]=lon_ctr_fk[1]-(lon_ctr_fk[2]-lon_ctr_fk[1]);
+      //lon_ctr_fk[0]=lon_ctr_fk[1]-(lon_ctr_fk[2]-lon_ctr_fk[1]);
+      lon_ctr_fk[0]=lon_ctr_fk[1]-nco_lon_dff_brnch(lon_ctr_fk[2],lon_ctr_fk[1]);
       /* LR */
       lat_ctr_fk[lon_nbr+1]=lat_ctr_fk[2*(lon_nbr+2)-1]-(lat_ctr_fk[3*(lon_nbr+2)-1]-lat_ctr_fk[2*(lon_nbr+2)-1]);
-      lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+(lon_ctr_fk[lon_nbr]-lon_ctr_fk[lon_nbr-1]);
+      //lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+(lon_ctr_fk[lon_nbr]-lon_ctr_fk[lon_nbr-1]);
+      lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+nco_lon_dff_brnch(lon_ctr_fk[lon_nbr],lon_ctr_fk[lon_nbr-1]);
       /* UR */
       lat_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]+(lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]-lat_ctr_fk[lat_nbr*(lon_nbr+2)-1]);
-      lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]-lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
+      //lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]-lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
+      lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+nco_lon_dff_brnch(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2],lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
       /* UL */
       lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lat_ctr_fk[lat_nbr*(lon_nbr+2)]+(lat_ctr_fk[lat_nbr*(lon_nbr+2)]-lat_ctr_fk[(lat_nbr-1)*(lon_nbr+2)]);
-      lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2]-lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
+      //lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2]-lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
+      lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-nco_lon_dff_brnch(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2],lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
 
       if(nco_dbg_lvl_get() >= nco_dbg_std){
 	long idx_dbg;
@@ -5128,6 +5141,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  idx_fk_crn_ul_ctr_ur=idx_fk+(lon_nbr+2); // (lat_idx+1)*lon_nbr+lon_idx
 	  idx_fk_crn_ul_ctr_ul=idx_fk+(lon_nbr+2)-1; // (lat_idx+1)*lon_nbr+lon_idx-1;
 	  
+	  /* 20160111: Algorithm requires that all longitudes in template be on same "branch cut"
+	     If, say, LL longitude is 179.0 and LR longitude is -179.0 then their sum and average are zero, not 180.0 or -180.0 as desired */
 	  idx_crn_ll=grd_crn_nbr*idx_rl+0;
 	  lat_crn[idx_crn_ll]=0.25*(lat_ctr_fk[idx_fk_crn_ll_ctr_ll]+lat_ctr_fk[idx_fk_crn_ll_ctr_lr]+lat_ctr_fk[idx_fk_crn_ll_ctr_ur]+lat_ctr_fk[idx_fk_crn_ll_ctr_ul]);
 	  lon_crn[idx_crn_ll]=0.25*(lon_ctr_fk[idx_fk_crn_ll_ctr_ll]+lon_ctr_fk[idx_fk_crn_ll_ctr_lr]+lon_ctr_fk[idx_fk_crn_ll_ctr_ur]+lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
@@ -5578,6 +5593,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  if(msk_unn.sp[idx] == mss_val_sht) msk[idx]=0; else msk[idx]=msk_unn.sp[idx];
       }else{
 	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.sp[idx];
+	/* 20160111: AMSR kludge fxm */
+	//	for(idx=0;idx<grd_sz_nbr;idx++) if(msk[idx] == 1) msk[idx]=0;
       } /* !mss_val */
       break;
     default:
@@ -5815,3 +5832,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   return rcd;
 
 } /* !nco_grd_nfr() */
+
+double /* O [dgr] Longitude difference (lon_r-lon_l) */
+nco_lon_dff_brnch /* [fnc] Subtract longitudes with branch-cut rules */
+(double lon_r, /* I [dgr] Longitude on right of gridcell (subtractor) */
+ double lon_l) /* I [dgr] Longitude on  left of gridcell (subtractee) */
+{
+  /* Purpose: Return difference of two longitudes in degrees
+     Assume longitudes are within 180 degrees of eachother
+     Default orientation is monitonically increasing longitude from left to right */
+  const char fnc_nm[]="nco_lon_dff_brnch()";
+  double lon_dff; /* [dgr] Longitude difference (lon_r-lon_l) */
+  //  if(lon_r < lon_l) lon_r+=360.0;
+  lon_dff=lon_r-lon_l;
+  if(True) return lon_dff;
+  if(fabs(lon_dff) < 180.0) return lon_dff;
+  (void)fprintf(stdout,"%s: ERROR %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
+  nco_exit(EXIT_FAILURE);
+  return lon_dff; /* Avoid compiler warning about reaching end of non-void function */
+} /* !nco_lon_dff_brnch() */

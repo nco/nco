@@ -206,6 +206,11 @@ extern "C" {
   nco_tps_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
   (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
 
+  double /* O [dgr] Longitude difference (lon_r-lon_l) */
+  nco_lon_dff_brnch /* [fnc] Subtract longitudes with branch-cut rules */
+  (double lon_r, /* I [dgr] Longitude on right of gridcell (subtractor) */
+   double lon_l); /* I [dgr] Longitude on  left of gridcell (subtractee) */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

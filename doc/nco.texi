@@ -15099,6 +15099,7 @@ ncatted -a long_name,T,o,c,temperature in.nc
 
 @html
 <a name="NaN"></a> <!-- http://nco.sf.net/nco.html#NaN -->
+<a name="nan"></a> <!-- http://nco.sf.net/nco.html#nan -->
 @end html
 @cindex NaN
 @cindex @acronym{IEEE} NaN
@@ -15127,6 +15128,12 @@ normal @acronym{IEEE} number, like 1.0e36 (or to whatever the original
 missing value was). 
 @example
 ncatted -a _FillValue,,m,f,1.0e36 in.nc
+@end example
+Some @acronym{NASA} @acronym{MODIS} datasets provide a real-world
+example. 
+@example
+ncatted -O -a _FillValue,,m,d,1.0e36 -a missing_value,,m,d,1.0e36 \
+        MODIS_L2N_20140304T1120.nc MODIS_L2N_20140304T1120_noNaN.nc
 @end example
 
 Delete all existing @code{units} attributes:
