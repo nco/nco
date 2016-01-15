@@ -1,5 +1,9 @@
 2016-01-15  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.5-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha03 final changes';git push
+	git tag -a 4.5.5-alpha03 -m 'Version 4.5.5-alpha03 new features: ncremap -P airs,mpas';git push --tags
+
 	* ncpdq: Eliminate duplicate file-header set-up that causes --gaa option to fail second-time
 
 	* ncremap: Add -P pdq_typ option for AIRS and MPAS data

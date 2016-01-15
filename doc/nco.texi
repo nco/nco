@@ -113,11 +113,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.5-alpha02
-@set doc-edition 4.5.5-alpha02
+@set nco-edition 4.5.5-alpha03
+@set doc-edition 4.5.5-alpha03
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 14 January 2016
+@set update-date 15 January 2016
 @set update-month January 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18865,9 +18865,10 @@ using @samp{-I @var{in_drc}} or standard input) generates an error
 @cindex @var{pdq_typ}
 @item -P @var{pdq_typ}
 Specifies the permutation mode desired.
-For a limited number of data-file types, one can tell @command{ncremap}
-to automatically permute the dimensions in the data file prior to 
-regridding.
+As of January 15, 2016, one can tell @command{ncremap} to automatically
+tagpermute the dimensions in the data file prior to regridding for a
+limited (though growning) number of data-file types that suffer from
+the @command{ncremap} limitation concerning dimension ordering.
 Valid types are @samp{airs} (for @acronym{NASA AIRS} satellite data), 
 @samp{mpas} (for @acronym{MPAS} ocean/ice model data), and @samp{nil} (for none).
 The default @var{pdq_typ} is @samp{nil}, which means @command{ncremap} 

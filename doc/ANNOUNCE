@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.5-alpha02 are ready. 
+The netCDF Operators NCO version 4.5.5-alpha03 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -25,7 +25,11 @@ A. NCO supports the CDF5 file type introduced in netCDF 4.4.0.
    ncks -7 in_5.nc out_7.nc
    http://nco.sf.net/nco.html#cdf5
 
-A. ncremap: Many improvements and bug-fixes.
+A. ncremap: Many improvements.
+   Notably -P option to cause automatic permutation of selected
+   file-types (AIRS, MPAS) prior to regridding.
+   ncremap -P mpas -i mpas.nc -m map.nc -o out.nc
+   http://nco.sf.net/nco.html#ncremap
 
 BUG FIXES:
 
@@ -33,8 +37,11 @@ A. ncremap: Inferring grids from curvilinear coordinates no longer
    get confused by "branch cuts" (i.e., the date-line). ncremap
    version 4.5.4 would sometimes infer concave gridcells that then
    confused mapping software. The solution is to upgrade to
-   4.5.5-alpha02.  
+   4.5.5-alpha03.  
    Thanks to Feng Ding for reporting the problem.
+
+A. ncpdq: Fix problem that could cause '-gaa' option to fail in
+   earlier versions. The solution is to upgrade to 4.5.5-alpha03.  
 
 KNOWN PROBLEMS DUE TO NCO:
 
