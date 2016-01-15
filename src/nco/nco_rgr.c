@@ -5035,7 +5035,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on bottom row of fake grid */
 	idx_rl=lat_idx*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on bottom row of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+lon_nbr]-lat_ctr[idx_rl]);
-	//lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+lon_nbr]-lon_ctr[idx_rl]);
 	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-nco_lon_dff_brnch(lon_ctr[idx_rl+lon_nbr],lon_ctr[idx_rl]);
       } /* !lon */
       /* Top row */
@@ -5044,7 +5043,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on top row of fake grid */
 	idx_rl=(lat_nbr-1)*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on top row of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-lon_nbr]);
-	//lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-lon_nbr]);
 	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+nco_lon_dff_brnch(lon_ctr[idx_rl],lon_ctr[idx_rl-lon_nbr]);
       } /* !lon */
       /* Left side */
@@ -5053,7 +5051,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on left side of fake grid */
 	idx_rl=(lat_idx-1)*lon_nbr+lon_idx; /* 1D-offset of neighboring point on left side of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+1]-lat_ctr[idx_rl]);
-	//lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-(lon_ctr[idx_rl+1]-lon_ctr[idx_rl]);
 	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-nco_lon_dff_brnch(lon_ctr[idx_rl+1],lon_ctr[idx_rl]);
       } /* !lat */
       /* Right side */
@@ -5062,24 +5059,19 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on right side of fake grid */
 	idx_rl=(lat_idx-1)*lon_nbr+lon_idx-2; /* 1D-offset of neighboring point on right side of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-1]);
-	//lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+(lon_ctr[idx_rl]-lon_ctr[idx_rl-1]);
 	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+nco_lon_dff_brnch(lon_ctr[idx_rl],lon_ctr[idx_rl-1]);
       } /* !lat */
       /* LL */
       lat_ctr_fk[0]=lat_ctr_fk[lon_nbr+2]-(lat_ctr_fk[2*(lon_nbr+2)]-lat_ctr_fk[lon_nbr+2]);
-      //lon_ctr_fk[0]=lon_ctr_fk[1]-(lon_ctr_fk[2]-lon_ctr_fk[1]);
       lon_ctr_fk[0]=lon_ctr_fk[1]-nco_lon_dff_brnch(lon_ctr_fk[2],lon_ctr_fk[1]);
       /* LR */
       lat_ctr_fk[lon_nbr+1]=lat_ctr_fk[2*(lon_nbr+2)-1]-(lat_ctr_fk[3*(lon_nbr+2)-1]-lat_ctr_fk[2*(lon_nbr+2)-1]);
-      //lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+(lon_ctr_fk[lon_nbr]-lon_ctr_fk[lon_nbr-1]);
       lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+nco_lon_dff_brnch(lon_ctr_fk[lon_nbr],lon_ctr_fk[lon_nbr-1]);
       /* UR */
       lat_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]+(lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]-lat_ctr_fk[lat_nbr*(lon_nbr+2)-1]);
-      //lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]-lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
       lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+nco_lon_dff_brnch(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2],lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
       /* UL */
       lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lat_ctr_fk[lat_nbr*(lon_nbr+2)]+(lat_ctr_fk[lat_nbr*(lon_nbr+2)]-lat_ctr_fk[(lat_nbr-1)*(lon_nbr+2)]);
-      //lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2]-lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
       lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-nco_lon_dff_brnch(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2],lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
 
       if(nco_dbg_lvl_get() >= nco_dbg_std){
@@ -5145,19 +5137,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	     If, say, LL longitude is 179.0 and LR longitude is -179.0 then their sum and average are zero, not 180.0 or -180.0 as desired */
 	  idx_crn_ll=grd_crn_nbr*idx_rl+0;
 	  lat_crn[idx_crn_ll]=0.25*(lat_ctr_fk[idx_fk_crn_ll_ctr_ll]+lat_ctr_fk[idx_fk_crn_ll_ctr_lr]+lat_ctr_fk[idx_fk_crn_ll_ctr_ur]+lat_ctr_fk[idx_fk_crn_ll_ctr_ul]);
-	  //lon_crn[idx_crn_ll]=0.25*(lon_ctr_fk[idx_fk_crn_ll_ctr_ll]+lon_ctr_fk[idx_fk_crn_ll_ctr_lr]+lon_ctr_fk[idx_fk_crn_ll_ctr_ur]+lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
 	  lon_crn[idx_crn_ll]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ll_ctr_ll],lon_ctr_fk[idx_fk_crn_ll_ctr_lr],lon_ctr_fk[idx_fk_crn_ll_ctr_ur],lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
 	  idx_crn_lr=grd_crn_nbr*idx_rl+1;
 	  lat_crn[idx_crn_lr]=0.25*(lat_ctr_fk[idx_fk_crn_lr_ctr_ll]+lat_ctr_fk[idx_fk_crn_lr_ctr_lr]+lat_ctr_fk[idx_fk_crn_lr_ctr_ur]+lat_ctr_fk[idx_fk_crn_lr_ctr_ul]);
-	  //lon_crn[idx_crn_lr]=0.25*(lon_ctr_fk[idx_fk_crn_lr_ctr_ll]+lon_ctr_fk[idx_fk_crn_lr_ctr_lr]+lon_ctr_fk[idx_fk_crn_lr_ctr_ur]+lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
 	  lon_crn[idx_crn_lr]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_lr_ctr_ll],lon_ctr_fk[idx_fk_crn_lr_ctr_lr],lon_ctr_fk[idx_fk_crn_lr_ctr_ur],lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
 	  idx_crn_ur=grd_crn_nbr*idx_rl+2;
 	  lat_crn[idx_crn_ur]=0.25*(lat_ctr_fk[idx_fk_crn_ur_ctr_ll]+lat_ctr_fk[idx_fk_crn_ur_ctr_lr]+lat_ctr_fk[idx_fk_crn_ur_ctr_ur]+lat_ctr_fk[idx_fk_crn_ur_ctr_ul]);
-	  //lon_crn[idx_crn_ur]=0.25*(lon_ctr_fk[idx_fk_crn_ur_ctr_ll]+lon_ctr_fk[idx_fk_crn_ur_ctr_lr]+lon_ctr_fk[idx_fk_crn_ur_ctr_ur]+lon_ctr_fk[idx_fk_crn_ur_ctr_ul]);
 	  lon_crn[idx_crn_ur]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ur_ctr_ll],lon_ctr_fk[idx_fk_crn_ur_ctr_lr],lon_ctr_fk[idx_fk_crn_ur_ctr_ur],lon_ctr_fk[idx_fk_crn_ur_ctr_ul]);
 	  idx_crn_ul=grd_crn_nbr*idx_rl+3;
 	  lat_crn[idx_crn_ul]=0.25*(lat_ctr_fk[idx_fk_crn_ul_ctr_ll]+lat_ctr_fk[idx_fk_crn_ul_ctr_lr]+lat_ctr_fk[idx_fk_crn_ul_ctr_ur]+lat_ctr_fk[idx_fk_crn_ul_ctr_ul]);
-	  //lon_crn[idx_crn_ul]=0.25*(lon_ctr_fk[idx_fk_crn_ul_ctr_ll]+lon_ctr_fk[idx_fk_crn_ul_ctr_lr]+lon_ctr_fk[idx_fk_crn_ul_ctr_ur]+lon_ctr_fk[idx_fk_crn_ul_ctr_ul]);
 	  lon_crn[idx_crn_ul]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ul_ctr_ll],lon_ctr_fk[idx_fk_crn_ul_ctr_lr],lon_ctr_fk[idx_fk_crn_ul_ctr_ur],lon_ctr_fk[idx_fk_crn_ul_ctr_ul]);
 	} /* !lon */
       } /* !lat */

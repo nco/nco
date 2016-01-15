@@ -251,7 +251,6 @@ main(int argc,char **argv)
   nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
   nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
-  nco_bool PRN_NEW_FMT=False; /* [flg] Print using new print format */
   nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
@@ -391,10 +390,12 @@ main(int argc,char **argv)
     /* Long options with short counterparts */
     {"3",no_argument,0,'3'},
     {"4",no_argument,0,'4'},
-    {"64bit",no_argument,0,'4'},
+    {"64bit_offset",no_argument,0,'4'},
     {"netcdf4",no_argument,0,'4'},
-    {"pnetcdf",no_argument,0,'5'},
     {"5",no_argument,0,'5'},
+    {"64bit_data",no_argument,0,'5'},
+    {"cdf5",no_argument,0,'5'},
+    {"pnetcdf",no_argument,0,'5'},
     {"7",no_argument,0,'7'},
     {"abc",no_argument,0,'a'},
     {"alphabetize",no_argument,0,'a'},
@@ -685,11 +686,10 @@ main(int argc,char **argv)
       fl_out_fmt=NC_FORMAT_CLASSIC;
       break;
     case '4': /* Catch-all to prescribe output storage format */
-      if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      if(!strcmp(opt_crr,"64bit_offset")) fl_out_fmt=NC_FORMAT_64BIT_OFFSET; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
-    case '5': /* Print using new print format */
+    case '5': /* Request netCDF3 64-bit offset+data storage (i.e., pnetCDF) format */
       fl_out_fmt=NC_FORMAT_CDF5;
-      PRN_NEW_FMT=!PRN_NEW_FMT;
       break;
     case '6': /* Request netCDF3 64-bit offset output storage format */
       fl_out_fmt=NC_FORMAT_64BIT;
@@ -1088,7 +1088,7 @@ main(int argc,char **argv)
     prn_flg.xml=PRN_XML;
     prn_flg.trd=!(PRN_CDL || PRN_XML || PRN_JSN);
     if((prn_flg.cdl || prn_flg.xml) && nco_dbg_lvl >= nco_dbg_std) prn_flg.nfo_xtr=True; else prn_flg.nfo_xtr=False;
-    prn_flg.new_fmt=(PRN_CDL || PRN_JSN || PRN_SRM || PRN_XML || PRN_NEW_FMT);
+    prn_flg.new_fmt=(PRN_CDL || PRN_JSN || PRN_SRM || PRN_XML);
     prn_flg.hdn=PRN_HDN;
     prn_flg.rad=RETAIN_ALL_DIMS;
     /* CDL must print filename stub */

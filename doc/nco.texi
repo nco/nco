@@ -117,7 +117,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.5-alpha01
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 8 January 2016
+@set update-date 14 January 2016
 @set update-month January 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3584,6 +3584,8 @@ when your other preferred methods are not available locally.
 <a name="fl_fmt"></a> <!-- http://nco.sf.net/nco.html#fl_fmt -->
 <a name="hdf"></a> <!-- http://nco.sf.net/nco.html#hdf -->
 <a name="64bit"></a> <!-- http://nco.sf.net/nco.html#64bit -->
+<a name="64bit-data"></a> <!-- http://nco.sf.net/nco.html#64bit-data -->
+<a name="64bit-offset"></a> <!-- http://nco.sf.net/nco.html#64bit-offset -->
 <a name="netcdf4"></a> <!-- http://nco.sf.net/nco.html#netcdf4 -->
 @end html
 @node File Formats and Conversion, Large File Support, Retaining Retrieved Files, Shared features
@@ -3595,7 +3597,8 @@ when your other preferred methods are not available locally.
 @cindex @code{NETCDF4_CLASSIC} files
 @cindex @code{NETCDF4} files
 @cindex @code{CLASSIC} files
-@cindex @code{64BIT} files
+@cindex @code{64BIT_OFFSET} files
+@cindex @code{64BIT_DATA} files
 @cindex @code{--3}
 @cindex @code{-3}
 @cindex @code{-4}
@@ -3609,13 +3612,14 @@ when your other preferred methods are not available locally.
 @cindex @code{--netcdf4}
 @cindex @code{--fl_fmt}
 @cindex @code{--file_format}
-@cindex @code{--64bit}
+@cindex @code{--64bit_offset}
+@cindex @code{--64bit_data}
 @cartouche
 Availability: @command{ncap2}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
-Short options: @samp{-3}, @samp{-4}, @samp{-6}, @samp{-7}@*
-Long options: @samp{--3}, @samp{--4}, @samp{--6}, @samp{--64bit}, @samp{--7}, @samp{--fl_fmt},
+Short options: @samp{-3}, @samp{-4}, @samp{-5}, @samp{-6}, @samp{-7}@*
+Long options: @samp{--3}, @samp{--4}, @samp{--5}, @samp{--6}, @samp{--64bit_offset}, @samp{--7}, @samp{--fl_fmt},
 @samp{--netcdf4}@*  
 @end cartouche
 All @acronym{NCO} operators support (read and write) all three (or four, 
@@ -3639,15 +3643,19 @@ format as the input netCDF file.)
 
 @node File Formats, Determining File Format, File Formats and Conversion, File Formats and Conversion
 @subsection File Formats
-netCDF supports four types of files: @code{CLASSIC}, @code{64BIT},
-@code{NETCDF4}, and @code{NETCDF4_CLASSIC}, 
+netCDF supports five types of files: @code{CLASSIC},
+@code{64BIT_OFFSET}, @code{64BIT_DATA}, @code{NETCDF4}, and
+@code{NETCDF4_CLASSIC}.
 The @code{CLASSIC} format is the traditional 32-bit offset written by
 netCDF2 and netCDF3.
 As of 2005, nearly all netCDF datasets were in @code{CLASSIC} format. 
-The @code{64BIT} format was added in Fall, 2004.
-As of 2010, many netCDF datasets were in @code{64BIT} format. 
+The @code{64BIT_OFFSET} (originally called plain old @code{64BIT})
+format was added in Fall, 2004. 
+As of 2010, many netCDF datasets were in @code{64BIT_OFFSET} format. 
 As of 2013, an increasing number of netCDF datasets were in
 @code{NETCDF4_CLASSIC} format.
+The @code{64BIT_DATA} (aka @code{CDF5} or @code{PNETCDF})
+format was added in January, 2016. 
 
 The @code{NETCDF4} format uses @acronym{HDF5} as the file storage layer. 
 The files are (usually) created, accessed, and manipulated using the 
@@ -3662,8 +3670,8 @@ linked with the netCDF4 library).
 @acronym{NCO} must be built with @w{netCDF4} to write files in the new
 @code{NETCDF4} and @code{NETCDF4_CLASSIC} formats, and to read files in
 these formats. 
-Datasets in the default @code{CLASSIC} or the newer @code{64BIT} formats 
-have maximum backwards-compatibility with older applications. 
+Datasets in the default @code{CLASSIC} or the newer @code{64BIT_OFFSET}
+formats have maximum backwards-compatibility with older applications. 
 @acronym{NCO} has deep support for @code{NETCDF4} formats.
 If performance or disk-space as important as backwards compatibility,
 then use @code{NETCDF4_CLASSIC} instead of @code{CLASSIC} format files. 
@@ -3674,11 +3682,11 @@ workflows will utilize this format.
 As mentioned above, all operators write use the input file format for
 output files unless told otherwise.
 Toggling the short option @samp{-6} or the long option @samp{--6} or
-@samp{--64bit} (or their @var{key}-@var{value} equivalent
-@samp{--fl_fmt=64bit}) produces the netCDF3 64-bit offset format named
-@code{64BIT}.
+@samp{--64bit_offset} (or their @var{key}-@var{value} equivalent
+@samp{--fl_fmt=64bit_offset}) produces the netCDF3 64-bit offset format
+named @code{64BIT_OFFSET}.
 @acronym{NCO} must be built with @w{netCDF 3.6} or higher to produce
-a @code{64BIT} file.
+a @code{64BIT_OFFSET} file.
 Using the @samp{-4} switch (or its long option equivalents
 @samp{--4} or @samp{--netcdf4}), or setting its @var{key}-@var{value}
 equivalent @samp{--fl_fmt=netcdf4} produces a @code{NETCDF4} file
@@ -3727,15 +3735,19 @@ First, examine the first line of global metadata output by @samp{ncks -M}:
 @cindex netCDF4 file format
 @cindex 32-bit offset file format
 @cindex 64-bit offset file format
+@cindex 64-bit data file format
+@cindex PnetCDF file format
 @cindex @command{ncks} 
 @cindex @code{-M}
 @example
-% ncks -M foo_3c.nc
-Summary of foo_3c.nc: filetype = NC_FORMAT_CLASSIC, 0 groups ...
-% ncks -M foo_364.nc
-Summary of foo_364.nc: filetype = NC_FORMAT_64BIT, 0 groups ...
-% ncks -M foo_4c.nc
-Summary of foo_4c.nc: filetype = NC_FORMAT_NETCDF4_CLASSIC, 0 groups ...
+% ncks -M foo_3.nc
+Summary of foo_3.nc: filetype = NC_FORMAT_CLASSIC, 0 groups ...
+% ncks -M foo_6.nc
+Summary of foo_6.nc: filetype = NC_FORMAT_64BIT_OFFSET, 0 groups ...
+% ncks -M foo_5.nc
+Summary of foo_5.nc: filetype = NC_FORMAT_64BIT_DATA, 0 groups ...
+% ncks -M foo_7.nc
+Summary of foo_7.nc: filetype = NC_FORMAT_NETCDF4_CLASSIC, 0 groups ...
 % ncks -M foo_4.nc
 Summary of foo_4.nc: filetype = NC_FORMAT_NETCDF4, 0 groups ...
 @end example
@@ -3743,24 +3755,24 @@ This method requires a netCDF4-enabled @acronym{NCO} version 3.9.0+
 (i.e., from 2007 or later).
 @cindex extended file format
 @cindex underlying file format
-@cindex @code{NC_FORMAT_NC3}
-@cindex @code{NC_FORMAT_NC_HDF5}
-@cindex @code{NC_FORMAT_NC_HDF4}
-@cindex @code{NC_FORMAT_PNETCDF}
-@cindex @code{NC_FORMAT_DAP2}
-@cindex @code{NC_FORMAT_DAP4}
+@cindex @code{NC_FORMATX_NC3}
+@cindex @code{NC_FORMATX_NC_HDF5}
+@cindex @code{NC_FORMATX_NC_HDF4}
+@cindex @code{NC_FORMATX_PNETCDF}
+@cindex @code{NC_FORMATX_DAP2}
+@cindex @code{NC_FORMATX_DAP4}
 As of @acronym{NCO} version 4.4.0 (January, 2014), @command{ncks} will
 also print the extended or underlying format of the input file.
 The extended filetype will be one of the six underlying formats that
 are accessible through the netCDF @acronym{API}.
 These formats are
-@code{NC_FORMAT_NC3} (classic and 64-bit versions of netCDF3 formats),
-@code{NC_FORMAT_NC_HDF5} (classic and extended versions of netCDF4, and
+@code{NC_FORMATX_NC3} (classic and 64-bit versions of netCDF3 formats),
+@code{NC_FORMATX_NC_HDF5} (classic and extended versions of netCDF4, and
 ``pure'' HDF5 format),
-@code{NC_FORMAT_NC_HDF4} (HDF4 format),
-@code{NC_FORMAT_PNETCDF} (PnetCDF format),
-@code{NC_FORMAT_DAP2} (accessed via DAP2 protocol), and
-@code{NC_FORMAT_DAP4} (accessed via DAP2 protocol).
+@code{NC_FORMATX_NC_HDF4} (HDF4 format),
+@code{NC_FORMATX_PNETCDF} (PnetCDF format),
+@code{NC_FORMATX_DAP2} (accessed via DAP2 protocol), and
+@code{NC_FORMATX_DAP4} (accessed via DAP4 protocol).
 For example,
 @example
 % ncks -D 2 -M hdf.hdf
@@ -3769,7 +3781,7 @@ Summary of hdf.hdf: filetype = NC_FORMAT_NETCDF4 (representation of \
 % ncks -D 2 -M http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc
 Summary of http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc: \
   filetype = NC_FORMAT_CLASSIC (representation of extended/underlying \
-  filetype NC_FORMAT_DAP2), 0 groups  
+  filetype NC_FORMATX_DAP2), 0 groups  
 % ncks -D 2 -M foo_4.nc
 Summary of foo_4.nc: filetype = NC_FORMAT_NETCDF4 (representation of \
   extended/underlying filetype NC_FORMAT_HDF5), 0 groups  
@@ -3780,11 +3792,13 @@ has to alter the file.
 Second, query the file with @samp{ncdump -k}:
 @cindex @command{ncdump} 
 @example
-% ncdump -k foo_3c.nc
+% ncdump -k foo_3.nc
 classic
-% ncdump -k foo_364.nc
+% ncdump -k foo_6.nc
 64-bit-offset
-% ncdump -k foo_4c.nc
+% ncdump -k foo_5.nc
+64-bit-data
+% ncdump -k foo_7.nc
 netCDF-4 classic model
 % ncdump -k foo_4.nc
 netCDF-4
@@ -3797,11 +3811,13 @@ command:
 @cindex @command{od} 
 @cindex octal dump
 @example
-% od -An -c -N4 foo_3c.nc
+% od -An -c -N4 foo_3.nc
    C   D   F 001
-% od -An -c -N4 foo_364.nc
+% od -An -c -N4 foo_6.nc
    C   D   F 002
-% od -An -c -N4 foo_4c.nc
+% od -An -c -N4 foo_5.nc
+fxm 
+% od -An -c -N4 foo_7.nc
  211   H   D   F
 % od -An -c -N4 foo_4.nc
  211   H   D   F
@@ -3822,31 +3838,34 @@ Let us demonstrate converting a file from any netCDF-supported
 input format into any netCDF output format (subject to limits of the
 output format).  
 Here the input file @file{in.nc} may be in any of these formats:
-netCDF3 (classic and 64bit), netCDF4 (classic and extended), HDF4, HDF5,
-HDF-EOS (version 2 or 5), and DAP. 
+netCDF3 (classic, 64bit_offset, 64bit_data), netCDF4 (classic and
+extended), HDF4, HDF5, HDF-EOS (version 2 or 5), and DAP. 
 The switch determines the output format written in the comment:
 @footnote{The switches @samp{-5}, @samp{--5}, and @samp{pnetcdf} are
-reserved for PnetCDF files, i.e., @code{NC_FORMAT_PNETCDF}.
+reserved for PnetCDF files, i.e., @code{NC_FORMAT_CDF5}.
 Such files are similar to netCDF3 classic files, yet also support
 64-bit offsets and the additional netCDF4 atomic types.}
 @example
-ncks --fl_fmt=classic in.nc foo_3c.nc # netCDF3 classic
-ncks --fl_fmt=64bit in.nc foo_364.nc # netCDF3 64bit
-ncks --fl_fmt=netcdf4_classic in.nc foo_4c.nc # netCDF4 classic
+ncks --fl_fmt=classic in.nc foo_3.nc # netCDF3 classic
+ncks --fl_fmt=64bit_offset in.nc foo_6.nc # netCDF3 64bit-offset
+ncks --fl_fmt=64bit_data in.nc foo_5.nc # netCDF3 64bit-data
+ncks --fl_fmt=netcdf4_classic in.nc foo_7.nc # netCDF4 classic
 ncks --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
-ncks -3 in.nc foo_3c.nc # netCDF3 classic
-ncks --3 in.nc foo_3c.nc # netCDF3 classic
-ncks -6 in.nc foo_364.nc # netCDF3 64bit
-ncks --64 in.nc foo_364.nc # netCDF3 64bit
+ncks -3 in.nc foo_3.nc # netCDF3 classic
+ncks --3 in.nc foo_3.nc # netCDF3 classic
+ncks -6 in.nc foo_6.nc # netCDF3 64bit-offset
+ncks --64 in.nc foo_6.nc # netCDF3 64bit-offset
+ncks -5 in.nc foo_5.nc # netCDF3 64bit-data
+ncks --5 in.nc foo_5.nc # netCDF3 64bit-data
 ncks -4 in.nc foo_4.nc # netCDF4 
 ncks --4 in.nc foo_4.nc # netCDF4 
-ncks -7 in.nc foo_4c.nc # netCDF4 classic
-ncks --7 in.nc foo_4c.nc # netCDF4 classic
+ncks -7 in.nc foo_7.nc # netCDF4 classic
+ncks --7 in.nc foo_7.nc # netCDF4 classic
 @end example
 Of course since most operators support these switches, the
 ``conversions'' can be done at the output stage of arithmetic
 or metadata processing rather than requiring a separate step.
-Producing (netCDF3) @code{CLASSIC} or @code{64BIT} files from
+Producing (netCDF3) @code{CLASSIC} or @code{64BIT_OFFSET} files from
 @code{NETCDF4_CLASSIC} files will always work. 
 
 @html

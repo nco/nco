@@ -76,18 +76,18 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
       *fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
     } /* endif NETCDF4 */
 #else /* !ENABLE_NETCDF4 */
-    (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64bit\" options.\n",nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64bit_offset\" options.\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_NETCDF4 */
-  }else if(strcasestr("pnetcdf",fl_fmt_sng)){
-#ifdef ENABLE_MPI
-    /* If "pnetcdf" contains string */
-    *fl_fmt_enm=NC_FORMAT_CDF5;
-#else /* !ENABLE_MPI */
-    (void)fprintf(stderr,"%s: ERROR This NCO was not built with PnetCDF (http://trac.mcs.anl.gov/projects/parallel-netcdf) and cannot create the requested PnetCDF file format. HINT: Re-try with supported file format such as \"classic\" or \"64bit\".\n",nco_prg_nm_get());
-#endif /* !ENABLE_MPI */
+  }else if(strcasestr("pnetcdf",fl_fmt_sng) || strcasestr(fl_fmt_sng,"cdf5")){
+    /* If "pnetcdf" contains string or string contains "cdf5" */
+    if(NC_LIB_VERSION >= 440){
+      *fl_fmt_enm=NC_FORMAT_CDF5;
+    }else{
+      (void)fprintf(stderr,"%s: ERROR This NCO was not built with PnetCDF (http://trac.mcs.anl.gov/projects/parallel-netcdf) capabilities and cannot create the requested PnetCDF file format. PnetCDF was introduced in the base netCDF library in version 4.4.0 in January, 2016. HINT: Re-try with requisite library version or select a supported file format such as \"classic\" or \"64bit_offset\".\n",nco_prg_nm_get());
+    } /* !NC_LIB_VERSION */
   }else{
-    (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",nco_prg_nm_get(),fl_fmt_sng);
+    (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit_offset\",%s \"netcdf4\", and \"netcdf4_classic\".\n",nco_prg_nm_get(),fl_fmt_sng,(NC_LIB_VERSION >= 440) ? "\"64bit_data\"," : "");
     nco_exit(EXIT_FAILURE);
   } /* endif fl_fmt_enm */
 

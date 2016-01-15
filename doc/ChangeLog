@@ -1,5 +1,9 @@
 2016-01-14  Charlie Zender  <zender@uci.edu>
 
+	* CDF5 work: deprecate NC_FORMAT_64BIT for NC_FORMAT_64BIT_OFFSET, expose NC_FORMAT_64BIT_DATA, update docs for -5, --5, --fl_fmt="64_bit_data"
+
+	* Deprecate pre-branch-cut methods
+
 	* NCO 4.5.5-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha01 final changes';git push
 	git tag -a 4.5.5-alpha01 -m 'Version 4.5.5-alpha01 new features: branch-cut patch to infer curvilinear grids';git push --tags

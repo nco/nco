@@ -490,23 +490,43 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 (const int fl_fmt_xtn) /* I [enm] netCDF extended file format */
 {
   /* Purpose: Convert netCDF extended file format enum to string */
-  switch(fl_fmt_xtn){
-  case NC_FORMAT_NC3:
-    return "NC_FORMAT_NC3";
-  case NC_FORMAT_NC_HDF5:
-    return "NC_FORMAT_HDF5";
-  case NC_FORMAT_NC_HDF4:
-    return "NC_FORMAT_HDF4";
-  case NC_FORMAT_PNETCDF:
-    return "NC_FORMAT_PNETCDF";
-  case NC_FORMAT_DAP2:
-    return "NC_FORMAT_DAP2";
-  case NC_FORMAT_DAP4:
-    return "NC_FORMAT_DAP4";
-  case NC_FORMAT_UNDEFINED:
-    return "NC_FORMAT_UNDEFINED";
-  default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+#if NC_LIB_VERSION < 440
+    switch(fl_fmt_xtn){
+    case NC_FORMAT_NC3:
+      return "NC_FORMAT_NC3";
+    case NC_FORMAT_NC_HDF5:
+      return "NC_FORMAT_HDF5";
+    case NC_FORMAT_NC_HDF4:
+      return "NC_FORMAT_HDF4";
+    case NC_FORMAT_PNETCDF:
+      return "NC_FORMAT_PNETCDF";
+    case NC_FORMAT_DAP2:
+      return "NC_FORMAT_DAP2";
+    case NC_FORMAT_DAP4:
+      return "NC_FORMAT_DAP4";
+    case NC_FORMAT_UNDEFINED:
+      return "NC_FORMAT_UNDEFINED";
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+#else /* !NC_LIB_VERSION */
+    switch(fl_fmt_xtn){
+    case NC_FORMATX_NC3:
+      return "NC_FORMATX_NC3";
+    case NC_FORMATX_NC_HDF5:
+      return "NC_FORMATX_HDF5";
+    case NC_FORMATX_NC_HDF4:
+      return "NC_FORMATX_HDF4";
+    case NC_FORMATX_PNETCDF:
+      return "NC_FORMATX_PNETCDF";
+    case NC_FORMATX_DAP2:
+      return "NC_FORMATX_DAP2";
+    case NC_FORMATX_DAP4:
+      return "NC_FORMATX_DAP4";
+    case NC_FORMATX_UNDEFINED:
+      return "NC_FORMATX_UNDEFINED";
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+#endif /* !NC_LIB_VERSION */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
