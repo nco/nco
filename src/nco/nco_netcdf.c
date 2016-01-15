@@ -446,8 +446,8 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
   switch(fl_fmt){
   case NC_FORMAT_CLASSIC:
     return "NC_FORMAT_CLASSIC";
-  case NC_FORMAT_64BIT:
-    return "NC_FORMAT_64BIT";
+  case NC_FORMAT_64BIT_OFFSET:
+    return "NC_FORMAT_64BIT_OFFSET";
   case NC_FORMAT_NETCDF4:
     return "NC_FORMAT_NETCDF4";
   case NC_FORMAT_NETCDF4_CLASSIC:
@@ -470,14 +470,14 @@ nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden at
   switch(fl_fmt){
   case NC_FORMAT_CLASSIC:
     return "classic";
-  case NC_FORMAT_64BIT:
+  case NC_FORMAT_64BIT_OFFSET:
     return "64-bit offset";
   case NC_FORMAT_NETCDF4:
     return "netCDF-4";
   case NC_FORMAT_NETCDF4_CLASSIC:
     return "netCDF-4 classic model";
   case NC_FORMAT_CDF5:
-    return "64-bit-variable";
+    return "64-bit data";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 

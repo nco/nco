@@ -62,9 +62,9 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
   if(strcasestr("classic",fl_fmt_sng) && !strcasestr(fl_fmt_sng,"netcdf4")){
     /* If "classic" contains string and string does not contain "netcdf4" */
     *fl_fmt_enm=NC_FORMAT_CLASSIC;
-  }else if(strcasestr("64bit",fl_fmt_sng)){
-    /* If "64bit" contains string */
-    *fl_fmt_enm=NC_FORMAT_64BIT;
+  }else if(strcasestr("64bit_offset",fl_fmt_sng)){
+    /* If "64bit_offset" contains string */
+    *fl_fmt_enm=NC_FORMAT_64BIT_OFFSET;
   }else if(strcasestr(fl_fmt_sng,"netcdf4")){
     /* If string contains "netcdf4" */
 #ifdef ENABLE_NETCDF4
@@ -79,8 +79,8 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
     (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64bit_offset\" options.\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_NETCDF4 */
-  }else if(strcasestr("pnetcdf",fl_fmt_sng) || strcasestr(fl_fmt_sng,"cdf5")){
-    /* If "pnetcdf" contains string or string contains "cdf5" */
+  }else if(strcasestr("64bit_data",fl_fmt_sng) || strcasestr("pnetcdf",fl_fmt_sng) || strcasestr(fl_fmt_sng,"cdf5")){
+    /* If "64bit_data" contains string or "pnetcdf" contains string or string contains "cdf5" */
     if(NC_LIB_VERSION >= 440){
       *fl_fmt_enm=NC_FORMAT_CDF5;
     }else{
