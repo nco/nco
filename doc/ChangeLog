@@ -1,3 +1,9 @@
+2016-01-15  Charlie Zender  <zender@uci.edu>
+
+	* ncpdq: Eliminate duplicate file-header set-up that causes --gaa option to fail second-time
+
+	* ncremap: Add -P pdq_typ option for AIRS and MPAS data
+
 2016-01-14  Charlie Zender  <zender@uci.edu>
 
 	* Tweaks to improve NaN-handling due to MODIS chlorophyll issues

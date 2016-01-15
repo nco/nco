@@ -935,13 +935,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   dmn_sz_out_int=(int *)nco_malloc(rgr_map.dst_grid_rank*nco_typ_lng((nc_type)NC_INT));
   rcd=nco_get_vara(in_id,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
 
-  /* Check-for and workaround faulty Tempest and MPAS-O grid sizes */
+  /* Check-for and workaround faulty Tempest and MPAS-O/I grid sizes */
   if(flg_grd_in_1D && (rgr_map.src_grid_size != dmn_sz_in_int[0])){
-    (void)fprintf(stdout,"%s: WARNING %s reports input grid dimension sizes disagree rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known issue with some Tempest mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
+    (void)fprintf(stdout,"%s: WARNING %s reports input grid dimension sizes disagree rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known issue with some Tempest mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
       dmn_sz_in_int[0]=rgr_map.src_grid_size;
   } /* !bug */
   if(flg_grd_out_1D && (rgr_map.dst_grid_size != dmn_sz_out_int[0])){
-    (void)fprintf(stdout,"%s: WARNING %s reports output grid dimension sizes disagree rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known issue with some Tempest mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
+    (void)fprintf(stdout,"%s: WARNING %s reports output grid dimension sizes disagree rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known issue with some Tempest mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
     dmn_sz_out_int[0]=rgr_map.dst_grid_size;
   } /* !bug */
  
@@ -1498,7 +1498,15 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int dmn_id_lon; /* [id] Dimension ID */
   if(flg_grd_in_1D){
     long col_nbr_in_dat; /* [nbr] Number of columns in input datafile */
-    rcd=nco_inq_dimid(in_id,col_nm_in,&dmn_id_col);
+    if((rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col)) == NC_NOERR) ; /* Default or command-line option worked, otherwise search usual suspects */
+    else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
+    else if((rcd=nco_inq_dimid_flg(in_id,"nCells",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nCells"); /* MPAS-O/I */
+    else if((rcd=nco_inq_dimid_flg(in_id,"nEdges",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nEdges"); /* MPAS-O/I */
+    else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("sounding_id"); /* OCO2 */
+    else{
+      (void)fprintf(stdout,"%s: ERROR %s reports datafile does not contain unstructured dimension name that matches a usual suspect (ncol, lndgrid, nCells, nEdges, sounding_id). HINT: Provide horizontal dimension name with \"-r col_nm=foo\"\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* !col_nm_in */
     rcd=nco_inq_dimlen(in_id,dmn_id_col,&col_nbr_in_dat);
     if(col_nbr_in != col_nbr_in_dat){
       (void)fprintf(stdout,"%s: ERROR %s reports mapfile and data file dimension sizes disagree: mapfile col_nbr_in = %ld != %ld = col_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,col_nbr_in,col_nbr_in_dat);
@@ -1658,7 +1666,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	/* 20150927: Extensive variable treatments are still in alpha-development
 	   Currently testing on AIRS TSurfStd_ct (by summing not averaging)
 	   In future may consider variables that need more complex (non-summing) extensive treatment
-	   MPAS-O has a zillion of these [xyz]Cell, cellsOnCell, fCell, indexToCellID, maxLevelCell, meshDensity
+	   MPAS-O/I has a zillion of these [xyz]Cell, cellsOnCell, fCell, indexToCellID, maxLevelCell, meshDensity
 	   Not to mention the variables that depend on nEdges and nVertices... */
         if(!strcmp(trv.nm,rgr->xtn_var[xtn_idx])){
           trv_tbl->lst[idx_tbl].flg_xtn=True;
@@ -1873,7 +1881,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	    /* Is horizontal dimension last, i.e., most-rapidly-varying? */
 	    if(flg_grd_in_1D && !strcmp(dmn_nm,col_nm_in)){
 	      if(dmn_idx != dmn_nbr_in-1){
-		/* Unstructured input grid has col in non-MRV location (expect this with, e.g., MPAS-O native grid dimension-ordering */
+		/* Unstructured input grid has col in non-MRV location (expect this with, e.g., MPAS-O/I native grid dimension-ordering */
 		(void)fprintf(stdout,"%s: WARNING %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. NCO regridder has only experimental support for unstructured spatial dimensions that are not the last dimension of input variable.\nHINT: Consider re-arranging input file dimensions to place horizontal dimension(s) last with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling regridder\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
 		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
@@ -1970,6 +1978,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* end idx_tbl */
 
   /* Free pre-allocated array space */
+  /* col_nm_in will not otherwise be free'd if it was guessed as usual suspect */
+  if(col_nm_in != rgr->col_nm_in) col_nm_in=(char *)nco_free(col_nm_in);
   if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
   if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
@@ -4619,6 +4629,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Locate dimensions that must be present in unstructured files */
   if((rcd=nco_inq_dimid_flg(in_id,"ncol",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("ncol"); /* CAM */
   else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("lndgrid"); /* CLM */
+  else if((rcd=nco_inq_dimid_flg(in_id,"nCells",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("nCells"); /* MPAS-O/I */
+  else if((rcd=nco_inq_dimid_flg(in_id,"nEdges",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("nEdges"); /* MPAS-O/I */
   else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("sounding_id"); /* OCO2 */
   if(col_dmn_nm) flg_grd_1D=True;
 
@@ -5885,3 +5897,26 @@ nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut r
   
   return 0.25*(lon_ll+lon_lr+lon_ur+lon_ul);
 } /* !nco_lon_crn_avg_brnch() */
+
+nco_bool /* O [flg] Input corners were CCW */
+nco_grd_qdr_ccw /* [fnc] Convert quadrilateral gridcell corners to CCW orientation */
+(double lat_ll, /* I [dgr] Latitude  at lower left  of gridcell */
+ double lat_lr, /* I [dgr] Latitude  at lower right of gridcell */
+ double lat_ur, /* I [dgr] Latitude  at upper right of gridcell */
+ double lat_ul, /* I [dgr] Latitude  at upper left  of gridcell */
+ double lon_ll, /* I [dgr] Longitude at lower left  of gridcell */
+ double lon_lr, /* I [dgr] Longitude at lower right of gridcell */
+ double lon_ur, /* I [dgr] Longitude at upper right of gridcell */
+ double lon_ul) /* I [dgr] Longitude at upper left  of gridcell */
+{
+  /* Purpose: Determine whether corner vertices are oriented CCW
+     If not, alter order so they are returned in CCW order */ 
+  const char fnc_nm[]="nco_grd_qdr_ccw()";
+  double lon_dff; /* [dgr] Longitude difference */
+  nco_bool flg_ccw; /* [flg] Input is CCW */
+  
+  lon_dff=lat_ll+lat_lr+lat_ur+lat_ul+lon_ll+lon_lr+lon_ur+lon_ul; /* CEWI */
+  if(lon_dff > 0) flg_ccw=True; else flg_ccw=False;
+  
+  return flg_ccw;
+} /* !nco_grd_qdr_ccw() */

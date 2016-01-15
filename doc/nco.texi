@@ -18574,7 +18574,7 @@ SYNTAX
 ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_opt}]
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}]
 [-M] [-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
-[-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [-T @var{tempest_opt}] [-t @var{thr_nbr}]
+[-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [-T @var{tempest_opt}] [-t @var{thr_nbr}]
 [-v @var{var_lst}[,@dots{}]] [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
 
@@ -18859,13 +18859,33 @@ using @samp{-I @var{in_drc}} or standard input) generates an error
 (output files will be named the same as input files).
 
 @html
+<a name="pdq_typ"></a> <!-- http://nco.sf.net/nco.html#pdq_typ -->
+@end html
+@cindex @code{-P @var{pdq_typ}}
+@cindex @var{pdq_typ}
+@item -P @var{pdq_typ}
+Specifies the permutation mode desired.
+For a limited number of data-file types, one can tell @command{ncremap}
+to automatically permute the dimensions in the data file prior to 
+regridding.
+Valid types are @samp{airs} (for @acronym{NASA AIRS} satellite data), 
+@samp{mpas} (for @acronym{MPAS} ocean/ice model data), and @samp{nil} (for none).
+The default @var{pdq_typ} is @samp{nil}, which means @command{ncremap} 
+does not permute the dimension order prior to regridding.
+In @acronym{AIRS}-mode, @command{ncremap} calls @command{ncpdq} to
+permute dimensions from their order in the input file to this order:
+@code{StdPressureLev,GeoTrack,GeoXTrack}.
+In @acronym{MPAS}-mode the order is 
+@code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}. 
+
+@html
 <a name="par_typ"></a> <!-- http://nco.sf.net/nco.html#par_typ -->
 @end html
 @cindex @code{-p @var{par_typ}}
 @cindex @var{par_typ}
 @item -p @var{par_typ}
 Specifies the parallelism mode desired.
-Parallelism accelerate throughput when regridding multiple files in one 
+Parallelism accelerates throughput when regridding multiple files in one  
 @command{ncremap} invocation.
 Valid types are @samp{bck} (for Background mode), 
 @samp{mpi} (for @acronym{MPI} mode), and @samp{nil} (for none).
@@ -18998,11 +19018,21 @@ to permute the dimensions before (and un-permute them after) regridding.
 For example
 @example
 # AIRS Level2 vertical profiles
-ncpdq -a StdPressureLev,GeoTrack,GeoXTrack AIRS_L2.hdf AIRS_L2.ncpdq.nc
-ncremap -i AIRS_L2.ncpdq.nc -d dst_1x1.nc -O ~/rgr
+ncpdq -a StdPressureLev,GeoTrack,GeoXTrack AIRS_L2.hdf AIRS_L2_ncpdq.nc
+ncremap -i AIRS_L2_ncpdq.nc -d dst_1x1.nc -O ~/rgr
 # MPAS-O fields
 ncpdq -a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells mpas.nc mpas_ncpdq.nc
 ncremap -R "--rgr col_nm=nCells" -i mpas_ncpdq.nc -m mpas120_to_t62.nc -O ~/rgr
+@end example
+@noindent
+Note that the previous two examples occur so frequently that
+@command{ncremap} has been specially equipped to handle them.
+Hence, as of 20160115, the following two commands suffice:
+@example
+# AIRS Level2 vertical profiles
+ncremap -P airs -i AIRS_L2.nc -d dst_1x1.nc -O ~/rgr
+# MPAS-O fields
+ncremap -P mpas -i mpas.nc -m mpas120_to_t62.nc -O ~/rgr
 @end example
 @noindent
 
@@ -19036,17 +19066,21 @@ to call @acronym{ERWG} with the options to exploit those capabilities.
 
 A side-effect of @command{ncremap} being an offline regridder is that,
 when necessary, it generates intermediate files to store grids and maps.  
-(No intermediate files are generated when the map-file is provided).
 These files are named, by default, 
 @file{ncremap_tmp_grd_dst.nc},
 @file{ncremap_tmp_grd_src.nc},   
 @file{ncremap_tmp_gnr_out.nc},  
-@file{ncremap_tmp_map_*.nc}, and
-@file{ncremap_tmp_msh_ovr_*.nc}.
+@file{ncremap_tmp_map_*.nc}, 
+@file{ncremap_tmp_msh_ovr_*.nc}, and
+@file{ncremap_tmp_pdq.nc},  
 They are placed in @var{drc_out}, which is the current working directory
 unless otherwise specified.
-Should they proliferate and/or annoy you, locate and/or remove all
-intermediate files under the current directory with 
+No intermediate grid or map files are generated when the map-file is
+provided. 
+No intermediate permuted file is generated unless the 
+@samp{-P @var{prm_typ}} option is invoked.
+Should intermediate files proliferate and/or annoy you, locate and/or
+remove all such files under the current directory with 
 @example
 find . -name 'ncremap_tmp*'
 rm `find . -name 'ncremap_tmp*'`

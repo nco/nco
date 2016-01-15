@@ -218,6 +218,17 @@ extern "C" {
    double lon_ur, /* I [dgr] Longitude at upper right of gridcell */
    double lon_ul); /* I [dgr] Longitude at upper left  of gridcell */
 
+  nco_bool /* O [flg] Input corners were CCW */
+  nco_grd_qdr_ccw /* [fnc] Convert quadrilateral gridcell corners to CCW orientation */
+  (double lat_ll, /* I [dgr] Latitude  at lower left  of gridcell */
+   double lat_lr, /* I [dgr] Latitude  at lower right of gridcell */
+   double lat_ur, /* I [dgr] Latitude  at upper right of gridcell */
+   double lat_ul, /* I [dgr] Latitude  at upper left  of gridcell */
+   double lon_ll, /* I [dgr] Longitude at lower left  of gridcell */
+   double lon_lr, /* I [dgr] Longitude at lower right of gridcell */
+   double lon_ur, /* I [dgr] Longitude at upper right of gridcell */
+   double lon_ul); /* I [dgr] Longitude at upper left  of gridcell */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
