@@ -1,5 +1,9 @@
 2016-01-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.5-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha01 final changes';git push
+	git tag -a 4.5.5-alpha01 -m 'Version 4.5.5-alpha01 new features: branch-cut patch to infer curvilinear grids';git push --tags
+
 	* Implement full branch-cut patch in nco_grd_nfr(), keeps curvilinear grids from generating concave gridcells
 	in 3/4 of Feng's five-failure parade, and causes 2/4 of those to work "perfectly". Remaining two have other bugs in conserve mode.
 
