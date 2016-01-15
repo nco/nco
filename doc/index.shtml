@@ -704,6 +704,7 @@ extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.5.5</b>: (<i>In Progress, features in-progress or completed include</i>)
+All operators support CDF5 format;
 <tt>ncks</tt> regridder uses CF to find coordinates;
 <tt>ncks --xtn</tt> better extensive variable treatment;
 <tt>ncpdq</tt> fix permutation with multiple groups;</li>

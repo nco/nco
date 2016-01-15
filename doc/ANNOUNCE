@@ -1,22 +1,13 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.5-alpha01 are ready. 
+The netCDF Operators NCO version 4.5.5-alpha02 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
-We are pleased to introduce ncremap, a new operator for regridding. 
-ncremap is a shell script that wraps ncks to produce a friendly
-interface to regridding features. Without any external dependencies,
-ncremap applies weights from a pre-exisiting mapfile to a source
-data file to produce a regridded dataset. Source and destination
-datasets may be on any Curvilinear, Rectangular, or Unstructured
-Data (CRUD) grid. When necessary ncremap calls ESMF_RegridWeightGen
-or TempestRemap to generate weights and uses those to regrid. ncremap
-hides the complexity of regridding from the user, who can know
-next-to-nothing about regridding.
+CDF5 is supported.
 
-Work on NCO 4.5.5 has commenced and will better support eliciting
+Work on NCO 4.5.6 has commenced and will better support eliciting
 latitude/longitude coordinates using the CF "coordinates" convention
 and regridding variables whose horizontal dimensions are not the
 most-rapidly-varying, and ncremap support for calling TempestRemap.  
@@ -26,82 +17,24 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap: A new netCDF operator for regridding.
-   ncremap is a shell script that wraps ncks to produce a friendly
-   interface to regridding features. Without any external dependencies,
-   ncremap applies weights from a pre-exisiting mapfile to input data
-   file(s) to produce a regrided dataset(s). Source and destination 
-   datasets may be on any Curvilinear, Rectangular, or Unstructured
-   Data (CRUD) grid. ncremap will also, when necessary, use external
-   programs (ESMF's ESMF_RegridWeightGen (ERWG), or TempestRemap's
-   GenerateOverlapMesh/GenerateOfflineMap) to generate weights and
-   mapfiles and use those to regrid. ERWG is distributed in binary
-   format with NCL, which many (most?) users already have on their
-   system. Or ERWG and TempestRemap may be installed from source. 
-   Please try ncremap and send us your feedback and suggestions.
-   Examples:
-   ncremap -i src.nc -d dst.nc -o out.nc
-   ls gcm14*cam*0007*.nc | ncremap -a conserve -M -d dst_1x1.nc -O ~/rgr
-   http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf # AGU Poster
-   http://nco.sf.net/nco.html#ncremap
+A. NCO supports the CDF5 file type introduced in netCDF 4.4.0.
+   Use '-5', '--5', '--fl_fmt=[cdf5|64bit_data|pnetcdf]'.
+   Conversion to and between all netCDF filetypes is supported:
+   ncks -5 in_3.nc out_5.nc
+   ncks -5 in_7.nc out_5.nc
+   ncks -7 in_5.nc out_7.nc
+   http://nco.sf.net/nco.html#cdf5
 
-B. ncks prints XML "_Unsigned" attribute for unsigned attribute types.
-   Formerly, ncks did not preserve the signedness of attributes.
-   Thanks to Aleksandar Jelenak and Ed Armstrong for this suggestion.
-   % ncks -v att_var --xml ~/nco/data/in_4.nc | grep Unsigned
-    <attribute name="ubyte_att" type="byte" isUnsigned="true" value="0 1 2 127 128 254 255 0" />
-    <attribute name="ushort_att" type="short" isUnsigned="true" value="37" />
-    <attribute name="uint64_att" type="long" isUnsigned="true" value="0" />
-   http://nco.sf.net/nco.html#xml
-
-C. ncap2 now accepts [] and () syntax interchangeably.
-   Expressions which formerly had to use one or the other can now
-   use either. Brought to you by Henry.
-
-D. ncap2 now conforms arrays by hyperslabbed dimension size rather
-   than by dimension name. This mean, e.g., that hyperslabs from
-   one dimension can be used to fill-in other dimensions.
-   A prototypical example is determining pressure thickness of layers
-   as the difference between interface pressure levels.
-   For hybrid coordinate system models like CAM, this is now a
-   (relatively) simple two-step command with a mixture of different
-   dimensions on the LHS and RHS:
-   prs_ntf[time,lat,lon,ilev]=P0*hyai+PS*hybi; // Interface pressures
-   prs_dlt[time,lat,lon,lev]=prs_ntf(:,:,:,1:$ilev.size-1)-prs_ntf(:,:,:,0:$ilev.size-2);
-   http://nco.sf.net/nco.html#pdel
-   Thanks to Philip Cameron-Smith for suggesting and to Henry Butowsky
-   for implementing this new feature.
-
-E. NCO now treats variables named wgt_* as weights and avoids
-   performing math on them when possible. E.g., ncbo will preserve
-   (and not difference) the variable wgt_1. This is the same behavior
-   that NCO uses for coordinates, "gw", and masks (named with msk_*.)
-   The idea is that weights are a property of the grid and should not
-   be differenced, averaged, etc., unless necesssary.
-   http://nco.sf.net/nco.html#prc_xcp
-
-F. ncap2 now accepts "sum" as a synonym for "total" in its methods.
-   Additionally, ncap2 has a new function,
-   ncap_stats_wvariance(var,wgt) to computed weighted standard
-   deviations where missing values may be present.
-   Additionally, ncap2 now builds with GSL 2.x. All thanks to Henry.
-   http://nco.sf.net/nco.html#ncap2
+A. ncremap: Many improvements and bug-fixes.
 
 BUG FIXES:
 
-A. ncks -V in (at least) versions 4.5.1--4.5.3 could segfault.
-   NB: This is the "-V" (uppercase) not "-v" (lowercase) option. 
-   The workaround is not to use -V, solution is to upgrade to 4.5.5-alpha01. 
-   Thanks to Patrick Nichols for reporting the problem.
-
-B. After dimension reduction operations, ncra and ncwa excise the
-   reduced dimensions from the CF "coordinates" attribute, if any.
-   Versions 4.4.9--4.5.3 could, under certain circumstances involving
-   multiple dimensions, retain extra whitespace in "coordinates".
-   A workaround is to dump (ncks --cdl in.nc > out.cdl) then
-   regenerate (ncgen -b out.nc out.cdl) the file.
-   The solution is to upgrade to 4.5.5-alpha01.
-   Thanks to Richard Strub for reporting the problem.
+A. ncremap: Inferring grids from curvilinear coordinates no longer
+   get confused by "branch cuts" (i.e., the date-line). ncremap
+   version 4.5.4 would sometimes infer concave gridcells that then
+   confused mapping software. The solution is to upgrade to
+   4.5.5-alpha02.  
+   Thanks to Feng Ding for reporting the problem.
 
 KNOWN PROBLEMS DUE TO NCO:
 

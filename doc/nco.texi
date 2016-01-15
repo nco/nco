@@ -113,8 +113,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.5-alpha01
-@set doc-edition 4.5.5-alpha01
+@set nco-edition 4.5.5-alpha02
+@set doc-edition 4.5.5-alpha02
 @set copyright-years 1995--2016
 @set update-year 2015
 @set update-date 14 January 2016
@@ -3583,6 +3583,7 @@ when your other preferred methods are not available locally.
 @html
 <a name="fl_fmt"></a> <!-- http://nco.sf.net/nco.html#fl_fmt -->
 <a name="hdf"></a> <!-- http://nco.sf.net/nco.html#hdf -->
+<a name="cdf5"></a> <!-- http://nco.sf.net/nco.html#cdf5 -->
 <a name="64bit"></a> <!-- http://nco.sf.net/nco.html#64bit -->
 <a name="64bit-data"></a> <!-- http://nco.sf.net/nco.html#64bit-data -->
 <a name="64bit-offset"></a> <!-- http://nco.sf.net/nco.html#64bit-offset -->
@@ -3591,6 +3592,7 @@ when your other preferred methods are not available locally.
 @node File Formats and Conversion, Large File Support, Retaining Retrieved Files, Shared features
 @section File Formats and Conversion
 @cindex @acronym{HDF}
+@cindex CDF5
 @cindex netCDF2
 @cindex netCDF3
 @cindex netCDF4
@@ -3599,6 +3601,7 @@ when your other preferred methods are not available locally.
 @cindex @code{CLASSIC} files
 @cindex @code{64BIT_OFFSET} files
 @cindex @code{64BIT_DATA} files
+@cindex @code{CDF5} files
 @cindex @code{--3}
 @cindex @code{-3}
 @cindex @code{-4}
@@ -3745,7 +3748,7 @@ Summary of foo_3.nc: filetype = NC_FORMAT_CLASSIC, 0 groups ...
 % ncks -M foo_6.nc
 Summary of foo_6.nc: filetype = NC_FORMAT_64BIT_OFFSET, 0 groups ...
 % ncks -M foo_5.nc
-Summary of foo_5.nc: filetype = NC_FORMAT_64BIT_DATA, 0 groups ...
+Summary of foo_5.nc: filetype = NC_FORMAT_CDF5, 0 groups ...
 % ncks -M foo_7.nc
 Summary of foo_7.nc: filetype = NC_FORMAT_NETCDF4_CLASSIC, 0 groups ...
 % ncks -M foo_4.nc
@@ -3795,9 +3798,9 @@ Second, query the file with @samp{ncdump -k}:
 % ncdump -k foo_3.nc
 classic
 % ncdump -k foo_6.nc
-64-bit-offset
+64-bit offset
 % ncdump -k foo_5.nc
-64-bit-data
+cdf5
 % ncdump -k foo_7.nc
 netCDF-4 classic model
 % ncdump -k foo_4.nc
@@ -3816,7 +3819,7 @@ command:
 % od -An -c -N4 foo_6.nc
    C   D   F 002
 % od -An -c -N4 foo_5.nc
-fxm 
+   C   D   F 005
 % od -An -c -N4 foo_7.nc
  211   H   D   F
 % od -An -c -N4 foo_4.nc
@@ -3849,6 +3852,7 @@ Such files are similar to netCDF3 classic files, yet also support
 ncks --fl_fmt=classic in.nc foo_3.nc # netCDF3 classic
 ncks --fl_fmt=64bit_offset in.nc foo_6.nc # netCDF3 64bit-offset
 ncks --fl_fmt=64bit_data in.nc foo_5.nc # netCDF3 64bit-data
+ncks --fl_fmt=cdf5 in.nc foo_5.nc # netCDF3 64bit-data
 ncks --fl_fmt=netcdf4_classic in.nc foo_7.nc # netCDF4 classic
 ncks --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
 ncks -3 in.nc foo_3.nc # netCDF3 classic
@@ -3865,8 +3869,9 @@ ncks --7 in.nc foo_7.nc # netCDF4 classic
 Of course since most operators support these switches, the
 ``conversions'' can be done at the output stage of arithmetic
 or metadata processing rather than requiring a separate step.
-Producing (netCDF3) @code{CLASSIC} or @code{64BIT_OFFSET} files from
-@code{NETCDF4_CLASSIC} files will always work. 
+Producing (netCDF3) @code{CLASSIC} or @code{64BIT_OFFSET} or
+@code{64BIT_DATA} files from @code{NETCDF4_CLASSIC} files always 
+works.  
 
 @html
 <a name="autoconversion"></a> <!-- http://nco.sf.net/nco.html#autoconversion -->

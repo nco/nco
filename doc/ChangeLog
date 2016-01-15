@@ -1,5 +1,9 @@
 2016-01-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.5-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha02 final changes';git push
+	git tag -a 4.5.5-alpha02 -m 'Version 4.5.5-alpha02 new features: Support CDF5';git push --tags
+
 	* CDF5 work: deprecate NC_FORMAT_64BIT for NC_FORMAT_64BIT_OFFSET, expose NC_FORMAT_64BIT_DATA, update docs for -5, --5, --fl_fmt="64_bit_data"
 
 	* Deprecate pre-branch-cut methods
