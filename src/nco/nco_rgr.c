@@ -5861,7 +5861,7 @@ nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut r
 
   lon_dff=lon_lr-lon_ll;
   if(lon_dff >= 180.0){
-    (void)fprintf(stdout,"%s: INFO %s reports lon_lr, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_lr,lon_ll,lon_dff);
+    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports lon_lr, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_lr,lon_ll,lon_dff);
     lon_lr-=360.0;
   }else if(lon_dff <= -180.0){
     lon_lr+=360.0;
@@ -5869,7 +5869,7 @@ nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut r
 
   lon_dff=lon_ur-lon_ll;
   if(lon_dff >= 180.0){
-    (void)fprintf(stdout,"%s: INFO %s reports lon_ur, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_ur,lon_ll,lon_dff);
+    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports lon_ur, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_ur,lon_ll,lon_dff);
     lon_ur-=360.0;
   }else if(lon_dff <= -180.0){
     lon_ur+=360.0;
@@ -5877,7 +5877,7 @@ nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut r
 
   lon_dff=lon_ul-lon_ll;
   if(lon_dff >= 180.0){
-    (void)fprintf(stdout,"%s: INFO %s reports lon_ul, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_ul,lon_ll,lon_dff);
+    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports lon_ul, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_ul,lon_ll,lon_dff);
     lon_ul-=360.0;
   }else if(lon_dff <= -180.0){
     lon_ul+=360.0;

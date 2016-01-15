@@ -391,6 +391,8 @@ nco_mss_val_get_dbl /* [fnc] Return missing_value of variable, if any, as double
     has_mss_val=True;
     /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
     (void)nco_get_att(nc_id,var_id,att_nm,mss_val_dbl,NC_DOUBLE);
+    //(void)fprintf(stderr,"%s: INFO NC_DOUBLE version of \"%s\" attribute for %s is %g\n",nco_prg_nm_get(),att_nm,var_nm,*mss_val_dbl);
+    if(!isfinite(*mss_val_dbl)) (void)fprintf(stderr,"%s: WARNING NC_DOUBLE version of \"%s\" attribute for %s fails isfinite(), value is %s\n",nco_prg_nm_get(),att_nm,var_nm,(isnan(*mss_val_dbl)) ? "NaN" : ((isinf(*mss_val_dbl)) ? "Infinity" : ""));
     break;
   } /* end loop over att */
 

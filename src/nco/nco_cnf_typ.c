@@ -872,6 +872,8 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     } break;
   case NC_DOUBLE:
     switch(typ_in){
+      /* 20160114: Unclear whether implicit coercion to promote NaNf to NaN works (needed for chlorophyll variable in MODIS_L2N_20140304T1120.nc) */
+      //    case NC_FLOAT: if(isfinite(*val_in.fp)) *val_out.dp=*val_in.fp; else *val_out.dp=NC_MIN_DOUBLE; break; 
     case NC_FLOAT: *val_out.dp=*val_in.fp; break; 
     case NC_DOUBLE: *val_out.dp=*val_in.dp; break; 
     case NC_INT: *val_out.dp=*val_in.ip; break;
@@ -1053,7 +1055,7 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
      value and are thus purely local to this routine. The only thing changed by this
      routine is the contents of the location pointed to by the pointer to the output value. */
   
-} /* end nco_val_cnf_typ */
+} /* end nco_val_cnf_typ() */
 
 int /* O [enm] Dummy return */
 nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */

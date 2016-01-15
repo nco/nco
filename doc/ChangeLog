@@ -1,5 +1,7 @@
 2016-01-14  Charlie Zender  <zender@uci.edu>
 
+	* Tweaks to improve NaN-handling due to MODIS chlorophyll issues
+
 	* Explicitly include <math.h> for all files that use isfinite(), isinf(), isnan()
 
 	* NCO 4.5.5-alpha02 release procedure:
