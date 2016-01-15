@@ -14,6 +14,7 @@
 #define NCO_VAR_AVG_H
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 isfinite isinf isnan */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 
 /* 3rd party vendors */

@@ -394,8 +394,8 @@ nco_mss_val_get_dbl /* [fnc] Return missing_value of variable, if any, as double
     break;
   } /* end loop over att */
 
-  /* Always warn when NCO looks for _FillValue but file has missing_value, and/or
-     always warn when NCO looks for missing_value but file has _FillValue.
+  /* Warn when NCO looks for _FillValue but file has missing_value, and/or
+     warn when NCO looks for missing_value but file has _FillValue.
      20101129: This is a long warning, only print when nco_dbg_lvl > 0 */
   if(nco_dbg_lvl_get() >= nco_dbg_std && has_fll_val && !has_mss_val && WRN_FIRST){
     char sa[1000];

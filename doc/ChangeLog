@@ -1,5 +1,7 @@
 2016-01-14  Charlie Zender  <zender@uci.edu>
 
+	* Explicitly include <math.h> for all files that use isfinite(), isinf(), isnan()
+
 	* NCO 4.5.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha02 final changes';git push
 	git tag -a 4.5.5-alpha02 -m 'Version 4.5.5-alpha02 new features: Support CDF5';git push --tags

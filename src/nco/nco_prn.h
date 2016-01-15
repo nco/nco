@@ -18,6 +18,7 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 isfinite isinf isnan */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <string.h> /* strcmp() */
 
