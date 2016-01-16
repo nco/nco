@@ -578,11 +578,11 @@ else # !map_usr_flg
     fi # !dst_usr_flg || grd_dst_usr_flg
     printf "Weight-generation type: ${wgt_gnr}\n"
     if [ "${wgt_gnr}" = 'esmf' ]; then 
-	printf "ESMF's ESMF_RegridWeightGen will generate map-file internally and store it as ${map_fl}\n"
+	printf "ESMF's ESMF_RegridWeightGen will generate map-file internally\n"
 	printf "Algorithm used to generate weights in map-file is: ${alg_opt}\n"
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
-	printf "TempestRemap's GenerateOverlapMesh and GenerateOfflineMap will generate map-file internally and store it as ${map_fl}\n"
+	printf "TempestRemap's GenerateOverlapMesh and GenerateOfflineMap will generate map-file internally\n"
     fi # !tempest
     if [ ${fl_nbr} -ge 2 ]; then 
 	if [ "${mlt_map_flg}" = 'Yes' ]; then 
@@ -684,7 +684,6 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	# Block 3 Loop 1: Map-file commands
 	printf "Grid(src): ${grd_src}\n"
 	printf "Grid(dst): ${grd_dst}\n"
-	printf "Map-File : ${map_fl}\n"
 	if [ "${wgt_gnr}" = 'esmf' ]; then 
 	    cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${esmf_opt} > /dev/null"
 	fi # !esmf
@@ -750,6 +749,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !pdq_opt
 
     # Block 5: Regrid
+    printf "Map-File : ${map_fl}\n"
     printf "Input : ${in_fl}\n"
     printf "Output: ${out_fl}\n"
     cmd_rgr[${fl_idx}]="ncks -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
