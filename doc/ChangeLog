@@ -1,3 +1,7 @@
+2016-01-16  Charlie Zender  <zender@uci.edu>
+
+	* Update ncremap environment (e.g., DATA, NCO PATH, netCDF LD_LIBRARY_PATH) on HPCs
+
 2016-01-15  Charlie Zender  <zender@uci.edu>
 
 	* Warn if packed in nco_grd_nfr() and nco_rgr_map() for input coordinate and variable, respectively

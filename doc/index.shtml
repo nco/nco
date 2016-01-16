@@ -67,7 +67,7 @@ Try to disable Spammers' machines:
 </td></tr></table>
 
 <p><hr width="100%"></p>
-<p><h1 align="center">Bienvenue sur let netCDF Operator (NCO) Site</h1>
+<p><h1 align="center">Bienvenue sur le netCDF Operator (NCO) Site</h1>
 
 <p><h2>
 Current stable NCO version is 4.5.4 released <!--#flastmod file="src/nco-4.5.4.tar.gz"-->
@@ -154,8 +154,8 @@ and
 <li>2015 Dec&nbsp;16: <a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">Poster</a> at Fall AGU, San Francisco</li>
 <li>2015 Nov&nbsp;04: <a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">Talk</a> at DOE ACME, Albuquerque</li>
 <li>2015 Oct&nbsp;20: 4.5.3 (Curvilinear)
-<li>2015 Sep&nbsp;01: NSF EarthCube <a href="#prp_e3">project</a> commences</li>
 <li>2015 Sep&nbsp;06: 4.5.2 (Generate SCRIP)
+<li>2015 Sep&nbsp;01: NSF EarthCube <a href="#prp_e3">project</a> commences</li>
 <li>2015 Jul&nbsp;10: 4.5.1 (Stability)
 <li>2015 Jun&nbsp;11: 4.5.0 (Regridding)
 <li>2015 May&nbsp;21: 4.4.9 (<tt>ncra</tt> weights)

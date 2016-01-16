@@ -55,13 +55,40 @@ fi # HOSTNAME
 # Default input and output directory is ${DATA}
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
-	cooley* | cc* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN
-	edison* | hopper* | nid* ) DATA="${SCRATCH}" ; ;; # NERSC edison compute nodes named nidNNNNN
-	pileus* ) DATA="/lustre/atlas/proj-shared/cli115/${USER}" ; ;; # OLCF CADES
-	rhea* ) DATA="/lustre/atlas/proj-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN
+	cooley* | cc* | mira* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
+	cori* | edison* | nid* ) DATA="${SCRATCH}" ; ;; # NERSC edison compute nodes named nidNNNNN, 24|64 cores|GB/node; cori 32|128 cores|GB/node
+	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
+	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
+	ys* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR yellowstone compute nodes named ysNNN, 32 GB/node
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
+# Ensure batch jobs access correct 'mpirun' (or, on edison, 'aprun') command, netCDF library, and NCO executables and library:
+case "${HOSTNAME}" in 
+    cooley* | cc* | mira* )
+	# http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
+	soft add +mvapich2 
+        export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
+	export PATH='/home/zender/bin'\:${PATH}
+	export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+    cori* | edison* | hopper* | nid* )
+	export PATH='/global/homes/z/zender/bin'\:${PATH}
+        export LD_LIBRARY_PATH='/global/homes/z/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+    pileus* )
+	export PATH='/home/zender/bin'\:${PATH}
+	export LD_LIBRARY_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals/lib:/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+    rhea* | titan* )
+	# 20151017: CSZ next three lines guarantee finding mpirun
+	source ${MODULESHOME}/init/sh # 20150607: PMC added to find module command
+	module unload PE-intel # CSZ 
+	module load PE-gnu # CSZ 
+        export PATH='/ccs/home/zender/bin'\:${PATH}
+	export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+    ys* )
+	# 20151018: Yellowstone support not yet tested in batch mode
+        export PATH='/glade/u/home/zender/bin'\:${PATH}
+        export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
+esac # !HOSTNAME
 
 # Test cases (examples for Charlie's machines):
 # ls ${DATA}/sld/raw/*.nc | ncremap -a conserve -D 0 -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
