@@ -1858,6 +1858,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
   } /* !dmn_nbr_rec */
   
+  int flg_pck; /* [flg] Variable is packed on disk  */
+  nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
+  double mss_val_dbl;
   /* Define regridded and copied variables in output file */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv_tbl->lst[idx_tbl].flg_mrv=True;
@@ -1872,12 +1875,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       /* If variable has not been defined, define it */
       if(rcd != NC_NOERR){
 	if(trv.flg_rgr){
-	  int flg_pck; /* [flg] Variable is packed on disk  */
 	  /* Regrid */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  dmn_in_fst=0;
 	  rcd=nco_inq_var_packing(in_id,var_id_in,&flg_pck);
 	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
+	  if(has_mss_val && !isfinite(mss_val_dbl)) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" has %s attribute that fails isfinite() (value is %s) so results are unpredictable. HINT: If regridding fails or values seem weird, retry after converting %s to normal number with, e.g., \"ncatted -a %s,%s,m,f,1.0e36 in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_mss_val_sng_get(),(isnan(mss_val_dbl)) ? "NaN" : ((isinf(mss_val_dbl)) ? "Infinity" : ""),nco_mss_val_sng_get(),nco_mss_val_sng_get(),var_rgr_nbr == 1 ? var_nm : "");
+	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seem weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    //dmn_idx_in_out_pre_rgr[dmn_idx]=dmn_idx;
@@ -2396,7 +2401,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   double *var_val_dbl_in=NULL;
   double *var_val_dbl_out=NULL;
   double *wgt_vld_out=NULL;
-  double mss_val_dbl;
   double var_val_crr;
   int *tally=NULL; /* [nbr] Number of valid (non-missing) values */
   size_t idx_in; /* [idx] Input grid index */
@@ -2404,7 +2408,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int lvl_idx; /* [idx] Level index */
   int lvl_nbr; /* [nbr] Number of levels */
   int thr_idx; /* [idx] Thread index */
-  nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
   size_t dst_idx; 
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
