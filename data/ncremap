@@ -539,7 +539,7 @@ fi # !dst_usr_flg
 # Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
 # Currently we require user to know (and specify) means by which destination grid is provided
 if [ "${map_usr_flg}" = 'Yes' ]; then 
-    printf "Source and destination grids will both be read from supplied map-file ${map_fl}\n"
+    printf "Source and destination grids will both be read from supplied map-file\n"
 else # !map_usr_flg
     fl_idx=0 # [idx] Current file index
     if [ "${dst_usr_flg}" = 'Yes' ]; then 
