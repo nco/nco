@@ -331,6 +331,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"snwe")){
       cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%lf,%lf,%lf,%lf",&rgr->lat_sth,&rgr->lat_nrt,&rgr->lon_wst,&rgr->lon_est);
       assert(cnv_nbr == 4);
+      if(cnv_nbr != 4) abort(); /* CEWI Use cnv_nbr at least once outside of assert() to avoid gcc 4.8.2 set-but-not-used warning */
       continue;
     } /* !snwe */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"wesn")){
@@ -1305,6 +1306,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
     lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0]);
     if(nco_grd_lat_typ != nco_grd_lat_unk) assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
+    if(lat_wgt_ttl_xpc < 0.0) abort();  /* CEWI Use lat_wgt_ttl_xpc at least once outside of assert() to avoid gcc 4.8.2 set-but-not-used warning */
   } /* !flg_grd_out_rct */
     
   /* When possible, ensure area_out is non-zero
@@ -5930,6 +5932,7 @@ nco_grd_qdr_ccw /* [fnc] Convert quadrilateral gridcell corners to CCW orientati
   
   lon_dff=lat_ll+lat_lr+lat_ur+lat_ul+lon_ll+lon_lr+lon_ur+lon_ul; /* CEWI */
   if(lon_dff > 0) flg_ccw=True; else flg_ccw=False;
+  if(False && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports lon_ul, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_ul,lon_ll,lon_dff); /* CEWI for fnc_nm */
   
   return flg_ccw;
 } /* !nco_grd_qdr_ccw() */
