@@ -1,5 +1,7 @@
 2016-01-15  Charlie Zender  <zender@uci.edu>
 
+	* Deep-free NC_STRING var_sct in nco_var_free() for ncap2 only
+
 	* NCO 4.5.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha03 final changes';git push
 	git tag -a 4.5.5-alpha03 -m 'Version 4.5.5-alpha03 new features: ncremap -P airs,mpas';git push --tags

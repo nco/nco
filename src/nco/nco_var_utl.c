@@ -1004,9 +1004,10 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
 
   /* String values must be deep-free'd, everything else is a flat buffer */
   if(var->type == (nc_type)NC_STRING){
-    /* 20140212: ncwa may free this memory twice because reduced variable not created correctly in nco_var_avg()
-       Temporarily only free string variables during debugging */
-    if(nco_dbg_lvl_get() == nco_dbg_crr)
+    /* 20140212: ncwa may free this memory twice because reduced variable not created correctly in nco_var_avg() as per TODO nco1127
+       Temporarily only free string variables during debugging
+       20160115: Henry using var_sct for new ncap2 var lists, needs string memory free'd, so deep-free() strings in ncap2, and only deep-free with others during debugging */
+    if(nco_dbg_lvl_get() == nco_dbg_crr || nco_prg_id_get() == ncap)
       if(var->val.vp) var->val.vp=(void *)nco_sng_lst_free((char **)var->val.vp,var->sz);
   }else{
     if(var->val.vp) var->val.vp=nco_free(var->val.vp);

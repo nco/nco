@@ -20298,16 +20298,18 @@ Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience
 Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10),
 1338-1342, doi:10.1016/j.envsoft.2008.03.004. 
 
-Zender, C. S. (2014), netCDF Operator (NCO) User Guide, Version 4.4.3,
+Zender, C. S. and H. J. Mangalam (2007), Scaling Properties of Common
+Statistical Operators for Gridded Datasets, Int. J. High
+Perform. Comput. Appl., 21(4), 485--498, doi:10.1177/1094342007083802.
+
+Zender, C. S. (Year), netCDF Operator (NCO) User Guide, 
 http://nco.sf.net/nco.pdf. 
 @end verbatim
 @end example
-Use the former when referring to overall design, purpose, and 
-optimization of @acronym{NCO}, and use the latter when referring to
-specific features and/or the User Guide itself.
-
-Additional information on citing @acronym{NCO} is in the User Guide at 
-@url{http://nco.sf.net#ctt}.
+Use the first when referring to overall design, purpose, and 
+optimization of @acronym{NCO}, the second for the speed and throughput
+of @acronym{NCO}, and the third for specific features and/or the User
+Guide itself, or in a non-academic setting.
 A complete list of @acronym{NCO} publications and presentations is at
 @url{http://nco.sf.net#pub}.
 This list links to the full papers and seminars themselves.
@@ -20338,28 +20340,29 @@ This list links to the full papers and seminars themselves.
 @cindex @acronym{SDO}
 @cindex @acronym{SEIII}
 @cindex OptIPuter
-@acronym{NSF} has funded a
+@cindex parallelism
+From 2004--2007, @acronym{NSF} funded a
 @uref{http://nco.sf.net#prp_sei, project}
 to improve Distributed Data Reduction & Analysis (@acronym{DDRA}) by
-evolving @acronym{NCO} into a suite of Scientific Data Operators called 
-@acronym{SDO}.
-@cindex parallelism
-The two main components of this project are @acronym{NCO} parallelism
-(OpenMP, @acronym{MPI}) and Server-Side @acronym{DDRA}
-(@acronym{SSDDRA}) implemented through extensions to @acronym{OPeNDAP} 
-and netCDF4. 
-This project will dramatically reduce bandwidth usage for @acronym{NCO}
-@acronym{DDRA}. 
+evolving @acronym{NCO} parallelism (OpenMP, @acronym{MPI}) and
+Server-Side @acronym{DDRA} (@acronym{SSDDRA}) implemented through
+extensions to @acronym{OPeNDAP} and netCDF4. 
+The @acronym{SSDDRA} features were implemented in @acronym{SWAMP},
+the PhD Thesis of Daniel Wang.
+@acronym{SWAMP} dramatically reduced bandwidth usage for @acronym{NCO} 
+between client and server.
 
 @cindex @acronym{NASA}
 @cindex @acronym{NRA}
 @cindex @acronym{HDF}
 With this first @acronym{NCO} proposal funded, the content of the
-next @acronym{NCO} proposal is clear.
-We are interested in obtaining @acronym{NASA} support for
+next @acronym{NCO} proposal became clear.
+We had long been interested in obtaining @acronym{NASA} support for 
 @acronym{HDF}-specific enhancements to @acronym{NCO}. 
-We plan to submit a proposal to the next suitable @acronym{NASA}
-@acronym{NRA} or @acronym{NSF} opportunity. 
+From 2012--2015 the @acronym{NASA} @acronym{ACCESS} program funded us to
+implement support support netCDF4 group functionality. 
+Thus @acronym{NCO} will grow and evade bit-rot for the foreseeable
+future. 
 
 We are considering other interesting ideas for still more proposals.
 Please contact us if you wish to be involved with any future
