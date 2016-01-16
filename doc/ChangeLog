@@ -1,5 +1,7 @@
 2016-01-15  Charlie Zender  <zender@uci.edu>
 
+	* Warn if packed in nco_grd_nfr() and nco_rgr_map() for input coordinate and variable, respectively
+
 	* Deep-free NC_STRING var_sct in nco_var_free() for ncap2 only
 
 	* NCO 4.5.5-alpha03 release procedure:

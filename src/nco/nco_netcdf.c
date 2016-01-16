@@ -1545,7 +1545,7 @@ nco_inq_var_packing /* [fnc] Check whether variable is packed on disk */
  int * const packing) /* O [flg] Variable is packed on disk */
 {
   /* Purpose: Check whether variable is packed on disk
-     Designed to behave like netCDF-library call for packing (which does not exist)
+     Designed to behave like (non-existent) netCDF-library call for packing
      Based on nco_pck_dsk_inq()
      Difference is that:
      nco_pck_dsk_inq() fills in members of variable structure

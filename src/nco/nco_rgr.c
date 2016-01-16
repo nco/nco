@@ -1872,9 +1872,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       /* If variable has not been defined, define it */
       if(rcd != NC_NOERR){
 	if(trv.flg_rgr){
+	  int flg_pck; /* [flg] Variable is packed on disk  */
 	  /* Regrid */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  dmn_in_fst=0;
+	  rcd=nco_inq_var_packing(in_id,var_id_in,&flg_pck);
+	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    //dmn_idx_in_out_pre_rgr[dmn_idx]=dmn_idx;
@@ -4895,7 +4898,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
     /* CICE lists missing value for lat/lon_ctr arrays (TLAT, TLONG) and re-uses that for bounds arrays */
     has_mss_val_ctr=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
-
+    
     /* 20150923: Also input, if present in curvilinear file, corners, area, and mask
        area and mask are same size as lat and lon */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
@@ -4973,6 +4976,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     dmn_cnt[1]=bnd_nbr;
     if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
   } /* !flg_grd_2D */
+
+  /* 20160115: AMSR coordinates are packed as NC_SHORT with scale_value=0.01f. What to do? Is it worth unpacking everything? */
+  int flg_pck; /* [flg] Variable is packed on disk  */
+  rcd=nco_inq_var_packing(in_id,lat_ctr_id,&flg_pck);
+  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports lat_ctr variable \"%s\" is packed so results unpredictable. HINT: If grid-generation causes problems, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,lat_nm_in);
+  rcd=nco_inq_var_packing(in_id,lon_ctr_id,&flg_pck);
+  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports lon_ctr variable \"%s\" is packed so results unpredictable. HINT: If grid-generation causes problems, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,lon_nm_in);
 
   /* Close input netCDF file */
   nco_close(in_id);
