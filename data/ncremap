@@ -112,6 +112,9 @@ esac # !HOSTNAME
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.cice.h.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.pop.h.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.rtm.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
+# MPAS:
+# ncremap -P mpas -i ${DATA}/mpas/raw/hist.ocn.0003-12-01_00.00.00.nc -m ${DATA}/maps/map_mpas120_TO_T62_aave.121116.nc -O ~/rgr
+# ncremap -P mpas -i ${DATA}/mpas/raw/hist.ocn.0003-12-01_00.00.00.nc -s ${DATA}/grids/fxm -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ACME benchmarks:
 # ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m map_ne30np4_to_fv129x256_aave.150418.nc   -O ~/rgr
 # ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
@@ -499,7 +502,7 @@ fi # !PETO
 printf "Started processing at `date`.\n"
 printf "NCO version is ${nco_version}\n"
 if [ "${map_usr_flg}" = 'Yes' ] && [ -n "${wgt_usr}" ] ; then
-    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_gnr' is not allowed (the weight-generator is unnecessary)\n"
+    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_gnr' is not allowed (weight-generator is unnecessary)\n"
     exit 1
 fi # wgt_usr
 if [ "${grd_src_usr_flg}" = 'Yes' ]; then
@@ -538,6 +541,9 @@ fi # !dst_usr_flg
 # Generate destination grid at most one-time
 # Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
 # Currently we require user to know (and specify) means by which destination grid is provided
+if [ -n "${pdq_opt}" ]; then 
+    printf "Input data obey \"${pdq_typ}\"-ordering and will be permuted with \"ncpdq ${pdq_opt}\"\n"
+fi # !pdq_opt
 if [ "${map_usr_flg}" = 'Yes' ]; then 
     printf "Source and destination grids will both be read from supplied map-file\n"
 else # !map_usr_flg
@@ -586,9 +592,9 @@ else # !map_usr_flg
     fi # !tempest
     if [ ${fl_nbr} -ge 2 ]; then 
 	if [ "${mlt_map_flg}" = 'Yes' ]; then 
-	    printf "Input files assumed to use unique input grids, one map-file will be generated per input file\n"
+	    printf "Input files assumed to use unique input grids\nOne source grid-file will be inferred and one map-file generated per input file\n"
 	else # !mlt_map_flg
-	    printf "Input files assumed to use same input grid, only one map-file will be generated\n"
+	    printf "Input files assumed to use same input grid\nOnly one source grid-file and one map-file will be generated\n"
 	fi # !mlt_map_flg
     fi # !fl_nbr
 fi # !map_usr
@@ -641,6 +647,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     if [ "$(basename ${in_fl})" = "${in_fl}" ]; then
 	in_fl="${drc_pwd}/${in_fl}"
     fi # !basename
+    printf "File #${fl_idx}  : ${in_fl}\n"
     if [ "${out_usr_flg}" = 'Yes' ]; then 
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    echo "ERROR: Single output filename specified with -o for multiple input files"
@@ -729,8 +736,8 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     
     # Block 4: Permutation
     if [ -n "${pdq_opt}" ]; then # !pdq_opt
-	printf "PDQ(in) : ${in_fl}\n"
-	printf "PDQ(out): ${pdq_fl}\n"
+	printf "PDQ(in)  : ${in_fl}\n"
+	printf "PDQ(out) : ${pdq_fl}\n"
 	cmd_pdq[${fl_idx}]="ncpdq ${nco_opt} ${nco_var_lst} ${pdq_opt} ${in_fl} ${pdq_fl}"
 	# Cause next block (regridding) to operate on PDQ file
 	in_fl=${pdq_fl}
@@ -749,9 +756,8 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !pdq_opt
 
     # Block 5: Regrid
-    printf "Map-File : ${map_fl}\n"
-    printf "Input : ${in_fl}\n"
-    printf "Output: ${out_fl}\n"
+    printf "Map/Wgt  : ${map_fl}\n"
+    printf "Regridded: ${out_fl}\n"
     cmd_rgr[${fl_idx}]="ncks -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
     
     # Block 5 Loop 2: Execute and/or echo commands
