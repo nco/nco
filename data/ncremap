@@ -647,7 +647,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     if [ "$(basename ${in_fl})" = "${in_fl}" ]; then
 	in_fl="${drc_pwd}/${in_fl}"
     fi # !basename
-    printf "File #${fl_idx}  : ${in_fl}\n"
+    printf "Input #${fl_idx} : ${in_fl}\n"
     if [ "${out_usr_flg}" = 'Yes' ]; then 
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    echo "ERROR: Single output filename specified with -o for multiple input files"

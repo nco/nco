@@ -1,6 +1,6 @@
 2016-01-16  Charlie Zender  <zender@uci.edu>
 
-	* Update ncremap environment (e.g., DATA, NCO PATH, netCDF LD_LIBRARY_PATH) on HPCs
+	* Update ncremap environment (e.g., DATA, NCO PATH, netCDF LD_LIBRARY_PATH) on HPCs and tidy output
 
 2016-01-15  Charlie Zender  <zender@uci.edu>
 
@@ -9,7 +9,7 @@
 	* Deep-free NC_STRING var_sct in nco_var_free() for ncap2 only
 
 	* NCO 4.5.5-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha03 final changes';git push
+	cd ~/nco;git commit -a -m 'Versqion 4.5.5-alpha03 final changes';git push
 	git tag -a 4.5.5-alpha03 -m 'Version 4.5.5-alpha03 new features: ncremap -P airs,mpas';git push --tags
 
 	* ncpdq: Eliminate duplicate file-header set-up that causes --gaa option to fail second-time
