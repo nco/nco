@@ -29,9 +29,8 @@
 
 # Source: https://github.com/nco/nco/tree/master/data/ncremap
 
-# Prerequisites: Bash, NCO, ESMF_RegridWeightGen
+# Prerequisites: Bash and NCO. For full functionality also install ESMF_RegridWeightGen and/or TempestRemap.
 # Script could use other shells, e.g., dash (Debian default) after re-writing function definition and looping constructs
-# Script could use other weight-generators, e.g., TempestRemap by re-writing map-file command
 
 # Script runs in one of four modes:
 # 1. Free-will: Infer source and destination grids to generate map-file, then regrid
@@ -94,7 +93,7 @@ esac # !HOSTNAME
 # ls ${DATA}/sld/raw/*.nc | ncremap -a conserve -D 0 -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
-# ncremap -a conserve -v FSNT -I ${DATA}/ -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
+# ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ncremap -i AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ncremap -v TSurfAir -i ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v CloudFrc_A -i ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
@@ -173,6 +172,7 @@ mpi_flg='No' # [sng] Parallelize over nodes
 msh_fl='' # [sng] Mesh-file (for Tempest)
 nco_opt='-O --no_tmp_fl' # [sng] NCO defaults (e.g., '-O -6 -t 1')
 nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
+nd_nbr=1 # [nbr] Number of nodes
 out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='' # [sng] Parallelism type
@@ -449,6 +449,49 @@ else
     map_fl=${map_fl_dfl}
 fi # !map_fl
 
+if [ "${mpi_flg}" = 'Yes' ]; then
+    if [ -n "${COBALT_NODEFILE}" ]; then 
+	nd_fl="${COBALT_NODEFILE}"
+    elif [ -n "${PBS_NODEFILE}" ]; then 
+	nd_fl="${PBS_NODEFILE}"
+    elif [ -n "${SLURM_NODELIST}" ]; then 
+	nd_fl="${SLURM_NODELIST}"
+    fi # !PBS
+    if [ -n "${nd_fl}" ]; then 
+	# NB: nodes are 0-based, e.g., [0..11]
+	nd_idx=0
+	for nd in `cat ${nd_fl} | uniq` ; do
+	    nd_nm[${nd_idx}]=${nd}
+	    let nd_idx=${nd_idx}+1
+	done # !nd
+	nd_nbr=${#nd_nm[@]}
+	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	    case "${HOSTNAME}" in 
+		cori* )
+		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
+		    cmd_mpi[${fl_idx}]="srun -L ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # NERSC
+		edison* | hopper* | nid* )
+		    # NB: NERSC staff says aprun automatically assigns to unique nodes even without "-L $node" argument
+		    cmd_mpi[${fl_idx}]="aprun -L ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # NERSC
+		* )
+		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
+	    esac # !HOSTNAME
+	done # !fl_idx
+    else # ! pbs
+	mpi_flg='No'
+	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	    cmd_mpi[${fl_idx}]=""
+	done # !fl_idx
+    fi # !pbs
+    if [ -z "${thr_usr}" ]; then 
+	if [ -n "${PBS_NUM_PPN}" ]; then
+#	NB: use export OMP_NUM_THREADS when thr_nbr > 8
+#	thr_nbr=${PBS_NUM_PPN}
+	    thr_nbr=$((PBS_NUM_PPN > 8 ? 8 : PBS_NUM_PPN))
+	fi # !pbs
+    fi # !thr_usr
+fi # !mpi
+
 # Print initial state
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: alg_opt  = ${alg_opt}\n"
@@ -551,11 +594,11 @@ else # !map_usr_flg
     if [ "${dst_usr_flg}" = 'Yes' ]; then 
 	# Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
 	# Infer destination grid-file from data file
-	printf "Destination grid will be inferred from data-file ${dst_fl} and stored as ${grd_dst}\n"
+	printf "Destination grid will be inferred from data-file\n"
 	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_dst} ${dst_fl} ${tmp_out_fl}"
     else # !dst_usr_flg
 	if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
-	    printf "Destination grid supplied by user as ${grd_dst}\n"
+	    printf "Destination grid supplied by user\n"
 	else
 	    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
 		printf "Destination grid will be generated from NCO grid string ${grd_sng}\n"
@@ -647,7 +690,8 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     if [ "$(basename ${in_fl})" = "${in_fl}" ]; then
 	in_fl="${drc_pwd}/${in_fl}"
     fi # !basename
-    printf "Input #${fl_idx} : ${in_fl}\n"
+    idx_prn=`printf "%02d" ${fl_idx}`
+    printf "Input #${idx_prn}: ${in_fl}\n"
     if [ "${out_usr_flg}" = 'Yes' ]; then 
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    echo "ERROR: Single output filename specified with -o for multiple input files"
@@ -758,7 +802,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     # Block 5: Regrid
     printf "Map/Wgt  : ${map_fl}\n"
     printf "Regridded: ${out_fl}\n"
-    cmd_rgr[${fl_idx}]="ncks -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
+    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
     
     # Block 5 Loop 2: Execute and/or echo commands
     if [ ${dbg_lvl} -ge 1 ]; then
