@@ -4709,7 +4709,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if((rcd=nco_inq_dimid_flg(in_id,"nv",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nv"); /* fxm */
   else if((rcd=nco_inq_dimid_flg(in_id,"nvertices",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nvertices"); /* CICE */
   
-  /* Locate fields that must be present in input file */
+  /* Locate fields that must be present in input file
+     Currently these variables must be in root group
+     This fails for, e.g., OMI L2 which has coordinates /GEOLOCATION_DATA/[Latitude,Longitude]
+     fxm: Generalize with traversal table so usual suspect coordinates may be in any group */
   if((rcd=nco_inq_varid_flg(in_id,"latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latitude");
   else if((rcd=nco_inq_varid_flg(in_id,"Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("Latitude"); /* TRMM */
   else if((rcd=nco_inq_varid_flg(in_id,"lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("lat"); /* CAM */
@@ -5182,13 +5185,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  crn_lon[3]=lon_ctr_fk[idx_fk_crn_ll_ctr_ul];
 	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr);
 
-	  idx_crn_ll=grd_crn_nbr*idx_rl+0;
 	  //	  if(flg_ccw) nco_crn2ctr(crn_lat,crn_lon,crn_nbr,lat_crn+idx_crn_ll,lon_crn+idx_crn_ll);
 
 	  idx_crn_ll=grd_crn_nbr*idx_rl+0;
 	  lat_crn[idx_crn_ll]=0.25*(lat_ctr_fk[idx_fk_crn_ll_ctr_ll]+lat_ctr_fk[idx_fk_crn_ll_ctr_lr]+lat_ctr_fk[idx_fk_crn_ll_ctr_ur]+lat_ctr_fk[idx_fk_crn_ll_ctr_ul]);
 	  lon_crn[idx_crn_ll]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ll_ctr_ll],lon_ctr_fk[idx_fk_crn_ll_ctr_lr],lon_ctr_fk[idx_fk_crn_ll_ctr_ur],lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
-
 	  idx_crn_lr=grd_crn_nbr*idx_rl+1;
 	  lat_crn[idx_crn_lr]=0.25*(lat_ctr_fk[idx_fk_crn_lr_ctr_ll]+lat_ctr_fk[idx_fk_crn_lr_ctr_lr]+lat_ctr_fk[idx_fk_crn_lr_ctr_ur]+lat_ctr_fk[idx_fk_crn_lr_ctr_ul]);
 	  lon_crn[idx_crn_lr]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_lr_ctr_ll],lon_ctr_fk[idx_fk_crn_lr_ctr_lr],lon_ctr_fk[idx_fk_crn_lr_ctr_ur],lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
@@ -6013,7 +6014,7 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
   } /* !crn_idx */
 
   if(dot_prd > 0.0) flg_ccw=True; else flg_ccw=False;
-  if(!flg_ccw) (void)fprintf(stdout,"%s: WARNING %s reports non-CCW gridcell LL (lat,lon) = (%g, %g), dot_prd = %g\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
+  if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: %s reports non-CCW gridcell LL (lat,lon) = (%g, %g), dot_prd = %g\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
   
   return flg_ccw;
 } /* !nco_ccw_chk() */
