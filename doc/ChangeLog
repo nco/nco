@@ -1,5 +1,7 @@
 2016-01-17  Charlie Zender  <zender@uci.edu>
 
+	* Implement nco_ccw_chk()
+
 	* Implement Bit Shave and Bit Set algorithms (for comparison with Bit Groom): ncks --baa=[0,1,2]
 
 2016-01-16  Charlie Zender  <zender@uci.edu>

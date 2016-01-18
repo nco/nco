@@ -5132,6 +5132,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       long int idx_fk_crn_ul_ctr_lr;
       long int idx_fk_crn_ul_ctr_ur;
       long int idx_fk_crn_ul_ctr_ul;
+      double crn_lat[grd_crn_nbr];
+      double crn_lon[grd_crn_nbr];
+      nco_bool flg_ccw; /* [flg] Gridcell is CCW */
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	  /* 9-point template valid at all interior (non-edge) points in real grid, and at all points (including edges) in fake grid
@@ -5169,9 +5172,23 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  
 	  /* 20160111: Algorithm requires that all longitudes in template be on same "branch cut"
 	     If, say, LL longitude is 179.0 and LR longitude is -179.0 then their sum and average are zero, not 180.0 or -180.0 as desired */
+	  crn_lat[0]=lat_ctr_fk[idx_fk_crn_ll_ctr_ll];
+	  crn_lat[1]=lat_ctr_fk[idx_fk_crn_ll_ctr_lr];
+	  crn_lat[2]=lat_ctr_fk[idx_fk_crn_ll_ctr_ur];
+	  crn_lat[3]=lat_ctr_fk[idx_fk_crn_ll_ctr_ul];
+	  crn_lon[0]=lon_ctr_fk[idx_fk_crn_ll_ctr_ll];
+	  crn_lon[1]=lon_ctr_fk[idx_fk_crn_ll_ctr_lr];
+	  crn_lon[2]=lon_ctr_fk[idx_fk_crn_ll_ctr_ur];
+	  crn_lon[3]=lon_ctr_fk[idx_fk_crn_ll_ctr_ul];
+	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr);
+
+	  idx_crn_ll=grd_crn_nbr*idx_rl+0;
+	  //	  if(flg_ccw) nco_crn2ctr(crn_lat,crn_lon,crn_nbr,lat_crn+idx_crn_ll,lon_crn+idx_crn_ll);
+
 	  idx_crn_ll=grd_crn_nbr*idx_rl+0;
 	  lat_crn[idx_crn_ll]=0.25*(lat_ctr_fk[idx_fk_crn_ll_ctr_ll]+lat_ctr_fk[idx_fk_crn_ll_ctr_lr]+lat_ctr_fk[idx_fk_crn_ll_ctr_ur]+lat_ctr_fk[idx_fk_crn_ll_ctr_ul]);
 	  lon_crn[idx_crn_ll]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ll_ctr_ll],lon_ctr_fk[idx_fk_crn_ll_ctr_lr],lon_ctr_fk[idx_fk_crn_ll_ctr_ur],lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
+
 	  idx_crn_lr=grd_crn_nbr*idx_rl+1;
 	  lat_crn[idx_crn_lr]=0.25*(lat_ctr_fk[idx_fk_crn_lr_ctr_ll]+lat_ctr_fk[idx_fk_crn_lr_ctr_lr]+lat_ctr_fk[idx_fk_crn_lr_ctr_ur]+lat_ctr_fk[idx_fk_crn_lr_ctr_ul]);
 	  lon_crn[idx_crn_lr]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_lr_ctr_ll],lon_ctr_fk[idx_fk_crn_lr_ctr_lr],lon_ctr_fk[idx_fk_crn_lr_ctr_ur],lon_ctr_fk[idx_fk_crn_lr_ctr_ul]);
@@ -5921,25 +5938,82 @@ nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut r
 } /* !nco_lon_crn_avg_brnch() */
 
 nco_bool /* O [flg] Input corners were CCW */
-nco_grd_qdr_ccw /* [fnc] Convert quadrilateral gridcell corners to CCW orientation */
-(double lat_ll, /* I [dgr] Latitude  at lower left  of gridcell */
- double lat_lr, /* I [dgr] Latitude  at lower right of gridcell */
- double lat_ur, /* I [dgr] Latitude  at upper right of gridcell */
- double lat_ul, /* I [dgr] Latitude  at upper left  of gridcell */
- double lon_ll, /* I [dgr] Longitude at lower left  of gridcell */
- double lon_lr, /* I [dgr] Longitude at lower right of gridcell */
- double lon_ur, /* I [dgr] Longitude at upper right of gridcell */
- double lon_ul) /* I [dgr] Longitude at upper left  of gridcell */
+nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation */
+(double * const crn_lat, /* [dgr] Latitude corners of gridcell */
+ double * const crn_lon, /* [dgr] Latitude corners of gridcell */
+ const int crn_nbr) /* [nbr] Number of corners per gridcell */
 {
   /* Purpose: Determine whether corner vertices are oriented CCW
-     If not, alter order so they are returned in CCW order */ 
-  const char fnc_nm[]="nco_grd_qdr_ccw()";
+     If not, alter order so they are returned in CCW order?
+     Algorithm:
+     Start crn_idx=0, i.e., at LL corner for quadrilateral
+     Vector A runs from crn_idx=0 to crn_idx=1, i.e., from LL->LR in quadrilateral
+     Vector B runs from crn_idx=1 to crn_idx=2, i.e., from LR->UR in quadrilateral
+     Compute cross-product A x B = C
+     C is normal to plane containining A and B
+     Dot-product of C with radial vector to head A = tail B is positive if A and B are CCW
+     Next edge: Copy previous B to next A, compute next B from crn_idx=2 to crn_idx=3 
+     Rinse, Lather, Repeat */ 
+  const char fnc_nm[]="nco_ccw_chk()";
   double lon_dff; /* [dgr] Longitude difference */
+  double A_tail_x,A_tail_y,A_tail_z;
+  double A_head_x,A_head_y,A_head_z;
+  double A_x,A_y,A_z;
+  double B_tail_x,B_tail_y,B_tail_z;
+  double B_head_x,B_head_y,B_head_z;
+  double B_x,B_y,B_z;
+  double C_x,C_y,C_z;
+  double R_x,R_y,R_z;
+  double lat_rdn;
+  double lon_rdn;
+  double sin_lat[crn_nbr];
+  double sin_lon[crn_nbr];
+  double cos_lat[crn_nbr];
+  double cos_lon[crn_nbr];
+  double dot_prd;
+  int crn_idx; /* [idx] Corner idx */
+  int A_tail_idx,A_head_idx;
+  int B_tail_idx,B_head_idx;
   nco_bool flg_ccw; /* [flg] Input is CCW */
   
-  lon_dff=lat_ll+lat_lr+lat_ur+lat_ul+lon_ll+lon_lr+lon_ur+lon_ul; /* CEWI */
-  if(lon_dff > 0) flg_ccw=True; else flg_ccw=False;
-  if(False && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports lon_ul, lon_ll, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_ul,lon_ll,lon_dff); /* CEWI for fnc_nm */
+  for(crn_idx=0;crn_idx<crn_nbr;crn_idx++){
+    lat_rdn=crn_lat[crn_idx]*M_PI/180.;
+    lon_rdn=crn_lon[crn_idx]*M_PI/180.;
+    sin_lat[crn_idx]=sin(lat_rdn);
+    cos_lat[crn_idx]=cos(lat_rdn);
+    sin_lon[crn_idx]=sin(lon_rdn);
+    cos_lon[crn_idx]=cos(lon_rdn);
+  } /* !crn_idx */
+
+  for(crn_idx=0;crn_idx<crn_nbr;crn_idx++){
+    A_tail_idx=crn_idx;
+    A_head_idx=B_tail_idx=(A_tail_idx+1)%crn_nbr;
+    B_head_idx=(B_tail_idx+1)%crn_nbr;
+    A_tail_x=cos_lat[A_tail_idx]*cos_lon[A_tail_idx];
+    A_tail_y=cos_lat[A_tail_idx]*sin_lon[A_tail_idx];
+    A_tail_z=sin_lat[A_tail_idx];
+    A_head_x=B_tail_x=R_x=cos_lat[A_head_idx]*cos_lon[A_head_idx];
+    A_head_y=B_tail_y=R_y=cos_lat[A_head_idx]*sin_lon[A_head_idx];
+    A_head_z=B_tail_z=R_z=sin_lat[A_head_idx];
+    B_head_x=cos_lat[B_head_idx]*cos_lon[B_head_idx];
+    B_head_y=cos_lat[B_head_idx]*sin_lon[B_head_idx];
+    B_head_z=sin_lat[B_head_idx];
+    A_x=A_head_x-A_tail_x;
+    A_y=A_head_y-A_tail_y;
+    A_z=A_head_z-A_tail_z;
+    B_x=B_head_x-B_tail_x;
+    B_y=B_head_y-B_tail_y;
+    B_z=B_head_z-B_tail_z;
+    /* Compute Cross-Product C = A x B */
+    C_x=A_y*B_z-B_y*A_z;
+    C_y=-A_x*B_z+B_x*A_z;
+    C_z=A_x*B_y-B_x*A_y;
+    /* Compute Dot-Product R dot C */
+    dot_prd=C_x*R_x+C_y*R_y+C_z*R_z;
+  } /* !crn_idx */
+
+  if(dot_prd > 0.0) flg_ccw=True; else flg_ccw=False;
+  if(!flg_ccw) (void)fprintf(stdout,"%s: WARNING %s reports non-CCW gridcell LL (lat,lon) = (%g, %g), dot_prd = %g\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
   
   return flg_ccw;
-} /* !nco_grd_qdr_ccw() */
+} /* !nco_ccw_chk() */
