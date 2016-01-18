@@ -165,6 +165,7 @@ hdr_pad='1000' # [B] Pad at end of header section
 in_fl='' # [sng] Input file
 #in_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] Input file
 in_xmp='in.nc' # [sng] Input file for examples
+job_nbr=2 # [nbr] Job simultaneity for parallelism
 map_fl='' # [sng] Map-file
 map_xmp='map.nc' # [sng] Map-file for examples
 mlt_map_flg='Yes' # [sng] Multi-map flag
@@ -201,6 +202,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation argument string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm})"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm})"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means use stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm})"
+    echo "${fnt_rvr}-b${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm})"
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file)"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm})"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm})"
@@ -254,7 +256,7 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${@}"
-while getopts :a:D:d:E:f:g:G:h:I:i:Mm:n:O:o:P:p:R:s:T:t:v:w:x: OPT; do
+while getopts :a:D:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:v:w:x: OPT; do
     case ${OPT} in
 	a) alg_typ=${OPTARG} ;; # Algorithm
 	D) dbg_lvl=${OPTARG} ;; # Debugging level
@@ -265,6 +267,7 @@ while getopts :a:D:d:E:f:g:G:h:I:i:Mm:n:O:o:P:p:R:s:T:t:v:w:x: OPT; do
 	G) grd_sng=${OPTARG} ;; # Grid generation string
 	I) drc_in=${OPTARG} ;; # Input directory
 	i) in_fl=${OPTARG} ;; # Input file
+	j) job_usr=${OPTARG} ;; # Job simultaneity
 	M) mlt_map_flg='No' ;; # Multi-map flag
 	m) map_fl=${OPTARG} ;; # Map-file
 	n) nco_usr=${OPTARG} ;; # NCO options
@@ -308,6 +311,9 @@ if [ -z "${drc_in}" ]; then
 else # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
+if [ -n "${job_usr}" ]; then 
+    job_nbr="${job_usr}"
+fi # !job_usr
 if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="-D ${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
@@ -355,7 +361,6 @@ fi # !pdq_typ
 if [ "${pdq_typ}" = 'mpas' ]; then 
     pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells'
 fi # !pdq_typ
-
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
 fi # !thr_usr
@@ -483,6 +488,9 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    cmd_mpi[${fl_idx}]=""
 	done # !fl_idx
     fi # !pbs
+    if [ -z "${job_usr}" ]; then 
+	job_nbr=${nd_nbr}
+    fi # !job_usr
     if [ -z "${thr_usr}" ]; then 
 	if [ -n "${PBS_NUM_PPN}" ]; then
 #	NB: use export OMP_NUM_THREADS when thr_nbr > 8
@@ -505,6 +513,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: grd_sng  = ${grd_sng}\n"
     printf "dbg: grd_src  = ${grd_src}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
+    printf "dbg: job_nbr  = ${job_nbr}\n"
     printf "dbg: in_fl    = ${in_fl}\n"
     printf "dbg: map_fl   = ${map_fl}\n"
     printf "dbg: mlt_map  = ${mlt_map_flg}\n"
@@ -685,6 +694,8 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
 fi # !grd_src_usr_flg
 
 # Begin loop over input files
+idx_srt=0
+let idx_end=$((job_nbr-1))
 for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     in_fl=${fl_in[${fl_idx}]}
     if [ "$(basename ${in_fl})" = "${in_fl}" ]; then
@@ -820,17 +831,43 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    rgr_pid[${fl_idx}]=$!
 	fi # !par_typ
     fi # !dbg
+
+    # Parallel regridding (both Background and MPI) spawn simultaneous processes in batches of ${job_nbr}
+    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+    if [ -n "${par_opt}" ]; then
+	let bch_idx=$((fl_idx / job_nbr))
+	let bch_flg=$(((fl_idx+1) % job_nbr))
+	printf "${spt_nm}: fl_idx = ${fl_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
+	if [ ${bch_flg} -eq 0 ] ; then
+	    printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at fl_idx = ${fl_idx}...\n"
+	    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
+		wait ${rgr_pid[${pid_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+		    exit 1
+		fi # !err
+	    done # !pid_idx
+	    let idx_srt=$((idx_srt + job_nbr))
+	    let idx_end=$((idx_end + job_nbr))
+	fi # !bch_flg
+    fi # !par_typ
+    
 done # !fl_idx
 
-# wait() for parallel regridding, if any, to finish
+# Parallel mode will often exit loop after a partial batch
 if [ -n "${par_opt}" ]; then
-    for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
-	wait ${rgr_pid[${fl_idx}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    done # !fl_idx
+    let bch_flg=$((fl_nbr % job_nbr))
+    if [ ${bch_flg} -ne 0 ] ; then
+	let bch_idx=$((bch_idx+1))
+	printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+	for ((pid_idx=${idx_srt};pid_idx<${fl_nbr};pid_idx++)); do
+	    wait ${rgr_pid[${pid_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+		exit 1
+	    fi # !err
+	done # !pid_idx
+    fi # !bch_flg
 fi # !par_typ
 
 date_end=$(date +"%s")

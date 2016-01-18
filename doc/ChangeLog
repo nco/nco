@@ -1,5 +1,7 @@
 2016-01-18  Charlie Zender  <zender@uci.edu>
 
+	* Add parallelism tuning with ncremap -j job_nbr where job_nbr is number of simultaneous jobs
+
 	* Fix double eval() in ncremap
 
 	* Adopt MPI per-node parallelization nearly in toto from climo_nco.sh to ncremap
