@@ -1,3 +1,7 @@
+2016-01-17  Charlie Zender  <zender@uci.edu>
+
+	* Implement Bit Shave and Bit Set algorithms (for comparison with Bit Groom): ncks --baa=[0,1,2]
+
 2016-01-16  Charlie Zender  <zender@uci.edu>
 
 	* Update ncremap environment (e.g., DATA, NCO PATH, netCDF LD_LIBRARY_PATH) on HPCs and tidy output

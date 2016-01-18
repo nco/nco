@@ -3016,7 +3016,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
  double * const area) /* [sr] Gridcell area */
 {
   /* Purpose: Compute area of spherical polygon */
-  /* Use L'Huilier's Theorem not Girard's Formula
+  /* In general, prefer L'Huilier's Theorem to Girard's Formula
      http://mathworld.wolfram.com/LHuiliersTheorem.html
      Girard's formula depends on pi-minus-angle and angle is usually quite small in our applications so precision would be lost
      L'Huilier's theorem depends only on angles (a,b,c) and semi-perimeter (s) and is well-conditioned for small angles
@@ -3025,6 +3025,13 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
      SE is also the solid angle subtended by the spherical triangle and that's, well, astonishing and pretty cool
      Wikipedia shows a better SE formula for triangles which are ill-conditioned for L'Huillier's formula because a = b ~ 0.5c
      https://en.wikipedia.org/wiki/Spherical_trigonometry#Area_and_spherical_excess 
+     See also interesting discussion of L'Huillier by Charles Karney who suggests his own alternative:
+     http://osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html
+     The discussion mentions Mil94
+     Robert D. Miller, Computing the area of a spherical polygon, Graphic Gems IV, chapter II.4, pages 132-137.
+     http://books.google.com/books?id=CCqzMm_-WucC&pg=PA132&lpg=PA132&dq=miller+area+spherical+polygon+gems&source=bl&ots=mrnvZ6NJcm&sig=CMg8eaD8dzP5snMaPeCQzgoFWUk&hl=sv&ei=4G-YTKv5GsWZOI-mmZQP&sa=X&oi=book_result&ct=result&resnum=1&ved=0CBQQ6AEwAA#v=onepage&q&f=false  
+     Mil94 contains similar ideas to my method for spherical polygons (decomposing into adjacent multiple triangles from single vertex)
+     
      So-called "proper" spherical triangle are those for which all angles are less than pi, so a+b+c<3*pi
      Cartesian coordinates of (lat,lon)=(theta,phi) are (x,y,z)=(cos(theta)*cos(phi),cos(theta)*sin(phi),sin(theta)) 
      Dot-product rule for vectors gives interior angle/arc length between two points:

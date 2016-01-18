@@ -343,6 +343,7 @@ main(int argc,char **argv)
     {"xml_no_location",no_argument,0,0}, /* [flg] Omit XML location tag */
     {"ncml_no_location",no_argument,0,0}, /* [flg] Omit XML location tag */
     /* Long options with argument, no short option counterpart */
+    {"baa",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
@@ -506,6 +507,10 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"baa") || !strcmp(opt_crr,"bit_alg")){
+	nco_baa_cnv=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* endif baa */
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

@@ -199,6 +199,7 @@ extern "C" {
   char *nco_not_mss_val_sng_get(void); /* [sng] Not missing value attribute name */
   char *nco_prg_nm_get(void);
   int nco_prg_id_get(void);
+  unsigned short nco_baa_cnv_get(void);
   unsigned short nco_dbg_lvl_get(void);
   unsigned short nco_fmt_xtn_get(void);
   unsigned short nco_mrd_cnv_get(void);
@@ -216,6 +217,9 @@ extern "C" {
   char *nco_prg_nm; /* [sng] Program name */
   char *nco_prg_nm_get(void){return nco_prg_nm;} /* [sng] Program name */
   
+  unsigned short nco_baa_cnv=0; /* [enm] Bit-Adjustment Algorithm */
+  unsigned short nco_baa_cnv_get(void){return nco_baa_cnv;} /* [enm] Bit-Adjustment Algorithm */
+
   unsigned short nco_dbg_lvl=0; /* [enm] Debugging level */
   unsigned short nco_dbg_lvl_get(void){return nco_dbg_lvl;} /* [enm] Debugging level */
 
@@ -658,8 +662,14 @@ extern "C" {
 
   enum nco_rth_cnv{ /* [enm] Arithmetic convention to assume */
     nco_rth_flt_flt, /* 0 Keep single-precision floating point (NCO default through version 4.3.5 20130927) */
-    nco_rth_flt_dbl  /* 1 Promote single-precision floating point to double before arithmetic (NCO default since version 4.3.6 20130927)*/
+    nco_rth_flt_dbl  /* 1 Promote single-precision floating point to double before arithmetic (NCO default since version 4.3.6 20130927) */
   }; /* end nco_rth_cnv */
+
+  enum nco_baa_cnv{ /* [enm] Bit-Adjustment Algorithm to use */
+    nco_baa_grm, /* 0 Bit Groom (NCO default since inception) */
+    nco_baa_shv, /* 1 Bit Shave (option since 20160117) */
+    nco_baa_set, /* 2 Bit Set (option since 20160117) */
+  }; /* end nco_baa_cnv */
 
   enum nco_upk_cnv{ /* [enm] Unpacking convention to assume */
     /* netCDF convention  : http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html

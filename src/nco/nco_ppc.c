@@ -657,18 +657,39 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     /* Left shift zeros into bits to be rounded */
     msk_f32_u32_zro <<= bit_xpl_nbr_zro;
     msk_f32_u32_one=~msk_f32_u32_zro;
-    if(!has_mss_val){
-      for(idx=0L;idx<sz;idx+=2L) u32_ptr[idx]&=msk_f32_u32_zro;
-      for(idx=1L;idx<sz;idx+=2L)
-	if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
-	  u32_ptr[idx]|=msk_f32_u32_one;
-    }else{
-      const float mss_val_flt=*mss_val.fp;
-      for(idx=0L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_zro;
-      for(idx=1L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U) u32_ptr[idx]|=msk_f32_u32_one;
-    } /* end else */
+    if(nco_baa_cnv_get() == nco_baa_grm){
+      /* Bit-Groom: alternately shave and set LSBs */
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx+=2L) u32_ptr[idx]&=msk_f32_u32_zro;
+	for(idx=1L;idx<sz;idx+=2L)
+	  if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
+	    u32_ptr[idx]|=msk_f32_u32_one;
+      }else{
+	const float mss_val_flt=*mss_val.fp;
+	for(idx=0L;idx<sz;idx+=2L)
+	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_zro;
+	for(idx=1L;idx<sz;idx+=2L)
+	  if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U) u32_ptr[idx]|=msk_f32_u32_one;
+      } /* end else */
+    }else if(nco_baa_cnv_get() == nco_baa_shv){
+      /* Bit-Shave: always shave LSBs */
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx++) u32_ptr[idx]&=msk_f32_u32_zro;
+      }else{
+	const float mss_val_flt=*mss_val.fp;
+	for(idx=0L;idx<sz;idx++)
+	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_zro;
+      } /* end else */
+    }else if(nco_baa_cnv_get() == nco_baa_set){
+      /* Bit-Set: always set LSBs */
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx++) u32_ptr[idx]&=msk_f32_u32_one;
+      }else{
+	const float mss_val_flt=*mss_val.fp;
+	for(idx=0L;idx<sz;idx++)
+	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_one;
+      } /* end else */
+    }else abort();
     break;
   case NC_DOUBLE:
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
@@ -681,18 +702,39 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     /* Left shift zeros into bits to be rounded */
     msk_f64_u64_zro <<= bit_xpl_nbr_zro;
     msk_f64_u64_one=~msk_f64_u64_zro;
-    if(!has_mss_val){
-      for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
-      for(idx=1L;idx<sz;idx+=2L)
-	if(u64_ptr[idx] != 0UL) /* Never quantize upwards floating point values of zero */
-	  u64_ptr[idx]|=msk_f64_u64_one;
-    }else{
-      const double mss_val_dbl=*mss_val.dp;
-      for(idx=0L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
-      for(idx=1L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
-    } /* end else */
+    if(nco_baa_cnv_get() == nco_baa_grm){
+      /* Bit-Groom: alternately shave and set LSBs */
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
+	for(idx=1L;idx<sz;idx+=2L)
+	  if(u64_ptr[idx] != 0UL) /* Never quantize upwards floating point values of zero */
+	    u64_ptr[idx]|=msk_f64_u64_one;
+      }else{
+	const double mss_val_dbl=*mss_val.dp;
+	for(idx=0L;idx<sz;idx+=2L)
+	  if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
+	for(idx=1L;idx<sz;idx+=2L)
+	  if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
+      } /* end else */
+    }else if(nco_baa_cnv_get() == nco_baa_shv){
+      /* Bit-Shave: always shave LSBs */
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx++) u64_ptr[idx]&=msk_f64_u64_zro;
+      }else{
+	const double mss_val_dbl=*mss_val.dp;
+	for(idx=0L;idx<sz;idx++)
+	  if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
+      } /* end else */
+    }else if(nco_baa_cnv_get() == nco_baa_set){
+      /* Bit-Set: always set LSBs */
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx++) u64_ptr[idx]&=msk_f64_u64_one;
+      }else{
+	const double mss_val_dbl=*mss_val.dp;
+	for(idx=0L;idx<sz;idx++)
+	  if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64_one;
+      } /* end else */
+    }else abort();
     break;
   case NC_INT: /* Do nothing for non-floating point types ...*/
   case NC_SHORT:
