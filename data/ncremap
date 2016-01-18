@@ -809,7 +809,6 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	echo ${cmd_rgr[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_rgr[${fl_idx}]}
 	if [ -z "${par_opt}" ]; then
 	    eval ${cmd_rgr[${fl_idx}]}
 	    if [ $? -ne 0 ]; then

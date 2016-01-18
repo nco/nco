@@ -5956,7 +5956,6 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
      Next edge: Copy previous B to next A, compute next B from crn_idx=2 to crn_idx=3 
      Rinse, Lather, Repeat */ 
   const char fnc_nm[]="nco_ccw_chk()";
-  double lon_dff; /* [dgr] Longitude difference */
   double A_tail_x,A_tail_y,A_tail_z;
   double A_head_x,A_head_y,A_head_z;
   double A_x,A_y,A_z;

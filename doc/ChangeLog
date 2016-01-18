@@ -1,5 +1,7 @@
 2016-01-18  Charlie Zender  <zender@uci.edu>
 
+	* Fix double eval() in ncremap
+
 	* Adopt MPI per-node parallelization nearly in toto from climo_nco.sh to ncremap
 
 2016-01-17  Charlie Zender  <zender@uci.edu>
