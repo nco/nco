@@ -837,9 +837,11 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     if [ -n "${par_opt}" ]; then
 	let bch_idx=$((fl_idx / job_nbr))
 	let bch_flg=$(((fl_idx+1) % job_nbr))
-	printf "${spt_nm}: fl_idx = ${fl_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
+	#printf "${spt_nm}: fl_idx = ${fl_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
 	if [ ${bch_flg} -eq 0 ] ; then
-	    printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at fl_idx = ${fl_idx}...\n"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at fl_idx = ${fl_idx}...\n"
+	    fi # !dbg
 	    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
 		wait ${rgr_pid[${pid_idx}]}
 		if [ $? -ne 0 ]; then
@@ -854,7 +856,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     
 done # !fl_idx
 
-# Parallel mode will often exit loop after a partial batch
+# Parallel mode will often exit loop after a partial batch, wait() for remaining jobs to finish
 if [ -n "${par_opt}" ]; then
     let bch_flg=$((fl_nbr % job_nbr))
     if [ ${bch_flg} -ne 0 ] ; then
