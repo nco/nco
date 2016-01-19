@@ -1,5 +1,9 @@
 2016-01-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.5-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Versqion 4.5.5-alpha04 final changes';git push
+	git tag -a 4.5.5-alpha04 -m 'Version 4.5.5-alpha04 new features: ncremap -j job_nbr';git push --tags
+
 	* Add parallelism tuning with ncremap -j job_nbr where job_nbr is number of simultaneous jobs
 
 	* Fix double eval() in ncremap

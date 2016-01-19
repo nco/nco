@@ -113,11 +113,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.5-alpha03
-@set doc-edition 4.5.5-alpha03
+@set nco-edition 4.5.5-alpha04
+@set doc-edition 4.5.5-alpha04
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 15 January 2016
+@set update-date 18 January 2016
 @set update-month January 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18572,7 +18572,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 SYNTAX
 @example
 ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_opt}]
-[-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}]
+[-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-M] [-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [-T @var{tempest_opt}] [-t @var{thr_nbr}]
 [-v @var{var_lst}[,@dots{}]] [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
@@ -18784,6 +18784,54 @@ If @var{in_fl} has only cell-center coordinates (and no edges),
 then @acronym{NCO} guess at or interpolate the edges.
 If @var{in_fl} has cell boundaries then @acronym{NCO} will use those. 
 @var{in_fl} is not modified, and may have read-only permissions.
+
+@html
+<a name="job_nbr"></a> <!-- http://nco.sf.net/nco.html#job_nbr -->
+@end html
+@cindex @code{-j @var{job_nbr}}
+@cindex @var{job_nbr}
+@item -j @var{job_nbr}
+Specifies the number of simultaneous regridding processes to spawn  
+during parallel execution for both Background and @acronym{MPI} modes. 
+In either parallel model @command{ncremap} spawns proceses in batches 
+of @var{job_nbr} jobs, thens waits for those processes to complete.
+Once a batch finishes, @command{ncremap} spawns the next batch.
+In Background mode, all jobs are spawned to the local node.
+In @acronym{MPI} mode, all jobs are spawned in round-robin fashion
+until to all available nodes until @var{job_nbr} jobs are running.
+
+If regridding consumes so much @acronym{RAM} (e.g., because
+variables are large and/or the number of threads is large) that a
+single node can perform only one regridding job at a time, then a
+reasonable value for @var{job_nbr} is the number of nodes,
+@var{node_nbr}. 
+Often, however, nodes can regrid multiple files simultaneously. 
+It can be more efficient to spawn multiple jobs per node than to
+increase the threading per job because I/O contention for write
+access to a single file prevents threading from scaling indefinitely. 
+
+By default @math{@var{job_nbr} = 2} in Background mode, and
+@math{@var{job_nbr} = @var{node_nbr}} in @acronym{MPI} mode.
+This helps prevent users from overloading nodes with too many jobs.
+Subject to the availability of adequate @acronym{RAM},
+expand the number of jobs per node by increasing @var{job_nbr}
+until, ideally, each core on the node is used. 
+Remember that processes and threading are multiplicative in core use.
+Four jobs each with four threads consumes sixteen cores.
+
+As an example, consider regridding 100 files with a single map.
+Say you have a five-node cluster, and each node has @w{16 cores}
+and can simultaneously regrid two files using eight threads each.
+(One usually needs to test a bit to determine these parameters.)
+Then an optimal (in terms of wallclock time) way to regrid would
+be requesting five nodes with 10 simultaneous jobs of eight threads.
+On many batch systems this would involve a scheduler command like 
+this @samp{qsub -l nodes=5 ...} followed by 
+@samp{ncremap -p mpi -j 10 -t 8 ...}.
+This job will likely complete between five and ten-times faster than a 
+serial invocation of @command{ncremap}.
+The uncertainty range is due to unforeseeable, system-dependent
+load and I/O charateristics.
 
 @html
 <a name="map_fl"></a> <!-- http://nco.sf.net/nco.html#map_fl -->
