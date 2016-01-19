@@ -20757,10 +20757,11 @@ nces -O --nsm_grp --nsm_sfx='_avg' \
 sn_LImon_all-mdl_all-xpt_all-nsm_200001-200512.nc \
   sn_LImon_all-mdl_all-xpt_nsm-avg.nc
 @end example
-The input file, @file{sn_LImon_all-mdl_all-xpt_all-nsm_200001-200512.nc}, produced by @file{cmb_fl_grp.sh}, 
-includes all the ensemble members as groups.
+The input file,
+@file{sn_LImon_all-mdl_all-xpt_all-nsm_200001-200512.nc}, produced by
+@file{cmb_fl_grp.sh}, includes all the ensemble members as groups.
 The option @samp{--nsm_grp} denotes 
-that we are using @uref{http://nco.sf.net/nco.html#nsm_grp, group ensembles mode} of @command{nces},
+that we are using @uref{http://nco.sf.net/nco.html#nsm_grp, group ensembles mode} of @command{nces}, 
 instead of @uref{http://nco.sf.net/nco.html#nsm_fl, file ensembles mode}, @samp{--nsm_fl}.
 The option @samp{--nsm_sfx='_avg'} instructs @command{nces} 
 to store the output as a new child group @file{/[model]/[model name]_avg/var};
