@@ -5199,6 +5199,17 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  idx_crn_ul=grd_crn_nbr*idx_rl+3;
 	  lat_crn[idx_crn_ul]=0.25*(lat_ctr_fk[idx_fk_crn_ul_ctr_ll]+lat_ctr_fk[idx_fk_crn_ul_ctr_lr]+lat_ctr_fk[idx_fk_crn_ul_ctr_ur]+lat_ctr_fk[idx_fk_crn_ul_ctr_ul]);
 	  lon_crn[idx_crn_ul]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ul_ctr_ll],lon_ctr_fk[idx_fk_crn_ul_ctr_lr],lon_ctr_fk[idx_fk_crn_ul_ctr_ur],lon_ctr_fk[idx_fk_crn_ul_ctr_ul]);
+
+	  crn_lat[0]=lat_crn[idx_crn_ll];
+	  crn_lat[1]=lat_crn[idx_crn_lr];
+	  crn_lat[2]=lat_crn[idx_crn_ur];
+	  crn_lat[3]=lat_crn[idx_crn_ul];
+	  crn_lon[0]=lon_crn[idx_crn_ll];
+	  crn_lon[1]=lon_crn[idx_crn_lr];
+	  crn_lon[2]=lon_crn[idx_crn_ur];
+	  crn_lon[3]=lon_crn[idx_crn_ul];
+	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr);
+
 	} /* !lon */
       } /* !lat */
       if(lat_ctr_fk) lat_ctr_fk=(double *)nco_free(lat_ctr_fk);

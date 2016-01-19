@@ -18832,6 +18832,10 @@ This job will likely complete between five and ten-times faster than a
 serial invocation of @command{ncremap}.
 The uncertainty range is due to unforeseeable, system-dependent
 load and I/O charateristics.
+Nodes that can simultaneously write to more than one file fare better
+with multiple jobs per node.
+Nodes with only one I/O channel to disk may be better exploited
+by utilizing more threads per process.
 
 @html
 <a name="map_fl"></a> <!-- http://nco.sf.net/nco.html#map_fl -->
