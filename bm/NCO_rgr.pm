@@ -109,6 +109,7 @@ sub tst_rgr {
   if($exit_value == 432){print "netCDF version 4.3.2 detected\n";}
   if($exit_value == 433){print "netCDF version 4.3.3 detected\n";}
   if($exit_value == 440){print "netCDF version 4.4.0 detected\n";}
+  if($exit_value == 441){print "netCDF version 4.4.1 detected\n";}
 
   if($exit_value >= 400){$RUN_NETCDF4_TESTS=1;}
   if($exit_value >= 431){$RUN_NETCDF4_TESTS_VERSION_GE_431=1;}
@@ -5409,7 +5410,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -H -s %d -v one ~/foo.nc
 # Check for corruption after simultaneously renaming multiple dimensions in netCDF4 file
-    $dsc_sng="netCDF4: Simultaneously rename multiple dimensions (requires netCDF 4.4.0)";
+    $dsc_sng="netCDF4: Simultaneously rename multiple dimensions (requires netCDF 4.4.1)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d lev,z -d lat,y -d lon,x $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -s %d -v one %tmp_fl_00%";
     $tst_cmd[2]="1";

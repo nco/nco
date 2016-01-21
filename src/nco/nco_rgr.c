@@ -5209,6 +5209,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  crn_lon[2]=lon_crn[idx_crn_ur];
 	  crn_lon[3]=lon_crn[idx_crn_ul];
 	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr);
+	  if(False && !flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: %s reports non-CCW gridcell at idx=%ul, (lat,lon)_idx=(%ul,%ul), (lat,lon) = (%g, %g), dot_prd = %g\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
 
 	} /* !lon */
       } /* !lat */
