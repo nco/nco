@@ -4552,7 +4552,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           found_dim=True;
           /* If dimension was to be record keep it that way, otherwise define degenerate size of 1 */
           if(DFN_CRR_DMN_AS_REC_IN_OUTPUT) dmn_cnt=NC_UNLIMITED; else dmn_cnt=1L;
-        } 
+        } /* endif */
         if(!found_dim){
           DEFINE_DIM[idx_dmn]=False;
           nbr_dmn_var_out--;    
@@ -4563,8 +4563,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(DEFINE_DIM[idx_dmn]){
         /* Define dimension and obtain dimension ID */
         (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_cnt,&dmn_id_out);
+	if(dmn_cnt == NC_UNLIMITED) rec_dmn_out_id=dmn_id_out; else rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
-        if(nco_dbg_lvl_get() == nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_nm,dmn_id_out);
+        if(nco_dbg_lvl_get() == nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension %s/%s ID %d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_nm,dmn_id_out);
 
         /* Assign defined ID to dimension ID array for the variable */
         dmn_out_id[idx_dmn]=dmn_id_out; 
@@ -4592,7 +4593,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } /* endif */
     } /* !ncwa */
 
-    /* Construct full dimension name using the full group name */
+    /* Construct full dimension name using full group name */
     dmn_nm_fll_out=(char *)nco_malloc(strlen(grp_dmn_out_fll)+strlen(dmn_nm)+2L);
     strcpy(dmn_nm_fll_out,grp_dmn_out_fll);
     if(strcmp(grp_dmn_out_fll,"/")) strcat(dmn_nm_fll_out,"/");
@@ -4602,8 +4603,10 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     (void)nco_dfn_dmn(dmn_nm_fll_out,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
 
     /* Die informatively if record dimension is not first dimension in netCDF3 output */
-    if(idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4 && DEFINE_DIM[idx_dmn]){
-      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",nco_prg_nm_get(),rec_dmn_nm,var_nm,idx_dmn+1);  
+    /* 20160122: This would be a helpful error message yet it currently triggers five false-positive ncpdq failures
+       Suspect incorrect conditions tested, if-clause entered, and program exits and causes regression test failures */
+    if(False && idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && DEFINE_DIM[idx_dmn] && fl_fmt != NC_FORMAT_NETCDF4){
+      (void)fprintf(stdout,"%s: ERROR User defined output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",nco_prg_nm_get(),rec_dmn_nm,var_nm,idx_dmn+1);  
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
@@ -4704,8 +4707,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   } /* !ncwa */
 
   if(nco_dbg_lvl_get() == nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s Defined variable <%s><%s> : ",nco_prg_nm_get(),fnc_nm,grp_out_fll,var_nm);
-    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) (void)fprintf(stdout,"<%s>#%d SIZE=%ld : ",dmn_cmn[idx_dmn].nm_fll,dmn_out_id[idx_dmn],dmn_cmn[idx_dmn].sz);
+    (void)fprintf(stdout,"%s: DEBUG %s Defined variable %s/%s: ",nco_prg_nm_get(),fnc_nm,grp_out_fll,var_nm);
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) (void)fprintf(stdout,"name,ID,sz = %s,%d,%ld : ",dmn_cmn[idx_dmn].nm_fll,dmn_out_id[idx_dmn],dmn_cmn[idx_dmn].sz);
     (void)fprintf(stdout,"\n");
   } /* endif dbg */ 
 

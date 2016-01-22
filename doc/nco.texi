@@ -6417,9 +6417,9 @@ planned.
 @cindex @code{--rnr}
 @cindex @code{--renormalize}
 @cindex @code{--rgr_rnr}
-First-order-accurate data regridding is a straightforward procedure of 
-identifying gridcell overlap and apportioning values correctly
-from source to destination.
+Conservative regridding is, for first-order accurate algorithms,
+a straightforward procedure of identifying gridcell overlap and
+apportioning values correctly from source to destination.
 The presence of missing values forces a decision on how to handle
 destination gridcells where some but not all source cells are valid. 
 @acronym{NCO} allows the user to choose between two distinct algorithms:
@@ -6474,7 +6474,25 @@ of the destination gridcell to meet the threshold for a non-missing
 destination value. 
 For a valid destination area of, say 25%, the renormalized algorithm
 produces a destination value four-times greater than the conservative
-algorithm.  
+algorithm.
+
+In practice, it may make sense to use the default ``conservative''
+algorithm when performing conservative regridding, and the
+``renormalized'' algorithm when performing other regridding such as
+bilinear interpolation or nearest-neighbor.
+Another consideration is whether the fields being regridded are fluxes
+or state variables. 
+For example, temperature (unlike heat) or concentrations (amount per
+unit volume) are not physically conserved quantities under
+areal-regridding so it often makes sense to interpolate them in a
+non-conservative fashion, to preserve their fine-scale structure. 
+Few researchers can digest the unphysical values of temperature that the  
+``conservative'' option will produce in regions rife with missing
+values.
+A counter-example is fluxes, which should be physically conserved under 
+areal-regridding.
+One should consider both the type of field and its conservation
+properties before choosing a regridding strategy.
 
 @acronym{NCO} automatically annotates the output with relevant metadata
 such as coordinate bounds, axes, and vertices (@w{@`{a} la} @acronym{CF}). 
