@@ -19082,9 +19082,12 @@ ncpdq -a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells mpas.nc mpas_ncpdq.nc
 ncremap -R "--rgr col_nm=nCells" -i mpas_ncpdq.nc -m mpas120_to_t62.nc -O ~/rgr
 @end example
 @noindent
-Note that the previous two examples occur so frequently that
-@command{ncremap} has been specially equipped to handle them.
-Hence, as of 20160115, the following two commands suffice:
+The previous two examples occur so frequently that @command{ncremap} has
+been specially equipped to handle @acronym{AIRS} and @acronym{MPAS}
+files. 
+As of 20160115, the following @command{ncremap} commands with @samp{-P}
+switches automagically perform all the required permutation and renaming
+necessary:
 @example
 # AIRS Level2 vertical profiles
 ncremap -P airs -i AIRS_L2.nc -d dst_1x1.nc -O ~/rgr
@@ -19092,6 +19095,11 @@ ncremap -P airs -i AIRS_L2.nc -d dst_1x1.nc -O ~/rgr
 ncremap -P mpas -i mpas.nc -m mpas120_to_t62.nc -O ~/rgr
 @end example
 @noindent
+The machinery to handle permutations and special options for other
+datafiles is relatively easy to extend. 
+If you work with common datasets that could benefit from their own
+@command{ncremap} @samp{-P} options, contact us and we will try to
+implement them. 
 
 The second limitation is that @command{ncremap} does not yet follow
 @acronym{CF} conventions to identify coordinate variables.
