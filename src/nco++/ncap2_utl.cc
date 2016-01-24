@@ -633,6 +633,7 @@ void
 ncap_lmt_evl
 (int nc_id,
  lmt_sct* lmt_ptr,
+ long hint_sz,
  prs_cls *prs_arg){
   
   long cnt_dmn;
@@ -650,14 +651,18 @@ ncap_lmt_evl
   dmn_vtr=(nc_id==prs_arg->in_id ? prs_arg->dmn_in_vtr: prs_arg->dmn_out_vtr);
   
   
+  // fudge the size
+  if( hint_sz > -1L )
+    cnt_dmn=hint_sz;
+  else 
+  {
+    dmn_ptr=dmn_vtr.find(lmt_ptr->nm);
   
-  dmn_ptr=dmn_vtr.find(lmt_ptr->nm);
-  
-  if(dmn_ptr==NULL)
-    err_prn(fnc_nm,"Dimension "+ std::string(lmt_ptr->nm)+" in limits not found");
-  
-  cnt_dmn=dmn_ptr->sz;
-  
+    if(dmn_ptr==NULL)
+      err_prn(fnc_nm,"Dimension "+ std::string(lmt_ptr->nm)+" in limits not found");
+
+    cnt_dmn=dmn_ptr->sz;
+  }   
   //fill out defaults
   srt=( lmt_ptr->is_usr_spc_min ? lmt_ptr->srt:0L);
   end=( lmt_ptr->is_usr_spc_max ? lmt_ptr->end:cnt_dmn-1);

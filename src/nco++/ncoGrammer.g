@@ -582,12 +582,12 @@ VAR_ATT_QT :( '\''!)
    ;     
 
 // return a STR_ATT_ID
-STR_ATT_ID:  '@'(LPH)(LPH|DGT)* {$setType(STR_ATT_ID);}
+ATT_ID:  '@'(LPH)(LPH|DGT)* {string an=$getText;$setText("global"+an);$setType(ATT_ID);}
 ;
 
 // Return a quoted STR_ATT_ID
 STR_ATT_QT :( '\''!)
-              '@' VAR_NM_QT {$setType(STR_ATT_ID);}
+              '@' VAR_NM_QT {$setType(STR_ATT_QT);}
              ('\''!)
 ;     
 
@@ -1614,8 +1614,23 @@ var=NULL_CEWI;
         } // end action
        
    |   (#(ATT_ID LMT_LIST))=> #(att:ATT_ID LMT_LIST){
-        ;
-        } 
+
+            //In Initial scan all newly defined atts are flagged as Undefined
+            var_sct *var1;
+            NcapVar *Nvar;
+
+            if(nco_dbg_lvl_get() > nco_dbg_var) dbg_prn(fnc_nm,att->getText());
+            
+            var1=ncap_var_udf(att->getText().c_str());
+
+            Nvar=new NcapVar(var1);
+            prs_arg->int_vtr.push_ow(Nvar);          
+
+            // Copy return variable
+            var=nco_var_dpl(var1);    
+
+       } //end action
+
    |   (#(ATT_ID LMT_DMN))=>  #(att1:ATT_ID DMN_LIST){
         ;
         } 
@@ -1723,7 +1738,7 @@ var=NULL_CEWI;
                  slb_sz=1;        
                 // fill out limit structure
                 for(idx=0 ; idx < nbr_dmn ;idx++){
-                   (void)ncap_lmt_evl(prs_arg->out_id,lmt_vtr[idx],prs_arg);
+                   (void)ncap_lmt_evl(prs_arg->out_id,lmt_vtr[idx],-1,prs_arg);
                     // Calculate size
                    slb_sz *= lmt_vtr[idx]->cnt;
                 }
@@ -1784,7 +1799,7 @@ var=NULL_CEWI;
                 var_lhs->sz=1;        
                 // fill out limit structure
                 for(idx=0 ; idx < nbr_dmn ;idx++){
-                   (void)ncap_lmt_evl(prs_arg->out_id,lmt_vtr[idx],prs_arg);
+                   (void)ncap_lmt_evl(prs_arg->out_id,lmt_vtr[idx],-1,prs_arg);
                     // Calculate size
                    var_lhs->sz *= lmt_vtr[idx]->cnt;
                 }
@@ -1990,9 +2005,162 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
                          
        } // end action
  
-   |   (#(ATT_ID LMT_LIST)) => #(att:ATT_ID LMT_LIST){
-        ;
+   |   (#(ATT_ID LMT_LIST)) => #(att:ATT_ID lmta:LMT_LIST){
+
+            long srt,end,cnt,srd;  
+            std::string att_nm=att->getText();
+            std::string fnc_nm("att_lmt"); 
+            NcapVar *Nvar=NULL;
+            NcapVector<lmt_sct*> lmt_vtr;
+
+            var_sct *var_lhs=NULL_CEWI; 
+            var_sct *var_rhs=NULL_CEWI; 
+            
+            if(prs_arg->ntl_scn)
+            { 
+              // only final scan for this attribute hyperslab 
+              var=ncap_var_udf(att_nm.c_str());
+              // can't return here -- have to use goto
+              goto att_end; 
+            } 
+  
+            Nvar=prs_arg->var_vtr.find(att_nm);
+
+            if(Nvar!=NULL)
+                var_lhs=nco_var_dpl(Nvar->var);
+            else    
+                var_lhs=ncap_att_init(att_nm,prs_arg);
+            
+
+            if(var_lhs==NULL_CEWI )
+                err_prn(fnc_nm,"Unable to locate attribute " +att_nm+ " in input or output files.");
+            
+		    lmt_mk(1L,lmta,lmt_vtr);
+           
+
+            if( lmt_vtr.size() != 1)
+                err_prn(fnc_nm,"Number of hyperslab limits for an attribute "+ att_nm+" must be one ");
+
+
+            lmt_vtr[0]->nm=strdup("zz@attribute");    
+            (void)ncap_lmt_evl(1,lmt_vtr[0],var_lhs->sz,prs_arg); 
+            
+            if(lmt_vtr[0]->cnt==0)
+               err_prn(fnc_nm,"Hyperslab limits for attribute "+ att_nm+" doesn't include any elements");   
+
+            srt=lmt_vtr[0]->srt;
+            cnt=lmt_vtr[0]->cnt;
+            srd=lmt_vtr[0]->srd; 
+            end=lmt_vtr[0]->end; 
+
+            // get rhs can be anything as long as it is of size cnt 
+            var_rhs=out(att->getNextSibling());
+
+
+            
+            if( var_lhs->type==NC_STRING)
+            { 
+              long szn; 
+              long idx; 
+              long cnt=0;  
+              char buffer[NC_MAX_ATTRS];  
+
+              buffer[0]='\0';
+ 
+              cast_void_nctype(NC_STRING, &var_lhs->val);    
+              cast_void_nctype(var_rhs->type, &var_rhs->val);     
+               
+              if( var_rhs->type==NC_STRING)
+              {
+                // check size
+               if(  var_rhs->sz!=1L &&  var_rhs->sz != cnt)   
+                  err_prn(fnc_nm,"Hyperslab limits for attribute "+att_nm + " on LHS size="+nbr2sng(cnt)+ " doesnt match RHS size=" + nbr2sng(var_rhs->sz));
+
+                   
+                szn=(var_rhs->sz >1 ? 1: 0);     
+                for(idx=srt; idx<=end;idx+=srd)  
+                {
+                   var_lhs->val.sngp[idx]=strdup(var_rhs->val.sngp[cnt]);    
+                   cnt+=szn;
+                }
+
+
+              } 
+                  
+              else if( var_rhs->type==NC_CHAR )
+              { 
+               // if RHS is a char string then it reduces to  single NC_STRING regardless of size  
+                strncpy(buffer, var_rhs->val.cp , var_rhs->sz);   
+                buffer[var_rhs->sz]='\0';  
+
+                for(idx=srt; idx<=end;idx+=srd)  
+                   var_lhs->val.sngp[idx]=strdup(buffer);    
+              }
+              else 
+              { 
+                err_prn(fnc_nm,"To hyperslab into a text NC_STRING The RHS type must alo be a text string of type NC_CHAR or NC_STRING"); 
+              } 
+
+              cast_nctype_void(var_rhs->type, &var_rhs->val);    
+              cast_nctype_void(var_lhs->type, &var_lhs->val);    
+
+  
+
+            }
+            
+
+            // deal with regular types   
+            if(var_lhs->type !=NC_STRING)
+            {  
+               char *cp_in;
+               char *cp_out;  
+               long idx;
+               long szn; 
+
+               size_t slb_sz=nco_typ_lng(var_lhs->type); 
+
+               // check size
+               if(  var_rhs->sz!=1L &&  var_rhs->sz != cnt)   
+                  err_prn(fnc_nm,"Hyperslab limits for attribute "+att_nm + " on LHS size="+nbr2sng(cnt)+ " doesnt match RHS size=" + nbr2sng(var_rhs->sz));
+
+ 
+               nco_var_cnf_typ(var_lhs->type,var_rhs);               
+
+               // if rhs size is one then simply copy across possibly multiple times
+               szn=(var_rhs->sz >1 ? 1: 0);   
+
+               cp_in=(char*)(var_rhs->val.vp); 
+              
+               //cp_out=(char*)var_lhs->val.vp; 
+
+               for(idx=srt; idx<=end;idx+=srd) 
+               { 
+                cp_out=(char*)(var_lhs->val.vp)+slb_sz*idx;     
+                memcpy(cp_out,cp_in,slb_sz);  
+                cp_in+= szn;
+               }
+
+            }
+
+            nco_var_free(var_rhs);  
+            nco_lmt_free(lmt_vtr[0]); 
+                  
+            Nvar=new NcapVar(var_lhs,att_nm);
+
+            prs_arg->var_vtr.push_ow(Nvar);       
+
+               // See If we have to return something
+            if(lmta->getFirstChild() && lmta->getFirstChild()->getType()==NORET)
+              var=NULL_CEWI;
+            else 
+              var=nco_var_dpl(var_lhs);               ;
+ 
+
+           att_end: ; 
+
+        
         } 
+
    |   (#(ATT_ID DMN_LIST))=> #(att1:ATT_ID DMN_LIST){
         ;
         } 
@@ -2276,6 +2444,102 @@ out returns [var_sct *var]
      
              
     }
+
+     // attribute with argument list 
+    | (#(ATT_ID LMT_LIST)) => #( attl:ATT_ID lmtl:LMT_LIST) {
+
+            std::string att_nm=attl->getText();
+            std::string fnc_nm("att_lmt"); 
+            NcapVar *Nvar=NULL;
+            NcapVector<lmt_sct*> lmt_vtr;
+
+            var_sct *var_att=NULL_CEWI; 
+
+            
+            if(prs_arg->ntl_scn)
+            { 
+              // only final scan for this attribute hyperslab 
+              var=ncap_var_udf(att_nm.c_str());
+              // can't return here -- have to use goto
+              goto attl_end; 
+            } 
+  
+            Nvar=prs_arg->var_vtr.find(attl->getText());
+
+            if(Nvar!=NULL)
+                var_att=nco_var_dpl(Nvar->var);
+            else    
+                var_att=ncap_att_init(att_nm,prs_arg);
+            
+
+            if(var_att==NULL_CEWI )
+                err_prn(fnc_nm,"Unable to locate attribute " +att_nm+ " in input or output files.");
+            
+		    lmt_mk(1L,lmtl,lmt_vtr);
+           
+
+            if( lmt_vtr.size() != 1)
+                err_prn(fnc_nm,"Number of hyperslab limits for an attribute "+ att_nm+"must be one ");
+
+            // fxm - very soon  
+            lmt_vtr[0]->nm=strdup("zz@attribute");    
+            (void)ncap_lmt_evl(1,lmt_vtr[0],var_att->sz,prs_arg); 
+             
+            // we have something to hyperslab
+            if( lmt_vtr[0]->cnt > 0)
+            {  
+               char *cp_in;
+               char *cp_out;  
+               long idx;
+               long srt=lmt_vtr[0]->srt;
+               long cnt=lmt_vtr[0]->cnt;
+               long srd=lmt_vtr[0]->srd; 
+               size_t slb_sz=nco_typ_lng(var_att->type); 
+                
+               /* create output att */
+               var=ncap_sclr_var_mk(att_nm,var_att->type,true);                 
+               (void)ncap_att_stretch(var,cnt);     
+
+               cp_in=(char*)( var_att->val.vp); 
+               cp_in+= (ptrdiff_t)slb_sz*srt;
+               cp_out=(char*)var->val.vp; 
+                    
+               idx=0;
+  
+               while(idx++ < cnt )
+               { 
+                  memcpy(cp_out, cp_in, slb_sz);                   
+                  cp_in+=srd*slb_sz;
+                  cp_out+=slb_sz; 
+               } 
+               
+               // if type NC_STRING then realloc ragged array  
+               if(var_att->type==NC_STRING)
+               { 
+                 idx=0;  
+                 (void)cast_void_nctype((nc_type)NC_STRING,&var->val);                  
+
+                 while(idx<cnt)
+                   var->val.sngp[idx]=strdup(var->val.sngp[idx++]);    
+
+                
+                 (void)cast_nctype_void((nc_type)NC_STRING,&var->val); 
+
+               }  
+
+
+            }
+            else
+            {
+              err_prn(fnc_nm,"Hyperslab limits for attribute "+ att_nm+" doesn't include any elements");  
+            }
+             
+            nco_var_free(var_att);    
+
+            attl_end: ; 
+        }
+
+
 
     // plain Variable
 	|   v:VAR_ID       
@@ -3093,7 +3357,7 @@ var=NULL_CEWI;
                         
           // fill out limit structure
            for(idx=0 ; idx < nbr_dmn ;idx++)
-            (void)ncap_lmt_evl(var_rhs->nc_id,lmt_vtr[idx],prs_arg);
+            (void)ncap_lmt_evl(var_rhs->nc_id,lmt_vtr[idx],-1,prs_arg);
 
           // See if var can be normalized
            for(idx=0; idx<nbr_dmn ; idx++){

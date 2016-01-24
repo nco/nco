@@ -1,3 +1,9 @@
+2016-01-24  Henry Butowsky  <henryb@hush.com>
+
+	* ncap2  first cut  to grammar file of  code for hyperslabbing attributes on the LHS and RHS
+	* added first version of push() method for attributes 
+
+
 2016-01-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.5-alpha04 release procedure:
