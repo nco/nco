@@ -5967,7 +5967,10 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
  const int rcr_lvl) /* [nbr] Recursion level */
 {
   /* Purpose: Determine whether corner vertices are oriented CCW
-     If not, alter order so they are returned in CCW order?
+     If not, alter order so they are returned in CCW order
+     Function can call itself, and rcr_lvl indicates recursion level:
+     rcr_lvl=1: Called by host code, i.e., nco_grd_nfr()
+     rcr_lvl=2: Called by itself, i.e., nco_ccw_chk()
      Algorithm:
      Start crn_idx=0, i.e., quadrilateral LL corner
      Vector A runs from crn_idx=0 to crn_idx=1, i.e., quadrilateral LL->LR
@@ -5975,6 +5978,11 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
      Compute cross-product A x B = C
      C is normal to plane containining A and B
      Dot-product of C with radial vector to head A = tail B is positive if A and B are CCW
+     If ABC is not CCW, then:
+       A. Assume entire quadrilateral is CW
+       B. Take mirror image of quadrilateral by switching B with D
+       C. Re-test for CCW. 
+       D. 
      Next edge: Copy previous B to next A, compute next B from crn_idx=2 to crn_idx=3 
      Rinse, Lather, Repeat */ 
   const char fnc_nm[]="nco_ccw_chk()";
@@ -6036,8 +6044,9 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
 
   if(dot_prd > 0.0) flg_ccw=True; else flg_ccw=False;
 
-  /* 20160124: Simplistic fix: reverse gridpoint order */
   if(!flg_ccw && crn_nbr == 4 && rcr_lvl == 1){
+    /* 20160124: Simplistic fix: reverse gridpoint order
+       This only works for quadrilaterals without degenerate points */
     double crn_tmp;
     if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports non-CCW gridcell LL (lat,lon) = (%g, %g), dot_prd = %g\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
     crn_tmp=crn_lat[1];
@@ -6046,8 +6055,10 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
     crn_tmp=crn_lon[1];
     crn_lon[1]=crn_lon[3];
     crn_lon[3]=crn_tmp;
+    /* Check new triangle ABC */
     flg_ccw=nco_ccw_chk(crn_lat,crn_lon,crn_nbr,rcr_lvl+1);
-    if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports non-CCW gridcell after inversion\n",nco_prg_nm_get(),fnc_nm);
+    if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports gridcell remains non-CCW after first inversion\n",nco_prg_nm_get(),fnc_nm);
+    /* fxm: Check triangle CDA */
   } /* flg_ccw */
     
   return flg_ccw;

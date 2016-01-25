@@ -401,7 +401,7 @@ if test "${C_INC}"; then
 # C_INC is useful on AIX platforms that have alternative C-compilers (e.g., gcc) installed in a directory (e.g., /usr/local) searched for other software (e.g., antlr)
 # Specifying both C_INC and ANTLR_INC would cause the pre-processor to grab 
 # C-headers from C_INC and antlr headers from ANTLR_INC
-# Using C_INC is required on UCI's ESMF
+# Using C_INC was required on UCI's old ESMF
     CPPFLAGS="-I${C_INC} ${CPPFLAGS}"
 fi
 AC_LANG_PUSH([C++])
@@ -531,7 +531,7 @@ AC_ARG_VAR(ESMF_LIB,Location of ESMF library (compile-time))
 # Store pre-ESMF LIBS value to restore from later
 nco_LIBS_no_ESMF="${LIBS}"
 nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
-AC_ARG_ENABLE(esmf,AS_HELP_STRING([--enable-esmf],[Build-in ESMF support if possible [[default=yes]]]),enable_esmf=${enableval},enable_esmf=yes)
+AC_ARG_ENABLE(esmf,AS_HELP_STRING([--enable-esmf],[Build-in ESMF support for integrated (instead of off-line) regridding. WARNING: Development code = Unsupported (and not necessary for regridding! Dragons lurk here.) [[default=yes]]]),enable_esmf=${enableval},enable_esmf=yes)
 if test "${enable_esmf}" != 'yes'; then
     enable_esmf='no'
 fi
