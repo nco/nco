@@ -6357,7 +6357,7 @@ Currently @acronym{NCO} understands only the mapfile format pioneered by
 (@url{http://oceans11.lanl.gov/svn/SCRIP/trunk/SCRIP})
 and later extended by @acronym{ESMF} 
 (@uref{http://www.earthsystemcog.org/projects/regridweightgen}),
-and adopted by Tempest
+and adopted (along with Exodus) by Tempest
 (@uref{https://github.com/ClimateGlobalChange/tempestremap.git}).
 See those references for documentation on map formats, grid
 specification, and weight generation. 
@@ -18634,6 +18634,9 @@ or Unstructured Data (@acronym{CRUD}) grid.
 TempestRemap's
 @command{GenerateOverlapMesh}/@command{GenerateOfflineMap}) to
 generate weights and mapfiles.
+In order to use the weight-generation options, ensure that one or both
+of the weight-generation packages is installed and on your
+@code{$PATH}. 
 @acronym{ERWG} is distributed in binary format with @acronym{NCL}, which
 many (most?) @acronym{NCO} users already have on their system(s). 
 @acronym{ERWG} may also be installed from source:
@@ -19079,7 +19082,7 @@ Support for extensive variables during regridding is nascent.
 Currently variables marked as extensive are summed, not regridded.
 @end table
 
-@unnumberedsubsec Limitatations to @command{ncremap}
+@unnumberedsubsec Limitations to @command{ncremap}
 
 There are three significant limitations to @command{ncremap} that we
 hope to remove in the coming year.

@@ -222,7 +222,8 @@ extern "C" {
   nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation */
   (double * const crn_lat, /* [dgr] Latitude corners of gridcell */
    double * const crn_lon, /* [dgr] Latitude corners of gridcell */
-   const int crn_nbr); /* [nbr] Number of corners per gridcell */
+   const int crn_nbr, /* [nbr] Number of corners per gridcell */
+   const int rcr_lvl); /* [nbr] Recursion level */
 
 #ifdef __cplusplus
 } /* end extern "C" */

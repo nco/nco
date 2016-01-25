@@ -3499,33 +3499,34 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      NCAR:
      /glade/p/cesm/cseg/mapping/grids
 
-     Generate global RLL grids:
+     Global RLL grids:
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150901.nc --rgr latlon=90,180 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
-     Generate maps for global RLL grids:
+     Maps for global RLL grids:
      ESMF_RegridWeightGen -s ${DATA}/grids/180x360_SCRIP.20150901.nc -d ${DATA}/grids/90x180_SCRIP.20150901.nc -w ${DATA}/maps/map_180x360_to_90x180.20150901.nc --method conserve
      ESMF_RegridWeightGen -s ${DATA}/grids/90x180_SCRIP.20150901.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/maps/map_90x180_to_180x360.20150901.nc --method conserve
 
-     Generate ACME grids:
+     ACME grids:
      ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150910.nc --rgr latlon=129,256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
      ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150910.nc --rgr latlon=257,512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
      ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150910.nc --rgr latlon=801,1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
 
-     Generate ACME maps:
+     ACME maps:
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/129x256_SCRIP.20150910.nc -w ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150910.nc --method conserve
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/257x512_SCRIP.20150910.nc -w ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150910.nc --method bilinear
      ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/257x512_SCRIP.20150910.nc -w ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150910.nc --method conserve
      ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/801x1600_SCRIP.20150910.nc -w ${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150910.nc --method bilinear
 
-     Generate regional RLL grids:
+     Regional RLL grids:
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-120.0,-90.0 ~/nco/data/in.nc ~/foo.nc
 
-     Generate global RLL skeleton:
+     Global RLL skeleton:
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
-     Generate curvilinear grids:
-     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20' --rgr lon_crv=1.0 --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc */
+     Curvilinear grids:
+     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Degenerate case.' --rgr crv=Y --rgr lon_crv=0.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Curvilinearity = 1.0 lon' --rgr lon_crv=1.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 
@@ -5183,7 +5184,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  crn_lon[1]=lon_ctr_fk[idx_fk_crn_ll_ctr_lr];
 	  crn_lon[2]=lon_ctr_fk[idx_fk_crn_ll_ctr_ur];
 	  crn_lon[3]=lon_ctr_fk[idx_fk_crn_ll_ctr_ul];
-	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr);
+	  //	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,1);
 
 	  //	  if(flg_ccw) nco_crn2ctr(crn_lat,crn_lon,crn_nbr,lat_crn+idx_crn_ll,lon_crn+idx_crn_ll);
 
@@ -5208,8 +5209,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  crn_lon[1]=lon_crn[idx_crn_lr];
 	  crn_lon[2]=lon_crn[idx_crn_ur];
 	  crn_lon[3]=lon_crn[idx_crn_ul];
-	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr);
-	  if(False && !flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: %s reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
+	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,1);
+	  if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: %s reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
+	  lat_crn[idx_crn_ll]=crn_lat[0];
+	  lat_crn[idx_crn_lr]=crn_lat[1];
+	  lat_crn[idx_crn_ur]=crn_lat[2];
+	  lat_crn[idx_crn_ul]=crn_lat[3];
+	  lon_crn[idx_crn_ll]=crn_lon[0];
+	  lon_crn[idx_crn_lr]=crn_lon[1];
+	  lon_crn[idx_crn_ur]=crn_lon[2];
+	  lon_crn[idx_crn_ul]=crn_lon[3];
 
 	} /* !lon */
       } /* !lat */
@@ -5954,14 +5963,15 @@ nco_bool /* O [flg] Input corners were CCW */
 nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation */
 (double * const crn_lat, /* [dgr] Latitude corners of gridcell */
  double * const crn_lon, /* [dgr] Latitude corners of gridcell */
- const int crn_nbr) /* [nbr] Number of corners per gridcell */
+ const int crn_nbr, /* [nbr] Number of corners per gridcell */
+ const int rcr_lvl) /* [nbr] Recursion level */
 {
   /* Purpose: Determine whether corner vertices are oriented CCW
      If not, alter order so they are returned in CCW order?
      Algorithm:
-     Start crn_idx=0, i.e., at LL corner for quadrilateral
-     Vector A runs from crn_idx=0 to crn_idx=1, i.e., from LL->LR in quadrilateral
-     Vector B runs from crn_idx=1 to crn_idx=2, i.e., from LR->UR in quadrilateral
+     Start crn_idx=0, i.e., quadrilateral LL corner
+     Vector A runs from crn_idx=0 to crn_idx=1, i.e., quadrilateral LL->LR
+     Vector B runs from crn_idx=1 to crn_idx=2, i.e., quadrilateral LR->UR
      Compute cross-product A x B = C
      C is normal to plane containining A and B
      Dot-product of C with radial vector to head A = tail B is positive if A and B are CCW
@@ -5987,10 +5997,10 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
   int A_tail_idx,A_head_idx;
   int B_tail_idx,B_head_idx;
   nco_bool flg_ccw; /* [flg] Input is CCW */
-  
+
   for(crn_idx=0;crn_idx<crn_nbr;crn_idx++){
-    lat_rdn=crn_lat[crn_idx]*M_PI/180.;
-    lon_rdn=crn_lon[crn_idx]*M_PI/180.;
+    lat_rdn=crn_lat[crn_idx]*M_PI/180.0;
+    lon_rdn=crn_lon[crn_idx]*M_PI/180.0;
     sin_lat[crn_idx]=sin(lat_rdn);
     cos_lat[crn_idx]=cos(lat_rdn);
     sin_lon[crn_idx]=sin(lon_rdn);
@@ -6016,16 +6026,29 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
     B_x=B_head_x-B_tail_x;
     B_y=B_head_y-B_tail_y;
     B_z=B_head_z-B_tail_z;
-    /* Compute Cross-Product C = A x B */
+    /* Cross-Product C = A x B */
     C_x=A_y*B_z-B_y*A_z;
     C_y=-A_x*B_z+B_x*A_z;
     C_z=A_x*B_y-B_x*A_y;
-    /* Compute Dot-Product R dot C */
+    /* Dot-Product R dot C */
     dot_prd=C_x*R_x+C_y*R_y+C_z*R_z;
   } /* !crn_idx */
 
   if(dot_prd > 0.0) flg_ccw=True; else flg_ccw=False;
-  if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: %s reports non-CCW gridcell LL (lat,lon) = (%g, %g), dot_prd = %g\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
-  
+
+  /* 20160124: Simplistic fix: reverse gridpoint order */
+  if(!flg_ccw && crn_nbr == 4 && rcr_lvl == 1){
+    double crn_tmp;
+    if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports non-CCW gridcell LL (lat,lon) = (%g, %g), dot_prd = %g\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
+    crn_tmp=crn_lat[1];
+    crn_lat[1]=crn_lat[3];
+    crn_lat[3]=crn_tmp;
+    crn_tmp=crn_lon[1];
+    crn_lon[1]=crn_lon[3];
+    crn_lon[3]=crn_tmp;
+    flg_ccw=nco_ccw_chk(crn_lat,crn_lon,crn_nbr,rcr_lvl+1);
+    if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports non-CCW gridcell after inversion\n",nco_prg_nm_get(),fnc_nm);
+  } /* flg_ccw */
+    
   return flg_ccw;
 } /* !nco_ccw_chk() */
