@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 # Henry Butowsky 20080104
-# Usage: nco_antlr_pst_prc.pl < in_fl > out_fl   
+# Usage: nco_antlr_pst_prc.pl < in_fl > out_fl
+# cd ~/nco/src/nco++;antlr ncoGrammer.g;./nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
 
 # Removes #ifdef code where __cplusplus is checked.
 # The struct in ncoParserTokenTypes.hpp is deleted

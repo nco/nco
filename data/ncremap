@@ -268,7 +268,7 @@ while getopts :a:D:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:v:w:x: OPT; do
 	M) mlt_map_flg='No' ;; # Multi-map flag
 	m) map_fl=${OPTARG} ;; # Map-file
 	n) nco_usr=${OPTARG} ;; # NCO options
-	O) drc_out=${OPTARG} ;; # Output directory
+	O) drc_usr=${OPTARG} ;; # Output directory
 	o) out_fl=${OPTARG} ;; # Output file
 	P) pdq_typ=${OPTARG} ;; # Permutation type
 	p) par_typ=${OPTARG} ;; # Parallelism type
@@ -287,6 +287,9 @@ done
 shift $((OPTIND-1)) # Advance one argument
 
 # Derived variables
+if [ -n "${drc_usr}" ]; then
+    drc_out="${drc_usr}"
+fi # !drc_usr
 grd_dst_dfl="${drc_out}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
 grd_src_dfl="${drc_out}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
 pdq_fl="${drc_out}/ncremap_tmp_pdq.nc" # [sng] Permuted data default
@@ -705,8 +708,11 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    echo "HINT: For multiple input files use -O option to specify output directory and do not use -o option. Output files will have same name as input files, but will be in different directory."
 	    exit 1
 	fi # !fl_nbr
+	if [ -n "${drc_usr}" ]; then
+	    out_fl="${drc_out}/${out_fl}"
+	fi # !drc_usr
     else # !out_usr_flg
-	out_fl="${drc_out}/$(basename ${in_fl})" # [sng] Output-file default
+	out_fl="${drc_out}/$(basename ${in_fl})"
     fi # !out_fl
     if [ "${in_fl}" = "${out_fl}" ]; then
 	echo "ERROR: Input file = Output file = ${in_fl}"
