@@ -3330,11 +3330,202 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("join",this,(int)PJOIN));
+      fmc_vtr.push_back( fmc_cls("push",this,(int)PPUSH));
     }
   }
 
 
   var_sct *vlist_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("vlist_cls::fnd");
+  bool bret;
+  int idx;
+  int fdx;
+  int nbr_args;
+  int nbr_dim;         
+  char *cstr;
+  std::string susg;
+  std::string sfnm=fmc_obj.fnm();
+  std::string att_nm;
+
+  var_sct *var=NULL_CEWI;
+  var_sct *var_att=NULL_CEWI;
+  var_sct *var_add=NULL_CEWI;
+
+
+  RefAST aRef;
+  RefAST tr;
+  std::vector<RefAST> vtr_args; 
+  prs_cls *prs_arg=walker.prs_arg;
+
+  NcapVar *Nvar=NULL;
+          
+  fdx=fmc_obj.fdx();
+
+
+  // Put args into vector 
+  if(expr)
+    vtr_args.push_back(expr);
+
+  if(tr=fargs->getFirstChild())
+  {
+    do  
+      vtr_args.push_back(tr);
+    while(tr=tr->getNextSibling());    
+  } 
+            
+  nbr_args=vtr_args.size();  
+
+  susg="usage: att_out="+sfnm+"(att_id, att_nm|var_nm|string)";
+
+  if(nbr_args!=2)
+    err_prn(sfnm, " Function has been called with wrong number of arguments arguments\n"+susg); 
+
+  
+
+
+
+  // deal with call by ref 
+  if(vtr_args[0]->getType() == CALL_REF )     
+  {   
+    bret=false; 
+  }
+  else
+  {
+    var_att=walker.out(vtr_args[0]);      
+    bret=true;
+  }
+
+  var_add=walker.out(vtr_args[1]);
+
+  // inital scan just return udf
+  if(prs_arg->ntl_scn)
+  {
+    if(var_att)
+       nco_var_free(var_att);
+     
+    nco_var_free(var_add);        
+
+    if( bret) 
+      var=ncap_var_udf("~zz@join_methods");  
+    else
+      var=ncap_sclr_var_mk(std::string(var_add->nm),(nc_type)NC_INT,false);  
+
+    return var;
+  }
+
+  // deal with call by ref final scan
+  if( !bret)
+  {     
+     att_nm=vtr_args[0]->getFirstChild()->getText();  
+     
+
+     Nvar=prs_arg->var_vtr.find(att_nm);
+
+
+     if(Nvar !=NULL)
+         var_att=nco_var_dpl(Nvar->var);
+     else    
+        var_att=ncap_att_init(att_nm,prs_arg);
+  
+     // if new var then write var - end of story   
+     if(!var_att) 
+     {   
+       nco_free(var_add->nm);
+       var_add->nm=strdup(att_nm.c_str());      
+       Nvar=new NcapVar(var_add,att_nm);
+
+       var=ncap_sclr_var_mk(att_nm,(nco_int)var_add->sz);
+       prs_arg->var_vtr.push_ow(Nvar);       
+
+       return var;
+
+     } 
+
+  } 
+
+  if(!var_att )
+     err_prn(sfnm, " first argument has evaluated to null\n"+susg); 
+  
+  
+  if(var_att->type==NC_CHAR && var_add->type !=NC_CHAR ) 
+     err_prn(sfnm, "Cannot push to a NC_CHAR attribute a non NC_CHAR type"+susg);           
+  
+
+  if(var_att->type == NC_STRING && !(var_add->type == NC_CHAR || var_add->type==NC_STRING) )
+     err_prn(sfnm, "Cannot push to a NC_STRING attribute a non-text type "+susg);           
+
+
+
+  // deal with this corner case first
+  if(var_att->type==NC_STRING && var_add->type==NC_CHAR)
+  { 
+     
+    char buffer[NC_MAX_ATTRS];
+    size_t sz_new;
+    size_t slb_sz=nco_typ_lng(var_att->type);   
+      
+    strncpy(buffer,(char*)var_add->val.vp, var_add->sz);            
+    buffer[var_add->sz]='\0';
+    sz_new=var_att->sz+1;
+ 
+    var_att->val.vp=nco_realloc(var_att->val.vp, sz_new*slb_sz);           
+    cast_void_nctype(NC_STRING,&var_att->val);         
+       
+    var_att->val.sngp[var_att->sz]=strdup(buffer);      
+    cast_nctype_void(NC_STRING,&var_att->val);           
+    var_att->sz++;
+          
+   }
+   else 
+   {
+     char *cp_in;
+     char *cp_out;
+     size_t slb_sz=nco_typ_lng(var_att->type);   
+     long sz_new=var_att->sz+var_add->sz;
+
+     nco_var_cnf_typ(var_att->type,var_add);         
+     var_att->val.vp=nco_realloc(var_att->val.vp, sz_new*slb_sz);           
+     
+     cp_in=(char*)var_add->val.vp;
+     cp_out=(char*)var_att->val.vp + (size_t)(var_att->sz*slb_sz);    
+   
+     memcpy(cp_out,cp_in, slb_sz*var_add->sz); 
+     var_att->sz=sz_new;  
+
+      // a bit cheeky here - set to null so we DONT have to deep-copy ragged array of strings    
+     if(var_add->type==NC_STRING) 
+     {
+       nco_free(var_add->val.vp);  
+       var_add->val.vp=(void*)NULL_CEWI;   
+     }
+        
+
+   }
+  
+
+  nco_var_free(var_add);
+
+  // deal with call by ref 
+  // not sure if we need a return value -?  for now return the att size 
+  if(bret) 
+  {
+     return var_att; 
+  }
+  else
+  {
+    Nvar=new NcapVar(var_att); 
+     var=ncap_sclr_var_mk(SCS("~zz@join_methods"), (nco_int)var_att->sz);
+     prs_arg->var_vtr.push_ow(Nvar);       
+     return var;  
+  }
+
+
+
+  }
+
+
+
+  var_sct *vlist_cls::fnd_join(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("vlist_cls::fnd");
   int idx;
   int fdx;

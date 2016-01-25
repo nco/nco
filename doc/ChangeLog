@@ -3,6 +3,12 @@
 	* Implement "cheesy" patch that inverts CW quadrilaterals to make them CCW so Tempest can read them
 	Patch succeeds in making all grids CCW (according to NCO) though Tempest occasionally disagrees
 
+2016-01-24  Henry Butowsky  <henryb@hush.com>
+
+	* ncap2 first cut to grammar file of code for hyperslabbing attributes on LHS and RHS
+
+	* First version of push() method for attributes
+
 2016-01-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.5-alpha04 release procedure:

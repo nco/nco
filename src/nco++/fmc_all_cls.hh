@@ -243,11 +243,12 @@ public:
 // var list class /*********************************************************/
 class vlist_cls: public vtl_cls {
 private:
-   enum {PJOIN };
+  enum {PJOIN,PPUSH };
    bool _flg_dbg;
 public:
   vlist_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+  var_sct *fnd_join(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
 
 

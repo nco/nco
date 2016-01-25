@@ -150,6 +150,7 @@ ncap_var_var_atan2
 void ncap_lmt_evl( 
 int nc_id,
 lmt_sct* lmt_ptr,
+long hint_sz,
 prs_cls *prs_arg);
 
 var_sct*
