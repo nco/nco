@@ -223,6 +223,7 @@ extern "C" {
   (double * const crn_lat, /* [dgr] Latitude corners of gridcell */
    double * const crn_lon, /* [dgr] Latitude corners of gridcell */
    const int crn_nbr, /* [nbr] Number of corners per gridcell */
+   int idx_ccw, /* [idx] Index of starting vertice for CCW check (Point A = tail side AB) */
    const int rcr_lvl); /* [nbr] Recursion level */
 
 #ifdef __cplusplus

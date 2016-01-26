@@ -5118,6 +5118,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	(void)fprintf(stderr,"%s: INFO %s idx_dbg = %li, Fake Center [lat,lon]=[%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_dbg,lat_ctr_fk[idx_dbg],lon_ctr_fk[idx_dbg]);
       } /* !dbg */
       
+      const int idx_ccw=0; /* [idx] Index of starting vertice for CCW check (Point A = tail side AB) */
+      const int rcr_lvl=1; /* [nbr] Recursion level */
       long int lat_idx_fk; /* [idx] Index into fake (extrapolated) latitude  array */
       long int lon_idx_fk; /* [idx] Index into fake (extrapolated) longitude array */
       long int idx_fk_crn_ll_ctr_ll;
@@ -5184,7 +5186,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  crn_lon[1]=lon_ctr_fk[idx_fk_crn_ll_ctr_lr];
 	  crn_lon[2]=lon_ctr_fk[idx_fk_crn_ll_ctr_ur];
 	  crn_lon[3]=lon_ctr_fk[idx_fk_crn_ll_ctr_ul];
-	  //	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,1);
+	  //	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,idx_ccw,rcr_lvl);
 
 	  //	  if(flg_ccw) nco_crn2ctr(crn_lat,crn_lon,crn_nbr,lat_crn+idx_crn_ll,lon_crn+idx_crn_ll);
 
@@ -5209,7 +5211,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  crn_lon[1]=lon_crn[idx_crn_lr];
 	  crn_lon[2]=lon_crn[idx_crn_ur];
 	  crn_lon[3]=lon_crn[idx_crn_ul];
-	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,1);
+	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,idx_ccw,rcr_lvl);
 	  if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: %s reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
 	  lat_crn[idx_crn_ll]=crn_lat[0];
 	  lat_crn[idx_crn_lr]=crn_lat[1];
@@ -5964,6 +5966,7 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
 (double * const crn_lat, /* [dgr] Latitude corners of gridcell */
  double * const crn_lon, /* [dgr] Latitude corners of gridcell */
  const int crn_nbr, /* [nbr] Number of corners per gridcell */
+ int idx_ccw, /* [idx] Index of starting vertice for CCW check (Point A = tail side AB) */
  const int rcr_lvl) /* [nbr] Recursion level */
 {
   /* Purpose: Determine whether corner vertices are oriented CCW
@@ -5978,11 +5981,21 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
      Compute cross-product A x B = C
      C is normal to plane containining A and B
      Dot-product of C with radial vector to head A = tail B is positive if A and B are CCW
-     If ABC is not CCW, then:
-       A. Assume entire quadrilateral is CW
-       B. Take mirror image of quadrilateral by switching B with D
-       C. Re-test for CCW. 
-       D. 
+     if(ABC is CCW){
+       if(CDA is CCW) Done 
+       else 
+       Copy D:=A (make CDA degenerate, triangularize quadrilateral)
+     }else(ABC is not CCW){
+       Assume entire quadrilateral is CW
+       Take mirror image of quadrilateral by switching B with D
+       If(new ABC is CCW){
+          If(CDA is CCW) Done 
+	  else 
+	  Copy D:=A (make CDA degenerate, triangularize quadrilateral)
+       }else{
+       Fail
+     }
+	  
      Next edge: Copy previous B to next A, compute next B from crn_idx=2 to crn_idx=3 
      Rinse, Lather, Repeat */ 
   const char fnc_nm[]="nco_ccw_chk()";
@@ -6015,40 +6028,52 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
     cos_lon[crn_idx]=cos(lon_rdn);
   } /* !crn_idx */
 
-  for(crn_idx=0;crn_idx<crn_nbr;crn_idx++){
-    A_tail_idx=crn_idx;
-    A_head_idx=B_tail_idx=(A_tail_idx+1)%crn_nbr;
-    B_head_idx=(B_tail_idx+1)%crn_nbr;
-    A_tail_x=cos_lat[A_tail_idx]*cos_lon[A_tail_idx];
-    A_tail_y=cos_lat[A_tail_idx]*sin_lon[A_tail_idx];
-    A_tail_z=sin_lat[A_tail_idx];
-    A_head_x=B_tail_x=R_x=cos_lat[A_head_idx]*cos_lon[A_head_idx];
-    A_head_y=B_tail_y=R_y=cos_lat[A_head_idx]*sin_lon[A_head_idx];
-    A_head_z=B_tail_z=R_z=sin_lat[A_head_idx];
-    B_head_x=cos_lat[B_head_idx]*cos_lon[B_head_idx];
-    B_head_y=cos_lat[B_head_idx]*sin_lon[B_head_idx];
-    B_head_z=sin_lat[B_head_idx];
-    A_x=A_head_x-A_tail_x;
-    A_y=A_head_y-A_tail_y;
-    A_z=A_head_z-A_tail_z;
-    B_x=B_head_x-B_tail_x;
-    B_y=B_head_y-B_tail_y;
-    B_z=B_head_z-B_tail_z;
-    /* Cross-Product C = A x B */
-    C_x=A_y*B_z-B_y*A_z;
-    C_y=-A_x*B_z+B_x*A_z;
-    C_z=A_x*B_y-B_x*A_y;
-    /* Dot-Product R dot C */
-    dot_prd=C_x*R_x+C_y*R_y+C_z*R_z;
-  } /* !crn_idx */
+  /* Calls from host code (i.e., nco_grd_nfr()) start at lower-left of quadrilateral ABCD = Point A = vertex 0
+     Calls from self can start from quadrilateral Point A or C 
+     To check triangle CDA, start at upper-right of quadrilateral ABCD = Point C = vertex 2 */
+  A_tail_idx=idx_ccw;
+  A_head_idx=B_tail_idx=(A_tail_idx+1)%crn_nbr;
+  B_head_idx=(B_tail_idx+1)%crn_nbr;
+  A_tail_x=cos_lat[A_tail_idx]*cos_lon[A_tail_idx];
+  A_tail_y=cos_lat[A_tail_idx]*sin_lon[A_tail_idx];
+  A_tail_z=sin_lat[A_tail_idx];
+  A_head_x=B_tail_x=R_x=cos_lat[A_head_idx]*cos_lon[A_head_idx];
+  A_head_y=B_tail_y=R_y=cos_lat[A_head_idx]*sin_lon[A_head_idx];
+  A_head_z=B_tail_z=R_z=sin_lat[A_head_idx];
+  B_head_x=cos_lat[B_head_idx]*cos_lon[B_head_idx];
+  B_head_y=cos_lat[B_head_idx]*sin_lon[B_head_idx];
+  B_head_z=sin_lat[B_head_idx];
+  A_x=A_head_x-A_tail_x;
+  A_y=A_head_y-A_tail_y;
+  A_z=A_head_z-A_tail_z;
+  B_x=B_head_x-B_tail_x;
+  B_y=B_head_y-B_tail_y;
+  B_z=B_head_z-B_tail_z;
+  /* Cross-Product C = A x B */
+  C_x=A_y*B_z-B_y*A_z;
+  C_y=-A_x*B_z+B_x*A_z;
+  C_z=A_x*B_y-B_x*A_y;
+  /* Dot-Product R dot C */
+  dot_prd=C_x*R_x+C_y*R_y+C_z*R_z;
 
   if(dot_prd > 0.0) flg_ccw=True; else flg_ccw=False;
 
-  if(!flg_ccw && crn_nbr == 4 && rcr_lvl == 1){
-    /* 20160124: Simplistic fix: reverse gridpoint order
+  if(flg_ccw && crn_nbr == 4 && rcr_lvl == 1){
+    /* Original ABC is CCW, now check CDA */
+    idx_ccw=2;
+    flg_ccw=nco_ccw_chk(crn_lat,crn_lon,crn_nbr,idx_ccw,rcr_lvl+1);
+    if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports triangle ABC is and CDA is not CCW in quadrilateral gridcell with LL (lat,lon) = (%g, %g), dot_prd = %g. Setting D:=A to triangularize quadrilateral.\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
+    /* Triangularize quadrilateral D:=A */
+    crn_lat[3]=crn_lat[0];
+    crn_lon[3]=crn_lon[0];
+    flg_ccw=True;
+    return flg_ccw;
+  }else if(!flg_ccw && crn_nbr == 4 && rcr_lvl == 1){
+    /* Original ABC is not CCW
+       20160124: Simplistic fix: reverse gridpoint order
        This only works for quadrilaterals without degenerate points */
     double crn_tmp;
-    if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports non-CCW gridcell LL (lat,lon) = (%g, %g), dot_prd = %g\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
+    if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports triangle ABC is non-CCW in quadrilateral gridcell with LL (lat,lon) = (%g, %g), dot_prd = %g. Mirror-imaging...\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
     crn_tmp=crn_lat[1];
     crn_lat[1]=crn_lat[3];
     crn_lat[3]=crn_tmp;
@@ -6056,9 +6081,27 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
     crn_lon[1]=crn_lon[3];
     crn_lon[3]=crn_tmp;
     /* Check new triangle ABC */
-    flg_ccw=nco_ccw_chk(crn_lat,crn_lon,crn_nbr,rcr_lvl+1);
-    if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports gridcell remains non-CCW after first inversion\n",nco_prg_nm_get(),fnc_nm);
-    /* fxm: Check triangle CDA */
+    idx_ccw=0;
+    flg_ccw=nco_ccw_chk(crn_lat,crn_lon,crn_nbr,idx_ccw,rcr_lvl+1);
+    if(flg_ccw){
+      /* Inverted ABC is CCW, now check CDA */
+      idx_ccw=2;
+      flg_ccw=nco_ccw_chk(crn_lat,crn_lon,crn_nbr,idx_ccw,rcr_lvl+1);
+      if(flg_ccw){
+	return flg_ccw;
+      }else{
+	if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports triangle ABC is CCW after inversion, but triangle CDA is not at quadrilateral gridcell with LL (lat,lon) = (%g, %g), dot_prd = %g. Setting D:=A to triangularize quadrilateral.\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
+	/* Triangularize quadrilateral D:=A */
+	crn_lat[3]=crn_lat[0];
+	crn_lon[3]=crn_lon[0];
+	flg_ccw=True;
+	return flg_ccw;
+      } /* flg_ccw */
+    }else{
+      /* Original and Inverted ABC are not CCW */
+      if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports triangle ABC remains non-CCW after first inversion\n",nco_prg_nm_get(),fnc_nm);
+      return flg_ccw;
+    } /* !flg_ccw */
   } /* flg_ccw */
     
   return flg_ccw;
