@@ -1,5 +1,7 @@
 2016-01-25  Charlie Zender  <zender@uci.edu>
 
+	* Cover most parameter space for tricky quadrilateral inputs by	calling nco_ccw_chk() recursively
+
 	* Mark --enable-esmf as developmental switch to be avoided
 
 	* ncremap correctly handle simultaneous -O drc_out -o fl_out switches

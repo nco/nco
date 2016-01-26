@@ -5212,7 +5212,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  crn_lon[2]=lon_crn[idx_crn_ur];
 	  crn_lon[3]=lon_crn[idx_crn_ul];
 	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,idx_ccw,rcr_lvl);
-	  if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: %s reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
+	  if(!flg_ccw) (void)fprintf(stdout,"%s: %s WARNING reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
 	  lat_crn[idx_crn_ll]=crn_lat[0];
 	  lat_crn[idx_crn_lr]=crn_lat[1];
 	  lat_crn[idx_crn_ur]=crn_lat[2];
@@ -5982,22 +5982,25 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
      C is normal to plane containining A and B
      Dot-product of C with radial vector to head A = tail B is positive if A and B are CCW
      if(ABC is CCW){
-       if(CDA is CCW) Done 
+       if(CDA is CCW) 
+         Done 
        else 
-       Copy D:=A (make CDA degenerate, triangularize quadrilateral)
+         Copy D:=A (make CDA degenerate, triangularize quadrilateral)
+       endif
      }else(ABC is not CCW){
        Assume entire quadrilateral is CW
        Take mirror image of quadrilateral by switching B with D
        If(new ABC is CCW){
-          If(CDA is CCW) Done 
-	  else 
-	  Copy D:=A (make CDA degenerate, triangularize quadrilateral)
+         If(CDA is CCW) 
+           Done 
+	 else 
+	   Copy D:=A (make CDA degenerate, triangularize quadrilateral)
+         endif
        }else{
-       Fail
+         Fail (return False, meaning point should be masked)
      }
-	  
-     Next edge: Copy previous B to next A, compute next B from crn_idx=2 to crn_idx=3 
-     Rinse, Lather, Repeat */ 
+     All cases return True (i.e., CCW) from rcr_lvl=1 except last
+     Last case returns False, and calling code should mask such an aberrant point */ 
   const char fnc_nm[]="nco_ccw_chk()";
   double A_tail_x,A_tail_y,A_tail_z;
   double A_head_x,A_head_y,A_head_z;
@@ -6066,8 +6069,7 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
     /* Triangularize quadrilateral D:=A */
     crn_lat[3]=crn_lat[0];
     crn_lon[3]=crn_lon[0];
-    flg_ccw=True;
-    return flg_ccw;
+    return True;
   }else if(!flg_ccw && crn_nbr == 4 && rcr_lvl == 1){
     /* Original ABC is not CCW
        20160124: Simplistic fix: reverse gridpoint order
@@ -6088,19 +6090,18 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
       idx_ccw=2;
       flg_ccw=nco_ccw_chk(crn_lat,crn_lon,crn_nbr,idx_ccw,rcr_lvl+1);
       if(flg_ccw){
-	return flg_ccw;
+	return True;
       }else{
 	if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports triangle ABC is CCW after inversion, but triangle CDA is not at quadrilateral gridcell with LL (lat,lon) = (%g, %g), dot_prd = %g. Setting D:=A to triangularize quadrilateral.\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
 	/* Triangularize quadrilateral D:=A */
 	crn_lat[3]=crn_lat[0];
 	crn_lon[3]=crn_lon[0];
-	flg_ccw=True;
-	return flg_ccw;
+	return True;
       } /* flg_ccw */
     }else{
       /* Original and Inverted ABC are not CCW */
       if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports triangle ABC remains non-CCW after first inversion\n",nco_prg_nm_get(),fnc_nm);
-      return flg_ccw;
+      return False;
     } /* !flg_ccw */
   } /* flg_ccw */
     
