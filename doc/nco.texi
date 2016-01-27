@@ -113,11 +113,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.5-alpha04
-@set doc-edition 4.5.5-alpha04
+@set nco-edition 4.5.5-alpha05
+@set doc-edition 4.5.5-alpha05
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 19 January 2016
+@set update-date 27 January 2016
 @set update-month January 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide

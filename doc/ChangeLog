@@ -1,3 +1,9 @@
+2016-01-27  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.5-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Versqion 4.5.5-alpha05 final changes';git push
+	git tag -a 4.5.5-alpha05 -m 'Version 4.5.5-alpha05 new features: CCW detection/correction';git push --tags
+
 2016-01-25  Charlie Zender  <zender@uci.edu>
 
 	* Cover most parameter space for tricky quadrilateral inputs by	calling nco_ccw_chk() recursively

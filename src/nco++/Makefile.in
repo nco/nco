@@ -362,6 +362,9 @@ ANTLR = runantlr
 #Invoke.o : ncoGrammer.g
 #	${ANTLR} ncoGrammer.g
 
+# 20160125: fxm postprocess tokens when symbol table changes
+# cd ~/nco/src/nco++;antlr ncoGrammer.g;./nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
+
 # fxm: Split off all sources except front-end into nco++ library
 ncap2_SOURCES = Invoke.cc \
 ncap2.cc \
