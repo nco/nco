@@ -1122,24 +1122,24 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
      
      One mode must be set for each edited attribute: append (a), create (c), delete (d), modify (m), or overwrite (o).
      -a: Attribute append mode
-     Append value att_val to current var_nm attribute att_nm value att_val, if any. 
-     If var_nm does not have an attribute att_nm, there is no effect.
+     Append value att_val to current var_nm attribute att_nm value att_val, if any
+     If var_nm does not have an attribute att_nm, there is no effect
      
      -c: Attribute create mode
-     Create variable var_nm attribute att_nm with att_val if att_nm does not yet exist. 
-     If var_nm already has an attribute att_nm, there is no effect.
+     Create variable var_nm attribute att_nm with att_val if att_nm does not yet exist
+     If var_nm already has an attribute att_nm, there is no effect
      
      -d: Attribute delete mode
-     Delete current var_nm attribute att_nm.
-     If var_nm does not have an attribute att_nm, there is no effect.
+     Delete current var_nm attribute att_nm
+     If var_nm does not have an attribute att_nm, there is no effect
      
      -m: Attribute modify mode
-     Change value of current var_nm attribute att_nm to value att_val.
-     If var_nm does not have an attribute att_nm, there is no effect.
+     Change value of current var_nm attribute att_nm to value att_val
+     If var_nm does not have an attribute att_nm, there is no effect
      
      -o: Attribute overwrite mode
-     Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
-     This is default mode. */
+     Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any
+     This is default mode */
   
   aed_sct *aed_lst;
   
