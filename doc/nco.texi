@@ -14977,7 +14977,7 @@ type @code{NC_FLOAT}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_DOUBLE}.
 @item i, l
-@dfn{Integer} or @dfn{Long}.
+@dfn{Integer} or (its now deprecated synonym) @dfn{Long}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_INT}.
 @item s
