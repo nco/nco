@@ -5514,7 +5514,7 @@ used in @w{Step 1} above.
 
 The new @acronym{SSC} option aggregates more than one input record at a time
 before performing arithmetic operations, and, with an additional
-switch, allows us to archive those results in multiple record output
+switch, allows us to archive those results in multiple-record output
 (MRO) files.  
 This reduces the task of producing the climatological summertime
 mean to one step:

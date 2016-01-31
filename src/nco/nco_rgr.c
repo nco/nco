@@ -3031,6 +3031,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
      Robert D. Miller, Computing the area of a spherical polygon, Graphic Gems IV, chapter II.4, pages 132-137.
      http://books.google.com/books?id=CCqzMm_-WucC&pg=PA132&lpg=PA132&dq=miller+area+spherical+polygon+gems&source=bl&ots=mrnvZ6NJcm&sig=CMg8eaD8dzP5snMaPeCQzgoFWUk&hl=sv&ei=4G-YTKv5GsWZOI-mmZQP&sa=X&oi=book_result&ct=result&resnum=1&ved=0CBQQ6AEwAA#v=onepage&q&f=false  
      Mil94 contains similar ideas to my method for spherical polygons (decomposing into adjacent multiple triangles from single vertex)
+     However, his method places the single vertex at the pole, then adds signed areas to obtain the full polygon area
+     Unclear whether his method suffers from degraded precision because of roundoff error and long side-lengths
      
      So-called "proper" spherical triangle are those for which all angles are less than pi, so a+b+c<3*pi
      Cartesian coordinates of (lat,lon)=(theta,phi) are (x,y,z)=(cos(theta)*cos(phi),cos(theta)*sin(phi),sin(theta)) 
