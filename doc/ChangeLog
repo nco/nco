@@ -1,3 +1,7 @@
+2016-01-30  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: Change default algorithm back to ESMF bilinear, which works for all Feng's cases
+
 2016-01-28  Charlie Zender  <zender@uci.edu>
 
 	* Improve ncatted quick help screen
@@ -5,7 +9,7 @@
 2016-01-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.5-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Versqion 4.5.5-alpha05 final changes';git push
+	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha05 final changes';git push
 	git tag -a 4.5.5-alpha05 -m 'Version 4.5.5-alpha05 new features: CCW detection/correction';git push --tags
 
 2016-01-25  Charlie Zender  <zender@uci.edu>

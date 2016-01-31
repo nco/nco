@@ -18670,7 +18670,7 @@ are more frequently change by users than other @acronym{ERWG} options
 (that can be changed with @samp{-E @var{esmf_opt}}).
 The @var{alg_typ} argument must be one of @acronym{ERWG}'s five
 interpolation algorithms: 
-@code{bilinear} (default, acceptable abbreviations are @code{bln}), 
+@code{bilinear} (default, acceptable abbreviation is @code{bln}), 
 @code{conserve} (or @code{conservative} or @code{cns}), 
 @code{nearestdtos} (or @code{nds} or @code{dtos}), 
 @code{neareststod} (or @code{nds} or @code{stod}), 

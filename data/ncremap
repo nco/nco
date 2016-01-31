@@ -114,8 +114,8 @@ esac # !HOSTNAME
 # ncremap -P mpas -i ${DATA}/mpas/raw/hist.ocn.0003-12-01_00.00.00.nc -m ${DATA}/maps/map_mpas120_TO_T62_aave.121116.nc -O ~/rgr
 # ncremap -P mpas -i ${DATA}/mpas/raw/hist.ocn.0003-12-01_00.00.00.nc -s ${DATA}/grids/fxm -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ACME benchmarks:
-# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m map_ne30np4_to_fv129x256_aave.150418.nc   -O ~/rgr
-# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
+# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc   -O ~/rgr
+# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 # ncremap -v FSNT,AODVIS -w esmf    -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v FSNT,AODVIS -w tempest -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
 
@@ -139,7 +139,7 @@ fnt_rvr=`tput smso` # Reverse
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
-alg_typ='conserve' # [nbr] Algorithm for ESMF interpolation (bilinear|patch|neareststod|nearestdtos|conserve)
+alg_typ='bilinear' # [nbr] Algorithm for ESMF interpolation (bilinear|patch|neareststod|nearestdtos|conserve)
 dbg_lvl=0 # [nbr] Debugging level
 #drc_in="${drc_pwd}" # [sng] Input file directory
 drc_in='' # [sng] Input file directory

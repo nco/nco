@@ -33,14 +33,18 @@ A. ncremap: Many improvements.
 
 BUG FIXES:
 
+A. ncremap: Inferred curvilinear grids always return points now in
+   counterclockwise order. Version 4.5.4 sometimes did not. 
+   This caused bad things to happen in the weight-generators.
+   The solution is to upgrade to 4.5.5-alpha04.  
+
 A. ncremap: Inferring grids from curvilinear coordinates no longer
-   get confused by "branch cuts" (i.e., the date-line). ncremap
-   version 4.5.4 would sometimes infer concave gridcells that then
-   confused mapping software. The solution is to upgrade to
-   4.5.5-alpha04.  
+   confused by "branch cuts" (i.e., the date-line). ncremap version
+   4.5.4 would sometimes infer concave gridcells that then confused
+   mapping software. The solution is to upgrade to 4.5.5-alpha04.  
    Thanks to Feng Ding for reporting the problem.
 
-A. ncpdq: Fix problem that could cause '-gaa' option to fail in
+A. ncpdq: Fix problem that could cause '--gaa' option to fail in
    earlier versions. The solution is to upgrade to 4.5.5-alpha04.  
 
 KNOWN PROBLEMS DUE TO NCO:
