@@ -17,12 +17,12 @@ netcdf mdl_2 {
       time=4;
     variables:
       float tas1(time);
-	  float tas2(time);
-	  double time(time);
+      float tas2(time);
+      double time(time);
     data:
       tas1=272.3,272.3,272.3,272.3;
-	  tas2=272.3,272.3,272.3,272.3;
-	  time=1.,2.,3.,4.;
+      tas2=272.3,272.3,272.3,272.3;
+      time=1.,2.,3.,4.;
  
     } // cesm_03
 
@@ -42,12 +42,12 @@ netcdf mdl_2 {
       time=4;
     variables:
       float tas1(time);
-	  float tas2(time);
-	  double time(time);
+      float tas2(time);
+      double time(time);
     data:
       tas1=273.3,273.3,273.3,273.3;
-	  tas2=273.3,273.3,273.3,273.3;
-	  time=1.,2.,3.,4.;
+      tas2=273.3,273.3,273.3,273.3;
+      time=1.,2.,3.,4.;
       
     } // ecmwf_03
     
@@ -62,12 +62,12 @@ netcdf mdl_2 {
       time=4;
     variables:
       float tas1(time);
-	  float tas2(time);
-	  double time(time);
+      float tas2(time);
+      double time(time);
     data:
       tas1=273.4,273.4,273.4,273.4;
-	  tas2=273.4,273.4,273.4,273.4;
-	  time=1.,2.,3.,4.;
+      tas2=273.4,273.4,273.4,273.4;
+      time=1.,2.,3.,4.;
       
     } // ecmwf_04
 

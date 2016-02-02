@@ -1,3 +1,7 @@
+2016-02-02  Charlie Zender  <zender@uci.edu>
+
+	* Annotate mdl_1.cdl to verify whether nces, ncbo, ncra propagate coordinate and non-coordinate metadata to output
+
 2016-01-30  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Change default algorithm back to ESMF bilinear, which works for all Feng's cases

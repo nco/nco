@@ -19,14 +19,17 @@ netcdf mdl_1 {
       time=unlimited;
     variables:
       float tas1(time);
-	  float tas2(time);
-	  double time(time);
-	  float gw(time); //test CF fixed variables (using time as dimension, usually dimension is lat)
+    tas1:long_name = "surface air temperature";
+      float tas2(time);
+      double time(time);
+    time:long_name = "time";
+    time:units = "days since 1964-03-12 12:09:00 -9:00"; 
+      float gw(time); //test CF fixed variables (using time as dimension, usually dimension is lat)
     data:
       tas1=272.1,272.1,272.1,272.1;
-	  tas2=272.1,272.1,272.1,272.1;
-	  time=1.,2.,3.,4.;
-	  gw=1.,1.,1.,1.;
+      tas2=272.1,272.1,272.1,272.1;
+      time=1.,2.,3.,4.;
+      gw=1.,1.,1.,1.;
  
     } // cesm_01
 
@@ -41,14 +44,17 @@ netcdf mdl_1 {
       time=unlimited;
     variables:
       float tas1(time);
-	  float tas2(time);
-	  double time(time);
-	  float gw(time);
+    tas1:long_name = "surface air temperature";
+      float tas2(time);
+      double time(time);
+    time:long_name = "time";
+    time:units = "days since 1964-03-12 12:09:00 -9:00"; 
+      float gw(time);
     data:
       tas1=272.2,272.2,272.2,272.2;
-	  tas2=272.2,272.2,272.2,272.2;
-	  time=1.,2.,3.,4.;
-	  gw=2.,2.,2.,2.;
+      tas2=272.2,272.2,272.2,272.2;
+      time=1.,2.,3.,4.;
+      gw=2.,2.,2.,2.;
       
     } // cesm_02
     
@@ -67,12 +73,15 @@ netcdf mdl_1 {
       time=unlimited;
     variables:
       float tas1(time);
-	  float tas2(time);
-	  double time(time);
+    tas1:long_name = "surface air temperature";
+      float tas2(time);
+      double time(time);
+    time:long_name = "time";
+    time:units = "days since 1964-03-12 12:09:00 -9:00"; 
     data:
       tas1=273.1,273.1,273.1,273.1;
-	  tas2=273.1,273.1,273.1,273.1;
-	  time=1.,2.,3.,4.;
+      tas2=273.1,273.1,273.1,273.1;
+      time=1.,2.,3.,4.;
       
     } // ecmwf_01
     
@@ -87,12 +96,15 @@ netcdf mdl_1 {
       time=unlimited;
     variables:
       float tas1(time);
-	  float tas2(time);
-	  double time(time);
+    tas1:long_name = "surface air temperature";
+      float tas2(time);
+      double time(time);
+    time:long_name = "time";
+    time:units = "days since 1964-03-12 12:09:00 -9:00"; 
     data:
       tas1=273.2,273.2,273.2,273.2;
-	  tas2=273.2,273.2,273.2,273.2;
-	  time=1.,2.,3.,4.;
+      tas2=273.2,273.2,273.2,273.2;
+      time=1.,2.,3.,4.;
       
     } // ecmwf_02
 
