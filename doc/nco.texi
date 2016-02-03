@@ -2357,13 +2357,13 @@ to the memory requirements.
 Further note that some operators perform internal type-promotion on some
 variables prior to arithmetic (@pxref{Type Conversion}).
 For example, @command{ncra} and @command{nces} both promote integer
-types to double-precision floating point prior to arithmetic, then 
+types to double-precision floating-point prior to arithmetic, then 
 perform the arithmetic, then demote back to the original integer type
 after arithmetic.
 This preserves the on-disk storage type while obtaining the accuracy
-advantages of floating point arithmetic. 
+advantages of floating-point arithmetic. 
 Since version 4.3.6 (released in September, 2013), @acronym{NCO} also
-by default converts single-precision floating point to double-precision
+by default converts single-precision floating-point to double-precision
 prior to arithmetic, which incurs the same @acronym{RAM} penalty.
 Hence, the sustained memory required for integer variables and
 single-precision floats are two or four-times their on-disk,
@@ -2713,7 +2713,7 @@ Compute-intensive operators (@code{ncap2}, @code{ncwa} and @code{ncpdq})
 benefit most from threading.
 The greatest increases in throughput due to threading occur on
 large datasets where each thread performs millions, at least,
-of floating point operations.
+of floating-point operations.
 Otherwise, the system overhead of setting up threads probably outweighs 
 the speed enhancements due to @acronym{SMP} parallelism.
 However, we have not yet demonstrated that the @acronym{SMP} parallelism 
@@ -3914,7 +3914,7 @@ Three numeric types (@code{NC_UINT}, @code{NC_UINT64} and
 @code{NC_INT64}) are @emph{demoted}.
 Since the input range is larger than the output range, demotion can
 result in numeric truncation and thus loss of data. 
-In such cases, it would possible to convert the data to floating point
+In such cases, it would possible to convert the data to floating-point
 values instead. 
 If this feature interests you, please be the squeaky wheel and let us
 know.
@@ -5236,7 +5236,7 @@ ncks -F -d lon,1.0,2.0 in.nc out.nc
 # Every other longitude value between 0 and 90 degrees
 ncks -F -d lon,0.0,90.0,2 in.nc out.nc
 @end example
-As shown, we recommend using a full floating point suffix of @code{.0}
+As shown, we recommend using a full floating-point suffix of @code{.0}
 instead of simply @code{.} in order to make obvious the selection of
 hyperslab elements based on coordinate value rather than index.
 
@@ -5958,7 +5958,7 @@ multi-slabs of regular coordinates.
 @example
 ncra -O -X 0.,180.,-30.,30. -X 270.,315.,45.,90. in.nc out.nc
 @end example
-The arguments to @samp{-X} are always interpreted as floating point
+The arguments to @samp{-X} are always interpreted as floating-point
 numbers, i.e., as coordinate values rather than dimension indices
 so that these two commands produce identical results
 @example
@@ -7822,7 +7822,7 @@ Packed data also can also be deflated for additional space savings.
 A limitation of packing is that unpacking data stored as integers
 into the linear range defined by @code{scale_factor} and
 @code{add_offset} rapidly loses precision outside of a narrow range of
-floating point values.  
+floating-point values.  
 Variables packed as @code{NC_SHORT}, for example, can represent only
 about 64000 discrete values in the range 
 @math{-32768*scale_factor+add_offset} to
@@ -7937,13 +7937,13 @@ when more precision is requested.
 The time-penalty for compressing and uncompressing data varies according 
 to the algorithm.
 The Number of Significant Digit (@acronym{NSD}) algorithm quantizes by
-bitmasking, and employs no floating point math.
+bitmasking, and employs no floating-point math.
 The Decimal Significant Digit (@acronym{DSD}) algorithm quantizes by
-rounding, which does require floating point math.
+rounding, which does require floating-point math.
 Hence @acronym{NSD} is likely faster than @acronym{DSD}, though
 the difference has not been measured.
 @acronym{NSD} creates a bitmask to alter the @dfn{significand} of
-@w{@acronym{IEEE} 754} floating point data.
+@w{@acronym{IEEE} 754} floating-point data.
 The bitmask is one for all bits to be retained and zero or one for all
 bits to be ignored.
 The algorithm assumes that the number of binary digits (i.e., bits)
@@ -8071,7 +8071,7 @@ fashion when processing array data.
 In general, the first element is rounded down, the second up, and so
 on. 
 This results in a mean bias quite close to zero.
-The only exception is that the floating point value of zero is never 
+The only exception is that the floating-point value of zero is never 
 quantized upwards.
 For simplicity, @acronym{NSD} always rounds scalars downwards.
 
@@ -8142,7 +8142,7 @@ in the attribute @code{least_significant_digit} and @acronym{NCO}
 does the same for consistency.
 The Unidata blog 
 @uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/compression_by_bit_shaving,  
-here} also shows how to compress @acronym{IEEE} floating point data by
+here} also shows how to compress @acronym{IEEE} floating-point data by
 zeroing insignificant bits.
 The author, John Caron, writes that the technique has been called
 ``bit-shaving''.
@@ -8190,7 +8190,7 @@ on-disk storage reduction only occurs once the data are compressed.
 @end html
 How can one be sure the lossy data are sufficiently precise?
 @acronym{PPC} preserves all significant digits of every value.
-The @acronym{DSD} algorithm uses floating point math to round each 
+The @acronym{DSD} algorithm uses floating-point math to round each 
 value optimally so that it has the maximum number of zeroed bits
 that preserve the specified precision.
 The @acronym{NSD} algorithm uses a theoretical approach (3.2 bits per
@@ -8478,7 +8478,7 @@ This table summarizes the performance of lossless and lossy compression
 on two typical, or at least random, netCDF data files.  
 The files were taken from representative model-simulated and
 satellite-retrieved datasets.
-Only floating point data were compressed.
+Only floating-point data were compressed.
 No attempt was made to compress integer-type variables as they occupy an 
 insignificant fraction of every dataset.
 The columns are
@@ -8504,7 +8504,7 @@ Number of significant digits retained by the precision-preserving
 compression @acronym{NSD} algorithm.  
 @item Pck 
 @kbd{Y} if the default @command{ncpdq} packing algorithm (convert
-floating point types to @code{NC_SHORT}) was employed.
+floating-point types to @code{NC_SHORT}) was employed.
 @item Size
 Resulting filesize in @acronym{MB}.
 @item %
@@ -9714,10 +9714,10 @@ Reasons to engage in type conversion include avoiding rounding
 errors and out-of-range limitations of less-precise types.
 This is the case with most integers.
 Thus @acronym{NCO} defaults to automatically promote integer types to
-floating point when performing lengthy arithmetic, yet @acronym{NCO}
+floating-point when performing lengthy arithmetic, yet @acronym{NCO}
 defaults to not promoting single to double-precision floats.
 
-Before discussing the more subtle floating point issues, we first
+Before discussing the more subtle floating-point issues, we first
 examine integer promotion. 
 We will show how following parsimonious conversion rules dogmatically
 can cause problems, and what @acronym{NCO} does about that. 
@@ -9816,7 +9816,7 @@ Truncation rounds @var{x} to the nearest integer not larger in absolute
 value.
 For example, truncation rounds @code{1.0d}, @code{1.5d}, and
 @code{1.8d} to the same value, @code{1s}. 
-Clearly, truncation does not round floating point numbers to the nearest
+Clearly, truncation does not round floating-point numbers to the nearest
 integer! 
 Yet truncation is how the @w{C language} performs implicit conversion of 
 real numbers to integers.
@@ -9954,7 +9954,7 @@ However the intermediate results where running sums are accumulated may
 suffer from too much rounding or from underflow unless computed in
 double-precision. 
 
-The order of operations matters to floating point math even when the
+The order of operations matters to floating-point math even when the
 analytic expressions are equal. 
 Cautious users feel disquieted when results from equally valid analyses
 differ in the final bits instead of agreeing bit-for-bit.
@@ -10165,7 +10165,7 @@ Why are the single-precision numerical artifacts so large?
 Each global average is the result of multiplying almost 15,000 elements
 each by its weight, summing those, and then dividing by the summed 
 weights.  
-Thus about 50,000 single-precision floating point operations caused
+Thus about 50,000 single-precision floating-point operations caused
 the loss of two to three significant digits of precision.
 The net error of a series of independent rounding errors is a random
 walk phenomena
@@ -10264,11 +10264,11 @@ their results.
 
 The @samp{--dbl} and @samp{--flt} switches are only available with the
 @acronym{NCO} arithmetic operators that could potentially perform more
-than a few  single-precision floating point operations per result.
+than a few  single-precision floating-point operations per result.
 These are @command{nces}, @command{ncra}, and @command{ncwa}.
 Each is capable of thousands to millions or more operations per result. 
 By contrast, the arithmetic operators @command{ncbo} and
-@command{ncflint} perform at most one floating point operation per
+@command{ncflint} perform at most one floating-point operation per
 result. 
 Providing the @samp{--dbl} option for such trivial operations makes 
 little sense, so the option is not currently made available.
@@ -11531,7 +11531,7 @@ template variable @code{var_tpl}, i.e., a variable with the same shape
 as the desired output. 
 The type of @code{var_out} will be the same as @code{val_srt}.
 Be sure to encode this type with the appropriate decimal point
-and floating point suffix when @code{val_srt} is a ``naked constant''
+and floating-point suffix when @code{val_srt} is a ``naked constant''
 rather than a variable.
 For example, to produce an array of shorts (signed two-byte integers), 
 integers (signed four-byte integers), unsigned 64-bit integers,
@@ -11806,7 +11806,7 @@ The table below lists the postfix character(s) to add to a number
 literal (aka, a naked constant) for explicit type specification.
 The same type-specification rules are used for variables and
 attributes. 
-A floating point number without a postfix defaults to @code{NC_DOUBLE}, 
+A floating-point number without a postfix defaults to @code{NC_DOUBLE}, 
 while an integer without a postfix defaults to type @code{NC_INT}:
 @example
 @verbatim
@@ -11881,9 +11881,9 @@ filetype is not.
 @item l|L	 
   @code{NC_INT}, a signed 4-byte integer 
 @item f|F	 
-  @code{NC_FLOAT}, a single-precision (4-byte) floating point number 
+  @code{NC_FLOAT}, a single-precision (4-byte) floating-point number 
 @item d|D
-  @code{NC_DOUBLE}, a double-precision (8-byte) floating point number 
+  @code{NC_DOUBLE}, a double-precision (8-byte) floating-point number 
 @item @strong{netCDF4 Types}
 @item ub|UB	 
   @code{NC_UBYTE}, an unsigned 1-byte integer 
@@ -12298,10 +12298,10 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
  convert to @code{NC_INT},   a signed 4-byte integer 
 @item float()
 @cindex float()	 
- convert to @code{NC_FLOAT}, a single-precision (4-byte) floating point number 
+ convert to @code{NC_FLOAT}, a single-precision (4-byte) floating-point number 
 @item double() 
 @cindex double()
- convert to @code{NC_DOUBLE}, a double-precision (8-byte) floating point number 
+ convert to @code{NC_DOUBLE}, a double-precision (8-byte) floating-point number 
 @item @strong{netCDF4 Types}
 @item ubyte()	 
 @cindex ubyte()
@@ -13185,7 +13185,7 @@ These are the @acronym{GSL} standard function names postfixed with
 function suffix.
 }.
 This allows @acronym{NCO} to return a missing value when the
-@acronym{GSL} library encounters a domain error or a floating point 
+@acronym{GSL} library encounters a domain error or a floating-point 
 exception. 
 The slow-down due to calling the error-handling version of the 
 @acronym{GSL} numerical functions was found to be negligible (please let
@@ -13729,7 +13729,7 @@ print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
 @node GSL statistics, GSL random number generation, GSL least-squares fitting, ncap2 netCDF Arithmetic Processor
 @subsection GSL statistics
 
-@noindent Wrappers for most of the @acronym{GSL} Statistical functions have been implemented. The @acronym{GSL} function names include a type specifier (except for type double functions). To obtain the equivalent @acronym{NCO} name simply remove the type specifier; then depending on the data type the appropriate @acronym{GSL} function  is called. The weighed statistical functions e.g., @code{ gsl_stats_wvariance()} are only defined in @acronym{GSL} for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
+@noindent Wrappers for most of the @acronym{GSL} Statistical functions have been implemented. The @acronym{GSL} function names include a type specifier (except for type double functions). To obtain the equivalent @acronym{NCO} name simply remove the type specifier; then depending on the data type the appropriate @acronym{GSL} function  is called. The weighed statistical functions e.g., @code{ gsl_stats_wvariance()} are only defined in @acronym{GSL} for floating-point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
 
 @noindent @acronym{GSL} Functions
 @example
@@ -14478,7 +14478,7 @@ log$(10.0) = 1.0$
 @end ifinfo
 @item nearbyint(x)
 @dfn{Round inexactly}
-Nearest integer to @var{x} is returned in floating point format.
+Nearest integer to @var{x} is returned in floating-point format.
 @cindex inexact conversion
 No exceptions are raised for @dfn{inexact conversions}.
 Example: 
@@ -14506,7 +14506,7 @@ pow$(2,3) = 8$
 @end ifinfo
 @item rint(x)
 @dfn{Round exactly}
-Nearest integer to @var{x} is returned in floating point format.
+Nearest integer to @var{x} is returned in floating-point format.
 Exceptions are raised for @dfn{inexact conversions}.
 Example: 
 @tex
@@ -14517,7 +14517,7 @@ rint$(0.1) = 0$
 @end ifinfo
 @item round(x)
 @dfn{Round}
-Nearest integer to @var{x} is returned in floating point format.
+Nearest integer to @var{x} is returned in floating-point format.
 Round halfway cases away from zero, regardless of current @acronym{IEEE}
 rounding direction.  
 Example: 
@@ -14585,7 +14585,7 @@ tanh$(1.0) = 0.761594155956$
 @end ifinfo
 @item trunc(x)
 @dfn{Truncate}
-Nearest integer to @var{x} is returned in floating point format.
+Nearest integer to @var{x} is returned in floating-point format.
 Round halfway cases toward zero, regardless of current @acronym{IEEE}
 rounding direction.  
 Example: 
@@ -14824,7 +14824,7 @@ as swiftly as possible.
 @cindex @code{_FillValue}
 When @command{ncatted} is used to change the @code{_FillValue} attribute,
 it changes the associated missing data self-consistently.
-If the internal floating point representation of a missing value, 
+If the internal floating-point representation of a missing value, 
 e.g., 1.0e36, differs between two machines then netCDF files produced 
 on those machines will have incompatible missing values.
 This allows @command{ncatted} to change the missing values in files from 

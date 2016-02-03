@@ -5140,9 +5140,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       long int idx_fk_crn_ul_ctr_lr;
       long int idx_fk_crn_ul_ctr_ur;
       long int idx_fk_crn_ul_ctr_ul;
-      double crn_lat[grd_crn_nbr];
-      double crn_lon[grd_crn_nbr];
       nco_bool flg_ccw; /* [flg] Gridcell is CCW */
+      double *crn_lat;
+      double *crn_lon;
+      crn_lat=(double *)nco_malloc(grd_crn_nbr*sizeof(double));
+      crn_lon=(double *)nco_malloc(grd_crn_nbr*sizeof(double));
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	  /* 9-point template valid at all interior (non-edge) points in real grid, and at all points (including edges) in fake grid
@@ -5228,6 +5230,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !lat */
       if(lat_ctr_fk) lat_ctr_fk=(double *)nco_free(lat_ctr_fk);
       if(lon_ctr_fk) lon_ctr_fk=(double *)nco_free(lon_ctr_fk);
+      if(crn_lon) crn_lon=(double *)nco_free(crn_lon);
+      if(crn_lat) crn_lat=(double *)nco_free(crn_lat);
     } /* !(lat_bnd_id && lon_bnd_id) */
     
     /* As of 20151205, use same sanity check for both inferred and copied curvilinear grids
@@ -6004,6 +6008,7 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
      All cases return True (i.e., CCW) from rcr_lvl=1 except last
      Last case returns False, and calling code should mask such an aberrant point */ 
   const char fnc_nm[]="nco_ccw_chk()";
+  const int CRN_NBR_MSVC=4;
   double A_tail_x,A_tail_y,A_tail_z;
   double A_head_x,A_head_y,A_head_z;
   double A_x,A_y,A_z;
@@ -6014,16 +6019,18 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
   double R_x,R_y,R_z;
   double lat_rdn;
   double lon_rdn;
-  double sin_lat[crn_nbr];
-  double sin_lon[crn_nbr];
-  double cos_lat[crn_nbr];
-  double cos_lon[crn_nbr];
+  /* fxm dumb MSVC compiler chokes unless array size is compile-time constant */
+  double sin_lat[CRN_NBR_MSVC];
+  double sin_lon[CRN_NBR_MSVC];
+  double cos_lat[CRN_NBR_MSVC];
+  double cos_lon[CRN_NBR_MSVC];
   double dot_prd;
   int crn_idx; /* [idx] Corner idx */
   int A_tail_idx,A_head_idx;
   int B_tail_idx,B_head_idx;
   nco_bool flg_ccw; /* [flg] Input is CCW */
 
+  assert(crn_nbr == CRN_NBR_MSVC);
   for(crn_idx=0;crn_idx<crn_nbr;crn_idx++){
     lat_rdn=crn_lat[crn_idx]*M_PI/180.0;
     lon_rdn=crn_lon[crn_idx]*M_PI/180.0;
