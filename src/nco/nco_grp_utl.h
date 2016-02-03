@@ -919,6 +919,13 @@ nco_nsm_wrt_att                      /* [fnc] Save ncge metadata attribute */
  const gpe_sct * const gpe,          /* I [sct] GPE structure */
  trv_tbl_sct * const trv_tbl);       /* I/O [sct] GTT (Group Traversal Table) */
 
+void
+nco_wrt_atr
+(const int nc_id,                    /* I [id] netCDF input file ID */
+ const int grp_out_id,               /* I [id] netCDF output group ID */
+ const int var_out_id,               /* I [id] netCDF output variable ID */
+ const trv_sct *var_trv);            /* I [sct] traversal variable */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

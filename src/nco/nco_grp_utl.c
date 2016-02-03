@@ -8230,6 +8230,27 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 } /* nco_bld_nsm() */
 
 void
+nco_wrt_atr
+(const int nc_id,                    /* I [id] netCDF input file ID */
+ const int grp_out_id,               /* I [id] netCDF output group ID */
+ const int var_out_id,               /* I [id] netCDF output variable ID */
+ const trv_sct *var_trv)             /* I [sct] traversal variable */
+{
+  /* Copy variable's attributes */
+  int var_id; /* [id] Variable ID */
+  int grp_id; /* [id] Group ID */
+
+  /* Obtain group ID */
+  (void)nco_inq_grp_full_ncid(nc_id, var_trv->grp_nm_fll, &grp_id);
+
+  /* Get variable ID */
+  (void)nco_inq_varid(grp_id, var_trv->nm, &var_id);
+
+  (void)nco_att_cpy(grp_id, grp_out_id, var_id, var_out_id, True);
+} /* nco_wrt_atr() */
+
+
+void
 nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed variables */
 (const int nc_id,                    /* I [ID] netCDF input file ID */
  const int nc_out_id,                /* I [ID] netCDF output file ID */
@@ -8264,12 +8285,16 @@ nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed var
       /* Get variable  */
       trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
 
-      /* Define variable  */
-      if(flg_def) (void)nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,NULL,0,trv_tbl);
-
       /* Obtain group IDs */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id_in);
       (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_id_out);
+
+      /* Define variable  */
+      if (flg_def){
+        int var_out_id=nco_cpy_var_dfn_trv(nc_id, nc_out_id, cnk, grp_out_fll, dfl_lvl, gpe, NULL, var_trv, NULL, 0, trv_tbl);
+        /* Write attribute */
+        (void)nco_wrt_atr(nc_id,grp_id_out,var_out_id,var_trv);
+      }
 
       /* Copy variable data */
       if(!flg_def) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,NULL,var_trv);
