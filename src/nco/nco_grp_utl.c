@@ -8241,14 +8241,13 @@ nco_wrt_atr
   int grp_id; /* [id] Group ID */
 
   /* Obtain group ID */
-  (void)nco_inq_grp_full_ncid(nc_id, var_trv->grp_nm_fll, &grp_id);
+  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
   /* Get variable ID */
-  (void)nco_inq_varid(grp_id, var_trv->nm, &var_id);
+  (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
 
-  (void)nco_att_cpy(grp_id, grp_out_id, var_id, var_out_id, True);
+  (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,True);
 } /* nco_wrt_atr() */
-
 
 void
 nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed variables */
@@ -8290,11 +8289,11 @@ nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed var
       (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_id_out);
 
       /* Define variable  */
-      if (flg_def){
+      if(flg_def){
         int var_out_id=nco_cpy_var_dfn_trv(nc_id, nc_out_id, cnk, grp_out_fll, dfl_lvl, gpe, NULL, var_trv, NULL, 0, trv_tbl);
-        /* Write attribute */
+        /* Copy attributes */
         (void)nco_wrt_atr(nc_id,grp_id_out,var_out_id,var_trv);
-      }
+      } /* endif */
 
       /* Copy variable data */
       if(!flg_def) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,NULL,var_trv);

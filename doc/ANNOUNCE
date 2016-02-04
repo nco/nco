@@ -47,6 +47,11 @@ A. ncremap: Inferring grids from curvilinear coordinates no longer
 A. ncpdq: Fix problem that could cause '--gaa' option to fail in
    earlier versions. The solution is to upgrade to 4.5.5-alpha04.  
 
+A. nces: Copy attributes of coordinate variables in nces --nsm_grp.
+   Previous versions omitted the attributes of coordinates (not
+   regular variables) in the ensemble average group. Thanks to Hannah
+   Nissan for reporting and Pedro Vicente for fixing this.
+
 KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
