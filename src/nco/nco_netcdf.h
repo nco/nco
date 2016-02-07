@@ -65,6 +65,26 @@
    This barrier helps segregate NCO from wrappers
    Re-define minimal sub-set of tokens for nco_netcdf.c as necessary
    This is small exception to the barrier */
+#ifndef NC_VERSION_MAJOR
+# define NC_VERSION_MAJOR 3
+#endif /* !NC_VERSION_MAJOR */
+#ifndef NC_VERSION_MINOR
+# define NC_VERSION_MINOR 6
+#endif /* !NC_VERSION_MINOR */
+#ifndef NC_VERSION_PATCH
+# define NC_VERSION_PATCH 0
+#endif /* !NC_VERSION_PATCH */
+#ifndef NC_VERSION_NOTE
+# define NC_VERSION_NOTE  "" /* May be blank */
+#endif /* !NC_VERSION_NOTE */
+#ifndef NC_VERSION
+# define NC_VERSION "3.6.0"
+#endif /* !NC_VERSION */
+  /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
+#ifndef NC_LIB_VERSION
+# define NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH )
+#endif /* !NC_LIB_VERSION */
+
 #ifndef NC_FORMAT_CLASSIC
 # define NC_FORMAT_CLASSIC (1)
 #endif

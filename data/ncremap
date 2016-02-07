@@ -175,11 +175,12 @@ out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='' # [sng] Parallelism type
 pdq_typ='' # [sng] Permutation type
-rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid')
-tps_opt='' # [sng] TempestRemap options
+rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon --rnr=0.0' # [sng] Regridding options
 thr_nbr=2 # [nbr] Thread number for regridder
-#var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
+#tps_opt='--mono' # [sng] TempestRemap options
+tps_opt='' # [sng] TempestRemap options
+#var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
 var_xmp='FSNT' # [sng] Variable list for examples
 wgt_gnr='esmf' # [sng] Weight-generator program
@@ -553,7 +554,7 @@ fi # !PETO
 printf "Started processing at `date`.\n"
 printf "NCO version is ${nco_version}\n"
 if [ "${map_usr_flg}" = 'Yes' ] && [ -n "${wgt_usr}" ] ; then
-    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_gnr' is not allowed (weight-generator is unnecessary)\n"
+    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_gnr' is not allowed (weight-generator is superfluous when map is supplied)\n"
     exit 1
 fi # wgt_usr
 if [ "${grd_src_usr_flg}" = 'Yes' ]; then
