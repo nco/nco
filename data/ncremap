@@ -436,12 +436,30 @@ if [ -z "${grd_sng}" ]; then
 else
     grd_sng_usr_flg='Yes'
 fi # !grd_sng
+if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ] || [ "${grd_dst_usr_flg}" = 'Yes' ] || [ "${grd_src_usr_flg}" = 'Yes' ]; then
+    # Specified map-file will be created if -d, -G, -g, or -s was specified
+    map_mk='Yes'
+fi # !map_mk
 if [ -n "${map_fl}" ]; then 
-    if [ ! -e "${map_fl}" ]; then
-	echo "ERROR: Unable to find specified regrid map ${map_fl}"
-	echo "HINT: Supply the full path-name for the regridding map"
-	exit 1
-    fi # ! -e
+    if [ "${map_mk}" = 'Yes' ]; then
+        if [ -e "${map_fl}" ]; then
+	    while true; do
+		echo "WARNING: Specified regrid map ${map_fl} already exists and will be over-written."
+		read -p "Continue (y/n)?" ask_nsw
+		case "${ask_nsw}" in
+		    N*|n*) exit 1 ;;
+		    Y*|y*) break ;;
+		    *) continue ;;
+		esac
+	    done # !true
+	fi # ! -e
+    else # !map_mk
+        if [ ! -e "${map_fl}" ]; then
+	    echo "ERROR: Unable to find specified regrid map ${map_fl}"
+	    echo "HINT: Supply a valid map-file (weight-file) name or supply the grid files or data files and let ncremap create a mapfile for you"
+	    exit 1
+	fi # ! -e
+    fi # !map_mk
     map_usr_flg='Yes'
 else
     if [ "${wgt_gnr}" = 'esmf' ]; then 
@@ -516,6 +534,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: job_nbr  = ${job_nbr}\n"
     printf "dbg: in_fl    = ${in_fl}\n"
     printf "dbg: map_fl   = ${map_fl}\n"
+    printf "dbg: map_mk   = ${map_mk}\n"
     printf "dbg: mlt_map  = ${mlt_map_flg}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: nco_opt  = ${nco_opt}\n"
@@ -553,38 +572,20 @@ if [ -f 'PET0.RegridWeightGen.Log' ]; then
 fi # !PETO
 printf "Started processing at `date`.\n"
 printf "NCO version is ${nco_version}\n"
-if [ "${map_usr_flg}" = 'Yes' ] && [ -n "${wgt_usr}" ] ; then
-    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_gnr' is not allowed (weight-generator is superfluous when map is supplied)\n"
+if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ] && [ -n "${wgt_usr}" ] ; then
+    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_gnr' is only allowed when creating a map (weight generator is superfluous when map is supplied)\n"
     exit 1
 fi # wgt_usr
-if [ "${grd_src_usr_flg}" = 'Yes' ]; then
-    if [ "${map_usr_flg}" = 'Yes' ]; then 
-	printf "${spt_nm}: ERROR Specifying both '-s grd_src' and '-m map_fl' is ambiguous and forbidden\n"
-	exit 1
-    fi # !map_usr_flg
-fi # !grd_src_usr_flg
     
 if [ "${dst_usr_flg}" = 'Yes' ]; then 
-    if [ "${map_usr_flg}" = 'Yes' ]; then 
-	printf "${spt_nm}: ERROR Specify either '-d dst_fl' or '-m map_fl' not both\n"
-	exit 1
-    fi # !map_usr_flg
     if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
 	printf "${spt_nm}: ERROR Specify either '-d dst_fl' or '-g grd_dst' not both\n"
 	exit 1
     fi # !grd_dst_usr_flg
-else # !dst_usr_flg
-    if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
-	if [ "${map_usr_flg}" = 'Yes' ]; then 
-	    printf "${spt_nm}: ERROR Specify either '-g grd_dst' or '-m map_fl' not both\n"
-	    exit 1
-	fi # !map_usr_flg
-    else
-	if [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ] ; then 
-	    printf "${spt_nm}: ERROR Must use one of '-d dst_fl', '-g grd_dst', '-G grd_sng', or '-m map_fl'\n"
-	    exit 1
-	fi # !map_usr_flg
-    fi # !grd_dst_usr_flg
+fi # !dst_usr_flg
+if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ] ; then 
+    printf "${spt_nm}: ERROR Must use one of '-d dst_fl', '-g grd_dst', '-G grd_sng', or '-m map_fl'\n"
+    exit 1
 fi # !dst_usr_flg
 
 # Generate destination grid, if necessary, once (only) before loop over input files

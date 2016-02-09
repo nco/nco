@@ -1,3 +1,7 @@
+2016-02-08  Charlie Zender  <zender@uci.edu>
+
+	* Allow ncremap -m to specify name of internally-generated mapfile
+
 2016-02-07  Charlie Zender  <zender@uci.edu>
 
 	* Implement back-compatible NC_VERSION tokens in nco_netcdf.h
