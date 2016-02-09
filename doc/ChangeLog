@@ -1,3 +1,7 @@
+2016-02-09  Charlie Zender  <zender@uci.edu>
+
+	* Add DeepBlue-SeaWiFS dimensions natrack, nxtrack
+
 2016-02-08  Charlie Zender  <zender@uci.edu>
 
 	* Allow ncremap -m to specify name of internally-generated mapfile
