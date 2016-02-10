@@ -1,5 +1,7 @@
 2016-02-09  Charlie Zender  <zender@uci.edu>
 
+	* Disentangle map_mk and map_usr_flg in ncremap
+
 	* Add DeepBlue-SeaWiFS dimensions natrack, nxtrack
 
 2016-02-08  Charlie Zender  <zender@uci.edu>

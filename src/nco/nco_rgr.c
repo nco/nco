@@ -2814,7 +2814,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
        ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
        ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
-       sld_nco.sh -v T -s ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
+       ncremap -v T -i ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
        GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
     if(False) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
@@ -3530,7 +3530,13 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
      Curvilinear grids:
      ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Degenerate case.' --rgr crv=Y --rgr lon_crv=0.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Curvilinearity = 1.0 lon' --rgr lon_crv=1.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc */
+     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Curvilinearity = 1.0 lon' --rgr lon_crv=1.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
+
+     1-D Latitude (no longitude) grids:
+     ncks -O -D 1 --rgr grd_ttl='Latitude-only zonal grid' --rgr skl=${DATA}/sld/rgr/skl_lat_10dgr_uni.nc --rgr grid=${DATA}/sld/rgr/grd_lat_10dgr_uni.nc --rgr latlon=18,1 --rgr snwe=-90,90,0,360  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Latitude-only zonal grid' --rgr skl=${DATA}/sld/rgr/skl_lat_05dgr_cap.nc --rgr grid=${DATA}/sld/rgr/grd_lat_05dgr_cap.nc --rgr latlon=37,1 --rgr snwe=-90,90,0,360  ~/nco/data/in.nc ~/foo.nc
+     ncremap -i ${DATA}/sld/rgr/skl_lat_10dgr_uni.nc -d ${DATA}/sld/rgr/skl_lat_05dgr_cap.nc -m ${DATA}/maps/map_lat10uni_to_lat05cap_aave.nc -o ~/rgr/lat10to05.nc
+     ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_lat_10dgr_uni.nc -d ${DATA}/sld/rgr/grd_lat_05dgr_cap.nc -w ${DATA}/maps/map_lat10uni_to_lat05cap_aave.nc --method conserve */
 
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
 

@@ -597,14 +597,13 @@ fi # !dst_usr_flg
 
 # Generate destination grid, if necessary, once (only) before loop over input files
 # Block 1: Destination grid
-# Unlike source grid, same destination grid is used for all files
-# Generate destination grid at most one-time
+# Generate destination grid at most one-time (unlike source grid)
 # Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
 # Currently we require user to know (and specify) means by which destination grid is provided
 if [ -n "${pdq_opt}" ]; then 
     printf "Input data obey \"${pdq_typ}\"-ordering and will be permuted with \"ncpdq ${pdq_opt}\"\n"
 fi # !pdq_opt
-if [ "${map_usr_flg}" = 'Yes' ]; then 
+if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ]; then 
     printf "Source and destination grids will both be read from supplied map-file\n"
 else # !map_usr_flg
     fl_idx=0 # [idx] Current file index
@@ -730,7 +729,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !basename
 
     # Generate new map unless map-file was supplied or already-generated (as indicated by map_usr_flg)
-    if [ "${map_usr_flg}" != 'Yes' ]; then
+    if [ "${map_mk}" = 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ]; then
 	# Block 2: Source grid
 	# Block 2 Loop 1: Source gridfile command
 	if [ ! -e "${in_fl}" ]; then
