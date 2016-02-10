@@ -1,6 +1,7 @@
 2016-02-09  Charlie Zender  <zender@uci.edu>
 
-	* ncremap appears to work with user-specified map-file names to write
+	* ncremap appears to work with user-specified map-file names to	write
+	Unfortunately, neither ERWG nor Tempest support zonally 1-D zonally uniform grids
 
 	* Disentangle map_mk and map_usr_flg in ncremap
 
