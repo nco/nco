@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.5-alpha04 are ready. 
+The netCDF Operators NCO version 4.5.5-alpha06 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -26,9 +26,13 @@ A. NCO supports the CDF5 file type introduced in netCDF 4.4.0.
    http://nco.sf.net/nco.html#cdf5
 
 A. ncremap: Many improvements.
-   Notably -P option to cause automatic permutation of selected
-   file-types (AIRS, MPAS) prior to regridding.
+   -P option triggers filetype-specific workflow procedures (such as
+   automatic permutation). Currently filetype-specific handling is
+   defined for AIRS and MPAS files:
+   ncremap -P airs -i airs.nc -m map.nc -o out.nc
    ncremap -P mpas -i mpas.nc -m map.nc -o out.nc
+   Now -m map_fl will name internally generated mapfiles:
+   ncremap -i in.nc -d dst.nc -m map.nc -o out.nc
    http://nco.sf.net/nco.html#ncremap
 
 BUG FIXES:

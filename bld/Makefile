@@ -401,7 +401,7 @@ else
   ESMF_INC_FLG := -I/usr/local/include
 endif # endif ESMF_ROOT
 endif # endif ESMF_INC
-# 20150319: For some reaseon, ESMC.h #includes ESMC_VM.h which #includes mpi.h
+# 20150319: For some reason, ESMC.h #includes ESMC_VM.h which #includes mpi.h
 ifeq (${PVM_ARCH},MACOSX)
 # Use stub header for uniprocessor MPI emulation provided by ESMF
  ESMF_INC_FLG += -I/Users/zender/data/esmf/src/Infrastructure/stubs/mpiuni
