@@ -175,7 +175,8 @@ out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='' # [sng] Parallelism type
 pdq_typ='' # [sng] Permutation type
-rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon --rnr=0.0' # [sng] Regridding options
+#rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon --rnr=0.0' # [sng] Regridding options
+rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
 thr_nbr=2 # [nbr] Thread number for regridder
 tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
 #tps_opt='--mono' # [sng] TempestRemap options
@@ -443,15 +444,21 @@ fi # !map_mk
 if [ -n "${map_fl}" ]; then 
     if [ "${map_mk}" = 'Yes' ]; then
         if [ -e "${map_fl}" ]; then
-	    while true; do
-		echo "WARNING: Specified regrid map ${map_fl} already exists and will be over-written."
-		read -p "Continue (y/n)?" ask_nsw
-		case "${ask_nsw}" in
+	    rsp_kbd_nbr=0
+	    while [ ${rsp_kbd_nbr} -lt 10 ] ; do
+		echo "WARNING: The file ${map_fl} already exists and will be over-written by the newly generated map-file."
+		read -p "Continue (y/n)? " rsp_kbd
+		let rsp_kbd_nbr+=1
+		case "${rsp_kbd}" in
 		    N*|n*) exit 1 ;;
 		    Y*|y*) break ;;
 		    *) continue ;;
 		esac
-	    done # !true
+	    done # !rsp_kbd_nbr
+	    if [ ${rsp_kbd_nbr} -ge 10 ]; then
+		echo "ERROR: Too many invalid responses, exiting"
+		exit 1
+	    fi # !rsp_kbd_nbr
 	fi # ! -e
     else # !map_mk
         if [ ! -e "${map_fl}" ]; then
