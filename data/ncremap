@@ -442,6 +442,7 @@ if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ] || [ "${grd_
     map_mk='Yes'
 fi # !map_mk
 if [ -n "${map_fl}" ]; then 
+    map_usr_flg='Yes'
     if [ "${map_mk}" = 'Yes' ]; then
         if [ -e "${map_fl}" ]; then
 	    rsp_kbd_nbr=0
@@ -467,18 +468,19 @@ if [ -n "${map_fl}" ]; then
 	    exit 1
 	fi # ! -e
     fi # !map_mk
-    map_usr_flg='Yes'
-else
+else # !map_fl
     if [ "${wgt_gnr}" = 'esmf' ]; then 
 	map_fl_dfl="${drc_out}/ncremap_tmp_map_${wgt_gnr}_${alg_opt}.nc" # [sng] Map-file default
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
 	map_fl_dfl="${drc_out}/ncremap_tmp_map_${wgt_gnr}.nc" # [sng] Map-file default
-	msh_fl_dfl="${drc_out}/ncremap_tmp_msh_ovr_${wgt_gnr}.g" # [sng] Mesh-file default
-	msh_fl=${msh_fl_dfl}
     fi # !tempest
     map_fl=${map_fl_dfl}
 fi # !map_fl
+if [ "${map_mk}" = 'Yes' ] && [ "${wgt_gnr}" = 'tempest' ]; then 
+    msh_fl_dfl="${drc_out}/ncremap_tmp_msh_ovr_${wgt_gnr}.g" # [sng] Mesh-file default
+    msh_fl=${msh_fl_dfl}
+fi # !tempest
 
 if [ "${mpi_flg}" = 'Yes' ]; then
     if [ -n "${COBALT_NODEFILE}" ]; then 
@@ -670,14 +672,12 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
     if [ "${wgt_gnr}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} > /dev/null"
 	cmd_map[${fl_idx}]="GenerateOfflineMap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tps_opt} > /dev/null"
-	# 20160101: TempestRemap programs have false positive error returns (failures reported as successes) so remove old map/mesh before generating new
-	/bin/rm -f ${msh_fl} ${map_fl}
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_msh[${fl_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_msh[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${msh_fl} ] ; then
+	    if [ $? -ne 0 ] || [ ! -f ${msh_fl} ]; then
 		printf "${spt_nm}: ERROR Failed to generate mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -688,7 +688,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_map[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${map_fl} ] ; then
+	if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
 	    printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
 	    if [ "${wgt_gnr}" = 'esmf' ]; then 
 		printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
@@ -696,8 +696,8 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
 	    exit 1
 	fi # !err
     fi # !dbg
-    # Set map_usr_flg to 'Yes' here to avoid re-generating map within file loop
-    map_usr_flg='Yes'
+    # Set map_mk to something besides 'Yes' to avoid re-generating map within file loop
+    map_mk='Already made map once. Never again.'
 fi # !grd_src_usr_flg
 
 # Begin loop over input files
@@ -728,8 +728,8 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	exit 1
     fi # !basename
 
-    # Generate new map unless map-file was supplied or already-generated (as indicated by map_usr_flg)
-    if [ "${map_mk}" = 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ]; then
+    # Generate new map unless map-file was supplied or already-generated
+    if [ "${map_mk}" = 'Yes' ]; then
 	# Block 2: Source grid
 	# Block 2 Loop 1: Source gridfile command
 	if [ ! -e "${in_fl}" ]; then
@@ -763,8 +763,6 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    printf "Mesh-File: ${msh_fl}\n"
 	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} ${tps_opt} > /dev/null"
 	    cmd_map[${fl_idx}]="GenerateOfflineMap --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${tps_opt} > /dev/null"
-	    # 20160101: TempestRemap programs have false negative error returns (failures reported as successes) so remove old map/mesh before generating new
-	    /bin/rm -f ${msh_fl} ${map_fl}
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_msh[${fl_idx}]}
 	    fi # !dbg
@@ -794,10 +792,10 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 
 	# Prevent creating new source gridfile and map-file after first iteration
 	if [ "${mlt_map_flg}" = 'No' ] && [ ${fl_idx} -eq 0 ] ; then 
-	    map_usr_flg='Yes'
+	    map_mk='Already made map once. Never again.'
 	fi # !mlt_map_flg
 
-    fi # !map_usr_flg
+    fi # !map_mk
     
     # Block 4: Permutation
     if [ -n "${pdq_opt}" ]; then # !pdq_opt
