@@ -83,6 +83,25 @@ extern "C" {
 # define False 0
 #endif /* False */
   
+/* 20151207: Reports that Cygwin math.h does not define M_LN10 or M_LN2
+   20160209: More reports that Cygwin math.h does not define M_PI
+   math.h does not necessarily define these constants in C99 mode
+   They are usually defined on Linux and MacOSX but not Cygwin
+   Linux math.h says these constants are POSIX/UNIX extensions to the C standard,
+   and only defines them when __DARWIN_C_LEVEL >= 199506L
+   NCO uses these math constants in nco_aux.c (M_PI), nco_ppc.c (M_LN2,M_LN10), and nco_rgr.c (M_PI)
+   Rather than have backup-definitions in the three corresponding .h files, 
+   we #ifndef all necessary math constants once in the common header nco.h */
+#ifndef M_LN10
+# define M_LN10      2.30258509299404568401799145468436421   /* loge(10)       */
+#endif /* M_LN10 */
+#ifndef M_LN2
+# define M_LN2       0.693147180559945309417232121458176568  /* loge(2)        */
+#endif /* M_LN2 */
+#ifndef M_PI
+#define M_PI        3.14159265358979323846264338327950288   /* pi             */
+#endif /* M_PI */
+
   /* Variables marked CEWI "Compiler Error Warning Initialization" are initialized
      to prevent spurious "warning: `float foo' might be used uninitialized in 
      this function" warnings when, e.g., GCC -Wuninitialized is turned on.

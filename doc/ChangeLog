@@ -1,5 +1,9 @@
 2016-02-10  Charlie Zender  <zender@uci.edu>
 
+	* Collect backup-definitions of M_PI, M_LN2, M_LN10 from nco_aux.h, nco_ppc.h, and nco_rgr.h into nco.h
+	Those definitions appear to be needed by Cygwin, and only Cygwin, on which NCO is rarely tested
+	Having them available in all source files reduces chance of future Cygwin breakage
+
 	* NCO 4.5.5-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha06 final changes';git push
 	git tag -a 4.5.5-alpha06 -m 'Version 4.5.5-alpha06 new features: bilinear default, fix when building with netCDF 4.4.0, nces crd mtd';git push --tags
