@@ -19061,6 +19061,13 @@ contents, which are currently empty.
 For example, to cause @command{GenerateOfflineMap} to use a
 @code{_FillValue} of @math{-1}, pass 
 @samp{-T "--fillvalue -1.0"} to @command{ncremap}.
+Other common options include enforcing monotonicity (which is not the
+default in TempestRemap) constraints. 
+To guarantee monotonicity in regridding from Finite Volume @acronym{FV} 
+to @acronym{FV} maps (e.g., @acronym{MPAS}-to-rectangular), pass 
+@samp{-T "-in_np 1"} to @command{ncremap}.
+To guarantee monotonicity in regridding from Finite Element @acronym{FE} 
+to @acronym{FV} maps, pass @samp{-T "--mono"}.
 
 @html
 <a name="thr_nbr"></a> <!-- http://nco.sf.net/nco.html#thr_nbr -->

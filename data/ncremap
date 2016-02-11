@@ -500,11 +500,11 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_nbr=${#nd_nm[@]}
 	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	    case "${HOSTNAME}" in 
-		cori* )
+		cori* | edison* | nid* )
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
 		    cmd_mpi[${fl_idx}]="srun -L ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # NERSC
-		edison* | hopper* | nid* )
-		    # NB: NERSC staff says aprun automatically assigns to unique nodes even without "-L $node" argument
+		hopper* )
+		    # NB: NERSC migrated from aprun to srun in 201601. Hopper commands will soon be deprecated.
 		    cmd_mpi[${fl_idx}]="aprun -L ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # NERSC
 		* )
 		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
