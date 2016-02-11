@@ -701,8 +701,8 @@ ncap_lmt_evl
   // do error checking 
   if(!prs_arg->FORTRAN_IDX_CNV){ 
     std::ostringstream os;
-    if(srt<0) srt+=cnt_dmn-1;       
-    if(end<0) end+=cnt_dmn-1;       
+    if(srt<0) srt+=cnt_dmn;       
+    if(end<0) end+=cnt_dmn;       
     if(lmt_ptr->is_usr_spc_min && (srt<0 || srt>cnt_dmn-1)) {
       
       os<<"Lower limit " <<srt<<" for dim "<<lmt_ptr->nm<<" is outside range "<<0L<<"-"<<cnt_dmn-1;

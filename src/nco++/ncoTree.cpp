@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoTree.cpp"$ */
+/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoTree.cpp"$ */
 #include "ncoTree.hpp"
 #include <antlr/Token.hpp>
 #include <antlr/AST.hpp>
@@ -4318,7 +4318,7 @@ var_sct * ncoTree::var_lmt_one_lhs(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 			// fortran index convention   
 			if(prs_arg->FORTRAN_IDX_CNV)
 			srt--;
-			else if(srt<0) srt+=var_lhs->sz-1; //deal with negative index convention 
+			else if(srt<0) srt+=var_lhs->sz; //deal with negative index convention 
 			
 			// do some bounds checking on single limits
 			if(srt >= var_lhs->sz || srt<0 )
