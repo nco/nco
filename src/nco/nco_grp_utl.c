@@ -6685,7 +6685,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
 
           /* Match input relative name to dimension relative name */ 
-          if(strcmp(lmt[lmt_idx]->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
+          if(!strcmp(lmt[lmt_idx]->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm)){
 
             /* Divide limits into two different cases */
 
@@ -7595,9 +7595,7 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
     trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa.lmt_crr=-1;
 
     /* Loop limits */
-    for(int idx_lmt=0;idx_lmt<nbr_nbr;idx_lmt++)
-    {
-
+    for(int idx_lmt=0;idx_lmt<nbr_nbr;idx_lmt++){
       /* Increment number of dimension limits for this dimension */
       trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr++;
 
@@ -7626,14 +7624,10 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
 
     } /* Loop limits */
 
-
-
     /* Apply MSA for each Dimension in new cycle (that now has all its limits in place) */
 
     /* Loop limits */
-    for(int idx_lmt=0;idx_lmt<nbr_nbr;idx_lmt++)
-    {
-
+    for(int idx_lmt=0;idx_lmt<nbr_nbr;idx_lmt++){
       dmn_trv_sct *ncd=trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd;
 
       /* Adapted from original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
