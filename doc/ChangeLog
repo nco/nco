@@ -1,3 +1,9 @@
+2016-02-11  Henry Butowsky  <henryb@hush.com>
+
+	* fixed incorrect handling of negative dmn indices in ncoGrammar in  ncap_evl_lmt()
+	  srt<0 => srt+=dmn_sz
+	  end<0 => end+=dmn_sz
+
 2016-02-10  Charlie Zender  <zender@uci.edu>
 
 	* Collect backup-definitions of M_PI, M_LN2, M_LN10 from nco_aux.h, nco_ppc.h, and nco_rgr.h into nco.h
