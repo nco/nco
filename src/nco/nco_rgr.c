@@ -1534,6 +1534,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack");
       else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack:L2_Standard_atmospheric&surface_product");
       else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Along_Swath:mod04",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("Cell_Along_Swath:mod04");
+      else if((rcd=nco_inq_dimid_flg(in_id,"CO_Latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude");
       else{
 	(void)fprintf(stdout,"%s: ERROR %s reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of latitude dimension name with --rgr lat_nm=name\n",nco_prg_nm_get(),fnc_nm);
 	nco_exit(EXIT_FAILURE);
