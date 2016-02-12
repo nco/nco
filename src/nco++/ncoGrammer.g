@@ -3241,7 +3241,7 @@ var_sct *var_nbr;
                // fortran index convention   
                if(prs_arg->FORTRAN_IDX_CNV)
                 srt--;
-               else if(srt<0) srt+=var_lhs->sz-1; //deal with negative index convention 
+               else if(srt<0) srt+=var_lhs->sz; //deal with negative index convention 
               
                 // do some bounds checking on single limits
                 if(srt >= var_lhs->sz || srt<0 )
