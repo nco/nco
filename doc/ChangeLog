@@ -1,6 +1,6 @@
 2016-02-12  Charlie Zender  <zender@uci.edu>
 
-	* Complete special-case zonal workflows (HIRDLS and MLS) in ncremap
+	* Complete special-case zonal workflows (HIRDLS and MLS) in ncremap, nco_rgr.c
 
 2016-02-11  Charlie Zender  <zender@uci.edu>
 
