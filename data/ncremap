@@ -294,6 +294,7 @@ if [ -n "${drc_usr}" ]; then
 fi # !drc_usr
 grd_dst_dfl="${drc_out}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
 grd_src_dfl="${drc_out}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
+hirdls_fl="${drc_out}/ncremap_tmp_hirdls.nc" # [sng] HIRDLS workflow default
 pdq_fl="${drc_out}/ncremap_tmp_pdq.nc" # [sng] Permuted data default
 tmp_out_fl="${drc_out}/${tmp_out_fl}" # [sng] Temporary output file
 if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bln' ] ; then 
@@ -351,9 +352,9 @@ elif [ "${par_typ}" = 'mpi' ]; then
     par_opt=' &'
 fi # !par_typ
 if [ -n "${pdq_typ}" ]; then
-    if [ "${pdq_typ}" != 'airs' ] && [ "${pdq_typ}" != 'mpas' ] && [ "${pdq_typ}" != 'nil' ]; then 
+    if [ "${pdq_typ}" != 'airs' ] && [ "${pdq_typ}" != 'hirdls' ] && [ "${pdq_typ}" != 'mpas' ] && [ "${pdq_typ}" != 'nil' ]; then 
 	    echo "ERROR: Invalid -P pdq_typ option = ${pdq_typ}"
-	    echo "HINT: Valid pdq_typ arguments are 'airs', 'mpas', and 'nil'"
+	    echo "HINT: Valid pdq_typ arguments are 'airs', 'hirdls', 'mpas', and 'nil'"
 	    exit 1
     fi # !pdq_typ
 fi # !pdq_typ
@@ -797,8 +798,27 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 
     fi # !map_mk
     
-    # Block 4: Permutation
-    if [ -n "${pdq_opt}" ]; then # !pdq_opt
+    # Block 4: Special Cases
+    # Block 4a: HIRDLS
+    if [ "${pdq_typ}" = 'hirdls' ]; then
+	cmd_hirdls[${fl_idx}]="ncecat -u lon ${nco_opt} ${nco_var_lst} ${in_fl} ${in_fl} ${hirdls_fl}1;ncap2 ${nco_opt} -s 'lon[$lon]'={0.0,90.0,180.0,270.0}' ${hirdls_fl}1 ${hirdls_fl}2;ncpdq ${nco_opt} ${nco_var_lst} ${hirdls_fl}2 ${hirdls_fl}3;"
+	in_fl="${hirdls_fl}3"
+
+	# Block 4a Loop 2: Execute and/or echo commands
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_hirdls[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_hirdls[${fl_idx}]}
+	    if [ $? -ne 0 ] || [ ! -f "${hirdls_fl}3" ] ; then
+		printf "${spt_nm}: ERROR Failed to generate HIRDLS-file. Debug this:\n${cmd_hirdls[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    fi # !hirdls
+
+    # Block 4: Generic Permutation (AIRS, MPAS)
+    if [ -n "${pdq_opt}" ]; then
 	printf "PDQ(in)  : ${in_fl}\n"
 	printf "PDQ(out) : ${pdq_fl}\n"
 	cmd_pdq[${fl_idx}]="ncpdq ${nco_opt} ${nco_var_lst} ${pdq_opt} ${in_fl} ${pdq_fl}"
@@ -840,6 +860,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !par_typ
     fi # !dbg
 
+    # Block 6: Wait
     # Parallel regridding (both Background and MPI) spawn simultaneous processes in batches of ${job_nbr}
     # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
     if [ -n "${par_opt}" ]; then
@@ -862,6 +883,22 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !bch_flg
     fi # !par_typ
     
+    # Block 7: HIRDLS special case
+    if [ "${pdq_typ}" = 'hirdls' ]; then
+	cmd_hirdls[${fl_idx}]="ncwa -a lon ${nco_opt} ${nco_var_lst} ${out_fl} ${out_fl}"
+	# Block 7 Loop 2: Execute and/or echo commands
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_hirdls[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_hirdls[${fl_idx}]}
+	    if [ $? -ne 0 ] || [ ! -f "${out_fl}" ] ; then
+		printf "${spt_nm}: ERROR Failed to generate HIRDLS-file. Debug this:\n${cmd_hirdls[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    fi # !hirdls
+
 done # !fl_idx
 
 # Parallel mode will often exit loop after a partial batch, wait() for remaining jobs to finish
