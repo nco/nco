@@ -91,9 +91,10 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
         (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
         break;
       default:
+	nco_dfl_case_generic_err();
         break;
       } /* end switch */
-      /* Some operations require additional processing */
+      /* A few operations require additional processing */
       switch(nco_op_typ_cpy) {
       case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
       case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
@@ -103,7 +104,17 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
       case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
         (void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
         break;
+      case nco_op_avg:
+      case nco_op_ttl:
+      case nco_op_min:
+      case nco_op_max:
+      case nco_op_mibs:
+      case nco_op_mabs:
+      case nco_op_mebs:
+      case nco_op_avgsqr:
+        break;
       default:
+	nco_dfl_case_generic_err();
         break;
       } /* end switch */
     } /* !var_prc[idx]->is_crd_var */
@@ -201,6 +212,9 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
     /* Sum the squares */
     (void)nco_var_add_tll_ncra(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->wgt_crr,var_prc->wgt_sum,var_prc->val,var_prc_out->val);
     break;
+  default:
+    nco_dfl_case_generic_err();
+    break; /* [enm] Nil or undefined operation type */
   } /* end switch */
 } /* end nco_opr_drv() */
 
@@ -229,7 +243,8 @@ nco_op_typ_cf_sng /* [fnc] Convert arithmetic operation type enum to string */
   case nco_op_dvd:
   case nco_op_nil:
   default:
-    return "BROKEN";
+    nco_dfl_case_generic_err();
+    return "BROKEN"; /* CEWI */
     break; /* [enm] Nil or undefined operation type */
   } /* end switch */
 } /* end nco_op_typ_cf_sng() */

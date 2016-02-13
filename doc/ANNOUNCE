@@ -76,11 +76,9 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.5.3 built/tested with netCDF
-   4.4.0-development (20160101) on top of HDF5 hdf5-1.8.13 with:
-
-   cd ~/nco;./configure # Configure mechanism -or-
-   cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
+   These problems occur with NCO 4.5.5-alpha07 built/tested under
+   MacOS with netCDF 4.3.3.1 on HDF5 1.8.16 and with
+   Linux with netCDF 4.4.1-development (20160212) on HDF5 1.8.13.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
