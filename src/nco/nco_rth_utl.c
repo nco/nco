@@ -171,10 +171,8 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
     break;	
   case nco_op_mebs: /* Mean absolute value */
     /* Always take the absolute value of the fresh input
-       Then, on first loop, copy variable from var_prc to var_prc_out like min and max
-       Following loops, do comparative maximum after taking absolute value */
+       Every loop add and increment tally like avg, sqrt, sqravg */
     (void)nco_var_abs(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val);
-    if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); 
     (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->wgt_crr,var_prc->wgt_sum,var_prc->val,var_prc_out->val);
     break;	
   case nco_op_mibs: /* Mean absolute value */
