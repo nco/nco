@@ -1,5 +1,12 @@
 2016-02-12  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.5-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.5-alpha07 final changes';git push
+	git tag -a 4.5.5-alpha07 -m 'Version 4.5.5-alpha07 new features: ncremap zonal, ncra/nces mebs nrm, ncap2 ngt dmn idx, cygwin';git push --tags
+
+	* Fix mebs normalization in ncra/nces. Previously mebs was not normalized and would just accumulate!
+	Affected all previous version of ncra/nces but not ncwa. Problem reported by Will Koeppen.
+
 	* Complete special-case zonal workflows (HIRDLS and MLS) in ncremap, nco_rgr.c
 
 2016-02-11  Charlie Zender  <zender@uci.edu>

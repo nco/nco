@@ -1152,6 +1152,12 @@ variables:
 	float txyz(time,lon,lat,lev);
 	txyz:long_name = "four dimensional record variable stored in txyz (time,lon,lat,lev) order";
 
+	float xyz(lon,lat,lev);
+	xyz:long_name = "three dimensional variable stored in xyz (lon,lat,lev) order";
+	
+	float tyz(time,lat,lev);
+	tyz:long_name = "three dimensional record variable stored in tyz (time,lat,lev) order";
+	
 	float four_dmn_rec_var(time,lat,lev,lon);
 	four_dmn_rec_var:long_name = "four dimensional record variable";
 	four_dmn_rec_var:units = "watt meter-2";
@@ -1725,6 +1731,13 @@ data:
 	tz=		1,2,3,4,5,6,7,8,9,10,
 			11,12,13,14,15,16,17,18,19,20,
 			21,22,23,24,25,26,27,28,29,30;
+	tyz=		1,2,3,4,5,6,7,8,9,10,
+			11,12,13,14,15,16,17,18,19,20,
+			21,22,23,24,25,26,27,28,29,30,
+	                31,32,33,34,35,36,37,38,39,40,
+                        41,42,43,44,45,46,47,48,49,50,
+			51,52,53,54,55,56,57,58,59,60;
+	xyz=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23;
 	txyz=		 	  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,
 				 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
 				 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,

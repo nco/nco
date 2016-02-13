@@ -113,11 +113,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.5-alpha06
-@set doc-edition 4.5.5-alpha06
+@set nco-edition 4.5.5-alpha07
+@set doc-edition 4.5.5-alpha07
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 10 February 2016
+@set update-date 12 February 2016
 @set update-month February 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9250,7 +9250,7 @@ Minimum value
 Maximum absolute value
 @item mebs
 Mean absolute value
-@item mabs
+@item mibs
 Minimum absolute value
 @item rms
 Root-mean-square (normalized by @var{N})

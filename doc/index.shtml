@@ -687,12 +687,14 @@ You may also retrieve the source of tagged versions directly with, e.g.,
 <tt>ncks</tt> prints human-legible ISO8601 dates;
 extensive hashing?;
 netCDF4 compound types?;
+<tt>ncremap</tt> use CF to find coordinates;
+<tt>ncks --xtn</tt> better extensive variable treatment;
 Optimize diskless files?;</li>
 <li><b>NCO 4.5.5</b>: (<i>In Progress, features in-progress or completed include</i>)
 All operators support CDF5 format;
-<tt>ncremap -P airs,mpas</tt>;
-<tt>ncremap</tt> use CF to find coordinates;
-<tt>ncks --xtn</tt> better extensive variable treatment;
+<tt>ncap2</tt> fix negative dimension indices handling;
+<tt>ncremap -P airs,hirdls,mls,mpas</tt>;
+<tt>nces/ncra</tt> fix <tt>-y mebs</tt> normalization;
 <tt>ncpdq</tt> fix <tt>--gaa</tt>;
 <tt>ncpdq</tt> fix permutation with multiple groups;</li>
 <li><b>NCO 4.5.4</b>: (<i>Current Stable Release</i>)

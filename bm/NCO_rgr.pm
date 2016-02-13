@@ -1171,6 +1171,17 @@ print "\n";
 
    } # #### Group Ensemble tests	
     
+#nces #23
+# nces -O -y mebs -v one -p ~/nco/data in.nc in.nc ~/foo.nc
+# ncks -C -H -v one ~/foo.nc
+    $dsc_sng="Test mebs normalization";
+    $tst_cmd[0]="ncra -Y ncfe -y mebs -v one $omp_flg -O $fl_fmt $nco_D_flg $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -v one %tmp_fl_00%";
+    $tst_cmd[2]="one = 1";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+
 # print "paused - hit return to continue"; my $wait=<STDIN>;
     
 ####################

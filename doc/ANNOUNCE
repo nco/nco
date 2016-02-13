@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.5-alpha06 are ready. 
+The netCDF Operators NCO version 4.5.5-alpha07 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -25,36 +25,52 @@ A. NCO supports the CDF5 file type introduced in netCDF 4.4.0.
    ncks -7 in_5.nc out_7.nc
    http://nco.sf.net/nco.html#cdf5
 
-A. ncremap: Many improvements.
-   -P option triggers filetype-specific workflow procedures (such as
-   automatic permutation). Currently filetype-specific handling is
-   defined for AIRS and MPAS files:
-   ncremap -P airs -i airs.nc -m map.nc -o out.nc
-   ncremap -P mpas -i mpas.nc -m map.nc -o out.nc
-   Now -m map_fl will name internally generated mapfiles:
+B. ncremap: -P option triggers filetype-specific workflow procedures
+   (such as automatic permutation). Currently filetype-specific
+   handling is defined for AIRS, HIRDLS, MLS, and MPAS files:
+   ncremap -P airs   -i airs.nc -m map.nc -o out.nc
+   ncremap -P hirdls -i airs.nc -m map.nc -o out.nc
+   ncremap -P mls    -i airs.nc -m map.nc -o out.nc
+   ncremap -P mpas   -i mpas.nc -m map.nc -o out.nc
+   One aspect of this handling is to rearrange dimension ordering
+   from the way NASA/MPAS distributes generates these datasets so 
+   that horizontal spatial dimensions (lat, lon) come last.
+   This is friendlier for regridding applications.
+   Also, -m map_fl supplies names to internally generated mapfiles: 
    ncremap -i in.nc -d dst.nc -m map.nc -o out.nc
    http://nco.sf.net/nco.html#ncremap
+
+C. ncremap -j job_nbr option for MPI parallelism
+   http://nco.sf.net/nco.html#ncremap
+
+D. Improve support for Cygwin builds
 
 BUG FIXES:
 
 A. ncremap: Inferred curvilinear grids always return points now in
    counterclockwise order. Version 4.5.4 sometimes did not. 
    This caused bad things to happen in the weight-generators.
-   The solution is to upgrade to 4.5.5-alpha04.  
 
-A. ncremap: Inferring grids from curvilinear coordinates no longer
+B. ncremap: Inferring grids from curvilinear coordinates no longer
    confused by "branch cuts" (i.e., the date-line). ncremap version
    4.5.4 would sometimes infer concave gridcells that then confused
-   mapping software. The solution is to upgrade to 4.5.5-alpha04.  
-   Thanks to Feng Ding for reporting the problem.
+   mapping software. Thanks to Feng Ding for reporting the problem.
 
-A. ncpdq: Fix problem that could cause '--gaa' option to fail in
-   earlier versions. The solution is to upgrade to 4.5.5-alpha04.  
+C. ncpdq: Fix problem that could cause '--gaa' option to fail in
+   earlier versions. 
 
-A. nces: Copy attributes of coordinate variables in nces --nsm_grp.
+D. nces: Copy attributes of coordinate variables in nces --nsm_grp.
    Previous versions omitted the attributes of coordinates (not
    regular variables) in the ensemble average group. Thanks to Hannah
    Nissan for reporting and Pedro Vicente for fixing this.
+
+E. ncra/nces: Correctly normalize "mebs" arithmetic. Under certain
+   conditions previous versions did not correctly normalize sums
+   computed with the mebs (mean absolute value) operator. Problem
+   reported by Will Koeppen. 
+
+F. ncap2: Fix incorrect handling of negative dimension indices.
+   Problem reported by Maksym Petrenko.
 
 KNOWN PROBLEMS DUE TO NCO:
 
@@ -115,7 +131,7 @@ B. NOT YET FIXED (netCDF4 library bug)
 
    20150922: Confirmed problem reported by Isabelle Dast, reported to Unidata
    20150924: Unidata confirmed problem
-   20151221: Verified problem still exists in netCDF library
+   20160212: Verified problem still exists in netCDF library
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd

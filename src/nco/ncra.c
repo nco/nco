@@ -1333,13 +1333,13 @@ main(int argc,char **argv)
         int mbr_srt=trv_tbl->nsm[idx_nsm].mbr_srt;
         int mbr_end=trv_tbl->nsm[idx_nsm].mbr_end;
 
-        /* Loop over members of current ensemble (use start and end members, multi file cases) */
+        /* Loop over ensemble members in current file (use start and end members, multi-file cases) */
         for(int idx_mbr=mbr_srt;idx_mbr<mbr_end;idx_mbr++){
 
           /* Loop over all variables */
           for(int idx_prc=0;idx_prc<nbr_var_prc;idx_prc++){ 
 
-            /* Obtain variable GTT object for the member *variable* in ensemble (the ones to average) */
+            /* Obtain variable GTT object for member variable in ensemble */
             var_trv=trv_tbl_var_nm_fll(var_prc[idx_prc]->nm_fll,trv_tbl);
             assert(var_trv);
 
@@ -1384,7 +1384,7 @@ main(int argc,char **argv)
           } /* end loop over var_prc */
         } /* end loop over mbr */
 
-      } /* Loop over ensembles in current file */
+      } /* !idx_mbr */
 
       (void)trv_tbl_free(trv_tbl1);
 
@@ -1423,13 +1423,12 @@ main(int argc,char **argv)
 
   /* Subcycle argument warning */
   if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* fxm: Remove this or make DBG when crd_val SSC/MRO is predictable? */
-    /* Loop records */
     for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
       /* Check subcycle for each record */
       if(lmt_rec[idx_rec]->ssc != 1L && (lmt_rec[idx_rec]->lmt_typ == lmt_crd_val || lmt_rec[idx_rec]->lmt_typ == lmt_udu_sng)){
         (void)fprintf(stderr,"\n%s: WARNING Subcycle argument SSC used in hyperslab specification for %s which will be determined based on coordinate values rather than dimension indices. The behavior of the subcycle hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first SSC elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ SSC elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of SSC records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",nco_prg_nm_get(),lmt_rec[idx_rec]->nm);
       } /* Check subcycle for each record */
-    } /* Loop records */
+    } /* !idx_rec */
   } /* Subcycle argument warning */
 
   /* Normalize, multiply, etc where necessary: ncra and nces normalization blocks are identical, 

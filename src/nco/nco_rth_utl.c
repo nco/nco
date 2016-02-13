@@ -72,6 +72,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
     }else{ /* !var_prc[idx]->is_crd_var */
       switch(nco_op_typ_cpy){
       case nco_op_avg: /* Normalize sum by tally to create mean */
+      case nco_op_mebs: /* Normalize sum by tally to create mean */
       case nco_op_sqrt: /* Normalize sum by tally to create mean */
       case nco_op_sqravg: /* Normalize sum by tally to create mean */
       case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
@@ -83,6 +84,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
         break;
       case nco_op_min: /* Minimum is already in buffer, do nothing */
       case nco_op_max: /* Maximum is already in buffer, do nothing */
+      case nco_op_mibs: /* Minimum absolute value is already in buffer, do nothing */
       case nco_op_mabs: /* Maximum absolute value is already in buffer, do nothing */
         break;
       case nco_op_ttl: /* Total is already in buffer, stuff missing values into elements with zero tally */
