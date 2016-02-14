@@ -4620,14 +4620,21 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(var_trv->flg_rdr){
     /* Must be ncpdq */
     assert(nco_prg_id == ncpdq);
-    for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
-      dmn_idx_in_out[var_trv->dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)
+      dmn_idx_in_out[var_trv->dmn_idx_out_in[idx_dmn]]=idx_dmn;
 
-    for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
-      dmn_out_id_tmp[dmn_out_idx]=dmn_out_id[dmn_out_idx];
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)
+      dmn_out_id_tmp[idx_dmn]=dmn_out_id[idx_dmn];
 
-    for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
-      dmn_out_id[dmn_idx_in_out[dmn_out_idx]]=dmn_out_id_tmp[dmn_out_idx];
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)
+      dmn_out_id[dmn_idx_in_out[idx_dmn]]=dmn_out_id_tmp[idx_dmn];
+
+    if (nco_dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout, "%s: DEBUG %s dimensions for %s:\n", nco_prg_nm_get(), fnc_nm, var_trv->nm_fll);
+      for (int idx_dmn = 0; idx_dmn < nbr_dmn_var; idx_dmn++){
+        (void)fprintf(stdout, "%s %d\n", dmn_cmn[idx_dmn].nm_fll, dmn_cmn[idx_dmn].id);
+      }
+    }
   } /* !var_trv->rdr */
 
   if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 

@@ -1,7 +1,7 @@
 // -*-C++-*-
 // Purpose: 
 // Generate netCDF files with:
-// ncgen -k netCDF-4 -b -o ~/nco/data/in_grp_8.nc ~/nco/data/in_grp_8.cdl
+// ncgen -k 4 -b -o ~/nco/data/in_grp_8.nc ~/nco/data/in_grp_8.cdl
 
 netcdf in_grp_8 {
  dimensions:
