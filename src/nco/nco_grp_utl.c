@@ -4897,51 +4897,6 @@ nco_get_dmn_nm_fll                     /* [fnc] Return dimension name with input
 } /* nco_get_dmn_nm_fll() */
 
 void
-nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
-(int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
- const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
- var_sct **var_prc_out,                /* I [sct] Processed variables */
- trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
-{
-  /* Purpose: Transfer dimension structures to be re-ordered (ncpdq) into GTT */
-
-  assert(nco_prg_id_get() == ncpdq);
-
-  /* Loop processed variables */
-  for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
-
-    /* Loop table */
-    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-      trv_sct var_trv=trv_tbl->lst[idx_var];
-
-      /* If GTT variable object is to extract */
-      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
-
-        /* Match by full variable name  */
-        if(!strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll)){
-
-          /* Mark re-order flag */
-          trv_tbl->lst[idx_var].flg_rdr=True;
-
-          assert(var_trv.nbr_dmn==var_prc_out[idx_var_prc]->nbr_dim);
-
-          /* Loop variable dimensions */
-          for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
-
-            /* Transfer */
-            trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]=dmn_idx_out_in[idx_var_prc][idx_var_dmn];
-
-          } /* Loop variable dimensions */
-        } /* Match by full variable name  */
-      } /* If GTT variable object is to extract */
-    } /* Loop table */
-  } /* Loop processed variables */
-
-  return;
-
-} /* end nco_dmn_rdr_trv() */
-
-void
 nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-ordered variable */
 (trv_tbl_sct * const trv_tbl,         /* I/O [sct] GTT (Group Traversal Table) */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */

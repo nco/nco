@@ -425,13 +425,6 @@ nco_cpy_var_dfn_trv                    /* [fnc] Define specified variable in out
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 void
-nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
-(int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
- const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
- var_sct **var_prc_out,                /* I [sct] Processed variables */
- trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
-
-void
 nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable */
 (trv_tbl_sct * const trv_tbl,         /* I/O [sct] GTT (Group Traversal Table) */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
