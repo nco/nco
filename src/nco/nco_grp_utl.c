@@ -4630,9 +4630,10 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       dmn_out_id[dmn_idx_in_out[idx_dmn]]=dmn_out_id_tmp[idx_dmn];
 
     if (nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout, "%s: DEBUG %s dimensions for %s:\n", nco_prg_nm_get(), fnc_nm, var_trv->nm_fll);
-      for (int idx_dmn = 0; idx_dmn < nbr_dmn_var; idx_dmn++){
-        (void)fprintf(stdout, "%s %d\n", dmn_cmn[idx_dmn].nm_fll, dmn_cmn[idx_dmn].id);
+      (void)fprintf(stdout, "%s: DEBUG %s dimensions for %s:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
+      for (int idx_dmn=0; idx_dmn<nbr_dmn_var;idx_dmn++){
+        char *dmm_nm_fll=nco_get_dmn_nm_fll(dmn_out_id[idx_dmn],dmn_cmn,nbr_dmn_var);
+        (void)fprintf(stdout, "%s %d\n",dmm_nm_fll,dmn_cmn[idx_dmn].id);
       }
     }
   } /* !var_trv->rdr */
@@ -4881,6 +4882,22 @@ nco_dfn_dmn                            /* [fnc] Define dimension size and ID in 
   } /* Loop dimensions */
 
 } /* nco_dmn_dfn */
+
+char*
+nco_get_dmn_nm_fll                     /* [fnc] Return dimension name with input id */
+(const int dmn_id,                     /* I [id] ID of dimension */
+ const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure array */
+ const int nbr_dmn)                    /* I [nbr] Number of dimensions (size of above array) */
+{
+  /* Loop dimensions */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+    /* Find dimension */
+    if(dmn_id==dmn_cmn[idx_dmn].id){
+      return dmn_cmn[idx_dmn].nm_fll;
+    } /* Find dimension */
+  } /* Loop dimensions */
+
+} /* nco_get_dmn_nm_fll() */
 
 void
 nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
