@@ -4883,20 +4883,17 @@ nco_dfn_dmn                            /* [fnc] Define dimension size and ID in 
 
 } /* nco_dmn_dfn */
 
-char*
+char *
 nco_get_dmn_nm_fll                     /* [fnc] Return dimension name with input id */
 (const int dmn_id,                     /* I [id] ID of dimension */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure array */
  const int nbr_dmn)                    /* I [nbr] Number of dimensions (size of above array) */
 {
   /* Loop dimensions */
-  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
-    /* Find dimension */
-    if(dmn_id==dmn_cmn[idx_dmn].id){
-      return dmn_cmn[idx_dmn].nm_fll;
-    } /* Find dimension */
-  } /* Loop dimensions */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++)
+    if(dmn_id == dmn_cmn[idx_dmn].id) return dmn_cmn[idx_dmn].nm_fll;
 
+  return "ERROR";
 } /* nco_get_dmn_nm_fll() */
 
 void
