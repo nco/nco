@@ -742,14 +742,15 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	# Block 1: Special cases
 	if [ "${pdq_typ}" = 'hirdls' ] || [ "${pdq_typ}" = 'mls' ]; then
 	    # Pre-process zonal input files so grid inferral works
-	    cmd_znl[${fl_idx}]="ncecat -u lon ${nco_opt} ${nco_var_lst} ${in_fl} ${in_fl} ${in_fl} ${in_fl} ${znl_fl/znl/znl1};ncap2 ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' ${znl_fl/znl/znl1} ${znl_fl/znl/znl2};"
-	    in_fl="${znl_fl/znl/znl2}"
+	    # 20160214: fix record variable to work around ncpdq problem
+	    cmd_znl[${fl_idx}]="ncecat -u lon ${nco_opt} ${nco_var_lst} ${in_fl} ${in_fl} ${in_fl} ${in_fl} ${znl_fl/znl/znl1};ncap2 ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' ${znl_fl/znl/znl1} ${znl_fl/znl/znl2};ncks --fix_rec_dmn lon ${nco_opt} ${nco_var_lst} ${znl_fl/znl/znl2} ${znl_fl/znl/znl3};"
+	    in_fl="${znl_fl/znl/znl3}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_znl[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_znl[${fl_idx}]}
-		if [ $? -ne 0 ] || [ ! -f "${znl_fl/znl/znl2}" ] ; then
+		if [ $? -ne 0 ] || [ ! -f "${znl_fl/znl/znl3}" ] ; then
 		    printf "${spt_nm}: ERROR Failed to generate lat-lon file from zonal file. Debug this:\n${cmd_znl[${fl_idx}]}\n"
 		    exit 1
 		fi # !err

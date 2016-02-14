@@ -843,7 +843,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always include terminal \n so mnemonic does not dangle */
-  return "Playing Hookey\n";
+  return "1040 Santa Ana\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -1154,7 +1154,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--xtn_var")) (void)fprintf(stdout,"    --xtn_var, --extensive var\tExtensive variables for regridding (summed not averaged)\n");
   if(strstr(opt_sng,"[-y op_typ]")){
     if(prg_lcl == ncbo)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tBinary arithmetic operation: add,sbt,mlt,dvd (+,-,*,/)\n");
-    if(prg_lcl == ncra || prg_lcl == ncfe || prg_lcl == ncge || prg_lcl == ncwa)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,mabs,mebs,mibs,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
+    if(prg_lcl == ncra || prg_lcl == ncfe || prg_lcl == ncge || prg_lcl == ncwa)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,mabs,mebs,mibs,min,max,tabs,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
   }
   /* All operators have input files, no need to strstr(in.nc) */
   if(prg_lcl == ncbo || prg_lcl == ncflint){

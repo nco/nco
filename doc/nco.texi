@@ -9213,6 +9213,7 @@ Pack and unpack individual variables with @command{ncpdq} and the
 @cindex @code{mibs}
 @cindex @code{rmssdn}
 @cindex @code{rms}
+@cindex @code{tabs}
 @cindex @code{ttl}
 @cindex @code{sqrt}
 @cindex average
@@ -9258,6 +9259,8 @@ Root-mean-square (normalized by @var{N})
 Root-mean square (normalized by @var{N-1})
 @item sqrt
 Square root of the mean
+@item tabs
+Sum of absolute values
 @item ttl
 Sum of values
 @end table
@@ -9390,6 +9393,12 @@ $$
 \mskflg_{\lmnnbr} \wgt_{\lmnnbr} \xxx_{\lmnnbr} ] 
 $$
 Thus the minima and maxima are determined after any weights are applied.
+
+The total absolute value of~$\xxx$ (@code{-y tabs}) is 
+$$
+\bar \xxx_{\jjj} = \sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
+\mskflg_{\idx} \wgt_{\idx} |\xxx_{\idx}|
+$$
 
 The minimum absolute value of~$\xxx$ (@code{-y mibs}) is 
 $$
@@ -12185,7 +12194,10 @@ Root-mean-square (normalize by @var{N})
 @item rmssdn()
 @cindex rmssdn()
 Root-mean square (normalize by @var{N-1})
-@item ttl() or total()
+@item tabs() or ttlabs()
+@cindex tabs()
+Sum of absolute values
+@item ttl() or total() or sum()
 @cindex ttl()
 Sum of values
 @end table

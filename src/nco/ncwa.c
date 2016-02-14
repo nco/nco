@@ -1046,13 +1046,14 @@ main(int argc,char **argv)
           } /* end if */
           /* Rather complex conditional statement is shorter than switch() */
           if( /* Normalize by weighted tally if ....  */
-            (nco_op_typ != nco_op_min) && /* ...operation is not min() and... */
-            (nco_op_typ != nco_op_max) && /* ...operation is not max() and... */
-            (nco_op_typ != nco_op_mabs) && /* ...operation is not mabs() and... */
-            (nco_op_typ != nco_op_mibs) && /* ...operation is not mabs() and... */
-            (nco_op_typ != nco_op_ttl || /* ...operation is not ttl() or... */
-	     var_prc[idx]->is_crd_var) /* ...variable is a coordinate */
-            ){ /* Divide numerator by masked, averaged, weights */
+	     var_prc[idx]->is_crd_var || /* ...variable is a coordinate or ...*/
+	     ((nco_op_typ != nco_op_min) && /* ...operation is not min() and... */
+	      (nco_op_typ != nco_op_max) && /* ...operation is not max() and... */
+	      (nco_op_typ != nco_op_mabs) && /* ...operation is not mabs() and... */
+	      (nco_op_typ != nco_op_mibs) && /* ...operation is not mibs() and... */
+	      (nco_op_typ != nco_op_tabs) && /* ...operation is not tabs() and... */
+	      (nco_op_typ != nco_op_ttl)) /* ...operation is not ttl() and... */
+	      ){ /* Divide numerator by masked, averaged, weights */
 	    (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
           } /* endif */
           /* Free wgt_avg, but keep wgt_out, after each use */
@@ -1082,6 +1083,7 @@ main(int argc,char **argv)
           case nco_op_max: /* Maximum is already in buffer, do nothing */	
           case nco_op_mabs: /* Maximum absolute value is already in buffer, do nothing */	
           case nco_op_mibs: /* Minimum absolute value is already in buffer, do nothing */	
+          case nco_op_tabs: /* Total absolute value is already in buffer, do nothing */	
           case nco_op_ttl: /* Total is already in buffer, do nothing */	
             break;
           default:

@@ -1,6 +1,10 @@
+2016-02-14  Charlie Zender  <zender@uci.edu>
+
+	* Introduce tabs = total_absolute_value operator and add numerous nces/ncwa regression tests
+
 2016-02-13  Charlie Zender  <zender@uci.edu>
 
-	* Notice and fix mebs off-by-one error in tally accumulated in nco_opr_drv()
+	* Notice and fix mebs off-by-one error in tally accumulated in nco_opr_drv() (again affected ncra/nces not ncwa)
 
 2016-02-12  Charlie Zender  <zender@uci.edu>
 

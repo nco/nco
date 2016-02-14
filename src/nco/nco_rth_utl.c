@@ -87,6 +87,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
       case nco_op_mibs: /* Minimum absolute value is already in buffer, do nothing */
       case nco_op_mabs: /* Maximum absolute value is already in buffer, do nothing */
         break;
+      case nco_op_tabs: /* Total absolute value is already in buffer, stuff missing values into elements with zero tally */
       case nco_op_ttl: /* Total is already in buffer, stuff missing values into elements with zero tally */
         (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
         break;
@@ -111,6 +112,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
       case nco_op_mibs:
       case nco_op_mabs:
       case nco_op_mebs:
+      case nco_op_tabs:
       case nco_op_avgsqr:
         break;
       default:
@@ -182,6 +184,11 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
     (void)nco_var_abs(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val);
     if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else (void)nco_var_min_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
+  case nco_op_tabs: /* Total absolute value */
+    /* Same as ttl but take absolute first */
+    (void)nco_var_abs(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val);
+    if(idx_rec == 0) (void)nco_var_copy_tll(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val); else (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->wgt_crr,var_prc->wgt_sum,var_prc->val,var_prc_out->val);
+    break;
   case nco_op_ttl: /* Total */
     /* NB: Copying input to output on first loop for nco_op_ttl, in similar manner to nco_op_[max/min], can work
        However, copying with nco_var_copy() would not change the tally variable, leaving it equal to zero
@@ -227,6 +234,7 @@ nco_op_typ_cf_sng /* [fnc] Convert arithmetic operation type enum to string */
   case nco_op_min: return "minimum"; break; /* [enm] Minimum value */
   case nco_op_max: return "maximum"; break; /* [enm] Maximum value */
   case nco_op_ttl: return "sum"; break; /* [enm] Linear sum */
+  case nco_op_tabs: return "sum_absolute_value"; break; /* [enm] Total absolute value */
   case nco_op_mabs: return "maximum_absolute_value"; break; /* [enm] Maximum absolute value */
   case nco_op_mebs: return "mean_absolute_value"; break; /* [enm] Mean absolute value */
   case nco_op_mibs: return "minimum_absolute_value"; break; /* [enm] Minimum absolute value */
@@ -289,6 +297,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
   if(!strcmp(nco_op_sng,"sqravg")) return nco_op_sqravg;
   if(!strcmp(nco_op_sng,"sqrt") || !strcmp(nco_op_sng,"square-root")) return nco_op_sqrt;
   if(!strcmp(nco_op_sng,"total") || !strcmp(nco_op_sng,"ttl") || !strcmp(nco_op_sng,"sum")) return nco_op_ttl;
+  if(!strcmp(nco_op_sng,"tabs") || !strcmp(nco_op_sng,"ttlabs") || !strcmp(nco_op_sng,"sumabs")) return nco_op_tabs;
 
   if(!strcmp(nco_op_sng,"add") || !strcmp(nco_op_sng,"+") || !strcmp(nco_op_sng,"addition")) return nco_op_add;
   if(!strcmp(nco_op_sng,"sbt") || !strcmp(nco_op_sng,"-") || !strcmp(nco_op_sng,"dff") || !strcmp(nco_op_sng,"diff") || !strcmp(nco_op_sng,"sub") || !strcmp(nco_op_sng,"subtract") || !strcmp(nco_op_sng,"subtraction")) return nco_op_sbt;
@@ -297,7 +306,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified operation type \"%s\"\n",nco_prg_nm,fnc_nm,nco_op_sng);
   (void)fprintf(stderr,"%s: HINT Valid operation type (op_typ) choices:\n",nco_prg_nm);
-  if(nco_prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtraction: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min or minimum, max or maximum, mabs or maximum_absolute_value, mebs or mean_absolute_value, mibs or maximum_absolute_value, ttl or total or sum, avg or average or mean, sqrt or square-root, sqravg, avgsqr, rms or root-mean-square, rmssdn\n");
+  if(nco_prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtraction: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min or minimum, max or maximum, mabs or maximum_absolute_value, mebs or mean_absolute_value, mibs or maximum_absolute_value, tabs or ttlabs or sumabs, ttl or total or sum, avg or average or mean, sqrt or square-root, sqravg, avgsqr, rms or root-mean-square, rmssdn\n");
   nco_exit(EXIT_FAILURE);
   return False; /* Statement should not be reached */
 } /* end nco_op_typ_get() */

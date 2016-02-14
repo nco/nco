@@ -642,6 +642,7 @@ extern "C" {
     nco_op_mabs, /* [enm] Maximum absolute value */
     nco_op_mebs, /* [enm] Mean absolute value */
     nco_op_mibs, /* [enm] Minimum absolute value */
+    nco_op_tabs, /* [enm] Total absolute value */
     nco_op_nil /* [enm] Nil or undefined operation type */
   }; /* end nco_op_typ enum */
 
