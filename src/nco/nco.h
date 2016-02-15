@@ -1160,6 +1160,7 @@ extern "C" {
     /* Following are members only used by transformation operators (non-ncks) */
     nco_bool flg_dmn_avg;    /* [flg] Diferentiate between dimensions to average or keep for this variable (ncwa) */  
     nco_bool flg_rdd;        /* [flg] Retain dimension as degenerate (size 1) (ncwa) */  
+    nco_bool flg_rvr;        /* [flg] Reverse dimension (option -a - of ncpdq) FXM_PVN */
   } var_dmn_sct; 
 
   /* Processing type enumerator */
