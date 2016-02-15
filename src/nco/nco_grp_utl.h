@@ -920,10 +920,14 @@ nco_wrt_atr
  const trv_sct *var_trv);            /* I [sct] traversal variable */
 
 char*
-nco_get_dmn_nm_fll                     /* [fnc] Return dimension name with input id */
+nco_get_dmn_nm_fll                     /* [fnc] Return dimension name with input id (debug) */
 (const int dmn_id,                     /* I [id] ID of dimension */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure array */
  const int nbr_dmn);                   /* I [nbr] Number of dimensions (size of above array) */
+
+void
+nco_var_xtr_trv                       /* [fnc] Print all variables to extract (debug) */
+(const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

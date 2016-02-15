@@ -4884,7 +4884,7 @@ nco_dfn_dmn                            /* [fnc] Define dimension size and ID in 
 } /* nco_dmn_dfn */
 
 char *
-nco_get_dmn_nm_fll                     /* [fnc] Return dimension name with input id */
+nco_get_dmn_nm_fll                     /* [fnc] Return dimension name with input id (debug) */
 (const int dmn_id,                     /* I [id] ID of dimension */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure array */
  const int nbr_dmn)                    /* I [nbr] Number of dimensions (size of above array) */
@@ -9950,3 +9950,18 @@ nco_nsm_wrt_att                  /* [fnc] Save ncge metadata attribute */
     } /* end if group and flg_xtr */
   } /* end loop to define group attributes */
 } /* nco_nsm_wrt_att() */
+
+void
+nco_var_xtr_trv                       /* [fnc] Print all variables to extract (debug) */
+(const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  int nbr_xtr=0;
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Filter variables to extract  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
+      (void)fprintf(stdout, "%s\n",trv_tbl->lst[tbl_idx].nm_fll);
+      nbr_xtr++;
+    } /* Filter variables  */
+  } /* Loop table */
+} /* nco_var_xtr_trv() */

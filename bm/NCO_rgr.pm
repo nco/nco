@@ -2772,7 +2772,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 #ncks #113 wrapped limit with an additional limit (with --msa) pvn20160211 -- bug found that happens in nco 4.2.0 also
 # ncks -O -C --msa -g g19 -v time -d time,9,0 -d time,1,2 ~/nco/data/in_grp_3.nc ~/foo.nc
-    $dsc_sng="EXPECTED FAILURE(Groups) Test wrapped limit with additonal limit and msa user order";
+    $dsc_sng="(Groups) Test wrapped limit with additonal limit and msa user order (expect failure TODO)";
     $tst_cmd[0]="ncks -O $nco_D_flg -C --msa -g g19 -v time -d time,9,0 -d time,1,2 $in_pth_arg in_grp_3.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -H %tmp_fl_00 | grep '=3'";
     $tst_cmd[2]="time[3]=3"; 
@@ -3317,7 +3317,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 #ncpdq #41
 #ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc ~/foo.nc
-   $dsc_sng="(Groups) Reverse -a lat -g g24 several groups";
+   $dsc_sng="(Groups) Reverse -a lat -g g24 several groups (expect failure TODO)";
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat -g g23,g24 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -v lat -g g24 %tmp_fl_00%";
    $tst_cmd[2]="lat[1]=-60 degrees_north";
