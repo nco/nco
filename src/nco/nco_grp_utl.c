@@ -4958,6 +4958,17 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
       rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
     } /* !rec_dmn_nm->lst */
 
+#ifdef FXM_PVN
+    nco_bool dmn_rvr_rdr_[NC_MAX_DIMS]; /* [flg] Reverse dimension */
+    /* Define a local dmn_rvr_rdr array upon reverse flag defined in dimensions for variable */
+    for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+      dmn_rvr_rdr_[idx_dmn]=False;
+      if(var_trv->var_dmn[idx_dmn].flg_rvr == True){
+        dmn_rvr_rdr_[idx_dmn]=True;
+      }
+    }
+#endif
+
     /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
     rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
 
