@@ -117,7 +117,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.5-alpha07
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 12 February 2016
+@set update-date 14 February 2016
 @set update-month February 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7881,9 +7881,9 @@ intrinsic characteristics and, in addition, the units of storage.
 This is the fundamental difference between the @acronym{NSD} and 
 @acronym{DSD} approaches. 
 The eight-hundred pound gorilla always has @math{@var{nsd=1}} regardless 
-of whether the value is store in pounds or in some other unit.
+of whether the value is stored in pounds or in some other unit.
 @acronym{DSD} corresponding to this weight is @math{@var{dsd=-2}} if the
-value is store in pounds, @math{@var{dsd=4}} if stored in megapounds.
+value is stored in pounds, @math{@var{dsd=4}} if stored in megapounds.
 
 Users may wish to express the precision to be preserved as either
 @acronym{NSD} or @acronym{DSD}.

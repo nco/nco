@@ -5,7 +5,8 @@ The netCDF Operators NCO version 4.5.5-alpha07 are ready.
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
-CDF5 is supported.
+NCO fully supports CDF5-format datasets, ncremap continues to
+accrue useful features, and some corner case bugs were fixed.
 
 Work on NCO 4.5.6 has commenced and will better support eliciting
 latitude/longitude coordinates using the CF "coordinates" convention
@@ -17,7 +18,10 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. NCO supports the CDF5 file type introduced in netCDF 4.4.0.
+A. NCO supports the CDF5 file type first introduced by pnetCDF and now  
+   supported in Unidata netCDF as of version 4.4.0.
+   CDF5 uses 64-bit offsets for a large address space (like the netCDF
+   64BIT type) AND arrays may have more than 2^32 elements.
    Use '-5', '--5', '--fl_fmt=[cdf5|64bit_data|pnetcdf]'.
    Conversion to and between all netCDF filetypes is supported:
    ncks -5 in_3.nc out_5.nc
@@ -43,7 +47,16 @@ B. ncremap: -P option triggers filetype-specific workflow procedures
 C. ncremap -j job_nbr option for MPI parallelism
    http://nco.sf.net/nco.html#ncremap
 
-D. Improve support for Cygwin builds
+D. ncra/nces/ncwa: New operation tabs()=total_absolute_value.
+   The the -y tabs option is like -y ttl except the sum is over
+   absolute values. tabs(), mibs(), mebs(), and mabs() are analogous
+   to ttl(), min(), mean(), and max(). 
+   nces -y tabs in.nc in.nc out.nc
+   ncra -y tabs in.nc in.nc out.nc
+   ncwa -y tabs in.nc out.nc
+   http://nco.sf.net/nco.html#op_typ
+
+E. Improve support for Cygwin builds
 
 BUG FIXES:
 
