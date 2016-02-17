@@ -1,5 +1,9 @@
 2016-02-17  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.5 final changes';git push
+	git tag -a 4.5.5 -m 'Version 4.5.5 new features: ncremap CCW, gaa, -j, -P mpas; CDF5, mebs nrm, tabs, gaa ncatted ncrename, nces crd mtd';git push --tags
+
 	* Add history attribute to maps produced by ncremap
 
 2016-02-16  Charlie Zender  <zender@uci.edu>

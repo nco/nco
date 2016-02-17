@@ -113,11 +113,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.5-alpha07
-@set doc-edition 4.5.5-alpha07
+@set nco-edition 4.5.5
+@set doc-edition 4.5.5
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 14 February 2016
+@set update-date 17 February 2016
 @set update-month February 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18602,8 +18602,9 @@ SYNTAX
 ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_opt}]
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-M] [-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
-[-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [-T @var{tempest_opt}] [-t @var{thr_nbr}]
-[-v @var{var_lst}[,@dots{}]] [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
+[-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] 
+[-T @var{tempest_opt}] [-t @var{thr_nbr}] [-v @var{var_lst}[,@dots{}]] 
+[-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
 
 @noindent
@@ -18613,6 +18614,8 @@ DESCRIPTION
 @var{drc_in}, or piped through standard input, to the grid specified by 
 (in descending order of precedence) @var{map_fl}, @var{grd_dst}, or
 @var{dst_fl} and stores the result in @var{output-file}(s). 
+When no @var{input-file} is provided, @command{ncremap} operates in
+``map-only'' mode where it exits after producing an annotated map-file. 
 @command{ncremap} was introduced to @acronym{NCO} in version 4.5.4
 (December, 2015). 
 As the newest operator, its interface is evolving in response to user
@@ -18800,6 +18803,7 @@ and inspecting the results.
 @end html
 @cindex @code{-I @var{in_drc}}
 @cindex @var{in_drc}
+@cindex @code{stdin}
 @item -I @var{in_drc}
 Specifies the input directory, i.e., the directory which contains
 the input file(s).
@@ -18814,8 +18818,8 @@ When multiple files are regridded, each output file takes the name
 of the corresponding input file.
 There is no namespace conflict because the input and output files are in
 separate directories. 
-Note that @command{ncremap} could instead take the list of multiple 
-input piped through standard input, e.g., @samp{ls *.nc | ncremap ...}.
+Note that @command{ncremap} can instead accept the list of input files
+through standard input, e.g., @samp{ls *.nc | ncremap ...}. 
 
 @html
 <a name="in_fl"></a> <!-- http://nco.sf.net/nco.html#in_fl -->
@@ -18839,6 +18843,8 @@ then @acronym{NCO} will guess (for rectangular grids) or interpolate
 Unstructured grids must supply cell boundary information, as it cannot
 be interpolated or guessed-at.
 @var{in_fl} is not modified, and may have read-only permissions.
+Note that @command{ncremap} can instead accept the input file name
+through standard input, e.g., @samp{ls *.nc | ncremap ...}. 
 
 @html
 <a name="job_nbr"></a> <!-- http://nco.sf.net/nco.html#job_nbr -->
@@ -18913,8 +18919,13 @@ then @acronym{NCO} will guess-at or interpolate the edges.
 If @var{map_fl} has cell boundaries then @acronym{NCO} will use those.
 A pre-computed @var{map_fl} is not modified, and may have read-only
 permissions. 
-The user will be prompted to confirm if an internally generated map-file  
+The user will be prompted to confirm if a newly generated map-file  
 named @var{map_fl} would overwrite an existing file.
+@command{ncremap} adds provenance information to any newly generated
+map-file whose name was specified with @samp{-m @var{map_fl}}.
+This provenance includes a @code{history} attribute that contains
+the command invoking @command{ncremap}, and the map-generating command
+invoked by @command{ncremap}.
 
 @html
 <a name="map_mlt"></a> <!-- http://nco.sf.net/nco.html#map_mlt -->

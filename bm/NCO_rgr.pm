@@ -2760,7 +2760,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 } # RUN_NETCDF4_TESTS_VERSION_GE_431
 	
-#ncks #112 wrapped limit with an additional limit (no --msa)
+# ncks #112 wrapped limit with an additional limit (no --msa)
 # ncks -O -C -g g19 -v time -d time,9,0 -d time,1,2 ~/nco/data/in_grp_3.nc ~/foo.nc
     $dsc_sng="(Groups) Test wrapped limit with addtional limit (no --msa)";
     $tst_cmd[0]="ncks -O $nco_D_flg -C -g g19 -v time -d time,9,0 -d time,1,2 $in_pth_arg in_grp_3.nc %tmp_fl_00";
@@ -2779,7 +2779,6 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
-	
 	
 #####################
 #### ncpdq tests #### -OK !
