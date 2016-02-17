@@ -3526,6 +3526,21 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/257x512_SCRIP.20150910.nc -w ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150910.nc --method conserve
      ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/801x1600_SCRIP.20150910.nc -w ${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150910.nc --method bilinear
 
+     AMWG grids:
+     ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 97x144 for horizontal resolution 1.9x2.5 degrees' --rgr grid=${DATA}/grids/97x144_SCRIP.20160301.nc --rgr latlon=97,144 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 193x288 for horizontal resolution 0.9x1.25 degrees' --rgr grid=${DATA}/grids/193x288_SCRIP.20160301.nc --rgr latlon=193,288 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+
+     AMWG maps:
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/97x144_SCRIP.20160301.nc -w ${DATA}/maps/map_ne30np4_to_fv97x144_bilin.20160301.nc --method bilinear
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/193x288_SCRIP.20160301.nc -w ${DATA}/maps/map_ne30np4_to_fv193x288_bilin.20160301.nc --method bilinear
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/97x144_SCRIP.20160301.nc -w ${DATA}/maps/map_ne30np4_to_fv97x144_aave.20160301.nc --method conserve
+     ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/193x288_SCRIP.20160301.nc -w ${DATA}/maps/map_ne30np4_to_fv193x288_aave.20160301.nc --method conserve
+
+     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/97x144_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv97x144_bilin.20160301.nc -w tempest -a bilinear
+     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/193x288_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv193x288_bilin.20160301.nc -w tempest -a bilinear
+     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/97x144_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv97x144_aave.20160301.nc -w tempest -a conserve
+     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/193x288_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv193x288_aave.20160301.nc -w tempest -a conserve
+
      Regional RLL grids:
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-120.0,-90.0 ~/nco/data/in.nc ~/foo.nc
 

@@ -383,35 +383,6 @@ if [ "${wgt_gnr}" != 'esmf' ] && [ "${wgt_gnr}" != 'tempest' ] ; then
 	    exit 1
 fi # !wgt_gnr
 
-if [ -n "${in_fl}" ]; then
-    # Single file argument
-    fl_in[${fl_nbr}]=${in_fl}
-    let fl_nbr=${fl_nbr}+1
-else # !in_fl
-    # Detecting input on stdin:
-    # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
-    # ls ${DATA}/ne30/raw/famipc5*1979*.nc | ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
-    if [ -t 0 ]; then 
-	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
-	    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-		if [ -f "${fl}" ]; then
-		    fl_in[${fl_nbr}]=${fl}
-		    let fl_nbr=${fl_nbr}+1
-		fi # !file
-	    done
-	else # !drc_in
-	    echo "ERROR: Must specify input file with -i or with stdin"
-	    echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
-	    exit 1
-	fi # !drc_in
-    else
-	# Input awaits on unit 0, i.e., on stdin
-	while read -r line; do # NeR05 p. 179
-	    fl_in[${fl_nbr}]=${line}
-	    let fl_nbr=${fl_nbr}+1
-	done < /dev/stdin
-    fi # stdin
-fi # !in_fl
 if [ -n "${dst_fl}" ]; then 
     if [ ! -e "${dst_fl}" ]; then
 	echo "ERROR: Unable to find specified destination-file ${dst_fl}"
@@ -489,6 +460,37 @@ if [ "${map_mk}" = 'Yes' ] && [ "${wgt_gnr}" = 'tempest' ]; then
     msh_fl_dfl="${drc_out}/ncremap_tmp_msh_ovr_${wgt_gnr}.g" # [sng] Mesh-file default
     msh_fl=${msh_fl_dfl}
 fi # !tempest
+
+# Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
+if [ -n "${in_fl}" ]; then
+    # Single file argument
+    fl_in[${fl_nbr}]=${in_fl}
+    let fl_nbr=${fl_nbr}+1
+else # !in_fl
+    # Detecting input on stdin:
+    # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
+    # ls ${DATA}/ne30/raw/famipc5*1979*.nc | ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
+    if [ -t 0 ]; then 
+	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
+	    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
+		if [ -f "${fl}" ]; then
+		    fl_in[${fl_nbr}]=${fl}
+		    let fl_nbr=${fl_nbr}+1
+		fi # !file
+	    done
+	else # !drc_in
+	    echo "ERROR: Must specify input file with -i or with stdin"
+	    echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+	    exit 1
+	fi # !drc_in
+    else
+	# Input awaits on unit 0, i.e., on stdin
+	while read -r line; do # NeR05 p. 179
+	    fl_in[${fl_nbr}]=${line}
+	    let fl_nbr=${fl_nbr}+1
+	done < /dev/stdin
+    fi # stdin
+fi # !in_fl
 
 if [ "${mpi_flg}" = 'Yes' ]; then
     if [ -n "${COBALT_NODEFILE}" ]; then 

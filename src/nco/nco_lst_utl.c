@@ -692,10 +692,10 @@ nco_rx_comma2hash /* [fnc] Replace commas with hashes when within braces */
   /* Loop over each character in string until first NUL encountered */
   while(*cp){
     /* Find open brace */
-    if(*cp=='{') openbrace=True;
-    if(openbrace && *cp==',') cp_cnv=cp;
+    if(*cp == '{') openbrace=True;
+    if(openbrace && *cp == ',') cp_cnv=cp;
     /* Find close brace */
-    if(*cp=='}'){ 
+    if(*cp == '}'){
       /* Change comma following open brace, if any, to hash */
       if(cp_cnv) *cp_cnv='#';
       /* Reset comma location following open brace */
