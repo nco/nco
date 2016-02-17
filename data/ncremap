@@ -701,8 +701,6 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_map[${fl_idx}]}
     fi # !dbg
-    hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
-    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_fl}"
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_map[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
@@ -712,11 +710,15 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
 	    fi # !esmf
 	    exit 1
 	fi # !err
-	eval ${cmd_att[${fl_idx}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
+	if [ "${map_usr_flg}" = 'Yes' ] ; then
+	    hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
+	    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_fl}"
+	    eval ${cmd_att[${fl_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !map_usr_flg
     fi # !dbg
     # Set map_mk to something besides 'Yes' to avoid re-generating map within file loop
     map_mk='Already made map once. Never again.'
@@ -829,6 +831,15 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 		fi # !esmf
 		exit 1
 	    fi # !err
+	    if [ "${map_usr_flg}" = 'Yes' ] ; then
+		hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
+		cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_fl}"
+		eval ${cmd_att[${fl_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !map_usr_flg
 	fi # !dbg
 
 	# Prevent creating new source gridfile and map-file after first iteration

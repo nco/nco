@@ -40,14 +40,21 @@ B. ncremap: -P option triggers filetype-specific workflow procedures
    from the way NASA/MPAS distributes generates these datasets so 
    that horizontal spatial dimensions (lat, lon) come last.
    This is friendlier for regridding applications.
-   Also, -m map_fl supplies names to internally generated mapfiles: 
-   ncremap -i in.nc -d dst.nc -m map.nc -o out.nc
+
+C. ncremap: -m map_fl supplies names to generated mapfiles and ncremap 
+   annotates map-files it creates with full history. This helps retain
+   provenance in generated mapfiles. And ncremap has a friendlier
+   mode, "map-only" mode, to generate mapfiles for later use.
+   To use this mode, call ncremap without any input files to remap.  
+   ncremap will then generate the mapfile then exit.
+   ncremap -i in.nc -d dst.nc -m map.nc -o out.nc # Named mapfile
+   ncremap -s grd_in.nc -g grd_out.nc -m map.nc # Map-only mode
    http://nco.sf.net/nco.html#ncremap
 
-C. ncremap -j job_nbr option for MPI parallelism
+D. ncremap -j job_nbr option for MPI parallelism
    http://nco.sf.net/nco.html#ncremap
 
-D. ncra/nces/ncwa: New operation tabs()=total_absolute_value.
+E. ncra/nces/ncwa: New operation tabs()=total_absolute_value.
    The the -y tabs option is like -y ttl except the sum is over
    absolute values. tabs(), mibs(), mebs(), and mabs() are analogous
    to ttl(), min(), mean(), and max(). 
@@ -55,10 +62,6 @@ D. ncra/nces/ncwa: New operation tabs()=total_absolute_value.
    ncra -y tabs in.nc in.nc out.nc
    ncwa -y tabs in.nc out.nc
    http://nco.sf.net/nco.html#op_typ
-
-E. Add support for --glb_att_add=--gaa to ncatted, ncrename
-   Adding this functions corrects an earlier oversight.
-   http://nco.sf.net/nco.html#gaa
 
 F. Improve support for Cygwin builds
 
@@ -88,6 +91,10 @@ E. ncra/nces: Correctly normalize "mebs" arithmetic. Under certain
 
 F. ncap2: Fix incorrect handling of negative dimension indices.
    Problem reported by Maksym Petrenko.
+
+G. ncatted/ncrename: Fully support --glb_att_add=--gaa.
+   This corrects an earlier oversight.
+   http://nco.sf.net/nco.html#gaa
 
 KNOWN PROBLEMS DUE TO NCO:
 
