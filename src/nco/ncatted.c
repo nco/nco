@@ -366,7 +366,7 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   if(fl_out) FL_OUT_NEW=True; else fl_out=(char *)strdup(fl_lst_in[0]);
 
-  if(nbr_aed == 0){
+  if(nbr_aed == 0 && gaa_nbr == 0){
     (void)fprintf(stdout,"%s: ERROR must specify an attribute to edit\n",nco_prg_nm);
     nco_usg_prn();
     nco_exit(EXIT_FAILURE);
@@ -446,8 +446,10 @@ main(int argc,char **argv)
     } /* end var_nm */
   } /* end loop over aed structures */
 
-  /* Catenate the time-stamped command line to the "history" global attribute */
+  /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
+  if(gaa_nbr > 0) (void)nco_glb_att_add(nc_id,gaa_arg,gaa_nbr);
+  if(HISTORY_APPEND) (void)nco_vrs_att_cat(nc_id);
 
   /* Take output file out of define mode */
   if(hdr_pad == 0UL){

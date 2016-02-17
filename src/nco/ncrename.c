@@ -620,6 +620,8 @@ main(int argc,char **argv)
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
+  if(gaa_nbr > 0) (void)nco_glb_att_add(nc_id,gaa_arg,gaa_nbr);
+  if(HISTORY_APPEND) (void)nco_vrs_att_cat(nc_id);
 
 #ifdef _OPENMP
   /* fxm: hack to get libxlsmp library linked in */

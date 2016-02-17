@@ -1,3 +1,11 @@
+2016-02-17  Charlie Zender  <zender@uci.edu>
+
+	* Add history attribute to maps produced by ncremap
+
+2016-02-16  Charlie Zender  <zender@uci.edu>
+
+	* Add nco_glb_att_add() and nco_vrs_att_cat() to ncatted, ncrename
+
 2016-02-14  Charlie Zender  <zender@uci.edu>
 
 	* Introduce tabs = total_absolute_value operator and add numerous nces/ncwa regression tests

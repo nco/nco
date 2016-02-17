@@ -255,7 +255,7 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
-cmd_ln="${@}"
+cmd_ln="${spt_nm} ${@}"
 while getopts :a:D:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:v:w:x: OPT; do
     case ${OPT} in
 	a) alg_typ=${OPTARG} ;; # Algorithm
@@ -479,9 +479,11 @@ else # !in_fl
 		fi # !file
 	    done
 	else # !drc_in
-	    echo "ERROR: Must specify input file with -i or with stdin"
-	    echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
-	    exit 1
+	    if [ "${map_mk}" != 'Yes' ]; then 
+		echo "ERROR: Must specify input file with -i or with stdin"
+		echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+		exit 1
+	    fi # !map_mk
 	fi # !drc_in
     else
 	# Input awaits on unit 0, i.e., on stdin
@@ -581,7 +583,7 @@ mkdir -p ${drc_out}
 # Human-readable summary
 if [ ${dbg_lvl} -ge 1 ]; then
     printf "NCO regridder invoked with command:\n"
-    echo "${spt_nm} ${cmd_ln}"
+    echo "${cmd_ln}"
 fi # !dbg
 date_srt=$(date +"%s")
 
@@ -612,6 +614,9 @@ fi # !dst_usr_flg
 # Generate destination grid at most one-time (unlike source grid)
 # Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
 # Currently we require user to know (and specify) means by which destination grid is provided
+if [ ${fl_nbr} -eq 0 ]; then
+    printf "Map-only run: no input data detected therefore will exit after generating map\n"
+fi # !fl_nbr
 if [ -n "${pdq_opt}" ]; then 
     printf "Input data obey \"${pdq_typ}\"-ordering and will be permuted with \"ncpdq ${pdq_opt}\"\n"
 fi # !pdq_opt
@@ -655,11 +660,11 @@ else # !map_usr_flg
     fi # !dst_usr_flg || grd_dst_usr_flg
     printf "Weight-generation type: ${wgt_gnr}\n"
     if [ "${wgt_gnr}" = 'esmf' ]; then 
-	printf "ESMF's ESMF_RegridWeightGen will generate map-file internally\n"
+	printf "ESMF's ESMF_RegridWeightGen will generate map-file\n"
 	printf "Algorithm used to generate weights in map-file is: ${alg_opt}\n"
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
-	printf "TempestRemap's GenerateOverlapMesh and GenerateOfflineMap will generate map-file internally\n"
+	printf "TempestRemap's GenerateOverlapMesh and GenerateOfflineMap will generate map-file\n"
     fi # !tempest
     if [ ${fl_nbr} -ge 2 ]; then 
 	if [ "${mlt_map_flg}" = 'Yes' ]; then 
@@ -696,6 +701,8 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_map[${fl_idx}]}
     fi # !dbg
+    hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
+    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_fl}"
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_map[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
@@ -703,6 +710,11 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
 	    if [ "${wgt_gnr}" = 'esmf' ]; then 
 		printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
 	    fi # !esmf
+	    exit 1
+	fi # !err
+	eval ${cmd_att[${fl_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -928,11 +940,14 @@ if [ -n "${par_opt}" ]; then
 fi # !par_typ
 
 date_end=$(date +"%s")
-printf "Completed processing of ${fl_nbr} file(s) at `date`.\n"
+if [ ${fl_nbr} -eq 0 ]; then
+    printf "Completed generating map-file(s) at `date`.\n"
+else # !fl_nbr
+    echo "Quick plots of results from last regridded file:"
+    echo "ncview  ${out_fl} &"
+    echo "panoply ${out_fl} &"
+fi # !fl_nbr
 date_dff=$((date_end-date_srt))
-echo "Quick plots of results from last regridded file:"
-echo "ncview  ${out_fl} &"
-echo "panoply ${out_fl} &"
 echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 
 exit 0
