@@ -173,7 +173,7 @@ nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 nd_nbr=1 # [nbr] Number of nodes
 out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
-par_typ='' # [sng] Parallelism type
+par_typ='nil' # [sng] Parallelism type
 pdq_typ='' # [sng] Permutation type
 #rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon --rnr=0.0' # [sng] Regridding options
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
