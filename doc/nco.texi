@@ -6343,9 +6343,23 @@ Long options:
 @samp{--renormalize=@var{wgt_thr}}@*
 @end cartouche
 
-As of @acronym{NCO} version 4.5.0 (June, 2015), @command{ncks} supports 
-horizontal regridding of global datasets where the grids and weights are
-all stored in an external @var{map-file}.
+@acronym{NCO} includes extensive regridding features in 
+@command{ncremap} (as of version 4.5.4 in November, 2015) and 
+and @command{ncks} (since version 4.5.0 in June, 2015). 
+Regridding can involve many choices, options, inputs, and outputs.
+The appropriate operator for this workflow is the @command{ncremap}
+script which automatically handles many details of regridding and
+passes the required commands to @command{ncks} and external programs.
+Occasionally users need access to lower-level remapping functionality
+present in @command{ncks} and not exposed to direct manipulation
+through @command{ncremap}. 
+This section describes the lower-level functionality and switches
+as implemented in @command{ncks}.
+Knowing what these features all will help @command{ncremap} users
+understand the full potential of both operators.
+
+@command{ncks} supports horizontal regridding of datasets where the
+grids and weights are all stored in an external @var{map-file}.
 Use the @samp{--map} or @samp{--rgr_map} options to specify the
 @var{map-file}, and @acronym{NCO} will regrid the @var{input-file} to
 a new (or possibly the same, aka, an identity mapping) horizontal grid
