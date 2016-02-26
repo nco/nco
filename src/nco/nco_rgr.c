@@ -3536,10 +3536,16 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/97x144_SCRIP.20160301.nc -w ${DATA}/maps/map_ne30np4_to_fv97x144_aave.20160301.nc --method conserve
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/193x288_SCRIP.20160301.nc -w ${DATA}/maps/map_ne30np4_to_fv193x288_aave.20160301.nc --method conserve
 
-     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/97x144_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv97x144_bilin.20160301.nc -w tempest -a bilinear
-     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/193x288_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv193x288_bilin.20160301.nc -w tempest -a bilinear
-     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/97x144_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv97x144_aave.20160301.nc -w tempest -a conserve
-     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/193x288_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv193x288_aave.20160301.nc -w tempest -a conserve
+     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/97x144_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv97x144_bilin.20160301.nc -w esmf -a bilinear
+     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/193x288_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv193x288_bilin.20160301.nc -w esmf -a bilinear
+     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/97x144_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv97x144_aave.20160301.nc -w esmf -a conserve
+     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/193x288_SCRIP.20160301.nc -m ${DATA}/maps/map_ne30np4_to_fv193x288_aave.20160301.nc -w esmf -a conserve
+
+     MPAS grids:
+     NCO cannot yet generate MPAS grids, but given an MPAS grid it can generate appropriate maps
+
+     MPAS maps:
+     ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ${DATA}/maps/map_oEC60to30_to_t62_aave.20160301.nc -w esmf -a conserve
 
      Regional RLL grids:
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-120.0,-90.0 ~/nco/data/in.nc ~/foo.nc
