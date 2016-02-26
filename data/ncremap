@@ -111,6 +111,7 @@ esac # !HOSTNAME
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.pop.h.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.rtm.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # MPAS:
+# ncremap -P mpas -i ${DATA}/mpas/raw/hist.ocn.0001-01-01_00.00.00.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -O ~/rgr
 # ncremap -P mpas -i ${DATA}/mpas/raw/hist.ocn.0003-12-01_00.00.00.nc -m ${DATA}/maps/map_mpas120_TO_T62_aave.121116.nc -O ~/rgr
 # ncremap -P mpas -i ${DATA}/mpas/raw/hist.ocn.0003-12-01_00.00.00.nc -s ${DATA}/grids/fxm -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ACME benchmarks:
@@ -294,7 +295,8 @@ if [ -n "${drc_usr}" ]; then
 fi # !drc_usr
 grd_dst_dfl="${drc_out}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
 grd_src_dfl="${drc_out}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
-pdq_fl="${drc_out}/ncremap_tmp_pdq.nc" # [sng] Permuted data default
+att_fl="${drc_out}/ncremap_tmp_att.nc" # [sng] Missing value workflow (MPAS) default
+pdq_fl="${drc_out}/ncremap_tmp_pdq.nc" # [sng] Permuted data default (AIRS, HIRDLS, MLS, MPAS) 
 tmp_out_fl="${drc_out}/${tmp_out_fl}" # [sng] Temporary output file
 ncwa_fl="${drc_out}/ncremap_tmp_ncwa.nc" # [sng] ncwa workflow (HIRDLS, MLS) default
 znl_fl="${drc_out}/ncremap_tmp_znl.nc" # [sng] Zonal workflow (HIRDLS, MLS) default
@@ -370,6 +372,7 @@ if [ "${pdq_typ}" = 'mls' ]; then
 fi # !mls
 if [ "${pdq_typ}" = 'mpas' ]; then 
     pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells'
+    rgr_opt="${rgr_opt} --rnr=0.0"
 fi # !mpas
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
@@ -620,6 +623,9 @@ fi # !fl_nbr
 if [ -n "${pdq_opt}" ]; then 
     printf "Input data obey \"${pdq_typ}\"-ordering and will be permuted with \"ncpdq ${pdq_opt}\"\n"
 fi # !pdq_opt
+if [ "${pdq_typ}" = 'mpas' ]; then
+    printf "Input data assumed to be barenaked MPAS-O/I: will be annotated with _FillValue prior to regridding, will use renormalized regridding (--rnr=0.0)\n"
+fi # !mpas
 if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ]; then 
     printf "Source and destination grids will both be read from supplied map-file\n"
 else # !map_usr_flg
@@ -772,7 +778,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 		fi # !err
 	    fi # !dbg
 	fi # !znl
-	
+
 	# Block 2: Source grid
 	# Block 2 Loop 1: Source gridfile command
 	if [ ! -e "${in_fl}" ]; then
@@ -849,15 +855,29 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 
     fi # !map_mk
     
-    # Block 4: Generic Permutation (AIRS, HIRDLS, MLS, MPAS)
+    # Block 4: Special cases
+    # Block 4a: Add missing metadata to MPAS files 
+    if [ "${pdq_typ}" = 'mpas' ]; then
+	cmd_att[${fl_idx}]="ncatted -O -a _FillValue,,o,d,-9.99999979021476795361e+33 ${in_fl} ${att_fl};"
+	in_fl="${att_fl}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_att[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_att[${fl_idx}]}
+	    if [ $? -ne 0 ] || [ ! -f "${att_fl}" ] ; then
+		printf "${spt_nm}: ERROR Failed to annotate MPAS file with _FillValue. Debug this:\n${cmd_att[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    fi # !mpas
+	
+    # Block 4b: Generic Permutation (AIRS, HIRDLS, MLS, MPAS)
     if [ -n "${pdq_opt}" ]; then
 	printf "PDQ(in)  : ${in_fl}\n"
 	printf "PDQ(out) : ${pdq_fl}\n"
 	cmd_pdq[${fl_idx}]="ncpdq ${nco_opt} ${nco_var_lst} ${pdq_opt} ${in_fl} ${pdq_fl}"
-	# Cause next block (regridding) to operate on PDQ file
 	in_fl=${pdq_fl}
-	
-	# Block 4 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_pdq[${fl_idx}]}
 	fi # !dbg

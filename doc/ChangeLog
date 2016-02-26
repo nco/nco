@@ -1,3 +1,9 @@
+2016-02-26  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: use ncatted to add _FillValue for MPAS
+
+	* ncremap: make --rnr=0.0 default for MPAS
+
 2016-02-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.5 release procedure:
