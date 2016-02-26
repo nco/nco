@@ -1,5 +1,9 @@
 2016-02-26  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.5.6-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.6-alpha01 final changes';git push
+	git tag -a 4.5.6-alpha01 -m 'Version 4.5.6-alpha01 new features: ncremap MPAS --rnr=0.0';git push --tags
+
 	* ncremap: use ncatted to add _FillValue for MPAS
 
 	* ncremap: make --rnr=0.0 default for MPAS

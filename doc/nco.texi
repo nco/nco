@@ -113,11 +113,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.5
-@set doc-edition 4.5.5
+@set nco-edition 4.5.6-alpha01
+@set doc-edition 4.5.6-alpha01
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 17 February 2016
+@set update-date 26 February 2016
 @set update-month February 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18664,13 +18664,18 @@ generate weights and mapfiles.
 In order to use the weight-generation options, ensure that one or both
 of the weight-generation packages is installed and on your
 @code{$PATH}. 
-@acronym{ERWG} is distributed in binary format with @acronym{NCL}, which
-many (most?) @acronym{NCO} users already have on their system(s). 
-@acronym{ERWG} may also be installed from source:
+The recommended way to obtain @acronym{ERWG} is as distributed in binary
+format with @acronym{NCL}, which many (most?) @acronym{NCO} users
+already have on their system(s).
+Then be sure the directory containing the @acronym{ERWG} executable is
+on your @code{$PATH} before using @command{ncremap}.
+As a fallback, @acronym{ERWG} may also be installed from source:
 @url{https://earthsystemcog.org/projects/esmf/download_last_public}.
 @command{ncremap} can also generate and utilize mapfiles created by
 TempestRemap, 
 @url{https://github.com/ClimateGlobalChange/tempestremap}.
+As far as we know TempestRemap must be built from source because there
+are no binary distributions of it. 
 Please contact those projects for support on building and installing
 their software, which makes @command{ncremap} more functional and
 user-friendly.
