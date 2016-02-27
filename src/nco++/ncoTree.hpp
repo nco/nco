@@ -351,7 +351,7 @@ if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
      int wlk_nbr);
 
      if(tr== ANTLR_USE_NAMESPACE(antlr)nullAST)
-        err_prn("run_dbl"," REPORTS given a null AST Refrence\n");
+        err_prn("run_dbl"," REPORTS given a null AST Reference\n");
             
      //small list dont bother with double parsing     
      // just do a final parse

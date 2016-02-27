@@ -953,7 +953,7 @@ if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
      int wlk_nbr);
 
      if(tr== ANTLR_USE_NAMESPACE(antlr)nullAST)
-        err_prn("run_dbl"," REPORTS given a null AST Refrence\n");
+        err_prn("run_dbl"," REPORTS given a null AST Reference\n");
             
      //small list dont bother with double parsing     
      // just do a final parse
@@ -1981,7 +1981,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
                     }   
 
                    if( var_rhs->sz != var_lhs->sz) 
-                       err_prn(fnc_nm,"regular assign - var size missmatch between \""+var_nm+"\" and RHS of expression");                        
+                       err_prn(fnc_nm,"regular assign - var size mismatch between \""+var_nm+"\" and RHS of expression");                        
 
                    var_lhs->val.vp=var_rhs->val.vp;
                
@@ -2074,7 +2074,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               {
                 // check size
                if(  var_rhs->sz!=1L &&  var_rhs->sz != cnt)   
-                  err_prn(fnc_nm,"Hyperslab limits for attribute "+att_nm + " on LHS size="+nbr2sng(cnt)+ " doesnt match RHS size=" + nbr2sng(var_rhs->sz));
+                  err_prn(fnc_nm,"Hyperslab limits for attribute "+att_nm + " on LHS size="+nbr2sng(cnt)+ " doesn't match RHS size=" + nbr2sng(var_rhs->sz));
 
                    
                 szn=(var_rhs->sz >1 ? 1: 0);     
@@ -2121,7 +2121,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
 
                // check size
                if(  var_rhs->sz!=1L &&  var_rhs->sz != cnt)   
-                  err_prn(fnc_nm,"Hyperslab limits for attribute "+att_nm + " on LHS size="+nbr2sng(cnt)+ " doesnt match RHS size=" + nbr2sng(var_rhs->sz));
+                  err_prn(fnc_nm,"Hyperslab limits for attribute "+att_nm + " on LHS size="+nbr2sng(cnt)+ " doesn't match RHS size=" + nbr2sng(var_rhs->sz));
 
  
                nco_var_cnf_typ(var_lhs->type,var_rhs);               

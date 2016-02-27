@@ -2437,7 +2437,7 @@ Leaks cause peak memory usage to increase monotonically with time
 regardless of script complexity. 
 Slow leaks are very difficult to find.
 Sometimes a @command{malloc()} (or @command{new[]}) failure is the
-only noticeable clue to their existance.
+only noticeable clue to their existence.
 If you have good reasons to believe that a memory allocation failure  
 is ultimately due to an @acronym{NCO} memory leak (rather than
 inadequate @acronym{RAM} on your system), then we would be very
@@ -15550,7 +15550,7 @@ not rank, while, @command{ncwa} changes both variable size and rank.}.
 In this case the input files to @command{ncbo}, @var{file_1} and
 @var{file_2}, will have unequally sized @code{time} dimensions which
 causes @command{ncbo} to fail.
-To prevent this from occuring, use @command{ncwa} to remove the
+To prevent this from occurring, use @command{ncwa} to remove the
 @code{time} dimension from @var{file_2}.
 See the example below.
 
