@@ -96,7 +96,7 @@ int
 main(int argc,char **argv)
 {
   const char fnc_nm[]="main"; 
-  FILE *yyin; /* File handle used to check file existance */
+  FILE *yyin; /* File handle used to check file existence */
   int parse_antlr(std::vector<prs_cls> &prs_vtr ,char*,char*);
   
   /* fxm TODO nco652 */
