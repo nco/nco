@@ -2680,7 +2680,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 #ncks #105
 # Test that -x exclusion of coordinate variables only works with -C
-# fxm: -x is not directly tested because it means testing for non-existance in output. how to do this?
+# fxm: -x is not directly tested because it means testing for non-existence in output. how to do this?
 # ncks -O -x -v time ~/nco/data/in.nc ~/foo.nc
 # ncks -H -C -d time,0 -v time ~/foo.nc
     $dsc_sng="Test that -x exclusion of coordinate variables only works with -C";

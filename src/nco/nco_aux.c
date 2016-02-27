@@ -286,7 +286,7 @@ nco_aux_evl
         lmt_tpl.max_idx=lmt_tpl.end=cll_idx_min+cll_nbr_cns-1;
         lmt_tpl.cnt=cll_nbr_cns;
         (*lmt_nbr)++;
-        if(*lmt_nbr > MAX_LMT_NBR) nco_err_exit(0,"%s: Number of slabs exceeds allocated mamory");
+        if(*lmt_nbr > MAX_LMT_NBR) nco_err_exit(0,"%s: Number of slabs exceeds allocated memory");
         lmt[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
         *lmt[(*lmt_nbr)-1]=lmt_tpl;
         cll_grp_nbr++;
@@ -509,7 +509,7 @@ nco_aux_evl_trv
         lmt_tpl.max_idx=lmt_tpl.end=cll_idx_min+cll_nbr_cns-1;
         lmt_tpl.cnt=cll_nbr_cns;
         (*aux_lmt_nbr)++;
-        if(*aux_lmt_nbr > MAX_LMT_NBR) nco_err_exit(0,"%s: Number of slabs exceeds allocated mamory");
+        if(*aux_lmt_nbr > MAX_LMT_NBR) nco_err_exit(0,"%s: Number of slabs exceeds allocated memory");
         lmt[(*aux_lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
         *lmt[(*aux_lmt_nbr)-1]=lmt_tpl;
         cll_grp_nbr++;
