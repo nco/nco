@@ -1353,6 +1353,10 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
     if(nm_nc) free(nm_nc);
     if(rcd == NC_NOERR) (void)fprintf(stdout,"Original variable name is preserved in \"%s\" attribute.\n",att_nm);
   } /* endif */
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s failed to nc_def_var() variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
+
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var()");
   return rcd;
 } /* end nco_def_var */
