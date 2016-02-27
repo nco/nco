@@ -1209,6 +1209,9 @@ nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * co
   const char fnc_nm[]="nco_def_dim()";
   int rcd;
   rcd=nc_def_dim(nc_id,dmn_nm,(size_t)dmn_sz,dmn_id);
+  if(rcd == NC_ENAMEINUSE){
+    (void)fprintf(stdout,"ERROR: %s cannot define dimension name \"%s\" which is already in use\n",fnc_nm,dmn_nm);
+  } /* endif */
   if(rcd == NC_EBADNAME){
     char *nm_nc=NULL; /* [sng] netCDF-compatible name */
     (void)fprintf(stdout,"INFO: %s reports input file dimension name \"%s\" contains illegal characters. ",fnc_nm,dmn_nm);
@@ -1790,6 +1793,7 @@ int
 nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_put_vara_*() */
+  const char fnc_nm[]="nco_put_vara()";
   int rcd=NC_NOERR;
   switch(type){
   case NC_FLOAT: rcd=nc_put_vara_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const float *)vp); break;
@@ -1809,6 +1813,11 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
+  if(rcd != NC_NOERR){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_put_vara() variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara()");
   return rcd;
 } /* end nco_put_vara */

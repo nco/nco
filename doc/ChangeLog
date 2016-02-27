@@ -1,3 +1,7 @@
+2016-02-27  Charlie Zender  <zender@uci.edu>
+
+	* Add slat/slon coordinates to FV output grids for interoperability with AMWG diagnostics
+
 2016-02-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.6-alpha01 release procedure:
