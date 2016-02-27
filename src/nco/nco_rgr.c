@@ -909,6 +909,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   double *lon_crn_out=NULL; /* [dgr] Longitude corners of rectangular destination grid */
   double *lon_ctr_out=NULL_CEWI; /* [dgr] Longitude centers of rectangular destination grid */
   double *lon_ntf_out=NULL; /* [dgr] Longitude interfaces of rectangular destination grid */
+  double *slat_ctr_out=NULL_CEWI; /* [dgr] Latitude  centers of staggered FV destination grid */
+  double *slon_ctr_out=NULL_CEWI; /* [dgr] Longitude centers of staggered FV destination grid */
   double *wgt_raw; /* [frc] Remapping weights */
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
@@ -968,6 +970,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   long col_nbr_out=long_CEWI; /* [nbr] Number of columns in destination grid */
   long lon_nbr_out=long_CEWI; /* [nbr] Number of longitudes in rectangular destination grid */
   long lat_nbr_out=long_CEWI; /* [nbr] Number of latitudes  in rectangular destination grid */
+  long slat_nbr_out=long_CEWI; /* [nbr] Number of latitudes in staggered FV grid destination grid */
+  long slon_nbr_out=long_CEWI; /* [nbr] Number of longitudes in staggered FV grid destination grid */
   if(flg_grd_out_1D){
     bnd_nbr_out=rgr_map.dst_grid_corners;
     col_nbr_out=dmn_sz_out_int[0];
@@ -979,6 +983,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     col_nbr_out=lat_nbr_out*lon_nbr_out;
     lat_nbr_out=dmn_sz_out_int[lat_psn_dst];
     lon_nbr_out=dmn_sz_out_int[lon_psn_dst];
+    slat_nbr_out=lat_nbr_out-1L;
+    slon_nbr_out=lon_nbr_out;
     /* Sanity-check */
     assert(lat_nbr_out*lon_nbr_out == (long)grd_sz_out);
   } /* !dst_grid_rank */
@@ -1283,6 +1289,17 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output longitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(nco_grd_lon_typ));
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
+    if(nco_grd_lat_typ == nco_grd_lat_fv){
+      slat_ctr_out=(double *)nco_malloc(slat_nbr_out*nco_typ_lng(crd_typ_out));
+      slon_ctr_out=(double *)nco_malloc(slon_nbr_out*nco_typ_lng(crd_typ_out));
+      for(idx=0;idx<slat_nbr_out;idx++){
+	slat_ctr_out[idx]=lat_ntf_out[idx+1];
+      } /* !lat_nbr_out */
+      for(idx=0;idx<slon_nbr_out;idx++){
+	slon_ctr_out[idx]=lon_ntf_out[idx];
+      } /* !lat_nbr_out */
+    } /* !nco_grd_lat_fv */
+
     switch(nco_grd_lat_typ){
     case nco_grd_lat_eqa:
     case nco_grd_lat_fv:
@@ -1773,8 +1790,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
     rcd+=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
     if(nco_grd_lat_typ == nco_grd_lat_fv){
-      rcd+=nco_def_dim(out_id,slat_nm_out,lat_nbr_out-1,&dmn_id_slat);
-      rcd+=nco_def_dim(out_id,slon_nm_out,lon_nbr_out,&dmn_id_slon);
+      rcd+=nco_def_dim(out_id,slat_nm_out,slat_nbr_out,&dmn_id_slat);
+      rcd+=nco_def_dim(out_id,slon_nm_out,slon_nbr_out,&dmn_id_slon);
     } /* !nco_grd_lat_fv */
   } /* !flg_grd_out_2D */
   rcd=nco_inq_dimid_flg(out_id,bnd_tm_nm_out,&dmn_id_bnd_tm);
@@ -2465,12 +2482,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_tuo,lon_ctr_out,crd_typ_out);
     if(nco_grd_lat_typ == nco_grd_lat_fv){
       dmn_srt_out[0]=0L;
-      dmn_cnt_tuo[0]=lat_nbr_out-1;
-      /* fxm: replace lat/lon_ctr_out with slat/slon_ctr_out */
-      (void)nco_put_vara(out_id,slat_out_id,dmn_srt_out,dmn_cnt_tuo,lat_ctr_out,crd_typ_out);
+      dmn_cnt_tuo[0]=slat_nbr_out;
+      (void)nco_put_vara(out_id,slat_out_id,dmn_srt_out,dmn_cnt_tuo,slat_ctr_out,crd_typ_out);
       dmn_srt_out[0]=0L;
-      dmn_cnt_tuo[0]=lon_nbr_out;
-      (void)nco_put_vara(out_id,slon_out_id,dmn_srt_out,dmn_cnt_tuo,lon_ctr_out,crd_typ_out);
+      dmn_cnt_tuo[0]=slon_nbr_out;
+      (void)nco_put_vara(out_id,slon_out_id,dmn_srt_out,dmn_cnt_tuo,slon_ctr_out,crd_typ_out);
+      if(slat_ctr_out) slat_ctr_out=(double *)nco_free(slat_ctr_out);
+      if(slon_ctr_out) slon_ctr_out=(double *)nco_free(slon_ctr_out);
     } /* !nco_grd_lat_fv */
     dmn_srt_out[0]=0L;
     dmn_cnt_tuo[0]=lat_nbr_out;
