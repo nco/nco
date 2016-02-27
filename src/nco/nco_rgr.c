@@ -1773,8 +1773,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
     rcd+=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
     if(nco_grd_lat_typ == nco_grd_lat_fv){
-      rcd+=nco_def_dim(out_id,slat_nm_out,lat_nbr_out-1,&dmn_id_lat);
-      rcd+=nco_def_dim(out_id,slon_nm_out,lon_nbr_out,&dmn_id_lon);
+      rcd+=nco_def_dim(out_id,slat_nm_out,lat_nbr_out-1,&dmn_id_slat);
+      rcd+=nco_def_dim(out_id,slon_nm_out,lon_nbr_out,&dmn_id_slon);
     } /* !nco_grd_lat_fv */
   } /* !flg_grd_out_2D */
   rcd=nco_inq_dimid_flg(out_id,bnd_tm_nm_out,&dmn_id_bnd_tm);
