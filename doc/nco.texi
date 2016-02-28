@@ -14800,8 +14800,8 @@ netcdf-4.0 Final  2008/08/28@*
 SYNTAX
 @example
 ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h] [--hdr_pad @var{nbr}]
-[-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
-@var{input-file} [[@var{output-file}]]
+[-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
+[--ram_all] [-t] @var{input-file} [[@var{output-file}]]
 @end example
  
 @noindent
@@ -14935,6 +14935,11 @@ Finally, if @var{var_nm} is left blank, then @command{ncatted}
 attempts to perform the editing operation on every variable in the file.
 This option may be convenient to use if you decide to change the
 conventions you use for describing the data.
+As of @acronym{NCO} 4.5.6 (March, 2016), @command{ncatted} accepts 
+the @samp{-t} (or long-option equivalent @samp{--typ_mch} or
+@samp{--type_match}) option.
+This causes @command{ncatted} to perform the editing operation only on
+variables that are the same type as the specified attribute.
 
 @html
 <a name="mode"></a> <!-- http://nco.sf.net/nco.html#mode -->
@@ -15162,6 +15167,31 @@ from whatever it currently is to ``temperature'':
 @example
 ncatted -a long_name,T,o,c,temperature in.nc
 @end example
+
+@html
+<a name="MPAS"></a> <!-- http://nco.sf.net/nco.html#MPAS -->
+<a name="typ_mch"></a> <!-- http://nco.sf.net/nco.html#typ_mch -->
+<a name="type_match"></a> <!-- http://nco.sf.net/nco.html#type_match -->
+@end html
+@cindex MPAS
+@cindex @code{_FillValue}
+Many model and observational datasets use missing values that are not
+annotated in the standard manner.
+For example, the MPAS ocean and ice models use
+@math{-9.99999979021476795361e+33} as the missing value.
+To prevent arithmetic from treating these values as normal, designate
+this value as the @code{_FillValue} attribute:
+@example
+ncatted    -a _FillValue,,o,d,-9.99999979021476795361e+33 in.nc
+ncatted -t -a _FillValue,,o,d,-9.99999979021476795361e+33 in.nc
+ncatted -t -a _FillValue,,o,d,-9.99999979021476795361e+33 \
+           -a _FillValue,,o,f,1.0e36 -a _FillValue,,o,i,-999 in.nc
+@end example
+The first example adds the attribute to all variables. 
+The @samp{-t} switch causes the second example to add the attribute only
+to double precision variables.
+This is often more useful, and can be used to provide distinct missing
+value attributes to each numeric type, as in the third example.
 
 @html
 <a name="NaN"></a> <!-- http://nco.sf.net/nco.html#NaN -->

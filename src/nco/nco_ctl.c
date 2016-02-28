@@ -957,7 +957,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min min] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-F] [-f] [--fl_fmt fmt] [--glb ...] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-s algebra] [-S fl.nco] [-t thr_nbr] [-v] in.nc [out.nc]\n");
     break;
   case ncatted:
-    opt_sng=(char *)strdup("[-a ...] [--bfr sz] [-D nco_dbg_lvl] [--glb ...] [-h] [--hdr_pad nbr] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] in.nc [[out.nc]]\n");
+    opt_sng=(char *)strdup("[-a ...] [--bfr sz] [-D nco_dbg_lvl] [--glb ...] [-h] [--hdr_pad nbr] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-t] in.nc [[out.nc]]\n");
     break;
   case ncbo:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_byt sz] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min min] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [--glb ...] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--msa] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in_1.nc in_2.nc [out.nc]\n");
@@ -1126,7 +1126,10 @@ nco_usg_prn(void)
   } /* end if */
   if(strstr(opt_sng,"[-S")) (void)fprintf(stdout,"-S, --fl_spt, --script-file fl.nco\tScript file containing multiple algebraic commands\n");
   if(strstr(opt_sng,"[-T")) (void)fprintf(stdout,"-T, --mask_comparator, --msk_cmp_typ, --op_rlt comparator\tComparator for mask condition: eq,ne,ge,le,gt,lt\n");
-  if(strstr(opt_sng,"[-t")) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
+  if(strstr(opt_sng,"[-t")){
+    if(prg_lcl == ncatted) (void)fprintf(stdout,"-t, --typ_mch, --type_match \tType-match attribute edits\n");
+    if(prg_lcl != ncatted) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
+  } /* end if */
   if(strstr(opt_sng,"[-U]")) (void)fprintf(stdout,"-U, --upk, --unpack\tUnpack input file\n");
   if(strstr(opt_sng,"[-u")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
