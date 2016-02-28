@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.5.6-alpha02 final changes';git push
 	git tag -a 4.5.6-alpha02 -m 'Version 4.5.6-alpha02 new features: FV slat/slon, unique names, clean-up, ncatted -h';git push --tags
 
+	* Turn-off fill mode in regridding
+
 	* Add history to ncatted when called by ncremap
 
 2016-02-27  Charlie Zender  <zender@uci.edu>

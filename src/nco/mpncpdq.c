@@ -899,7 +899,7 @@ main(int argc,char **argv)
     /* Set chunksize parameters */
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr);
     
-    /* Turn off default filling behavior to enhance efficiency */
+    /* Turn-off default filling behavior to enhance efficiency */
     nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
     
     /* Take output file out of define mode */
@@ -1073,7 +1073,7 @@ main(int argc,char **argv)
 	    /* Set chunksize parameters */
 	    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr);
 	    
-	    /* Turn off default filling behavior to enhance efficiency */
+	    /* Turn-off default filling behavior to enhance efficiency */
 	    nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP

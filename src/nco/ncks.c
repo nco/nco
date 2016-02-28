@@ -1041,7 +1041,7 @@ main(int argc,char **argv)
 	if(prc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,prc_nbr);
 #endif /* !ENABLE_MPI */
       
-      /* Turn off default filling behavior to enhance efficiency */
+      /* Turn-off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
       
       /* Take output file out of define mode */

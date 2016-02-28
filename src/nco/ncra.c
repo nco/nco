@@ -823,7 +823,7 @@ main(int argc,char **argv)
   /* Add input file list global attribute */
   if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
-  /* Turn off default filling behavior to enhance efficiency */
+  /* Turn-off default filling behavior to enhance efficiency */
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Add cell_methods attributes (before exiting define mode) */

@@ -596,6 +596,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int dst_grid_corners_id; /* [id] Destination grid corners dimension ID */
   int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
   int dst_grid_size_id; /* [id] Destination grid size dimension ID */
+  int fll_md_old; /* [enm] Old fill mode */
   int num_links_id; /* [id] Number of links dimension ID */
   int num_wgts_id; /* [id] Number of weights dimension ID */
   int src_grid_corners_id; /* [id] Source grid corners dimension ID */
@@ -2433,6 +2434,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(slon_nm_out) slon_nm_out=(char *)nco_free(slon_nm_out);
   } /* !nco_grd_lat_fv */
   
+  /* Turn-off default filling behavior to enhance efficiency */
+  nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+      
   /* Begin data mode */
   (void)nco_enddef(out_id);
 

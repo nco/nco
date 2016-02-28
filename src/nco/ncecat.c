@@ -681,7 +681,7 @@ main(int argc,char **argv)
     if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
     if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
-    /* Turn off default filling behavior to enhance efficiency */
+    /* Turn-off default filling behavior to enhance efficiency */
     nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
     /* Take output file out of define mode */
@@ -819,7 +819,7 @@ main(int argc,char **argv)
       /* Define extracted groups, variables, and attributes in output file */
       (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,CPY_GLB_METADATA,(nco_bool)True,(nco_bool)False,nco_pck_plc_nil,rec_dmn_nm,trv_tbl_gpr);
 
-      /* Turn off default filling behavior to enhance efficiency */
+      /* Turn-off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Write extracted data to output file */

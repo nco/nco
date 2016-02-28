@@ -896,7 +896,7 @@ main(int argc,char **argv)
   /* Set chunksize parameters */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,(lmt_msa_sct **)NULL_CEWI,(int)0,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr);
 
-  /* Turn off default filling behavior to enhance efficiency */
+  /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
   /* Take output file out of define mode */

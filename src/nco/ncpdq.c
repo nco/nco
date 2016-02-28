@@ -710,7 +710,7 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
-  /* Turn off default filling behavior to enhance efficiency */
+  /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Take output file out of define mode */

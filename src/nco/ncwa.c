@@ -806,7 +806,7 @@ main(int argc,char **argv)
     } /* end for */
   } /* end if */
 
-  /* Turn off default filling behavior to enhance efficiency */
+  /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Add cell_methods attributes (before exiting define mode) */
