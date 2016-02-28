@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.5.6-alpha02 final changes';git push
 	git tag -a 4.5.6-alpha02 -m 'Version 4.5.6-alpha02 new features: output FV grids with slat/slon';git push --tags
 
+	* Use unique intermediate filenames by default in ncremap, to prevent interference during parallel invocations
+
 	* Add slat/slon coordinates to FV output grids for interoperability with AMWG diagnostics
 
 2016-02-26  Charlie Zender  <zender@uci.edu>
