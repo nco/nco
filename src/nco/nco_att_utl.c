@@ -513,6 +513,7 @@ nco_bool /* [flg] Attribute was changed */
 nco_aed_prc_var_all /* [fnc] Process attributes in all variables */
 (const int nc_id, /* I [id] netCDF file ID */
  const aed_sct aed, /* I [sct] Attribute-edit information */
+ const nco_bool flg_typ_mch, /* I [flg] Type-match attribute edits */
  const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */ 
 {
   /* Purpose: Process attributes in all variables */
@@ -524,10 +525,12 @@ nco_aed_prc_var_all /* [fnc] Process attributes in all variables */
 
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
-      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
-      (void)nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
-      flg_chg|=nco_aed_prc_wrp(grp_id,var_id,aed);
-      var_fnd=True;
+      if((flg_typ_mch && trv_tbl->lst[tbl_idx].var_typ == aed.typ) || !flg_typ_mch){
+	(void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
+	(void)nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
+	flg_chg|=nco_aed_prc_wrp(grp_id,var_id,aed);
+	var_fnd=True;
+      } /* !typ */
     } /* !var */
   } /* !tbl */ 
 

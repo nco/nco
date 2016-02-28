@@ -167,7 +167,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
+  const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rrt-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -198,6 +198,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+  nco_bool flg_typ_mch=False; /* [flg] Type-match attribute edits */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
@@ -251,6 +252,8 @@ main(int argc,char **argv)
     {"path",required_argument,0,'p'},
     {"retain",no_argument,0,'R'},
     {"rtn",no_argument,0,'R'},
+    {"typ_mch",no_argument,0,'t'},
+    {"type_match",no_argument,0,'t'},
     {"help",no_argument,0,'?'},
     {"hlp",no_argument,0,'?'},
     {0,0,0,0}
@@ -346,6 +349,9 @@ main(int argc,char **argv)
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);
       break;
+    case 't': /* Type-match attribute edits */
+      flg_typ_mch=True;
+      break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
@@ -419,7 +425,7 @@ main(int argc,char **argv)
   for(int idx_aed=0;idx_aed<nbr_aed;idx_aed++){
     if(!aed_lst[idx_aed].var_nm){
       /* Variable name is blank so edit same attribute for all variables */
-      (void)nco_aed_prc_var_all(nc_id,aed_lst[idx_aed],trv_tbl);
+      (void)nco_aed_prc_var_all(nc_id,aed_lst[idx_aed],flg_typ_mch,trv_tbl);
     }else if(strpbrk(aed_lst[idx_aed].var_nm,".*^$\\[]()<>+?|{}")){
       /* Variable name contains a "regular expression" (rx) */
       trv_tbl_sct *trv_tbl_rx;
@@ -441,7 +447,7 @@ main(int argc,char **argv)
       /* Variable name of "global" means edit global attributes */
       (void)nco_aed_prc_glb(nc_id,aed_lst[idx_aed],trv_tbl);
     }else{ 
-      /* Regular ole' variable name means edits attributes that match absoluted and relative names */
+      /* Regular ole' variable name means edits attributes that match absolute and relative names */
       (void)nco_aed_prc_var_nm(nc_id,aed_lst[idx_aed],trv_tbl);
     } /* end var_nm */
   } /* end loop over aed structures */

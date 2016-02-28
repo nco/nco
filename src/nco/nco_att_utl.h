@@ -75,6 +75,7 @@ nco_bool /* [flg] Attribute was changed */
 nco_aed_prc_var_all /* [fnc] Process attributes in all variables */
 (const int nc_id, /* I [id] netCDF file ID */
  const aed_sct aed, /* I [sct] Attribute-edit information */
+ const nco_bool flg_typ_mch, /* I [flg] Type-match attribute edits */
  const trv_tbl_sct * const trv_tbl); /* I [lst] Traversal table */ 
 
 nco_bool /* [flg] Attribute was changed */
