@@ -2,7 +2,9 @@
 
 	* NCO 4.5.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.6-alpha02 final changes';git push
-	git tag -a 4.5.6-alpha02 -m 'Version 4.5.6-alpha02 new features: output FV grids with slat/slon';git push --tags
+	git tag -a 4.5.6-alpha02 -m 'Version 4.5.6-alpha02 new features: FV slat/slon, unique names and clean-up';git push --tags
+
+	* ncremap does not annotate with ncatted when called from climo_nco.sh
 
 	* Use unique intermediate filenames by default in ncremap, to prevent interference during parallel invocations
 
