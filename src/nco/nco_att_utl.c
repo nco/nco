@@ -525,7 +525,7 @@ nco_aed_prc_var_all /* [fnc] Process attributes in all variables */
 
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
-      if((flg_typ_mch && trv_tbl->lst[tbl_idx].var_typ == aed.typ) || !flg_typ_mch){
+      if((flg_typ_mch && trv_tbl->lst[tbl_idx].var_typ == aed.type) || !flg_typ_mch){
 	(void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
 	(void)nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
 	flg_chg|=nco_aed_prc_wrp(grp_id,var_id,aed);
