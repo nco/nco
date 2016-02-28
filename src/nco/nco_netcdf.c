@@ -1698,6 +1698,66 @@ nco_rename_var(const int nc_id,const int var_id,const char * const var_nm)
 
 /* Start _get _put _var */
 int
+nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type type)
+{
+  /* Purpose: Wrapper for nc_put_var_*()
+     20160228: nc_put_var() family does type conversion, nc_put_vara() family does not */
+  const char fnc_nm[]="nco_put_var()";
+  int rcd=NC_NOERR;
+  switch(type){
+  case NC_FLOAT: rcd=nc_put_var_float(nc_id,var_id,(const float *)vp); break;
+  case NC_DOUBLE: rcd=nc_put_var_double(nc_id,var_id,(const double *)vp); break;
+  case NC_INT: rcd=NCO_PUT_VAR_INT(nc_id,var_id,(const nco_int *)vp); break;
+  case NC_SHORT: rcd=nc_put_var_short(nc_id,var_id,(const short *)vp); break;
+  case NC_CHAR: rcd=NCO_PUT_VAR_CHAR(nc_id,var_id,(const nco_char *)vp); break;
+  case NC_BYTE: rcd=NCO_PUT_VAR_BYTE(nc_id,var_id,(const nco_byte *)vp); break;
+#ifdef ENABLE_NETCDF4
+  case NC_UBYTE: rcd=NCO_PUT_VAR_UBYTE(nc_id,var_id,(const nco_ubyte *)vp); break;
+  case NC_USHORT: rcd=NCO_PUT_VAR_USHORT(nc_id,var_id,(const nco_ushort *)vp); break;
+  case NC_UINT: rcd=NCO_PUT_VAR_UINT(nc_id,var_id,(const nco_uint *)vp); break;
+  case NC_INT64: rcd=NCO_PUT_VAR_INT64(nc_id,var_id,(const nco_int64 *)vp); break;
+  case NC_UINT64: rcd=NCO_PUT_VAR_UINT64(nc_id,var_id,(const nco_uint64 *)vp); break;
+    /* NC_STRING prototype next causes same compiler warnings described in nco_put_var1() above */
+  case NC_STRING: rcd=NCO_PUT_VAR_STRING(nc_id,var_id,(const char **)vp); break;
+#endif /* !ENABLE_NETCDF4 */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  if(rcd != NC_NOERR){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_put_var() variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var()");
+  return rcd;
+} /* end nco_put_var */
+
+int
+nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type type)
+{
+  /* Purpose: Wrapper for nc_get_var_*() */
+  int rcd=NC_NOERR;
+  switch(type){
+  case NC_FLOAT: rcd=nc_get_var_float(nc_id,var_id,(float *)vp); break;
+  case NC_DOUBLE: rcd=nc_get_var_double(nc_id,var_id,(double *)vp); break;
+  case NC_INT: rcd=NCO_GET_VAR_INT(nc_id,var_id,(nco_int *)vp); break;
+  case NC_SHORT: rcd=nc_get_var_short(nc_id,var_id,(nco_short *)vp); break;
+  case NC_CHAR: rcd=NCO_GET_VAR_CHAR(nc_id,var_id,(nco_char *)vp); break;
+  case NC_BYTE: rcd=NCO_GET_VAR_BYTE(nc_id,var_id,(nco_byte *)vp); break;
+#ifdef ENABLE_NETCDF4
+  case NC_UBYTE: rcd=NCO_GET_VAR_UBYTE(nc_id,var_id,(nco_ubyte *)vp); break;
+  case NC_USHORT: rcd=NCO_GET_VAR_USHORT(nc_id,var_id,(nco_ushort *)vp); break;
+  case NC_UINT: rcd=NCO_GET_VAR_UINT(nc_id,var_id,(nco_uint *)vp); break;
+  case NC_INT64: rcd=NCO_GET_VAR_INT64(nc_id,var_id,(nco_int64 *)vp); break;
+  case NC_UINT64: rcd=NCO_GET_VAR_UINT64(nc_id,var_id,(nco_uint64 *)vp); break;
+  case NC_STRING: rcd=NCO_GET_VAR_STRING(nc_id,var_id,(nco_string *)vp); break;
+#endif /* !ENABLE_NETCDF4 */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var()");
+  return rcd;
+} /* end nco_get_var */
+
+int
 nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * const vp,const nc_type var_typ)
 {
   /* Purpose: Wrapper for nc_get_var1_*() */
