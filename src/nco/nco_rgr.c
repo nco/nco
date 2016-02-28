@@ -1637,21 +1637,22 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* endif */
   } /* !idx */
 
-  /* 20160228: MPAS has a host of mysterious grid and extensive variables that should probably not be regridded */
-  const int mpas_xcl_lst_nbr=18; /* [nbr] Number of objects on exclusion list */
-  /* Exception list source: */
-  const char *mpas_xcl_lst[]={"cellMask,cellsOnCell,cellsOnEdge,cellsOnVertex,edgeMask,edgesOnCell,edgesOnEdge,edgesOnVertex,indexToCellID,indexToEdgeID,indexToVertexID,maxLevelCell,maxLevelEdgeTop,nEdgesOnCell,nEdgesOnEdge,vertexMask,verticesOnCell,verticesOnEdge"};
-  for(idx=0;idx<mpas_xcl_lst_nbr;idx++){
-    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
-      if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,mpas_xcl_lst[idx])) break;
-    if(idx_tbl < trv_nbr){
-      if(trv_tbl->lst[idx_tbl].flg_xtr){
-	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
-	var_xcl_nbr++;
+  if(False){
+    /* 20160228: MPAS has a host of mysterious grid and extensive variables that should probably not be regridded */
+    const int mpas_xcl_lst_nbr=18;
+    const char *mpas_xcl_lst[]={"cellMask,cellsOnCell,cellsOnEdge,cellsOnVertex,edgeMask,edgesOnCell,edgesOnEdge,edgesOnVertex,indexToCellID,indexToEdgeID,indexToVertexID,maxLevelCell,maxLevelEdgeTop,nEdgesOnCell,nEdgesOnEdge,vertexMask,verticesOnCell,verticesOnEdge"};
+    for(idx=0;idx<mpas_xcl_lst_nbr;idx++){
+      for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
+	if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,mpas_xcl_lst[idx])) break;
+      if(idx_tbl < trv_nbr){
+	if(trv_tbl->lst[idx_tbl].flg_xtr){
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
+	  var_xcl_nbr++;
+	} /* endif */
+	trv_tbl->lst[idx_tbl].flg_xtr=False;
       } /* endif */
-      trv_tbl->lst[idx_tbl].flg_xtr=False;
-    } /* endif */
-  } /* !idx */
+    } /* !idx */
+  } /* !False */
   
   char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
   int dmn_idx; /* [idx] Dimension index */

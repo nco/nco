@@ -657,7 +657,7 @@ fi # !pdq_opt
 if [ "${pdq_typ}" = 'mpas' ]; then
     printf "Input assumed to be MPAS-O/I data: will apply renormalized regridding (--rnr=0.0)\n"
     if [ "${clm_flg}" = 'No' ]; then
- 	printf "Input assumed to be barenaked of attributes: will annotate with _FillValue prior to regridding\n"
+ 	printf "Input assumed to be barenaked of attributes: will annotate NC_DOUBLE variables with _FillValue prior to regridding\n"
     fi # !clm_flg
 fi # !mpas
 if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ]; then 
