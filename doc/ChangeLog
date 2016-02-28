@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.5.6-alpha02 final changes';git push
 	git tag -a 4.5.6-alpha02 -m 'Version 4.5.6-alpha02 new features: FV slat/slon, unique names, clean-up, ncatted -h';git push --tags
 
+	* Add list of MPAS grid and extensive variables to exclude
+
 	* Add wrappers for nc_put_var(), nc_get_var() families
 
 	* Add ncatted -t --typ_mch --type_match switch for editing all variables whose type matches attribute type and no others

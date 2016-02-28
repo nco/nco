@@ -892,7 +892,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     # Block 4: Special cases
     # Block 4a: Add missing metadata to MPAS files unless script was invoked by climo_nco.sh (it makes no sense to give naked files to climo_nco.sh and then annotate here, so assume climo_nco.sh is working with annotated files)
     if [ "${pdq_typ}" = 'mpas' ] && [ "${clm_flg}" = 'No' ]; then
-	cmd_att[${fl_idx}]="ncatted -O -a _FillValue,,o,d,-9.99999979021476795361e+33 ${in_fl} ${att_fl};"
+	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${in_fl} ${att_fl};"
 	in_fl="${att_fl}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_att[${fl_idx}]}
