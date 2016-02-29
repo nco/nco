@@ -303,7 +303,7 @@ if [ -n "${drc_usr}" ]; then
     drc_out="${drc_usr}"
 else
     if [ -n "${out_fl}" ]; then
-	drc_out=dirname ${out_fl}
+	drc_out="$(dirname ${out_fl})"
     fi # !out_fl
 fi # !drc_usr
 if [ -n "${tmp_usr}" ]; then
