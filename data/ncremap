@@ -765,6 +765,9 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
 	fi # !err
 	if [ "${map_usr_flg}" = 'Yes' ]; then
 	    hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
+	    if [ "${wgt_gnr}" = 'tempest' ]; then 
+		hst_att="${hst_att};${cmd_msh[${fl_idx}]}"
+	    fi # !tempest
 	    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_fl}"
 	    eval ${cmd_att[${fl_idx}]}
 	    if [ $? -ne 0 ]; then
