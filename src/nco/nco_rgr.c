@@ -2895,8 +2895,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	
 #pragma omp critical
 	{ /* begin OpenMP critical */
-	  rcd=nco_put_var(out_id,var_id_out,var_val_dbl_out,var_typ_rgr);
-	  //	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
+	  //	  rcd=nco_put_var(out_id,var_id_out,var_val_dbl_out,var_typ_rgr);
+	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
 	} /* end OpenMP critical */
 	
 	if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);

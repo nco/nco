@@ -1199,7 +1199,7 @@ print "\n";
     $dsc_sng="Test tabs on coordinate";
     $tst_cmd[0]="ncra -Y ncfe -y tabs -v lond $omp_flg -O $fl_fmt $nco_D_flg $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v lon -d lon,3 %tmp_fl_00%";
-    $tst_cmd[2]="lon[3]=270";
+    $tst_cmd[2]="lon[3] = 270";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
@@ -2680,7 +2680,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 #ncks #105
 # Test that -x exclusion of coordinate variables only works with -C
-# fxm: -x is not directly tested because it means testing for non-existence in output. how to do this?
+# fxm: -x is not directly tested because it means testing for non-existance in output. how to do this?
 # ncks -O -x -v time ~/nco/data/in.nc ~/foo.nc
 # ncks -H -C -d time,0 -v time ~/foo.nc
     $dsc_sng="Test that -x exclusion of coordinate variables only works with -C";
@@ -2770,7 +2770,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-# ncks #113 wrapped limit with an additional limit (with --msa) pvn20160211 -- bug found that happens in nco 4.2.0 also
+#ncks #113 wrapped limit with an additional limit (with --msa) pvn20160211 -- bug found that happens in nco 4.2.0 also
 # ncks -O -C --msa -g g19 -v time -d time,9,0 -d time,1,2 ~/nco/data/in_grp_3.nc ~/foo.nc
     $dsc_sng="(Groups) Test wrapped limit with additonal limit and msa user order (expect failure TODO)";
     $tst_cmd[0]="ncks -O $nco_D_flg -C --msa -g g19 -v time -d time,9,0 -d time,1,2 $in_pth_arg in_grp_3.nc %tmp_fl_00";
