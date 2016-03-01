@@ -2,7 +2,7 @@
 
 	* NCO 4.5.6-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.6-alpha03 final changes';git push
-	git tag -a 4.5.6-alpha03 -m 'Version 4.5.6-alpha03 new features: FV slat/slon, unique names, clean-up, ncatted -t, NC_NOFILL,nc_put_var(),ncremap -U';git push --tags
+	git tag -a 4.5.6-alpha03 -m 'Version 4.5.6-alpha03 new features: ncremap add cmd_msh to history';git push --tags
 
 	* Brown paper bag release--switching from nco_put_vara() to nco_put_var() broke ... a lot
 
