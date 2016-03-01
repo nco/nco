@@ -409,7 +409,9 @@ if [ "${pdq_typ}" = 'mls' ]; then
     pdq_opt='-a CO_Pressure,CO_Latitude,lon'
 fi # !mls
 if [ "${pdq_typ}" = 'mpas' ]; then 
-    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells'
+#    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean only
+#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # Ice only
+    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
     rgr_opt="${rgr_opt} --rnr=0.0"
 fi # !mpas
 if [ -n "${thr_usr}" ]; then 
