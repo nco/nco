@@ -3660,7 +3660,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 192x288 for horizontal resolution 0.9x1.25 degrees' --rgr grid=${DATA}/grids/192x288_SCRIP.20160301.nc --rgr latlon=192,288 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
      ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 128x256 for horizontal resolution 1.4x1.4 degrees' --rgr grid=${DATA}/grids/128x256_SCRIP.20160301.nc --rgr latlon=128,256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
      ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 256x512 for horizontal resolution 0.7x0.7 degrees' --rgr grid=${DATA}/grids/256x512_SCRIP.20160301.nc --rgr latlon=256,512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 360x720 produced by RTM' --rgr grid=${DATA}/grids/360x720_SCRIP.20160301.nc --rgr latlon=360,720 --rgr lat_typ=eqa --rgr lon_typ=180_wst ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 360x720 produced by RTM' --rgr grid=${DATA}/grids/360x720rtm_SCRIP.20160301.nc --rgr latlon=360,720 --rgr lat_typ=eqa --rgr lon_typ=180_wst ~/nco/data/in.nc ~/foo.nc
 
      AMWG maps:
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/128x256_SCRIP.20160301.nc -w ${DATA}/maps/map_ne30np4_to_fv128x256_aave.20160301.nc --method conserve
