@@ -1425,8 +1425,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports global metadata specifies conservative remapping with normalization of type = %s. Furthermore, destination fractions frc_dst = dst_frac = frac_b = frc_out contain non-unity elements (maximum deviation from unity of %g occurs for frc_out[%ld] = %g). Thus normalization issues cannot be ignored. Will apply \'destarea\' normalization (i.e., divide by non-zero frc_out[dst_idx]) to all regridded arrays.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ),frc_out_dff_one_max,idx_max_dvn,frc_out[idx_max_dvn]);
   } /* !sometimes non-unity */
   if(flg_frc_nrm && rgr->flg_rnr){
-    (void)fprintf(stdout,"%s: ERROR %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice may be an error, depending on intent of each. Call Charlie and tell him how NCO should handle this :)\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
-    nco_exit(EXIT_FAILURE);
+    (void)fprintf(stdout,"%s: WARNING %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice may be an error, depending on intent of each. Call Charlie and tell him how NCO should handle this :)\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
+    //nco_exit(EXIT_FAILURE);
   } /* !flg_rnr */
 
   /* Detailed summary of 2D grids now available including quality-checked coordinates and area */
@@ -1931,7 +1931,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       var_nm=trv.nm;
+      /* Preserve input type in output type */
       var_typ_out=trv.var_typ;
+      /* Demote DP to SP to save space. fxm: missing value type will then be inconsistent if copied without demotion */
+      //if(trv.var_typ == NC_DOUBLE) var_typ_out=NC_FLOAT; else var_typ_out=trv.var_typ;
       dmn_nbr_in=trv.nbr_dmn;
       dmn_nbr_out=trv.nbr_dmn;
       rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
@@ -2839,7 +2842,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	       NB: Non-conservative interpolation methods (e.g., bilinear) should NOT apply this normalization (theoretically there is no danger in doing so because frc_out == 1 always for all gridcells that participate in bilinear remapping and frc_out == 0 otherwise, but still, best not to tempt the Fates)
 	       NB: Both frc_out and NCO's renormalization (below) could serve the same purpose
 	       Applying both could lead to double-normalizing by missing values!
-	       20151018: Be sure this does not occur! current this is done by only executing flg_frc_nrm block when !has_mss_val
+	       20151018: Be sure this does not occur! currently this is done by only executing flg_frc_nrm block when !has_mss_val
 	       and having a separate normalization block for has_mss_val
 	       fxm: Use better logic and more metadata information to determine code path */
 	    if(lvl_nbr == 1){
