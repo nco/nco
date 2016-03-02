@@ -1,3 +1,9 @@
+2016-03-01  Charlie Zender  <zender@uci.edu>
+
+	* Test automatic double->float conversion for regridding storage to conserve space. Abandon until missing value conversion also done.
+
+	* Allow flg_frc_nrm && rgr->flg_rnr to work so MPAS-I bilinear regridding with --rnr completes.	Full ramifications unclear.
+
 2016-02-29  Charlie Zender  <zender@uci.edu>
 
 	* Modify ncpdq -a option to handle MPAS ice dimensions
