@@ -80,6 +80,9 @@ case "${HOSTNAME}" in
 	source ${MODULESHOME}/init/sh # 20150607: PMC added to find module command
 	module unload PE-intel # CSZ 
 	module load PE-gnu # CSZ 
+	if [ -n "${NCL_DIR}" ]; then
+            export PATH="${NCL_DIR}/bin:${PATH}"
+	fi # !NCL_DIR
         export PATH='/ccs/home/zender/bin'\:${PATH}
 	export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
     ys* )
