@@ -1259,6 +1259,8 @@ For the reasons explained above (compiler compatibility) install as
 much pre-requisite and optional software as possible from pre-compiled
 packages. 
 This is easy on modern package-oriented OSs. 
+The NCL/ESMF packages provide ESMF_RegridWeightGen for use
+by <tt>ncremap</tt>, they are not required to <i>build</i> NCO. 
 For Debian-based systems:
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
@@ -1267,6 +1269,7 @@ For Debian-based systems:
 <dt>sudo aptitude install gsl-bin libgsl0-dev # GSL</dt>
 <dt>sudo aptitude install libnetcdf6 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>
 <dt>sudo aptitude install libhdf5-serial-dev # HDF5</dt>
+<dt>sudo aptitude install ncl-ncarg # ESMF_RegridWeightGen (for ncremap)</dt>
 <dt>sudo aptitude install udunits-bin libudunits2-0 libudunits2-dev # UDUnits</dt>
 </tt>
 
@@ -1281,6 +1284,7 @@ For RPM-based systems (substitute <tt>yum</tt> for <tt>dnf</tt> on older Fedora 
 <dt>sudo dnf install expat expat-devel -y # expat XML parser, a UDUnits-prereq (RHEL only?)</dt>
 <dt>sudo dnf install libdap libdap-devel -y # DAP</dt>
 <dt>sudo dnf install bison flex gcc gcc-c++ -y # GNU toolchain</dt>
+<dt>sudo dnf install ncl # ESMF_RegridWeightGen (for ncremap)</dt>
 <dt>sudo dnf install gsl gsl-devel -y # GSL</dt>
 <dt>sudo dnf install netcdf netcdf-devel -y # netCDF</dt>
 <dt>sudo dnf install librx librx-devel -y # RX</dt>
@@ -1292,6 +1296,7 @@ For RPM-based systems (substitute <tt>yum</tt> for <tt>dnf</tt> on older Fedora 
 For Mac OS X with MacPorts:
 <tt>
 <dt>sudo port install antlr # Antlr</dt>
+<dt>sudo port install esmf # ESMF_RegridWeightGen (for ncremap)</dt>
 <dt>sudo port install libdap # DAP</dt>
 <dt>sudo port install gsl # GSL</dt>
 <dt>sudo port install netcdf # netCDF</dt>
