@@ -654,8 +654,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     /* Create mask */
     msk_f32_u32_zro=0u; /* Zero all bits */
     msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
-    /* Left shift zeros into bits to be rounded */
+    /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
     msk_f32_u32_zro <<= bit_xpl_nbr_zro;
+    /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
     msk_f32_u32_one=~msk_f32_u32_zro;
     if(nco_baa_cnv_get() == nco_baa_grm){
       /* Bit-Groom: alternately shave and set LSBs */
@@ -701,8 +702,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     /* Create mask */
     msk_f64_u64_zro=0ul; /* Zero all bits */
     msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
-    /* Left shift zeros into bits to be rounded */
+    /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
     msk_f64_u64_zro <<= bit_xpl_nbr_zro;
+    /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
     msk_f64_u64_one=~msk_f64_u64_zro;
     if(nco_baa_cnv_get() == nco_baa_grm){
       /* Bit-Groom: alternately shave and set LSBs */
