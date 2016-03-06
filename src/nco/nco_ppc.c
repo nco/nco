@@ -595,8 +595,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Use constants defined in math.h */
   const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
   
-  const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicit. */
-  const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicit. */
+  const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
+  const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
   
   double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
   
@@ -621,7 +621,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   assert(nsd > 0);
   assert(nsd <= 16);
 
-    /* How many bits to preserve? */
+  /* How many bits to preserve? */
   prc_bnr_xct=nsd*bit_per_dcm_dgt_prc;
   /* Be conservative, round upwards */
   prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
@@ -683,7 +683,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     }else if(nco_baa_cnv_get() == nco_baa_set){
       /* Bit-Set: always set LSBs */
       if(!has_mss_val){
-	for(idx=0L;idx<sz;idx++) u32_ptr[idx]|=msk_f32_u32_one;
+	for(idx=0L;idx<sz;idx++)
+	  if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
+	    u32_ptr[idx]|=msk_f32_u32_one;
       }else{
 	const float mss_val_flt=*mss_val.fp;
 	for(idx=0L;idx<sz;idx++)
@@ -728,11 +730,13 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     }else if(nco_baa_cnv_get() == nco_baa_set){
       /* Bit-Set: always set LSBs */
       if(!has_mss_val){
-	for(idx=0L;idx<sz;idx++) u64_ptr[idx]&=msk_f64_u64_one;
+	for(idx=0L;idx<sz;idx++)
+	  if(u64_ptr[idx] != 0UL) /* Never quantize upwards floating point values of zero */
+	    u64_ptr[idx]|=msk_f64_u64_one;
       }else{
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx++)
-	  if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64_one;
+	  if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
       } /* end else */
     }else abort();
     break;

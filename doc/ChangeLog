@@ -1,5 +1,7 @@
 2016-03-06  Charlie Zender  <zender@uci.edu>
 
+	* Fix Bit-Set algorithm (--baa=2) not to quantize zero upward
+
 	* Fix Bit-Set algorithm (--baa=2) to "or and" not "and and"
 
 2016-03-01  Charlie Zender  <zender@uci.edu>
