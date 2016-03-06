@@ -1,3 +1,7 @@
+2016-03-06  Charlie Zender  <zender@uci.edu>
+
+	* Fix Bit-Set algorithm (--baa=2) to "or and" not "and and"
+
 2016-03-01  Charlie Zender  <zender@uci.edu>
 
 	* Test automatic double->float conversion for regridding storage to conserve space. Abandon until missing value conversion also done.

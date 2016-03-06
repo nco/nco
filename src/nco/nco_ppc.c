@@ -683,11 +683,11 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     }else if(nco_baa_cnv_get() == nco_baa_set){
       /* Bit-Set: always set LSBs */
       if(!has_mss_val){
-	for(idx=0L;idx<sz;idx++) u32_ptr[idx]&=msk_f32_u32_one;
+	for(idx=0L;idx<sz;idx++) u32_ptr[idx]|=msk_f32_u32_one;
       }else{
 	const float mss_val_flt=*mss_val.fp;
 	for(idx=0L;idx<sz;idx++)
-	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_one;
+	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]|=msk_f32_u32_one;
       } /* end else */
     }else abort();
     break;
