@@ -4741,6 +4741,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   long bnd_idx;
   long bnd_nbr; /* [nbr] Number of bounds in gridcell */
+  long col_idx;
   long col_nbr; /* [nbr] Number of columns in grid */
   long crn_idx; /* [idx] Counting index for corners */
   long dmn_sz; /* [nbr] Size of current dimension */
@@ -4951,15 +4952,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     grd_typ=nco_grd_2D_unk;
     lat_typ=nco_grd_lat_unk;
     lon_typ=nco_grd_lon_unk;
-    /* Unstructured grids with bounds information may use a pseudo-rectangular convention of archiving
-       latitude and longitude bounds as 2xN (rather than 4XN) arrays even though cell have four corners.
-       "convention" that two latitudes and two longitudes specify rectangular boundary cell
-       In this case, bnd_nbr=grd_crn_nbr=2=sizeof(nv)=sizeof(nvertices) currently
-       Set number of corners to rectangular and leave bnd_nbr as is */
-    if(bnd_nbr == 2){
-      grd_crn_nbr=4;
-      flg_1D_psd_rct_bnd=True;
-    } /* !bnd_nbr */
     /* 1D grids without their own boundaries are at the mercy of the weight generator */
     if(dmn_id_bnd == NC_MIN_INT){
       (void)fprintf(stdout,"%s: WARNING %s reports an unstructured grid without spatial boundary information. NCO can copy but not infer spatial boundaries from unstructured grids. Thus NCO will not write spatial bounds to the gridfile inferred from this input file. Instead, the weight generator that ingests this gridfile must generate weights for gridcells with unknown spatial extent. This is feasible for grids and mappings where weights masquerade as areas and are determined by underlying grid and interpolation type (e.g., bilinear remapping of spectral element grid). Unfortunately, the ESMF_RegridWeightGen (ERWG) program requires cell interfaces in both grid files, so ERWG will break on this gridfile. Other weight generators such as TempestRemap may be more successful with this SCRIP file.\n",nco_prg_nm_get(),fnc_nm);
@@ -4972,6 +4964,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	 By default do not write grid corner values */
       grd_crn_nbr=4;
     } /* !dmn_id_bnd */
+    if(bnd_nbr == 2){
+      /* Unstructured grids with bounds information (e.g., OCO2) may use a pseudo-rectangular convention of archiving
+	 latitude and longitude bounds as 2xN (rather than 4XN) arrays even though cell have four corners.
+	 "convention" is that two latitudes and two longitudes can specify rectangular boundary cell
+	 In this case, bnd_nbr=grd_crn_nbr=2=sizeof(nv)=sizeof(nvertices) currently
+	 Set number of corners to rectangular and leave bnd_nbr as is */
+      grd_crn_nbr=4;
+      flg_1D_psd_rct_bnd=True;
+    } /* !bnd_nbr */
   }else if(flg_grd_2D){ /* !flg_grd_1D */
     /* Assume 2D grid of uninitialized type */
     grd_rnk_nbr=dmn_nbr_2D;
@@ -5086,9 +5087,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(msk_id != NC_MIN_INT)  rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     dmn_srt[0]=dmn_srt[1]=0L;
     dmn_cnt[0]=col_nbr;
-    dmn_cnt[1]=grd_crn_nbr;
-    if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
-    if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
+    if(flg_1D_psd_rct_bnd){
+      dmn_cnt[1]=bnd_nbr;
+      if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
+      if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
+    }else{
+      dmn_cnt[1]=grd_crn_nbr;
+      if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
+      if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
+    } /* !flg_1D_psd_rct_bnd */
   } /* !flg_grd_1D */
 
   if(flg_grd_crv){
@@ -5729,6 +5736,21 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     for(idx=0;idx<grd_sz_nbr;idx++){
       grd_ctr_lat[idx]=lat_ctr[idx];
       grd_ctr_lon[idx]=lon_ctr[idx];
+      if(flg_1D_psd_rct_bnd){
+	assert(grd_crn_nbr == 4);
+	/* Convert boundaries that were provided as pseudo-rectangular to corners */
+	for(col_idx=0;col_idx<col_nbr;col_idx++){
+	  idx=grd_crn_nbr*col_idx;
+	  lon_crn[idx]=lon_bnd[2*col_idx]; /* LL */
+	  lon_crn[idx+1]=lon_bnd[2*col_idx+1]; /* LR */
+	  lon_crn[idx+2]=lon_bnd[2*col_idx+1]; /* UR */
+	  lon_crn[idx+3]=lon_bnd[2*col_idx]; /* UL */
+	  lat_crn[idx]=lat_bnd[2*col_idx]; /* LL */
+	  lat_crn[idx+1]=lat_bnd[2*col_idx+1]; /* LR */
+	  lat_crn[idx+2]=lat_bnd[2*col_idx+1]; /* UR */
+	  lat_crn[idx+3]=lat_bnd[2*col_idx]; /* UL */
+	} /* !col_idx */
+      } /* flg_1D_psd_rct_bnd */
       if(flg_wrt_crn){
 	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
 	  idx2=grd_crn_nbr*idx+crn_idx;
