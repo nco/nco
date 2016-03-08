@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.6-alpha03 are ready. 
+The netCDF Operators NCO version 4.5.6-alpha04 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -101,7 +101,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.5.6-alpha03 built/tested under
+   These problems occur with NCO 4.5.6-alpha04 built/tested under
    MacOS with netCDF 4.3.3.1 on HDF5 1.8.16 and with
    Linux with netCDF 4.4.1-development (20160212) on HDF5 1.8.13.
 
