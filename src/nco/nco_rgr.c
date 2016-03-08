@@ -5312,7 +5312,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !dbg */
       
       const int idx_ccw=0; /* [idx] Index of starting vertice for CCW check (Point A = tail side AB) */
-      const int rcr_lvl=1; /* [nbr] Recursion level */
+      const int rcr_lvl=1; /* [nbr] Recursion level (1 is top level, 2 and greater are recursed */
       long int lat_idx_fk; /* [idx] Index into fake (extrapolated) latitude  array */
       long int lon_idx_fk; /* [idx] Index into fake (extrapolated) longitude array */
       long int idx_fk_crn_ll_ctr_ll;
@@ -5733,24 +5733,25 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   /* lat/lon_crn will not change anymore so stuff rectangular arrays into unrolled arrays */
   if(flg_grd_1D){
+    if(flg_1D_psd_rct_bnd){
+      assert(grd_crn_nbr == 4);
+      /* Convert boundaries that were provided as pseudo-rectangular to corners */
+      for(col_idx=0;col_idx<col_nbr;col_idx++){
+	/* fxm: OCO2 provides boundaries in CW not CCW orientation */
+	idx=grd_crn_nbr*col_idx;
+	lon_crn[idx]=lon_bnd[2*col_idx]; /* LL */
+	lon_crn[idx+1]=lon_bnd[2*col_idx+1]; /* LR */
+	lon_crn[idx+2]=lon_bnd[2*col_idx+1]; /* UR */
+	lon_crn[idx+3]=lon_bnd[2*col_idx]; /* UL */
+	lat_crn[idx]=lat_bnd[2*col_idx]; /* LL */
+	lat_crn[idx+1]=lat_bnd[2*col_idx]; /* LR */
+	lat_crn[idx+2]=lat_bnd[2*col_idx+1]; /* UR */
+	lat_crn[idx+3]=lat_bnd[2*col_idx+1]; /* UL */
+      } /* !col_idx */
+    } /* flg_1D_psd_rct_bnd */
     for(idx=0;idx<grd_sz_nbr;idx++){
       grd_ctr_lat[idx]=lat_ctr[idx];
       grd_ctr_lon[idx]=lon_ctr[idx];
-      if(flg_1D_psd_rct_bnd){
-	assert(grd_crn_nbr == 4);
-	/* Convert boundaries that were provided as pseudo-rectangular to corners */
-	for(col_idx=0;col_idx<col_nbr;col_idx++){
-	  idx=grd_crn_nbr*col_idx;
-	  lon_crn[idx]=lon_bnd[2*col_idx]; /* LL */
-	  lon_crn[idx+1]=lon_bnd[2*col_idx+1]; /* LR */
-	  lon_crn[idx+2]=lon_bnd[2*col_idx+1]; /* UR */
-	  lon_crn[idx+3]=lon_bnd[2*col_idx]; /* UL */
-	  lat_crn[idx]=lat_bnd[2*col_idx]; /* LL */
-	  lat_crn[idx+1]=lat_bnd[2*col_idx+1]; /* LR */
-	  lat_crn[idx+2]=lat_bnd[2*col_idx+1]; /* UR */
-	  lat_crn[idx+3]=lat_bnd[2*col_idx]; /* UL */
-	} /* !col_idx */
-      } /* flg_1D_psd_rct_bnd */
       if(flg_wrt_crn){
 	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
 	  idx2=grd_crn_nbr*idx+crn_idx;

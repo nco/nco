@@ -1,5 +1,7 @@
 2016-03-07  Charlie Zender  <zender@uci.edu>
 
+	* OCO2 bounds are given as CW not CCW so must ensure CCW before writing to output
+
 	* Add OCO2 bounds latitude_bnds, longitude_bnds and fixes for 1D-pseudo-rectangular bounds
 
 2016-03-06  Charlie Zender  <zender@uci.edu>
