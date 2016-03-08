@@ -4654,6 +4654,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
   const int itr_nbr_max=20; // [nbr] Maximum number of iterations
+  const int idx_ccw=0; /* [idx] Index of starting vertice for CCW check (Point A = tail side AB) */
+  const int rcr_lvl=1; /* [nbr] Recursion level (1 is top level, 2 and greater are recursed */
  
   const nc_type crd_typ=NC_DOUBLE;
 
@@ -4758,6 +4760,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long lon_idx;
   long lon_nbr; /* [nbr] Number of longitudes in grid */
   
+  long int idx_crn_ll;
+  long int idx_crn_lr;
+  long int idx_crn_ur;
+  long int idx_crn_ul;
+  
   nco_bool FL_RTR_RMT_LCN;
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=True; /* Option O */
@@ -4770,7 +4777,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool flg_grd_2D=False;
   nco_bool flg_grd_crv=False;
   nco_bool flg_wrt_crn=True;
-  nco_bool has_mss_val_ctr;
+  nco_bool has_mss_val_ctr=False;
   nco_bool has_mss_val_msk;
 
   nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
@@ -5075,6 +5082,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     msk_unn.vp=(void *)nco_malloc(grd_sz_nbr*nco_typ_lng(msk_typ));
   } /* !msk */
 
+  /* All grids: 
+     Some real-world datasets violate convention that coordinates ought never have missing values 
+     CICE lists missing value for lat/lon_ctr arrays (TLAT, TLONG) and re-uses that for bounds arrays */
+  has_mss_val_ctr=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
+
   if(flg_grd_1D){
     /* Obtain fields that must be present in unstructured input file */
     dmn_srt[0]=0L;
@@ -5105,8 +5117,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     dmn_cnt[1]=lon_nbr;
     rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
-    /* CICE lists missing value for lat/lon_ctr arrays (TLAT, TLONG) and re-uses that for bounds arrays */
-    has_mss_val_ctr=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
     
     /* 20150923: Also input, if present in curvilinear file, corners, area, and mask
        area and mask are same size as lat and lon */
@@ -5221,10 +5231,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(flg_grd_crv){
     /* For curvilinear grids first, if necessary, infer corner boundaries
        Then perform sanity check using same code on inferred and copied grids */
-    long int idx_crn_ll;
-    long int idx_crn_lr;
-    long int idx_crn_ur;
-    long int idx_crn_ul;
     
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
       /* Interfaces (ntf) and boundaries (bnd) for curvilinear grids are ill-defined since sides need not follow latitudes nor meridians 
@@ -5311,8 +5317,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	(void)fprintf(stderr,"%s: INFO %s idx_dbg = %li, Fake Center [lat,lon]=[%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_dbg,lat_ctr_fk[idx_dbg],lon_ctr_fk[idx_dbg]);
       } /* !dbg */
       
-      const int idx_ccw=0; /* [idx] Index of starting vertice for CCW check (Point A = tail side AB) */
-      const int rcr_lvl=1; /* [nbr] Recursion level (1 is top level, 2 and greater are recursed */
       long int lat_idx_fk; /* [idx] Index into fake (extrapolated) latitude  array */
       long int lon_idx_fk; /* [idx] Index into fake (extrapolated) longitude array */
       long int idx_fk_crn_ll_ctr_ll;
@@ -5372,19 +5376,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  idx_fk_crn_ul_ctr_ul=idx_fk+(lon_nbr+2)-1; // (lat_idx+1)*lon_nbr+lon_idx-1;
 	  
 	  /* 20160111: Algorithm requires that all longitudes in template be on same "branch cut"
-	     If, say, LL longitude is 179.0 and LR longitude is -179.0 then their sum and average are zero, not 180.0 or -180.0 as desired */
-	  crn_lat[0]=lat_ctr_fk[idx_fk_crn_ll_ctr_ll];
-	  crn_lat[1]=lat_ctr_fk[idx_fk_crn_ll_ctr_lr];
-	  crn_lat[2]=lat_ctr_fk[idx_fk_crn_ll_ctr_ur];
-	  crn_lat[3]=lat_ctr_fk[idx_fk_crn_ll_ctr_ul];
-	  crn_lon[0]=lon_ctr_fk[idx_fk_crn_ll_ctr_ll];
-	  crn_lon[1]=lon_ctr_fk[idx_fk_crn_ll_ctr_lr];
-	  crn_lon[2]=lon_ctr_fk[idx_fk_crn_ll_ctr_ur];
-	  crn_lon[3]=lon_ctr_fk[idx_fk_crn_ll_ctr_ul];
-	  //	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,idx_ccw,rcr_lvl);
-
-	  //	  if(flg_ccw) nco_crn2ctr(crn_lat,crn_lon,crn_nbr,lat_crn+idx_crn_ll,lon_crn+idx_crn_ll);
-
+	     If, say, LL longitude is 179.0 and LR longitude is -179.0 then their sum and average are zero, not 180.0 or -180.0 as desired
+	     Routines labeled "*_brnch" in the following ensure that branch-cut rules are followed */
 	  idx_crn_ll=grd_crn_nbr*idx_rl+0;
 	  lat_crn[idx_crn_ll]=0.25*(lat_ctr_fk[idx_fk_crn_ll_ctr_ll]+lat_ctr_fk[idx_fk_crn_ll_ctr_lr]+lat_ctr_fk[idx_fk_crn_ll_ctr_ur]+lat_ctr_fk[idx_fk_crn_ll_ctr_ul]);
 	  lon_crn[idx_crn_ll]=nco_lon_crn_avg_brnch(lon_ctr_fk[idx_fk_crn_ll_ctr_ll],lon_ctr_fk[idx_fk_crn_ll_ctr_lr],lon_ctr_fk[idx_fk_crn_ll_ctr_ur],lon_ctr_fk[idx_fk_crn_ll_ctr_ul]);
@@ -5425,8 +5418,54 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(crn_lat) crn_lat=(double *)nco_free(crn_lat);
     } /* !(lat_bnd_id && lon_bnd_id) */
     
-    /* As of 20151205, use same sanity check for both inferred and copied curvilinear grids
-       20151129: Above extrapolation technique yields corners outside [-90.0,90.0], [-180.0,360.0]
+  } /* !flg_grd_crv */
+
+  if(flg_1D_psd_rct_bnd){
+    double lon_brnch_min;
+    double lon_brnch_max;
+    double lon_dff;
+    assert(grd_crn_nbr == 4);
+    /* Make boundaries that were provided as pseudo-rectangular branch-cut-compliant */
+    for(col_idx=0;col_idx<col_nbr;col_idx++){
+      lon_brnch_min=(lon_bnd[2*col_idx] <= lon_bnd[2*col_idx+1]) ? lon_bnd[2*col_idx] : lon_bnd[2*col_idx+1];
+      lon_brnch_max=(lon_bnd[2*col_idx] >= lon_bnd[2*col_idx+1]) ? lon_bnd[2*col_idx] : lon_bnd[2*col_idx+1];
+      lon_dff=lon_brnch_max-lon_brnch_min;
+      if(lon_dff >= 180.0){
+	if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports 1D pseudo-rectangular bounds branch-cut straddle at col_idx=%ld lon_brnch_max, lon_brnch_min, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,lon_brnch_max,lon_brnch_min,lon_dff);
+	lon_brnch_max-=360.0;
+      }else if(lon_dff <= -180.0){
+	lon_brnch_max+=360.0;
+      } /* !lon_dff */
+      /* Extra condition to convert CW bounds to CCW bounds (necessary for OCO2) */
+      if(lon_brnch_min <= lon_brnch_max){
+	lon_bnd[2*col_idx]=lon_brnch_min;
+	lon_bnd[2*col_idx+1]=lon_brnch_max;
+      }else{
+	lon_bnd[2*col_idx]=lon_brnch_max;
+	lon_bnd[2*col_idx+1]=lon_brnch_min;
+      } /* end else */
+    } /* !col_idx */
+    /* Convert boundaries that were provided as pseudo-rectangular to corners */
+    for(col_idx=0;col_idx<col_nbr;col_idx++){
+      idx=grd_crn_nbr*col_idx;
+      /* fxm: OCO2 provides boundaries in CW not CCW orientation */
+      lon_crn[idx]=lon_bnd[2*col_idx]; /* LL */
+      lon_crn[idx+1]=lon_bnd[2*col_idx+1]; /* LR */
+      lon_crn[idx+2]=lon_bnd[2*col_idx+1]; /* UR */
+      lon_crn[idx+3]=lon_bnd[2*col_idx]; /* UL */
+      lat_crn[idx]=lat_bnd[2*col_idx]; /* LL */
+      lat_crn[idx+1]=lat_bnd[2*col_idx]; /* LR */
+      lat_crn[idx+2]=lat_bnd[2*col_idx+1]; /* UR */
+      lat_crn[idx+3]=lat_bnd[2*col_idx+1]; /* UL */
+      /* fxm: OCO2 provides boundaries in CW not CCW orientation */
+    } /* !col_idx */
+  } /* flg_1D_psd_rct_bnd */
+
+  if(flg_grd_crv || flg_1D_psd_rct_bnd){
+    /* As of 20160308, use same sanity check for 1D pseudo-rectangular grids as for curvilinear grids
+       Pseudo-rectangular grids rely on user-produced boundaries which may be psychotic (CW, non-branch-cut)
+       Starting 20151205, use same sanity check for both inferred and copied curvilinear grids
+       20151129: Curvilinear extrapolation technique above yields corners outside [-90.0,90.0], [-180.0,360.0]
        Also, it may assume input is ascending swath and fail for descending swaths
        Complications not fully addressed:
        Swaths may (verify this) turn from ascending to descending, or visa-versa, when satellite crosses latitude extrema
@@ -5451,6 +5490,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       lon_min_min=-180.0;
       lon_max_max=180.0;
     } /* !NCO_LON_0_TO_360 */
+
+    /* Correct for extrapolation outside boundaries */
     for(idx=0;idx<grd_sz_nbr*grd_crn_nbr;idx++){
       idx_ctr=idx/grd_crn_nbr;
       if(has_mss_val_ctr)
@@ -5461,7 +5502,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  idx_crn_lr=grd_crn_nbr*idx_ctr+1;
 	  idx_crn_ur=grd_crn_nbr*idx_ctr+2;
 	  idx_crn_ul=grd_crn_nbr*idx_ctr+3;
-	  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s Curvilinear corner issue (from %s corners) at idx = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,(lat_bnd_id == NC_MIN_INT) ? "inferred" : "copied",idx_ctr,lat_ctr[idx_ctr],lon_ctr[idx_ctr],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
+	  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports %s corner outside canonical bounds at idx = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,(lat_bnd_id == NC_MIN_INT) ? "inferred" : "copied",idx_ctr,lat_ctr[idx_ctr],lon_ctr[idx_ctr],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
 	  /* Restrict grid to real latitudes and to the 360-degree range detected from input cell-centers */
 	  if(lat_crn[idx] < -90.0) lat_crn[idx]=-90.0;
 	  if(lat_crn[idx] >  90.0) lat_crn[idx]=90.0;
@@ -5470,6 +5511,23 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !sanity */
     } /* !idx */
 
+    /* Vertices (for valid points) are now within 360 degrees (either [0,360] or [-180,180]) implied by input coordinate system
+       Curvilinear inferred grid are, by construction, branch-cut compliant
+       fxm: Curvilinear and 1D pseudo-rectangular grids prescribed by (i.e., read-in from) input may not be branch-cut compliant */
+
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
+      long idx_dbg;
+      idx_dbg=rgr->idx_dbg;
+      idx_crn_ll=grd_crn_nbr*idx_dbg+0;
+      idx_crn_lr=grd_crn_nbr*idx_dbg+1;
+      idx_crn_ur=grd_crn_nbr*idx_dbg+2;
+      idx_crn_ul=grd_crn_nbr*idx_dbg+3;
+      (void)fprintf(stderr,"%s: INFO %s idx_dbg = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_dbg,lat_ctr[idx_dbg],lon_ctr[idx_dbg],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
+    } /* !dbg */
+
+  } /* !flg_grd_crv || flg_1D_psd_rct_bnd */
+
+  if(flg_grd_crv){
     /* Copy centers into empty output array */
     for(idx=0;idx<grd_sz_nbr;idx++){
       grd_ctr_lat[idx]=lat_ctr[idx];
@@ -5480,16 +5538,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       grd_crn_lat[idx]=lat_crn[idx];
       grd_crn_lon[idx]=lon_crn[idx];
     } /* !idx */
-  
-    if(nco_dbg_lvl_get() >= nco_dbg_std){
-      long idx_dbg;
-      idx_dbg=rgr->idx_dbg;
-      idx_crn_ll=grd_crn_nbr*idx_dbg+0;
-      idx_crn_lr=grd_crn_nbr*idx_dbg+1;
-      idx_crn_ur=grd_crn_nbr*idx_dbg+2;
-      idx_crn_ul=grd_crn_nbr*idx_dbg+3;
-      (void)fprintf(stderr,"%s: INFO %s idx_dbg = %li, Center [lat,lon]=[%g,%g]; Corners LL [%g,%g] LR [%g,%g] UR [%g,%g] UL [%g,%g]\n",nco_prg_nm_get(),fnc_nm,idx_dbg,lat_ctr[idx_dbg],lon_ctr[idx_dbg],lat_crn[idx_crn_ll],lon_crn[idx_crn_ll],lat_crn[idx_crn_lr],lon_crn[idx_crn_lr],lat_crn[idx_crn_ur],lon_crn[idx_crn_ur],lat_crn[idx_crn_ul],lon_crn[idx_crn_ul]);
-    } /* !dbg */
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
@@ -5733,22 +5781,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   /* lat/lon_crn will not change anymore so stuff rectangular arrays into unrolled arrays */
   if(flg_grd_1D){
-    if(flg_1D_psd_rct_bnd){
-      assert(grd_crn_nbr == 4);
-      /* Convert boundaries that were provided as pseudo-rectangular to corners */
-      for(col_idx=0;col_idx<col_nbr;col_idx++){
-	/* fxm: OCO2 provides boundaries in CW not CCW orientation */
-	idx=grd_crn_nbr*col_idx;
-	lon_crn[idx]=lon_bnd[2*col_idx]; /* LL */
-	lon_crn[idx+1]=lon_bnd[2*col_idx+1]; /* LR */
-	lon_crn[idx+2]=lon_bnd[2*col_idx+1]; /* UR */
-	lon_crn[idx+3]=lon_bnd[2*col_idx]; /* UL */
-	lat_crn[idx]=lat_bnd[2*col_idx]; /* LL */
-	lat_crn[idx+1]=lat_bnd[2*col_idx]; /* LR */
-	lat_crn[idx+2]=lat_bnd[2*col_idx+1]; /* UR */
-	lat_crn[idx+3]=lat_bnd[2*col_idx+1]; /* UL */
-      } /* !col_idx */
-    } /* flg_1D_psd_rct_bnd */
     for(idx=0;idx<grd_sz_nbr;idx++){
       grd_ctr_lat[idx]=lat_ctr[idx];
       grd_ctr_lon[idx]=lon_ctr[idx];
@@ -6187,6 +6219,9 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
      Function can call itself, and rcr_lvl indicates recursion level:
      rcr_lvl=1: Called by host code, i.e., nco_grd_nfr()
      rcr_lvl=2: Called by itself, i.e., nco_ccw_chk()
+     Assumptions:
+     Quadrilateral vertices are already corrected to obey branch-cut rules, i.e.,
+     all vertices are on "same side" of dateline or Greenwich as appropriate
      Algorithm:
      Start crn_idx=0, i.e., quadrilateral LL corner
      Vector A runs from crn_idx=0 to crn_idx=1, i.e., quadrilateral LL->LR
@@ -6215,7 +6250,14 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
      All cases return True (i.e., CCW) from rcr_lvl=1 except last
      Last case returns False, and calling code should mask such an aberrant point */ 
   const char fnc_nm[]="nco_ccw_chk()";
+
+  /* MSVC compiler chokes unless array size is compile-time constant */
   const int CRN_NBR_MSVC=4;
+  double sin_lat[CRN_NBR_MSVC];
+  double sin_lon[CRN_NBR_MSVC];
+  double cos_lat[CRN_NBR_MSVC];
+  double cos_lon[CRN_NBR_MSVC];
+
   double A_tail_x,A_tail_y,A_tail_z;
   double A_head_x,A_head_y,A_head_z;
   double A_x,A_y,A_z;
@@ -6226,11 +6268,6 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
   double R_x,R_y,R_z;
   double lat_rdn;
   double lon_rdn;
-  /* fxm dumb MSVC compiler chokes unless array size is compile-time constant */
-  double sin_lat[CRN_NBR_MSVC];
-  double sin_lon[CRN_NBR_MSVC];
-  double cos_lat[CRN_NBR_MSVC];
-  double cos_lon[CRN_NBR_MSVC];
   double dot_prd;
   int crn_idx; /* [idx] Corner idx */
   int A_tail_idx,A_head_idx;
