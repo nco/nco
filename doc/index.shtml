@@ -1226,14 +1226,14 @@ system, e.g.,
 If pre-built executables do not satisfy you (e.g., are out-of-date)
 and you want the latest, greatest features, then the first steps to
 build (i.e., compile, for the most part) NCO from source code are to
-install the prerequisites:
+install the pre-requisites:
 <a href="http://www.antlr.org">ANTLR</a> version 2.7.7 (like <a href="http://dust.ess.uci.edu/tmp/antlr-2.7.7.tar.gz">this one</a> <i>not</i> version 3.x or 4.x!) (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations).
 If possible, install this software stack from pre-built binaries 
-(commands to do so on Debian and RPM systems are given just below).
+(commands to do so on Debian, Mac, and RPM systems follow below).
 ANTLR binaries from major distributions are pre-built with the source
 patch necessary to allow NCO to link to ANTLR.
 If you must build the source stack yourself (e.g., due to lack of root
@@ -1261,6 +1261,10 @@ packages.
 This is easy on modern package-oriented OSs. 
 The NCL/ESMF packages provide ESMF_RegridWeightGen for use
 by <tt>ncremap</tt>, they are not required to <i>build</i> NCO. 
+Remember, to compile NCO from source, you need not only the library
+dependencies the "devel" versions 
+(which include the header files) of the 
+
 For Debian-based systems:
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>

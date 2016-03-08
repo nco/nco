@@ -1,3 +1,7 @@
+2016-03-07  Charlie Zender  <zender@uci.edu>
+
+	* Add OCO2 bounds latitude_bnds, longitude_bnds and fixes for 1D-pseudo-rectangular bounds
+
 2016-03-06  Charlie Zender  <zender@uci.edu>
 
 	* Fix Bit-Set algorithm (--baa=2) not to quantize zero upward
