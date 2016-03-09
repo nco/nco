@@ -1916,7 +1916,7 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   /* Purpose: Write NCO version information to global metadata */
   aed_sct vrs_sng_aed;
   char att_nm[]="NCO"; /* [sng] Name of attribute in which to store NCO version */
-  char vrs_git[]=TKN2SNG(VERSION); /* [sng] Version according to Git */
+  char vrs_git[]=TKN2SNG(NCO_VERSION); /* [sng] Version according to Git */
   char *vrs_cvs; /* [sng] Version according to RCS/CVS-like release tag */
   char *vrs_sng; /* [sng] NCO version */
   ptr_unn att_val;

@@ -310,7 +310,7 @@ extern "C" {
 # define NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH )
 #endif /* !NC_LIB_VERSION */
 
-  /* NCO meta-information available in VERSION token since forever
+  /* NCO meta-information available in NCO_VERSION token since forever
      20141008: Define NCO tokens consistent with new netcdf_meta.h tokens */
 #ifndef NCO_VERSION_MAJOR
 # define NCO_VERSION_MAJOR 4

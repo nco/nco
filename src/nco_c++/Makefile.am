@@ -16,7 +16,7 @@ libnco_c___la_SOURCES = nco_att.cc nco_dmn.cc nco_fl.cc nco_hgh.cc nco_utl.cc nc
 
 libnco_c___la_CPPFLAGS = -DABORT_ON_ERROR
 
-libnco_c___la_LDFLAGS = -release @VERSION@
+libnco_c___la_LDFLAGS = -release @NCO_VERSION@
 
 tst_SOURCES = tst.cc
 

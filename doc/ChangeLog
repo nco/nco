@@ -1,3 +1,7 @@
+2016-03-09  Charlie Zender  <zender@uci.edu>
+
+	* Change CPP VERSION token to NCO_VERSION to prevent namespace conflict with other packages
+
 2016-03-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.6-alpha04 release procedure:

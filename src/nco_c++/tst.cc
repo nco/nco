@@ -67,7 +67,7 @@ int main(int argc,char **argv)
 #define TKN2SNG(x) XTKN2SNG(x)
   const std::string date_cpp(__DATE__); // [sng] Date from C pre-processor
   const std::string time_cpp(__TIME__); // [sng] Time from C pre-processor
-  const std::string vrs_cpp(TKN2SNG(VERSION)); // [sng] Version from C pre-processor
+  const std::string vrs_cpp(TKN2SNG(NCO_VERSION)); // [sng] Version from C pre-processor
   const std::string hst_cpp(TKN2SNG(HOSTNAME)); // [sng] Hostname from C pre-processor
   const std::string usr_cpp(TKN2SNG(USER)); // [sng] Hostname from C pre-processor
   if(vrs_cvs == "Unknown") std::cerr << prg_nm << " version " << vrs_cpp << " built " << date_cpp << " on " << hst_cpp << " by " << usr_cpp << std::endl;

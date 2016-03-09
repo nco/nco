@@ -158,9 +158,9 @@ nco_vrs_prn /* [fnc] Print NCO version */
  const char * const CVS_Revision) /* I [sng] CVS revision string */
 {
   /* Purpose: Print NCO version */
-  char *date_cvs; /* Date this file was last modified */
-  char *vrs_rcs; /* Version of this file, e.g., 1.213 */
-  char *vrs_cvs; /* Version according to CVS release tag */
+  char *date_cvs=NULL; /* Date this file was last modified */
+  char *vrs_rcs=NULL; /* Version of this file, e.g., 1.213 */
+  char *vrs_cvs=NULL; /* Version according to CVS release tag */
 
   int date_cvs_lng;
   int vrs_cvs_lng;
@@ -168,7 +168,7 @@ nco_vrs_prn /* [fnc] Print NCO version */
   const char date_cpp[]=__DATE__; /* [sng] Date from C pre-processor */
   const char time_cpp[]=__TIME__; /* [sng] Time from C pre-processor */
   /*  const char time_cpp[]=__TIME__; *//* [sng] Time from C pre-processor */
-  const char vrs_cpp[]=TKN2SNG(VERSION); /* [sng] Version from C pre-processor */
+  const char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */
   const char hst_cpp[]=TKN2SNG(HOSTNAME); /* [sng] Hostname from C pre-processor */
   const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
 
@@ -183,7 +183,7 @@ nco_vrs_prn /* [fnc] Print NCO version */
     date_cvs=(char *)strdup("Current");
   } /* endif */
 
-  if(strlen(CVS_Revision) > strlen("*Revision*") || strlen(CVS_Revision) < strlen("*Revision*")){
+  if(strlen(CVS_Revision) != strlen("*Revision*")){
     /* CVS_Revision is defined */
     vrs_cvs_lng=strrchr(CVS_Revision,'$')-strchr(CVS_Revision,':')-3L;
     vrs_rcs=(char *)nco_malloc((vrs_cvs_lng+1L)*sizeof(char));
@@ -194,8 +194,6 @@ nco_vrs_prn /* [fnc] Print NCO version */
     vrs_rcs=(char *)strdup("Current");
   } /* endif */
 
-  vrs_cvs=cvs_vrs_prs();
-
   if(strlen(CVS_Id) > strlen("*Id*")){
     (void)fprintf(stderr,"NCO netCDF Operators version %s last modified %s built %s on %s by %s\n",vrs_cpp,date_cvs,date_cpp,hst_cpp,usr_cpp);
   }else{
@@ -204,13 +202,14 @@ nco_vrs_prn /* [fnc] Print NCO version */
     (void)fprintf(stderr,"NCO netCDF Operators version %s built by %s on %s at %s %s\n",NCO_VERSION,usr_cpp,hst_cpp,date_cpp,time_cpp);
   } /* endif */
   if(strlen(CVS_Id) > strlen("*Id*")){
+    vrs_cvs=cvs_vrs_prs();
     (void)fprintf(stderr,"%s version %s\n",nco_prg_nm_get(),vrs_cvs);
   }else{
     (void)fprintf(stderr,"%s version %s\n",nco_prg_nm_get(),vrs_cpp);
   } /* endif */
 
-  date_cvs=(char *)nco_free(date_cvs);
-  vrs_rcs=(char *)nco_free(vrs_rcs);
-  vrs_cvs=(char *)nco_free(vrs_cvs);
+  if(date_cvs) date_cvs=(char *)nco_free(date_cvs);
+  if(vrs_rcs) vrs_rcs=(char *)nco_free(vrs_rcs);
+  if(vrs_cvs) vrs_cvs=(char *)nco_free(vrs_cvs);
 } /* end nco_vrs_prn() */
 
