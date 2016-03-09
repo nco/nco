@@ -199,7 +199,7 @@ nco_vrs_prn /* [fnc] Print NCO version */
   }else{
     /* 20141008: Try new nco.h-based versioning */
     /*    (void)fprintf(stderr,"NCO netCDF Operators version %s built %s on %s by %s\n",vrs_cpp,date_cpp,hst_cpp,usr_cpp);*/
-    (void)fprintf(stderr,"NCO netCDF Operators version %s built by %s on %s at %s %s\n",NCO_VERSION,usr_cpp,hst_cpp,date_cpp,time_cpp);
+    (void)fprintf(stderr,"NCO netCDF Operators version %s built by %s on %s at %s %s\n",vrs_cpp,usr_cpp,hst_cpp,date_cpp,time_cpp);
   } /* endif */
   if(strlen(CVS_Id) > strlen("*Id*")){
     vrs_cvs=cvs_vrs_prs();
