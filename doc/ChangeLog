@@ -28,7 +28,7 @@
 
 2016-02-29  Charlie Zender  <zender@uci.edu>
 
-	* Modify ncpdq -a option to handle MPAS ice dimensions
+	* Modify ncpdq -a option in ncremap to handle MPAS ice dimensions
 
 	* NCO 4.5.6-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.5.6-alpha03 final changes';git push
