@@ -98,7 +98,7 @@ case "${HOSTNAME}" in
             export PATH="${PATH}:/glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin"
 	fi # !NCARG_ROOT
         export PATH='/glade/u/home/zender/bin'\:${PATH}
-        export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
+        export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 esac # !HOSTNAME
 
 # Insta-install
