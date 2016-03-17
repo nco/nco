@@ -322,7 +322,7 @@ tokens {
     WHILE="while";    
     FOR="for";
    
-    PRINT="print";  
+    PRINT="printz";  
     DEFDIMA="defdim";
     DEFDIMU="defdimunlim";
  
@@ -445,6 +445,8 @@ DOT options {paraphrase="dot operator";} : '.';
 
 CALL_REF options {paraphrase="call by reference";} : '&';
 
+
+
 protected DGT:     ('0'..'9');
 protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
@@ -531,11 +533,13 @@ NUMBER:
 ;
 
 
+
+
 // Return var or att (var_nm@att_nm)
 VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribute identifier"; } 
      :  (LPH)(LPH|DGT)*   
             {
-             // try to intelligently guess the type to avoid un-necessary function search  
+             // try to intelligently guess the type to avoid un-necessary function search    
             bool bDoSearch;
             switch( LA(1) ){
                case ' ': 
@@ -606,6 +610,7 @@ DIM_VAL options { paraphrase="dimension identifier"; }
             { $setType(DIM_ID_SIZE);}
          )? 
    ;  
+
 
 // Shorthand for naming dims in method e.g., $0,$1, $2 etc
 DIM_MTD_ID 
@@ -1078,7 +1083,7 @@ RefAST nco_dupList(RefAST tr){
       RefAST otr;  
       // nb astFactory is protected- must call from within class
       otr=astFactory->dupList(tr);      
-      otr->setNextSibling( ANTLR_USE_NAMESPACE(antlr)nullAST ) ;
+      //otr->setNextSibling( ANTLR_USE_NAMESPACE(antlr)nullAST ) ;
       /*  
       if(otr->getNextSibling()!= ANTLR_USE_NAMESPACE(antlr)ASTNULL )     
         err_prn("nco_dupList", "NON NULL AST SIBLING\n");
@@ -1147,6 +1152,8 @@ static std::vector<std::string> lpp_vtr;
        if(var != (var_sct*)NULL)
          var=nco_var_free(var);
        iret=FEXPR;
+
+       dbg_prn(fnc_nm,"executed FEXPR "+ fss->getText());    
      }
 
     | #(IF var=out stmt:. ) {
@@ -2217,16 +2224,18 @@ out returns [var_sct *var]
            { var=ncap_var_var_op(var1,var2, PLUS );}
 	|  (#(MINUS out out)) => #( MINUS var1=out var2=out)
             { var=ncap_var_var_op(var1,var2, MINUS );}
-    |  (#(UTIMES #(POST_INC out)))=> #( UTIMES #(POST_INC var1=out_asn)){
+    // |  (#(UTIMES #(POST_INC out)))=> #( UTIMES #(POST_INC var1=out_asn)){
+    |  (#(UTIMES #(POST_INC VAR_ID)))=> #( UTIMES #(POST_INC var1=out)){
              var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,true,prs_arg);      
        } 
-    |  (#(UTIMES #(POST_DEC out)))=> #( UTIMES #(POST_DEC var1=out_asn)){
+    //|  (#(UTIMES #(POST_DEC out)))=> #( UTIMES #(POST_DEC var1=out_asn)){
+    |  (#(UTIMES #(POST_DEC VAR_ID)))=> #( UTIMES #(POST_DEC var1=out)){
              var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,true,prs_arg);      
        } 
-    |  (#(UTIMES #(INC out)))=> #( UTIMES #(INC var1=out_asn)){
+    |  (#(UTIMES #(INC VAR_ID)))=> #( UTIMES #(INC var1=out)){
              var=ncap_var_var_inc(var1,NULL_CEWI,INC,true,prs_arg);      
        } 
-    |  (#(UTIMES #(DEC out)))=> #( UTIMES #(DEC var1=out_asn)){
+    |  (#(UTIMES #(DEC VAR_ID)))=> #( UTIMES #(DEC var1=out)){
              var=ncap_var_var_inc(var1,NULL_CEWI,DEC,true,prs_arg);      
        } 
 
@@ -2270,7 +2279,7 @@ out returns [var_sct *var]
     | #(GEQ  var1=out var2=out)   
             { var=ncap_var_var_op(var1,var2, GEQ );}
     | #(LEQ  var1=out var2=out)   
-            { var=ncap_var_var_op(var1,var2, LEQ );}
+             { var=ncap_var_var_op(var1,var2, LEQ );}
     | #(EQ  var1=out var2=out)    
             { var=ncap_var_var_op(var1,var2, EQ );}
     | #(NEQ  var1=out var2=out)   
@@ -2281,62 +2290,151 @@ out returns [var_sct *var]
     | #(FGTHAN  var1=out var2=out) 
             { var=ncap_var_var_op(var1,var2, FGTHAN );}
     // Assign Operators 
-    | #(PLUS_ASSIGN pls_asn:. var2=out) {
-       var1=out_asn(pls_asn);
-       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,(pls_asn->getType()==UTIMES), prs_arg);
-       }
-	| #(MINUS_ASSIGN min_asn:. var2=out){
-       var1=out_asn(min_asn);
-       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,(min_asn->getType()==UTIMES), prs_arg);
-       }
-	| #(TIMES_ASSIGN tim_asn:. var2=out){       
-       var1=out_asn(tim_asn);
-       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,(tim_asn->getType()==UTIMES), prs_arg);
-       }
-	| #(DIVIDE_ASSIGN div_asn:. var2=out){	
-       var1=out_asn(div_asn);
-       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,(div_asn->getType()==UTIMES), prs_arg);
+    // | #(PLUS_ASSIGN pls_asn:. var2=out) {
+    //    var1=out_asn(pls_asn);
+    //    var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,(pls_asn->getType()==UTIMES), prs_arg);
+    //    }
+    // Assign Operators 
+    
+    | ( #(PLUS_ASSIGN  (VAR_ID|ATT_ID)  var2=out)) => #(PLUS_ASSIGN var1=out  var2=out)  {
+       var=ncap_var_var_inc(var1,var2,PLUS_ASSIGN ,false, prs_arg);
        }
 
-    | #(ASSIGN asn:. ) 
-            {
+    | (#(PLUS_ASSIGN  #(UTIMES VAR_ID) var2=out)) => #(PLUS_ASSIGN  #(UTIMES var1=out)  var2=out)  {
+       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,true, prs_arg);
+       }
+
+    | (#(PLUS_ASSIGN  #(UTIMES ATT_ID) var2=out)) => #(PLUS_ASSIGN  #(UTIMES atp:ATT_ID)  var2=out)  {
+
+       var1=out(att2var(atp));     
+       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,false, prs_arg);
+       }
+
+
+    | ( #(MINUS_ASSIGN  (VAR_ID|ATT_ID)  var2=out)) => #(MINUS_ASSIGN  var1=out  var2=out)  {
+       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,false, prs_arg);
+       }
+
+    | (#(MINUS_ASSIGN #(UTIMES VAR_ID) var2=out)) => #(MINUS_ASSIGN #(UTIMES var1=out)  var2=out)  {
+       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,true, prs_arg);
+       }
+
+    | (#(MINUS_ASSIGN #(UTIMES ATT_ID) var2=out)) => #(MINUS_ASSIGN #(UTIMES atm:ATT_ID)  var2=out)  {
+       var1=out(att2var(atm));     
+       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,false, prs_arg);
+       }
+
+    | (#(TIMES_ASSIGN  (VAR_ID|ATT_ID)  var2=out)) => #(TIMES_ASSIGN  var1=out  var2=out)  {
+       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,false, prs_arg);
+       }
+
+    | (#(TIMES_ASSIGN #(UTIMES VAR_ID) var2=out)) => #(TIMES_ASSIGN #(UTIMES var1=out)  var2=out)  {
+       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,true, prs_arg);
+       }
+
+    | (#(TIMES_ASSIGN #(UTIMES ATT_ID) var2=out)) => #(TIMES_ASSIGN #(UTIMES attm:ATT_ID)  var2=out)  {
+       var1=out(att2var(attm));     
+       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,false, prs_arg);
+       }
+
+    | (#(DIVIDE_ASSIGN  (VAR_ID|ATT_ID)  var2=out)) => #(DIVIDE_ASSIGN  var1=out  var2=out)  {
+       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,false, prs_arg);
+       }
+
+    | (#(DIVIDE_ASSIGN #(UTIMES VAR_ID) var2=out)) => #(DIVIDE_ASSIGN #(UTIMES var1=out)  var2=out)  {
+       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,true, prs_arg);
+       }
+
+    | (#(DIVIDE_ASSIGN #(UTIMES ATT_ID) var2=out)) => #(DIVIDE_ASSIGN #(UTIMES atd:ATT_ID)  var2=out)  {
+       var1=out(att2var(atd));        
+       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,false, prs_arg);
+       }
+
+
+    | (#(ASSIGN (VAR_ID|ATT_ID))) => #(ASSIGN asn:.) {
+             if(prs_arg->ntl_scn)
+               var=assign_ntl(asn,false); 
+             else
+               var=assign(asn,false);
+      }
+
+    | (#(ASSIGN #(UTIMES ATT_ID) )) =>  #(ASSIGN #(atta:UTIMES ATT_ID))  {
               // Check for RAM variable - if present 
               // change tree - for example from:
               //     ( EXPR ( = ( * n1 ) ( + four four ) ) )
               // to  ( EXPR ( = n1 ( + four four ) ) )
              RefAST tr;
-             bool bram;
-             NcapVar *Nvar;
 
-             if(asn->getType()==UTIMES){
-               tr=asn->getFirstChild();
-               tr->setNextSibling(asn->getNextSibling());
-               bram=true;
-             } else { 
-               tr=asn; 
-               bram=false;
-             }
+             tr=atta->getFirstChild();
+             tr->setNextSibling(atta->getNextSibling());
              
-             // Die if attempting to create a RAM var 
-             // from an existing disk var   
-             Nvar= prs_arg->var_vtr.find(tr->getText());
-
-             if(bram && tr->getType()==VAR_ID && Nvar && Nvar->flg_mem==false){
-              std::string serr;
-              serr= "It is impossible to recast disk variable: \"" + tr->getText() +"\" as a RAM variable.";
-              err_prn(fnc_nm,serr );       
-              }                
+             // remember tr siblings and children are  duplicated here   
+             tr=att2var(tr);   
 
              if(prs_arg->ntl_scn)
-               var=assign_ntl(tr,bram); 
+               var=assign_ntl(tr,false); 
              else
-               var=assign(tr,bram);
+               var=assign(tr,false);
                
-            }  
+    }  
+    
+    //  memory var - regular and pointer
+    | #(ASSIGN #(asn2:UTIMES (VAR_ID| #(UTIMES  asn2a:ATT_ID)) )) {
+              // Check for RAM variable - if present 
+              // change tree - for example from:
+              //     ( EXPR ( = ( * n1 ) ( + four four ) ) )
+              // to  ( EXPR ( = n1 ( + four four ) ) )
+
+             RefAST tr;
+             NcapVar *Nvar;          
+
+             // deal with ATT_ID 
+             if(asn2a)  
+             { 
+               // remember tr and siblings and children are  duplicated here
+               tr=att2var(asn2a);   
+               tr->setNextSibling(asn2->getNextSibling());
+
+             } 
+             // must be VAR_ID 
+             else 
+             { 
+                  
+               tr=asn2->getFirstChild();
+               tr->setNextSibling(asn2->getNextSibling());
+
+               // Die if attempting to create a RAM var 
+               // from an existing disk var   
+                Nvar= prs_arg->var_vtr.find(tr->getText());
+
+                if(Nvar && Nvar->flg_mem==false)
+                {
+                  std::string serr;
+                  serr= "It is impossible to recast disk variable: \"" + tr->getText() +"\" as a RAM variable.";
+                  err_prn(fnc_nm,serr );       
+                
+                }                
+             }
+
+             if(prs_arg->ntl_scn)
+               var=assign_ntl(tr,true); 
+             else
+               var=assign(tr, true);
+               
+        }
+   
+
+
+    | #(UTIMES attz:ATT_ID) {
+          var=out(att2var(attz));    
+    }
+
+
+
      | #(WHERE_ASSIGN wasn:. ) {
 
      }
-
+    
     //ternary Operator
      |   #(QUESTION var1=out qus:.) {
            bool br;
@@ -2544,7 +2642,8 @@ out returns [var_sct *var]
     // plain Variable
 	|   v:VAR_ID       
         { 
-
+          //dbg_prn(fnc_nm,"getting regular var in out "+v->getText());
+   
           var=prs_arg->ncap_var_init(v->getText(),true);
           if(var== NULL){
                if(prs_arg->ntl_scn){
@@ -2679,6 +2778,60 @@ out returns [var_sct *var]
         // {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(SCS("~uint64"),static_cast<nco_uint64>(std::strtoull(val_uint64->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end UINT64
 // #endif /* !ENABLE_NETCDF4 */
 
+;
+
+// takes an ATT_ID pointer and converts it to a VAR_ID
+att2var returns [ RefAST tr ]
+{
+  var_sct *var_att=NULL_CEWI; 
+  std::string sn;
+  NcapVar *Nvar;
+}
+
+: (att:ATT_ID) {
+
+    sn=ncap_att2var(prs_arg,att->getText()); 
+    /*
+    Nvar=prs_arg->var_vtr.find(att->getText());  
+
+    if(!Nvar)
+        err_prn("Unable to evaluate the attribute "  + att->getText() +" as a variable points\n Hint: The attribute should be defined in a previous scope" );
+    
+    var_att=nco_var_dpl(Nvar->var);
+    
+    if(var_att->type !=NC_STRING && var_att->type !=NC_CHAR )
+        err_prn("To use that attribute "+ att->getText() +" as a variable pointer it must be a text type  NC_CHAR or NC_STRING"); 
+    
+    cast_void_nctype(var_att->type, &var_att->val );
+    if(var_att->type == NC_STRING)
+    {
+       sn=var_att->val.sngp[0];
+    }
+    else if( var_att->type==NC_CHAR)
+    {        
+       char buffer[100]={'\0'};
+       strncpy(buffer, var_att->val.cp, var_att->sz);
+       sn=buffer;  
+    } 
+
+    cast_nctype_void(var_att->type, &var_att->val);
+    nco_var_free(var_att);  
+
+    // tr->setType(VAR_ID);       
+    //tr->setText(sn);
+    //tr=att->clone();
+   */
+
+    tr=nco_dupList(att);
+    
+    if(sn.find('@') != std::string::npos)
+      tr->setType(ATT_ID);       
+    else
+      tr->setType(VAR_ID);       
+
+    tr->setText(sn);
+
+    }
 ;
 
 // Return a var or att WITHOUT applying a cast 

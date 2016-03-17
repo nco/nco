@@ -76,6 +76,11 @@
 
 /* Begin funtions in ncap2_utl.cc */
 
+std::string ncap_att2var
+( prs_cls *prs_arg,   
+  std::string att_nm);
+
+
 var_sct*               /* O [sct] variable containing attribute */
 ncap_att_get	       /*   [fnc] Grab an attribute from input file */	
 (int var_id,           /*   I  var id        */ 
@@ -126,6 +131,13 @@ void
 ncap_att_prn   
 (var_sct *var, 
  char *const att_in_sng);
+
+char *            /* [0] sng - malloced inside function */
+ncap_att_sprn     /* [fnc] Print a single attribute*/
+(var_sct *var,   /* I Variable containing att */
+ char *const att_in_sng); /* user defined format string */
+
+
 
 int                 /* number appended */ 
 ncap_att_str        /* extract string(s) from a NC_CHAR or NC_STRING type attribute */
@@ -372,6 +384,15 @@ var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
 nco_uint64 val_uint64);
+
+
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_string val_string);
+
+
 // end ncap_sclr_var_mk() overloads
 
 void

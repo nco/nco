@@ -2236,7 +2236,7 @@ const char* ncoParser::tokenNames[] = {
 	"\"else\"",
 	"\"where\"",
 	"\"elsewhere\"",
-	"\"print\"",
+	"\"printz\"",
 	"VAR_ID",
 	"ATT_ID",
 	"{",
@@ -2315,13 +2315,13 @@ const char* ncoParser::tokenNames[] = {
 
 const unsigned long ncoParser::_tokenSet_0_data_[] = { 3221225472UL, 4228052455UL, 2146959361UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // SEMI "defdim" "defdimunlim" LPAREN NSTRING "while" "break" "continue" 
-// "if" "where" "print" VAR_ID ATT_ID LCURL "for" FUNC INC DEC LNOT PLUS 
+// "if" "where" "printz" VAR_ID ATT_ID LCURL "for" FUNC INC DEC LNOT PLUS 
 // MINUS TIMES NCAP_FLOAT NCAP_DOUBLE NCAP_INT NCAP_BYTE NCAP_UBYTE NCAP_SHORT 
 // NCAP_USHORT NCAP_UINT NCAP_INT64 NCAP_UINT64 N4STRING DIM_ID_SIZE 
 const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_0(_tokenSet_0_data_,8);
 const unsigned long ncoParser::_tokenSet_1_data_[] = { 3221225474UL, 4266393575UL, 2147483647UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF SEMI "defdim" "defdimunlim" LPAREN NSTRING "while" "break" "continue" 
-// "if" "else" "where" "elsewhere" "print" VAR_ID ATT_ID LCURL RCURL "for" 
+// "if" "else" "where" "elsewhere" "printz" VAR_ID ATT_ID LCURL RCURL "for" 
 // LSQUARE DIVIDE DOT FUNC INC DEC LNOT PLUS MINUS TIMES CARET MOD FLTHAN 
 // FGTHAN LTHAN GTHAN GEQ LEQ EQ NEQ LAND LOR QUESTION ASSIGN PLUS_ASSIGN 
 // MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN NCAP_FLOAT NCAP_DOUBLE NCAP_INT 
@@ -2330,14 +2330,14 @@ const unsigned long ncoParser::_tokenSet_1_data_[] = { 3221225474UL, 4266393575U
 const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_1(_tokenSet_1_data_,8);
 const unsigned long ncoParser::_tokenSet_2_data_[] = { 3221225474UL, 4228120551UL, 2146959361UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF SEMI "defdim" "defdimunlim" LPAREN NSTRING "while" "break" "continue" 
-// "if" "else" "where" "elsewhere" "print" VAR_ID ATT_ID LCURL RCURL "for" 
+// "if" "else" "where" "elsewhere" "printz" VAR_ID ATT_ID LCURL RCURL "for" 
 // FUNC INC DEC LNOT PLUS MINUS TIMES NCAP_FLOAT NCAP_DOUBLE NCAP_INT NCAP_BYTE 
 // NCAP_UBYTE NCAP_SHORT NCAP_USHORT NCAP_UINT NCAP_INT64 NCAP_UINT64 N4STRING 
 // DIM_ID_SIZE 
 const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_2(_tokenSet_2_data_,8);
 const unsigned long ncoParser::_tokenSet_3_data_[] = { 3221225474UL, 4292870143UL, 2147483647UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF SEMI "defdim" "defdimunlim" LPAREN NSTRING COMMA RPAREN "while" 
-// "break" "continue" "if" "else" "where" "elsewhere" "print" VAR_ID ATT_ID 
+// "break" "continue" "if" "else" "where" "elsewhere" "printz" VAR_ID ATT_ID 
 // LCURL RCURL "for" COLON LSQUARE DIM_ID DIVIDE DIM_MTD_ID CALL_REF DOT 
 // FUNC INC DEC LNOT PLUS MINUS TIMES CARET MOD FLTHAN FGTHAN LTHAN GTHAN 
 // GEQ LEQ EQ NEQ LAND LOR QUESTION ASSIGN PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN 

@@ -19,6 +19,7 @@ public:
   void    push_ow(NcapVar *Nvar);
   void    push(NcapVar *Nvar);
   void    erase(std::string s_fnm);
+  void    erase_all(std::string var_nm);
   void    erase(long idx); 
   void    sort();
 

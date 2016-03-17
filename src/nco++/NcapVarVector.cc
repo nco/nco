@@ -140,7 +140,39 @@ void NcapVarVector::sort(){
 }
 
 
+// takes a variable name as an argument and 
+// deletes that and all associated attributes 
+// of the form var_m@
+void NcapVarVector::erase_all(std::string var_nm){
+  bool match=false;
+  long sz;
+  long idx;
+  long srt=-1;
+  long end=-1;
+  idx=findi(var_nm);
+  
+  if(idx >=0) erase(idx);
+  
+  sz=this->size();
 
+  for(idx=0; idx<sz;idx++)
+  {
+    if( (*this)[idx]->xpr_typ==ncap_att &&  (*this)[idx]->getVar()==var_nm)
+      if(srt==-1) srt=idx;    
+    else      
+      if(srt>=0)
+      {    
+	end=idx-1;
+        break; 
+      } 
+  }  
+
+  if(srt >=0) 
+    // call base class 
+    std::vector<NcapVar*>::erase(begin()+srt,begin()+end);
+
+
+}
 /*
 NcapVar* NcapVarVector::find(const char*nm){
   long idx;

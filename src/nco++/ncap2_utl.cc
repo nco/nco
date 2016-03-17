@@ -89,6 +89,46 @@ ncap_att_get
   return var_ret; 
 }
 
+std::string ncap_att2var
+( prs_cls *prs_arg,   
+  std::string att_nm)
+{
+
+  std::string sn; 
+  var_sct *var_att=NULL_CEWI; 
+  NcapVar *Nvar;
+
+  Nvar=prs_arg->var_vtr.find(att_nm);  
+
+  if(!Nvar)
+    err_prn("Unable to evaluate the attribute "  + att_nm +" as a variable points\n Hint: The attribute should be defined in a previous scope" );
+    
+  var_att=nco_var_dpl(Nvar->var);
+    
+  if(var_att->type !=NC_STRING && var_att->type !=NC_CHAR )
+    err_prn("To use that attribute "+ att_nm +" as a variable pointer it must be a text type  NC_CHAR or NC_STRING"); 
+    
+  cast_void_nctype(var_att->type, &var_att->val );
+  if(var_att->type == NC_STRING)
+  {
+      sn=var_att->val.sngp[0];
+  }
+  else if( var_att->type==NC_CHAR)
+  {        
+      char buffer[100]={'\0'};
+      strncpy(buffer, var_att->val.cp, var_att->sz);
+      sn=buffer;  
+  } 
+ 
+  cast_nctype_void(var_att->type, &var_att->val);
+  nco_var_free(var_att);  
+
+  return sn;
+
+}
+
+
+
 var_sct * /* O [sct] variable containing attribute */
 ncap_att_init /* [fnc] Grab an attribute from input file */
 (const std::string s_va_nm, /* I [sng] att name of form var_nm&att_nm */ 
@@ -356,13 +396,122 @@ ncap_att_prn     /* [fnc] Print a single attribute*/
   default: nco_dfl_case_nc_type_err();
     break;
   } /* end switch */
-  (void)fprintf(stdout,"\n");
+
+  /* only print if format string NOT user defined  */
+  if(att_in_sng ==(char*)NULL)
+      (void)fprintf(stdout,"\n");
   
   (void)cast_nctype_void(var->type,&var->val);
   
   (void)fflush(stdout);
   
 } /* end ncap_att_prn() */
+
+
+char * 
+ncap_att_sprn     /* [fnc] Print a single attribute*/
+(var_sct *var,   /* I Variable containing att */
+ char *const att_in_sng) /* user defined format string */
+{
+  char dlm_sng[3];
+  char att_sng[NCO_MAX_LEN_FMT_SNG];
+ 
+  char *tp;
+  char *cp;    
+  char *cp_max;  
+
+  long att_lmn;
+  long att_sz; 
+  long max_sz;
+  
+  /* Copy value to avoid indirection in loop over att_sz */
+  att_sz=var->sz;
+  
+  cp=(char*)nco_calloc(sizeof(char),(NC_MAX_ATTRS+100)); 
+  tp=cp;  
+  cp_max=cp+ (size_t)(NC_MAX_ATTRS+100); 
+
+
+
+  if(att_in_sng ==(char*)NULL) {        
+    (void)sprintf(tp,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
+    tp+=strlen(tp); 
+    /* Typecast pointer to values before access */
+    (void)strcpy(dlm_sng,", ");
+    (void)sprintf(att_sng,"%s%%s",nco_typ_fmt_sng(var->type));
+    /* user defined format string */ 
+  } else {
+    (void)strcpy(att_sng,att_in_sng);
+    (void)strcpy(dlm_sng,"");
+  }
+      
+  (void)cast_void_nctype(var->type,&var->val);
+
+  
+  switch(var->type){
+  case NC_FLOAT:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++) { (void)sprintf(tp,att_sng,var->val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    break;
+  case NC_DOUBLE:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++) { (void)sprintf(tp,att_sng,var->val.dp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");  tp+=strlen(tp); }
+    break;
+  case NC_SHORT:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    break;
+  case NC_INT:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,(long)var->val.ip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    break;
+  case NC_CHAR:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++){
+      char char_foo;
+      /* Assume \0 is string terminator and do not print it */
+      if((char_foo=var->val.cp[att_lmn]) != '\0') (void)sprintf(tp++,"%c",char_foo);   
+         
+    } /* end loop over element */
+    *tp='\0';
+    break;
+  case NC_BYTE:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.bp[att_lmn], (att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    break;
+  case NC_UBYTE:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.ubp[att_lmn], (att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    break;
+  case NC_USHORT:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.usp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    break;
+  case NC_UINT:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.uip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    break;
+  case NC_INT64:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.i64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    break;
+  case NC_UINT64:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.ui64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    break;
+  case NC_STRING:
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ; att_lmn++) { (void)sprintf(tp,att_sng,var->val.sngp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");tp+=strlen(tp); }
+    break;
+  default: nco_dfl_case_nc_type_err();
+    break;
+  } /* end switch */
+  
+  (void)cast_nctype_void(var->type,&var->val);
+  
+  if( tp >= cp_max )
+  {
+    cp=(char*)nco_realloc(cp, NC_MAX_ATTRS*sizeof(char));     
+    cp[NC_MAX_ATTRS-1]='\0';
+  }
+  else
+  {
+    cp=(char*)nco_realloc(cp, sizeof(char) * (strlen(cp)+1));     
+  }       
+  
+  return cp;
+
+} /* end ncap_att_prn() */
+
+
 
 
 int          /* number appended */ 
@@ -2478,7 +2627,7 @@ ncap_sclr_var_mk
   return var;
 }
 
-/* fxm: Allow ncap2 to instantiate NC_STRINGs
+/* fxm: Allow ncap2 to instantiate NC_STRINGs */
    var_sct *
    ncap_sclr_var_mk(
    const std::string var_nm,
@@ -2490,7 +2639,7 @@ ncap_sclr_var_mk
    *var->val.sngp=val_string;
    (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
    return var;
-   } */ 
+   } 
 
 // Do an in-memory hyperslab !!
 void 

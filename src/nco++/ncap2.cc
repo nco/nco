@@ -548,6 +548,9 @@ main(int argc,char **argv)
   misc_cls misc_obj(true); 
   // string list functions
   vlist_cls vlist_obj(true);
+  // string list functions
+  print_cls print_obj(true);
+
 
   // Populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
@@ -568,6 +571,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&cod_obj);
   (void)pop_fmc_vtr(fmc_vtr,&misc_obj);
   (void)pop_fmc_vtr(fmc_vtr,&vlist_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&print_obj);
 
 #ifdef ENABLE_GSL
 # ifdef ENABLE_NCO_GSL
