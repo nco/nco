@@ -63,6 +63,9 @@ if [ -z "${DATA}" ]; then
 fi # DATA
 # Ensure batch jobs access correct 'mpirun' (or, on edison, 'aprun') command, netCDF library, and NCO executables and library:
 case "${HOSTNAME}" in 
+    aims* )
+	export PATH='/export/zender1/bin'\:${PATH}
+        export LD_LIBRARY_PATH='/export/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
     cooley* | cc* | mira* )
 	# http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
 	soft add +mvapich2 

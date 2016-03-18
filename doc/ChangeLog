@@ -1,7 +1,16 @@
+2016-03-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.6-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.6-alpha05 final changes';git push
+	git tag -a 4.5.6-alpha05 -m 'Version 4.5.6-alpha05 new features: ncap2 pointers, terraref';git push --tags
+
+	* Add paths for LLNL aims machines to ncremap, climo_nco.sh, climo_ann.sh
+
 2016-03-18  Henry Butowsky  <henryb@hush.com>
-	* removed all print functions from ncoGrammar
-	* print now handled as method by print_cls()  in fmc_all_cls.cc
-	  
+
+	* Removed all print functions from ncoGrammar
+
+	* Print now handled as method by print_cls() in fmc_all_cls.cc
 
 2016-03-09  Charlie Zender  <zender@uci.edu>
 

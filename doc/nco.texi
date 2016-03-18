@@ -113,11 +113,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.5.6-alpha04
-@set doc-edition 4.5.6-alpha04
+@set nco-edition 4.5.6-alpha05
+@set doc-edition 4.5.6-alpha05
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 8 March 2016
+@set update-date 18 March 2016
 @set update-month March 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -12092,11 +12092,11 @@ They only work on variables in Output.
 @cindex @code{set_miss()}
  The numeric argument @var{expr} becomes the new missing value,
  overwriting the old missing value, if any.
- The argument given is converted if necessary to the variable type.
- NB: This only changes the missing value attribute. 
+ The argument given is converted if necessary to the variable's type.
+ NB: This only changes the missing value attribute.
  Missing values in the original variable remain unchanged, and thus 
  are no long considered missing values.
- They are ``orphaned''.
+ They are effectively ``orphaned''.
  Thus @code{set_miss()} is normally used only when creating new
  variables.
  The intrinsic function @code{change_miss()} (see below) is typically 
