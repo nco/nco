@@ -128,8 +128,6 @@ statement:
          ( //standard if-else ambiguity
          options {warnWhenFollowAmbig = false;} 
         : ELSEWHERE! statement )?
-        // print statement
-        | PRINT^ LPAREN! (VAR_ID|ATT_ID|NSTRING) (COMMA! NSTRING)?  RPAREN! SEMI! 
         // Code block
         | block
    ;        
@@ -322,7 +320,6 @@ tokens {
     WHILE="while";    
     FOR="for";
    
-    PRINT="printz";  
     DEFDIMA="defdim";
     DEFDIMU="defdimunlim";
  
@@ -1354,122 +1351,7 @@ static std::vector<std::string> lpp_vtr;
         } 
 
         (void)ncap_def_dim(def->getText(),sz,bunlimited,prs_arg);
-     }
-
-    // All the following functions have iret=0
-    | (#(PRINT VAR_ID))=> #(PRINT pvid:VAR_ID){
-
-          int var_id;
-          int fl_id=-1;
-          char *fmt_sng;
-         
-          std::string va_nm(pvid->getText());
-          NcapVar *Nvar;
-          
-          if(prs_arg->ntl_scn) goto end2;
-          Nvar=prs_arg->var_vtr.find(va_nm);
-
-          if(Nvar && Nvar->flg_mem){   
-            wrn_prn(fnc_nm,"Cannot print out RAM variables at the moment!");
-            goto end2;
-          }
-
-          // check output first -nb can only print out vars that are defined AND written
-          // it is possible to get with the var defined in output but no data
-          // flg_stt==1 mean var defined but no data !!
-          // So we try to use var in input -if it exist their    
-          if(Nvar && Nvar->flg_stt==2){
-             fl_id=prs_arg->out_id;   
-          }else{
-           // Check input file for var   
-           if(NC_NOERR==nco_inq_varid_flg(prs_arg->in_id,va_nm.c_str(),&var_id))
-            fl_id=prs_arg->in_id;
-          }
-
-          if(fl_id==-1) {
-            wrn_prn(fnc_nm,"Print function cannot find var \""+va_nm+"\" in input or output");
-            goto end2;
-          }
-
-          // Grab format string 
-          if(pvid->getNextSibling() && pvid->getNextSibling()->getType()==NSTRING)
-            fmt_sng=strdup(pvid->getNextSibling()->getText().c_str());
-          else 
-            fmt_sng=(char*)NULL; 
-   
-          if( fl_id >=0)
-           (void)nco_prn_var_val_lmt(fl_id,va_nm.c_str(),(lmt_sct*)NULL,0L,fmt_sng,prs_arg->FORTRAN_IDX_CNV,False,False);
-             
-          if(fmt_sng) fmt_sng=(char*)nco_free(fmt_sng); 
-
-        end2: ;
-    }
-    | (#(PRINT ATT_ID))=> #(PRINT patt:ATT_ID){
-
-          int apsn;
-          var_sct *var1;
-          char *fmt_sng;
-          std::string fl_nm;
-          std::string att_nm;
-          std::string var_nm;
-          NcapVar *Nvar;
-          
-          var=NULL_CEWI;
-
-          // print only on second parse
-          if(prs_arg->ntl_scn) goto end3;
-
-          fl_nm=patt->getText();
-          apsn=fl_nm.find("@");
-          var_nm=fl_nm.substr(0,apsn);
-          att_nm=fl_nm.substr(apsn+1);            
-          
-          Nvar=prs_arg->var_vtr.find(var_nm);
-          if( Nvar && att_nm==std::string(nco_mss_val_sng_get()) ){         
-              if(Nvar->var->has_mss_val==True){
-                var1=ncap_sclr_var_mk(fl_nm,Nvar->var->type,true);
-                (void)memcpy(var1->val.vp,Nvar->var->mss_val.vp, nco_typ_lng(Nvar->var->type));
-                var=var1;
-              }else{
-                wrn_prn(fnc_nm,"Cannot print missing value \""+ fl_nm+ "\" for variable \""+ var_nm +"\" as it is undefined");
-                goto end3;    
-              }
-          }else{   
-             Nvar=prs_arg->var_vtr.find(fl_nm);
-             if(Nvar==NULL_CEWI) 
-                var=ncap_att_init(fl_nm,prs_arg);
-             else
-                var=nco_var_dpl(Nvar->var); 
-          }
-
-          if(var==NULL_CEWI ){
-            wrn_prn(fnc_nm,"Cannot print  attribute \"" +fl_nm+ "\". Not present in input or output files.");
-            goto end3;    
-           }
-
-          // Grab format string 
-          if(patt->getNextSibling() && patt->getNextSibling()->getType()==NSTRING)
-            fmt_sng=strdup(patt->getNextSibling()->getText().c_str());
-          else 
-            fmt_sng=(char*)NULL; 
-
-          (void)ncap_att_prn(var,fmt_sng);
-          var=nco_var_free(var); 
-
-          end3:   ;
-    }
-
-    | (#(PRINT NSTRING))=> #(PRINT pstr:NSTRING){
-       char *prn_sng;
-       
-       if(!prs_arg->ntl_scn){
-        prn_sng=strdup(pstr->getText().c_str());
-        (void)sng_ascii_trn(prn_sng);            
-
-        fprintf(stdout,"%s",prn_sng);
-        prn_sng=(char*)nco_free(prn_sng);
-      }    
-    }
+      }
     ;
 
 // Parse assign statement - Initial Scan

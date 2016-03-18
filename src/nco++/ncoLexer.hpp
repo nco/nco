@@ -53,7 +53,7 @@
 #line 54 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 342 "ncoGrammer.g"
+#line 339 "ncoGrammer.g"
 
 private:
     prs_cls *prs_arg;
