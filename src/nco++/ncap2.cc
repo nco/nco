@@ -969,6 +969,8 @@ main(int argc,char **argv)
     if(var_vtr[idx]->xpr_typ == ncap_att){
       /* Skip missing values (for now) */
       if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) continue;     
+      /* skip NC_STRING without warning - we  use NC_STRING as  variable pointers */  
+      if( fl_out_fmt != NC_FORMAT_NETCDF4 &&  var_vtr[idx]->var->type==NC_STRING ) continue;   
       att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
       att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
       att_item.sz=var_vtr[idx]->var->sz;
