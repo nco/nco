@@ -194,8 +194,12 @@ call_ref: CALL_REF^(VAR_ID|ATT_ID)
      ;
 
 /*************************************************************/
-/* start  expressions */
-meth_exp: primary_exp (DOT^ FUNC func_arg)*
+
+top_exp: ur:TIMES^ {#ur->setType(UTIMES);#ur->setText("UTIMES");}  top_exp
+             | primary_exp
+     ;  
+             
+meth_exp: top_exp (DOT^ FUNC func_arg)*
      ;
 
 // unary left association   
@@ -208,17 +212,16 @@ unaryleft_exp: meth_exp (
     ;
 
 // unary right association   
-/*
-unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ | TIMES^ ) unary_exp
+unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ ) unary_exp
             | unaryleft_exp
 	;
-*/
 
+/*
 unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ 
              | ur:TIMES^ {#ur->setType(UTIMES);#ur->setText("UTIMES");} ) unary_exp
              | unaryleft_exp
     ;    
-
+*/
 // right association
 pow_exp: unary_exp (CARET^ pow_exp )? 
     ;
@@ -2106,21 +2109,22 @@ out returns [var_sct *var]
            { var=ncap_var_var_op(var1,var2, PLUS );}
 	|  (#(MINUS out out)) => #( MINUS var1=out var2=out)
             { var=ncap_var_var_op(var1,var2, MINUS );}
-    // |  (#(UTIMES #(POST_INC out)))=> #( UTIMES #(POST_INC var1=out_asn)){
-    |  (#(UTIMES #(POST_INC VAR_ID)))=> #( UTIMES #(POST_INC var1=out)){
-             var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,true,prs_arg);      
+    |  (#(POST_INC #(UTIMES ATT_ID)))=> #( POST_INC #(UTIMES aposti:ATT_ID)){
+             var1=out(att2var(aposti));     
+             var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,false,prs_arg);      
        } 
-    //|  (#(UTIMES #(POST_DEC out)))=> #( UTIMES #(POST_DEC var1=out_asn)){
-    |  (#(UTIMES #(POST_DEC VAR_ID)))=> #( UTIMES #(POST_DEC var1=out)){
-             var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,true,prs_arg);      
+    |  (#(POST_DEC #(UTIMES ATT_ID)))=> #( POST_DEC #(UTIMES apostd:ATT_ID)){
+             var1=out(att2var(apostd));     
+             var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,false,prs_arg);      
        } 
-    |  (#(UTIMES #(INC VAR_ID)))=> #( UTIMES #(INC var1=out)){
-             var=ncap_var_var_inc(var1,NULL_CEWI,INC,true,prs_arg);      
+    |  (#(INC #(UTIMES ATT_ID)))=> #( INC #(UTIMES aprei:ATT_ID)){
+             var1=out(att2var(aprei));     
+             var=ncap_var_var_inc(var1,NULL_CEWI,INC,false,prs_arg);      
        } 
-    |  (#(UTIMES #(DEC VAR_ID)))=> #( UTIMES #(DEC var1=out)){
-             var=ncap_var_var_inc(var1,NULL_CEWI,DEC,true,prs_arg);      
+    |  (#(DEC #(UTIMES ATT_ID)))=> #( DEC #(UTIMES apred:ATT_ID)){
+             var1=out(att2var(apred));     
+             var=ncap_var_var_inc(var1,NULL_CEWI,DEC,false,prs_arg);      
        } 
-
 	|	#(TIMES var1=out var2=out)
             { var=ncap_var_var_op(var1,var2, TIMES );}	
 
@@ -2139,9 +2143,10 @@ out returns [var_sct *var]
 
     |   #(INC var1=out_asn )      
             { var=ncap_var_var_inc(var1,NULL_CEWI,INC,false,prs_arg);}
+
     |   #(DEC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,NULL_CEWI, DEC,false,prs_arg );}
-    
+            {var=ncap_var_var_inc(var1,NULL_CEWI, DEC,false,prs_arg );}
+
     |   #(POST_INC var1=out_asn ){
             var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,false,prs_arg);
         }

@@ -1,7 +1,7 @@
 #ifndef INC_ncoEnumTokenTypes_hpp_
 #define INC_ncoEnumTokenTypes_hpp_
 
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoEnumTokenTypes.hpp"$ */
+/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoEnumTokenTypes.hpp"$ */
 
 #ifndef CUSTOM_API
 # define CUSTOM_API
@@ -61,14 +61,14 @@
 		DIM_MTD_ID = 53,
 		ATT_ID = 54,
 		CALL_REF = 55,
-		DOT = 56,
-		FUNC = 57,
-		INC = 58,
-		DEC = 59,
-		LNOT = 60,
-		PLUS = 61,
-		MINUS = 62,
-		TIMES = 63,
+		TIMES = 56,
+		DOT = 57,
+		FUNC = 58,
+		INC = 59,
+		DEC = 60,
+		LNOT = 61,
+		PLUS = 62,
+		MINUS = 63,
 		CARET = 64,
 		MOD = 65,
 		FLTHAN = 66,

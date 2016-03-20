@@ -2,7 +2,7 @@
 #define INC_ncoParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoParser.hpp"$ */
+/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ncoParserTokenTypes.hpp"
@@ -98,8 +98,9 @@ public:
 	public: void call_ref();
 	public: void func_arg();
 	public: void hyper_slb();
-	public: void meth_exp();
+	public: void top_exp();
 	public: void primary_exp();
+	public: void meth_exp();
 	public: void unaryleft_exp();
 	public: void unary_exp();
 	public: void pow_exp();
