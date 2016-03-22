@@ -1,3 +1,9 @@
+2016-03-22  Charlie Zender  <zender@uci.edu>
+
+	* ncremap uses append not overwrite mode
+
+	* ncatted new nappend mode appends only to existing attributes
+
 2016-03-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.6-alpha05 release procedure:
