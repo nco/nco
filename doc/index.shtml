@@ -1265,7 +1265,7 @@ Remember, to compile NCO from source, you need not only the library
 dependencies the "devel" versions 
 (which include the header files) of the 
 
-For Debian-based systems:
+For Debian-based systems (like Ubuntu) (<tt>aptitude</tt> is similar to and interchangeable, I think, with <tt>apt-get</tt>):
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
 <dt>sudo aptitude install libcurl4-gnutls-dev libexpat1-dev libxml2-dev # DAP-prereqs (curl, expat XML parser) </dt>
