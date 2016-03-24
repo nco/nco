@@ -1806,7 +1806,13 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
                 var1=nco_var_free(var1);
                 var1=var_nw;
              }
-               
+             
+             // do attribute propagation only  from RHS -if not an att
+             if( !ncap_var_is_att(var1))  
+                 ncap_att_gnrl(var_nm,var1->nm,1,prs_arg);
+
+ 
+
                //blow out if vars not the same size      
              if(var1->sz != var_cst->sz) 
                   err_prn(fnc_nm, "LHS cast for "+var_nm+" - cannot make RHS "+ std::string(var1->nm) + " conform.");          
