@@ -117,7 +117,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.6-alpha05
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 21 March 2016
+@set update-date 24 March 2016
 @set update-month March 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18234,7 +18234,12 @@ ncpdq -a lon,-lat in.nc out.nc # OK. No whitespace before "-"
 ncpdq --rdr=-lat in.nc out.nc # Preferred. Uses "=" not whitespace
 @end example
 
+@cindex transpose
 @cindex reverse dimensions
+@html
+<a name="ncpdq_trn"></a> <!-- http://nco.sf.net/nco.html#ncpdq_trn -->
+<a name="transpose"></a> <!-- http://nco.sf.net/nco.html#transpose -->
+@end html
 To create the mathematical transpose of a variable, place all its
 dimensions in the dimension re-order list in reversed order.
 This example creates the transpose of @code{three_dmn_var}: 

@@ -1974,12 +1974,13 @@ nco_glb_att_add /* [fnc] Add global attributes */
     /* nco_sng2kvm() converts argument "--gaa one,two=3" into kvm.key="one,two" and kvm.val=3
        Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
     if(kvm.key){
-      int att_idx; /* [idx] Index over attribute names in current GAA argument */
+      int att_idx; /* [idx] Index over qattribute names in current GAA argument */
       int att_nbr; /* [nbr] Number of attribute names in current GAA argument */
       char **att_lst;
       att_lst=nco_lst_prs_2D(kvm.key,",",&att_nbr);
       for(att_idx=0;att_idx<att_nbr;att_idx++){ /* Expand multi-attribute-name specification */
         gaa_lst[gaa_nbr].key=strdup(att_lst[att_idx]);
+	/* 20160324: fxm: can next line break when kvm.val is NULL? */
 	gaa_lst[gaa_nbr].val=strdup(kvm.val);
         gaa_nbr++;
       } /* end for */
@@ -1998,6 +1999,8 @@ nco_glb_att_add /* [fnc] Add global attributes */
     /* Insert value into attribute structure */
     gaa_aed.val=att_val;
     gaa_aed.sz=strlen(gaa_aed.val.cp);
+    gaa_aed.mode=aed_overwrite;
+    /* 20160324: which is better mode for gaa---overwrite or append? */
     gaa_aed.mode=aed_append;
     /* Write attribute to disk */
     (void)nco_aed_prc(out_id,NC_GLOBAL,gaa_aed);

@@ -1,3 +1,7 @@
+2016-03-24  Charlie Zender  <zender@uci.edu>
+
+	* Initialize kvm.val to NULL to handle empty values, e.g., --gaa history=""
+
 2016-03-22  Charlie Zender  <zender@uci.edu>
 
 	* ncremap uses append not overwrite mode

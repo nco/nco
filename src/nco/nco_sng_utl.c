@@ -613,6 +613,9 @@ nco_sng2kvm /* [fnc] Parse string into key-value pair */
   int arg_idx=0; /* [nbr] */
   kvm_sct kvm;
 
+  /* 20160324: Initialize val to NULL so that can handle empty values, e.g., --gaa history="" */
+  kvm.val=NULL;
+  
   /* NB: Replace strtok() by strsep()? strtok() does not handle consecutive delimiters well
      20160216: String values that contain delimiter will fail
      fxm replace all but first delimiter with temporary character until strtok() finishes */
