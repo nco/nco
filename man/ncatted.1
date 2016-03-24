@@ -198,8 +198,8 @@ If
 .I var_nm
 does not have an attribute 
 .IR att_nm ,
-there is no
-effect.
+it is created with value
+.IR att_val.
 .TP
 .B c
 .IR Create .
@@ -247,6 +247,24 @@ attribute
 .I att_nm
 to value
 .IR att_val .
+If 
+.I var_nm
+does not have an attribute 
+.IR att_nm ,
+there is no
+effect. 
+.TP
+.B n 
+.IR Nappend .
+Append value 
+.I att_val
+to current 
+.I var_nm
+attribute
+.I att_nm
+value 
+.IR att_val ,
+if any.  
 If 
 .I var_nm
 does not have an attribute 

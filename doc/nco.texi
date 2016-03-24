@@ -117,7 +117,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.5.6-alpha05
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 18 March 2016
+@set update-date 21 March 2016
 @set update-month March 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -10384,11 +10384,13 @@ multiple uses of the @samp{--glb} (or equivalent @samp{--gaa} or
 @samp{--glb_att_add}) switch.
 The switch takes mandatory arguments 
 @samp{--glb @var{att_nm}=@var{att_val}}   
-where @var{att_nm} is the desired name of the global attriute to add, 
+where @var{att_nm} is the desired name of the global attribute to add, 
 and @var{att_val} is its value.
 Currently only text attributes are supported (recorded as type
 @code{NC_CHAR}), and regular expressions are not allowed (unlike
 @pxref{ncatted netCDF Attribute Editor}).    
+Attributes are added in ``Append'' mode, meaning that values are
+appended to pre-existing values, if any. 
 @example
 @verbatim
 ncra --glb machine=${HOSTNAME} --glb created_by=${USER} in*.nc out.nc
@@ -14946,21 +14948,22 @@ variables that are the same type as the specified attribute.
 <a name="att_mode"></a> <!-- http://nco.sf.net/nco.html#att_mode -->
 @end html
 The value of @var{mode} is a single character abbreviation (@code{a},
-@code{c}, @code{d}, @code{m}, or @code{o}) standing for one of
+@code{c}, @code{d}, @code{m}, @code{n}, or @code{o}) standing for one of 
 five editing modes:@*
 @cindex attributes, appending
 @cindex attributes, creating
 @cindex attributes, deleting
 @cindex attributes, modifying
 @cindex attributes, editing
+@cindex attributes, nappending
 @cindex attributes, overwriting
 @table @code
 @item a 
 @dfn{Append}.
 Append value @var{att_val} to current @var{var_nm} attribute
 @var{att_nm} value @var{att_val}, if any.  
-If @var{var_nm} does not have an attribute @var{att_nm}, there is no
-effect.
+If @var{var_nm} does not already have an existing attribute
+@var{att_nm}, it is created with the value @var{att_val}.
 @item c
 @dfn{Create}.
 Create variable @var{var_nm} attribute @var{att_nm} with @var{att_val}
@@ -14982,6 +14985,17 @@ Change value of current @var{var_nm} attribute @var{att_nm} to value
 @var{att_val}. 
 If @var{var_nm} does not have an attribute @var{att_nm}, there is no
 effect. 
+@item n 
+@dfn{Nappend}.
+Append value @var{att_val} to @var{var_nm} attribute @var{att_nm} value 
+@var{att_val} if @var{att_nm} already exists.
+If @var{var_nm} does not have an attribute @var{att_nm}, there is no
+effect. 
+In other words, if @var{att_nm} already exist, Nappend behaves like
+Append otherwise it does nothing.
+The mnenomic is ``non-create append''.
+Nappend mode was added to @command{ncatted} in version 4.5.6 (April,
+2016). 
 @item o
 @dfn{Overwrite}.
 Write attribute @var{att_nm} with value @var{att_val} to variable

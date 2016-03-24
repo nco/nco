@@ -148,7 +148,7 @@ nco_aed_prc_wrp /* [fnc] Expand regular expressions then pass attribute edits to
   return flg_chg; /* [flg] Attribute was altered */
 } /* end nco_aed_prc() */
 
- nco_bool /* [flg] Attribute was changed */
+nco_bool /* [flg] Attribute was changed */
 nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const int var_id, /* I [id] ID of variable on which to perform attribute editing */
@@ -384,6 +384,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   switch(aed.mode){
   case aed_append:	
+  case aed_nappend:	
     if(rcd_inq_att == NC_NOERR){
       /* Append to existing attribute value */
       if(aed.type != att_typ){
@@ -405,7 +406,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
       flg_chg=True; /* [flg] Attribute was altered */
       att_val_new=nco_free(att_val_new);
-    }else{
+    }else if(aed.mode == aed_append){
       /* Create new attribute */
       rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
       flg_chg=True; /* [flg] Attribute was altered */
@@ -1217,12 +1218,14 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	  }else if(!strcmp("create",arg_lst[2])){aed_lst[idx].mode=aed_create;
 	  }else if(!strcmp("delete",arg_lst[2])){aed_lst[idx].mode=aed_delete;
 	  }else if(!strcmp("modify",arg_lst[2])){aed_lst[idx].mode=aed_modify;
+	  }else if(!strcmp("nappend",arg_lst[2])){aed_lst[idx].mode=aed_nappend;
 	  }else if(!strcmp("overwrite",arg_lst[2])){aed_lst[idx].mode=aed_overwrite;} */
     switch(*(arg_lst[2])){
     case 'a': aed_lst[idx].mode=aed_append; break;
     case 'c': aed_lst[idx].mode=aed_create; break;
     case 'd': aed_lst[idx].mode=aed_delete; break;
     case 'm': aed_lst[idx].mode=aed_modify; break;
+    case 'n': aed_lst[idx].mode=aed_nappend; break;
     case 'o': aed_lst[idx].mode=aed_overwrite; break;
     default: 
       (void)fprintf(stderr,"%s: ERROR `%s' is not a supported mode\n",nco_prg_nm_get(),arg_lst[2]);
@@ -1995,7 +1998,7 @@ nco_glb_att_add /* [fnc] Add global attributes */
     /* Insert value into attribute structure */
     gaa_aed.val=att_val;
     gaa_aed.sz=strlen(gaa_aed.val.cp);
-    gaa_aed.mode=aed_overwrite;
+    gaa_aed.mode=aed_append;
     /* Write attribute to disk */
     (void)nco_aed_prc(out_id,NC_GLOBAL,gaa_aed);
   } /* !gaa_idx */

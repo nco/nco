@@ -19,83 +19,14 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. NCO supports the CDF5 file type first introduced by pnetCDF and now  
-   supported in Unidata netCDF as of version 4.4.0.
-   CDF5 uses 64-bit offsets for a large address space (like the netCDF
-   64BIT type) AND arrays may have more than 2^32 elements.
-   Use '-5', '--5', '--fl_fmt=[cdf5|64bit_data|pnetcdf]'.
-   Conversion to and between all netCDF filetypes is supported:
-   ncks -5 in_3.nc out_5.nc
-   ncks -5 in_7.nc out_5.nc
-   ncks -7 in_5.nc out_7.nc
-   http://nco.sf.net/nco.html#cdf5
-
-B. ncremap: -P option triggers filetype-specific workflow procedures
-   (such as automatic permutation). Currently filetype-specific
-   handling is defined for AIRS, HIRDLS, MLS, and MPAS files:
-   ncremap -P airs   -i airs.nc -m map.nc -o out.nc
-   ncremap -P hirdls -i airs.nc -m map.nc -o out.nc
-   ncremap -P mls    -i airs.nc -m map.nc -o out.nc
-   ncremap -P mpas   -i mpas.nc -m map.nc -o out.nc
-   One aspect of this handling is to rearrange dimension ordering
-   from the way NASA/MPAS distributes generates these datasets so 
-   that horizontal spatial dimensions (lat, lon) come last.
-   This is friendlier for regridding applications.
-
-C. ncremap: -m map_fl supplies names to generated mapfiles and ncremap 
-   annotates map-files it creates with full history. This helps retain
-   provenance in generated mapfiles. And ncremap has a friendlier
-   mode, "map-only" mode, to generate mapfiles for later use.
-   To use this mode, call ncremap without any input files to remap.  
-   ncremap will then generate the mapfile then exit.
-   ncremap -i in.nc -d dst.nc -m map.nc -o out.nc # Named mapfile
-   ncremap -s grd_in.nc -g grd_out.nc -m map.nc # Map-only mode
-   http://nco.sf.net/nco.html#ncremap
-
-D. ncremap -j job_nbr option for MPI parallelism
-   http://nco.sf.net/nco.html#ncremap
-
-E. ncra/nces/ncwa: New operation tabs()=total_absolute_value.
-   The the -y tabs option is like -y ttl except the sum is over
-   absolute values. tabs(), mibs(), mebs(), and mabs() are analogous
-   to ttl(), min(), mean(), and max(). 
-   nces -y tabs in.nc in.nc out.nc
-   ncra -y tabs in.nc in.nc out.nc
-   ncwa -y tabs in.nc out.nc
-   http://nco.sf.net/nco.html#op_typ
-
-F. Improve support for Cygwin builds
+A. ncatted new mode "nappend" appends only to existing attributes.
+   If the attribute does not yet exist, it is not created.
+   Same as "append" mode, except "append" will create attributes.
+   http://nco.sf.net/nco.html#ncatted
 
 BUG FIXES:
 
-A. ncremap: Inferred curvilinear grids always return points now in
-   counterclockwise order. Version 4.5.4 sometimes did not. 
-   This caused bad things to happen in the weight-generators.
-
-B. ncremap: Inferring grids from curvilinear coordinates no longer
-   confused by "branch cuts" (i.e., the date-line). ncremap version
-   4.5.4 would sometimes infer concave gridcells that then confused
-   mapping software. Thanks to Feng Ding for reporting the problem.
-
-C. ncpdq: Fix problem that could cause '--gaa' option to fail in
-   earlier versions. 
-
-D. nces: Copy attributes of coordinate variables in nces --nsm_grp.
-   Previous versions omitted the attributes of coordinates (not
-   regular variables) in the ensemble average group. Thanks to Hannah
-   Nissan for reporting and Pedro Vicente for fixing this.
-
-E. ncra/nces: Correctly normalize "mebs" arithmetic. Under certain
-   conditions previous versions did not correctly normalize sums
-   computed with the mebs (mean absolute value) operator. Problem
-   reported by Will Koeppen. 
-
-F. ncap2: Fix incorrect handling of negative dimension indices.
-   Problem reported by Maksym Petrenko.
-
-G. ncatted/ncrename: Fully support --glb_att_add=--gaa.
-   This corrects an earlier oversight.
-   http://nco.sf.net/nco.html#gaa
+A. Correct ncatted documentation for "append" mode.
 
 KNOWN PROBLEMS DUE TO NCO:
 
