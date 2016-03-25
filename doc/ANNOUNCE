@@ -24,6 +24,14 @@ A. ncatted new mode "nappend" appends only to existing attributes.
    Same as "append" mode, except "append" will create attributes.
    http://nco.sf.net/nco.html#ncatted
 
+A. ncap2 now propagates metadata when Left-Hand-Casting variables.
+   Previous versions did not propagate the metadata.
+   This fix makes converting the _type_ of a variable easier.
+   For example, to change one_dmn_rec_var to NC_SHORT, use
+   ncap2 -s 'one_dmn_rec_var[time]=short(one_dmn_rec_var)' in.nc out.nc
+   The output file will contain the original metadata.
+   http://nco.sf.net/nco.html#ncap2
+
 BUG FIXES:
 
 A. Correct ncatted documentation for "append" mode.
