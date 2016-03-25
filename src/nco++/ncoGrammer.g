@@ -159,12 +159,12 @@ lmt_list: LPAREN! lmt (COMMA! lmt)*  RPAREN!
 // be used with or with out $ prefix. ie "$lon" or "lon" 
 // So parser is compatible with ncap1
 dmn_list_p:
-   LSQUARE! (VAR_ID|DIM_ID) (COMMA! (VAR_ID|DIM_ID))* RSQUARE!
+   LSQUARE! (VAR_ID|DIM_ID)? (COMMA! (VAR_ID|DIM_ID))* RSQUARE!
       { #dmn_list_p = #( [DMN_LIST_P, "dmn_list_p"], #dmn_list_p ); }
     ;
 
 dmn_list:
-   LPAREN! DIM_ID (COMMA! DIM_ID)* RPAREN!
+   LPAREN! (DIM_ID) (COMMA! DIM_ID)* RPAREN!
       { #dmn_list = #( [DMN_LIST, "dmn_list"], #dmn_list ); }
     ;
 
@@ -1410,6 +1410,8 @@ var=NULL_CEWI;
               bcst=true;  
               var_cst=NULL_CEWI;
 
+               
+                
               aRef=dmn->getFirstChild();
          
               // pPut dimension names in vector       
@@ -1425,33 +1427,38 @@ var=NULL_CEWI;
                    && prs_arg->dmn_out_vtr.findi(str_vtr[idx]) ==-1)      
                   break;
 
-               // return undef if dim missing 
-               if( idx <str_vtr_sz){
-                  var=NULL_CEWI;
-               } else {
+              // return undef if dim missing 
+              if( idx <str_vtr_sz)
+                 var1=ncap_var_udf(var_nm.c_str());
+              else 
+              {
                  // Cast is applied in VAR_ID action in function out()
                  var_cst=ncap_cst_mk(str_vtr,prs_arg);
-
                  var1=out(vid1->getNextSibling());
-                 if(var1->undefined) {
-                    var=NULL_CEWI;
-                 } else {
+
+                 if(!var1->undefined) 
+                 {
                    var_cst=nco_var_cnf_typ(var1->type,var_cst);
                    var_cst->typ_dsk=var1->type;
-                   var=nco_var_dpl(var_cst);
-                   }
-                 var1=nco_var_free(var1);
+                   var1=nco_var_free(var1); 
+                   var1=nco_var_dpl(var_cst);
+                 }
+
               }
               
-              if(!var){
+              if(var1->undefined)
+              {
+                var1=nco_var_free(var1);   
                 var1=ncap_var_udf(var_nm.c_str());
                 Nvar=new NcapVar(var1);
                 (void)prs_arg->int_vtr.push_ow(Nvar);
                 var=nco_var_dpl(var1);
-              } else{
-                var->nm=(char*)nco_free(var->nm);
-                var->nm=strdup(var_nm.c_str());
-                var1=nco_var_dpl(var);
+              } 
+              else
+              {
+                var1->nm=(char*)nco_free(var1->nm);
+                var1->nm=strdup(var_nm.c_str());
+                var=nco_var_dpl(var1);
                 prs_arg->ncap_var_write(var1,bram);
              }
 
@@ -1764,22 +1771,38 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               bcst=true;  
               var_cst=NULL_CEWI;
 
-              //aRef=vid->getFirstChild()->getFirstChild();
-              aRef=dmn->getFirstChild();
-         
-              // pPut dimension names in vector       
-              while(aRef) {
-                str_vtr.push_back(aRef->getText());
-                aRef=aRef->getNextSibling();      
-              }
 
-              // Cast is applied in VAR_ID action in function out()
-              // Note cast is NOT applied to an attribute, an irregular hyperslab
-              // or any entity which has a size of one.
-              var_cst=ncap_cst_mk(str_vtr,prs_arg);     
-              var1=out(vid1->getNextSibling());
+              if(aRef)
+              { 
+                  aRef=dmn->getFirstChild();
+                  
+                  // pPut dimension names in vector       
+                  while(aRef) 
+                  {
+                    str_vtr.push_back(aRef->getText());
+                    aRef=aRef->getNextSibling();      
+                  }
 
-              /* NB var_cst->val.vp always now set to null */ 
+                  // Cast is applied in VAR_ID action in function out()
+                  // Note cast is NOT applied to an attribute, an irregular hyperslab
+                  // or any entity which has a size of one.
+                  var_cst=ncap_cst_mk(str_vtr,prs_arg);     
+                  var1=out(vid1->getNextSibling());
+              }  
+              // deal with an empty hyperslab ie casting a scalar
+              else
+              {  
+                 var1=out(vid1->getNextSibling());    
+                 /* NB var_cst->val.vp always now set to null */ 
+                 var_cst=ncap_sclr_var_mk("Internally generated template",var1->type,false);   
+              }    
+
+
+
+             // do attribute propagation only  from RHS -if not an att
+             if( !ncap_var_is_att(var1))  
+                 ncap_att_gnrl(var_nm,var1->nm,1,prs_arg);
+
 
 
               // If the RHS has size one or is an attribute or an irregular hyperslab
@@ -1792,24 +1815,20 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               // The code rebuilds var1 with the shape from the casting variable  
               if( br1 || br2){
                 var_sct *var_nw;
-                void *vp_swp;
+
+                if(br1)
+                   (void)ncap_att_stretch(var1,var_cst->sz);
 
                 var_nw=nco_var_dpl(var_cst);
-                var_nw=nco_var_cnf_typ(var1->type,var_nw);
-                if(br1)
-                   (void)ncap_att_stretch(var1,var_nw->sz);
+                (void)nco_var_cnf_typ(var1->type,var_nw);
                  
-                vp_swp=var_nw->val.vp;
                 var_nw->val.vp=var1->val.vp;
-                var1->val.vp=vp_swp;
+                var1->val.vp=(void*)NULL;
 
                 var1=nco_var_free(var1);
                 var1=var_nw;
              }
              
-             // do attribute propagation only  from RHS -if not an att
-             if( !ncap_var_is_att(var1))  
-                 ncap_att_gnrl(var_nm,var1->nm,1,prs_arg);
 
  
 
@@ -2547,7 +2566,7 @@ out returns [var_sct *var]
           }
 
           // apply cast only if sz >1 
-          if(bcst && var->sz >1)
+          if(bcst && var_cst && var->sz >1)
             var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
         } /* end action */
 
@@ -3430,7 +3449,7 @@ var=NULL_CEWI;
                var=nco_var_cnf_typ(var_rhs->type,var);
                 
                // apply LHS cast if necessary 
-               if(var->sz>1 && bcst) 
+               if(var->sz>1 && bcst && var_cst) 
                  var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
               }else{
                 var=ncap_var_udf("~rhs_undefined");             
@@ -3550,7 +3569,7 @@ var=NULL_CEWI;
               /* Casting a hyperslab --this makes my brain  hurt!!! 
               if the var is already the correct size then do nothing 
                what not even dimension reordering ?  */  
-              if(bcst && var1->sz != var_cst->sz)
+              if(bcst && var_cst &&  var1->sz != var_cst->sz)
                  var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
               
               var=var1;
