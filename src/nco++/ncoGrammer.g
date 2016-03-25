@@ -1772,10 +1772,11 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               var_cst=NULL_CEWI;
 
 
-              if(aRef)
+
+              if(dmn)
               { 
-                  aRef=dmn->getFirstChild();
-                  
+
+                  aRef=dmn->getFirstChild();                  
                   // pPut dimension names in vector       
                   while(aRef) 
                   {
@@ -1793,7 +1794,6 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               else
               {  
                  var1=out(vid1->getNextSibling());    
-                 /* NB var_cst->val.vp always now set to null */ 
                  var_cst=ncap_sclr_var_mk("Internally generated template",var1->type,false);   
               }    
 
@@ -1812,6 +1812,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               bool br1=(var_cst->sz >=1 && var1->sz==1);
               bool br2=(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 ));
 
+              // NB var_cst->val.vp always now set to null 
               // The code rebuilds var1 with the shape from the casting variable  
               if( br1 || br2){
                 var_sct *var_nw;
