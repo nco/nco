@@ -23,7 +23,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   const nc_type var_typ_out=NC_USHORT;
   const nc_type var_typ_in=NC_USHORT;
 
-  char fl_bnr[]="/data/zender/terraref/test_raw";
+  char fl_bnr[]="/data/zender/terraref/test_ush_raw";
   char dmn_bnd_nm[]="wavelength";
   char dmn_xdm_nm[]="x";
   char dmn_ydm_nm[]="y";
@@ -61,9 +61,17 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   ptr_unn var_val;
   
-  bnd_nbr=926;
-  xdm_nbr=1600;
-  ydm_nbr=99;
+  if(False){
+    /* test_raw */
+    bnd_nbr=926; /* bands */
+    xdm_nbr=1600; /* samples */
+    ydm_nbr=99; /* lines */
+  } /* !False */
+
+  /* test_ush_raw */
+  bnd_nbr=272; /* bands */
+  xdm_nbr=384; /* samples */
+  ydm_nbr=893; /* lines */
 
   var_sz=bnd_nbr*xdm_nbr*ydm_nbr;
   var_val.vp=(void *)nco_malloc(var_sz*nctypelen(var_typ_in));
