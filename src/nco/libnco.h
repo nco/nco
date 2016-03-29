@@ -22,7 +22,7 @@
 /* Library headers */
 #include "nco_att_utl.h" /* Attribute utilities */
 #include "nco_aux.h" /* Auxiliary coordinates */
-#include "nco_bnr.h" /* Binary write utilities */
+#include "nco_bnr.h" /* Binary file utilities */
 #include "nco_cln_utl.h" /* Calendar utilities */
 #include "nco_cnf_dmn.h" /* Conform dimensions */
 #include "nco_cnf_typ.h" /* Conform variable types */

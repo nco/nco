@@ -31,7 +31,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_att_utl.h" /* Attribute utilities */
-#include "nco_bnr.h" /* Binary write utilities */
+#include "nco_bnr.h" /* Binary file utilities */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_dmn_utl.h" /* Dimension utilities */
 #include "nco_grp_trv.h" /* Group traversal */

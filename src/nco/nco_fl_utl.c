@@ -1673,7 +1673,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 	nco_exit(EXIT_FAILURE);
       } /* end if */
       if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",nco_prg_nm_get());
-      (void)fprintf(stdout,"%s: %s exists---`e'xit, `o'verwrite (i.e., delete existing file), or `a'ppend (i.e., replace duplicate variables in and add new variables to existing file) (e/o/a)? ",nco_prg_nm_get(),fl_out);
+      (void)fprintf(stdout,"%s: %s exists---`e'xit, `o'verwrite (i.e., delete existing file), or `a'ppend (i.e., replace duplicate variables in, and add metadata and new variables to, existing file) (e/o/a)? ",nco_prg_nm_get(),fl_out);
       (void)fflush(stdout);
       /*       fgets() reads (at most one less than NCO_USR_RPL_MAX_LNG) to first newline or EOF */
       rcd_fgets=fgets(usr_rpl,NCO_USR_RPL_MAX_LNG,stdin);

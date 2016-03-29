@@ -38,6 +38,10 @@ extern "C" {
   (char *fl_scrip, /* I [sng] SCRIP file name with proper path */
    kvm_sct *kvm_scrip); /* I/O [sct] Structure to hold contents of SCRIP file */ 
 
+  int /* O [rcd] Return code */
+  nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
+  (char *fl_trr); /* I [sng] TERRAREF file name with proper path */
+  
 #ifdef ENABLE_ESMF
   int /* O [enm] Return code */
   nco_rgr_esmf /* [fnc] Regrid using ESMF library */

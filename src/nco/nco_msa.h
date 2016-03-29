@@ -28,7 +28,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
-#include "nco_bnr.h" /* Binary write utilities */
+#include "nco_bnr.h" /* Binary file utilities */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_grp_utl.h" /* Group utilities */
 #include "nco_lmt.h" /* Hyperslab limits */

@@ -966,14 +966,20 @@ main(int argc,char **argv)
   } /* endif fl_bnr */
     
   if(flg_rgr && !fl_out){
-	(void)fprintf(stdout,"%s: ERROR Regridding requested but no output file specified\nHINT: Specify output file with \"-o fl_out\" or as last argument\n",nco_prg_nm_get());
-        nco_exit(EXIT_FAILURE);
+    (void)fprintf(stdout,"%s: ERROR Regridding requested but no output file specified\nHINT: Specify output file with \"-o fl_out\" or as last argument\n",nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
   } /* !flg_rgr */
     
   if(gpe){
     if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",nco_prg_nm_get());
     if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups, non-atomic types, or multiple record dimensions. However, it _will_ autoconvert netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE...) to netCDF3 atomic types (e.g., NC_CHAR, NC_SHORT...).\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
+
+  if(nco_dbg_lvl == 73){
+    (void)nco_trr_read(fl_out);
+    nco_exit_gracefully();
+    return EXIT_SUCCESS;
+  } /* !dbg */
 
   if(fl_out){
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
@@ -1053,7 +1059,7 @@ main(int argc,char **argv)
       } /* hdr_pad */
 
       /* [fnc] Open unformatted binary data file for writing */
-      if(fl_bnr) fp_bnr=nco_bnr_open(fl_bnr);
+      if(fl_bnr) fp_bnr=nco_bnr_open(fl_bnr,"w");
       
       /* Timestamp end of metadata setup and disk layout */
       rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);

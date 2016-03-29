@@ -10,6 +10,140 @@
 #include "nco_sld.h" /* Swath-Like Data */
 
 int /* O [rcd] Return code */
+nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
+(char *fl_out) /* I [sng] TERRAREF file name with proper path */
+{
+  /* Purpose: Read TERRAREF file */
+  const char fnc_nm[]="nco_trr_read()"; /* [sng] Function name */
+
+  const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
+  const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
+
+  const nc_type crd_typ=NC_FLOAT;
+  const nc_type var_typ_out=NC_USHORT;
+  const nc_type var_typ_in=NC_USHORT;
+
+  char fl_bnr[]="/data/zender/terraref/test_raw";
+  char dmn_bnd_nm[]="wavelength";
+  char dmn_xdm_nm[]="x";
+  char dmn_ydm_nm[]="y";
+  char var_nm[]="xps_frc";
+
+  char *fl_out_tmp=NULL_CEWI;
+
+  FILE *fp_bnr=NULL; /* [fl] Unformatted binary input file handle */
+
+  int dmn_ids[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
+
+  int dmn_id_bnd; /* [id] Band dimension ID */
+  int dmn_id_xdm; /* [id] X dimension ID */
+  int dmn_id_ydm; /* [id] Y dimension ID */
+  int fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
+  int out_id; /* I [id] Output netCDF file ID */
+  int rcd=NC_NOERR;
+  int var_id; /* [id] Current variable ID */
+
+  long dmn_srt[dmn_nbr_grd_max];
+  long dmn_cnt[dmn_nbr_grd_max];
+
+  long bnd_nbr; /* [nbr] Number of bands */
+  long xdm_nbr; /* [nbr] Number of pixels in x-dimension */
+  long ydm_nbr; /* [nbr] Number of pixels in y-dimension */
+  long var_sz; /* [nbr] Size of variable */
+
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=True; /* Option O */
+  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
+
+  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+
+  ptr_unn var_val;
+  
+  bnd_nbr=926;
+  xdm_nbr=1600;
+  ydm_nbr=99;
+
+  var_sz=bnd_nbr*xdm_nbr*ydm_nbr;
+  var_val.vp=(void *)nco_malloc(var_sz*nctypelen(var_typ_in));
+  
+  /* [fnc] Open unformatted binary data file for reading */
+  fp_bnr=nco_bnr_open(fl_bnr,"r");
+      
+  /* [fnc] Read unformatted binary data */
+  nco_bnr_rd(fp_bnr,var_nm,var_sz,var_typ_in,var_val.vp);
+
+  /* [fnc] Close unformatted binary data file */
+  if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
+
+  /* Open grid file */
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+
+  /* Define dimensions */
+  rcd=nco_def_dim(out_id,dmn_bnd_nm,bnd_nbr,&dmn_id_bnd);
+  rcd=nco_def_dim(out_id,dmn_xdm_nm,xdm_nbr,&dmn_id_xdm);
+  rcd=nco_def_dim(out_id,dmn_ydm_nm,ydm_nbr,&dmn_id_ydm);
+  
+  /* Define variables */
+  dmn_ids[0]=dmn_id_bnd;
+  dmn_ids[1]=dmn_id_xdm;
+  dmn_ids[2]=dmn_id_ydm;
+  (void)nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_3D,dmn_ids,&var_id);
+  
+  /* Define "units" attributes */
+  aed_sct aed_mtd;
+  char *att_nm;
+  char *att_val;
+  
+  att_nm=strdup("title");
+  att_val=strdup("Terraref");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=NULL;
+  aed_mtd.id=NC_GLOBAL;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
+  const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
+  att_nm=strdup("created_by");
+  att_val=strdup(usr_cpp);
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=NULL;
+  aed_mtd.id=NC_GLOBAL;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
+  /* Begin data mode */
+  (void)nco_enddef(out_id);
+  
+  /* Write variables */
+  dmn_srt[0]=0L;
+  dmn_srt[1]=0L;
+  dmn_srt[2]=0L;
+  dmn_cnt[0]=bnd_nbr;
+  dmn_cnt[1]=xdm_nbr;
+  dmn_cnt[2]=ydm_nbr;
+  rcd=nco_put_vara(out_id,var_id,dmn_srt,dmn_cnt,var_val.vp,var_typ_in);
+  
+  if(var_val.vp) var_val.vp=(void *)nco_free(var_val.vp);
+
+  /* Close output file and move it from temporary to permanent location */
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+
+  return rcd;
+} /* end nco_trr_read() */
+  
+int /* O [rcd] Return code */
 nco_scrip_read /* [fnc] Read, parse, and print contents of SCRIP file */
 (char *fl_scrip, /* SCRIP file name with proper path */
  kvm_sct *kvm_scrip)/* structure to hold contents of SCRIP file */ 

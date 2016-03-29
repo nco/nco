@@ -1,7 +1,12 @@
+2016-03-28  Charlie Zender  <zender@uci.edu>
+
+	* Add binary file read utilities
+
+	* Clarify append message to include metadata consequences
+
 2016-03-24  Henry Butowsky  <henryb@hush.com>
 
-	* Implemented new notation to LHC a scaler 
-	  e.g four[]=10;
+	* Implement new notation to LHC a scalar, e.g., four[]=10;
 
 2016-03-24  Charlie Zender  <zender@uci.edu>
 
