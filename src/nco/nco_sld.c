@@ -229,16 +229,16 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   //  const nc_type crd_typ=NC_FLOAT;
 
-  char fl_bnr[]="/data/zender/terraref/test_ush_raw";
   char dmn_wvl_nm[]="wavelength";
   char dmn_xdm_nm[]="x";
   char dmn_ydm_nm[]="y";
   char var_nm[]="xps_frc";
 
+  char *fl_in;
   char *fl_out;
   char *fl_out_tmp=NULL_CEWI;
 
-  FILE *fp_bnr=NULL; /* [fl] Unformatted binary input file handle */
+  FILE *fp_in=NULL; /* [fl] Unformatted binary input file handle */
 
   int dmn_ids[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
 
@@ -284,6 +284,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   } /* !False */
 
   /* Initialize local copies of command-line values  */
+  fl_in=trr->fl_in;
   fl_out=trr->fl_out;
 
   wvl_nbr=trr->wvl_nbr; /* bands */
@@ -297,13 +298,13 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   var_val.vp=(void *)nco_malloc(var_sz*nctypelen(var_typ_in));
   
   /* [fnc] Open unformatted binary data file for reading */
-  fp_bnr=nco_bnr_open(fl_bnr,"r");
+  fp_in=nco_bnr_open(fl_in,"r");
       
   /* [fnc] Read unformatted binary data */
-  nco_bnr_rd(fp_bnr,var_nm,var_sz,var_typ_in,var_val.vp);
+  nco_bnr_rd(fp_in,var_nm,var_sz,var_typ_in,var_val.vp);
 
   /* [fnc] Close unformatted binary data file */
-  if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
+  if(fp_in) (void)nco_bnr_close(fp_in,fl_in);
 
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
