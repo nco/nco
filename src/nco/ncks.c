@@ -1000,6 +1000,7 @@ main(int argc,char **argv)
     (void)nco_trr_read(trr_nfo);
     /* Free Terraref structure */
     trr_nfo=nco_trr_free(trr_nfo);
+    if(trr_wxy) trr_wxy=(char *)nco_free(trr_wxy);
     nco_exit_gracefully();
     return EXIT_SUCCESS;
   } /* !Terraref */
