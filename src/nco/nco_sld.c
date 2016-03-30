@@ -22,6 +22,8 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
      
   const char fnc_nm[]="nco_trr_ini()";
   
+  int cnv_nbr; /* [nbr] Number of elements converted by sscanf() */
+
   trr_sct *trr;
 
   /* Allocate */
@@ -40,6 +42,10 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   /* Initialize arguments after copying */
   if(!trr->fl_out) trr->fl_out=(char *)strdup("/data/zender/terraref/trr_out.nc");
   if(!trr->var_nm) trr->var_nm=(char *)strdup("xps_frc");
+  if(!trr_wxy){
+    cnv_nbr=sscanf(trr_wxy,"%ld,%ld,%ld",&trr->wvl_nbr,&trr->xdm_nbr,&trr->ydm_nbr);
+    assert(cnv_nbr == 3);
+  } /* !trr_wxy */
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports ",nco_prg_nm_get(),fnc_nm);
@@ -51,7 +57,6 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   } /* endif dbg */
   
   /* Parse extended kvm options */
-  int cnv_nbr; /* [nbr] Number of elements converted by sscanf() */
   int trr_arg_idx; /* [idx] Index over trr_arg (i.e., separate invocations of "--trr var1[,var2]=val") */
   int trr_var_idx; /* [idx] Index over trr_lst (i.e., all names explicitly specified in all "--trr var1[,var2]=val" options) */
   int trr_var_nbr=0;
@@ -95,8 +100,8 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   trr->ydm_bnd_nm=NULL; /* [sng] Name of dimension to employ for y-coordinate bounds */
 
   /* Initialize key-value properties used in grid generation */
-  nc_type var_typ_in=NC_SHORT; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
-  nc_type var_typ_out=NC_SHORT; /* [enm] NetCDF type of data in output file */
+  trr->var_typ_in=NC_SHORT; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
+  trr->var_typ_out=NC_SHORT; /* [enm] NetCDF type of data in output file */
   trr->wvl_nbr=272; /* [nbr] Number of wavelengths */
   trr->xdm_nbr=384; /* [nbr] Number of pixels in x-dimension */
   trr->ydm_nbr=893; /* [nbr] Number of pixels in y-dimension */
@@ -109,16 +114,16 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
       continue;
     } /* !ttl */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"var_typ_in")){
-      var_typ_in=nco_sng2typ(trr_lst[trr_var_idx].val);
+      trr->var_typ_in=nco_sng2typ(trr_lst[trr_var_idx].val);
       continue;
     } /* !var_typ_in */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"var_typ_out")){
-      var_typ_out=nco_sng2typ(trr_lst[trr_var_idx].val);
+      trr->var_typ_out=nco_sng2typ(trr_lst[trr_var_idx].val);
       continue;
     } /* !var_typ_out */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"wxy")){
       cnv_nbr=sscanf(trr_lst[trr_var_idx].val,"%ld,%ld,%ld",&trr->wvl_nbr,&trr->xdm_nbr,&trr->ydm_nbr);
-      assert(cnv_nbr == 2);
+      assert(cnv_nbr == 3);
       continue;
     } /* !wxy */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"wvl_nbr")){
@@ -222,7 +227,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
 
-  const nc_type crd_typ=NC_FLOAT;
+  //  const nc_type crd_typ=NC_FLOAT;
 
   char fl_bnr[]="/data/zender/terraref/test_ush_raw";
   char dmn_wvl_nm[]="wavelength";
@@ -320,7 +325,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   char *att_val;
   
   att_nm=strdup("title");
-  att_val=strdup("Terraref");
+  att_val=strdup(trr->ttl);
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=NULL;
   aed_mtd.id=NC_GLOBAL;

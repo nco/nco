@@ -126,7 +126,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 #endif /* !NCO_ABORT_ON_ERROR */
 } /* end nco_err_exit() */
 
-const nc_type /* O [enm] netCDF type */
+nc_type /* O [enm] netCDF type */
 nco_sng2typ /* [fnc] Convert user-supplied string to netCDF type enum */
 (const char * const typ_sng) /* I [sng] String indicating type */
 {
@@ -170,7 +170,7 @@ nco_sng2typ /* [fnc] Convert user-supplied string to netCDF type enum */
 
 } /* end nco_sng2typ() */
 
-const size_t /* O [B] Native type size */
+size_t /* O [B] Native type size */
 nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
 (const nc_type nco_typ) /* I [enm] netCDF type */
 {
