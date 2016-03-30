@@ -108,6 +108,14 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
       trr->ttl=(char *)strdup(trr_lst[trr_var_idx].val);
       continue;
     } /* !ttl */
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"var_typ_in")){
+      var_typ_in=nco_sng2typ(trr_lst[trr_var_idx].val);
+      continue;
+    } /* !var_typ_in */
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"var_typ_out")){
+      var_typ_out=nco_sng2typ(trr_lst[trr_var_idx].val);
+      continue;
+    } /* !var_typ_out */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"wxy")){
       cnv_nbr=sscanf(trr_lst[trr_var_idx].val,"%ld,%ld,%ld",&trr->wvl_nbr,&trr->xdm_nbr,&trr->ydm_nbr);
       assert(cnv_nbr == 2);

@@ -1243,42 +1243,12 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       nco_exit(EXIT_FAILURE);
     } /* !ATT_TYP_INHERIT */
 
-    /* Attribute type and value do not matter if we are deleting it */
+    /* Attribute type and value do not matter when we will delete attribute */
     if(aed_lst[idx].mode != aed_delete && !ATT_TYP_INHERIT){
 
       /* Set type of current aed structure */
-      /* Convert single letter code to type enum */
-      switch(*(arg_lst[3])){
-      case 'F':	
-      case 'f':	aed_lst[idx].type=(nc_type)NC_FLOAT; break;
-      case 'D':	
-      case 'd':	aed_lst[idx].type=(nc_type)NC_DOUBLE; break;
-      case 'C':	
-      case 'c':	aed_lst[idx].type=(nc_type)NC_CHAR; break;
-      case 'B':	
-      case 'b':	aed_lst[idx].type=(nc_type)NC_BYTE; break;
-      default: 
-        /* Ambiguous single letters must use full string comparisons */
-        if(!strcasecmp(arg_lst[3],"l") || !strcasecmp(arg_lst[3],"i")) aed_lst[idx].type=(nc_type)NC_INT; 
-        else if(!strcasecmp(arg_lst[3],"s")) aed_lst[idx].type=(nc_type)NC_SHORT; 
-#ifdef ENABLE_NETCDF4
-        else if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=(nc_type)NC_UBYTE; 
-        else if(!strcasecmp(arg_lst[3],"us")) aed_lst[idx].type=(nc_type)NC_USHORT; 
-        else if(!strcasecmp(arg_lst[3],"u") || !strcasecmp(arg_lst[3],"ui") || !strcasecmp(arg_lst[3],"ul")) aed_lst[idx].type=(nc_type)NC_UINT; 
-        else if(!strcasecmp(arg_lst[3],"ll") || !strcasecmp(arg_lst[3],"int64")) aed_lst[idx].type=(nc_type)NC_INT64; 
-        else if(!strcasecmp(arg_lst[3],"ull") || !strcasecmp(arg_lst[3],"uint64")) aed_lst[idx].type=(nc_type)NC_UINT64; 
-        else if(!strcasecmp(arg_lst[3],"sng") || !strcasecmp(arg_lst[3],"string")) aed_lst[idx].type=(nc_type)NC_STRING; 
-        else{
-          (void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",nco_prg_nm_get(),arg_lst[3]);
-          (void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, `i' = `l' = integer, `b' = byte",nco_prg_nm_get());
+      aed_lst[idx].type=nco_sng2typ(arg_lst[3]);
 
-          (void)fprintf(stderr,", `ub' = unsigned byte, `us' = unsigned short, `u' or `ui' or `ul' = unsigned int,`ll' or `int64' = 64-bit signed integer, `ull' or `uint64` = unsigned 64-bit integer, `sng' or `string' = string");
-
-          (void)fprintf(stderr,"\n");
-          nco_exit(EXIT_FAILURE);} /*  end if error */
-#endif /* ENABLE_NETCDF4 */
-        break;
-      } /* end switch */
     } /* end if not delete mode and !ATT_TYP_INHERIT */
 
     if(aed_lst[idx].mode != aed_delete){
