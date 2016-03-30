@@ -1,3 +1,7 @@
+2016-03-30  Charlie Zender  <zender@uci.edu>
+
+	* Change default gaa mode (back from) append to overwrite to prevent repeated values in climo_nco.sh ANN files
+
 2016-03-29  Charlie Zender  <zender@uci.edu>
 
 	* Functionalize nco_sng2typ()

@@ -261,6 +261,8 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   long wvl_nbr; /* [nbr] Number of wavelengths */
   long xdm_nbr; /* [nbr] Number of pixels in x-dimension */
   long ydm_nbr; /* [nbr] Number of pixels in y-dimension */
+  long wvl_idx;
+  long ydm_idx;
   long var_sz; /* [nbr] Size of variable */
 
   nc_type var_typ_in; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
@@ -274,6 +276,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
+  ptr_unn var_raw;
   ptr_unn var_val;
   
   /* Initialize local copies of command-line values  */
@@ -291,17 +294,46 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   var_sz=wvl_nbr*xdm_nbr*ydm_nbr;
   var_val.vp=(void *)nco_malloc(var_sz*nctypelen(var_typ_in));
+  var_raw.vp=(void *)nco_malloc(var_sz*nctypelen(var_typ_in));
   
   /* [fnc] Open unformatted binary data file for reading */
   fp_in=nco_bnr_open(fl_in,"r");
       
   /* [fnc] Read unformatted binary data */
-  nco_bnr_rd(fp_in,var_nm,var_sz,var_typ_in,var_val.vp);
+  nco_bnr_rd(fp_in,var_nm,var_sz,var_typ_in,var_raw.vp);
 
   /* [fnc] Close unformatted binary data file */
   if(fp_in) (void)nco_bnr_close(fp_in,fl_in);
 
-  /* Open grid file */
+  /* ENVI Image Files documentation:
+     http://www.harrisgeospatial.com/docs/enviimagefiles.html
+     Band Sequential: BSQ format is the simplest format, where each line of the data is followed immediately by the next line in the same spectral band. This format is optimal for spatial (x,y) access of any part of a single spectral band.
+     Band-interleaved-by-pixel: BIP format stores the first pixel for all bands in sequential order, followed by the second pixel for all bands, followed by the third pixel for all bands, and so forth, interleaved up to the number of pixels. This format provides optimum performance for spectral (z) access of the image data.
+     Band-interleaved-by-line: BIL format stores the first line of the first band, followed by the first line of the second band, followed by the first line of the third band, interleaved up to the number of bands. Subsequent lines for each band are interleaved in similar fashion. This format provides a compromise in performance between spatial and spectral processing and is the recommended file format for most ENVI processing tasks. */
+
+  /* De-interleave */
+  long ln_sz; /* [nbr] Number of pixels in line */
+  long ln_sz_byt; /* [B] Number of bytes in line */
+  long rst_sz_byt; /* [B] Raster size in bytes */
+  long src_fst_byt; /* [B] Line offset in bytes, source */
+  long dst_fst_byt; /* [B] Line offset in bytes, destination */
+
+  ln_sz_byt=xdm_nbr*nctypelen(var_typ_in);
+  ln_sz=xdm_nbr;
+  rst_sz_byt=xdm_nbr*ydm_nbr*nctypelen(var_typ_in);
+  
+  for(ydm_idx=0;ydm_idx<ydm_nbr;ydm_idx++){
+    for(wvl_idx=0;wvl_idx<wvl_nbr;wvl_idx++){
+      src_fst_byt=(ydm_idx*wvl_nbr+wvl_idx)*ln_sz_byt;
+      dst_fst_byt=wvl_idx*rst_sz_byt+ydm_idx*ln_sz_byt;
+      memcpy((void *)(var_val.cp+dst_fst_byt),(void *)(var_raw.cp+src_fst_byt),ln_sz_byt);
+    } /* !wvl_idx */
+  } /* !ydm_idx */
+  
+  /* Free input data memory */
+  if(var_raw.vp) var_raw.vp=(void *)nco_free(var_raw.vp);
+
+  /* Open grid file */  
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
@@ -418,11 +450,12 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   dmn_cnt[1]=xdm_nbr;
   dmn_cnt[2]=ydm_nbr;
   rcd=nco_put_vara(out_id,var_id,dmn_srt,dmn_cnt,var_val.vp,var_typ_in);
-  
-  if(var_val.vp) var_val.vp=(void *)nco_free(var_val.vp);
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+
+  /* Free output data memory */
+  if(var_val.vp) var_val.vp=(void *)nco_free(var_val.vp);
 
   return rcd;
 } /* end nco_trr_read() */

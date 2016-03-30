@@ -1969,9 +1969,12 @@ nco_glb_att_add /* [fnc] Add global attributes */
     /* Insert value into attribute structure */
     gaa_aed.val=att_val;
     gaa_aed.sz=strlen(gaa_aed.val.cp);
+    /* 20160324: which is better mode for gaa---overwrite or append? 
+       20160330: answer is overwrite. otherwise, climo_nco.sh produces ANN file with, e.g.,
+       :climo_script = "climo_nco.shclimo_nco.shclimo_nco.sh" ;
+       :climo_hostname = "aerosolaerosolaerosol" ;
+       :climo_version = "4.5.6-alpha054.5.6-alpha054.5.6-alpha05" ; */
     gaa_aed.mode=aed_overwrite;
-    /* 20160324: which is better mode for gaa---overwrite or append? */
-    gaa_aed.mode=aed_append;
     /* Write attribute to disk */
     (void)nco_aed_prc(out_id,NC_GLOBAL,gaa_aed);
   } /* !gaa_idx */
