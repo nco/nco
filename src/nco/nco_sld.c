@@ -42,10 +42,6 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   /* Initialize arguments after copying */
   if(!trr->fl_out) trr->fl_out=(char *)strdup("/data/zender/terraref/trr_out.nc");
   if(!trr->var_nm) trr->var_nm=(char *)strdup("xps_frc");
-  if(!trr_wxy){
-    cnv_nbr=sscanf(trr_wxy,"%ld,%ld,%ld",&trr->wvl_nbr,&trr->xdm_nbr,&trr->ydm_nbr);
-    assert(cnv_nbr == 3);
-  } /* !trr_wxy */
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports ",nco_prg_nm_get(),fnc_nm);
@@ -105,7 +101,13 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   trr->wvl_nbr=272; /* [nbr] Number of wavelengths */
   trr->xdm_nbr=384; /* [nbr] Number of pixels in x-dimension */
   trr->ydm_nbr=893; /* [nbr] Number of pixels in y-dimension */
-  
+
+  /* Initialize variables settable by global switches */
+  if(!trr_wxy){
+    cnv_nbr=sscanf(trr_wxy,"%ld,%ld,%ld",&trr->wvl_nbr,&trr->xdm_nbr,&trr->ydm_nbr);
+    assert(cnv_nbr == 3);
+  } /* !trr_wxy */
+
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   for(trr_var_idx=0;trr_var_idx<trr_var_nbr;trr_var_idx++){
@@ -271,18 +273,6 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   ptr_unn var_val;
   
-  if(False){
-    /* test_raw */
-    wvl_nbr=926; /* bands */
-    xdm_nbr=1600; /* samples */
-    ydm_nbr=99; /* lines */
-
-    /* test_ush_raw */
-    wvl_nbr=272; /* bands */
-    xdm_nbr=384; /* samples */
-    ydm_nbr=893; /* lines */
-  } /* !False */
-
   /* Initialize local copies of command-line values  */
   fl_in=trr->fl_in;
   fl_out=trr->fl_out;
