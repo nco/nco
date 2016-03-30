@@ -45,6 +45,7 @@ extern "C" {
   trr_sct * /* O [sct] Terraref structure */
   nco_trr_ini /* [fnc] Initialize Terraref structure */
   (const char * const cmd_ln, /* I [sng] Command-line */
+   const int dfl_lvl, /* I [enm] Deflate level [0..9] */
    char **trr_arg, /* I [sng] Terraref arguments */
    const int trr_arg_nbr, /* I [nbr] Number of Terraref arguments */
    char * const trr_in, /* I [sng] File containing raw Terraref imagery */

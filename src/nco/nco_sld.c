@@ -12,6 +12,7 @@
 trr_sct * /* O [sct] Terraref structure */
 nco_trr_ini /* [fnc] Initialize Terraref structure */
 (const char * const cmd_ln, /* I [sng] Command-line */
+ const int dfl_lvl, /* I [enm] Deflate level [0..9] */
  char **trr_arg, /* I [sng] Terraref arguments */
  const int trr_arg_nbr, /* I [nbr] Number of Terraref arguments */
  char * const trr_in, /* I [sng] File containing raw Terraref imagery */
@@ -31,6 +32,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   
   /* Initialize variable directly or indirectly set via command-line (except for key-value arguments) */
   trr->cmd_ln=strdup(cmd_ln); /* [sng] Command-line */
+  trr->dfl_lvl=dfl_lvl; /* I [enm] Deflate level [0..9] */
 
   trr->trr_arg=trr_arg; /* [sng] Terraref arguments */
   trr->trr_nbr=trr_arg_nbr; /* [nbr] Number of Terraref arguments */
@@ -103,7 +105,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   trr->ydm_nbr=893; /* [nbr] Number of pixels in y-dimension */
 
   /* Initialize variables settable by global switches */
-  if(!trr_wxy){
+  if(trr_wxy){
     cnv_nbr=sscanf(trr_wxy,"%ld,%ld,%ld",&trr->wvl_nbr,&trr->xdm_nbr,&trr->ydm_nbr);
     assert(cnv_nbr == 3);
   } /* !trr_wxy */
@@ -247,6 +249,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   int dmn_id_wvl; /* [id] Wavelength dimension ID */
   int dmn_id_xdm; /* [id] X dimension ID */
   int dmn_id_ydm; /* [id] Y dimension ID */
+  int dfl_lvl; /* [enm] Deflate level [0..9] */
   int fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
   int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;
@@ -284,6 +287,8 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   var_typ_in=trr->var_typ_in; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
   var_typ_out=trr->var_typ_out; /* [enm] NetCDF type of data in output file */
 
+  dfl_lvl=trr->dfl_lvl;
+
   var_sz=wvl_nbr*xdm_nbr*ydm_nbr;
   var_val.vp=(void *)nco_malloc(var_sz*nctypelen(var_typ_in));
   
@@ -309,6 +314,14 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   dmn_ids[1]=dmn_id_xdm;
   dmn_ids[2]=dmn_id_ydm;
   (void)nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_3D,dmn_ids,&var_id);
+
+  if(dfl_lvl > 0){
+    int shuffle; /* [flg] Turn on shuffle filter */
+    int deflate; /* [flg] Turn on deflate filter */
+    deflate=(int)True;
+    shuffle=NC_SHUFFLE;
+    (void)nco_def_var_deflate(out_id,var_id,deflate,shuffle,dfl_lvl);
+  } /* !dfl_lvl */
   
   /* Define "units" attributes */
   aed_sct aed_mtd;
@@ -339,6 +352,58 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   aed_mtd.val.cp=att_val;
   aed_mtd.mode=aed_create;
   (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
+  att_nm=strdup("history");
+  att_val=strdup(trr->cmd_ln);
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=NULL;
+  aed_mtd.id=NC_GLOBAL;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
+  att_nm=strdup("long_name");
+  att_val=strdup("Exposure");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=var_nm;
+  aed_mtd.id=var_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,var_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
+  att_nm=strdup("meaning");
+  att_val=strdup("Exposure on scale from 0 to 2^16-1 = 65535");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=var_nm;
+  aed_mtd.id=var_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,var_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
+  att_nm=strdup("units");
+  att_val=strdup("1");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=var_nm;
+  aed_mtd.id=var_id;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,var_id,aed_mtd);
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
   

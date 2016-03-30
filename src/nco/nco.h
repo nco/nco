@@ -1005,6 +1005,7 @@ extern "C" {
     nc_type var_typ_out; /* [enm] NetCDF type */
     // Other internal data and metadata 
     char *cmd_ln; /* [sng] Command-line */
+    int dfl_lvl; /* [enm] Deflate level [0..9] */
     int trr_nbr; /* [nbr] Number of Terraref arguments */
     char *ttl; /* [sng] Title */
   } trr_sct;

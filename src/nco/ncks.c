@@ -996,7 +996,7 @@ main(int argc,char **argv)
     char *trr_out;
     trr_sct *trr_nfo;
     trr_out=(char *)strdup(fl_out);
-    trr_nfo=nco_trr_ini(cmd_ln,trr_arg,trr_nbr,trr_in,trr_out,trr_wxy);
+    trr_nfo=nco_trr_ini(cmd_ln,dfl_lvl,trr_arg,trr_nbr,trr_in,trr_out,trr_wxy);
     (void)nco_trr_read(trr_nfo);
     /* Free Terraref structure */
     trr_nfo=nco_trr_free(trr_nfo);
