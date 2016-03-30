@@ -40,8 +40,21 @@ extern "C" {
 
   int /* O [rcd] Return code */
   nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
-  (char *fl_trr); /* I [sng] TERRAREF file name with proper path */
+  (trr_sct *trr_nfo); /* I/O [sct] Terraref information */
   
+  trr_sct * /* O [sct] Terraref structure */
+  nco_trr_ini /* [fnc] Initialize Terraref structure */
+  (const char * const cmd_ln, /* I [sng] Command-line */
+   char **trr_arg, /* I [sng] Terraref arguments */
+   const int trr_arg_nbr, /* I [nbr] Number of Terraref arguments */
+   char * const trr_in, /* I [sng] File containing raw Terraref imagery */
+   char * const trr_out, /* I [sng] File containing netCDF Terraref imagery */
+   char * const trr_wxy); /* I [sng] Terraref dimension sizes */
+  
+  trr_sct * /* O [sct] Pointer to free'd Terraref structure */
+  nco_trr_free /* [fnc] Deallocate Terraref structure */
+  (trr_sct *trr); /* I/O [sct] Terraref structure */
+
 #ifdef ENABLE_ESMF
   int /* O [enm] Return code */
   nco_rgr_esmf /* [fnc] Regrid using ESMF library */

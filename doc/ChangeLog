@@ -1,3 +1,7 @@
+2016-03-29  Charlie Zender  <zender@uci.edu>
+
+	* Full Terraref trr infrastructure: nco_trr_ini(), nco_trr_read(), nco_trr_free()
+
 2016-03-28  Charlie Zender  <zender@uci.edu>
 
 	* Add binary file read utilities

@@ -115,6 +115,7 @@ main(int argc,char **argv)
   char **gaa_arg=NULL; /* [sng] Global attribute arguments */
   char **grp_lst_in=NULL;
   char **rgr_arg=NULL; /* [sng] Regridding arguments */
+  char **trr_arg=NULL; /* [sng] Terraref arguments */
   char **var_lst_in=NULL;
   char **xtn_lst_in=NULL; /* [sng] Extensive variables */
   char *aux_arg[NC_MAX_DIMS];
@@ -147,6 +148,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *spr_chr=NULL; /* [sng] Separator for XML character types */
   char *spr_nmr=NULL; /* [sng] Separator for XML numeric types */
+  char *trr_in=NULL; /* [sng] File containing raw Terraref imagery */
+  char *trr_wxy=NULL; /* [sng] Terraref dimension sizes */
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
@@ -200,6 +203,7 @@ main(int argc,char **argv)
   int opt;
   int ppc_nbr=0; /* [nbr] Number of PPC arguments */
   int rgr_nbr=0; /* [nbr] Number of regridding arguments */
+  int trr_nbr=0; /* [nbr] Number of TERRAREF arguments */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
@@ -258,6 +262,7 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_rgr=False; /* [flg] Regrid */
+  nco_bool flg_trr=False; /* [flg] Terraref */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
@@ -383,6 +388,10 @@ main(int argc,char **argv)
     {"rnr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"renormalize",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"scrip",required_argument,0,0}, /* SCRIP file */
+    {"trr",required_argument,0,0}, /* [sng] Terraref */
+    {"terraref",required_argument,0,0}, /* [sng] Terraref */
+    {"trr_in",required_argument,0,0}, /* [sng] File containing raw Terraref imagery */
+    {"trr_wxy",required_argument,0,0}, /* [sng] Terraref dimension sizes */
     {"tst_udunits",required_argument,0,0},
     {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
     {"xml_spr_nmr",required_argument,0,0}, /* [flg] Separator for XML numeric types */
@@ -637,6 +646,13 @@ main(int argc,char **argv)
 	maxrss+=0; /* CEWI */
         nco_exit(EXIT_SUCCESS);
       } /* endif "sysconf" */
+      if(!strcmp(opt_crr,"trr") || !strcmp(opt_crr,"terraref")){
+        flg_trr=True;
+        trr_arg=(char **)nco_realloc(trr_arg,(trr_nbr+1)*sizeof(char *));
+        trr_arg[trr_nbr++]=(char *)strdup(optarg);
+      } /* endif "trr" */
+      if(!strcmp(opt_crr,"trr_in")){trr_in=(char *)strdup(optarg);flg_trr=True;}
+      if(!strcmp(opt_crr,"trr_wxy")){trr_wxy=(char *)strdup(optarg);flg_trr=True;}
       if(!strcmp(opt_crr,"tst_udunits")){ 
 	/* Use this feature with, e.g.,
 	   ncks --tst_udunits='5 meters',centimeters ~/nco/data/in.nc
@@ -975,12 +991,19 @@ main(int argc,char **argv)
     if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups, non-atomic types, or multiple record dimensions. However, it _will_ autoconvert netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE...) to netCDF3 atomic types (e.g., NC_CHAR, NC_SHORT...).\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
-  if(nco_dbg_lvl == 73){
-    (void)nco_trr_read(fl_out);
+    /* Terraref */
+  if(flg_trr){
+    char *trr_out;
+    trr_sct *trr_nfo;
+    trr_out=(char *)strdup(fl_out);
+    trr_nfo=nco_trr_ini(cmd_ln,trr_arg,trr_nbr,trr_in,trr_out,trr_wxy);
+    (void)nco_trr_read(trr_nfo);
+    /* Free Terraref structure */
+    trr_nfo=nco_trr_free(trr_nfo);
     nco_exit_gracefully();
     return EXIT_SUCCESS;
-  } /* !dbg */
-
+  } /* !Terraref */
+  
   if(fl_out){
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
     int out_id;

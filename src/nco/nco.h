@@ -983,6 +983,32 @@ extern "C" {
     nco_grd_lon_bb, /* Longitude grid determined by bounding box (lon_wst/lon_est) and gridcell number (lon_nbr) */
   } nco_grd_lon_typ_enm;
 
+  /* Terraref structure */
+  typedef struct{ /* trr_sct */
+    // File names specifiable with individual command line switches
+    char *fl_in; /* [sng] File containing raw imagery */
+    char *fl_out; /* [sng] File containing netCDF imagery */
+    char *fl_out_tmp; /* [sng] Temporary file containing netCDF imagery */
+    // Metadata specifiable with key-value syntax
+    char **trr_arg; /* [sng] Terraref arguments */
+    char *wvl_nm; /* [sng] Name of wavelength dimension */
+    char *xdm_nm; /* [sng] Name of x-coordinate dimension */
+    char *ydm_nm; /* [sng] Name of y-coordinate dimension */
+    char *var_nm; /* [sng] Variable containing imagery */
+    char *wvl_bnd_nm; /* [sng] Name of dimension to employ for wavelength bounds */
+    char *xdm_bnd_nm; /* [sng] Name of dimension to employ for x-coordinate bounds */
+    char *ydm_bnd_nm; /* [sng] Name of dimension to employ for y-coordinate bounds */
+    long wvl_nbr; /* [nbr] Number of wavelengths */
+    long xdm_nbr; /* [nbr] Number of pixels in x-dimension */
+    long ydm_nbr; /* [nbr] Number of pixels in y-dimension */
+    nc_type var_typ_in; /* [enm] NetCDF type */
+    nc_type var_typ_out; /* [enm] NetCDF type */
+    // Other internal data and metadata 
+    char *cmd_ln; /* [sng] Command-line */
+    int trr_nbr; /* [nbr] Number of Terraref arguments */
+    char *ttl; /* [sng] Title */
+  } trr_sct;
+
   /* Regrid structure */
   typedef struct{ /* rgr_sct */
     // File names specifiable with individual command line switches
