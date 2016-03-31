@@ -43,7 +43,6 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
 
   /* Initialize arguments after copying */
   if(!trr->fl_out) trr->fl_out=(char *)strdup("/data/zender/terraref/trr_out.nc");
-  if(!trr->var_nm) trr->var_nm=(char *)strdup("exposure");
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports ",nco_prg_nm_get(),fnc_nm);
@@ -98,8 +97,8 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   trr->ydm_bnd_nm=NULL; /* [sng] Name of dimension to employ for y-coordinate bounds */
 
   /* Initialize numeric key-value properties used in data processing */
-  trr->var_typ_in=NC_SHORT; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
-  trr->var_typ_out=NC_SHORT; /* [enm] NetCDF type of data in output file */
+  trr->var_typ_in=NC_USHORT; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
+  trr->var_typ_out=NC_USHORT; /* [enm] NetCDF type of data in output file */
   trr->wvl_nbr=272; /* [nbr] Number of wavelengths */
   trr->xdm_nbr=384; /* [nbr] Number of pixels in x-dimension */
   trr->ydm_nbr=893; /* [nbr] Number of pixels in y-dimension */
@@ -127,6 +126,10 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
       trr->ttl=(char *)strdup(trr_lst[trr_var_idx].val);
       continue;
     } /* !ttl */
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"var_nm")){
+      trr->var_nm=(char *)strdup(trr_lst[trr_var_idx].val);
+      continue;
+    } /* !var_nm */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"var_typ_in")){
       trr->var_typ_in=nco_sng2typ(trr_lst[trr_var_idx].val);
       continue;
@@ -155,30 +158,30 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
       if(*sng_cnv_rcd) nco_sng_cnv_err(trr_lst[trr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
     } /* !ydm_nbr */
-    if(!strcasecmp(trr_lst[trr_var_idx].key,"wvl_bnd_nm")){
-      trr->wvl_bnd_nm=(char *)strdup(trr_lst[trr_var_idx].val);
-      continue;
-    } /* !wvl_bnd_nm */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"wvl_nm")){
       trr->wvl_nm=(char *)strdup(trr_lst[trr_var_idx].val);
       continue;
     } /* !wvl_nm */
-    if(!strcasecmp(trr_lst[trr_var_idx].key,"xdm_bnd_nm")){
-      trr->xdm_bnd_nm=(char *)strdup(trr_lst[trr_var_idx].val);
-      continue;
-    } /* !xdm_bnd_nm */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"xdm_nm")){
       trr->xdm_nm=(char *)strdup(trr_lst[trr_var_idx].val);
       continue;
     } /* !xdm_nm */
-    if(!strcasecmp(trr_lst[trr_var_idx].key,"ydm_bnd_nm")){
-      trr->ydm_bnd_nm=(char *)strdup(trr_lst[trr_var_idx].val);
-      continue;
-    } /* !ydm_bnd_nm */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"ydm_nm")){
       trr->ydm_nm=(char *)strdup(trr_lst[trr_var_idx].val);
       continue;
     } /* !ydm_nm */
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"wvl_bnd_nm")){
+      trr->wvl_bnd_nm=(char *)strdup(trr_lst[trr_var_idx].val);
+      continue;
+    } /* !wvl_bnd_nm */
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"xdm_bnd_nm")){
+      trr->xdm_bnd_nm=(char *)strdup(trr_lst[trr_var_idx].val);
+      continue;
+    } /* !xdm_bnd_nm */
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"ydm_bnd_nm")){
+      trr->ydm_bnd_nm=(char *)strdup(trr_lst[trr_var_idx].val);
+      continue;
+    } /* !ydm_bnd_nm */
     (void)fprintf(stderr,"%s: ERROR %s reports unrecognized key-value option to --trr switch: %s\n",nco_prg_nm_get(),fnc_nm,trr_lst[trr_var_idx].key);
     nco_exit(EXIT_FAILURE);
   } /* end for */
@@ -243,14 +246,13 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   //  const nc_type crd_typ=NC_FLOAT;
 
-  char dmn_wvl_nm[]="wavelength";
-  char dmn_xdm_nm[]="x";
-  char dmn_ydm_nm[]="y";
-  char var_nm[]="exposure";
-
   char *fl_in;
   char *fl_out;
   char *fl_out_tmp=NULL_CEWI;
+  char *var_nm;
+  char *wvl_nm;
+  char *xdm_nm;
+  char *ydm_nm;
 
   FILE *fp_in=NULL; /* [fl] Unformatted binary input file handle */
 
@@ -298,7 +300,11 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   /* Initialize local copies of command-line values */
   fl_in=trr->fl_in;
   fl_out=trr->fl_out;
-
+  var_nm=trr->var_nm;
+  wvl_nm=trr->wvl_nm;
+  xdm_nm=trr->xdm_nm;
+  ydm_nm=trr->ydm_nm;
+  
   wvl_nbr=trr->wvl_nbr; /* bands */
   xdm_nbr=trr->xdm_nbr; /* samples */
   ydm_nbr=trr->ydm_nbr; /* lines */
@@ -387,9 +393,9 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
-  rcd=nco_def_dim(out_id,dmn_wvl_nm,wvl_nbr,&dmn_id_wvl);
-  rcd=nco_def_dim(out_id,dmn_xdm_nm,xdm_nbr,&dmn_id_xdm);
-  rcd=nco_def_dim(out_id,dmn_ydm_nm,ydm_nbr,&dmn_id_ydm);
+  rcd=nco_def_dim(out_id,wvl_nm,wvl_nbr,&dmn_id_wvl);
+  rcd=nco_def_dim(out_id,xdm_nm,xdm_nbr,&dmn_id_xdm);
+  rcd=nco_def_dim(out_id,ydm_nm,ydm_nbr,&dmn_id_ydm);
   
   /* Define variables */
   if(ntl_typ_out == nco_trr_ntl_bsq){
