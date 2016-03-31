@@ -2574,12 +2574,10 @@ out returns [var_sct *var]
              err_prn(fnc_nm,"Could not read var "+ v->getText());
   
            if(bcst && var_cst && var->sz >1)          
-             /* 
              if(var_cst->nbr_dim==var->nbr_dim)     
-               ncap_var_cnf_dmn(&var_cst,&var);
+               ncap_var_cnf_dmn(&var,&var_cst);
              else    
-             */ 
-             var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
+               var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
          }
 
 
