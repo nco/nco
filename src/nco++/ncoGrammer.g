@@ -2558,18 +2558,32 @@ out returns [var_sct *var]
           //dbg_prn(fnc_nm,"getting regular var in out "+v->getText());
    
           var=prs_arg->ncap_var_init(v->getText(),true);
-          if(var== NULL){
-               if(prs_arg->ntl_scn){
-                 var=ncap_var_udf(v->getText().c_str());
-                 return var;
-               }else
-                 nco_exit(EXIT_FAILURE);
-          }
 
-          // apply cast only if sz >1 
-          if(bcst && var_cst && var->sz >1)
-            var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
-        } /* end action */
+         // initial scan 
+         if(prs_arg->ntl_scn)  
+         {  
+           if(var==NULL)     
+              var=ncap_var_udf(v->getText().c_str());
+           else if(bcst && var_cst && var->sz >1)      
+              var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);  
+         } 
+         // final scan  
+         else
+         { 
+           if(var==NULL)
+             err_prn(fnc_nm,"Could not read var "+ v->getText());
+  
+           if(bcst && var_cst && var->sz >1)          
+             /* 
+             if(var_cst->nbr_dim==var->nbr_dim)     
+               ncap_var_cnf_dmn(&var_cst,&var);
+             else    
+             */ 
+             var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
+         }
+
+
+    } /* end action */
 
     // PLain attribute
     |   att:ATT_ID { 
