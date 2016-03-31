@@ -11292,7 +11292,14 @@ tm5=!tm4;               // tm5=1, 1, 0, 1, 1, 0, 1, 1, 1, 1 double
 	
 @noindent @strong{Regular Assign Operator}@*
 @noindent @emph{var1 '=' exp1} @*
-If var1 does not already exist in Output then var1 is written to Output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
+If var1 does not already exist in Input or Output then var1 is written to Output with the values, type and dimensions from expr1. If var1 is in Input only it is copied to Output first. Once the var is in Ouptut then the only reqirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted as necessary to the disk type.
+
+If you wish to change the type or shape of a variable in Input then you have to cast the variable. See @pxref{Left hand casting}
+@example
+time[time]=time.int();
+three_dmn_var_dbl[time,lon,lat]=666L;
+@end example
+
 
 @noindent @strong{ Other Assign Operators +=,-=,*=./= }@*
         @noindent  @emph{var1 'ass_op' exp1 }@*
@@ -11538,6 +11545,14 @@ However, this syntax only works with @acronym{NCO} version 4.5.4
 @acronym{LHS} and @acronym{RHS} dimension names (not just sizes) match. 
 From the pressure differences, one can obtain the mass path in each
 layer as shown.
+
+Another reason to cast a variable is to modify the shape or type 
+of a variable already in Input 
+@example
+gds_var[gds_crd]=gds_var.double();
+three_dmn_var_crd[lat,lon,lev]=10.0d;
+four[]=four.int();
+@end example
 
 @html
 <a name="ncap_arr"></a> <!-- http://nco.sf.net/nco.html#ncap_arr -->
