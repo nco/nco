@@ -322,14 +322,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 6
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE  "alpha05" /* Blank for final versions, non-blank (e.g., "beta37") for pre-release versions */
+# define NCO_VERSION_NOTE  "alpha06" /* Blank for final versions, non-blank (e.g., "beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.5.6-alpha05"
+# define NCO_VERSION "4.5.6-alpha06"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -956,6 +956,15 @@ extern "C" {
     nco_bool PRN_VAR_METADATA; /* [flg] Print variable metadata */
   } prn_fmt_sct;
   
+  /* Types used in Terraref structure */
+  typedef enum nco_trr_ntl_typ_enm{ /* [enm] Interleave-type enum */
+    nco_trr_ntl_nil=0,
+    nco_trr_ntl_unk, /* Unknown or unclassified interleave-type */ 
+    nco_trr_ntl_bsq, /* Band Sequential */
+    nco_trr_ntl_bip, /* Band-interleaved-by-pixel */
+    nco_trr_ntl_bil, /* Band-interleaved-by-line */
+  } nco_trr_ntl_typ_enm;
+
   /* Types used in regrid structure */
   typedef enum nco_grd_2D_typ_enm{ /* [enm] Two-dimensional grid-type enum */
     nco_grd_2D_nil=0,
@@ -1005,9 +1014,11 @@ extern "C" {
     nc_type var_typ_out; /* [enm] NetCDF type */
     // Other internal data and metadata 
     char *cmd_ln; /* [sng] Command-line */
+    char *ttl; /* [sng] Title */
     int dfl_lvl; /* [enm] Deflate level [0..9] */
     int trr_nbr; /* [nbr] Number of Terraref arguments */
-    char *ttl; /* [sng] Title */
+    nco_trr_ntl_typ_enm ntl_typ_in; /* [enm] Interleave-type of raw data */
+    nco_trr_ntl_typ_enm ntl_typ_out; /* [enm] Interleave-type or output */
   } trr_sct;
 
   /* Regrid structure */

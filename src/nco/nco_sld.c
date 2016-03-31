@@ -43,7 +43,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
 
   /* Initialize arguments after copying */
   if(!trr->fl_out) trr->fl_out=(char *)strdup("/data/zender/terraref/trr_out.nc");
-  if(!trr->var_nm) trr->var_nm=(char *)strdup("xps_frc");
+  if(!trr->var_nm) trr->var_nm=(char *)strdup("exposure");
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports ",nco_prg_nm_get(),fnc_nm);
@@ -97,12 +97,14 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   trr->xdm_bnd_nm=NULL; /* [sng] Name of dimension to employ for x-coordinate bounds */
   trr->ydm_bnd_nm=NULL; /* [sng] Name of dimension to employ for y-coordinate bounds */
 
-  /* Initialize key-value properties used in grid generation */
+  /* Initialize numeric key-value properties used in data processing */
   trr->var_typ_in=NC_SHORT; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
   trr->var_typ_out=NC_SHORT; /* [enm] NetCDF type of data in output file */
   trr->wvl_nbr=272; /* [nbr] Number of wavelengths */
   trr->xdm_nbr=384; /* [nbr] Number of pixels in x-dimension */
   trr->ydm_nbr=893; /* [nbr] Number of pixels in y-dimension */
+  trr->ntl_typ_in=nco_trr_ntl_bil; /* [enm] Interleave-type of raw data */
+  trr->ntl_typ_out=nco_trr_ntl_bsq; /* [enm] Interleave-type of output data */
 
   /* Initialize variables settable by global switches */
   if(trr_wxy){
@@ -113,6 +115,14 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   for(trr_var_idx=0;trr_var_idx<trr_var_nbr;trr_var_idx++){
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"ntl_typ_in")){
+      trr->ntl_typ_in=nco_trr_sng_ntl(trr_lst[trr_var_idx].val);
+      continue;
+    } /* !ntl_typ_in */
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"ntl_typ_out")){
+      trr->ntl_typ_out=nco_trr_sng_ntl(trr_lst[trr_var_idx].val);
+      continue;
+    } /* !ntl_typ_out */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"ttl")){
       trr->ttl=(char *)strdup(trr_lst[trr_var_idx].val);
       continue;
@@ -178,7 +188,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   if(!trr->wvl_nm) trr->wvl_nm=(char *)strdup("wavelength"); /* [sng] Name of wavelength dimension */
   if(!trr->xdm_nm) trr->xdm_nm=(char *)strdup("x"); /* [sng] Name of x-coordinate dimension */
   if(!trr->ydm_nm) trr->ydm_nm=(char *)strdup("y"); /* [sng] Name of y-coordinate dimension */
-  if(!trr->var_nm) trr->var_nm=(char *)strdup("xps_frc"); /* [sng] Variable containing imagery */
+  if(!trr->var_nm) trr->var_nm=(char *)strdup("exposure"); /* [sng] Variable containing imagery */
   if(!trr->wvl_bnd_nm) trr->wvl_bnd_nm=(char *)strdup("wvl_bnds"); /* [sng] Name of dimension to employ for wavelength bounds */
   if(!trr->xdm_bnd_nm) trr->xdm_bnd_nm=(char *)strdup("x_bnds"); /* [sng] Name of dimension to employ for x-coordinate bounds */
   if(!trr->ydm_bnd_nm) trr->ydm_bnd_nm=(char *)strdup("y_bnds"); /* [sng] Name of dimension to employ for y-coordinate bounds */
@@ -236,7 +246,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   char dmn_wvl_nm[]="wavelength";
   char dmn_xdm_nm[]="x";
   char dmn_ydm_nm[]="y";
-  char var_nm[]="xps_frc";
+  char var_nm[]="exposure";
 
   char *fl_in;
   char *fl_out;
@@ -246,9 +256,12 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   int dmn_ids[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
 
+  int dmn_idx_wvl; /* [idx] Index of wavelength dimension */
+  int dmn_idx_ydm; /* [idx] Index of y-coordinate dimension */
+  int dmn_idx_xdm; /* [idx] Index of x-coordinate dimension */
   int dmn_id_wvl; /* [id] Wavelength dimension ID */
-  int dmn_id_xdm; /* [id] X dimension ID */
-  int dmn_id_ydm; /* [id] Y dimension ID */
+  int dmn_id_xdm; /* [id] X-dimension ID */
+  int dmn_id_ydm; /* [id] Y-dimension ID */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
   int fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
   int out_id; /* I [id] Output netCDF file ID */
@@ -276,10 +289,13 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
+  nco_trr_ntl_typ_enm ntl_typ_in; /* [enm] Interleave-type of raw data */
+  nco_trr_ntl_typ_enm ntl_typ_out; /* [enm] Interleave-type of output data */
+
   ptr_unn var_raw;
   ptr_unn var_val;
   
-  /* Initialize local copies of command-line values  */
+  /* Initialize local copies of command-line values */
   fl_in=trr->fl_in;
   fl_out=trr->fl_out;
 
@@ -287,10 +303,18 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   xdm_nbr=trr->xdm_nbr; /* samples */
   ydm_nbr=trr->ydm_nbr; /* lines */
 
+  ntl_typ_in=trr->ntl_typ_in; /* [enm] Interleave-type of raw data */
+  ntl_typ_out=trr->ntl_typ_out; /* [enm] Interleave-type of output data */
+
   var_typ_in=trr->var_typ_in; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
   var_typ_out=trr->var_typ_out; /* [enm] NetCDF type of data in output file */
 
   dfl_lvl=trr->dfl_lvl;
+
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    (void)fprintf(stderr,"%s: INFO %s Terraref metadata: ",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"wvl_nbr = %li, xdm_nbr = %li, ydm_nbr = %li, ntl_typ_in = %s, ntl_typ_out = %s, var_typ_in = %s, var_typ_out = %s\n",wvl_nbr,xdm_nbr,ydm_nbr,nco_trr_ntl_sng(ntl_typ_in),nco_trr_ntl_sng(ntl_typ_out),nco_typ_sng(var_typ_in),nco_typ_sng(var_typ_out));
+  } /* endif dbg */
 
   var_sz=wvl_nbr*xdm_nbr*ydm_nbr;
   var_val.vp=(void *)nco_malloc(var_sz*nctypelen(var_typ_in));
@@ -311,26 +335,52 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
      Band-interleaved-by-pixel: BIP format stores the first pixel for all bands in sequential order, followed by the second pixel for all bands, followed by the third pixel for all bands, and so forth, interleaved up to the number of pixels. This format provides optimum performance for spectral (z) access of the image data.
      Band-interleaved-by-line: BIL format stores the first line of the first band, followed by the first line of the second band, followed by the first line of the third band, interleaved up to the number of bands. Subsequent lines for each band are interleaved in similar fashion. This format provides a compromise in performance between spatial and spectral processing and is the recommended file format for most ENVI processing tasks. */
 
-  /* De-interleave */
-  long ln_sz; /* [nbr] Number of pixels in line */
-  long ln_sz_byt; /* [B] Number of bytes in line */
-  long rst_sz_byt; /* [B] Raster size in bytes */
-  long src_fst_byt; /* [B] Line offset in bytes, source */
-  long dst_fst_byt; /* [B] Line offset in bytes, destination */
+  if(ntl_typ_in == nco_trr_ntl_bil && ntl_typ_out == nco_trr_ntl_bsq){
+    /* De-interleave */
+    long ln_sz; /* [nbr] Number of pixels in line */
+    long ln_sz_byt; /* [B] Number of bytes in line */
+    long img_sz_byt; /* [B] Image size in bytes */
+    long src_fst_byt; /* [B] Line offset in bytes, source */
+    long dst_fst_byt; /* [B] Line offset in bytes, destination */
+    
+    ln_sz=xdm_nbr;
+    ln_sz_byt=ln_sz*nctypelen(var_typ_in);
+    img_sz_byt=xdm_nbr*ydm_nbr*nctypelen(var_typ_in);
+    
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s de-interleaving input image from ENVI type %s\n",nco_prg_nm_get(),fnc_nm,nco_trr_ntl_sng(ntl_typ_in));
+    for(ydm_idx=0;ydm_idx<ydm_nbr;ydm_idx++){
+      for(wvl_idx=0;wvl_idx<wvl_nbr;wvl_idx++){
+	src_fst_byt=(ydm_idx*wvl_nbr+wvl_idx)*ln_sz_byt;
+	dst_fst_byt=wvl_idx*img_sz_byt+ydm_idx*ln_sz_byt;
+	memcpy((void *)(var_val.cp+dst_fst_byt),(void *)(var_raw.cp+src_fst_byt),ln_sz_byt);
+      } /* !wvl_idx */
+    } /* !ydm_idx */
+  }else{
+    if(var_val.vp) var_val.vp=(void *)nco_free(var_val.vp);
+    var_val.vp=var_raw.vp;
+    var_raw.vp=NULL;
+  } /* !ntl_bil */
 
-  ln_sz_byt=xdm_nbr*nctypelen(var_typ_in);
-  ln_sz=xdm_nbr;
-  rst_sz_byt=xdm_nbr*ydm_nbr*nctypelen(var_typ_in);
-  
-  for(ydm_idx=0;ydm_idx<ydm_nbr;ydm_idx++){
-    for(wvl_idx=0;wvl_idx<wvl_nbr;wvl_idx++){
-      src_fst_byt=(ydm_idx*wvl_nbr+wvl_idx)*ln_sz_byt;
-      dst_fst_byt=wvl_idx*rst_sz_byt+ydm_idx*ln_sz_byt;
-      memcpy((void *)(var_val.cp+dst_fst_byt),(void *)(var_raw.cp+src_fst_byt),ln_sz_byt);
-    } /* !wvl_idx */
-  } /* !ydm_idx */
-  
-  /* Free input data memory */
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    if(var_typ_in == NC_USHORT){
+      long idx;
+      double val_min;
+      double val_max;
+      double val_avg;
+      val_min=var_val.usp[0];
+      val_max=var_val.usp[0];
+      val_avg=0.0;
+      for(idx=0;idx<var_sz;idx++){
+	if(var_val.usp[idx] < val_min) val_min=var_val.usp[idx];
+	if(var_val.usp[idx] > val_max) val_max=var_val.usp[idx];
+	val_avg+=var_val.usp[idx];
+      } /* !idx */
+      val_avg/=var_sz;
+      (void)fprintf(stderr,"%s: INFO %s image diagnostics: min=%g, max=%g, avg=%g\n",nco_prg_nm_get(),fnc_nm,val_min,val_max,val_avg);
+    } /* !NC_USHORT */
+  } /* !dbg */
+
+    /* Free input data memory */
   if(var_raw.vp) var_raw.vp=(void *)nco_free(var_raw.vp);
 
   /* Open grid file */  
@@ -342,9 +392,29 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   rcd=nco_def_dim(out_id,dmn_ydm_nm,ydm_nbr,&dmn_id_ydm);
   
   /* Define variables */
-  dmn_ids[0]=dmn_id_wvl;
-  dmn_ids[1]=dmn_id_xdm;
-  dmn_ids[2]=dmn_id_ydm;
+  if(ntl_typ_out == nco_trr_ntl_bsq){
+    /* Band-sequential order */
+    dmn_idx_wvl=0;
+    dmn_idx_ydm=1;
+    dmn_idx_xdm=2;
+  }else if(ntl_typ_out == nco_trr_ntl_bip){
+    /* Band-interleaved-by-pixel order */
+    dmn_idx_wvl=2;
+    dmn_idx_ydm=0;
+    dmn_idx_xdm=1;
+  }else if(ntl_typ_out == nco_trr_ntl_bil){
+    /* Band-interleaved-by-line order */
+    dmn_idx_wvl=1;
+    dmn_idx_ydm=0;
+    dmn_idx_xdm=2;
+  } /* !ntl_typ_out */
+  dmn_ids[dmn_idx_wvl]=dmn_id_wvl;
+  dmn_ids[dmn_idx_xdm]=dmn_id_xdm;
+  dmn_ids[dmn_idx_ydm]=dmn_id_ydm;
+  dmn_cnt[dmn_idx_wvl]=wvl_nbr;
+  dmn_cnt[dmn_idx_xdm]=xdm_nbr;
+  dmn_cnt[dmn_idx_ydm]=ydm_nbr;
+
   (void)nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_3D,dmn_ids,&var_id);
 
   if(dfl_lvl > 0){
@@ -446,9 +516,6 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   dmn_srt[0]=0L;
   dmn_srt[1]=0L;
   dmn_srt[2]=0L;
-  dmn_cnt[0]=wvl_nbr;
-  dmn_cnt[1]=xdm_nbr;
-  dmn_cnt[2]=ydm_nbr;
   rcd=nco_put_vara(out_id,var_id,dmn_srt,dmn_cnt,var_val.vp,var_typ_in);
 
   /* Close output file and move it from temporary to permanent location */
@@ -460,6 +527,37 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   return rcd;
 } /* end nco_trr_read() */
   
+nco_trr_ntl_typ_enm /* O [enm] Interleave-type */
+nco_trr_sng_ntl /* [fnc] Convert user-supplied string to interleave-type enum */
+(const char * const typ_sng) /* I [sng] String indicating interleave-type */
+{
+  /* Purpose: Convert user-supplied string to interleave-type */
+  const char fnc_nm[]="nco_trr_sng_ntl()";
+  
+  if(!strcasecmp(typ_sng,"bsq") || !strcasecmp(typ_sng,"band_sequential")) return nco_trr_ntl_bsq;
+  else if(!strcasecmp(typ_sng,"bip") || !strcasecmp(typ_sng,"band_interleaved_by_pixel")) return nco_trr_ntl_bip;
+  else if(!strcasecmp(typ_sng,"bil") || !strcasecmp(typ_sng,"band_interleaved_by_line")) return nco_trr_ntl_bil;
+  else abort();
+  
+  return nco_trr_ntl_unk;
+} /* end nco_trr_sng_ntl() */
+
+const char * /* O [sng] String describing interleave-type */
+nco_trr_ntl_sng /* [fnc] Convert interleave-type enum to string */
+(const nco_trr_ntl_typ_enm nco_trr_ntl_typ) /* I [enm] Interleave-type enum */
+{
+  /* Purpose: Convert interleave-type enum to string */
+  switch(nco_trr_ntl_typ){
+  case nco_trr_ntl_bsq: return "band_sequential (BSQ format)";
+  case nco_trr_ntl_bip: return "band_interleaved_by_pixel (BIP format)";
+  case nco_trr_ntl_bil: return "band_interleaved_by_line (BIL format)";
+  default: nco_dfl_case_generic_err(); break;
+  } /* end switch */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_trr_ntl_sng() */
+
 int /* O [rcd] Return code */
 nco_scrip_read /* [fnc] Read, parse, and print contents of SCRIP file */
 (char *fl_scrip, /* SCRIP file name with proper path */

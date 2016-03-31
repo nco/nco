@@ -56,6 +56,14 @@ extern "C" {
   nco_trr_free /* [fnc] Deallocate Terraref structure */
   (trr_sct *trr); /* I/O [sct] Terraref structure */
 
+  nco_trr_ntl_typ_enm /* O [enm] Interleave-type */
+  nco_trr_sng_ntl /* [fnc] Convert user-supplied string to interleave-type enum */
+  (const char * const typ_sng); /* I [sng] String indicating interleave-type */
+
+  const char * /* O [sng] String describing interleave-type */
+  nco_trr_ntl_sng /* [fnc] Convert interleave-type enum to string */
+  (const nco_trr_ntl_typ_enm nco_trr_ntl_typ); /* I [enm] Interleave-type enum */
+
 #ifdef ENABLE_ESMF
   int /* O [enm] Return code */
   nco_rgr_esmf /* [fnc] Regrid using ESMF library */
