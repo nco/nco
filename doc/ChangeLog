@@ -1,8 +1,7 @@
 2016-03-31  Henry Butowsky  <henryb@hush.com>
-	* Mods to LHC casting so "pathalogical" expressions like 
-	 'three_dmn_var_dbl[time,lon,lat]=three_dmn_var_dbl.int()' 
-	  work !!
-	
+
+	* Modify LHC casting so "pathological" expressions like 'three_dmn_var_dbl[time,lon,lat]=three_dmn_var_dbl.int()' work
+
 2016-03-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.6-alpha06 release procedure:
