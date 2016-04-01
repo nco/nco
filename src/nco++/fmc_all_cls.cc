@@ -4182,7 +4182,18 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   
   if(lcl_type == VVAR && fdx==PPRINT)  
     var_att=NULL;
-  else
+  else if(lcl_type==VSTRING)
+  {
+    char *cp;
+    nco_string val_string;
+
+    cp = strdup(vtr_args[0]->getText().c_str());          
+    (void)sng_ascii_trn(cp);            
+    val_string=cp; 
+    var_att=ncap_sclr_var_mk("~zz@print_methods", val_string); 
+
+  }
+  else  
     var_att=walker.out(vtr_args[0]);       
 
 

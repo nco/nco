@@ -341,7 +341,8 @@ ncap_att_prn     /* [fnc] Print a single attribute*/
   att_sz=var->sz;
   
   if(att_in_sng ==(char*)NULL) {        
-    (void)fprintf(stdout,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
+    if(var->type != NC_CHAR && var->type != NC_STRING)
+       (void)fprintf(stdout,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(var->type,&var->val);
     (void)strcpy(dlm_sng,", ");
@@ -398,7 +399,7 @@ ncap_att_prn     /* [fnc] Print a single attribute*/
   } /* end switch */
 
   /* only print if format string NOT user defined  */
-  if(att_in_sng ==(char*)NULL)
+  if(att_in_sng ==(char*)NULL && var->type != NC_CHAR && var->type != NC_STRING )
       (void)fprintf(stdout,"\n");
   
   (void)cast_nctype_void(var->type,&var->val);
