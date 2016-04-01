@@ -662,7 +662,7 @@ main(int argc,char **argv)
   /* Open output file */
   if(FL_OUT_NEW){
     /* Normal case, like rest of NCO, where writes are made to temporary file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
   }else{ /* Existing file */
     /* ncap2, like ncrename and ncatted, directly modifies fl_in if fl_out is omitted
        If fl_out resolves to _same name_ as fl_in, method above is employed */

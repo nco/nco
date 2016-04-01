@@ -1,3 +1,12 @@
+2016-03-31  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.5.6-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.5.6-alpha07 final changes';git push
+	git tag -a 4.5.6-alpha07 -m 'Version 4.5.6-alpha07 new features: FORCE_APPEND';git push --tags
+
+	* Make FORCE_APPEND I/O in nco_fl_out_open(), and set to true when user interactively selects append
+	This ensures specifying -A follows same code path as interactively selecting append. Fixes bug reported by Parker Norton.
+
 2016-03-31  Henry Butowsky  <henryb@hush.com>
 
 	* Modify LHC casting so "pathological" expressions like 'three_dmn_var_dbl[time,lon,lat]=three_dmn_var_dbl.int()' work

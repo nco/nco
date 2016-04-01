@@ -1482,7 +1482,7 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
 (const char * const fl_out, /* I [sng] Name of file to open */
- const nco_bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
+ nco_bool * const FORCE_APPEND, /* I/O [flg] Append to existing file, if any */
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
@@ -1532,7 +1532,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
   if(RAM_CREATE) md_create|=NC_DISKLESS|NC_WRITE;
 
-  if(FORCE_OVERWRITE && FORCE_APPEND){
+  if(FORCE_OVERWRITE && *FORCE_APPEND){
     (void)fprintf(stdout,"%s: ERROR FORCE_OVERWRITE and FORCE_APPEND are both set\n",nco_prg_nm_get());
     (void)fprintf(stdout,"%s: HINT: Overwrite (-O) and Append (-A) options are mutually exclusive. Re-run your command, setting at most one of these switches.\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
@@ -1655,7 +1655,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
     if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
 
-    if(FORCE_APPEND){
+    if(*FORCE_APPEND){
       /* Incur expense of copying current file to temporary file
 	 This is a no-op when files are identical */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
@@ -1713,6 +1713,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       (void)nco_fl_cp(fl_out,fl_out_tmp);
       rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
+      *FORCE_APPEND=True;
       break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */

@@ -1019,7 +1019,7 @@ main(int argc,char **argv)
       rgr_in=(char *)strdup(fl_in);
       rgr_out=(char *)strdup(fl_out);
       rgr_nfo=nco_rgr_ini(cmd_ln,in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_map,rgr_var,wgt_vld_thr,xtn_lst_in,xtn_nbr);
-      rgr_nfo->fl_out_tmp=nco_fl_out_open(rgr_nfo->fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+      rgr_nfo->fl_out_tmp=nco_fl_out_open(rgr_nfo->fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
       /* Copy Global Metadata */
       rgr_nfo->out_id=out_id;
@@ -1052,13 +1052,13 @@ main(int argc,char **argv)
       (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
       
       /* Open output file */
-      fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+      fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
     
       /* Initialize chunking from user-specified inputs */
       if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
       /* Define extracted groups, variables, and attributes in output file */
-      CPY_GRP_METADATA = FORCE_APPEND ? False : PRN_GLB_METADATA;
+      CPY_GRP_METADATA=PRN_GLB_METADATA;
       (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,CPY_GRP_METADATA,PRN_VAR_METADATA,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
 
       /* Catenate time-stamped command line to "history" global attribute */
