@@ -36,6 +36,11 @@ BUG FIXES:
 
 A. Correct ncatted documentation for "append" mode.
 
+A. Fix Append mode to follow same code path and defaults when
+   requested with -A and with interactive responses to the
+   exit/append/overwrite question. Thanks to Parker Norton for
+   pointing out this inconsistency. 
+
 KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
