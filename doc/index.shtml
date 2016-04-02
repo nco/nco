@@ -149,7 +149,7 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2016 Mar&nbsp;??: 4.5.6 (<i>In progress</i>)
+<li>2016 Apr&nbsp;??: 4.6.0 (<i>In progress</i>)
 <li>2016 Feb&nbsp;17: 4.5.5 (Stability)
 <li>2016 Jan&nbsp;07: 4.5.4 (<tt>ncremap</tt>)
 <li>2015 Dec&nbsp;16: <a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">Poster</a> at Fall AGU, San Francisco</li>
@@ -682,7 +682,7 @@ Stable releases receive unique tags and their tarballs are stored
 You may also retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.5.5 http://github.com/nco/nco.git nco-4.5.5</tt></a>.
 <ul>
-<li><b>NCO 4.5.7</b>: (<i>Future</i>) 
+<li><b>NCO 4.6.2</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 <tt>ncks</tt> prints human-legible ISO8601 dates;
@@ -691,10 +691,17 @@ netCDF4 compound types?;
 <tt>ncremap</tt> use CF to find coordinates;
 <tt>ncks --xtn</tt> better extensive variable treatment;
 Optimize diskless files?;</li>
-<li><b>NCO 4.5.6</b>: (<i>In Progress, features in-progress or completed include</i>)
+<li><b>NCO 4.6.1</b>: (<i>In Progress, features in-progress or completed include</i>)
 <tt>ncremap</tt> use CF to find coordinates;
 <tt>ncks --xtn</tt> better extensive variable treatment;
 <tt>ncpdq</tt> fix permutation with multiple groups;</li>
+<li><b>NCO 4.6.0</b>: 
+<tt>ncap2</tt> LHC metadata propagation;
+<tt>ncatted</tt> nappend mode;
+<tt>ncks</tt> reads ENVI bsq/bip/bil images;
+<tt>ncks</tt> Terraref features;
+<tt>ncks -A</tt> append consistency;
+<tt>ncremap</tt> uses $TMPDIR;</li>
 <li><b>NCO 4.5.5</b>: (<i>Current Stable Release</i>)
 All operators support CDF5 format;
 <tt>ncap2</tt> fix negative dimension indices handling;

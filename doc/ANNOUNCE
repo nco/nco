@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.5.6-alpha06 are ready. 
+The netCDF Operators NCO version 4.6.0-beta01 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -9,7 +9,7 @@ What's new?
 NCO fully supports CDF5-format datasets, ncremap continues to
 accrue useful features, and some corner case bugs were fixed.
 
-Work on NCO 4.5.6 has commenced and will better support eliciting
+Work on NCO 4.6.1 has commenced and will better support eliciting
 latitude/longitude coordinates using the CF "coordinates" convention
 and regridding variables whose horizontal dimensions are not the
 most-rapidly-varying.
@@ -19,13 +19,18 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. ncap2 now works with pointers to variables and attributes.
+   This allows, e.g., loops over arbitrary sets of variables, and
+   make creating aggregations of variables much simpler.
+   For example, to fxm
+
 A. ncatted new mode "nappend" appends only to existing attributes.
    If the attribute does not yet exist, it is not created.
    Same as "append" mode, except "append" will create attributes.
    http://nco.sf.net/nco.html#ncatted
 
 A. ncap2 now propagates metadata when Left-Hand-Casting variables.
-   Previous versions did not propagate the metadata.
+   Previous versions did not propagate metadata to LHC variables.
    This fix makes converting the _type_ of a variable easier.
    For example, to change one_dmn_rec_var to NC_SHORT, use
    ncap2 -s 'one_dmn_rec_var[time]=short(one_dmn_rec_var)' in.nc out.nc
@@ -49,7 +54,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.5.6-alpha06 built/tested under
+   These problems occur with NCO 4.6.0-beta01 built/tested under
    MacOS with netCDF 4.3.3.1 on HDF5 1.8.16 and with
    Linux with netCDF 4.4.1-development (20160212) on HDF5 1.8.13.
 
