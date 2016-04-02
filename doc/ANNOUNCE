@@ -32,6 +32,10 @@ A. ncap2 now propagates metadata when Left-Hand-Casting variables.
    The output file will contain the original metadata.
    http://nco.sf.net/nco.html#ncap2
 
+A. ncremap now defaults to $TMPDIR for storing intermediate files.
+   This is user-configurable with the -U switch.
+   http://nco.sf.net/nco.html#ncremap
+
 BUG FIXES:
 
 A. Correct ncatted documentation for "append" mode.

@@ -172,7 +172,7 @@ drc_in='' # [sng] Input file directory
 drc_in_xmp='~/drc_in' # [sng] Input file directory for examples
 drc_out="${drc_pwd}" # [sng] Output file directory
 drc_out_xmp="~/rgr" # [sng] Output file directory for examples
-drc_tmp='' # [sng] Temporary file directory
+drc_tmp="${TMPDIR%/}" # [sng] Temporary file directory
 dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
 #esmf_opt='--src_regional --dst_regional --ignore_unmapped' # [sng] ESMF_RegridWeightGen options
@@ -322,16 +322,15 @@ shift $((OPTIND-1)) # Advance one argument
 
 # Derived variables
 if [ -n "${drc_usr}" ]; then
-    drc_out="${drc_usr}"
+    drc_out="${drc_usr%/}"
 else
     if [ -n "${out_fl}" ]; then
 	drc_out="$(dirname ${out_fl})"
     fi # !out_fl
 fi # !drc_usr
 if [ -n "${tmp_usr}" ]; then
-	drc_tmp=${tmp_usr}
-else
-	drc_tmp=${drc_out}
+    # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
+    drc_tmp=${tmp_usr%/}
 fi # !out_fl
 att_fl="${drc_tmp}/ncremap_tmp_att.nc" # [sng] Missing value workflow (MPAS) default
 grd_dst_dfl="${drc_tmp}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default

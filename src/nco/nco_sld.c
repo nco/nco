@@ -114,14 +114,14 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   for(trr_var_idx=0;trr_var_idx<trr_var_nbr;trr_var_idx++){
-    if(!strcasecmp(trr_lst[trr_var_idx].key,"ntl_typ_in")){
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"ntl_in")){
       trr->ntl_typ_in=nco_trr_sng_ntl(trr_lst[trr_var_idx].val);
       continue;
-    } /* !ntl_typ_in */
-    if(!strcasecmp(trr_lst[trr_var_idx].key,"ntl_typ_out")){
+    } /* !ntl_in */
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"ntl_out")){
       trr->ntl_typ_out=nco_trr_sng_ntl(trr_lst[trr_var_idx].val);
       continue;
-    } /* !ntl_typ_out */
+    } /* !ntl_out */
     if(!strcasecmp(trr_lst[trr_var_idx].key,"ttl")){
       trr->ttl=(char *)strdup(trr_lst[trr_var_idx].val);
       continue;
@@ -130,11 +130,11 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
       trr->var_nm=(char *)strdup(trr_lst[trr_var_idx].val);
       continue;
     } /* !var_nm */
-    if(!strcasecmp(trr_lst[trr_var_idx].key,"var_typ_in")){
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"typ_in")){
       trr->var_typ_in=nco_sng2typ(trr_lst[trr_var_idx].val);
       continue;
     } /* !var_typ_in */
-    if(!strcasecmp(trr_lst[trr_var_idx].key,"var_typ_out")){
+    if(!strcasecmp(trr_lst[trr_var_idx].key,"typ_out")){
       trr->var_typ_out=nco_sng2typ(trr_lst[trr_var_idx].val);
       continue;
     } /* !var_typ_out */

@@ -1,3 +1,9 @@
+2016-04-01  Charlie Zender  <zender@uci.edu>
+
+	* Change default temporary directory (for intermediate files) from $drc_out to $TMPDIR
+
+	* Trim trailing slash from drc_out, drc_tmp so $TMPDIR looks right
+
 2016-03-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.5.6-alpha07 release procedure:
