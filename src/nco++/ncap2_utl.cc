@@ -414,9 +414,11 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
 (var_sct *var,   /* I Variable containing att */
  char *const att_in_sng) /* user defined format string */
 {
+
+  char char_foo;
   char dlm_sng[3];
   char att_sng[NCO_MAX_LEN_FMT_SNG];
- 
+   
   char *tp;
   char *cp;    
   char *cp_max;  
@@ -468,22 +470,17 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
     break;
   case NC_CHAR:
     if(att_in_sng ==(char*)NULL)    
-    {
+      /* remember string initialized to nulls */
       strncpy(tp,var->val.cp,att_sz);
-    }
     else          
     {
       for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++)
-      {
-        char char_foo;
         /* Assume \0 is string terminator and do not print it */
         if((char_foo=var->val.cp[att_lmn]) != '\0') 
 	{ 
            (void)sprintf(tp,att_sng,char_foo);   
            tp+=strlen(tp); 
         } 
-      }  
-         
     } /* end loop over element */
 
     break;
