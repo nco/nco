@@ -435,8 +435,12 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
 
 
   if(att_in_sng ==(char*)NULL) {        
-    (void)sprintf(tp,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
-    tp+=strlen(tp); 
+    /* default dont bother if att info if type is text */
+    if(var->type != NC_CHAR && var->type != NC_STRING)
+    {     
+      (void)sprintf(tp,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
+      tp+=strlen(tp); 
+    }
     /* Typecast pointer to values before access */
     (void)strcpy(dlm_sng,", ");
     (void)sprintf(att_sng,"%s%%s",nco_typ_fmt_sng(var->type));
@@ -463,13 +467,25 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
     for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,(long)var->val.ip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
     break;
   case NC_CHAR:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++){
-      char char_foo;
-      /* Assume \0 is string terminator and do not print it */
-      if((char_foo=var->val.cp[att_lmn]) != '\0') (void)sprintf(tp++,"%c",char_foo);   
+    if(att_in_sng ==(char*)NULL)    
+    {
+      strncpy(tp,var->val.cp,att_sz);
+    }
+    else          
+    {
+      for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++)
+      {
+        char char_foo;
+        /* Assume \0 is string terminator and do not print it */
+        if((char_foo=var->val.cp[att_lmn]) != '\0') 
+	{ 
+           (void)sprintf(tp,att_sng,char_foo);   
+           tp+=strlen(tp); 
+        } 
+      }  
          
     } /* end loop over element */
-    *tp='\0';
+
     break;
   case NC_BYTE:
     for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.bp[att_lmn], (att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
