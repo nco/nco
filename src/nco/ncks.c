@@ -264,6 +264,8 @@ main(int argc,char **argv)
   nco_bool flg_rgr=False; /* [flg] Regrid */
   nco_bool flg_trr=False; /* [flg] Terraref */
 
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
+
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
@@ -272,7 +274,28 @@ main(int argc,char **argv)
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
-  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
+  /* Climatology bounds structure */
+  typedef struct{ /* clm_bnd_sct */
+    char *fl_srt; /* [sng] First file in climatology */
+    char *fl_end; /* [sng] Last file in climatology */
+    char *time_bnds; /* Name of attribute */
+    char *tm_bnds_nm; /* [sng] Time bounds name */
+    char *clm_bnds_nm; /* [sng] Climatology bounds name */
+    int id; /* Variable ID or NC_GLOBAL (= -1) for global attribute */
+    long sz; /* Number of elements in attribute */
+    nc_type type; /* Type of attribute */
+    ptr_unn val; /* Pointer to attribute value */
+    aed_enm mode; /* Action to perform with attribute */
+  } clm_bnd_sct;
+  
+  typedef enum clm_bnd{ /* [enm] Attribute editor mode */
+    clm_bnd_append,
+    clm_bnd_create,
+    clm_bnd_delete,
+    clm_bnd_modify,
+    clm_bnd_nappend,
+    clm_bnd_overwrite
+  } clm_bnd_enm; /* end clm_bnd enum */
 
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */

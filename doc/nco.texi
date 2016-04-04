@@ -117,7 +117,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.0-beta01
 @set copyright-years 1995--2016
 @set update-year 2015
-@set update-date 2 April 2016
+@set update-date 4 April 2016
 @set update-month April 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16938,15 +16938,18 @@ changing variable dimensionality, including the record dimension.
 @cindex @code{--data}
 @cindex @code{--hieronymus}
 @item -H 
-Turn-on printing to screen or turn-off copying data (not metadata).
+Toggle default behavior of printing to screen or copying data (not
+metadata). 
 Also activated using @samp{--print} or @samp{--prn}.
-By default @command{ncks} prints all metadata and data to screen if
-no netCDF output file is specified.
-Use @samp{-H} to print data to screen if a netCDF output is specified,
-or to restrict printing to data (no metadata) when no netCDF output is 
-specified.
-Also use @samp{-H} to turn-off copying data (not metadata) to an output
-file. 
+By default @command{ncks} prints all metadata but no data to screen 
+when no netCDF @var{output-file} when one is specified.
+And if @var{output-file} is specified, @command{ncks} copies all
+metadata and all data to it.
+In other words, the printing/copying default is context-sensitive,
+and @samp{-H} toggles the default behavior.
+Hence, use @samp{-H} to turn-off copying data (not metadata) to an
+output file. 
+And use @samp{-H} to turn-on printing data (not metadata) to screen.
 Unless otherwise specified (with @code{-s}), each element of the data
 hyperslab prints on a separate line containing the names, indices,
 and, values, if any, of all of the variables dimensions.
@@ -17744,7 +17747,7 @@ Note that limits applied to coordinate values are specified with a
 decimal point, and limits applied to dimension indices do not have a 
 decimal point @xref{Hyperslabs}.
 @example
-ncks -H -d time,5 -d lat,,0.0 -d lon,330.0, -d band,0.3,0.5 
+ncks -d time,5 -d lat,,0.0 -d lon,330.0, -d band,0.3,0.5 
 -d lev,1000.0 in.nc out.nc 
 @end example
 
