@@ -109,10 +109,11 @@ esac # !HOSTNAME
 
 # Test cases (for Charlie's machines)
 # Map-only:
-# ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/foo.nc -w esmf -a bilinear
-# ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/foo.nc -w tempest
+# ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -w esmf -a bilinear
+# ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -w tempest
+# ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -w tempest
 # Regrid:
-# ls ${DATA}/sld/raw/*.nc | ncremap -a conserve -D 0 -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
+# ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 # ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr

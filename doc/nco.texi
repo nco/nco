@@ -17736,7 +17736,7 @@ two variables @code{time} and @code{pressure}.
 Create netCDF @file{out.nc} containing all variables from file
 @file{in.nc}.  
 Restrict the dimensions of these variables to a hyperslab. 
-Print (with @code{-H}) the hyperslabs to the screen for good measure.  
+@c Print (with @code{-H}) the hyperslabs to the screen for good measure.  
 The specified hyperslab is: the fifth value in dimension @code{time};
 the 
 half-open range @math{@var{lat} > 0.} in coordinate @code{lat}; the

@@ -278,25 +278,18 @@ main(int argc,char **argv)
   typedef struct{ /* clm_bnd_sct */
     char *fl_srt; /* [sng] First file in climatology */
     char *fl_end; /* [sng] Last file in climatology */
-    char *time_bnds; /* Name of attribute */
-    char *tm_bnds_nm; /* [sng] Time bounds name */
-    char *clm_bnds_nm; /* [sng] Climatology bounds name */
-    int id; /* Variable ID or NC_GLOBAL (= -1) for global attribute */
-    long sz; /* Number of elements in attribute */
-    nc_type type; /* Type of attribute */
-    ptr_unn val; /* Pointer to attribute value */
-    aed_enm mode; /* Action to perform with attribute */
+    char *tm_crd_nm; /* [sng] Name of time coordinate variable */
+    char *tm_bnds_nm; /* [sng] Time bounds variable name (to delete) */
+    char *bnds_dmn_nm; /* [sng] Bounds dimension name name */
+    char *clm_bnds_nm; /* [sng] Climatology bounds variable name (to create) */
+    int tm_crd_id; /* Variable ID for tm_crd */
+    int tm_bnds_id; /* Variable ID for tm_bnds */
+    int clm_bnds_id; /* Variable ID for clm_bnds */
+    nc_type type; /* Type of (time and) climatology bounds variable(s) */
+    ptr_unn val_srt; /* Climatology bounds variable attribute start value */
+    ptr_unn val_end; /* Climatology bounds variable attribute end value */
   } clm_bnd_sct;
   
-  typedef enum clm_bnd{ /* [enm] Attribute editor mode */
-    clm_bnd_append,
-    clm_bnd_create,
-    clm_bnd_delete,
-    clm_bnd_modify,
-    clm_bnd_nappend,
-    clm_bnd_overwrite
-  } clm_bnd_enm; /* end clm_bnd enum */
-
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
   MPI_Comm mpi_cmm=MPI_COMM_WORLD; /* [prc] Communicator */
