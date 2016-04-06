@@ -4306,7 +4306,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
        sz=strlen(cp);  
        var=ncap_sclr_var_mk("~zz@print_methods",NC_STRING,true);    
        cast_void_nctype(NC_STRING,&var->val);
-       var->val.sngp[0]=cp;   
+       var->val.sngp[0]=(nco_string)cp;   
        cast_nctype_void(NC_STRING,&var->val);            
        var->sz=1; 
      }
