@@ -55,7 +55,7 @@
 #include "NcapVarVector.hh"
 #include "NcapVar.hh"
 #include "sdo_utl.hh"
-#include "VarOp.hh" 
+#include "VarOpNew.hh" 
 #include "prs_cls.hh"
 
 
@@ -248,6 +248,12 @@ ncap_var_var_stc
  var_sct *var2,  /* I [sct] Input variable structure containing second operand */
  int op);
 
+var_sct *             /* O [sct] Sum of input variables (var1+var2) INITIAL SCAN ONLY */
+ncap_var_var_op_ntl   /* [fnc] Add two variables */
+(var_sct *var1,       /* I [sct] Input variable structure containing first operand */
+ var_sct *var2,       /* I [sct] Input variable structure containing second operand */
+ int op);             /* Operation +-% */
+
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
 ncap_var_var_op   /* [fnc] Add two variables */
 (var_sct *var1,  /* I [sct] Input variable structure containing first operand */
@@ -262,11 +268,6 @@ ncap_var_var_inc    /* [fnc] Add two variables */
  bool bram,         /* I [flg] Make a RAM variable */
  prs_cls *prs_arg);
 
-var_sct *             /* O [sct] Sum of input variables (var1+var2) INITIAL SCAN ONLY */
-ncap_var_var_op_ntl   /* [fnc] Add two variables */
-(var_sct *var1,       /* I [sct] Input variable structure containing first operand */
- var_sct *var2,       /* I [sct] Input variable structure containing second operand */
- int op);             /* Operation +-% */
 
 bool            /* O [flg] true if all var elemenst are true */
 ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
@@ -296,6 +297,12 @@ var_sct* var2);
 nco_bool        /* Reurns True if var has attribute style name */
 ncap_var_is_att( 
 var_sct *var);
+
+nco_bool 
+ncap_var_is_op_doable( 
+var_sct *var1, 
+var_sct *var2); 
+
 
 bool           /* Returns true if expression contains a utility fuction */ 
 ncap_fnc_srh(
