@@ -1182,11 +1182,12 @@ Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
 then checks out NCO version <tt>4.5.5</tt>:
 <p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.5.5</tt></p>
-This command retrieves the current (&ldquo;bleeding edge&rdquo;)
+These commands retrieve the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
-<p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p>
+<p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p> or
+<p><tt>git clone git@github.com:/nco/nco.git</tt></p>,
 Track changes to the development version using
-<p><tt>cd ~/nco;git pull</tt></p>
+<p><tt>cd nco;git pull</tt></p>
 One difference between running a "tagged" release 
 (e.g., <tt>4.5.5</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,

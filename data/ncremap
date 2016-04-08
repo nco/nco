@@ -72,13 +72,17 @@ case "${HOSTNAME}" in
         export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
 	export PATH='/home/zender/bin'\:${PATH}
 	export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
-    cori* | edison* | hopper* | nid* )
+    # 20160407: Split cori from edison binary locations to allow for different system libraries
+    cori* )
 	# On cori, module load ncl installs ERWG in ${NCARG_ROOT}/../intel/bin
 	if [ -n "${NCARG_ROOT}" ]; then
             export PATH="${NCARG_ROOT}/bin:${PATH}"
 	fi # !NCARG_ROOT
-	export PATH='/global/homes/z/zender/bin'\:${PATH}
-        export LD_LIBRARY_PATH='/global/homes/z/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+	export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
+        export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
+    edison* )
+	export PATH='/global/homes/z/zender/bin_edison'\:${PATH}
+        export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH} ; ;;
     pileus* )
 	export PATH='/home/zender/bin'\:${PATH}
 	export LD_LIBRARY_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals/lib:/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;

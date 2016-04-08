@@ -116,8 +116,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set nco-edition 4.6.0-beta01
 @set doc-edition 4.6.0-beta01
 @set copyright-years 1995--2016
-@set update-year 2015
-@set update-date 4 April 2016
+@set update-year 2016
+@set update-date 6 April 2016
 @set update-month April 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6337,7 +6337,7 @@ overwritten (its contents are immaterial).
 @cindex @code{--rgr_map}
 @cindex @var{--map-file}
 @cartouche
-Availability: @command{ncks}, @command{ncremap}@*
+Availability: @command{ncclimo}, @command{ncks}, @command{ncremap}@*
 Short options: None@*
 Long options: 
 @samp{--map @var{map-file}} or @samp{--rgr_map @var{map-file}}@*
@@ -6347,7 +6347,8 @@ Long options:
 @end cartouche
 
 @acronym{NCO} includes extensive regridding features in 
-@command{ncremap} (as of version 4.5.4 in November, 2015) and 
+@command{ncclimo} (as of version 4.6.0 in April, 2016)
+@command{ncremap} (as of version 4.5.4 in November, 2015)
 and @command{ncks} (since version 4.5.0 in June, 2015). 
 Regridding can involve many choices, options, inputs, and outputs.
 The appropriate operator for this workflow is the @command{ncremap}
@@ -6355,11 +6356,12 @@ script which automatically handles many details of regridding and
 passes the required commands to @command{ncks} and external programs.
 Occasionally users need access to lower-level remapping functionality
 present in @command{ncks} and not exposed to direct manipulation
-through @command{ncremap}. 
+through @command{ncremap} or @command{ncclimo}.
 This section describes the lower-level functionality and switches
 as implemented in @command{ncks}.
-Knowing what these features all will help @command{ncremap} users
-understand the full potential of both operators.
+Knowing what these features are will help @command{ncremap} and
+@command{ncclimo} users understand the full potential of these
+operators. 
 
 @command{ncks} supports horizontal regridding of datasets where the
 grids and weights are all stored in an external @var{map-file}.
@@ -10967,6 +10969,7 @@ described in any detail in the sections below.
 * ncpdq netCDF Permute Dimensions Quickly::
 * ncra netCDF Record Averager::
 * ncrcat netCDF Record Concatenator::
+* ncclimo netCDF Climatology Generator::
 * ncremap netCDF Remapper::
 * ncrename netCDF Renamer::
 * ncwa netCDF Weighted Averager::
@@ -15820,6 +15823,35 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 
 @page
 @html
+<a name="ncclimo"></a> <!-- http://nco.sf.net/nco.html#ncclimo -->
+@end html
+@node ncclimo netCDF Climatology Generator, ncremap netCDF Remapper, ncrcat netCDF Record Concatenator, Reference Manual
+@section @command{ncclimo} netCDF Climatology Generator
+@cindex climo
+@cindex climatology
+@findex ncclimo
+
+@noindent
+SYNTAX
+@example
+ncclimo [-a @var{clm_md}] [-b @var{bnd_nm}] [-c @var{caseid}] [-d @var{dbg_lvl}]
+[-e @var{yr_end}] [-f @var{fml_nm}] [-h @var{hst_nm}] [-i @var{drc_in}]
+[-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] [-O @var{drc_rgr}] [-o @var{drc_out}]
+[-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}] [-s @var{yr_srt}] [-t @var{thr_nbr}]
+[-v @var{var_lst}] [-x @var{cf_flg}] 
+@end example
+
+@noindent
+DESCRIPTION
+
+@noindent
+@html
+<a name="xmp_ncclimo"></a> <!-- http://nco.sf.net/nco.html#xmp_ncclimo -->
+@end html
+EXAMPLES
+
+@page
+@html
 <a name="nces"></a> <!-- http://nco.sf.net/nco.html#nces -->
 <a name="ncea"></a> <!-- http://nco.sf.net/nco.html#ncea -->
 @end html
@@ -18546,7 +18578,7 @@ weighted mean statistics.
 @html
 <a name="ncrcat"></a> <!-- http://nco.sf.net/nco.html#ncrcat -->
 @end html
-@node ncrcat netCDF Record Concatenator, ncremap netCDF Remapper, ncra netCDF Record Averager, Reference Manual
+@node ncrcat netCDF Record Concatenator, ncclimo netCDF Climatology Generator, ncra netCDF Record Averager, Reference Manual
 @section @command{ncrcat} netCDF Record Concatenator
 @cindex concatenation
 @cindex record concatenation
@@ -18680,7 +18712,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @html
 <a name="ncremap"></a> <!-- http://nco.sf.net/nco.html#ncremap -->
 @end html
-@node ncremap netCDF Remapper, ncrename netCDF Renamer, ncrcat netCDF Record Concatenator, Reference Manual
+@node ncremap netCDF Remapper, ncrename netCDF Renamer, ncclimo netCDF Climatology Generator, Reference Manual
 @section @command{ncremap} netCDF Remapper
 @cindex remap
 @cindex regrid
