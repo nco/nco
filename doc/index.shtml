@@ -1313,7 +1313,9 @@ For Mac OS X with MacPorts:
 <dt>sudo port install gsl # GSL</dt>
 <dt>sudo port install netcdf # netCDF</dt>
 <dt>sudo port install udunits2 # UDUnits</dt>
-</tt>
+Without MacPorts, the system TeXInfo may be too old to build the
+documentation.
+If so, use <tt>configure --disable-doc</tt>.
 
 <dt><a name="bld_cygwin"></a></dt> <!-- http://nco.sf.net#bld_cygwin -->
 For Windows with Cygwin, select and install the following packages with Cygwin Setup:

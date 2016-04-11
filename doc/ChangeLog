@@ -1,7 +1,6 @@
 2016-04-08  Henry Butowsky  <henryb@hush.com>
 
-	* mods to ncap_var_var_op() and ncap_var_var_inc() so that 2 arg operators can handle 
-	situation where one operand is of size==1 with out stretching or a conform call
+	* Modify ncap_var_var_op() and ncap_var_var_inc() so two operand functions need not stretch or conform scalars
 
 2016-04-07  Charlie Zender  <zender@uci.edu>
 
