@@ -149,7 +149,10 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
+<!-- <li>2016 Apr&nbsp;??: 4.6.1 (<i>In progress</i>) -->
 <li>2016 Apr&nbsp;??: 4.6.0 (<i>In progress</i>)
+<li>2016 Apr&nbsp;06: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201604.pdf">Poster</a> at NASA ESDSWG, Greenbelt</li>
+<li>2016 Apr&nbsp;05: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">Talk</a> at NASA GES DISC, Greenbelt</li>
 <li>2016 Feb&nbsp;17: 4.5.5 (Stability)
 <li>2016 Jan&nbsp;07: 4.5.4 (<tt>ncremap</tt>)
 <li>2015 Dec&nbsp;16: <a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">Poster</a> at Fall AGU, San Francisco</li>
@@ -166,15 +169,8 @@ and
 <li>2014 Oct&nbsp;01: 4.4.6 (<tt>ncra, ncwa</tt> packing bugfixes, stride optimization)
 <li>2014 Aug&nbsp;26: 4.4.5 (Stability)
 <li>2014 Jul&nbsp;01: NASA ACCESS 2013 <a href="#prp_axs">project</a> commences</li>
-<li>2014 May&nbsp;29: 4.4.4 (Stability)
-<li>2014 Apr&nbsp;02: 4.4.3 (Stability)
-<li>2014 Mar&nbsp;27: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">Talk</a> at NASA GSFC, Greenbelt</li>
-<li>2014 Mar&nbsp;25: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> at NASA ESDSWG, Greenbelt</li>
-<li>2014 Feb&nbsp;20: 4.4.2 (Stability)
-<li>2014 Jan&nbsp;29: 4.4.1 (Stability)
-<li>2014 Jan&nbsp;09: 4.4.0 (Stability)
-<li><a href="./milestones_old.shtml">Milestones from 2003&ndash;2013 (versions 2.8.4&ndash;4.3.9)</a></li>
-<li><a href="./nco_news.shtml">News and Announcements from 1998&ndash;2003 (version 1.1.0&ndash;2.8.3) and earlier</a></li>
+<li><a href="./milestones_old.shtml">Milestones from 200301&ndash;201406 (versions 2.8.4&ndash;4.4.4)</a></li>
+<li><a href="./nco_news.shtml">News and Announcements from 199801&ndash;200212 (version 1.1.0&ndash;2.8.3) and earlier</a></li>
 </ul>
 <hr></p>
 

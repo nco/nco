@@ -65,6 +65,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   
   nc_type var_typ;
 
+  nco_bool flg_glb=False; /* [flg] Printing attributes for root-level group */
+
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
   const nco_bool XML=prn_flg->xml; /* [flg] XML output */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
@@ -83,7 +85,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&att_nbr_vsb,(int *)NULL);
     /* Which group is this? */
     rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
-    if(rcd == NC_ENOGRP) (void)strcpy(src_sng,(CDL) ? "" : "Global"); else (void)strcpy(src_sng,(CDL) ? "" : "Group");
+    if(rcd == NC_ENOGRP) flg_glb=True;
+    if(flg_glb) (void)strcpy(src_sng,(CDL) ? "" : "Global"); else (void)strcpy(src_sng,(CDL) ? "" : "Group");
     if(CDL) prn_ndn+=prn_flg->sxn_fst;
   }else{
     /* Get name and number of attributes for variable */
@@ -443,6 +446,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     
   } /* end loop over attributes */
 
+  /* Print extra line after global attributes */
+  if(CDL && flg_glb) (void)fprintf(stdout,"\n");
   if(!prn_flg->new_fmt && CDL_OR_TRD) (void)fprintf(stdout,"\n");
   (void)fflush(stdout);
   
