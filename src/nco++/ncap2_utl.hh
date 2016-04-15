@@ -266,6 +266,7 @@ ncap_var_var_inc    /* [fnc] Add two variables */
  var_sct *var2,     /* I [sct] Input variable structure containing second operand */
  int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
  bool bram,         /* I [flg] Make a RAM variable */
+ bool bret,         /* I [flg] if true then return var else return NULL */
  prs_cls *prs_arg);
 
 

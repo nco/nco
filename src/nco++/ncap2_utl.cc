@@ -2075,6 +2075,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
  var_sct *var2,    /* I [sct] Input variable structure containing second operand */
  int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
  bool bram,         /* I [bool] If true make a RAM variable */ 
+ bool bret, 
  prs_cls *prs_arg)
 {
   const char fnc_nm[]="ncap_var_var_inc"; 
@@ -2113,12 +2114,12 @@ ncap_var_var_inc   /* [fnc] Add two variables */
     if(op==INC||op==DEC)
     { 
       var1=ncap_var_var_stc(var1,var2,op);
-      var_ret=nco_var_dpl(var1);
+      var_ret= (bret ? nco_var_dpl(var1): NULL);
     }
 
     if(op==POST_INC||op==POST_DEC)
     { 
-      var_ret=nco_var_dpl(var1);
+      var_ret=(bret ? nco_var_dpl(var1): NULL);
       var1=ncap_var_var_stc(var1,var2,op);
     }
 
@@ -2129,7 +2130,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
       std::string sa(var1->nm);
       NcapVar *Nvar=new NcapVar(var1,sa);
       prs_arg->var_vtr.push_ow(Nvar);       
-     }
+    }
     return var_ret;    
   }
   
@@ -2177,7 +2178,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   }
   
   (void)ncap_var_var_stc(var1,var2,op);
-  var_ret=nco_var_dpl(var1);
+  var_ret=(bret ? nco_var_dpl(var1): NULL);
   
   // if LHS is a variable then write to disk
   if(!vb1)

@@ -829,8 +829,7 @@ NcapVector<lmt_sct*> &lmt_vtr )
              break;
            case 1: //end
              lmt_ptr->is_usr_spc_max=True;
-             lmt_ptr->end=uival;
-             break;
+             lmt_ptr->end=uival;             break;
            case 2: //srd
              lmt_ptr->srd_sng=strdup("~fill_in");
              lmt_ptr->srd=uival;
@@ -1122,26 +1121,23 @@ static std::vector<std::string> lpp_vtr;
             
                 }
 
-    | #(exp:EXPR ass:.) {
-       RefAST tr;
-       RefAST ntr;  
+    | #(exp:EXPR ass:.) 
+     {
+       int aType; 
        
-       if(ass->getType()==ASSIGN && prs_arg->ntl_scn ){
-         ntr=ass->getFirstChild();
-         if(ntr->getType()==UTIMES) 
-           ntr=ntr->getFirstChild();
-        
-         if(ntr->getType() == VAR_ID || ntr->getType() ==ATT_ID){
-            ntr->addChild( astFactory->create(NORET,"no_ret") );
-           // std::cout << "Modified assign "<<exp->toStringTree()<<std::endl;      
-         }
-       } 
+       aType=ass->getType(); 
+
+     
+      
+      if( aType==ASSIGN || aType==POST_INC || aType==POST_DEC || aType==INC || aType==DEC||aType==PLUS_ASSIGN || aType==MINUS_ASSIGN || aType==TIMES_ASSIGN || aType==DIVIDE_ASSIGN )
+            ass->setText("NO_RET"); 
 
        var=out(exp->getFirstChild());
+
        if(var != (var_sct*)NULL)
          var=nco_var_free(var);
        iret=EXPR;
-     }
+    }
 
     // These expressions excute in their own basic blocks
     // Any expressions  which use the utility functions
@@ -1358,7 +1354,7 @@ static std::vector<std::string> lpp_vtr;
     ;
 
 // Parse assign statement - Initial Scan
-assign_ntl [bool bram] returns [var_sct *var]
+assign_ntl [bool bram,bool bret] returns [var_sct *var]
 {
 const std::string fnc_nm("assign_ntl"); 
 var=NULL_CEWI;
@@ -1549,11 +1545,11 @@ var=NULL_CEWI;
         // Copy return variable
         var=nco_var_dpl(var1);    
 
-       } //end action
+    } //end action
 
     ; // end assign block
 
-assign [bool bram] returns [var_sct *var]
+assign [bool bram,bool bret] returns [var_sct *var]
 {
 const std::string fnc_nm("assign"); 
 var=NULL_CEWI;
@@ -1748,12 +1744,13 @@ var=NULL_CEWI;
                 (void)nco_lmt_free(lmt_vtr[idx]);
 
               // See If we have to return something
-end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORET)
-                var=NULL_CEWI;
-              else 
+end0:         if(bret)
                 var=prs_arg->ncap_var_init(var_nm,true);
+              else 
+                var=NULL_CEWI;
+
                
-        } // end action
+    } // end action
 
         // Deal with LHS casting 
         | (#(VAR_ID (DMN_LIST|DMN_LIST_P) ))=> #(vid1:VAR_ID dmn:.){   
@@ -1840,10 +1837,10 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               var1->nm =strdup(var_nm.c_str());
 
               // See If we have to return something
-              if(dmn->getNextSibling() && dmn->getNextSibling()->getType()==NORET)
-                var=NULL_CEWI;
-              else 
+              if(bret)
                 var=nco_var_dpl(var1);     
+              else 
+                var=NULL_CEWI;
 
               //call to nco_var_get() in ncap_var_init() uses this property
               var1->typ_dsk=var1->type;
@@ -1852,7 +1849,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               bcst=false;
               var_cst=nco_var_free(var_cst); 
 
-          } // end action
+    } // end action
            
           | vid2:VAR_ID {   
                // Set class wide variables
@@ -1896,7 +1893,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
                         // else LHS missing value gets over written by RHS
                         if(!var_rhs->has_mss_val)
                          (void)nco_mss_val_cp(var_lhs,var_rhs);   
-                    }   
+                   }
 
                    if( var_rhs->sz != var_lhs->sz) 
                        err_prn(fnc_nm,"regular assign - var size mismatch between \""+var_nm+"\" and RHS of expression");                        
@@ -1913,15 +1910,16 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
                    nco_free(var_rhs->nm);
                    var_rhs->nm=strdup(var_nm.c_str());  
                    (void)prs_arg->ncap_var_write(var_rhs,bram);  
-               }  
+               }
 
                 // See If we have to return something
-               if(vid2->getFirstChild() && vid2->getFirstChild()->getType()==NORET)
-                 var=NULL_CEWI;
+               if(bret)
+                 var=prs_arg->ncap_var_init(var_nm,true);              
                else 
-                 var=prs_arg->ncap_var_init(var_nm,true);               ;
+                 var=NULL_CEWI;
+
                          
-       } // end action
+    } // end action
  
    |   (#(ATT_ID LMT_LIST)) => #(att:ATT_ID lmta:LMT_LIST){
 
@@ -2068,16 +2066,15 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
             prs_arg->var_vtr.push_ow(Nvar);       
 
                // See If we have to return something
-            if(lmta->getFirstChild() && lmta->getFirstChild()->getType()==NORET)
-              var=NULL_CEWI;
+            if(bret)
+              var=nco_var_dpl(var_lhs);             
             else 
-              var=nco_var_dpl(var_lhs);               ;
- 
+              var=NULL_CEWI; 
 
            att_end: ; 
 
         
-        } 
+    }
 
    |   (#(ATT_ID DMN_LIST))=> #(att1:ATT_ID DMN_LIST){
         ;
@@ -2114,20 +2111,32 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
             prs_arg->var_vtr.push_ow(Nvar);       
 
                // See If we have to return something
-            if(att2->getFirstChild() && att2->getFirstChild()->getType()==NORET)
-              var=NULL_CEWI;
+            if(bret)
+              var=nco_var_dpl(var1);               
             else 
-              var=nco_var_dpl(var1);               ;
+              var=NULL_CEWI;
+
                   
-       } // end action
+    } // end action
    ;
                
 out returns [var_sct *var]
 {
+    bool bret=true;   
     const std::string fnc_nm("out"); 
 	var_sct *var1;
     var_sct *var2;
     var=NULL_CEWI;
+  
+    // on the following tokens if text is set to NO_RET then make sure out return var=NULL
+    // the check is done in statements / EXPR
+    // out_AST_in declared an inialized  to the first arg of out() (see ncoTree.cpp/out() for actual code )
+    if( out_AST_in != ANTLR_USE_NAMESPACE(antlr)nullAST && out_AST_in->getText()=="NO_RET" )
+    {
+       int aType=out_AST_in->getType();
+       if(aType==ASSIGN ||aType==POST_INC || aType==POST_DEC || aType==INC || aType==DEC||aType==PLUS_ASSIGN || aType==MINUS_ASSIGN || aType==DIVIDE_ASSIGN || aType==TIMES_ASSIGN)
+          bret=false;
+    }      
 }  
     // arithmetic operators 
 
@@ -2137,19 +2146,19 @@ out returns [var_sct *var]
             { var=ncap_var_var_op(var1,var2, MINUS );}
     |  (#(POST_INC #(UTIMES ATT_ID)))=> #( POST_INC #(UTIMES aposti:ATT_ID)){
              var1=out(att2var(aposti));     
-             var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,false,prs_arg);      
+             var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,false,bret,prs_arg);      
        } 
     |  (#(POST_DEC #(UTIMES ATT_ID)))=> #( POST_DEC #(UTIMES apostd:ATT_ID)){
              var1=out(att2var(apostd));     
-             var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,false,prs_arg);      
+             var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,false,bret,prs_arg);      
        } 
     |  (#(INC #(UTIMES ATT_ID)))=> #( INC #(UTIMES aprei:ATT_ID)){
              var1=out(att2var(aprei));     
-             var=ncap_var_var_inc(var1,NULL_CEWI,INC,false,prs_arg);      
+             var=ncap_var_var_inc(var1,NULL_CEWI,INC,false,bret,prs_arg);      
        } 
     |  (#(DEC #(UTIMES ATT_ID)))=> #( DEC #(UTIMES apred:ATT_ID)){
              var1=out(att2var(apred));     
-             var=ncap_var_var_inc(var1,NULL_CEWI,DEC,false,prs_arg);      
+             var=ncap_var_var_inc(var1,NULL_CEWI,DEC,false,bret,prs_arg);      
        } 
 	|	#(TIMES var1=out var2=out)
             { var=ncap_var_var_op(var1,var2, TIMES );}	
@@ -2168,16 +2177,16 @@ out returns [var_sct *var]
     |   #(PLUS var1=out ) // do nothing   
 
     |   #(INC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,NULL_CEWI,INC,false,prs_arg);}
+            { var=ncap_var_var_inc(var1,NULL_CEWI,INC,false,bret,prs_arg);}
 
     |   #(DEC var1=out_asn )      
-            {var=ncap_var_var_inc(var1,NULL_CEWI, DEC,false,prs_arg );}
+            {var=ncap_var_var_inc(var1,NULL_CEWI, DEC,false,bret,prs_arg );}
 
     |   #(POST_INC var1=out_asn ){
-            var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,false,prs_arg);
+            var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,false,bret,prs_arg);
         }
     |   #(POST_DEC var1=out_asn ){      
-            var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,false,prs_arg);
+            var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,false,bret,prs_arg);
         }
     // Logical Operators
     | #(LAND var1=out var2=out)  
@@ -2210,84 +2219,83 @@ out returns [var_sct *var]
     // Assign Operators 
     
     | ( #(PLUS_ASSIGN  (VAR_ID|ATT_ID)  var2=out)) => #(PLUS_ASSIGN var1=out  var2=out)  {
-       var=ncap_var_var_inc(var1,var2,PLUS_ASSIGN ,false, prs_arg);
+       var=ncap_var_var_inc(var1,var2,PLUS_ASSIGN ,false, bret,prs_arg);
        }
 
     | (#(PLUS_ASSIGN  #(UTIMES VAR_ID) var2=out)) => #(PLUS_ASSIGN  #(UTIMES var1=out)  var2=out)  {
-       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,true, prs_arg);
+       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,true, bret,prs_arg);
        }
 
     | (#(PLUS_ASSIGN  #(UTIMES ATT_ID) var2=out)) => #(PLUS_ASSIGN  #(UTIMES atp:ATT_ID)  var2=out)  {
 
        var1=out(att2var(atp));     
-       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,false, prs_arg);
+       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,false,bret, prs_arg);
        }
 
 
     | ( #(MINUS_ASSIGN  (VAR_ID|ATT_ID)  var2=out)) => #(MINUS_ASSIGN  var1=out  var2=out)  {
-       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,false, prs_arg);
+       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,false, bret,prs_arg);
        }
 
     | (#(MINUS_ASSIGN #(UTIMES VAR_ID) var2=out)) => #(MINUS_ASSIGN #(UTIMES var1=out)  var2=out)  {
-       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,true, prs_arg);
+       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,true, bret,prs_arg);
        }
 
     | (#(MINUS_ASSIGN #(UTIMES ATT_ID) var2=out)) => #(MINUS_ASSIGN #(UTIMES atm:ATT_ID)  var2=out)  {
        var1=out(att2var(atm));     
-       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,false, prs_arg);
+       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,false, bret,prs_arg);
        }
 
     | (#(TIMES_ASSIGN  (VAR_ID|ATT_ID)  var2=out)) => #(TIMES_ASSIGN  var1=out  var2=out)  {
-       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,false, prs_arg);
+       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,false, bret,prs_arg);
        }
 
     | (#(TIMES_ASSIGN #(UTIMES VAR_ID) var2=out)) => #(TIMES_ASSIGN #(UTIMES var1=out)  var2=out)  {
-       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,true, prs_arg);
+       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,true, bret,prs_arg);
        }
 
     | (#(TIMES_ASSIGN #(UTIMES ATT_ID) var2=out)) => #(TIMES_ASSIGN #(UTIMES attm:ATT_ID)  var2=out)  {
        var1=out(att2var(attm));     
-       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,false, prs_arg);
+       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,false, bret,prs_arg);
        }
 
     | (#(DIVIDE_ASSIGN  (VAR_ID|ATT_ID)  var2=out)) => #(DIVIDE_ASSIGN  var1=out  var2=out)  {
-       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,false, prs_arg);
+       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,false, bret,prs_arg);
        }
 
     | (#(DIVIDE_ASSIGN #(UTIMES VAR_ID) var2=out)) => #(DIVIDE_ASSIGN #(UTIMES var1=out)  var2=out)  {
-       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,true, prs_arg);
+       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,true, bret,prs_arg);
        }
 
     | (#(DIVIDE_ASSIGN #(UTIMES ATT_ID) var2=out)) => #(DIVIDE_ASSIGN #(UTIMES atd:ATT_ID)  var2=out)  {
        var1=out(att2var(atd));        
-       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,false, prs_arg);
+       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,false, bret,prs_arg);
        }
 
 
     | (#(ASSIGN (VAR_ID|ATT_ID))) => #(ASSIGN asn:.) {
              if(prs_arg->ntl_scn)
-               var=assign_ntl(asn,false); 
+               var=assign_ntl(asn,false,bret); 
              else
-               var=assign(asn,false);
-      }
+               var=assign(asn,false,bret);
+    }
 
+    // dealing with a variable pointer  
     | (#(ASSIGN #(UTIMES ATT_ID) )) =>  #(ASSIGN #(atta:UTIMES ATT_ID))  {
-              // Check for RAM variable - if present 
-              // change tree - for example from:
-              //     ( EXPR ( = ( * n1 ) ( + four four ) ) )
-              // to  ( EXPR ( = n1 ( + four four ) ) )
-             RefAST tr;
 
+             RefAST tr;
              tr=atta->getFirstChild();
              tr->setNextSibling(atta->getNextSibling());
              
+              
              // remember tr siblings and children are  duplicated here   
+             
              tr=att2var(tr);   
 
              if(prs_arg->ntl_scn)
-               var=assign_ntl(tr,false); 
+               var=assign_ntl(tr,false,bret); 
              else
-               var=assign(tr,false);
+               var=assign(tr,false,bret);
                
     }  
     
@@ -2330,9 +2338,9 @@ out returns [var_sct *var]
              }
 
              if(prs_arg->ntl_scn)
-               var=assign_ntl(tr,true); 
+               var=assign_ntl(tr,true,bret); 
              else
-               var=assign(tr, true);
+               var=assign(tr, true,bret);
                
         }
    

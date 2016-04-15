@@ -222,8 +222,7 @@ NcapVector<lmt_sct*> &lmt_vtr )
              break;
            case 1: //end
              lmt_ptr->is_usr_spc_max=True;
-             lmt_ptr->end=uival;
-             break;
+             lmt_ptr->end=uival;             break;
            case 2: //srd
              lmt_ptr->srd_sng=strdup("~fill_in");
              lmt_ptr->srd=uival;
@@ -504,10 +503,10 @@ public:
 	public: int  statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * out(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
-		bool bram
+		bool bram,bool bret
 	);
 	public: var_sct * assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
-		bool bram
+		bool bram,bool bret
 	);
 	public: var_sct * out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public:  RefAST  att2var(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
