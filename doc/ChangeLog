@@ -1,4 +1,8 @@
 2016-04-15  Henry Butowsky  <henryb@hush.com>
+	* bug introduced in 4.5.4.  For a regular assign statement in two parse operation the missing values were NOT being propagated from the RHS to The LHS
+          the  following test now works ncap2 -v -O -S gsl_sf.in in.nc foo.nc   
+
+2016-04-15  Henry Butowsky  <henryb@hush.com>
 	* Mods to out() and assign() such that for ASSIGN familiy of operands and '++', -- operands a value is returned only if needed 
             
 2016-04-12  Charlie Zender  <zender@uci.edu>
