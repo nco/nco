@@ -7477,8 +7477,7 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
 {
 
   /* a) case where the dimension has coordinate variables */
-  if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd)
-  {
+  if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd){
 
     /* For this call (-X) the *same* limits are applied to all coordinates, and other variables might apply
     them too, so make sure they are applied only once by setting -1 in lmt_crr */
@@ -7582,15 +7581,8 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
     } /* Loop limits */
   } /* a) case where the dimension has coordinate variables */
 
-
   /* b) Dimension only (no coordinate variable for this dimension) */
-  else if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd)
-  {
-
-    if(nco_dbg_lvl_get() >= nco_dbg_dev)
-    {
-
-    }
+  else if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd){
 
     /* For this call (-X) the *same* limits are applied to all coordinates, and other variables might apply
     them too, so make sure they are applied only once by setting -1 in lmt_crr */

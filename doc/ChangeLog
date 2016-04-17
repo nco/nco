@@ -1,6 +1,11 @@
+2016-04-16  Charlie Zender  <zender@uci.edu>
+
+	* Add climatology_bounds stubs
+
 2016-04-15  Henry Butowsky  <henryb@hush.com>
-	* Mods to out() and assign() such that for ASSIGN familiy of operands and '++', -- operands a value is returned only if needed 
-            
+
+	* Modify out() and assign() such that for ASSIGN familiy of operands and '++', -- operands a value is returned only if needed
+
 2016-04-12  Charlie Zender  <zender@uci.edu>
 
 	* Print blank line after global attributes in CDL mode in nco_prn_att()

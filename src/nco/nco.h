@@ -1140,7 +1140,7 @@ extern "C" {
     int lmt_crr;          /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
   } lmt_msa_sct;
 
-   /* GTT coordinate variable structure; it contains netCDF model fields and an MSA field */
+  /* GTT coordinate variable structure; it contains netCDF model fields and an MSA field */
   typedef struct{ 
     char *crd_nm_fll;       /* [sng] Full coordinate name */
     char *dmn_nm_fll;       /* [sng] Full name of dimension for *this* coordinate  */  
