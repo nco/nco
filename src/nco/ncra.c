@@ -309,12 +309,20 @@ main(int argc,char **argv)
     char *tm_bnd_nm; /* [sng] Time bounds variable name (to delete) */
     char *bnd_dmn_nm; /* [sng] Bounds dimension name name */
     char *clm_bnd_nm; /* [sng] Climatology bounds variable name (to create) */
-    int tm_crd_id; /* Variable ID for tm_crd */
-    int tm_bnd_id; /* Variable ID for tm_bnds */
-    int clm_bnd_id; /* Variable ID for clm_bnds */
-    nc_type type; /* Type of (time and) climatology bounds variable(s) */
-    ptr_unn val_srt; /* Climatology bounds variable attribute start value */
-    ptr_unn val_end; /* Climatology bounds variable attribute end value */
+    int tm_crd_id_in; /* [id] Variable ID for tm_crd in input */
+    int tm_bnd_id_in; /* [id] Variable ID for tm_bnds in input */
+    int clm_bnd_id_in; /* [id] Variable ID for clm_bnds in input */
+    int tm_crd_id_out; /* [id] Variable ID for tm_crd in output */
+    int tm_bnd_id_out; /* [id] Variable ID for tm_bnds in output */
+    int clm_bnd_id_out; /* [id] Variable ID for clm_bnds in output */
+    long dmn_srt[2]; /* [idx] Start indices for retrieving start and end bounds */
+    nc_type type; /* [enm] Type of (time and) climatology bounds variable(s) */
+    nc_type tm_crd_typ; /* [enm] Variable type for tm_crd */
+    nc_type tm_bnd_typ; /* [enm] Variable type for tm_bnd */
+    nc_type clm_bnd_typ; /* [enm] Variable type for clm_bnd */
+    double val[2]; /* [frc] Climatology bounds variable attribute values */
+    double val_srt; /* [frc] Climatology bounds variable attribute start value */
+    double val_end; /* [frc] Climatology bounds variable attribute end value */
   } clm_bnd_sct;
   clm_bnd_sct cb;
   
@@ -867,63 +875,94 @@ main(int argc,char **argv)
     if(nbr_dmn > 0) dmn=nco_dmn_lst_free(dmn,nbr_dmn);
   } /* !ncra */
 
-  /* Add climatology_bounds attribute (before exiting define mode) */
+  /* Add climatology_bounds attribute to output file (before exiting define mode) */
   if(flg_cb && nco_prg_id == ncra){
+    cb.type=NC_NAT; /* [enm] Time coordinate name */
     cb.tm_crd_nm=NULL; /* [sng] Time coordinate name */
     cb.tm_bnd_nm=NULL; /* [sng] Time bounds name */
-    cb.tm_crd_id=NC_MIN_INT; /* [id] Time coordinate ID */
-    cb.tm_bnd_id=NC_MIN_INT; /* [id] Time bounds ID */
-    if((rcd=nco_inq_varid_flg(in_id,"time",&cb.tm_crd_id)) == NC_NOERR) cb.tm_crd_nm=strdup("time");
-    else if((rcd=nco_inq_varid_flg(in_id,"Time",&cb.tm_crd_id)) == NC_NOERR) cb.tm_crd_nm=strdup("Time");
-    if(cb.tm_crd_id == NC_MIN_INT){
+    cb.clm_bnd_nm=NULL; /* [sng] Climatology bounds name */
+    cb.tm_crd_id_in=NC_MIN_INT; /* [id] Time coordinate ID */
+    cb.tm_bnd_id_in=NC_MIN_INT; /* [id] Time bounds ID */
+    cb.clm_bnd_id_in=NC_MIN_INT; /* [id] Climatology bounds ID */
+    cb.clm_bnd_id_out=NC_MIN_INT; /* [id] Climatology bounds ID */
+    if((rcd=nco_inq_varid_flg(in_id,"time",&cb.tm_crd_id_in)) == NC_NOERR) cb.tm_crd_nm=strdup("time");
+    else if((rcd=nco_inq_varid_flg(in_id,"Time",&cb.tm_crd_id_in)) == NC_NOERR) cb.tm_crd_nm=strdup("Time");
+    if(cb.tm_crd_id_in != NC_MIN_INT){
+      rcd=nco_inq_vartype(in_id,cb.tm_crd_id_in,&cb.type);
+    }else{ /* !tm_crd_id_in */
       if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with unknown time coordinate. Turning-off climatology bounds mode.\n",nco_prg_nm_get());
       flg_cb=False;
       goto skp_cb; 
-    } /* !tm_crd_id */
-
-    if((rcd=nco_inq_varid_flg(in_id,"time_bnds",&cb.tm_bnd_id)) == NC_NOERR) cb.tm_bnd_nm=strdup("time_bnds");
-    else if((rcd=nco_inq_varid_flg(in_id,"time_bounds",&cb.tm_bnd_id)) == NC_NOERR) cb.tm_bnd_nm=strdup("time_bounds");
-    if(cb.tm_bnd_id == NC_MIN_INT){
+    } /* !tm_crd_in */
+      
+    if((rcd=nco_inq_varid_flg(in_id,"time_bnds",&cb.tm_bnd_id_in)) == NC_NOERR) cb.tm_bnd_nm=strdup("time_bnds");
+    else if((rcd=nco_inq_varid_flg(in_id,"time_bounds",&cb.tm_bnd_id_in)) == NC_NOERR) cb.tm_bnd_nm=strdup("time_bounds");
+    if(cb.tm_bnd_id_in == NC_MIN_INT){
       if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with unknown time bounds variable. Turning-off climatology bounds mode.\n",nco_prg_nm_get());
       flg_cb=False;
       goto skp_cb; 
-    }else{ /* !tm_bnd_id */
-      rcd=nco_inq_varid_flg(out_id,cb.tm_bnd_nm,&cb.tm_bnd_id); 
+    }else{ /* !tm_bnd_id_in */
+      /* Obtain climatology bounds start from first input file */
+      cb.dmn_srt[0]=0L;
+      cb.dmn_srt[1]=0L;
+      rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+0,(nc_type)NC_DOUBLE);
+      
+      /*  */
+      rcd=nco_inq_varid_flg(out_id,cb.tm_bnd_nm,&cb.tm_bnd_id_out); 
       if(rcd != NC_NOERR){
-	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds was not copied to output file.\n",nco_prg_nm_get());
+	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Time bounds was not copied to output file.\n",nco_prg_nm_get());
 	nco_exit(EXIT_FAILURE);
-      } /* !tm_bnd_id */
+      } /* !tm_bnd_id_out */
 
-      /* Rename time_bounds as climatology_bounds
-	 Otherwise time_bounds will be copied (and orphaned) in output file
-	 Also, this ensures same dimensions are used */
-      rcd=nco_rename_var(out_id,cb.tm_bnd_id,"climatology_bounds");
-    } /* !tm_bnd_id */
+    } /* !tm_bnd_id_in */
     
-    rcd=nco_inq_varid_flg(out_id,cb.tm_crd_nm,&cb.tm_crd_id); 
+    rcd=nco_inq_varid_flg(out_id,cb.tm_crd_nm,&cb.tm_crd_id_out); 
     if(rcd != NC_NOERR){
       if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds time coordinate not found in output file.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
-    } /* !tm_crd_id */
+    } /* !tm_crd_id_out */
+
+    if((rcd=nco_inq_varid_flg(in_id,"climatology_bnds",&cb.clm_bnd_id_in)) == NC_NOERR) cb.clm_bnd_nm=strdup("climatology_bnds");
+    else if((rcd=nco_inq_varid_flg(in_id,"climatology_bounds",&cb.clm_bnd_id_in)) == NC_NOERR) cb.clm_bnd_nm=strdup("climatology_bounds");
+    if(rcd != NC_NOERR){
+      if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Climatology bounds not found in input file.\n",nco_prg_nm_get());
+    } /* !clm_bnd_id_in */
+
+    rcd=nco_inq_varid_flg(out_id,cb.clm_bnd_nm,&cb.clm_bnd_id_out); 
+    if(rcd != NC_NOERR){
+      if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Climatology bounds not found in output file.\n",nco_prg_nm_get());
+    } /* !clm_bnd_id_in */
+
     aed_sct aed_mtd;
     char *att_nm;
     char *att_val;
 
+    /* Add climatology_bounds attribute */
     att_nm=strdup("climatology");
     att_val=strdup("climatology_bounds");
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=cb.tm_crd_nm;
-    aed_mtd.id=cb.tm_crd_id;
+    aed_mtd.id=cb.tm_crd_id_out;
     aed_mtd.sz=strlen(att_val);
     aed_mtd.type=NC_CHAR;
     aed_mtd.val.cp=att_val;
     aed_mtd.mode=aed_create;
-    (void)nco_aed_prc(out_id,cb.tm_crd_id,aed_mtd);
+    (void)nco_aed_prc(out_id,cb.tm_crd_id_out,aed_mtd);
     if(att_nm) att_nm=(char *)nco_free(att_nm);
     if(att_val) att_val=(char *)nco_free(att_val);
     
+    /* Delete bounds attribute */
+    att_nm=strdup("bounds");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=cb.tm_crd_nm;
+    aed_mtd.id=cb.tm_crd_id_out;
+    aed_mtd.mode=aed_delete;
+    (void)nco_aed_prc(out_id,cb.tm_crd_id_out,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    
     if(cb.tm_bnd_nm) cb.tm_bnd_nm=(char *)nco_free(cb.tm_bnd_nm);
     if(cb.tm_crd_nm) cb.tm_crd_nm=(char *)nco_free(cb.tm_crd_nm);
+    if(cb.clm_bnd_nm) cb.clm_bnd_nm=(char *)nco_free(cb.clm_bnd_nm);
   } /* !flg_cb */
 
   /* goto skp_cb */
@@ -1022,13 +1061,19 @@ main(int argc,char **argv)
 
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
 
-      if(flg_cb && fl_idx == 0 && nco_prg_id == ncra){
-	/* Climatology bounds start value */
-	;
-      } /* !flg_cb */
       if(flg_cb && fl_idx == fl_nbr-1 && nco_prg_id == ncra){
 	/* Climatology bounds end value */
-	;
+	/* Obtain climatology bounds end from last input file */
+	cb.dmn_srt[0]=0L;
+	cb.dmn_srt[1]=1L;
+	rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+1,(nc_type)NC_DOUBLE);
+	rcd=nco_put_var(out_id,cb.clm_bnd_id_out,cb.val,(nc_type)NC_DOUBLE);
+
+	/* Rename time_bounds as climatology_bounds
+	   Otherwise time_bounds will be copied (and orphaned) in output file
+	   Also, this ensures same dimensions are used
+	   However, renaming should occur at end of procedure so that traversal table does not get out-of-sync */
+	rcd=nco_rename_var(out_id,cb.tm_bnd_id_out,"climatology_bounds");
       } /* !flg_cb */
 
       /* Loop over number of different record dimensions in file */
