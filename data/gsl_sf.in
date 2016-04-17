@@ -1,6 +1,6 @@
 // $Header$ -*-C++-*-
 
-// Purpose: Script to test gsl special functions
+// Purpose: Script to test GSL special functions
 
 /* Usage: 
    ncap2 -O -v -S ~/nco/data/gsl_sf.in ~/nco/data/in.nc ~/foo.nc
@@ -11,17 +11,13 @@ print("Test script for gsl Special Functions\n");
 // Count number of errors
 nbr_err=0;
 nbr_err_ttl=0;
-
-
 {
   arg1[time]=1.0;
   a1@arg1=1s; 
   a1@arg2=3s;
   a1@arg3={1,2,3,4,5,6,7,8,9,10};
   time3[time]=1.0;
-
 }
-
 
 // Bessel functions
 {
@@ -48,38 +44,29 @@ nbr_err_ttl=0;
     nbr_err++;	
   }
 
-
   if( fabs(a3.total()-a4.total()) >0.01){
      print("ERROR: a2:Bessel functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(a5.total()-a6.total()) >0.01){
      print("ERROR: a5:Bessel functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(a7.avg()-a8.avg()) >0.01){
      print("ERROR: a7:Bessel functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(a9.total()-165.063) >0.01){
      print("ERROR: a9:Bessel functions\n");
      nbr_err++;	
   }
 
-
-
   print("RESULTS block a: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
-
-
 }
 
 // Elliptical Integrals
@@ -92,53 +79,43 @@ nbr_err_ttl=0;
   // takes four double args
   b5=gsl_sf_ellint_RJ(bnd_var@double_att,bnd_var@int_att,time,three_dmn_var_dbl);
 
-
   if( fabs(b0.total()-103.67256)  >0.01){
      print("ERROR: b0:Elliptical Integral functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(b1.total()-4.82441) >0.01){
      print("ERROR: b1:Elliptical Integral functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(b2.total()-0.010359 ) >0.0001){
      print("ERROR: b2:Elliptical Integral functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(b3.total()-0.94582 ) >0.001){
      print("ERROR: b3:Elliptical Integral functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(b4.total()-1.58596 ) >0.001){
      print("ERROR: b4:Elliptical Integral functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(b5.total()-0.441753 ) >0.0001){
      print("ERROR: b5:Elliptical Integral functions\n");
      nbr_err++;	
   }
 
-
   print("RESULTS block b: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
-
 }
 
 //hyper-geometric functions
 {
-
   chglon=lon;
   set_miss(chglon,-2000);
 
@@ -148,49 +125,38 @@ nbr_err_ttl=0;
   c3=gsl_sf_hyperg_2F1(2.0,1.0,chglon,0.1);
   c4=gsl_sf_hyperg_2F0(1.5,0.5,chglon/10);
 
-
   if( fabs(c0.total()-309.23826 ) >0.01){
      print("ERROR: c0:Hypergeometric functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(c1.total()-800.97646 ) >0.01){
      print("ERROR: c1:Hypergeometric functions\n");
      nbr_err++;	
   }
 
-
-
   if( fabs(c2.total()-2.02375 ) >0.001){
      print("ERROR: c2:Hypergeometric functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(c3.total()-3.0041 ) >0.001){
      print("ERROR: c3:Hypergeometric functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(c4.total()-1.0 ) >0.01){
      print("ERROR: c4:Hypergeometric functions\n");
      nbr_err++;	
   }
 
-
   print("RESULTS block c: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
 }
-
-
 
 // Legendre functions
 {
-
   leg[lon]={0,1,2,3};
 
   // d0,d1 identical
@@ -200,30 +166,25 @@ nbr_err_ttl=0;
 
   // d2,d3 identical
   d2=gsl_sf_legendre_Plm(time.int()-1,0,0.7);
-
     
   // not in gsl 2.0
   //gsl_sf_legendre_Plm_array(9,0,0.7,&d3);
 
   // d4,d5 identical
   d4=gsl_sf_legendre_sphPlm(leg,0,0.7);
-  
 
   // not in gsl 2.0
   // gsl_sf_legendre_sphPlm_array(3,0,0.7,&d5);
-
 
   if( fabs(d0.total()-d1.total() ) >0.01){
      print("ERROR: d0:Legendre functions\n");
      nbr_err++;	
   }
-
   
   if( fabs(d2.total()- 1.56887  ) >0.01){
      print("ERROR: d2:Legendre functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(d4.ttl()- 0.628677 ) >0.01){
      print("ERROR: d4:Legendre functions\n");
@@ -233,7 +194,6 @@ nbr_err_ttl=0;
   print("RESULTS block d: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
 }
 
 // Miscellaneous Functions
@@ -251,7 +211,6 @@ nbr_err_ttl=0;
   e6=gsl_sf_Chi(three_dmn_var_int/10);
   e7=gsl_sf_fermi_dirac_half(lon);
 
-
   e8=gsl_sf_lngamma(time/10);
   e9=gsl_sf_gamma_inc(time/10,time);
   e10=gsl_sf_gegenpoly_n(time.int()-1,0.1,0.3);
@@ -261,111 +220,84 @@ nbr_err_ttl=0;
   e13=time.gsl_sf_synchrotron_1();
   e14=gsl_sf_transport_4(lon/100);
 
-
-
-
-
   if( fabs(e0.total()-56.1677 >0.01)){
      print("ERROR: e0:Misc functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(e1.total()-2.02447)>0.01){
      print("ERROR: e1:Misc functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(e2.total()-2.50099553)>0.01){
      print("ERROR: e2:Misc functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(e3.avg()-0.3631 >1e-3)){
      print("ERROR: e3:Misc functions\n");
      nbr_err++;	
   }
 
-
   if( fabs( fabs(e4.avg())-406.3444 >0.001)){
      print("ERROR: e4:Misc functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(e5.min()-2.7182818 >0.001)){
      print("ERROR: e5:Misc functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(e6.total()-1667.04887 >0.001)){
      print("ERROR: e6:Misc functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(e7.avg()-1449.3344 >0.001)){
      print("ERROR: e7:Misc functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(e8.avg()-0.71191 >0.001)){
      print("ERROR: e8:Misc functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(e9.avg()-0.032042 >0.0001)){
      print("ERROR: e9:Misc functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(e10.total()-0.95417 >0.001)){
      print("ERROR: e10:Misc functions\n");
      nbr_err++;	
   }
-
 
   if(e11.total()-490 !=0){
      print("ERROR: e11:Misc functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(e12.avg()-1.2985 >0.001)){
      print("ERROR: e12:Misc functions\n");
      nbr_err++;	
   }
-
 
   if( fabs(e13.avg()- 0.11694 >0.001)){
      print("ERROR: e13:Misc functions\n");
      nbr_err++;	
   }
 
-
   if( fabs(e14.max()- 4.6764 >0.001)){
      print("ERROR: e14:Misc functions\n");
      nbr_err++;	
   }
 
-
-
-
-
-
   print("RESULTS block e: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
-
-
-
 }
 
 // Check gsl_stats and gsl_ran functions
@@ -385,20 +317,17 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
-
   //compare sd with sd input in ran generator
   if( abs(f2.gsl_stats_sd()-3.0) >0.5){  
        print("ERROR: f2:sd functions\n");
      nbr_err++;	
   }
 
-
   //compare nco min with gsl min
   if( abs(f2.min()- f2.gsl_stats_min()) >0.01){  
        print("ERROR: f2:min functions\n");
      nbr_err++;	
   }
-
 
   //compare nco max with gsl max
   if( abs(f2.max()- f2.gsl_stats_max()) >0.01){  
@@ -412,13 +341,10 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
-
-
   // repeat exercise with integers
   f3[f_size]=100;
   // create array of random numbers less than 100
   f4=gsl_rng_uniform_int(f3);
-
 
   //compare nco average with gsl average
   if( abs(f4.avg()- f4.gsl_stats_mean()) >1){  
@@ -432,7 +358,6 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
-
   //compare nco max with gsl max
   if( abs(f4.max()- f4.gsl_stats_max()) >0.01){  
        print("ERROR: f4:max functions\n");
@@ -445,18 +370,15 @@ nbr_err_ttl=0;
       nbr_err++;	
   }
 
-
   // check sd and sd_m
   if( abs(  gsl_stats_sd(f4) - gsl_stats_sd_m(f4,1,f4.size(),gsl_stats_mean(f4)))>0.01){
       print("ERROR: f4:gsl variance functions\n");
       nbr_err++;	
   }
 
-
   f5[f_size]=2.0;
 
   f6=gsl_ran_exponential(f5).sort();
-
 
    // check weighted functions
  if( abs( gsl_stats_wmean(1.0d,1,f2,1,f2.size())- gsl_stats_mean(f2)) >0.01){  
@@ -464,15 +386,11 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
-
    // check weighted functions
  if( abs( gsl_stats_wmean(0.5d,1,f6,1,f6.size())- gsl_stats_mean(f6)) >0.01){  
        print("ERROR: f6: weighted mean2 function\n");
      nbr_err++;	
   }
-
-
-
 
   print("RESULTS block f: Num errors="); print(nbr_err,"%d");
   //nbr_err_ttl+=nbr_err;
@@ -480,28 +398,19 @@ nbr_err_ttl=0;
 
 }
 
-
-
-
 // Cumulative distribution functions
 {
   g1=gsl_cdf_ugaussian_P(three_dmn_var_dbl/10);
   g2=gsl_cdf_gaussian_P(three_dmn_var_dbl/20,2.0);
   g3=gsl_cdf_gamma_P(time,1.0,2.0);
-  
-
 
   print("RESULTS block g: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
 }
-
 
 // Least Squares Fitting 
 {
-
-
   h_xin[time]={1,2,3,4,5,6,7,8,9,10.0};
   h_yin[time]={3.1,6.2,9.1,12.2,15.1,18.2,21.3,24.0,27.0,30.0};
   h_win[time]=1.0;
@@ -519,16 +428,10 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
-
-
   print("RESULTS block h: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
 }
-
-
-
 
 // Results summany
 print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");

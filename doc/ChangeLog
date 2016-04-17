@@ -6,7 +6,7 @@
 
 	* Modify out() and assign() so ASSIGN familiy of operands and '++', -- operands a value is returned only if needed
 
-	* Fix bug introduced in 4.5.4: For a regular assign statement in two parse operation missing values were NOT propagated from RHS to LHS. Following test now works ncap2 -v -O -S gsl_sf.in in.nc foo.nc
+	* Fix bug introduced in 4.5.4: Regular assign statements in two-parse operations did not propagate missing values from RHS to LHS. Following test now works ncap2 -v -O -S gsl_sf.in in.nc foo.nc
 
 2016-04-12  Charlie Zender  <zender@uci.edu>
 

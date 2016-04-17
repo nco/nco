@@ -876,7 +876,7 @@ main(int argc,char **argv)
     if((rcd=nco_inq_varid_flg(in_id,"time",&cb.tm_crd_id)) == NC_NOERR) cb.tm_crd_nm=strdup("time");
     else if((rcd=nco_inq_varid_flg(in_id,"Time",&cb.tm_crd_id)) == NC_NOERR) cb.tm_crd_nm=strdup("Time");
     if(cb.tm_crd_id == NC_MIN_INT){
-      if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with unknown time coordinate. Turning off climatology bounds mode.\n",nco_prg_nm_get());
+      if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with unknown time coordinate. Turning-off climatology bounds mode.\n",nco_prg_nm_get());
       flg_cb=False;
       goto skp_cb; 
     } /* !tm_crd_id */
@@ -884,7 +884,7 @@ main(int argc,char **argv)
     if((rcd=nco_inq_varid_flg(in_id,"time_bnds",&cb.tm_bnd_id)) == NC_NOERR) cb.tm_bnd_nm=strdup("time_bnds");
     else if((rcd=nco_inq_varid_flg(in_id,"time_bounds",&cb.tm_bnd_id)) == NC_NOERR) cb.tm_bnd_nm=strdup("time_bounds");
     if(cb.tm_bnd_id == NC_MIN_INT){
-      if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with unknown time bounds variable. Turning off climatology bounds mode.\n",nco_prg_nm_get());
+      if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with unknown time bounds variable. Turning-off climatology bounds mode.\n",nco_prg_nm_get());
       flg_cb=False;
       goto skp_cb; 
     }else{ /* !tm_bnd_id */
