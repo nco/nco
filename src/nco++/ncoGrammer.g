@@ -1886,17 +1886,14 @@ end0:         if(bret)
                    // var is defined and populated &  RHS is scalar -then stretch var to match
                    var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);   
                    if(var_rhs->sz ==1 && var_lhs->sz >1)
-                   {
                        (void)ncap_att_stretch(var_rhs,var_lhs->sz);
-                        // this is a special case -- if the RHS scalar has
-                        // no missing value then retain LHS missing value
-                        // else LHS missing value gets over written by RHS
-                        if(!var_rhs->has_mss_val)
-                         (void)nco_mss_val_cp(var_lhs,var_rhs);   
-                   }
 
                    if( var_rhs->sz != var_lhs->sz) 
                        err_prn(fnc_nm,"regular assign - var size mismatch between \""+var_nm+"\" and RHS of expression");                        
+
+                   if(var_rhs->has_mss_val)
+                        (void)nco_mss_val_cp(var_rhs,var_lhs);   
+
 
                    var_lhs->val.vp=var_rhs->val.vp;
                
