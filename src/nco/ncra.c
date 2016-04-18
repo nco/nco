@@ -303,29 +303,28 @@ main(int argc,char **argv)
 
   /* Climatology bounds structure */
   typedef struct{ /* clm_bnd_sct */
-    char *fl_srt; /* [sng] First file in climatology */
-    char *fl_end; /* [sng] Last file in climatology */
-    char *tm_crd_nm; /* [sng] Name of time coordinate variable */
-    char *tm_bnd_nm; /* [sng] Time bounds variable name (to delete) */
     char *bnd_dmn_nm; /* [sng] Bounds dimension name name */
     char *clm_bnd_nm; /* [sng] Climatology bounds variable name (to create) */
-    int tm_crd_id_in; /* [id] Variable ID for tm_crd in input */
-    int tm_bnd_id_in; /* [id] Variable ID for tm_bnds in input */
+    char *fl_end; /* [sng] Last file in climatology */
+    char *fl_srt; /* [sng] First file in climatology */
+    char *tm_bnd_nm; /* [sng] Time bounds variable name (to delete) */
+    char *tm_crd_nm; /* [sng] Name of time coordinate variable */
+    char *unt_val; /* [sng] Bounds units value */
+    double val[2]; /* [frc] Climatology bounds variable attribute values */
     int clm_bnd_id_in; /* [id] Variable ID for clm_bnds in input */
-    int tm_crd_id_out; /* [id] Variable ID for tm_crd in output */
-    int tm_bnd_id_out; /* [id] Variable ID for tm_bnds in output */
     int clm_bnd_id_out; /* [id] Variable ID for clm_bnds in output */
+    int tm_bnd_id_in; /* [id] Variable ID for tm_bnds in input */
+    int tm_bnd_id_out; /* [id] Variable ID for tm_bnds in output */
+    int tm_crd_id_in; /* [id] Variable ID for tm_crd in input */
+    int tm_crd_id_out; /* [id] Variable ID for tm_crd in output */
     long dmn_ids[2]; /* [idx] Dimension IDs for new bounds variable */
     long dmn_srt[2]; /* [idx] Start indices for retrieving start and end bounds */
-    nco_bool tm_bnd_in; /* [flg] Time bounds appear in input */
-    nco_bool clm_bnd_in; /* [flg] Climatology bounds appear in input */
-    nco_bool bnd2clm; /* [flg] Convert time bounds to climatology bounds */
-    nco_bool clm2clm; /* [flg] Convert climatology bounds to climatology bounds */
-    nco_bool clm2bnd; /* [flg] Convert climatology bounds to time bounds */
     nc_type type; /* [enm] Type of (time and) climatology bounds variable(s) */
-    double val[2]; /* [frc] Climatology bounds variable attribute values */
-    double val_srt; /* [frc] Climatology bounds variable attribute start value */
-    double val_end; /* [frc] Climatology bounds variable attribute end value */
+    nco_bool bnd2clm; /* [flg] Convert time bounds to climatology bounds */
+    nco_bool clm2bnd; /* [flg] Convert climatology bounds to time bounds */
+    nco_bool clm2clm; /* [flg] Convert climatology bounds to climatology bounds */
+    nco_bool clm_bnd_in; /* [flg] Climatology bounds appear in input */
+    nco_bool tm_bnd_in; /* [flg] Time bounds appear in input */
   } clm_bnd_sct;
   clm_bnd_sct cb;
   
@@ -882,6 +881,7 @@ main(int argc,char **argv)
   if(flg_cb && nco_prg_id == ncra){
     char bnd_sng[]="bounds"; /* CF-standard time bounds attribute name */
     char clm_sng[]="climatology"; /* CF-standard climatology bounds attribute name */
+    char unt_sng[]="units"; /* NUG-standard units attribute name */
     long att_sz;
     nc_type att_typ;
 
@@ -994,18 +994,14 @@ main(int argc,char **argv)
       if(cb.clm2bnd) cb.tm_bnd_id_out=cb.clm_bnd_id_out;
     } /* !clm2clm */
 
-    aed_sct aed_mtd;
-    char *att_nm;
-    char *att_val;
-
-    if(cb.bnd2clm){
-      /*      cb.dmn_ids[0]=cb.dmn_id_crd;
-      cb.dmn_ids[1]=cb.dmn_id_bnd;
-      (void)nco_def_var(out_id,cb.clm_bnd_nm,cb.type,dmn_nbr_2D,cb.dmn_ids,&cb.clm_bnd_id_out); */
+    if(cb.bnd2clm || cb.clm2bnd){
+      aed_sct aed_mtd;
+      char *att_nm;
+      char *att_val;
 
       /* Add climatology_bounds attribute */
-      att_nm=strdup("climatology");
-      att_val=strdup("climatology_bounds");
+      att_nm = cb.bnd2clm ? strdup("climatology") : strdup("bounds");
+      att_val= cb.bnd2clm ? strdup("climatology_bounds") : strdup("time_bnds");
       aed_mtd.att_nm=att_nm;
       aed_mtd.var_nm=cb.tm_crd_nm;
       aed_mtd.id=cb.tm_crd_id_out;
@@ -1018,40 +1014,41 @@ main(int argc,char **argv)
       if(att_val) att_val=(char *)nco_free(att_val);
       
       /* Delete bounds attribute */
-      att_nm=strdup("bounds");
+      att_nm= cb.bnd2clm ? strdup("bounds") : strdup("climatology_bounds");
       aed_mtd.att_nm=att_nm;
       aed_mtd.var_nm=cb.tm_crd_nm;
       aed_mtd.id=cb.tm_crd_id_out;
       aed_mtd.mode=aed_delete;
       (void)nco_aed_prc(out_id,cb.tm_crd_id_out,aed_mtd);
       if(att_nm) att_nm=(char *)nco_free(att_nm);
-    } /* !bnd2clm */
-    
-    if(cb.clm2bnd){
-      /* Add bounds attribute */
-      att_nm=strdup("bounds");
-      att_val=strdup("time_bnds");
-      aed_mtd.att_nm=att_nm;
-      aed_mtd.var_nm=cb.tm_crd_nm;
-      aed_mtd.id=cb.tm_crd_id_out;
-      aed_mtd.sz=strlen(att_val);
-      aed_mtd.type=NC_CHAR;
-      aed_mtd.val.cp=att_val;
-      aed_mtd.mode=aed_create;
-      (void)nco_aed_prc(out_id,cb.tm_crd_id_out,aed_mtd);
-      if(att_nm) att_nm=(char *)nco_free(att_nm);
-      if(att_val) att_val=(char *)nco_free(att_val);
-      
-      /* Delete climatology_bounds attribute */
-      att_nm=strdup("climatology_bounds");
-      aed_mtd.att_nm=att_nm;
-      aed_mtd.var_nm=cb.tm_crd_nm;
-      aed_mtd.id=cb.tm_crd_id_out;
-      aed_mtd.mode=aed_delete;
-      (void)nco_aed_prc(out_id,cb.tm_crd_id_out,aed_mtd);
-      if(att_nm) att_nm=(char *)nco_free(att_nm);
-    } /* !clm2bnd */
 
+      /* Copy units attribute if necessary */
+      if(cb.tm_bnd_in) rcd=nco_inq_att_flg(out_id,cb.tm_bnd_id_in,unt_sng,&att_typ,&att_sz);
+      if(cb.clm_bnd_in) rcd=nco_inq_att_flg(out_id,cb.clm_bnd_id_in,unt_sng,&att_typ,&att_sz);
+      if(rcd != NC_NOERR && att_typ == NC_CHAR){
+	rcd=nco_inq_att_flg(out_id,cb.tm_crd_id_in,unt_sng,&att_typ,&att_sz);
+	if(rcd == NC_NOERR && att_typ == NC_CHAR){
+	  cb.unt_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+	  rcd+=nco_get_att(in_id,cb.tm_crd_id_in,unt_sng,cb.unt_val,att_typ);
+	  /* NUL-terminate attribute before using strstr() */
+	  cb.unt_val[att_sz]='\0';
+	  
+	  /* Add climatology_bounds attribute */
+	  att_nm=strdup(unt_sng);
+	  att_val=cb.unt_val;
+	  aed_mtd.att_nm=att_nm;
+	  aed_mtd.var_nm=cb.bnd2clm ? cb.tm_bnd_nm : cb.clm_bnd_nm;
+	  aed_mtd.id=cb.bnd2clm ? cb.tm_bnd_id_out : cb.clm_bnd_id_out;
+	  aed_mtd.sz=strlen(att_val);
+	  aed_mtd.type=NC_CHAR;
+	  aed_mtd.val.cp=att_val;
+	  aed_mtd.mode=aed_create;
+	  if(cb.bnd2clm) (void)nco_aed_prc(out_id,cb.tm_bnd_id_out,aed_mtd); else (void)nco_aed_prc(out_id,cb.clm_bnd_id_out,aed_mtd);
+	  if(att_nm) att_nm=(char *)nco_free(att_nm);
+	  if(att_val) att_val=cb.unt_val=(char *)nco_free(att_val);
+	} /* !rcd && att_typ */
+      } /* !rcd && att_typ */
+    } /* !bnd2clm !clm2bnd */
   } /* !flg_cb */
   
   /* goto skp_cb */
@@ -1749,8 +1746,8 @@ main(int argc,char **argv)
        Also, this ensures same dimensions are used
        Rename at end of procedure so that traversal table does not get out-of-sync */
     rcd+=nco_redef(out_id);
-    if(cb.bnd2clm) rcd=nco_rename_var(out_id,cb.tm_bnd_id_out,cb.clm_bnd_nm);
-    if(cb.clm2bnd) rcd=nco_rename_var(out_id,cb.clm_bnd_id_out,cb.tm_bnd_nm);
+    if(cb.bnd2clm) rcd+=nco_rename_var(out_id,cb.tm_bnd_id_out,cb.clm_bnd_nm);
+    if(cb.clm2bnd) rcd+=nco_rename_var(out_id,cb.clm_bnd_id_out,cb.tm_bnd_nm);
     rcd+=nco_enddef(out_id);
   } /* !flg_cb */
 
