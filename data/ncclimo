@@ -3,10 +3,32 @@
 # Purpose: Climatology script tailored to ACME guidelines for CAM/CLM output
 # This script produces climatological monthly means, seasonal means, annual mean, and optionally regrids all these files
 
-# Author: C. Zender
-# Created: 20150526
+# Copyright (C) 2015-2016 Charlie Zender
+# This file is part of NCO, the netCDF Operators. NCO is free software.
+# You may redistribute and/or modify NCO under the terms of the 
+# GNU General Public License (GPL) Version 3.
 
-# Source: https://github.com/ACME-Climate/PreAndPostProcessingScripts/blob/master/generate_climatologies/climo_nco.sh
+# As a special exception to the terms of the GPL, you are permitted 
+# to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
+# libraries and to distribute the resulting executables under the terms 
+# of the GPL, but in addition obeying the extra stipulations of the 
+# HDF, netCDF, OPeNDAP, and UDUnits licenses.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+# See the GNU General Public License for more details.
+
+# The original author of this software, Charlie Zender, seeks to improve
+# it with your suggestions, contributions, bug-reports, and patches.
+# Please contact the NCO project at http://nco.sf.net or write to
+# Charlie Zender
+# Department of Earth System Science
+# University of California, Irvine
+# Irvine, CA 92697-3100
+
+# Source: https://github.com/nco/nco/tree/master/data/ncclimo
+# Documentation: http://nco.sf.net/nco.html#ncclimo
 
 # Prerequisites: Bash, NCO
 # Script could use other shells, e.g., dash (Debian default) after rewriting function definition and looping constructs
@@ -76,25 +98,24 @@ case "${HOSTNAME}" in
 esac # !HOSTNAME
 
 # Production usage:
-# chmod a+x ~/PreAndPostProcessingScripts/generate_climatologies/climo_nco.sh
-# climo_nco.sh -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm
-# climo_nco.sh -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm
-# climo_nco.sh -c B1850C5e1_ne30 -s 2 -e 199 -i /lustre/atlas1/cli115/world-shared/mbranst/B1850C5e1_ne30/atm/hist -o ${DATA}/ne30/clm
+# ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm
+# ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm
+# ncclimo -c B1850C5e1_ne30 -s 2 -e 199 -i /lustre/atlas1/cli115/world-shared/mbranst/B1850C5e1_ne30/atm/hist -o ${DATA}/ne30/clm
 
 # Debugging and Benchmarking:
-# climo_nco.sh > ~/climo_nco.out 2>&1 &
-# climo_nco.sh -c B1850C5e1_ne30 -s 2 -e 199 > ~/climo_nco.out 2>&1 &
-# climo_nco.sh -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/climo_nco.out 2>&1 &
-# climo_nco.sh -d 2 -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o ${DATA}/anl > ~/climo_nco.out 2>&1 &
-# climo_nco.sh -d 2 -x Yes -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o ${DATA}/anl > ~/climo_nco.out 2>&1 &
-# climo_nco.sh -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm > ~/climo_nco.out 2>&1 &
-# climo_nco.sh -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm > ~/climo_nco.out 2>&1 &
-# MPAS: Prior to running climo_nco.sh on MPAS output, annotate missing values of input with, e.g.,
+# ncclimo > ~/ncclimo.out 2>&1 &
+# ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
+# ncclimo -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/ncclimo.out 2>&1 &
+# ncclimo -d 2 -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o ${DATA}/anl > ~/ncclimo.out 2>&1 &
+# ncclimo -d 2 -x Yes -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o ${DATA}/anl > ~/ncclimo.out 2>&1 &
+# ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm > ~/ncclimo.out 2>&1 &
+# MPAS: Prior to running ncclimo on MPAS output, annotate missing values of input with, e.g.,
 # for fl in `ls hist.*` ; do
 #  ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${fl}
 # done
-# climo_nco.sh -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/climo_nco.out 2>&1 &
-# climo_nco.sh -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/climo_nco.out 2>&1 &
+# ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -109,27 +130,27 @@ esac # !HOSTNAME
 # https://www.nersc.gov/users/computational-systems/edison/running-jobs/aprun
 # OLCF PBS: 
 # https://www.olcf.ornl.gov/support/system-user-guides/rhea-user-guide/#903
-# Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute climo_nco.sh command interactively
-#   Cooley: qsub -I -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname=climo_nco
-#   Cori:   salloc  -A acme --nodes=12 --partition=debug --time=00:30:00 --job-name=climo_nco # NB: 30 minute limit, Edison too
-#   Hopper: qsub -I -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q debug -N climo_nco # deprecated, old Edison
-#   Rhea:   qsub -I -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N climo_nco # Bigmem: -l partition=gpu
+# Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
+#   Cooley: qsub -I -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname=ncclimo
+#   Cori:   salloc  -A acme --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit, Edison too
+#   Hopper: qsub -I -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q debug -N ncclimo # deprecated, old Edison
+#   Rhea:   qsub -I -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
 #   Yellow: fxm # Bigmem: 
-# Non-interactive batch procedure: a) Store climo_nco.sh command in climo_nco.[cobalt|pbs] b) qsub climo_nco.[cobalt|pbs]
+# Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs] b) qsub ncclimo.[cobalt|pbs]
 # Non-interactive batch queue differences (besides argument syntax):
 # 1. Cobalt requires an initial 'shebang' line to specify the shell interpreter (not required on PBS)
 # 2. Cobalt appends stdout/stderr to existing output files, if any, whereas PBS overwrites existing files
 # 3. Cobalt uses ${COBALT_NODEFILE} and (NA) whereas PBS uses ${PBS_NODEFILE} and ${PBS_NUM_PPN}, respectively, and SLURM uses ${SLURM_NODELIST} and ${SLURM_CPUS_ON_NODE}, respectively
 # Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables
-#   Cooley a): /bin/rm -f ~/climo_nco.err  ~/climo_nco.out
-#              echo '#!/bin/bash' > ~/climo_nco.cobalt
-#              echo "climo_nco.sh -d 1 -p mpi -c b1850c5_m2a -s 0055 -e 0058 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/climo_nco.cobalt;chmod a+x ~/climo_nco.cobalt
-#   Cori,Edison a): echo "climo_nco.sh -a scd -d 1 -p mpi -c AMIP_ACMEv02ce_FC5_ne30_ne30_COSP -s 2008 -e 2012 -i /scratch1/scratchdirs/wlin/archive/AMIP_ACMEv02ce_FC5_ne30_ne30_COSP/atm/hist -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc"  > ~/climo_nco.pbs;chmod a+x ~/climo_nco.slurm
-#   Rhea a):   echo "climo_nco.sh -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc"  > ~/climo_nco.pbs;chmod a+x ~/climo_nco.pbs
-#   Cooley b): qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname climo_nco --error ~/climo_nco.err --output ~/climo_nco.out --notify zender@uci.edu ~/climo_nco.cobalt
-#   Cori,Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=regular --job-name=climo_nco --mail-type=END --error=~/climo_nco.err --output=~/climo_nco.out ~/climo_nco.slurm
-#   Hopper b): qsub -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q regular -N climo_nco -j oe -m e -o ~/climo_nco.out ~/climo_nco.pbs
-#   Rhea b):   qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N climo_nco -j oe -m e -o ~/climo_nco.out ~/climo_nco.pbs
+#   Cooley a): /bin/rm -f ~/ncclimo.err  ~/ncclimo.out
+#              echo '#!/bin/bash' > ~/ncclimo.cobalt
+#              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 0055 -e 0058 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
+#   Cori,Edison a): echo "ncclimo -a scd -d 1 -p mpi -c AMIP_ACMEv02ce_FC5_ne30_ne30_COSP -s 2008 -e 2012 -i /scratch1/scratchdirs/wlin/archive/AMIP_ACMEv02ce_FC5_ne30_ne30_COSP/atm/hist -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc"  > ~/ncclimo.pbs;chmod a+x ~/ncclimo.slurm
+#   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc"  > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#   Cooley b): qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
+#   Cori,Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=regular --job-name=ncclimo --mail-type=END --error=~/ncclimo.err --output=~/ncclimo.out ~/ncclimo.slurm
+#   Hopper b): qsub -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
+#   Rhea b):   qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 
 # Normal use: Set five "mandatory" inputs (caseid, yr_srt, yr_end, drc_in, drc_out), and possibly rgr_map, on command line
 # caseid:  Simulation name (filenames must start with ${caseid})
@@ -191,7 +212,7 @@ esac # !HOSTNAME
 #          '-D 2 -7 -L 1' for NCO debugging level 2, netCDF4-classic output, compression level 1
 #          '--no_tmp_fl -x' to skip temporary files, turn extraction into exclusion list
 # rgr_opt: String of options (besides thread-number) to pass-through exclusively to NCO regridder, e.g., 
-#          climo_nco.sh -m clm2 ... -R col_nm=lndgrid -r map.nc ...
+#          ncclimo -m clm2 ... -R col_nm=lndgrid -r map.nc ...
 # thr_nbr: Thread number to use in NCO regridder, '-t 1' for one thread, '-t 2' for two threads...
 
 # Set script name and run directory
@@ -280,13 +301,13 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "          ${fnt_bld}$spt_nm -c hist    -m ice  -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -c hist    -m ocn -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}\n\n"
     printf "Interactive batch queues on ...\n"
-    printf "cooley: qsub -I -A HiRes_EarthSys --nodecount=1 --time=00:30:00 --jobname=climo_nco\n"
-    printf "cori  : salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=climo_nco\n"
-    printf "edison: salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=climo_nco\n"
-    printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N climo_nco\n"
-    printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -lpartition=gpu -N climo_nco # Bigmem\n\n"
-#    echo "3-yrs  ne30: climo_nco.sh -c famipc5_ne30_v0.3_00003 -s 1980 -e 1982 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc > ~/climo_nco.out 2>&1 &"
-#    printf "3-yrs ne120: climo_nco.sh -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1982 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ~zender/data/maps/map_ne120np4_to_fv257x512_aave.20150901.nc > ~/climo_nco.out 2>&1 &\n\n"
+    printf "cooley: qsub -I -A HiRes_EarthSys --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
+    printf "cori  : salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
+    printf "edison: salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
+    printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
+    printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -lpartition=gpu -N ncclimo # Bigmem\n\n"
+#    echo "3-yrs  ne30: ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1982 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc > ~/ncclimo.out 2>&1 &"
+#    printf "3-yrs ne120: ncclimo -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1982 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ~zender/data/maps/map_ne120np4_to_fv257x512_aave.20150901.nc > ~/ncclimo.out 2>&1 &\n\n"
     exit 1
 } # end fnc_usg_prn()
 
@@ -640,7 +661,7 @@ for mth in {01..12}; do
 	fi # ! -e
     done # !fl_in
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
-    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
+    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
     cmd_cf[${clm_idx}]="cf_clm_att_put ${bnd_nm} ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_clm_srt}-${MM}.nc ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_clm_end}-${MM}.nc ${fl_out[${clm_idx}]} ${par_opt_cf}"
 done # !mth
 
@@ -761,10 +782,10 @@ fi # !rgr_map
 # Block 2: Climatological seasonal means
 # Block 2 Loop 1: Generate seasonal commands
 printf "Climatological seasonal means...\n"
-cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
-cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
-cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
-cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
+cmd_clm[13]="${cmd_mpi[13]} ncra -O -w 31,30,31 ${nco_opt} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
+cmd_clm[14]="${cmd_mpi[14]} ncra -O -w 30,31,31 ${nco_opt} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
+cmd_clm[15]="${cmd_mpi[15]} ncra -O -w 30,31,30 ${nco_opt} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
+cmd_clm[16]="${cmd_mpi[16]} ncra -O -w 31,31,28 ${nco_opt} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
 
 # PMC: next line hacks code to use AMWG weights instead of NCO weights
 #printf "MAJOR KLUDGE: FORCING USE OF AMWG WTS!!!"
@@ -864,7 +885,7 @@ fi # !rgr_map
 
 # Block 3: Climatological annual mean (seventeenth file)
 printf "Climatological annual mean...\n"
-cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
+cmd_clm[17]="${cmd_mpi[17]} ncra -O -w 92,92,91,90 ${nco_opt} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
 if [ ${dbg_lvl} -ge 1 ]; then
     echo ${cmd_clm[17]}
 fi # !dbg
