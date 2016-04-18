@@ -8,7 +8,6 @@
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
-#include "nco_sng_utl.h" /* String utilities */
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
 char * /* O [sng] netCDF-compatible name */

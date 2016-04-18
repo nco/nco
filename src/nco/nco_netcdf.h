@@ -58,6 +58,9 @@
 
 /* Personal headers */
 #include "nco_typ.h" /* Type definitions, opaque types */
+#ifdef _MSC_VER
+# include "nco_sng_utl.h" /* String utilities */
+#endif /* !_MSC_VER */
 
 /* NB: 
    nco_netcdf.h does #include nco_typ.h which #defines some forward-compatibility tokens
