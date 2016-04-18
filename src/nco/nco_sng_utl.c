@@ -601,6 +601,50 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing decimal point and preceding exponen
   return;
 } /* end sng_trm_trl_zro() */
 
+nc_type /* O [enm] netCDF type */
+nco_sng2typ /* [fnc] Convert user-supplied string to netCDF type enum */
+(const char * const typ_sng) /* I [sng] String indicating type */
+{
+  /* Purpose: Convert user-supplied string to netCDF type */
+  const char fnc_nm[]="nco_sng2typ()";
+
+  /* Convert single letter code to type enum */
+  switch(*typ_sng){
+  case 'F':	
+  case 'f': return (nc_type)NC_FLOAT; break;
+  case 'D':	
+  case 'd': return (nc_type)NC_DOUBLE; break;
+  case 'C':	
+  case 'c': return (nc_type)NC_CHAR; break;
+  case 'B':	
+  case 'b': return (nc_type)NC_BYTE; break;
+  default: 
+    /* Ambiguous single letters and extended matches must use full string comparisons */
+    if(!strcasecmp(typ_sng,"float") || !strcasecmp(typ_sng,"float32") || !strcasecmp(typ_sng,"NC_FLOAT")) return (nc_type)NC_FLOAT; 
+    else if(!strcasecmp(typ_sng,"l") || !strcasecmp(typ_sng,"i") || !strcasecmp(typ_sng,"int") || !strcasecmp(typ_sng,"int32") || !strcasecmp(typ_sng,"NC_INT")) return (nc_type)NC_INT; 
+    else if(!strcasecmp(typ_sng,"s") || !strcasecmp(typ_sng,"short") || !strcasecmp(typ_sng,"int16") || !strcasecmp(typ_sng,"NC_SHORT")) return (nc_type)NC_SHORT; 
+#ifdef ENABLE_NETCDF4
+    else if(!strcasecmp(typ_sng,"ub") || !strcasecmp(typ_sng,"ubyte") || !strcasecmp(typ_sng,"uint8") || !strcasecmp(typ_sng,"NC_UBYTE")) return (nc_type)NC_UBYTE; 
+    else if(!strcasecmp(typ_sng,"us") || !strcasecmp(typ_sng,"ushort") || !strcasecmp(typ_sng,"uint16") || !strcasecmp(typ_sng,"NC_USHORT")) return (nc_type)NC_USHORT; 
+    else if(!strcasecmp(typ_sng,"u") || !strcasecmp(typ_sng,"ui") || !strcasecmp(typ_sng,"uint") || !strcasecmp(typ_sng,"uint32") || !strcasecmp(typ_sng,"ul") || !strcasecmp(typ_sng,"NC_UINT")) return (nc_type)NC_UINT; 
+    else if(!strcasecmp(typ_sng,"ll") || !strcasecmp(typ_sng,"int64") || !strcasecmp(typ_sng,"NC_INT64")) return (nc_type)NC_INT64; 
+    else if(!strcasecmp(typ_sng,"ull") || !strcasecmp(typ_sng,"uint64") || !strcasecmp(typ_sng,"NC_UINT64")) return (nc_type)NC_UINT64; 
+    else if(!strcasecmp(typ_sng,"sng") || !strcasecmp(typ_sng,"string") || !strcasecmp(typ_sng,"NC_STRING")) return (nc_type)NC_STRING; 
+    else{
+      (void)fprintf(stderr,"NCO: ERROR `%s' is not a supported netCDF data type\n",typ_sng);
+      (void)fprintf(stderr,"NCO: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, `i' = `l' = integer, `b' = byte");
+      (void)fprintf(stderr,", `ub' = unsigned byte, `us' = unsigned short, `u' or `ui' or `ul' = unsigned int,`ll' or `int64' = 64-bit signed integer, `ull' or `uint64` = unsigned 64-bit integer, `sng' or `string' = string");
+      (void)fprintf(stderr,"\n");
+      nco_err_exit(0,fnc_nm);
+    }
+#endif /* ENABLE_NETCDF4 */
+    break;
+  } /* end switch */
+  
+  return (nc_type)NC_NAT;
+
+} /* end nco_sng2typ() */
+
 kvm_sct /* O [sct] Key-value pair */
 nco_sng2kvm /* [fnc] Parse string into key-value pair */
 (char *sng) /* I [sng] String to parse, including "=" */

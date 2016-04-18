@@ -58,9 +58,6 @@
 
 /* Personal headers */
 #include "nco_typ.h" /* Type definitions, opaque types */
-#ifdef _MSC_VER
-# include "nco_sng_utl.h" /* String utilities */
-#endif /* !_MSC_VER */
 
 /* NB: 
    nco_netcdf.h does #include nco_typ.h which #defines some forward-compatibility tokens
@@ -252,10 +249,6 @@ void
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 (const int rcd, /* I [enm] netCDF error code */ 
  const char * const msg); /* I [sng] Supplemental error message */
-
-nc_type /* O [enm] netCDF type */
-nco_sng2typ /* [fnc] Convert user-supplied string to netCDF type enum */
-(const char * const typ_sng); /* I [sng] String indicating type */
 
 size_t /* O [B] Native type size */
 nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */

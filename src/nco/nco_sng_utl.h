@@ -42,7 +42,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-
 #ifdef NEED_ISBLANK
   int /* O [flg] Character is a space or horizontal tab */
   isblank /* [fnc] Is character a space or horizontal tab? */
@@ -123,6 +122,10 @@ extern "C" {
   (char * const sng, /* I/O [sng] String to process */
    const int trl_zro_max); /* [nbr] Maximum number of trailing zeros allowed */
   
+  nc_type /* O [enm] netCDF type */
+  nco_sng2typ /* [fnc] Convert user-supplied string to netCDF type enum */
+  (const char * const typ_sng); /* I [sng] String indicating type */
+
   kvm_sct /* O [sct] Key-value pair */
   nco_sng2kvm /* [fnc] Parse string into key-value pair */
   (char *sng); /* I [sng] String to parse, including "=" */
