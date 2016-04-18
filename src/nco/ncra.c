@@ -955,18 +955,17 @@ main(int argc,char **argv)
     if(cb.tm_bnd_in) cb.bnd2clm=True;
     
     if(cb.tm_bnd_in){
-      rcd=nco_inq_varid_flg(out_id,cb.tm_bnd_nm,&cb.tm_bnd_id_in); 
+      rcd=nco_inq_varid_flg(in_id,cb.tm_bnd_nm,&cb.tm_bnd_id_in); 
       if(cb.tm_bnd_id_in == NC_MIN_INT){
 	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with missing time bounds variable %s. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),cb.tm_bnd_nm);
 	flg_cb=False;
 	goto skp_cb; 
       } /* !tm_bnd_id_in */
-      //      rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+0,(nc_type)NC_DOUBLE);
-      rcd=nc_get_var1_double(in_id,cb.tm_bnd_id_in,(size_t *)cb.dmn_srt,cb.val+0);
+      rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+0,(nc_type)NC_DOUBLE);
     } /* !tm_bnd_in */
 
     if(cb.clm_bnd_in){
-      rcd=nco_inq_varid_flg(out_id,cb.clm_bnd_nm,&cb.clm_bnd_id_in); 
+      rcd=nco_inq_varid_flg(in_id,cb.clm_bnd_nm,&cb.clm_bnd_id_in); 
       if(cb.clm_bnd_id_in == NC_MIN_INT){
 	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with missing climatology bounds variable %s. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),cb.tm_bnd_nm);
 	flg_cb=False;
@@ -1488,8 +1487,7 @@ main(int argc,char **argv)
 	/* Obtain climatology bounds end from last input file */
 	cb.dmn_srt[0]=0L;
 	cb.dmn_srt[1]=1L;
-	//	if(cb.tm_bnd_in) rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+1,(nc_type)NC_DOUBLE);
-	if(cb.tm_bnd_in) rcd=nc_get_var1_double(in_id,cb.tm_bnd_id_in,(size_t *)cb.dmn_srt,cb.val+1);
+	if(cb.tm_bnd_in) rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+1,(nc_type)NC_DOUBLE);
 	if(cb.clm_bnd_in) rcd=nco_get_var1(in_id,cb.clm_bnd_id_in,cb.dmn_srt,cb.val+1,(nc_type)NC_DOUBLE);
       } /* !flg_cb */
 

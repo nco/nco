@@ -983,10 +983,13 @@ fi # !lnk_flg
 date_end=$(date +"%s")
 printf "Completed climatology generation for model-run ${caseid} at `date`.\n"
 date_dff=$((date_end-date_srt))
+echo "Quick plots of climatological annual mean:"
 if [ -n "${rgr_map}" ]; then 
-    echo "Quick plots of regridded climatological annual mean: ncview ${fl_rgr[17]} &"
+    echo "ncview ${fl_rgr[17]} &"
+    echo "panoply ${fl_rgr[17]} &"
 else
-    echo "Quick plots of climatological annual mean: ncview ${fl_out[17]} &"
+    echo "ncview ${fl_out[17]} &"
+    echo "panoply ${fl_out[17]} &"
 fi # !rgr_map    
 echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 
