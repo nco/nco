@@ -1520,6 +1520,7 @@ main(int argc,char **argv)
 	double val_dbl;
 	var_id_in= cb.tm_bnd_in ? cb.tm_bnd_id_in : cb.clm_bnd_id_in;
 	rcd=nco_get_var1(in_id,var_id_in,cb.dmn_srt_srt,&val_dbl,(nc_type)NC_DOUBLE);
+	if(fl_idx == 0) cb.val[0]=val_dbl;
 	if(val_dbl < cb.val[0]) cb.val[0]=val_dbl;
 	rcd=nco_get_var1(in_id,var_id_in,cb.dmn_srt_end,&val_dbl,(nc_type)NC_DOUBLE);
 	if(val_dbl > cb.val[1]) cb.val[1]=val_dbl;
