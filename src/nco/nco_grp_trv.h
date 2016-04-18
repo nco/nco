@@ -123,6 +123,11 @@ trv_tbl_prn_flg_xtr                   /* [fnc] Print table items that have .flg_
 (const char * const fnc_nm,           /* I [sng] Function name  */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
+void
+trv_tbl_prn_dbg                       /* [fnc] Print several table members fields (debug only) */
+(const char * const fnc_nm,           /* I [sng] Function name  */
+const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
 void                          
 trv_tbl_cmn_nm_prt                     /* [fnc] Print list of common objects (same absolute path) */
 (const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
