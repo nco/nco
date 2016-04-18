@@ -1867,7 +1867,13 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 		/* Are units those of a calendar? */
 		unit_cln_crd=nco_cln_chk_tm(unit_sng_crd);
 		if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports units string \"%s\" is %sa calendar string\n",nco_prg_nm_get(),fnc_nm,unit_sng_crd,unit_cln_crd ? "" : "not " );
-
+#ifndef HAVE_UDUNITS2_H
+		if(unit_cln_crd){
+		  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports units string \"%s\" is a calendar string, but UDUNITS2 not built-in, so will not attempt to print calendar dates legibly\n",nco_prg_nm_get(),fnc_nm,unit_sng_crd);
+		  unit_cln_crd=False;
+                } /* !unit_cln_crd */
+#endif /* !HAVE_UDUNITS2 */
+		
 	      } /* end if att_typ */
 	    } /* end if rcd_lcl */
 	  } /* end if True */
