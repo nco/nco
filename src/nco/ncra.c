@@ -306,8 +306,6 @@ main(int argc,char **argv)
   typedef struct{ /* clm_bnd_sct */
     char *bnd_dmn_nm; /* [sng] Bounds dimension name name */
     char *clm_bnd_nm; /* [sng] Climatology bounds variable name (to create) */
-    char *fl_end; /* [sng] Last file in climatology */
-    char *fl_srt; /* [sng] First file in climatology */
     char *tm_bnd_nm; /* [sng] Time bounds variable name (to delete) */
     char *tm_crd_nm; /* [sng] Name of time coordinate variable */
     char *cln_val; /* [sng] Bounds calendar value */
