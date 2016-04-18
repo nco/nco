@@ -521,7 +521,7 @@ CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 # Variables having to do with binary executables created by module
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 MDL_BIN_SYM_LNK := ncdiff ncea nces ncrcat # Symbolic links
-MDL_BIN_SPT := ncremap # Scripts
+MDL_BIN_SPT := ncclimo ncremap # Scripts
 ifeq (${MPI},Y)
 # MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
  MDL_MPI_TRG := # MPI binary targets
@@ -1666,6 +1666,9 @@ ${MY_BIN_DIR}/ncbo:	${MY_OBJ_DIR}/ncbo.o lib
 	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -s -f ncbo ncdiff
+ncclimo:   ${MY_BIN_DIR}/ncclimo
+${MY_BIN_DIR}/ncclimo:	${MY_DAT_DIR}/ncclimo
+	/bin/cp -f ${MY_DAT_DIR}/ncclimo ${MY_BIN_DIR}
 ncecat:   ${MY_BIN_DIR}/ncecat
 ${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
 	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
