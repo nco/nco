@@ -661,7 +661,7 @@ for mth in {01..12}; do
 	fi # ! -e
     done # !fl_in
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
-    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
+    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
     cmd_cf[${clm_idx}]="cf_clm_att_put ${bnd_nm} ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_clm_srt}-${MM}.nc ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_clm_end}-${MM}.nc ${fl_out[${clm_idx}]} ${par_opt_cf}"
 done # !mth
 
@@ -782,16 +782,16 @@ fi # !rgr_map
 # Block 2: Climatological seasonal means
 # Block 2 Loop 1: Generate seasonal commands
 printf "Climatological seasonal means...\n"
-cmd_clm[13]="${cmd_mpi[13]} ncra -O -w 31,30,31 ${nco_opt} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
-cmd_clm[14]="${cmd_mpi[14]} ncra -O -w 30,31,31 ${nco_opt} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
-cmd_clm[15]="${cmd_mpi[15]} ncra -O -w 30,31,30 ${nco_opt} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
-cmd_clm[16]="${cmd_mpi[16]} ncra -O -w 31,31,28 ${nco_opt} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
+cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
+cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
+cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
+cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
 
 # PMC: next line hacks code to use AMWG weights instead of NCO weights
 #printf "MAJOR KLUDGE: FORCING USE OF AMWG WTS!!!"
 #cmd_clm[13]="${cmd_mpi[13]} ncra -O --no_nrm -w 0.3369565308094025,0.3260869681835175,0.3369565308094025 ${nco_opt} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
 #cmd_clm[14]="${cmd_mpi[14]} ncra -O --no_nrm -w 0.3260869681835175,0.3369565308094025,0.3369565308094025 ${nco_opt} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
-#cmd_clm[15]="${cmd_mpi[15]} ncra -O--no_nrm  -w 0.32967033,0.34065934,0.32967033 ${nco_opt} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
+#cmd_clm[15]="${cmd_mpi[15]} ncra -O --no_nrm -w 0.32967033,0.34065934,0.32967033 ${nco_opt} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
 #cmd_clm[16]="${cmd_mpi[16]} ncra -O --no_nrm -w 0.3444444537162781,0.3444444537162781,0.3111111223697662 ${nco_opt} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
 
 # Block 2 Loop 2: Execute and/or echo seasonal climatology commands
@@ -885,7 +885,7 @@ fi # !rgr_map
 
 # Block 3: Climatological annual mean (seventeenth file)
 printf "Climatological annual mean...\n"
-cmd_clm[17]="${cmd_mpi[17]} ncra -O -w 92,92,91,90 ${nco_opt} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
+cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
 if [ ${dbg_lvl} -ge 1 ]; then
     echo ${cmd_clm[17]}
 fi # !dbg
