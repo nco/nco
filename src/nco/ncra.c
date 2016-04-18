@@ -320,7 +320,8 @@ main(int argc,char **argv)
     int tm_crd_id_in; /* [id] Variable ID for tm_crd in input */
     int tm_crd_id_out; /* [id] Variable ID for tm_crd in output */
     int dmn_ids[2]; /* [idx] Dimension IDs for new bounds variable */
-    long dmn_srt[2]; /* [idx] Start indices for retrieving start and end bounds */
+    long dmn_srt_srt[2]; /* [idx] Start indices for retrieving start bounds */
+    long dmn_srt_end[2]; /* [idx] Start indices for retrieving end bounds */
     nc_type type; /* [enm] Type of (time and) climatology bounds variable(s) */
     nco_bool bnd2clm; /* [flg] Convert time bounds to climatology bounds */
     nco_bool clm2bnd; /* [flg] Convert climatology bounds to time bounds */
@@ -898,14 +899,16 @@ main(int argc,char **argv)
     cb.clm_bnd_id_out=NC_MIN_INT; /* [id] Climatology bounds ID */
     cb.clm_bnd_in=False; /* [flg] Climatology bounds appear in input */
     cb.clm_bnd_nm=NULL; /* [sng] Climatology bounds name */
-    cb.dmn_srt[0]=0L;
-    cb.dmn_srt[1]=0L;
+    cb.dmn_srt_srt[0]=0L;cb.dmn_srt_srt[1]=0L;
+    cb.dmn_srt_end[0]=0L;cb.dmn_srt_end[1]=1L;
     cb.tm_bnd_id_in=NC_MIN_INT; /* [id] Time bounds ID */
     cb.tm_bnd_in=False; /* [flg] Time bounds appear in input */
     cb.tm_bnd_nm=NULL; /* [sng] Time bounds name */
     cb.tm_crd_id_in=NC_MIN_INT; /* [id] Time coordinate ID */
     cb.tm_crd_nm=NULL; /* [sng] Time coordinate name */
     cb.type=NC_NAT; /* [enm] Time coordinate name */
+    cb.val[0]=NC_MIN_DOUBLE;
+    cb.val[1]=NC_MIN_DOUBLE;
 
     if((rcd=nco_inq_varid_flg(in_id,"time",&cb.tm_crd_id_in)) == NC_NOERR) cb.tm_crd_nm=strdup("time");
     else if((rcd=nco_inq_varid_flg(in_id,"Time",&cb.tm_crd_id_in)) == NC_NOERR) cb.tm_crd_nm=strdup("Time");
@@ -963,7 +966,6 @@ main(int argc,char **argv)
 	flg_cb=False;
 	goto skp_cb; 
       } /* !tm_bnd_id_in */
-      rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+0,(nc_type)NC_DOUBLE);
     } /* !tm_bnd_in */
 
     if(cb.clm_bnd_in){
@@ -973,7 +975,6 @@ main(int argc,char **argv)
 	flg_cb=False;
 	goto skp_cb; 
       } /* !tm_bnd_id_in */
-      rcd=nco_get_var1(in_id,cb.clm_bnd_id_in,cb.dmn_srt,cb.val+0,(nc_type)NC_DOUBLE);
     } /* !clm_bnd_in */
 
     rcd=nco_inq_varid_flg(out_id,cb.tm_crd_nm,&cb.tm_crd_id_out); 
@@ -1513,12 +1514,15 @@ main(int argc,char **argv)
 
       } /* end idx_rec loop over different record variables to process */
 
-      if(flg_cb && fl_idx == fl_nbr-1 && nco_prg_id == ncra){
-	/* Obtain climatology bounds end from last input file */
-	cb.dmn_srt[0]=0L;
-	cb.dmn_srt[1]=1L;
-	if(cb.tm_bnd_in) rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+1,(nc_type)NC_DOUBLE);
-	if(cb.clm_bnd_in) rcd=nco_get_var1(in_id,cb.clm_bnd_id_in,cb.dmn_srt,cb.val+1,(nc_type)NC_DOUBLE);
+      if(flg_cb && nco_prg_id == ncra){
+	/* Obtain climatology bounds from input file */
+	int var_id_in;
+	double val_dbl;
+	var_id_in= cb.tm_bnd_in ? cb.tm_bnd_id_in : cb.clm_bnd_id_in;
+	rcd=nco_get_var1(in_id,var_id_in,cb.dmn_srt_srt,&val_dbl,(nc_type)NC_DOUBLE);
+	if(val_dbl < cb.val[0]) cb.val[0]=val_dbl;
+	rcd=nco_get_var1(in_id,var_id_in,cb.dmn_srt_end,&val_dbl,(nc_type)NC_DOUBLE);
+	if(val_dbl > cb.val[1]) cb.val[1]=val_dbl;
       } /* !flg_cb */
 
       /* End ncra, ncrcat section */
