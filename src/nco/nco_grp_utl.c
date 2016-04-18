@@ -4956,17 +4956,6 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
       rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
     } /* !rec_dmn_nm->lst */
 
-#ifdef FXM_PVN
-    nco_bool dmn_rvr_rdr_[NC_MAX_DIMS]; /* [flg] Reverse dimension */
-    /* Define a local dmn_rvr_rdr array upon reverse flag defined in dimensions for variable */
-    for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-      dmn_rvr_rdr_[idx_dmn]=False;
-      if(var_trv->var_dmn[idx_dmn].flg_rvr == True){
-        dmn_rvr_rdr_[idx_dmn]=True;
-      }
-    }
-#endif
-
     /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
     rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
 
@@ -6547,6 +6536,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
 
   if(nco_dbg_lvl_get() == nco_dbg_vrb) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
+
+  if(nco_dbg_lvl_get() == nco_dbg_dev) trv_tbl_prn_dbg(fnc_nm, trv_tbl);
 
   return;
 } /* nco_bld_trv_tbl() */
