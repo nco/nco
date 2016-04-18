@@ -928,6 +928,8 @@ main(int argc,char **argv)
 	/* NUL-terminate attribute before using strstr() */
 	cb.tm_bnd_nm[att_sz]='\0';
 	cb.tm_bnd_in=True;
+      }else{
+	cb.tm_bnd_nm=strdup("time_bnds");
       } /* !rcd && att_typ */
 
       /* Input file must have either (but not both) time bounds or climatology bounds */
@@ -1005,8 +1007,8 @@ main(int argc,char **argv)
       char *att_val;
 
       /* Add new bounds attribute */
-      att_nm = cb.bnd2clm ? strdup("climatology") : strdup("bounds");
-      att_val= cb.bnd2clm ? strdup("climatology_bounds") : strdup("time_bnds");
+      att_nm = cb.bnd2clm ? strdup(clm_sng) : strdup(bnd_sng);
+      att_val= cb.bnd2clm ? strdup(cb.clm_bnd_nm) : strdup(cb.tm_bnd_nm);
       aed_mtd.att_nm=att_nm;
       aed_mtd.var_nm=cb.tm_crd_nm;
       aed_mtd.id=cb.tm_crd_id_out;
@@ -1019,7 +1021,7 @@ main(int argc,char **argv)
       if(att_val) att_val=(char *)nco_free(att_val);
       
       /* Delete old bounds attribute */
-      att_nm= cb.bnd2clm ? strdup("bounds") : strdup("climatology_bounds");
+      att_nm= cb.bnd2clm ? strdup(bnd_sng) : strdup(clm_sng);
       aed_mtd.att_nm=att_nm;
       aed_mtd.var_nm=cb.tm_crd_nm;
       aed_mtd.id=cb.tm_crd_id_out;
