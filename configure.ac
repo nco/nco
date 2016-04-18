@@ -725,9 +725,11 @@ if test "${enable_udunits2}" != 'no'; then
 	fi
     elif test "${NETCDF_INC}"; then
 	nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
-    else
+    fi
+    if test "${UDUNITS2_PATH}" = ''; then
 	# NO UDUNITS2_PATH section
 	# Fedora 1.7 has /usr/include/udunits2/udunits2.h
+	# 20160418 FC23 has /usr/include/udunits2/udunits2.h
 	# Add this path to CPPFLAGS if it exists, otherwise do nothing
 	AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"], [])
 	# Ubuntu

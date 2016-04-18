@@ -4629,13 +4629,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)
       dmn_out_id[dmn_idx_in_out[idx_dmn]]=dmn_out_id_tmp[idx_dmn];
 
-    if (nco_dbg_lvl_get() >= nco_dbg_dev){
+    if(nco_dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout, "%s: DEBUG %s dimensions for %s:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
-      for (int idx_dmn=0; idx_dmn<nbr_dmn_var;idx_dmn++){
-        char *dmm_nm_fll=nco_get_dmn_nm_fll(dmn_out_id[idx_dmn],dmn_cmn,nbr_dmn_var);
-        (void)fprintf(stdout, "%s %d\n",dmm_nm_fll,dmn_cmn[idx_dmn].id);
-      }
-    }
+      for (int idx_dmn=0; idx_dmn<nbr_dmn_var;idx_dmn++)
+        (void)fprintf(stdout, "%s %d\n",nco_get_dmn_nm_fll(dmn_out_id[idx_dmn],dmn_cmn,nbr_dmn_var),dmn_cmn[idx_dmn].id);
+    } /* !dbg */
   } /* !var_trv->rdr */
 
   if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
