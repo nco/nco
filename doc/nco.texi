@@ -6347,7 +6347,7 @@ Long options:
 @end cartouche
 
 @acronym{NCO} includes extensive regridding features in 
-@command{ncclimo} (as of version 4.6.0 in April, 2016)
+@command{ncclimo} (as of version 4.6.0 in April, 2016),
 @command{ncremap} (as of version 4.5.4 in November, 2015)
 and @command{ncks} (since version 4.5.0 in June, 2015). 
 Regridding can involve many choices, options, inputs, and outputs.

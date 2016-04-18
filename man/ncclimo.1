@@ -1,70 +1,58 @@
 .\" $Header$ -*-nroff-*-
-.\" Purpose: ROFF man page for ncremap
+.\" Purpose: ROFF man page for ncclimo
 .\" Usage:
-.\" nroff -man ~/nco/man/ncremap.1 | less
-.TH NCREMAP 1
+.\" nroff -man ~/nco/man/ncclimo.1 | less
+.TH NCCLIMO 1
 .SH NAME
-ncremap \- netCDF Remapper
+ncclimo \- netCDF Climatology Generator
 .SH SYNTAX
-ncremap
+ncclimo
 [\-a
-.IR alg_typ ]
-[\-D
-.IR dbg_lvl ] 
+.IR clm_md ]
+[\-b
+.IR bnd_nm ]
+[\-c
+.IR caseid ]
 [\-d
-.IR dst_fl ] 
-[\-E
-.IR esmf_opt ] 
-[\-G
-.IR grd_sng ] 
-[\-g
-.IR grd_fl ] 
-[\-I
-.IR in_drc ] 
+.IR dbg_lvl ] 
+[\-e
+.IR yr_end ] 
+[\-f
+.IR fml_nm ] 
+[\-h
+.IR hst_nm ] 
 [\-i
-.IR in_fl ] 
-[\-j
-.IR job_nbr ] 
-[\-M] [\-m
-.IR map_fl ] 
+.IR drc_in ] 
+[\-l
+.IR lnk_flg ] 
+[\-m
+.IR mdl_nm ] 
 [\-n
 .IR nco_usr ] 
 [\-O
-.IR out_drc ] 
+.IR drc_rgr ] 
 [\-o
-.IR output-file ] 
-[\-P
-.IR pdq_typ ] 
+.IR drc_out ] 
 [\-p
 .IR par_typ ] 
 [\-R
 .IR rgr_opt ] 
+[\-r
+.IR rgr_map ] 
 [\-s
-.IR grd_src ] 
-[\-T
-.IR tempest_opt ] 
+.IR yr_srt ] 
 [\-t
 .IR thr_nbr ] 
 [\-v
 .IR var_lst ] 
-[\-w
-.IR wgt_gnr ] 
 [\-x
-.IR xtn_var ] 
+.IR cf_flg ] 
 
 .SH DESCRIPTION
 .PP
-.B ncremap
-remaps the data in the
-.I input-file
-file(s) to the grid specified by (in descending order of precedence)
-.I map_fl ,
-.I dst_fl, 
-.I grd_dst, or
-.I grd_sng,
-and stores the result(s) in the
-.I output-file
-file(s).
+.B ncclimo
+produces climatological monthly means, seasonal means, annual mean,
+and optionally regrids all these files.
 
 .\" NB: Append man_end.txt here
 .\" $Header$ -*-nroff-*-
@@ -118,6 +106,7 @@ TeX-intensive portions.
 .BR ncap2 (1), 
 .BR ncatted (1), 
 .BR ncbo (1), 
+.BR ncclimo (1), 
 .BR nces (1), 
 .BR ncecat (1), 
 .BR ncflint (1), 
