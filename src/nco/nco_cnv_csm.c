@@ -407,9 +407,15 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       if(att_typ == NC_STRING) (void)fprintf(stderr,"%s: WARNING %s reports existing cell_methods attribute for variable %s is type NC_STRING. Unpredictable results...\n",nco_prg_nm_get(),fnc_nm,aed.var_nm);
       if(att_typ != NC_STRING && att_typ != NC_CHAR) (void)fprintf(stderr,"%s: WARNING %s reports existing cell_methods attribute for variable %s is type %s. Unpredictable results...\n",nco_prg_nm_get(),fnc_nm,aed.var_nm,nco_typ_sng(att_typ));
 
-      /* 20150625: Often climatologies are multiply-averaged over time
+      /* Often climatologies are multiply-averaged over time
+	 NCO's treatment of this has changed with time
+	 pre-20140131: 
+	 NCO has no special treatment of cell_methods
+	 20140131: 
+	 First NCO implementation (ncra, ncea, ncwa) of cell_methods with 
+	 20150625: 
 	 For example, climate model output is often archived as monthly means in each gridcell
-	 The cell_methods attribute of these monthly data begin as "time: mean" (i.e., monthly mean).
+	 cell_methods attributes of these monthly data begin as "time: mean" (i.e., monthly mean).
 	 We then create a climatology by a sequence of one or two more temporal-averaging steps
 	 The one-step method puts all the months in the hopper and averages those
 	 Variables in the resultiing file may have cell_methods = "time: mean time: mean"
@@ -417,7 +423,17 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 	 Then it averages those four seasons into the climatological annual mean
 	 Variables in the resultiing file may have cell_methods = "time: mean time: mean time: mean"
 	 To avoid this redundancy, we check that the new cell_method does not duplicate the old 
-	 If it would, then skip adding the new */
+	 If it would, then skip adding the new
+	 20160418: 
+	 Treatment of multiply-time-averaged quantities requires climatology bounds attribute
+	 One-step methods (e.g., monthly mean) should have time-bounds attribute
+	 cell_methods = "time: mean"
+	 Two-step methods (e.g., climatological March) should have climatology-bounds attribute
+	 cell_methods = "time: mean within years time: mean over years"
+	 Three-step methods (e.g., climatological MAM) should have climatology-bounds attribute
+	 cell_methods = "time: mean within years time: mean over years"
+	 Four-step methods (e.g., climatological ANN) should have time-bounds attribute
+	 cell_methods = "time: mean" */
       ptr_unn val_old; /* [sng] Old cell_methods attribute */
       val_old.vp=(void *)nco_malloc((att_lng+1L)*sizeof(char));
       (void)nco_get_att(grp_out_id,var_out_id,aed.att_nm,val_old.vp,NC_CHAR);
