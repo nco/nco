@@ -1132,6 +1132,8 @@ fi
 # Tell GNU C compiler to use C99 standard (older gcc versions default to C89)
 # fxm: only do this for gcc, not g++
 if test $ac_compiler_gnu = 'yes'; then
+    # _BSD_SOURCE needed for backward compatibility with old GCC
+    # 20160418: default cori gcc is 4.3.4 from 2008!
     CFLAGS="${CFLAGS} -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
     case ${host} in
 # MacOSX does not understand shared libraries

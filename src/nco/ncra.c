@@ -310,6 +310,7 @@ main(int argc,char **argv)
     char *fl_srt; /* [sng] First file in climatology */
     char *tm_bnd_nm; /* [sng] Time bounds variable name (to delete) */
     char *tm_crd_nm; /* [sng] Name of time coordinate variable */
+    char *cln_val; /* [sng] Bounds calendar value */
     char *unt_val; /* [sng] Bounds units value */
     double val[2]; /* [frc] Climatology bounds variable attribute values */
     int clm_bnd_id_in; /* [id] Variable ID for clm_bnds in input */
@@ -885,25 +886,26 @@ main(int argc,char **argv)
   if(flg_cb && nco_prg_id == ncra){
     char bnd_sng[]="bounds"; /* CF-standard time bounds attribute name */
     char clm_sng[]="climatology"; /* CF-standard climatology bounds attribute name */
+    char cln_sng[]="calendar"; /* CF-standard calendar attribute name */
     char unt_sng[]="units"; /* NUG-standard units attribute name */
     long att_sz;
     nc_type att_typ;
 
-    cb.tm_bnd_in=False; /* [flg] Time bounds appear in input */
-    cb.clm_bnd_in=False; /* [flg] Climatology bounds appear in input */
     cb.bnd2clm=False; /* [flg] Convert time bounds to climatology bounds */
-    cb.clm2clm=False; /* [flg] Convert climatology bounds to climatology bounds */
     cb.clm2bnd=False; /* [flg] Convert climatology bounds to time bounds */
-    cb.type=NC_NAT; /* [enm] Time coordinate name */
-    cb.tm_crd_nm=NULL; /* [sng] Time coordinate name */
-    cb.tm_bnd_nm=NULL; /* [sng] Time bounds name */
-    cb.clm_bnd_nm=NULL; /* [sng] Climatology bounds name */
-    cb.tm_crd_id_in=NC_MIN_INT; /* [id] Time coordinate ID */
-    cb.tm_bnd_id_in=NC_MIN_INT; /* [id] Time bounds ID */
+    cb.clm2clm=False; /* [flg] Convert climatology bounds to climatology bounds */
     cb.clm_bnd_id_in=NC_MIN_INT; /* [id] Climatology bounds ID */
     cb.clm_bnd_id_out=NC_MIN_INT; /* [id] Climatology bounds ID */
+    cb.clm_bnd_in=False; /* [flg] Climatology bounds appear in input */
+    cb.clm_bnd_nm=NULL; /* [sng] Climatology bounds name */
     cb.dmn_srt[0]=0L;
     cb.dmn_srt[1]=0L;
+    cb.tm_bnd_id_in=NC_MIN_INT; /* [id] Time bounds ID */
+    cb.tm_bnd_in=False; /* [flg] Time bounds appear in input */
+    cb.tm_bnd_nm=NULL; /* [sng] Time bounds name */
+    cb.tm_crd_id_in=NC_MIN_INT; /* [id] Time coordinate ID */
+    cb.tm_crd_nm=NULL; /* [sng] Time coordinate name */
+    cb.type=NC_NAT; /* [enm] Time coordinate name */
 
     if((rcd=nco_inq_varid_flg(in_id,"time",&cb.tm_crd_id_in)) == NC_NOERR) cb.tm_crd_nm=strdup("time");
     else if((rcd=nco_inq_varid_flg(in_id,"Time",&cb.tm_crd_id_in)) == NC_NOERR) cb.tm_crd_nm=strdup("Time");
@@ -1039,7 +1041,7 @@ main(int argc,char **argv)
 	  /* NUL-terminate attribute before using strstr() */
 	  cb.unt_val[att_sz]='\0';
 	  
-	  /* Add climatology_bounds attribute */
+	  /* Add units attribute */
 	  att_nm=strdup(unt_sng);
 	  att_val=cb.unt_val;
 	  aed_mtd.att_nm=att_nm;
@@ -1054,6 +1056,34 @@ main(int argc,char **argv)
 	  if(att_val) att_val=cb.unt_val=(char *)nco_free(att_val);
 	} /* !rcd && att_typ */
       } /* !rcd && att_typ */
+
+      /* Copy calendar attribute from coordinate to new bounds if necessary */
+      if(cb.tm_bnd_in) rcd=nco_inq_att_flg(out_id,cb.tm_bnd_id_out,cln_sng,&att_typ,&att_sz);
+      if(cb.clm_bnd_in) rcd=nco_inq_att_flg(out_id,cb.clm_bnd_id_out,cln_sng,&att_typ,&att_sz);
+      if(rcd != NC_NOERR && att_typ == NC_CHAR){
+	rcd=nco_inq_att_flg(out_id,cb.tm_crd_id_out,cln_sng,&att_typ,&att_sz);
+	if(rcd == NC_NOERR && att_typ == NC_CHAR){
+	  cb.cln_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+	  rcd+=nco_get_att(out_id,cb.tm_crd_id_out,cln_sng,cb.cln_val,att_typ);
+	  /* NUL-terminate attribute before using strstr() */
+	  cb.cln_val[att_sz]='\0';
+	  
+	  /* Add calendar attribute */
+	  att_nm=strdup(cln_sng);
+	  att_val=cb.cln_val;
+	  aed_mtd.att_nm=att_nm;
+	  aed_mtd.var_nm=cb.bnd2clm ? cb.tm_bnd_nm : cb.clm_bnd_nm;
+	  aed_mtd.id=cb.bnd2clm ? cb.tm_bnd_id_out : cb.clm_bnd_id_out;
+	  aed_mtd.sz=strlen(att_val);
+	  aed_mtd.type=NC_CHAR;
+	  aed_mtd.val.cp=att_val;
+	  aed_mtd.mode=aed_create;
+	  if(cb.bnd2clm) (void)nco_aed_prc(out_id,cb.tm_bnd_id_out,aed_mtd); else (void)nco_aed_prc(out_id,cb.clm_bnd_id_out,aed_mtd);
+	  if(att_nm) att_nm=(char *)nco_free(att_nm);
+	  if(att_val) att_val=cb.cln_val=(char *)nco_free(att_val);
+	} /* !rcd && att_typ */
+      } /* !rcd && att_typ */
+      
     } /* !bnd2clm !clm2bnd */
   } /* !flg_cb */
   
