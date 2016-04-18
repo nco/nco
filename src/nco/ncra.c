@@ -1023,13 +1023,13 @@ main(int argc,char **argv)
       if(att_nm) att_nm=(char *)nco_free(att_nm);
 
       /* Copy units attribute if necessary */
-      if(cb.tm_bnd_in) rcd=nco_inq_att_flg(out_id,cb.tm_bnd_id_in,unt_sng,&att_typ,&att_sz);
-      if(cb.clm_bnd_in) rcd=nco_inq_att_flg(out_id,cb.clm_bnd_id_in,unt_sng,&att_typ,&att_sz);
+      if(cb.tm_bnd_in) rcd=nco_inq_att_flg(out_id,cb.tm_bnd_id_out,unt_sng,&att_typ,&att_sz);
+      if(cb.clm_bnd_in) rcd=nco_inq_att_flg(out_id,cb.clm_bnd_id_out,unt_sng,&att_typ,&att_sz);
       if(rcd != NC_NOERR && att_typ == NC_CHAR){
-	rcd=nco_inq_att_flg(out_id,cb.tm_crd_id_in,unt_sng,&att_typ,&att_sz);
+	rcd=nco_inq_att_flg(out_id,cb.tm_crd_id_out,unt_sng,&att_typ,&att_sz);
 	if(rcd == NC_NOERR && att_typ == NC_CHAR){
 	  cb.unt_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	  rcd+=nco_get_att(in_id,cb.tm_crd_id_in,unt_sng,cb.unt_val,att_typ);
+	  rcd+=nco_get_att(out_id,cb.tm_crd_id_out,unt_sng,cb.unt_val,att_typ);
 	  /* NUL-terminate attribute before using strstr() */
 	  cb.unt_val[att_sz]='\0';
 	  
@@ -1478,12 +1478,11 @@ main(int argc,char **argv)
       } /* end idx_rec loop over different record variables to process */
 
       if(flg_cb && fl_idx == fl_nbr-1 && nco_prg_id == ncra){
-	/* Climatology bounds end value */
 	/* Obtain climatology bounds end from last input file */
 	cb.dmn_srt[0]=0L;
 	cb.dmn_srt[1]=1L;
-	rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+1,(nc_type)NC_DOUBLE);
-	rcd=nco_put_var(out_id,cb.clm_bnd_id_out,cb.val,(nc_type)NC_DOUBLE);
+	if(cb.tm_bnd_in) rcd=nco_get_var1(in_id,cb.tm_bnd_id_in,cb.dmn_srt,cb.val+1,(nc_type)NC_DOUBLE);
+	if(cb.clm_bnd_in) rcd=nco_get_var1(in_id,cb.clm_bnd_id_in,cb.dmn_srt,cb.val+1,(nc_type)NC_DOUBLE);
       } /* !flg_cb */
 
       /* End ncra, ncrcat section */
@@ -1739,6 +1738,8 @@ main(int argc,char **argv)
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     } /* end loop over idx */
   } /* endif ncra || nces */
+
+  if(flg_cb && nco_prg_id == ncra) rcd=nco_put_var(out_id,cb.clm_bnd_id_out,cb.val,(nc_type)NC_DOUBLE);
 
   if(flg_cb && (cb.bnd2clm || cb.clm2bnd)){
     /* Rename time bounds as climatology bounds, or visa-versa
