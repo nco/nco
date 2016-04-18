@@ -1052,9 +1052,6 @@ main(int argc,char **argv)
       if(att_nm) att_nm=(char *)nco_free(att_nm);
     } /* !clm2bnd */
 
-    if(cb.tm_bnd_nm) cb.tm_bnd_nm=(char *)nco_free(cb.tm_bnd_nm);
-    if(cb.tm_crd_nm) cb.tm_crd_nm=(char *)nco_free(cb.tm_crd_nm);
-    if(cb.clm_bnd_nm) cb.clm_bnd_nm=(char *)nco_free(cb.clm_bnd_nm);
   } /* !flg_cb */
   
   /* goto skp_cb */
@@ -1751,8 +1748,10 @@ main(int argc,char **argv)
        Otherwise wrong bounds will remain orphaned in output file
        Also, this ensures same dimensions are used
        Rename at end of procedure so that traversal table does not get out-of-sync */
+    rcd+=nco_redef(out_id);
     if(cb.bnd2clm) rcd=nco_rename_var(out_id,cb.tm_bnd_id_out,cb.clm_bnd_nm);
     if(cb.clm2bnd) rcd=nco_rename_var(out_id,cb.clm_bnd_id_out,cb.tm_bnd_nm);
+    rcd+=nco_enddef(out_id);
   } /* !flg_cb */
 
   /* Close output file and move it from temporary to permanent location */
@@ -1801,6 +1800,11 @@ main(int argc,char **argv)
     if(wgt) wgt=(var_sct *)nco_var_free(wgt);
     if(wgt_out) wgt_out=(var_sct *)nco_var_free(wgt_out);
     if(wgt_avg) wgt_avg=(var_sct *)nco_var_free(wgt_avg);
+    if(flg_cb){
+      if(cb.tm_bnd_nm) cb.tm_bnd_nm=(char *)nco_free(cb.tm_bnd_nm);
+      if(cb.tm_crd_nm) cb.tm_crd_nm=(char *)nco_free(cb.tm_crd_nm);
+      if(cb.clm_bnd_nm) cb.clm_bnd_nm=(char *)nco_free(cb.clm_bnd_nm);
+    } /* !flg_cb */
 
     (void)trv_tbl_free(trv_tbl);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
