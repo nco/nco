@@ -15868,10 +15868,10 @@ code.
 -o: directory where computed climo files should be placed.
 -c: caseid, i.e., simulation name. For input files like
 famipc5_ne30_v0.3_00001.cam.h0.1980-01.nc, specify "-c
-famipc5_ne30_v0.3_00001". The ".cam." and ".h0." bits are added to the
-filenames internally by default, and can be modified via the "-m mdl_nm"
-and "-h hst_nm" switches if needed. See comments in @command{ncclimo}
-for documentation.  
+famipc5_ne30_v0.3_00001". 
+The ".cam." and ".h0." bits are added to the filenames internally by
+default, and can be modified via the "-m mdl_nm" and "-h hst_nm"
+switches if needed. See comments in @command{ncclimo} for documentation.  
 -m: model type. Default is "cam". Other options are "clm2", "ocn",
 "ice", "cism", "cice", "pop". 
 
@@ -15886,7 +15886,11 @@ this:
 ncclimo -c hist -m ocn -s 1980 -e 1983 -i drc_in -o drc_out # MPAS-O
 ncclimo -c hist -m ice -s 1980 -e 1983 -i drc_in -o drc_out # MPAS-I
 @end example
-MPAS climos are unaware of missing values until/unless the input files are "fixed". I recommend that the person who produces the simulation annotate all floating point variables with the appropriate _FillValue prior to invoking @command{ncclimo}. Run something like this once in the history file directory:
+MPAS climos are unaware of missing values until/unless the input files
+are "fixed". I recommend that the person who produces the simulation
+annotate all floating point variables with the appropriate _FillValue
+prior to invoking @command{ncclimo}. Run something like this once in the
+history file directory: 
 @example
 @verbatim
 for fl in `ls hist.*` ; do
