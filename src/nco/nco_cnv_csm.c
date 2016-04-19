@@ -313,7 +313,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   if(cb){
     if(cb->bnd2clm || cb->clm2clm) cll_mth_clm=strdup("time: mean within years time: mean over years");
-    if(cb->clm2bnd) cll_mth_clm=strdup("time: mean within years time: mean over years");
+    if(cb->clm2bnd) cll_mth_clm=strdup("time: mean");
   } /* !cb */
 
   /* Process all variables */
