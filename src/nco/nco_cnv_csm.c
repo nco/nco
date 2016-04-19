@@ -234,6 +234,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
  const int dmn_nbr_rdc,              /* I [sct] Number of dimensions to reduce variable over */
  const int nco_op_typ,               /* I [enm] Operation type, default is average */
  gpe_sct *gpe,                       /* I [sng] Group Path Editing (GPE) structure */
+ const clm_bnd_sct * const cb,       /* I [sct] Climatology bounds structure */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* Purpose: Add/modify CF cell_methods attribute
@@ -277,6 +278,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   char *att_val_cpy; /* [sng] Copy of attribute */
   char *grp_out_fll=NULL; /* [sng] Group name */
   char *sbs_ptr; /* [sng] Pointer to substring */
+  char *cll_mth_clm; /* [sng] Cell methods for climatology */
   
   int *dmn_mch; /* [idx] Indices of dimensions reduced in this variable */
 
@@ -309,6 +311,11 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   /* Allocate space for maximum number of matching dimensions */
   dmn_mch=(int *)nco_calloc(dmn_nbr_rdc,sizeof(int));
 
+  if(cb){
+    if(cb->bnd2clm || cb->clm2clm) cll_mth_clm=strdup("time: mean within years time: mean over years");
+    if(cb->clm2bnd) cll_mth_clm=strdup("time: mean within years time: mean over years");
+  } /* !cb */
+
   /* Process all variables */
   for(var_idx=0;var_idx<var_nbr;var_idx++){ 
 
@@ -333,6 +340,23 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     aed.sz=0L;
     dmn_nbr_mch=0;
     flg_dpl=False;
+
+    if(cb){
+      /* Does variable use time coordinate? */
+      for(dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++)
+	if(!strcmp(var_trv->var_dmn[dmn_idx_var].dmn_nm,cb->tm_crd_nm)) break;
+      if(dmn_idx_var < var_trv->nbr_dmn){
+	/* Stamp with appropriate cell_methods temporal attribute */
+	att_val=strdup(cll_mth_clm);
+	aed.sz=strlen(att_val);
+	aed.type=NC_CHAR;
+	aed.val.cp=att_val;
+	aed.mode=aed_overwrite;
+	(void)nco_aed_prc(grp_out_id,var_out_id,aed);
+	if(att_val) att_val=(char *)nco_free(att_val);
+	continue;
+      } /* !dmn_idx_var */
+    } /* !cb */
 
     /* cell_methods format: blank-separated phrases of form "dmn1[, dmn2[...]]: op_typ", e.g., "lat, lon: mean" */ 
     for(dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
@@ -452,9 +476,9 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       aed.val.cp[1]='\0';
       (void)strncat(aed.val.cp,att_val_cpy,aed.sz-1L);
       if(att_val_cpy) att_val_cpy=(char *)nco_free(att_val_cpy);
-    }else{
+    }else{ /* !cell_methods attribute already exists */
       aed.mode=aed_create;
-    } /* endif attribute exists */
+    } /* !cell_methods attribute already exists */
 
     /* Edit attribute */
     if(!flg_dpl) (void)nco_aed_prc(grp_out_id,var_out_id,aed);
@@ -497,7 +521,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 		dmn_sng_lng=strlen(dmn_rdc[dmn_idx_rdc]->nm);
 		sbs_sng_lng=(size_t)(sbs_ptr-att_val);
 		aed.mode=aed_overwrite;
-		/* If dimension to excise is trailed by a space, also remove the space, i.e., count it as part of dimension string
+		/* Remove whitespace immediately following excised dimension, i.e., count it as part of dimension string
 		   True for all dimensions except final dimension (trailed by a NUL, not a space) */
 		if(sbs_ptr[dmn_sng_lng] == ' ') dmn_sng_lng++;
 		aed.sz=att_lng-dmn_sng_lng;

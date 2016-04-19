@@ -1,5 +1,7 @@
 2016-04-18  Charlie Zender  <zender@uci.edu>
 
+	* Coordinate cell_methods with climatology bounds
+
 	* Copy missing calendar to temporal bounds to aid debugging
 
 2016-04-17  Charlie Zender  <zender@uci.edu>

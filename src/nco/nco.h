@@ -992,6 +992,32 @@ extern "C" {
     nco_grd_lon_bb, /* Longitude grid determined by bounding box (lon_wst/lon_est) and gridcell number (lon_nbr) */
   } nco_grd_lon_typ_enm;
 
+  /* Climatology bounds structure */
+  typedef struct{ /* clm_bnd_sct */
+    char *bnd_dmn_nm; /* [sng] Bounds dimension name name */
+    char *clm_bnd_nm; /* [sng] Climatology bounds variable name (to create) */
+    char *tm_bnd_nm; /* [sng] Time bounds variable name (to delete) */
+    char *tm_crd_nm; /* [sng] Name of time coordinate variable */
+    char *cln_val; /* [sng] Bounds calendar value */
+    char *unt_val; /* [sng] Bounds units value */
+    double val[2]; /* [frc] Climatology bounds variable attribute values */
+    int clm_bnd_id_in; /* [id] Variable ID for clm_bnds in input */
+    int clm_bnd_id_out; /* [id] Variable ID for clm_bnds in output */
+    int tm_bnd_id_in; /* [id] Variable ID for tm_bnds in input */
+    int tm_bnd_id_out; /* [id] Variable ID for tm_bnds in output */
+    int tm_crd_id_in; /* [id] Variable ID for tm_crd in input */
+    int tm_crd_id_out; /* [id] Variable ID for tm_crd in output */
+    int dmn_ids[2]; /* [idx] Dimension IDs for new bounds variable */
+    long dmn_srt_srt[2]; /* [idx] Start indices for retrieving start bounds */
+    long dmn_srt_end[2]; /* [idx] Start indices for retrieving end bounds */
+    nc_type type; /* [enm] Type of (time and) climatology bounds variable(s) */
+    nco_bool bnd2clm; /* [flg] Convert time bounds to climatology bounds */
+    nco_bool clm2bnd; /* [flg] Convert climatology bounds to time bounds */
+    nco_bool clm2clm; /* [flg] Convert climatology bounds to climatology bounds */
+    nco_bool clm_bnd_in; /* [flg] Climatology bounds appear in input */
+    nco_bool tm_bnd_in; /* [flg] Time bounds appear in input */
+  } clm_bnd_sct; /* end climatology bounds structure */
+
   /* Terraref structure */
   typedef struct{ /* trr_sct */
     // File names specifiable with individual command line switches
@@ -1019,7 +1045,7 @@ extern "C" {
     int trr_nbr; /* [nbr] Number of Terraref arguments */
     nco_trr_ntl_typ_enm ntl_typ_in; /* [enm] Interleave-type of raw data */
     nco_trr_ntl_typ_enm ntl_typ_out; /* [enm] Interleave-type or output */
-  } trr_sct;
+  } trr_sct; /* end Terraref structure */
 
   /* Regrid structure */
   typedef struct{ /* rgr_sct */
@@ -1083,7 +1109,7 @@ extern "C" {
     nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_map; /* [flg] User-specified mapping weights */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
-  } rgr_sct;
+  } rgr_sct; /* end Regrid structure */
 
   /* Key-value structure */
   typedef struct{
