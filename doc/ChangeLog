@@ -1,5 +1,9 @@
 2016-04-18  Charlie Zender  <zender@uci.edu>
 
+	* Turn-off dysfunctional "legible" (lgb) print-formatting until it works
+
+	* Coordinate cell_methods with climatology bounds
+
 	* Copy missing calendar to temporal bounds so ncdump -t prints correct date
 
 2016-04-17  Charlie Zender  <zender@uci.edu>

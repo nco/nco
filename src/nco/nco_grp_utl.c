@@ -5244,6 +5244,8 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
     } /* Has re-defined record dimension */
   } /* Loop table */
 
+  if(nco_dbg_lvl_get() == nco_dbg_dev) trv_tbl_prn_dbg("nco_var_dmn_rdr_mtd_trv", trv_tbl);
+
   return;
 
 } /* nco_var_dmn_rdr_mtd_trv() */

@@ -810,7 +810,7 @@ main(int argc,char **argv)
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Add cell_methods attributes (before exiting define mode) */
-  if(flg_cll_mth) rcd+=nco_cnv_cf_cll_mth_add(out_id,var_prc_out,nbr_var_prc,dmn_avg,dmn_avg_nbr,nco_op_typ,gpe,trv_tbl);
+  if(flg_cll_mth) rcd+=nco_cnv_cf_cll_mth_add(out_id,var_prc_out,nbr_var_prc,dmn_avg,dmn_avg_nbr,nco_op_typ,gpe,(clm_bnd_sct *)NULL,trv_tbl);
 
   /* Take output file out of define mode */
   if(hdr_pad == 0UL){

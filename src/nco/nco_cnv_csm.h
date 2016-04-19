@@ -56,7 +56,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
  dmn_sct * const * const dmn,        /* I [sct] Dimensions over which to reduce variable */
  const int dmn_nbr,                  /* I [sct] Number of dimensions to reduce variable over */
  const int nco_op_typ,               /* I [enm] Operation type, default is average */
- gpe_sct *gpe,                       /* [sng] Group Path Editing (GPE) structure */
+ gpe_sct *gpe,                       /* I [sng] Group Path Editing (GPE) structure */
+ const clm_bnd_sct * const cb,       /* I [sct] Climatology bounds structure */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 int /* I [enm] Operation type */
