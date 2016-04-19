@@ -107,7 +107,6 @@ esac # !HOSTNAME
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
 # ncclimo -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/ncclimo.out 2>&1 &
 # ncclimo -d 2 -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o ${DATA}/anl > ~/ncclimo.out 2>&1 &
-# ncclimo -d 2 -x Yes -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o ${DATA}/anl > ~/ncclimo.out 2>&1 &
 # ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm > ~/ncclimo.out 2>&1 &
 # MPAS: Prior to running ncclimo on MPAS output, annotate missing values of input with, e.g.,
@@ -235,7 +234,7 @@ bnd_nm='nbnd' # [sng] Bounds dimension name (e.g., 'nbnd', 'tbnd')
 clm_md='scd' # [sng] Climatology mode ('scd' or 'sdd' as per above)
 caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
-cf_flg='No' # [sng] Produce CF climatology attribute?
+cf_flg='Yes' # [sng] Produce CF climatology attribute?
 lnk_flg='Yes' # [sng] Link ACME-climo to AMWG-climo filenames
 dbg_lvl=0 # [nbr] Debugging level
 drc_in='' # [sng] Input file directory
@@ -327,33 +326,6 @@ function trim_leading_zeros {
 	sng_trm='0'
     fi # endif
 } # end trim_leading_zeros()
-
-function cf_clm_att_inq {
-    # Is file suitable for adding CF-compliant climatology attribute?
-    fl=${1}
-    # Does file have "time" dimension+variable=coordinate?
-    # Does that coordinate have "time_bnds" (or any time bounds) variable?
-    # Does that variable have "nbnd" (or, for clm2, "tbnd") dimension of size 2?
-    flg='Yes'
-    #flg='No'
-} # end cf_clm_att_inq()
-
-function cf_clm_att_put {
-    # Annotate with CF-compliant climatology attribute
-    bnd_nm=${1}
-    fl_srt=${2}
-    fl_end=${3}
-    fl=${4}
-    # NB: time boundary dimension is model-dependent: 'nbnd' for ACME, 'tbnd' for CAM3, 'hist_interval' for CLM2, ...
-    # fxm: Generalize name of time bounds variable: 'time_bnds' for ACME, 'time_bounds' for CAM3+CLM2, ...
-    time_srt=`ncks -C -H -s %g -v time_bnds -d ${bnd_nm},0 -d time,0 ${fl_srt}`
-    time_end=`ncks -C -H -s %g -v time_bnds -d ${bnd_nm},0 -d time,0 ${fl_end}`
-    echo "cf time_srt = ${time_srt}"
-    echo "cf time_end = ${time_end}"
-    ncap2 -O -s "time@climatology=\"climatology_bnds\";climatology_bnds[\$time,\$${bnd_nm}]=0;climatology_bnds(0,0)=${time_srt};climatology_bnds(0,1)=${time_end};time@cell_methods=\"time: mean within years time: mean over years\"" ${fl} ${fl}
-    ncatted -O -a bounds,time,d,,, ${fl}
-    ncks -O -C -x -v time_bnds ${fl} ${fl}
-} # end cf_clm_att_put()
 
 get_spt_drc () {
 # SMB (20150814):
@@ -505,13 +477,6 @@ if [ ${clm_md} = 'scd' ]; then
     let yr_cln=${yr_cln}+1
 fi # !scd
 
-# Perform CF annotation?
-if [ "${cf_flg}" = 'Yes' ]; then
-    # cf_clm_att_inq() overrides user preference
-    cf_clm_att_inq ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_srt}-01.nc
-    cf_flg=${flg}
-fi # !cf
-
 if [ "${mpi_flg}" = 'Yes' ]; then
     if [ -n "${COBALT_NODEFILE}" ]; then 
 	nd_fl="${COBALT_NODEFILE}"
@@ -613,9 +578,9 @@ else
     printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year.\n"
 fi # !scd
 if [ ${cf_flg} = 'Yes' ]; then 
-    printf "Annotation for the CF climatology attribute and climatology_bnds variable will be performed.\n"
+    printf "Annotation for CF climatology attribute and climatology_bounds variable will be performed.\n"
 else
-    printf "Annotation for the CF climatology attribute and climatology_bnds variable will not be performed.\n"
+    printf "Annotation for CF climatology attribute and climatology_bounds variable will not be performed.\n"
 fi # !cf
 if [ -n "${rgr_map}" ]; then 
     printf "This climatology will be regridded.\n"
@@ -662,7 +627,6 @@ for mth in {01..12}; do
     done # !fl_in
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
     cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
-    cmd_cf[${clm_idx}]="cf_clm_att_put ${bnd_nm} ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_clm_srt}-${MM}.nc ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_clm_end}-${MM}.nc ${fl_out[${clm_idx}]} ${par_opt_cf}"
 done # !mth
 
 # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
@@ -733,18 +697,6 @@ if [ -n "${par_opt}" ]; then
 	fi # !err
     done # !clm_idx
 fi # !par_opt
-
-# Block 1 Loop 3: Execute and/or echo monthly CF commands
-if [ ${cf_flg} = 'Yes' ]; then
-    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_cf[${clm_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    ${cmd_cf[${clm_idx}]}
-	fi # !dbg
-    done # !clm_idx
-fi # !cf_flg
 wait
 
 # Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).
@@ -834,22 +786,6 @@ if [ -n "${par_opt}" ]; then
 	fi # !err
     done # !clm_idx
 fi # !par_opt
-
-# Block 2 Loop 3: Execute and/or echo seasonal CF commands
-if [ ${cf_flg} = 'Yes' ]; then
-    cmd_cf[13]="cf_clm_att_put ${bnd_nm} ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_srt}-03.nc ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_end}-05.nc ${fl_out[13]} ${par_opt_cf}"
-    cmd_cf[14]="cf_clm_att_put ${bnd_nm} ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_srt}-06.nc ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_end}-08.nc ${fl_out[14]} ${par_opt_cf}"
-    cmd_cf[15]="cf_clm_att_put ${bnd_nm} ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_srt}-09.nc ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_end}-11.nc ${fl_out[15]} ${par_opt_cf}"
-    cmd_cf[16]="cf_clm_att_put ${bnd_nm} ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_clm_srt_dec}-${mm_djf_srt}.nc ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_end}-${mm_djf_end}.nc ${fl_out[16]} ${par_opt_cf}"
-    for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_cf[${clm_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    ${cmd_cf[${clm_idx}]}
-	fi # !dbg
-    done # !clm_idx    
-fi # !cf_flg
 wait
 
 # Block 2: Loop 4: Regrid seasonal files. Load-balance by using idle nodes (nodes not used for annual mean).
@@ -921,17 +857,6 @@ if [ -n "${par_opt}" ]; then
 	exit 1
     fi # !err
 fi # !par_opt
-
-if [ ${cf_flg} = 'Yes' ]; then
-    cmd_cf[17]="cf_clm_att_put ${bnd_nm} ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_clm_srt_dec}-${mm_ann_srt}.nc ${drc_in}/${caseid}.${mdl_nm}.${hst_nm}.${yyyy_end}-${mm_ann_end}.nc ${fl_out[17]} ${par_opt_cf}"
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_cf[17]}
-    fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
-	${cmd_cf[17]}
-    fi # !dbg
-fi # !cf_flg
-wait
 
 # Block 5: Regrid climatological annual mean
 if [ -n "${rgr_map}" ]; then 

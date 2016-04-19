@@ -1,5 +1,7 @@
 2016-04-18  Charlie Zender  <zender@uci.edu>
 
+	* Excise old CF-handling from ncclimo
+
 	* NCO 4.6.0-beta03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.0-beta03 final changes';git push
 	git tag -a 4.6.0-beta03 -m 'Version 4.6.0-beta03 new features: ncclimo, climatology bounds';git push --tags
