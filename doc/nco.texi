@@ -117,7 +117,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.0-beta03
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 17 April 2016
+@set update-date 18 April 2016
 @set update-month April 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -15843,6 +15843,394 @@ ncclimo [-a @var{clm_md}] [-b @var{bnd_nm}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 
 @noindent
 DESCRIPTION
+
+@command{ncclimo} produces climatological monthly means, seasonal means,
+annual mean, and optionally regrids all these files.
+
+The basic way to use @command{ncclimo} is to bring up a terminal window and simply type:
+@example
+ncclimo         -s start_yr -e end_yr -c run_id -i drc_in -o drc_out # CAM
+ncclimo -m clm2 -s start_yr -e end_yr -c run_id -i drc_in -o drc_out # ALM/CLM
+@end example
+A complete description of all available flags is given in comments
+embedded in @command{ncclimo}, and for convenience here is a summary: 
+-s: start year (example: 1980). Unless the optional flag "-a sdd" is
+specified, the first month used will be Dec of the year before the start
+year you specify (to allow for contiguous DJF climos). If "-a sdd" is
+specified, the first month used will be Jan of the specified start
+year. 
+-e: end yr (example: 2000). Unless the optional flag "-a sdd" is
+specified, the last month used will be Nov of the specified end year. If
+"-a sdd" is specified, the last month will be Dec of the specified end
+year.  
+-i: directory containing all netcdf files to be used for input to this
+code.  
+-o: directory where computed climo files should be placed.
+-c: caseid, i.e., simulation name. For input files like
+famipc5_ne30_v0.3_00001.cam.h0.1980-01.nc, specify "-c
+famipc5_ne30_v0.3_00001". The ".cam." and ".h0." bits are added to the
+filenames internally by default, and can be modified via the "-m mdl_nm"
+and "-h hst_nm" switches if needed. See comments in @command{ncclimo}
+for documentation.  
+-m: model type. Default is "cam". Other options are "clm2", "ocn",
+"ice", "cism", "cice", "pop". 
+
+MPAS O/I considerations:
+MPAS ocean and ice models currently have their own (non-CESM'ish) naming
+convention for monthly output files. @command{ncclimo} recognizes input
+files as being MPAS-style when invoked with "-c hist" and "-m ocn" or
+"-m ice". Use the optional "-f fml_nm" switch to replace "hist" with a
+more descriptive simulation name for the output. Invocation looks like
+this: 
+@example
+ncclimo -c hist -m ocn -s 1980 -e 1983 -i drc_in -o drc_out # MPAS-O
+ncclimo -c hist -m ice -s 1980 -e 1983 -i drc_in -o drc_out # MPAS-I
+@end example
+MPAS climos are unaware of missing values until/unless the input files are "fixed". I recommend that the person who produces the simulation annotate all floating point variables with the appropriate _FillValue prior to invoking @command{ncclimo}. Run something like this once in the history file directory:
+@example
+@verbatim
+for fl in `ls hist.*` ; do
+  ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${fl}
+done
+@end verbatim
+@end example
+If/when MPAS O/I generates the _FillValue attributes itself, this step
+can and should be skipped. All other @command{ncclimo} features like
+regridding (below) are invoked identically for MPAS as for CAM/CLM users
+although under-the-hood @command{ncclimo} does do some special
+pre-processing (dimension permutation, metadata annotation) for MPAS. A
+five-year oEC60to30 MPAS-O climo with regridding to T62 takes < 10
+minutes on rhea. 
+
+Regridding (climos and other files):
+@command{ncclimo} will (optionally) regrid during climatology generation
+and produce climatology files on both the native and desired analysis
+grids. 
+This regridding is virtually free, because it is performed on
+idle nodes/cores after the monthly climatologies have been computed and
+while the seasonal climatologies are being computed. 
+This load-balancing can save half an hour on ne120 datasets. 
+To regrid, simply pass the desired mapfile name with @samp{-r map.nc},
+e.g., @samp{-r maps/map_ne120np4_to_fv257x512_aave.20150901.nc}. 
+Although this should not be necessary for normal use, you may pass any
+options specific to regridding with @samp{-R opt1 opt2}.
+
+Specifying '-O drc_rgr' (NB: uppercase "O") causes @command{ncclimo} to
+place the regridded files in the directory @var{drc_rgr}. 
+These files have the same names as the native grid climos from which
+they were derived. 
+There is no namespace conflict because they are in separate
+directories. 
+These files also have symbolic links to their AMWG filenames. 
+If @samp{-O drc_rgr} is not specified, @command{ncclimo} places
+all regridded files in the native grid climo output directory,
+@var{drc_out}, specified by @samp{-o @var{drc_out}} (NB: lowercase
+"o"). 
+To avoid namespace conflicts when both climos are stored in the same
+directory, the names of the regridded files are suffixed by the
+destination geometry string obtained from the mapfile, e.g.,
+@file{*_climo_fv257x512_bilin.nc}. 
+These files also have symbolic links to their AMWG filenames. 
+@example
+ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i drc_in -o drc_out
+ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i drc_in -r map_file -o drc_out
+ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i drc_in -r map_file -o drc_out -O drc_rgr
+@end example
+
+The above commands perform a climatology without regridding, then with
+regridding (all climos stored in @var{drc_out}), then with regridding and
+storing regridded files separately. Paths specified by @var{drc_in},
+@var{drc_out}, and @var{drc_rgr} may be relative or absolute. 
+An alternative to regridding during climatology generation is to regrid
+afterwards with @command{ncremap}, which has more special features
+built-in for regridding. 
+To use @command{ncremap} to regrid a climatology in @var{drc_out} and
+place the results in @var{drc_rgr}, use something like
+@example
+ncremap -I drc_out -m map.nc -O drc_rgr
+ls drc_out/*climo* | ncremap -m map.nc -O drc_rgr
+@end example
+See the full ncremap documentation for more examples (including MPAS!).
+ 
+Coupled Runs:
+@command{ncclimo} works on all ACME models. It can simultaneously
+generate climatologies for a coupled run, where climatologies mean both
+native and regridded monthly, seasonal, and annual averages as per the
+AG specification. Here are template commands for a recent simulation:
+@example
+@verbatim
+caseid=20160121.A_B2000ATMMOD.ne30_oEC.titan.a00
+drc_in=/lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run
+map_atm=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
+map_lnd=$map_atm
+map_ocn=${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc
+map_ice=$map_ocn
+ncclimo -p mpi -c ${caseid} -m cam  -s 2 -e 5 -i $drc_in -r $map_atm -o ${DATA}/acme/atm
+ncclimo        -c ${caseid} -m clm2 -s 2 -e 5 -i $drc_in -r $map_lnd -o ${DATA}/acme/lnd
+ncclimo -p mpi -c hist      -m ocn  -s 2 -e 5 -i $drc_in -r $map_ocn -o ${DATA}/acme/ocn 
+ncclimo        -c hist      -m ice  -s 2 -e 5 -i $drc_in -r $map_ice -o ${DATA}/acme/ice
+@end verbatim
+@end example
+The atmosphere and ocean model output is significantly larger than the
+land and ice model output. These commands recognize that by using
+different parallelization strategies that may (rhea standard queue) or
+may not (cooley or rhea bigmem queue) be required, depending on the
+fatness of the analysis nodes, as explained below.
+
+Memory Considerations:
+It is important to employ the optimal @command{ncclimo}  parallelization
+strategy for your computer hardware resources. Select from the three
+available choices with the '-p par_typ' switch. The options are serial
+mode ('-p nil' or '-p serial'), background mode parallelism ('-p bck'),
+and MPI parallelism ('-p mpi'). The default is background mode
+parallelism, which is appropriate for lower resolution (e.g., ne30L30)
+simulations on most nodes at high-performance computer centers. Use (or
+at least start with) serial mode on personal
+laptops/workstations. Serial mode requires twelve times less RAM than
+the parallel modes, and is much less likely to deadlock or cause OOM
+(out-of-memory) conditions on your personal computer. If the available
+RAM (+swap) is < 12*4*sizeof(monthly input file), then try serial mode
+first (12 is the optimal number of parallel processes for monthly
+climos, the computational overhead is a factor of four). CAM-SE ne30L30
+output is about ~1 GB per month so each month requires about 4 GB of
+RAM. CAM-SE ne30L72 output (with LINOZ) is about ~10 GB/month so each
+month requires ~40 GB RAM. CAM-SE ne120 output is about ~12 GB/month so
+each month requires ~48 GB RAM. The computer does not actually use all
+this memory at one time, and many kernels compress RAM usage to below
+what top reports, so the actual physical usage is hard to pin-down, but
+may be a factor of 2.5-3.0 (rather than a factor of four) times the size
+of the input file. For instance, my 16 GB MacBookPro will successfully
+run an ne30L30 climatology (that requests 48 GB RAM) in background mode,
+but the laptop will be slow and unresponsive for other uses until it
+finishes (in 6-8 minutes) the climos. Experiment a bit and choose the
+parallelization option that works best for you.  
+
+Serial mode, as its name implies, uses one core at a time for climos,
+and proceeds sequentially from months to seasons to annual
+climatologies. Serial mode means that climos are performed serially, but
+regridding will employ OMP threading on platforms that support it, and
+use up to 16 cores. By design each month and each season is independent
+of the others, so all months can be computed in parallel, then each
+season can be computed in parallel (using monthly climatologies), then
+the annual average can be computed. Background parallelization mode
+exploits this parallelism and executes the climos in parallel as
+background processes on a single node, so that twelve cores are
+simultaneously employed for monthly climatologies, four for seasonal,
+and one for annual. The optional regridding will employ up to two cores
+per process. MPI parallelism executes the climatologies on different
+nodes so that up to (optimally) twelve nodes are employed performing
+monthly climos. The full memory of each node is available for each
+individual climo. The optional regridding will employ up to eight cores
+per node. MPI mode or Background mode on a big memory queue must be used
+to process ne30L72 and ne120L30 climos on some, but not all, DOE
+computers. For example, attempting an ne120L30 climo on in background
+mode on rhea (i.e., on one 128 GB compute node) will fail due to
+OOM. (OOM errors do not produce useful return codes so if your climo
+processes die without printing useful information, the cause may be
+OOM). However the same climo will succeed if executed on a single
+big-memory (1 TB) node on rhea (use -lpartition=gpu, as shown below). Or
+MPI mode can be used for any climatology. The same ne120L30 climo will
+also finish blazingly fast in background mode on cooley (i.e., on one
+384 GB compute node), so MPI mode is unnecessary on cooley. In general,
+the fatter the memory, the better the performance.  
+
+For a Single, Dedicated Node on LCFs:
+The basic approach above (running the script from a standard terminal
+window) works well for small cases can be unpleasantly slow on login
+nodes of LCFs and for longer or higher resolution (e.g., ne120)
+climatologies. As a baseline, generating a climatology of 5 years of
+ne30 (~1x1 degree) CAM-SE output with @command{ncclimo} takes 1-2
+minutes on rhea (at a time with little contention), and 6-8 minutes on a
+2014 MacBook Pro. To make things a bit faster at LCFs, you can ask for
+your own dedicated node (note this approach doesn't make sense except on
+supercomputers which have a job-control queue). On rhea do this via:
+@example
+qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:10:00 -N climo_nco # rhea standard node (128 GB)
+qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:10:00 -lpartition=gpu -N climo_nco # rhea bigmem node (1 TB)
+@end example
+The equivalents on cooley and cori are:
+@example
+qsub -I -A HiRes_EarthSys --nodecount=1 --time=00:10:00 --jobname=climo_nco # cooley node (384 GB)
+salloc  -A acme --nodes=1 --partition=debug --time=00:10:00 --job-name=climo_nco # cori (128 GB)
+@end example
+Acquiring a dedicated node is useful for any calculation you want to do
+quickly, not just creating climo files though it does burn through our
+computing allocation so don't be wasteful. This command returns a prompt
+once nodes are assigned (the prompt is returned in your home directory
+so you may then have to cd to the location you meant to run from). At
+that point you can simply use the 'basic' @command{ncclimo} invocation
+to run your code. It will be faster because you are not sharing the node
+it's running on with other people. Again, ne30L30 climos only require <
+2 minutes, so the 10 minutes requested in the example is excessive and
+conservative. Tune-it with experience. Here is the meaning of each flag
+used:
+-I (that's a capital i): submit in interactive mode = return a prompt
+rather than running a program. 
+--time: how long to keep this dedicated node for. Unless you kill the
+shell created by the qsub command, the shell will exist for this amount
+of time, then die suddenly. In the above examples, 3 hrs is requested. 
+"-l nodes=1" (rhea) or "--nodecount 1" (cooley) or "--nodes=1"
+(cori/edison): the number of nodes to request. @command{ncclimo} will
+use multiple cores per node. 
+-V: export existing environmental variables into the new interactive
+shell. Peter doubts this is actually needed. 
+-q: the queue name (needed for locations like edison that have multiple
+queues with no default queue) 
+-A: the name of the account to charge for time used. This page may be
+useful for figuring that out if the above defaults don't work:
+Computational Resources 
+
+For a 12 node, MPI Job:
+The above parallel approaches will fail when a single node lacks enough
+RAM (plus swap) to store all twelve monthly input files, plus extra RAM
+for computations. One should employ MPI multinode parallelism (-p mpi)
+on nodes with less RAM than 12*3*sizeof(input).  The longest an ne120
+climo will take is less than half an hour (~25 minutes on Edison or
+Rhea), so the simplest method to run MPI jobs is to request
+12-interactive nodes using the above commands (though remember to add -p
+mpi), then execute the script at the command line. It is also possible,
+and sometimes preferable, to request non-interactive compute nodes in a
+batch queue. Executing an MPI-mode climo (on machines with job
+scheduling and, optimally, 12 available nodes) in a batch queue can be
+done in 2 commands. First, write an executable file which calls the
+@command{ncclimo} script with appropriate arguments. We do this below by
+echoing to a file ~/climo_nco.pbs, but you could also open an editor and
+copy the stuff in quotes below into a file and save it: 
+@example
+@verbatim
+echo "ncclimo -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm" > ~/climo_nco.pbs
+@end verbatim
+@end example
+The only new argument here is "-p mpi", which tells the script to use
+MPI parallelism. Once this file exists, submit a 12 node,
+non-interactive job to execute it: 
+@example
+qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -j oe -m e -N climo_nco -o ~/climo_nco.txt ~/climo_nco.pbs
+@end example
+This script adds the following new flags:
+"-j oe": combine output and error streams into standard error.
+"-m e": send email to the job submitter when the job ends
+"-o ~/climo_nco.txt": write all output to ~/climo_nco.txt
+The above commands are meant for Rhea. The equivalent commands for
+Cooley and Cori/Edison are: 
+@example
+@verbatim
+# Cooley
+/bin/rm -f ~/climo_nco.err ~/climo_nco.out
+echo '#!/bin/bash' > ~/climo_nco.cobalt
+echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /projects/EarthModel/qtpang/archive/famipc5_ne120_v0.3_00003/atm/hist -o ${DATA}/ne120/clm" >> ~/climo_nco.cobalt;chmod a+x ~/climo_nco.cobalt
+qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname climo_nco --error ~/climo_nco.err --output ~/climo_nco.out --notify zender@uci.edu ~/climo_nco.cobalt
+# Cori/Edison:
+echo "ncclimo -a scd -d 1 -p mpi -c AMIP_ACMEv02ce_FC5_ne30_ne30_COSP -s 2008 -e 2012 -i /scratch1/scratchdirs/wlin/archive/AMIP_ACMEv02ce_FC5_ne30_ne30_COSP/atm/hist -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/climo_nco.pbs;chmod a+x ~/climo_nco.slurm
+sbatch -A acme --nodes=12 --time=03:00:00 --partition=regular --job-name=climo_nco --mail-type=END --error=~/climo_nco.err --output=~/climo_nco.out ~/climo_nco.slurm
+@end verbatim
+@end example
+
+What does @command{ncclimo} do?
+The basic idea of this script is very simple. For monthly climatologies
+(e.g. JAN), @command{ncclimo} passes the list of all relevant January
+monthly files to NCO's ncra command, which averages each variable in
+these monthly files over their time dimension (if it exists) or copies
+the value from the first month unchanged (if no time axis
+exists). Seasonal climos are then created by taking the average of the
+monthly climo files using ncra. In order to account for differing
+numbers of days per month, the "-w" flag in ncra is used, followed by
+the number of days in the relevant months. For example, the MAM climo is
+computed from: "ncra -w 31,30,31 MAR_climo.nc APR_climo.nc MAY_climo.nc
+MAM_climo.nc" (details about file names and other optimization flags
+have been stripped here to make the concept easier to follow). The ANN
+climo is then computed by doing a weighted average of the seasonal
+climos.
+
+Assumptions, Approximations, and Algorithms (AAA) Employed:
+A climatology embodies many algorithmic choices, and regridding from the
+native to the analysis grid involves still more choices. A separate
+method should reproduce the @command{ncclimo} and NCO answers to
+round-off precision if it implements the same algorithmic choices. For
+example, @command{ncclimo} agrees to round-off with AMWG diagnostics
+when making the same (sometimes questionable) choices. The most
+important choices have to do with converting single- to double-precision
+(SP and DP, respectively), treatment of missing values,
+generation/application of regridding weights. For concreteness and
+clarity we describe the algorithmic choices made in processing a CAM-SE
+monthly output into a climatological annual mean (ANN) and then
+regridding that. Other climatologies (e.g., daily to monthly, or
+annual-to-climatological) involve similar choices.
+
+ACME (and CESM) computes fields in DP and outputs history (not restart)
+files as monthly means in SP. The NCO climatology generator
+(@command{ncclimo}) processes these data in four stages. Stage N
+accesses input only from stage N-1, never from stage N-2 or
+earlier. Thus the (on-disk) files from stage N determine the highest
+precision achievable by stage N+1. The general principal is to perform
+math (addition, weighting, normalization) in DP and output results to
+disk in the same precision in which they were input from disk (usually
+SP). In Stage 1, NCO ingests Stage 0 monthly means (raw CAM-SE output),
+converts SP input to DP, performs the average across all years, then
+converts the answer from DP to SP for storage on-disk as the
+climatological monthly mean. In Stage 2, NCO ingests Stage 1
+climatological monthly means, converts SP input to DP, performs the
+average across all months in the season (e.g., DJF), then converts the
+answer from DP to SP for storage on-disk as the climatological seasonal
+mean. In Stage 3, NCO ingests Stage 2 climatological seasonal means,
+converts SP input to DP, performs the average across all four seasons
+(DJF, MAM, JJA, SON), then converts the answer from DP to SP for storage
+on-disk as the climatological annual mean. 
+
+Stage 2 weights each input month by its number of days (e.g., 31 for
+January), and Stage 3 weights each input season by its number of days
+(e.g., 92 for MAM). ACME runs CAM-SE with a 365-day calendar, so these
+weights are independent of year and never change. 
+The treatment of missing values in Stages 1-3 is limited by the lack of
+missing value tallies provided by Stage 0 (model) output. Stage 0
+records a value as missing if it is missing for the entire month, and
+present if the value is valid for one or more timesteps. Stage 0 does
+not record the missing value tally (number of valid timesteps) for each
+spatial point. Thus a point with a single valid timestep during a month
+is weighted the same in Stages 1-4 as a point with 100% valid timesteps
+during the month. The absence of tallies inexorably degrades the
+accuracy of subsequent statistics by a amount that varies in time and
+space. On the positive side, it significantly reduces the output size
+(by a factor of two) and complexity of analyzing fields that contain
+missing values. Due to the ambiguous nature of missing values, it is
+debatable whether they merit efforts to treat them more exactly.
+
+The vast majority of fields undergo three promotion/demotion cycles
+between CAM-SE and ANN. No promotion/demotion cycles occur for history
+fields that CAM-SE outputs in DP rather than SP, nor for fields without
+a time dimension. Typically these fields are grid coordinates (e.g.,
+longitude, latitude) or model constants (e.g., CO2 mixing ratio). NCO
+never performs any arithmetic on grid coordinates or non-time-varying
+input, regardless of whether they are SP or DP. Instead, NCO copies
+these fields directly from the first input file. 
+Stage 4 uses a mapfile to regrid climos from the native to the desired
+analysis grid. ACME currently uses mapfiles generated by
+ESMF_RegridWeightGen (ERWG). The algorithmic choices, approximations,
+and commands used to generate mapfiles from input gridfiles are
+described here. As that page describes, the input gridfiles used by ACME
+until ~20150901 contained flaws that effectively reduced their
+precision, especially at regional scales. ACME (and CESM) mapfiles
+continue to approximate lat/lon grids as connected by great
+circles. This assumption may be removed in the future. Constraints
+imposed by ERWG during weight-generation ensure that global integrals of
+fields undergoing conservative regridding are exactly conserved.
+
+Application of weights from the mapfile to regrid the native data to the
+analysis grid is straightforward. Grid fields (e.g., latitude,
+longitude, area) are not regridded. Instead they are copied (and area is
+reconstructed if absent) directly from the mapfile. NCO ingests all
+other native grid (source) fields, converts SP to DP, and accumulates
+destination gridcell values as the sum of the DP weight (from the sparse
+matrix in the mapfile) times the (usually SP-promoted-to-DP) source
+values. Fields without missing values are then stored to disk in their
+original precision. Fields with missing values are treated (by default)
+with what NCO calls the "conservative" algorithm. The conservative
+algorithm uses all valid data from the source grid on the destination
+grid once and only once. Destination cells receive the weighted valid
+values of the source cells. This is conservative because the global
+integrals of the source and destination fields are equal. See the NCO
+documentation here for more description of the conservative and of the
+optional ("renormalized") algorithm. 
 
 @noindent
 @html

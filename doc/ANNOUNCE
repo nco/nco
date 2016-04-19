@@ -11,6 +11,8 @@ as well as some optimizations to reduce its memory footprint.
 (Thanks to Henry Butowky!). Appending is now consistent in
 interactive- and forced-modes in all operators.
 And ncremap continues to accrue useful features.
+Overall, though, 4.6.0 is most notable for the debut of ncclimo.
+ncclimo is a new operator that generates climatologies.
 
 Work on NCO 4.6.1 has commenced and will better support eliciting
 latitude/longitude coordinates using the CF "coordinates" convention
@@ -21,6 +23,21 @@ Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
+
+A. ncclimo produces climatological monthly means, seasonal means, 
+   annual mean, and optionally regrids all these files. Like ncremap,
+   ncclimo is actually a front-end script to manage the complexity
+   of invoking the underlying operators (ncks for ncremap and ncra for
+   ncclimo). Using ncclimo is as simple as
+   ncclimo -s start_yr -e end_yr -c run_id -i drc_in -o drc_out
+   ncclimo -s 5 -e 10 -c hist -m ocn -i drc_in -o drc_out # MPAS-O
+   ncclimo produces climatologies starting from monthly-mean files of 
+   most CESM-like model and observational data formats.
+   It has sophisticated parallelism and regridding options.
+   Models tested include ALM, CAM, CLM, CICE, CISM, CLM, MPAS-I,
+   MPAS-O, and POP. ncclimo resulted from work with the DOE ACME
+   project, and I am grateful for their support.
+   http://nco.sf.net/nco.html#ncclimo
 
 A. ncap2 now works with pointers to variables and attributes.
    This allows, e.g., loops over arbitrary sets of variables, and
@@ -46,6 +63,16 @@ A. ncatted new mode "nappend" appends only to existing attributes.
 A. ncremap now defaults to $TMPDIR for storing intermediate files.
    This is user-configurable with the -U switch.
    http://nco.sf.net/nco.html#ncremap
+
+A. ncks can now ingest and de-interleave ENVI images in BIL, BSQ, and
+   BIP format and store them as any netCDF type. ncks is a viable (and 
+   faster) replacement for that small subset of tasks normally taken
+   on by the venerable GDAL toolkit (gdal_translate in particular).
+   Thanks to David LeBauer of the University of Illinois/NCSA and DOE
+   TERRAREF for supporting this feature.
+   ncks --trr_wxy=926,1600,1 --trr typ_in=NC_USHORT --trr ntl_in=bil \
+   --trr_in=in.nc foo.nc out.nc
+   http://nco.sf.net/nco.html#terraref
 
 BUG FIXES:
 
