@@ -1,6 +1,6 @@
 2016-04-18  Charlie Zender  <zender@uci.edu>
 
-	* Copy missing calendar to temporal bounds to aid debugging
+	* Copy missing calendar to temporal bounds so ncdump -t prints correct date
 
 2016-04-17  Charlie Zender  <zender@uci.edu>
 
@@ -8,7 +8,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.0-beta02 final changes';git push
 	git tag -a 4.6.0-beta02 -m 'Version 4.6.0-beta02 new features: ncclimo, climatology bounds';git push --tags
 
-	* Copy missing units to temporal bounds to aid debugging
+	* Copy missing units to temporal bounds so ncdump -t prints correct date
 
 2016-04-16  Charlie Zender  <zender@uci.edu>
 
