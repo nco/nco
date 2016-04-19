@@ -112,6 +112,7 @@ esac # !HOSTNAME
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 -i /lustre/atlas1/cli115/world-shared/mbranst/B1850C5e1_ne30/atm/hist -o ${DATA}/ne30/clm
 
 # Debugging and Benchmarking:
+# ncclimo -v FSNT,AODVIS -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
 # ncclimo -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/ncclimo.out 2>&1 &
@@ -457,11 +458,11 @@ elif [ "${par_typ}" = 'mpi' ]; then
     fi # !UVCDAT_SETUP_PATH
 fi # !par_typ
 if [ -n "${rgr_map}" ]; then 
-    if [ ! -e "${rgr_map}" ]; then
+    if [ ! -f "${rgr_map}" ]; then
 	echo "ERROR: Unable to find specified regrid map ${rgr_map}"
 	echo "HINT: Supply the full path-name for the regridding map"
 	exit 1
-    fi # ! -e
+    fi # ! -f
     rgr_opt="${rgr_opt} --map ${rgr_map}"
 fi # !rgr_map
 if [ -n "${thr_usr}" ]; then 
@@ -628,11 +629,11 @@ for mth in {01..12}; do
 	yyyy_clm_end=${yyyy_clm_end_dec}
     fi # !scd
     for fl_in in ${yr_fl} ; do
-	if [ ! -e "${drc_in}/${fl_in}" ]; then
+	if [ ! -f "${drc_in}/${fl_in}" ]; then
 	    echo "ERROR: Unable to find required input file ${drc_in}/${fl_in}"
 	    echo "HINT: All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
 	    exit 1
-	fi # ! -e
+	fi # ! -f
     done # !fl_in
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
     cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
