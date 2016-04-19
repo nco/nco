@@ -1,6 +1,6 @@
 2016-04-18  Charlie Zender  <zender@uci.edu>
 
-	* Turn-off dysfunctional "legible" (lgb) print-formatting until it works
+	* Turn-off dysfunctional legible (lgb) print-formatting until it works
 
 	* Coordinate cell_methods with climatology bounds
 
