@@ -118,7 +118,7 @@ variables:
 	int lat_times_lon(lat_times_lon);
 	lat_times_lon:long_name = "Element index (i.e., C-based storage order) for 2D coordinate grids stored as 1D arrays";
 
-	float lat_2D_rct(lat,lon);
+        float lat_2D_rct(lat,lon);
 	lat_2D_rct:long_name = "Latitude for 2D rectangular grid stored as 2D array";
 	lat_2D_rct:units = "degrees_north";
 
@@ -285,6 +285,23 @@ variables:
 	float P0;
 	P0:long_name = "reference pressure";
 	P0:units = "pascal";
+
+        float cnv_CF_grd(lat,lon);
+	cnv_CF_grd:long_name = "test CF grid_mapping convention";
+        cnv_CF_grd:grid_mapping = "albers_conical_equal_area";
+        cnv_CF_grd:purpose = "Test whether grid_mapping is propagated with coordinate";
+
+	char albers_conical_equal_area;
+        albers_conical_equal_area:long_name = "Albers Conical Equal Area Projection";
+        albers_conical_equal_area:purpose = "Test that this grid_mapping is propagated with all associated variables (like cnv_CF_grd)";
+        albers_conical_equal_area:grid_mapping_name = "albers_conical_equal_area";
+        albers_conical_equal_area:false_easting = 0.;
+        albers_conical_equal_area:false_northing = 0.;
+        albers_conical_equal_area:latitude_of_projection_origin = 40.;
+        albers_conical_equal_area:longitude_of_central_meridian = -101.;
+        albers_conical_equal_area:standard_parallel = 20., 60.;
+        albers_conical_equal_area:longitude_of_prime_meridian = 0.;
+        albers_conical_equal_area:semi_major_axis = 6378137.;
 
 	float cnv_CF_crd(gds_crd);
 	cnv_CF_crd:long_name = "test CF coordinates conventions";
@@ -1250,6 +1267,7 @@ data:
 	// char_var_multinul='0','\n','\0';
 	char_var_nul='\0';
 	char_var_space=" ";
+        cnv_CF_grd=1,2,3,4,5,6,7,8;
 	cnv_CF_crd=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
 	cnv_CF_ncl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	cnv_CF_ncl_var_1=11.,22.,23.,24.,25.,26.,27.,28.,29.,30.;
