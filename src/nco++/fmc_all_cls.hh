@@ -191,6 +191,7 @@ private:
    enum {PABS,PSQR };
    bool _flg_dbg;
 public:
+
   unr_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
@@ -204,6 +205,18 @@ public:
   arr_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
+
+//Array Function /****************************************/
+class  bnds_cls: public vtl_cls {
+private:
+   enum {PBOUNDS };
+   bool _flg_dbg;
+public:
+  bnds_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+};
+
+
 
 //Bilinear  Interpolation Functions /****************************************/
 class bil_cls: public vtl_cls {

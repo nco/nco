@@ -550,6 +550,8 @@ main(int argc,char **argv)
   vlist_cls vlist_obj(true);
   // string list functions
   print_cls print_obj(true);
+  // string list functions
+  bnds_cls bnds_obj(true);
 
 
   // Populate vector
@@ -572,6 +574,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&misc_obj);
   (void)pop_fmc_vtr(fmc_vtr,&vlist_obj);
   (void)pop_fmc_vtr(fmc_vtr,&print_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&bnds_obj);
 
 #ifdef ENABLE_GSL
 # ifdef ENABLE_NCO_GSL

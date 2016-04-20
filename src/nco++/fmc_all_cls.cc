@@ -2349,6 +2349,144 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
   } 
 
+// Bounds function - calculates bounds of a 1D coordinate variable
+  bnds_cls::bnds_cls(bool flg_dbg){
+    //Populate only on  constructor call
+    if(fmc_vtr.empty()){
+          fmc_vtr.push_back( fmc_cls("make_bounds",this,PBOUNDS)); 
+
+    }		      
+  } 
+  var_sct * bnds_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("arr_cls::fnd");
+  int fdx;
+  int nbr_args;
+  int idx;
+  int nbr_dim;
+  dmn_sct **dim;
+  var_sct *var1=NULL_CEWI;
+  var_sct *var2=NULL_CEWI;
+  var_sct *var_ret;
+           
+  std::string susg;
+  std::string sfnm=fmc_obj.fnm();
+
+  RefAST tr;
+  std::vector<RefAST> args_vtr; 
+  std::vector<std::string> cst_vtr;              
+
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;            
+  vtl_typ lcl_typ;
+
+  fdx=fmc_obj.fdx();
+ 
+
+  if(expr)
+      args_vtr.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	args_vtr.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+  nbr_args=args_vtr.size();  
+
+  susg="usage: var_out="+sfnm+"(coordinate_var,$dim"; 
+
+  
+  if(nbr_args<2)
+      err_prn(sfnm,"Function has been called with less than two arguments\n"+susg); 
+
+
+
+  if(nbr_args >3 &&!prs_arg->ntl_scn) 
+      wrn_prn(sfnm,"Function been called with more than two arguments"); 
+
+
+   
+  
+  var1=walker.out(args_vtr[0]);  
+
+  
+  if(prs_arg->ntl_scn && var1->undefined )
+  {
+    return var1;
+  }
+
+
+  /* second argument must be a single dimension */
+  if(args_vtr[1]->getType() != DIM_ID ) 
+     err_prn(sfnm,"Second argument must be a dimension\n"+susg); 
+
+  // cast a var from using the dim arg
+  if(args_vtr[1]->getType() == DIM_ID ) 
+  {
+    for(idx=0;idx<var1->nbr_dim;idx++)    
+      cst_vtr.push_back( var1->dim[idx]->nm);     
+
+   cst_vtr.push_back(args_vtr[1]->getText());
+     
+   var_ret=ncap_cst_mk(cst_vtr,prs_arg);
+   
+   // convert to type of first arg
+   //var_ret=nco_var_cnf_typ(var1->type,var_ret);  
+   nco_var_cnf_typ(NC_DOUBLE,var_ret);  
+
+  }
+
+
+  if(prs_arg->ntl_scn)
+  {
+    var1=nco_var_free(var1);
+    return var_ret; 
+  }
+
+  // allocate space  
+  void *vp=nco_malloc( var_ret->sz * nco_typ_lng(var_ret->type)); 
+  var_ret->val.vp=vp;
+
+
+ 
+  // do the heavy lifting 
+  {  
+    long sz; 
+    double dprev;
+
+
+    nco_var_cnf_typ(NC_DOUBLE, var1);   
+
+    (void)cast_void_nctype(NC_DOUBLE,&var1->val);
+    (void)cast_void_nctype(NC_DOUBLE,&var_ret->val);
+
+    sz=var1->sz;
+
+    dprev=2* var1->val.dp[0]-var1->val.dp[1];     
+    for(idx=0;idx<sz;idx++)  
+    {
+      var_ret->val.dp[2*idx]= 0.5*(dprev+var1->val.dp[idx]);                                                                                   
+      if(idx>0)  
+	var_ret->val.dp[2*idx-1] = var_ret->val.dp[2*idx];
+
+      dprev=var1->val.dp[idx]; 
+    }
+    // calculate final value 
+    var_ret->val.dp[2*sz-1]= 2*dprev-var_ret->val.dp[2*sz-2]; 
+
+    (void)cast_nctype_void(NC_DOUBLE,&var1->val);
+    (void)cast_nctype_void(NC_DOUBLE,&var_ret->val);
+
+  }
+   
+   nco_var_free(var1);
+
+
+  
+     
+  return var_ret;
+
+  }
 
 
 //Bilinear  Interpolation Functions /****************************************/
