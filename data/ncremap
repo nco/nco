@@ -453,28 +453,28 @@ if [ "${wgt_gnr}" != 'esmf' ] && [ "${wgt_gnr}" != 'tempest' ]; then
 fi # !wgt_gnr
 
 if [ -n "${dst_fl}" ]; then 
-    if [ ! -e "${dst_fl}" ]; then
+    if [ ! -f "${dst_fl}" ]; then
 	echo "ERROR: Unable to find specified destination-file ${dst_fl}"
 	echo "HINT: Supply the full path-name for the destination-file"
 	exit 1
-    fi # ! -e
+    fi # ! -f
     dst_usr_flg='Yes'
 fi # !dst_fl
 if [ -n "${grd_dst}" ]; then 
-    if [ ! -e "${grd_dst}" ]; then
+    if [ ! -f "${grd_dst}" ]; then
 	echo "ERROR: Unable to find specified destination grid-file ${grd_dst}"
 	echo "HINT: Supply the full path-name for the destination grid, or generate one automatically with -G"
 	exit 1
-    fi # ! -e
+    fi # ! -f
     grd_dst_usr_flg='Yes'
 else
     grd_dst=${grd_dst_dfl} # [sng] Grid-file default
 fi # !grd_dst
 if [ -n "${grd_src}" ]; then 
-    if [ ! -e "${grd_src}" ]; then
+    if [ ! -f "${grd_src}" ]; then
 	echo "ERROR: Unable to find specified source grid-file ${grd_src}"
 	exit 1
-    fi # ! -e
+    fi # ! -f
     grd_src_usr_flg='Yes'
 else
     grd_src=${grd_src_dfl} # [sng] Grid-file default
@@ -492,7 +492,7 @@ fi # !map_mk
 if [ -n "${map_fl}" ]; then 
     map_usr_flg='Yes'
     if [ "${map_mk}" = 'Yes' ]; then
-        if [ -e "${map_fl}" ]; then
+        if [ -f "${map_fl}" ]; then
 	    rsp_kbd_nbr=0
 	    while [ ${rsp_kbd_nbr} -lt 10 ]; do
 		echo "WARNING: The file ${map_fl} already exists and will be over-written by the newly generated map-file."
@@ -508,13 +508,13 @@ if [ -n "${map_fl}" ]; then
 		echo "ERROR: Too many invalid responses, exiting"
 		exit 1
 	    fi # !rsp_kbd_nbr
-	fi # ! -e
+	fi # ! -f
     else # !map_mk
-        if [ ! -e "${map_fl}" ]; then
+        if [ ! -f "${map_fl}" ]; then
 	    echo "ERROR: Unable to find specified regrid map ${map_fl}"
 	    echo "HINT: Supply a valid map-file (weight-file) name or supply the grid files or data files and let ncremap create a mapfile for you"
 	    exit 1
-	fi # ! -e
+	fi # ! -f
     fi # !map_mk
 else # !map_fl
     if [ "${wgt_gnr}" = 'esmf' ]; then 
@@ -859,11 +859,11 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 
 	# Block 2: Source grid
 	# Block 2 Loop 1: Source gridfile command
-	if [ ! -e "${in_fl}" ]; then
+	if [ ! -f "${in_fl}" ]; then
 	    echo "${spt_nm}: ERROR Unable to find Input file ${in_fl}"
 	    echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
 	    exit 1
-	fi # ! -e
+	fi # ! -f
 	# Infer source grid-file from input data file
 	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${in_fl} ${tmp_out_fl}"
 	
