@@ -1,3 +1,9 @@
+2016-04-20  Charlie Zender  <zender@uci.edu>
+
+	* Treat as coordinates all variables listed in a "grid_mapping" attribute
+
+	* Default source code download links now point to GitHub not SF
+
 2016-04-18  Charlie Zender  <zender@uci.edu>
 
 	* Excise old CF-handling from ncclimo

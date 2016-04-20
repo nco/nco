@@ -255,10 +255,13 @@ special cases.
 <!-- http://nco.sf.net#Contribute -->
 <dt><a name="Contribute"></a></dt>
 <h2>How to Contribute: Volunteer, Endorse, or Donate</h2>
-<p>In March, 2000, NCO became an Open Source project hosted by
-<a href="http://sf.net">SourceForge.net</a>.
-This facilitates collaboration, code contributions, and support.
-<p>In March, 2015, NCO source code moved to <a href="http://github.com">GitHub.com</a>.
+<p>NCO has always (since 1995) been GPL'd Open Source.
+<a href="http://sf.net">SourceForge.net</a> started hosting NCO 
+in March, 2000.
+This facilitated collaboration, code contributions, and support.
+<p>In March, 2015, NCO development moved to <a href="http://github.com">GitHub.com</a>.
+We continue to use the SourceForge discussion fora for historical
+continuity (seventeen years of searchable Q&amp;A).
 No matter what your programming background there is a task you can help with. 
 From re-organizing the TODO list itself, to improving this cheesy
 webpage, to documentation, to designing and implementing new features
@@ -672,10 +675,12 @@ San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
 <!-- http://nco.sf.net#hgh -->
 <dt><a name="Highlights"></a><a name="hgh"></a></dt>
 <h2>Release Highlights</h2>
-Stable releases receive unique tags and their tarballs are stored  
-<a href="http://nco.sf.net/src">here</a> on SourceForge and
+Stable releases receive unique tags and their tarballs are created and stored  
 <a href="https://github.com/nco/nco/releases">here</a> at GitHub.
-You may also retrieve the source of tagged versions directly with, e.g.,
+Identical copies of those tarballs are also stored
+<a href="http://nco.sf.net/src">here</a> on SourceForge for historical
+continuity.
+You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.5.5 http://github.com/nco/nco.git nco-4.5.5</tt></a>.
 <ul>
 <li><b>NCO 4.6.2</b>: (<i>Future</i>) 
@@ -1154,7 +1159,7 @@ The simplest way to acquire the source is to download the compressed tarball:
 <ul>
 <li>
 <!-- scp ${DATA}/nco-4.5.5.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
-<a href="src/nco-4.5.5.tar.gz">nco-4.5.5.tar.gz</a> 
+<a href="https://github.com/nco/nco/archive/4.5.5.tar.gz">nco-4.5.5.tar.gz</a> 
 (<!--#fsize file="src/nco-4.5.5.tar.gz"--> compressed tar-file)<br>
 <!--#exec cmd="openssl dgst -md5 src/nco-4.5.5.tar.gz"--><br>
 <!--#exec cmd="openssl dgst -sha1 src/nco-4.5.5.tar.gz"--> 

@@ -1135,7 +1135,9 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
      20130112: As of today set is_crd_var true in nco_var_fll() when either of these conditions is true 
      so no longer need to specify these conditions separately. 
      20150519: Add nco_is_spc_in_clm_att() to this list
+     20160420: Add nco_is_spc_in_grd_att() to this list
      Keep this old code here as a reminder that is_crd_var also incorporates these conditions
+     is_spc_in_grd_att=nco_is_spc_in_grd_att(var[idx]->nc_id,var[idx]->id);
      is_spc_in_clm_att=nco_is_spc_in_clm_att(var[idx]->nc_id,var[idx]->id);
      is_spc_in_crd_att=nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id);
      is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id); */

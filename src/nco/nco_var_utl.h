@@ -134,6 +134,11 @@ extern "C" {
   (const int nc_id, /* I [id] netCDF file ID */
    const int var_trg_id); /* I [id] Variable ID */
   
+  nco_bool /* [flg] Variable is listed in a "grid_mapping" attribute */
+  nco_is_spc_in_grd_att /* [fnc] Variable is listed in a "grid_mapping" attribute */
+  (const int nc_id, /* I [id] netCDF file ID */
+   const int var_trg_id); /* I [id] Variable ID */
+
   void
   nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
   (const int nc_id, /* I [id] netCDF input-file ID */

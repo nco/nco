@@ -74,6 +74,12 @@ A. ncks can now ingest and de-interleave ENVI images in BIL, BSQ, and
    --trr_in=in.nc foo.nc out.nc
    http://nco.sf.net/nco.html#terraref
 
+A. NCO now treats as associated coordinates all variables listed in
+   "grid_mapping" attributes. Now variables such as
+   "char albers_conical_equal_area" are automatically extracted along
+   with variables that refer to the mappings. ncecat will not wrap
+   these mappings in a record dimension.
+
 BUG FIXES:
 
 A. Correct ncatted documentation for "append" mode.

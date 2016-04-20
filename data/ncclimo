@@ -43,6 +43,7 @@
 # scp ~/nco/data/ncclimo edison.nersc.gov:bin_edison
 # scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin
 # scp ~/nco/data/ncclimo yellowstone.ucar.edu:bin
+# scp dust.ess.uci.edu:nco/data/ncclimo ~/bin
 
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [ -z "${HOSTNAME}" ]; then
@@ -76,11 +77,19 @@ case "${HOSTNAME}" in
 	export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
     # 20160407: Split cori from edison binary locations to allow for different system libraries
     cori* )
+	# 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
+	# Not necessary for interactive, nor for CSZ non-interactive, batch submisssions
+	# Must be due to home environment differences between CSZ and other users
+	# Loading gsl and udunits seems to do no harm, so always do it
+	# This is equivalent to LD_LIBRARY_PATH method used for netCDF and SZIP on rhea
+	# Why do cori/edison and rhea require workarounds for different packages?
 	module load gsl
+	module load udunits
 	export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
         export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
     edison* )
 	module load gsl
+	module load udunits
 	export PATH='/global/homes/z/zender/bin_edison'\:${PATH}
         export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH} ; ;;
     pileus* )
@@ -112,7 +121,7 @@ esac # !HOSTNAME
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 -i /lustre/atlas1/cli115/world-shared/mbranst/B1850C5e1_ne30/atm/hist -o ${DATA}/ne30/clm
 
 # Debugging and Benchmarking:
-# ncclimo -v FSNT,AODVIS -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
+# ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
 # ncclimo -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/ncclimo.out 2>&1 &
@@ -134,11 +143,14 @@ esac # !HOSTNAME
 # NERSC SLURM:
 # https://www.nersc.gov/users/computational-systems/cori/running-jobs/slurm-introduction
 # https://www.nersc.gov/users/computational-systems/cori/running-jobs/for-edison-users/torque-moab-vs-slurm-comparisons
-# NERSC Torque:
-# https://www.nersc.gov/users/computational-systems/edison/running-jobs/batch-jobs
-# https://www.nersc.gov/users/computational-systems/edison/running-jobs/aprun
+# https://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
+# https://www.nersc.gov/users/computational-systems/edison/running-jobs/queues-and-policies/
 # OLCF PBS: 
 # https://www.olcf.ornl.gov/support/system-user-guides/rhea-user-guide/#903
+# Requesting interactive nodes, Submitting non-interactive batch jobs, Monitoring queues:
+# Cobalt: qsub -I,   qsub,  qstat
+# PBS:    qsub -I,   qsub,  qstat
+# SLURM:   salloc, sbatch, squeue
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
 #   Cooley: qsub -I -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A acme --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit, Edison too
@@ -147,17 +159,19 @@ esac # !HOSTNAME
 #   Yellow: fxm # Bigmem: 
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs] b) qsub ncclimo.[cobalt|pbs]
 # Non-interactive batch queue differences (besides argument syntax):
-# 1. Cobalt requires an initial 'shebang' line to specify the shell interpreter (not required on PBS)
+# 1. Cobalt and SLURM require initial 'shebang' line to specify the shell interpreter (not required on PBS)
 # 2. Cobalt appends stdout/stderr to existing output files, if any, whereas PBS overwrites existing files
 # 3. Cobalt uses ${COBALT_NODEFILE} and (NA) whereas PBS uses ${PBS_NODEFILE} and ${PBS_NUM_PPN}, respectively, and SLURM uses ${SLURM_NODELIST} and ${SLURM_CPUS_ON_NODE}, respectively
-# Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables
+# 4. SLURM automatically combines stdout and stderr, yet does not understand tilde (~ = home directory) expansion in error/output filenames
+# Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s
 #   Cooley a): /bin/rm -f ~/ncclimo.err  ~/ncclimo.out
 #              echo '#!/bin/bash' > ~/ncclimo.cobalt
-#              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 0055 -e 0058 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
-#   Cori,Edison a): echo "ncclimo -a scd -d 1 -p mpi -c AMIP_ACMEv02ce_FC5_ne30_ne30_COSP -s 2008 -e 2012 -i /scratch1/scratchdirs/wlin/archive/AMIP_ACMEv02ce_FC5_ne30_ne30_COSP/atm/hist -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
+#              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 55 -e 58 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
+#   Cori,Edison a): echo '#!/bin/bash' > ~/ncclimo.slurm
+#                   echo "ncclimo -a scd -d 1 -p mpi -c AMIP_ACMEv02ce_FC5_ne30_ne30_COSP -s 2008 -e 2012 -i /scratch1/scratchdirs/wlin/archive/AMIP_ACMEv02ce_FC5_ne30_ne30_COSP/atm/hist -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc"  > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Cooley b): qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
-#   Cori,Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=regular --job-name=ncclimo --mail-type=END --error=~/ncclimo.err --output=~/ncclimo.out ~/ncclimo.slurm
+#   Cori,Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=regular --job-name=ncclimo --mail-type=END --output=ncclimo.out ~/ncclimo.slurm
 #   Hopper b): qsub -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Rhea b):   qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 

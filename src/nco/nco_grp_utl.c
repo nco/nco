@@ -1065,10 +1065,10 @@ void
 nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified variable to extraction list */
 (const int nc_id, /* I [ID] netCDF file ID */
  const trv_sct * const var_trv, /* I [sct] Variable (object) */
- const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", or "coordinates") */
+ const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping") */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
 {
-  /* Detect associated variables specified by CF "ancillary_variables", "bounds", "climatology", or "coordinates" convention
+  /* Detect associated variables specified by CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" convention
      Private routine called by nco_xtr_cf_add()
      http://cfconventions.org/1.6.html#ancillary-data
      http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
@@ -1080,7 +1080,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
 
   int grp_id; /* [id] Group ID */
   int nbr_att; /* [nbr] Number of attributes */
-  int nbr_cf; /* [nbr] Number of variables specified in CF attribute ("ancillary_variables", "bounds", "climatology", or "coordinates") */
+  int nbr_cf; /* [nbr] Number of variables specified in CF attribute ("ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping") */
   int var_id; /* [id] Variable ID */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
@@ -1114,7 +1114,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
       /* Split list into separate coordinate names
 	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
       cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
-      /* ...for each variable in CF convention attribute, i.e., for each variable listed in "ancillary_variables", or in "bounds", or in "coordinates"... */
+      /* ...for each variable in CF convention attribute, i.e., for each variable listed in "ancillary_variables", or in "bounds", or in "coordinates", or in "grid_mapping", ... */
       for(int idx_cf=0;idx_cf<nbr_cf;idx_cf++){
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;
@@ -6500,16 +6500,18 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     CNV_CCM_CCSM_CF=True;
   } /* endif */
   if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-    /* Implement CF "ancillary_variables", "bounds", "climatology", and "coordinates" */
+    /* Implement CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" */
     (void)nco_xtr_cf_add(nc_id,"ancillary_variables",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"bounds",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"climatology",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
-    /* Do all twice, so that, e.g., auxiliary coordinates retrieved because of "coordinates" come with their bounds variables */
+    (void)nco_xtr_cf_add(nc_id,"grid_mapping",trv_tbl);
+    /* Do all twice, so that, e.g., auxiliary coordinates retrieved because of "coordinates" come with their "bounds" variables */
     (void)nco_xtr_cf_add(nc_id,"ancillary_variables",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"climatology",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"bounds",trv_tbl);
+    (void)nco_xtr_cf_add(nc_id,"grid_mapping",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
   /* Mark extracted dimensions */
@@ -7176,13 +7178,13 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
 } /* end nco_grp_var_lst() */
 
 char * /* O [sng] Name of variable   */
-nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variables", "bounds", "climatology", or "coordinates") */
+nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variables", "bounds", "climatology", "coordinates" and "grid_mapping") */
 (const int nc_id, /* I [ID] netCDF file ID */
  const trv_sct * const var_trv, /* I [sct] Variable (object) */
- const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", or "coordinates") */
+ const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping") */
  nco_bool *flg_cf_fnd) /* I/O [flg] CF variable was found */
 {
-  /* Detect associated variables specified by CF "ancillary_variables", "bounds", "climatology", or "coordinates" convention
+  /* Detect associated variables specified by CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" conventions
      http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
 
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
@@ -7192,7 +7194,7 @@ nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variabl
 
   int grp_id; /* [id] Group ID */
   int nbr_att; /* [nbr] Number of attributes */
-  int nbr_cf; /* [nbr] Number of coordinates specified in "bounds" or "coordinates" attribute */
+  int nbr_cf; /* [nbr] Number of coordinates specified in "bounds" or "coordinates" attributes */
   int var_id; /* [id] Variable ID */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
@@ -7240,7 +7242,7 @@ nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variabl
       /* Split list into separate coordinate names
 	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
       cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
-      /* ...for each associated variable in CF convention attribute, i.e., "ancillary_variables", "bounds", "climatology", or "coordinates"... */
+      /* ...for each associated variable in CF convention attribute, i.e., "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping", ... */
       for(int idx_cf=0;idx_cf<nbr_cf;idx_cf++){
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;

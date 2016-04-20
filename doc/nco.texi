@@ -15975,7 +15975,7 @@ ls drc_out/*climo* | ncremap -m map.nc -O drc_rgr
 See the full ncremap documentation for more examples (including @acronym{MPAS}!).
  
 Coupled Runs:
-@command{ncclimo} works on all @acronum{ACME} models. 
+@command{ncclimo} works on all @acronym{ACME} models. 
 It can simultaneously generate climatologies for a coupled run, where
 climatologies mean both native and regridded monthly, seasonal, and
 annual averages as per the AG specification. 
@@ -16153,7 +16153,7 @@ sbatch -A acme --nodes=12 --time=03:00:00 --partition=regular --job-name=climo_n
 What does @command{ncclimo} do?
 The basic idea of this script is very simple. For monthly climatologies
 (e.g. JAN), @command{ncclimo} passes the list of all relevant January
-monthly files to @acronum{NCO}'s ncra command, which averages each variable in
+monthly files to @acronym{NCO}'s ncra command, which averages each variable in
 these monthly files over their time dimension (if it exists) or copies
 the value from the first month unchanged (if no time axis
 exists). Seasonal climos are then created by taking the average of the
@@ -16169,41 +16169,41 @@ climos.
 Assumptions, Approximations, and Algorithms (@acronym{AAA}) Employed: 
 A climatology embodies many algorithmic choices, and regridding from the
 native to the analysis grid involves still more choices. A separate
-method should reproduce the @command{ncclimo} and @acronum{NCO} answers to
+method should reproduce the @command{ncclimo} and @acronym{NCO} answers to
 round-off precision if it implements the same algorithmic choices. For
 example, @command{ncclimo} agrees to round-off with @acronym{AMWG} diagnostics
 when making the same (sometimes questionable) choices. The most
 important choices have to do with converting single- to double-precision
-(@acronum{SP} and @acronum{DP}, respectively), treatment of missing values,
+(@acronym{SP} and @acronym{DP}, respectively), treatment of missing values,
 generation/application of regridding weights. For concreteness and
 clarity we describe the algorithmic choices made in processing a @acronym{CAM-SE}
 monthly output into a climatological annual mean (ANN) and then
 regridding that. Other climatologies (e.g., daily to monthly, or
 annual-to-climatological) involve similar choices.
 
-@acronum{ACME} (and @acronym{CESM}) computes fields in @acronum{DP} and outputs history (not restart)
-files as monthly means in @acronum{SP}. The @acronum{NCO} climatology generator
+@acronym{ACME} (and @acronym{CESM}) computes fields in @acronym{DP} and outputs history (not restart)
+files as monthly means in @acronym{SP}. The @acronym{NCO} climatology generator
 (@command{ncclimo}) processes these data in four stages. Stage N
 accesses input only from stage N-1, never from stage N-2 or
 earlier. Thus the (on-disk) files from stage N determine the highest
 precision achievable by stage N+1. The general principal is to perform
-math (addition, weighting, normalization) in @acronum{DP} and output results to
+math (addition, weighting, normalization) in @acronym{DP} and output results to
 disk in the same precision in which they were input from disk (usually
-@acronum{SP}). In Stage 1, @acronum{NCO} ingests Stage 0 monthly means (raw @acronym{CAM-SE} output),
-converts @acronum{SP} input to @acronum{DP}, performs the average across all years, then
-converts the answer from @acronum{DP} to @acronum{SP} for storage on-disk as the
-climatological monthly mean. In Stage 2, @acronum{NCO} ingests Stage 1
-climatological monthly means, converts @acronum{SP} input to @acronum{DP}, performs the
+@acronym{SP}). In Stage 1, @acronym{NCO} ingests Stage 0 monthly means (raw @acronym{CAM-SE} output),
+converts @acronym{SP} input to @acronym{DP}, performs the average across all years, then
+converts the answer from @acronym{DP} to @acronym{SP} for storage on-disk as the
+climatological monthly mean. In Stage 2, @acronym{NCO} ingests Stage 1
+climatological monthly means, converts @acronym{SP} input to @acronym{DP}, performs the
 average across all months in the season (e.g., DJF), then converts the
-answer from @acronum{DP} to @acronum{SP} for storage on-disk as the climatological seasonal
-mean. In Stage 3, @acronum{NCO} ingests Stage 2 climatological seasonal means,
-converts @acronum{SP} input to @acronum{DP}, performs the average across all four seasons
-(DJF, MAM, JJA, SON), then converts the answer from @acronum{DP} to @acronum{SP} for storage
+answer from @acronym{DP} to @acronym{SP} for storage on-disk as the climatological seasonal
+mean. In Stage 3, @acronym{NCO} ingests Stage 2 climatological seasonal means,
+converts @acronym{SP} input to @acronym{DP}, performs the average across all four seasons
+(DJF, MAM, JJA, SON), then converts the answer from @acronym{DP} to @acronym{SP} for storage
 on-disk as the climatological annual mean. 
 
 Stage 2 weights each input month by its number of days (e.g., 31 for
 January), and Stage 3 weights each input season by its number of days
-(e.g., 92 for MAM). @acronum{ACME} runs @acronym{CAM-SE} with a 365-day calendar, so these
+(e.g., 92 for MAM). @acronym{ACME} runs @acronym{CAM-SE} with a 365-day calendar, so these
 weights are independent of year and never change. 
 The treatment of missing values in Stages 1-3 is limited by the lack of
 missing value tallies provided by Stage 0 (model) output. Stage 0
@@ -16221,19 +16221,19 @@ debatable whether they merit efforts to treat them more exactly.
 
 The vast majority of fields undergo three promotion/demotion cycles
 between @acronym{CAM-SE} and ANN. No promotion/demotion cycles occur for history
-fields that @acronym{CAM-SE} outputs in @acronum{DP} rather than @acronum{SP}, nor for fields without
+fields that @acronym{CAM-SE} outputs in @acronym{DP} rather than @acronym{SP}, nor for fields without
 a time dimension. Typically these fields are grid coordinates (e.g.,
-longitude, latitude) or model constants (e.g., CO2 mixing ratio). @acronum{NCO}
+longitude, latitude) or model constants (e.g., CO2 mixing ratio). @acronym{NCO}
 never performs any arithmetic on grid coordinates or non-time-varying
-input, regardless of whether they are @acronum{SP} or @acronum{DP}. Instead, @acronum{NCO} copies
+input, regardless of whether they are @acronym{SP} or @acronym{DP}. Instead, @acronym{NCO} copies
 these fields directly from the first input file. 
 Stage 4 uses a mapfile to regrid climos from the native to the desired
-analysis grid. @acronum{ACME} currently uses mapfiles generated by
+analysis grid. @acronym{ACME} currently uses mapfiles generated by
 ESMF_RegridWeightGen (ERWG). The algorithmic choices, approximations,
 and commands used to generate mapfiles from input gridfiles are
-described here. As that page describes, the input gridfiles used by @acronum{ACME}
+described here. As that page describes, the input gridfiles used by @acronym{ACME}
 until ~20150901 contained flaws that effectively reduced their
-precision, especially at regional scales. @acronum{ACME} (and @acronym{CESM}) mapfiles
+precision, especially at regional scales. @acronym{ACME} (and @acronym{CESM}) mapfiles
 continue to approximate lat/lon grids as connected by great
 circles. This assumption may be removed in the future. Constraints
 imposed by ERWG during weight-generation ensure that global integrals of
@@ -16242,17 +16242,18 @@ fields undergoing conservative regridding are exactly conserved.
 Application of weights from the mapfile to regrid the native data to the
 analysis grid is straightforward. Grid fields (e.g., latitude,
 longitude, area) are not regridded. Instead they are copied (and area is
-reconstructed if absent) directly from the mapfile. @acronum{NCO} ingests all
-other native grid (source) fields, converts @acronum{SP} to @acronum{DP}, and accumulates
-destination gridcell values as the sum of the @acronum{DP} weight (from the sparse
-matrix in the mapfile) times the (usually @acronum{SP}-promoted-to-@acronum{DP}) source
+reconstructed if absent) directly from the mapfile. @acronym{NCO} ingests all
+other native grid (source) fields, converts @acronym{SP} to @acronym{DP}, and accumulates
+destination gridcell values as the sum of the @acronym{DP} weight (from the sparse
+matrix in the mapfile) times the (usually @acronym{SP}-promoted-to-@acronym{DP}) source
 values. Fields without missing values are then stored to disk in their
 original precision. Fields with missing values are treated (by default)
-with what @acronum{NCO} calls the "conservative" algorithm. The conservative
+with what @acronym{NCO} calls the "conservative" algorithm. The conservative
 algorithm uses all valid data from the source grid on the destination
 grid once and only once. Destination cells receive the weighted valid
 values of the source cells. This is conservative because the global
-integrals of the source and destination fields are equal. See the @acronum{NCO}
+integrals of the source and destination fields are equal. See the
+@acronym{NCO}
 documentation here for more description of the conservative and of the
 optional ("renormalized") algorithm. 
 
