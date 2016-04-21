@@ -95,7 +95,7 @@ case "${HOSTNAME}" in
     pileus* )
 	export PATH='/home/zender/bin'\:${PATH}
 	export LD_LIBRARY_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals/lib:/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
-    rhea* | titan* )
+    rhea* )
 	# 20151017: CSZ next three lines guarantee finding mpirun
 	source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	module unload PE-intel # Remove Intel-compiled mpirun environment
@@ -107,8 +107,13 @@ case "${HOSTNAME}" in
 	    source /lustre/atlas1/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
 	    export ${UVCDAT_SETUP_PATH}
 	fi # !UVCDAT_SETUP_PATH
-        export PATH='/ccs/home/zender/bin'\:${PATH}
-	export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+        export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
+	export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
+    titan* )
+	source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
+	module load gcc
+        export PATH='/ccs/home/zender/bin_titan'\:${PATH}
+	export LD_LIBRARY_PATH='/opt/cray/netcdf/4.3.2/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
     ys* )
 	# 20151018: Yellowstone support not yet tested in batch mode
         export PATH='/glade/u/home/zender/bin'\:${PATH}
