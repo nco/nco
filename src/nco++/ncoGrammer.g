@@ -1205,7 +1205,7 @@ static std::vector<std::string> lpp_vtr;
         where_assign(stmt3,var);
     
       // deal with else-where
-      if(tr=stmt3->getNextSibling()) {
+      if((tr=stmt3->getNextSibling())!=ANTLR_USE_NAMESPACE(antlr)nullAST) {
 
         //invert mask
         var=ncap_var_var_stc(var,NULL_CEWI,LNOT); 
@@ -2582,7 +2582,9 @@ out returns [var_sct *var]
              if(var_cst->nbr_dim==var->nbr_dim)     
                ncap_var_cnf_dmn(&var,&var_cst);
              else    
+             {
                var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
+             }
          }
 
 
