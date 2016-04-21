@@ -6,13 +6,12 @@ http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-ncap2 has a singularly useful new feature: variable pointers,
-as well as some optimizations to reduce its memory footprint.
-(Thanks to Henry Butowky!). Appending is now consistent in
-interactive- and forced-modes in all operators.
-And ncremap continues to accrue useful features.
-Overall, though, 4.6.0 is most notable for the debut of ncclimo.
+4.6.0 is most notable for the debut of ncclimo.
 ncclimo is a new operator that generates climatologies.
+ncap2 has a singularly useful new feature: variable pointers,
+as a reduced memory footprint and a new make_bounds() function
+to simplify adding CF-bounds variables (Thanks to Henry).
+And ncremap continues to accrue useful features.
 
 Work on NCO 4.6.1 has commenced and will better support eliciting
 latitude/longitude coordinates using the CF "coordinates" convention
@@ -28,24 +27,34 @@ A. ncclimo produces climatological monthly means, seasonal means,
    annual mean, and optionally regrids all these files. Like ncremap,
    ncclimo is actually a front-end script to manage the complexity
    of invoking the underlying operators (ncks for ncremap and ncra for
-   ncclimo). Using ncclimo is as simple as
+   ncclimo). ncclimo produces climatologies starting from monthly-mean
+   files of most CESM-like model and observational data formats.
+   Invoke ncclimo with, e.g.,
    ncclimo -s start_yr -e end_yr -c run_id -i drc_in -o drc_out
-   ncclimo -s 5 -e 10 -c hist -m ocn -i drc_in -o drc_out # MPAS-O
-   ncclimo produces climatologies starting from monthly-mean files of 
-   most CESM-like model and observational data formats.
+   ncclimo -s 5 -e 10 -c hist -m ocn -i drc_in -o drc_out
    It has sophisticated parallelism and regridding options.
    Models tested include ALM, CAM, CLM, CICE, CISM, CLM, MPAS-I,
    MPAS-O, and POP. ncclimo resulted from work with the DOE ACME
-   project, and I am grateful for their support.
+   project, and we are grateful for their support.
    http://nco.sf.net/nco.html#ncclimo
 
 A. ncap2 now works with pointers to variables and attributes.
    This allows, e.g., loops over arbitrary sets of variables, and
    make creating aggregations of variables much simpler.
-   For example, to fxm
+   Here is an example of using this new feature to convert all
+   variables in a file to double precision:
+   
+   http://nco.sf.net/nco.html#ncap2
 
 A. ncap2 has reduced memory usage. Scalars are no longer stretched
    to conform to arrays prior to arithmetic.
+
+A. ncap2 has a new function to create CF-compliant bounds:
+   defdim("bnd_dmn",2);
+   bounds_var=make_bounds(crd_var,$bnd_dmn,"bounds_var_nm");
+   The "bounds_var_nm" is optional. Passing it causes make_bounds() to 
+   add the attribute crd_var@bounds="bounds_var_nm".
+   http://nco.sf.net/nco.html#make_bounds
 
 A. ncap2 now propagates metadata when Left-Hand-Casting variables.
    Previous versions did not propagate metadata to LHC variables.
@@ -65,9 +74,9 @@ A. ncremap now defaults to $TMPDIR for storing intermediate files.
    http://nco.sf.net/nco.html#ncremap
 
 A. ncks can now ingest and de-interleave ENVI images in BIL, BSQ, and
-   BIP format and store them as any netCDF type. ncks is a viable (and 
-   faster) replacement for that small subset of tasks normally taken
-   on by the venerable GDAL toolkit (gdal_translate in particular).
+   BIP formats and store them as any netCDF type. ncks is a viable
+   (and faster) replacement for that small subset of tasks normally
+   done by the venerable GDAL toolkit (gdal_translate in particular).
    Thanks to David LeBauer of the University of Illinois/NCSA and DOE
    TERRAREF for supporting this feature.
    ncks --trr_wxy=926,1600,1 --trr typ_in=NC_USHORT --trr ntl_in=bil \
@@ -75,10 +84,11 @@ A. ncks can now ingest and de-interleave ENVI images in BIL, BSQ, and
    http://nco.sf.net/nco.html#terraref
 
 A. NCO now treats as associated coordinates all variables listed in
-   "grid_mapping" attributes. Now variables such as
+   "grid_mapping" attributes. Variables such as
    "char albers_conical_equal_area" are automatically extracted along
-   with variables that refer to the mappings. ncecat will not wrap
-   these mappings in a record dimension.
+   with variables that them. ncecat will not wrap mappings in a record
+   dimension. 
+   http://nco.sf.net/nco.html#grid_mapping
 
 BUG FIXES:
 
