@@ -61,7 +61,7 @@ if [ -z "${DATA}" ]; then
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
-# Ensure batch jobs access correct 'mpirun' (or, on edison, 'aprun') command, netCDF library, and NCO executables and library:
+# Ensure batch jobs access correct 'mpirun' (or, on cori/edison, 'srun') command, netCDF library, and NCO executables and library:
 case "${HOSTNAME}" in 
     aims* )
 	export PATH='/export/zender1/bin'\:${PATH}
@@ -74,6 +74,14 @@ case "${HOSTNAME}" in
 	export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
     # 20160407: Split cori from edison binary locations to allow for different system libraries
     cori* )
+	# 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
+	# Not necessary for interactive, nor for CSZ non-interactive, batch submisssions
+	# Must be due to home environment differences between CSZ and other users
+	# Loading gsl and udunits seems to do no harm, so always do it
+	# This is equivalent to LD_LIBRARY_PATH method used for netCDF and SZIP on rhea
+	# Why do cori/edison and rhea require workarounds for different packages?
+	module load gsl
+	module load udunits
 	# On cori, module load ncl installs ERWG in ${NCARG_ROOT}/../intel/bin
 	if [ -n "${NCARG_ROOT}" ]; then
             export PATH="${NCARG_ROOT}/bin:${PATH}"
@@ -81,22 +89,36 @@ case "${HOSTNAME}" in
 	export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
         export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
     edison* )
+	module load gsl
+	module load udunits
 	export PATH='/global/homes/z/zender/bin_edison'\:${PATH}
         export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH} ; ;;
     pileus* )
 	export PATH='/home/zender/bin'\:${PATH}
 	export LD_LIBRARY_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals/lib:/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
-    rhea* | titan* )
+    rhea* )
 	# 20151017: CSZ next three lines guarantee finding mpirun
-	source ${MODULESHOME}/init/sh # 20150607: PMC added to find module command
-	module unload PE-intel # CSZ 
-	module load PE-gnu # CSZ 
+	source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
+	module unload PE-intel # Remove Intel-compiled mpirun environment
+	module load PE-gnu # Provides GCC-compiled mpirun environment (CSZ uses GCC to build NCO on rhea)
+	# 20160219: CSZ UVCDAT setup causes failures with mpirun, attempting a work-around
+	if [ -n "${UVCDAT_SETUP_PATH}" ]; then
+	    module unload python ompi paraview PE-intel PE-gnu
+	    module load gcc
+	    source /lustre/atlas1/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
+	    export ${UVCDAT_SETUP_PATH}
+	fi # !UVCDAT_SETUP_PATH
 	# On rhea, module load ncl installs ERWG in ${NCL_DIR}/bin
 	if [ -n "${NCL_DIR}" ]; then
             export PATH="${NCL_DIR}/bin:${PATH}"
 	fi # !NCL_DIR
-        export PATH='/ccs/home/zender/bin'\:${PATH}
-	export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+        export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
+	export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
+    titan* )
+	source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
+	module load gcc
+        export PATH='/ccs/home/zender/bin_titan'\:${PATH}
+	export LD_LIBRARY_PATH='/opt/cray/netcdf/4.3.2/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
     ys* )
 	# 20151018: Yellowstone support not yet tested in batch mode
 	# On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
@@ -105,7 +127,7 @@ case "${HOSTNAME}" in
             export PATH="${PATH}:/glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin"
 	fi # !NCARG_ROOT
         export PATH='/glade/u/home/zender/bin'\:${PATH}
-        export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+        export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
 esac # !HOSTNAME
 
 # Insta-install

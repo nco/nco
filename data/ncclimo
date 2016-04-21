@@ -64,7 +64,7 @@ if [ -z "${DATA}" ]; then
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
-# Ensure batch jobs access correct 'mpirun' (or, on edison, 'aprun') command, netCDF library, and NCO executables and library:
+# Ensure batch jobs access correct 'mpirun' (or, on cori/edison, 'srun') command, netCDF library, and NCO executables and library:
 case "${HOSTNAME}" in 
     aims* )
 	export PATH='/export/zender1/bin'\:${PATH}
@@ -85,6 +85,10 @@ case "${HOSTNAME}" in
 	# Why do cori/edison and rhea require workarounds for different packages?
 	module load gsl
 	module load udunits
+	# On cori, module load ncl installs ERWG in ${NCARG_ROOT}/../intel/bin
+	if [ -n "${NCARG_ROOT}" ]; then
+            export PATH="${NCARG_ROOT}/bin:${PATH}"
+	fi # !NCARG_ROOT
 	export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
         export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
     edison* )
@@ -107,6 +111,10 @@ case "${HOSTNAME}" in
 	    source /lustre/atlas1/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
 	    export ${UVCDAT_SETUP_PATH}
 	fi # !UVCDAT_SETUP_PATH
+	# On rhea, module load ncl installs ERWG in ${NCL_DIR}/bin
+	if [ -n "${NCL_DIR}" ]; then
+            export PATH="${NCL_DIR}/bin:${PATH}"
+	fi # !NCL_DIR
         export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
 	export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
     titan* )
@@ -116,6 +124,11 @@ case "${HOSTNAME}" in
 	export LD_LIBRARY_PATH='/opt/cray/netcdf/4.3.2/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
     ys* )
 	# 20151018: Yellowstone support not yet tested in batch mode
+	# On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
+	if [ -n "${NCARG_ROOT}" ]; then
+#            export PATH="${NCARG_ROOT}/bin:${PATH}"
+            export PATH="${PATH}:/glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin"
+	fi # !NCARG_ROOT
         export PATH='/glade/u/home/zender/bin'\:${PATH}
         export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
 esac # !HOSTNAME
