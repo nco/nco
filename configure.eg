@@ -373,6 +373,15 @@ export NETCDF_ROOT='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4'
 export PATH='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4/bin':${PATH}
 cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4' SZ=Y SZ_LIB='/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D OMP=Y allinone;cd -
 
+# gcc/g++ 2016420 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on titan:
+export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
+module add gcc # change GCC from v 4.3.4 to 4.9.0
+#module add gsl # not used yet
+#module add cray-netcdf # not used yet
+#module add udunits # not used yet
+export PATH=${PATH}:'/opt/cray/netcdf/4.3.2/bin'
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL=N NETCDF_ROOT='/opt/cray/netcdf/4.3.2' NETCDF_INC='/opt/cray/netcdf/4.3.2/GNU/49/include' NETCDF_LIB='/opt/cray/netcdf/4.3.2/GNU/49/lib' OPTS=D OMP=Y UDUNITS_INC='/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/include' UDUNITS_LIB='/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib -lexpat' allinone;cd -
+
 # icc/icpc 20160107 Zender tried and failed to use this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
 export GNU_TRP=`~/nco/autobld/config.guess`
 # Commands used for Makefile builds

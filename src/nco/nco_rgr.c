@@ -1373,7 +1373,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(flg_grd_out_rct && nco_grd_2D_typ != nco_grd_2D_unk){
       /* Mr. Enenstein and George O. Abell taught me the area of spherical zones
 	 Spherical zone area is exact and faithful to underlying rectangular equi-angular grid
-	 However, ESMF and Tempest both appear to always approximate spherical polygons as connected by great circle arcs
+	 However, ESMF and Tempest approximate spherical polygons as connected by great circle arcs
 	 fxm: Distinguish spherical zone shapes (e.g., equi-angular) from great circle arcs (e.g., unstructured polygons) */
       for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
 	for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
