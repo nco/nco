@@ -69,14 +69,18 @@ case "${HOSTNAME}" in
     aims* )
 	export PATH='/export/zender1/bin'\:${PATH}
         export LD_LIBRARY_PATH='/export/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
-    cooley* | cc* | mira* )
+    cooley* )
+	# 20160421: Split cooley from mira binary locations to allow for different system libraries
 	# http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
 	soft add +mvapich2 
         export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
-	export PATH='/home/zender/bin'\:${PATH}
-	export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
-    # 20160407: Split cori from edison binary locations to allow for different system libraries
+	export PATH='/home/zender/bin_cooley'\:${PATH}
+	export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
+    mira* )
+	export PATH='/home/zender/bin_mira'\:${PATH}
+	export LD_LIBRARY_PATH='/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
     cori* )
+	# 20160407: Split cori from edison binary locations to allow for different system libraries
 	# 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
 	# Not necessary for interactive, nor for CSZ non-interactive, batch submisssions
 	# Must be due to home environment differences between CSZ and other users

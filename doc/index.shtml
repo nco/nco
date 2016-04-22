@@ -151,6 +151,7 @@ and
 <ul>
 <!-- <li>2016 Apr&nbsp;??: 4.6.1 (<i>In progress</i>) -->
 <li>2016 Apr&nbsp;??: 4.6.0 (<tt>ncclimo</tt>) (<i>In progress</i>)
+<li>2016 Apr&nbsp;20: <a href="http://www.geosci-model-dev-discuss.net/gmd-2016-63">Manuscript</a> on PPC, <i>Geosci. Model Dev. Discuss.</li>
 <li>2016 Apr&nbsp;06: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201604.pdf">Poster</a> at NASA ESDSWG, Greenbelt</li>
 <li>2016 Apr&nbsp;05: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">Talk</a> at NASA GES DISC, Greenbelt</li>
 <li>2016 Feb&nbsp;17: 4.5.5 (Stability)
@@ -163,7 +164,7 @@ and
 <li>2015 Jul&nbsp;10: 4.5.1 (Stability)
 <li>2015 Jun&nbsp;11: 4.5.0 (Regridding)
 <li>2015 May&nbsp;21: 4.4.9 (<tt>ncra</tt> weights)
-<li>2015 Feb&nbsp;16: 4.4.8 (Precision-preserving Compression)
+<li>2015 Feb&nbsp;16: 4.4.8 (Precision-Preserving Compression)
 <li>2014 Dec&nbsp;15: DOE ACME <a href="#prp_acme">project</a> commences</li>
 <li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
 <li>2014 Oct&nbsp;01: 4.4.6 (<tt>ncra, ncwa</tt> packing bugfixes, stride optimization)
@@ -1236,7 +1237,7 @@ If pre-built executables do not satisfy you (e.g., are out-of-date)
 and you want the latest, greatest features, then the first steps to
 build (i.e., compile, for the most part) NCO from source code are to
 install the pre-requisites:
-<a href="http://www.antlr.org">ANTLR</a> version 2.7.7 (like <a href="http://dust.ess.uci.edu/tmp/antlr-2.7.7.tar.gz">this one</a> <i>not</i> version 3.x or 4.x!) (required for <tt>ncap2</tt>), 
+<a href="http://www.antlr.org">ANTLR</a> version 2.7.7 (like <a href="http://dust.ess.uci.edu/nco/antlr-2.7.7.tar.gz">this one</a> <i>not</i> version 3.x or 4.x!) (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and

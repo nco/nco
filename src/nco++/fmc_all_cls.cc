@@ -2363,9 +2363,10 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   int nbr_args;
   int idx;
   int nbr_dim;
+  nc_type itype;
   dmn_sct **dim;
   var_sct *var1=NULL_CEWI;
-  var_sct *var2=NULL_CEWI;
+  var_sct *var_txt=NULL_CEWI;
   var_sct *var_ret;
            
   std::string susg;
@@ -2385,15 +2386,16 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   if(expr)
       args_vtr.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+   if(tr=fargs->getFirstChild()) 
+   {
       do  
 	args_vtr.push_back(tr);
       while(tr=tr->getNextSibling());    
-    } 
+   } 
       
   nbr_args=args_vtr.size();  
 
-  susg="usage: var_out="+sfnm+"(coordinate_var,$dim"; 
+  susg="usage: var_out="+sfnm+"(coordinate_var,$dim, string_nm ?"; 
 
   
   if(nbr_args<2)
@@ -2401,19 +2403,15 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 
 
-  if(nbr_args >3 &&!prs_arg->ntl_scn) 
-      wrn_prn(sfnm,"Function been called with more than two arguments"); 
+  if(nbr_args >4 &&!prs_arg->ntl_scn) 
+      wrn_prn(sfnm,"Function been called with more than three arguments"); 
 
 
    
   
   var1=walker.out(args_vtr[0]);  
-
-  
-  if(prs_arg->ntl_scn && var1->undefined )
-  {
-    return var1;
-  }
+  if(nbr_args >=3)
+    var_txt=walker.out(args_vtr[2]); 
 
 
   /* second argument must be a single dimension */
@@ -2421,7 +2419,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
      err_prn(sfnm,"Second argument must be a dimension\n"+susg); 
 
   // cast a var from using the dim arg
-  if(args_vtr[1]->getType() == DIM_ID ) 
+  if(var1->undefined==False &&  args_vtr[1]->getType() == DIM_ID   ) 
   {
     for(idx=0;idx<var1->nbr_dim;idx++)    
       cst_vtr.push_back( var1->dim[idx]->nm);     
@@ -2429,61 +2427,131 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
    cst_vtr.push_back(args_vtr[1]->getText());
      
    var_ret=ncap_cst_mk(cst_vtr,prs_arg);
-   
+
+   // use coordinate var name so we get attribute propagation
+   nco_free(var_ret->nm);
+   var_ret->nm=strdup(var1->nm);      
+
    // convert to type of first arg
-   //var_ret=nco_var_cnf_typ(var1->type,var_ret);  
-   nco_var_cnf_typ(NC_DOUBLE,var_ret);  
+   var_ret=nco_var_cnf_typ(var1->type,var_ret);  
 
   }
 
 
   if(prs_arg->ntl_scn)
   {
-    var1=nco_var_free(var1);
-    return var_ret; 
+    if(var_txt) 
+      nco_var_free(var_txt);    
+
+    if(var1->undefined) 
+      return var1; 
+    else 
+    {     
+      var1=nco_var_free(var1);
+      return var_ret;    
+    }
   }
 
-  // allocate space  
+  if(var_txt)
+  {
+    std::string att_nm;
+    NcapVar *Nvar;
+
+    if(var_txt->type !=NC_CHAR && var_txt->type !=NC_STRING)     
+      wrn_prn(fnc_nm,"Third argument is the bounds name and must be a  text type");  
+    else
+    {
+      att_nm=var_ret->nm;att_nm+="@bounds";
+      Nvar=new NcapVar(var_txt,att_nm);
+      prs_arg->var_vtr.push_ow(Nvar);       
+    }       
+
+  }
+
+
+  // if type less than float then promote to double do calculation the convert back to original type
+  // else if float then leave as is 
+  itype=var1->type;   
+
+  if( itype !=NC_FLOAT && itype !=NC_DOUBLE) 
+  {  
+    nco_var_cnf_typ(NC_DOUBLE, var1);
+    nco_var_cnf_typ(NC_DOUBLE, var_ret);
+  }  
+
+  
+  (void)cast_void_nctype(var1->type,&var1->val);
+  (void)cast_void_nctype(var_ret->type,&var_ret->val);
+
+
+   // allocate space for results 
   void *vp=nco_malloc( var_ret->sz * nco_typ_lng(var_ret->type)); 
   var_ret->val.vp=vp;
 
 
  
   // do the heavy lifting 
+  if(var1->type==NC_DOUBLE)
   {  
     long sz; 
+    double *idp;
+    double *rdp;
     double dprev;
 
 
-    nco_var_cnf_typ(NC_DOUBLE, var1);   
-
-    (void)cast_void_nctype(NC_DOUBLE,&var1->val);
-    (void)cast_void_nctype(NC_DOUBLE,&var_ret->val);
-
+    // reduce indrection 
+    idp=var1->val.dp;
+    rdp=var_ret->val.dp;
+    
     sz=var1->sz;
 
-    dprev=2* var1->val.dp[0]-var1->val.dp[1];     
+    dprev=2* idp[0]-idp[1];     
     for(idx=0;idx<sz;idx++)  
     {
-      var_ret->val.dp[2*idx]= 0.5*(dprev+var1->val.dp[idx]);                                                                                   
+      rdp[2*idx]= 0.5*(dprev+idp[idx]);                                                                                   
       if(idx>0)  
-	var_ret->val.dp[2*idx-1] = var_ret->val.dp[2*idx];
+	rdp[2*idx-1] = rdp[2*idx];
 
-      dprev=var1->val.dp[idx]; 
+      dprev=idp[idx]; 
     }
     // calculate final value 
-    var_ret->val.dp[2*sz-1]= 2*dprev-var_ret->val.dp[2*sz-2]; 
+    rdp[2*sz-1]= 2*dprev-rdp[2*sz-2]; 
 
-    (void)cast_nctype_void(NC_DOUBLE,&var1->val);
-    (void)cast_nctype_void(NC_DOUBLE,&var_ret->val);
 
   }
-   
-   nco_var_free(var1);
+  else if(var1->type==NC_FLOAT)
+  {  
+    long sz; 
+    float *ifp;
+    float *rfp;
+    float fprev;
 
+    ifp=var1->val.fp;
+    rfp=var_ret->val.fp;
+    
+    sz=var1->sz;
 
+    fprev=2* ifp[0]-ifp[1];     
+    for(idx=0;idx<sz;idx++)  
+    {
+      rfp[2*idx]= 0.5*(fprev+ifp[idx]);                                                                                   
+      if(idx>0)  
+	rfp[2*idx-1] = rfp[2*idx];
+
+      fprev=ifp[idx]; 
+    }
+    // calculate final value 
+    rfp[2*sz-1]= 2*fprev-rfp[2*sz-2]; 
+
+  }
+
+  (void)cast_nctype_void(var1->type,&var1->val);
+  (void)cast_nctype_void(var_ret->type,&var_ret->val);
   
-     
+  // convert results back to orignal type
+  nco_var_cnf_typ(itype,var_ret);  
+  nco_var_free(var1);
+
   return var_ret;
 
   }
