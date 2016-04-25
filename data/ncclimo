@@ -78,7 +78,7 @@ case "${HOSTNAME}" in
 	export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
     mira* )
 	export PATH='/home/zender/bin_mira'\:${PATH}
-	export LD_LIBRARY_PATH='/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
+	export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
     cori* )
 	# 20160407: Split cori from edison binary locations to allow for different system libraries
 	# 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
