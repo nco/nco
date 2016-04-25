@@ -117,7 +117,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.0-beta03
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 19 April 2016
+@set update-date 22 April 2016
 @set update-month April 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -10736,7 +10736,7 @@ Bounds are subject to the user-specified override switches
 @cindex @code{climatology} attribute
 @cindex climatology convention
 As of @acronym{NCO} version 4.4.9 (May, 2015), @acronym{NCO} 
-supports the @acronym{CF} @code{climatology} convention for climatology 
+supports the @acronym{CF} @code{climatology} convention for climatological 
 statistics described 
 @uref{http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#climatological-statistics, here}.
 This convention allows coordinate variables (including multidimensional
@@ -18850,7 +18850,7 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c]
+ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c] [--cb]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
@@ -18948,6 +18948,58 @@ Second, weights are never applied for minimization, square-roots, etc.
 @command{ncra} @emph{never weights} coordinate variables (e.g., 
 @code{time}) regardless of the weighting performed on non-coordinate
 variables.
+
+@html
+<a name="cb"></a> <!-- http://nco.sf.net/nco.html#cb -->
+<a name="c2b"></a> <!-- http://nco.sf.net/nco.html#c2b -->
+<a name="clm_bnd"></a> <!-- http://nco.sf.net/nco.html#clm_bnd -->
+<a name="clm2bnd"></a> <!-- http://nco.sf.net/nco.html#clm2bnd -->
+@end html
+@cindex @code{--cb}
+@cindex @code{--c2b}
+@cindex @code{--clm_bnd}
+@cindex @code{--clm2bnd}
+As of @acronym{NCO} version 4.6.0 (April, 2016) @command{ncra} can honor 
+the @acronym{CF} @code{climatology} and climatological statistics
+conventions described in @ref{CF Conventions}.
+Currently this is opt-in with the @samp{--cb} flag (or long-option
+equivalent @samp{--clm_bnd}), or with the @samp{--c2b} flag (or its
+long-option equivalent @samp{--clm2bnd}) switches. 
+Invoking @samp{--cb} causes @command{ncra} to:
+@enumerate
+@item Add a @code{climatology} attribute with value
+``climatology_bounds'' the time coordinate, if necessary
+@item Remove the @code{bounds} attribute from the time coordinate, if
+necessary 
+@item Output a variable named @code{climatology_bounds} with values that
+      are minima/maxima of the input time coordinate @code{bounds}
+      variable. 
+@item Omit any input time coordinate @code{bounds} attribute and
+      variable 
+@item Ensure the @code{cell_methods} attribute for all variables is
+      appropriate for climatolgies within and over years.
+      Climatologies within days will have incorrect units (the switch is
+      currently opt-in so that incorrect units are not inadvertently generated).
+      Please contact the authors if this functionality is important to you
+      (The omission of climatologies within days is mainly a matter of
+      trying to keep the switches and interface clean).
+@end enumerate
+Use the @samp{--c2b} flag (instead of @samp{--cb}) to convert the input
+@code{climatology} bounds to a non-climatology @code{bounds} in the
+output.  
+In other words, use @samp{--c2b} when averaging sub-sampled
+climatologies together to produce a continuous (non-climatologically
+sub-sampled) mean. 
+@example
+# Use --cb to average months into a climatological month
+ncra --cb 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
+# Use --cb to average climatological months into a climatological season
+ncra --cb clm_DEC.nc clm_JAN.nc clm_FEB.nc clm_DJF.nc
+# Four seasons make a complete year so use --c2b
+ncra --c2b clm_DJF.nc clm_MAM.nc clm_JJA.nc clm_SON.nc clm_ANN.nc
+@end example
+Currently this functionality only works with climatologies within and
+over years (not within or over days).
 
 @noindent
 @html

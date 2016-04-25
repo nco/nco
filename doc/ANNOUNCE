@@ -67,7 +67,28 @@ A. ncap2 now propagates metadata when Left-Hand-Casting variables.
 A. ncatted new mode "nappend" appends only to existing attributes.
    If the attribute does not yet exist, it is not created.
    Same as "append" mode, except "append" will create attributes.
+   ncatted -a long_name,T,n,c,' nappended text' in.nc
    http://nco.sf.net/nco.html#ncatted
+
+A. ncra can now honor the CF convention for climatology bounds.
+   Currently this is opt-in with the --cb or --c2b switches.
+   --cb causes ncra to:
+   1. Add a "climatology" attribute with value "climatology_bounds" to 
+   the time coordinate, if necessary
+   2. Remove the "bounds" from the time coordinate, if necessary
+   3. Output a variable named "climatology_bounds" with values that
+   are minima/maxima of the input time coordinate bounds 
+   4. Omit any input time coordinate bounds attribute and variable
+   5. Ensure cell_methods attribute for all variables is appropriate 
+   --c2b is like --cb except --c2b converts the input "climatology"
+   bounds to a non-climatology "bounds" in the output. 
+   Use --c2b when averaging sub-sampled climatologies to produce a
+   continuous (non-climatologically sub-sampled) mean.
+   ncra --cb *_01.nc clm_JAN.nc
+   ncra --cb clm_DEC.nc clm_JAN.nc clm_FEB.nc clm_DJF.nc
+   ncra --c2b clm_DJF.nc clm_MAM.nc clm_JJA.nc clm_SON.nc clm_ANN.nc
+   Depending on feedback, we may make --cb the default
+   http://nco.sf.net/nco.html#cb
 
 A. ncremap now defaults to $TMPDIR for storing intermediate files.
    This is user-configurable with the -U switch.
