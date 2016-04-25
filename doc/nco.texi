@@ -30,7 +30,7 @@ Irvine, CA 92697-3100
 
 After editing any hyperlink locations, Emacs users update indices with
 C-c C-u C-a	texinfo-all-menus-update
-C-c C-u C-e	texinfo-every-node-update
+C-c C-u C-e	texitnfo-every-node-update
 
 Multiple files:
 M-x texinfo-multiple-files-update
