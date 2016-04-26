@@ -144,7 +144,7 @@ esac # !HOSTNAME
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
-# ncclimo -v TOTEXTTAU -c svc_MERRA2_100.tavgM_2d_aer_Nx.198001.nc4 -s 1980 -e 2015 -a sdd -i ${DATA}/merra/raw -o ${DATA}/merra/clm
+# ncclimo -v TOTEXTTAU -c svc_MERRA2_100.tavgM_2d_aer_Nx.198001.nc4 -s 1980 -e 2015 -a sdd -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
 # ncclimo -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/ncclimo.out 2>&1 &

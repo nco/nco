@@ -892,12 +892,12 @@ main(int argc,char **argv)
 
       /* Input file must have either (but not both) time bounds or climatology bounds */
       if(cb->tm_bnd_in && cb->clm_bnd_in){
-	(void)fprintf(stderr,"%s: ERROR Climatology bounds invoked on time coordinate with both time bounds attribute %s and climatology bounds attribute %s. Results would be ambiguous. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
+	(void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on time coordinate with both time bounds attribute %s and climatology bounds attribute %s. Results would be ambiguous. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
 	flg_cb=False;
 	goto skp_cb;
       } /* !(cb->tm_bnd_in && cb->clm_bnd_in) */
       if(!cb->tm_bnd_in && !cb->clm_bnd_in){
-	(void)fprintf(stderr,"%s: ERROR Climatology bounds invoked on time coordinate with neither time bounds attribute %s nor climatology bounds attribute %s. No way to obtain bounding time values. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
+	(void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on time coordinate with neither time bounds attribute %s nor climatology bounds attribute %s. No way to obtain bounding time values. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
 	flg_cb=False;
 	goto skp_cb;
       } /* !cb->tm_bnd_in && !cb->clm_bnd_in */
@@ -939,7 +939,7 @@ main(int argc,char **argv)
     if(cb->bnd2clm){
       rcd=nco_inq_varid_flg(out_id,cb->tm_bnd_nm,&cb->tm_bnd_id_out); 
       if(rcd != NC_NOERR){
-	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Time bounds variable %s was not copied to output file\n",nco_prg_nm_get(),cb->tm_bnd_nm);
+	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: ERROR Time bounds variable %s was not copied to output file\n",nco_prg_nm_get(),cb->tm_bnd_nm);
 	nco_exit(EXIT_FAILURE);
       } /* !tm_bnd_id_out */
       /* Write climatology bounds to time bounds then rename */
