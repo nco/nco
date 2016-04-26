@@ -1,5 +1,7 @@
 2016-04-26  Charlie Zender  <zender@uci.edu>
 
+	* Reset rcd handling in CF bounds logic
+
 	* Add ncclimo support for "generic" datasets (like NASA MERRA) with YYYYMM format
 
 2016-04-22  Charlie Zender  <zender@uci.edu>

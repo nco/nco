@@ -877,6 +877,7 @@ main(int argc,char **argv)
 	cb->clm_bnd_in=True;
       }else{
 	cb->clm_bnd_nm=strdup("climatology_bounds");
+	rcd=NC_NOERR;
       }	/* !rcd && att_typ */
 
       rcd=nco_inq_att_flg(in_id,cb->tm_crd_id_in,bnd_sng,&att_typ,&att_sz);
@@ -888,6 +889,7 @@ main(int argc,char **argv)
 	cb->tm_bnd_in=True;
       }else{
 	cb->tm_bnd_nm=strdup("time_bnds");
+	rcd=NC_NOERR;
       } /* !rcd && att_typ */
 
       /* Input file must have either (but not both) time bounds or climatology bounds */
@@ -917,6 +919,7 @@ main(int argc,char **argv)
       if(cb->tm_bnd_id_in == NC_MIN_INT){
 	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with missing time bounds variable %s. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),cb->tm_bnd_nm);
 	flg_cb=False;
+	rcd=NC_NOERR;
 	goto skp_cb; 
       } /* !tm_bnd_id_in */
     } /* !tm_bnd_in */
@@ -926,6 +929,7 @@ main(int argc,char **argv)
       if(cb->clm_bnd_id_in == NC_MIN_INT){
 	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with missing climatology bounds variable %s. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),cb->tm_bnd_nm);
 	flg_cb=False;
+	rcd=NC_NOERR;
 	goto skp_cb; 
       } /* !tm_bnd_id_in */
     } /* !clm_bnd_in */
@@ -1009,6 +1013,7 @@ main(int argc,char **argv)
 	  if(att_nm) att_nm=(char *)nco_free(att_nm);
 	  if(att_val) att_val=cb->unt_val=(char *)nco_free(att_val);
 	} /* !rcd && att_typ */
+	rcd=NC_NOERR;
       } /* !rcd && att_typ */
 
       /* Copy calendar attribute from coordinate to new bounds if necessary */
@@ -1036,6 +1041,7 @@ main(int argc,char **argv)
 	  if(att_nm) att_nm=(char *)nco_free(att_nm);
 	  if(att_val) att_val=cb->cln_val=(char *)nco_free(att_val);
 	} /* !rcd && att_typ */
+	rcd=NC_NOERR;
       } /* !rcd && att_typ */
       
     } /* !bnd2clm !clm2bnd */
