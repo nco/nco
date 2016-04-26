@@ -239,7 +239,7 @@ esac # !HOSTNAME
 #          nil = None: Execute script in serial mode on single node
 #                Works best when available RAM < 12*4*sizeof(monthly input file), otherwise jobs swap-to-disk
 # var_lst: Variables to include, or, with nco_opt='-x', to exclude, in comma-separated list format, e.g.,
-#          'FSNT,AODVIS'. Regular expressions work, too: 'AODDUST.?'
+#          'FSNT,AODVIS'. Regular expressions work, too: 'AOD.?'
 
 # Infrequently used options:
 # bnd_nm:  Name of bounds dimension (examples include 'nbnd' (default), 'tbnd' (CAM2, CAM3), 'hist_interval' (CLM2)
@@ -467,16 +467,18 @@ fi # !fml_nm
 if [ "${mdl_nm}" = 'cam2' ]; then
     bnd_nm='tbnd'
 fi # !caseid
+# http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
 # http://stackoverflow.com/questions/17420994/bash-regex-match-string
 if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     mdl_typ='yyyymm'
-    bs_nm="$(basename ${caseid%.*})"
+    bs_nm="${BASH_REMATCH[1]}"
+    bs_nm="$(basename ${bs_nm})"
     # Remove suffix twice because GES-DISC serves data as *.yyyymm.nc4
-    bs_nm="${bs_nm%.*}"
-    bs_sfx="${caseid##*.}"
+#    bs_nm="${bs_nm%.*}"
+    bs_sfx="${caseid#*.}"
 fi # !caseid
 if [ "${mdl_typ}" = 'yyyymm' ]; then
-    printf "Dataset type is generic with YYYYMM. Filenames constructed as ${bs_nm}.YYYYMM.${bs_sfx}\n"
+    printf "Dataset type is generic with YYYYMM. Filenames constructed as ${bs_nm}YYYYMM.${bs_sfx}\n"
 else # !mdl_typ
     printf "Dataset type is not generic.\n"
 fi # !mdl_typ
@@ -664,7 +666,7 @@ for mth in {01..12}; do
 	elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
 	    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
 	elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
-	    yr_fl="${yr_fl} ${bs_nm}.${YYYY}${MM}.${bs_sfx}"
+	    yr_fl="${yr_fl} ${bs_nm}${YYYY}${MM}.${bs_sfx}"
 	fi # !cesm
     done # !yr
     if [ ${clm_md} = 'scd' ] && [ ${MM} = '12' ]; then 
