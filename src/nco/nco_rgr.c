@@ -1389,7 +1389,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* !tst */
 
   /* Verify frc_out is sometimes non-zero
-     ESMF: "For bilinear and patch remapping, the destination grid frac array [brac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero." */
+     ESMF: "For bilinear and patch remapping, the destination grid frac array [frac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero." */
   for(idx=0;idx<(long)grd_sz_out;idx++)
     if(frc_out[idx] != 0.0) break;
   if(idx == (long)grd_sz_out){

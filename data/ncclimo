@@ -144,6 +144,7 @@ esac # !HOSTNAME
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
+# ncclimo -v TOTEXTTAU -c svc_MERRA2_100.tavgM_2d_aer_Nx.198001.nc4 -s 1980 -e 2015 -a sdd -i ${DATA}/merra/raw -o ${DATA}/merra/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
 # ncclimo -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/ncclimo.out 2>&1 &
@@ -296,7 +297,7 @@ gaa_sng="--gaa climo_script=${spt_nm} --gaa climo_hostname=${HOSTNAME} --gaa cli
 hdr_pad='1000' # [B] Pad at end of header section
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ocn')
-mdl_typ='cesm' # [sng] Model type ('cesm' or 'mpas') (for filenames and regridding)
+mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for filenames and regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
 nd_nbr=1 # [nbr] Number of nodes
@@ -466,6 +467,19 @@ fi # !fml_nm
 if [ "${mdl_nm}" = 'cam2' ]; then
     bnd_nm='tbnd'
 fi # !caseid
+# http://stackoverflow.com/questions/17420994/bash-regex-match-string
+if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
+    mdl_typ='yyyymm'
+    bs_nm="$(basename ${caseid%.*})"
+    # Remove suffix twice because GES-DISC serves data as *.yyyymm.nc4
+    bs_nm="${bs_nm%.*}"
+    bs_sfx="${caseid##*.}"
+fi # !caseid
+if [ "${mdl_typ}" = 'yyyymm' ]; then
+    printf "Dataset type is generic with YYYYMM. Filenames constructed as ${bs_nm}.YYYYMM.${bs_sfx}\n"
+else # !mdl_typ
+    printf "Dataset type is not generic.\n"
+fi # !mdl_typ
 
 if [ -n "${gaa_sng}" ]; then
     if [ "${yr_nbr}" -gt 1 ] ; then
@@ -616,7 +630,7 @@ if [ ${dbg_lvl} -ge 0 ]; then
     printf "Climatology generation invoked with command:\n"
     echo "${cmd_ln}"
 fi # !dbg
-printf "Started climatology generation for model-run ${caseid} at `date`.\n"
+printf "Started climatology generation for dataset ${caseid} at `date`.\n"
 printf "Climatology from ${yr_nbr} years of contiguous data crossing ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
 if [ ${clm_md} = 'scd' ]; then 
     printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive months that cross calendar-year boundaries.\n"
@@ -647,8 +661,10 @@ for mth in {01..12}; do
 	YYYY=`printf "%04d" ${yr}`
 	if [ ${mdl_typ} = 'cesm' ]; then
 	    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-	else # Use MPAS not CESM conventions
+	elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
 	    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+	elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
+	    yr_fl="${yr_fl} ${bs_nm}.${YYYY}${MM}.${bs_sfx}"
 	fi # !cesm
     done # !yr
     if [ ${clm_md} = 'scd' ] && [ ${MM} = '12' ]; then 
@@ -657,8 +673,10 @@ for mth in {01..12}; do
 	    YYYY=`printf "%04d" ${yr}`
 	    if [ ${mdl_typ} = 'cesm' ]; then
 		yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-	    else # Use MPAS not CESM conventions
+	    elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
 		yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+	    elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
+		yr_fl="${yr_fl} ${bs_nm}.${YYYY}${MM}.${bs_sfx}"
 	    fi # !cesm
 	done # !yr
 	yyyy_clm_srt=${yyyy_clm_srt_dec}
@@ -952,7 +970,7 @@ if [ ${lnk_flg} = 'Yes' ]; then
 fi # !lnk_flg
     
 date_end=$(date +"%s")
-printf "Completed climatology generation for model-run ${caseid} at `date`.\n"
+printf "Completed climatology generation for dataset ${caseid} at `date`.\n"
 date_dff=$((date_end-date_srt))
 echo "Quick plots of climatological annual mean:"
 if [ -n "${rgr_map}" ]; then 
