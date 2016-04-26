@@ -920,7 +920,7 @@ nco_wrt_atr
  const trv_sct *var_trv);            /* I [sct] traversal variable */
 
 char *
-nco_get_dmn_nm_fll                     /* [fnc] Return dimension name with input id (debug) */
+nco_get_dmn_nm_fll                     /* [fnc] Return name corresponding to input dimension ID (debug) */
 (const int dmn_id,                     /* I [id] ID of dimension */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure array */
  const int nbr_dmn);                   /* I [nbr] Number of dimensions (size of above array) */

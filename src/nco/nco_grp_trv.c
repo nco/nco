@@ -258,16 +258,15 @@ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
   (void)fprintf(stdout, "%s: INFO %s reports extracted objects:\n", nco_prg_nm_get(), fnc_nm);
   /* Print all matching objects from traversal table */
   trv_sct trv_obj;
-  for(unsigned int tbl_idx=0; tbl_idx<trv_tbl->nbr; tbl_idx++){
+  for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     trv_obj=trv_tbl->lst[tbl_idx];
     if(trv_obj.flg_xtr && trv_obj.nco_typ == nco_obj_typ_var){
-      (void)fprintf(stdout, "%s\n", trv_obj.nm_fll);
-      (void)fprintf(stdout, "   %d dimensions: ", trv_obj.nbr_dmn);
-      for(unsigned int idx_dmn=0; idx_dmn<trv_obj.nbr_dmn; idx_dmn++){
-        (void)fprintf(stdout, " %s ", trv_obj.var_dmn[idx_dmn].dmn_nm);
-      }
-      (void)fprintf(stdout, "\n");
-      (void)fprintf(stdout, "   record dimension name: ");
+      (void)fprintf(stdout,"%s\n",trv_obj.nm_fll);
+      (void)fprintf(stdout,"   %d dimensions: ",trv_obj.nbr_dmn);
+      for(int idx_dmn=0; idx_dmn<trv_obj.nbr_dmn;idx_dmn++)
+        (void)fprintf(stdout, " %s ",trv_obj.var_dmn[idx_dmn].dmn_nm);
+      (void)fprintf(stdout,"\n");
+      (void)fprintf(stdout,"   record dimension name: ");
       if(trv_obj.rec_dmn_nm_out) (void)fprintf(stdout, "%s\n ", trv_obj.rec_dmn_nm_out); else (void)fprintf(stdout, "NULL\n");
     }
   } /* end loop over trv_tbl */
