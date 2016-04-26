@@ -894,12 +894,12 @@ main(int argc,char **argv)
 
       /* Input file must have either (but not both) time bounds or climatology bounds */
       if(cb->tm_bnd_in && cb->clm_bnd_in){
-	(void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on time coordinate with both time bounds attribute %s and climatology bounds attribute %s. Results would be ambiguous. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
+	(void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on time coordinate with both time bounds attribute \"%s\" and climatology bounds attribute \"%s\". Results would be ambiguous. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
 	flg_cb=False;
 	goto skp_cb;
       } /* !(cb->tm_bnd_in && cb->clm_bnd_in) */
       if(!cb->tm_bnd_in && !cb->clm_bnd_in){
-	(void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on time coordinate with neither time bounds attribute %s nor climatology bounds attribute %s. No way to obtain bounding time values. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
+	(void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on time coordinate with neither time bounds attribute \"%s\" nor climatology bounds attribute \"%s\". No way to obtain bounding time values. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
 	flg_cb=False;
 	goto skp_cb;
       } /* !cb->tm_bnd_in && !cb->clm_bnd_in */
@@ -917,7 +917,7 @@ main(int argc,char **argv)
     if(cb->tm_bnd_in){
       rcd=nco_inq_varid_flg(in_id,cb->tm_bnd_nm,&cb->tm_bnd_id_in); 
       if(cb->tm_bnd_id_in == NC_MIN_INT){
-	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with missing time bounds variable %s. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),cb->tm_bnd_nm);
+	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with missing time bounds variable \"%s\". Turning-off climatology bounds mode.\n",nco_prg_nm_get(),cb->tm_bnd_nm);
 	flg_cb=False;
 	rcd=NC_NOERR;
 	goto skp_cb; 
@@ -927,7 +927,7 @@ main(int argc,char **argv)
     if(cb->clm_bnd_in){
       rcd=nco_inq_varid_flg(in_id,cb->clm_bnd_nm,&cb->clm_bnd_id_in); 
       if(cb->clm_bnd_id_in == NC_MIN_INT){
-	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with missing climatology bounds variable %s. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),cb->tm_bnd_nm);
+	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with missing climatology bounds variable \"%s\". Turning-off climatology bounds mode.\n",nco_prg_nm_get(),cb->tm_bnd_nm);
 	flg_cb=False;
 	rcd=NC_NOERR;
 	goto skp_cb; 
