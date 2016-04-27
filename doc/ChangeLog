@@ -1,5 +1,9 @@
 2016-04-27  Charlie Zender  <zender@uci.edu>
 
+	* ncremap fix drc_tmp logic to work without $TMPDIR
+
+	* ncremap search for ERWG, Tempest before trying to execute them
+
 	* ncclimo add debugging info for MPI node list
 
 2016-04-26  Charlie Zender  <zender@uci.edu>

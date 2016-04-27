@@ -199,7 +199,6 @@ drc_in='' # [sng] Input file directory
 drc_in_xmp='~/drc_in' # [sng] Input file directory for examples
 drc_out="${drc_pwd}" # [sng] Output file directory
 drc_out_xmp="~/rgr" # [sng] Output file directory for examples
-drc_tmp="${TMPDIR%/}" # [sng] Temporary file directory
 dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
 #esmf_opt='--src_regional --dst_regional --ignore_unmapped' # [sng] ESMF_RegridWeightGen options
@@ -241,6 +240,16 @@ var_lst='' # [sng] Variables to process (empty means all)
 var_xmp='FSNT' # [sng] Variable list for examples
 wgt_gnr='esmf' # [sng] Weight-generator program
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
+
+# Set temporary-file directory
+if [ -d "${TMPDIR}" ]; then
+    # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
+    drc_tmp="${TMPDIR%/}"
+elif [ -d '/tmp' ]; then
+    drc_tmp='/tmp'
+else
+    drc_tmp=${PWD}
+fi # !gpfs
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
@@ -355,6 +364,7 @@ else
 	drc_out="$(dirname ${out_fl})"
     fi # !out_fl
 fi # !drc_usr
+
 if [ -n "${tmp_usr}" ]; then
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
     drc_tmp=${tmp_usr%/}
@@ -769,10 +779,13 @@ else # !map_usr_flg
     if [ "${wgt_gnr}" = 'esmf' ]; then 
 	printf "ESMF's ESMF_RegridWeightGen will generate map-file\n"
 	printf "Algorithm used to generate weights in map-file is: ${alg_opt}\n"
+	wgt_cmd='ESMF_RegridWeightGen'
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
 	printf "TempestRemap's GenerateOverlapMesh and GenerateOfflineMap will generate map-file\n"
+	wgt_cmd='GenerateOverlapMesh'
     fi # !tempest
+    command -v ${wgt_cmd} 2>&1 /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command ${wgt_cmd}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is often provided in NCL packages. Tempest executables must be installed from source."; exit 1; }
     if [ ${fl_nbr} -ge 2 ]; then 
 	if [ "${mlt_map_flg}" = 'Yes' ]; then 
 	    printf "Input files assumed to use unique input grids\nOne source grid-file will be inferred and one map-file generated per input file\n"
