@@ -15909,7 +15909,7 @@ specify @samp{-c famipc5_ne30_v0.3_00001}.
 The @samp{.cam.} and @samp{.h0.} bits are added internally to produce
 the input filenames.
 These can be modified via the @option{-m @var{mdl_nm}} and 
-option{-h @var{hst_nm}} switches if needed.  
+@option{-h @var{hst_nm}} switches if needed.  
 For input files like @file{merra2_198001.nc},
 specify @samp{-c merra2_198001.nc}. 
 See comments in @command{ncclimo} for further documentation.   
