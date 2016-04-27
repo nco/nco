@@ -1,3 +1,7 @@
+2016-04-27  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo add debugging info for MPI node list
+
 2016-04-26  Charlie Zender  <zender@uci.edu>
 
 	* Reset rcd handling in CF bounds logic
