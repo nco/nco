@@ -91,7 +91,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
 @uref{}: URL with optional alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
 @url{}: URL, synonym for @uref
-@var{}: Metasyntactic variable, e.g., @var{input}
+@var{}: Metasyntactic variable, e.g., @var{fl_in}
 @verbatim: Anything goes inside environment (no @'s needed to protect special characters like braces)
 @verbatiminclude: Insert contents of file here, e.g., @verbatiminclude{nco.sh}
 @example: Quoted environment (@'s needed to protect special characters like braces)
@@ -101,6 +101,11 @@ Use '@*' to force hard carriage return
 Use '@:', after periods, questions marks, exclamation marks, or colons
 that do not end sentences, e.g., 'vs.@:'
 Use '@.', '@!', and `@?' to end sentences that end with single capital letters (e.g., initials)
+
+Outline Hierarchy:
+@section
+@subsection
+@unnumberedsubsec
 
 Resources:
 Octave TeXInfo manual shows clean TeXInfo structure
@@ -15869,8 +15874,6 @@ DESCRIPTION
 
 @command{ncclimo} produces climatological monthly means, seasonal means,
 annual mean, and optionally regrids all these files.
-
-
 Standard @command{ncclimo} usage looks like
 @example
 ncclimo           -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
@@ -15894,17 +15897,21 @@ be November of the specified end year.
 If @samp{-a sdd} is specified, the last month will be December of the
 specified end year.  
 @item -i drc_in
-Directory containing all netcdf files to be used for input to this  
-code.  
+Directory containing all netCDF files that will be input to produce the
+climo. 
 @item -o drc_out
-Directory where computed climo files should be placed.
+Directory to hold computed (output) climo files.
 @item -c caseid
-Simulation name (or any input filename for non-@acronym{CESM}'ish files). 
-For input files like @file{famipc5_ne30_v0.3_00001.cam.h0.1980-01.nc},
+Simulation name, or any input filename for non-@acronym{CESM}'ish files.  
+For @acronym{CESM}'ish input files like
+@file{famipc5_ne30_v0.3_00001.cam.h0.1980-01.nc}, 
 specify @samp{-c famipc5_ne30_v0.3_00001}. 
-The @samp{.cam.} and @samp{.h0.} bits are added to the filenames
-internally by default, and can be modified via the 
-@option{-m @var{mdl_nm}} and @option{-h @var{hst_nm}} switches if needed. 
+The @samp{.cam.} and @samp{.h0.} bits are added internally to produce
+the input filenames.
+These can be modified via the @option{-m @var{mdl_nm}} and 
+option{-h @var{hst_nm}} switches if needed.  
+For input files like @file{merra2_198001.nc},
+specify @samp{-c merra2_198001.nc}. 
 See comments in @command{ncclimo} for further documentation.   
 @item -m mdl_nm
 Model name (as embedded in monthly input filenames). 
@@ -15913,7 +15920,7 @@ Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @end table
 @noindent
 
-@acronym{MPAS-O/I} considerations:
+@unnumberedsubsec @acronym{MPAS-O/I} considerations
 @acronym{MPAS} ocean and ice models currently have their own
 (non-@acronym{CESM}'ish) naming convention for monthly output files.  
 @command{ncclimo} recognizes input files as being from @acronym{MPAS}
@@ -15948,7 +15955,7 @@ pre-processing (dimension permutation, metadata annotation) for
 A five-year oEC60to30 @acronym{MPAS-O} climo with regridding to T62
 takes < 10 minutes on @file{rhea}. 
 
-Regridding (climos and other files):
+@unnumberedsubsec Regridding Climos and Other Files
 @command{ncclimo} will (optionally) regrid during climatology generation 
 and produce climatology files on both native and analysis grids. 
 This regridding is virtually free, because it is performed on idle
@@ -16000,7 +16007,7 @@ ls drc_out/*climo* | ncremap -m map.nc -O drc_rgr
 See @ref{ncremap netCDF Remapper} for more details (including
 @acronym{MPAS}!).  
  
-Coupled Runs:
+@unnumberedsubsec Coupled Runs
 @command{ncclimo} works on all @acronym{ACME} models. 
 It can simultaneously generate climatologies for a coupled run, where
 climatologies mean both native and regridded monthly, seasonal, and
@@ -16025,16 +16032,17 @@ ncclimo        -c hist    -m ice  -s 2 -e 5 -i $drc_in -r $map_ice -o $drc_out/i
 Atmosphere and ocean model output is typically larger than land and ice
 model output.  
 These commands recognize that by using different parallelization
-strategies that may (@file{rhea} standard queue) or may not (@file{cooley} or
-@file{rhea} bigmem queue) be required, depending on the fatness of the
-analysis nodes, as explained below. 
+strategies that may (@file{rhea} standard queue) or may not
+(@file{cooley}, or @file{rhea}'s @code{bigmem} queue) be required,
+depending on the fatness of the analysis nodes, as explained below. 
 
-Memory Considerations:
+@unnumberedsubsec Memory Considerations
 It is important to employ the optimal @command{ncclimo}  parallelization
-strategy for your computer hardware resources. Select from the three
-available choices with the '-p par_typ' switch. The options are serial
-mode ('-p nil' or '-p serial'), background mode parallelism ('-p bck'),
-and MPI parallelism ('-p mpi'). The default is background mode
+strategy for your computer hardware resources. 
+Select from the three available choices with the 
+@option{-p @var{par_typ}} switch.
+The options are serial mode (@samp{-p nil} or @samp{-p serial}), 
+background mode parallelism (@samp{-p bck}), and @acronym{MPI} parallelism ('-p mpi'). The default is background mode
 parallelism, which is appropriate for lower resolution (e.g., ne30L30)
 simulations on most nodes at high-performance computer centers. Use (or
 at least start with) serial mode on personal
@@ -16069,11 +16077,11 @@ exploits this parallelism and executes the climos in parallel as
 background processes on a single node, so that twelve cores are
 simultaneously employed for monthly climatologies, four for seasonal,
 and one for annual. The optional regridding will employ up to two cores
-per process. MPI parallelism executes the climatologies on different
+per process. @acronym{MPI} parallelism executes the climatologies on different
 nodes so that up to (optimally) twelve nodes are employed performing
 monthly climos. The full memory of each node is available for each
 individual climo. The optional regridding will employ up to eight cores
-per node. MPI mode or Background mode on a big memory queue must be used
+per node. @acronym{MPI} mode or Background mode on a big memory queue must be used
 to process ne30L72 and ne120L30 climos on some, but not all, DOE
 computers. For example, attempting an ne120L30 climo on in background
 mode on @file{rhea} (i.e., on one 128 GB compute node) will fail due to
@@ -16083,7 +16091,7 @@ OOM). However the same climo will succeed if executed on a single
 big-memory (1 TB) node on @file{rhea} (use -lpartition=gpu, as shown below). Or
 MPI mode can be used for any climatology. The same ne120L30 climo will
 also finish blazingly fast in background mode on @file{cooley} (i.e., on one
-384 GB compute node), so MPI mode is unnecessary on @file{cooley}. In general,
+384 GB compute node), so @acronym{MPI} mode is unnecessary on @file{cooley}. In general,
 the fatter the memory, the better the performance.  
 
 For a Single, Dedicated Node on LCFs:
@@ -16132,17 +16140,17 @@ queues with no default queue)
 useful for figuring that out if the above defaults don't work:
 Computational Resources 
 
-For a 12 node, MPI Job:
+For a 12 node, @acronym{MPI} Job:
 The above parallel approaches will fail when a single node lacks enough
 RAM (plus swap) to store all twelve monthly input files, plus extra RAM
-for computations. One should employ MPI multinode parallelism (-p mpi)
+for computations. One should employ @acronym{MPI} multinode parallelism (-p mpi)
 on nodes with less RAM than 12*3*sizeof(input).  The longest an ne120
 climo will take is less than half an hour (~25 minutes on @file{edison} or
-@file{rhea}), so the simplest method to run MPI jobs is to request
+@file{rhea}), so the simplest method to run @acronym{MPI} jobs is to request
 12-interactive nodes using the above commands (though remember to add -p
 mpi), then execute the script at the command line. It is also possible,
 and sometimes preferable, to request non-interactive compute nodes in a
-batch queue. Executing an MPI-mode climo (on machines with job
+batch queue. Executing an @acronym{MPI}-mode climo (on machines with job
 scheduling and, optimally, 12 available nodes) in a batch queue can be
 done in 2 commands. First, write an executable file which calls the
 @command{ncclimo} script with appropriate arguments. We do this below by

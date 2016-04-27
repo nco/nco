@@ -592,6 +592,10 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_fl="${PBS_NODEFILE}"
     elif [ -n "${SLURM_NODELIST}" ]; then 
 	nd_fl="${SLURM_NODELIST}"
+    else
+	echo "ERROR: MPI job unable to find node list"
+	echo "HINT: ${spt_nm} uses first node list found in \$COBALT_NODEFILE (= \"${COBALT_NODEFILE}\"), \$PBS_NODEFILE (= \"${PBS_NODEFILE}\"), \$SLURM_NODELIST (= \"${SLURM_NODELIST}\")"
+	exit 1
     fi # !PBS
     if [ -n "${nd_fl}" ]; then 
 	# NB: nodes are 0-based, e.g., [0..11]
