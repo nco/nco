@@ -117,7 +117,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.0-beta03
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 22 April 2016
+@set update-date 27 April 2016
 @set update-month April 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2663,7 +2663,7 @@ First, users may request a specific number of threads @var{thr_nbr} with
 the @samp{-t} switch (or its long option equivalents, @samp{--thr_nbr},
 @samp{--threads}, and @samp{--omp_num_threads}).
 If not user-specified, OpenMP obtains @var{thr_nbr} from the
-@code{OMP_NUM_THREADS} environment variable, if present, or from the
+@env{OMP_NUM_THREADS} environment variable, if present, or from the
 @acronym{OS}, if not.
 
 @cartouche
@@ -2688,7 +2688,7 @@ goal of our current funding and would require new volunteers or funding.
 @end cartouche
 
 @cindex @var{thr_nbr}
-@cindex @code{OMP_NUM_THREADS}
+@cindex @env{OMP_NUM_THREADS}
 @cindex @command{ncrcat}
 @cindex @command{ncwa}
 @cindex @command{ncap2}
@@ -15870,13 +15870,15 @@ DESCRIPTION
 @command{ncclimo} produces climatological monthly means, seasonal means,
 annual mean, and optionally regrids all these files.
 
-The basic way to use @command{ncclimo} is to bring up a terminal window and simply type:
+
+Standard @command{ncclimo} usage looks like
 @example
-ncclimo         -s srt_yr -e end_yr -c run_id -i drc_in -o drc_out # CAM
-ncclimo -m clm2 -s srt_yr -e end_yr -c run_id -i drc_in -o drc_out # ALM/CLM
+ncclimo           -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
+ncclimo -m mdl_nm -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 @end example
 A complete description of all available flags is given in comments
-embedded in @command{ncclimo}, and for convenience here is a summary: 
+embedded in @command{ncclimo}.
+The standard options are:
 @table @option
 @item -s srt_yr
 Start year (example: 1980). 
@@ -15897,15 +15899,15 @@ code.
 @item -o drc_out
 Directory where computed climo files should be placed.
 @item -c caseid
-Simulation name. 
+Simulation name (or any input filename for non-@acronym{CESM}'ish files). 
 For input files like @file{famipc5_ne30_v0.3_00001.cam.h0.1980-01.nc},
 specify @samp{-c famipc5_ne30_v0.3_00001}. 
 The @samp{.cam.} and @samp{.h0.} bits are added to the filenames
 internally by default, and can be modified via the 
 @option{-m @var{mdl_nm}} and @option{-h @var{hst_nm}} switches if needed. 
-See comments in @command{ncclimo} for documentation.   
-@item -m mdl_typ
-Model type. 
+See comments in @command{ncclimo} for further documentation.   
+@item -m mdl_nm
+Model name (as embedded in monthly input filenames). 
 Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @samp{ice}, @samp{cism}, @samp{cice}, @samp{pop}. 
 @end table
@@ -15923,12 +15925,12 @@ Invocation looks like
 ncclimo -c hist -m ocn -s 1980 -e 1983 -i drc_in -o drc_out # MPAS-O
 ncclimo -c hist -m ice -s 1980 -e 1983 -i drc_in -o drc_out # MPAS-I
 @end example
-@acronym{MPAS} climos are unaware of missing values until/unless the
+@acronym{MPAS} climos are unaware of missing values until/unless
 input files are ``fixed''. 
 We recommend that simulation producers annotate all floating point
-variables with the appropriate _FillValue prior to invoking
+variables with the appropriate @code{_FillValue} prior to invoking
 @command{ncclimo}. 
-Run something like this once in the history file directory: 
+Run something like this once in the history-file directory: 
 @example
 @verbatim
 for fl in `ls hist.*` ; do
@@ -15936,7 +15938,7 @@ for fl in `ls hist.*` ; do
 done
 @end verbatim
 @end example
-If/when @acronym{MPAS-O/I} generates the _FillValue attributes itself,
+If/when @acronym{MPAS-O/I} generates the @code{_FillValue} attributes itself,
 this step can and should be skipped. 
 All other @command{ncclimo} features like regridding (below) are invoked
 identically for @acronym{MPAS} as for @acronym{CAM}/@acronym{CLM} users
@@ -15947,13 +15949,12 @@ A five-year oEC60to30 @acronym{MPAS-O} climo with regridding to T62
 takes < 10 minutes on @file{rhea}. 
 
 Regridding (climos and other files):
-@command{ncclimo} will (optionally) regrid during climatology generation
-and produce climatology files on both the native and desired analysis
-grids. 
-This regridding is virtually free, because it is performed on
-idle nodes/cores after the monthly climatologies have been computed and
-while the seasonal climatologies are being computed. 
-This load-balancing can save half an hour on ne120 datasets. 
+@command{ncclimo} will (optionally) regrid during climatology generation 
+and produce climatology files on both native and analysis grids. 
+This regridding is virtually free, because it is performed on idle
+nodes/cores after monthly climatologies have been computed and while
+seasonal climatologies are being computed.  
+This load-balancing can save half-an-hour on ne120 datasets. 
 To regrid, simply pass the desired mapfile name with @samp{-r map.nc},
 e.g., @samp{-r maps/map_ne120np4_to_fv257x512_aave.20150901.nc}. 
 Although this should not be necessary for normal use, you may pass any
@@ -15972,20 +15973,21 @@ all regridded files in the native grid climo output directory,
 @var{drc_out}, specified by @samp{-o @var{drc_out}} (NB: lowercase 
 @samp{o}). 
 To avoid namespace conflicts when both climos are stored in the same
-directory, the names of the regridded files are suffixed by the
-destination geometry string obtained from the mapfile, e.g.,
+directory, the names of regridded files are suffixed by the destination
+geometry string obtained from the mapfile, e.g., 
 @file{*_climo_fv257x512_bilin.nc}. 
 These files also have symbolic links to their @acronym{AMWG} filenames. 
 @example
-ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i drc_in -o drc_out
-ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i drc_in -r map_file -o drc_out
-ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i drc_in -r map_file -o drc_out -O drc_rgr
+ncclimo -c amip_xpt -s 1980 -e 1983 -i drc_in -o drc_out
+ncclimo -c amip_xpt -s 1980 -e 1983 -i drc_in -r map_fl -o drc_out
+ncclimo -c amip_xpt -s 1980 -e 1983 -i drc_in -r map_fl -o drc_out -O drc_rgr
 @end example
-
+@noindent
 The above commands perform a climatology without regridding, then with
 regridding (all climos stored in @var{drc_out}), then with regridding and
-storing regridded files separately. Paths specified by @var{drc_in},
-@var{drc_out}, and @var{drc_rgr} may be relative or absolute. 
+storing regridded files separately. 
+Paths specified by @var{drc_in}, @var{drc_out}, and @var{drc_rgr} may be
+relative or absolute.  
 An alternative to regridding during climatology generation is to regrid
 afterwards with @command{ncremap}, which has more special features
 built-in for regridding. 
@@ -15995,32 +15997,35 @@ place the results in @var{drc_rgr}, use something like
 ncremap -I drc_out -m map.nc -O drc_rgr
 ls drc_out/*climo* | ncremap -m map.nc -O drc_rgr
 @end example
-See the full ncremap documentation for more examples (including @acronym{MPAS}!).
+See @ref{ncremap netCDF Remapper} for more details (including
+@acronym{MPAS}!).  
  
 Coupled Runs:
 @command{ncclimo} works on all @acronym{ACME} models. 
 It can simultaneously generate climatologies for a coupled run, where
 climatologies mean both native and regridded monthly, seasonal, and
-annual averages as per the AG specification. 
+annual averages as per @acronym{ACME} specifications (which mandate
+the inclusion of certain helpful metadata and provenance information).
 Here are template commands for a recent simulation:
 @example
 @verbatim
 caseid=20160121.A_B2000ATMMOD.ne30_oEC.titan.a00
 drc_in=/lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run
+drc_out=${DATA}/acme
 map_atm=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 map_lnd=$map_atm
 map_ocn=${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc
 map_ice=$map_ocn
-ncclimo -p mpi -c ${caseid} -m cam  -s 2 -e 5 -i $drc_in -r $map_atm -o ${DATA}/acme/atm
-ncclimo        -c ${caseid} -m clm2 -s 2 -e 5 -i $drc_in -r $map_lnd -o ${DATA}/acme/lnd
-ncclimo -p mpi -c hist      -m ocn  -s 2 -e 5 -i $drc_in -r $map_ocn -o ${DATA}/acme/ocn 
-ncclimo        -c hist      -m ice  -s 2 -e 5 -i $drc_in -r $map_ice -o ${DATA}/acme/ice
+ncclimo -p mpi -c $caseid -m cam  -s 2 -e 5 -i $drc_in -r $map_atm -o $drc_out/atm
+ncclimo        -c $caseid -m clm2 -s 2 -e 5 -i $drc_in -r $map_lnd -o $drc_out/lnd
+ncclimo -p mpi -c hist    -m ocn  -s 2 -e 5 -i $drc_in -r $map_ocn -o $drc_out/ocn 
+ncclimo        -c hist    -m ice  -s 2 -e 5 -i $drc_in -r $map_ice -o $drc_out/ice
 @end verbatim
 @end example
-The atmosphere and ocean model output is significantly larger than the
-land and ice model output. 
+Atmosphere and ocean model output is typically larger than land and ice
+model output.  
 These commands recognize that by using different parallelization
-strategies that may (@file{rhea} standard queue) or may not (cooley or
+strategies that may (@file{rhea} standard queue) or may not (@file{cooley} or
 @file{rhea} bigmem queue) be required, depending on the fatness of the
 analysis nodes, as explained below. 
 
@@ -16077,8 +16082,8 @@ processes die without printing useful information, the cause may be
 OOM). However the same climo will succeed if executed on a single
 big-memory (1 TB) node on @file{rhea} (use -lpartition=gpu, as shown below). Or
 MPI mode can be used for any climatology. The same ne120L30 climo will
-also finish blazingly fast in background mode on cooley (i.e., on one
-384 GB compute node), so MPI mode is unnecessary on cooley. In general,
+also finish blazingly fast in background mode on @file{cooley} (i.e., on one
+384 GB compute node), so MPI mode is unnecessary on @file{cooley}. In general,
 the fatter the memory, the better the performance.  
 
 For a Single, Dedicated Node on LCFs:
@@ -16095,7 +16100,7 @@ supercomputers which have a job-control queue). On @file{rhea} do this via:
 qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:10:00 -N climo_nco # rhea standard node (128 GB)
 qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:10:00 -lpartition=gpu -N climo_nco # rhea bigmem node (1 TB)
 @end example
-The equivalents on cooley and cori are:
+The equivalents on @file{cooley} and @file{cori} are:
 @example
 qsub -I -A HiRes_EarthSys --nodecount=1 --time=00:10:00 --jobname=climo_nco # cooley node (384 GB)
 salloc  -A acme --nodes=1 --partition=debug --time=00:10:00 --job-name=climo_nco # cori (128 GB)
@@ -16116,12 +16121,12 @@ rather than running a program.
 --time: how long to keep this dedicated node for. Unless you kill the
 shell created by the qsub command, the shell will exist for this amount
 of time, then die suddenly. In the above examples, 3 hrs is requested. 
-"-l nodes=1" (@file{rhea}) or "--nodecount 1" (cooley) or "--nodes=1"
-(cori/edison): the number of nodes to request. @command{ncclimo} will
+"-l nodes=1" (@file{rhea}) or "--nodecount 1" (@file{cooley}) or "--nodes=1"
+(@file{cori}/@file{edison}): the number of nodes to request. @command{ncclimo} will
 use multiple cores per node. 
 -V: export existing environmental variables into the new interactive
 shell. Peter doubts this is actually needed. 
--q: the queue name (needed for locations like edison that have multiple
+-q: the queue name (needed for locations like @file{edison} that have multiple
 queues with no default queue) 
 -A: the name of the account to charge for time used. This page may be
 useful for figuring that out if the above defaults don't work:
@@ -16132,7 +16137,7 @@ The above parallel approaches will fail when a single node lacks enough
 RAM (plus swap) to store all twelve monthly input files, plus extra RAM
 for computations. One should employ MPI multinode parallelism (-p mpi)
 on nodes with less RAM than 12*3*sizeof(input).  The longest an ne120
-climo will take is less than half an hour (~25 minutes on Edison or
+climo will take is less than half an hour (~25 minutes on @file{edison} or
 @file{rhea}), so the simplest method to run MPI jobs is to request
 12-interactive nodes using the above commands (though remember to add -p
 mpi), then execute the script at the command line. It is also possible,
@@ -16158,8 +16163,8 @@ This script adds the following new flags:
 "-j oe": combine output and error streams into standard error.
 "-m e": send email to the job submitter when the job ends
 "-o ~/climo_nco.txt": write all output to ~/climo_nco.txt
-The above commands are meant for @file{rhea}. The equivalent commands for
-Cooley and Cori/Edison are: 
+The above commands are meant for @file{rhea}. 
+Equivalent commands for @file{cooley} and @file{cori}/@file{edison} are: 
 @example
 @verbatim
 # Cooley
