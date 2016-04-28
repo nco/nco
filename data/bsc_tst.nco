@@ -1,0 +1,453 @@
+// $Header$ -*-C++-*-
+
+// Purpose: Script to test instinsic operations (=-*/)  and basic functions 
+//          like casting variables and hyperslabbing variables               
+
+/* Usage: 
+   ncap2 -O -v -S ~/nco/data/gsl_sf.in ~/nco/data/in.nc ~/foo.nc
+   ncks ~/foo.nc | /bin/more */
+
+print("Test script for basic and intrinsic functions\n");
+
+// Count number of errors
+nbr_err=0;
+nbr_err_ttl=0;
+
+// casting variables block a
+{
+  // recast vars in input to diffferent types and/or shape
+  one[]=1.0d;
+  od[time]=od.short();
+
+  three_dmn_var_dbl[time,lon,lat]=three_dmn_var_dbl.int();
+  three_dmn_var_dbl.set_miss(-99);
+
+  three_dmn_var_sht[lat,lon]={1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0};
+
+  
+  // poulate vars existing in input
+  three_dmn_var_int(:,:,:)=-1;
+  one_dmn_rec_wgt(:)=2.0;
+
+  // cast a hyperslab
+  three_new[time,lat,lon]=three_dmn_var_int(0,:,:);
+
+  a10[time,lat,lon,lev]=P0*hyam+hybm*PS; 
+
+  if(one.type() != NC_DOUBLE || one.size() !=1 )
+  {
+     print("ERROR: a:one\n");
+     nbr_err++;	
+  }
+
+  if(od.type() != NC_SHORT || od.size() !=10 )
+  {
+     print("ERROR: a:od\n");
+     nbr_err++;	
+  }
+
+  if(three_dmn_var_dbl.total() !=2802)
+  {
+     print("ERROR: a:three_dmn_var_dbl\n");
+     nbr_err++;	
+  }
+
+  if(three_dmn_var_sht.type() != NC_DOUBLE || three_dmn_var_sht.size() != 8  )
+  {
+     print("ERROR: a:three_dmn_var_sht\n");
+     nbr_err++;	
+  }
+
+  if(three_dmn_var_int.total() != -80)
+  {
+     print("ERROR: a:three_dmn_var_int\n");
+     nbr_err++;	
+  }
+
+  if(one_dmn_rec_wgt.total() != 20.0d)
+  {
+     print("ERROR: a:one_dmn_rec_wgt\n");
+     nbr_err++;	
+  }
+
+  if(three_new.total() != -80 || three_new.type() != NC_INT)
+  {
+     print("ERROR: a:three_new\n");
+     nbr_err++;	
+  }
+
+  if(a10.ndims() != 4 ||  a10.type() != NC_FLOAT || fabs(a10.total() - 1.230098e+07)>1.0e2)
+  {
+     print("ERROR: a10\n");
+     nbr_err++;	
+  }
+
+
+  print("RESULTS block a: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+}
+
+
+// more casting and hyperslabbing
+{
+  b1[ilev]=0.0;
+  b1(::2)=1.0;
+  b1(1::2)=2.0;  
+
+  b2[time,lon]=time.int();
+  
+  // RHS isnt cast as its already the right size -try negative indices
+  b3[ilev]=time(6:9)/ time(-4:-1);
+
+  // cast a hyperslab     
+  b4[ilev,lat,lon]=lat_2D_rct(0,:);
+
+  // cast a hyperslab from a attribute
+  b5@fill=20L;
+  b5[ilev]=b5@fill;  
+
+  // cast from a "value list"
+  b6@fill={1.0,4.0,9.0,16.0};
+  b6[ilev]=b6@fill;
+ 
+  // cast from a single hyperslab
+  b7[ilev]=time(9);
+
+  // casting expressions
+  b8[ilev]=b5/b7 + 1.0;;
+
+  
+  // use var/att to index into array
+  b9=three_dmn_rec_var;
+  b9@idx_a={1,1,2};       // srt
+  b9@idx_b={0,0,0,1,0,3}; // srt, end
+
+  b9a=b9(b9@idx_a); 
+  b9b=b9(b9@idx_b); 
+
+  if(b1.total()!=6.0)
+  {
+     print("ERROR: b1\n");
+     nbr_err++;	
+  }
+
+  if(b2.total()!=220)
+  {
+     print("ERROR: b2\n");
+     nbr_err++;	
+  }
+
+
+  if(b3.total()!=4)
+  {
+     print("ERROR: b3\n");
+     nbr_err++;	
+  }
+
+  if(b4.total()!=-2880.0f)
+  {
+     print("ERROR: b4\n");
+     nbr_err++;	
+  }
+
+  if(b5.total()!=80)
+  {
+     print("ERROR: b5\n");
+     nbr_err++;	
+  }
+
+  if(b6.total()!= 30.0)
+  {
+     print("ERROR: b6\n");
+     nbr_err++;	
+  }
+
+  if(b7.avg()!= 10.0)
+  {
+     print("ERROR: b7\n");
+     nbr_err++;	
+  }
+
+  if(b8.avg()!= 3.0 || b8.type() != NC_DOUBLE)
+  {
+     print("ERROR: b8\n");
+     nbr_err++;	
+  }
+  
+  if( b9a != 15 || b9a.ndims()!=0   ) 
+  {  
+     print("ERROR: b9a - variable indices\n");
+     nbr_err++;	
+
+  }
+
+  if( b9b(0,0)!=1 || b9b(1,3)!=8 || b9b.ndims()!=2   ) 
+  {  
+     print("ERROR: b9b - variable indices\n");
+     nbr_err++;	
+
+  }
+
+
+
+  print("RESULTS block b: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+}
+
+// type conversion - var/var and var/att and att/att
+{ 
+  c1=time;
+  c1_byte=time.byte();
+  c1_short=time.short();
+  c1_int=time.int();
+  c1_float=time.float();
+  c1_float=time.double();
+
+  c1@byte=10b;
+  c1@short=20s;
+  c1@int=30;
+  c1@int2=23L;
+  c1@int3=24l;
+  c1@float=40f;
+  c1@double=50d;
+
+  //var var
+  c2=c1_float / c1_short *c1_int;  
+  c3=c1_byte*1.0d; 
+
+  //var att 
+  c4=2L * c1@double; 
+  c5=c1_int * c1@float;
+   
+  // att att 
+  c1@result=c1@double/c1@byte;  
+
+  if(c2.type() != NC_FLOAT || c2.size() !=10 )
+  {
+     print("ERROR: c2\n");
+     nbr_err++;	
+  }
+  
+  if(c3.type() != NC_DOUBLE || c3.size() != 10 )
+  {
+     print("ERROR: c3\n");
+     nbr_err++;	
+  }
+
+  if(c4.type() != NC_INT || c4.size() != 1 )
+  {
+     print("ERROR: c4\n");
+     nbr_err++;	
+  }
+
+  if(c1@result.type() != NC_DOUBLE || c1@result.size() != 1 )
+  {
+     print("ERROR: c1@result\n");
+     nbr_err++;	
+  }
+
+
+
+  print("RESULTS block c: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+}
+
+// attributes
+{
+
+  // attribute propgation
+  d1=(2*3+4-3/time);
+  if( !exists(d1@units) || !exists(d1@long_name))
+  {
+     print("ERROR: d1@attribute propagation\n");
+     nbr_err++;	
+  }
+  
+
+  // attribute inheritance
+  lon_grd(0:1)={-46,46};
+  if( !exists(lon_grd@units) || !exists(lon_grd@long_name))
+  {
+     print("ERROR: d2/lon_grd @attribute inheritance\n");
+     nbr_err++;	
+  }
+  
+  lon_grd@total=lon_grd.ttl();
+  lon_grd@delta=1e-6;
+
+  // attribute propgation
+  d3=2.0f+3.0 - 1.0*lon_grd;
+  if( !( exists(d3@units) && exists(d3@long_name) && exists(d3@delta) && exists(d3@total)) )
+  {
+     print("ERROR: d3@attribute propagation\n");
+     nbr_err++;	
+  }
+
+  // attribute hyperslab
+  d3@time=time;
+  d3@time_odd=time(::2);
+  d3@time_even=time(1::2);
+
+  if( d3@time(9)!=10.0d )  
+  {
+     print("ERROR: d3@attribute single-slab\n");
+     nbr_err++;	
+  }
+  
+  // nb cant use total() as att has no dimension -doh doh doh 
+  if( d3@time_odd.size() != 5 || d3@time_odd.gsl_stats_mean() * d3@time_odd.size() != 25.0 )  
+  {
+     print("ERROR: d3@attribute odd hyperslab\n");
+     nbr_err++;	
+  }
+  
+  if( d3@time_even.size() != 5 || d3@time_even.gsl_stats_mean() * d3@time_even.size() != 30.0 )  
+  {
+     print("ERROR: d3@attribute even hyperslab\n");
+     nbr_err++;	
+  }
+
+  // RHS attribute hyperslab;
+  d4=4;
+  d4@time_odd=time(::2);
+ 
+  // Attributes comparison
+  if( d4@time_odd != d3@time_odd)  
+  {
+     print("ERROR: d4a@attribute comparison\n");
+     nbr_err++;	
+  }
+  
+  // Attributes comparison
+  if( ++d4@time_odd != d3@time_even)  
+  {
+     print("ERROR: d4b@attribute comparison\n");
+     nbr_err++;	
+  }
+
+  d4@time_odd=d3@time_odd;
+  // use assign operands
+  d4@time_odd+=10;       
+  d4@time_odd*=20;       
+  d4@time_odd/=20;       
+  d4@time_odd-=10;
+
+  // Attributes comparison
+  if( d4@time_odd != d3@time_odd)  
+  {
+     print("ERROR: d4c@unary operands test\n");
+     nbr_err++;	
+  }
+
+
+
+
+  print("RESULTS block d: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+}
+
+// missing values and missing methods
+{
+  defdim("plon",20);
+
+  e1=array(0.0,0.5,$plon);
+
+  if(e1.total()!=95.0)
+  {
+     print("ERROR: e1:total()\n");
+     nbr_err++;	
+  }
+  
+  e1(0:2)=-999.0;
+  e1.set_miss(-999.0);
+
+  if(e1.total()!=93.5)
+  {
+     print("ERROR: e1:set_miss()\n");
+     nbr_err++;	
+  }
+
+  e1.change_miss(-666.0);
+  if(e1.total()!=93.5)
+  {
+     print("ERROR: e1:change_miss()\n");
+     nbr_err++;	
+  }
+
+  if(e1.number_miss() != 3)
+  {
+     print("ERROR: e1:number_miss()\n");
+     nbr_err++;	
+  }
+ 
+  e1.delete_miss();
+  if(e1.total()!=-1904.5)
+  {
+     print("ERROR: e1:delete_miss()\n");
+     nbr_err++;	
+  }
+  
+  // add two variables with different missing values 
+  // in var_var_op() as of Sun Sep 20 12:03:53 2015 / 99a7f11b0a3802b901c8f684997e55b5fcadba01 
+  // missing values in op2 are changed to op1 
+  e2=three_dmn_rec_var;  
+  e3=three_dmn_rec_var;
+
+  e2(0,0,0:3)=-99.0;
+  e2(9,1,0:3)=-99.0;  
+  e2.set_miss(-99.0);
+
+  e3(0,0,0:1)=-99.0;
+  e3(1,1,0:1)=-99.0;  
+  e3.set_miss(-99.0);
+  
+  e4=e2+e3;
+  
+  e3.change_miss(-88.0);   
+  
+  e5=e2+e3; 
+
+
+  if(e4 != e5 )
+  {
+     print("ERROR: e6 missing values not made cognizant");
+     nbr_err++;	
+  }
+  
+  print("RESULTS block e: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+}
+
+// Check gsl_stats and gsl_ran functions
+{
+  nbr_err=0;
+
+  print("RESULTS block f: Num errors="); print(nbr_err,"%d");
+  //nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+}
+
+// Cumulative distribution functions
+{
+
+  print("RESULTS block g: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+}
+
+// Least Squares Fitting 
+{
+
+  print("RESULTS block h: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+}
+
+// Results summany
+print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");

@@ -241,6 +241,15 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+    $dsc_sng="Run script to to test casting, hyperslabbing and intrinsic functions";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S '../data/bsc_tst.nco' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -v nbr_err_ttl -s '%d' %tmp_fl_00%";
+    $tst_cmd[2]="0";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+
 
 
 

@@ -1119,39 +1119,46 @@ ram_vars_add
 {
   var_sct *var1;
   
-  var1=ncap_sclr_var_mk(std::string("__BYTE"),nco_int(NC_BYTE));
+  var1=ncap_sclr_var_mk(std::string("NC_BYTE"),nco_int(NC_NAT));
   prs_arg->ncap_var_write(var1,true);
   
-  var1=ncap_sclr_var_mk(std::string("__CHAR"),nco_int(NC_CHAR));
+  var1=ncap_sclr_var_mk(std::string("NC_BYTE"),nco_int(NC_BYTE));
   prs_arg->ncap_var_write(var1,true);
   
-  var1=ncap_sclr_var_mk(std::string("__SHORT"),nco_int(NC_SHORT));
+  var1=ncap_sclr_var_mk(std::string("NC_CHAR"),nco_int(NC_CHAR));
   prs_arg->ncap_var_write(var1,true);
   
-  var1=ncap_sclr_var_mk(std::string("__INT"),nco_int(NC_INT));
+  var1=ncap_sclr_var_mk(std::string("NC_SHORT"),nco_int(NC_SHORT));
   prs_arg->ncap_var_write(var1,true);
   
-  var1=ncap_sclr_var_mk(std::string("__FLOAT"),nco_int(NC_FLOAT));
+  var1=ncap_sclr_var_mk(std::string("NC_INT"),nco_int(NC_INT));
   prs_arg->ncap_var_write(var1,true);
   
-  var1=ncap_sclr_var_mk(std::string("__DOUBLE"),nco_int(NC_DOUBLE));
+  var1=ncap_sclr_var_mk(std::string("NC_FLOAT"),nco_int(NC_FLOAT));
+  prs_arg->ncap_var_write(var1,true);
+  
+  var1=ncap_sclr_var_mk(std::string("NC_DOUBLE"),nco_int(NC_DOUBLE));
   prs_arg->ncap_var_write(var1,true);
   
 #ifdef ENABLE_NETCDF4
-  var1=ncap_sclr_var_mk(std::string("__UBYTE"),nco_int(NC_UBYTE));
+  var1=ncap_sclr_var_mk(std::string("NC_UBYTE"),nco_int(NC_UBYTE));
   prs_arg->ncap_var_write(var1,true); 
   
-  var1=ncap_sclr_var_mk(std::string("__USHORT"),nco_int(NC_USHORT));
+  var1=ncap_sclr_var_mk(std::string("NC_USHORT"),nco_int(NC_USHORT));
   prs_arg->ncap_var_write(var1,true);
   
-  var1=ncap_sclr_var_mk(std::string("__UINT"),nco_int(NC_UINT));
+  var1=ncap_sclr_var_mk(std::string("NC_UINT"),nco_int(NC_UINT));
   prs_arg->ncap_var_write(var1,true);
   
-  var1=ncap_sclr_var_mk(std::string("__INT64"),nco_int(NC_INT64));
+  var1=ncap_sclr_var_mk(std::string("NC_INT64"),nco_int(NC_INT64));
   prs_arg->ncap_var_write(var1,true);
   
-  var1=ncap_sclr_var_mk(std::string("__UINT64"),nco_int(NC_UINT64));
+  var1=ncap_sclr_var_mk(std::string("NC_UINT64"),nco_int(NC_UINT64));
   prs_arg->ncap_var_write(var1,true);
+
+  var1=ncap_sclr_var_mk(std::string("NC_STRING"),nco_int(NC_STRING));
+  prs_arg->ncap_var_write(var1,true);
+
 #endif // !ENABLE_NETCDF4
   
 #ifdef INFINITY
