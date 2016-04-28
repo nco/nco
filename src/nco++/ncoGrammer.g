@@ -1375,10 +1375,13 @@ var=NULL_CEWI;
                var_rhs=nco_var_free(var_rhs);               
 
                var_lhs=prs_arg->ncap_var_init(var_nm,false);
-               if(var_lhs){
+               if(var_lhs)
+               {
                  var=nco_var_dpl(var_lhs);
                  (void)prs_arg->ncap_var_write(var_lhs,bram);
-               } else {
+               } 
+               else 
+               {
                  // set var to udf
                  var_lhs=ncap_var_udf(var_nm.c_str());
                  var=nco_var_dpl(var_lhs);
@@ -1465,47 +1468,35 @@ var=NULL_CEWI;
             }
 
           | vid2:VAR_ID {   
-
-              var_sct *var_lhs=(var_sct*)NULL;              
-              var_sct *var_rhs=(var_sct*)NULL;              
+              
+              var_sct *var_rhs;
               std::string var_nm;
               
               var_nm=vid2->getText();
 
               if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
-      
-              // Set class wide variables           
-              bcst=false;
-              var_cst=NULL_CEWI; 
-              
-              // get shape from RHS
-              var_rhs=out(vid2->getNextSibling());
-           
-              // use init_chk() to avoid warning from ncap_var_init() if var not present  
-              if(prs_arg->ncap_var_init_chk(var_nm)) 
-                var_lhs=prs_arg->ncap_var_init(var_nm,false); 
+               
+               // Set class wide variables           
+               bcst=false;
+               var_cst=NULL_CEWI; 
+             
+               // get shape from RHS
+               var_rhs=out(vid2->getNextSibling());
+               (void)nco_free(var_rhs->nm);                
+               var_rhs->nm =strdup(var_nm.c_str());
 
-              if(var_lhs)
-              {
-                 var=nco_var_dpl(var_lhs);
-                 (void)prs_arg->ncap_var_write(var_lhs,bram);
-                 nco_var_free(var_rhs); 
-              }
-              else if(var_rhs)
-              {
-                 //Copy return variable
-                 (void)nco_free(var_rhs->nm);                
-                 var_rhs->nm =strdup(var_nm.c_str());
-                 //Copy return variable
-                var=nco_var_dpl(var_rhs);
-                // Write var to int_vtr
-                // if var already in int_vtr or var_vtr then write call does nothing
-                (void)prs_arg->ncap_var_write(var_rhs,bram);
-              }   
-              else 
-              {               
-                var=ncap_var_udf(var_nm.c_str());   
-              }  
+               //Copy return variable
+               if(bret)
+                  var=nco_var_dpl(var_rhs);
+               else
+                  var=(var_sct*)NULL;  
+                
+               // Write var to int_vtr
+               // if var already in int_vtr or var_vtr then write call does nothing
+               (void)prs_arg->ncap_var_write(var_rhs,bram);
+               //(void)ncap_var_write_omp(var_rhs,bram,prs_arg);
+
+
         } // end action
        
    |   (#(ATT_ID LMT_LIST))=> #(att:ATT_ID LMT_LIST){
@@ -1522,7 +1513,10 @@ var=NULL_CEWI;
             prs_arg->int_vtr.push_ow(Nvar);          
 
             // Copy return variable
-            var=nco_var_dpl(var1);    
+            if(bret)
+              var=nco_var_dpl(var1);    
+            else
+              var=(var_sct*)NULL; 
 
        } //end action
 
@@ -1543,7 +1537,10 @@ var=NULL_CEWI;
         prs_arg->int_vtr.push_ow(Nvar);          
 
         // Copy return variable
-        var=nco_var_dpl(var1);    
+        if(bret)
+          var=nco_var_dpl(var1);    
+        else
+          var=(var_sct*)NULL;    
 
     } //end action
 
@@ -1851,16 +1848,17 @@ end0:         if(bret)
 
     } // end action
            
-          | vid2:VAR_ID {   
+          | vid2:VAR_ID {
+
                // Set class wide variables
-               var_sct *var_lhs=(var_sct*)NULL;
-               var_sct *var_rhs=(var_sct*)NULL;
+               var_sct *var_rhs;
                NcapVar *Nvar;
                std::string var_nm;
  
                var_nm=vid2->getText();       
 
-               if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
+
+              if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
                
                bcst=false;
                var_cst=NULL_CEWI; 
@@ -1870,52 +1868,56 @@ end0:         if(bret)
                // Save name 
                std::string s_var_rhs(var_rhs->nm);
 
+               // Do attribute propagation only if
+               // var doesn't already exist or is defined but NOT
+               // populated
                Nvar=prs_arg->var_vtr.find(var_nm);
+               //rcd=nco_inq_varid_flg(prs_arg->out_id,var_rhs->nm ,&var_id);
 
                if(!Nvar || (Nvar && Nvar->flg_stt==1))
-                   (void)ncap_att_cpy(var_nm,s_var_rhs,prs_arg);
-
-               if(Nvar)
-                 var_lhs=nco_var_dpl(Nvar->var);
-               // use init_chk() to avoid warning from ncap_var_init() if var not present  
-               else if(prs_arg->ncap_var_init_chk(var_nm))
-                  var_lhs=prs_arg->ncap_var_init(var_nm,false); 
- 
-               if(var_lhs)
-               {
-                   // var is defined and populated &  RHS is scalar -then stretch var to match
-                   var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);   
-                   if(var_rhs->sz ==1 && var_lhs->sz >1)
-                       (void)ncap_att_stretch(var_rhs,var_lhs->sz);
-
-                   if( var_rhs->sz != var_lhs->sz) 
-                       err_prn(fnc_nm,"regular assign - var size mismatch between \""+var_nm+"\" and RHS of expression");                        
-
-                   if(var_rhs->has_mss_val)
-                        (void)nco_mss_val_cp(var_rhs,var_lhs);   
-
-
-                   var_lhs->val.vp=var_rhs->val.vp;
+                 (void)ncap_att_cpy(var_nm,s_var_rhs,prs_arg);
                
-                   var_rhs->val.vp=(void*)NULL;                
-                   nco_var_free(var_rhs);  
-                   // Write var to disk
-                   (void)prs_arg->ncap_var_write(var_lhs,bram);
-               }
-               else
-               {
-                   nco_free(var_rhs->nm);
-                   var_rhs->nm=strdup(var_nm.c_str());  
-                   (void)prs_arg->ncap_var_write(var_rhs,bram);  
-               }
+                // var is defined and populated &  RHS is scalar -then stretch var to match
+               if(Nvar && Nvar->flg_stt==2)
+               {  
+                  long n_sz=Nvar->var->sz 
+
+                  if(var_rhs->sz ==1 && Nvar->var->sz >1)
+                  {
+                    var_rhs=nco_var_cnf_typ(Nvar->var->type,var_rhs);  
+                    (void)ncap_att_stretch(var_rhs,n_sz);
+                    
+                    // this is a special case -- if the RHS scalar has
+                    // no missing value then retain LHS missing value
+                    // else LHS missing value gets over written by RHS
+                    if(!var_rhs->has_mss_val)
+                      (void)nco_mss_val_cp(Nvar->var,var_rhs);   
+                  }
+                  
+                  else if( var_rhs->sz >1 && n_sz >1 && var_rhs->sz != n_sz && n_sz % var_rhs->sz ==0)  
+                      ncap_var_cnf_dmn(&Nvar->var,&var_rhs); 
+                   
+                
+                  if(var_rhs->sz != Nvar->var->sz)
+                   err_prn(fnc_nm, "size miss-match in simple assign between \""+ var_nm +"\""+ " size="+nbr2sng(Nvar->var->sz) + "var_rhs expr size="+nbr2sng(var_rhs->sz) );
+
+               } 
+
+               // finally add new name before write  
+               (void)nco_free(var_rhs->nm);                
+               var_rhs->nm =strdup(var_nm.c_str());
+
+               // Write var to disk
+               (void)prs_arg->ncap_var_write(var_rhs,bram);
+               //(void)ncap_var_write_omp(var_rhs,bram,prs_arg);
 
                 // See If we have to return something
                if(bret)
-                 var=prs_arg->ncap_var_init(var_nm,true);              
+                 var=prs_arg->ncap_var_init(var_nm,true);   
                else 
                  var=NULL_CEWI;
 
-                         
+   
     } // end action
  
    |   (#(ATT_ID LMT_LIST)) => #(att:ATT_ID lmta:LMT_LIST){
