@@ -8917,7 +8917,7 @@ the task when reads/writes to disk are avoided.
 Most @acronym{NCO} operations are simple enough that they require a
 single read-from/write-to disk for every block of input/output. 
 Diskless access does not change this, but it does add an extra
-read-from/write-to RAM. 
+read-from/write-to @acronym{RAM}. 
 However this extra @acronym{RAM} write/read does avoid contention for limited
 system resources like disk-head access.
 Operators which may benefit from @acronym{RAM} disks include @command{ncwa}, which
@@ -8948,14 +8948,14 @@ of four) smaller than your available system @acronym{RAM}.
 See @ref{Memory Requirements} for further details. 
 
 @cindex @acronym{RAM} variables
-The @samp{--create_ram} switch causes output files to be created in RAM,
+The @samp{--create_ram} switch causes output files to be created in @acronym{RAM},
 rather than on disk. 
 These files are copied to disk only when closed, i.e., when the
 operator completes.
 Creating files in @acronym{RAM} may save time, especially with @command{ncap2}
 computations that are iterative, e.g., loops, and for multi-file
 operators that write output every record (timestep) or file.
-RAM files provide many of the same benefits as @acronym{RAM} variables in such
+@acronym{RAM} files provide many of the same benefits as @acronym{RAM} variables in such
 cases (@pxref{RAM variables}). 
 
 Two switches, @samp{--ram_all} and @samp{--diskless_all}, are convenient
@@ -16047,28 +16047,36 @@ strategy for your computer hardware resources.
 Select from the three available choices with the 
 @option{-p @var{par_typ}} switch.
 The options are serial mode (@samp{-p nil} or @samp{-p serial}), 
-background mode parallelism (@samp{-p bck}), and @acronym{MPI} parallelism ('-p mpi'). The default is background mode
-parallelism, which is appropriate for lower resolution (e.g., ne30L30)
-simulations on most nodes at high-performance computer centers. Use (or
-at least start with) serial mode on personal
-laptops/workstations. Serial mode requires twelve times less RAM than
-the parallel modes, and is much less likely to deadlock or cause OOM
-(out-of-memory) conditions on your personal computer. If the available
-RAM (+swap) is < 12*4*sizeof(monthly input file), then try serial mode
-first (12 is the optimal number of parallel processes for monthly
-climos, the computational overhead is a factor of four). @acronym{CAM-SE} ne30L30
-output is about ~1 GB per month so each month requires about 4 GB of
-RAM. @acronym{CAM-SE} ne30L72 output (with LINOZ) is about ~10 GB/month so each
-month requires ~40 GB RAM. @acronym{CAM-SE} ne120 output is about ~12 GB/month so
-each month requires ~48 GB RAM. The computer does not actually use all
-this memory at one time, and many kernels compress RAM usage to below
-what top reports, so the actual physical usage is hard to pin-down, but
-may be a factor of 2.5-3.0 (rather than a factor of four) times the size
-of the input file. For instance, my 16 GB MacBookPro will successfully
-run an ne30L30 climatology (that requests 48 GB RAM) in background mode,
-but the laptop will be slow and unresponsive for other uses until it
-finishes (in 6-8 minutes) the climos. Experiment a bit and choose the
-parallelization option that works best for you.  
+background mode parallelism (@samp{-p bck}), and @acronym{MPI}
+parallelism @samp{-p mpi}. 
+The default is background-mode parallelism.
+This is appropriate for lower resolution (e.g., ne30L30) simulations on
+most nodes at high-performance computer centers. 
+Use (or at least start with) serial mode on personal
+laptops/workstations.   
+Serial mode requires twelve times less @acronym{RAM} than the parallel
+modes, and is much less likely to deadlock or cause @acronym{OOM}
+(out-of-memory) conditions on your personal computer. 
+If the available @acronym{RAM} (plus swap) is 
+@math{< 12*4*}@code{sizeof(}monthly input file@code{)}, then try serial
+mode first (12 is the optimal number of parallel processes for monthly
+climos, the computational overhead is a factor of four). 
+@acronym{CAM-SE} ne30L30 output is about @w{1 GB/month} so each month
+requires about @w{4 GB} of @acronym{RAM}. 
+@acronym{CAM-SE} ne30L72 output (with @acronym{LINOZ}) is about 
+@w{10 GB/month} so each month requires about @w{40 GB} @acronym{RAM}. 
+@acronym{CAM-SE} ne120 output is about @w{12 GB/month} so each month
+requires about @w{48 GB} @acronym{RAM}. 
+The computer does not actually use all this memory at one time, and many
+kernels compress @acronym{RAM} usage to below what top reports, so the
+actual physical usage is hard to pin-down, but may be a factor of
+2.5--3.0 (rather than a factor of four) times the size of the input
+file. 
+For instance, my @w{16 GB} 2014 MacBookPro successfully runs an ne30L30 
+climatology (that requests @w{48 GB} @acronym{RAM}) in background mode. 
+However the laptop is slow and unresponsive for other uses until it
+finishes (in 6--8 minutes) the climos. 
+Experiment and choose the parallelization option that performs best.
 
 Serial mode, as its name implies, uses one core at a time for climos,
 and proceeds sequentially from months to seasons to annual
@@ -16090,9 +16098,9 @@ per node. @acronym{MPI} mode or Background mode on a big memory queue must be us
 to process ne30L72 and ne120L30 climos on some, but not all, DOE
 computers. For example, attempting an ne120L30 climo on in background
 mode on @file{rhea} (i.e., on one 128 GB compute node) will fail due to
-OOM. (OOM errors do not produce useful return codes so if your climo
+@acronym{OOM}. (@acronym{OOM} errors do not produce useful return codes so if your climo
 processes die without printing useful information, the cause may be
-OOM). However the same climo will succeed if executed on a single
+@acronym{OOM}). However the same climo will succeed if executed on a single
 big-memory (1 TB) node on @file{rhea} (use -lpartition=gpu, as shown below). Or
 MPI mode can be used for any climatology. The same ne120L30 climo will
 also finish blazingly fast in background mode on @file{cooley} (i.e., on one
@@ -16103,7 +16111,7 @@ For a Single, Dedicated Node on LCFs:
 The basic approach above (running the script from a standard terminal
 window) works well for small cases can be unpleasantly slow on login
 nodes of LCFs and for longer or higher resolution (e.g., ne120)
-climatologies. As a baseline, generating a climatology of 5 years of
+climatologies. As a baseline, generating a climatology of @w{5 years} of
 ne30 (~1x1 degree) @acronym{CAM-SE} output with @command{ncclimo} takes 1-2
 minutes on @file{rhea} (at a time with little contention), and 6-8 minutes on a
 2014 MacBook Pro. To make things a bit faster at LCFs, you can ask for
@@ -16147,9 +16155,9 @@ Computational Resources
 
 For a 12 node, @acronym{MPI} Job:
 The above parallel approaches will fail when a single node lacks enough
-RAM (plus swap) to store all twelve monthly input files, plus extra RAM
+@acronym{RAM} (plus swap) to store all twelve monthly input files, plus extra @acronym{RAM}
 for computations. One should employ @acronym{MPI} multinode parallelism (-p mpi)
-on nodes with less RAM than 12*3*sizeof(input).  The longest an ne120
+on nodes with less @acronym{RAM} than 12*3*sizeof(input).  The longest an ne120
 climo will take is less than half an hour (~25 minutes on @file{edison} or
 @file{rhea}), so the simplest method to run @acronym{MPI} jobs is to request
 12-interactive nodes using the above commands (though remember to add -p
