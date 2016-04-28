@@ -1,4 +1,8 @@
 2016-04-28  Henry Butowsky  <henryb@hush.com>
+        * added bsc_tst.nco to ncap2 perl test suite.
+	  It test casting, hyperslabbing and intrinsic functions
+	
+2016-04-28  Henry Butowsky  <henryb@hush.com>
 	* changed ram variables that represent the netcdf types from __FLOAT, __DOUBLE .. to
           NC_NAT,NC_BYTE,NC_BYTE,NC_CHAR, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE, NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64,NC_STRING
 	  These vars can be used with the type() method. e.g 
