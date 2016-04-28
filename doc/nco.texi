@@ -6253,6 +6253,11 @@ ncks --rgr grd_ttl='Equi-Angular grid 128x256' --rgr grid=${DATA}/grids/128x256_
 # T42 Gaussian grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='T42 Gaussian grid' --rgr grid=${DATA}/grids/t42_SCRIP.20150901.nc \
      --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~zender/nco/data/in.nc ~/foo.nc
+
+# NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree) Equi-Angular grid
+# Date-line west edge of first longitude, east edge of last longitude
+ncks --rgr grd_ttl='Equi-Angular grid 3600x7200 (NASA CMG)' --rgr grid=${DATA}/grids/3600x7200_SCRIP.20160301.nc \
+     --rgr latlon=3600,7200 --rgr lat_typ=uni --rgr lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
 @end verbatim
 @end example
 
