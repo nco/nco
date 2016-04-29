@@ -700,9 +700,11 @@ Optimize diskless files?;</li>
 <li><b>NCO 4.6.0</b>: 
 <tt>ncap2</tt> LHC metadata propagation;
 <tt>ncatted</tt> nappend mode;
+<tt>ncclimo</tt> debut;
 <tt>ncks</tt> reads ENVI bsq/bip/bil images;
 <tt>ncks</tt> Terraref features;
 <tt>ncks -A</tt> append consistency;
+<tt>ncra --cb</tt> climatology bounds</li>
 <tt>ncremap</tt> uses $TMPDIR;</li>
 <li><b>NCO 4.5.5</b>: (<i>Current Stable Release</i>)
 All operators support CDF5 format;

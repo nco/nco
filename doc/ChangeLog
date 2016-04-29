@@ -1,13 +1,17 @@
 2016-04-28  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.0-beta04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.0-beta04 final changes';git push
+	git tag -a 4.6.0-beta04 -m 'Version 4.6.0-beta04 new features: TMPDIR, var-var.double(), c2b, grid_mapping';git push --tags
+
 	* Finish first pass at documenting ncclimo
 
 2016-04-28  Henry Butowsky  <henryb@hush.com>
 
-	* IMPORTANT: reverted mods in 4.5.4. Now, once again, variables in input can be redefined in output with a cast.
+	* IMPORTANT: revert mods in 4.5.4. Once again variables in input can be redefined in output with a cast:
 	  time=time.int() is once again exactly equivalent to time[$time]=time.int()
 
-	* Added to a regular assign statement conformance of the RHS, e.g, n2[time,lat,lon]=10.0;n2=time; // time is stretched to conform to n2
+	* Add to regular assign statement conformance of RHS, e.g, n2[time,lat,lon]=10.0;n2=time; // stretches time to conform to n2
 
 2016-04-28  Henry Butowsky  <henryb@hush.com>
 
