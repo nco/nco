@@ -110,6 +110,7 @@ sub tst_rgr {
   if($exit_value == 433){print "netCDF version 4.3.3 detected\n";}
   if($exit_value == 440){print "netCDF version 4.4.0 detected\n";}
   if($exit_value == 441){print "netCDF version 4.4.1 detected\n";}
+  if($exit_value == 442){print "netCDF version 4.4.2 detected\n";}
 
   if($exit_value >= 400){$RUN_NETCDF4_TESTS=1;}
   if($exit_value >= 431){$RUN_NETCDF4_TESTS_VERSION_GE_431=1;}
@@ -249,10 +250,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-
-
-
-
     $USER=$ENV{'USER'};
     if($USER eq 'zender'){
 	# Regridding regression tests
@@ -263,12 +260,12 @@ print "\n";
 	# ncwa -O -y ttl -v area ~/foo.nc ~/foo3.nc
 	# ncks -H -u -C -v area ~/foo3.nc
 	
-	$dsc_sng="Regridding FSNT 1D->2D to test conservation (uses SSH/scp to dust.ess.uci.edu)";
+	$dsc_sng="Regrid FSNT 1D->2D to test conservation (uses SSH/scp to dust.ess.uci.edu)";
 	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc .";
 	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.20150901.nc ne30_tst.nc %tmp_fl_00%";
 #	my $pwd=`pwd`; chomp $pwd; print $pwd;
-#	$dsc_sng="Regridding FSNT to regridding conservation (uses wget to dust.ess.uci.edu)";
+#	$dsc_sng="Regrid FSNT to regridding conservation (uses wget to dust.ess.uci.edu)";
 #	$tst_cmd[0]="wget -c -P $drc_dat http://dust.ess.uci.edu/maps/map_ne30np4_to_fv129x256_aave.20150901.nc";
 #	$tst_cmd[1]="wget -c -P $drc_dat http://dust.ess.uci.edu/ne30/rgr/ne30_tst.nc";
 #	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg --map=".$drc_dat."/map_ne30np4_to_fv129x256_aave.20150901.nc ".$drc_dat."/ne30_tst.nc %tmp_fl_00%";
@@ -280,14 +277,14 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Regridding AODVIS 1D->2D to test missing value treatment";
+	$dsc_sng="Regrid AODVIS 1D->2D to test missing value treatment";
 	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v AODVIS %tmp_fl_01%";
 	$tst_cmd[1]="AODVIS = 0.151705";
 	$tst_cmd[2]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Regridding area 1D->2D to test grid area integral/normalization";
+	$dsc_sng="Regrid area 1D->2D to test grid area integral/normalization";
 	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --map=${drc_dat}/map_ne30np4_to_fv129x256_aave.20150901.nc $drc_dat/ne30_tst.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncwa -O $fl_fmt $nco_D_flg -y ttl -v area %tmp_fl_00% %tmp_fl_02%";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v area %tmp_fl_02%";
@@ -296,7 +293,7 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Regridding FSNT 1D->2D to test bilinear remapping (uses SSH/scp to dust.ess.uci.edu)";
+	$dsc_sng="Regrid FSNT 1D->2D to test bilinear remapping (uses SSH/scp to dust.ess.uci.edu)";
 	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_ne30np4_to_fv257x512_bilin.20150901.nc .";
 	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv257x512_bilin.20150901.nc ne30_tst.nc %tmp_fl_00%";
@@ -307,7 +304,7 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Regridding FSNT 2D->1D to test conservation (uses SSH/scp to dust.ess.uci.edu)";
+	$dsc_sng="Regrid FSNT 2D->1D to test conservation (uses SSH/scp to dust.ess.uci.edu)";
 	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_fv129x256_to_ne30np4_aave.20150901.nc .";
 	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg --map=map_fv129x256_to_ne30np4_aave.20150901.nc ne30_2D.nc %tmp_fl_00%";
 	$tst_cmd[2]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
@@ -317,7 +314,7 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Regridding FSNT 2D->2D to test conservation (uses SSH/scp to dust.ess.uci.edu)";
+	$dsc_sng="Regrid FSNT 2D->2D to test conservation (uses SSH/scp to dust.ess.uci.edu)";
 	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_fv129x256_to_fv257x512_aave.20150901.nc .";
 	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_2D.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_fv129x256_to_fv257x512_aave.20150901.nc ne30_2D.nc %tmp_fl_00%";
@@ -328,7 +325,7 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="Regridding FSNT 1D->1D to test identity mapping and conservation (uses SSH/scp to dust.ess.uci.edu)";
+	$dsc_sng="Regrid FSNT 1D->1D to test identity mapping and conservation (uses SSH/scp to dust.ess.uci.edu)";
 	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_ne30np4_to_ne30np4_aave.20150603.nc .";
 	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_ne30np4_aave.20150603.nc ne30_tst.nc %tmp_fl_00%";
@@ -5525,7 +5522,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -H -s %d -v one ~/foo.nc
 # Check for corruption after simultaneously renaming multiple dimensions in netCDF4 file
-    $dsc_sng="netCDF4: Simultaneously rename multiple dimensions (requires netCDF 4.4.1)";
+    $dsc_sng="netCDF4: Simultaneously rename multiple dimensions (requires netCDF 4.4.2)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d lev,z -d lat,y -d lon,x $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -s %d -v one %tmp_fl_00%";
     $tst_cmd[2]="1";

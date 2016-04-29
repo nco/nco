@@ -167,7 +167,7 @@ x
 % Use \gdef instead of \def to make definition persistent across TeX blocks
 % These should be consistent with any TeXInfo macros
 % 1. Primary commands
-\gdef\cod{CO} % [frc] Math pi
+\gdef\cod{{\rm CO}_{2}} % [frc] Math pi
 \gdef\dmn{D} % [dmn] Variable dimension
 \gdef\rdr{R} % [dmn] Re-order dimension
 \gdef\shr{S} % [dmn] Share dimension
@@ -11563,8 +11563,6 @@ prs_dlt[time,lat,lon,lev]=prs_ntf(:,:,:,1:$ilev.size-1)-prs_ntf(:,:,:,0:$ilev.si
 // Divide by gravity to obtain total mass path in layer aka mpl [kg m-2] 
 mpl=prs_dlt/grv_sfc;
 // Multiply by mass mixing ratio to obtain mass path of constituent
-// Everything up to here works fine. The following line (commented-out) breaks the script.
-// However, it breaks it silently, no error is printed. Please try to fix this.
 mpl_CO2=mpl*mmr_CO2;
 EOF
 ncap2 -O -v -S ~/pdel.nco ~/nco/data/in.nc ~/foo.nc
@@ -15935,8 +15933,8 @@ Use the optional @option{-f @var{fml_nm}} switch to replace @code{hist}
 with a more descriptive simulation name for the output. 
 Invocation looks like
 @example
-ncclimo -c hist -m ocn -s 1980 -e 1983 -i drc_in -o drc_out # MPAS-O
-ncclimo -c hist -m ice -s 1980 -e 1983 -i drc_in -o drc_out # MPAS-I
+ncclimo -c hist -m ocn -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
+ncclimo -c hist -m ice -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-I
 @end example
 @acronym{MPAS} climos are unaware of missing values until/unless
 input files are ``fixed''. 
@@ -16131,20 +16129,22 @@ minutes on a 2014 MacBook Pro.
 To make things a bit faster at @acronym{LCF}s, request a dedicated node
 (this only makes sense on supercomputers or clusters with
 job-schedulers).  
-On @file{rhea}), which uses the @acronym{PBS} scheduler, do this with
+On @file{rhea} or @file{titan}, which use the @acronym{PBS} scheduler,
+do this with 
 @example
 # Standard node (128 GB), PBS scheduler
-qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:10:00 -N climo_nco
+qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:10:00 -N ncclimo
 # Bigmem node (1 TB), PBS scheduler
-qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:10:00 -lpartition=gpu -N climo_nco
+qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:10:00 -lpartition=gpu -N ncclimo
 @end example
-The equivalent requests on @file{cooley} (Cobalt scheduler) and
-@file{cori} (@acronym{SLURM} scheduler) are: 
+The equivalent requests on @file{cooley} or @file{mira} (Cobalt
+scheduler) and @file{cori} or @file{titan} (@acronym{SLURM} scheduler)
+are:  
 @example
 # Cooley node (384 GB) with Cobalt
-qsub -I -A HiRes_EarthSys --nodecount=1 --time=00:10:00 --jobname=climo_nco 
+qsub -I -A HiRes_EarthSys --nodecount=1 --time=00:10:00 --jobname=ncclimo 
 # Cori node (128 GB) with SLURM
-salloc  -A acme --nodes=1 --partition=debug --time=00:10:00 --job-name=climo_nco
+salloc  -A acme --nodes=1 --partition=debug --time=00:10:00 --job-name=ncclimo
 @end example
 @noindent
 Flags used and their meanings:
@@ -16216,7 +16216,7 @@ echo "ncclimo -p mpi -c $caseid -s 1 -e 20 -i $drc_in -o $drc_out" > ncclimo.pbs
 @end example
 The only new argument here is @samp{-p mpi} that tells @command{ncclimo}
 to use @acronym{MPI} parallelism. 
-Then this command file with a @w{12 node} non-interactive job: 
+Then execute this command file with a @w{12 node} non-interactive job: 
 @example
 qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -j oe -m e -N ncclimo \
      -o ncclimo.out ncclimo.pbs
@@ -16227,7 +16227,7 @@ This script adds new flags:
 @samp{-o ncclimo.out} (write all output to @file{ncclimo.out}).
 The above commands are meant for @acronym{PBS} schedulers like on
 @file{rhea}.  
-Equivalent commands for @file{cooley} (Cobalt) and
+Equivalent commands for @file{cooley}/@file{mira} (Cobalt) and
 @file{cori}/@file{edison} (@acronym{SLURM}) are
 @example
 @verbatim
@@ -16241,7 +16241,8 @@ qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname ncclimo \
 
 # Cori/Edison (SLURM scheduler)
 echo "ncclimo -p mpi -c $caseid -s 1 -e 20 -i $drc_in -o $drc_out -r $map_fl" \
-      > ncclimo.pbs;chmod a+x ncclimo.slurm
+      > ncclimo.pbs
+chmod a+x ncclimo.slurm
 sbatch -A acme --nodes=12 --time=03:00:00 --partition=regular --job-name=ncclimo \
        --mail-type=END --error=ncclimo.err --output=ncclimo.out ncclimo.slurm
 @end verbatim
@@ -16338,7 +16339,21 @@ No promotion/demotion cycles occur for history fields that
 @acronym{CAM-SE} outputs in @acronym{DP} rather than @acronym{SP}, nor
 for fields without a time dimension. 
 Typically these fields are grid coordinates (e.g., longitude, latitude) 
-or model constants (e.g., CO2 mixing ratio). 
+or model constants (e.g., 
+@set flg
+@tex
+$\cod$
+@clear flg
+@end tex
+@ifinfo
+CO2
+@clear flg
+@end ifinfo
+@ifset flg
+CO2
+@clear flg
+@end ifset
+mixing ratio). 
 @acronym{NCO} never performs any arithmetic on grid coordinates or
 non-time-varying input, regardless of whether they are @acronym{SP} or
 @acronym{DP}. 
@@ -16393,6 +16408,40 @@ conservative and of the optional (``renormalized'') algorithm.
 <a name="xmp_ncclimo"></a> <!-- http://nco.sf.net/nco.html#xmp_ncclimo -->
 @end html
 EXAMPLES
+
+@html
+<a name="merra2"></a> <!-- http://nco.sf.net/nco.html#merra2 -->
+@end html
+How to create a climo from a collection of monthly
+non-@acronym{CESM}'ish files?
+This is a two-step procedure:
+First be sure the names are arranged with a @acronym{YYYYMM}-format date
+preceding the suffix (usually @samp{.nc}).
+Then give @emph{any} monthly input filename to @command{ncclimo}.
+Consider the @acronym{MERRA2} collection, for example.
+As retrieved from @acronym{NASA}, @acronym{MERRA2} files have names like
+@file{svc_MERRA2_300.tavgM_2d_aer_Nx.200903.nc4}. 
+While the sub-string @samp{200903} is easy to recognize as a month in
+@acronym{YYYYMM} format, other parts (specifically the @samp{300} code)
+of the filename also change with date. 
+We can use Bash regular expressions to extract dates and create symbolic
+links to simpler filenames with regularly patterned @acronym{YYYYMM}
+strings like @file{merra2_200903.nc4}:
+@example
+@verbatim
+for fl in `ls *.nc4` ; do
+# Convert svc_MERRA2_300.tavgM_2d_aer_Nx.YYYYMM.nc4 to merra2_YYYYMM.nc4
+    sfx_out=`expr match "${fl}" '.*_Nx.\(.*.nc4\)'`
+    fl_out="merra2_${sfx_out}"
+    ln -s ${fl} ${fl_out}
+done
+@end verbatim
+@end example
+Then call @command{ncclimo} with @file{merra2_200903.nc4} as
+@var{caseid}: 
+@example
+ncclimo -c merra2_200903.nc4 -s 1980 -e 2016 -i $drc_in -o $drc_out
+@end example
 
 @page
 @html

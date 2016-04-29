@@ -1,26 +1,24 @@
-2016-04-28  Henry Butowsky  <henryb@hush.com>
-	* IMPORTANT - reverted modsin 4.5.4 to regular assign statement  such that a variable in input could not redefined in output without a cast
-	  so intuitive statements like 
-	  time=time.int() // lon=10  work ore exactly equivalent to time[$time]=time.int() // lon[]=10;
+2016-04-28  Charlie Zender  <zender@uci.edu>
 
-	* Also added to a regular assign  statement conformance  of the RHS 
-	  e.g 
-	  n2[time,lat,lon]=10.0;
-	  n2=time;  // time is stretched  to conform to n2 
-	     
+	* Finish first pass at documenting ncclimo
 
 2016-04-28  Henry Butowsky  <henryb@hush.com>
-        * added bsc_tst.nco to ncap2 perl test suite.
-	  It test casting, hyperslabbing and intrinsic functions
-	
+
+	* IMPORTANT: reverted mods in 4.5.4. Now, once again, variables in input can be redefined in output with a cast.
+	  time=time.int() is once again exactly equivalent to time[$time]=time.int()
+
+	* Added to a regular assign statement conformance of the RHS, e.g, n2[time,lat,lon]=10.0;n2=time; // time is stretched to conform to n2
+
 2016-04-28  Henry Butowsky  <henryb@hush.com>
-	* changed ram variables that represent the netcdf types from __FLOAT, __DOUBLE .. to
-          NC_NAT,NC_BYTE,NC_BYTE,NC_CHAR, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE, NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64,NC_STRING
-	  These vars can be used with the type() method. e.g 
-	
-          // convert from float to double 
-          if( var.type()==NC_FLOAT) var=var.double()
-	
+
+        * Add bsc_tst.nco to ncap2 perl test suite. Currently tests casting, hyperslabbing, and intrinsic functions.
+
+2016-04-28  Henry Butowsky  <henryb@hush.com>
+
+	* Changed RAM variables that represent netCDF types from __FLOAT, __DOUBLE ... to
+          NC_NAT, NC_BYTE, NC_UBYTE, ... NC_FLOAT, NC_DOUBLE
+	  Use these with the type() method,  e.g, if(var.type() == NC_FLOAT) var=var.double()
+
 2016-04-27  Charlie Zender  <zender@uci.edu>
 
 	* ncremap fix drc_tmp logic to work without $TMPDIR

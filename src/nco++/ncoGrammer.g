@@ -1880,7 +1880,7 @@ end0:         if(bret)
                 // var is defined and populated &  RHS is scalar -then stretch var to match
                if(Nvar && Nvar->flg_stt==2)
                {  
-                  long n_sz=Nvar->var->sz 
+                  long n_sz=Nvar->var->sz;
 
                   if(var_rhs->sz ==1 && Nvar->var->sz >1)
                   {
