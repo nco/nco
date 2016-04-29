@@ -843,7 +843,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always include terminal \n so mnemonic does not dangle */
-  return "Titanic\n";
+  return "1084 Tia Juana\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -1025,7 +1025,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--bfr")) (void)fprintf(stdout,"    --bfr_sz, --buffer_size sz\tBuffer size to open files with\n");
   if(strstr(opt_sng,"[-C]")) (void)fprintf(stdout,"-C, --nocoords\t\tAssociated coordinate variables should not be processed\n");
   if(strstr(opt_sng,"[-c]")) (void)fprintf(stdout,"-c, --crd, --coords\tCoordinate variables will all be processed\n");
-  if(strstr(opt_sng,"--cb")) (void)fprintf(stdout,"    --cb, --clm_bnd\tCF Climatology bounds will be processed\n");
+  if(strstr(opt_sng,"--cb")) (void)fprintf(stdout,"    --cb, --clm_bnd\tCF Climatology bounds will be processed (see also --c2b)\n");
   if(strstr(opt_sng,"--cdl")) (void)fprintf(stdout,"    --cdl\t\tPrint CDL (netCDF lingua franca used by ncdump/ncgen)\n");
   if(strstr(opt_sng,"--cnk_dmn")) (void)fprintf(stdout,"    --cnk_dmn, --chunk_dimension nm,sz\tChunksize of dimension nm is sz\n");
   if(strstr(opt_sng,"--cnk_map")) (void)fprintf(stdout,"    --cnk_map, --chunk_map map\t\tChunking map [dmn,lfp,prd,rd1,rew,scl,xpl,xst]\n");

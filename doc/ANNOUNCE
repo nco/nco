@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.6.0-beta03 are ready. 
+The netCDF Operators NCO version 4.6.0-beta04 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -32,11 +32,13 @@ A. ncclimo produces climatological monthly means, seasonal means,
    Invoke ncclimo with, e.g.,
    ncclimo -s start_yr -e end_yr -c run_id -i drc_in -o drc_out
    ncclimo -s 5 -e 10 -c hist -m ocn -i drc_in -o drc_out
-   It has sophisticated parallelism and regridding options.
-   Models tested include ALM, CAM, CLM, CICE, CISM, CLM, MPAS-I,
+   ncclimo -s 1980 -e 2016 -c merra2_198001.nc -i drc_in -o drc_out
+   ncclimo has sophisticated parallelism and regridding options.
+   Datasets tested include ALM, CAM, CLM, CICE, CISM, CLM, MPAS-I,
    MPAS-O, and POP. ncclimo resulted from work with the DOE ACME
    project, and we are grateful for their support.
    http://nco.sf.net/nco.html#ncclimo
+   http://nco.sf.net/nco.html#merra2
 
 A. ncap2 now works with pointers to variables and attributes.
    This allows, e.g., loops over arbitrary sets of variables, and
@@ -124,7 +126,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.6.0-beta03 built/tested under
+   These problems occur with NCO 4.6.0-beta04 built/tested under
    MacOS with netCDF 4.3.3.1 on HDF5 1.8.16 and with
    Linux with netCDF 4.4.1-development (20160212) on HDF5 1.8.13.
 

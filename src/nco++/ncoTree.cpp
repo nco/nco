@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoTree.cpp"$ */
+/* $ANTLR 2.7.7 (20151030): "ncoGrammer.g" -> "ncoTree.cpp"$ */
 #include "ncoTree.hpp"
 #include <antlr/Token.hpp>
 #include <antlr/AST.hpp>
@@ -3914,7 +3914,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					// var is defined and populated &  RHS is scalar -then stretch var to match
 					if(Nvar && Nvar->flg_stt==2)
 					{  
-					long n_sz=Nvar->var->sz 
+					long n_sz=Nvar->var->sz;
 					
 					if(var_rhs->sz ==1 && Nvar->var->sz >1)
 					{
