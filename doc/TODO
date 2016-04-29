@@ -675,7 +675,10 @@ nco1126. ncra segfault with MSA christine smit regardless of presence of scale_f
       ncra -O -C -v one_dmn_rec_var -d time,0,0 -d time,2,2 ~/nco/data/in.nc ~/foo.nc # borken
       ncra -O -C -v one_dmn_rec_var -d time,0,0 -d time,1,1 ~/nco/data/in.nc ~/foo.nc # works
 nco1127. nco: replicate nco_var_dpl() method of deep-copying NC_STRING in nco_var_avg() so nco_var_free() can correctly free() var_sct for NC_STRING
-nco1128. 
+nco1128. nco: ncrename --lowercase --uppercase options? MERRA2 merra
+       ncrename -v all,lowercase in.nc out.nc
+       ncrename --lowercase --var .ONE,.TWO,... in.nc out.nc
+nco1129. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
