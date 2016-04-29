@@ -16224,7 +16224,7 @@ and, optimally, @w{12 nodes}) in a batch queue can be done in two
 commands. 
 First, write an executable file which calls the @command{ncclimo} script
 with appropriate arguments. 
-We do this below by echoing to a file @file{~/ncclimo.pbs}.
+We do this below by echoing to a file, @file{ncclimo.pbs}.
 @example
 @verbatim
 echo "ncclimo -p mpi -c $caseid -s 1 -e 20 -i $drc_in -o $drc_out" > ncclimo.pbs
@@ -17411,12 +17411,12 @@ Examine the netCDF output file to see the variables in the binary file.
 Use the @samp{-C} switch, if necessary, to avoid wanting unwanted
 coordinates to the binary file:
 @example
-% ncks -O -v one_dmn_rec_var -b ~/bnr.dat -p ~/nco/data in.nc ~/out.nc
-% ls -l ~/bnr.dat | cut -d ' ' -f 5 # 200 B contains time and one_dmn_rec_var
+% ncks -O -v one_dmn_rec_var -b bnr.dat -p ~/nco/data in.nc out.nc
+% ls -l bnr.dat | cut -d ' ' -f 5 # 200 B contains time and one_dmn_rec_var
 200
-% ls -l ~/bnr.dat
-% ncks -C -O -v one_dmn_rec_var -b ~/bnr.dat -p ~/nco/data in.nc ~/out.nc
-% ls -l ~/bnr.dat | cut -d ' ' -f # 40 B contains one_dmn_rec_var only
+% ls -l bnr.dat
+% ncks -C -O -v one_dmn_rec_var -b bnr.dat -p ~/nco/data in.nc out.nc
+% ls -l bnr.dat | cut -d ' ' -f # 40 B contains one_dmn_rec_var only
 40
 @end example
 
