@@ -1508,7 +1508,7 @@ Optional Features:
   --enable-esmf           Build-in ESMF support for integrated (instead of
                           off-line) regridding. WARNING: Development code =
                           Unsupported (and not necessary for regridding!
-                          Dragons lurk here.) [[default=yes]]
+                          Dragons lurk here.) [[default=no]]
   --enable-gsl            Build-in GSL support if possible [[default=yes]]
   --enable-regex          Allow extended regular expressions [[default=yes]]
   --enable-udunits        Build-in UDUnits support if possible [[default=no]]
@@ -19264,9 +19264,9 @@ fi
 
 # End nco_c++
 
-echo "########################################"
-echo "#     Testing for ESMF support          #"
-echo "########################################"
+echo "##################################################"
+echo "# Testing for ESMF support (only for developers) #"
+echo "##################################################"
 # Begin ESMF
 
 # Begin mandatory link test with libnetcdf.a
@@ -19282,7 +19282,7 @@ nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
 if test "${enable_esmf+set}" = set; then :
   enableval=$enable_esmf; enable_esmf=${enableval}
 else
-  enable_esmf=yes
+  enable_esmf=no
 fi
 
 if test "${enable_esmf}" != 'yes'; then

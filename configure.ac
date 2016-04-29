@@ -517,9 +517,9 @@ fi
 AC_ARG_ENABLE(nco_cplusplus,AS_HELP_STRING([--enable-nco_cplusplus],[Build NCO C++ interface library [[default=yes]]]),enable_nco_cxx=${enableval},enable_nco_cxx=yes)
 # End nco_c++
 
-echo "########################################"
-echo "#     Testing for ESMF support          #"
-echo "########################################"
+echo "##################################################"
+echo "# Testing for ESMF support (only for developers) #"
+echo "##################################################"
 # Begin ESMF
 
 # Begin mandatory link test with libnetcdf.a
@@ -531,7 +531,7 @@ AC_ARG_VAR(ESMF_LIB,Location of ESMF library (compile-time))
 # Store pre-ESMF LIBS value to restore from later
 nco_LIBS_no_ESMF="${LIBS}"
 nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
-AC_ARG_ENABLE(esmf,AS_HELP_STRING([--enable-esmf],[Build-in ESMF support for integrated (instead of off-line) regridding. WARNING: Development code = Unsupported (and not necessary for regridding! Dragons lurk here.) [[default=yes]]]),enable_esmf=${enableval},enable_esmf=yes)
+AC_ARG_ENABLE(esmf,AS_HELP_STRING([--enable-esmf],[Build-in ESMF support for integrated (instead of off-line) regridding. WARNING: Development code = Unsupported (and not necessary for regridding! Dragons lurk here.) [[default=no]]]),enable_esmf=${enableval},enable_esmf=no)
 if test "${enable_esmf}" != 'yes'; then
     enable_esmf='no'
 fi
