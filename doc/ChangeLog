@@ -1,6 +1,11 @@
+2016-04-29  Charlie Zender  <zender@uci.edu>
+
+	* Add ncremap and ncclimo regression tests when $USER=zender
+
 2016-04-29  Henry Butowsky  <henryb@hush.com>
-	* Added has_miss()  to the utl_cls() the _miss() familty
-	
+
+	* Add has_miss() to the _miss() familty in utl_cls()
+
 2016-04-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.0-beta04 release procedure:

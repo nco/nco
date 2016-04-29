@@ -150,7 +150,7 @@ sub bm_ntl($$){
     my $dbg_lvl; # [flg] Debugging level
     ($bch_flg,$dbg_lvl)=@_;
 # Enumerate operators to test
-    @opr_lst_all = qw( ncap2 ncdiff ncatted ncbo ncflint nces ncecat ncks ncpdq ncra ncrcat ncremap ncrename ncwa net);
+    @opr_lst_all = qw( ncap2 ncdiff ncatted ncbo ncclimo ncflint nces ncecat ncks ncpdq ncra ncrcat ncremap ncrename ncwa net);
     @opr_lst_mpi = qw( ncbo ncecat ncflint ncpdq ncra ncwa ncpdq ncra );
     $opr_sng_mpi = "ncbo ncdiff ncecat ncflint nces ncpdq ncra ncwa "; # ncpdq ncra MPI, but fail bench
     $opr_rgr_mpi = "ncbo ncdiff ncecat ncflint nces ncpdq ncra ncwa ncrcat"; # need all of them for regression
