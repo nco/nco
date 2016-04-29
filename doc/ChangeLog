@@ -2,7 +2,7 @@
 
 	* NCO 4.6.0-beta04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.0-beta04 final changes';git push
-	git tag -a 4.6.0-beta04 -m 'Version 4.6.0-beta04 new features: TMPDIR, var-var.double(), c2b, grid_mapping';git push --tags
+	git tag -a 4.6.0-beta04 -m 'Version 4.6.0-beta04 new features: TMPDIR, var=var.double(), c2b, grid_mapping';git push --tags
 
 	* Finish first pass at documenting ncclimo
 
