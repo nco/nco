@@ -8,7 +8,7 @@
 
 2016-04-28  Henry Butowsky  <henryb@hush.com>
 
-	* IMPORTANT: revert mods in 4.5.4. Once again variables in input can be redefined in output with a cast:
+	* IMPORTANT: revert mods in 4.5.4. Once again variables in input can be redefined in output without a cast:
 	  time=time.int() is once again exactly equivalent to time[$time]=time.int()
 
 	* Add to regular assign statement conformance of RHS, e.g, n2[time,lat,lon]=10.0;n2=time; // stretches time to conform to n2
