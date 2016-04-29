@@ -10335,12 +10335,18 @@ external type @code{NC_DOUBLE} (a C-type @code{double}).
 @example
 ncap2 -s 'tpt=short(tpt);prs=double(prs)' in.nc out.nc
 @end example
-Starting in version 4.5.4 (January, 2016) this only changes the 
-variable type in memory, not on-disk.
-Before then, this changed the type of the variable both in memory and
-on-disk. 
-To change the type of variable on-disk, unless it is explicitly cast
-(with Left-Hand-Casting).
+With ncap2 there also is the @code{convert()} method that takes an integer 
+argument. For example the above statements become:
+@example
+ncap2 -s 'tpt=tpt.convert(NC_SHORT);prs=prs.convert(NC_DOUBLE)' in.nc out.nc
+@end example
+Can also use @code{convert()} in combination with @code{type()} so to make variable 
+@code{ilev_new} the same type as @code{ilev} just do:
+@example
+ncap2 -s 'ilev_new=ilev_new.convert(ilev.type())' in.nc out.nc
+@end example
+
+
 @xref{ncap2 netCDF Arithmetic Processor}, for more details.
 
 @html
@@ -12366,7 +12372,7 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 
 @sp 1
 @noindent @strong{Type Conversion Methods @*}
-@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You may only use the new netCDF4 types if you have compiled/links @acronym{NCO} with the netCDF4 library and the Output file is HDF5.
+@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You may only use the new netCDF4 types if you have compiled/links @acronym{NCO} with the netCDF4 library and the Output file is HDF5. 
 
 @table @code
 @item @strong{netCDF3/4 Types}
@@ -12405,6 +12411,16 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 @cindex unit64()
  convert to @code{NC_UINT64}, an unsigned 8-byte integer
 @end table
+
+You can also use the @code{convert()} method to do type conversion. This takes an integer agument. For convience the Netcdf pre-processor token are defined in ncap2 as ram variables. For example you may wish to convert a non floating point type to the same type as another variable.
+
+@example
+ltype=lon.type();
+if( time.type()!=NC_DOUBLE && time.type()!= NC_FLOAT) 
+  time=time.convert(ltype);
+@end example
+
+
 
 @noindent @strong{Intrinsic Mathematical Methods @*}
 The list of mathematical methods is system dependant.
