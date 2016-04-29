@@ -1,3 +1,6 @@
+2016-04-29  Henry Butowsky  <henryb@hush.com>
+	* Added has_miss()  to the utl_cls() the _miss() familty
+	
 2016-04-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.0-beta04 release procedure:

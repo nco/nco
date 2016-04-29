@@ -376,7 +376,7 @@
        err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
      
      // deal with is_miss in a seperate function     
-     if(fdx==NUM_MISS)
+     if(fdx==NUM_MISS||fdx==HAS_MISS)
        return is_fnd(is_mtd, vtr_args,fmc_obj,walker);           
    
   
@@ -602,8 +602,12 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
        return ncap_sclr_var_mk(SCS("~utility_function"),styp,false);         
     }  
 
-    // from now on dealing with a final scan !!
-    if(var->has_mss_val){
+    if(!var->has_mss_val)      
+      icnt=0; 
+    else if( fdx==HAS_MISS)    
+      icnt=1; 
+    else if( fdx==NUM_MISS)   
+    {
       char *cp_out=(char*)var->val.vp; 
       long idx;
       size_t slb_sz;  
@@ -611,15 +615,13 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       icnt=0;       
 
       slb_sz=nco_typ_lng(var->type); 
-      for(idx=0 ;idx<var->sz;idx++){
+      for(idx=0 ;idx<var->sz;idx++)
+      {
         if( !memcmp(cp_out,var->mss_val.vp,slb_sz))
 	  icnt++;
         cp_out+=(ptrdiff_t)slb_sz;
       }   
-    }else{
-       icnt=0; 
-    }     
-
+    }
     nco_var_free(var); 
 
     if(styp==NC_UINT64) 
