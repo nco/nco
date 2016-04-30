@@ -5202,6 +5202,8 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
 
   /* Final step: search for all redefined record dimension variables and mark other variables */
 
+  if(nco_dbg_lvl_get() == nco_dbg_dev) trv_tbl_prn_dbg("nco_var_dmn_rdr_mtd_trv", trv_tbl);
+
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
@@ -5228,15 +5230,18 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
             dmn_trv_sct *dmn_trv;
 
             /* Store name of record dimension on output */
-            if(!strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,rec_dmn_nm_out))
+            if(!strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm, rec_dmn_nm_out)){
               trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
+            }
 
             /* Get unique dimension object from unique dimension ID, in input list */
             dmn_trv=nco_dmn_trv_sct(var_trv_mrk.var_dmn[idx_dmn].dmn_id,trv_tbl);
 
             /* Is record? */
             /* Store record dimension name on output */
-            if(dmn_trv->is_rec_dmn) trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
+            if(dmn_trv->is_rec_dmn){
+              trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
+            }
 
           } /* Loop variable dimensions */
         } /* Avoid same */
@@ -6540,8 +6545,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
 
   if(nco_dbg_lvl_get() == nco_dbg_vrb) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
-
-  if(nco_dbg_lvl_get() == nco_dbg_dev) trv_tbl_prn_dbg(fnc_nm, trv_tbl);
 
   return;
 } /* nco_bld_trv_tbl() */
