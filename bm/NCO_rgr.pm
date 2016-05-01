@@ -167,19 +167,6 @@ if($USER eq 'zender'){
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	if(1){
-	$dsc_sng="ncremap regrid FSNT 1D->2D to test conservation (depends on SSH/scp to dust.ess.uci.edu)";
-	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc .";
-	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
-	$tst_cmd[2]="ncremap -i ne30_tst.nc -m map_ne30np4_to_fv129x256_aave.20150901.nc -o %tmp_fl_00%";
-	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
-	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
-	$tst_cmd[5]="FSNT = 244.124 W/m2";
-	$tst_cmd[6]="SS_OK";
-	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0; # Reset array
-	} # endif False
-
 	$dsc_sng="ncks regrid AODVIS 1D->2D to test missing value treatment";
 	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v AODVIS %tmp_fl_01%";
 	$tst_cmd[1]="AODVIS = 0.151705";
@@ -269,6 +256,17 @@ if($USER eq 'zender'){
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -s %8.5f -d grid_size,256 -v grid_center_lat foo_grid.nc";
 	$tst_cmd[3]="-88.59375";
 	$tst_cmd[4]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
+
+	$dsc_sng="ncremap regrid FSNT 1D->2D to test conservation (depends on SSH/scp to dust.ess.uci.edu)";
+	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc .";
+	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
+	$tst_cmd[2]="ncremap -i ne30_tst.nc -m map_ne30np4_to_fv129x256_aave.20150901.nc -o %tmp_fl_00%";
+	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
+	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_01%";
+	$tst_cmd[5]="FSNT = 244.124 W/m2";
+	$tst_cmd[6]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 } # !zender
