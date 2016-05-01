@@ -1095,6 +1095,8 @@ extern "C" {
     char **xtn_var; /* [sng] Extensive variables */
     char *cmd_ln; /* [sng] Command-line */
     double wgt_vld_thr; /* [frc] Weight threshold for valid destination value */
+    int dfl_lvl; /* [enm] Deflate level */
+    int fl_out_fmt; /* [enm] Output file format */
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */
     int rgr_nbr; /* [nbr] Number of regridding arguments */

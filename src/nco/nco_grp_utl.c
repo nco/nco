@@ -4907,8 +4907,8 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
  const nco_bool *dmn_rvr_rdr)         /* I [flg] Reverse dimension */
 {
   /* Purpose: Determine and set new dimensionality in metadata of each re-ordered variable
-     Based in nco_var_dmn_rdr_mtd(). 
-     NB: first record dimension for object variable is used
+     Based on nco_var_dmn_rdr_mtd()
+     NB: first record dimension for target variable is used
      Test case: ncpdq -O -a lev,time -v two_dmn_rec_var in.nc out.nc
      Mark lev as record and un-mark time as record (by setting record name to lev) */
 
@@ -8277,7 +8277,7 @@ nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed var
 
       /* Define variable  */
       if(flg_def){
-        int var_out_id=nco_cpy_var_dfn_trv(nc_id, nc_out_id, cnk, grp_out_fll, dfl_lvl, gpe, NULL, var_trv, NULL, 0, trv_tbl);
+        int var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,NULL,0,trv_tbl);
         /* Copy attributes */
         (void)nco_wrt_atr(nc_id,grp_id_out,var_out_id,var_trv);
       } /* endif */
@@ -9731,7 +9731,6 @@ nco_rad                                /* [fnc] Retain all dimensions */
     } /* Dimension not found, make it */
   } /* Loop unique dimensions list */
 } /* nco_rad() */
-
 
 void                                               
 nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variables belonging to ensembles in both files (ncbo) */

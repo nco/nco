@@ -60,10 +60,10 @@ Try to disable Spammers' machines:
 [<a href="http://cfconventions.org/1.6.html">CF</a>] 
 [<a href="https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group">DIWG</a>] 
 [<a href="http://www.gnu.org/software/gsl">GSL</a>]
-[<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
+[<a href="http://www.unidata.ucar.edu/software/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://github.com/nco/swamp">SWAMP</a>] 
-[<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
+[<a href="http://www.unidata.ucar.edu/software/udunits">UDUnits</a>] 
 </td></tr></table>
 
 <p><hr width="100%"></p>

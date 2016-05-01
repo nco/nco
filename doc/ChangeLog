@@ -1,3 +1,7 @@
+2016-05-01  Charlie Zender  <zender@uci.edu>
+
+	* Respect fl_fm_out and dfl_lvl in nco_grd_mk(), nco_grd_nfr(), nco_rgr_map()
+
 2016-04-29  Charlie Zender  <zender@uci.edu>
 
 	* Add ncremap and ncclimo regression tests when $USER=zender
