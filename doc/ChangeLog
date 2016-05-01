@@ -1,5 +1,7 @@
 2016-05-01  Charlie Zender  <zender@uci.edu>
 
+	* Correct order of shuffle,deflate in nco_var_def_deflate()
+
 	* Respect fl_fm_out and dfl_lvl in nco_grd_mk(), nco_grd_nfr(), nco_rgr_map()
 
 2016-04-29  Charlie Zender  <zender@uci.edu>

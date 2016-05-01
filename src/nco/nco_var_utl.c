@@ -1095,7 +1095,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->undefined=False; /* [flg] Used by ncap parser */
   var->is_fix_var=True; /* Is this a fixed (non-processed) variable? */
   var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
-  var->shuffle=NC_NOSHUFFLE; /* [flg] Turn on shuffle filter */
+  var->shuffle=NC_NOSHUFFLE; /* [flg] Turn-on shuffle filter */
   /* Members related to packing */
   var->has_scl_fct=False; /* [flg] Valid scale_factor attribute exists */
   var->has_add_fst=False; /* [flg] Valid add_offset attribute exists */
@@ -1226,8 +1226,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
         /* Deflation */
         if(dmn_nbr > 0){
-          int shuffle; /* [flg] Turn on shuffle filter */
-          int deflate; /* [flg] Turn on deflate filter */
+          int shuffle; /* [flg] Turn-on shuffle filter */
+          int deflate; /* [flg] Turn-on deflate filter */
           int dfl_lvl_in; /* [enm] Deflate level [0..9] */
           int var_in_id;
           /* Uncertain that output name always exists in input file */
@@ -1236,7 +1236,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
             /* When output name is in input file, inquire input deflation level */
             rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
             /* Copy original deflation settings */
-            if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var[idx]->id,deflate,shuffle,dfl_lvl_in);
+            if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl_in);
           }else{
 	    /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating */
 	    shuffle=NC_SHUFFLE;
@@ -1725,7 +1725,7 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
      Hence there is no reason to track current storage properties in var_sct
      However, if that ever changes, here are hooks to do so */
   if(False && var->nbr_dim > 0){
-    int deflate; /* [flg] Turn on deflate filter */
+    int deflate; /* [flg] Turn-on deflate filter */
     int srg_typ; /* [enm] Storage type */
     rcd+=nco_inq_var_deflate(var->nc_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);
     rcd+=nco_inq_var_chunking(var->nc_id,var->id,&srg_typ,var->cnk_sz);
@@ -1929,7 +1929,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   
   /* Set deflate and chunking to defaults */  
   var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
-  var->shuffle=NC_NOSHUFFLE; /* [flg] Turn on shuffle filter */
+  var->shuffle=NC_NOSHUFFLE; /* [flg] Turn-on shuffle filter */
   
   for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
   

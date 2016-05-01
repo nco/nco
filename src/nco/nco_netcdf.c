@@ -1387,8 +1387,8 @@ int nco_def_var_chunking
 int nco_def_var_deflate
 (const int nc_id, /* [ID] netCDF ID */
  const int var_id, /* [ID] Variable ID */
- const int shuffle, /* [flg] Turn on shuffle filter */
- const int deflate, /* [flg] Turn on deflate filter */
+ const int shuffle, /* [flg] Turn-on shuffle filter */
+ const int deflate, /* [flg] Turn-on deflate filter */
  const int dfl_lvl) /* [enm] Deflate level [0..9] */
 {
   /* Purpose: Wrapper for nc_def_var_deflate() */
@@ -1437,8 +1437,8 @@ int
 nco_inq_var_deflate
 (const int nc_id, /* I [ID] netCDF ID */
  const int var_id, /* I [ID] Variable ID */
- int * const shuffle, /* O [flg] Turn on shuffle filter */
- int * const deflate, /* O [flg] Turn on deflate filter */
+ int * const shuffle, /* O [flg] Turn-on shuffle filter */
+ int * const deflate, /* O [flg] Turn-on deflate filter */
  int * const dfl_lvl) /* O [enm] Deflate level [0..9] */
 {
   /* Purpose: Wrapper for nc_inq_var_deflate() */

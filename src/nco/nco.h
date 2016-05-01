@@ -1432,7 +1432,7 @@ extern "C" {
     int nc_id; /* [id] File ID */
     int pck_dsk; /* [flg] Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
     int pck_ram; /* [flg] Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
-    int shuffle; /* [flg] Turn on shuffle filter */
+    int shuffle; /* [flg] Turn-on shuffle filter */
     int undefined; /* [flg] Variable is still undefined (in first parser pass) */
     long *cnt; /* [nbr] Contiguous vector of lengths of hyperslab */
     long *end; /* [idx] Contiguous vector of indices to end of hyperslab */

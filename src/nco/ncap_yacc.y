@@ -64,7 +64,7 @@
 #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
   YY_DECL;
 
-/* Turn on parser debugging option (Bison manual p. 85) */
+/* Turn-on parser debugging option (Bison manual p. 85) */
 #define YYDEBUG 0
 int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 

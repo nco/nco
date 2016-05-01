@@ -767,7 +767,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         /* rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};*/ /* Deprecated 20110419 */
         /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/ /* Deprecated ~2000 */
         /* wget -p: fxm (and enables clobber)
-        wget -r: Turn on recursive retrieving (and enables clobber)
+        wget -r: Turn-on recursive retrieving (and enables clobber)
         wget --tries: Set number of retries. Default is 20. */
         rmt_fch_cmd_sct http={"wget --tries=1 --output-document=%s %s",4,synchronous,lcl_rmt};
         rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};

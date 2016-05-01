@@ -4114,7 +4114,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Set deflate and chunking to defaults */  
   var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
-  var->shuffle=NC_NOSHUFFLE; /* [flg] Turn on shuffle filter */
+  var->shuffle=NC_NOSHUFFLE; /* [flg] Turn-on shuffle filter */
 
   for(int idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
 
@@ -4754,9 +4754,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Deflation */
     if(nbr_dmn_var > 0){
-      int deflate; /* [flg] Turn on deflate filter */
+      int deflate; /* [flg] Turn-on deflate filter */
       int dfl_lvl_in; /* [enm] Deflate level [0..9] */
-      int shuffle; /* [flg] Turn on shuffle filter */
+      int shuffle; /* [flg] Turn-on shuffle filter */
       rcd=nco_inq_var_deflate(grp_in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
       /* Copy original deflation settings */
       if(deflate || shuffle) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
