@@ -919,7 +919,7 @@ nco_wrt_atr
  const int var_out_id,               /* I [id] netCDF output variable ID */
  const trv_sct *var_trv);            /* I [sct] traversal variable */
 
-char *
+const char *
 nco_get_dmn_nm_fll                     /* [fnc] Return name corresponding to input dimension ID (debug) */
 (const int dmn_id,                     /* I [id] ID of dimension */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure array */

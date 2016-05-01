@@ -4881,7 +4881,7 @@ nco_dfn_dmn                            /* [fnc] Define dimension size and ID in 
 
 } /* nco_dmn_dfn */
 
-char *
+const char *
 nco_get_dmn_nm_fll                     /* [fnc] Return name corresponding to input dimension ID (debug) */
 (const int dmn_id,                     /* I [id] ID of dimension */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure array */
