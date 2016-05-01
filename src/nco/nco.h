@@ -1456,14 +1456,14 @@ extern "C" {
     struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually structure for variable on output) fxm: deprecate! TODO nco226 */
   } var_sct; /* end var_sct_tag */
 
-   /* Dimension utility structure to share common fields; used in nco_cnk_sz_set_trv() */
+  /* Utility structure to share dimension common fields; used in nco_cnk_sz_set_trv() */
   typedef struct{
     char *nm_fll; /* [sng] Full dimension name */
     char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension/coordinate */
     int id; /* [id] Dimension ID */
     nco_bool NON_HYP_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool is_rec_dmn; /* [flg] Dimension is unlimited/record dimension */
-    size_t dmn_cnt; /* [nbr] Hyperslabbed size of dimension (= sz iff !NON_HYP_DMN) */
+    size_t dmn_cnt; /* [nbr] Hyperslabbed size of dimension (= sz iff NON_HYP_DMN) */
     size_t sz; /* [nbr] Size (non-hyperslabbed) of dimension */
   } dmn_cmn_sct;
 

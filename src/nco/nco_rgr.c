@@ -597,6 +597,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int dst_grid_corners_id; /* [id] Destination grid corners dimension ID */
   int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
   int dst_grid_size_id; /* [id] Destination grid size dimension ID */
+  int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int num_links_id; /* [id] Number of links dimension ID */
   int num_wgts_id; /* [id] Number of weights dimension ID */
@@ -1838,31 +1839,32 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   deflate=(int)True;
   shuffle=NC_SHUFFLE;
   dfl_lvl=rgr->dfl_lvl;
+  fl_out_fmt=rgr->fl_out_fmt;
 
   /* Define new coordinates and variables in regridded file */
   if(flg_grd_out_1D){
     rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&lat_out_id);
-    (void)nco_def_var_deflate(out_id,lat_out_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_out_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&lon_out_id);
-    (void)nco_def_var_deflate(out_id,lon_out_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_out_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_col;
     dmn_ids_out[1]=dmn_id_bnd;
     rcd+=nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
-    (void)nco_def_var_deflate(out_id,lat_bnd_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_bnd_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_col;
     dmn_ids_out[1]=dmn_id_bnd;
     rcd+=nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
-    (void)nco_def_var_deflate(out_id,lon_bnd_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_bnd_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&area_out_id);
-    (void)nco_def_var_deflate(out_id,area_out_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     if(flg_frc_out_wrt){
       rcd+=nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&frc_out_id);
-      (void)nco_def_var_deflate(out_id,frc_out_id,deflate,shuffle,dfl_lvl);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,frc_out_id,deflate,shuffle,dfl_lvl);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
   } /* !flg_grd_out_1D */
@@ -1870,65 +1872,65 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_lon;
     rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_out_id);
-    (void)nco_def_var_deflate(out_id,lat_out_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_out_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_out_id);
-    (void)nco_def_var_deflate(out_id,lon_out_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_out_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
-    (void)nco_def_var_deflate(out_id,area_out_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     if(flg_frc_out_wrt){
       rcd+=nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
-      (void)nco_def_var_deflate(out_id,frc_out_id,deflate,shuffle,dfl_lvl);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,frc_out_id,deflate,shuffle,dfl_lvl);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_lon;
     dmn_ids_out[2]=dmn_id_bnd;
     rcd+=nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_3D,dmn_ids_out,&lat_bnd_id);
-    (void)nco_def_var_deflate(out_id,lat_bnd_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_bnd_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_3D,dmn_ids_out,&lon_bnd_id);
-    (void)nco_def_var_deflate(out_id,lon_bnd_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_bnd_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
   } /* !flg_grd_out_crv */
   if(flg_grd_out_rct){
     rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_out_id);
-    (void)nco_def_var_deflate(out_id,lat_out_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_out_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon,&lon_out_id);
-    (void)nco_def_var_deflate(out_id,lon_out_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_out_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     if(nco_grd_lat_typ == nco_grd_lat_fv){
       rcd+=nco_def_var(out_id,slat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_slat,&slat_out_id);
-      (void)nco_def_var_deflate(out_id,slat_out_id,deflate,shuffle,dfl_lvl);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,slat_out_id,deflate,shuffle,dfl_lvl);
       var_crt_nbr++;
       rcd+=nco_def_var(out_id,slon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_slon,&slon_out_id);
-      (void)nco_def_var_deflate(out_id,slon_out_id,deflate,shuffle,dfl_lvl);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,slon_out_id,deflate,shuffle,dfl_lvl);
       var_crt_nbr++;
     } /* !nco_grd_lat_fv */
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_bnd;
     rcd+=nco_def_var(out_id,lat_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_id);
-    (void)nco_def_var_deflate(out_id,lat_bnd_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_bnd_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_lon;
     dmn_ids_out[1]=dmn_id_bnd;
     rcd+=nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
-    (void)nco_def_var_deflate(out_id,lon_bnd_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_bnd_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,lat_wgt_nm,crd_typ_out,dmn_nbr_1D,&dmn_id_lat,&lat_wgt_id);
-    (void)nco_def_var_deflate(out_id,lat_wgt_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_wgt_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_lon;
     rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
-    (void)nco_def_var_deflate(out_id,area_out_id,deflate,shuffle,dfl_lvl);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,deflate,shuffle,dfl_lvl);
     var_crt_nbr++;
     if(flg_frc_out_wrt){
       rcd+=nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
-      (void)nco_def_var_deflate(out_id,frc_out_id,deflate,shuffle,dfl_lvl);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,frc_out_id,deflate,shuffle,dfl_lvl);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
   } /* !flg_grd_out_rct */
@@ -2073,8 +2075,25 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  } /* !dmn_idx */
 	} /* !flg_rgr */
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
-	/* fxm: copy deflate and shuffle from input file attributes? */
-	(void)nco_def_var_deflate(out_id,var_id_out,deflate,shuffle,dfl_lvl);
+	/* Duplicate netCDF4 settings when possible */
+	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+	  /* Deflation */
+	  if(dmn_nbr_out > 0){
+	    int deflate; /* [flg] Turn on deflate filter */
+	    int dfl_lvl_in; /* [enm] Deflate level [0..9] */
+	    int shuffle; /* [flg] Turn on shuffle filter */
+	    rcd=nco_inq_var_deflate(in_id,var_id_in,&shuffle,&deflate,&dfl_lvl_in);
+	    /* Copy original deflation settings */
+	    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl_in);
+	    /* Overwrite HDF Lempel-Ziv compression level, if requested */
+	    if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
+	    /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+	    if(dfl_lvl == 0) shuffle=NC_NOSHUFFLE;
+	    /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating */
+	    if(dfl_lvl >= 0) shuffle=NC_SHUFFLE;
+	    if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl);
+	  } /* !dmn_nbr_out */
+	} /* !NC_FORMAT_NETCDF4 */ 
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
 	if(trv.flg_rgr){
 	  aed_mtd_crd.var_nm=var_nm;
@@ -4228,8 +4247,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   shuffle=NC_SHUFFLE;
 
   /* Define variables */
-  (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,dmn_sz_int_id,deflate,shuffle,dfl_lvl);
+  (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id); /* NB: Too small to deflate */
   (void)nco_def_var(out_id,grd_area_nm,(nc_type)crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&area_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_id,deflate,shuffle,dfl_lvl);
   (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
@@ -6025,8 +6043,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   shuffle=NC_SHUFFLE;
 
   /* Define variables */
-  (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,dmn_sz_int_id,deflate,shuffle,dfl_lvl);
+  (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id); /* NB: Too small to deflate */
   (void)nco_def_var(out_id,area_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&area_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_id,deflate,shuffle,dfl_lvl);
   (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
