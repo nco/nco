@@ -1,3 +1,7 @@
+2016-05-02  Charlie Zender  <zender@uci.edu>
+
+	* Fix non-interactive batch mode on SLURM to expand SLURM_NODELIST and store as file like PBS and Cobalt
+
 2016-05-01  Charlie Zender  <zender@uci.edu>
 
 	* Change --upk switch. Was flag and synonym for -U, --unpack (ncpdq only)
