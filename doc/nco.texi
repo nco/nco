@@ -9131,16 +9131,16 @@ unpacked data, i.e., @code{int}, @code{float} or @code{double}.
 @end html
 @cindex interoperability
 @cindex @acronym{HDF} unpacking
-Many (most?) files originally written in @acronym{HDF4} format use a
-poorly documented @acronym{HDF} packing/unpacking algorithm that is
+Many (most?) files originally written in @acronym{HDF4} format use
+poorly documented @acronym{HDF} packing/unpacking algorithms that are
 incompatible and easily confused with the netCDF packing algorithm 
 described above.   
-The unpacking component of the @acronym{HDF} algorithm (described
-@uref{http://www.hdfgroup.org/HDF5/doc/UG/UG_frame10Datasets.html, here}
+The unpacking component of the ``conventional'' @acronym{HDF} algorithm
+(described @uref{http://www.hdfgroup.org/HDF5/doc/UG/UG_frame10Datasets.html, here}
 and in Section 3.10.6 of the @acronym{HDF4} Users Guide
 @uref{http://www.hdfgroup.org/release4/doc/UsrGuide_html/UG_PDF.pdf,
 here}) 
-and in the @acronym{MODIS} @acronym{FAQ}
+and in the @acronym{FAQ} for @acronym{MODIS} @acronym{MOD08} data
 @uref{http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html, here}) 
 is
 @tex
@@ -9154,11 +9154,32 @@ $$
 @var{upk} = @var{scale_factor}*(@var{pck} - @var{add_offset})@*
 @sp 1
 @end ifnottex
+
+The unpacking component of the @acronym{HDF} algorithm employed
+for @acronym{MODIS} @acronym{MOD13} data
+is
+@tex
+$$
+\rm
+\hbox{upk} = (\hbox{pck} - \hbox{add\_offset})/\hbox{scale\_factor}
+$$
+@end tex
+@ifnottex
+@sp 1
+@var{upk} = (@var{pck} - @var{add_offset})/@var{scale_factor}@*
+@sp 1
+@end ifnottex
+
+The unpacking component of the @acronym{HDF} algorithm employed
+for @acronym{MODIS} @acronym{MOD04} data is the same as the netCDF
+algorithm.
+
 @ignore
 Unfortunately, @acronym{HDF} packing is hard to understand and
 documentation is often lacking.
-Many @acronym{MODIS} @acronym{HDF4} datasets use what we call the 
-``@acronym{HDF} algorithm''.
+Many @acronym{MODIS} @acronym{HDF4} datasets use what we used to call
+``the @acronym{HDF} algorithm'', until we realized there was more than
+one incompatible (with netCDF) @acronym{HDF} algorithm.
 These include @acronym{MODIS} @acronym{MOD10CM} datasets.
 However, we must discriminate between @acronym{HDF4} and @acronym{HDF5}  
 packing. 
