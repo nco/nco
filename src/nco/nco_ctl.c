@@ -1131,7 +1131,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncatted) (void)fprintf(stdout,"-t, --typ_mch, --type_match \tType-match attribute edits\n");
     if(prg_lcl != ncatted) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
   } /* end if */
-  if(strstr(opt_sng,"[-U]")) (void)fprintf(stdout,"-U, --upk, --unpack\tUnpack input file\n");
+  if(strstr(opt_sng,"[-U]")) (void)fprintf(stdout,"-U, --unpack\tUnpack input file\n");
   if(strstr(opt_sng,"[-u")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
     if(prg_lcl == ncecat) (void)fprintf(stdout,"-u, --ulm_nm --rcd_nm\tNew unlimited (record) dimension name\n");

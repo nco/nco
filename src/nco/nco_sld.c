@@ -538,8 +538,6 @@ nco_trr_sng_ntl /* [fnc] Convert user-supplied string to interleave-type enum */
 (const char * const typ_sng) /* I [sng] String indicating interleave-type */
 {
   /* Purpose: Convert user-supplied string to interleave-type */
-  const char fnc_nm[]="nco_trr_sng_ntl()";
-  
   if(!strcasecmp(typ_sng,"bsq") || !strcasecmp(typ_sng,"band_sequential")) return nco_trr_ntl_bsq;
   else if(!strcasecmp(typ_sng,"bip") || !strcasecmp(typ_sng,"band_interleaved_by_pixel")) return nco_trr_ntl_bip;
   else if(!strcasecmp(typ_sng,"bil") || !strcasecmp(typ_sng,"band_interleaved_by_line")) return nco_trr_ntl_bil;

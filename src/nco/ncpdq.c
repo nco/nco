@@ -281,6 +281,7 @@ main(int argc,char **argv)
     {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
     {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
     {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    {"upk",required_argument,0,0}, /* [enm] Unpacking convention to utilize */
     /* Long options with short counterparts */
     {"3",no_argument,0,'3'},
     {"4",no_argument,0,'4'},
@@ -327,7 +328,6 @@ main(int argc,char **argv)
     {"threads",required_argument,0,'t'},
     {"omp_num_threads",required_argument,0,'t'},
     {"unpack",no_argument,0,'U'},
-    {"upk",no_argument,0,'U'},
     {"variable",required_argument,0,'v'},
     {"auxiliary",required_argument,0,'X'},
     {"exclude",no_argument,0,'x'},
@@ -422,6 +422,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
       if(!strcmp(opt_crr,"nsx") || !strcmp(opt_crr,"intersection")) GRP_VAR_UNN=False;
+      if(!strcmp(opt_crr,"upk")){ /* [enm] Unpacking convention to utilize */
+        nco_upk_cnv=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      } /* endif "hdr_pad" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);

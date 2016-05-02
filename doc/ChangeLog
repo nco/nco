@@ -1,6 +1,6 @@
 2016-05-01  Charlie Zender  <zender@uci.edu>
 
-	* Expand hdf_upk logic to nco_upk_HDF_MOD10, nco_upk_HDF_MOD13 for MODIS MOD10CM and MOD13C2 datasets
+	* Expand HDF4 hdf_upk logic to nco_upk_HDF_MOD10, nco_upk_HDF_MOD13 for MODIS MOD10CM and MOD13C2 datasets
 
 	* Correct order of shuffle,deflate in nco_var_def_deflate()
 

@@ -2079,9 +2079,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 	  /* Deflation */
 	  if(dmn_nbr_out > 0){
-	    int deflate; /* [flg] Turn-on deflate filter */
 	    int dfl_lvl_in; /* [enm] Deflate level [0..9] */
-	    int shuffle; /* [flg] Turn-on shuffle filter */
 	    rcd=nco_inq_var_deflate(in_id,var_id_in,&shuffle,&deflate,&dfl_lvl_in);
 	    /* Copy original deflation settings */
 	    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl_in);

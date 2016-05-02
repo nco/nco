@@ -691,7 +691,7 @@ extern "C" {
     nco_baa_set, /* 2 Bit Set (option since 20160117) */
   }; /* end nco_baa_cnv */
 
-  enum nco_upk_cnv{ /* [enm] Unpacking convention to assume */
+  enum nco_upk_cnv{ /* [enm] Unpacking convention to utilize */
     /* netCDF convention  : http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
        HDF/NASA convention: http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html */
     nco_upk_netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */

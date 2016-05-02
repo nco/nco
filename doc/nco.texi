@@ -18537,10 +18537,9 @@ Similarly, @command{ncunpack} is a synonym for @command{ncpdq}
 except that @command{ncpack} implicitly assumes a request to unpack, 
 i.e., @samp{-P pck_upk}.
 @cindex @code{-U}
-@cindex @code{--upk}
 @cindex @code{--unpack}
 Finally, the @command{ncpdq} @samp{-U} switch (or its long option
-equivalents, @samp{--upk} and @samp{--unpack}) requires no argument.
+equivalents @samp{--unpack}) requires no argument.
 It simply requests unpacking.
 
 Given the menagerie of synonyms, equivalent options, and implied
