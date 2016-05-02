@@ -4926,6 +4926,9 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
   assert(nco_prg_id == ncpdq);
   CEWI_unused(nco_prg_id);
   
+  /* Initialize for this variable */
+  REDEFINED_RECORD_DIMENSION=False;
+
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
 
@@ -4934,9 +4937,6 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
 
     assert(var_trv->flg_xtr); 
     assert(var_trv->nbr_dmn == var_prc_out[idx_var_prc]->nbr_dim);
-
-    /* Initialize for this variable */
-    REDEFINED_RECORD_DIMENSION=False;
 
     /* Mark re-order flag */
     var_trv->flg_rdr=True;
@@ -4977,7 +4977,7 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
         if(REDEFINED_RECORD_DIMENSION){
           /* ...then requested re-order requires multiple record dimensions... */
           if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",nco_prg_nm_get(),var_prc[idx_var_prc]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
-          break;
+          continue;
         }else{ /* !REDEFINED_RECORD_DIMENSION */
           /* ...otherwise, update output record dimension name... */
           rec_dmn_nm_out=rec_dmn_nm_out_crr;

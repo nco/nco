@@ -546,9 +546,11 @@ if [ "${mpi_flg}" = 'Yes' ]; then
     elif [ -n "${PBS_NODEFILE}" ]; then 
 	nd_fl="${PBS_NODEFILE}"
     elif [ -n "${SLURM_NODELIST}" ]; then 
+	# SLURM returns compressed lists (e.g., "nid00[076-078,559-567]")
+	# Convert this to file with uncompressed list (like Cobalt, PBS)
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
-	nd_lst=`scontrol show hostname ${SLURM_NODELIST}`
 	nd_fl='ncclimo.slurm_nodelist'
+	nd_lst=`scontrol show hostname ${SLURM_NODELIST}`
 	echo ${nd_lst} > ${nd_fl}
     else
 	echo "ERROR: MPI job unable to find node list"

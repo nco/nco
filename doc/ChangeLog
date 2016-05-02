@@ -1,5 +1,13 @@
 2016-05-02  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.0-beta05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.0-beta05 final changes';git push
+	git tag -a 4.6.0-beta05 -m 'Version 4.6.0-beta05 new features: ncclimo/ncremap rgr, netCDF4 grids, upk MOD13, SLURM_NODELIST';git push --tags
+
+	* ncpdq: initialize REDEFINED_RECORD_DIMENSION=False only once, before variable loop (bug caught by Pedro)
+
+	* ncpdq: change "break;" to "continue;" (bug caught by Pedro)
+
 	* Fix non-interactive batch mode on SLURM to expand SLURM_NODELIST and store as file like PBS and Cobalt
 
 2016-05-01  Charlie Zender  <zender@uci.edu>
