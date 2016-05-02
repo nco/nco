@@ -1,5 +1,8 @@
 2016-05-01  Charlie Zender  <zender@uci.edu>
 
+	* Change --upk switch. Was flag and synonym for -U, --unpack (ncpdq only)
+	Now --upk arg where arg=[0,1,2]=[netCDF=MOD04,MOD10,MOD13] unpacking algorithm
+
 	* Expand HDF4 hdf_upk logic to nco_upk_HDF_MOD10, nco_upk_HDF_MOD13 for MODIS MOD10CM and MOD13C2 datasets
 
 	* Correct order of shuffle,deflate in nco_var_def_deflate()
