@@ -124,11 +124,14 @@ print "\n";
 $USER=$ENV{'USER'};
 $DATA=$ENV{'DATA'};
 if($USER eq 'zender'){
+# ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
+# ncwa -O -w area ${DATA}/ne30/clm/famipc5_ne30_v0.3_00003_ANN_197912_198311_climo.nc ~/foo.nc
+# ncks -O -H -u -C -v FSNT ~/foo.nc
 	$dsc_sng="ncclimo (depends on input files in ${DATA}/ne30/raw)";
-	$tst_cmd[0]="ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm > ~/foo.nco_rgr";
+	$tst_cmd[0]="ncclimo -v FSNT,AODVIS,area -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm > ~/foo.nco_rgr";
 	$tst_cmd[1]="ncwa -O $fl_fmt $nco_D_flg -w area ${DATA}/ne30/clm/famipc5_ne30_v0.3_00003_ANN_197912_198311_climo.nc %tmp_fl_00%";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_00%";
-	$tst_cmd[3]="FSNT = 244.124 W/m2";
+	$tst_cmd[3]="FSNT = 235.503 W/m2";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
