@@ -695,7 +695,8 @@ extern "C" {
     /* netCDF convention  : http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
        HDF/NASA convention: http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html */
     nco_upk_netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
-    nco_upk_HDF     /* 1    HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
+    nco_upk_HDF_MOD10, /* 1 HDF MODIS MOD10 unpack convention: unpacked=scale_factor*(packed-add_offset) */
+    nco_upk_HDF_MOD13, /* 2 HDF MODIS MOD13 unpack convention: unpacked=(packed-add_offset)/scale_factor */
   }; /* end nco_upk_cnv */
 
   typedef enum aed{ /* [enm] Attribute editor mode */

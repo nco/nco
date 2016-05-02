@@ -1059,6 +1059,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   const char fnc_nm[]="nco_var_upk()";
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+  int nco_upk_cnv_typ;
 
   /* Return if variable in memory is not currently packed */
   if(!var->pck_ram) return var;
@@ -1086,7 +1087,8 @@ nco_var_upk /* [fnc] Unpack variable in memory */
      ncpdq -O -C -U --hdf -v ^pck_.? ~/nco/data/in.nc ~/foo.nc # Unpack HDF
      ncpdq -O -C -P --hdf -v ^pck_.? ~/nco/data/in.nc ~/foo.nc # Unpack HDF and re-pack netCDF */
 
-  if(nco_upk_cnv_get() == nco_upk_netCDF){
+  nco_upk_cnv_typ=nco_upk_cnv_get();
+  if(nco_upk_cnv_typ == nco_upk_netCDF){
     /* netCDF unpack definition: unpacked=(scale_factor*packed)+add_offset */
     
     if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
@@ -1111,8 +1113,8 @@ nco_var_upk /* [fnc] Unpack variable in memory */
       (void)nco_var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
     } /* endif has_add_fst */
 
-  }else{ /* !netCDF_unpack_convention */
-    /* 20130729: NASA HDF unpack definition: unpacked=scale_factor*(packed-add_offset) */
+  }else if(nco_upk_cnv_typ == nco_upk_HDF_MOD10){ /* !netCDF_unpack_convention */
+    /* 20130729: NASA HDF MODIS MOD10 unpack definition: unpacked=scale_factor*(packed-add_offset) */
 
     if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
       scv_sct add_fst_scv;
@@ -1135,7 +1137,12 @@ nco_var_upk /* [fnc] Unpack variable in memory */
       /* Multiply var by scale_factor */
       (void)nco_var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
     } /* endif has_scl_fct */
-    
+
+  }else{ /* !netCDF_unpack_convention */
+
+    (void)fprintf(stdout,"%s: ERROR %s reports unknown nco_upk_cnv\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+
   } /* !netCDF_unpack_convention */
 
   if(var->has_mss_val) var=nco_cnv_mss_val_typ(var,var->type);

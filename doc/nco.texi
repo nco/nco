@@ -122,8 +122,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.0-beta04
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 28 April 2016
-@set update-month April 2016
+@set update-date 1 May 2016
+@set update-month May 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -9131,14 +9131,18 @@ unpacked data, i.e., @code{int}, @code{float} or @code{double}.
 @end html
 @cindex interoperability
 @cindex @acronym{HDF} unpacking
-Most files originally written in @acronym{HDF} format use the
-@acronym{HDF} packing/unpacking algorithm.
-This algorithm is incompatible with the netCDF packing algorithm 
+Many (most?) files originally written in @acronym{HDF4} format use a
+poorly documented @acronym{HDF} packing/unpacking algorithm that is
+incompatible and easily confused with the netCDF packing algorithm 
 described above.   
 The unpacking component of the @acronym{HDF} algorithm (described
 @uref{http://www.hdfgroup.org/HDF5/doc/UG/UG_frame10Datasets.html, here}
-and in Section 3.10.6 of the HDF4 Users Guide
-@uref{http://www.hdfgroup.org/release4/doc/UsrGuide_html/UG_PDF.pdf, here}) is
+and in Section 3.10.6 of the @acronym{HDF4} Users Guide
+@uref{http://www.hdfgroup.org/release4/doc/UsrGuide_html/UG_PDF.pdf,
+here}) 
+and in the @acronym{MODIS} @acronym{FAQ}
+@uref{http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html, here}) 
+is
 @tex
 $$
 \rm
@@ -9151,15 +9155,21 @@ $$
 @sp 1
 @end ifnottex
 @ignore
-NB: HDF packing documentation is hard to follow
-MODIS HDF4 datasets definitely use the ``HDF algorithm''
-However, must discriminate between HDF4 and HDF5 packing.
-HDF4, or at least some HDF4 datasets implement the ``HDF algorithm'',
-aka linear scale_factor and add_offset in other order from netCDF.
-HDF5 only implements D-scaling, aka, decimal-scaling bit-packing.
-D-Scaling uses add_offset (i.e., minimum data value) and scale_factor
-(integer power of 10 by which the add_offset corrected data are divided
-before storage) to control D-scaling.
+Unfortunately, @acronym{HDF} packing is hard to understand and
+documentation is often lacking.
+Many @acronym{MODIS} @acronym{HDF4} datasets use what we call the 
+``@acronym{HDF} algorithm''.
+These include @acronym{MODIS} @acronym{MOD10CM} datasets.
+However, we must discriminate between @acronym{HDF4} and @acronym{HDF5}  
+packing. 
+@acronym{HDF4}, or at least some @acronym{HDF4} datasets implement the
+``@acronym{HDF} algorithm'', aka linear @code{scale_factor} and 
+@code{add_offset} in the other order from netCDF. 
+@acronym{HDF5} only implements D-scaling, aka, decimal-scaling
+bit-packing. 
+D-Scaling uses @code{add_offset} as a minimum data value, and
+@code{scale_factor} as the integer power @w{of 10} by which the
+@code{add_offset} corrected data are divided before storage.
 
 @cindex scale-offset compression
 @cindex scale-offset filter
@@ -12371,7 +12381,7 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 
 @sp 1
 @noindent @strong{Type Conversion Methods @*}
-@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You may only use the new netCDF4 types if you have compiled/links @acronym{NCO} with the netCDF4 library and the Output file is HDF5. 
+@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You may only use the new netCDF4 types if you have compiled/links @acronym{NCO} with the netCDF4 library and the Output file is @acronym{HDF5}. 
 
 @table @code
 @item @strong{netCDF3/4 Types}
@@ -18837,8 +18847,10 @@ ncpdq --hdf_upk -P xst_new modis.nc modis.nc
 Prior to @acronym{NCO} 4.4.0 and netCDF 4.3.1 (January, 2014),
 @acronym{NCO} requires the @samp{--hdf4} switch to correctly read
 HDF4 input files.
-For example, @samp{ncpdq --hdf4 --hdf_upk -P xst_new modis.hdf modis.nc}.
-That switch is now obsolete, though harmless for backwards compatibility.
+For example, 
+@samp{ncpdq --hdf4 --hdf_upk -P xst_new modis.hdf modis.nc}. 
+That switch is now obsolete, though harmless for backwards
+compatibility. 
 Prior to version 4.3.7 (October, 2013), @acronym{NCO} lacked the
 software necessary to workaround netCDF library flaws handling
 @acronym{HDF4} files, and thus @acronym{NCO} failed to convert
