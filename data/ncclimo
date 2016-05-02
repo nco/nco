@@ -567,22 +567,28 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_nbr=${#nd_nm[@]}
 	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 	    case "${HOSTNAME}" in 
-		cori* | edison* )
+		# 20160502: Remove limits on tasks per node so round-robin algorithm can schedule multiple jobs on same node
+		cori* | edison* | nid* )
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
-		    cmd_mpi[${clm_idx}]="srun -L ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # NERSC
+ 		    cmd_mpi[${clm_idx}]="srun --nodelist ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} --nodes=1" ; ;; # NERSC
+# 		    cmd_mpi[${clm_idx}]="srun --nodelist ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # NERSC
 		hopper* )
 		    # NB: NERSC migrated from aprun to srun in 201601. Hopper commands will soon be deprecated.
 		    cmd_mpi[${clm_idx}]="aprun -L ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # NERSC
 		* )
-		    cmd_mpi[${clm_idx}]="mpirun -H ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
+		    cmd_mpi[${clm_idx}]="mpirun -H ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt)
+#		    cmd_mpi[${clm_idx}]="mpirun -H ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	done # !clm_idx
-    else # ! pbs
+	if [ -n "${SLURM_NODELIST}" ]; then 
+	    /bin/rm -f ${nd_fl}
+	fi # !SLURM
+    else # !nd_fl
 	mpi_flg='No'
 	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 	    cmd_mpi[${clm_idx}]=''
 	done # !clm_idx
-    fi # !pbs
+    fi # !nd_fl
     if [ -z "${thr_usr}" ]; then 
 	if [ -n "${PBS_NUM_PPN}" ]; then
 #	NB: use export OMP_NUM_THREADS when thr_nbr > 8
