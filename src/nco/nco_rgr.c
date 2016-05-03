@@ -5020,6 +5020,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     int dmn_nbr; /* [nbr] Number of dimensions */
 
     rcd=nco_inq_varndims(in_id,cf->crd_id[0],&dmn_nbr);
+    if(dmn_nbr == 2){
+      flg_grd_crv=True;
+    }else{
+      (void)fprintf(stderr,"%s: ERROR %s reports coordinates variable %s has %i dimension(s).\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],dmn_nbr);
+      nco_exit(EXIT_FAILURE);
+    } /* !dmn_nbr */
     rcd=nco_inq_vardimid(in_id,cf->crd_id[0],dmn_ids);
     cf->dmn_nm[0]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
     cf->dmn_nm[1]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
@@ -5061,24 +5067,26 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Locate dimensions that must be present in rectangular files */
   //  lat_dmn_nm=rgr->lat_dmn_nm; /* [sng] Name of dimension to recognize as latitude */
   // if((rcd=nco_inq_dimid_flg(in_id,lat_dmn_nm,&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup(lat_dmn_nm);
-  if(dmn_id_lat == NC_MIN_INT){
-    if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("latitude");
-    else if((rcd=nco_inq_dimid_flg(in_id,"lat",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("lat");
-    else if((rcd=nco_inq_dimid_flg(in_id,"Latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("Latitude"); /* HIRDLS */
-    else if((rcd=nco_inq_dimid_flg(in_id,"Lat",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("Lat");
-    else if((rcd=nco_inq_dimid_flg(in_id,"CO_Latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("CO_Latitude"); /* MLS */
-  } /* !dmn_id_lat */
+  if(!flg_grd_crv){
+    if(dmn_id_lat == NC_MIN_INT){
+      if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("latitude");
+      else if((rcd=nco_inq_dimid_flg(in_id,"lat",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("lat");
+      else if((rcd=nco_inq_dimid_flg(in_id,"Latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("Latitude"); /* HIRDLS */
+      else if((rcd=nco_inq_dimid_flg(in_id,"Lat",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("Lat");
+      else if((rcd=nco_inq_dimid_flg(in_id,"CO_Latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("CO_Latitude"); /* MLS */
+    } /* !dmn_id_lat */
+    
+    //  lon_dmn_nm=rgr->lon_dmn_nm; /* [sng] Name of dimension to recognize as latitude */
+    //  if((rcd=nco_inq_dimid_flg(in_id,lon_dmn_nm,&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup(lon_dmn_nm);
+    if(dmn_id_lon == NC_MIN_INT){
+      if((rcd=nco_inq_dimid_flg(in_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("longitude");
+      else if((rcd=nco_inq_dimid_flg(in_id,"lon",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("lon");
+      else if((rcd=nco_inq_dimid_flg(in_id,"Longitude",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("Longitude");
+      else if((rcd=nco_inq_dimid_flg(in_id,"Lon",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("Lon");
+    } /* !dmn_id_lon */
+    if(lat_dmn_nm && lon_dmn_nm) flg_grd_2D=True;
+  } /* !flg_grd_crv */
   
-  //  lon_dmn_nm=rgr->lon_dmn_nm; /* [sng] Name of dimension to recognize as latitude */
-  //  if((rcd=nco_inq_dimid_flg(in_id,lon_dmn_nm,&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup(lon_dmn_nm);
-  if(dmn_id_lon == NC_MIN_INT){
-    if((rcd=nco_inq_dimid_flg(in_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("longitude");
-    else if((rcd=nco_inq_dimid_flg(in_id,"lon",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("lon");
-    else if((rcd=nco_inq_dimid_flg(in_id,"Longitude",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("Longitude");
-    else if((rcd=nco_inq_dimid_flg(in_id,"Lon",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("Lon");
-  } /* !dmn_id_lon */
-  if(lat_dmn_nm && lon_dmn_nm) flg_grd_2D=True;
-
   /* Try known curvilinear dimension names for latitude and longitude */
   if(!lat_dmn_nm || !lon_dmn_nm){
     if(!lat_dmn_nm){
