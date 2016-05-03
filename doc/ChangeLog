@@ -1,5 +1,7 @@
 2016-05-03  Charlie Zender  <zender@uci.edu>
 
+	* Improve and simplify nco_grd_nfr() logic for grid determination, introduce and respect lon_dmn and lat_dmn options for dimension names
+
 	* Inferring grids from CF "coordinates" attribute works, now remapping needs same logic...
 
 	* Check units of coordinate variables
