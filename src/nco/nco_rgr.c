@@ -4926,10 +4926,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
 #if 1
   cf_crd_sct *cf=NULL;
-  char *var_nm; /* [sng] Variable for special regridding treatment */
+  char *rgr_var; /* [sng] Variable for special regridding treatment */
   nco_bool flg_cf=False; /* [flg] Follow CF Coordinates convention to find and infer grid */
-  var_nm=rgr->var_nm;
-  if(var_nm){
+  rgr_var=rgr->var_nm;
+  if(rgr_var){
     /* Infer grid from special variable
        Intended to be variable that has both horizontal dimensions and "coordinates" attribute, e.g.,
        ncks --cdl -m ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc | grep coordinates
@@ -4959,8 +4959,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     cf->var_nm=NULL; /* [sng] Coordinates variable name */
     cf->var_type=NC_NAT; /* [enm] Coordinates variable type */
 
-    if((rcd=nco_inq_varid_flg(in_id,var_nm,&cf->var_id)) != NC_NOERR){
-      (void)fprintf(stderr,"%s: WARNING %s reports special \"coordinates\" variable %s not found. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,var_nm);
+    if((rcd=nco_inq_varid_flg(in_id,rgr_var,&cf->var_id)) != NC_NOERR){
+      (void)fprintf(stderr,"%s: WARNING %s reports special \"coordinates\" variable %s not found. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,rgr_var);
       flg_cf=False;
       goto skp_cf;
     } /* !rcd */ 
@@ -4973,7 +4973,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       cf->crd_sng[att_sz]='\0';
       cf->crd=True;
     }else{ /* !rcd && att_typ */
-      (void)fprintf(stderr,"%s: WARNING %s reports coordinates variable %s does not have character-valued \"coordinates\" attribute. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,var_nm);
+      (void)fprintf(stderr,"%s: WARNING %s reports coordinates variable %s does not have character-valued \"coordinates\" attribute. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,rgr_var);
       flg_cf=False;
       goto skp_cf;
     } /* !rcd && att_typ */
@@ -5014,15 +5014,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       *(cf->unt_sng[1]+att_sz)='\0';
     } /* !rcd && att_typ */
       
-    int dmn_nbr; /* [nbr] Number of dimensions */
+    /* fxm: 20160503 */
+    int crd_rnk; /* [nbr] Number of dimensions */
 
-    rcd=nco_inq_varndims(in_id,cf->crd_id[0],&dmn_nbr);
-    if(dmn_nbr == 2){
+    rcd=nco_inq_varndims(in_id,cf->crd_id[0],&crd_rnk);
+    if(crd_rnk == 2){
       flg_grd_crv=True;
     }else{
-      (void)fprintf(stderr,"%s: ERROR %s reports coordinates variable %s has %i dimension(s).\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],dmn_nbr);
+      (void)fprintf(stderr,"%s: ERROR %s reports coordinates variable %s has %i dimension(s).\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],crd_rnk);
       nco_exit(EXIT_FAILURE);
-    } /* !dmn_nbr */
+    } /* !crd_rnk */
     rcd=nco_inq_vardimid(in_id,cf->crd_id[0],cf->dmn_id);
     cf->dmn_nm[0]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
     cf->dmn_nm[1]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
@@ -5039,7 +5040,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lat_nm_in=strdup(cf->crd_nm[0]);
     lon_nm_in=strdup(cf->crd_nm[1]);
     
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Coordinate %s has dimensions %s and %s.\n",nco_prg_nm_get(),fnc_nm,var_nm,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[0],cf->dmn_nm[0],cf->dmn_nm[1]);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Coordinate %s has dimensions %s and %s.\n",nco_prg_nm_get(),fnc_nm,rgr_var,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[0],cf->dmn_nm[0],cf->dmn_nm[1]);
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Coordinates %s and %s \"units\" values are \"%s\" and \"%s\", respectively.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->crd_nm[1],cf->unt_sng[0] ? cf->unt_sng[0] : "(non-existent)",cf->unt_sng[1] ? cf->unt_sng[1] : "(non-existent)");
 
     /* Clean-up CF coordinates memory */
@@ -5051,7 +5052,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(cf->unt_sng[0]) cf->unt_sng[0]=(char *)nco_free(cf->unt_sng[0]);
     if(cf->unt_sng[1]) cf->unt_sng[1]=(char *)nco_free(cf->unt_sng[1]);
     //    if(foo) foo=(char *)nco_free(foo);
-  } /* !var_nm */
+  } /* !rgr_var */
 
   /* goto skp_cf */
  skp_cf: 
