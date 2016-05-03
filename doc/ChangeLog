@@ -1,3 +1,7 @@
+2016-05-03  Charlie Zender  <zender@uci.edu>
+
+	* Add stubs for checking CF "coordinates" attribute to infer grid
+
 2016-05-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.0-beta05 release procedure:

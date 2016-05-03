@@ -859,7 +859,7 @@ main(int argc,char **argv)
     cb->tm_bnd_nm=NULL; /* [sng] Time bounds name */
     cb->tm_crd_id_in=NC_MIN_INT; /* [id] Time coordinate ID */
     cb->tm_crd_nm=NULL; /* [sng] Time coordinate name */
-    cb->type=NC_NAT; /* [enm] Time coordinate name */
+    cb->type=NC_NAT; /* [enm] Time coordinate type */
     cb->val[0]=NC_MIN_DOUBLE;
     cb->val[1]=NC_MIN_DOUBLE;
 
@@ -1049,7 +1049,7 @@ main(int argc,char **argv)
   
   /* goto skp_cb */
  skp_cb: 
-  /* De-allocate abandoned cb structure or it will be inadvertently used in nco_cnv_cf_cll_mth_add() */
+  /* free() any abandoned cb structure now or it will be inadvertently used in nco_cnv_cf_cll_mth_add() */
   if(!flg_cb)
     if(cb) cb=(clm_bnd_sct *)nco_free(cb);
 

@@ -625,6 +625,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    case "${HOSTNAME}" in 
 		# 20160502: Remove limits on tasks per node so round-robin algorithm can schedule multiple jobs on same node
 		cori* | edison* | nid* )
+		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori* or edison*
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
  		    cmd_mpi[${clm_idx}]="srun --nodelist ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} --nodes=1" ; ;; # NERSC
 # 		    cmd_mpi[${clm_idx}]="srun --nodelist ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # NERSC

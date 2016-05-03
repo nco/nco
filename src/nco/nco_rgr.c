@@ -176,7 +176,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Initialize arguments after copying */
   if(!rgr->fl_out) rgr->fl_out=(char *)strdup("/data/zender/rgr/rgr_out.nc");
   if(!rgr->fl_grd_dst) rgr->fl_grd_dst=(char *)strdup("/data/zender/scrip/grids/remap_grid_T42.nc");
-  if(!rgr->var_nm) rgr->var_nm=(char *)strdup("ORO");
+  //  if(!rgr->var_nm) rgr->var_nm=(char *)strdup("ORO");
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: INFO %s reports ",nco_prg_nm_get(),fnc_nm);
@@ -4762,7 +4762,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char grd_rnk_nm[]="grid_rank";
   char grd_sz_nm[]="grid_size";
   char msk_nm[]="grid_imask";
-  
+    
   double *grd_ctr_lat; /* [dgr] Latitude  centers of grid */
   double *grd_ctr_lon; /* [dgr] Longitude centers of grid */
   double *grd_crn_lat; /* [dgr] Latitude  corners of grid */
@@ -4913,6 +4913,38 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("sounding_id"); /* OCO2 */
   if(col_dmn_nm) flg_grd_1D=True;
 
+#if 0
+  cf_crd_sct *cf=NULL;
+  char *var_nm; /* [sng] Variable for special regridding treatment */
+  var_nm=rgr->var_nm;
+  if(var_nm){
+    /* Infer grid from special variable
+       Intended to be variable that has both horizontal dimensions and "coordinates" attribute, e.g.,
+       ncks --cdl -m ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc | grep coordinates
+       4LFTX_221_SPDY_S113:coordinates = "gridlat_221 gridlon_221" ; */
+
+    char clm_sng[]="coordinates"; /* CF-standard climatology bounds attribute name */
+    long att_sz;
+    nc_type att_typ;
+    
+    cf=(cf_crd_sct *)nco_malloc(sizeof(cf_crd_sct));
+    cf->crd=False; /* [flg] CF coordinates information is complete */
+    cf->crd_id[0]=NC_MIN_INT; /* [id] Coordinate ID, first */
+    cf->crd_id[1]=NC_MIN_INT; /* [id] Coordinate ID, second */
+    cf->crd_nm[0]=NULL; /* [sng] Coordinate name, first */
+    cf->crd_nm[1]=NULL; /* [sng] Coordinate name, second */
+    cf->dmn_id[0]=NC_MIN_INT; /* [id] Dimension ID, first */
+    cf->dmn_id[1]=NC_MIN_INT; /* [id] Dimension ID, second */
+    cf->dmn_nm[0]=NULL; /* [sng] Dimension name, first */
+    cf->dmn_nm[1]=NULL; /* [sng] Dimension name, second */
+    cf->var_id=NC_MIN_INT; /* [id] Coordinate variable ID */
+    cf->var_nm=NULL; /* [sng] Coordinates variable name */
+    cf->var_type=NC_NAT; /* [enm] Coordinates variable type */
+
+  } /* !var_nm */
+  if(cf) cf=(cf_crd_sct *)nco_free(cf);
+#endif /* !0 */
+  
   /* Locate dimensions that must be present in rectangular files */
   //  lat_dmn_nm=rgr->lat_dmn_nm; /* [sng] Name of dimension to recognize as latitude */
   // if((rcd=nco_inq_dimid_flg(in_id,lat_dmn_nm,&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup(lat_dmn_nm);
