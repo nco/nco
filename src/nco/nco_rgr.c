@@ -4914,12 +4914,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(col_dmn_nm) flg_grd_1D=True;
 
   /* Locate dimensions that must be present in rectangular files */
+  //  lat_dmn_nm=rgr->lat_dmn_nm; /* [sng] Name of dimension to recognize as latitude */
+  // if((rcd=nco_inq_dimid_flg(in_id,lat_dmn_nm,&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup(lat_dmn_nm);
   if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("latitude");
   else if((rcd=nco_inq_dimid_flg(in_id,"lat",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("lat");
   else if((rcd=nco_inq_dimid_flg(in_id,"Latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("Latitude"); /* HIRDLS */
   else if((rcd=nco_inq_dimid_flg(in_id,"Lat",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("Lat");
   else if((rcd=nco_inq_dimid_flg(in_id,"CO_Latitude",&dmn_id_lat)) == NC_NOERR) lat_dmn_nm=strdup("CO_Latitude"); /* MLS */
 
+  //  lon_dmn_nm=rgr->lon_dmn_nm; /* [sng] Name of dimension to recognize as latitude */
+  //  if((rcd=nco_inq_dimid_flg(in_id,lon_dmn_nm,&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup(lon_dmn_nm);
   if((rcd=nco_inq_dimid_flg(in_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("longitude");
   else if((rcd=nco_inq_dimid_flg(in_id,"lon",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("lon");
   else if((rcd=nco_inq_dimid_flg(in_id,"Longitude",&dmn_id_lon)) == NC_NOERR) lon_dmn_nm=strdup("Longitude");
