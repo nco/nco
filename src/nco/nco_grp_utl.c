@@ -2825,16 +2825,14 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
   size_t var_nm_fll_lng;                     /* [nbr] Length of full variable name */
   size_t dmn_nm_fll_lng;                     /* [nbr] Length of of full dimension name */
   
-  /* Coordinate variables are 1D */
-  if(var_trv->nbr_dmn !=1 ){
-    return False;
-  }
+  /* True Coordinate variables are 1D */
+  if(var_trv->nbr_dmn != 1) return False;
   
-  /* Most common case is for the unique dimension full name to match the full variable name   */
+  /* Most common case is that unique dimension full name matches full variable name */
   if(!strcmp(var_trv->nm_fll,dmn_trv->nm_fll)){
     if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_trv->nm_fll);
     return True;
-  }
+  } /* !strcmp() */
   
   /* Deal with in-scope cases */
   var_nm_fll_lng=strlen(var_trv->nm_fll);

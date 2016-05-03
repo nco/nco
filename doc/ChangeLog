@@ -1,6 +1,6 @@
 2016-05-03  Charlie Zender  <zender@uci.edu>
 
-	* Add stubs for checking CF "coordinates" attribute to infer grid
+	* Add stubs to check CF "coordinates" attribute to infer grid
 
 2016-05-02  Charlie Zender  <zender@uci.edu>
 
