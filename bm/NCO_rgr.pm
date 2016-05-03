@@ -30,7 +30,7 @@ use vars qw(
 	    $foo_fl $foo_tst $foo_x_fl $foo_xy_fl
 	    $foo_xymyx_fl $foo_y_fl $foo_yx_fl $mpi_prc $nco_D_flg $localhostname
 	    $nsr_xpc $omp_flg $opr_nm $opr_rgr_mpi $fl_out_rgn
-	    $fl_out $pth_rmt_scp_tst $prsrv_fl @tst_cmd $DATA $USER %NCO_RC
+	    $fl_out $pth_rmt_scp_tst $prsrv_fl @tst_cmd $HOME $DATA $USER %NCO_RC
 	    );
 
 sub tst_rgr {
@@ -123,12 +123,13 @@ print "\n";
     $opr_nm="ncclimo";
     $USER=$ENV{'USER'};
     $DATA=$ENV{'DATA'};
+    $HOME=$ENV{'HOME'};
 if($USER eq 'zender'){
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
 # ncwa -O -w area ${DATA}/ne30/clm/famipc5_ne30_v0.3_00003_ANN_197912_198311_climo.nc ~/foo.nc
 # ncks -O -H -u -C -v FSNT ~/foo.nc
 	$dsc_sng="ncclimo (depends on input files in ${DATA}/ne30/raw)";
-	$tst_cmd[0]="ncclimo -v FSNT,AODVIS,area -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm";
+	$tst_cmd[0]="ncclimo -v FSNT,AODVIS,area -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm > ${HOME}/foo.ncclimo";
 	$tst_cmd[1]="ncwa -O $fl_fmt $nco_D_flg -w area ${DATA}/ne30/clm/famipc5_ne30_v0.3_00003_ANN_197912_198311_climo.nc %tmp_fl_00%";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_00%";
 	$tst_cmd[3]="FSNT = 235.503 W/m2";
@@ -144,6 +145,7 @@ if($USER eq 'zender'){
 ####################
     $USER=$ENV{'USER'};
     $DATA=$ENV{'DATA'};
+    $HOME=$ENV{'HOME'};
 if($USER eq 'zender'){
 	# Regridding regression tests
 	# valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncks -O -D 5 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc ${DATA}/ne30/rgr/ne30_tst.nc ~/foo.nc > ~/foo 2>&1

@@ -4919,6 +4919,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     char *crd_nm[2]; /* [sng] Coordinate names */
     char *crd_sng; /* [sng] Coordinates attribute value */
     char *dmn_nm[2]; /* [sng] Dimension names */
+    char *unt_sng[2]; /* [sng] Units strings */
     char *var_nm; /* [sng] Coordinates variable name */
     int crd_id[2]; /* [id] Coordinate IDs */
     int dmn_id[2]; /* [id] Dimension IDs */
@@ -4940,6 +4941,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ncks -O -D 3 --rgr nfr=y --rgr_var=4LFTX_221_SPDY_S113 --rgr grid=~/grd_narr.nc ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc ~/foo.nc */
 
     char crd_sng[]="coordinates"; /* CF-standard coordinates attribute name */
+    char unt_sng[]="units"; /* netCDF-standard units attribute name */
     long att_sz;
     nc_type att_typ;
     
@@ -4954,6 +4956,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     cf->dmn_id[1]=NC_MIN_INT; /* [id] Dimension ID, second */
     cf->dmn_nm[0]=NULL; /* [sng] Dimension name, first */
     cf->dmn_nm[1]=NULL; /* [sng] Dimension name, second */
+    cf->unt_sng[0]=NULL; /* [sng] Units string, first coordinate */
+    cf->unt_sng[1]=NULL; /* [sng] Units string, second coordinate */
     cf->var_id=NC_MIN_INT; /* [id] Coordinate variable ID */
     cf->var_nm=NULL; /* [sng] Coordinates variable name */
     cf->var_type=NC_NAT; /* [enm] Coordinates variable type */
@@ -4998,11 +5002,24 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       goto skp_cf;
     } /* !rcd */ 
 
+    rcd=nco_inq_att_flg(in_id,cf->crd_id[0],unt_sng,&att_typ,&att_sz);
+    if(rcd == NC_NOERR && att_typ == NC_CHAR){
+      cf->unt_sng[0]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+      rcd+=nco_get_att(in_id,cf->crd_id[0],unt_sng,cf->unt_sng[0],att_typ);
+      /* NUL-terminate attribute before using strstr() */
+      *(cf->unt_sng[0]+att_sz)='\0';
+    } /* !rcd && att_typ */
+    rcd=nco_inq_att_flg(in_id,cf->crd_id[1],unt_sng,&att_typ,&att_sz);
+    if(rcd == NC_NOERR && att_typ == NC_CHAR){
+      cf->unt_sng[1]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+      rcd+=nco_get_att(in_id,cf->crd_id[1],unt_sng,cf->unt_sng[1],att_typ);
+      /* NUL-terminate attribute before using strstr() */
+      *(cf->unt_sng[1]+att_sz)='\0';
+    } /* !rcd && att_typ */
+      
     int dmn_nbr; /* [nbr] Number of dimensions */
-    int *dmn_ids; /* [id] Dimension IDs array */
 
     rcd=nco_inq_varndims(in_id,cf->crd_id[0],&dmn_nbr);
-    dmn_ids=(int *)nco_malloc(dmn_nbr*sizeof(int));
     rcd=nco_inq_vardimid(in_id,cf->crd_id[0],dmn_ids);
     cf->dmn_nm[0]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
     cf->dmn_nm[1]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
@@ -5020,6 +5037,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lon_nm_in=strdup(cf->crd_nm[1]);
     
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Coordinate %s has dimensions %s and %s.\n",nco_prg_nm_get(),fnc_nm,var_nm,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[0],cf->dmn_nm[0],cf->dmn_nm[1]);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Coordinates %s and %s \"units\" values are \"%s\" and \"%s\", respectively.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->crd_nm[1],cf->unt_sng[0] ? cf->unt_sng[0] : "(non-existent)",cf->unt_sng[1] ? cf->unt_sng[1] : "(non-existent)");
 
     /* Clean-up CF coordinates memory */
     if(cf->crd_nm[0]) cf->crd_nm[0]=(char *)nco_free(cf->crd_nm[0]);
@@ -5027,7 +5045,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(cf->crd_sng) cf->crd_sng=(char *)nco_free(cf->crd_sng);
     if(cf->dmn_nm[0]) cf->dmn_nm[0]=(char *)nco_free(cf->dmn_nm[0]);
     if(cf->dmn_nm[1]) cf->dmn_nm[1]=(char *)nco_free(cf->dmn_nm[1]);
-    if(dmn_ids) dmn_ids=(int *)nco_free(dmn_ids);
+    if(cf->unt_sng[0]) cf->unt_sng[0]=(char *)nco_free(cf->unt_sng[0]);
+    if(cf->unt_sng[1]) cf->unt_sng[1]=(char *)nco_free(cf->unt_sng[1]);
     //    if(foo) foo=(char *)nco_free(foo);
   } /* !var_nm */
 
