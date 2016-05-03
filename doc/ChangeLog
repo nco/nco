@@ -1,5 +1,7 @@
 2016-05-03  Charlie Zender  <zender@uci.edu>
 
+	* Inferring grids from CF "coordinates" attribute works, now remapping needs same logic...
+
 	* Check units of coordinate variables
 
 	* Add stubs to check CF "coordinates" attribute to infer grid

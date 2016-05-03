@@ -993,7 +993,21 @@ extern "C" {
     nco_grd_lon_bb, /* Longitude grid determined by bounding box (lon_wst/lon_est) and gridcell number (lon_nbr) */
   } nco_grd_lon_typ_enm;
 
-  /* Climatology bounds structure */
+  /* CF Coordinates structure (20160503: Used only in ncks.c for to infer grids from CF coordinates convention) */
+  typedef struct{ /* clm_bnd_sct */
+    char *crd_nm[2]; /* [sng] Coordinate names */
+    char *crd_sng; /* [sng] Coordinates attribute value */
+    char *dmn_nm[2]; /* [sng] Dimension names */
+    char *unt_sng[2]; /* [sng] Units strings */
+    char *var_nm; /* [sng] Coordinates variable name */
+    int crd_id[2]; /* [id] Coordinate IDs */
+    int dmn_id[2]; /* [id] Dimension IDs */
+    int var_id; /* [id] Coordinate variable ID */
+    nc_type var_type; /* [enm] Coordinates variable type */
+    nco_bool crd; /* [flg] CF coordinates information is complete */
+  } cf_crd_sct; /* end CF coordinates structure */
+
+  /* Climatology bounds structure (20160503: Used only in ncra.c for climos) */
   typedef struct{ /* clm_bnd_sct */
     char *bnd_dmn_nm; /* [sng] Bounds dimension name name */
     char *clm_bnd_nm; /* [sng] Climatology bounds variable name (to create) */

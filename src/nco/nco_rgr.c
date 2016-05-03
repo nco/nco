@@ -4817,8 +4817,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int itr_cnt; /* Iteration counter */
   int lat_rnk; /* [nbr] Rank of latitude coordinate */
   int lon_rnk; /* [nbr] Rank of longitude coordinate */
-  int lat_ctr_id; /* [id] Latitude centers of rectangular grid variable ID */
-  int lon_ctr_id; /* [id] Longitude centers of rectangular grid variable ID */
+  int lat_ctr_id=NC_MIN_INT; /* [id] Latitude centers of rectangular grid variable ID */
+  int lon_ctr_id=NC_MIN_INT; /* [id] Longitude centers of rectangular grid variable ID */
   int lat_bnd_id=NC_MIN_INT; /* [id] Latitude centers of rectangular grid variable ID */
   int lon_bnd_id=NC_MIN_INT; /* [id] Longitude centers of rectangular grid variable ID */
   int msk_id=NC_MIN_INT; /* [id] Mask variable ID */
@@ -4902,8 +4902,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *lon_bnd_nm=NULL_CEWI; /* [sng] Name of longitude boundary variable */
   int dmn_id_bnd=NC_MIN_INT; /* [id] Dimension ID for spatial bounds */
   int dmn_id_col=NC_MIN_INT; /* [id] Dimension ID for unstructured grids */
-  int dmn_id_lat; /* [id] Dimension ID */
-  int dmn_id_lon; /* [id] Dimension ID */
+  int dmn_id_lat=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_lon=NC_MIN_INT; /* [id] Dimension ID */
 
   /* Locate dimensions that must be present in unstructured files */
   if((rcd=nco_inq_dimid_flg(in_id,"ncol",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("ncol"); /* CAM */
@@ -4914,20 +4914,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(col_dmn_nm) flg_grd_1D=True;
 
 #if 1
-  /* CF Coordinates structure */
-  typedef struct{ /* clm_bnd_sct */
-    char *crd_nm[2]; /* [sng] Coordinate names */
-    char *crd_sng; /* [sng] Coordinates attribute value */
-    char *dmn_nm[2]; /* [sng] Dimension names */
-    char *unt_sng[2]; /* [sng] Units strings */
-    char *var_nm; /* [sng] Coordinates variable name */
-    int crd_id[2]; /* [id] Coordinate IDs */
-    int dmn_id[2]; /* [id] Dimension IDs */
-    int var_id; /* [id] Coordinate variable ID */
-    nc_type var_type; /* [enm] Coordinates variable type */
-    nco_bool crd; /* [flg] CF coordinates information is complete */
-  } cf_crd_sct; /* end CF coordinates structure */
-
   cf_crd_sct *cf=NULL;
   char *var_nm; /* [sng] Variable for special regridding treatment */
   nco_bool flg_cf=False; /* [flg] Follow CF Coordinates convention to find and infer grid */
@@ -5005,14 +4991,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     rcd=nco_inq_att_flg(in_id,cf->crd_id[0],unt_sng,&att_typ,&att_sz);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
       cf->unt_sng[0]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-      rcd+=nco_get_att(in_id,cf->crd_id[0],unt_sng,cf->unt_sng[0],att_typ);
+      rcd=nco_get_att(in_id,cf->crd_id[0],unt_sng,cf->unt_sng[0],att_typ);
       /* NUL-terminate attribute before using strstr() */
       *(cf->unt_sng[0]+att_sz)='\0';
     } /* !rcd && att_typ */
     rcd=nco_inq_att_flg(in_id,cf->crd_id[1],unt_sng,&att_typ,&att_sz);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
       cf->unt_sng[1]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-      rcd+=nco_get_att(in_id,cf->crd_id[1],unt_sng,cf->unt_sng[1],att_typ);
+      rcd=nco_get_att(in_id,cf->crd_id[1],unt_sng,cf->unt_sng[1],att_typ);
       /* NUL-terminate attribute before using strstr() */
       *(cf->unt_sng[1]+att_sz)='\0';
     } /* !rcd && att_typ */
@@ -5026,11 +5012,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       (void)fprintf(stderr,"%s: ERROR %s reports coordinates variable %s has %i dimension(s).\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],dmn_nbr);
       nco_exit(EXIT_FAILURE);
     } /* !dmn_nbr */
-    rcd=nco_inq_vardimid(in_id,cf->crd_id[0],dmn_ids);
+    rcd=nco_inq_vardimid(in_id,cf->crd_id[0],cf->dmn_id);
     cf->dmn_nm[0]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
     cf->dmn_nm[1]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
-    rcd=nco_inq_dimname(in_id,dmn_ids[0],cf->dmn_nm[0]);
-    rcd=nco_inq_dimname(in_id,dmn_ids[1],cf->dmn_nm[1]);
+    rcd=nco_inq_dimname(in_id,cf->dmn_id[0],cf->dmn_nm[0]);
+    rcd=nco_inq_dimname(in_id,cf->dmn_id[1],cf->dmn_nm[1]);
     
     /* Dimensions and coordinates have been vetted. Store as primary lookup names. */
     dmn_id_lat=cf->dmn_id[0];
