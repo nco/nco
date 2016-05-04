@@ -1632,12 +1632,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     /* Dimensions and coordinates have been vetted. Store as primary lookup names. */
     dmn_id_lat=cf->dmn_id[0];
     dmn_id_lon=cf->dmn_id[1];
-    /* fxm: subtle distinction: lat_nm_in is coordinate name when specified from command-line, dimension name when found through CF-method */
+    /* NB: lat_nm_in is coordinate name when specified from command-line, dimension name when found through CF-method */
     lat_nm_in=strdup(cf->dmn_nm[0]);
     lon_nm_in=strdup(cf->dmn_nm[1]);
-    //lat_nm_in=strdup(cf->crd_nm[0]);
-    //lon_nm_in=strdup(cf->crd_nm[1]);
-    // Next four lines not needed in nco_rgr_map()
+    // nco_rgr_map() only needs dimension names (it reads input coordinates from map- not data-file) so next four lines unnecessary
     //lat_ctr_id=cf->crd_id[0];
     //lon_ctr_id=cf->crd_id[1];
     //lat_dmn_nm=strdup(cf->dmn_nm[0]);
@@ -5158,9 +5156,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Dimensions and coordinates have been vetted. Store as primary lookup names. */
     dmn_id_lat=cf->dmn_id[0];
     dmn_id_lon=cf->dmn_id[1];
+    /* NB: lat_nm_in is coordinate name when specified from command-line, dimension name when found through CF-method */
     lat_nm_in=strdup(cf->crd_nm[0]);
     lon_nm_in=strdup(cf->crd_nm[1]);
-    // Next four lines not needed in nco_rgr_map()
+    // nco_rgr_map() only needs dimension names (it reads input coordinates from map- not data-file) so next four lines unnecessary
     lat_ctr_id=cf->crd_id[0];
     lon_ctr_id=cf->crd_id[1];
     lat_dmn_nm=strdup(cf->dmn_nm[0]);
