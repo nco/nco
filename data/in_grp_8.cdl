@@ -16,10 +16,10 @@ netcdf in_grp_8 {
     double time(time);
     float snd(time,lat,lon);
     data:
-    lat=1,2;
-    lon=10,20,30;
-    time=100,200;
-    snd=1,2,3,4,5,6,7,8,9,10,11,12;
+    lat=0,1;
+    lon=0,1,2;
+    time=0,1;
+    snd=0,1,2,3,4,5,6,7,8,9,10,11;
   } // end g1
   
   group: g2 { 
@@ -33,10 +33,10 @@ netcdf in_grp_8 {
     double time(time);
     float snd(time,lat,lon);
     data:
-    lat=1,2;
-    lon=10,20,30;
-    time=100,200;
-    snd=1,2,3,4,5,6,7,8,9,10,11,12;
+    lat=0,1;
+    lon=0,1,2;
+    time=0,1;
+    snd=0,1,2,3,4,5,6,7,8,9,10,11;
   } // end g2
  
 } // root group

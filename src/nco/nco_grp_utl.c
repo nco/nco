@@ -4913,10 +4913,8 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
   char *rec_dmn_nm_out_crr; /* [sng] Name of record dimension, if any, required by re-order */
   char *rec_dmn_nm_in; /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out; /* [sng] Record dimension name, re-ordered */
-  int dmn_idx_out_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, output->input (Stored in GTT) */
   int nco_prg_id; /* [enm] Program ID */
   nco_bool REDEFINED_RECORD_DIMENSION; /* [flg] Re-defined record dimension */
-  nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension (Stored in GTT) */
   nm_lst_sct *rec_dmn_nm; /* [sct] Record dimension names array */
 
   /* Get Program ID */
@@ -4929,6 +4927,9 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
 
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
+
+    int *dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
+    nco_bool *dmn_rvr_in=NULL; /* [flg] Reverse dimension */
 
     /* Obtain variable GTT *pointer using full variable name */
     trv_sct *var_trv=trv_tbl_var_nm_fll(var_prc[idx_var_prc]->nm_fll,trv_tbl);
@@ -4954,13 +4955,14 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
       rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
     } /* !rec_dmn_nm->lst */
 
+    dmn_idx_out_in=(int *)nco_malloc(var_prc[idx_var_prc]->nbr_dim*sizeof(int));
+    dmn_rvr_in=(nco_bool *)nco_malloc(var_prc[idx_var_prc]->nbr_dim*sizeof(nco_bool));
     /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
     rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
 
+    /* Transfer dimension structures to be re-ordered into GTT */
     var_trv->dmn_idx_out_in=(int *)nco_malloc(var_trv->nbr_dmn*sizeof(int));
     var_trv->dmn_rvr_in=(nco_bool *)nco_malloc(var_trv->nbr_dmn*sizeof(nco_bool));
-
-    /* Transfer dimension structures to be re-ordered into GTT */
     for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
       var_trv->dmn_idx_out_in[idx_dmn]=dmn_idx_out_in[idx_dmn];
       var_trv->dmn_rvr_in[idx_dmn]=dmn_rvr_in[idx_dmn];
@@ -4998,6 +5000,9 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
       rec_dmn_nm=(nm_lst_sct *)nco_free(rec_dmn_nm);
     } /* !rec_dmn_nm */
 
+    /* Free current dimension correspondence */
+    dmn_idx_out_in=(int *)nco_free(dmn_idx_out_in);
+    dmn_rvr_in=(nco_bool *)nco_free(dmn_rvr_in);
     if(rec_dmn_nm_in)rec_dmn_nm_in=(char *)nco_free(rec_dmn_nm_in);
     if(rec_dmn_nm_out)rec_dmn_nm_out=(char *)nco_free(rec_dmn_nm_out);
 
@@ -5065,6 +5070,9 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
     /* Update is_rec_var flag for var_prc */
     for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
 
+      int *dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
+      dmn_idx_out_in=(int *)nco_malloc(var_prc[idx_var_prc]->nbr_dim*sizeof(int));
+
       /* Match by full variable name  */
       if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
 
@@ -5107,8 +5115,8 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
               if(NEEDS_REORDER){
 
                 /* NB:
-		   --- use found index of processed idx_var_prc_out
-		   --- use search index of GTT idx_var_mrk */
+                 --- use found index of processed idx_var_prc_out
+                 --- use search index of GTT idx_var_mrk */
 
                 /* Find index of processed variables that corresponds to found GTT variable */
                 nco_var_prc_idx_trv(var_trv_mrk.nm_fll,var_prc_out,nbr_var_prc,&idx_var_prc_out);        
@@ -5126,8 +5134,8 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
                 if(dmn_out_idx == var_prc_out[idx_var_prc_out]->nbr_dim){
                   /* ...No. Variable will be non-record---does this change its status?... */
                   if(nco_dbg_lvl_get() >= nco_dbg_var)
-		    if(var_prc_out[idx_var_prc_out]->is_rec_var) 
-		      (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
+                    if(var_prc_out[idx_var_prc_out]->is_rec_var)
+                      (void)fprintf(stdout, "%s: INFO Requested re-order will change variable %s from record to non-record variable\n", nco_prg_nm_get(), var_prc_out[idx_var_prc_out]->nm);
                   /* Assign record flag dictated by re-order */
                   var_prc_out[idx_var_prc_out]->is_rec_var=False; 
                 }else{ /* ...otherwise variable will be record variable... */
@@ -5195,6 +5203,8 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
           } /* NEEDS_REORDER */
         } /* ...look if there is a record name to find  */
       } /* Match by full variable name  */
+      /* Free current dimension correspondence */
+      dmn_idx_out_in=(int *)nco_free(dmn_idx_out_in);
     } /* end loop over var_prc */
   } /* Loop table */
 

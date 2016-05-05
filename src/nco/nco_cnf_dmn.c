@@ -505,16 +505,14 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   
   /* On entry to this section of code, we assume:
      1. var_out duplicates var_in */
-  
+ 
   /* Create complete 1-to-1 ordered list of dimensions in new output variable */
   /* For each dimension in re-ordered dimension list... */
   for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++){
     /* ...see if re-order dimension exists in dmn_in dimension list... */
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
-      
-      /* ...must compare by dimension IDs ...dimensions can have same names  */
-      if(var_in->dim[dmn_in_idx]->id == dmn_rdr[dmn_rdr_idx]->id){
-	
+      /* ...by comparing names, not dimension IDs... */
+      if(!strcmp(var_in->dim[dmn_in_idx]->nm,dmn_rdr[dmn_rdr_idx]->nm)){
         dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_idx;
         dmn_idx_shr_rdr[dmn_shr_nbr]=dmn_rdr_idx;
         dmn_idx_shr_in[dmn_shr_nbr]=dmn_in_idx;

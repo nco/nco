@@ -130,7 +130,7 @@ main(int argc,char **argv)
   ddra_info_sct ddra_info={.flg_ddra=False};
 #endif /* !__cplusplus */
 
-  dmn_sct **dmn_rdr=NULL; /* [sct] Dimension structures to be re-ordered */
+  dmn_sct **dmn_rdr_trv=NULL; /* [sct] Dimension structures to be re-ordered (from global table) */
 
   extern char *optarg;
   extern int optind;
@@ -151,6 +151,7 @@ main(int argc,char **argv)
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
+  int dmn_rdr_nbr_trv=0; /* [nbr] Number of dimension to re-order (from global table) */
   int dmn_rdr_nbr_in=0; /* [nbr] Original number of dimension to re-order */
   int fl_idx=int_CEWI;
   int fl_nbr=0;
@@ -164,7 +165,6 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
-  int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
@@ -622,7 +622,7 @@ main(int argc,char **argv)
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
 
   /* Create list of dimensions to average(ncwa)/re-order(ncpdq) */
-  if(IS_REORDER) (void)nco_dmn_avg_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr_in,flg_dmn_prc_usr_spc,False,trv_tbl,&dmn_rdr,&dmn_rdr_nbr);
+  if(IS_REORDER) (void)nco_dmn_avg_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr_in,flg_dmn_prc_usr_spc,False,trv_tbl,&dmn_rdr_trv,&dmn_rdr_nbr_trv);
 
   /* Fill-in variable structure list for all extracted variables */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
@@ -642,7 +642,7 @@ main(int argc,char **argv)
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc,trv_tbl);
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr_trv,dmn_rdr_nbr_trv,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc,trv_tbl);
 
   /* Store processed and fixed variables info into GTT */
   (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc,nbr_var_fix,var_fix,trv_tbl);
@@ -664,8 +664,40 @@ main(int argc,char **argv)
   /* Initialize chunking from user-specified inputs */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
-  /* Determine and set new dimensionality in metadata of each re-ordered variable */
-  if(IS_REORDER) (void)nco_var_dmn_rdr_mtd_trv(trv_tbl,nbr_var_prc,var_prc,var_prc_out,nbr_var_fix,var_fix,dmn_rdr,dmn_rdr_nbr,dmn_rvr_rdr);
+  if(IS_REORDER){
+
+    dmn_sct **dmn_rdr=NULL; /* [sct] Dimension structures to be re-ordered */
+
+    /* "dmn_rdr" is only used for input to function nco_var_dmn_rdr_mtd(), that compares dimensions by short name;
+       this is because the input list of -a are dimension short names; group support is obtained combining with -g option;
+       on input it contains a list of dimension short names, that together with input array "dmn_rvr_rdr"
+       of flags that determine if dimension at index dmn_rvr_rdr[index] is to be reversed; uses cases:
+       in_grp_8.nc contains the dimensions /g1/lat, /g1/lon, /g2/lat, /g2/lon
+       ncpdq -O -v lat,lon -a -lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
+       "dmn_rdr" contains names ["lat"], ["lon"],  striped of '-' (minus) sign and dmn_rvr_rdr contains [True],[True ]
+       ncpdq -O -v lat,lon -a lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
+       "dmn_rdr" contains names ["lat"], ["lon"], and dmn_rvr_rdr contains [False],[True ] */
+
+    /* Form list of re-ordering dimensions from extracted input dimensions */
+    dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
+
+    /* Initialize re-ordering dimensions; initialize only short name */
+    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
+      dmn_rdr[idx_rdr]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+      dmn_rdr[idx_rdr]->nm=(char *)strdup(dmn_rdr_lst_in[idx_rdr]);
+      dmn_rdr[idx_rdr]->nm_fll=NULL;
+      dmn_rdr[idx_rdr]->id=-1;
+    }
+
+    /* Determine and set new dimensionality in metadata of each re-ordered variable */
+    (void)nco_var_dmn_rdr_mtd_trv(trv_tbl,nbr_var_prc,var_prc,var_prc_out,nbr_var_fix,var_fix,dmn_rdr,dmn_rdr_nbr,dmn_rvr_rdr);
+
+    for(idx_rdr=0; idx_rdr<dmn_rdr_nbr_in; idx_rdr++){
+      dmn_rdr[idx_rdr]->nm=(char *)nco_free(dmn_rdr[idx_rdr]->nm);
+      dmn_rdr[idx_rdr]=(dmn_sct *)nco_free(dmn_rdr[idx_rdr]);
+    }
+    dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
+  } /* IS_REORDER */
 
   /* Alter metadata for variables that will be packed */
   if(nco_pck_plc != nco_pck_plc_nil){
@@ -898,7 +930,12 @@ main(int argc,char **argv)
       if(dmn_rdr_nbr_in > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
       dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
       /* Free dimension list pointers */
-      dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
+      for(idx_rdr=0; idx_rdr<dmn_rdr_nbr_trv; idx_rdr++){
+        dmn_rdr_trv[idx_rdr]->nm=(char *)nco_free(dmn_rdr_trv[idx_rdr]->nm);
+        dmn_rdr_trv[idx_rdr]->nm_fll=(char *)nco_free(dmn_rdr_trv[idx_rdr]->nm_fll);
+        dmn_rdr_trv[idx_rdr]=(dmn_sct *)nco_free(dmn_rdr_trv[idx_rdr]);
+      }
+      dmn_rdr_trv=(dmn_sct **)nco_free(dmn_rdr_trv);
       /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */
     } /* endif dmn_rdr_nbr > 0 */
     if(nco_pck_plc != nco_pck_plc_nil){

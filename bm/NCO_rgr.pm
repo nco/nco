@@ -3361,19 +3361,52 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 #ncpdq #41
 #ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc ~/foo.nc
-   $dsc_sng="(Groups) Reverse -a lat -g g24 several groups (expect failure TODO)";
+   $dsc_sng="(Groups) Reverse -a lat -g g24 several groups";
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat -g g23,g24 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -v lat -g g24 %tmp_fl_00%";
    $tst_cmd[2]="lat[1]=-60 degrees_north";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-   $#tst_cmd=0; # Reset array      
+   $#tst_cmd=0; # Reset array    
+
+#ncpdq #42
+#ncpdq -O -v lat,lon -a -lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
+#ncks -H out1.nc
+   $dsc_sng="(Groups) Reverse -a -lat,-lon several groups";
+   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat,-lon -g g1,g2 $in_pth_arg in_grp_8.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -H -v lon -g g2 %tmp_fl_00%";
+   $tst_cmd[2]="lon[2]=0";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array    
+
+#ncpdq #43
+#ncpdq -O -v lat,lon -a lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
+#ncks -H out1.nc
+   $dsc_sng="(Groups) Reverse -a lat,-lon several groups";
+   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a lat,-lon -g g1,g2 $in_pth_arg in_grp_8.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -H -v lon -g g2 %tmp_fl_00%";
+   $tst_cmd[2]="lon[2]=0";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array  
+
+#ncpdq #44
+#ncpdq -O -v lat,lon -a -lat,lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
+#ncks -H out1.nc
+   $dsc_sng="(Groups) Reverse -a -lat,lon several groups";
+   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat,lon -g g1,g2 $in_pth_arg in_grp_8.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -H -v lon -g g2 %tmp_fl_00%";
+   $tst_cmd[2]="lon[2]=2";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array               
 
 #####################
 #### ncpdq PACK GROUP tests 
 #####################   
 
-#ncpdq #42
+#ncpdq #45
 #ncpdq -h -O -P all_new -v upk in.nc ~/foo.nc
 #ncpdq -h -O -P upk -v upk ~/foo.nc ~/foo.nc
 #ncks -C -H -s '%g' -v upk ~/foo.nc
@@ -3387,7 +3420,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array  
 
-#ncpdq #43
+#ncpdq #46
 # same as ncpdq #30
 # ncpdq -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 in_grp_3.nc ~/foo.nc
 # ncks -g g19g4 -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 ~/foo.nc
@@ -3401,7 +3434,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array  
    	
-#ncpdq #44
+#ncpdq #47
 # ncpdq -O -4 -a lon,lat --cnk_min=1 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct ~/nco/data/in.nc ~/foo.nc
 # ncks -m ~/foo.nc | grep 'lat_2D_rct dimension 0'
    $dsc_sng="Chunking -a lon,lat --cnk_min=1 --cnk_plc=xpl --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
@@ -3414,7 +3447,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 } ##### Group tests	
 	
-#ncpdq #45
+#ncpdq #48
     $dsc_sng="Unpack 1D variable twice to verify first unpacking does not inadvertently store packing attributes";
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 %tmp_fl_00% %tmp_fl_01%";
@@ -3424,7 +3457,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
 	
-#ncpdq #46
+#ncpdq #49
     $dsc_sng="Unpack 1D variable with netCDF convention";
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
@@ -3433,7 +3466,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
 	
-#ncpdq #47
+#ncpdq #50
     $dsc_sng="Unpack 1D variable with HDF convention";
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk --hdf_upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
@@ -3442,7 +3475,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
 	
-#ncpdq #48
+#ncpdq #51
     $dsc_sng="Re-pack 1D variable from HDF convention to netCDF convention";
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P xst_new --hdf_upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 %tmp_fl_00% %tmp_fl_01%";
