@@ -451,7 +451,7 @@ protected DGT:     ('0'..'9');
 protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 protected XPN:     ( 'e' | 'E' ) ( '+' | '-' )? ('0'..'9')+ ;
-protected VAR_NM_QT: (LPHDGT|'-'|'+'|'.'|'('|')'|':' )+  ;      
+protected VAR_NM_QT: (LPHDGT|'-'|'+'|'.'|'('|')'|':'|' ' )+  ;      
 
 protected BLASTOUT: .
          {

@@ -1,3 +1,9 @@
+2016-05-05  Henry Butowsky  <henryb@hush.com>
+	* added space ' ' to the allowed chars in a quoted var or att so the exp vor this look like:
+	  VAR_NM_QT: (LPHDGT|'-'|'+'|'.'|'('|')'|':'|' ' )+  ;
+	  The full NetCDF specification for ID includes UTf8 characters - save that for another day
+	 
+
 2016-05-04  Charlie Zender  <zender@uci.edu>
 
 	* Fix nces tabs regression test
