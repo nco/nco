@@ -16294,6 +16294,15 @@ sbatch -A acme --nodes=12 --time=03:00:00 --partition=regular --job-name=ncclimo
        --mail-type=END --error=ncclimo.err --output=ncclimo.out ncclimo.slurm
 @end verbatim
 @end example
+Notice that Cobalt and @acronym{SLURM} require the introductory
+shebang-interpreter line (@code{#!/bin/bash}) which @acronym{PBS} does
+not need.  
+Set only the scheduler batch queue parameters mentioned above. 
+In @acronym{MPI}-mode, @command{ncclimo} determines the appropriate
+number of tasks-per-node based on the number of nodes available and
+script internals (like load-balancing for regridding). 
+Hence do not set a tasks-per-node parameter with scheduler configuration
+parameters as this could cause conflicts.
 
 @unnumberedsubsec What does @command{ncclimo} do?
 For monthly climatologies (e.g., @acronym{JAN}), @command{ncclimo} passes
