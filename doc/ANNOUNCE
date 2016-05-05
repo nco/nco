@@ -129,6 +129,16 @@ K. NCO now treats as associated coordinates all variables listed in
    dimension. 
    http://nco.sf.net/nco.html#grid_mapping
 
+L. ncks now now follows the CF "coordinates" convention when inferring
+   grids or remapping. One specifies (with --rgr_var var_nm) the
+   variable that may have the "coordinates" attribute, and NCO will
+   inspect and apply the "coordinates" convention for that variable
+   for grid generation and remapping. 
+   ncks --rgr_var=var_nm --rgr nfr=y --rgr grid=grd.nc in.nc foo.nc
+   ncks --rgr_var=var_nm --map map.nc in.nc out.nc
+   Soon this capability will be merged into ncremap too.
+   http://nco.sf.net/nco.html#regrid
+
 BUG FIXES:
 
 A. Correct ncatted documentation for "append" mode.
@@ -137,6 +147,16 @@ B. Fix Append mode to follow same code path and defaults when
    requested with -A and with interactive responses to the
    exit/append/overwrite question. Thanks to Parker Norton for
    pointing out this inconsistency. 
+
+C. ncpdq fix complex reordering in group hierarchies.
+   Previously ncpdq could misorder dimensions when multiple
+   different dimensions shared the same short name (in different
+   groups). Thanks to Pedro Vicente for tracking-down and fixing
+   this bug! And finding and fixing another ncpdq bug that had
+   not yet been reported in the wild.
+
+D. ncap2 fix bug propagating attributes of variables with whitespace
+   in their names. 
 
 KNOWN PROBLEMS DUE TO NCO:
 
