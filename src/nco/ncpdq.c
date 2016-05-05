@@ -670,13 +670,15 @@ main(int argc,char **argv)
 
     /* "dmn_rdr" is only used for input to function nco_var_dmn_rdr_mtd(), that compares dimensions by short name;
        this is because the input list of -a are dimension short names; group support is obtained combining with -g option;
-       on input it contains a list of dimension short names, that together with input array "dmn_rvr_rdr"
-       of flags that determine if dimension at index dmn_rvr_rdr[index] is to be reversed; uses cases:
+       on input it contains a list of dimension short names (in "dmn_rdr"), that together with input array "dmn_rvr_rdr"
+       of flags that determine if dimension at index dmn_rvr_rdr[index] is to be reversed; use cases:
        in_grp_8.nc contains the dimensions /g1/lat, /g1/lon, /g2/lat, /g2/lon
        ncpdq -O -v lat,lon -a -lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
        "dmn_rdr" contains names ["lat"], ["lon"],  striped of '-' (minus) sign and dmn_rvr_rdr contains [True],[True ]
+       output is reversed /g1/lat, /g1/lon, /g2/lat, /g2/lon
        ncpdq -O -v lat,lon -a lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
-       "dmn_rdr" contains names ["lat"], ["lon"], and dmn_rvr_rdr contains [False],[True ] */
+       "dmn_rdr" contains names ["lat"], ["lon"], and dmn_rvr_rdr contains [False],[True ] 
+       output is reversed /g1/lon, /g2/lon */
 
     /* Form list of re-ordering dimensions from extracted input dimensions */
     dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
