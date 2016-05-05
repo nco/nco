@@ -1244,7 +1244,7 @@ if($USER eq 'zender'){
     $dsc_sng="Test tabs on coordinate";
     $tst_cmd[0]="ncra -Y ncfe -y tabs -v lond $omp_flg -O $fl_fmt $nco_D_flg $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v lon -d lon,3 %tmp_fl_00%";
-    $tst_cmd[2]="lon[3] = 270";
+    $tst_cmd[2]="lon[3]=270";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
