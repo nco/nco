@@ -1,8 +1,16 @@
+2016-05-06  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.0 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.0 final changes';git push
+	git tag -a 4.6.0 -m 'Version 4.6.0 new features: ncclimo, ncap2	vlists, climatology bounds, terraref, ncpdq fixes';git push --tags
+
+	* Pedro committed ncpdq fixes
+
 2016-05-05  Henry Butowsky  <henryb@hush.com>
-	* added space ' ' to the allowed chars in a quoted var or att so the exp vor this look like:
+
+	* Add space ' ' to allowed chars in a quoted var or att which can be:
 	  VAR_NM_QT: (LPHDGT|'-'|'+'|'.'|'('|')'|':'|' ' )+  ;
-	  The full NetCDF specification for ID includes UTf8 characters - save that for another day
-	 
+	  Full NetCDF specification for ID includes UTf8 characters - save that for another day
 
 2016-05-04  Charlie Zender  <zender@uci.edu>
 
