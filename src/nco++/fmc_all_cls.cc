@@ -378,7 +378,8 @@
      // deal with is_miss in a seperate function     
      if(fdx==NUM_MISS||fdx==HAS_MISS)
        return is_fnd(is_mtd, vtr_args,fmc_obj,walker);           
-   
+     if(fdx==GET_MISS)       
+       return get_fnd(is_mtd, vtr_args,fmc_obj,walker);             
   
 
     if( fdx==SET_MISS || fdx==CH_MISS) {
@@ -411,39 +412,6 @@
 
 
     /* Deal with GET_MISS as its different from other methods */
-    if(fdx==GET_MISS){
-      var_sct *var_tmp=NULL_CEWI;
-      var_sct *var_ret=NULL_CEWI;
-   
-      var_tmp=prs_arg->ncap_var_init(va_nm,false);
-
-      // Initial scan
-      if(prs_arg->ntl_scn) 
-        if(var_tmp)  
-	  var_ret= ncap_sclr_var_mk(SCS ("~utility_function"),var_tmp->type,false);
-        else
-	  var_ret=ncap_var_udf("~utility_function");
-
-      // Final scan
-      if(!prs_arg->ntl_scn){
-        if(var_tmp){
-           // nb ncap_sclr_var_mk() calls nco_mss_val_mk() and fills var_ret with the default fill value
-           // for that type.  So if the var has no missing value then this is the value returned 
-           // Default fill  values are defined in  netcdf.h . 
-           var_ret=ncap_sclr_var_mk(SCS("~utility_function"),var_tmp->type,true);
-           if(var_tmp->has_mss_val)
-             (void)memcpy(var_ret->val.vp, var_tmp->mss_val.vp,nco_typ_lng(var_tmp->type)); 
-        }else{          
-        /* Cant find variable blow out */ 
-          serr=sfnm+ " Unable to locate missing value for "+ va_nm;
-          err_prn(fnc_nm,serr);
-        } 
-      } // end else
- 
-      if(var_tmp) var_tmp=nco_var_free(var_tmp);
-
-      return var_ret; 	
-     } // end GET_MISS 
 
 
     if(prs_arg->ntl_scn) {
@@ -629,7 +597,89 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
     else 
       return ncap_sclr_var_mk(SCS("~utility_function"),(nco_int)icnt);
 }  
-    
+
+ 
+// custom function for GET_MISS
+var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("srt_cls::imap_fnd");
+    int nbr_args;
+    int fdx=fmc_obj.fdx();
+    var_sct *var=NULL_CEWI;
+    var_sct *var_ret=NULL_CEWI;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    vtl_typ lcl_typ;
+    std::string va_nm;
+    std::string susg;
+    std::string serr;
+    prs_cls *prs_arg=walker.prs_arg;    
+
+
+    nbr_args=args_vtr.size(); 
+
+    if(nbr_args ==0) 
+       err_prn(fnc_nm," \""+sfnm+"\" has been called with no arguments"); 
+
+
+      
+    lcl_typ=expr_typ(args_vtr[0]);         
+
+    if(lcl_typ != VVAR &&  lcl_typ != VPOINTER ) 
+    {
+      serr="The first operand of the " + sfnm+ " must be a variable identifier or a variable pointer only.";
+      err_prn(fnc_nm,serr);
+    }
+
+    if(lcl_typ==VVAR )       
+       va_nm=args_vtr[0]->getText();
+    else if(lcl_typ==VPOINTER)
+    { 
+      // get contents of att for var-pointer  
+      std::string att_nm=args_vtr[0]->getFirstChild()->getText();
+      va_nm=ncap_att2var(prs_arg,att_nm);
+    }
+
+
+    if(va_nm.size())
+       var=prs_arg->ncap_var_init(va_nm,false);
+
+    // Initial scan
+    if(prs_arg->ntl_scn) 
+    {
+        if(var)  
+	  var_ret= ncap_sclr_var_mk(SCS ("~utility_function"),var->type,false);
+        else
+	  var_ret=ncap_var_udf("~utility_function");
+
+        nco_var_free(var);  
+        return var_ret;      
+    }     
+
+    // Final scan
+    if(var)
+    {
+        // nb ncap_sclr_var_mk() calls nco_mss_val_mk() and fills var_ret with the default fill value
+	// for that type.  So if the var has no missing value then this is the value returned 
+	// Default fill  values are defined in  netcdf.h . 
+	var_ret=ncap_sclr_var_mk(SCS("~utility_function"),var->type,true);
+        if(var->has_mss_val)
+	  (void)memcpy(var_ret->val.vp, var->mss_val.vp,nco_typ_lng(var->type)); 
+    }
+    else
+    {          
+        /* Cant find variable blow out */ 
+        serr=sfnm+ " Unable to locate missing value for "+ va_nm;
+        err_prn(fnc_nm,serr);
+    } 
+
+ 
+    if(var) 
+      var=nco_var_free(var);
+
+    return var_ret; 	
+
+} 
+
+
 
 
 
