@@ -652,9 +652,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   char *att_val;
   char *cnv_sng=NULL_CEWI;
   /* netCDF standard is uppercase Conventions, though some models user lowercase */
-  char cnv_sng_UC[]="Conventions"; /* Unidata standard     string (uppercase) */
-  char cnv_sng_LC[]="conventions"; /* Unidata non-standard string (lowercase) */
-  char cnv_sng_tps[]="Title"; /* Tempest uses "Title" not "Conventions" attribute */
+  char cnv_sng_UC[]="Conventions"; /* [sng] Unidata standard     string (uppercase) */
+  char cnv_sng_LC[]="conventions"; /* [sng] Unidata non-standard string (lowercase) */
+  char cnv_sng_tps[]="Title"; /* [sng] Tempest uses "Title" not "Conventions" attribute */
   char name0_sng[]="name0"; /* [sng] Attribute where Tempest stores least-rapidly-varying dimension name */
   
   long att_sz;
@@ -1005,7 +1005,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Ensure coordinates are in degrees not radians for simplicity and CF-compliance
      NB: ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc has [xy]?_a in degrees and [xy]?_b in radians! */
   nco_bool flg_crd_rdn=False; /* [flg] Destination coordinates are in radians not degrees */
-  char unt_sng[]="units";
+  char unt_sng[]="units"; /* [sng] netCDF-standard units attribute name */
   rcd=nco_inq_att_flg(in_id,dst_grd_ctr_lat_id,unt_sng,&att_typ,&att_sz);
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
     att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
@@ -1543,11 +1543,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        4LFTX_221_SPDY_S113:coordinates = "gridlat_221 gridlon_221" ;
        Usage:
        ncks -O -D 3 --rgr nfr=y --rgr_var=ALBDO_221_SFC_S113 --rgr grid=~/grd_narr.nc ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc ~/foo.nc */
-
     char crd_sng[]="coordinates"; /* CF-standard coordinates attribute name */
-    char unt_sng[]="units"; /* netCDF-standard units attribute name */
-    long att_sz;
-    nc_type att_typ;
     
     cf=(cf_crd_sct *)nco_malloc(sizeof(cf_crd_sct));
     cf->crd=False; /* [flg] CF coordinates information is complete */
@@ -4904,6 +4900,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char grd_rnk_nm[]="grid_rank";
   char grd_sz_nm[]="grid_size";
   char msk_nm[]="grid_imask";
+  char unt_sng[]="units"; /* netCDF-standard units attribute name */
     
   double *grd_ctr_lat; /* [dgr] Latitude  centers of grid */
   double *grd_ctr_lon; /* [dgr] Longitude centers of grid */
@@ -4969,6 +4966,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long dmn_srt[dmn_nbr_grd_max];
   long dmn_cnt[dmn_nbr_grd_max];
 
+  long att_sz;
   long bnd_idx;
   long bnd_nbr; /* [nbr] Number of bounds in gridcell */
   long col_idx;
@@ -4993,6 +4991,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long int idx_crn_ur;
   long int idx_crn_ul;
   
+  nc_type att_typ;
+
   nco_bool FL_RTR_RMT_LCN;
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=True; /* Option O */
@@ -5067,11 +5067,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        4LFTX_221_SPDY_S113:coordinates = "gridlat_221 gridlon_221" ;
        Usage:
        ncks -O -D 3 --rgr nfr=y --rgr_var=4LFTX_221_SPDY_S113 --rgr grid=~/grd_narr.nc ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc ~/foo.nc */
-
     char crd_sng[]="coordinates"; /* CF-standard coordinates attribute name */
-    char unt_sng[]="units"; /* netCDF-standard units attribute name */
-    long att_sz;
-    nc_type att_typ;
     
     cf=(cf_crd_sct *)nco_malloc(sizeof(cf_crd_sct));
     cf->crd=False; /* [flg] CF coordinates information is complete */

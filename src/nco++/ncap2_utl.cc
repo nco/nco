@@ -106,22 +106,44 @@ ncap_att_get
   return var_ret; 
 }
 
+
+
 std::string ncap_att2var
 ( prs_cls *prs_arg,   
   std::string att_nm)
 {
 
+  std::string fnc_nm("ncap_att2var");
   std::string sn; 
   var_sct *var_att=NULL_CEWI; 
-  NcapVar *Nvar;
+  NcapVar *Nvar=NULL;
 
-  Nvar=prs_arg->var_vtr.find(att_nm);  
+  if(prs_arg->ntl_scn)
+    Nvar=prs_arg->int_vtr.find(att_nm);
 
-  if(!Nvar)
-    err_prn("Unable to evaluate the attribute "  + att_nm +" as a variable points\n Hint: The attribute should be defined in a previous scope" );
-    
-  var_att=nco_var_dpl(Nvar->var);
-    
+  if(Nvar==NULL) 
+    Nvar=prs_arg->var_vtr.find(att_nm);
+
+  if(Nvar !=NULL)
+    var_att=nco_var_dpl(Nvar->var);
+  else    
+    var_att=ncap_att_init(att_nm,prs_arg);
+
+  if(prs_arg->ntl_scn==False  && var_att==NULL_CEWI )
+    err_prn(fnc_nm,"Unable to locate attribute " +att_nm+ " in input or output files.");
+
+            
+  /* empty so return empty string */ 
+  if(var_att==NULL_CEWI )
+    return sn;
+
+  /* cant resolve pointer here */
+  if(var_att->val.vp==NULL_CEWI)
+  {
+    nco_var_free(var_att);      
+    return sn;
+  }
+
   if(var_att->type !=NC_STRING && var_att->type !=NC_CHAR )
     err_prn("To use that attribute "+ att_nm +" as a variable pointer it must be a text type  NC_CHAR or NC_STRING"); 
     

@@ -2280,22 +2280,19 @@ out returns [var_sct *var]
     }
 
     // dealing with a variable pointer  
-    | (#(ASSIGN #(UTIMES ATT_ID) )) =>  #(ASSIGN #(atta:UTIMES ATT_ID))  {
+    | (#(ASSIGN #(UTIMES ATT_ID) )) =>  #(ASSIGN #(atta:UTIMES ATT_ID)) {
 
              RefAST tr;
              tr=atta->getFirstChild();
              tr->setNextSibling(atta->getNextSibling());
              
-              
              // remember tr siblings and children are  duplicated here   
-             
              tr=att2var(tr);   
 
              if(prs_arg->ntl_scn)
                var=assign_ntl(tr,false,bret); 
              else
                var=assign(tr,false,bret);
-               
     }  
     
     //  memory var - regular and pointer
@@ -2594,7 +2591,9 @@ out returns [var_sct *var]
 
     // PLain attribute
     |   att:ATT_ID { 
-
+   
+            var=att_plain(att);  
+            /*  
             NcapVar *Nvar=NULL;
          
             if(prs_arg->ntl_scn)
@@ -2620,6 +2619,7 @@ out returns [var_sct *var]
             
             if(prs_arg->ntl_scn && var->val.vp !=NULL)
                 var->val.vp=(void*)nco_free(var->val.vp);
+            */
               
         }
 
@@ -2714,59 +2714,6 @@ out returns [var_sct *var]
 
 ;
 
-// takes an ATT_ID pointer and converts it to a VAR_ID
-att2var returns [ RefAST tr ]
-{
-  var_sct *var_att=NULL_CEWI; 
-  std::string sn;
-  NcapVar *Nvar;
-}
-
-: (att:ATT_ID) {
-
-    sn=ncap_att2var(prs_arg,att->getText()); 
-    /*
-    Nvar=prs_arg->var_vtr.find(att->getText());  
-
-    if(!Nvar)
-        err_prn("Unable to evaluate the attribute "  + att->getText() +" as a variable points\n Hint: The attribute should be defined in a previous scope" );
-    
-    var_att=nco_var_dpl(Nvar->var);
-    
-    if(var_att->type !=NC_STRING && var_att->type !=NC_CHAR )
-        err_prn("To use that attribute "+ att->getText() +" as a variable pointer it must be a text type  NC_CHAR or NC_STRING"); 
-    
-    cast_void_nctype(var_att->type, &var_att->val );
-    if(var_att->type == NC_STRING)
-    {
-       sn=var_att->val.sngp[0];
-    }
-    else if( var_att->type==NC_CHAR)
-    {        
-       char buffer[100]={'\0'};
-       strncpy(buffer, var_att->val.cp, var_att->sz);
-       sn=buffer;  
-    } 
-
-    cast_nctype_void(var_att->type, &var_att->val);
-    nco_var_free(var_att);  
-
-    // tr->setType(VAR_ID);       
-    //tr->setText(sn);
-    //tr=att->clone();
-   */
-
-    tr=nco_dupList(att);
-    
-    if(sn.find('@') != std::string::npos)
-      tr->setType(ATT_ID);       
-    else
-      tr->setType(VAR_ID);       
-
-    tr->setText(sn);
-
-    }
-;
 
 // Return a var or att WITHOUT applying a cast 
 // and checks that the operand is a valid Lvalue
@@ -2827,7 +2774,9 @@ NcapVar *Nvar;
             if(att->getFirstChild())
                 err_prn(fnc_nm,"Invalid Lvalue " +att->getText() );
 
+            var=att_plain(att);
 
+            /* 
             if(prs_arg->ntl_scn)
               Nvar=prs_arg->int_vtr.find(att->getText());
 
@@ -2850,9 +2799,103 @@ NcapVar *Nvar;
 
             if(prs_arg->ntl_scn && var->val.vp !=NULL)
                 var->val.vp=(void*)nco_free(var->val.vp);
+            */ 
+              
 
        }// end action    
 ;
+
+
+
+att_plain returns [var_sct *var]
+{
+const std::string fnc_nm("att_plain");
+var=NULL_CEWI; 
+string att_nm; 
+NcapVar *Nvar;
+   
+}
+
+: att:ATT_ID 
+      { 
+            // check "output"
+            NcapVar *Nvar=NULL;
+             
+            att_nm=att->getText();       
+
+            if(prs_arg->ntl_scn)
+              Nvar=prs_arg->int_vtr.find(att_nm);
+
+            if(Nvar==NULL) 
+              Nvar=prs_arg->var_vtr.find(att_nm);
+
+            var=NULL_CEWI;    
+            if(Nvar !=NULL)
+                var=nco_var_dpl(Nvar->var);
+            else    
+                var=ncap_att_init(att_nm,prs_arg);
+
+            if(prs_arg->ntl_scn==False  && var==NULL_CEWI )
+                err_prn(fnc_nm,"Unable to locate attribute " +att_nm+ " in input or output files.");
+
+            
+            // if att not found return undefined
+            if(prs_arg->ntl_scn && var==NULL_CEWI )
+                var=ncap_var_udf(att_nm.c_str());
+
+            if(prs_arg->ntl_scn && var->val.vp !=NULL)
+                var->val.vp=(void*)nco_free(var->val.vp);
+
+       }// end action    
+;
+
+
+
+
+
+// takes an ATT_ID pointer and converts it to a VAR_ID
+att2var returns [ RefAST tr ]
+{
+  var_sct *var=NULL_CEWI; 
+  NcapVar *Nvar;
+  std::string sn;
+  std::string att_nm;
+  std::string fnc_nm("att2var");
+
+}
+
+: (att:ATT_ID) 
+   {
+    /* sn can be empty on 1st Parse but not 2nd */
+   att_nm=att->getText();
+   
+   if(nco_dbg_lvl_get() >= nco_dbg_scl) 
+      dbg_prn(fnc_nm,"att_nm="+att_nm);
+       
+    sn=ncap_att2var(prs_arg,att_nm); 
+   
+    if(prs_arg->ntl_scn && sn.empty())     
+    {
+       sn="_empty_"+att_nm;   
+       var=ncap_var_udf(sn.c_str());
+       Nvar=new NcapVar(var);
+       prs_arg->int_vtr.push_ow(Nvar);            
+    }
+    
+
+    tr=nco_dupList(att);
+    
+    if(sn.find('@') != std::string::npos)
+      tr->setType(ATT_ID);       
+    else
+      tr->setType(VAR_ID);       
+
+    tr->setText(sn);
+
+    }
+;
+
+
 
 value_list returns [var_sct *var]
 {

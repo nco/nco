@@ -5985,29 +5985,8 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
           /* Dimension name relative */
           char *dmn_nm=trv_obj.var_dmn[idx_var_dmn].dmn_nm;
 
-          char *sng_dmn=NULL;
-
-          trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_rvr=False;
-
-          /* Option -a '-' (minus), reverse dimesnion Strip-out '-' and compare name */
-          if (usr_sng[0] == '-'){
-            sng_dmn=(char *)strdup(usr_sng+1L);
-            if (!strcmp(sng_dmn,dmn_nm)){
-              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_rvr=True;
-            }
-          }else{ /* Not -a '-', duplicate user string to use in nco_pth_mch() */
-            sng_dmn=(char *)strdup(usr_sng);
-          }
-
           /* Must meet necessary flags */
-          nco_bool pth_mth=nco_pth_mch(dmn_nm_fll,dmn_nm,sng_dmn); 
-
-          /* If does not meet criteria, reverse flag */
-          if(!pth_mth){
-            trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_rvr=False;
-          }
-
-          sng_dmn=(char *)nco_free(sng_dmn);
+          nco_bool pth_mth=nco_pth_mch(dmn_nm_fll,dmn_nm,usr_sng);
 
           if(pth_mth){
             int idx_dmn_out; /* [idx] Index for output dimensions */
