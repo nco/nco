@@ -1,0 +1,47 @@
+
+// Produce a list of all vars in input
+// each element of att list  is of type NC_STRING
+// nb get_var_in() can take a single argument that can be a var name or regular expression
+// lists are  of type NC_STRING and can are in essence ragged arrays
+
+@all=get_vars_in();
+
+*sz=@all.size();
+*idx=0;
+
+for(idx=0;idx<sz;idx++)
+{
+  // remember @var_nm is of type NC_STRING
+  @var_nm=@all(idx);
+ 
+  if( *@var_nm.type()==NC_FLOAT)
+     *@var_nm=*@var_nm.double();
+
+  else if( *@var_nm.type()==NC_DOUBLE )
+     *@var_nm=*@var_nm; 
+}
+
+@out=get_vars_out();
+
+
+print("\n/****************************/\n");
+print(@out);
+print("\n/****************************/\n");
+
+
+
+*sz=@out.size();
+*idx=0;
+
+for(idx=0;idx<sz;idx++)
+{
+  // remember @var_nm is of type NC_STRING
+  @var_nm=@out(idx);
+ 
+  if( *@var_nm.type()==NC_DOUBLE && *@var_nm.has_miss() )
+  {  print(@var_nm,"about to change miss %s\n");
+     *@var_nm.change_miss(-1.0);
+  }
+
+}
+
