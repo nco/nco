@@ -129,14 +129,16 @@ K. NCO now treats as associated coordinates all variables listed in
    dimension. 
    http://nco.sf.net/nco.html#grid_mapping
 
-L. ncks now now follows the CF "coordinates" convention when inferring
-   grids or remapping. One specifies (with --rgr_var var_nm) the
-   variable that may have the "coordinates" attribute, and NCO will
-   inspect and apply the "coordinates" convention for that variable
-   for grid generation and remapping. 
+L. ncremap and ncks now follow the CF "coordinates" convention when
+   inferring grids and remapping. One specifies the variable that may
+   have the "coordinates" attribute, and NCO will inspect and apply
+   the "coordinates" convention for that variable for grid generation
+   and remapping.  
+   ncremap -V var_nm -s src.nc -d dst.nc -m map.nc
+   ncremap -V var_nm --map map.nc in.nc out.nc
    ncks --rgr_var=var_nm --rgr nfr=y --rgr grid=grd.nc in.nc foo.nc
    ncks --rgr_var=var_nm --map map.nc in.nc out.nc
-   Soon this capability will be merged into ncremap too.
+   http://nco.sf.net/nco.html#ncremap
    http://nco.sf.net/nco.html#regrid
 
 BUG FIXES:

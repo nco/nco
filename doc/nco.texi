@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.0-beta05
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 8 May 2016
+@set update-date 9 May 2016
 @set update-month May 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19439,7 +19439,7 @@ ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_op
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-M] [-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] 
-[-T @var{tempest_opt}] [-t @var{thr_nbr}] [-u @var{unq_sfx}] [-v @var{var_lst}[,@dots{}]] 
+[-T @var{tempest_opt}] [-t @var{thr_nbr}] [-u @var{unq_sfx}] [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] 
 [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
 
@@ -19870,8 +19870,6 @@ In @acronym{MPI} mode these commands are issued round-robin fashion
 to all the compute nodes available to the job.
 Typically both parallel modes scale well with sufficent @acronym{CPU}s
 until I/O contention becomes the bottleneck. 
-Currently there is no way to limit the number of regridding commands 
-spawned in parallel mode, so be sure not to overwhelm your system.
 Furthermore, a naming conflict among intermediate files still exists
 (see Limitations, below) so parallel mode is currently only supported
 when all source files share the same grid.
@@ -19977,6 +19975,42 @@ It behaves like subsetting (@pxref{Subsetting Files}) in the rest of
 @acronym{NCO}.   
 
 @html
+<a name="rgr_var"></a> <!-- http://nco.sf.net/nco.html#rgr_var -->
+@end html
+@cindex @code{-V @var{rgr_var}}
+@cindex @var{rgr_var}
+@item -V @var{rgr_var}
+The @samp{-V} option tells @command{ncremap} to use the same grid as 
+@var{rgr_var} in the input file.
+If @var{rgr_var} adheres to the @acronym{CF} @code{coordinates}
+convention described 
+@uref{http://cfconventions.org/1.6.html#coordinate-system, here},
+then @command{ncclimo} will infer the grid as represented by those
+coordinate variables.
+This option simplifies inferring grids when the grid coordinate names 
+are unknown, since @command{ncclimo} will follow the @acronym{CF}
+convention to learn the identity of the grid coordinates.
+
+Until @acronym{NCO} version 4.6.0 (May, 2016), @command{ncremap} would 
+not follow @acronym{CF} conventions to identify coordinate variables.
+Instead, @command{ncremap} used an internal database of ``usual
+suspects'' to identify latitude and longitude coordinate variables.
+Now, if @var{rgr_var} is @acronym{CF}-compliant, then @command{ncremap}
+will automatically identify the horizontal spatial dimensions. 
+If @var{rgr_var} is supplied but is not @acronym{CF}-compliant, then
+@command{ncremap} will use its internal database to identify 
+horizontal spatial dimensions.
+If both these automated methods fail, manually supply @command{ncremap}
+with the names of the horizontal spatial dimensions 
+@example
+# Method used to obtain horizontal spatial coordinates:
+ncremap -V rgr_var -i in.nc -d dst.nc -O ~/rgr # CF coordinates convention
+ncremap -i in.nc -d dst.nc -O ~/rgr # Internal database
+ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr # Manual
+@end example
+@noindent
+
+@html
 <a name="wgt_gnr"></a> <!-- http://nco.sf.net/nco.html#wgt_gnr -->
 @end html
 @cindex @code{-w @var{wgt_gnr}}
@@ -20005,7 +20039,7 @@ Currently variables marked as extensive are summed, not regridded.
 
 @unnumberedsubsec Limitations to @command{ncremap}
 
-There are three significant limitations to @command{ncremap} that we
+There are two significant limitations to @command{ncremap} that we
 hope to remove in the coming year.
 First, the fields to be regridded must have latitude and longitude as
 the final two dimension in @var{in_fl}. 
@@ -20043,20 +20077,7 @@ If you work with common datasets that could benefit from their own
 @command{ncremap} @samp{-P} options, contact us and we will try to
 implement them. 
 
-The second limitation is that @command{ncremap} does not yet follow
-@acronym{CF} conventions to identify coordinate variables.
-Instead, @command{ncremap} uses an internal database of ``usual
-suspects'' to identify latitude and longitude coordinate variables.
-Hence even if the @var{input-file} is completely @acronym{CF}-compliant,
-@command{ncremap} may not automatically identify the spatial dimensions.
-To workaround this limitation, supply @command{ncremap} with the names
-of the horizontal spatial dimensions 
-@example
-ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr
-@end example
-@noindent
-
-The third limitation is that @command{ncremap} currently must read
+The second limitation is that @command{ncremap} currently must read
 weights from an on-disk mapfile, it cannot yet compute weights itself 
 and use them directly from @acronym{RAM}.
 This makes @command{ncremap} an ``offline regridder'' and unnecessarily

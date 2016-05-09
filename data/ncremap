@@ -236,7 +236,7 @@ tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
 #tps_opt='--mono' # [sng] TempestRemap options
 tps_opt='' # [sng] TempestRemap options
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
-unq_sfx=".pid${spt_pid}.ncremap.tmp" # [sng] Unique suffix
+unq_sfx=".pid${spt_pid}" # [sng] Unique suffix
 var_lst='' # [sng] Variables to process (empty means all)
 var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
@@ -692,6 +692,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: unq_sfx  = ${unq_sfx}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
+    printf "dbg: var_rgr  = ${var_rgr}\n"
     printf "dbg: wgt_usr  = ${wgt_usr}\n"
     printf "Asked to regrid ${fl_nbr} files:\n"
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do

@@ -1,14 +1,16 @@
 2016-05-09  Charlie Zender  <zender@uci.edu>
 
-	* Add -V var_rgr option to ncremap to invoke --rgr_var=var_rgr for CF grid inferral and remapping
-
-2016-05-06  Charlie Zender  <zender@uci.edu>
+	* Shorten unique name suffix in ncremap
 
 	* NCO 4.6.0 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.0 final changes';git push
 	git tag -a 4.6.0 -m 'Version 4.6.0 new features: ncclimo, ncap2	vlists, climatology bounds, terraref, ncpdq fixes';git push --tags
 
-	* Pedro committed ncpdq fixes
+	* Add -V var_rgr option to ncremap to invoke --rgr_var=var_rgr for CF grid inferral and remapping
+
+2016-05-06  Charlie Zender  <zender@uci.edu>
+
+	* Pedro committed ncpdq patches that fix vexing longstanding problems permuting in group hierarchies
 
 2016-05-05  Henry Butowsky  <henryb@hush.com>
 
