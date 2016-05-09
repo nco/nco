@@ -191,7 +191,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   if(!trr->wvl_nm) trr->wvl_nm=(char *)strdup("wavelength"); /* [sng] Name of wavelength dimension */
   if(!trr->xdm_nm) trr->xdm_nm=(char *)strdup("x"); /* [sng] Name of x-coordinate dimension */
   if(!trr->ydm_nm) trr->ydm_nm=(char *)strdup("y"); /* [sng] Name of y-coordinate dimension */
-  if(!trr->var_nm) trr->var_nm=(char *)strdup("exposure"); /* [sng] Variable containing imagery */
+  if(!trr->var_nm) trr->var_nm=(char *)strdup("xps_img"); /* [sng] Variable containing imagery */
   if(!trr->wvl_bnd_nm) trr->wvl_bnd_nm=(char *)strdup("wvl_bnds"); /* [sng] Name of dimension to employ for wavelength bounds */
   if(!trr->xdm_bnd_nm) trr->xdm_bnd_nm=(char *)strdup("x_bnds"); /* [sng] Name of dimension to employ for x-coordinate bounds */
   if(!trr->ydm_bnd_nm) trr->ydm_bnd_nm=(char *)strdup("y_bnds"); /* [sng] Name of dimension to employ for y-coordinate bounds */
@@ -477,7 +477,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   if(att_val) att_val=(char *)nco_free(att_val);
   
   att_nm=strdup("long_name");
-  att_val=strdup("Exposure");
+  att_val=strdup("Exposure counts");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=var_nm;
   aed_mtd.id=var_id;
@@ -490,7 +490,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   if(att_val) att_val=(char *)nco_free(att_val);
   
   att_nm=strdup("meaning");
-  att_val=strdup("Exposure on scale from 0 to 2^16-1 = 65535");
+  att_val=strdup("Counts on scale from 0 to 2^16-1 = 65535");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=var_nm;
   aed_mtd.id=var_id;

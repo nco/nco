@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.0-beta05
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 3 May 2016
+@set update-date 8 May 2016
 @set update-month May 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -12386,13 +12386,17 @@ These functions are used to manipulate missing values and @acronym{RAM} variable
 @end table
 
 @sp 1
-@noindent @strong{PDQ Methods @*}
+@noindent @strong{PDQ Methods@*}
 See @pxref{ncpdq netCDF Permute Dimensions Quickly}
 @table @code
 @item reverse(dim args)
- Reverses the dimension ordering of elements in a variable. 
+ Reverse the dimension ordering of elements in a variable. 
 @item permute(dim args)
- Re-shapes variables by re-ordering the dimensions. All the dims of the variable must be specified in the arguments. A limitation of this permute (unlike ncpdq) is that the record dimension cannot be re-assigned. 
+ Re-shape variables by re-ordering the dimensions. 
+ All the dimensions of the variable must be specified in the
+ arguments. 
+ A limitation of this permute (unlike @command{ncpdq}) is that the
+ record dimension cannot be re-assigned.  
 @end table 
 // Swap dimensions about and reorder along lon
 @example
@@ -12401,9 +12405,14 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 @end example
 
 @sp 1
-@noindent @strong{Type Conversion Methods @*}
-@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You may only use the new netCDF4 types if you have compiled/links @acronym{NCO} with the netCDF4 library and the Output file is @acronym{HDF5}. 
-
+@noindent @strong{Type Conversion Methods and Functions@*}
+@noindent These methods allow @command{ncap2} to convert variables and
+attributes to the different netCDF types. 
+For more details on automatic and manual type conversion see
+(@pxref{Type Conversion}). 
+netCDF4 types are only available if you have compiled/links
+@acronym{NCO} with the netCDF4 library and the Output file is
+@acronym{HDF5}.
 @table @code
 @item @strong{netCDF3/4 Types}
 @item byte()	 
@@ -12442,15 +12451,17 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
  convert to @code{NC_UINT64}, an unsigned 8-byte integer
 @end table
 
-You can also use the @code{convert()} method to do type conversion. This takes an integer agument. For convience the Netcdf pre-processor token are defined in ncap2 as ram variables. For example you may wish to convert a non floating point type to the same type as another variable.
-
+You can also use the @code{convert()} method to do type conversion. 
+This takes an integer agument. 
+For convenience, @command{ncap2} defines the netCDF pre-processor tokens
+as @acronym{RAM} variables. 
+For example you may wish to convert a non-floating point variable to the
+same type as another variable. 
 @example
-ltype=lon.type();
-if( time.type()!=NC_DOUBLE && time.type()!= NC_FLOAT) 
-  time=time.convert(ltype);
+lon_type=lon.type();
+if(time.type() != NC_DOUBLE && time.type() != NC_FLOAT) 
+   time=time.convert(lon_type);
 @end example
-
-
 
 @noindent @strong{Intrinsic Mathematical Methods @*}
 The list of mathematical methods is system dependant.
@@ -16294,6 +16305,15 @@ sbatch -A acme --nodes=12 --time=03:00:00 --partition=regular --job-name=ncclimo
        --mail-type=END --error=ncclimo.err --output=ncclimo.out ncclimo.slurm
 @end verbatim
 @end example
+Notice that Cobalt and @acronym{SLURM} require the introductory
+shebang-interpreter line (@code{#!/bin/bash}) which @acronym{PBS} does
+not need.  
+Set only the scheduler batch queue parameters mentioned above. 
+In @acronym{MPI}-mode, @command{ncclimo} determines the appropriate
+number of tasks-per-node based on the number of nodes available and
+script internals (like load-balancing for regridding). 
+Hence do not set a tasks-per-node parameter with scheduler configuration
+parameters as this could cause conflicts.
 
 @unnumberedsubsec What does @command{ncclimo} do?
 For monthly climatologies (e.g., @acronym{JAN}), @command{ncclimo} passes

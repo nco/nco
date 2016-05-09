@@ -149,8 +149,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<!-- <li>2016 Apr&nbsp;??: 4.6.1 (<i>In progress</i>) -->
-<li>2016 Apr&nbsp;??: 4.6.0 (<tt>ncclimo</tt>) (<i>In progress</i>)
+<!-- <li>2016 Jun&nbsp;??: 4.6.1 (<i>In progress</i>) -->
+<li>2016 May&nbsp;??: 4.6.0 (<tt>ncclimo</tt>) (<i>In progress</i>)
 <li>2016 Apr&nbsp;20: <a href="http://www.geosci-model-dev-discuss.net/gmd-2016-63">Manuscript</a> on PPC, <i>Geosci. Model Dev. Discuss.</i></li>
 <li>2016 Apr&nbsp;06: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201604.pdf">Poster</a> at NASA ESDSWG, Greenbelt</li>
 <li>2016 Apr&nbsp;05: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">Talk</a> at NASA GES DISC, Greenbelt</li>
@@ -178,7 +178,7 @@ and
 <!-- http://nco.sf.net#Definition -->
 <dt><a name="Definition"></a><a name="dfn"></a></dt>
 <h2>What is NCO?</h2>
-<p>The netCDF Operators (NCO) comprise a dozen standalone,
+<p>The netCDF Operators (NCO) comprise about a dozen standalone,
 command-line programs that take 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>,
 <a href="http://hdfgroup.org">HDF</a>, and/or
@@ -222,6 +222,7 @@ techniques for climate data analysis:
 <li><a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processor (<a href="./nco.html#xmp_ncap">examples</a>)</li>
 <li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF ATTribute EDitor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
 <li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (addition, multiplication...) (<a href="./nco.html#xmp_ncbo">examples</a>)</li>
+<li><a href="./nco.html#ncclimo"><tt>ncclimo</tt></a> netCDF CLIMatOlogy Generator (<a href="./nco.html#xmp_ncclimo">examples</a>)</li>
 <li><a href="./nco.html#nces"><tt>nces</tt></a> netCDF Ensemble Statistics (<a href="./nco.html#xmp_nces">examples</a>)</li>
 <li><a href="./nco.html#ncecat"><tt>ncecat</tt></a> netCDF Ensemble conCATenator (<a href="./nco.html#xmp_ncecat">examples</a>)</li>
 <li><a href="./nco.html#ncflint"><tt>ncflint</tt></a> netCDF FiLe INTerpolator (<a href="./nco.html#xmp_ncflint">examples</a>)</li>
