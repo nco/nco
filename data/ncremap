@@ -238,6 +238,7 @@ tps_opt='' # [sng] TempestRemap options
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 unq_sfx=".pid${spt_pid}.ncremap.tmp" # [sng] Unique suffix
 var_lst='' # [sng] Variables to process (empty means all)
+var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
 wgt_gnr='esmf' # [sng] Weight-generator program
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
@@ -278,6 +279,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm})"
     echo "${fnt_rvr}-T${fnt_nrm} ${fnt_bld}tps_opt${fnt_nrm}  TempestRemap GenerateOfflineMap options (default ${fnt_bld}${tps_opt}${fnt_nrm})"
     echo "${fnt_rvr}-u${fnt_nrm} ${fnt_bld}unq_sfx${fnt_nrm}  Unique suffix (prevents intermediate files from sharing names) (default ${fnt_bld}${unq_sfx}${fnt_nrm})"
+    echo "${fnt_rvr}-V${fnt_nrm} ${fnt_bld}var_rgr${fnt_nrm}  CF template variable (empty means none) (default ${fnt_bld}${var_rgr}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_gnr${fnt_nrm}  Weight-generator (default ${fnt_bld}${wgt_gnr}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm})"
@@ -322,7 +324,7 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${spt_nm} ${@}"
-while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:v:w:x: OPT; do
+while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x: OPT; do
     case ${OPT} in
 	a) alg_typ=${OPTARG} ;; # Algorithm
 	C) clm_flg='Yes' ;; # Climo flag (undocumented)
@@ -347,6 +349,7 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:v:w:x: OPT; do
 	t) thr_usr=${OPTARG} ;; # Thread number
 	U) tmp_usr=${OPTARG} ;; # Temporary directory
 	u) unq_usr=${OPTARG} ;; # Unique suffix
+	V) var_rgr=${OPTARG} ;; # CF template variable 
 	v) var_lst=${OPTARG} ;; # Variables
 	w) wgt_usr=${OPTARG} ;; # Weight-generator
 	x) xtn_var=${OPTARG} ;; # Extensive variables
@@ -432,6 +435,9 @@ fi # !hdr_pad
 if [ -n "${var_lst}" ]; then 
     nco_var_lst="-v ${var_lst}"
 fi # !var_lst
+if [ -n "${var_rgr}" ]; then 
+    nco_var_rgr="--rgr_var=${var_rgr}"
+fi # !var_rgr
 if [ -n "${xtn_var}" ]; then 
     rgr_opt="${rgr_opt} --xtn=${xtn_var}"
 fi # !var_lst
@@ -758,7 +764,7 @@ else # !map_usr_flg
 	# Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
 	# Infer destination grid-file from data file
 	printf "Destination grid will be inferred from data-file\n"
-	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_dst} ${dst_fl} ${tmp_out_fl}"
+	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y ${nco_var_rgr} --rgr grid=${grd_dst} ${dst_fl} ${tmp_out_fl}"
     else # !dst_usr_flg
 	if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
 	    printf "Destination grid supplied by user\n"
@@ -917,7 +923,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    exit 1
 	fi # ! -f
 	# Infer source grid-file from input data file
-	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr grid=${grd_src} ${in_fl} ${tmp_out_fl}"
+	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y ${nco_var_rgr} --rgr grid=${grd_src} ${in_fl} ${tmp_out_fl}"
 	
 	# Block 2 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -1023,7 +1029,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     # Block 5: Regrid
     printf "Map/Wgt  : ${map_fl}\n"
     printf "Regridded: ${out_fl}\n"
-    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
+    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
     
     # Block 5 Loop 2: Execute and/or echo commands
     if [ ${dbg_lvl} -ge 1 ]; then
