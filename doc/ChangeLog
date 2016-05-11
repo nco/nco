@@ -20,7 +20,7 @@
 
 	* Add space ' ' to allowed chars in a quoted var or att which can be:
 	  VAR_NM_QT: (LPHDGT|'-'|'+'|'.'|'('|')'|':'|' ' )+  ;
-	  Full NetCDF specification for ID includes UTf8 characters - save that for another day
+	  Full NetCDF specification for ID includes UTF8 characters (save that for another day)
 
 2016-05-04  Charlie Zender  <zender@uci.edu>
 
