@@ -58,7 +58,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   int thr_nbr_rqs=int_CEWI; /* [nbr] Number of threads to request */
 
 #ifndef _OPENMP
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO Build compiler lacked (or user turned off) OpenMP support. Code will execute with single thread in Uni-Processor (UP) mode.\n",nco_prg_nm_get());
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO Build compiler lacked (or user turned-off) OpenMP support. Code will execute with single thread in Uni-Processor (UP) mode.\n",nco_prg_nm_get());
   return (int)1;
 #endif /* !_OPENMP */
 

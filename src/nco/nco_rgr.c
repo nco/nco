@@ -1665,7 +1665,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     //lat_dmn_nm=strdup(cf->dmn_nm[0]);
     //lon_dmn_nm=strdup(cf->dmn_nm[1]);
     
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Latitude coordinate \"%s\" has dimensions \"%s\" and \"%s\".\n",nco_prg_nm_get(),fnc_nm,rgr_var,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[idx_lat],cf->dmn_nm[idx_lat],cf->dmn_nm[idx_lon]);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Latitude coordinate \"%s\" has dimensions \"%s\" and \"%s\". Longitude coordinate \"%s\" has dimensions \"%s\" and \"%s\".\n",nco_prg_nm_get(),fnc_nm,rgr_var,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[idx_lat],cf->dmn_nm[idx_lat],cf->dmn_nm[idx_lon],cf->crd_nm[idx_lon],cf->dmn_nm[idx_lat],cf->dmn_nm[idx_lon]);
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Coordinates %s and %s \"units\" values are \"%s\" and \"%s\", respectively.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->crd_nm[1],cf->unt_sng[0] ? cf->unt_sng[0] : "(non-existent)",cf->unt_sng[1] ? cf->unt_sng[1] : "(non-existent)");
 
     /* Clean-up CF coordinates memory */
