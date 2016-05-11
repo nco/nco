@@ -1531,7 +1531,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* 20160503 Discover coordinates via CF Convention if indicated
      This copies method used in nco_grd_nfr() */
-#if 1
+  /* Begin CF-coordinates block */
   cf_crd_sct *cf=NULL;
   char *rgr_var; /* [sng] Variable for special regridding treatment */
   nco_bool flg_cf=False; /* [flg] Follow CF Coordinates convention to find and infer grid */
@@ -1604,6 +1604,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       rcd=nco_get_att(in_id,cf->crd_id[0],unt_sng,cf->unt_sng[0],att_typ);
       /* NUL-terminate attribute before using strstr() */
       *(cf->unt_sng[0]+att_sz)='\0';
+      if(!strcasestr(cf->unt_sng[0],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports first coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->unt_sng[0]);
     } /* !rcd && att_typ */
     rcd=nco_inq_att_flg(in_id,cf->crd_id[1],unt_sng,&att_typ,&att_sz);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
@@ -1611,6 +1612,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       rcd=nco_get_att(in_id,cf->crd_id[1],unt_sng,cf->unt_sng[1],att_typ);
       /* NUL-terminate attribute before using strstr() */
       *(cf->unt_sng[1]+att_sz)='\0';
+      if(!strcasestr(cf->unt_sng[1],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports second coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[1],cf->unt_sng[1]);
     } /* !rcd && att_typ */
       
     int crd_rnk; /* [nbr] Coordinate rank */
@@ -1625,19 +1627,45 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd=nco_inq_dimname(in_id,cf->dmn_id[0],cf->dmn_nm[0]);
     rcd=nco_inq_dimname(in_id,cf->dmn_id[1],cf->dmn_nm[1]);
     
+    /* "coordinates" convention does not guarantee lat, lon are specified in that order
+       Use "units" values, if any, to determine order
+       In absence of "units", assume order is lat, lon */ 
+    nco_bool crd0_is_lat=False; /* [flg] First coordinate is latitude */
+    nco_bool crd0_is_lon=False; /* [flg] First coordinate is longitude */
+    nco_bool crd1_is_lat=False; /* [flg] Second coordinate is latitude */
+    nco_bool crd1_is_lon=False; /* [flg] Second coordinate is longitude */
+    if(cf->unt_sng[0]){
+      if(!strcasecmp(cf->unt_sng[0],"degrees_north")) crd0_is_lat=True;
+      if(!strcasecmp(cf->unt_sng[0],"degrees_east")) crd0_is_lon=True;
+    } /* endif */      
+    if(cf->unt_sng[1]){
+      if(!strcasecmp(cf->unt_sng[1],"degrees_north")) crd1_is_lat=True;
+      if(!strcasecmp(cf->unt_sng[1],"degrees_east")) crd1_is_lon=True;
+    } /* endif */      
+    assert((crd0_is_lat && crd1_is_lon) || (crd0_is_lon && crd1_is_lat));
+    int idx_lat;
+    int idx_lon;
+    if(crd0_is_lat && crd1_is_lon){
+      idx_lat=0;
+      idx_lon=1;
+    }else{
+      idx_lat=1;
+      idx_lon=0;
+    } /* endif */
+    
     /* Dimensions and coordinates have been vetted. Store as primary lookup names. */
     dmn_id_lat=cf->dmn_id[0];
     dmn_id_lon=cf->dmn_id[1];
     /* NB: lat_nm_in is coordinate name when specified from command-line, dimension name when found through CF-method */
     lat_nm_in=strdup(cf->dmn_nm[0]);
     lon_nm_in=strdup(cf->dmn_nm[1]);
-    // nco_rgr_map() only needs dimension names (it reads input coordinates from map- not data-file) so next four lines unnecessary
+    /* Next four lines unnecessary in nco_rgr_map() which only needs dimension names (it reads input coordinates from map- not data-file) */
     //lat_ctr_id=cf->crd_id[0];
     //lon_ctr_id=cf->crd_id[1];
     //lat_dmn_nm=strdup(cf->dmn_nm[0]);
     //lon_dmn_nm=strdup(cf->dmn_nm[1]);
     
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Coordinate %s has dimensions %s and %s.\n",nco_prg_nm_get(),fnc_nm,rgr_var,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[0],cf->dmn_nm[0],cf->dmn_nm[1]);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Latitude coordinate \"%s\" has dimensions \"%s\" and \"%s\".\n",nco_prg_nm_get(),fnc_nm,rgr_var,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[idx_lat],cf->dmn_nm[idx_lat],cf->dmn_nm[idx_lon]);
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Coordinates %s and %s \"units\" values are \"%s\" and \"%s\", respectively.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->crd_nm[1],cf->unt_sng[0] ? cf->unt_sng[0] : "(non-existent)",cf->unt_sng[1] ? cf->unt_sng[1] : "(non-existent)");
 
     /* Clean-up CF coordinates memory */
@@ -1657,7 +1685,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(!flg_cf)
     if(cf) cf=(cf_crd_sct *)nco_free(cf);
   rcd=NC_NOERR;
-#endif /* !0 */
+  /* End CF-coordinates block */
+
 
   if(flg_grd_in_1D){
     long col_nbr_in_dat; /* [nbr] Number of columns in input datafile */
@@ -5055,7 +5084,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("sounding_id"); /* OCO2 */
   if(col_dmn_nm) flg_grd_1D=True;
 
-#if 1
+  /* Begin CF-coordinates block */
   cf_crd_sct *cf=NULL;
   char *rgr_var; /* [sng] Variable for special regridding treatment */
   nco_bool flg_cf=False; /* [flg] Follow CF Coordinates convention to find and infer grid */
@@ -5128,6 +5157,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       rcd=nco_get_att(in_id,cf->crd_id[0],unt_sng,cf->unt_sng[0],att_typ);
       /* NUL-terminate attribute before using strstr() */
       *(cf->unt_sng[0]+att_sz)='\0';
+      if(!strcasestr(cf->unt_sng[0],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports first coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->unt_sng[0]);
     } /* !rcd && att_typ */
     rcd=nco_inq_att_flg(in_id,cf->crd_id[1],unt_sng,&att_typ,&att_sz);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
@@ -5135,6 +5165,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       rcd=nco_get_att(in_id,cf->crd_id[1],unt_sng,cf->unt_sng[1],att_typ);
       /* NUL-terminate attribute before using strstr() */
       *(cf->unt_sng[1]+att_sz)='\0';
+      if(!strcasestr(cf->unt_sng[1],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports second coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[1],cf->unt_sng[1]);
     } /* !rcd && att_typ */
       
     int crd_rnk; /* [nbr] Coordinate rank */
@@ -5149,19 +5180,45 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     rcd=nco_inq_dimname(in_id,cf->dmn_id[0],cf->dmn_nm[0]);
     rcd=nco_inq_dimname(in_id,cf->dmn_id[1],cf->dmn_nm[1]);
     
-    /* Dimensions and coordinates have been vetted. Store as primary lookup names. */
-    dmn_id_lat=cf->dmn_id[0];
-    dmn_id_lon=cf->dmn_id[1];
-    /* NB: lat_nm_in is coordinate name when specified from command-line, dimension name when found through CF-method */
-    lat_nm_in=strdup(cf->crd_nm[0]);
-    lon_nm_in=strdup(cf->crd_nm[1]);
-    // nco_rgr_map() only needs dimension names (it reads input coordinates from map- not data-file) so next four lines unnecessary
-    lat_ctr_id=cf->crd_id[0];
-    lon_ctr_id=cf->crd_id[1];
-    lat_dmn_nm=strdup(cf->dmn_nm[0]);
-    lon_dmn_nm=strdup(cf->dmn_nm[1]);
+    /* "coordinates" convention does not guarantee lat, lon are specified in that order
+       Use "units" values, if any, to determine order
+       In absence of "units", assume order is lat, lon */ 
+    nco_bool crd0_is_lat=False; /* [flg] First coordinate is latitude */
+    nco_bool crd0_is_lon=False; /* [flg] First coordinate is longitude */
+    nco_bool crd1_is_lat=False; /* [flg] Second coordinate is latitude */
+    nco_bool crd1_is_lon=False; /* [flg] Second coordinate is longitude */
+    if(cf->unt_sng[0]){
+      if(!strcasecmp(cf->unt_sng[0],"degrees_north")) crd0_is_lat=True;
+      if(!strcasecmp(cf->unt_sng[0],"degrees_east")) crd0_is_lon=True;
+    } /* endif */      
+    if(cf->unt_sng[1]){
+      if(!strcasecmp(cf->unt_sng[1],"degrees_north")) crd1_is_lat=True;
+      if(!strcasecmp(cf->unt_sng[1],"degrees_east")) crd1_is_lon=True;
+    } /* endif */      
+    assert((crd0_is_lat && crd1_is_lon) || (crd0_is_lon && crd1_is_lat));
+    int idx_lat;
+    int idx_lon;
+    if(crd0_is_lat && crd1_is_lon){
+      idx_lat=0;
+      idx_lon=1;
+    }else{
+      idx_lat=1;
+      idx_lon=0;
+    } /* endif */
     
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Coordinate %s has dimensions %s and %s.\n",nco_prg_nm_get(),fnc_nm,rgr_var,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[0],cf->dmn_nm[0],cf->dmn_nm[1]);
+    /* Dimensions and coordinates have been vetted. Store as primary lookup names. */
+    dmn_id_lat=cf->dmn_id[idx_lat];
+    dmn_id_lon=cf->dmn_id[idx_lon];
+    /* NB: lat_nm_in is coordinate name when specified from command-line, dimension name when found through CF-method */
+    lat_nm_in=strdup(cf->crd_nm[idx_lat]);
+    lon_nm_in=strdup(cf->crd_nm[idx_lon]);
+    /* Next four lines unnecessary in nco_rgr_map() which only needs dimension names (it reads input coordinates from map- not data-file) */
+    lat_ctr_id=cf->crd_id[idx_lat];
+    lon_ctr_id=cf->crd_id[idx_lon];
+    lat_dmn_nm=strdup(cf->dmn_nm[idx_lat]);
+    lon_dmn_nm=strdup(cf->dmn_nm[idx_lon]);
+    
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Latitude coordinate \"%s\" has dimensions \"%s\" and \"%s\".\n",nco_prg_nm_get(),fnc_nm,rgr_var,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[idx_lat],cf->dmn_nm[idx_lat],cf->dmn_nm[idx_lon]);
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Coordinates %s and %s \"units\" values are \"%s\" and \"%s\", respectively.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->crd_nm[1],cf->unt_sng[0] ? cf->unt_sng[0] : "(non-existent)",cf->unt_sng[1] ? cf->unt_sng[1] : "(non-existent)");
 
     /* Clean-up CF coordinates memory */
@@ -5181,7 +5238,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(!flg_cf)
     if(cf) cf=(cf_crd_sct *)nco_free(cf);
   rcd=NC_NOERR;
-#endif /* !0 */
+  /* End CF-coordinates block */
   
   /* Locate dimensions that must be present in rectangular files */
   if(dmn_id_lat == NC_MIN_INT){
