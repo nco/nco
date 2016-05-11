@@ -1653,15 +1653,20 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       idx_lon=0;
     } /* endif */
     
-    /* Dimensions and coordinates have been vetted. Store as primary lookup names. */
+    /* Dimensions and coordinates have been vetted. Store as primary lookup names.
+       Dimensions are always returned in order [LRV,MRV]=[0,1]
+       LRV is along-track direction, and MRV is across-track (at least in NASA data)
+       Internally we label LRV as "lat" and MRV as "lon" so that code looks similar for curvilinear and rectangular grids */
     dmn_id_lat=cf->dmn_id[0];
     dmn_id_lon=cf->dmn_id[1];
-    /* NB: lat_nm_in is coordinate name when specified from command-line, dimension name when found through CF-method */
+    /* Subtlety: lat_nm_in is coordinate (variable+dimension) name when specified from command-line (as in nco_grd_nfr()), dimension name when found through CF-method (as in nco_rgr_map()). This confusing distinction could be avoided by passing command-line dimension names through-to nco_rgr_map(). However, that route would require complex priorities for what to do when passing command-line coordinate names not dimension names and visa-versa. */
     lat_nm_in=strdup(cf->dmn_nm[0]);
     lon_nm_in=strdup(cf->dmn_nm[1]);
+    //lat_nm_in=strdup(cf->crd_nm[idx_lat]);
+    //lon_nm_in=strdup(cf->crd_nm[idx_lon]);
     /* Next four lines unnecessary in nco_rgr_map() which only needs dimension names (it reads input coordinates from map- not data-file) */
-    //lat_ctr_id=cf->crd_id[0];
-    //lon_ctr_id=cf->crd_id[1];
+    //lat_ctr_id=cf->crd_id[idx_lat];
+    //lon_ctr_id=cf->crd_id[idx_lon];
     //lat_dmn_nm=strdup(cf->dmn_nm[0]);
     //lon_dmn_nm=strdup(cf->dmn_nm[1]);
     
@@ -5206,19 +5211,24 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       idx_lon=0;
     } /* endif */
     
-    /* Dimensions and coordinates have been vetted. Store as primary lookup names. */
-    dmn_id_lat=cf->dmn_id[idx_lat];
-    dmn_id_lon=cf->dmn_id[idx_lon];
-    /* NB: lat_nm_in is coordinate name when specified from command-line, dimension name when found through CF-method */
+    /* Dimensions and coordinates have been vetted. Store as primary lookup names.
+       Dimensions are always returned in order [LRV,MRV]=[0,1]
+       LRV is along-track direction, and MRV is across-track (at least in NASA data)
+       Internally we label LRV as "lat" and MRV as "lon" so that code looks similar for curvilinear and rectangular grids */
+    dmn_id_lat=cf->dmn_id[0];
+    dmn_id_lon=cf->dmn_id[1];
+    /* Subtlety: lat_nm_in is coordinate (variable+dimension) name when specified from command-line (as in nco_grd_nfr()), dimension name when found through CF-method (as in nco_rgr_map()). This confusing distinction could be avoided by passing command-line dimension names through-to nco_rgr_map(). However, that route would require complex priorities for what to do when passing command-line coordinate names not dimension names and visa-versa. */
+    //lat_nm_in=strdup(cf->dmn_nm[0]);
+    //lon_nm_in=strdup(cf->dmn_nm[1]);
     lat_nm_in=strdup(cf->crd_nm[idx_lat]);
     lon_nm_in=strdup(cf->crd_nm[idx_lon]);
     /* Next four lines unnecessary in nco_rgr_map() which only needs dimension names (it reads input coordinates from map- not data-file) */
     lat_ctr_id=cf->crd_id[idx_lat];
     lon_ctr_id=cf->crd_id[idx_lon];
-    lat_dmn_nm=strdup(cf->dmn_nm[idx_lat]);
-    lon_dmn_nm=strdup(cf->dmn_nm[idx_lon]);
+    lat_dmn_nm=strdup(cf->dmn_nm[0]);
+    lon_dmn_nm=strdup(cf->dmn_nm[1]);
     
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Latitude coordinate \"%s\" has dimensions \"%s\" and \"%s\".\n",nco_prg_nm_get(),fnc_nm,rgr_var,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[idx_lat],cf->dmn_nm[idx_lat],cf->dmn_nm[idx_lon]);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports coordinates variable %s \"coordinates\" attribute \"%s\" points to coordinates %s and %s. Latitude coordinate \"%s\" has LRV (along-track) and MRV (across-track) dimensions \"%s\" and \"%s\", respectively.\n",nco_prg_nm_get(),fnc_nm,rgr_var,cf->crd_sng,cf->crd_nm[0],cf->crd_nm[1],cf->crd_nm[idx_lat],cf->dmn_nm[0],cf->dmn_nm[1]);
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Coordinates %s and %s \"units\" values are \"%s\" and \"%s\", respectively.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->crd_nm[1],cf->unt_sng[0] ? cf->unt_sng[0] : "(non-existent)",cf->unt_sng[1] ? cf->unt_sng[1] : "(non-existent)");
 
     /* Clean-up CF coordinates memory */

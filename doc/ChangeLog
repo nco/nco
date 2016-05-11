@@ -1,3 +1,7 @@
+2016-05-11  Charlie Zender  <zender@uci.edu>
+
+	* Allow for "coordinates"-ordering opposite to storage (LRV->MRV) order, e.g., "coordinates=[longitude,latitude]" instead of "coordinates=[longitude,latitude]"
+
 2016-05-09  Charlie Zender  <zender@uci.edu>
 
 	* Shorten unique name suffix in ncremap
