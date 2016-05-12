@@ -125,14 +125,15 @@ print "\n";
     $DATA=$ENV{'DATA'};
     $HOME=$ENV{'HOME'};
 if($USER eq 'zender'){
+# NB: area variable is not in ACME cube-sphere native output so this answer is not area-weighted
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
-# ncwa -O -w area ${DATA}/ne30/clm/famipc5_ne30_v0.3_00003_ANN_197912_198311_climo.nc ~/foo.nc
+# ncwa -O ${DATA}/ne30/clm/famipc5_ne30_v0.3_00003_ANN_197912_198311_climo.nc ~/foo.nc
 # ncks -O -H -u -C -v FSNT ~/foo.nc
 	$dsc_sng="ncclimo (depends on input files in ${DATA}/ne30/raw)";
-	$tst_cmd[0]="ncclimo -v FSNT,AODVIS,area -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm > ${HOME}/foo.ncclimo";
-	$tst_cmd[1]="ncwa -O $fl_fmt $nco_D_flg -w area ${DATA}/ne30/clm/famipc5_ne30_v0.3_00003_ANN_197912_198311_climo.nc %tmp_fl_00%";
+	$tst_cmd[0]="ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm > ${HOME}/foo.ncclimo";
+	$tst_cmd[1]="ncwa -O $fl_fmt $nco_D_flg ${DATA}/ne30/clm/famipc5_ne30_v0.3_00003_ANN_197912_198311_climo.nc %tmp_fl_00%";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H -u -C -v FSNT %tmp_fl_00%";
-	$tst_cmd[3]="FSNT = 235.503 W/m2";
+	$tst_cmd[3]="FSNT = 235.965 W/m2";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
@@ -409,8 +410,9 @@ if($USER eq 'zender'){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-    $dsc_sng="Run script to test conversion of input vars to type NC_DOUBLE using var-pointers";
-    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S '../data/vpointer_tst.nco' $in_pth_arg in.nc %tmp_fl_00%";
+# ncap2 -O -v -S ~/nco/data/vpointer-tst.nco ~/nco/data/in.nc ~/foo.nc
+   $dsc_sng="Run script to test conversion of input vars to type NC_DOUBLE using var-pointers";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S '../data/vpointer-tst.nco' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v nbr_err -s '%d' %tmp_fl_00%";
     $tst_cmd[2]="0";
     $tst_cmd[3]="SS_OK";

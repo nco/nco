@@ -1,5 +1,7 @@
 2016-05-12  Charlie Zender  <zender@uci.edu>
 
+	* Fix ncclimo regression test (sought non-existent area variable) and new ncap2 regression test (sought mis-spelled file)
+
 	* NCO 4.6.0 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.0 final changes';git push
 	git tag -a 4.6.0 -m 'Version 4.6.0 new features: ncclimo, ncap2	vlists, climatology bounds, CF, terraref, ncpdq fixes';git push --tags
