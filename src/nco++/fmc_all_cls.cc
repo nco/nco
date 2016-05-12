@@ -4572,7 +4572,8 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 
  }
 
- nco_var_free(var_att);
+ if(var_att)
+    nco_var_free(var_att);
 
  if(fmt_sng)
    nco_free(fmt_sng);
