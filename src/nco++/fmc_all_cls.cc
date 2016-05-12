@@ -3958,7 +3958,9 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
     var=ncap_sclr_var_mk(SCS("~zz@string"), NC_STRING,false );  
 
 
-    wrn_prn(sfnm,"nbr_var_fl="+nbr2sng(nbr_var_fl)+" xtr_nbr="+nbr2sng(xtr_nbr));
+
+    if(nco_dbg_lvl_get() >= nco_dbg_scl)     
+          wrn_prn(sfnm,"nbr_var_fl="+nbr2sng(nbr_var_fl)+" xtr_nbr="+nbr2sng(xtr_nbr));
 
     if(xtr_nbr==0) 
     {   
