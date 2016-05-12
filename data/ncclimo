@@ -161,6 +161,8 @@ esac # !HOSTNAME
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
 # ALCF Cobalt:
+# softenv # lists available packages
+# http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
 # http://www.alcf.anl.gov/user-guides/using-cobalt-cooley
 # https://www.alcf.anl.gov/user-guides/cobalt-job-control
 # NERSC SLURM:

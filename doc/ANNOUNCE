@@ -1,22 +1,23 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.6.0-beta05 are ready. 
+The netCDF Operators NCO version 4.6.0 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-4.6.0 may be most notable for the debut of ncclimo.
-ncclimo is a new operator that generates climatologies.
+4.6.0 may be most notable for the debut of ncclimo, a new operator
+that generates climatologies from monthly-mean input. 
 Perhaps it's a tie with ncap2, which has a singularly useful new
-feature: variable pointers. ncap2 also has a reduced memory footprint
-and a function to simplify adding CF-bounds variables (Thanks Henry!). 
-As usual, ncremap continues to accrue useful features.
+feature: variable lists/pointers. ncap2 also has a reduced memory
+footprint and a function to simplify adding CF-bounds variables
+(Thanks Henry!). As usual, ncremap continues to accrue useful
+features, the most notable of which is learning grid information
+from the CF "coordinates" attribute, if any.
 
-Work on NCO 4.6.1 has commenced and will better support eliciting
-latitude/longitude coordinates using the CF "coordinates" convention
-and regridding variables whose horizontal dimensions are not the
-most-rapidly-varying.
+Work on NCO 4.6.1 has commenced and will better support regridding
+variables whose horizontal dimensions are not the
+most-rapidly-varying. 
 
 Enjoy,
 Charlie
@@ -50,6 +51,7 @@ B. ncap2 now works with pointers to variables and attributes.
      @var_nm=sprint(@all(idx));
      if(*@var_nm.type() == NC_FLOAT) *@var_nm=*@var_nm.double();
    }
+   Congratulations Henry for finishing this impressive functionality! 
    More documentation will be added in the coming weeks. For now,      
    http://nco.sf.net/nco.html#ncap2
 
@@ -164,7 +166,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.6.0-beta05 built/tested under
+   These problems occur with NCO 4.6.0 built/tested under
    MacOS with netCDF 4.3.3.1 on HDF5 1.8.16 and with
    Linux with netCDF 4.4.1-development (20160212) on HDF5 1.8.13.
 
@@ -218,6 +220,7 @@ B. NOT YET FIXED (netCDF4 library bug)
    20150922: Confirmed problem reported by Isabelle Dast, reported to Unidata
    20150924: Unidata confirmed problem
    20160212: Verified problem still exists in netCDF library
+   20160512: Ditto
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd

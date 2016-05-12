@@ -1,11 +1,14 @@
-2016-05-12  Henry Butowsky  <henryb@hush.com>
-	* fixed nasty bug in out()/att(hyperslab) action for NC_STRING that resulted in a double free(). Was only visible with clang (MACOS) compiler.
-
-2016-05-11  Charlie Zender  <zender@uci.edu>
+2016-05-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.0 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.0 final changes';git push
 	git tag -a 4.6.0 -m 'Version 4.6.0 new features: ncclimo, ncap2	vlists, climatology bounds, CF, terraref, ncpdq fixes';git push --tags
+
+2016-05-12  Henry Butowsky  <henryb@hush.com>
+
+	* Fix nasty bug in out()/att(hyperslab) action for NC_STRING that caused double free() on clang
+
+2016-05-11  Charlie Zender  <zender@uci.edu>
 
 	* Allow for "coordinates"-ordering opposite to storage (LRV->MRV) order, e.g., "coordinates=[longitude,latitude]" instead of "coordinates=[longitude,latitude]"
 

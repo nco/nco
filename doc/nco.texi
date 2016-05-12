@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.0-beta05
-@set doc-edition 4.6.0-beta05
+@set nco-edition 4.6.0
+@set doc-edition 4.6.0
 @set copyright-years 1995--2016
 @set update-year 2016
 @set update-date 9 May 2016
@@ -15054,7 +15054,7 @@ Finally, if @var{var_nm} is left blank, then @command{ncatted}
 attempts to perform the editing operation on every variable in the file.
 This option may be convenient to use if you decide to change the
 conventions you use for describing the data.
-As of @acronym{NCO} 4.5.6 (March, 2016), @command{ncatted} accepts 
+As of @acronym{NCO} 4.6.0 (May, 2016), @command{ncatted} accepts 
 the @samp{-t} (or long-option equivalent @samp{--typ_mch} or
 @samp{--type_match}) option.
 This causes @command{ncatted} to perform the editing operation only on
@@ -15111,7 +15111,7 @@ effect.
 In other words, if @var{att_nm} already exist, Nappend behaves like
 Append otherwise it does nothing.
 The mnenomic is ``non-create append''.
-Nappend mode was added to @command{ncatted} in version 4.5.6 (April,
+Nappend mode was added to @command{ncatted} in version 4.6.0 (May,
 2016). 
 @item o
 @dfn{Overwrite}.
