@@ -2506,49 +2506,58 @@ out returns [var_sct *var]
                char *cp_in;
                char *cp_out;  
                long idx;
+               long jdx;  
                long srt=lmt_vtr[0]->srt;
                long cnt=lmt_vtr[0]->cnt;
                long srd=lmt_vtr[0]->srd; 
+               long end=lmt_vtr[0]->end; 
                size_t slb_sz=nco_typ_lng(var_att->type); 
                 
                /* create output att */
-               var=ncap_sclr_var_mk(att_nm,var_att->type,true);                 
-               (void)ncap_att_stretch(var,cnt);     
-
-               cp_in=(char*)( var_att->val.vp); 
-               cp_in+= (ptrdiff_t)slb_sz*srt;
-               cp_out=(char*)var->val.vp; 
-                    
-               idx=0;
-  
-               while(idx++ < cnt )
-               { 
-                  memcpy(cp_out, cp_in, slb_sz);                   
-                  cp_in+=srd*slb_sz;
-                  cp_out+=slb_sz; 
-               } 
-               
-               // if type NC_STRING then realloc ragged array  
-               if(var_att->type==NC_STRING)
-               { 
-                 idx=0;  
-                 (void)cast_void_nctype((nc_type)NC_STRING,&var->val);                  
-
-                 while(idx<cnt)
-                   var->val.sngp[idx]=strdup(var->val.sngp[idx++]);    
+                 
+               if( var_att->type ==NC_STRING )  
+               {
+                   var=ncap_sclr_var_mk(att_nm,var_att->type,false);                
+                   var->val.vp=(void*)nco_malloc(slb_sz*cnt);       
+                   (void)cast_void_nctype((nc_type)NC_STRING,&var->val);                 
+                   (void)cast_void_nctype((nc_type)NC_STRING,&var_att->val);                  
+                   
+                   jdx=0;  
+                   for(idx=srt;idx<=end;idx+=srd)  
+                     var->val.sngp[jdx++]=strdup(var_att->val.sngp[idx]);
 
                 
                  (void)cast_nctype_void((nc_type)NC_STRING,&var->val); 
+                 (void)cast_nctype_void((nc_type)NC_STRING,&var_att->val); 
+               
+               }
+               else
+               {     
+                   var=ncap_sclr_var_mk(att_nm,var_att->type,true);                 
+                   (void)ncap_att_stretch(var,cnt);     
 
-               }  
+                   cp_in=(char*)( var_att->val.vp); 
+                   cp_in+= (ptrdiff_t)slb_sz*srt;
+                   cp_out=(char*)var->val.vp; 
+                   
+                   idx=0;
+                   
+                   while(idx++ < cnt )
+                   { 
+                       memcpy(cp_out, cp_in, slb_sz);                   
+                       cp_in+=srd*slb_sz;
+                       cp_out+=slb_sz; 
+                   } 
 
+               }               
 
             }
             else
             {
               err_prn(fnc_nm,"Hyperslab limits for attribute "+ att_nm+" doesn't include any elements");  
             }
-             
+
+            nco_lmt_free(lmt_vtr[0]);  
             nco_var_free(var_att);    
 
             attl_end: ; 
