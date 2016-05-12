@@ -1,0 +1,41 @@
+@all=get_vars_in();
+
+*sz=@all.size();
+
+nbr_err=0;
+*cnt_in=0;
+
+for(*idx=0;idx<sz;idx++)
+{
+  @var_nm=@all(idx);
+  // print(@var_nm,"about to test %s\n");
+  if(*@var_nm.type() == NC_INT || *@var_nm.type() == NC_FLOAT)
+  {
+       *@var_nm=*@var_nm.double();
+       cnt_in++; 
+  }
+
+} 
+
+@out=get_vars_out();
+*sz=@out.size();
+*cnt_out=0;
+
+
+/* now check the number of conversions */
+for(*idx=0;idx<sz;idx++)
+{
+  @var_nm=@out(idx);
+
+  if(*@var_nm.type() == NC_DOUBLE)
+     cnt_out++; 
+  else
+     nbr_err++;         
+
+}
+
+if(cnt_in != cnt_out)
+{
+   nbr_err++;
+   print("ERROR with vpointer convert script\n");
+}
