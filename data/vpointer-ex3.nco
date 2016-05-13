@@ -1,0 +1,61 @@
+// example vpointer script
+// reads in all 3D/4D vars and converts them to float 
+// after conversion  
+// for each var processed
+// creates a range attribute that contains min/max
+// creates a total attribtes that contains the sum of the elements
+
+
+// The regular NCO attribute definition is var_nm@all_nm - but if "var_nm" is missing 
+// then it is defaulted  to "global" 
+// This  function reads in all vars in Input and ouptuts them as a ragged array
+// which is in NetCDF lingo is a NC_STRING att
+// to see  the NC_STRING att the ouptut file type must be NetCDF-4
+@all=get_vars_in();
+
+*sz=@all.size();
+
+
+for(*idx=0;idx<sz;idx++)
+{
+
+  // To use an atrribute as a "pointer" - it must be a text type (NC_CHAR and NC_STRING) -The text it contains is 
+  // a var name or an att name -  by prefixing this att with a '*' we are saying "treat me as a variable" 
+  // the '*' has the highest presedence of the operators in NCAP2 so for example
+  //  *global@var_nm.total() is equivalent to (*global@var_nm).total() 
+  @var_nm=@all(idx);
+  // works similar to  to a printf() 
+  print(@var_nm,"about to test %s\n");
+  if(*@var_nm.ndims()>=3 )
+  {
+    // This is where the magic happens the '*' says make me a variable !!
+    *@var_nm=*@var_nm.float();
+    // The push function also takes a call-by-ref att -if it  doesnt already exist then it is created
+    // the call below is pushing a NC_STRING to an att so the end result is a list of NC_STRINGS   
+    push(&@prc,@var_nm); 
+  }
+
+} 
+
+
+*sz=@prc.size();
+
+
+for(*idx=0;idx<sz;idx++)
+{
+  @var_nm=@prc(idx);
+
+  // we can work with att pointers as well 
+  // sprint - ouptut is of type NC_CHAR
+  @att_total=sprint(@var_nm,"%s@total"); 
+  @att_range=sprint(@var_nm,"%s@range"); 
+ 
+  *@att_total= *@var_nm.total();
+  *@att_range={ min(*@var_nm), max(*@var_nm)}; 
+
+
+} 
+
+
+
+

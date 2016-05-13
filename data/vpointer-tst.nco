@@ -3,7 +3,6 @@
 *sz=@all.size();
 
 nbr_err=0;
-*cnt_in=0;
 
 for(*idx=0;idx<sz;idx++)
 {
@@ -12,30 +11,24 @@ for(*idx=0;idx<sz;idx++)
   if(*@var_nm.type() == NC_INT || *@var_nm.type() == NC_FLOAT)
   {
        *@var_nm=*@var_nm.double();
-       cnt_in++; 
+       push(&@tst,@var_nm); 
   }
 
 } 
 
-@out=get_vars_out();
-*sz=@out.size();
-*cnt_out=0;
 
-
+sz=@tst.size();
 /* now check the number of conversions */
 for(*idx=0;idx<sz;idx++)
 {
-  @var_nm=@out(idx);
-
-  if(*@var_nm.type() == NC_DOUBLE)
-     cnt_out++; 
-  else
-     nbr_err++;         
-
-}
-
-if(cnt_in != cnt_out)
-{
+  @var_nm=@tst(idx);
+  
+  if(!exists(*@var_nm)) 
+  {
+   print(@var_nm,"var: %s not present in output\n"); 
    nbr_err++;
-   print("ERROR with vpointer convert script\n");
+  }
 }
+
+print("total number of errors ");
+print(nbr_err);
