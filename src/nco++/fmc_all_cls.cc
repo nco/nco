@@ -3694,27 +3694,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   if(nbr_args!=2)
     err_prn(sfnm, " Function has been called with wrong number of arguments arguments\n"+susg); 
 
-  // get var to push -maybe a call by ref
-  if(vtr_args[1]->getType() == CALL_REF )     
-  {
-    nco_string val_string;
-    std::string add_nm=vtr_args[1]->getFirstChild()->getText();      
-
-    var_add=ncap_sclr_var_mk(SCS("~zz@string"), NC_STRING,false ); 
-
-    // malloc space directly if final scan
-    if(!prs_arg->ntl_scn)
-    {   
-       var_add->val.vp=(void*)nco_malloc(nco_typ_lng(NC_STRING));
-       cast_void_nctype(NC_STRING, &var_add->val);        
-       var_add->val.sngp[0]=strdup(add_nm.c_str());   
-       cast_nctype_void(NC_STRING, &var_add->val);        
-    }
-           
-
-  }
-  else 
-   var_add=walker.out(vtr_args[1]);
+  var_add=walker.out(vtr_args[1]);
              
 
 
@@ -3932,7 +3912,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 
     if(vtype==NC_STRING)
     {  
-       xtr_nbr=var_regexp->sz;
+      xtr_nbr=var_regexp->sz;
        xtr_lst=nco_var_lst_mk(fl_id, nbr_var_fl, var_regexp->val.sngp  , False, False, &xtr_nbr);    
     }
 
