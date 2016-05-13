@@ -2639,9 +2639,11 @@ out returns [var_sct *var]
 
     |   str:NSTRING
         {
+            /* use malloc here rather than strdup(str->getText().c_str()) as this causes 
+               an invalid-read when using GCC compiler */ 
             char *tsng;
-            
-            tsng=strdup(str->getText().c_str());
+            tsng=(char*)nco_malloc(str->getText().size()+1);    
+            strcpy(tsng, str->getText().c_str());
             (void)sng_ascii_trn(tsng);            
             var=(var_sct *)nco_malloc(sizeof(var_sct));
             /* Set defaults */
@@ -2660,11 +2662,14 @@ out returns [var_sct *var]
             tsng=(char*)nco_free(tsng);      
         }
 
+
+
+
     |   str1:N4STRING
         {
             char *tsng;
-
-            tsng=strdup(str1->getText().c_str());
+            tsng=(char*)nco_malloc(str1->getText().size()+1);    
+            strcpy(tsng, str1->getText().c_str());
             (void)sng_ascii_trn(tsng);            
             var=(var_sct *)nco_malloc(sizeof(var_sct));
             /* Set defaults */
