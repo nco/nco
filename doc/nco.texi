@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.0
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 9 May 2016
+@set update-date 13 May 2016
 @set update-month May 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -15938,8 +15938,9 @@ DESCRIPTION
 annual mean, and optionally regrids all these files.
 Standard @command{ncclimo} usage looks like
 @example
-ncclimo           -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
-ncclimo -m mdl_nm -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
+ncclimo            -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
+ncclimo -m mdl_nm  -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
+ncclimo -v var_lst -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 @end example
 A complete description of all available flags is given in comments
 embedded in @command{ncclimo}.
@@ -15979,6 +15980,11 @@ See comments in @command{ncclimo} for further documentation.
 Model name (as embedded in monthly input filenames). 
 Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @samp{ice}, @samp{cism}, @samp{cice}, @samp{pop}. 
+@item -v var_lst
+Variables to subset.
+Same behavior as @ref{Subsetting Files}.
+Regular expressions are allowed, e.g., @samp{PREC.?} will extract
+the variables @samp{PRECC,PRECL,PRECSC,PRECSL} if present.
 @end table
 @noindent
 

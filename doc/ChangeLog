@@ -1,6 +1,6 @@
 2016-05-12  Charlie Zender  <zender@uci.edu>
 
-	* Remove ncremap step to fix lon in HIRDLS/MLS files since ncpdq now works as expected
+	* Remove ncremap step to fix lon dimension in HIRDLS/MLS files since ncpdq now works as expected
 
 	* Fix ncclimo regression test (sought non-existent area variable) and new ncap2 regression test (sought mis-spelled file)
 
