@@ -22,6 +22,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   att_sct *att=NULL_CEWI;
 
+  const char fnc_nm[]="nco_prn_att()"; /* [sng] Function name  */
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *nm_cdl;
@@ -145,13 +146,14 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	     _IsNetcdf4 and _SuperblockVersion are computed by traversing file with HDF5 API, looking for clues
 	     All were introduced in 4.4.1-rc2 on 20160513 */
 	  if(NC_LIB_VERSION >= 441){
+	    /* Trial and error show that nc_inq_att() returns type==NC_NAT */
 	    rcd=nco_inq_att_flg(grp_id,var_id,"_NCProperties",&att_typ,&att_sz);
 	    if(rcd == NC_NOERR){
 	      idx=att_nbr_ttl++;
 	      att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	      att[idx].nm=(char *)strdup("_NCProperties");
-	      att[idx].type=att_typ;
-	      assert(att_typ != 0);
+	      att[idx].type=NC_CHAR;
+	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
 	      att[idx].sz=att_sz;
 	      rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 	    } /* !rcd */
