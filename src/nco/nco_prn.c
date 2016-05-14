@@ -158,18 +158,24 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 	      rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 	    } /* !rcd */
-	    rcd=nco_inq_att_flg(grp_id,var_id,"_IsNetcdf4",&att_typ,&att_sz);
-	    if(rcd == NC_NOERR){
-	      idx=att_nbr_ttl++;
-	      att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
-	      att[idx].nm=(char *)strdup("_IsNetcdf4");
-	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
-	      att[idx].type=NC_INT;
-	      att[idx].sz=att_sz;
-	      att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
-	      rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
-	    } /* !rcd */
-	    rcd=NC_NOERR;
+	    /* _IsNetcdf4 */
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_IsNetcdf4");
+	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
+	    att[idx].type=NC_INT;
+	    att[idx].sz=att_sz;
+	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	    rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+	    /* _SuperblockVersion */
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_SuperblockVersion");
+	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
+	    att[idx].type=NC_INT;
+	    att[idx].sz=att_sz;
+	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	    rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 	  } /* !441 */
 	} /* !rcd */	
       } /* !xml */
