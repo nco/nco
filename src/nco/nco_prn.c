@@ -146,7 +146,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	     _IsNetcdf4 and _SuperblockVersion are computed by traversing file with HDF5 API, looking for clues
 	     All were introduced in 4.4.1-rc2 on 20160513 */
 	  if(NC_LIB_VERSION >= 441){
-	    /* 20160514: nc_inq_att() for "_NCProperties" returns type==NC_NAT */
+	    /* 20160514: nc_inq_att() for "_NCProperties" returns type==NC_NAT or random integer, and att_sz is random for files without _NCProperties */
+	    /* 20160514: nc_inq_att() for "_IsNetcdf4" returns random random type and size too */
 	    rcd=nco_inq_att_flg(grp_id,var_id,"_NCProperties",&att_typ,&att_sz);
 	    if(rcd == NC_NOERR){
 	      idx=att_nbr_ttl++;
@@ -164,7 +165,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    att[idx].nm=(char *)strdup("_IsNetcdf4");
 	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
 	    att[idx].type=NC_INT;
-	    att[idx].sz=att_sz;
+	    att[idx].sz=1L;
 	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 	    rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 	    /* _SuperblockVersion */
@@ -173,7 +174,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    att[idx].nm=(char *)strdup("_SuperblockVersion");
 	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
 	    att[idx].type=NC_INT;
-	    att[idx].sz=att_sz;
+	    att[idx].sz=1L;
 	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 	    rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 	  } /* !441 */
