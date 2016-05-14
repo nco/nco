@@ -155,6 +155,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      att[idx].type=NC_CHAR;
 	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
 	      att[idx].sz=att_sz;
+	      att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 	      rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 	    } /* !rcd */
 	    rcd=NC_NOERR;
