@@ -145,7 +145,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	     _NCProperties is persistent, added at file creation 
 	     _IsNetcdf4 and _SuperblockVersion are computed by traversing file with HDF5 API, looking for clues
 	     All were introduced in 4.4.1-rc2 on 20160513 */
-	  if(NC_LIB_VERSION >= 441){
+	  if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 && NC_LIB_VERSION >= 441){
 	    /* 20160514: nc_inq_att() for "_NCProperties" returns type==NC_NAT or random integer, and att_sz is random for files without _NCProperties */
 	    /* 20160514: nc_inq_att() for "_IsNetcdf4" returns random random type and size too */
 	    rcd=nco_inq_att_flg(grp_id,var_id,"_NCProperties",&att_typ,&att_sz);
