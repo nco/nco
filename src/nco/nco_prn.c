@@ -63,6 +63,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   long sng_lng=long_CEWI; /* [nbr] Length of NC_CHAR string */
   long sng_lngm1=long_CEWI; /* [nbr] Length minus one of NC_CHAR string */
   
+  nc_type att_typ;
   nc_type var_typ;
 
   nco_bool flg_glb=False; /* [flg] Printing attributes for root-level group */
@@ -144,13 +145,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	     _IsNetcdf4 and _SuperblockVersion are computed by traversing file with HDF5 API, looking for clues
 	     All were introduced in 4.4.1-rc2 on 20160513 */
 	  if(NC_LIB_VERSION >= 441){
-	    rcd=nco_inq_att_flg(grp_id,var_id,"_NCProperties",&att_type,&att_sz);
+	    rcd=nco_inq_att_flg(grp_id,var_id,"_NCProperties",&att_typ,&att_sz);
 	    //	    rcd=nco_inq_att_flg(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
-	    if(rcd == NC_NO_ERR){
+	    if(rcd == NC_NOERR){
 	      idx=att_nbr_ttl++;
 	      att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	      att[idx].nm=(char *)strdup("_NCProperties");
-	      att[idx].typ=att_type;
+	      att[idx].typ=att_typ;
 	      att[idx].sz=att_sz;
 	      (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 	    } /* !rcd */
