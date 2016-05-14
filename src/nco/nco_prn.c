@@ -151,7 +151,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      idx=att_nbr_ttl++;
 	      att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	      att[idx].nm=(char *)strdup("_NCProperties");
-	      att[idx].typ=att_typ;
+	      att[idx].type=att_typ;
 	      att[idx].sz=att_sz;
 	      (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 	    } /* !rcd */
