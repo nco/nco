@@ -146,15 +146,16 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	     All were introduced in 4.4.1-rc2 on 20160513 */
 	  if(NC_LIB_VERSION >= 441){
 	    rcd=nco_inq_att_flg(grp_id,var_id,"_NCProperties",&att_typ,&att_sz);
-	    //	    rcd=nco_inq_att_flg(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
 	    if(rcd == NC_NOERR){
 	      idx=att_nbr_ttl++;
 	      att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	      att[idx].nm=(char *)strdup("_NCProperties");
 	      att[idx].type=att_typ;
+	      assert(att_typ != 0);
 	      att[idx].sz=att_sz;
-	      (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+	      rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 	    } /* !rcd */
+	    rcd=NC_NOERR;
 	  } /* !441 */
 	} /* !rcd */	
       } /* !xml */
