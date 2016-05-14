@@ -139,6 +139,17 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 	  strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
 	  if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+	  /* _NCProperties, _IsNetcdf4, _SuperblockVersion only printed for root group
+	     _NCProperties is persistent, added at file creation 
+	     _IsNetcdf4 and _SuperblockVersion are computed by traversing file with HDF5 API, looking for clues
+	     All were introduced in 4.4.1-rc2 on 20160513 */
+	  if(NC_LIB_VERSION >= 441){
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_NCProperties");
+	    (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
+	    (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+	  } /* !441 */
 	} /* !rcd */	
       } /* !xml */
     }else{
