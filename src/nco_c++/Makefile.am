@@ -16,7 +16,7 @@ libnco_c___la_SOURCES = nco_att.cc nco_dmn.cc nco_fl.cc nco_hgh.cc nco_utl.cc nc
 
 libnco_c___la_CPPFLAGS = -DABORT_ON_ERROR
 
-# NB: VERSION here refers to argument to AC_INIT() in configure.ac
+# NB: VERSION here refers to ... what? argument to AC_INIT() in configure.ac? No, that's package_version
 libnco_c___la_LDFLAGS = -release @VERSION@
 
 tst_SOURCES = tst.cc
