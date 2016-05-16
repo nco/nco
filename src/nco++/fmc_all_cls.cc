@@ -879,8 +879,9 @@ var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
        /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh
 	  20020703: AIX, SGI*, WIN32 do not define acoshf, asinhf, atanhf
 	  20050610: C99 mandates support for acosh(), asinh(), atanh(), cosh(), sinh(), tanh()
+	  20160515: Add hyperbolic function support to MACOSX
 	  Eventually users without C99 will forego ncap */
-#if defined(LINUX) || defined(LINUXAMD64)
+#if defined(LINUX) || defined(LINUXAMD64) || defined(MACOSX)
       sym_vtr.push_back(sym_cls("acosh",acosh,acoshf));
       sym_vtr.push_back(sym_cls("asinh",asinh,asinhf));
       sym_vtr.push_back(sym_cls("atanh",atanh,atanhf));

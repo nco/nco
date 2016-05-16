@@ -130,6 +130,7 @@ nco_var_utl.h
 lib_LTLIBRARIES = libnco.la
 
 # This creates version-stamped shared-library, e.g., libnco-2.9.4.so
+# NB: VERSION here refers to argument to AC_INIT() in configure.ac
 libnco_la_LDFLAGS = -release @VERSION@
 
 # Fedora Core nco.spec in nco-3.1.2 wants to install headers

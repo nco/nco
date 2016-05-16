@@ -16,7 +16,8 @@ libnco_c___la_SOURCES = nco_att.cc nco_dmn.cc nco_fl.cc nco_hgh.cc nco_utl.cc nc
 
 libnco_c___la_CPPFLAGS = -DABORT_ON_ERROR
 
-libnco_c___la_LDFLAGS = -release @NCO_VERSION@
+# NB: VERSION here refers to ... what? argument to AC_INIT() in configure.ac? No, that's package_version
+libnco_c___la_LDFLAGS = -release @VERSION@
 
 tst_SOURCES = tst.cc
 
@@ -26,7 +27,7 @@ TESTPROGRAMS = tst
 check_PROGRAMS = $(TESTPROGRAMS)
 TESTS = $(TESTPROGRAMS)
 
-# The test programs produce these files:
+# Test programs produce these files:
 CLEANFILES = out.nc
 
 MAINTAINERCLEANFILES = Makefile.in in.nc

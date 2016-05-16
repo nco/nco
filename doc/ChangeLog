@@ -1,3 +1,11 @@
+2016-05-15  Charlie Zender  <zender@uci.edu>
+
+	* Add hyperbolic function support to MACOSX
+
+2016-05-14  Charlie Zender  <zender@uci.edu>
+
+	* Support reporting _NCProperties, _IsNetcdf4, _SuperblockVersion in netCDF 4.4.1+
+
 2016-05-12  Charlie Zender  <zender@uci.edu>
 
 	* Remove ncremap step to fix lon dimension in HIRDLS/MLS files since ncpdq now works as expected

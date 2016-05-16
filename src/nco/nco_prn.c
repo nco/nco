@@ -22,6 +22,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   att_sct *att=NULL_CEWI;
 
+  const char fnc_nm[]="nco_prn_att()"; /* [sng] Function name  */
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *nm_cdl;
@@ -63,6 +64,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   long sng_lng=long_CEWI; /* [nbr] Length of NC_CHAR string */
   long sng_lngm1=long_CEWI; /* [nbr] Length minus one of NC_CHAR string */
   
+  nc_type att_typ;
   nc_type var_typ;
 
   nco_bool flg_glb=False; /* [flg] Printing attributes for root-level group */
@@ -139,6 +141,43 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 	  strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
 	  if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+	  /* _NCProperties, _IsNetcdf4, _SuperblockVersion only printed for root group
+	     _NCProperties is persistent, added at file creation 
+	     _IsNetcdf4 and _SuperblockVersion are computed by traversing file with HDF5 API, looking for clues
+	     All were introduced in 4.4.1-rc2 on 20160513 */
+	  if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 && NC_LIB_VERSION >= 441){
+	    /* 20160514: nc_inq_att() for "_NCProperties" returns type==NC_NAT or random integer, and att_sz is random for files without _NCProperties */
+	    /* 20160514: nc_inq_att() for "_IsNetcdf4" returns random type and size too */
+	    rcd=nco_inq_att_flg(grp_id,var_id,"_NCProperties",&att_typ,&att_sz);
+	    if(rcd == NC_NOERR){
+	      idx=att_nbr_ttl++;
+	      att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	      att[idx].nm=(char *)strdup("_NCProperties");
+	      att[idx].type=NC_CHAR;
+	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
+	      att[idx].sz=att_sz;
+	      att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	      rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+	    } /* !rcd */
+	    /* _IsNetcdf4 */
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_IsNetcdf4");
+	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
+	    att[idx].type=NC_INT;
+	    att[idx].sz=1L;
+	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	    rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+	    /* _SuperblockVersion */
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_SuperblockVersion");
+	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
+	    att[idx].type=NC_INT;
+	    att[idx].sz=1L;
+	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	    rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+	  } /* !441 */
 	} /* !rcd */	
       } /* !xml */
     }else{
