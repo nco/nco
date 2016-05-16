@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.0
-@set doc-edition 4.6.0
+@set nco-edition 4.6.1-alpha01
+@set doc-edition 4.6.1-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
 @set update-date 13 May 2016
@@ -4480,7 +4480,7 @@ convention described in @ref{CF Conventions}.
 As of @acronym{NCO} version 3.9.6 (January, 2009) 
 both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{coordinates}
 convention described in @ref{CF Conventions}.
-As of @acronym{NCO} version 4.6.0 (April, 2016) 
+As of @acronym{NCO} version 4.6.0 (May, 2016) 
 both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{grid_mapping}
 convention described in @ref{CF Conventions}. 
 
@@ -6361,7 +6361,7 @@ Long options:
 @end cartouche
 
 @acronym{NCO} includes extensive regridding features in 
-@command{ncclimo} (as of version 4.6.0 in April, 2016),
+@command{ncclimo} (as of version 4.6.0 in May, 2016),
 @command{ncremap} (as of version 4.5.4 in November, 2015)
 and @command{ncks} (since version 4.5.0 in June, 2015). 
 Regridding can involve many choices, options, inputs, and outputs.
@@ -10829,7 +10829,7 @@ Ancillary variables are subject to the user-specified override switches
 @end html
 @cindex @code{grid_mapping} attribute
 @cindex ancillary variables convention
-As of @acronym{NCO} version 4.6.0 (April, 2016), @acronym{NCO} 
+As of @acronym{NCO} version 4.6.0 (May, 2016), @acronym{NCO} 
 supports the @acronym{CF} @code{grid_mapping} convention for 
 described 
 @uref{http://cfconventions.org/cf-conventions/cf-conventions.html#grid-mappings-and-projections, here}.
@@ -19190,7 +19190,7 @@ variables.
 @cindex @code{--c2b}
 @cindex @code{--clm_bnd}
 @cindex @code{--clm2bnd}
-As of @acronym{NCO} version 4.6.0 (April, 2016) @command{ncra} can honor 
+As of @acronym{NCO} version 4.6.0 (May, 2016) @command{ncra} can honor 
 the @acronym{CF} @code{climatology} and climatological statistics
 conventions described in @ref{CF Conventions}.
 Currently this is opt-in with the @samp{--cb} flag (or long-option
