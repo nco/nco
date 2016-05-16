@@ -147,7 +147,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	     All were introduced in 4.4.1-rc2 on 20160513 */
 	  if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 && NC_LIB_VERSION >= 441){
 	    /* 20160514: nc_inq_att() for "_NCProperties" returns type==NC_NAT or random integer, and att_sz is random for files without _NCProperties */
-	    /* 20160514: nc_inq_att() for "_IsNetcdf4" returns random random type and size too */
+	    /* 20160514: nc_inq_att() for "_IsNetcdf4" returns random type and size too */
 	    rcd=nco_inq_att_flg(grp_id,var_id,"_NCProperties",&att_typ,&att_sz);
 	    if(rcd == NC_NOERR){
 	      idx=att_nbr_ttl++;
