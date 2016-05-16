@@ -9,7 +9,7 @@ file:///home/zender/nco/doc/highlights_old.shtml
 
 Usage:
 /usr/bin/scp ~/nco/doc/highlights_old.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-scp -p ~/nco/doc/highlights_old.shtml dust.ess.uci.edu:/var/www/html/nco
+scp -p ~/nco/doc/highlights_old.shtml dust.ess.uci.edu:Sites/nco
 -->
 
 <!doctype html public "-//W3C//DTD HTML 3.2//EN">
