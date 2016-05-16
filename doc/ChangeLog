@@ -1,5 +1,7 @@
 2016-05-16  Charlie Zender  <zender@uci.edu>
 
+	* Condense homepage, add new presentations
+
 	* NCO 4.6.1-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.1-alpha01 final changes';git push
 	git tag -a 4.6.1-alpha01 -m 'Version 4.6.1-alpha01 new features: netCDF4 provenance attributes';git push --tags

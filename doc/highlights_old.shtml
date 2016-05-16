@@ -23,8 +23,96 @@ scp -p ~/nco/doc/highlights_old.shtml dust.ess.uci.edu:/var/www/html/nco
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
 <dt><a name="News"></a></dt>
-<h2>Release Highlights from 2000&ndash;2012 (versions 1.1.47&ndash;4.2.3)</h2>
+<h2>Release Highlights from 200001&ndash;201406 (versions 1.1.47&ndash;4.4.4)</h2>
 
+<li><b>NCO 4.4.4</b>:
+netCDF'ize non-compliant element names;
+<tt>-x var</tt> tolerates non-existence;
+<tt>--rad</tt> <a href="http://nco.sf.net/nco.html#rad">orphan dimensions</a>;
+<tt>ncwa --mask_condition</tt> <a href="#bug_ncwa_mask_condition">bugfix</a></li>
+<li><b>NCO 4.4.3</b>:
+Faster DAP access to strided data;
+<a href="http://nco.sf.net/nco.html#grp_brd">Group broadcasting</a> for ensembles;
+<li><b>NCO 4.4.2</b>:
+CF <tt>cell_methods</tt> support;
+Bugfixes for <tt>nces</tt> memory, LLVM/clang builds, <tt>-X</tt>, RX's with groups, <tt>--cnk_dmn</tt>;</li>
+<li><b>NCO 4.4.1</b>: 
+Group support for <tt>-X</tt> and <tt>--cnk_dmn</tt>;
+Chunk and uncompress simultaneously;
+<tt>ncra/ncea/ncrcat</tt> <a href="#bug_ncra_no_fl_close">bugfix</a></li>
+<li><b>NCO 4.4.0</b>: 
+Optimizations;
+<tt>ncdismember</tt> awesomeness;
+<tt>ncks --hdn</tt>;
+<tt>ncks --fix_rec_dmn=all</tt>;
+<tt>ncks</tt> <a href="http://nco.sf.net/nco.html#autoconv">autoconversion</a>;
+<tt>ncrename</tt> output path;
+<tt>ncra --mro</tt> <a href="#bug_ncra_mro_mss_val">bugfix</a>;
+<tt>ncra/ncrcat</tt> stride bugfix;
+Better <a href="http://nco.sf.net/nco.html#cnk">chunking</a>;
+Group support for <tt>ncwa -w -m</tt>;</li>
+<li><b>NCO 4.3.9</b>:
+New operator <tt>nces</tt>;
+Full XML/NcML compliance;
+<tt>ncatted</tt> NaN bugfix;</li>
+<li><b>NCO 4.3.8</b>:
+<tt>ncatted</tt> group features;</li>
+<li><b>NCO 4.3.7</b>:
+HDF4 <a href="http://nco.sf.net/nco.html#hdf4">support</a>;
+XML/NcML data <a href="http://nco.sf.net/nco.html#xml">support</a>;
+Multiple record dimension <a href="http://nco.sf.net/nco.html#mrd">support</a> with <tt>ncpdq, ncecat --mrd</a></tt>;
+<tt>ncrename</tt> group features;
+<tt>ncap2</tt> file bugfix;
+<tt>ncecat</tt> ID bugfix;
+<tt>ncwa -b</tt> bugfix;</li>
+<li><b>NCO 4.3.6</b>:
+<tt>--flt</tt> default;
+<tt>ncpdq/ncecat</tt> leave only one record dimension;
+<tt>ncwa/nces</tt> bugfixes;
+<tt>ncdismember</tt></li>
+<li><b>NCO 4.3.5</b>: 
+<tt>nces/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
+<tt>nces/ncra/ncwa</tt> float&rightarrow;double coercion with <tt><a href="http://nco.sf.net/nco.html#dbl">--dbl</a></tt>;</li>
+<tt>ncwa -d</tt> <a href="#bug_ncwa_lmt">bugfix</a>
+<li><b>NCO 4.3.4</b>:
+HDF unpacking <tt>--hdf_upk</tt>;
+<tt>ncpdq</tt> unpacking <a href="#bug_ncpdq_upk">bugfix</a>;
+CDL printing legibility;</li>
+<li><b>NCO 4.3.3</b>:
+CDL printing <tt>ncks --cdl</tt>;
+<tt>ncrename -g</tt>;
+<tt>ncwa</tt> groups with <tt>-g -G --unn</tt>;</li>
+<li><b>NCO 4.3.2</b>:
+<tt>ncflint/ncpdq</tt> groups with </tt>-g -G --unn</tt>;
+<tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>;</li>
+<li><b>NCO 4.3.1</b>:
+<tt>ncbo</tt> symmetry, group broadcasting;
+<tt>ncbo -G --unn</tt>;
+<tt>ncecat</tt> <a href="http://nco.sf.net/nco.html#rag">RAG</a>;
+<tt>ncbo</tt> CF <a href="#bug_ncbo_ccm_ccsm_cf">bugfix</a>;
+<tt>ncatted</tt> <a href="#bug_ncatted_strcmp">bugfix</a>;
+Windows DAP;</li>
+<li><b>NCO 4.3.0</b>: 
+<tt>ncbo -g</tt> groups;
+<tt>ncatted</tt> NULs;
+<tt>ncap2</tt> rounding;
+<tt>ncks</tt> metadata <a href="#bug_ncks_mtd">bugfix</a></li>
+<li><b>NCO 4.2.6</b>: 
+Record appending with <tt>ncra/ncrcat --rec_apn</tt>;
+<tt>ncflint --fix_rec_crd</tt>;
+RX's in full paths;
+Correct dimension/coordinate scopes;
+<tt>ncks</tt> MM3 workaround;</li>
+<li><b>NCO 4.2.5</b>: 
+<tt>ncks --mk_rec_dmn</tt> <a href="#bug_ncks_mk_rec_dmn">bugfix</a>;
+<tt>ncks</tt> subsetting <a href="#bug_ncks_sbs">bugfix</a></li>
+<li><b>NCO 4.2.4</b>:
+Group <a href="http://nco.sf.net/nco.html#rx">wildcards</a>;
+Group <a href="http://nco.sf.net/nco.html#anchoring">anchoring and recursion</a>;
+Intersection/union <a href="http://nco.sf.net/nco.html#unn">modes</a>;
+<tt>ncrename</tt> global att. handling;
+<tt>nces</tt> <a href="#bug_nces_rec_var">bugfix</a>;
+<tt>ncra</tt> <a href="#bug_ncra_flg_bfr_nrm">bugfix</a></li>
 <li><b>NCO 4.2.3</b>:
 Group Path Editing (GPE);
 <tt>ncecat</tt> <a href="#bug_ncecat_nintap">bugfix</a></li>

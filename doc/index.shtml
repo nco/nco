@@ -552,125 +552,51 @@ climate models (see <a href="#pub">publications</a>).</p>
 <dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
 <h2>Publications and Presentations</h2>
 <ul>
+<li><!-- Zen16 --> <a name="Zen16"></a> <!--http://www.ess.uci.edu/~zender#Zen16 -->
+Zender, C. S. (2016): Regrid Curvilinear, Rectangular, and Unstructured Data (CRUD) with ncremap, a new netCDF Operator. Presented to the Earth Science Data Systems Working Group (ESDSWG) Meeting, Greenbelt, MD, April 6--8, 2016.
+<a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201604.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+
+<li><!-- Zen16 --> <a name="Zen16"></a> <!--http://www.ess.uci.edu/~zender#Zen16 -->
+Zender, C. S. (2016): Regridding Swath, Curvilinear, Rectangular, and Unstructured Data (SCRUD). Presented to the NASA Goddard Earth Sciences (GES) Data and Information Services Center (DISC), Goddard Space Flight Center, Greenbelt, MD, April 5, 2016.
+<a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+
+<li><!-- Zen15 --> <a name="Zen15"></a> <!--http://www.ess.uci.edu/~zender#Zen15 -->
+Zender, C. S. (2015): Regrid Curvilinear, Rectangular, and Unstructured Data (CRUD) with ncremap, a new netCDF Operator. Presented to the American Geophysical Union Fall Meeting, San Francisco, CA, December 14--18, 2015. <i>Eos Trans. AGU</i>, <b>95</b>(54), Fall Meet. Suppl., Abstract IN31A-1744.
+<a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+
+<li><!-- Zen15 --> <a name="Zen15"></a> <!--http://www.ess.uci.edu/~zender#Zen15 -->
+Zender, C. S. (2015): Optimizing Intrinsic Parallelism to generate climatologies with netCDF Operators (NCO). Presented to the DOE Accelerated Climate Modeling for Energy (ACME) PI Meeting, Albuquerque, NM, November 2--4, 2015.
+<a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+
+<li><!-- ZVW15 --> <a name="ZVW15"></a> <!--http://www.ess.uci.edu/~zender#ZVW15 -->
+Zender, C. S., P. Vicente, and W. Wang (2015): Use netCDF Operators (NCO) to Improve Data Interoperability and Usability. Presented to the Earth Science Data Systems Working Group (ESDSWG) Meeting, Greenbelt, MD, March 24--26, 2015.
+<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201503.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+
+<li><!-- ZVW14 --> <a name="ZVW14"></a> <!--http://www.ess.uci.edu/~zender#ZVW14 -->
+Zender, C. S., P. Vicente, and W. Wang (2014): Simplifying and accelerating model evaluation by NASA satellite data. Presented to the Earth Science Data Systems Working Group (ESDSWG) Meeting, Greenbelt, MD, March 24--26, 2014.
+<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+
 <li><!-- Zen14 --> <a name="Zen14"></a> <!--http://www.ess.uci.edu/~zender#Zen14 -->
 Zender, C.&nbsp;S. (2014): <i>Use Hierarchical Storage and Analysis to Exploit Intrinsic Parallelism</i>. Presented to the NASA Goddard Earth Sciences (GES) Data and Information Services Center (DISC), Goddard Space Flight Center, Greenbelt, MD, March&nbsp;27, 2014.
-<a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">PDF</a> (&copy;&nbsp;2014 by me)</a></li>
+<a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
 
 <li><!-- ZVW13 --> <a name="ZVW13"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
 Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2013): <i>Use Hierarchical Storage and Analysis to Exploit Intrinsic Parallelism</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 9&ndash;13, 2013. <i>Eos Trans. AGU</i>, <b>93</b>(53), Fall Meet. Suppl., Abstract IN52A-06.
-<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201312.pdf">PDF</a> (&copy;&nbsp;2013 by me)</a></li>
+<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201312.pdf">PDF</a> (&copy;&nbsp;2013 by me)</li>
 
 <li><!-- ZVW13 --> <a name="ZVW13"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
-Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2013): <i>The Future of Model Evaluation</i>. Presented to the Chapman University Symposium on Big Data and Analytics: 44th Symposium on the Interface of Computing Science and Statistics, Chapman University, Orange,&nbsp;CA, April 4&ndash;6, 2013. <a href="http://dust.ess.uci.edu/smn/smn_nco_chapman_201304.pdf">PDF</a> (&copy;&nbsp;2013 by me)</a></li>
+Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2013): <i>The Future of Model Evaluation</i>. Presented to the Chapman University Symposium on Big Data and Analytics: 44th Symposium on the Interface of Computing Science and Statistics, Chapman University, Orange,&nbsp;CA, April 4&ndash;6, 2013. <a href="http://dust.ess.uci.edu/smn/smn_nco_chapman_201304.pdf">PDF</a> (&copy;&nbsp;2013 by me)</li>
 
 <li><!-- ZVW12 --> <a name="ZVW12"></a> <!--http://www.ess.uci.edu/~zender#ZVW12 -->
 Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2012): <i>NCO: Simpler and faster model evaluation by NASA satellite data via unified file-level netCDF and HDF-EOS data post-processing tools.</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 3&ndash;7, 2012. <i>Eos Trans. AGU</i>, <b>93</b>(53), Fall Meet. Suppl., Abstract IN34A-07.
-<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201212.pdf">PDF</a> (&copy;&nbsp;2012 by me)</a></li>
+<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201212.pdf">PDF</a> (&copy;&nbsp;2012 by me)</li>
 
 <li><!-- ZVW12 --> <a name="ZVW12"></a> <!--http://www.ess.uci.edu/~zender#ZVW12 -->
 Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2012): <i>Simplifying and accelerating model evaluation by NASA satellite data.</i>. Presented to the Earth Science Data Systems Working Group (ESDSWG) Meeting, Annapolis&nbsp;MD, November 13&ndash;15, 2012.
-<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201211.pdf">PDF</a> (&copy;&nbsp;2012 by me)</a></li>
+<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201211.pdf">PDF</a> (&copy;&nbsp;2012 by me)</li>
 
-<li><!-- WZJ083 --> <a name="WZJ083"></a> <!--http://www.ess.uci.edu/~zender#WZJ083 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2008), Compiling the uncompilable: A&nbsp;case for shell script compilation, <i>Submitted to ACM Trans. Softw. Engin. Method.</i>.
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ083.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ083.pdf">PDF</a> (&copy;&nbsp;2008 by ACM)</a></li>
+<li><a href="./prs_pbl_old.shtml">Presentation and Publications from 2006&ndash;2011</a></li>
 
-<li><!-- WZJ091 --> <a name="WZJ091"></a> <!--http://www.ess.uci.edu/~zender#WZJ091 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2009), Efficient Clustered Server-side Data Analysis Workflows using SWAMP, <i>Earth Sci. Inform.</i>, <b>2</b>(3), 141&ndash;155, doi:10.1007/s12145-009-0021-z.
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ091.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ091.pdf">PDF</a> (&copy;&nbsp;2009 by ESI)</a></li>
-
-<li><!-- WZJ081 --> <a name="WZJ081"></a> <!--http://www.ess.uci.edu/~zender#WZJ081 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks: Cluster Workflow Execution of Retargeted Data Analysis Scripts, in <i>Cluster Computing and the Grid, 2008. CCGRID&nbsp;'08. 8th&nbsp;IEEE International Symposium on</i>. Lyons, France, 19&nbsp;22 May, 2008. IEEE Computer Society, 449&ndash;458, doi:10.1109/CCGRID.2008.69.
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ081.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ081.pdf">PDF</a> (&copy;&nbsp;2008 by IEEE)</a></li>
-
-<li><!-- Zen08 --> <a name="Zen08"></a> <!--http://www.ess.uci.edu/~zender#Zen08 -->
-Zender, C.&nbsp;S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), <i>Environ. Modell. Softw.</i>, <b>23</b>(10), 1338&ndash;1342, doi:10.1016/j.envsoft.2008.03.004.
-<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08_csz.pdf">PDF (CSZ)</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">PDF (EMS)</a> (&copy;&nbsp;2008 by Elsevier Ltd.)</a></li>
-
-<li> <!-- WZJ074 --> <a name="WZJ074"></a> <!--http://www.ess.uci.edu/~zender#WZJ074 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender and S.&nbsp;F. Jenks (2007): <i>A System for Scripted Data Analysis at Remote Data Centers</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 10&ndash;14, 2007. <i>Eos Trans. AGU</i>, <b>88</b>(52), Fall Meet. Suppl., Abstract IN11B-0469.
-<a href="http://dust.ess.uci.edu/ppr/pst_WZJ074.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/pst_WZJ074.pdf">PDF (DLW)</a>
-</li>
-
-<li> <!-- WZJ073 --> <a name="WZJ073"></a> <!--http://www.ess.uci.edu/~zender#WZJ073 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), Server-side parallel data reduction and analysis, in <i>Advances in Grid and Pervasive Computing, Second International Conference, GPC 2007</i>, Paris, France, May 2&ndash;4, 2007, Proceedings. IEEE Lecture Notes in Computer Science, vol. 4459, edited by C.&nbsp;C&eacute;rin and K.-C. Li, pp. 744&ndash;750, Springer-Verlag, Berlin/Heidelberg.
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ073.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ073.pdf">PDF (DLW)</a>
-</li>
-
-<li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
-<i>Server-side Parallel Data Reduction and Analysis</i>.
-Presented by D.&nbsp;Wang to the International Conference on Grid and
-Pervasive Computing (GPC),
-Paris, France, May 2&ndash;4, 2007. 
-<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_gpc_200705.pdf">PDF</a></li>
-
-<li><!-- ZeM07 --> <a name="ZeM07"></a> <!--http://www.ess.uci.edu/~zender#ZeM07 -->
-Zender, C.&nbsp;S., and H.&nbsp;J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, <i>Int.&nbsp;J.&nbsp;High Perform. Comput. Appl, <b>21</b>(4), 485&ndash;498, doi:10.1177/1094342007083802</i>.
-<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07_csz.pdf">PDF (CSZ)</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">PDF (IJHPCA) (&copy;&nbsp;2007 by SAGE Publications)</a></li>
-
-<li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
-<i>Server-side Data Reduction and Analysis with Script Workflow Analysis for Multi-Processing</i>.
-Presented by D.&nbsp;Wang to the OPeNDAP Developer's Workshop,
-Boulder, CO, February 21&ndash;23, 2007.
-<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_opendap_200702.pdf">PDF</a></li>
-
-<li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
-<i>Server-side Data Reduction and Analysis with Script Workflow Analysis for Multi-Processing</i>.
-Presented by D.&nbsp;Wang to the 23rd AMS Conference on Interactive Information and
-Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology,
-San Antonio, TX, January 14&ndash;18, 2007.
-<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_ams_200701.pdf">PDF</a></li>
-
-<li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
-DAP-enabled Server-side Data Reduction and Analysis, 
-<i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, 
-Paper 3B.2., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
-<a href="http://dust.ess.uci.edu/ppr/abs_xtn_WZJ07.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/abs_xtn_WZJ07.pdf">PDF</a></li>
-
-<li><!-- ZeW07 --> <a name="ZeW07"></a> <!--http://www.ess.uci.edu/~zender#ZeW07 -->
-Zender, C.&nbsp;S., and D.&nbsp;L. Wang (2007), 
-<i>High performance distributed data reduction and analysis with the netCDF Operators (NCO)</i>. 
-Presented to the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology, January 14&ndash;18, 
-San Antonio,&nbsp;TX, January 14&ndash;18, 2007.
-<a href="http://dust.ess.uci.edu/smn/smn_nco_ams_200701.pdf">PDF</a></li>
-
-<li><!-- ZeW07 --> <a name="ZeW07"></a> <!--http://www.ess.uci.edu/~zender#ZeW07 -->
-Zender, C.&nbsp;S., and D.&nbsp;L. Wang (2007), 
-High performance distributed data reduction and analysis with the netCDF Operators (NCO), 
-<i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, 
-Paper 3B.4., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
-<a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.pdf">PDF</a></li>
-
-<li><!-- WZJ06 --> <a name="WZJ06"></a> <!-- http://dust.ess.uci.edu/ppr/pst_WZJ06.pdf -->
-Wang, D.&nbsp, Zender, C.&nbsp;S., and S.&nbsp;F. Jenks (2006): 
-<i>Server-side netCDF Data Reduction and Analysis</i>.
-Presented by D.&nbsp;Wang to the Fall Meeting of the American Geophysical Union, 
-San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
-<i>Eos Trans. AGU</i>, <b>87</b>(52), Fall Meet. Suppl., Abstract IN53B-0826.
-<a href="http://dust.ess.uci.edu/ppr/pst_WZJ06.pdf">PDF</a>
-
-<li><!-- ZMW06 --> <a name="ZMW06"></a> <!-- http://dust.ess.uci.edu/ppr/pst_ZMW06.pdf -->
-Zender, C.&nbsp;S., H.&nbsp;J. Mangalam, and D.&nbsp;L. Wang (2006):
-<i>Improving Scaling Properties of Common Statistical Operators for Gridded Geoscience Datasets</i>.
-Presented to the Fall Meeting of the American Geophysical Union, 
-San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
-<i>Eos Trans. AGU</i>, <b>87</b>(52), Fall Meet. Suppl., Abstract IN53B-0827.
-<a href="http://dust.ess.uci.edu/ppr/pst_ZMW06.pdf">PDF</a>
 </ul>
 <hr></p>
 
@@ -784,95 +710,7 @@ Default chunking policy/map is <tt>xst/xst</tt>;
 Fix <tt>ncpdq</tt> dimension-reversal parsing;
 Chunking while hyperslabbing <a href="#bug_cnk_hyp">bugfix</a>;
 Correctly parse MS Windows volume names like <tt>C:\foo</tt></li>
-<li><b>NCO 4.4.4</b>:
-netCDF'ize non-compliant element names;
-<tt>-x var</tt> tolerates non-existence;
-<tt>--rad</tt> <a href="http://nco.sf.net/nco.html#rad">orphan dimensions</a>;
-<tt>ncwa --mask_condition</tt> <a href="#bug_ncwa_mask_condition">bugfix</a></li>
-<li><b>NCO 4.4.3</b>:
-Faster DAP access to strided data;
-<a href="http://nco.sf.net/nco.html#grp_brd">Group broadcasting</a> for ensembles;
-<li><b>NCO 4.4.2</b>:
-CF <tt>cell_methods</tt> support;
-Bugfixes for <tt>nces</tt> memory, LLVM/clang builds, <tt>-X</tt>, RX's with groups, <tt>--cnk_dmn</tt>;</li>
-<li><b>NCO 4.4.1</b>: 
-Group support for <tt>-X</tt> and <tt>--cnk_dmn</tt>;
-Chunk and uncompress simultaneously;
-<tt>ncra/ncea/ncrcat</tt> <a href="#bug_ncra_no_fl_close">bugfix</a></li>
-<li><b>NCO 4.4.0</b>: 
-Optimizations;
-<tt>ncdismember</tt> awesomeness;
-<tt>ncks --hdn</tt>;
-<tt>ncks --fix_rec_dmn=all</tt>;
-<tt>ncks</tt> <a href="http://nco.sf.net/nco.html#autoconv">autoconversion</a>;
-<tt>ncrename</tt> output path;
-<tt>ncra --mro</tt> <a href="#bug_ncra_mro_mss_val">bugfix</a>;
-<tt>ncra/ncrcat</tt> stride bugfix;
-Better <a href="http://nco.sf.net/nco.html#cnk">chunking</a>;
-Group support for <tt>ncwa -w -m</tt>;</li>
-<li><b>NCO 4.3.9</b>:
-New operator <tt>nces</tt>;
-Full XML/NcML compliance;
-<tt>ncatted</tt> NaN bugfix;</li>
-<li><b>NCO 4.3.8</b>:
-<tt>ncatted</tt> group features;</li>
-<li><b>NCO 4.3.7</b>:
-HDF4 <a href="http://nco.sf.net/nco.html#hdf4">support</a>;
-XML/NcML data <a href="http://nco.sf.net/nco.html#xml">support</a>;
-Multiple record dimension <a href="http://nco.sf.net/nco.html#mrd">support</a> with <tt>ncpdq, ncecat --mrd</a></tt>;
-<tt>ncrename</tt> group features;
-<tt>ncap2</tt> file bugfix;
-<tt>ncecat</tt> ID bugfix;
-<tt>ncwa -b</tt> bugfix;</li>
-<li><b>NCO 4.3.6</b>:
-<tt>--flt</tt> default;
-<tt>ncpdq/ncecat</tt> leave only one record dimension;
-<tt>ncwa/nces</tt> bugfixes;
-<tt>ncdismember</tt></li>
-<li><b>NCO 4.3.5</b>: 
-<tt>nces/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
-<tt>nces/ncra/ncwa</tt> float&rightarrow;double coercion with <tt><a href="http://nco.sf.net/nco.html#dbl">--dbl</a></tt>;</li>
-<tt>ncwa -d</tt> <a href="#bug_ncwa_lmt">bugfix</a>
-<li><b>NCO 4.3.4</b>:
-HDF unpacking <tt>--hdf_upk</tt>;
-<tt>ncpdq</tt> unpacking <a href="#bug_ncpdq_upk">bugfix</a>;
-CDL printing legibility;</li>
-<li><b>NCO 4.3.3</b>:
-CDL printing <tt>ncks --cdl</tt>;
-<tt>ncrename -g</tt>;
-<tt>ncwa</tt> groups with <tt>-g -G --unn</tt>;</li>
-<li><b>NCO 4.3.2</b>:
-<tt>ncflint/ncpdq</tt> groups with </tt>-g -G --unn</tt>;
-<tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>;</li>
-<li><b>NCO 4.3.1</b>:
-<tt>ncbo</tt> symmetry, group broadcasting;
-<tt>ncbo -G --unn</tt>;
-<tt>ncecat</tt> <a href="http://nco.sf.net/nco.html#rag">RAG</a>;
-<tt>ncbo</tt> CF <a href="#bug_ncbo_ccm_ccsm_cf">bugfix</a>;
-<tt>ncatted</tt> <a href="#bug_ncatted_strcmp">bugfix</a>;
-Windows DAP;</li>
-<li><b>NCO 4.3.0</b>: 
-<tt>ncbo -g</tt> groups;
-<tt>ncatted</tt> NULs;
-<tt>ncap2</tt> rounding;
-<tt>ncks</tt> metadata <a href="#bug_ncks_mtd">bugfix</a></li>
-<li><b>NCO 4.2.6</b>: 
-Record appending with <tt>ncra/ncrcat --rec_apn</tt>;
-<tt>ncflint --fix_rec_crd</tt>;
-RX's in full paths;
-Correct dimension/coordinate scopes;
-<tt>ncks</tt> MM3 workaround;</li>
-<li><b>NCO 4.2.5</b>: 
-<tt>ncks --mk_rec_dmn</tt> <a href="#bug_ncks_mk_rec_dmn">bugfix</a>;
-<tt>ncks</tt> subsetting <a href="#bug_ncks_sbs">bugfix</a></li>
-<li><b>NCO 4.2.4</b>:
-Group <a href="http://nco.sf.net/nco.html#rx">wildcards</a>;
-Group <a href="http://nco.sf.net/nco.html#anchoring">anchoring and recursion</a>;
-Intersection/union <a href="http://nco.sf.net/nco.html#unn">modes</a>;
-<tt>ncrename</tt> global att. handling;
-<tt>nces</tt> <a href="#bug_nces_rec_var">bugfix</a>;
-<tt>ncra</tt> <a href="#bug_ncra_flg_bfr_nrm">bugfix</a></li>
-<li><a href="./highlights_old.shtml">Release Highlights from 2000&ndash;2012 (versions 1.1.47&ndash;4.2.3)</a></li>
+<li><a href="./highlights_old.shtml">Release Highlights from 200001&ndash;201406 (versions 1.1.47&ndash;4.4.4)</a></li>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#hgh -->
