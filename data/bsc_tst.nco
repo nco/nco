@@ -342,7 +342,50 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
+  // check a LHS var defined by a RHS att 
+  d4@one=2.0d;       
+  d5=d4@one;
+  
+  if(d5.type()!=NC_DOUBLE || d5.size() !=1)
+  {
+     print("ERROR: d5: var defined from an att\n");
+     nbr_err++;	
+  }
+ 
+  // check a LHS cast with a RHS att
+  d6[time]=d4@one;
 
+  if(d6.type()!=NC_DOUBLE || d6.size() != time.size())
+  {
+     print("ERROR: d6: var cast from an att\n");
+     nbr_err++;	
+  }
+
+
+  if(d6.type()!=NC_DOUBLE || d6.size() != time.size())
+  {
+     print("ERROR: d6: var cast from an att\n");
+     nbr_err++;	
+  }
+
+  // check a LHS cast with a RHS att list
+  d7[time]={1s,4us,9b,16L,25ull,36,49,64,81,100.0f};
+
+  if(d7.type()!=NC_FLOAT || d7.size() != time.size())
+  {
+     print("ERROR: d7: var cast from an att list\n");
+     nbr_err++;	
+  }
+
+  // try hyperslabbing an NV_STRING att
+  d7@greek={"alpha"s,"beta"s,"gamma"s,"delta"s,"epsilon"s};
+  d7@hyper_greek=d7@greek(0::2); 
+   
+  if(d7@hyper_greek.size() !=3 || d7@hyper_greek.type()!=NC_STRING) 
+  {
+     print("ERROR: d7a: hyperslabbing an NC_STRING att\n");
+     nbr_err++;	
+  }
 
 
   print("RESULTS block d: Num errors="); print(nbr_err,"%d");
@@ -423,12 +466,34 @@ nbr_err_ttl=0;
   nbr_err=0;
 }
 
-// Check gsl_stats and gsl_ran functions
+// variable / att/dim quoting
 {
-  nbr_err=0;
+  defdim("a:list(A++)",10);
+  defdim("b:list(B-- )",20);
+  'f.. m1(+:)'['$a:list(A++)','$b:list(B-- )']=1l;
+  'f.. m1(+:)'(0,10)=101;
+
+  if( 'f.. m1(+:)'.total() != 300l || 'f.. m1(+:)'.type() != NC_INT) 
+  {
+      print("ERROR: f1 quotes vars & dims not working");
+      nbr_err++;	
+  }
+
+  'f.. m1(+:)@a(1)'=5.0f;
+  'f.. m1(+:)@b(1)'=4.0f;
+
+  'f.. m1(+:)@c'= 'f.. m1(+:)@a(1)' * 'f.. m1(+:)@b(1)';
+
+  if( 'f.. m1(+:)@c' != 20.0f || 'f.. m1(+:)@c'.type() != NC_FLOAT) 
+  {
+      print("ERROR: f2 quoted atts");
+      nbr_err++;	
+  }
+
+ 
 
   print("RESULTS block f: Num errors="); print(nbr_err,"%d");
-  //nbr_err_ttl+=nbr_err;
+  nbr_err_ttl+=nbr_err;
   nbr_err=0;
 
 }
