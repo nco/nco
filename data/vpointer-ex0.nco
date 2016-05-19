@@ -1,0 +1,141 @@
+// a brief description of variable pointers
+// variable pointers are nothing more than 
+// attributes with text 
+
+idx=9;
+idy=20;
+t2=time;
+
+
+global@vpointerX="idx";
+
+// lets increment idx by one
+// the '*' says I want to do something to the actual var defined in the text
+*global@vpointerX++;
+print(idx);
+
+
+// lets now multiply idx by 5
+*global@vpointerX=*global@vpointerX*5;
+
+// OK the above is a bit a bit long 
+// we can re-write is as:
+*@vpointerX*=5;  // idx now equals 250
+print(idx);
+
+// OK so if an att is missing the var name prefix then it defaults
+// to "global" - But you are free to use any var-name 
+
+@vpointerY="idy";
+
+// lets add together idx and idy
+idz=*@vpointerX+*@vpointerY;  // idz == 270
+print(idz);
+
+// we can also reference variables in  the input file
+// can use an existing att pointer as atts are not written
+// to the netcdf file until after script has finished
+@vpointerX="three_dmn_var";
+
+// we can convert the above var to type NC_DOUBLE and 
+// write  it to ouptut all in one go 
+*@vpointerX=*@vpointerX.double();
+
+// So far the above pointers are of type NC_CHAR 
+// we can also use type NC_STRING -  So whats the difference ?
+// Well an NC_CHAR attribute is a list of N  characters where N is 
+// the length of the attribute
+// AN NC_STRING attribute is a list of N strings where each string is
+// null terminated ( like regular C strings) 
+// Well why do we care ? Well if we want to peform operations on a 
+// bunch  of variables the it is much easier to use a single NC_STRING 
+// att than an array of NC_CHAR's 
+
+
+// the postfix "s" indicates that the string is of type NC_STRING
+@coordinates="idx"s;
+
+//lets add the Y
+push(&@coordinates,"idy"s);
+//lets ad the Z
+push(&@coordinates,"idz"s);
+
+print(@coordinates,"%s\n"); // "idx","idy", "idz"
+
+// Now things are more interesting - we can can perform a set of operations 
+// on the  list of vars
+*sz=@coordinates.size();
+
+for(*icnt=0; icnt<sz;icnt++)
+{
+ // A very important point here. We can only dereference a plain  att
+ // and NOT an attribute expression we can NOT say *@coordinates(idx).set_miss(-1)
+ // So we have to use an intermediate att
+ @var_nm=@coordinates(icnt); 
+ //lets set the missing value
+ *@var_nm.set_miss(-1);
+
+ //lets add a unit attribute using vpointers
+ @var_nm_units= push( sprint(@var_nm), "@units");
+ // WOW what just happened!! That looks complicated !!
+ // OK lets take it step-by-step 
+ // @var_nm is of type NC_STRING - we convert it to type NC_CHAR using sprint()
+ // and then append to it "@units" using push()
+
+ // so we can now dereference the vpointer (which in this case is an att)
+ // and assign it a value 
+ *@var_nm_units="metres";
+}
+
+
+// Push Revisited 
+// push simply appends values to an att
+// With the numerical types, if the type of the value(s) being pushed is 
+// different from the att type the it is auto-magically converted to the att type 
+// anything can be pushed - an att or var or expression
+
+x[time]=time;
+
+x@coords=1.0d;
+
+// with a regulat att arguments push acts like a normal function call 
+// and returns the results of concatentation
+x@coords=push(x@coords,4l); 
+
+// to speed thing up we can use use a call-by-ref att argument 
+// in which case push just returns the final length  of the att
+push(&x@coords,5*5);
+print(x@coords);
+
+// if the call by ref doesnt exists then it is created e.g
+push(&x@lon, lon/90.0); 
+print(x@lon);
+
+// create an att that contains min/max/avg;
+three_dmn_var_dbl@bounds=min(three_dmn_var_dbl);
+push(&three_dmn_var_dbl@bounds, max(three_dmn_var_dbl)); 
+push(&three_dmn_var_dbl@bounds, avg(three_dmn_var_dbl)); 
+
+// With an NC_CHAR it simply appends
+x@greeting="hello";
+x@greeting=push(x@greeting," world !!\n");
+print(x@greeting);  // hello world !!
+
+// can append to an NC_STRING att
+x@greek={"alpha"s,"beta"s,"gamma"s};
+// append a single string
+push(&x@greek,"delta"s);
+
+@e="epsilon";
+
+//its OK to to push an NC_CHAR to a NC_STRING att
+// it just gets converted
+push(&x@greek,@e);
+push(&x@greek,"zeta");
+
+@rest={"eta"s,"theta"s,"iota"s,"kappa"s,"lambda"s};
+
+// push the  @rest
+push(&x@greek, @rest);
+
+print(x@greek);
