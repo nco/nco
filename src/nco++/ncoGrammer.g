@@ -2518,7 +2518,8 @@ out returns [var_sct *var]
                if( var_att->type ==NC_STRING )  
                {
                    var=ncap_sclr_var_mk(att_nm,var_att->type,false);                
-                   var->val.vp=(void*)nco_malloc(slb_sz*cnt);       
+                   var->val.vp=(void*)nco_malloc(slb_sz*cnt);  
+                   var->sz=cnt;       
                    (void)cast_void_nctype((nc_type)NC_STRING,&var->val);                 
                    (void)cast_void_nctype((nc_type)NC_STRING,&var_att->val);                  
                    
@@ -2526,9 +2527,8 @@ out returns [var_sct *var]
                    for(idx=srt;idx<=end;idx+=srd)  
                      var->val.sngp[jdx++]=strdup(var_att->val.sngp[idx]);
 
-                
-                 (void)cast_nctype_void((nc_type)NC_STRING,&var->val); 
-                 (void)cast_nctype_void((nc_type)NC_STRING,&var_att->val); 
+                   (void)cast_nctype_void((nc_type)NC_STRING,&var->val); 
+                   (void)cast_nctype_void((nc_type)NC_STRING,&var_att->val); 
                
                }
                else
