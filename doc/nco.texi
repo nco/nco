@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 13 May 2016
+@set update-date 20 May 2016
 @set update-month May 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18078,6 +18078,7 @@ include an NcML formatting characters (e.g., commas, angles, quotes).
 @cindex @command{ncmin}
 @cindex @command{ncrecsz}
 @cindex @command{ncrng}
+@cindex @command{nctypget}
 @cindex @command{ncunits}
 @cindex @file{.bashrc}
 @cindex filters
@@ -18160,7 +18161,7 @@ These files are usually named @file{.bashrc}, @file{.cshrc}, and
 # ncattget $att_nm $var_nm $fl_nm : What attributes does variable have?
 function ncattget { ncks -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
 # ncunits $att_val $fl_nm : Which variables have given units?
-function ncunits { ncks -M -m ${2} | grep -E -i " attribute [0-9]+: units.+ ${1}" | cut -f 1 -d ' ' | sort ; }
+function ncunits { ncks -m ${2} | grep -E -i " attribute [0-9]+: units.+ ${1}" | cut -f 1 -d ' ' | sort ; }
 # ncavg $var_nm $fl_nm : What is mean of variable?
 function ncavg { ncwa -y avg -O -C -v ${1} ${2} ~/foo.nc ; ncks -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncavg $var_nm $fl_nm : What is mean of variable?
@@ -18183,8 +18184,10 @@ function ncrng { ncap2 -O -C -v -s "foo_min=${1}.min();foo_max=${1}.max();print(
 function ncmode { ncap2 -O -C -v -s "foo=gsl_stats_median_from_sorted_data(${1}.sort());print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncrecsz $fl_nm : What is record dimension size?
 function ncrecsz { ncks -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
+# nctypget $var_nm $fl_nm : What type is variable?
+function nctypget { ncks -m -v ${1} ${2} | grep -E -i "^${1}: type" | cut -f 3 -d ' ' | cut -f 1 -d ',' ; }
 # Csh shell (/bin/csh) users place these in .cshrc
-ncattget() { ncks -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
+ncattget() { ncks -M -m -v ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
 ncdmnsz() { ncks -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
 nclist() { ncks -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 ncrecsz() { ncks -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
