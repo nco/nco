@@ -1563,6 +1563,38 @@ nco_shp_chk
 /* This file is generated in makefile from ncoParserTokenTypes.hpp */ 
 #include "ncoEnumTokenTypes.hpp"
 
+/* nb this function really belongs as 
+   a function template overload in VarOPNew.hh */
+var_sct* tmp_var_op_nco_string(var_sct* var1, int op) 
+{
+    long idx;
+    long sz;
+    nco_string *tp1;
+
+    sz=var1->sz;
+    
+    tp1=(nco_string*)(var1->val.vp);
+
+
+    switch(op) 
+    {
+    case VSORT: 
+      std::sort(tp1,tp1+sz,ltstr() );  
+         break; 
+
+	 // reverse sort 
+    case VRSORT: 
+      std::sort(tp1,tp1+sz,gtstr() );  
+         break; 
+
+    default:
+      break;     
+
+    }
+
+    return var1;
+}
+
 
 var_sct* var_op(var_sct* var1 , int op)
 {
@@ -1580,7 +1612,7 @@ var_sct* var_op(var_sct* var1 , int op)
     case NC_BYTE: (void)tmp_var_op<nco_byte>(var1,op); break;
     case NC_UBYTE: (void)tmp_var_op<nco_ubyte>(var1,op); break;
     case NC_CHAR:  (void)tmp_var_op<nco_char>(var1,op); break;
-    case NC_STRING:  break; 
+    case NC_STRING: (void)tmp_var_op_nco_string(var1,op); break; 
     default: nco_dfl_case_nc_type_err(); break;
 
   }

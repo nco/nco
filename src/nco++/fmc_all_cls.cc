@@ -1792,8 +1792,10 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           case NC_CHAR: 
 	    (void)ncap_sort_and_map<nco_char>(var1,var2,bdirection);    
             break;  
-           case NC_STRING: break; /* Do nothing */
-             
+           case NC_STRING: 
+	     (void)ncap_sort_and_map<nco_string>(var1,var2,bdirection);    
+            break;
+  
            default: nco_dfl_case_nc_type_err(); break;
             
 	} // end big switch
