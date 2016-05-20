@@ -778,10 +778,60 @@ var_sct* tmp_var_op(var_sct* var1, int op) {
     } // end switch	
 
     return var1;
-  } // end var_op
+} // end var_op
 
 
 
+struct ltstr
+{
+  bool operator()(const char* s1, const char* s2) const
+  {
+    return strcmp(s1, s2) < 0;
+  }
+};
 
+struct gtstr
+{
+  bool operator()(const char* s1, const char* s2) const
+  {
+    return strcmp(s1, s2) < 0;
+  }
+};
+
+
+/*
+ function template overload for ragged arrays 
+template<> 
+var_sct* tmp_var_op<nco_string>(var_sct* var1, int op) 
+{
+    long idx;
+    long sz;
+    nco_string *tp1;
+
+    sz=var1->sz;
+    
+    tp1=(nco_string*)(var1->val.vp);
+
+
+    switch(op) 
+    {
+    case VSORT: 
+      std::sort(tp1,tp1+sz,ltstr() );  
+         break; 
+
+	 // reverse sort 
+    case VRSORT: 
+      std::sort(tp1,tp1+sz,gtstr() );  
+         break; 
+
+    default:
+      break;     
+
+    }
+
+    return var1;
+}
+
+*/
 
 #endif
