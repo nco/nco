@@ -1,3 +1,6 @@
+2016-05-20  Henry Butowsky  <henryb@hush.com>
+	* added sorting of NC_STRING (att & var) to srt_cls() some work to be done integrating into existing  templates 
+	
 2016-05-16  Charlie Zender  <zender@uci.edu>
 
 	* Condense homepage, add new presentations
