@@ -2,7 +2,6 @@
 
 	* Add nctypget filter
 
-
 2016-05-20  Henry Butowsky  <henryb@hush.com>
 
 	* Add NC_STRING sort (att & var) to srt_cls(). More work to do integrating into existing templates...
@@ -17,7 +16,7 @@
 
 2016-05-15  Charlie Zender  <zender@uci.edu>
 
-	* Add hyperbolic function support to MACOSX
+	* Add ncap2 hyperbolic function support to MACOSX
 
 2016-05-14  Charlie Zender  <zender@uci.edu>
 
