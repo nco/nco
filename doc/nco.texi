@@ -7795,6 +7795,8 @@ instructions to activate chunking nevertheless contain chunked
 variables. 
 
 @html
+<a name="bg"></a> <!-- http://nco.sf.net/nco.html#bg -->
+<a name="BG"></a> <!-- http://nco.sf.net/nco.html#BG -->
 <a name="ppc"></a> <!-- http://nco.sf.net/nco.html#ppc -->
 <a name="PPC"></a> <!-- http://nco.sf.net/nco.html#PPC -->
 <a name="compression"></a> <!-- http://nco.sf.net/nco.html#compression -->
