@@ -894,7 +894,10 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
     else
       var=walker.out(vtr_args[0]) ;
 
-  
+    // blow out if scalar var or is att
+    if(var->nbr_dim==0 || ncap_var_is_att(var) )      
+      err_prn(sfnm,"Cannot get dim names from a scalar var or an att\n"); 
+
     // do heavy lifting
     { 
       int ndims;
