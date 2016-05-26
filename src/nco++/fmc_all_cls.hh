@@ -102,11 +102,12 @@ public:
 //Basic Functions /****************************************/
 class bsc_cls: public vtl_cls {
 private:
-  enum {PSIZE,PTYPE,PNDIMS,PEXISTS };
+  enum {PSIZE,PTYPE,PNDIMS,PEXISTS,PGETDIMS };
    bool _flg_dbg;
 public:
   bsc_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+  var_sct *getdims_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
 };
 
 //Maths Functions /****************************************/

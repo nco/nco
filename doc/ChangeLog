@@ -1,6 +1,8 @@
 2016-05-26  Henry Butowsky  <henryb@hush.com>
 	* fixed template code in VarOpNew.cc so that an array of NC_STRING is sorted in descending order correct
 
+	* added getdims() to bsc_cls- returns an attribute of type NC_STRING with the dim names
+	
 2016-05-23  Charlie Zender  <zender@uci.edu>
 
 	* Clean-up new provenance code now that netCDF4 4.4.1-RC3 merged necessary patches

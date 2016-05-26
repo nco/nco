@@ -691,6 +691,7 @@ var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
       fmc_vtr.push_back( fmc_cls("size",this,(int)PSIZE));
       fmc_vtr.push_back( fmc_cls("type",this,(int)PTYPE));
       fmc_vtr.push_back( fmc_cls("ndims",this,(int)PNDIMS));
+      fmc_vtr.push_back( fmc_cls("getdims",this,(int)PGETDIMS));
       fmc_vtr.push_back( fmc_cls("exists",this,(int)PEXISTS));
 
     }
@@ -698,7 +699,7 @@ var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
   var_sct *bsc_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("bsc_cls::fnd");
-
+  bool is_mtd;
     int fdx=fmc_obj.fdx();   //index
     int nbr_args;
     std::string va_nm;
@@ -742,7 +743,9 @@ var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     } 
       
      nbr_args=vtr_args.size();  
-
+   
+     is_mtd=(expr ? true: false);
+  
 
     // no arguments - bomb out
     if(nbr_args==0){    
@@ -752,7 +755,10 @@ var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 	// more than one arg -- only print message once 
     } else if(nbr_args >1 && !prs_arg->ntl_scn)
         wrn_prn(sfnm,"Function has been called with more than one argument");
-           
+     
+    // custom functiom
+    if(fdx==PGETDIMS)
+      return getdims_fnd(is_mtd, vtr_args,fmc_obj, walker); 
 
     tr=vtr_args[0];  
 
@@ -835,6 +841,86 @@ var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
       var1=nco_var_free(var1);
       return var;		 
   }       
+
+
+var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker)
+{
+  const std::string fnc_nm("bsc_cls::getndims_fnd");
+    int nbr_args;
+    int fdx=fmc_obj.fdx();
+    var_sct *var=NULL_CEWI;
+    var_sct *var_att=NULL_CEWI;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    vtl_typ lcl_typ;
+    std::string va_nm;
+    std::string susg;
+    std::string serr;
+    prs_cls *prs_arg=walker.prs_arg;    
+
+
+    nbr_args=vtr_args.size(); 
+
+    if(nbr_args ==0) 
+       err_prn(fnc_nm," \""+sfnm+"\" has been called with no arguments"); 
+
+
+      
+    lcl_typ=expr_typ(vtr_args[0]);         
+
+    // If initial scan
+    if(prs_arg->ntl_scn){
+
+      // Evaluate argument on first scan for side-effects eg var1++ or var1+=10 etc 
+      if( lcl_typ!=VVAR && lcl_typ !=VPOINTER)
+      {
+        var=walker.out(vtr_args[0]) ;
+        var=nco_var_free(var);
+      }
+      return ncap_var_udf("~zz@getndims");          
+    }
+       
+    // from here on dealing with final scan
+    if(lcl_typ==VVAR )
+    {       
+       va_nm=vtr_args[0]->getText();
+       var=prs_arg->ncap_var_init(va_nm,false); 
+    }
+    else if(lcl_typ==VPOINTER)
+    { // get contents of att for var-pointer  
+      std::string att_nm=vtr_args[0]->getFirstChild()->getText();
+      va_nm=ncap_att2var(prs_arg,att_nm);
+      var=prs_arg->ncap_var_init(va_nm,false); 
+    }
+    else
+      var=walker.out(vtr_args[0]) ;
+
+  
+    // do heavy lifting
+    { 
+      int ndims;
+      int idx;
+ 
+      ndims=var->nbr_dim;
+     
+      var_att=ncap_sclr_var_mk("~zz@getndims",NC_STRING,false);
+
+      var_att->val.vp=(void*)nco_malloc(ndims* nco_typ_lng(NC_STRING));         
+      var_att->sz=ndims; 
+
+      (void)cast_void_nctype((nc_type)NC_STRING,&var_att->val);                  
+      for(idx=0;idx<ndims;idx++)     
+	var_att->val.sngp[idx]=strdup(var->dim[idx]->nm);
+
+
+      (void)cast_nctype_void((nc_type)NC_STRING,&var_att->val); 
+    }
+
+    nco_free(var);   
+
+    return var_att;
+}
+
+
 
   
 //Math Functions /******************************************/
