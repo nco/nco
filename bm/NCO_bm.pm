@@ -419,7 +419,6 @@ sub drc_dat_set{
 # tst_run() consumes @tst_cmd array and executes them in order
 #################################################################################
 sub tst_run {
-    
     my %fl_nm_lcl = ( # fl_nm_lcl = local_file_name
 		'%stdouterr%'   => "", # stdouterr has to be left to generate stderr
 		'%tmp_fl_00%'    => "$drc_dat/tmp_fl_00.nc", # Default replacement for $fl_out
@@ -573,7 +572,6 @@ sub tst_run {
 	delete $cmd_lst[$#cmd_lst]; # and now the $cmd_lst is the same as it ever was..
 	
 #print "\nDEBUG:in tst_run:613, \$mpi_prc=[$mpi_prc] \$pfx_mpi=[$pfx_mpi] \$mpi_fk=[$mpi_fk]\n";
-	
 	foreach (@cmd_lst){
 #			print "\nforeach cmd_lst = $_\n";
 	    my $md5_chk = 1;
@@ -717,9 +715,8 @@ sub tst_run {
     else{ #print "DEBUG: \$nsr_xpc is not numeric: $nsr_xpc \n";
 	$xpc_is_nbr = 0;
     }
-    
     # Compare numeric results
-    if($cmd_rsl_is_nbr && $xpc_is_nbr){ # && it equals the expected value
+    if($cmd_rsl_is_nbr && $xpc_is_nbr && length($cmd_rsl)>0){ # && it equals the expected value
 #print "\n \$nsr_xpc [$nsr_xpc] considered a number\n";
 	$dbg_sng.="DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc & actual  \$cmd_rsl = [$cmd_rsl]\n";
 	if($nsr_xpc == $cmd_rsl){
@@ -736,7 +733,7 @@ sub tst_run {
 	    my $diff = abs($nsr_xpc - $cmd_rsl);
 	    $dbg_sng .= "DEBUG: !!FAILED (Numeric output) [expected: $nsr_xpc vs result: $cmd_rsl].  Difference = $diff.\n";
 	}
-    }elsif(!$cmd_rsl_is_nbr && !$xpc_is_nbr){# Compare non-numeric tests
+    }elsif(!$cmd_rsl_is_nbr && !$xpc_is_nbr && length($cmd_rsl)>0){# Compare non-numeric tests
 	 dbg_msg(2,"DEBUG: expected value assumed to be alphabetic: $nsr_xpc\n\$cmd_rsl = $cmd_rsl\n");
 #print "\n \$nsr_xpc [$nsr_xpc] considered a string\n";
 	 
