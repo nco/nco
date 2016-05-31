@@ -1996,6 +1996,7 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array 							
 	
 #ncks #42 Extract associated coordinates test 1 (netCDF3 file) 
+#This tests that coordinate rlev is extracted with rz
     $dsc_sng="Extract associated coordinates test 1 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v rz $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -o -w rlev";
@@ -2005,10 +2006,13 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array 
 	
 #ncks #43 Extract associated coordinates test 2 (netCDF3 file) 
+#This tests that coordinate rlev is not extracted with rz when -C switch is used
+#ncks -O -C -v rz ~/nco/data/in.nc ~/foo.nc
+#ncks -v rz ~/foo.nc | wc | cut -d ' ' -f 6
     $dsc_sng="Extract associated coordinates test 2 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v rz $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /rlev";
-    $tst_cmd[2]="";
+    $tst_cmd[1]="ncks -v rz %tmp_fl_00% | wc | cut -d ' ' -f 6";
+    $tst_cmd[2]="11";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
