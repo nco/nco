@@ -1,3 +1,7 @@
+2016-05-31  Charlie Zender  <zender@uci.edu>
+
+	* Die with explanation when --mk_rec_dmn receives multiple arguments
+
 2016-05-26  Henry Butowsky  <henryb@hush.com>
 
 	* Fix VarOpNew.cc so array of NC_STRING is correctly sorted in descending order

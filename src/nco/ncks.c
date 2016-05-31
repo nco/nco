@@ -592,7 +592,14 @@ main(int argc,char **argv)
 	sld_nfo=(kvm_sct *)nco_malloc(BUFSIZ*sizeof(kvm_sct));
         nco_scrip_read(fl_scrip,sld_nfo);
       } /* endif "scrip" */
-      if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
+      if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")){
+	if(strchr(optarg,',')){
+	  (void)fprintf(stdout,"%s: ERROR record dimension name %s contains a comma and appears to be a list\n",nco_prg_nm_get(),optarg);
+	  (void)fprintf(stdout,"%s: HINT --mk_rec_dmn currently accepts only one dimension name as an argument (relaxing this limit is TODO nco1129, let us know if this is important to you). To change multiple dimensions into record dimensions, run ncks multiple times and change one dimension each time. Be sure the output file format is netCDF4.\n",nco_prg_nm_get());
+	  nco_exit(EXIT_FAILURE);
+	} /* endif */
+	rec_dmn_nm=strdup(optarg);
+      } /* !mk_rec_dmn */
       if(!strcmp(opt_crr,"mpi_implementation")){
         (void)fprintf(stdout,"%s\n",nco_mpi_get());
         nco_exit(EXIT_SUCCESS);
