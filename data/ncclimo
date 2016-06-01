@@ -208,7 +208,7 @@ esac # !HOSTNAME
 #          SCD mode ignores Jan-Nov of yr_srt
 #          Dec of yr_end is excluded from the seasonal and monthly analysis in SCD mode
 #          yr_end should, and for SDD mode must, contain complete year of output
-# drc_out: Output directory for processed, climatological data ("climo files")
+# drc_out: Output directory for processed native grid climatology ("climo files")
 #          User needs write permission for ${drc_out}
 # rgr_map: Regridding map, if non-NULL, invoke regridder with specified map on output datasets
 #          Pass options intended exclusively for the NCO regridder as arguments to the -R switch

@@ -15945,9 +15945,20 @@ ncclimo -m mdl_nm  -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo -v var_lst -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 @end example
 A complete description of all available flags is given in comments
-embedded in @command{ncclimo}.
+embedded in @command{ncclimo}, and a more succinct description is given 
+below.
 The standard options are:
 @table @option
+@item -a clm_md
+Climatology mode that determines type of @acronym{DJF} average.
+The two valid options are @code{scd} (default) and @code{sdd}.
+@acronym{SCD}-mode stands for ``Seasonally Continuous December''. 
+The first month used will be December of the year before the start year
+specified with @samp{-s}.
+The last month will be November of the end year specified with @samp{-e}.
+@acronym{SDD}-mode stands for ``Seasonally Discontinuous December''. 
+The first month used will be January of the specified start year. 
+The last month will be December of the end year specified with @samp{-e}.
 @item -s srt_yr
 Start year (example: 1980). 
 Unless the option @samp{-a sdd} is specified, the first month used will
@@ -15962,10 +15973,23 @@ be November of the specified end year.
 If @samp{-a sdd} is specified, the last month will be December of the
 specified end year.  
 @item -i drc_in
-Directory containing all netCDF files that will be input to produce the
-climo. 
+Directory containing all netCDF files to read as input to the
+climatology.  
+@item -l lnk_flg
+This switch turns-off the default linking of @acronym{ACME}-climo to
+@acronym{AMWG}-climo filenames.  
+@acronym{AMWG} omits the @acronym{YYYYMM} components of climo filenames,
+resulting in shorter names.
+By default @command{ncclimo} symbolically links the full
+(@acronym{ACME}) filename to the shorter (@acronym{AMWG}) name.
+@acronym{AMWG} diagnostics scripts can produce plots directly from
+these linked filenames. 
+Use this switch to turn-off that linking and reduce filename
+proliferation if you do not need @acronym{AMWG} filenames.
 @item -o drc_out
-Directory to hold computed (output) climo files.
+Directory to hold computed (output) native grid climo files.
+Regridded climos will also be placed here unless a separate directory
+for them is specified with -O (NB: capital ``O''). 
 @item -c caseid
 Simulation name, or any input filename for non-@acronym{CESM}'ish files.  
 For @acronym{CESM}'ish input files like
