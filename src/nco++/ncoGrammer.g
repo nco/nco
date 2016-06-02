@@ -711,7 +711,8 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
       nbr_dmn=lmt_peek(aRef);      
       //nbr_dmn=lRef->getNumberOfChildren();
 
-      for(idx=0 ; idx < nbr_dmn ; idx++){
+      for(idx=0 ; idx < nbr_dmn ; idx++)
+      {
          hyp.ind[0]=ANTLR_USE_NAMESPACE(antlr)nullAST;
          hyp.ind[1]=ANTLR_USE_NAMESPACE(antlr)nullAST;
          hyp.ind[2]=ANTLR_USE_NAMESPACE(antlr)nullAST;
@@ -719,19 +720,22 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
        if(lRef->getType()!=LMT) 
             return 0;
        
-        eRef=lRef->getFirstChild();
-        nbr_cln=0;
+       eRef=lRef->getFirstChild();
+       nbr_cln=0;
         
-       while(eRef) {
-          if(eRef->getType() == COLON){
+       while(eRef) 
+       {
+          if(eRef->getType() == COLON)
+          {
             cRef=eRef;        
             nbr_cln++;
           }
            eRef=eRef->getNextSibling();
         }
       
-      // Initialise  to default markers
-       switch(nbr_cln) {
+       // Initialise  to default markers
+       switch(nbr_cln) 
+       {
           case 0: 
              break;
                 
@@ -749,9 +753,11 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
         }
 
        eRef=lRef->getFirstChild();
+
        // point inidices to any expressions that exist
-        nbr_cln=0;
-       while(eRef) {
+       nbr_cln=0;
+       while(eRef) 
+       {
           if(eRef->getType() == COLON) 
              nbr_cln++; 
            else   
@@ -761,9 +767,10 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
        }
        // save indices 
        ast_lmt_vtr.push_back(hyp);
-
        lRef=lRef->getNextSibling();
-     }
+
+      }
+
      return nbr_dmn;
 } 
 
@@ -900,12 +907,14 @@ if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
      lmt_ptr->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
 
     for(jdx=0 ; jdx <3 ; jdx++){
+      bool bset=false;  
       long ldx=0L;
       var_sct *var_out;
 
       aRef=ast_lmt_vtr[idx].ind[jdx];
 
-      if(aRef && aRef->getType() != COLON ){
+      if(aRef && aRef->getType() != COLON )
+      {
         // Calculate number using out()
         var_out=out(aRef);
         // convert result to type int
@@ -914,30 +923,53 @@ if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
          // only interested in the first value.
         ldx=var_out->val.ip[0];
         var_out=nco_var_free(var_out);
-        
+        bset=true;
+      } 
+      else
+       bset=false;
+   
         // switch jdx 0-srt,1-end,2-srd
-        switch(jdx){
+        switch(jdx)
+        {
+          //srt
           case 0: 
-             lmt_ptr->is_usr_spc_min=True;
-             lmt_ptr->srt=ldx;
+             if(bset)
+              {
+                lmt_ptr->is_usr_spc_min=True;
+                lmt_ptr->srt=ldx;
+              }
              break;
-          case 1: //end
-             lmt_ptr->is_usr_spc_max=True;
-             lmt_ptr->end=ldx;
+          // end
+          case 1: 
+              /* need to deal with situation where only start is defined -- ie picking only a single value */
+              if(aRef==ANTLR_USE_NAMESPACE(antlr)nullAST && lmt_ptr->is_usr_spc_min==True )   
+              {  
+                 lmt_ptr->is_usr_spc_max=True;
+                 lmt_ptr->end=lmt_ptr->srt; 
+              }  
+              else if( aRef && bset)
+              {
+                 lmt_ptr->is_usr_spc_max=True;
+                 lmt_ptr->end=ldx;
+              }
              break;
-          case 2: //srd
-             lmt_ptr->srd_sng=strdup("~fill_in");
-             lmt_ptr->srd=ldx;         
+          //srd 
+          case 2: 
+             if(bset)
+              {
+                lmt_ptr->srd_sng=strdup("~fill_in");
+                lmt_ptr->srd=ldx;         
+              }
              break;
         }
-      }
-    }// end jdx
-         
-    /* need to deal with situation where only start is defined -- ie picking only a single value */
-    if( lmt_ptr->is_usr_spc_min==True && lmt_ptr->is_usr_spc_max==False && lmt_ptr->srd_sng==NULL){
+        
+    /* need to deal with situation where only start is defined -- ie picking only a single value 
+    if(0 &&  lmt_ptr->is_usr_spc_min==True && lmt_ptr->is_usr_spc_max==False && lmt_ptr->srd_sng==NULL){
         lmt_ptr->is_usr_spc_max=True;
         lmt_ptr->end=lmt_ptr->srt; 
     }    
+    */
+    }  
 
     lmt_vtr.push_back(lmt_ptr);
   } // end idx
