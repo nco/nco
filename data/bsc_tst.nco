@@ -189,6 +189,75 @@ nbr_err_ttl=0;
 
   }
 
+  // more hyperslabbing
+  b10=1.0;  
+  b10@a1=time(8:);  
+  
+  if( b10@a1.size() != 2 || b10@a1(0)+b10@a1(1) !=19 )
+  {
+     print("ERROR: b10@a1 hhyperslabbing\n");
+     nbr_err++;	
+  }
+
+  b10@a2=time(::3);  
+  if( b10@a2.size() != 4  ||  fabs(b10@a2.gsl_stats_mean()-5.5) > 0.01    )
+  {
+     print("ERROR: b10@a2 hhyperslabbing\n");
+     nbr_err++;	
+  }
+
+  b10@a3=time(:4);  
+  if( b10@a3.size() != 5  ||  fabs(b10@a3.gsl_stats_mean()-3.0) > 0.01    )
+  {
+     print("ERROR: b10@a3 hhyperslabbing\n");
+     nbr_err++;	
+  }
+
+  b10@a4=time(3:9:2);  
+  if( b10@a4.size() != 4  ||  fabs(b10@a4.gsl_stats_mean()-7.0) > 0.01    )
+  {
+     print("ERROR: b10@a4 hhyperslabbing\n");
+     nbr_err++;	
+  }
+
+  b10@a5=time(:9:9);  
+  if( b10@a5.size() != 2  ||  fabs(b10@a5.gsl_stats_mean()-5.5) > 0.01    )
+  {
+     print("ERROR: b10@a5 hhyperslabbing\n");
+     nbr_err++;	
+  }
+
+       
+  b10@a6=time(:9:10);  // a lttle tricky one 
+  if( b10@a6.size() != 1  ||  fabs(b10@a6.gsl_stats_mean()-1.0) > 0.01    )
+  {
+     print("ERROR: b10@a6 hhyperslabbing\n");
+     nbr_err++;	
+  }
+
+  // check some negative indices
+  if( time(8:9) != time(-2:-1) )
+  {
+     print("ERROR: b11  a) negative indices\n");
+     nbr_err++;	
+  }
+
+  // check some more negative indices
+  if( time(0:4) != time(-10:-6) )
+  {
+     print("ERROR: b11  b) negative indices\n");
+     nbr_err++;	
+  }
+
+  // check some more negative indices
+  if( time(0::3) != time(-10::3) )
+  {
+     print("ERROR: b11  c) negative indices\n");
+     nbr_err++;	
+  }
+
+
+
 
 
   print("RESULTS block b: Num errors="); print(nbr_err,"%d");

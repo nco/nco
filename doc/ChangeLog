@@ -1,3 +1,7 @@
+2016-05-02  Henry Butowsky  <henryb@hush.com>
+
+	* fixed - slabs of form var(x:) now handled correctly
+
 2016-05-31  Charlie Zender  <zender@uci.edu>
 
 	* Die with explanation when --mk_rec_dmn receives multiple arguments
