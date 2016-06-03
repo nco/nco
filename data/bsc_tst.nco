@@ -238,27 +238,65 @@ nbr_err_ttl=0;
   // check some negative indices
   if( time(8:9) != time(-2:-1) )
   {
-     print("ERROR: b11  a) negative indices\n");
+     print("ERROR: b10  a) negative indices\n");
      nbr_err++;	
   }
 
   // check some more negative indices
   if( time(0:4) != time(-10:-6) )
   {
-     print("ERROR: b11  b) negative indices\n");
+     print("ERROR: b10  b) negative indices\n");
      nbr_err++;	
   }
 
   // check some more negative indices
   if( time(0::3) != time(-10::3) )
   {
-     print("ERROR: b11  c) negative indices\n");
+     print("ERROR: b10  c) negative indices\n");
+     nbr_err++;	
+  }
+
+  // check indices defined in a var or att
+  b11=2.0;
+  b11@indices={3,9,2};
+  if( time(b11@indices) != time(3:9:2)  )
+  {
+     print("ERROR: b11  a) var/att indices\n");
+     nbr_err++;	
+  }
+
+  b11@indices2={8,1,0};
+  if( th(b11@indices2) != th(8,1,0 )) 
+  {
+     print("ERROR: b11  b) var/att indices\n");
      nbr_err++;	
   }
 
 
+  b11@indices3={2,4,0,1,0,0};
+  if( th(b11@indices3) != th(2:4,0:1,0:0))
+  {
+     print("ERROR: b11  c) var/att indices\n");
+     nbr_err++;	
+  }
+
+  b11@indices4={1,4,1,0,1,1,0,2,1,0,1,1};
+  if( four_dmn_rec_var(b11@indices4) != four_dmn_rec_var(1:4:1,0:1:1,0:2:1,0:1:1))
+  {
+     print("ERROR: b11  d) var/att indices\n");
+     nbr_err++;	
+  }
 
 
+ b12@indices5={8,1,0};
+ b12=th(b12@indices5);
+ if( b12.size() !=1 || b12.type()!=NC_INT || b12.ndims() !=0|| b12 != 69.0   ) 
+  {
+     print("ERROR: b12  a) var/att indices\n");
+     nbr_err++;	
+  }
+
+ 
 
   print("RESULTS block b: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
