@@ -2340,6 +2340,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   std::string sfnm=fmc_obj.fnm();
 
   RefAST tr;
+  RefAST aRef;;
   std::vector<RefAST> args_vtr; 
   std::vector<std::string> cst_vtr;              
 
@@ -2361,7 +2362,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
       
   nbr_args=args_vtr.size();  
 
-  susg="usage: var_out="+sfnm+"(start_exp,inc_exp,$dim|var)"; 
+  susg="usage: var_out="+sfnm+"(start_exp,inc_exp,$dim|dim_list|var)"; 
 
   
   if(nbr_args<3)
@@ -2400,7 +2401,23 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
    // convert to type of first arg
    var_ret=nco_var_cnf_typ(var1->type,var_ret);  
 
-  }else{
+  }
+  else if( args_vtr[2]->getType()==DMN_ARG_LIST)
+  {
+    aRef=args_vtr[2]->getFirstChild();
+    while(aRef) 
+    {           
+      cst_vtr.push_back(aRef->getText());    
+      aRef=aRef->getNextSibling();  
+    } 
+
+    var_ret=ncap_cst_mk(cst_vtr,prs_arg);   
+    // convert to type of first arg
+    var_ret=nco_var_cnf_typ(var1->type,var_ret);  
+
+  }
+  else
+  {
     // assume third argument is var - interested in only using its shape !!  
     var_ret=walker.out(args_vtr[2]);
     
