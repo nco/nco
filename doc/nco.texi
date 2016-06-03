@@ -122,8 +122,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 31 May 2016
-@set update-month May 2016
+@set update-date 2 June 2016
+@set update-month June 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -15938,6 +15938,11 @@ DESCRIPTION
 
 @command{ncclimo} produces climatological monthly means, seasonal means,
 annual mean, and optionally regrids all these files.
+There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
+@samp{-i}, and @samp{-o})), and more options are available to customize
+the processing.
+Options are similar but not identical (due to shell limitations) to
+@command{ncremap} options.
 Standard @command{ncclimo} usage looks like
 @example
 ncclimo            -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
@@ -15947,9 +15952,11 @@ ncclimo -v var_lst -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 A complete description of all available flags is given in comments
 embedded in @command{ncclimo}, and a more succinct description is given 
 below.
-The standard options are:
+Options in alphabetical order are:
 @table @option
-@item -a clm_md
+@cindex @code{-a @var{clm_md}}
+@cindex @var{clm_md}
+@item -a @var{clm_md}
 Climatology mode that determines type of @acronym{DJF} average.
 The two valid options are @code{scd} (default) and @code{sdd}.
 @acronym{SCD}-mode stands for ``Seasonally Continuous December''. 
@@ -15959,38 +15966,9 @@ The last month will be November of the end year specified with @samp{-e}.
 @acronym{SDD}-mode stands for ``Seasonally Discontinuous December''. 
 The first month used will be January of the specified start year. 
 The last month will be December of the end year specified with @samp{-e}.
-@item -s srt_yr
-Start year (example: 1980). 
-Unless the option @samp{-a sdd} is specified, the first month used will
-be December of the year before the start year (to allow for contiguous
-DJF climos).   
-If @samp{-a sdd} is specified, the first month used will be January of
-the specified start year. 
-@item -e end_yr
-End year (example: 2000). 
-Unless the option @samp{-a sdd} is specified, the last month used will
-be November of the specified end year. 
-If @samp{-a sdd} is specified, the last month will be December of the
-specified end year.  
-@item -i drc_in
-Directory containing all netCDF files to read as input to the
-climatology.  
-@item -l lnk_flg
-This switch turns-off the default linking of @acronym{ACME}-climo to
-@acronym{AMWG}-climo filenames.  
-@acronym{AMWG} omits the @acronym{YYYYMM} components of climo filenames,
-resulting in shorter names.
-By default @command{ncclimo} symbolically links the full
-(@acronym{ACME}) filename to the shorter (@acronym{AMWG}) name.
-@acronym{AMWG} diagnostics scripts can produce plots directly from
-these linked filenames. 
-Use this switch to turn-off that linking and reduce filename
-proliferation if you do not need @acronym{AMWG} filenames.
-@item -o drc_out
-Directory to hold computed (output) native grid climo files.
-Regridded climos will also be placed here unless a separate directory
-for them is specified with -O (NB: capital ``O''). 
-@item -c caseid
+@cindex @code{-c @var{caseid}}
+@cindex @var{caseid}
+@item -c @var{caseid}
 Simulation name, or any input filename for non-@acronym{CESM}'ish files.  
 For @acronym{CESM}'ish input files like
 @file{famipc5_ne30_v0.3_00001.cam.h0.1980-01.nc}, 
@@ -16002,11 +15980,84 @@ These can be modified via the @option{-m @var{mdl_nm}} and
 For input files like @file{merra2_198001.nc},
 specify @samp{-c merra2_198001.nc}. 
 See comments in @command{ncclimo} for further documentation.   
-@item -m mdl_nm
+@cindex @code{-D @var{dbg_lvl}}
+@cindex @var{dbg_lvl}
+@item -D @var{dbg_lvl}
+Specifies a debugging level similar to the rest of @acronym{NCO}.
+If @math{@var{dbg_lvl} = 1}, @command{ncremap} prints more extensive
+diagnostics of its behavior.
+If @math{@var{dbg_lvl} = 2}, @command{ncremap} prints the commands
+it would execute at any higher or lower debugging level, but does
+not execute these commands.
+If @math{@var{dbg_lvl} > 2}, @command{ncremap} prints the diagnostic
+information, executes all commands, and passes-through the debugging
+level to the regridder (@command{ncks}) for additional diagnostics.
+@item -e @var{end_yr}
+End year (example: 2000). 
+Unless the option @samp{-a sdd} is specified, the last month used will
+be November of the specified end year. 
+If @samp{-a sdd} is specified, the last month will be December of the
+specified end year.  
+@cindex @code{-f @var{fml_nm}}
+@cindex @var{fml_nm}
+@item -f @var{fml_nm}
+Family name (nickname) of output files.
+By default output climo file names are constructed from the @var{caseid}
+of the input files.
+The @var{fml_nm}, if supplied, replaces @var{caseid} in output climo
+names, which will be of the form
+@var{fml_nm}_XX_YYYYMM_YYYYMM.nc where @var{XX} is the month or seasonal
+abbreviation.
+Use @samp{-f @var{fml_nm}} to simplify long names, avoid overlap, etc.
+Example values of @var{fml_nm} are @samp{control}, @samp{experiment},
+and (for a single-variable climo) @samp{FSNT}.
+@cindex @code{-i @var{drc_in}}
+@cindex @var{drc_in}
+@item -i @var{drc_in}
+Directory containing all netCDF files to read as input to the
+climatology.  
+@cindex @code{-l}
+@item -l 
+This switch (which takes no option) turns-off the default linking of
+@acronym{ACME}-climo to @acronym{AMWG}-climo filenames.  
+@acronym{AMWG} omits the @acronym{YYYYMM} components of climo filenames,
+resulting in shorter names.
+By default @command{ncclimo} symbolically links the full
+(@acronym{ACME}) filename to the shorter (@acronym{AMWG}) name.
+@acronym{AMWG} diagnostics scripts can produce plots directly from
+these linked filenames. 
+Use this switch to turn-off that linking and reduce filename
+proliferation if you do not need @acronym{AMWG} filenames.
+@cindex @code{-m @var{mdl_nm}}
+@cindex @var{mdl_nm}
+@item -m @var{mdl_nm}
 Model name (as embedded in monthly input filenames). 
 Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @samp{ice}, @samp{cism}, @samp{cice}, @samp{pop}. 
-@item -v var_lst
+@cindex @code{-O @var{drc_rgr}}
+@cindex @var{drc_rgr}
+@item -O @var{drc_rgr}
+Directory to hold regridded climo files.
+Regridded climos will be placed in @var{drc_out} unless a separate
+directory for them is specified with -O (NB: capital ``O''). 
+@cindex @code{-o @var{drc_out}}
+@cindex @var{drc_out}
+@item -o @var{drc_out}
+Directory to hold computed (output) native grid climo files.
+Regridded climos will also be placed here unless a separate directory
+for them is specified with -O (NB: capital ``O''). 
+@cindex @code{-s @var{srt_yr}}
+@cindex @var{srt_yr}
+@item -s @var{srt_yr}
+Start year (example: 1980). 
+Unless the option @samp{-a sdd} is specified, the first month used will
+be December of the year before the start year (to allow for contiguous
+DJF climos).   
+If @samp{-a sdd} is specified, the first month used will be January of
+the specified start year. 
+@cindex @code{-v @var{var_lst}}
+@cindex @var{var_lsty}
+@item -v @var{var_lst}
 Variables to subset.
 Same behavior as @ref{Subsetting Files}.
 Regular expressions are allowed, e.g., @samp{PREC.?} will extract
@@ -16512,7 +16563,7 @@ EXAMPLES
 <a name="merra2"></a> <!-- http://nco.sf.net/nco.html#merra2 -->
 @end html
 How to create a climo from a collection of monthly
-non-@acronym{CESM}'ish files?
+non-@acronym{CESM}'ish files? 
 This is a two-step procedure:
 First be sure the names are arranged with a @acronym{YYYYMM}-format date
 preceding the suffix (usually @samp{.nc}).
@@ -16541,6 +16592,20 @@ Then call @command{ncclimo} with @file{merra2_200903.nc4} as
 @example
 ncclimo -c merra2_200903.nc4 -s 1980 -e 2016 -i $drc_in -o $drc_out
 @end example
+
+Often one wishes to create a climatology of a single variable.
+The @samp{-f @var{fml_nm}} option to @command{ncclimo} makes this easy.
+Consider a series of single-variable climos for the fields @code{FSNT}, 
+and @code{FLNT}
+@example
+@verbatim
+ncclimo -v FSNT -f FSNT -c amip_xpt -s 1980 -e 1983 -i drc_in -o drc_out
+ncclimo -v FLNT -f FLNT -c amip_xpt -s 1980 -e 1983 -i drc_in -o drc_out
+@end verbatim
+@end example
+These climos use the @samp{-f} option and so there output files will
+have no namespace conflicts. 
+Moreover, the climatologies can be generated in parallel.
 
 @page
 @html
