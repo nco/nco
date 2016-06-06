@@ -16011,6 +16011,18 @@ abbreviation.
 Use @samp{-f @var{fml_nm}} to simplify long names, avoid overlap, etc.
 Example values of @var{fml_nm} are @samp{control}, @samp{experiment},
 and (for a single-variable climo) @samp{FSNT}.
+@cindex @code{-h @var{hst_nm}}
+@cindex @var{hst_nm}
+@item -h @var{hst_nm}
+History volume name of file used to generate climatologies.
+This referring to the @var{hst_nm} character sequence used to construct
+input file names: @code{caseid.mdl_nm.}@var{hst_nm}@code{.YYYY-MM.nc}.
+By default input climo file names are constructed from the @var{caseid} 
+of the input files, together with the model name @var{mdl_nm} (specified
+with @samp{-m}) and the date range.
+Use @samp{-h @var{hst_nm}} to specify alternative history volumes.
+Examples include @samp{h0} (default, works for @acronym{CAM},
+@acronym{ALM/CLM}, @samp{h1}, @samp{h} (for @acronym{CISM}).
 @cindex @code{-i @var{drc_in}}
 @cindex @var{drc_in}
 @item -i @var{drc_in}
@@ -16046,6 +16058,31 @@ directory for them is specified with -O (NB: capital ``O'').
 Directory to hold computed (output) native grid climo files.
 Regridded climos will also be placed here unless a separate directory
 for them is specified with -O (NB: capital ``O''). 
+@cindex @code{-p @var{par_typ}}
+@cindex @var{par_typ}
+@item -p @var{par_typ}
+Specifies the parallelism mode desired.
+The options are serial mode (@samp{-p nil} or @samp{-p serial}), 
+background mode parallelism (@samp{-p bck}), and @acronym{MPI}
+parallelism @samp{-p mpi}. 
+The default is background-mode parallelism.
+The default @var{par_typ} is @samp{bck}, which means @command{ncclimo} 
+runs spawns up to twelve (one for each month) parallel processes at a time.
+See discussion below under Memory Considerations.
+@cindex @code{-r @var{rgr_map}}
+@cindex @var{rgr_map}
+@item -r @var{rgr_map}
+Regridding map.
+Unless @samp{-r} is specified @command{ncclimo} produces only a 
+climatology on the native grid of the input datasets.
+The @var{rgr_map} specifies how to (quickly) transform the native
+grid into the desired analysis grid.
+@command{ncclimo} will (call @command{ncremap} to) apply the given map
+to the native grid climatology and produce a second climatology on the
+analysis grid.
+Options intended exclusively for the regridder may be passed as
+arguments to the @samp{-R} switch.
+See below the discussion on regridding.
 @cindex @code{-s @var{srt_yr}}
 @cindex @var{srt_yr}
 @item -s @var{srt_yr}
@@ -16055,6 +16092,16 @@ be December of the year before the start year (to allow for contiguous
 DJF climos).   
 If @samp{-a sdd} is specified, the first month used will be January of
 the specified start year. 
+@cindex @code{-t @var{thr_nbr}}
+@cindex @var{thr_nbr}
+@item -t @var{thr_nbr}
+Specifies the number of threads used per regridding process
+(@pxref{OpenMP Threading}).
+The @acronym{NCO} regridder scales well up to 8--16 threads.
+However, regridding with the maximum number of threads can interfere
+with climatology generation in parallel climatology mode (i.e., when
+@math{@var{par_typ} = @code{mpi}} or @code{bck}). 
+Hence @command{ncclimo} defaults to @math{@var{thr_nbr}=2}.
 @cindex @code{-v @var{var_lst}}
 @cindex @var{var_lsty}
 @item -v @var{var_lst}
@@ -16131,8 +16178,8 @@ geometry string obtained from the mapfile, e.g.,
 These files also have symbolic links to their @acronym{AMWG} filenames. 
 @example
 ncclimo -c amip_xpt -s 1980 -e 1983 -i drc_in -o drc_out
-ncclimo -c amip_xpt -s 1980 -e 1983 -i drc_in -r map_fl -o drc_out
-ncclimo -c amip_xpt -s 1980 -e 1983 -i drc_in -r map_fl -o drc_out -O drc_rgr
+ncclimo -c amip_xpt -s 1980 -e 1983 -i drc_in -o drc_out -r map_fl
+ncclimo -c amip_xpt -s 1980 -e 1983 -i drc_in -o drc_out -r map_fl -O drc_rgr
 @end example
 @noindent
 The above commands perform a climatology without regridding, then with
@@ -16240,18 +16287,16 @@ climos.
 The full memory of each node is available for each individual climo. 
 The optional regridding employs, by default, up to eight cores per node
 in @acronym{MPI}-mode.
-@acronym{MPI}-mode (or Background-mode on a big memory node) must be
-used to process ne30L72 and ne120L30 climos on some, but not all, 
-@acronym{DOE} computers. 
-For example, attempting an ne120L30 climo on in background mode on
-@file{rhea} (i.e., on one @w{128 GB} compute node) will fail due to 
-@acronym{OOM}. 
+@acronym{MPI}-mode or serial-mode must be used to process ne30L72 and
+ne120L30 climos on all but the fattest @acronym{DOE} nodes. 
+An ne120L30 climo in background mode on @file{rhea} (i.e., on one @w{128
+GB} compute node) fails due to @acronym{OOM}. 
 (Unfortunately @acronym{OOM} errors do not produce useful return codes
 so if your climo processes die without printing useful information, the
 cause may be @acronym{OOM}). 
-However the same climo will succeed if executed on a single big-memory
-(@w{1 TB}) node on @file{rhea} (use @samp{-lpartition=gpu}, as shown
-below). 
+However the same climo in background-mode succeeds when executed on a
+single big-memory (@w{1 TB}) node on @file{rhea} (use
+@samp{-lpartition=gpu}, as shown below). 
 Or @acronym{MPI}-mode can be used for any climatology. 
 The same ne120L30 climo will also finish blazingly fast in background
 mode on @file{cooley} (i.e., on one @w{384 GB} compute node), so
