@@ -741,6 +741,17 @@ Newer (beta- or pre-release) packages are sometimes available for AIX users as d
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
 
+<a name="anaconda"></a> <!-- http://nco.sf.net#anaconda -->
+<a name="conda"></a> <!-- http://nco.sf.net#conda -->
+<h3><a href="https://www.continuum.io/why-anaconda">Anaconda</a></h3>
+<ul>
+Anaconda is a cross-platform package manager.
+&lsquo;<tt>conda install nco</tt>&rsquo; installs NCO in your Anaconda framework.
+Anaconda NCO is generally within about 3&nbsp;months of the latest release.
+<li><a href="https://anaconda.org/ioos/nco">nco-4.5.5</a> Executables Anaconda-compatible. Maintained by Anaconda Project.</li>
+Thanks to Rich Signell, Filipe Fernandes (and others?) for developing and maintaining Anaconda's NCO package.
+</ul>
+
 <a name="debian"></a><a name="dbn"></a> <!-- http://nco.sf.net#debian -->
 <a name="ubuntu"></a><a name="ubn"></a> <!-- http://nco.sf.net#ubuntu -->
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
