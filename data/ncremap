@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Purpose: Regrid (subsets of) netCDF files, possibly on different grids
+# Purpose: Regrid (subsets of) netCDF files between different grids, generate rectangular grids (in SCRIP format), generate mapfiles
 
 # Copyright (C) 2015-2016 Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -287,6 +287,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "Examples: ${fnt_bld}$spt_nm -i ${in_xmp} -m ${map_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -i ${in_xmp} -g ${grd_dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -s ${grd_src_xmp} -g ${grd_dst_xmp} -m ${map_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -a bilinear -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -a conserve -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -w tempest  -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
