@@ -1,10 +1,16 @@
-2016-05-03  Henry Butowsky  <henryb@hush.com>
-	* mods to array() - method can now take a list of dims as third arg. e.g
-	  n2=array(1.0, 2.0, /$time,$lat,$lon/)
-            
-2016-05-02  Henry Butowsky  <henryb@hush.com>
+2016-06-09  Charlie Zender  <zender@uci.edu>
 
-	* fixed - slabs of form var(x:) now handled correctly
+	* Coaslesce (and make obsolete) four earlier functions into nco_is_spc_in_cf_att()
+
+	* Add nco_rfr_crd.pdf to homepage. Contributed by Wenshan Wang of UCI.
+
+2016-06-03  Henry Butowsky  <henryb@hush.com>
+
+	* array() function can now take dimension list as third argument, e.g., n2=array(1.0, 2.0, /$time,$lat,$lon/)
+
+2016-06-02  Henry Butowsky  <henryb@hush.com>
+
+	* Fix handling of implicit array bounds for slabs of form var(x:)
 
 2016-05-31  Charlie Zender  <zender@uci.edu>
 

@@ -230,7 +230,7 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
 	int var_id;
 	nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
 	nco_inq_varid(grp_id,trv_tbl->lst[idx_tbl].nm,&var_id);
-	if(!nco_is_spc_in_bnd_att(grp_id,var_id) && !nco_is_spc_in_clm_att(grp_id,var_id) && !nco_is_spc_in_crd_att(grp_id,var_id)){
+	if(!nco_is_spc_in_cf_att(grp_id,"bounds",var_id) && !nco_is_spc_in_cf_att(grp_id,"climatology",var_id) && !nco_is_spc_in_cf_att(grp_id,"coordinates",var_id)){
 	  trv_tbl->lst[idx_tbl].ppc=ppc_val;
 	  trv_tbl->lst[idx_tbl].flg_nsd=flg_nsd;
 	} /* endif */

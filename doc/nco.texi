@@ -38,7 +38,7 @@ M-x texinfo-multiple-files-update
 Usage: 
 export TEX='tex --src-specials'
 cd ~/nco/doc;texi2dvi nco.texi;makeinfo --html --ifinfo --no-split --output=nco.html nco.texi;makeinfo nco.texi;dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --ifinfo --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 2 June 2016
+@set update-date 9 June 2016
 @set update-month June 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide

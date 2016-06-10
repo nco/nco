@@ -884,12 +884,16 @@ Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin 
 <li><a href="./nco.xml">XML</a> Extensible Markup Language (<tt>firefox</tt>)</h2></li>
 </ul>
 <tt>nco.texi</tt> is the most up-to-date.
-Files <tt>nco.dvi</tt>, <tt>nco.ps</tt>, and <tt>nco.pdf</tt> are
+Files <tt>nco.dvi</tt>, <tt>nco.ps</tt>, and <tt>nco.pdf</tt> 
 contain all the mathematical formulae (typeset with TeX) missing from
 the screen-oriented formats. 
 The screen-oriented formats&mdash;<tt>nco.html</tt>,
 <tt>nco.info</tt>, <tt>nco.txt</tt>, and <tt>nco.xml</tt>&mdash;contain 
 all the documentation except the highly mathematical sections.
+
+Wenshan Wang of UCI contributed a <a href="./nco_rfr_crd.pdf">Quick Reference Card</a> 
+(last updated <!--#flastmod file="./nco_rfr_crd.pdf"-->) suitable for
+printing, framing, and/or carrying on your person at all times.
 
 <!--
 <h3>Wiki:</h3>

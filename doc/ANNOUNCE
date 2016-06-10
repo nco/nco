@@ -6,23 +6,29 @@ http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-4.6.0 may be most notable for the debut of ncclimo, a new operator
-that generates climatologies from monthly-mean input. 
-Perhaps it's a tie with ncap2, which has a singularly useful new
-feature: variable lists/pointers. ncap2 also has a reduced memory
-footprint and a function to simplify adding CF-bounds variables
-(Thanks Henry!). As usual, ncremap continues to accrue useful
-features, the most notable of which is learning grid information
-from the CF "coordinates" attribute, if any.
 
-Work on NCO 4.6.1 has commenced and will better support regridding
-variables whose horizontal dimensions are not the
-most-rapidly-varying. 
+4.6.1 ...
+
+As usual, ncremap continues to accrue useful features, the most
+notable of which is ...
+
+Work on NCO 4.6.2 has commenced and will better support regridding
+variables whose horizontal dimensions are not most-rapidly-varying.  
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
+
+A. ncks supports the new provenance features released in
+   netCDF-4.4.1-RC3. These provenance (and other) metadata 
+   are revealed by the --hdn (or --hidden) switch when dumping 
+   global metadata from a netCDF4 file:
+   ncks --cdl --hdn -M ~/nco/data/in_grp.nc
+
+A. Wenshan Wang of UCI contributed a Quick Reference Card suitable
+   for printing. Thanks, Wenshan!
+   http://nco.sf.net/nco_rfr_crd.pdf
 
 A. ncclimo produces climatological monthly means, seasonal means, 
    annual mean, and optionally regrids all these files. Like ncremap,
@@ -41,7 +47,11 @@ A. ncclimo produces climatological monthly means, seasonal means,
    http://nco.sf.net/nco.html#ncclimo
    http://nco.sf.net/nco.html#merra2
 
-B. ncap2 now works with pointers to variables and attributes.
+A. ncap2's array() function can now take a dimension list as the
+   third argument, e.g., n2=array(1.0,2.0,/$time,$lat,$lon/)
+   http://nco.sf.net/nco.html#ncap2
+
+A. ncap2 now works with pointers to variables and attributes.
    This allows, e.g., loops over arbitrary sets of variables, and
    make creating aggregations of variables much simpler. An ncap2
    script that converts all float variables to double precision:
@@ -55,112 +65,11 @@ B. ncap2 now works with pointers to variables and attributes.
    More documentation will be added in the coming weeks. For now,      
    http://nco.sf.net/nco.html#ncap2
 
-C. ncap2 has reduced memory usage. Scalars are no longer stretched
-   to conform to arrays prior to arithmetic.
-
-D. ncap2 has a new function to create CF-compliant bounds:
-   defdim("bnd_dmn",2);
-   bounds_var=make_bounds(crd_var,$bnd_dmn,"bounds_var_nm");
-   The "bounds_var_nm" is optional. Passing it causes make_bounds() to 
-   add the attribute crd_var@bounds="bounds_var_nm".
-   http://nco.sf.net/nco.html#make_bounds
-
-E. ncap2 now propagates metadata when Left-Hand-Casting variables.
-   Previous versions did not propagate metadata to LHC variables.
-   This fix makes converting the _type_ of a variable easier.
-   For example, to change one_dmn_rec_var to NC_SHORT, use
-   ncap2 -s 'one_dmn_rec_var[time]=short(one_dmn_rec_var)' in.nc out.nc
-   The output file will contain the original metadata.
-   http://nco.sf.net/nco.html#ncap2
-
-F. ncatted new mode "nappend" appends only to existing attributes.
-   If the attribute does not yet exist, it is not created.
-   Same as "append" mode, except "append" will create attributes.
-   ncatted -a long_name,T,n,c,' nappended text' in.nc
-   http://nco.sf.net/nco.html#ncatted
-
-G. ncpdq now has a third unpacking mode.
-   Access non-default modes with --upk=[0,1,2] where
-   Mode 0: Applies netCDF convention. Default mode:
-   upk=scale_factor*pck+add_offset   
-   Mode 1: HDF4 MODIS MOD08 convention: 
-   upk=scale_factor*(pck-add_offset)
-   Mode 2: HDF4 MODIS MOD13 convention: 
-   upk=(pck-add_offset)/scale_factor
-   Yes, be careful unpacking HDF4 data!
-   http://nco.sf.net/nco.html#hdf_upk
-   
-H. ncra can now honor the CF convention for climatology bounds.
-   Currently this is opt-in with the --cb or --c2b switches.
-   --cb causes ncra to:
-   1. Add a "climatology" attribute with value "climatology_bounds" to 
-   the time coordinate, if necessary
-   2. Remove the "bounds" from the time coordinate, if necessary
-   3. Output a variable named "climatology_bounds" with values that
-   are minima/maxima of the input time coordinate bounds 
-   4. Omit any input time coordinate bounds attribute and variable
-   5. Ensure cell_methods attribute for all variables is appropriate 
-   --c2b is like --cb except --c2b converts the input "climatology"
-   bounds to a non-climatology "bounds" in the output. 
-   Use --c2b when averaging sub-sampled climatologies to produce a
-   continuous (non-climatologically sub-sampled) mean.
-   ncra --cb *_01.nc clm_JAN.nc
-   ncra --cb clm_DEC.nc clm_JAN.nc clm_FEB.nc clm_DJF.nc
-   ncra --c2b clm_DJF.nc clm_MAM.nc clm_JJA.nc clm_SON.nc clm_ANN.nc
-   Depending on feedback, we may make --cb the default
-   http://nco.sf.net/nco.html#cb
-
-I. ncremap now defaults to $TMPDIR for storing intermediate files.
-   This is user-configurable with the -U switch.
-   http://nco.sf.net/nco.html#ncremap
-
-J. ncks can now ingest and de-interleave ENVI images in BIL, BSQ, and
-   BIP formats and store them as any netCDF type. ncks is a viable
-   (and faster) replacement for that small subset of tasks normally
-   done by the venerable GDAL toolkit (gdal_translate in particular).
-   Thanks to David LeBauer of the University of Illinois/NCSA and DOE
-   TERRAREF for supporting this feature.
-   ncks --trr_wxy=926,1600,1 --trr typ_in=NC_USHORT --trr ntl_in=bil \
-   --trr_in=in.nc foo.nc out.nc
-   http://nco.sf.net/nco.html#terraref
-
-K. NCO now treats as associated coordinates all variables listed in
-   "grid_mapping" attributes. Variables such as
-   "char albers_conical_equal_area" are automatically extracted along
-   with variables that them. ncecat will not wrap mappings in a record
-   dimension. 
-   http://nco.sf.net/nco.html#grid_mapping
-
-L. ncremap and ncks now follow the CF "coordinates" convention when
-   inferring grids and remapping. One specifies the variable that may
-   have the "coordinates" attribute, and NCO will inspect and apply
-   the "coordinates" convention for that variable for grid generation
-   and remapping.  
-   ncremap -V var_nm -s src.nc -d dst.nc -m map.nc
-   ncremap -V var_nm --map map.nc in.nc out.nc
-   ncks --rgr_var=var_nm --rgr nfr=y --rgr grid=grd.nc in.nc foo.nc
-   ncks --rgr_var=var_nm --map map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#ncremap
-   http://nco.sf.net/nco.html#regrid
-
 BUG FIXES:
 
-A. Correct ncatted documentation for "append" mode.
-
-B. Fix Append mode to follow same code path and defaults when
-   requested with -A and with interactive responses to the
-   exit/append/overwrite question. Thanks to Parker Norton for
-   pointing out this inconsistency. 
-
-C. ncpdq fix complex reordering in group hierarchies.
-   Previously ncpdq could misorder dimensions when multiple
-   different dimensions shared the same short name (in different
-   groups). Thanks to Pedro Vicente for tracking-down and fixing
-   this bug! And finding and fixing another ncpdq bug that had
-   not yet been reported in the wild.
-
-D. ncap2 fix bug propagating attributes of variables with whitespace
-   in their names. 
+A. ncap2 fixed handling of implicit array bounds for slabs of form
+   var(3:). Previously ncap2 would exit with an error.
+   http://nco.sf.net/nco.html#ncap2
 
 KNOWN PROBLEMS DUE TO NCO:
 

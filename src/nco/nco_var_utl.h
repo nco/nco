@@ -119,6 +119,12 @@ extern "C" {
   (var_sct **var_lst, /* I/O [sct] Variable structure list to free */
    const int var_nbr); /* I [nbr] Number of variable structures in list */
   
+  nco_bool /* [flg] Variable is listed in this CF attribute, thereby associated */
+  nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby associated */
+  (const int nc_id, /* I [id] netCDF file ID */
+   const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping") */
+   const int var_trg_id); /* I [id] Variable ID */
+
   nco_bool /* [flg] Variable is listed in a "bounds" attribute */
   nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
   (const int nc_id, /* I [id] netCDF file ID */

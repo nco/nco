@@ -912,8 +912,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     if((var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
 
     /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...)
-       20130112: As of today set is_crd_var true in nco_var_fll() when either of these conditions is true 
-       so no longer need to specify these conditions separately. 
+       20130112: As of today set is_crd_var true in nco_var_fll() when either of these conditions is true so no longer need to specify these conditions separately. 
        20150519: Add nco_is_spc_in_clm_att() to this list
        Keep this old code here as a reminder that is_crd_var also incorporates these conditions
        is_spc_in_clm_att=nco_is_spc_in_clm_att(var[idx]->nc_id,var[idx]->id);
