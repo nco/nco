@@ -1692,7 +1692,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   rcd=NC_NOERR;
   /* End CF-coordinates block */
 
-
   if(flg_grd_in_1D){
     long col_nbr_in_dat; /* [nbr] Number of columns in input datafile */
     /* Check default or command-line option first, then search usual suspects */

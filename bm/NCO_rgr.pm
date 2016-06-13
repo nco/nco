@@ -275,6 +275,27 @@ if($USER eq 'zender'){
 	$tst_cmd[6]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
+
+# ncremap generate T42 dataset, populate with test field, conservatively regrid to 2x2, verify conservation
+# ncks -O --rgr skl=~/skl_t42.nc --rgr grid=~/grd_t42.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+# ncks -O --rgr grid=~/grd_2x2.nc --rgr latlon=90,180 --rgr lat_typ=eqa --rgr lon_typ=Grn_wst ~/nco/data/in.nc ~/foo.nc
+# ncap2 -O -s 'tst[lat,lon]=1.0f' ~/skl_t42.nc ~/dat_t42.nc
+# ncremap -a conserve -s ~/grd_t42.nc -g ~/grd_2x2.nc -m ~/map_t42_to_2x2.nc
+# ncremap -i ~/dat_t42.nc -m ~/map_t42_to_2x2.nc -o ~/dat_2x2.nc
+# ncwa -O ~/dat_2x2.nc ~/dat_avg.nc
+# ncks -C -H -v tst ~/dat_avg.nc
+	$dsc_sng="ncremap generate fake T42 dataset, conservatively regrid to 2x2";
+	$tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --rgr skl=foo_skl_t42.nc --rgr grid=foo_grd_t42.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg --rgr grid=foo_grd_2x2.nc --rgr latlon=90,180 --rgr lat_typ=eqa --rgr lon_typ=Grn_wst $in_pth_arg in.nc %tmp_fl_00%";
+	$tst_cmd[2]="ncap2 -O $fl_fmt $nco_D_flg -s 'tst[lat,lon]=1.0f' foo_skl_t42.nc foo_dat_t42.nc";
+	$tst_cmd[3]="ncremap -a conserve -s foo_grd_t42.nc -g foo_grd_2x2.nc -m foo_map_t42_to_2x2.nc";
+	$tst_cmd[4]="ncremap -i foo_dat_t42.nc -m foo_map_t42_to_2x2.nc -o foo_dat_2x2.nc";
+	$tst_cmd[5]="ncwa -O $fl_fmt $nco_D_flg foo_dat_2x2.nc foo_dat_avg.nc";
+	$tst_cmd[6]="ncks -C -H -v tst foo_dat_avg.nc";
+	$tst_cmd[7]="tst = 1";
+	$tst_cmd[8]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array
 } # !zender
 
 ####################
