@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 9 June 2016
+@set update-date 12 June 2016
 @set update-month June 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -21456,6 +21456,11 @@ Large work-load testing
 @cindex Remik Ziemlinski
 @item Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Gary Strand, George White Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
+@cindex Filipe Fernandes
+@cindex Rich Signell
+@cindex Kyle Wilcox
+@item Filipe Fernandes, Rich Signell, Kyle Wilcox
+Anaconda packaging
 @cindex Daniel Baumann
 @cindex Nick Bower
 @cindex Luk Claes
@@ -21500,7 +21505,7 @@ RHEL and CentOS build scripts and bug reports.
 Single bug reports and fixes
 @cindex Wenshan Wang
 @item Wenshan Wang
-@acronym{CMIP5} and @acronym{MODIS} processing documentation.
+@acronym{CMIP5} and @acronym{MODIS} processing documentation, reference card
 @end table
 Please let me know if your name was omitted!
 
