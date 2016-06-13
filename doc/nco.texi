@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 12 June 2016
+@set update-date 13 June 2016
 @set update-month June 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -15960,12 +15960,12 @@ Options in alphabetical order are:
 Climatology mode that determines type of @acronym{DJF} average.
 The two valid options are @code{scd} (default) and @code{sdd}.
 @acronym{SCD}-mode stands for ``Seasonally Continuous December''. 
-The first month used will be December of the year before the start year
+The first month used is December of the year before the start year
 specified with @samp{-s}.
-The last month will be November of the end year specified with @samp{-e}.
+The last month is November of the end year specified with @samp{-e}.
 @acronym{SDD}-mode stands for ``Seasonally Discontinuous December''. 
-The first month used will be January of the specified start year. 
-The last month will be December of the end year specified with @samp{-e}.
+The first month used is January of the specified start year. 
+The last month is December of the end year specified with @samp{-e}.
 @cindex @code{-c @var{caseid}}
 @cindex @var{caseid}
 @item -c @var{caseid}
@@ -15994,9 +15994,9 @@ information, executes all commands, and passes-through the debugging
 level to the regridder (@command{ncks}) for additional diagnostics.
 @item -e @var{end_yr}
 End year (example: 2000). 
-Unless the option @samp{-a sdd} is specified, the last month used will
-be November of the specified end year. 
-If @samp{-a sdd} is specified, the last month will be December of the
+Unless the option @samp{-a sdd} is specified, the last month used 
+is November of the specified end year. 
+If @samp{-a sdd} is specified, the last month is December of the
 specified end year.  
 @cindex @code{-f @var{fml_nm}}
 @cindex @var{fml_nm}
@@ -16005,7 +16005,7 @@ Family name (nickname) of output files.
 By default output climo file names are constructed from the @var{caseid}
 of the input files.
 The @var{fml_nm}, if supplied, replaces @var{caseid} in output climo
-names, which will be of the form
+names, which are of the form
 @var{fml_nm}_XX_YYYYMM_YYYYMM.nc where @var{XX} is the month or seasonal
 abbreviation.
 Use @samp{-f @var{fml_nm}} to simplify long names, avoid overlap, etc.
@@ -16022,11 +16022,11 @@ of the input files, together with the model name @var{mdl_nm} (specified
 with @samp{-m}) and the date range.
 Use @samp{-h @var{hst_nm}} to specify alternative history volumes.
 Examples include @samp{h0} (default, works for @acronym{CAM},
-@acronym{ALM/CLM}, @samp{h1}, @samp{h} (for @acronym{CISM}).
+@acronym{ALM/CLM}), @samp{h1}, and @samp{h} (for @acronym{CISM}).
 @cindex @code{-i @var{drc_in}}
 @cindex @var{drc_in}
 @item -i @var{drc_in}
-Directory containing all netCDF files to read as input to the
+Directory containing all monthly mean files to read as input to the
 climatology.  
 @cindex @code{-l}
 @item -l 
@@ -16050,14 +16050,14 @@ Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @cindex @var{drc_rgr}
 @item -O @var{drc_rgr}
 Directory to hold regridded climo files.
-Regridded climos will be placed in @var{drc_out} unless a separate
-directory for them is specified with -O (NB: capital ``O''). 
+Regridded climos are placed in @var{drc_out} unless a separate
+directory for them is specified with @samp{-O} (NB: capital ``O''). 
 @cindex @code{-o @var{drc_out}}
 @cindex @var{drc_out}
 @item -o @var{drc_out}
 Directory to hold computed (output) native grid climo files.
-Regridded climos will also be placed here unless a separate directory
-for them is specified with -O (NB: capital ``O''). 
+Regridded climos are also placed here unless a separate directory
+for them is specified with @samp{-O} (NB: capital ``O''). 
 @cindex @code{-p @var{par_typ}}
 @cindex @var{par_typ}
 @item -p @var{par_typ}
@@ -16089,25 +16089,25 @@ See below the discussion on regridding.
 Start year (example: 1980). 
 Unless the option @samp{-a sdd} is specified, the first month used will
 be December of the year before the start year (to allow for contiguous
-DJF climos).   
-If @samp{-a sdd} is specified, the first month used will be January of
+@acronym{DJF} climos).   
+If @samp{-a sdd} is specified, the first month used is January of
 the specified start year. 
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
 @item -t @var{thr_nbr}
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
-The @acronym{NCO} regridder scales well up to 8--16 threads.
+The @acronym{NCO} regridder scales well to 8--16 threads.
 However, regridding with the maximum number of threads can interfere
 with climatology generation in parallel climatology mode (i.e., when
-@math{@var{par_typ} = @code{mpi}} or @code{bck}). 
-Hence @command{ncclimo} defaults to @math{@var{thr_nbr}=2}.
+@math{@var{par_typ}} = @code{mpi} or @code{bck}). 
+Hence @command{ncclimo} defaults to @var{thr_nbr}=2.
 @cindex @code{-v @var{var_lst}}
 @cindex @var{var_lsty}
 @item -v @var{var_lst}
 Variables to subset.
 Same behavior as @ref{Subsetting Files}.
-Regular expressions are allowed, e.g., @samp{PREC.?} will extract
+Regular expressions are allowed so, e.g., @samp{PREC.?} extracts
 the variables @samp{PRECC,PRECL,PRECSC,PRECSL} if present.
 @end table
 @noindent
@@ -16369,7 +16369,7 @@ This command returns a prompt once nodes are assigned (the prompt is
 returned in your home directory so you may then have to @command{cd} to
 the location you meant to run from). 
 Then run your code with the basic @command{ncclimo} invocation.
-It will be faster because it has exclusive access to the node.
+The is faster because the node is exclusively dedicated to @command{ncclimo}.
 Again, ne30L30 climos only require @w{< 2} minutes, so the 
 @w{10 minutes} requested in the example is excessive and conservative.  
 Tune it with experience. 
@@ -16772,7 +16772,7 @@ Output statistics in group ensemble mode are stored in the parent group
 by default. 
 If the ensemble members are @file{/cesm/cesm_01} and
 @file{/cesm/cesm_02}, then the computed statistic will be in
-@file{/cesm} in the output file.  
+@file{/cesm} in the output file.   
 The @samp{--nsm_sfx} option instructs nces to instead store output in  
 a new child group of the parent created by attaching the suffix
 to the parent group's name, e.g., @samp{--nsm_sfx='_avg'} would store
@@ -21665,7 +21665,7 @@ There are detailed instructions on @command{ncra} (@pxref{ncra netCDF Record Ave
 Inside the input file @file{in.nc}, the record dimension @code{time} is from Jan 1990 to Dec 2005.
 
 @noindent
-@strong{Seasonal average (e.g., DJF):}
+@strong{Seasonal average (e.g., @acronym{DJF}):}
 @cindex seasonal average
 @cindex average
 @cindex time-averaging
