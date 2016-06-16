@@ -1027,11 +1027,13 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
     let yr_nbr_prv=${yr_end_rth_prv}-${yr_srt_rth_prv}+1
     let yr_nbr_xtn=${yr_end_rth}-${yr_srt_rth_prv}+1
     yyyy_clm_srt_dec_prv=${yyyy_srt_prv}
+    wgt_prv=$(echo "${yr_nbr_prv}/${yr_nbr_xtn}" | bc -l)
+    wgt_crr=$(echo "${yr_nbr}/${yr_nbr_xtn}" | bc -l)
     printf "Produce extended climatology as weighted average of previous and current climatologies:\n"
-    printf "Previous climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}\n"
-    printf "Current  climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
+    printf "Previous climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}, weight = ${wgt_prv}\n"
+    printf "Current  climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
     printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
-
+    
     clm_idx=0
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
@@ -1061,7 +1063,7 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
     fl_xtn[17]="${drc_xtn}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
 
     for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	cmd_xtn[${clm_idx}]="ncflint -O -w ${yr_nbr_prv},${yr_nbr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
+	cmd_xtn[${clm_idx}]="ncflint -O -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_xtn[${clm_idx}]}
 	fi # !dbg
