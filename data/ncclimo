@@ -142,6 +142,10 @@ esac # !HOSTNAME
 # ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 -i /lustre/atlas1/cli115/world-shared/mbranst/B1850C5e1_ne30/atm/hist -o ${DATA}/ne30/clm
 
+# Extended climo testing:
+# ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1981 -i ${DATA}/ne30/raw -o ${DATA}/ne30/prv -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
+# ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1982 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -x ${DATA}/ne30/prv -X ${DATA}/ne30/xtn
+
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -a sdd -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
@@ -998,25 +1002,71 @@ if [ ${lnk_flg} = 'Yes' ]; then
 fi # !lnk_flg
     
 if [ -n "${drc_prv}" ]; then
-    for fl in "${drc_prv}"/"${casid}"*ANN_*_climo.nc ; do
+    for fl in "${drc_prv}"/"${casid}"*MAM_*_climo.nc ; do
 	clm_nbr=0 # [nbr] Number of climatologies in directory
 	if [ -f "${fl}" ]; then
 	    fl_prv_ann=${fl}
 	    let clm_nbr=${clm_nbr}+1
 	fi # !file
     done
-    echo "Found ${clm_nbr} ANN files in directory ${drc_prv}"
-    if [[ "${fl_prv_ann}" =~ ^(.*)_ANN_([0-9][0-9][0-9][0-9])([01][0-9])_([0-9][0-9][0-9][0-9])([01][0-9])_climo.nc$ ]]; then
-	prv_srt="${BASH_REMATCH[2]}"
-	prv_end="${BASH_REMATCH[4]}"
+    echo "Found ${clm_nbr} MAM files in directory ${drc_prv}"
+    if [[ "${fl_prv_ann}" =~ ^(.*)_MAM_([0-9][0-9][0-9][0-9])([01][0-9])_([0-9][0-9][0-9][0-9])([01][0-9])_climo.nc$ ]]; then
+	yyyy_srt_prv="${BASH_REMATCH[2]}"
+	yyyy_end_prv="${BASH_REMATCH[4]}"
     fi # !fl_prv_ann
-    trim_leading_zeros ${prv_srt}
-    prv_srt_rth=${sng_trm}
-    trim_leading_zeros ${prv_end}
-    prv_end_rth=${sng_trm}
-    let prv_drn=${prv_end_rth}-${prv_srt_rth}
-    echo "prv_srt_rth = ${prv_srt_rth}, prv_end_rth = ${prv_end_rth}, prv_drn = ${prv_drn}"
-#    fl_prv[13]="${drc_prv}/${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
+    trim_leading_zeros ${yyyy_srt_prv}
+    yr_srt_rth_prv=${sng_trm}
+    let yr_srtm1_prv=${yr_srt_rth_prv}-1
+    trim_leading_zeros ${yyyy_end_prv}
+    yr_end_rth_prv=${sng_trm}
+    let yr_endm1_prv=${yr_end_rth_prv}-1
+    let yr_nbr_prv=${yr_end_rth_prv}-${yr_srt_rth_prv}+1
+    let yr_nbr_xtn=${yr_end_rth}-${yr_srt_rth_prv}+1
+    yyyy_clm_srt_dec_prv=${yyyy_srt_prv}
+    printf "Produce extended climatology as weighted average of previous and current climatologies:\n"
+    printf "Previous climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}\n"
+    printf "Current  climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
+    printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
+
+    clm_idx=0
+    for mth in {01..12}; do
+	let clm_idx=${clm_idx}+1
+	MM=`printf "%02d" ${clm_idx}`
+	fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end_prv}${MM}_climo.nc"
+	fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end}${MM}_climo.nc"
+    done # !mth
+    if [ ${clm_md} = 'scd' ]; then 
+	yyyy_clm_srt_dec_prv=`printf "%04d" ${yr_srtm1_prv}`
+	yyyy_clm_end_dec_prv=`printf "%04d" ${yr_endm1_prv}`
+	clm_idx=12
+	MM=`printf "%02d" ${clm_idx}`
+	fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec_prv}${MM}_climo.nc"
+	fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec}${MM}_climo.nc"
+    fi # !scd
+    fl_prv[13]="${drc_prv}/${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end_prv}05_climo.nc"
+    fl_prv[14]="${drc_prv}/${out_nm}_JJA_${yyyy_srt_prv}06_${yyyy_end_prv}08_climo.nc"
+    fl_prv[15]="${drc_prv}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end_prv}11_climo.nc"
+    fl_prv[16]="${drc_prv}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end_prv}${mm_djf_end}_climo.nc"
+    fl_prv[17]="${drc_prv}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end_prv}${mm_ann_end}_climo.nc"
+
+    fl_xtn[13]="${drc_xtn}/${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end}05_climo.nc"
+    fl_xtn[14]="${drc_xtn}/${out_nm}_JJA_${yyyy_srt_prv}06_${yyyy_end}08_climo.nc"
+    fl_xtn[15]="${drc_xtn}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end}11_climo.nc"
+    fl_xtn[16]="${drc_xtn}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
+    fl_xtn[17]="${drc_xtn}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
+
+    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	cmd_xtn[${clm_idx}]="ncflint -O -w ${yr_nbr_prv},${yr_nbr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_xtn[${clm_idx}]}
+	fi # !dbg
+	eval ${cmd_xtn[${clm_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "${spt_nm}: ERROR monthly climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
+	    exit 1
+	fi # !err
+    done # !clm_idx
+
 fi # !drc_prv
 
 date_end=$(date +"%s")
