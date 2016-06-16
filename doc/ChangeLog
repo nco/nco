@@ -1,3 +1,7 @@
+2016-06-15  Charlie Zender  <zender@uci.edu>
+
+	* Add stubs to extend previous climatology in ncclimo
+
 2016-06-13  Charlie Zender  <zender@uci.edu>
 
 	* Add integrated, end-to-end grid-generation, map-generation, conservative regridding regression test

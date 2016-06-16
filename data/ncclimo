@@ -292,8 +292,10 @@ drc_in_mps="${DATA}/mpas/raw" # [sng] Input file directory for MPAS examples
 drc_out='' # [sng] Output file directory
 drc_out_xmp="${DATA}/ne30/clm" # [sng] Output file directory for examples
 drc_out_mps="${DATA}/mpas/clm" # [sng] Output file directory for MPAS examples
+drc_prv='' # [sng] Directory containing previous climatology to extend with current data
 drc_rgr='' # [sng] Regridded file directory
 drc_rgr_xmp="${DATA}/ne30/rgr" # [sng] Regrid file directory for examples
+drc_xtn='' # [sng] Directory containing extended climatology
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
 gaa_sng="--gaa climo_script=${spt_nm} --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_version}" # [sng] Global attributes to add
 hdr_pad='1000' # [B] Pad at end of header section
@@ -314,6 +316,7 @@ rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
+xtn_flg='No' # [sng] Extend previous climatology with current data
 yr_srt='1980' # [yr] Start year
 yr_end='1983' # [yr] End year
 
@@ -341,7 +344,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm})"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Starting year (default ${fnt_bld}${yr_srt}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
-    echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}cf_flg${fnt_nrm}   Xperimental switch (for developers) (default ${fnt_bld}${cf_flg}${fnt_nrm})"
+    echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Xperimental switch (for developers) (default ${fnt_bld}${drc_prv}${fnt_nrm})"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}\n"
@@ -404,7 +407,7 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${spt_nm} ${@}"
-while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:s:t:v:x: OPT; do
+while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:s:t:v:x:X: OPT; do
     case ${OPT} in
 	a) clm_md=${OPTARG} ;; # Climatology mode
 	b) bnd_nm=${OPTARG} ;; # Bounds dimension name
@@ -425,7 +428,8 @@ while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:s:t:v:x: OPT; do
 	s) yr_srt=${OPTARG} ;; # Start year
 	t) thr_usr=${OPTARG} ;; # Thread number
 	v) var_lst=${OPTARG} ;; # Variables
-	x) cf_flg=${OPTARG} ;; # CF annotation
+	x) drc_prv=${OPTARG} ;; # Previous climatology directory
+	X) drc_xtn=${OPTARG} ;; # Extended climatology directory
 	\?) # Unrecognized option
 	    printf "\nERROR: Option ${fnt_bld}-$OPTARG${fnt_nrm} not allowed"
 	    fnc_usg_prn ;;
@@ -610,8 +614,10 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
     printf "dbg: drc_in   = ${drc_in}\n"
     printf "dbg: drc_out  = ${drc_out}\n"
+    printf "dbg: drc_prv  = ${drc_prv}\n"
     printf "dbg: drc_pwd  = ${drc_pwd}\n"
     printf "dbg: drc_rgr  = ${drc_rgr}\n"
+    printf "dbg: drc_xtn  = ${drc_xtn}\n"
     printf "dbg: fml_nm   = ${fml_nm}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
@@ -626,6 +632,7 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
+    printf "dbg: xtn_flg  = ${xtn_flg}\n"
     printf "dbg: yyyy_end = ${yyyy_end}\n"
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
 fi # !dbg
@@ -990,6 +997,28 @@ if [ ${lnk_flg} = 'Yes' ]; then
     cd ${drc_pwd}
 fi # !lnk_flg
     
+if [ -n "${drc_prv}" ]; then
+    for fl in "${drc_prv}"/"${casid}"*ANN_*_climo.nc ; do
+	clm_nbr=0 # [nbr] Number of climatologies in directory
+	if [ -f "${fl}" ]; then
+	    fl_prv_ann=${fl}
+	    let clm_nbr=${clm_nbr}+1
+	fi # !file
+    done
+    echo "Found ${clm_nbr} ANN files in directory ${drc_prv}"
+    if [[ "${fl_prv_ann}" =~ ^(.*)_ANN_([0-9][0-9][0-9][0-9])([01][0-9])_([0-9][0-9][0-9][0-9])([01][0-9])_climo.nc$ ]]; then
+	prv_srt="${BASH_REMATCH[2]}"
+	prv_end="${BASH_REMATCH[4]}"
+    fi # !fl_prv_ann
+    trim_leading_zeros ${prv_srt}
+    prv_srt_rth=${sng_trm}
+    trim_leading_zeros ${prv_end}
+    prv_end_rth=${sng_trm}
+    let prv_drn=${prv_end_rth}-${prv_srt_rth}
+    echo "prv_srt_rth = ${prv_srt_rth}, prv_end_rth = ${prv_end_rth}, prv_drn = ${prv_drn}"
+#    fl_prv[13]="${drc_prv}/${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
+fi # !drc_prv
+
 date_end=$(date +"%s")
 printf "Completed climatology generation for dataset ${caseid} at `date`.\n"
 date_dff=$((date_end-date_srt))
