@@ -1,6 +1,8 @@
 2016-06-16  Charlie Zender  <zender@uci.edu>
 
-	* ncclimo extended climatologies semi-working
+	* Quiet ncpdq INFO messages
+
+	* ncclimo extended climatologies work on native grid
 
 2016-06-15  Charlie Zender  <zender@uci.edu>
 

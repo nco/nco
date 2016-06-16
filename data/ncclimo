@@ -144,7 +144,7 @@ esac # !HOSTNAME
 
 # Extended climo testing:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1981 -i ${DATA}/ne30/raw -o ${DATA}/ne30/prv -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
-# ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1982 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -x ${DATA}/ne30/prv -X ${DATA}/ne30/xtn
+# ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1982 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -x ${DATA}/ne30/prv -X ${DATA}/ne30/xtn -S 1980
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
@@ -321,8 +321,9 @@ thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
 xtn_flg='No' # [sng] Extend previous climatology with current data
-yr_srt='1980' # [yr] Start year
 yr_end='1983' # [yr] End year
+yr_srt='1980' # [yr] Start year
+yr_srt_prv='1980' # [yr] Start year previous climatology
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
@@ -411,7 +412,7 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${spt_nm} ${@}"
-while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:s:t:v:x:X: OPT; do
+while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:x:X: OPT; do
     case ${OPT} in
 	a) clm_md=${OPTARG} ;; # Climatology mode
 	b) bnd_nm=${OPTARG} ;; # Bounds dimension name
@@ -429,6 +430,7 @@ while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:s:t:v:x:X: OPT; do
 	p) par_typ=${OPTARG} ;; # Parallelism type
 	R) rgr_opt=${OPTARG} ;; # Regridding options
 	r) rgr_map=${OPTARG} ;; # Regridding map
+	S) yr_srt_prv=${OPTARG} ;; # Start year previous
 	s) yr_srt=${OPTARG} ;; # Start year
 	t) thr_usr=${OPTARG} ;; # Thread number
 	v) var_lst=${OPTARG} ;; # Variables
@@ -451,6 +453,14 @@ if [ -n "${drc_rgr_usr}" ]; then
 else 
     drc_rgr="${drc_out%/}"
 fi # !drc_rgr_usr
+if [ -n "${drc_prv}" ]; then
+    drc_prv="${drc_prv%/}"
+fi # !drc_prv
+if [ -n "${drc_xtn}" ]; then
+    drc_xtn="${drc_xtn%/}"
+else
+    drc_xtn="${drc_prv}"
+fi # !drc_xtn
 
 # Determine first full year
 trim_leading_zeros ${yr_srt}
@@ -1001,24 +1011,18 @@ if [ ${lnk_flg} = 'Yes' ]; then
     cd ${drc_pwd}
 fi # !lnk_flg
     
-if [ -n "${drc_prv}" ]; then
-    for fl in "${drc_prv}"/"${casid}"*MAM_*_climo.nc ; do
-	clm_nbr=0 # [nbr] Number of climatologies in directory
-	if [ -f "${fl}" ]; then
-	    fl_prv_ann=${fl}
-	    let clm_nbr=${clm_nbr}+1
-	fi # !file
-    done
-    echo "Found ${clm_nbr} MAM files in directory ${drc_prv}"
-    if [[ "${fl_prv_ann}" =~ ^(.*)_MAM_([0-9][0-9][0-9][0-9])([01][0-9])_([0-9][0-9][0-9][0-9])([01][0-9])_climo.nc$ ]]; then
-	yyyy_srt_prv="${BASH_REMATCH[2]}"
-	yyyy_end_prv="${BASH_REMATCH[4]}"
-    fi # !fl_prv_ann
-    trim_leading_zeros ${yyyy_srt_prv}
+if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
+    mkdir -p ${drc_prv}
+    mkdir -p ${drc_xtn}
+
+    trim_leading_zeros ${yr_srt_prv}
     yr_srt_rth_prv=${sng_trm}
+    yyyy_srt_prv=`printf "%04d" ${yr_srt_rth_prv}`
     let yr_srtm1_prv=${yr_srt_rth_prv}-1
-    trim_leading_zeros ${yyyy_end_prv}
+    let yr_end_prv=${yr_srt_rth}-1
+    trim_leading_zeros ${yr_end_prv}
     yr_end_rth_prv=${sng_trm}
+    yyyy_end_prv=`printf "%04d" ${yr_end_rth_prv}`
     let yr_endm1_prv=${yr_end_rth_prv}-1
     let yr_nbr_prv=${yr_end_rth_prv}-${yr_srt_rth_prv}+1
     let yr_nbr_xtn=${yr_end_rth}-${yr_srt_rth_prv}+1
@@ -1043,6 +1047,7 @@ if [ -n "${drc_prv}" ]; then
 	fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec_prv}${MM}_climo.nc"
 	fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec}${MM}_climo.nc"
     fi # !scd
+
     fl_prv[13]="${drc_prv}/${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end_prv}05_climo.nc"
     fl_prv[14]="${drc_prv}/${out_nm}_JJA_${yyyy_srt_prv}06_${yyyy_end_prv}08_climo.nc"
     fl_prv[15]="${drc_prv}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end_prv}11_climo.nc"
@@ -1062,12 +1067,12 @@ if [ -n "${drc_prv}" ]; then
 	fi # !dbg
 	eval ${cmd_xtn[${clm_idx}]}
 	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR monthly climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
+	    printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
 	    exit 1
 	fi # !err
     done # !clm_idx
 
-fi # !drc_prv
+fi # !yr_srt_prv
 
 date_end=$(date +"%s")
 printf "Completed climatology generation for dataset ${caseid} at `date`.\n"
