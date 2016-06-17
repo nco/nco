@@ -1106,6 +1106,8 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
 	fi # !clm_md
     done # !clm_idx
 
+    printf "Weight previous and new native-grid climos to produce extended climo...\n"
+    printf "Weight previous and new regridded climos to produce extended regridded climo...\n"
     for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 	cmd_xtn[${clm_idx}]="ncflint -O -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	cmd_rgr_xtn[${clm_idx}]="ncflint -O -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
