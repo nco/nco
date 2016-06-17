@@ -1088,6 +1088,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--mk_rec_dmn")) (void)fprintf(stdout,"    --mk_rec_dmn dim\tDefine dim as record dimension in output file\n");
   if(strstr(opt_sng,"--mro")) (void)fprintf(stdout,"    --mro\t\tMulti-Record Output\n");
   if(strstr(opt_sng,"[-N]")){
+    if(prg_lcl == ncflint) (void)fprintf(stdout,"-N, --nrm, --normalize\tNormalize input weights so w1:=w1/(w1+w2), w2:=w2/(w1+w2)\n");
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-N, --nmr, --numerator\tNo normalization\n");
     if(prg_lcl == ncra || prg_lcl == ncfe || prg_lcl == ncge) (void)fprintf(stdout,"-N, --no_nrm_by_wgt\tNo normalization by weights\n");
   } /* !-N */

@@ -33,8 +33,7 @@
    ncflint -O -w 0.66666,0.33333 -v lcl_time_hr /data/zender/arese/clm/951030_0800_arese_clm.nc /data/zender/arese/clm/951030_1100_arese_clm.nc ~/foo.nc; ncks -H ~/foo.nc
    ncflint -O -w 0.66666 -v lcl_time_hr /data/zender/arese/clm/951030_0800_arese_clm.nc /data/zender/arese/clm/951030_1100_arese_clm.nc ~/foo.nc; ncks -H ~/foo.nc
 
-   ncdiff -O ~/foo.nc /data/zender/arese/clm/951030_0900_arese_clm.nc foo2.nc;ncks -H foo2.nc | m
- */
+   ncdiff -O ~/foo.nc /data/zender/arese/clm/951030_0900_arese_clm.nc foo2.nc;ncks -H foo2.nc | m */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -104,6 +103,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
   nco_bool MUST_CONFORM=False; /* Must nco_var_cnf_dmn() find truly conforming variables? */
+  nco_bool NRM_WGT=False; /* [flg] Normalize input weights so w1:=w1/(w1+w2), w2:=w2/(w1+w2) */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -137,7 +137,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="3467ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
+  const char * const opt_sht_lst="3467ACcD:d:Fg:G:hi:L:l:NOo:p:rRt:v:X:xw:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -310,6 +310,8 @@ main(int argc,char **argv)
     {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
     {"local",required_argument,0,'l'},
     {"lcl",required_argument,0,'l'},
+    {"nrm",no_argument,0,'N'}, /* [flg] Normalize input weights so w1:=w1/(w1+w2), w2:=w2/(w1+w2) */
+    {"normalize",no_argument,0,'N'}, /* [flg] Normalize input weights so w1:=w1/(w1+w2), w2:=w2/(w1+w2) */
     {"overwrite",no_argument,0,'O'},
     {"ovr",no_argument,0,'O'},
     {"output",required_argument,0,'o'},
@@ -493,6 +495,9 @@ main(int argc,char **argv)
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
+      break;
+    case 'N': /* Toggle NRM_WGT */
+      NRM_WGT=!NRM_WGT;
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -758,6 +763,11 @@ main(int argc,char **argv)
   } /* end if CMD_LN_NTP_VAR */
 
   if(CMD_LN_NTP_WGT){
+    if(NRM_WGT){
+      /* Normalize input weights so w1:=w1/(w1+w2), w2:=w2/(w1+w2) */
+      wgt_val_1=wgt_val_1/(wgt_val_1+wgt_val_2);
+      wgt_val_2=wgt_val_2/(wgt_val_1+wgt_val_2);
+    } /* !NRM_WGT */
     val_gnr_unn.d=wgt_val_1; /* Generic container for arrival point or weight */
     wgt_1=scl_mk_var(val_gnr_unn,NC_DOUBLE);
     val_gnr_unn.d=wgt_val_2; /* Generic container for arrival point or weight */
