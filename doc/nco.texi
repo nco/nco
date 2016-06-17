@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 13 June 2016
+@set update-date 16 June 2016
 @set update-month June 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17155,7 +17155,7 @@ ncflint [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_min sz] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
-[-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] 
+[-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [-N] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
@@ -17205,6 +17205,37 @@ Thus it is possible to specify @math{@var{wgt1} = 2} and
 @math{@var{wgt2} = -3}.
 One can use this functionality to multiply all the values in a given
 file by a constant.
+
+@cindex normalization
+@cindex @code{-N}
+@cindex @code{--nrm}
+@cindex @code{--normalize}
+As of @acronym{NCO} version 4.6.1 (July, 2016), the @samp{-N} switch
+(or long-option equivalents @samp{--nrm} or @samp{--normalize})
+implements a variation of this method. 
+Use of this switch instructs @commands{ncflint} to internally normalize
+the two supplied (or one supplied and one inferred) weights so that
+@set flg
+@tex
+$wgt1 = wgt1 / (wgt1 + wgt2)$ and $wgt2 = wgt2 / (wgt1 + wgt2)$
+@clear flg
+@end tex
+@ifinfo
+@math{@var{wgt1} = @var{wgt1}/(@var{wgt1} + @var{wgt2}} and
+@math{@var{wgt2} = @var{wgt2}/(@var{wgt1} + @var{wgt2}} and
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html does not like @math{}
+@var{wgt1} = @var{wgt1}/(@var{wgt1} + @var{wgt2} and
+@var{wgt2} = @var{wgt2}/(@var{wgt1} + @var{wgt2}
+@clear flg
+@end ifset
+.
+This allows the user to input integral weights, say, and have
+@command{ncflint} do the chore of normalizing them.
+Be careful that @samp{-N} means what you think, since the same
+switch does something quite different in @command{ncwa}.
 
 The second method of using @command{ncflint} is to specify the
 interpolation option @w{with @samp{-i}} (or with the @samp{--ntp} or 
