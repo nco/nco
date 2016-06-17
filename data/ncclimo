@@ -1062,6 +1062,13 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
     fl_xtn[16]="${drc_xtn}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
     fl_xtn[17]="${drc_xtn}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
 
+    # Derive all seventeen regridded and AMWG names from output names
+    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+#	fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
+	fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_prv}}"
+	fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
+    done # !clm_idx
+
     for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 	cmd_xtn[${clm_idx}]="ncflint -O -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
