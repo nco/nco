@@ -298,7 +298,9 @@ drc_out_xmp="${DATA}/ne30/clm" # [sng] Output file directory for examples
 drc_out_mps="${DATA}/mpas/clm" # [sng] Output file directory for MPAS examples
 drc_prv='' # [sng] Directory containing previous climatology to extend with current data
 drc_rgr='' # [sng] Regridded file directory
+drc_rgr_prv='' # [sng] Regridded file directory for previous climatology
 drc_rgr_xmp="${DATA}/ne30/rgr" # [sng] Regrid file directory for examples
+drc_rgr_xtn='' # [sng] Regridded file directory for for extended climatology
 drc_xtn='' # [sng] Directory containing extended climatology
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
 gaa_sng="--gaa climo_script=${spt_nm} --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_version}" # [sng] Global attributes to add
@@ -443,7 +445,7 @@ while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:x:X: OPT; do
 done
 shift $((OPTIND-1)) # Advance one argument
 
-# Derived variable
+# Derived variables
 if [ -n "${drc_out_usr}" ]; then
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
     drc_out="${drc_out_usr%/}"
@@ -461,6 +463,18 @@ if [ -n "${drc_xtn}" ]; then
 else
     drc_xtn="${drc_prv}"
 fi # !drc_xtn
+
+# Doubly-derived variables
+if [ -n "${drc_rgr_prv}" ]; then
+    drc_rgr_prv="${drc_rgr_prv%/}"
+else
+    drc_rgr_prv="${drc_prv%/}"
+fi # !drc_rgr_prv
+if [ -n "${drc_rgr_xtn}" ]; then
+    drc_rgr_xtn="${drc_rgr_xtn%/}"
+else
+    drc_rgr_xtn="${drc_xtn%/}"
+fi # !drc_rgr_xtn
 
 # Determine first full year
 trim_leading_zeros ${yr_srt}
@@ -753,12 +767,12 @@ for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 	    # http://tldp.org/LDP/abs/html/string-manipulation.html
 	    dfl_sfx='rgr'
 	    rgr_sfx=`expr match "${rgr_map}" '.*_to_\(.*\).nc'`
-	    if [ "${#rgr_sfx}" -eq  0 ]; then
+	    if [ "${#rgr_sfx}" -eq 0 ]; then
 		printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
 		rgr_sfx=${dfl_sfx}
 	    else
 		yyyymmdd_sng=`expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)'` # Find YYYYYMMDD
-		if [ "${#yyyymmdd_sng}" -ne  0 ]; then
+		if [ "${#yyyymmdd_sng}" -ne 0 ]; then
 		    rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
 		fi # !strlen
 	    fi # !strlen
@@ -1064,13 +1078,37 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
 
     # Derive all seventeen regridded and AMWG names from output names
     for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-#	fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
+	fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
 	fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_prv}}"
 	fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
+
+	fl_rgr_xtn[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_xtn}}"
+	fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_xtn}}"
+	fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_end}/_${yyyy_end_xtn}}"
+
+	fl_amwg_xtn[${clm_idx}]=`expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
+	fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
+	fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_xtn}\//}" # Delete prepended path to ease symlinking
+	if [ ${clm_md} = 'scd' ] ; then
+	    # Handle Dec, DJF, and ANN
+	    if [ ${clm_idx} -eq 12 ] || [ ${clm_idx} -eq 16 ] || [ ${clm_idx} -eq 17 ] ; then 
+		fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
+		fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_prv}}"
+		if [ ${clm_idx} -eq 12 ] ; then 
+		    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_clm_end_dec}/_${yyyy_clm_end_dec_prv}}"
+		else
+		    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
+		fi # !Dec
+
+		fl_rgr_xtn[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_xtn}}"
+		fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_xtn}}"
+	    fi # !Dec, DJF, ANN
+	fi # !clm_md
     done # !clm_idx
 
     for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 	cmd_xtn[${clm_idx}]="ncflint -O -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
+	cmd_rgr_xtn[${clm_idx}]="ncflint -O -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_xtn[${clm_idx}]}
 	fi # !dbg
@@ -1079,7 +1117,41 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
 	    printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
 	    exit 1
 	fi # !err
+
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_rgr_xtn[${clm_idx}]}
+	fi # !dbg
+	eval ${cmd_rgr_xtn[${clm_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
+	    exit 1
+	fi # !err
     done # !clm_idx
+
+    # Link ACME-climo to AMWG-climo filenames
+    # drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
+    # Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
+    if [ ${lnk_flg} = 'Yes' ]; then
+	printf "Link extended ACME-climo to AMWG-climo filenames...\n"
+	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	    if [ -n "${rgr_map}" ]; then 
+		cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr_xtn};ln -s -f ${fl_rgr_xtn[${clm_idx}]/${drc_rgr_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_rgr_xtn}\//}"
+	    else
+		cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_xtn};ln -s -f ${fl_xtn[${clm_idx}]/${drc_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_xtn}\//}"
+	    fi # !rgr_map
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_lnk_xtn[${clm_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		eval ${cmd_lnk_xtn[${clm_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR linking ACME to AMWG filename cmd_lnk_xtn[${clm_idx}] failed. Debug this:\n${cmd_lnk_xtn[${clm_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	done # !clm_idx
+	cd ${drc_pwd}
+    fi # !lnk_flg
 
 fi # !yr_srt_prv
 
@@ -1087,13 +1159,23 @@ date_end=$(date +"%s")
 printf "Completed climatology generation for dataset ${caseid} at `date`.\n"
 date_dff=$((date_end-date_srt))
 echo "Quick plots of climatological annual mean:"
-if [ -n "${rgr_map}" ]; then 
-    echo "ncview ${fl_rgr[17]} &"
-    echo "panoply ${fl_rgr[17]} &"
+if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
+    if [ -n "${rgr_map}" ]; then 
+	echo "ncview ${fl_rgr_xtn[17]} &"
+	echo "panoply ${fl_rgr_xtn[17]} &"
+    else
+	echo "ncview ${fl_xtn[17]} &"
+	echo "panoply ${fl_xtn[17]} &"
+    fi # !rgr_map    
 else
-    echo "ncview ${fl_out[17]} &"
-    echo "panoply ${fl_out[17]} &"
-fi # !rgr_map    
+    if [ -n "${rgr_map}" ]; then 
+	echo "ncview ${fl_rgr[17]} &"
+	echo "panoply ${fl_rgr[17]} &"
+    else
+	echo "ncview ${fl_out[17]} &"
+	echo "panoply ${fl_out[17]} &"
+    fi # !rgr_map    
+fi # !yr_srt_prv
 echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 
 # PMC: add SMB's Git (SHA1) hash info to climo files

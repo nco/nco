@@ -1,3 +1,7 @@
+2016-06-17  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo extended climatologies work on analysis grid
+
 2016-06-16  Charlie Zender  <zender@uci.edu>
 
 	* Add ncflint -N, --nrm, --normalize option so w1:=w1/(w1+w2), w2:=w2/(w1+w2)
