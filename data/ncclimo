@@ -335,8 +335,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Annual climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm})"
     echo "${fnt_rvr}-b${fnt_nrm} ${fnt_bld}bnd_nm${fnt_nrm}   Bounds dimension name (default ${fnt_bld}${bnd_nm}${fnt_nrm})"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm})"
-    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debugging level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
-    echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   Ending year (default ${fnt_bld}${yr_end}${fnt_nrm})"
+    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
+    echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm})"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm})"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm})"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm})"
@@ -346,12 +346,16 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_rgr${fnt_nrm}  Regridded directory (default ${fnt_bld}${drc_rgr}${fnt_nrm})"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm})"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm})"
-    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regridding map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm})"
-    echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regridding options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm})"
+    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm})"
+    echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm})"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm})"
-    echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Starting year (default ${fnt_bld}${yr_srt}${fnt_nrm})"
+    echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm})"
+    echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_prv${fnt_nrm}   Start year previous climo (default ${fnt_bld}${yr_srt_prv}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
-    echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Xperimental switch (for developers) (default ${fnt_bld}${drc_prv}${fnt_nrm})"
+    echo "${fnt_rvr}-X${fnt_nrm} ${fnt_bld}drc_xtn${fnt_nrm}  Extended climo directory (default ${fnt_bld}${drc_xtn}${fnt_nrm})"
+    echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Previous climo directory (default ${fnt_bld}${drc_prv}${fnt_nrm})"
+    echo "${fnt_rvr}-Y${fnt_nrm} ${fnt_bld}rgr_xtn${fnt_nrm}  Regridded extended climo directory (default ${fnt_bld}${drc_rgr_xtn}${fnt_nrm})"
+    echo "${fnt_rvr}-y${fnt_nrm} ${fnt_bld}rgr_prv${fnt_nrm}  Regridded previous climo directory (default ${fnt_bld}${drc_rgr_prv}${fnt_nrm})"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}\n"
@@ -414,7 +418,7 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${spt_nm} ${@}"
-while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:x:X: OPT; do
+while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y: OPT; do
     case ${OPT} in
 	a) clm_md=${OPTARG} ;; # Climatology mode
 	b) bnd_nm=${OPTARG} ;; # Bounds dimension name
@@ -436,8 +440,10 @@ while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:x:X: OPT; do
 	s) yr_srt=${OPTARG} ;; # Start year
 	t) thr_usr=${OPTARG} ;; # Thread number
 	v) var_lst=${OPTARG} ;; # Variables
-	x) drc_prv=${OPTARG} ;; # Previous climatology directory
-	X) drc_xtn=${OPTARG} ;; # Extended climatology directory
+	X) drc_xtn=${OPTARG} ;; # Extended climo directory
+	x) drc_prv=${OPTARG} ;; # Previous climo directory
+	Y) drc_rgr_xtn=${OPTARG} ;; # Regridded extended climo directory
+	y) drc_rgr_prv=${OPTARG} ;; # Regridded previous climo directory
 	\?) # Unrecognized option
 	    printf "\nERROR: Option ${fnt_bld}-$OPTARG${fnt_nrm} not allowed"
 	    fnc_usg_prn ;;
@@ -457,6 +463,8 @@ else
 fi # !drc_rgr_usr
 if [ -n "${drc_prv}" ]; then
     drc_prv="${drc_prv%/}"
+else
+    drc_prv="${drc_out}"
 fi # !drc_prv
 if [ -n "${drc_xtn}" ]; then
     drc_xtn="${drc_xtn%/}"
@@ -1107,28 +1115,64 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
     done # !clm_idx
 
     printf "Weight previous and new native-grid climos to produce extended climo...\n"
-    printf "Weight previous and new regridded climos to produce extended regridded climo...\n"
     for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	cmd_xtn[${clm_idx}]="ncflint -O -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
-	cmd_rgr_xtn[${clm_idx}]="ncflint -O -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
+	cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_xtn[${clm_idx}]}
 	fi # !dbg
-	eval ${cmd_xtn[${clm_idx}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
-	    exit 1
-	fi # !err
+	if [ ${dbg_lvl} -le 1 ]; then
+	    if [ -z "${par_opt}" ]; then
+		eval ${cmd_xtn[${clm_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
+		    exit 1
+		fi # !err
+	    else # !par_opt
+		eval ${cmd_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+		xtn_pid[${clm_idx}]=$!
+	    fi # !par_opt
+	fi # !dbg
+    done # !clm_idx
+    if [ -n "${par_opt}" ]; then
+	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	    wait ${xtn_pid[${clm_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
+		exit 1
+	    fi # !err
+	done # !clm_idx
+    fi # !par_opt
+    wait
 
+    printf "Weight previous and new regridded climos to produce extended regridded climo...\n"
+    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_rgr_xtn[${clm_idx}]}
 	fi # !dbg
-	eval ${cmd_rgr_xtn[${clm_idx}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
-	    exit 1
-	fi # !err
+	if [ ${dbg_lvl} -le 1 ]; then
+	    if [ -z "${par_opt}" ]; then
+		eval ${cmd_rgr_xtn[${clm_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
+		    exit 1
+		fi # !err
+	    else # !par_opt
+		eval ${cmd_rgr_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+		rgr_xtn_pid[${clm_idx}]=$!
+	    fi # !par_opt
+	fi # !dbg
     done # !clm_idx
+    if [ -n "${par_opt}" ]; then
+	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	    wait ${rgr_xtn_pid[${clm_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
+		exit 1
+	    fi # !err
+	done # !clm_idx
+    fi # !par_opt
+    wait
 
     # Link ACME-climo to AMWG-climo filenames
     # drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths

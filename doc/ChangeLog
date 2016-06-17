@@ -1,5 +1,7 @@
 2016-06-17  Charlie Zender  <zender@uci.edu>
 
+	* Implement all ncclimo extended/previous directories and command-line options
+
 	* ncclimo extended climatologies work on analysis grid
 
 2016-06-16  Charlie Zender  <zender@uci.edu>
