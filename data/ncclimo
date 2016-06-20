@@ -1091,8 +1091,7 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
 	fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
 
 	fl_rgr_xtn[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_xtn}}"
-	fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_xtn}}"
-	fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_end}/_${yyyy_end_xtn}}"
+	fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_prv}}"
 
 	fl_amwg_xtn[${clm_idx}]=`expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
 	fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
@@ -1109,7 +1108,7 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
 		fi # !Dec
 
 		fl_rgr_xtn[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_xtn}}"
-		fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_xtn}}"
+		fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_prv}}"
 	    fi # !Dec, DJF, ANN
 	fi # !clm_md
     done # !clm_idx
