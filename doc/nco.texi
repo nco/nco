@@ -16199,34 +16199,44 @@ ls drc_out/*climo* | ncremap -m map.nc -O drc_rgr
 See @ref{ncremap netCDF Remapper} for more details (including
 @acronym{MPAS}!).  
  
-@cindex incremental climatologies
+@cindex incremental climatologies (climos)
+@cindex extended climatology (climo)
+@cindex previous climatology (climo)
+@cindex current climatology (climo)
 @unnumberedsubsec Incremental Climatologies
 As of @acronym{NCO} version 4.6.2 (released July, 2016),
-@command{ncclimo} supports ``incremental climatologies''.
-An incremental climo is computed as a weighted mean of two
-consecutive shorter climatologies.
+@command{ncclimo} supports generating climatologies incrementally,
+rather as monolithic products generated from the raw monthly data.
+The so-called ``extended climo'' is computed as a weighted mean of two 
+consecutive shorter climatologies, called the ``previous'' and
+``current'' climos.
+The extended climo is computed from the earlier climos, not the original
+monthly input that generated them.
 This permits ongoing simulations (or lengthy observations) to be
 analyzed in shorter segments that are incrementaly combined, instead of 
-requiring all contributing data to be simultaneously available on disk. 
+requiring all raw, native-grid data to be simultaneously accessible.
 
-Without incremental climatology capability, a one-hundred year
-climatology requires that one-hundred years of monthly data are
+Without incremental climatology capability, generating a one-hundred
+year climatology requires that one-hundred years of monthly data be
 available on disk. 
-Disk space requirements for large datasets may make this untenable.
+Disk-space requirements for large datasets may make this untenable.
 The incremental climo feature permits this one-hundred year climo to be
-generated as the weighted mean of, say, the last ten years of monthly
-data (weighted at 10%) combined with the pre-computed climatology of the
-previous 90-years (weighted at 90%).
+generated as the weighted mean of, say, the current ten year climatology
+(weighted at 10%) combined with the climatology of the previous 90-years
+(weighted at 90%). 
 The 90-year climo could itself have been generated incrementally, and so
 on. 
 Climatologies occupy at most 17/(12@var{N}) the amount of space
 of @var{N} years of monthly data, so incremental climatologies
 vastly reduce disk-space requirements.
 
-Specifying (with @samp{-S}) a previous climo start year causes
-@command{ncclimo} to perform the current climo, then perform a weighted
-average of the previous and current climo to form an ``incremental''
+@command{ncclimo} first generates the current climatology from the
+current monthly input files then, if requested (with @samp{-S}), weights 
+that current climo with the previous climo to produce the extended
 climo.   
+The argument to @samp{-S}) is the previous climo start year.
+That, together with the current climo end year, determines the extended
+climo range.
 @command{ncclimo} assumes that the previous climo ends the month before
 the current climo begins.
 Most users will run incremental clmos the same way they run regular climos
@@ -16236,15 +16246,18 @@ will not be found), and if subsetting (i.e., @samp{-v var_lst}) is
 performed, then the subset must remain the same, and if nicknames (i.e.,
 @samp{-f fml_nm}) are employed, then the nickname must remain the same. 
 
-As of 20160620, the @code{climatology_bounds} attributes of the
-incremental climo are incorrect.
+As of 20160621, the @code{climatology_bounds} attributes of the extended
+climo are incorrect. 
 This is a work in progress...
-
-Mandatory argument: @samp{-S @var{yr_srt_prv}} where @var{yr_srt_prv} is
-the starting year of the previous climo. 
 
 Options:
 @table @option
+@cindex @code{-S @var{yr_srt_prv}}
+@cindex @var{yr_srt_prv}
+@item -S @var{yr_srt_prv}
+The starting year of the previous climo. 
+This is the only mandatory argument.
+It is required to trigger incremental climatologies.
 @cindex @code{-x @var{drc_prv}}
 @cindex @var{drc_prv}
 @item -x @var{drc_prv}
@@ -16293,22 +16306,30 @@ due to @acronym{AMWG} filename convention.
 Thus @acronym{AMWG} filename links, if any, point to the latest extended 
 climo in a given directory. 
 
-However, many researchers segregate native-grid from analysis-grid
-climos, or to keep each climo in a separate directory. 
-Incrementing such climos requires up to four additional options to
-specify all the previous and extended climatologies for both native and
-analysis grids.
+Many researchers segregate (with @samp{-O @var{drc_rgr}}) native-grid
+from analysis-grid climos. 
+Incrementally generated climos must be consistent in this regard.
+In other words, all climos contributing to an extended climo must have
+their native-grid and analysis-grid files in the same (per-climo)
+directory, or all climos must segregate their native from their analysis
+grid files.
+Do not segregate the grids in one climo, and combine them in another.
+Such climos cannot be incrementally aggregated.
+Thus incrementing climos can require from zero to four additional
+options that specify all the previous and extended climatologies for
+both native and analysis grids.
 The example below constructs the current climo in @var{crr},
 then combines the weighted average of that with the previous climo in
 @var{prv}, and places the resulting extended climatology in @var{xtn}.
-Here the native and analysis directories are identical for each climo:
+Here the native and analysis climos are combined in one directory per 
+climo:
 @example
 ncclimo -v FSNT,AODVIS -c caseid -s 1980 -e 1981 -i raw -o prv -r map.nc
 ncclimo -v FSNT,AODVIS -c caseid -s 1982 -e 1983 -i raw -o clm -r map.nc \
         -S 1980 -x prv -X xtn
 @end example
-If the native and analysis grid climo directories are themselves
-distinct, then those directories must be specified, too:
+If the native and analysis grid climo directories are segregated, 
+then those directories must be specified, too:
 @example
 ncclimo -v FSNT,AODVIS -c caseid -s 1980 -e 1981 -i raw -o prv -O rgr_prv -r map.nc
 ncclimo -v FSNT,AODVIS -c caseid -s 1982 -e 1983 -i raw -o clm -O rgr -r map.nc \

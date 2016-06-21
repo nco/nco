@@ -303,7 +303,7 @@ drc_rgr_xmp="${DATA}/ne30/rgr" # [sng] Regrid file directory for examples
 drc_rgr_xtn='' # [sng] Regridded file directory for for extended climatology
 drc_xtn='' # [sng] Directory containing extended climatology
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
-gaa_sng="--gaa climo_script=${spt_nm} --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_version}" # [sng] Global attributes to add
+gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_version}" # [sng] Global attributes to add
 hdr_pad='1000' # [B] Pad at end of header section
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ocn')
@@ -523,16 +523,16 @@ fi # !caseid
 if [ "${mdl_typ}" = 'yyyymm' ]; then
     printf "Dataset type is generic with YYYYMM. Filenames constructed as ${bs_nm}_YYYYMM.${bs_sfx}\n"
 else # !mdl_typ
-    printf "Dataset type is not generic.\n"
+    printf "Dataset type is CESM'ish or ACME'ish.  (not generic).\n"
 fi # !mdl_typ
 
-if [ -n "${gaa_sng}" ]; then
+if [ -n "${gaa_sng_std}" ]; then
     if [ "${yr_nbr}" -gt 1 ] ; then
 	yrs_avg_sng="${yr_srt}-${yr_end}"
     else
 	yrs_avg_sng="${yr_srt}"
     fi # !yr_nbr
-    gaa_sng="${gaa_sng} --gaa yrs_averaged=${yrs_avg_sng}"
+    gaa_sng="${gaa_sng_std} --gaa yrs_averaged=${yrs_avg_sng}"
     nco_opt="${nco_opt} ${gaa_sng}"
 fi # !var_lst
 if [ -n "${var_lst}" ]; then
@@ -1051,10 +1051,13 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
     yyyy_clm_srt_dec_prv=${yyyy_srt_prv}
     wgt_prv=$(echo "${yr_nbr_prv}/${yr_nbr_xtn}" | bc -l)
     wgt_crr=$(echo "${yr_nbr}/${yr_nbr_xtn}" | bc -l)
-    printf "Produce extended climatology as weighted average of previous and current climatologies:\n"
+    printf "Incrementally produce extended climatology as weighted average of previous and current climatologies:\n"
     printf "Previous climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}, weight = ${wgt_prv}\n"
     printf "Current  climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
     printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
+    
+    # Replace yr_srt by yr_srt_prv in "yrs_averaged" attribute
+    nco_opt="${nco_opt/${yr_srt}-/${yr_srt_prv}-}"
     
     clm_idx=0
     for mth in {01..12}; do
@@ -1143,36 +1146,38 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
     fi # !par_opt
     wait
 
-    printf "Weight previous and new regridded climos to produce extended regridded climo...\n"
-    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_rgr_xtn[${clm_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    if [ -z "${par_opt}" ]; then
-		eval ${cmd_rgr_xtn[${clm_idx}]}
+    if [ -n "${rgr_map}" ]; then 
+	printf "Weight previous and new regridded climos to produce extended regridded climo...\n"
+	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	    cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_rgr_xtn[${clm_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_rgr_xtn[${clm_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_opt
+		    eval ${cmd_rgr_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+		    rgr_xtn_pid[${clm_idx}]=$!
+		fi # !par_opt
+	    fi # !dbg
+	done # !clm_idx
+	if [ -n "${par_opt}" ]; then
+	    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+		wait ${rgr_xtn_pid[${clm_idx}]}
 		if [ $? -ne 0 ]; then
 		    printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
-	    else # !par_opt
-		eval ${cmd_rgr_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
-		rgr_xtn_pid[${clm_idx}]=$!
-	    fi # !par_opt
-	fi # !dbg
-    done # !clm_idx
-    if [ -n "${par_opt}" ]; then
-	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	    wait ${rgr_xtn_pid[${clm_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
-		exit 1
-	    fi # !err
-	done # !clm_idx
-    fi # !par_opt
-    wait
-
+	    done # !clm_idx
+	fi # !par_opt
+	wait
+    fi # !rgr_map
+    
     # Link ACME-climo to AMWG-climo filenames
     # drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
     # Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd

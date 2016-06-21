@@ -150,7 +150,7 @@ and
 
 <ul>
 <!-- <li>2016 Jul&nbsp;??: 4.6.2 (<i>In progress</i>) -->
-<li>2016 Jun&nbsp;??: 4.6.1 (<i>In progress</i>)
+<li>2016 Jul&nbsp;??: 4.6.1 (<i>In progress</i>)
 <li>2016 May&nbsp;12: 4.6.0 (<tt>ncclimo</tt>)
 <li>2016 Apr&nbsp;20: <a href="http://www.geosci-model-dev-discuss.net/gmd-2016-63">Manuscript</a> on PPC, <i>Geosci. Model Dev. Discuss.</i></li>
 <li>2016 Apr&nbsp;06: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201604.pdf">Poster</a> at NASA ESDSWG, Greenbelt</li>
@@ -618,13 +618,13 @@ You may retrieve the source of tagged versions directly with, e.g.,
 <tt>ncks</tt> prints human-legible ISO8601 dates;
 extensive hashing?;
 netCDF4 compound types?;
+<tt>ncks --xtn</tt> better extensive variable treatment;
 <tt>ncremap</tt> use CF to find coordinates;
 <tt>ncks --xtn</tt> better extensive variable treatment;
 Optimize diskless files?;</li>
 <li><b>NCO 4.6.1</b>: (<i>In Progress, features in-progress or completed include</i>)
-<tt>ncremap</tt> use CF to find coordinates;
-<tt>ncks --xtn</tt> better extensive variable treatment;
-<tt>ncpdq</tt> fix permutation with multiple groups;</li>
+<tt>ncclimo</tt> incremental mode;
+<tt>ncflint -N</tt> normalization;</li>
 <li><b>NCO 4.6.0</b>: 
 <tt>ncap2</tt> LHC metadata propagation;
 <tt>ncatted</tt> nappend mode;
@@ -632,7 +632,9 @@ Optimize diskless files?;</li>
 <tt>ncks</tt> reads ENVI bsq/bip/bil images;
 <tt>ncks</tt> Terraref features;
 <tt>ncks -A</tt> append consistency;
-<tt>ncra --cb</tt> climatology bounds</li>
+<tt>ncpdq</tt> fix permutation with multiple groups;
+<tt>ncra --cb</tt> climatology bounds
+<tt>ncremap</tt> uses CF to find coordinates;
 <tt>ncremap</tt> uses $TMPDIR;</li>
 <li><b>NCO 4.5.5</b>: (<i>Current Stable Release</i>)
 All operators support CDF5 format;
@@ -1091,10 +1093,12 @@ Source documentation for NCO and netCDF4(alpha13)</a></li>
 we recommend that you first try the pre-built binaries for your
 system, e.g.,  
 <tt>
-<dt>sudo aptitude install nco # Debian-based systems like Debian, Mint, Ubuntu</dt>
-<dt>sudo dnf-install nco      # Newer RPM-based systems like CentOS, Fedora, openSUSE, RHEL</dt>
-<dt>sudo yum-install nco      # Older RPM-based systems like CentOS, Fedora, openSUSE, RHEL</dt>
-<dt>sudo port install nco     # MacPorts (after installing MacPorts on Mac OS X)</dt>
+<dt>brew install homebrew/science/nco # Mac (after installing Homebrew)</dt>
+<dt>conda install -c conda-forge nco # Any Linux or Mac (after installing Anaconda)</dt>
+<dt>sudo aptitude install nco # Debian-based Linux systems like Debian, Mint, Ubuntu</dt>
+<dt>sudo dnf-install nco      # Newer RPM-based Linux systems like CentOS, Fedora, openSUSE, RHEL</dt>
+<dt>sudo yum-install nco      # Older RPM-based Linux systems like CentOS, Fedora, openSUSE, RHEL</dt>
+<dt>sudo port install nco     # Mac (after installing MacPorts on Mac OS X)</dt>
 </tt>
 If pre-built executables do not satisfy you (e.g., are out-of-date)
 and you want the latest, greatest features, then the first steps to

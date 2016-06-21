@@ -1,8 +1,14 @@
-2016-06-20  Charlie Zender  <zender@uci.edu>
+2016-06-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.1-alpha02 final changes';git push
-	git tag -a 4.6.1-alpha02 -m 'Version 4.6.1-alpha02 new features: ncclimo extended mode';git push --tags
+	git tag -a 4.6.1-alpha02 -m 'Version 4.6.1-alpha02 new features: ncclimo incremental mode, ncflint -N';git push --tags
+
+	* Fix yrs_averaged attributes of incremental climos
+
+	* Fix incremental generation on analysis grid
+
+2016-06-20  Charlie Zender  <zender@uci.edu>
 
 	* Correct filenames for fl_rgr_xtn that contain December
 
