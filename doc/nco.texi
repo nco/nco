@@ -118,11 +118,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.1-alpha01
-@set doc-edition 4.6.1-alpha01
+@set nco-edition 4.6.1-alpha02
+@set doc-edition 4.6.1-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 16 June 2016
+@set update-date 20 June 2016
 @set update-month June 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16199,8 +16199,124 @@ ls drc_out/*climo* | ncremap -m map.nc -O drc_rgr
 See @ref{ncremap netCDF Remapper} for more details (including
 @acronym{MPAS}!).  
  
+@cindex incremental climatologies
+@unnumberedsubsec Incremental Climatologies
+As of @acronym{NCO} version 4.6.2 (released July, 2016),
+@command{ncclimo} supports ``incremental climatologies''.
+An incremental climo is computed as a weighted mean of two
+consecutive shorter climatologies.
+This permits ongoing simulations (or lengthy observations) to be
+analyzed in shorter segments that are incrementaly combined, instead of 
+requiring all contributing data to be simultaneously available on disk. 
+
+Without incremental climatology capability, a one-hundred year
+climatology requires that one-hundred years of monthly data are
+available on disk. 
+Disk space requirements for large datasets may make this untenable.
+The incremental climo feature permits this one-hundred year climo to be
+generated as the weighted mean of, say, the last ten years of monthly
+data (weighted at 10%) combined with the pre-computed climatology of the
+previous 90-years (weighted at 90%).
+The 90-year climo could itself have been generated incrementally, and so
+on. 
+Climatologies occupy at most 17/(12@var{N}) the amount of space
+of @var{N} years of monthly data, so incremental climatologies
+vastly reduce disk-space requirements.
+
+Specifying (with @samp{-S}) a previous climo start year causes
+@command{ncclimo} to perform the current climo, then perform a weighted
+average of the previous and current climo to form an ``incremental''
+climo.   
+@command{ncclimo} assumes that the previous climo ends the month before
+the current climo begins.
+Most users will run incremental clmos the same way they run regular climos
+in terms of parallelism and regridding, although that is not required.  
+Both climos must treat Decembers same way (or else previous climo files
+will not be found), and if subsetting (i.e., @samp{-v var_lst}) is
+performed, then the subset must remain the same, and if nicknames (i.e.,
+@samp{-f fml_nm}) are employed, then the nickname must remain the same. 
+
+As of 20160620, the @code{climatology_bounds} attributes of the
+incremental climo are incorrect.
+This is a work in progress...
+
+Mandatory argument: @samp{-S @var{yr_srt_prv}} where @var{yr_srt_prv} is
+the starting year of the previous climo. 
+
+Options:
+@table @option
+@cindex @code{-x @var{drc_prv}}
+@cindex @var{drc_prv}
+@item -x @var{drc_prv}
+Directory in which the previous native grid climo files reside for an
+incremental climatology. 
+Default value is @var{drc_out}. 
+Unless a separate directory is specified (with @samp{-y}) for the
+previous climo on the analysis grid, it is assumed to reside in
+@var{drc_prv}, too. 
+@cindex @code{-X @var{drc_xtn}}
+@cindex @var{drc_xtn}
+@item -X @var{drc_xtn}
+Directory in which the extended native grid climo files will be stored
+for an incremental climatology.
+Default value is @var{drc_prv}. 
+Unless a separate directory is specified (with @samp{-Y}) for the
+extended climo on the analysis grid, it will be stored in @var{drc_xtn},
+too.  
+@cindex @code{-y @var{drc_rgr_prv}}
+@cindex @var{drc_rgr_prv}
+@item -y @var{drc_rgr_prv}
+Directory in which the previous climo on the analysis grid resides in an
+incremental climatology. 
+Default value is @var{drc_prv}.
+@cindex @code{-Y @var{drc_rgr_xtn}}
+@cindex @var{drc_rgr_xtn}
+@item -Y @var{drc_rgr_xtn}
+Directory in which the extended analysis grid climo files will be
+stored in an incremental climatology. 
+Default value is @var{drc_xtn}.
+@end table
+@noindent
+
+Incremental climatologies can be as simple as providing a start year for
+the previous climo, e.g., 
+@example
+ncclimo -v FSNT,AODVIS -c caseid -s 1980 -e 1981 -i raw -o clm -r map.nc
+ncclimo -v FSNT,AODVIS -c caseid -s 1982 -e 1983 -i raw -o clm -r map.nc -S 1980
+@end example
+By default @command{ncclimo} stores all native and analysis grid climos
+in one directory so the above ``just works''.
+There are no namespace clashes because all climos are for distinct
+years, and regridded files have a suffix based on their grid resolution.  
+However, there can be only one set of @acronym{AMWG} filename links
+due to @acronym{AMWG} filename convention.
+Thus @acronym{AMWG} filename links, if any, point to the latest extended 
+climo in a given directory. 
+
+However, many researchers segregate native-grid from analysis-grid
+climos, or to keep each climo in a separate directory. 
+Incrementing such climos requires up to four additional options to
+specify all the previous and extended climatologies for both native and
+analysis grids.
+The example below constructs the current climo in @var{crr},
+then combines the weighted average of that with the previous climo in
+@var{prv}, and places the resulting extended climatology in @var{xtn}.
+Here the native and analysis directories are identical for each climo:
+@example
+ncclimo -v FSNT,AODVIS -c caseid -s 1980 -e 1981 -i raw -o prv -r map.nc
+ncclimo -v FSNT,AODVIS -c caseid -s 1982 -e 1983 -i raw -o clm -r map.nc \
+        -S 1980 -x prv -X xtn
+@end example
+If the native and analysis grid climo directories are themselves
+distinct, then those directories must be specified, too:
+@example
+ncclimo -v FSNT,AODVIS -c caseid -s 1980 -e 1981 -i raw -o prv -O rgr_prv -r map.nc
+ncclimo -v FSNT,AODVIS -c caseid -s 1982 -e 1983 -i raw -o clm -O rgr -r map.nc \
+        -S 1980 -x prv -X xtn -y rgr_prv -Y rgr_xtn
+@end example
+
 @unnumberedsubsec Coupled Runs
-@command{ncclimo} works on all @acronym{ACME} models. 
+@command{ncclimo} works on all @acronym{ACME} and @acronym{CESM} models. 
 It can simultaneously generate climatologies for a coupled run, where
 climatologies mean both native and regridded monthly, seasonal, and
 annual averages as per @acronym{ACME} specifications (which mandate

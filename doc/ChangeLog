@@ -1,5 +1,9 @@
 2016-06-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.1-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.1-alpha02 final changes';git push
+	git tag -a 4.6.1-alpha02 -m 'Version 4.6.1-alpha02 new features: ncclimo extended mode';git push --tags
+
 	* Correct filenames for fl_rgr_xtn that contain December
 
 2016-06-17  Charlie Zender  <zender@uci.edu>
