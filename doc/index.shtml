@@ -119,7 +119,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 </td>
 
 The NCO toolkit manipulates and analyzes data stored in
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>-accessible
+<a href="http://www.unidata.ucar.edu/netcdf">netCDF</a>-accessible
 formats, including 
 <a href="http://opendap.org">DAP</a>,
 <a href="http://hdfgroup.org/products/hdf4">HDF4</a>, and 
@@ -181,7 +181,7 @@ and
 <h2>What is NCO?</h2>
 <p>The netCDF Operators (NCO) comprise about a dozen standalone,
 command-line programs that take 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>,
+<a href="http://www.unidata.ucar.edu/netcdf">netCDF</a>,
 <a href="http://hdfgroup.org">HDF</a>, and/or
 <a href="http://opendap.org">DAP</a>
 files as input, then operate (e.g., derive new data, compute
@@ -243,7 +243,7 @@ many non-linear statistics as well, e.g., total, minimum, RMS.
 Moreover, <tt>ncap2</tt> implements a powerful domain language which
 handles arbitrarily complex algebra, calculus, and statistics (using GSL).
 The operators are as general as 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
+<a href="http://www.unidata.ucar.edu/netcdf">netCDF</a>
 itself: there are no restrictions on the contents of input file(s).
 NCO's internal routines are completely dynamic and impose no limit on
 the number or sizes of dimensions, variables, and files.
@@ -1106,7 +1106,7 @@ build (i.e., compile, for the most part) NCO from source code are to
 install the pre-requisites:
 <a href="http://www.antlr.org">ANTLR</a> version 2.7.7 (like <a href="http://dust.ess.uci.edu/nco/antlr-2.7.7.tar.gz">this one</a> <i>not</i> version 3.x or 4.x!) (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
+<a href="http://www.unidata.ucar.edu/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations).
 If possible, install this software stack from pre-built binaries 
@@ -1617,7 +1617,7 @@ community.
 [<a href="http://cfconventions.org/1.6.html">CF</a>] 
 [<a href="https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group">DIWG</a>] 
 [<a href="http://www.gnu.org/software/gsl">GSL</a>] 
-[<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
+[<a href="http://www.unidata.ucar.edu/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://github.com/nco/swamp">SWAMP</a>]
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
