@@ -142,7 +142,7 @@ esac # !HOSTNAME
 # ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 -i /lustre/atlas1/cli115/world-shared/mbranst/B1850C5e1_ne30/atm/hist -o ${DATA}/ne30/clm
 
-# Extended climo testing:
+# Incremental climo testing:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1981 -i ${DATA}/ne30/raw -o ${DATA}/ne30/prv -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1982 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -x ${DATA}/ne30/prv -X ${DATA}/ne30/xtn -S 1980
 
@@ -1033,6 +1033,7 @@ if [ ${lnk_flg} = 'Yes' ]; then
     cd ${drc_pwd}
 fi # !lnk_flg
     
+# Incremental climos
 if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
     mkdir -p ${drc_prv}
     mkdir -p ${drc_xtn}
@@ -1203,7 +1204,7 @@ if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
 	cd ${drc_pwd}
     fi # !lnk_flg
 
-fi # !yr_srt_prv
+fi # !yr_srt_prv incremental climos
 
 date_end=$(date +"%s")
 printf "Completed climatology generation for dataset ${caseid} at `date`.\n"
