@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 20 June 2016
+@set update-date 28 June 2016
 @set update-month June 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -15334,18 +15334,34 @@ value attributes to each numeric type, as in the third example.
 @cindex @acronym{IEEE} NaN
 @cindex Not-a-Number
 @acronym{NCO} arithmetic operators may not work as expected on
-@acronym{IEEE} NaN (short for Not-a-Number) and NaN-like numbers such as
+@acronym{IEEE} NaN (short for Not-a-Number) and NaN-like numbers such as 
 positive infinity and negative infinity
-@footnote{Arithmetic comparisons to NaN and NaN-like numbers always
+@footnote{NaN is a special floating point value (not a string).
+Arithmetic comparisons to NaN and NaN-like numbers always
 return False, contrary to the behavior of all other numbers.
-This is difficult to inuit, yet is the behavior defined for NaN by
-@w{@acronym{IEEE} 754}.
-Although using NaN for the missing value in datasets is legal, 
-we strongly discourage it.}. 
+This behavior is difficult to intuit, yet @w{@acronym{IEEE} 754}
+mandates it.  
+To correctly handle NaNs during arithmetic, code must use special 
+math library macros (e.g., @command{isnormal()}) to determine whether
+any operand is special. 
+If so, additional special logic must handle the arithmetic.
+This is in addition to the normal handling incurred to correctly handle
+missing values. 
+Handling field and missing values (either or both of which may be NaN)
+in binary operators thus incurs four-to-eight extra code paths.
+Each code path slows down arithmetic relative to normal numbers.
+This makes supporting NaN arithmetic costly and inefficient.
+Hence @acronym{NCO} supports NaN only to the extent necessary to replace
+it with a normal number.
+Although using NaN for the missing value (or any value) in datasets is
+legal in netCDF, we strongly discourage it.
+We recommend avoiding NaN entirely.}. 
 One way to work-around this problem is to change @acronym{IEEE} NaNs to
 normal missing values. 
 As of @acronym{NCO} 4.1.0 (March, 2012), @command{ncatted} works with
-NaNs.
+NaNs (though none of the arithmetic operators do).
+This limited support enables users to change NaN to a normal number
+before performing arithmetic or propagating a NaN-tainted dataset.
 First set the missing value (i.e., the value of the @code{_FillValue}
 attribute) for the variable(s) in question to the @acronym{IEEE} NaN
 value.  
