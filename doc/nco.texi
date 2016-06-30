@@ -11471,12 +11471,19 @@ arithmetic expression:
 time_avg=time.total() / $time.size;
 @end example
 
+
 Increase the size of a new variable by one and set new member to zero:
 @example
 defdim("cnt_new",$cnt.size+1);
 new_var[$cnt_new]=0.0;
 new_var(0:($cnt_new.size-2))=old_var;
 @end example
+
+To define an unlimited dimension simply set the size to zero
+@example
+defdim("time2",0)
+@end example
+
 
 @noindent @strong{Dimension Abbreviations @*}
 It is possible to use dimension abbreviations as method arguments:@*
