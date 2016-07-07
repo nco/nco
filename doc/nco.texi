@@ -122,8 +122,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 28 June 2016
-@set update-month June 2016
+@set update-date 6 July 2016
+@set update-month July 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -20906,8 +20906,10 @@ ncks -v /g1/lon ~/foo.nc # Shows units and new_units are both gone
 
 Clearly, renaming dimensions in netCDF4 files is non-trivial.
 The latest chapter in this saga is a netCDF4 bug discovered in
-September, 2015, and present in version 4.3.3.1 (and possibly earlier
-versions too).  
+September, 2015, and present in versions 4.3.3.1 (and possibly earlier 
+versions too) and later.
+As of this writing (July, 2016) the bug has not been fixed and is
+still present in netCDF4 version 4.4.1.
 This bug causes @command{ncrename} to create corrupted output files
 when attempting to rename two dimensions simultaneously.
 The workaround is to rename the dimensions sequentially, in two separate  
