@@ -1950,8 +1950,8 @@ nco_glb_att_add /* [fnc] Add global attributes */
       att_lst=nco_lst_prs_2D(kvm.key,",",&att_nbr);
       for(att_idx=0;att_idx<att_nbr;att_idx++){ /* Expand multi-attribute-name specification */
         gaa_lst[gaa_nbr].key=strdup(att_lst[att_idx]);
-	/* 20160324: fxm: can next line break when kvm.val is NULL? */
-	gaa_lst[gaa_nbr].val=strdup(kvm.val);
+	/* 20160714: Allow for empty arguments by only using strdup() on non-NULL pointers */
+	gaa_lst[gaa_nbr].val= kvm.val ? strdup(kvm.val) : NULL;
         gaa_nbr++;
       } /* end for */
       att_lst=nco_sng_lst_free(att_lst,att_nbr);
