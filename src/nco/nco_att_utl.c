@@ -1944,7 +1944,7 @@ nco_glb_att_add /* [fnc] Add global attributes */
     /* nco_sng2kvm() converts argument "--gaa one,two=3" into kvm.key="one,two" and kvm.val=3
        Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
     if(kvm.key){
-      int att_idx; /* [idx] Index over qattribute names in current GAA argument */
+      int att_idx; /* [idx] Index over attribute names in current GAA argument */
       int att_nbr; /* [nbr] Number of attribute names in current GAA argument */
       char **att_lst;
       att_lst=nco_lst_prs_2D(kvm.key,",",&att_nbr);
