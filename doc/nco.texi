@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 14 July 2016
+@set update-date 15 July 2016
 @set update-month July 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7619,7 +7619,13 @@ Explicitly specify chunksizes for particular dimensions with
 Mnemonic: @emph{R}ecord @emph{D}imension size @emph{1}@*
 @item Chunksize Equals Scalar Size Specified
 Definition: Chunksize for all dimensions is set with the
-@samp{--cnk_scl} option.@* 
+@samp{--cnk_scl} option.
+Note that for this map @var{cnk_scl} itself becomes the chunksize of
+each dimension. 
+This is in contrast to the @var{cnk_prd} map, where the @var{r}th root
+of @var{cnk_scl}) becomes the chunksize of each dimension.@* 
+@var{cnk_map} key values: @samp{scl}, @samp{cnk_scl}, @samp{map_scl}@*
+Mnemonic: @emph{SC}a@emph{L}ar@*
 @var{cnk_map} key values: @samp{xpl}, @samp{cnk_xpl}, @samp{map_xpl}@*
 Mnemonic: E@emph{XPL}icitly specified dimensions@*
 @item Chunksize Product Matches Scalar Size Specified
@@ -7629,7 +7635,9 @@ matches (approximately equals) the size specified with the
 A dimension of size one is said to be @emph{degenerate}.
 For a variable of rank @var{R} (i.e., with @var{R} non-degenerate
 dimensions), the chunksize in each non-degenerate dimension is the
-@var{R}th root of @var{cnk_scl}.@*
+@var{R}th root of @var{cnk_scl}.
+This is in contrast to the @var{cnk_scl} map, where @var{cnk_scl} itself
+becomes the chunksize of each dimension.@* 
 @var{cnk_map} key values: @samp{prd}, @samp{cnk_prd}, @samp{map_prd}@*
 Mnemonic: @emph{PR}o@emph{D}uct@*
 @item Chunksize Lefter Product Matches Scalar Size Specified
