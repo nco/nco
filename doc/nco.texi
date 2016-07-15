@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 12 July 2016
+@set update-date 14 July 2016
 @set update-month July 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -8238,7 +8238,7 @@ in the least significant digit.
 @html
 <p><b>Note for HTML users</b>: 
 <br>The definition of error metrics relies heavily on mathematical
-expressions which cannot easily be represented in HTML.  
+expressions that cannot easily be represented in HTML.  
 <b>See the <a href="./nco.pdf">printed manual</a> for much more detailed
 and complete documentation of this subject.</b>
 @end html
