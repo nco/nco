@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 15 July 2016
+@set update-date 17 July 2016
 @set update-month July 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7578,7 +7578,7 @@ is called the @dfn{chunking map}.
 The user specifies the desired chunking map with the @samp{-M} switch
 (or its long option equivalents, @samp{--cnk_map} and
 @samp{--chunk_map}) and its @var{cnk_map} argument.
-Eight chunking maps are currently implemented:@*
+Nine chunking maps are currently implemented:@*
 @cindex @samp{dmn}
 @cindex @samp{scl}
 @cindex @samp{prd}
@@ -7587,6 +7587,7 @@ Eight chunking maps are currently implemented:@*
 @cindex @samp{xst}
 @cindex @samp{rew}
 @cindex @samp{nc4}
+@cindex @samp{nco}
 @cindex @samp{cnk_dmn}
 @cindex @samp{cnk_scl}
 @cindex @samp{cnk_prd}
@@ -7595,6 +7596,7 @@ Eight chunking maps are currently implemented:@*
 @cindex @samp{cnk_xst}
 @cindex @samp{cnk_rew}
 @cindex @samp{cnk_nc4}
+@cindex @samp{cnk_nco}
 @cindex @samp{map_dmn}
 @cindex @samp{map_scl}
 @cindex @samp{map_prd}
@@ -7603,6 +7605,7 @@ Eight chunking maps are currently implemented:@*
 @cindex @samp{map_xst}
 @cindex @samp{map_rew}
 @cindex @samp{map_nc4}
+@cindex @samp{map_nco}
 @cindex Chris Barker
 @table @dfn
 @item Chunksize Equals Dimension Size

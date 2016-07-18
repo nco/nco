@@ -1,3 +1,7 @@
+2016-07-17  Charlie Zender  <zender@uci.edu>
+
+	* Address some chunking documentation/implementation inconsistencies noted by Antonio Rodriges
+
 2016-07-14  Charlie Zender  <zender@uci.edu>
 
 	* Avoid segfault when --gaa key= does not have RHS argument, so val=NULL

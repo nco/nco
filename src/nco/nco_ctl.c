@@ -1028,7 +1028,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--cb")) (void)fprintf(stdout,"    --cb, --clm_bnd\tCF Climatology bounds will be processed (see also --c2b)\n");
   if(strstr(opt_sng,"--cdl")) (void)fprintf(stdout,"    --cdl\t\tPrint CDL (netCDF lingua franca used by ncdump/ncgen)\n");
   if(strstr(opt_sng,"--cnk_dmn")) (void)fprintf(stdout,"    --cnk_dmn, --chunk_dimension nm,sz\tChunksize of dimension nm is sz\n");
-  if(strstr(opt_sng,"--cnk_map")) (void)fprintf(stdout,"    --cnk_map, --chunk_map map\t\tChunking map [dmn,lfp,prd,rd1,rew,scl,xpl,xst]\n");
+  if(strstr(opt_sng,"--cnk_map")) (void)fprintf(stdout,"    --cnk_map, --chunk_map map\t\tChunking map [dmn,lfp,nc4,nco,prd,rd1,rew,scl,xpl,xst]\n");
   if(strstr(opt_sng,"--cnk_min")) (void)fprintf(stdout,"    --cnk_min, --chunk_min min\t\tMinimum size [B] of variable to chunk\n");
   if(strstr(opt_sng,"--cnk_plc")) (void)fprintf(stdout,"    --cnk_plc, --chunk_policy plc\tChunking policy [all,g2d,g3d,xpl,xst,uck]\n");
   if(strstr(opt_sng,"--cnk_scl")) (void)fprintf(stdout,"    --cnk_scl, --chunk_scalar sz\tChunksize scalar (for all dimensions)\n");

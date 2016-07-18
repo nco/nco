@@ -349,24 +349,34 @@ nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
 
   if(!strcmp(nco_cnk_map_sng,"nil")) return nco_cnk_map_nil;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_nil")) return nco_cnk_map_nil;
+  if(!strcmp(nco_cnk_map_sng,"map_nil")) return nco_cnk_map_nil;
   if(!strcmp(nco_cnk_map_sng,"dmn")) return nco_cnk_map_dmn;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_dmn")) return nco_cnk_map_dmn;
+  if(!strcmp(nco_cnk_map_sng,"map_dmn")) return nco_cnk_map_dmn;
   if(!strcmp(nco_cnk_map_sng,"rd1")) return nco_cnk_map_rd1;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_rd1")) return nco_cnk_map_rd1;
+  if(!strcmp(nco_cnk_map_sng,"map_rd1")) return nco_cnk_map_rd1;
   if(!strcmp(nco_cnk_map_sng,"scl")) return nco_cnk_map_scl;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_scl")) return nco_cnk_map_scl;
+  if(!strcmp(nco_cnk_map_sng,"map_scl")) return nco_cnk_map_scl;
   if(!strcmp(nco_cnk_map_sng,"prd")) return nco_cnk_map_prd;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_prd")) return nco_cnk_map_prd;
+  if(!strcmp(nco_cnk_map_sng,"map_prd")) return nco_cnk_map_prd;
   if(!strcmp(nco_cnk_map_sng,"lfp")) return nco_cnk_map_lfp;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_lfp")) return nco_cnk_map_lfp;
+  if(!strcmp(nco_cnk_map_sng,"map_lfp")) return nco_cnk_map_lfp;
   if(!strcmp(nco_cnk_map_sng,"xst")) return nco_cnk_map_xst;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_xst")) return nco_cnk_map_xst;
+  if(!strcmp(nco_cnk_map_sng,"map_xst")) return nco_cnk_map_xst;
   if(!strcmp(nco_cnk_map_sng,"rew")) return nco_cnk_map_rew;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_rew")) return nco_cnk_map_rew;
+  if(!strcmp(nco_cnk_map_sng,"map_rew")) return nco_cnk_map_rew;
   if(!strcmp(nco_cnk_map_sng,"nc4")) return nco_cnk_map_nc4;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_nc4")) return nco_cnk_map_nc4;
+  if(!strcmp(nco_cnk_map_sng,"map_nc4")) return nco_cnk_map_nc4;
   if(!strcmp(nco_cnk_map_sng,"nco")) return nco_cnk_map_nco;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_nco")) return nco_cnk_map_nco;
+  if(!strcmp(nco_cnk_map_sng,"map_nco")) return nco_cnk_map_nco;
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified chunking map %s\n",nco_prg_nm_get(),fnc_nm,nco_cnk_map_sng);
   nco_exit(EXIT_FAILURE);
