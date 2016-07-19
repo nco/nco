@@ -1,3 +1,7 @@
+2016-07-19  Charlie Zender  <zender@uci.edu>
+
+	* Accept, e.g., map_rew as well as rew and cnk_map_rew-style options
+
 2016-07-17  Charlie Zender  <zender@uci.edu>
 
 	* Address some chunking documentation/implementation inconsistencies noted by Antonio Rodriges

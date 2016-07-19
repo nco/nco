@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 17 July 2016
+@set update-date 19 July 2016
 @set update-month July 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6505,9 +6505,9 @@ The first example uses the default conservative algorithm.
 The second example specifies that valid values must cover at least 10%
 of the destination gridcell to meet the threshold for a non-missing
 destination value. 
-For a valid destination area of, say 25%, the renormalized algorithm
-produces a destination value four-times greater than the conservative
-algorithm.
+With valid destination areas of, say 25% or 50%, the renormalized
+algorithm would produce destination values greater than the conservative
+algorithm by factors of four or two, respectively.
 
 In practice, it may make sense to use the default ``conservative''
 algorithm when performing conservative regridding, and the

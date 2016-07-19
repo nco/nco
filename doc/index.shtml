@@ -83,7 +83,7 @@ Current stable NCO version is 4.6.0 released <!--#flastmod file="src/nco-4.6.0.t
 <li><a href="#prp_sei">NCO&rarr;SDO Project</a></li>
 <li><a href="#Publications">Publications</a></li>
 <li><a href="#Highlights">Release Highlights</a></li>
-<li><a href="#Binaries">Binaries</a></li>
+<li><a href="#Executables">Executables</a></li>
 <li><a href="#RTFM">Documentation</a></li>
 <li><a href="#FAQ">FAQ</a></li>
 <li><a href="#Support">Help/Support/Contacts</a></li>
@@ -721,8 +721,12 @@ Correctly parse MS Windows volume names like <tt>C:\foo</tt></li>
 <!-- http://nco.sf.net#bnr -->
 <!-- http://nco.sf.net#binaries -->
 <!-- http://nco.sf.net#Binaries -->
+<!-- http://nco.sf.net#exe -->
+<!-- http://nco.sf.net#executables -->
+<!-- http://nco.sf.net#Executables -->
 <dt><a name="Binaries"></a><a name="bnr"><a name="binaries"></a></dt>
-<h2>Get NCO Binary Executables</h2>
+<dt><a name="Executables"></a><a name="exe"><a name="executables"></a></dt>
+<h2>Pre-built Executables</h2>
 
 <p>Pre-built binary executables are available for many platforms.
 Our source tarballs are always up-to-date, and work on our
@@ -733,7 +737,7 @@ Below are one-line installation instructions and links to these and to
 packages for other platforms created by volunteers.
 Anyone willing to perform regular regression testing and porting 
 of NCO to other platforms is welcome.  
-Previous versions of these binaries are still available by searching
+Previous versions of these executables are still available by searching
 the directory index <a href="src">here</a>.
 
 <a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
@@ -828,7 +832,7 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
 cd ~/bin;tar cvzf ${DATA}/nco-4.6.0.macosx.10.11.tar.gz nc*;scp ${DATA}/nco-4.6.0.macosx.10.11.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
+The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
 <li><a href="src/nco-4.6.0.macosx.10.11.tar.gz">nco-4.6.0.macosx.10.11.tar.gz</a> (<!--#fsize file="src/nco-4.6.0.macosx.10.11.tar.gz"-->): Executables MacOSX 10.11-compatible (last updated <!--#flastmod file="src/nco-4.6.0.macosx.10.11.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
@@ -1090,7 +1094,7 @@ Source documentation for NCO and netCDF4(alpha13)</a></li>
 
 <a name="bld_rqr"></a> <!-- http://nco.sf.net#bld_rqr -->
 <li>Although building NCO yourself can be easy, sexy, and lucrative,
-we recommend that you first try the pre-built binaries for your
+we recommend that you first try the pre-built executables for your
 system, e.g.,  
 <tt>
 <dt>brew install homebrew/science/nco # Mac (after installing Homebrew)</dt>
@@ -1109,9 +1113,9 @@ install the pre-requisites:
 <a href="http://www.unidata.ucar.edu/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations).
-If possible, install this software stack from pre-built binaries 
+If possible, install this software stack from pre-built executables 
 (commands to do so on Debian, Mac, and RPM systems follow below).
-ANTLR binaries from major distributions are pre-built with the source
+ANTLR executables from major distributions are pre-built with the source
 patch necessary to allow NCO to link to ANTLR.
 If you must build the source stack yourself (e.g., due to lack of root
 access, or systems without packages such as AIX), build all libraries

@@ -22,7 +22,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   att_sct *att=NULL_CEWI;
 
-  const char fnc_nm[]="nco_prn_att()"; /* [sng] Function name  */
+  //  const char fnc_nm[]="nco_prn_att()"; /* [sng] Function name  */
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *nm_cdl;
@@ -149,6 +149,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 && NC_LIB_VERSION >= 441){
 	    /* 20160514: nc_inq_att() for "_NCProperties" returns type==NC_NAT or random integer, and att_sz is random for files without _NCProperties */
 	    /* 20160514: nc_inq_att() for "_IsNetcdf4" returns random type and size too */
+	    /* 20160719: Above issues were fixed in netCDF 4.4.1 final release */
 	    strcpy(att_nm,"_NCProperties");
 	    rcd=nco_inq_att_flg(grp_id,var_id,att_nm,&att_typ,&att_sz);
 	    if(rcd == NC_NOERR){
@@ -156,7 +157,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	      att[idx].nm=(char *)strdup(att_nm);
 	      att[idx].type=att_typ;
-	      //if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
 	      att[idx].sz=att_sz;
 	      att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 	      rcd=nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
@@ -168,7 +168,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      idx=att_nbr_ttl++;
 	      att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	      att[idx].nm=(char *)strdup(att_nm);
-	      //if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
 	      att[idx].type=att_typ;
 	      att[idx].sz=att_sz;
 	      att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
@@ -181,7 +180,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      idx=att_nbr_ttl++;
 	      att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	      att[idx].nm=(char *)strdup(att_nm);
-	      //if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"INFO: %s reports att_typ = %d, att_sz = %ld\n",fnc_nm,att_typ,att_sz);
 	      att[idx].type=att_typ;
 	      att[idx].sz=att_sz;
 	      att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
