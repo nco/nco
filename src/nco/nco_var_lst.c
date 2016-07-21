@@ -749,8 +749,6 @@ nco_var_lst_convert /* [fnc] Make variable structure list from variable name ID 
 
 } /* end nco_var_lst_convert() */
 
-
-
 int /* O [enm] Return code */
 nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
 (var_sct *** var_1_ptr, /* I/O [sct] Variable list 1 */
@@ -1227,13 +1225,9 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
       var_op_typ=fix_typ;
 
   if(CNV_CCM_CCSM_CF){
-
-    nco_bool var_is_fix;  /* [fnc] Variable should be treated as a fixed variable */
-
+    nco_bool var_is_fix;  /* [fnc] Treat variable as a fixed variable */
     var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc);  
-
-    if (var_is_fix) var_op_typ=fix_typ;
-
+    if(var_is_fix) var_op_typ=fix_typ;
   } /* end if CNV_CCM_CCSM_CF */
 
   /* Warn about any expected weird behavior */
