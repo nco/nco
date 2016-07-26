@@ -38,6 +38,15 @@ nco_aed_prc_wrp /* [fnc] Expand regular expressions then pass attribute edits to
     return flg_chg; /* [flg] Attribute was altered */
   } /* !rx */
 
+  if(aed.att_nm && strpbrk(aed.att_nm,".*^$[]()<>+{}") && !strpbrk(aed.att_nm,"?|\\")){
+    /* If attribute name contains special character that could indicate regular expression,
+       and that could also be legal in a CDL name, and contains no characters that are illegal
+       in CDL names, then attempt attribute edit based on verbatim name string 
+       before attempting to expand regular expression. */
+    flg_chg|=nco_aed_prc(nc_id,var_id,aed);
+    if(flg_chg) return flg_chg; /* [flg] Attribute was altered */
+  } /* !rx */
+
   aed_sct aed_swp; /* [sct] Attribute-edit information */
   char **att_nm_lst;
   int att_idx;
@@ -146,7 +155,7 @@ nco_aed_prc_wrp /* [fnc] Expand regular expressions then pass attribute edits to
   if(att_nm_lst) att_nm_lst=nco_sng_lst_free(att_nm_lst,att_nbr);
 
   return flg_chg; /* [flg] Attribute was altered */
-} /* end nco_aed_prc() */
+} /* end nco_aed_prc_wrp() */
 
 nco_bool /* [flg] Attribute was changed */
 nco_aed_prc /* [fnc] Process single attribute edit for single variable */
