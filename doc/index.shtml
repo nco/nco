@@ -1152,7 +1152,7 @@ For Debian-based systems (like Ubuntu) (<tt>aptitude</tt> is similar to and inte
 <dt>sudo aptitude install libcurl4-gnutls-dev libexpat1-dev libxml2-dev # DAP-prereqs (curl, expat XML parser) </dt>
 <dt>sudo aptitude install bison flex gcc g++ # GNU toolchain</dt>
 <dt>sudo aptitude install gsl-bin libgsl0-dev # GSL</dt>
-<dt>sudo aptitude install libnetcdf6 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>
+<dt>sudo aptitude install libnetcdf11 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>
 <dt>sudo aptitude install libhdf5-serial-dev # HDF5</dt>
 <dt>sudo aptitude install ncl-ncarg # ESMF_RegridWeightGen (for ncremap)</dt>
 <dt>sudo aptitude install udunits-bin libudunits2-0 libudunits2-dev # UDUnits</dt>
@@ -1162,7 +1162,7 @@ For Debian-based systems (like Ubuntu) (<tt>aptitude</tt> is similar to and inte
 <dt><a name="bld_yum"></a></dt> <!-- http://nco.sf.net#bld_yum -->
 <dt><a name="dnf"></a></dt> <!-- http://nco.sf.net#dnf -->
 <dt><a name="bld_dnf"></a></dt> <!-- http://nco.sf.net#bld_dnf -->
-For RPM-based systems (substitute <tt>yum</tt> for <tt>dnf</tt> on older Fedora systems):
+For RPM-based systems like Fedora and CentOS (substitute <tt>yum</tt> for <tt>dnf</tt> on older systems):
 <tt>
 <dt>sudo dnf install antlr antlr-C++ -y # ANTLR</dt>
 <dt>sudo dnf install curl-devel libxml2-devel -y # DAP-prereqs</dt>
@@ -1189,7 +1189,7 @@ For Mac OS X with MacPorts:
 </tt>
 Without MacPorts, the system TeXInfo may be too old to build the
 documentation.
-If so, use <tt>configure --disable-doc</tt>.
+In this case use <tt>configure --disable-doc</tt>.
 
 <dt><a name="bld_cygwin"></a></dt> <!-- http://nco.sf.net#bld_cygwin -->
 For Windows with Cygwin, select and install the following packages with Cygwin Setup:
