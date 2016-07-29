@@ -41,7 +41,7 @@
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
 # scp ~/nco/data/ncclimo edison.nersc.gov:bin_edison
-# scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin
+# scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncclimo yellowstone.ucar.edu:bin
 # scp dust.ess.uci.edu:nco/data/ncclimo ~/bin
 

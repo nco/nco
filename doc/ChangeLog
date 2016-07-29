@@ -1,5 +1,9 @@
 2016-07-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.1-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.1-alpha03 final changes';git push
+	git tag -a 4.6.1-alpha03 -m 'Version 4.6.1-alpha03 new features: fix hyperactive incremental mode, ncatted special characters, chunking docs';git push --tags
+
 	* Prevent ncclimo from attempting to generate incremental climos when yr_srt_prv not supplied
 
 2016-07-26  Charlie Zender  <zender@uci.edu>
