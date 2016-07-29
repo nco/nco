@@ -1,3 +1,7 @@
+2016-07-29  Charlie Zender  <zender@uci.edu>
+
+	* Prevent ncclimo from attempting to generate incremental climos when yr_srt_prv not supplied
+
 2016-07-26  Charlie Zender  <zender@uci.edu>
 
 	* Allow special characters in ncatted names. Fixes TODO nco1130 reported by emontgomery 20160726.

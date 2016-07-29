@@ -560,7 +560,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   
   /* Rounding is currently defined as op1:=bitmask(op1,ppc) */  
   
-  /* Number of Significant Digits (NSD) algorithm
+  /* This routine implements the Bit Grooming Number of Significant Digits (NSD) algorithm
      NSD based on absolute precision, i.e., number of digits in significand and in decimal scientific notation
      DSD based on precision relative to decimal point, i.e., number of digits before/after decimal point
      DSD is more often used colloquially, e.g., "thermometers measure temperature accurate to 1 degree C" 

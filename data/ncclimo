@@ -325,7 +325,6 @@ var_lst='' # [sng] Variables to process (empty means all)
 xtn_flg='No' # [sng] Extend previous climatology with current data
 yr_end='1983' # [yr] End year
 yr_srt='1980' # [yr] Start year
-yr_srt_prv='1980' # [yr] Start year previous climatology
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
@@ -350,7 +349,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm})"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm})"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm})"
-    echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_prv${fnt_nrm}   Start year previous climo (default ${fnt_bld}${yr_srt_prv}${fnt_nrm})"
+    echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_prv${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
     echo "${fnt_rvr}-X${fnt_nrm} ${fnt_bld}drc_xtn${fnt_nrm}  Extended climo directory (default ${fnt_bld}${drc_xtn}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Previous climo directory (default ${fnt_bld}${drc_prv}${fnt_nrm})"
@@ -520,11 +519,6 @@ if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     out_nm=${bs_nm}
     bs_sfx="${caseid#*.}"
 fi # !caseid
-if [ "${mdl_typ}" = 'yyyymm' ]; then
-    printf "Dataset type is generic with YYYYMM. Filenames constructed as ${bs_nm}_YYYYMM.${bs_sfx}\n"
-else # !mdl_typ
-    printf "Dataset type is CESM'ish or ACME'ish.  (not generic).\n"
-fi # !mdl_typ
 
 if [ -n "${gaa_sng_std}" ]; then
     if [ "${yr_nbr}" -gt 1 ] ; then
@@ -695,6 +689,11 @@ if [ ${dbg_lvl} -ge 0 ]; then
     echo "${cmd_ln}"
 fi # !dbg
 printf "Started climatology generation for dataset ${caseid} at `date`.\n"
+if [ "${mdl_typ}" = 'yyyymm' ]; then
+    printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
+else # !mdl_typ
+    printf "Filenames will be constructed with CESM'ish or ACME'ish conventions.\n"
+fi # !mdl_typ
 printf "Climatology from ${yr_nbr} years of contiguous data crossing ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
 if [ ${clm_md} = 'scd' ]; then 
     printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive months that cross calendar-year boundaries.\n"
@@ -1034,7 +1033,7 @@ if [ ${lnk_flg} = 'Yes' ]; then
 fi # !lnk_flg
     
 # Incremental climos
-if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
+if [ -n "${yr_srt_prv}" ]; then
     mkdir -p ${drc_prv}
     mkdir -p ${drc_xtn}
 
@@ -1210,7 +1209,7 @@ date_end=$(date +"%s")
 printf "Completed climatology generation for dataset ${caseid} at `date`.\n"
 date_dff=$((date_end-date_srt))
 echo "Quick plots of climatological annual mean:"
-if [ "${yr_srt_prv}" != "${yr_srt}" ]; then
+if [ -n "${yr_srt_prv}" ]; then
     if [ -n "${rgr_map}" ]; then 
 	echo "ncview ${fl_rgr_xtn[17]} &"
 	echo "panoply ${fl_rgr_xtn[17]} &"
