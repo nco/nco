@@ -177,16 +177,40 @@ esac # !HOSTNAME
 #          2 = As in dbg_lvl=1, but _do not evaluate commands_
 #          3 = As in dbg_lvl=1, and pass debug level through to NCO/ncks
 
-# Set script name and run directory
+# Set script name, directory, PID, run directory, NCO version
 drc_pwd=${PWD}
-nco_version=$(ncks --version 2>&1 >/dev/null | grep NCO | awk '{print $5}')
-spt_nm=$(basename ${0}) # [sng] Script name
+# NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
+# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+spt_src="${BASH_SOURCE[0]}"
+while [ -h "${spt_src}" ]; do # Recursively resolve ${spt_src} until file is no longer a symlink
+  drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
+  spt_src="$(readlink "${spt_src}")"
+  [[ ${spt_src} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
+done
+drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
+nco_exe=`which ncks`
+if [ -z "${nco_exe}" ]; then
+    echo "ERROR: Unable to find NCO, nco_exe = ${nco_exe}"
+    exit 1
+fi # !nco_exe
+# Use stackoverflow method to find NCO directory
+while [ -h "${nco_exe}" ]; do
+  drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
+  nco_exe="$(readlink "${nco_exe}")"
+  [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
+done
+drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
+nco_vrs=$(ncks --version 2>&1 >/dev/null | grep NCO | awk '{print $5}')
+spt_nm=$(basename ${BASH_SOURCE[0]}) # [sng] Script name (Unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
 
-# Set fonts for legibility
-fnt_nrm=`tput sgr0` # Normal
-fnt_bld=`tput bold` # Bold
-fnt_rvr=`tput smso` # Reverse
+# When running in a terminal window (not in an non-interactive batch queue)...
+if [ -n "${TERM}" ]; then
+    # Set fonts for legibility
+    fnt_nrm=`tput sgr0` # Normal
+    fnt_bld=`tput bold` # Bold
+    fnt_rvr=`tput smso` # Reverse
+fi # !TERM
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
@@ -205,7 +229,7 @@ dst_xmp='dst.nc' # [sng] Destination file for examples
 #esmf_opt='--ignore_unmapped --netcdf4' # [sng] ESMF_RegridWeightGen options
 esmf_opt='--ignore_unmapped' # [sng] ESMF_RegridWeightGen options
 fl_nbr=0 # [nbr] Number of files to remap
-gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_version}" # [sng] Global attributes to add
+gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
 grd_dst='' # [sng] Destination grid-file
 grd_dst_glb="${DATA}/grids/180x360_SCRIP.20150901.nc" # [sng] Grid-file (destination) global
 grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
@@ -724,7 +748,11 @@ if [ -f 'PET0.RegridWeightGen.Log' ]; then
     /bin/rm -f PET0.RegridWeightGen.Log
 fi # !PETO
 printf "Started processing at `date`.\n"
-printf "NCO ${spt_nm} version is ${nco_version}\n"
+printf "Running remap script ${spt_nm} from directory ${drc_spt}\n"
+printf "NCO version ${nco_vrs} from directory ${drc_nco}\n"
+printf "Input files in or relative to directory ${drc_in}\n"
+printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
+printf "Output files to directory ${drc_out}\n"
 if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ] && [ -n "${wgt_usr}" ]; then
     printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_gnr' is only allowed when creating a map (weight generator is superfluous when map is supplied)\n"
     exit 1
