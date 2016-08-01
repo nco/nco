@@ -1125,8 +1125,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   } /* end loop over dimensions */
 
-  //cnk_map_lfp: /* end goto */
-
   if(cnk_map == nco_cnk_map_lfp ||
      (cnk_plc == nco_cnk_plc_nco && dmn_nbr != 3) ||
      (cnk_map == nco_cnk_map_rew && dmn_nbr != 3)){
@@ -1166,8 +1164,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     /* Allow existing chunksizes to be over-ridden by explicitly specified chunksizes */
     goto cnk_xpl_override;
   } /* !nco_cnk_map_lfp */
-
-  //cnk_map_rew: /* end goto */
 
   /* Apply Rew only to 3-D variables */
   if(cnk_map == nco_cnk_map_rew && dmn_nbr != 3) goto cnk_xpl_override;
@@ -1305,7 +1301,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   } /* !nco_cnk_map_rew */
 
   /* Uniform override */
-  // cnk_unf_override: /* end goto */
 
   /* Override "reasonable" defaults with explicitly set uniform scalar chunksize, if any */
   if(cnk_sz_dfl > 0UL){

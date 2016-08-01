@@ -1,3 +1,7 @@
+2016-08-01  Charlie Zender  <zender@uci.edu>
+
+	* Clarify which size options are in bytes and which are in elements, especially for chunking
+
 2016-07-31  Charlie Zender  <zender@uci.edu>
 
 	* Deduce script and NCO paths using stackoverflox method borrowed from terraref.sh
