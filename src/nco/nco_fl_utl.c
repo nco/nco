@@ -1178,7 +1178,7 @@ nco_fl_mv /* [fnc] Move first file to second */
   /* 20160802: Until today, failure was diagnosed iff rcd == -1
      Linux rcd    != 0 indicates failure
      MacOS BSD rcd > 0 indicates failure */
-  if(!rcd_sys){
+  if(rcd_sys){
     (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",nco_prg_nm_get(),cmd_mv);
     nco_exit(EXIT_FAILURE);
   } /* end if */
