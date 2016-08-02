@@ -1176,9 +1176,10 @@ nco_fl_mv /* [fnc] Move first file to second */
   (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src_cdl,fl_dst_cdl);
   rcd_sys=system(cmd_mv);
   /* 20160802: Until today, failure was diagnosed iff rcd == -1
-     Linux rcd    != 0 indicates failure
+     Unclear what rcd == -1 actually means to systems, because rcd == 0 always indicates success and
+     Linux rcd     > 0 indicates failure
      MacOS BSD rcd > 0 indicates failure */
-  if(rcd_sys){
+  if(rcd_sys > 0){
     (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",nco_prg_nm_get(),cmd_mv);
     nco_exit(EXIT_FAILURE);
   } /* end if */
