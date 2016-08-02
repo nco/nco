@@ -1175,7 +1175,10 @@ nco_fl_mv /* [fnc] Move first file to second */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
   (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src_cdl,fl_dst_cdl);
   rcd_sys=system(cmd_mv);
-  if(rcd_sys == -1){
+  /* 20160802: Until today, failure was diagnosed iff rcd == -1
+     Linux rcd    != 0 indicates failure
+     MacOS BSD rcd > 0 indicates failure */
+  if(!rcd_sys){
     (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",nco_prg_nm_get(),cmd_mv);
     nco_exit(EXIT_FAILURE);
   } /* end if */
