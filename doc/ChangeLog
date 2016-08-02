@@ -1,5 +1,7 @@
 2016-08-02  Charlie Zender  <zender@uci.edu>
 
+	* Fix nco_grd_nfr(): use nco_inq_varid() not nco_inq_dimid() to	find coordinates
+
 	* Relax failed return code diagnosis for nco_fl_mv(), fail when rcd != 0
 
 2016-08-01  Charlie Zender  <zender@uci.edu>
