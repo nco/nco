@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1-alpha03
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 1 August 2016
+@set update-date 3 August 2016
 @set update-month August 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7651,8 +7651,8 @@ matches (approximately equals) the size specified with the
 @samp{--cnk_scl=@var{sz_lmn}} option.
 A dimension of size one is said to be @emph{degenerate}.
 For a variable of rank @var{R} (i.e., with @var{R} non-degenerate
-dimensions), the chunksize in each non-degenerate dimension is the
-@var{R}th root of @var{sz_lmn}.
+dimensions), the chunksize in each non-degenerate dimension is
+(approximately) the @var{R}th root of @var{sz_lmn}.
 This is in contrast to the @var{cnk_scl} map, where @var{sz_lmn} itself
 becomes the chunksize of each dimension.@* 
 @var{cnk_map} key values: @samp{prd}, @samp{cnk_prd}, @samp{map_prd}@*
@@ -7665,8 +7665,14 @@ This is accomplished by using dimension sizes as chunksizes for the
 rightmost (most rapidly varying) dimensions, and then ``flexing'' the
 chunksize of the leftmost (least rapidly varying) dimensions such that 
 the product of all chunksizes matches the specified size.
-All dimensions to the left of and including the first record dimension
-define the left-hand side.
+All @var{L}-dimensions to the left of and including the first record 
+dimension define the left-hand side.
+To be precise, if the total size (in bytes) of the variable is
+@var{var_sz}, and if the specified (with @samp{--cnk_byt}) product of
+the @var{R} ``righter'' dimensions (those that vary more rapidly than
+the first record dimension) is @var{sz_byt}, then chunksize (in bytes)
+of each of the @var{L} lefter dimensions is (approximately) the
+@var{L}th root of @math{@var{var_sz}/@var{sz_byt}}.
 This map was first proposed by Chris Barker.@*
 @var{cnk_map} key values: @samp{lfp}, @samp{cnk_lfp}, @samp{map_lfp}@*
 Mnemonic: @emph{L}e@emph{F}ter @emph{P}roduct@*
@@ -19455,7 +19461,8 @@ ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c] [--cb]
 @noindent
 DESCRIPTION
 
-@command{ncra} averages record variables across an arbitrary number of 
+@command{ncra} computes statistics (including, though not limited to,
+averages) of record variables across an arbitrary number of  
 @var{input-files}.
 @cindex degenerate dimension
 @cindex record dimension
@@ -19642,6 +19649,23 @@ Assuming @samp{??} only expands to the five desired files, the following
 averages June, 1985--June, 1989: 
 @example
 ncra -d time,6.,54. ??.nc 8506_8906.nc
+ncra -y max -d time,6.,54. ??.nc 8506_8906.nc
+@end example
+The second example identifies the maximum instead of averaging.
+@xref{Operation Types}, for a description of all available statistical 
+operations. 
+
+@cindex seasonal average
+@cindex average
+@cindex subcycle
+@cindex time-averaging
+@command{ncra} includes the powerful subcycle and multi-record output
+features (@pxref{Subcycle}). 
+This example uses these features to compute and output winter
+(@acronym{DJF}) averages for all winter seasons beginning with year 1990 
+and continuing to the end of the input file:
+@example
+ncra -O --mro -d time,"1990-12-01",,12,3 in.nc out.nc
 @end example
 
 The @samp{-w wgt} option weights input data @emph{per-file} or
@@ -19651,9 +19675,10 @@ ncra -w 31,31,28 dec.nc jan.nc feb.nc out.nc
 ncra -w delta_t in1.nc in2.nc in3.nc out.nc 
 @end example
 The first example weights the input differently per-file to produce
-correctly weighted winter season mean statistics.
+correctly weighted winter seasonal mean statistics.
 The second example weights the input per-timestep to produce correctly 
 weighted mean statistics.
+The last example 
 
 @page
 @html

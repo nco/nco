@@ -1,3 +1,7 @@
+2016-08-03  Charlie Zender  <zender@uci.edu>
+
+	* Improve documentation for chunking with LFP and using ncra subcyles and MRO
+
 2016-08-02  Charlie Zender  <zender@uci.edu>
 
 	* Fix nco_grd_nfr(): use nco_inq_varid() not nco_inq_dimid() to	find coordinates
