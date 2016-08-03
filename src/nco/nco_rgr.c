@@ -2604,7 +2604,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
   } /* !nco_grd_lat_fv */
 
-  if(flg_grd_out_2D){
+  if(flg_grd_out_rct){
     att_nm=strdup("long_name");
     att_val=strdup("latitude quadrature weights (normalized to sum to 2.0 on global grids)");
     aed_mtd.att_nm=att_nm;
@@ -2617,7 +2617,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     (void)nco_aed_prc(out_id,lat_wgt_id,aed_mtd);
     if(att_nm) att_nm=(char *)nco_free(att_nm);
     if(att_val) att_val=(char *)nco_free(att_val);
-  } /* !flg_grd_out_2D */
+  } /* !flg_grd_out_rct */
   
   att_nm=strdup("map_file");
   att_val=strdup(fl_in);
