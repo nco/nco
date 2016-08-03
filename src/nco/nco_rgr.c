@@ -2715,8 +2715,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_cnt_tuo[0]=lat_nbr_out;
     dmn_cnt_tuo[1]=lon_nbr_out;
     dmn_cnt_tuo[2]=bnd_nbr_out;
-    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_tuo,lat_bnd_out,crd_typ_out);
-    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_tuo,lon_bnd_out,crd_typ_out);
+    /* NB: 20160803 Semantically confusing---curvilinear grids must write *_crn_out data into *_bnd_out arrays */
+    (void)nco_put_vara(out_id,lat_bnd_id,dmn_srt_out,dmn_cnt_tuo,lat_crn_out,crd_typ_out);
+    (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_tuo,lon_crn_out,crd_typ_out);
   } /* !flg_grd_out_crv */
   if(flg_grd_out_rct){
     dmn_srt_out[0]=0L;
