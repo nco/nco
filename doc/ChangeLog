@@ -1,6 +1,6 @@
 2016-08-03  Charlie Zender  <zender@uci.edu>
 
-	* Merge Balwinder's changes for Constance at PNNL into ncclimo
+	* ncclimo: merge Balwinder's changes for Constance at PNNL
 
 	* Only write lat_wgt attributes when flg_grd_out_rct is true
 

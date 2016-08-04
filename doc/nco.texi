@@ -16871,9 +16871,10 @@ nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 @noindent
 DESCRIPTION
 
-@command{nces} performs gridpoint statistics on variables across an
-arbitrary number (an @dfn{ensemble}) of @var{input-files} and/or of
-input groups within each file.
+@command{nces} performs gridpoint statistics (including, but not limited
+to, averages) on variables across an arbitrary number (an
+@dfn{ensemble}) of @var{input-files} and/or of input groups within each
+file. 
 Each file (or group) receives an equal weight.
 @command{nces} was formerly (until @acronym{NCO} version 4.3.9,
 released December, 2013) known as @command{ncea} (netCDF Ensemble
@@ -21064,8 +21065,9 @@ ncwa [-3] [-4] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b]
 @noindent
 DESCRIPTION
 
-@command{ncwa} averages variables in a single file over arbitrary
-dimensions, with options to specify weights, masks, and normalization.   
+@command{ncwa} performs statistics (including, but not limited to,
+averages) on variables in a single file over arbitrary dimensions, with
+options to specify weights, masks, and normalization.
 @xref{Statistics vs. Concatenation}, for a description of the
 distinctions between the various statistics tools and concatenators. 
 The default behavior of @command{ncwa} is to arithmetically average
