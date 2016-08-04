@@ -1,5 +1,9 @@
 2016-08-04  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.1-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.1-beta01 final changes';git push
+	git tag -a 4.6.1-beta01 -m 'Version 4.6.1-beta01 new features: ncremap crv, constance, nco_fl_mv(), cnk';git push --tags
+
 	* ncremap: give-up on confirming overwriting existing maps until it works in interactive shells only
 
 	* Use different output dimensions bounds names for mappings to curvilinear axes
