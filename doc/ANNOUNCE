@@ -84,6 +84,11 @@ A. When inferring grid coordinates from 2D files, ncremap in 4.6.0
    This has been fixed. The workaround is to downgrade to 4.5.6 or
    upgrade to 4.6.1.
 
+A. ncremap now automatically chooses distinct output spatial and
+   temporal bounds names when for non-rectangular output datasets.
+   Previously ncremap might use, e.g., "nbnd" for both. This failed
+   for curvilinear datasets.
+
 KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the

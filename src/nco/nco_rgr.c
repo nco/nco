@@ -486,8 +486,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   /* Revert to defaults for any names not specified on command-line */
   if(!rgr->area_nm) rgr->area_nm=(char *)strdup("area"); /* [sng] Name of variable containing gridcell area */
-  if(!rgr->bnd_nm) rgr->bnd_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for spatial bounds */
-  /* NB: CESM uses nbnd and ilev for temporal and vertical bounds, respectively (CESM outputs no horizontal spatial bounds). NCO defaults to nbnd for all bounds with two endpoints */
+  if(!rgr->bnd_nm) rgr->bnd_nm=(char *)strdup("nvertices"); /* [sng] Name of dimension to employ for spatial bounds */
+  /* NB: CESM uses nbnd and ilev for temporal and vertical bounds, respectively (CESM outputs no horizontal spatial bounds). NCO defaults to nbnd for all bounds with two endpoints. */
   if(!rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for temporal bounds */
   if(!rgr->col_nm_in) rgr->col_nm_in=(char *)strdup("ncol"); /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
   if(!rgr->frc_nm) rgr->frc_nm=(char *)strdup("frac_b"); /* [sng] Name of variable containing gridcell fraction */
@@ -1938,7 +1938,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Name output dimensions/variables */
   area_nm_out=rgr->area_nm;
-  bnd_nm_out=rgr->bnd_nm;
   bnd_tm_nm_out=rgr->bnd_tm_nm;
   frc_nm_out=rgr->frc_nm;
   lat_bnd_nm_out=rgr->lat_bnd_nm;
@@ -1953,8 +1952,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     lat_bnd_nm_out=rgr->lat_vrt_nm;
     lon_bnd_nm_out=rgr->lon_vrt_nm;
   } /* !flg_grd_out_1D */
-  if(flg_grd_out_2D){
+  if(flg_grd_out_crv){
     bnd_nm_out=rgr->bnd_nm;
+  } /* !flg_grd_out_crv */
+  if(flg_grd_out_rct){
+    bnd_nm_out=rgr->bnd_tm_nm; /* NB: default to bnd_tm_nm for spatial bounds */
+  } /* !flg_grd_out_rct */
+  if(flg_grd_out_2D){
     lat_bnd_nm_out=rgr->lat_bnd_nm;
     lon_bnd_nm_out=rgr->lon_bnd_nm;
   } /* !flg_grd_out_2D */
@@ -1962,6 +1966,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     slat_nm_out=strdup("slat");
     slon_nm_out=strdup("slon");
   } /* !nco_grd_lat_fv */
+  /* Ensure temporal bounds dimension name is distinct from spatial bounds when their sizes differ */
+  if(bnd_nbr_out != bnd_tm_nbr_out){
+    if(!strcmp(bnd_nm_out,bnd_tm_nm_out)){
+      (void)fprintf(stdout,"%s: INFO %s reports spatial and temporal output bounds dimensions are identical (and named \"%s\") by default for rectangular output grids because both can be stored as 2D arrays. That cannot work for this mapping because temporal and spatial bounds dimensions sizes differ (bnd_nbr_out = %d, bnd_tm_nbr_out = %d). Using fall-back spatial bounds name \"%s\" instead. HINT: You may change one or both manually with --rgr bnd_nm=name or --rgr bnd_tm_nm=name.\n",nco_prg_nm_get(),fnc_nm,bnd_tm_nm_out,bnd_nbr_out,bnd_tm_nbr_out,bnd_nm_out);
+    } /* !strcmp() */
+  } /* !bnd_nbr_out */
 
   /* Persistent metadata */
   aed_sct aed_mtd_crd;
@@ -1988,11 +1998,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       rcd+=nco_def_dim(out_id,slon_nm_out,slon_nbr_out,&dmn_id_slon);
     } /* !nco_grd_lat_fv */
   } /* !flg_grd_out_2D */
+  /* If dimension has not been defined, define it */
   rcd=nco_inq_dimid_flg(out_id,bnd_tm_nm_out,&dmn_id_bnd_tm);
-  /* If dimension has not been defined, define it */
   if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,bnd_tm_nm_out,bnd_tm_nbr_out,&dmn_id_bnd_tm);
-  rcd=nco_inq_dimid_flg(out_id,bnd_nm_out,&dmn_id_bnd);
   /* If dimension has not been defined, define it */
+  rcd=nco_inq_dimid_flg(out_id,bnd_nm_out,&dmn_id_bnd);
   if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,bnd_nm_out,bnd_nbr_out,&dmn_id_bnd);
 
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
@@ -2430,7 +2440,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
 
   att_nm=strdup("long_name");
-  if(flg_grd_out_2D) att_val=strdup("gridcell latitude interfaces"); else att_val=strdup("gridcell latitude vertices");
+  if(flg_grd_out_rct) att_val=strdup("gridcell latitude interfaces"); else att_val=strdup("gridcell latitude vertices");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lat_bnd_nm_out;
   aed_mtd.id=lat_bnd_id;
@@ -2538,7 +2548,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
 
   att_nm=strdup("long_name");
-  if(flg_grd_out_2D) att_val=strdup("gridcell longitude interfaces"); else att_val=strdup("gridcell longitude vertices");
+  if(flg_grd_out_rct) att_val=strdup("gridcell longitude interfaces"); else att_val=strdup("gridcell longitude vertices");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lon_bnd_nm_out;
   aed_mtd.id=lon_bnd_id;
