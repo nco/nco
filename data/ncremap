@@ -578,7 +578,6 @@ if [ -n "${map_fl}" ]; then
 		    echo "ERROR: Too many invalid responses, exiting"
 		    exit 1
 		fi # !rsp_kbd_nbr
-	    fi # !TERM
 	    fi # !0
 	fi # !map_fl
     else # !map_mk
