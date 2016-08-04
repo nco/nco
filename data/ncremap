@@ -557,23 +557,29 @@ if [ -n "${map_fl}" ]; then
     map_usr_flg='Yes'
     if [ "${map_mk}" = 'Yes' ]; then
 	# Confirm before overwriting maps
-	# 20160803: Interactive shells only (block hangs on read() in non-interactive shells)
-        if [ -f "${map_fl}" ] && [ -n "${PS1}" ]; then
-	    rsp_kbd_nbr=0
-	    while [ ${rsp_kbd_nbr} -lt 10 ]; do
-		echo "WARNING: The file ${map_fl} already exists and will be over-written by the newly generated map-file."
-		read -p "Continue (y/n)? " rsp_kbd
-		let rsp_kbd_nbr+=1
-		case "${rsp_kbd}" in
-		    N*|n*) exit 1 ;;
-		    Y*|y*) break ;;
-		    *) continue ;;
-		esac
-	    done # !rsp_kbd_nbr
-	    if [ ${rsp_kbd_nbr} -ge 10 ]; then
-		echo "ERROR: Too many invalid responses, exiting"
-		exit 1
-	    fi # !rsp_kbd_nbr
+        if [ -f "${map_fl}" ]; then
+	    # 20160803: Interactive shells only (block hangs on read() in non-interactive shells)
+            if [ 1 -eq 0 ]; then
+#	    if [[ -t 0 || -p /dev/stdin ]]; then
+#           if [ -n "${TERM}" ]; then
+#           if [ -n "${PS1}" ]; then
+		rsp_kbd_nbr=0
+		while [ ${rsp_kbd_nbr} -lt 10 ]; do
+		    echo "WARNING: Map-file ${map_fl} already exists and will be over-written."
+		    read -p "Continue (y/n)? " rsp_kbd
+		    let rsp_kbd_nbr+=1
+		    case "${rsp_kbd}" in
+			N*|n*) exit 1 ;;
+			Y*|y*) break ;;
+			*) continue ;;
+		    esac
+		done # !rsp_kbd_nbr
+		if [ ${rsp_kbd_nbr} -ge 10 ]; then
+		    echo "ERROR: Too many invalid responses, exiting"
+		    exit 1
+		fi # !rsp_kbd_nbr
+	    fi # !TERM
+	    fi # !0
 	fi # !map_fl
     else # !map_mk
         if [ ! -f "${map_fl}" ]; then

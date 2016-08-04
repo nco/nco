@@ -1,6 +1,6 @@
 2016-08-04  Charlie Zender  <zender@uci.edu>
 
-	* ncremap: confirm before overwriting existing maps in interactive shells only
+	* ncremap: give-up on confirming overwriting existing maps until it works in interactive shells only
 
 	* Use different output dimensions bounds names for mappings to curvilinear axes
 	Default is now to use temporal bounds name for spatial bounds for rectangular grids,
