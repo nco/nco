@@ -143,7 +143,7 @@ esac # !HOSTNAME
 # ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
-# ncremap -i AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
+# ncremap -i ${DATA}/hdf/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ncremap -v TSurfAir -i ${DATA}/hdf/AIRS.2015.01.15.001.L2.RetStd.v6.0.11.0.G15015142014.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v CloudFrc_A -i ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
 # ncremap -i ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -O ~/rgr
@@ -559,10 +559,10 @@ if [ -n "${map_fl}" ]; then
 	# Confirm before overwriting maps
         if [ -f "${map_fl}" ]; then
 	    # 20160803: Interactive shells only (block hangs on read() in non-interactive shells)
-            if [ 1 -eq 0 ]; then
 #	    if [[ -t 0 || -p /dev/stdin ]]; then
 #           if [ -n "${TERM}" ]; then
 #           if [ -n "${PS1}" ]; then
+            if [ 1 -eq 0 ]; then
 		rsp_kbd_nbr=0
 		while [ ${rsp_kbd_nbr} -lt 10 ]; do
 		    echo "WARNING: Map-file ${map_fl} already exists and will be over-written."
