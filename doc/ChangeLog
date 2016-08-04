@@ -1,5 +1,7 @@
 2016-08-03  Charlie Zender  <zender@uci.edu>
 
+	* Merge Balwinder's changes for Constance at PNNL into ncclimo
+
 	* Only write lat_wgt attributes when flg_grd_out_rct is true
 
 	* Write lat/lon_crn not lat/lon_bnd data when map is curvilinear
