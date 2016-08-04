@@ -556,7 +556,9 @@ fi # !map_mk
 if [ -n "${map_fl}" ]; then 
     map_usr_flg='Yes'
     if [ "${map_mk}" = 'Yes' ]; then
-        if [ -f "${map_fl}" ]; then
+	# Confirm before overwriting maps
+	# 20160803: Interactive shells only (block hangs on read() in non-interactive shells)
+        if [ -f "${map_fl}" ] && [ -n "${PS1}" ]; then
 	    rsp_kbd_nbr=0
 	    while [ ${rsp_kbd_nbr} -lt 10 ]; do
 		echo "WARNING: The file ${map_fl} already exists and will be over-written by the newly generated map-file."
@@ -572,7 +574,7 @@ if [ -n "${map_fl}" ]; then
 		echo "ERROR: Too many invalid responses, exiting"
 		exit 1
 	    fi # !rsp_kbd_nbr
-	fi # ! -f
+	fi # !map_fl
     else # !map_mk
         if [ ! -f "${map_fl}" ]; then
 	    echo "ERROR: Unable to find specified regrid map ${map_fl}"
