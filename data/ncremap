@@ -558,7 +558,7 @@ if [ -n "${map_fl}" ]; then
     if [ "${map_mk}" = 'Yes' ]; then
 	# Confirm before overwriting maps
         if [ -f "${map_fl}" ]; then
-	    # 20160803: Interactive shells only (block hangs on read() in non-interactive shells)
+	    # 20160803: fxm get to work on Interactive shells only (block hangs on read() in non-interactive shells)
 #	    if [[ -t 0 || -p /dev/stdin ]]; then
 #           if [ -n "${TERM}" ]; then
 #           if [ -n "${PS1}" ]; then
