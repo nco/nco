@@ -1,3 +1,9 @@
+2016-08-06  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.1 final changes';git push
+	git tag -a 4.6.1 -m 'Version 4.6.1 new features: nco_fl_mv(), cnk doc, ncremap crv, ncatted dot, ncclimo ncr md, ncflint -N, provenance';git push --tags
+
 2016-08-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.1-beta01 release procedure:

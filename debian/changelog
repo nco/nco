@@ -1,8 +1,8 @@
 nco (4.6.1-1) unstable; urgency=low
 
-  * new upstream version 
+  * new upstream version nco_fl_mv(), cnk doc, ncremap crv, ncatted dot, ncclimo ncr md, ncflint -N, provenance
 
- -- Charlie Zender <zender@uci.edu>  Thu, 12 Jun 2016 12:25:15 -0700
+ -- Charlie Zender <zender@uci.edu>  Sat, 06 Aug 2016 12:25:15 -0700
 
 nco (4.6.0-1) unstable; urgency=low
 
