@@ -2887,7 +2887,7 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
           if( ui64p[idx]>INT_MAX ) {
 	    // bomb out if necessary  
             ostringstream os; 
-            os<<"Possible integer overflow. You have rquested the generation of integers up to the value of " <<ui64p[idx]<<" .This is greater than "<<INT_MAX<<" - the maximum value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g., ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
+            os<<"Possible integer overflow. You have requested the generation of integers up to the value of " <<ui64p[idx]<<" .This is greater than "<<INT_MAX<<" - the maximum value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g., ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
             err_prn(sfnm,os.str());
           }
           
