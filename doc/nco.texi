@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.1
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 6 August 2016
+@set update-date 8 August 2016
 @set update-month August 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -388,7 +388,7 @@ The netCDF Operators, or @acronym{NCO}, are a suite of programs known as
 operators. 
 The operators facilitate manipulation and analysis of data stored in the 
 self-describing netCDF format, available from
-(@uref{http://www.unidata.ucar.edu/packages/netcdf}).
+(@uref{http://www.unidata.ucar.edu/software/netcdf}).
 Each @acronym{NCO} operator (e.g., ncks) takes netCDF input
 file(s), performs an operation (e.g., averaging, hyperslabbing, or
 renaming), and outputs a processed netCDF file. 
@@ -397,13 +397,13 @@ these data formats, and thus @acronym{NCO}, are generic and are equally
 useful in fields from agriculture to zoology.
 The @acronym{NCO} User Guide illustrates @acronym{NCO} use with
 examples from the field of climate modeling and analysis. 
-The @acronym{NCO} homepage is @uref{http://nco.sf.net}, and
-there is a mirror at @uref{http://dust.ess.uci.edu/nco}.
+The @acronym{NCO} homepage is @uref{http://nco.sf.net}, and the 
+source code is maintained at @uref{http://github.com/nco/nco}.
 
 This documentation is for @acronym{NCO} version @value{nco-edition}.
 It was last updated @value{update-date}.
-Corrections, additions, and rewrites of this documentation are very
-welcome.
+Corrections, additions, and rewrites of this documentation are
+gratefully welcome.
 
 Enjoy,@*
 Charlie Zender
@@ -663,7 +663,7 @@ online through the World Wide Web at @acronym{URL}
 @cindex netCDF
 To build and use @acronym{NCO}, you must have netCDF installed.
 The netCDF homepage is
-@uref{http://www.unidata.ucar.edu/packages/netcdf}.
+@uref{http://www.unidata.ucar.edu/software/netcdf}.
 
 New @acronym{NCO} releases are announced on the netCDF list 
 and on the @code{nco-announce} mailing list 
@@ -3401,7 +3401,7 @@ The documentation at the
 @uref{http://www.opendap.org, OPeNDAP Homepage}
 is voluminous.
 Check there and on the
-@uref{http://www.unidata.ucar.edu/packages/dods/home/mailLists/, DODS mail lists}.
+@uref{http://www.unidata.ucar.edu/software/dods/home/mailLists/, DODS mail lists}.
 to learn more about the extensive capabilities of @acronym{OPeNDAP}
 @footnote{
 We are most familiar with the @acronym{OPeNDAP} ability to enable 
@@ -6886,7 +6886,7 @@ Long options:
 @samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
 @end cartouche
 There is more than one way to hyperskin a cat.
-The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits} package 
+The @uref{http://www.unidata.ucar.edu/software/udunits, UDUnits} package 
 provides a library which, if present, @acronym{NCO} uses to translate
 user-specified physical dimensions into the physical dimensions of data
 stored in netCDF files.
@@ -7017,7 +7017,7 @@ pre-built binaries on machines with libraries in different locations.
 
 @cindex Climate and Forecast Metadata Convention
 @cindex @acronym{CF} conventions
-The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits}
+The @uref{http://www.unidata.ucar.edu/software/udunits, UDUnits}
 package documentation describes the supported formats of time
 dimensions. 
 Among the metadata conventions that adhere to these formats are the  
