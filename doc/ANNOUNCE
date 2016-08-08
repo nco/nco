@@ -7,10 +7,11 @@ http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
 
-4.6.1 ...
-
-As usual, ncremap continues to accrue useful features, the most
-notable of which is ...
+4.6.1 is mainly a stability release to polish existing features and to
+add minor new ones. The main new feature is that ncclimo supports
+incremental climatologies. ncatted works much better with special
+characters in attribute names, while preserving its ability to handle
+regular expressions. ncflint gains a weight-normalization option.
 
 Work on NCO 4.6.2 has commenced and will better support regridding
 variables whose horizontal dimensions are not most-rapidly-varying.  
@@ -21,50 +22,30 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. ncks supports new provenance features released in netCDF-4.4.1.
-   These provenance (and other) metadata are revealed by the --hdn (or
+   These provenance (and other) metadata are revealed by the --hdn (or 
    --hidden) switch when dumping global metadata from a netCDF4 file:
    ncks --cdl --hdn -M ~/nco/data/in_grp.nc
+   http://nco.sf.net/nco.html#ncflint
 
-A. Wenshan Wang of UCI contributed a Quick Reference Card suitable
+B. Wenshan Wang of UCI contributed a Quick Reference Card suitable
    for printing. Thanks, Wenshan!
    http://nco.sf.net/nco_rfr_crd.pdf
 
-A. Add ncflint -N, --nrm, --normalize option so w1:=w1/(w1+w2), w2:=w2/(w1+w2)
+C. Add ncflint -N, --nrm, --normalize option so w1:=w1/(w1+w2),
+   w2:=w2/(w1+w2)
+   http://nco.sf.net/nco.html#ncflint
 
-A. ncap2's array() function can now take a dimension list as the
+D. ncap2's array() function can now take a dimension list as the
    third argument, e.g., n2=array(1.0,2.0,/$time,$lat,$lon/)
    http://nco.sf.net/nco.html#ncap2
 
-A. ncclimo produces climatological monthly means, seasonal means, 
-   annual mean, and optionally regrids all these files. Like ncremap,
-   ncclimo is actually a front-end script to manage the complexity
-   of invoking the underlying operators (ncks for ncremap and ncra for
-   ncclimo). ncclimo produces climatologies starting from monthly-mean
-   files of most CESM-like model and observational data formats.
-   Invoke ncclimo with, e.g.,
-   ncclimo -s start_yr -e end_yr -c run_id -i drc_in -o drc_out
-   ncclimo -s 5 -e 10 -c hist -m ocn -i drc_in -o drc_out
-   ncclimo -s 1980 -e 2016 -c merra2_198001.nc -i drc_in -o drc_out
-   ncclimo has sophisticated parallelism and regridding options.
-   Datasets tested include ALM, CAM, CLM, CICE, CISM, CLM, MPAS-I,
-   MPAS-O, and POP. ncclimo resulted from work with the DOE ACME
-   project, and we are grateful for their support.
+E. ncclimo will now generate incremental climatologies, e.g., it will
+   extend an existing climatology with the new files from a simulation
+   to create an extended climatology. Only the new monthly files and
+   the existing climatolgoy need be accessible---the old monthly files
+   are not used. Invoke ncclimo incremental mode with, e.g.,
+   ncclimo -c caseid -s 1982 -e 1983 -i raw -o clm -r map.nc -S 1980
    http://nco.sf.net/nco.html#ncclimo
-   http://nco.sf.net/nco.html#merra2
-
-A. ncap2 now works with pointers to variables and attributes.
-   This allows, e.g., loops over arbitrary sets of variables, and
-   make creating aggregations of variables much simpler. An ncap2
-   script that converts all float variables to double precision:
-   @all=get_vars_in();
-   *sz=@all.size();
-   for(idx=0;idx<sz;idx++){
-     @var_nm=sprint(@all(idx));
-     if(*@var_nm.type() == NC_FLOAT) *@var_nm=*@var_nm.double();
-   }
-   Congratulations Henry for finishing this impressive functionality! 
-   More documentation will be added in the coming weeks. For now,      
-   http://nco.sf.net/nco.html#ncap2
 
 BUG FIXES:
 
@@ -75,19 +56,21 @@ A. ncatted now allows special characters in attribute and variable
    not work, then it interprets them as a regular expression.
    Thanks to emontgomery for reporting the problem.
 
-A. ncap2 fixed handling of implicit array bounds for slabs of form
+B. ncap2 fixed handling of implicit array bounds for slabs of form
    var(3:). Previously ncap2 would exit with an error.
    http://nco.sf.net/nco.html#ncap2
 
-A. When inferring grid coordinates from 2D files, ncremap in 4.6.0
+C. When inferring grid coordinates from 2D files, ncremap in 4.6.0
    sometimes would confuse dimension names with coordinate names.
    This has been fixed. The workaround is to downgrade to 4.5.6 or
    upgrade to 4.6.1.
 
-A. ncremap now automatically chooses distinct output spatial and
+D. ncremap now automatically chooses distinct output spatial and
    temporal bounds names when for non-rectangular output datasets.
-   Previously ncremap might use, e.g., "nbnd" for both. This failed
-   for curvilinear datasets.
+   Previously ncremap might use, e.g., "nbnd" for both. This could
+   fail for curvilinear datasets.
+
+E. Resolve an issue that caused spurious warnings from nco_fl_mv().
 
 KNOWN PROBLEMS DUE TO NCO:
 

@@ -87,7 +87,7 @@ Current stable NCO version is 4.6.1 released <!--#flastmod file="src/nco-4.6.1.t
 <li><a href="#RTFM">Documentation</a></li>
 <li><a href="#FAQ">FAQ</a></li>
 <li><a href="#Support">Help/Support/Contacts</a></li>
-<li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
+<li><a href="#ANNOUNCE/ChangeLog/README/TODO">ANNOUNCE/ChangeLog/README/TODO</a></li>
 <li><a href="#Source">Source Code</a></li>
 <li><a href="#bld">Compiling</a></li>
 <li><a href="#NCAR">Supercomputers</a></li>
@@ -1010,12 +1010,13 @@ site.</li>
 <!-- End Support -->
 
 <!-- http://nco.sf.net#README -->
-<dt><a name="README/ChangeLog/TODO"></a></dt>
-<h2>README/ChangeLog/TODO</h2>
+<dt><a name="ANNOUNCE/ChangeLog/READMELog/TODO"></a></dt>
+<h2>ANNOUNCE/ChangeLog/README/TODO</h2>
 <p>Files containing useful information about the current distribution:
 <ul>
-<li><a href="./README"><tt>README</tt></a> Platforms and software required</li>
+<li><a href="./ANNOUNCE"><tt>ANNOUNCE</tt></a> Notes on current release</li>
 <li><a href="./ChangeLog"><tt>ChangeLog</tt></a> Change History since 1997 (version 0.9)</li>
+<li><a href="./README"><tt>README</tt></a> Platforms and software required</li>
 <li><a href="./TODO"><tt>TODO</tt></a> An unordered list of features and fixes we plan</li> 
 </ul>
 <hr></p>
