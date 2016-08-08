@@ -77,7 +77,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
 
   if(thr_nbr == 0)
     if(nco_dbg_lvl_get() >= nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev )
-      (void)fprintf(fp_stderr,"%s: INFO User did not specify thread request > 0 on command line. NCO will automatically assign threads based on OMP_NUM_THREADS environment and machine capabilities.\nHINT: Not specifiying any --thr_nbr (or specifying --thr_nbr=0) causes NCO to try to pick the optimal thread number. Specifying --thr_nbr=1 tells NCO to execute in Uni-Processor (UP) (i.e., single-threaded) mode.\n",nco_prg_nm_get());
+      (void)fprintf(fp_stderr,"%s: INFO User did not specify thread request > 0 on command line. NCO will automatically assign threads based on OMP_NUM_THREADS environment and machine capabilities.\nHINT: Not specifying any --thr_nbr (or specifying --thr_nbr=0) causes NCO to try to pick the optimal thread number. Specifying --thr_nbr=1 tells NCO to execute in Uni-Processor (UP) (i.e., single-threaded) mode.\n",nco_prg_nm_get());
 
   if(thr_nbr > 0) USR_SPC_THR_RQS=True;
 
