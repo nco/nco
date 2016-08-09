@@ -182,6 +182,7 @@ drc_pwd=${PWD}
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 spt_src="${BASH_SOURCE[0]}"
+[[ -z "${spt_src}" ]] && spt_src="${0}" # jm: in case BASH_SOURCE does not work
 while [ -h "${spt_src}" ]; do # Recursively resolve ${spt_src} until file is no longer a symlink
   drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
   spt_src="$(readlink "${spt_src}")"

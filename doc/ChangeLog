@@ -1,5 +1,7 @@
 2016-08-09  Charlie Zender  <zender@uci.edu>
 
+	* Add [[ -z "${spt_src}" ]] && spt_src="${0}" in case BASH_SOURCE does not work
+
 	* Change spt_nm=$(basename ${BASH_SOURCE[0]}) to spt_nm=$(basename ${spt_src}). Former fails for Jerome and on Edison
 
 2016-08-06  Charlie Zender  <zender@uci.edu>
