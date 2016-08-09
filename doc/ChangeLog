@@ -1,5 +1,11 @@
 2016-08-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.2-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.2-alpha01 final changes';git push
+	git tag -a 4.6.2-alpha01 -m 'Version 4.6.2-alpha01 new features: Implement fall-back in case BASH_SOURCE does not work';git push --tags
+
+	* Implement fall-back in case BASH_SOURCE does not work
+
 	* Add [[ -z "${spt_src}" ]] && spt_src="${0}" in case BASH_SOURCE does not work
 
 	* Change spt_nm=$(basename ${BASH_SOURCE[0]}) to spt_nm=$(basename ${spt_src}). Former fails for Jerome and on Edison

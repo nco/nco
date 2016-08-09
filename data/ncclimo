@@ -270,10 +270,9 @@ esac # !HOSTNAME
 
 # Set script name, directory, PID, run directory, NCO version
 drc_pwd=${PWD}
-# NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 spt_src="${BASH_SOURCE[0]}"
-[[ -z "${spt_src}" ]] && spt_src="${0}" # jm: in case BASH_SOURCE does not work
+[[ -z "${spt_src}" ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
 while [ -h "${spt_src}" ]; do # Recursively resolve ${spt_src} until file is no longer a symlink
   drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
   spt_src="$(readlink "${spt_src}")"
@@ -1256,12 +1255,8 @@ echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
     fl_out_lst="${fl_out_lst} ${fl_out[${clm_idx}]}"
 done
-spt_drc=$(get_spt_drc)
-if [ ${dbg_lvl} -ge 1 ]; then
-    echo "Script is in directory: ${spt_drc}"
-fi # !dbg
 # CSZ: 20150826 disable until less fragile (than relative path) solution is found 
-#cd ${spt_drc}
+#cd ${drc_spt}
 # ../utils/add_git_hash_to_netcdf_metadata ${fl_out_lst}
 
 exit 0
