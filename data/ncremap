@@ -201,7 +201,7 @@ while [ -h "${nco_exe}" ]; do
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 >/dev/null | grep NCO | awk '{print $5}')
-spt_nm=$(basename ${BASH_SOURCE[0]}) # [sng] Script name (Unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
+spt_nm=$(basename ${spt_src}) # [sng] Script name (Unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
 
 # When running in a terminal window (not in an non-interactive batch queue)...

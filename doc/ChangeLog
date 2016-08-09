@@ -1,3 +1,7 @@
+2016-08-09  Charlie Zender  <zender@uci.edu>
+
+	* Change spt_nm=$(basename ${BASH_SOURCE[0]}) to spt_nm=$(basename ${spt_src}). Former fails for Jerome and on Edison
+
 2016-08-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.1 release procedure:
