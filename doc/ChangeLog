@@ -1,3 +1,7 @@
+2016-08-23  Charlie Zender  <zender@uci.edu>
+
+	* Split finding NCO path from finding script path
+
 2016-08-22  Charlie Zender  <zender@uci.edu>
 
 	* Add -U drc_tmp switch to ncremap documentation
