@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 9 August 2016
+@set update-date 22 August 2016
 @set update-month August 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19834,8 +19834,8 @@ ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_op
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-M] [-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] 
-[-T @var{tempest_opt}] [-t @var{thr_nbr}] [-u @var{unq_sfx}] [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] 
-[-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
+[-T @var{tempest_opt}] [-t @var{thr_nbr}] [-U @var{drc_tmp}] [-u @var{unq_sfx}] 
+[-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
 
 @noindent
@@ -20334,6 +20334,22 @@ to @acronym{FV} maps, pass @samp{-T "--mono"}.
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
 The @acronym{NCO} regridder scales well up to 8--16 threads.
+
+@html
+<a name="tmp_drc"></a> <!-- http://nco.sf.net/nco.html#tmp_drc -->
+@end html
+@cindex @code{-U @var{tmp_drc}}
+@cindex @var{tmp_drc}
+@item -U @var{tmp_drc}
+Specifies the directory in which to place intermediate output files.
+Depending on how it is invoked, @command{ncremap} may generate
+a few or many intermediate files (grids and maps) that it will, by
+default, remove upon successful completion.
+These files can be large, so the option to set @var{tmp_drc} is offered
+to ensure their location is convenient to the system.
+If the user does not specify @var{tmp_drc}, then @command{ncremap} uses
+the value of @code{$TMPDIR}, if any, or else @file{/tmp} if it exists,
+or else it uses the current working director (@code{$PWD}).
 
 @html
 <a name="unq_sfx"></a> <!-- http://nco.sf.net/nco.html#unq_sfx -->
