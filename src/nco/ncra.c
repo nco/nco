@@ -1489,7 +1489,12 @@ main(int argc,char **argv)
       } /* end idx_rec loop over different record variables to process */
 
       if(flg_cb && nco_prg_id == ncra){
-	/* Obtain climatology bounds from input file */
+	/* Obtain climatology bounds from input file
+	   20160824: Currently dmn_srt_srt and dmn_srt_end indices are 0 and 1, respectively
+	   This means values are always/only taken for first record in input file
+	   Thus climatology_bounds are only correct for input files with single timestep
+	   To fix this requires updating dmn_srt_srt and dmn_srt_end with correct indices
+	   Correct indices must account for multiple input records per file and hyperslabbing (e.g., -d time,3,5) */
 	int var_id_in;
 	double val_dbl;
 	var_id_in= cb->tm_bnd_in ? cb->tm_bnd_id_in : cb->clm_bnd_id_in;

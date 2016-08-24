@@ -680,10 +680,15 @@ nco1128. nco: ncrename --lowercase --uppercase options? MERRA2 merra
        ncrename --lowercase --var .ONE,.TWO,... in.nc out.nc
 nco1129. ncks allow --mk_rec_dmn to change multiple dimensions at one time
        ncks -O --mk_rec_dmn lat,lon ~/nco/data/in_grp.nc ~/foo.nc
-nco1130. ncatted support for '.' (dot) in names (reported by emontgomery 20170726)
+nco1130. ncatted support for '.' (dot) in names (reported by emontgomery 20160726 fixed 20160729)
        ncatted treats dot.name as rx then fails to find match
        ncatted -O -a dot.name,global,o,c,value ~/nco/data/in.nc ~/foo.nc
-nco1131. 
+nco1131. nco: ncra --cb wrong unless single record per input file (see note tagged 20160824 in ncra.c)
+       ncks -O -v three_dmn_var_dbl ~/nco/data/in.nc ~/foo.nc
+       ncra -O --cb -d time,3,6 -v three_dmn_var_dbl ~/foo.nc ~/foo2.nc
+       ncks --cdl -v climatology_bounds ~/foo2.nc
+       climatology_bounds are [0.5,1.5] but should be [2.5,6.5]
+nco1132. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

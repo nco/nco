@@ -19578,7 +19578,7 @@ necessary
 @item Omit any input time coordinate @code{bounds} attribute and
       variable 
 @item Ensure the @code{cell_methods} attribute for all variables is
-      appropriate for climatolgies within and over years.
+      appropriate for climatologies within and over years.
       Climatologies within days will have incorrect units (the switch is
       currently opt-in so that incorrect units are not inadvertently generated).
       Please contact the authors if this functionality is important to you
