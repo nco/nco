@@ -1,3 +1,7 @@
+2016-08-24  Henry Butowsky  <henryb@hush.com>
+	* documented the ncap2 function 'create_bound()
+
+
 2016-08-23  Charlie Zender  <zender@uci.edu>
 
 	* Split finding NCO path from finding script path

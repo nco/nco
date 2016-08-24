@@ -11186,6 +11186,7 @@ already contain the appended dimensions.
 * Intrinsic mathematical methods::
 * Operator precedence and associativity ::
 * ID Quoting::
+* create_bounds() function::
 @end menu
 
 @html
@@ -14872,7 +14873,7 @@ This page lists the @command{ncap2} operators in order of precedence (highest to
 @html
 <a name="ncap_nmc"></a> <!-- http://nco.sf.net/nco.html#ncap_nmc -->
 @end html
-@node ID Quoting,  , Operator precedence and associativity , ncap2 netCDF Arithmetic Processor
+@node ID Quoting, create_bounds() function, Operator precedence and associativity , ncap2 netCDF Arithmetic Processor
 @subsection ID Quoting
 @cindex ID Quoting
 In this section when I refer to a name I mean a variable name, attribute name or a dimension name
@@ -14942,6 +14943,39 @@ netcdf-4.0 Final  2008/08/28@*
 @end verbatim
 @end example
 @c End HMB documentation
+
+@node create_bounds() function, , ID Quoting, ncap2 netCDF Arithmetic Processor
+@subsection create_bounds() function
+@cindex create_bounds() function
+The ncap2 custom function 'create_bounds()' takes any monotonic 1D coordinate variable with regular or irregular ( eg Gaussian ) spacing and creates a bounds variable.
+
+@emph{<bounds_var_out>=create_bounds( <coordinate_var_in>, <dim in>, <string>)}  
+
+@table @var
+@item 1st Argument
+The var-name of the input coordinate var.
+@item 2nd Argument
+The dim name of the second dimension of the ouput variable. 
+The size of this dim should always be 2
+if the dim doest exist you'll have to create it using @code{ defdim(); }. 
+@item 3rd Argument
+The string value of a "bounds" attribute that is created in the input coordinate var. ( so this should be the var-name of your bounds)
+@end table
+
+
+Below is typical usgae
+@example
+defdim("nv",2);
+longitude_bounds=create_bounds(longitude, $nv, "longitude_bounds")
+@end example
+
+This another common CF convention
+
+@example
+defdim("nv",2);
+climatology_bounds=create_bounds(time, $nv, "climatology_bounds")
+@end example
+
 
 @page
 @html
