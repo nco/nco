@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 22 August 2016
+@set update-date 24 August 2016
 @set update-month August 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19595,6 +19595,8 @@ variables.
 As of @acronym{NCO} version 4.6.0 (May, 2016) @command{ncra} can honor 
 the @acronym{CF} @code{climatology} and climatological statistics
 conventions described in @ref{CF Conventions}.
+This functionality only works when each input file contains only a
+single record (timestep).
 Currently this is opt-in with the @samp{--cb} flag (or long-option
 equivalent @samp{--clm_bnd}), or with the @samp{--c2b} flag (or its
 long-option equivalent @samp{--clm2bnd}) switches. 
