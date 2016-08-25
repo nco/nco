@@ -1,6 +1,6 @@
 2016-08-24  Charlie Zender  <zender@uci.edu>
 
-	* Note tagged 20160824 how to fix --cb to work for multiple-record input files and hyperslabs
+	* Note in ncra.c tagged 20160824 on how to fix --cb to work for multiple-record input files and hyperslabs
 
 2016-08-24  Henry Butowsky  <henryb@hush.com>
 
