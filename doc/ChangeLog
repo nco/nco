@@ -1,5 +1,7 @@
 2016-08-31  Charlie Zender  <zender@uci.edu>
 
+	* git tag -a 4.6.2-alpha01 -m 'Same as version 4.6.2-alpha01. Second attempt at Zenodo release for PPC paper.';git push --tags
+
 	* NCO 4.6.2-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.2-alpha01 final changes';git push
 	git tag -a 4.6.2-alpha01 -m 'Version 4.6.2-alpha01 new features: fall-back if BASH_SOURCE fails; first Zenodo release for PPC paper';git push --tags
