@@ -1,3 +1,9 @@
+2016-08-31  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.2-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.2-alpha01 final changes';git push
+	git tag -a 4.6.2-alpha01 -m 'Version 4.6.2-alpha01 new features: fall-back if BASH_SOURCE fails; first Zenodo release for PPC paper';git push --tags
+
 2016-08-24  Charlie Zender  <zender@uci.edu>
 
 	* Note in ncra.c tagged 20160824 on how to fix --cb to work for multiple-record input files and hyperslabs
@@ -15,10 +21,6 @@
 	* Add -U drc_tmp switch to ncremap documentation
 
 2016-08-09  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.6.2-alpha01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.2-alpha01 final changes';git push
-	git tag -a 4.6.2-alpha01 -m 'Version 4.6.2-alpha01 new features: Implement fall-back in case BASH_SOURCE does not work';git push --tags
 
 	* Implement fall-back in case BASH_SOURCE does not work
 
