@@ -180,7 +180,6 @@ esac # !HOSTNAME
 # ncremap -P mpas -i ${DATA}/mpas/raw/hist.ocn.0001-01-01_00.00.00.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -O ~/rgr
 # ncremap -P mpas -i ${DATA}/mpas/raw/hist.ice.0003-12-01_00.00.00.nc -m ${DATA}/maps/map_mpas120_TO_T62_aave.121116.nc -O ~/rgr
 # ACME benchmarks:
-# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc   -O ~/rgr
 # ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 # ncremap -v FSNT,AODVIS -w esmf    -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v FSNT,AODVIS -w tempest -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
