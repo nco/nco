@@ -147,7 +147,8 @@ case "${HOSTNAME}" in
 esac # !HOSTNAME
 
 # Insta-install
-# scp ~/nco/data/ncremap cori.nersc.gov:bin
+# scp ~/nco/data/ncremap cori.nersc.gov:bin_cori
+# scp ~/nco/data/ncremap edison.nersc.gov:bin_edison
 
 # Test cases (for Charlie's machines)
 # Map-only:
