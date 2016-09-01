@@ -1,6 +1,8 @@
 2016-09-01  Charlie Zender  <zender@uci.edu>
 
-	* git tag -a 4.6.1-gmd_ppc -m 'Same as version 4.6.2-alpha01. Zenodo tag for GMD PPC paper.';git push --tags
+	* NCO 4.6.1-gmd_ppc release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.1-gmd_ppc final changes';git pus
+	git tag -a 4.6.1-gmd_ppc -m 'Same as version 4.6.2-alpha01. Zenodo tag for GMD PPC paper.';git push --tags
 
 2016-08-31  Charlie Zender  <zender@uci.edu>
 
