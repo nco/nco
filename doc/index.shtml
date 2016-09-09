@@ -554,47 +554,51 @@ climate models (see <a href="#pub">publications</a>).</p>
 <h2>Publications and Presentations</h2>
 <ul>
 <li><!-- Zen16 --> <a name="Zen16"></a> <!--http://www.ess.uci.edu/~zender#Zen16 -->
+Zender, C.&nbsp; S. (2016), Bit Grooming: Statistically accurate precision-preserving quantization with compression, evaluated in the netCDF Operators (NCO, v4.4.8+), <i>In Press, Geosci. Model Dev.</i>, doi:10.5194/gmd-2016-63.
+<a href="http://dust.ess.uci.edu/ppr/ppr_Zen16.pdf">PDF</a></li>
+  
+<li><!-- Zen16 --> <a name="Zen16"></a> <!--http://www.ess.uci.edu/~zender#Zen16 -->
 Zender, C. S. (2016): Regrid Curvilinear, Rectangular, and Unstructured Data (CRUD) with ncremap, a new netCDF Operator. Presented to the Earth Science Data Systems Working Group (ESDSWG) Meeting, Greenbelt, MD, April 6--8, 2016.
-<a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201604.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201604.pdf">PDF</a></li>
 
 <li><!-- Zen16 --> <a name="Zen16"></a> <!--http://www.ess.uci.edu/~zender#Zen16 -->
 Zender, C. S. (2016): Regridding Swath, Curvilinear, Rectangular, and Unstructured Data (SCRUD). Presented to the NASA Goddard Earth Sciences (GES) Data and Information Services Center (DISC), Goddard Space Flight Center, Greenbelt, MD, April 5, 2016.
-<a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">PDF</a></li>
 
 <li><!-- Zen15 --> <a name="Zen15"></a> <!--http://www.ess.uci.edu/~zender#Zen15 -->
 Zender, C. S. (2015): Regrid Curvilinear, Rectangular, and Unstructured Data (CRUD) with ncremap, a new netCDF Operator. Presented to the American Geophysical Union Fall Meeting, San Francisco, CA, December 14--18, 2015. <i>Eos Trans. AGU</i>, <b>95</b>(54), Fall Meet. Suppl., Abstract IN31A-1744.
-<a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">PDF</a></li>
 
 <li><!-- Zen15 --> <a name="Zen15"></a> <!--http://www.ess.uci.edu/~zender#Zen15 -->
 Zender, C. S. (2015): Optimizing Intrinsic Parallelism to generate climatologies with netCDF Operators (NCO). Presented to the DOE Accelerated Climate Modeling for Energy (ACME) PI Meeting, Albuquerque, NM, November 2--4, 2015.
-<a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">PDF</a></li>
 
 <li><!-- ZVW15 --> <a name="ZVW15"></a> <!--http://www.ess.uci.edu/~zender#ZVW15 -->
 Zender, C. S., P. Vicente, and W. Wang (2015): Use netCDF Operators (NCO) to Improve Data Interoperability and Usability. Presented to the Earth Science Data Systems Working Group (ESDSWG) Meeting, Greenbelt, MD, March 24--26, 2015.
-<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201503.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201503.pdf">PDF</a></li>
 
 <li><!-- ZVW14 --> <a name="ZVW14"></a> <!--http://www.ess.uci.edu/~zender#ZVW14 -->
 Zender, C. S., P. Vicente, and W. Wang (2014): Simplifying and accelerating model evaluation by NASA satellite data. Presented to the Earth Science Data Systems Working Group (ESDSWG) Meeting, Greenbelt, MD, March 24--26, 2014.
-<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">PDF</a></li>
 
 <li><!-- Zen14 --> <a name="Zen14"></a> <!--http://www.ess.uci.edu/~zender#Zen14 -->
 Zender, C.&nbsp;S. (2014): <i>Use Hierarchical Storage and Analysis to Exploit Intrinsic Parallelism</i>. Presented to the NASA Goddard Earth Sciences (GES) Data and Information Services Center (DISC), Goddard Space Flight Center, Greenbelt, MD, March&nbsp;27, 2014.
-<a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">PDF</a> (&copy;&nbsp;2014 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">PDF</a></li>
 
 <li><!-- ZVW13 --> <a name="ZVW13"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
 Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2013): <i>Use Hierarchical Storage and Analysis to Exploit Intrinsic Parallelism</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 9&ndash;13, 2013. <i>Eos Trans. AGU</i>, <b>93</b>(53), Fall Meet. Suppl., Abstract IN52A-06.
-<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201312.pdf">PDF</a> (&copy;&nbsp;2013 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201312.pdf">PDF</a></li>
 
 <li><!-- ZVW13 --> <a name="ZVW13"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
-Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2013): <i>The Future of Model Evaluation</i>. Presented to the Chapman University Symposium on Big Data and Analytics: 44th Symposium on the Interface of Computing Science and Statistics, Chapman University, Orange,&nbsp;CA, April 4&ndash;6, 2013. <a href="http://dust.ess.uci.edu/smn/smn_nco_chapman_201304.pdf">PDF</a> (&copy;&nbsp;2013 by me)</li>
+Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2013): <i>The Future of Model Evaluation</i>. Presented to the Chapman University Symposium on Big Data and Analytics: 44th Symposium on the Interface of Computing Science and Statistics, Chapman University, Orange,&nbsp;CA, April 4&ndash;6, 2013. <a href="http://dust.ess.uci.edu/smn/smn_nco_chapman_201304.pdf">PDF</a></li>
 
 <li><!-- ZVW12 --> <a name="ZVW12"></a> <!--http://www.ess.uci.edu/~zender#ZVW12 -->
 Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2012): <i>NCO: Simpler and faster model evaluation by NASA satellite data via unified file-level netCDF and HDF-EOS data post-processing tools.</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 3&ndash;7, 2012. <i>Eos Trans. AGU</i>, <b>93</b>(53), Fall Meet. Suppl., Abstract IN34A-07.
-<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201212.pdf">PDF</a> (&copy;&nbsp;2012 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201212.pdf">PDF</a></li>
 
 <li><!-- ZVW12 --> <a name="ZVW12"></a> <!--http://www.ess.uci.edu/~zender#ZVW12 -->
 Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2012): <i>Simplifying and accelerating model evaluation by NASA satellite data.</i>. Presented to the Earth Science Data Systems Working Group (ESDSWG) Meeting, Annapolis&nbsp;MD, November 13&ndash;15, 2012.
-<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201211.pdf">PDF</a> (&copy;&nbsp;2012 by me)</li>
+<a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201211.pdf">PDF</a></li>
 
 <li><a href="./prs_pbl_old.shtml">Presentation and Publications from 2006&ndash;2011</a></li>
 
@@ -613,7 +617,7 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.6.1 http://github.com/nco/nco.git nco-4.6.1</tt></a>.
 <ul>
-<li><b>NCO 4.6.2</b>: (<i>Future</i>) 
+<li><b>NCO 4.6.3</b>: (<i>Future</i>) 
 <tt>ncks</tt> prints human-legible ISO8601 dates;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 <tt>ncks</tt> prints human-legible ISO8601 dates;
@@ -623,7 +627,9 @@ netCDF4 compound types?;
 <tt>ncremap</tt> use CF to find coordinates;
 <tt>ncks --xtn</tt> better extensive variable treatment;
 Optimize diskless files?;</li>
-<li><b>NCO 4.6.1</b>: (<i>In Progress, features in-progress or completed include</i>)
+<li><b>NCO 4.6.2</b>: (<i>In Progress, features in-progress or completed include</i>)
+Improved <tt>ncclimo, ncremap</tt> behavior in <tt>module</tt> environments;</li>
+<li><b>NCO 4.6.1</b>: (<i>Current Stable Release</i>)
 <tt>ncclimo</tt> incremental mode;
 <tt>ncflint -N</tt> normalization;</li>
 <li><b>NCO 4.6.0</b>: 
@@ -637,13 +643,13 @@ Optimize diskless files?;</li>
 <tt>ncra --cb</tt> climatology bounds
 <tt>ncremap</tt> uses CF to find coordinates;
 <tt>ncremap</tt> uses $TMPDIR;</li>
-<li><b>NCO 4.5.5</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.5.5</b>:
 All operators support CDF5 format;
 <tt>ncap2</tt> fix negative dimension indices handling;
 <tt>ncremap -P airs,hirdls,mls,mpas</tt>;
 <tt>nces/ncra</tt> fix <tt>-y mebs</tt> normalization, add <tt>-y tabs</tt>;
 <tt>ncatted/ncrename/ncpdq</tt> fix <tt>--gaa</tt>;</li>
-<li><b>NCO 4.5.4</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.5.4</b>:
 <tt>ncap2</tt> syntax simplification/fixes;
 <tt>ncks -V</tt> bugfix;
 <tt>ncks</tt> XML <tt>_Unsigned</tt> attribute;
@@ -773,18 +779,14 @@ Thanks to Rich Signell, Filipe Fernandes (and others?) for developing and mainta
 <li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.6.1</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
-<a href="http://packages.ubuntu.com/natty/nco">Ubuntu NCO</a> homepages.
+<a href="https://launchpad.net/ubuntu/+source/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
-NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
+NCO packages in the Debian/Ubuntu repositories (e.g., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/nco/nco/tree/master/doc/beta.txt">here</a>.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.6.1-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_4.6.1-1_amd64.deb">nco_4.6.1-1_amd64.deb</a> (<!--#fsize file="src/nco_4.6.1-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.6.1-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.6.1-1.dsc">nco_4.6.1-1.dsc</a> (<!--#fsize file="src/nco_4.6.1-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.6.1-1.dsc"-->)</li>
-<li><a href="src/nco_4.6.1-1_amd64.changes">nco_4.6.1-1_amd64.changes</a> (<!--#fsize file="src/nco_4.6.1-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.6.1-1_amd64.changes"-->)</li>
-<li><a href="src/nco_4.6.1.orig.tar.gz">nco_4.6.1.orig.tar.gz</a> (<!--#fsize file="src/nco_4.6.1.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.6.1.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.6.1-1.diff.gz">nco_4.6.1-1.diff.gz</a> (<!--#fsize file="src/nco_4.6.1-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.6.1-1_amd64.changes"-->)</li>
-Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
+<li><a href="https://launchpad.net/ubuntu/+source/nco/4.6.1-1">nco_4.6.1-1_amd64.deb</a> : Executables AMD64-compatible</li>
+Thanks to Daniel Baumann, Sebastian Couwenberg, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
 </ul>

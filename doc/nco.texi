@@ -122,8 +122,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 31 August 2016
-@set update-month August 2016
+@set update-date 7 September 2016
+@set update-month September 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -11501,7 +11501,6 @@ arithmetic expression:
 @example
 time_avg=time.total() / $time.size;
 @end example
-
 
 Increase the size of a new variable by one and set new member to zero:
 @example
