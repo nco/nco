@@ -12145,20 +12145,17 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : \
 @node print statement, Missing values ncap2, if statement, ncap2 netCDF Arithmetic Processor
 @subsection print statement
 @cindex print() @command{ncap2}
+
+The print function is overloaded and has two forms. 
+The format string is optional
+
 @example
-print(variable_name/attribute name/string, format string);
+print(variable_name, format string?);
+
+print(expression/attribute name/string, format string?);
 @end example  
 
-@noindent The print function takes a variable name or attribute name or
-a quoted string and prints the contents in a in a similar fashion to
-@code{ncks -H}.
-There is also an optional C-language style format string argument. 
-Currently the print function cannot print @acronym{RAM} variables or expressions 
-such as @code{'print(var_msk*3+4)'}. 
-To print an expression, first evaluate it as a non-@acronym{RAM} variable (so it
-will be saved and can be printed), and then print the variable.
-
-@noindent examples
+@noindent If the variable exists in I/O then it is printed in a similar fashion to @code{ncks -H}.
 @example
 @verbatim
 print(lon);
@@ -12167,16 +12164,51 @@ lon[1]=90
 lon[2]=180 
 lon[3]=270 
 
-print(lon_2D_rrg,"%3.2f,");
-0.00,0.00,180.00,0.00,180.00,0.00,180.00,0.00,
+print(byt_2D )
+lat[0]=-90 lon[0]=0 byt_2D[0]=0 
+lat[0]=-90 lon[1]=90 byt_2D[1]=1 
+lat[0]=-90 lon[2]=180 byt_2D[2]=2 
+lat[0]=-90 lon[3]=270 byt_2D[3]=3 
+lat[1]=90 lon[0]=0 byt_2D[4]=4 
+lat[1]=90 lon[1]=90 byt_2D[5]=5 
+lat[1]=90 lon[2]=180 byt_2D[6]=6 
+lat[1]=90 lon[3]=270 byt_2D[7]=7 
+@end verbatim
+@end example
 
+@noindent If the first argument is NOT a variable the second form is invoked.
+@example
+@verbatim
 print(mss_val_fst@_FillValue);
 mss_val_fst@_FillValue, size = 1 NC_FLOAT, value = -999
 
 print("This function \t is monotonic\n");
 This function is 	  monotonic
+
+print(att_var@float_att)
+att_var@float_att, size = 7 NC_FLOAT, value = 73, 72, 71, 70.01, 69.001, 68.01, 67.01
+
+print(lon*10.0)
+lon, size = 4 NC_DOUBLE, value = 0, 900, 1800, 2700
+
 @end verbatim
 @end example
+
+
+@noindent if the format string is specified then the results from the overloaded forms are the same
+@example
+@verbatim
+print(lon_2D_rrg,"%3.2f,");
+0.00,0.00,180.00,0.00,180.00,0.00,180.00,0.00,
+
+print(lon*10.0, "%g,")
+0,900,1800,2700,
+
+print(att_var@float_att,"%g," )
+73,72,71,70.01,69.001,68.01,67.01,
+@end verbatim
+@end example
+
 
 @html
 <a name="ncap_miss"></a> <!-- http://nco.sf.net/nco.html#ncap_miss -->
