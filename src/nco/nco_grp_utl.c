@@ -7306,7 +7306,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
           /* Has 'latitude' auxiliary coordinates */
           if(var_trv.var_dmn[idx_dmn].nbr_lat_crd){
-            /* Use the coordinate with lower group depth (index 0) (These were already sorted ) */
+            /* Use coordinate with lower group depth (index 0) (These were already sorted) */
             lat_trv=trv_tbl_var_nm_fll(var_trv.var_dmn[idx_dmn].lat_crd[0].nm_fll,trv_tbl);
             dmn_idx_fnd=idx_dmn;
             dmn_id_fnd_lat=var_trv.var_dmn[idx_dmn].lat_crd[0].dmn_id;
@@ -7318,7 +7318,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
           /* Has 'longitude' auxiliary coordinates */
           if(var_trv.var_dmn[idx_dmn].nbr_lon_crd){
-            /* Use the coordinate with lower group depth (index 0) (These were already sorted ) */
+            /* Use coordinate with lower group depth (index 0) (These were already sorted) */
             lon_trv=trv_tbl_var_nm_fll(var_trv.var_dmn[idx_dmn].lon_crd[0].nm_fll,trv_tbl);
             dmn_idx_fnd=idx_dmn;
             dmn_id_fnd_lon=var_trv.var_dmn[idx_dmn].lon_crd[0].dmn_id;
@@ -7348,7 +7348,6 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
           /* Found limits */
           if(aux_lmt_nbr > 0){
-
             if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[idx_tbl].nm_fll,aux_lmt_nbr); 
 
             lmt_sct **lmt=aux;
@@ -7361,22 +7360,20 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             /* Apply limits to variable in table */
             (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,var_trv.nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
 
-            /* Apply limits to *all* 'latitude', 'longitude' variables that share the same ID */
+            /* Apply limits to *all* 'latitude', 'longitude' variables that share same ID */
             (void)nco_lmt_std_att_lat_lon(nc_id,lmt,lmt_dmn_nbr,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);   
 
             /* Get unique dimension object from unique dimension ID (e.g., 'gds_crd) */
             dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id_fnd_lat,trv_tbl);
 
-            /* The dimension IDs of both 'latitude' and 'longitude' must refer to the same dimemsion (e.g., 'gds_crd) */
+            /* Dimension IDs of both 'latitude' and 'longitude' must refer to same dimemsion (e.g., gds_crd) */
             assert(dmn_id_fnd_lon == dmn_trv->dmn_id);
 
-            /*  Apply limits to the coordinate (e.g., 'gds_crd) */
+            /* Apply limits to coordinate (e.g., gds_crd) */
             (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,dmn_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
 
-            if(nco_dbg_lvl_get() == nco_dbg_old) 
-            {
-              for(int idx_lmt=0;idx_lmt<lmt_dmn_nbr;idx_lmt++)
-              {
+            if(nco_dbg_lvl_get() == nco_dbg_old){
+              for(int idx_lmt=0;idx_lmt<lmt_dmn_nbr;idx_lmt++){
                 (void)fprintf(stdout,"\nlimit index %d\n",idx_lmt);
                 nco_lmt_prt(lmt[idx_lmt]);
               }

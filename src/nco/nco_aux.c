@@ -11,10 +11,13 @@
    Cells that contain a value within the user-requested range are considered a match.
    Could be useful to look at the CF bounds variable instead but harder.
    
-   Author: Karen Schuchardt
+   Original Author: Karen Schuchardt, PNNL
    
    Example usage:
-   ncks -X 0.,45.,0.,90. -X 180.,225.,-90.,0. ~/nco/data/in.nc ~/foo.nc */
+   ncks -v gds_3dvar -X 0.,45.,0.,90. -X 180.,225.,-90.,0. ~/nco/data/in.nc ~/foo.nc
+   ncks -X -99,-93,28,32 ${DATA}/hdf/nwm.t18z.short_range.channel_rt.f015.conus.nc_georeferenced.nc ~/foo.nc
+   ncatted -O -a standard_name,latitude,o,c,latitude -a standard_name,longitude,o,c,longitude ${DATA}/hdf/nwm.t18z.short_range.channel_rt.f015.conus.nc_georeferenced.nc ~/foo.nc
+   ncks -O -D 3 -X -99,-93,28,32 ~/foo.nc ~/foo2.nc */
 
 #include "nco_aux.h" /* Auxiliary coordinates */
 
