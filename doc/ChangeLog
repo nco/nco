@@ -1,6 +1,6 @@
 2016-09-09  Henry Butowsky  <henryb@hush.com>
-	* updated manual section on ncap2/print
-	 ( need to finalize form of sprint() & snprint() with charlie )
+
+	* Updated manual section on ncap2/print (need to finalize form of sprint() & snprint())
 
 2016-09-01  Charlie Zender  <zender@uci.edu>
 
