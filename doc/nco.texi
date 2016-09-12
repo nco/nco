@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 7 September 2016
+@set update-date 11 September 2016
 @set update-month September 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6103,7 +6103,7 @@ monotonic and rectangular grids.
 Confusingly, the angular spacing in a Regular grid need not be uniform,  
 it could be irregular, such as in a Gaussian grid.
 The term Regular is not too useful in grid-generation, because so many
-other parameters (spacing, centering) are necessary to disambiuate it.}. 
+other parameters (spacing, centering) are necessary to disambiguate it.}. 
 The Uniform-latitude grid may have any number of latitudes. 
 @acronym{NCO} can only generate longitude grids (below) that are
 uniformly spaced, so the Uniform-latitude grids we describe are
@@ -6168,7 +6168,7 @@ representation on disk is not uniform.
 Nevertheless, some call the Cap grid a uniform-angle grid because the
 information contained at the poles is aggregated in memory to span twice
 the range of a single polar gridcell (which has half the normal width). 
-The @acronym{NCL} uses the term ``Fixed grid'' for a Cap grid.
+@acronym{NCL} uses the term ``Fixed grid'' for a Cap grid.
 The ``Fixed'' terminology seems broken.
 
 Finally, Gaussian grids are the Cartesian representation of global
@@ -6253,12 +6253,12 @@ ncks --rgr grd_ttl='Equi-Angular grid 128x256' --rgr grid=${DATA}/grids/128x256_
 
 # T42 Gaussian grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='T42 Gaussian grid' --rgr grid=${DATA}/grids/t42_SCRIP.20150901.nc \
-     --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~zender/nco/data/in.nc ~/foo.nc
+     --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
 
 # NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree) Equi-Angular grid
 # Date-line west edge of first longitude, east edge of last longitude
 ncks --rgr grd_ttl='Equi-Angular grid 3600x7200 (NASA CMG)' --rgr grid=${DATA}/grids/3600x7200_SCRIP.20160301.nc \
-     --rgr latlon=3600,7200 --rgr lat_typ=uni --rgr lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
+     --rgr latlon=3600,7200 --rgr lat_typ=uni --rgr lon_typ=180_wst ~zender/nco/data/in.nc ~/foo.nc
 @end verbatim
 @end example
 
@@ -6390,7 +6390,7 @@ Currently @acronym{NCO} understands only the mapfile format pioneered by
 (@url{http://oceans11.lanl.gov/svn/SCRIP/trunk/SCRIP})
 and later extended by @acronym{ESMF} 
 (@uref{http://www.earthsystemcog.org/projects/regridweightgen}),
-and adopted (along with Exodus) by Tempest
+and adopted (along with Exodus) by TempestRemap
 (@uref{https://github.com/ClimateGlobalChange/tempestremap.git}).
 See those references for documentation on map formats, grid
 specification, and weight generation. 
@@ -19882,7 +19882,7 @@ When no @var{input-file} is provided, @command{ncremap} operates in
 ``map-only'' mode where it exits after producing an annotated map-file. 
 @command{ncremap} was introduced to @acronym{NCO} in version 4.5.4
 (December, 2015). 
-As the newest operator, its interface is evolving in response to user
+As a newer operator, its interface is evolving in response to user
 needs, feedback, and new features. 
 @command{ncremap} orchestrates the regridding features of several
 different programs.
@@ -19897,6 +19897,7 @@ to generate the remapping weights that @acronym{NCO} then applies.
 @cindex @acronym{ERWG}
 @cindex TempestRemap
 @cindex @acronym{NCL}
+@cindex Conda
 Unlike the rest of @acronym{NCO}, @command{ncremap} is a shell script,
 not a compiled binary. 
 @command{ncremap} wraps the underlying regridder (@command{ncks}) and
@@ -19914,9 +19915,15 @@ generate weights and mapfiles.
 In order to use the weight-generation options, ensure that one or both
 of the weight-generation packages is installed and on your
 @code{$PATH}. 
-The recommended way to obtain @acronym{ERWG} is as distributed in binary
-format with @acronym{NCL}, which many (most?) @acronym{NCO} users
-already have on their system(s).
+The recommended way to obtain @acronym{ERWG} is as distributed in binary 
+format.  
+Many (most?) @acronym{NCO} users already have @acronym{NCL} on their
+system(s), and @acronym{NCL} usually comes with @acronym{ERWG}.
+Since about June, 2016, the Conda @acronym{NCO} package will also
+install @acronym{ERWG}
+@footnote{   
+Install the Conda @acronym{NCO} package with
+@samp{conda install -c conda-forge nco}.}. 
 Then be sure the directory containing the @acronym{ERWG} executable is
 on your @code{$PATH} before using @command{ncremap}.
 As a fallback, @acronym{ERWG} may also be installed from source:
