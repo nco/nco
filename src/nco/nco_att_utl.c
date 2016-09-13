@@ -1943,7 +1943,7 @@ nco_glb_att_add /* [fnc] Add global attributes */
 
   //gaa_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
 
-  final_string = nco_join_sng(gaa_arg, delimiter, gaa_arg_nbr);
+  final_string = nco_join_sng((const char**)gaa_arg, delimiter, gaa_arg_nbr); //join all the arguments
 
   gaa_lst = nco_argument_parser(final_string);
 

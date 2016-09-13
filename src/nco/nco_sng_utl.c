@@ -647,7 +647,7 @@ nco_sng2typ /* [fnc] Convert user-supplied string to netCDF type enum */
 
 kvm_sct /* O [kvm_sct] key-value pair*/
 nco_sng2kvm /* [fnc] convert a string to key-value pair */
-(char *args) /* I [sng] input string argument with an equal sign connecting the key & value */
+(const char *args) /* I [sng] input string argument with an equal sign connecting the key & value */
 {
 /*Implementation: parsing the args so they can be sent to a kvm (fake kvm here)
  * as a key-value pair.
@@ -746,15 +746,12 @@ const char* delimiter) /* I [char] the delimiter*/
     char** final = NULL, *temp = strdup(source);
     size_t counter = nco_count_blocks(source, delimiter), index = 0;    
 
-    // for(size_t i = 0; temp[i]; i++){
-
-    //     if(delimiter == temp[i]){++ counter;}
-    // } //end of loop
-
     if(!strstr(temp, delimiter)){ //special case for one single argument
 
       final    = (char**)malloc(sizeof(char*));
+
       final[0] = temp;
+
       return final;
     }
 
@@ -763,10 +760,10 @@ const char* delimiter) /* I [char] the delimiter*/
     if(final){
 
         for(char *token = strtok(temp, delimiter); token; token = strtok(NULL, delimiter)){
+
             final[index ++] = strdup(token);
         } //end for
 
-        //final[index] = NULL;
         free(temp);
 
     }else{return NULL;} //end if
@@ -788,19 +785,25 @@ nco_input_check /* [fnc] check whether the input is legal and give feedback acco
     if(!strstr(args, "=")){ //If no equal sign in arguments
         
         printf("\033[0;31mIn %s\n", args);
+
         perror("Formatting Error: No equal sign detected \033[0m\n");
+
         return 0;
     } //endif
     if(strstr(args, "=") == args){ //If equal sign is in the very beginning of the arguments (no key)
         
         printf("\033[0;31mIn %s\n", args);
+
         perror("Formatting Error: No key in key-value pair.\033[0m\n"); 
+
         return 0;
     } //endif
     if(strstr(args, "=") == args + strlen(args) - 1){ //If equal sign is in the very end of the arguments
         
         printf("\033[0;31mIn %s\n", args);
+
         perror("Formatting Error: No value in key-value pair.\033[0m\n"); 
+        
         return 0;
     } //endif
     return 1;
@@ -809,22 +812,34 @@ nco_input_check /* [fnc] check whether the input is legal and give feedback acco
 
 #endif
 
-int nco_count_blocks(const char* args, const char* delimiter)
+int // O [int] the number of string blocks if will be split with delimiter
+nco_count_blocks // [fnc] Check number of string blocks if will be split with delimiter
+(const char* args, // I [sng] the string which is going to be split
+const char* delimiter) // I [sng] the delimiter
 {
   int i = 0;
+
   char *pch=strchr(args, *(delimiter));
+
   while (pch!=NULL) {
+
     i++;
+
     pch=strchr(pch+1, *(delimiter));
   }
   return i + 1;
 }
 
-void nco_doubleptr_free(char **restrict doubleptr, const block_num)
+void 
+nco_doubleptr_free // [fnc] free the double pointer and set to null
+(char **restrict doubleptr, // I/O [char* to sng] the double pointer being free'd
+const int block_num) //I [int] the number of sng in the double pointer
 {
     /* Use to free the double character pointer, and set the pointer to NULL */
     for(int i=0; i < block_num; i++){free(doubleptr[i]);}
+
     free(doubleptr);
+
     doubleptr = NULL;
 }
 
@@ -835,17 +850,14 @@ kvm_sct* /* O [kvm_sct] the pointer to the first kvm structure */
 nco_argument_parser /* [fnc] main parser, split the string and assign to kvm structure */
 (const char *restrict args) /* I [sng] input string */
 {
-    /* Main parser for the argument. This will */
-    //if(!args || !nco_input_check(args)){exit(-1);}
+    /* Main parser for the argument. This will split the whole argument into key value pair and send to sng2kvm*/
+    if(!args){
+
+        nco_exit(EXIT_FAILURE);
+    }
 
     char **separate_args = nco_string_split(args, ";");
-    size_t counter = nco_count_blocks(args, ";") * nco_count_blocks(args, ",");
-
-    if(!strstr(args, "=") && !strstr(args, ",") && nco_input_check(args)){
-      
-      kvm_sct kvm_object = nco_sng2kvm(args);
-      return &kvm_object;
-    }
+    size_t counter = nco_count_blocks(args, ";") * nco_count_blocks(args, ","); //Max number of kvm structure in this argument
 
     for(int i=0; i < nco_count_blocks(args, ";"); i++){
 
@@ -862,6 +874,7 @@ nco_argument_parser /* [fnc] main parser, split the string and assign to kvm str
     for(int i=0; i < nco_count_blocks(args, ";"); i++){
         
         char *value = strdup(strstr(separate_args[i], "="));
+
         char **individual_args = nco_string_split(separate_args[i], ",");
 
         for(int j=0; j < nco_count_blocks(separate_args[i], ","); j++){
@@ -884,9 +897,9 @@ nco_argument_parser /* [fnc] main parser, split the string and assign to kvm str
 
     }//end outer loop
     nco_doubleptr_free(separate_args, nco_count_blocks(args, ";"));
+
     kvm_set[counter].key = NULL; //Add an ending flag for kvm array.
 
-  
     return kvm_set;
 }
 
@@ -895,7 +908,11 @@ nco_argument_parser /* [fnc] main parser, split the string and assign to kvm str
 #ifndef NCO_JOIN_SNG_
 #define NCO_JOIN_SNG_
 
-char* nco_join_sng(const char **restrict doubleptr, const char* delimiter, const int block_num)
+char* //O [sng] the string which had been joined
+nco_join_sng // [fnc] join the string; each is connected with the delimiter
+(const char **restrict doubleptr, // I [char* to sng] the group of string being connected
+const char* delimiter, //I [sng] the delimiter
+const int block_num) //I [int] number of strings
 {
     if(block_num == 1) {return strdup(doubleptr[0]);}
 
