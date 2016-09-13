@@ -2862,6 +2862,17 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $tst_cmd[2]="time[3]=3"; 
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+# ncks #114
+# ncks -h -O --gaa "foo=bar;foo2,foo3=bar2;script=created by nco_climo.sh" ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
+    $dsc_sng="Add multiple global attributes";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa 'foo=bar;foo2,foo3=bar2;script=created by nco_climo.sh' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo2' | cut -d ' ' -f 11-13";
+    $tst_cmd[2]="bar2";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
 #####################

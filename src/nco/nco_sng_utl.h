@@ -143,6 +143,37 @@ extern "C" {
   nco_kvm_prn /* [fnc] Print kvm contents */
   (kvm_sct kvm); /* [fnc] kvm to print */
   
+
+  char** /* O [pointer to sngs] group of splitted sngs*/
+  nco_string_split /* [fnc] split the string by delimiter */
+  (const char *restrict source, /* I [sng] the source string */
+  const char* delimiter);
+
+  int /* O [int] the boolean for the checking result */
+  nco_input_check /* [fnc] check whether the input is legal and give feedback accordingly. */
+  (const char *restrict args); /* O [sng] input arguments */
+
+  void 
+  nco_doubleptr_free
+  (char **restrict doubleptr,
+  const int block_num);
+
+  kvm_sct* /* O [kvm_sct] the pointer to the first kvm structure */
+  nco_argument_parser /* [fnc] main parser, split the string and assign to kvm structure */
+  (const char *restrict args); /* I [sng] input string */
+
+  char* 
+  nco_join_sng
+  (const char **restrict doubleptr, 
+  const char* delimiter,
+  const int block_num);
+
+  int
+  nco_count_blocks
+  (const char* args,
+  const char* delimiter);
+
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
