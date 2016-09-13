@@ -662,7 +662,7 @@ nco_sng2kvm /* [fnc] convert a string to key-value pair */
 
   kvm.val = NULL;
 
-  for(char* char_token = strtok(args, "="); char_token; char_token = strtok(NULL, "=")){
+  for(char* char_token = strtok((char*)args, "="); char_token; char_token = strtok(NULL, "=")){
     //Use memcpy because strdup is not a standard C lib func and memcpy is faster than strcpy (little bit).
     char_token = nco_sng_strip(char_token);
 
@@ -803,7 +803,7 @@ nco_input_check /* [fnc] check whether the input is legal and give feedback acco
         printf("\033[0;31mIn %s\n", args);
 
         perror("Formatting Error: No value in key-value pair.\033[0m\n"); 
-        
+
         return 0;
     } //endif
     return 1;
