@@ -1,3 +1,7 @@
+2016-09-14  Charlie Zender  <zender@uci.edu>
+
+	* Merge Jerome Mao's update/improvement of multi-argument parsing
+
 2016-09-09  Henry Butowsky  <henryb@hush.com>
 
 	* Updated manual section on ncap2/print (need to finalize form of sprint() & snprint())
