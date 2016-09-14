@@ -730,7 +730,6 @@ nco_kvm_prn(kvm_sct kvm)
   if(kvm.key) (void)fprintf(stdout,"%s = %s\n",kvm.key,kvm.val); else return;
 } /* end nco_kvm_prn() */
 
-
 #ifndef NCO_STRING_SPLIT_
 #define NCO_STRING_SPLIT_
 
@@ -809,7 +808,6 @@ nco_input_check /* [fnc] check whether the input is legal and give feedback acco
     return 1;
 
 }
-
 #endif
 
 int // O [int] the number of string blocks if will be split with delimiter
@@ -831,23 +829,23 @@ char* delimiter) // I [sng] the delimiter
 }
 
 void 
-nco_doubleptr_free // [fnc] free the double pointer and set to null
-(char **restrict doubleptr, // I/O [char* to sng] the double pointer being free'd
-const int block_num) //I [int] the number of sng in the double pointer
+nco_sng_lst_free_void /* [fnc] free() string list */
+(char **restrict sng_lst, /* I/O [sng] String list to free() */
+ const int sng_nbr) /* I [int] Number of strings in list */
 {
     /* Use to free the double character pointer, and set the pointer to NULL */
-    for(int i=0; i < block_num; i++){free(doubleptr[i]);}
+    for(int i=0; i < sng_nbr; i++){free(sng_lst[i]);}
 
-    free(doubleptr);
+    free(sng_lst);
 
-    doubleptr = NULL;
+    sng_lst = NULL;
 }
 
-#ifndef NCO_ARGUMENT_PARSER_
-#define NCO_ARGUMENT_PARSER_
+#ifndef NCO_ARG_MLT_PRS_
+#define NCO_ARG_MLT_PRS_
 
 kvm_sct* /* O [kvm_sct] the pointer to the first kvm structure */
-nco_argument_parser /* [fnc] main parser, split the string and assign to kvm structure */
+nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structure */
 (const char *restrict args) /* I [sng] input string */
 {
     /* Main parser for the argument. This will split the whole argument into key value pair and send to sng2kvm*/
@@ -892,11 +890,11 @@ nco_argument_parser /* [fnc] main parser, split the string and assign to kvm str
             free(temp_value);
         }//end inner loop
 
-        nco_doubleptr_free(individual_args, nco_count_blocks(separate_args[i], ","));
+        nco_sng_lst_free_void(individual_args, nco_count_blocks(separate_args[i], ","));
         free(value);
 
     }//end outer loop
-    nco_doubleptr_free(separate_args, nco_count_blocks(args, ";"));
+    nco_sng_lst_free_void(separate_args, nco_count_blocks(args, ";"));
 
     kvm_set[counter].key = NULL; //Add an ending flag for kvm array.
 
@@ -908,32 +906,32 @@ nco_argument_parser /* [fnc] main parser, split the string and assign to kvm str
 #ifndef NCO_JOIN_SNG_
 #define NCO_JOIN_SNG_
 
-char* //O [sng] the string which had been joined
-nco_join_sng // [fnc] join the string; each is connected with the delimiter
-(const char **restrict doubleptr, // I [char* to sng] the group of string being connected
-const char* delimiter, //I [sng] the delimiter
-const int block_num) //I [int] number of strings
+char * /* O [sng] Joined strings */
+nco_join_sng /* [fnc] Join strings with delimiter */
+(const char **restrict sng_lst, /* I [sng] List of strings being connected */
+ const char *dlm_sng, /* I [sng] Delimiter string */
+ const int sng_nbr) /* I [int] Number of strings */
 {
-    if(block_num == 1) {return strdup(doubleptr[0]);}
+    if(sng_nbr == 1) {return strdup(sng_lst[0]);}
 
     size_t word_length = 0;
     size_t copy_counter = 0;
 
-    for(size_t i=0; i < block_num; i++){
+    for(size_t i=0; i < sng_nbr; i++){
 
-        word_length += strlen(doubleptr[i]) + 1;
+        word_length += strlen(sng_lst[i]) + 1;
     }
 
     char *final_string = (char*)malloc(word_length + 1);
 
-    for(int i=0; i < block_num; i++){
+    for(int i=0; i < sng_nbr; i++){
 
-        size_t temp_length = strlen(doubleptr[i]);
+        size_t temp_length = strlen(sng_lst[i]);
 
-        memcpy(final_string + copy_counter, doubleptr[i], temp_length);
+        memcpy(final_string + copy_counter, sng_lst[i], temp_length);
 
-        if(i < block_num - 1){ // If it is not the last block of string
-            memcpy(final_string + copy_counter + temp_length, delimiter, 1);
+        if(i < sng_nbr - 1){ // If it is not the last block of string
+            memcpy(final_string + copy_counter + temp_length, dlm_sng, 1);
         }
 
         copy_counter += (temp_length + 1);

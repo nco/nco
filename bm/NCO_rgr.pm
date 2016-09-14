@@ -2867,7 +2867,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # ncks #114
 # ncks -h -O --gaa "foo=bar;foo2,foo3=bar2;script=created by nco_climo.sh" ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
-    $dsc_sng="Add multiple global attributes";
+    $dsc_sng="Add multiple global attributes with argument parsing by Jerome";
     $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa 'foo=bar;foo2,foo3=bar2;script=created by nco_climo.sh' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo2' | cut -d ' ' -f 11-13";
     $tst_cmd[2]="bar2";

@@ -1939,47 +1939,20 @@ nco_glb_att_add /* [fnc] Add global attributes */
   kvm_sct *gaa_lst=NULL; /* [sct] List of all GAA specifications */
   kvm_sct kvm;
   ptr_unn att_val;
-  char *delimiter = ";", *final_string = NULL;
+  const char * const dlm_sng=";";
+  char *sng_fnl=NULL;
 
-  //gaa_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
+  /* Join arguments together */
+  sng_fnl=nco_join_sng((const char**)gaa_arg,dlm_sng,gaa_arg_nbr);
+  gaa_lst=nco_arg_mlt_prs(sng_fnl);
 
-  final_string = nco_join_sng((const char**)gaa_arg, delimiter, gaa_arg_nbr); //join all the arguments
-
-  gaa_lst = nco_argument_parser(final_string);
-
-  for(int i = 0; (gaa_lst + i) -> key; i++){
-      gaa_lst[i].key = strcat(gaa_lst[i].key, "\0");
-
-      gaa_lst[i].val = strcat(gaa_lst[i].val, "\0");
-
-      gaa_nbr = i;
-  }
-  gaa_nbr ++;
-
-  // /* Parse GAAs */
-  // for(gaa_arg_idx=0;gaa_arg_idx<gaa_arg_nbr;gaa_arg_idx++){
-  //   if(!strstr(gaa_arg[gaa_arg_idx],"=")){
-  //     (void)fprintf(stdout,"%s: Invalid --gaa specification: %s. Must contain \"=\" sign, e.g., \"key=value\".\n",nco_prg_nm_get(),gaa_arg[gaa_arg_idx]);
-  //     if(gaa_lst) gaa_lst=(kvm_sct *)nco_free(gaa_lst);
-  //     nco_exit(EXIT_FAILURE);
-  //   } /* endif */
-  //   kvm=nco_sng2kvm(gaa_arg[gaa_arg_idx]);
-  //   /* nco_sng2kvm() converts argument "--gaa one,two=3" into kvm.key="one,two" and kvm.val=3
-  //      Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
-  //   if(kvm.key){
-  //     int att_idx; /* [idx] Index over attribute names in current GAA argument */
-  //     int att_nbr; /* [nbr] Number of attribute names in current GAA argument */
-  //     char **att_lst;
-  //     att_lst=nco_lst_prs_2D(kvm.key,",",&att_nbr);
-  //     for(att_idx=0;att_idx<att_nbr;att_idx++){ /* Expand multi-attribute-name specification */
-  //       gaa_lst[gaa_nbr].key=strdup(att_lst[att_idx]);
-	// /* 20160714: Allow for empty arguments by only using strdup() on non-NULL pointers */
-	// gaa_lst[gaa_nbr].val= kvm.val ? strdup(kvm.val) : NULL;
-  //       gaa_nbr++;
-  //     } /* end for */
-  //     att_lst=nco_sng_lst_free(att_lst,att_nbr);
-  //   } /* end if */
-  // } /* end for */
+  /* jm fxm use more descriptive name than i---what does i count? */
+  for(int i=0;(gaa_lst+i)->key;i++){
+      gaa_lst[i].key=strcat(gaa_lst[i].key,"\0");
+      gaa_lst[i].val=strcat(gaa_lst[i].val,"\0");
+      gaa_nbr=i;
+  } /* end loop over i */
+  gaa_nbr++;
 
   for(gaa_idx=0;gaa_idx<gaa_nbr;gaa_idx++){
     /* Insert attribute value */

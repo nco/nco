@@ -154,24 +154,24 @@ extern "C" {
   (const char *restrict args); /* O [sng] input arguments */
 
   void 
-  nco_doubleptr_free
-  (char **restrict doubleptr,
+  nco_sng_lst_free_void
+  (char **restrict sng_lst,
   const int block_num);
 
-  kvm_sct* /* O [kvm_sct] the pointer to the first kvm structure */
-  nco_argument_parser /* [fnc] main parser, split the string and assign to kvm structure */
-  (const char *restrict args); /* I [sng] input string */
+  kvm_sct * /* O [kvm_sct] Pointer to first kvm structure */
+  nco_arg_mlt_prs /* [fnc] Main parser, split string and assign to kvm structure */
+  (const char *restrict args); /* I [sng] Input string */
 
-  char* 
-  nco_join_sng
-  (const char **restrict doubleptr, 
-  const char* delimiter,
-  const int block_num);
+  char * /* O [sng] Joined strings */
+  nco_join_sng /* [fnc] Join strings with delimiter */
+  (const char **restrict sng_lst, /* I [sng] List of strings being connected */
+   const char *dlm_sng, /* I [sng] Delimiter string */
+   const int sng_nbr); /* I [int] Number of strings */
 
   int
   nco_count_blocks
   (const char* args,
-  char* delimiter);
+   char* delimiter);
 
 
 #ifdef __cplusplus
