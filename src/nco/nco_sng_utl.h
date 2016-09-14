@@ -171,7 +171,7 @@ extern "C" {
   int
   nco_count_blocks
   (const char* args,
-  const char* delimiter);
+  char* delimiter);
 
 
 #ifdef __cplusplus
