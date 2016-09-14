@@ -815,7 +815,7 @@ nco_input_check /* [fnc] check whether the input is legal and give feedback acco
 int // O [int] the number of string blocks if will be split with delimiter
 nco_count_blocks // [fnc] Check number of string blocks if will be split with delimiter
 (const char* args, // I [sng] the string which is going to be split
-const char* delimiter) // I [sng] the delimiter
+char* delimiter) // I [sng] the delimiter
 {
   int i = 0;
 
