@@ -866,7 +866,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
 
     }//end loop
 
-    kvm_sct* kvm_set = (kvm_sct*)malloc(sizeof(kvm_sct) * (counter + 1)); //kvm array intended to be returned
+    kvm_sct* kvm_set = (kvm_sct*)malloc(sizeof(kvm_sct) * (counter + 1)); /* kvm array intended to be returned */
     counter          = 0;
 
     for(int i=0; i < nco_count_blocks(args, ";"); i++){

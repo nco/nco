@@ -1946,12 +1946,12 @@ nco_glb_att_add /* [fnc] Add global attributes */
   sng_fnl=nco_join_sng((const char**)gaa_arg,dlm_sng,gaa_arg_nbr);
   gaa_lst=nco_arg_mlt_prs(sng_fnl);
 
-  /* jm fxm use more descriptive name than i---what does i count? */
-  for(int i=0;(gaa_lst+i)->key;i++){
-      gaa_lst[i].key=strcat(gaa_lst[i].key,"\0");
-      gaa_lst[i].val=strcat(gaa_lst[i].val,"\0");
-      gaa_nbr=i;
-  } /* end loop over i */
+  /* Set GAA number to list size and NUL-terminate values */
+  for(int kvm_idx=0;(gaa_lst+kvm_idx)->key;kvm_idx++){
+      gaa_lst[kvm_idx].key=strcat(gaa_lst[kvm_idx].key,"\0");
+      gaa_lst[kvm_idx].val=strcat(gaa_lst[kvm_idx].val,"\0");
+      gaa_nbr=kvm_idx;
+  } /* end loop over kvm_idx */
   gaa_nbr++;
 
   for(gaa_idx=0;gaa_idx<gaa_nbr;gaa_idx++){
