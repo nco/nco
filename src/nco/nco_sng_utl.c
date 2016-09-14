@@ -819,13 +819,13 @@ char* delimiter) // I [sng] the delimiter
 {
   int i = 0;
 
-  char *pch=strchr(args, *(delimiter));
+  const char *pch = strchr(args, *(delimiter));
 
-  while (pch!=NULL) {
+  while (pch != NULL) {
 
     i++;
 
-    pch=strchr(pch+1, *(delimiter));
+    pch = strchr(pch + 1, *(delimiter));
   }
   return i + 1;
 }
