@@ -744,7 +744,7 @@ const char* delimiter) /* I [char] the delimiter*/
      * Example: a, b=1 will be split into *<a> = "a" *<b> = "b=1" with a delimiter of "," 
      * Remember to free after calling this function. */
     char** final = NULL, *temp = strdup(source);
-    size_t counter = nco_count_blocks(source, delimiter), index = 0;    
+    size_t counter = nco_count_blocks(source, (char*)delimiter), index = 0;    
 
     if(!strstr(temp, delimiter)){ //special case for one single argument
 
