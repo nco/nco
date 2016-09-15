@@ -854,10 +854,10 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
         nco_exit(EXIT_FAILURE);
     }
 
-    char **separate_args = nco_string_split(args, ";");
-    size_t counter = nco_count_blocks(args, ";") * nco_count_blocks(args, ","); //Max number of kvm structure in this argument
+    char **separate_args = nco_string_split(args, ":");
+    size_t counter = nco_count_blocks(args, ":") * nco_count_blocks(args, ","); //Max number of kvm structure in this argument
 
-    for(int i=0; i < nco_count_blocks(args, ";"); i++){
+    for(int i=0; i < nco_count_blocks(args, ":"); i++){
 
         if(!nco_input_check(separate_args[i])){
 
@@ -869,7 +869,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
     kvm_sct* kvm_set = (kvm_sct*)malloc(sizeof(kvm_sct) * (counter + 1)); /* kvm array intended to be returned */
     counter          = 0;
 
-    for(int i=0; i < nco_count_blocks(args, ";"); i++){
+    for(int i=0; i < nco_count_blocks(args, ":"); i++){
         
         char *value = strdup(strstr(separate_args[i], "="));
 
@@ -894,7 +894,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
         free(value);
 
     }//end outer loop
-    nco_sng_lst_free_void(separate_args, nco_count_blocks(args, ";"));
+    nco_sng_lst_free_void(separate_args, nco_count_blocks(args, ":"));
 
     kvm_set[counter].key = NULL; //Add an ending flag for kvm array.
 

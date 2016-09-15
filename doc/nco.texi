@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 11 September 2016
+@set update-date 15 September 2016
 @set update-month September 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -10485,20 +10485,29 @@ Currently only text attributes are supported (recorded as type
 @pxref{ncatted netCDF Attribute Editor}).    
 Attributes are added in ``Append'' mode, meaning that values are
 appended to pre-existing values, if any. 
+Multiple invocations can simplify the annotation of output file at
+creation (or modification) time:
 @example
 @verbatim
 ncra --glb machine=${HOSTNAME} --glb created_by=${USER} in*.nc out.nc
 @end verbatim
 @end example
-Multiple invocations simplify the annotation of output file at creation
-(or modification) time.
+As of @acronym{NCO} version 4.6.2 (October, 2016), one may instead
+combine the separate invocations into a single list of invocations
+separated by colons:
+@example
+@verbatim
+ncra --glb machine=${HOSTNAME}:created_by=${USER} in*.nc out.nc
+@end verbatim
+@end example
+The list may contain any number of key-value pairs.
 
-This feature helps to avoid the performance penalty incurred by having
-to use @command{ncatted} separately to annotate large files.
-Should users emit a loud hue and cry, we will consider ading the
-the functionality of @command{ncatted} to the front-end of all
-operators, i.e., accepting valid @command{ncatted} arguments to
-modify attributes of any type and to apply regular expressions.
+The global attribution addition feature helps to avoid the performance
+penalty incurred by using @command{ncatted} separately to annotate large files. 
+Should users emit a loud hue and cry, we will consider ading the the
+functionality of ncatted to the front-end of all operators, i.e.,
+accepting valid @command{ncatted} arguments to modify attributes of any
+type and to apply regular expressions.
 
 @html
 <a name="hst"></a> <!-- http://nco.sf.net/nco.html#hst -->
