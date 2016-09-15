@@ -18,7 +18,8 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A.
+A. Multi-arguments
+   Thanks to Jerome Mao for implementing multi-arguments
 
 A. ncclimo will now ...
    http://nco.sf.net/nco.html#ncclimo

@@ -10501,6 +10501,11 @@ ncra --glb machine=${HOSTNAME}:created_by=${USER} in*.nc out.nc
 @end verbatim
 @end example
 The list may contain any number of key-value pairs.
+Special care must be taken should a key or value contain a delimiter
+(i.e., a colon) otherwise @command{NCO} will interpret the colon as
+a delimiter and will attempt to create a new attribute.
+To protect a colon from being interpreted as an argument delimiter,
+precede it with a backslash.
 
 The global attribution addition feature helps to avoid the performance
 penalty incurred by using @command{ncatted} separately to annotate large files. 
