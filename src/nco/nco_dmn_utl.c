@@ -338,6 +338,7 @@ nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and 
 	
     if(dim_2[idx]->cnt != dim_1[jdx]->cnt){
       (void)fprintf(stderr,"%s: ERROR %sdimension size mismatch: dimension %s in file %s is size %li while dimension %s in file %s is size %li\n",nco_prg_nm_get(),(dim_1[jdx]->is_rec_dmn) ? "record " : "",dim_1[jdx]->nm,fl_sng_1,dim_1[jdx]->cnt,dim_2[idx]->nm,fl_sng_2,dim_2[idx]->cnt);
+      if(dim_1[idx]->cnt == 1 || dim_2[jdx]->cnt == 1) (void)fprintf(stderr,"%s: HINT Mismatch is due to degenerate (of size 1) dimension. Re-try command after first removing degenerate dimension from one file with, e.g.,\nncwa -a %s %s %s\n",nco_prg_nm_get(),(dim_1[idx]->cnt == 1) ? dim_1[idx]->nm : dim_2[idx]->nm,(dim_1[idx]->cnt == 1) ? fl_sng_1 : fl_sng_2,(dim_1[idx]->cnt == 1) ? fl_sng_1 : fl_sng_2);
       nco_exit(EXIT_FAILURE); 
     } /* endif size mismatch */
   } /* end loop over dimensions */

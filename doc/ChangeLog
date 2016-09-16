@@ -1,3 +1,7 @@
+2016-09-16  Charlie Zender  <zender@uci.edu>
+
+	* Improve error message when dimensions have size mismatch due to degenerate dimension
+
 2016-09-15  Charlie Zender  <zender@uci.edu>
 
 	* Change multi-argument delimiter from semi-colon
