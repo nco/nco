@@ -12469,6 +12469,12 @@ Number of dimensions in variable
 @item type() 
 @cindex type()
 Returns the netcdf type (see previous section)
+@item exists()
+@cindex exists()
+Return 1 (true) if var or att is present in I/O else return 0 (false)
+@item getdims()
+@cindex getdims()
+Returns an NC_STRING attribute of all the dim names of a variable
 @end table
 
 @sp 1
@@ -12485,6 +12491,10 @@ These functions are used to manipulate missing values and @acronym{RAM} variable
  Returns the missing value of a variable in Input or Output  
 @item delete_miss()
  Deletes the missing value associated with a variable.
+@item has_miss()
+Returns 1 (True) if the variable has a missing else returns 0 (False)
+@item number_miss
+ Returns the number of missing values a variable contains
 @item ram_write()
  Writes a @acronym{RAM} variable to disk i.e., converts it to a regular disk type variable
 @item ram_delete()
