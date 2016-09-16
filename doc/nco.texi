@@ -11715,13 +11715,14 @@ This is the variable from which the array can derive its shape 1D or nD
 Use form (A) or (B)  for 1D arrays 
 @example
 In the following var_out is of type NC_DOUBLE
-var_out=array(10.0, 2, $time)  // 10.5, 12.5, 14.5, 16.5, 18.5, 20.5, 22.5, 24.5, 26.5, 28.5  
+var_out=array(10.0, 2, $time)  //10.5,12.5,14.5,16.5,18.5,20.5,22.5,24.5,26.5,28.5
 
-The following is also ID - It gets its "shape" from the var "ilev" and is of type NC_UINT
-var_out=array( 0ul, 2, ilev)   // 0, 2, 4, 6
+The following is also ID 
+It gets its "shape" from the var "ilev" and is of type NC_UINT
+var_out=array( 0ul, 2, ilev)    // 0,2,4,6
 
 The following is of type NC_FLOAT
-var_out=array(99.0f, 2.5, $lon)    // 99, 101.5, 104, 106.5 
+var_out=array(99.0f, 2.5, $lon) // 99,101.5,104,106.5
 @end example
 
 @noindent @strong{ n-Dimensional Arrays@*}
@@ -11734,10 +11735,11 @@ var_out=array(1.0, 2.0, three_dmn_var)
 var_out=array(1.0, 2.0,/$lat, $lev, $lon/)
 
 Below the type is NC_BYTE
-var_out=array(20b, -4, /$lat,$lon/)  // 20, 16, 12, 8, 4, 0, -4, -8  
+var_out=array(20b, -4, /$lat,$lon/)  // 20,16,12,8,4,0,-4,-8  
 
 srt=3.14159f; inc=srt/2.0f
-var_out(srt,inc, var_2D_rrg)  // 3.14159, 4.712385, 6.28318, 7.853975, 9.42477, 10.99557, 12.56636, 14.13716 ; 
+var_out(srt,inc, var_2D_rrg)  
+// 3.14159, 4.712385, 6.28318, 7.853975, 9.42477, 10.99557, 12.56636, 14.13716 ; 
 @end example
 
 
