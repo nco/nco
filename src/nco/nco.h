@@ -91,7 +91,7 @@ extern "C" {
    and only defines them when __DARWIN_C_LEVEL >= 199506L
    NCO uses these math constants in nco_aux.c (M_PI), nco_ppc.c (M_LN2,M_LN10), and nco_rgr.c (M_PI)
    Rather than have backup-definitions in the three corresponding .h files, 
-   we #ifndef all necessary math constants once in the common header nco.h */
+   we #ifndef all necessary math constants once in common header nco.h */
 #ifndef M_LN10
 # define M_LN10      2.30258509299404568401799145468436421   /* loge(10)       */
 #endif /* M_LN10 */

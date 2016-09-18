@@ -1939,7 +1939,7 @@ nco_glb_att_add /* [fnc] Add global attributes */
   kvm_sct *gaa_lst=NULL; /* [sct] List of all GAA specifications */
   kvm_sct kvm;
   ptr_unn att_val;
-  const char * const dlm_sng=":";
+  const char * const dlm_sng="#";
   char *sng_fnl=NULL;
 
   /* Join arguments together */

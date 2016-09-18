@@ -207,9 +207,14 @@ extern "C" {
   (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
 
   double /* O [dgr] Longitude difference (lon_r-lon_l) */
-  nco_lon_dff_brnch /* [fnc] Subtract longitudes with branch-cut rules */
+  nco_lon_dff_brnch_dgr /* [fnc] Subtract longitudes with branch-cut rules */
   (double lon_r, /* I [dgr] Longitude on right of gridcell (subtractor) */
    double lon_l); /* I [dgr] Longitude on  left of gridcell (subtractee) */
+
+  double /* O [rdn] Longitude difference (lon_r-lon_l) */
+  nco_lon_dff_brnch_rdn /* [fnc] Subtract longitudes with branch-cut rules */
+  (double lon_r, /* I [rdn] Longitude on right of gridcell (subtractor) */
+   double lon_l); /* I [rdn] Longitude on  left of gridcell (subtractee) */
 
   double /* O [dgr] Longitude average (lon_r-lon_l) */
   nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut rules */

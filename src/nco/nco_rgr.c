@@ -953,11 +953,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Check-for and workaround faulty Tempest and MPAS-O/I grid sizes */
   if(flg_grd_in_1D && (rgr_map.src_grid_size != dmn_sz_in_int[0])){
-    (void)fprintf(stdout,"%s: INFO %s reports input grid dimension sizes disagree: rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known issue with some Tempest mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
+    (void)fprintf(stdout,"%s: INFO %s reports input grid dimension sizes disagree: rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
       dmn_sz_in_int[0]=rgr_map.src_grid_size;
   } /* !bug */
   if(flg_grd_out_1D && (rgr_map.dst_grid_size != dmn_sz_out_int[0])){
-    (void)fprintf(stdout,"%s: INFO %s reports output grid dimension sizes disagree: rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known issue with some Tempest mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
+    (void)fprintf(stdout,"%s: INFO %s reports output grid dimension sizes disagree: rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
     dmn_sz_out_int[0]=rgr_map.dst_grid_size;
   } /* !bug */
  
@@ -1358,13 +1358,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(idx == (long)grd_sz_out){
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports area_out from mapfile is everywhere zero. This is expected for bilinearly interpolated output maps produced by ESMF_RegridWeightGen. ",nco_prg_nm_get(),fnc_nm);
     if(flg_grd_out_2D && flg_grd_out_rct && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable named \"%s\") from the destination gridcell boundaries. NCO diagnoses quadrilateral area for rectangular output grids from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs (used by, e.g., ESMF_RegridWeightGen and Tempest). Be warned that NCO correctly diagnoses area for all convex polygons, yet not for most concave polygons. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable named \"%s\") from the destination gridcell boundaries. NCO diagnoses quadrilateral area for rectangular output grids from a formula that assumes that cell boundaries follow arcs of constant latitude and longitude. This differs from the area of cells with boundaries that follow great circle arcs (used by, e.g., ESMF_RegridWeightGen and TempestRemap). Be warned that NCO correctly diagnoses area for all convex polygons, yet not for most concave polygons. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
       flg_dgn_area_out=True;
     }else if(flg_grd_out_2D && flg_grd_out_crv && (bnd_nbr_out == 2 || bnd_nbr_out == 4)){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable named \"%s\") from the destination gridcell boundaries. NCO diagnoses quadrilateral area for curvilinear output grids from formulae that assume that cell boundaries follow great circle arcs (as do, e.g., ESMF_RegridWeightGen and Tempest). This differs from the area of cells with boundaries that follow lines of constant latitude or longitude. Be warned that NCO correctly diagnoses area for all convex polygons, yet not for most concave polygons. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable named \"%s\") from the destination gridcell boundaries. NCO diagnoses quadrilateral area for curvilinear output grids from formulae that assume that cell boundaries follow great circle arcs (as do, e.g., ESMF_RegridWeightGen and TempestRemap). This differs from the area of cells with boundaries that follow lines of constant latitude or longitude. Be warned that NCO correctly diagnoses area for all convex polygons, yet not for most concave polygons. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
       flg_dgn_area_out=True;
     }else if(flg_grd_out_1D && flg_bnd_1D_usable){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable name \"%s\") from the destination gridcell boundaries. NCO diagnoses spherical polygon area for unstructured output grids from formulae that assume that cell boundaries follow great circle arcs (as do, e.g., ESMFRegridWeightGen and Tempest). This differs from the area of cells with boundaries that follow lines of constant latitude or longitude. Be warned that NCO correctly diagnoses area for all convex polygons, yet not for most concave polygons. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Since the destination grid provides cell bounds information, NCO will diagnose area (and output it as a variable name \"%s\") from the destination gridcell boundaries. NCO diagnoses spherical polygon area for unstructured output grids from formulae that assume that cell boundaries follow great circle arcs (as do, e.g., ESMFRegridWeightGen and TempestRemap). This differs from the area of cells with boundaries that follow lines of constant latitude or longitude. Be warned that NCO correctly diagnoses area for all convex polygons, yet not for most concave polygons. To determine whether the diagnosed areas are fully consistent with the output grid, one must know such exact details. If your grid has analytic areas that NCO does not yet diagnose correctly from provided cell boundaries, please contact us.\n",rgr->area_nm);
       flg_dgn_area_out=True;
     }else{ /* !1D */
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"However, NCO cannot find enough boundary information, or it is too stupid about spherical trigonometry, to diagnose area_out. NCO will output an area variable (named \"%s\") copied from the input mapfile. This area will be everywhere zero.\n",rgr->area_nm);
@@ -3401,8 +3401,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
      Robert D. Miller, Computing the area of a spherical polygon, Graphic Gems IV, chapter II.4, pages 132-137.
      http://books.google.com/books?id=CCqzMm_-WucC&pg=PA132&lpg=PA132&dq=miller+area+spherical+polygon+gems&source=bl&ots=mrnvZ6NJcm&sig=CMg8eaD8dzP5snMaPeCQzgoFWUk&hl=sv&ei=4G-YTKv5GsWZOI-mmZQP&sa=X&oi=book_result&ct=result&resnum=1&ved=0CBQQ6AEwAA#v=onepage&q&f=false  
      Mil94 contains similar ideas to my method for spherical polygons (decomposing into adjacent multiple triangles from single vertex)
-     However, his method places the single vertex at the pole, then adds signed areas to obtain the full polygon area
-     Unclear whether his method suffers from degraded precision because of roundoff error and long side-lengths
+     However, his method places single vertex at pole, then adds signed areas to obtain full polygon area
+     His method may suffer from degraded precision because of roundoff error and long side-lengths
      
      So-called "proper" spherical triangle are those for which all angles are less than pi, so a+b+c<3*pi
      Cartesian coordinates of (lat,lon)=(theta,phi) are (x,y,z)=(cos(theta)*cos(phi),cos(theta)*sin(phi),sin(theta)) 
@@ -3437,8 +3437,11 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
         Compute polygon centroid and treat this as hub from which spokes are drawn to all vertices
         This method requires computation of N triangles, though fewer sides due to optimization
 	Moreover, it works on all convex polygons and on slightly concave polygons
-	The centroid/hub has a clear view of the interior of most simple concave polygons */
-
+	Centroid/hub has clear view of interior of most simple concave polygons
+     4. L'Huillier method with exact RLL grids by Zender and Agress 20160918
+        A. Decompose polygon into triangles via either method 2 or 3
+	B. Determine whether triangle is spherical or contains RLL (constant latitude)
+	C. Spherical triangles use L'Huillier, RLL triangles use series expansion */
   const char fnc_nm[]="nco_sph_plg_area()";
   const double dgr2rdn=M_PI/180.0;
   short int bnd_idx;
@@ -3518,19 +3521,21 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       tri_nbr++;
       /* Compute interior angle/great circle arc a for first triangle; subsequent triangles recycle previous arc c */
       if(tri_nbr == 1){
-	/* 20150831: Test by computing ncol=0 area in conus chevrons grid:
-	   ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_aave.20150823.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
+	/* 20150831: Test by computing ncol=0 area in conus chevrons grid, compare to MAT results
+	   ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/257x512_SCRIP.20150901.nc -m ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150901.nc
+	   ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc -m ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc
+	   ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
 	   ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/dogfood.nc
-	   ncks -H -s %20.15e -v area -d ncol,0 ${DATA}/ne30/rgr/dogfood.nc
-	   ncks -H -s %20.15e -v grid_area -d grid_size,0 ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc
+	   ncks -H -s %20.15e, -v area -d ncol,0 ${DATA}/ne30/rgr/dogfood.nc
+	   ncks -H -s %20.15e, -v grid_area -d grid_size,0 ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc
 	   
 	   ncol=0 on conus chevrons file:
 	   3.653857995295246e-05 raw GLL weight
-	   3.653857995294302e-05 matlab N-2 triangles
-	   3.653857995294301e-05 matlab N   triangles
+	   3.653857995294302e-05 matlab N-2 triangles (CSZ algorithm)
+	   3.653857995294301e-05 matlab N   triangles (MAT algorithm)
 	   3.653857995294258e-05 new NCO (haversine)
 	   3.653857995289623e-05 old NCO (acos) */
-	/* Computing great circle arcs over small arcs requires care since the central angle is near 0 degrees
+	/* Computing great circle arcs over small arcs requires care since central angle is near 0 degrees
 	   Cosine small angles changes slowly for such angles, and leads to precision loss
 	   Use haversine formula instead of spherical law of cosines formula
 	   https://en.wikipedia.org/wiki/Great-circle_distance */
@@ -3539,7 +3544,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
 	   lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];ngl_a=acos(cos_a); */
 	/* Interior angle/great circle arc a, haversine formula: */
-	lon_dlt=fabs(lon_bnd_rdn[idx_a]-lon_bnd_rdn[idx_b]);
+	// 20160918: Use branch cut rules for longitude
+	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_a],lon_bnd_rdn[idx_b]));
 	lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
 	sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
 	ngl_a=2.0*asin(sin_hlf_tht);
@@ -3547,12 +3553,12 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	ngl_a=ngl_c;
       } /* !tri_nbr */
       /* Interior angle/great circle arc b */
-      lon_dlt=fabs(lon_bnd_rdn[idx_b]-lon_bnd_rdn[idx_c]);
+      lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_b],lon_bnd_rdn[idx_c]));
       lat_dlt=fabs(lat_bnd_rdn[idx_b]-lat_bnd_rdn[idx_c]);
       sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*pow(sin(0.5*lon_dlt),2));
       ngl_b=2.0*asin(sin_hlf_tht);
       /* Interior angle/great circle arc c */
-      lon_dlt=fabs(lon_bnd_rdn[idx_c]-lon_bnd_rdn[idx_a]);
+      lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_c],lon_bnd_rdn[idx_a]));
       lat_dlt=fabs(lat_bnd_rdn[idx_c]-lat_bnd_rdn[idx_a]);
       sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*pow(sin(0.5*lon_dlt),2));
       ngl_c=2.0*asin(sin_hlf_tht);
@@ -3583,10 +3589,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 } /* !nco_sph_plg_area() */
 
 int /* O [enm] Return code */
-nco_rgr_tps /* [fnc] Regrid using Tempest library */
+nco_rgr_tps /* [fnc] Regrid using TempestRemap library */
 (rgr_sct * const rgr) /* I/O [sct] Regridding structure */
 {
-  /* Purpose: Regrid fields using Tempest remapping "library" (more precisely, executables)
+  /* Purpose: Regrid fields using TempestRemap "library" (more precisely, executables)
 
      Test Tempest library: no way to activate yet
      export DATA_TEMPEST='/data/zender/rgr';ncks -O --rgr=Y ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
@@ -3601,7 +3607,7 @@ nco_rgr_tps /* [fnc] Regrid using Tempest library */
   int rcd_sys;
   int lat_nbr_rqs=180;
   int lon_nbr_rqs=360;
-  nco_rgr_cmd_typ nco_rgr_cmd; /* [enm] Tempest remap command enum */
+  nco_rgr_cmd_typ nco_rgr_cmd; /* [enm] TempestRemap command enum */
 
   char *nvr_DATA_TEMPEST; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
   nvr_DATA_TEMPEST=getenv("DATA_TEMPEST");
@@ -3627,7 +3633,7 @@ nco_rgr_tps /* [fnc] Regrid using Tempest library */
   (void)sprintf(cmd_rgr,cmd_rgr_fmt,lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst_cdl);
   rcd_sys=system(cmd_rgr);
   if(rcd_sys == -1){
-    (void)fprintf(stdout,"%s: ERROR %s unable to complete Tempest regridding command \"%s\"\n",nco_prg_nm_get(),fnc_nm,cmd_rgr);
+    (void)fprintf(stdout,"%s: ERROR %s unable to complete TempestRemap regridding command \"%s\"\n",nco_prg_nm_get(),fnc_nm,cmd_rgr);
     nco_exit(EXIT_FAILURE);
   } /* end if */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
@@ -3734,7 +3740,7 @@ nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */
   case nco_rgr_mth_conservative: return "Conservative remapping";
   case nco_rgr_mth_bilinear: return "Bilinear remapping";
   case nco_rgr_mth_none: return "none";
-  case nco_rgr_mth_unknown: return "Unknown (Tempest)";
+  case nco_rgr_mth_unknown: return "Unknown (TempestRemap)";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -3767,7 +3773,7 @@ nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */
   case nco_rgr_nrm_fracarea: return "fracarea";
   case nco_rgr_nrm_destarea: return "destarea";
   case nco_rgr_nrm_none: return "none";
-  case nco_rgr_nrm_unknown: return "Unknown (Tempest)";
+  case nco_rgr_nrm_unknown: return "Unknown (TempestRemap)";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -3776,10 +3782,10 @@ nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */
 } /* end nco_rgr_nrm_sng() */
 
 const char * /* O [sng] String containing regridding command and format */
-nco_tps_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
-(const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] Tempest remap command enum */
+nco_tps_cmd_fmt_sng /* [fnc] Convert TempestRemap command enum to command string */
+(const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] TempestRemap command enum */
 {
-  /* Purpose: Convert Tempest remap command enum to command string and format */
+  /* Purpose: Convert TempestRemap command enum to command string and format */
   switch(nco_rgr_cmd){
   case nco_rgr_ApplyOfflineMap:
     return "ApplyOfflineMap";
@@ -3813,10 +3819,10 @@ nco_tps_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command strin
 } /* end nco_tps_cmd_fmt_sng() */
 
 const char * /* O [sng] String containing regridding command name */
-nco_tps_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
-(const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] Tempest remap command enum */
+nco_tps_cmd_sng /* [fnc] Convert TempestRemap command enum to command name */
+(const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] TempestRemap command enum */
 {
-  /* Purpose: Convert Tempest remap command enum to command string */
+  /* Purpose: Convert TempestRemap command enum to command string */
   switch(nco_rgr_cmd){
   case nco_rgr_ApplyOfflineMap: return "ApplyOfflineMap";
   case nco_rgr_CalculateDiffNorms: return "CalculateDiffNorms";
@@ -5723,7 +5729,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on bottom row of fake grid */
 	idx_rl=lat_idx*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on bottom row of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+lon_nbr]-lat_ctr[idx_rl]);
-	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-nco_lon_dff_brnch(lon_ctr[idx_rl+lon_nbr],lon_ctr[idx_rl]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-nco_lon_dff_brnch_dgr(lon_ctr[idx_rl+lon_nbr],lon_ctr[idx_rl]);
       } /* !lon */
       /* Top row */
       lat_idx=lat_nbr+1; /* lat idx of extrapolated point on fake grid */
@@ -5731,7 +5737,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on top row of fake grid */
 	idx_rl=(lat_nbr-1)*lon_nbr+lon_idx-1; /* 1D-offset of neighboring point on top row of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-lon_nbr]);
-	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+nco_lon_dff_brnch(lon_ctr[idx_rl],lon_ctr[idx_rl-lon_nbr]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+nco_lon_dff_brnch_dgr(lon_ctr[idx_rl],lon_ctr[idx_rl-lon_nbr]);
       } /* !lon */
       /* Left side */
       lon_idx=0; /* lon idx of extrapolated point on fake grid */
@@ -5739,7 +5745,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on left side of fake grid */
 	idx_rl=(lat_idx-1)*lon_nbr+lon_idx; /* 1D-offset of neighboring point on left side of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]-(lat_ctr[idx_rl+1]-lat_ctr[idx_rl]);
-	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-nco_lon_dff_brnch(lon_ctr[idx_rl+1],lon_ctr[idx_rl]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]-nco_lon_dff_brnch_dgr(lon_ctr[idx_rl+1],lon_ctr[idx_rl]);
       } /* !lat */
       /* Right side */
       lon_idx=lon_nbr+1; /* lon idx of extrapolated point on fake grid */
@@ -5747,20 +5753,20 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_fk=lat_idx*(lon_nbr+2)+lon_idx; /* 1D-offset of extrapolated point on right side of fake grid */
 	idx_rl=(lat_idx-1)*lon_nbr+lon_idx-2; /* 1D-offset of neighboring point on right side of real grid */
 	lat_ctr_fk[idx_fk]=lat_ctr[idx_rl]+(lat_ctr[idx_rl]-lat_ctr[idx_rl-1]);
-	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+nco_lon_dff_brnch(lon_ctr[idx_rl],lon_ctr[idx_rl-1]);
+	lon_ctr_fk[idx_fk]=lon_ctr[idx_rl]+nco_lon_dff_brnch_dgr(lon_ctr[idx_rl],lon_ctr[idx_rl-1]);
       } /* !lat */
       /* LL */
       lat_ctr_fk[0]=lat_ctr_fk[lon_nbr+2]-(lat_ctr_fk[2*(lon_nbr+2)]-lat_ctr_fk[lon_nbr+2]);
-      lon_ctr_fk[0]=lon_ctr_fk[1]-nco_lon_dff_brnch(lon_ctr_fk[2],lon_ctr_fk[1]);
+      lon_ctr_fk[0]=lon_ctr_fk[1]-nco_lon_dff_brnch_dgr(lon_ctr_fk[2],lon_ctr_fk[1]);
       /* LR */
       lat_ctr_fk[lon_nbr+1]=lat_ctr_fk[2*(lon_nbr+2)-1]-(lat_ctr_fk[3*(lon_nbr+2)-1]-lat_ctr_fk[2*(lon_nbr+2)-1]);
-      lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+nco_lon_dff_brnch(lon_ctr_fk[lon_nbr],lon_ctr_fk[lon_nbr-1]);
+      lon_ctr_fk[lon_nbr+1]=lon_ctr_fk[lon_nbr]+nco_lon_dff_brnch_dgr(lon_ctr_fk[lon_nbr],lon_ctr_fk[lon_nbr-1]);
       /* UR */
       lat_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]+(lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-1]-lat_ctr_fk[lat_nbr*(lon_nbr+2)-1]);
-      lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+nco_lon_dff_brnch(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2],lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
+      lon_ctr_fk[(lat_nbr+2)*(lon_nbr+2)-1]=lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2]+nco_lon_dff_brnch_dgr(lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-2],lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)-3]);
       /* UL */
       lat_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lat_ctr_fk[lat_nbr*(lon_nbr+2)]+(lat_ctr_fk[lat_nbr*(lon_nbr+2)]-lat_ctr_fk[(lat_nbr-1)*(lon_nbr+2)]);
-      lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-nco_lon_dff_brnch(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2],lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
+      lon_ctr_fk[(lat_nbr+1)*(lon_nbr+2)]=lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]-nco_lon_dff_brnch_dgr(lon_ctr_fk[lat_nbr*(lon_nbr+2)+2],lon_ctr_fk[lat_nbr*(lon_nbr+2)+1]);
 
       if(nco_dbg_lvl_get() >= nco_dbg_std){
 	long idx_dbg;
@@ -6608,14 +6614,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 } /* !nco_grd_nfr() */
 
 double /* O [dgr] Longitude difference (lon_r-lon_l) */
-nco_lon_dff_brnch /* [fnc] Subtract longitudes with branch-cut rules */
+nco_lon_dff_brnch_dgr /* [fnc] Subtract longitudes with branch-cut rules */
 (double lon_r, /* I [dgr] Longitude on right of gridcell (subtractor) */
  double lon_l) /* I [dgr] Longitude on  left of gridcell (subtractee) */
 {
   /* Purpose: Return difference of two longitudes in degrees
      Assume longitudes are within 180 degrees of eachother
      Default orientation is monotonically increasing longitude from left to right */
-  const char fnc_nm[]="nco_lon_dff_brnch()";
+  const char fnc_nm[]="nco_lon_dff_brnch_dgr()";
   const double lon_dff=lon_r-lon_l; /* [dgr] Longitude difference (lon_r-lon_l) */
   if(lon_dff >= 180.0){
     (void)fprintf(stdout,"%s: WARNING %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
@@ -6625,7 +6631,28 @@ nco_lon_dff_brnch /* [fnc] Subtract longitudes with branch-cut rules */
   } /* !lon_dff */
 
   return lon_dff;
-} /* !nco_lon_dff_brnch() */
+} /* !nco_lon_dff_brnch_dgr() */
+
+double /* O [rdn] Longitude difference (lon_r-lon_l) */
+nco_lon_dff_brnch_rdn /* [fnc] Subtract longitudes with branch-cut rules */
+(double lon_r, /* I [rdn] Longitude on right of gridcell (subtractor) */
+ double lon_l) /* I [rdn] Longitude on  left of gridcell (subtractee) */
+{
+  /* Purpose: Return difference of two longitudes in radians
+     Assume longitudes are within pi radians of eachother
+     Default orientation is monotonically increasing longitude from left to right */
+  const char fnc_nm[]="nco_lon_dff_brnch_rdn()";
+  const double lon_dff=lon_r-lon_l; /* [rdn] Longitude difference (lon_r-lon_l) */
+  if(lon_dff >= M_PI){
+    (void)fprintf(stdout,"%s: WARNING %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
+    return lon_dff-M_PI-M_PI;
+  }else if(lon_dff <= -M_PI){
+    (void)fprintf(stdout,"%s: WARNING %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
+    return lon_dff+M_PI+M_PI;
+  } /* !lon_dff */
+
+  return lon_dff;
+} /* !nco_lon_dff_brnch_rdn() */
 
 double /* O [dgr] Longitude average (lon_r-lon_l) */
 nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut rules */

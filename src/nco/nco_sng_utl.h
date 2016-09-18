@@ -143,7 +143,6 @@ extern "C" {
   nco_kvm_prn /* [fnc] Print kvm contents */
   (kvm_sct kvm); /* [fnc] kvm to print */
   
-
   char** /* O [pointer to sngs] group of splitted sngs*/
   nco_string_split /* [fnc] split the string by delimiter */
   (const char *restrict source, /* I [sng] the source string */
@@ -172,7 +171,6 @@ extern "C" {
   nco_count_blocks
   (const char* args,
    char* delimiter);
-
 
 #ifdef __cplusplus
 } /* end extern "C" */
