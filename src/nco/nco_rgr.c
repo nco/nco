@@ -3469,7 +3469,12 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
     lon_bnd_sin[idx]=sin(lon_bnd_rdn[idx]);
     lat_bnd_sin[idx]=sin(lat_bnd_rdn[idx]);
   } /* !idx */
-  double area_ltr; /* [sr] Gridcell area, non-spherical */
+  double area_crc; /* [sr] Latitude-triangle correction to spherical triangle area */
+  double area_ltr; /* [sr] Gridcell area allowing for latitude-triangles */
+  double area_ttl; /* [sr] Sphere area assuming spherical triangles */
+  double area_ltr_ttl; /* [sr] Sphere area allowing for latitude-triangles */
+  double area_crc_ttl; /* [sr] Latitude-triangle correction for whole sphere */
+  double area_crc_abs_ttl; /* [sr] Latitude-triangle absolute correction for whole sphere */
   double lat_dlt; /* [rdn] Latitudinal difference */
   double lon_dlt; /* [rdn] Longitudinal difference */
   double ngl_a; /* [rdn] Interior angle/great circle arc a */
@@ -3485,11 +3490,14 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   long idx_c; /* [idx] Point C 1-D index */
   nco_bool flg_ltr_cll; /* [flg] Any triangle in cell is latitude-triangle */
   nco_bool flg_ltr_crr; /* [flg] Current triangle is latitude-triangle */
+  area_ttl=0.0;
+  area_ltr_ttl=0.0;
+  area_crc_ttl=0.0;
+  area_crc_abs_ttl=0.0;
   for(unsigned int col_idx=0;col_idx<col_nbr;col_idx++){
     flg_ltr_cll=False;
     ngl_c=double_CEWI; /* Otherwise compiler unsure ngl_c is initialized first use */
     area[col_idx]=0.0;
-    area_ltr=0.0;
     tri_nbr=0;
     /* A is always first vertice */
     idx_a=bnd_nbr*col_idx; 
@@ -3580,9 +3588,16 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
       xcs_sph=4.0*atan(xcs_sph_qtr_tan);
       area[col_idx]+=xcs_sph;
+      area_ltr+=xcs_sph;
+      area_ttl+=xcs_sph;
+      area_ltr_ttl+=xcs_sph;
       /* Begin search for next B at current C */
       bnd_idx=idx_c-idx_a;
-      /* 20160918 from here to end of loop is non-spherical work */
+      /* 20160918 from here to end of loop is non-spherical work
+	 Generate area field for latitude-triangles by fxm
+	 ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/ne30np4_pentagons.091226.nc -m ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc
+	 ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
+	 ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/ne30_FSNT.nc > ~/foo.txt 2>&1 */
       if(lat_bnd_rdn[idx_a] == lat_bnd_rdn[idx_b] ||
 	 lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c] ||
 	 lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
@@ -3628,7 +3643,11 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	double xpn_x; /* [frc] Expansion parameter */
 	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_b],lon_bnd_rdn[idx_c]));
 	xpn_x=lat_bnd_sin[idx_ltr_b]*(1.0-cos(lon_dlt))/sin(lon_dlt);
-	area_ltr+=xcs_sph-lon_dlt*lat_bnd_sin[idx_ltr_b]+2.0*atan(xpn_x);
+	area_crc=-lon_dlt*lat_bnd_sin[idx_ltr_b]+2.0*atan(xpn_x);
+	area_ltr+=area_crc;
+	area_ltr_ttl+=area_crc;
+	area_crc_ttl+=area_crc;
+	area_crc_abs_ttl+=fabs(area_crc);
 	if(0){
 	  /* 20160918: Compute area of latitude triangle wedge using power expansion */
 	  double xpn_x_sqr; /* [frc] Expansion parameter squared */
@@ -3650,16 +3669,17 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	    xpn_trm=xpn_nmr/xpn_dnm;
 	    xpn_sum+=xpn_trm;
 	  } /* !idx_xpn */
-	  (void)fprintf(stdout,"%s: INFO %s reports col_idx = %u triangle %d is latitude-triangle. Computing non-spherical area using series approximation...not implemented yet\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
-	  (void)fprintf(stdout,"%s: INFO %s reports Spherical and latitude-triangle areas are %g and %g\n",nco_prg_nm_get(),fnc_nm,xcs_sph,xpn_sum);
+	  (void)fprintf(stdout,"%s: Latitude-triangle area using series approximation...not implemented yet\n",nco_prg_nm_get());
 	} /* !0 */
+	(void)fprintf(stdout,"%s: INFO %s col_idx = %u triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
       } /* !flg_ltr_crr */
     } /* !tri_idx */
     if(flg_ltr_cll){
       /* Current gridcell contained at least one latitude-triangle */
-      (void)fprintf(stdout,"%s: INFO %s reports Spherical and latitude-gridcell areas are %g and %g\n",nco_prg_nm_get(),fnc_nm,area[col_idx],area_ltr);
+      (void)fprintf(stdout,"%s: INFO %s col_idx = %u spherical area, latitude-gridcell area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_ltr,100.0*(area_ltr-area[col_idx])/area[col_idx]);
     } /* !flg_ltr_cll */    
   } /* !col_idx */
+  (void)fprintf(stdout,"%s: INFO %s total spherical area, latitude-gridcell area, %% difference, crc_ttl, crc_abs_ttl: %g, %g, %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,area_ttl,area_ltr_ttl,100.0*(area_ltr_ttl-area_ttl)/area_ttl,area_crc_ttl,area_crc_abs_ttl);
   if(lat_bnd_rdn) lat_bnd_rdn=(double *)nco_free(lat_bnd_rdn);
   if(lon_bnd_rdn) lon_bnd_rdn=(double *)nco_free(lon_bnd_rdn);
   if(lat_bnd_cos) lat_bnd_cos=(double *)nco_free(lat_bnd_cos);
@@ -6723,11 +6743,13 @@ nco_lon_dff_brnch_rdn /* [fnc] Subtract longitudes with branch-cut rules */
      Default orientation is monotonically increasing longitude from left to right */
   const char fnc_nm[]="nco_lon_dff_brnch_rdn()";
   const double lon_dff=lon_r-lon_l; /* [rdn] Longitude difference (lon_r-lon_l) */
+  nco_bool dbg_prn=False; /* [rdn] Longitude difference (lon_r-lon_l) */
+  /* longitudes on different branch cuts are expected when computing polygon area, so warn only if requested with high debugging level */
   if(lon_dff >= M_PI){
-    (void)fprintf(stdout,"%s: WARNING %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
+    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
     return lon_dff-M_PI-M_PI;
   }else if(lon_dff <= -M_PI){
-    (void)fprintf(stdout,"%s: WARNING %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
+    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);
     return lon_dff+M_PI+M_PI;
   } /* !lon_dff */
 
