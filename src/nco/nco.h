@@ -99,8 +99,11 @@ extern "C" {
 # define M_LN2       0.693147180559945309417232121458176568  /* loge(2)        */
 #endif /* M_LN2 */
 #ifndef M_PI
-#define M_PI        3.14159265358979323846264338327950288   /* pi             */
+# define M_PI        3.14159265358979323846264338327950288   /* pi             */
 #endif /* M_PI */
+#ifndef M_PI_2
+# define M_PI_2      1.57079632679489661923132169163975144   /* pi/2           */
+#endif /* M_PI_2 */
 
   /* Variables marked CEWI "Compiler Error Warning Initialization" are initialized
      to prevent spurious "warning: `float foo' might be used uninitialized in 

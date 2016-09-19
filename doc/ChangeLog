@@ -1,5 +1,7 @@
 2016-09-18  Charlie Zender  <zender@uci.edu>
 
+	* Add exact solution (untested) for non-spherical area of latitude-triangles
+
 	* Change multi-argument delimiter from colon to hash
 
 	* Add nco_lon_dff_brnch_rdn() to enforce branch-cut rules in area diagnosis

@@ -3469,6 +3469,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
     lon_bnd_sin[idx]=sin(lon_bnd_rdn[idx]);
     lat_bnd_sin[idx]=sin(lat_bnd_rdn[idx]);
   } /* !idx */
+  double area_ltr; /* [sr] Gridcell area, non-spherical */
   double lat_dlt; /* [rdn] Latitudinal difference */
   double lon_dlt; /* [rdn] Longitudinal difference */
   double ngl_a; /* [rdn] Interior angle/great circle arc a */
@@ -3482,9 +3483,13 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   long idx_a; /* [idx] Point A 1-D index */
   long idx_b; /* [idx] Point B 1-D index */
   long idx_c; /* [idx] Point C 1-D index */
+  nco_bool flg_ltr_cll; /* [flg] Any triangle in cell is latitude-triangle */
+  nco_bool flg_ltr_crr; /* [flg] Current triangle is latitude-triangle */
   for(unsigned int col_idx=0;col_idx<col_nbr;col_idx++){
+    flg_ltr_cll=False;
     ngl_c=double_CEWI; /* Otherwise compiler unsure ngl_c is initialized first use */
     area[col_idx]=0.0;
+    area_ltr=0.0;
     tri_nbr=0;
     /* A is always first vertice */
     idx_a=bnd_nbr*col_idx; 
@@ -3493,6 +3498,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
     /* bnd_idx labels offset from point A of potential location of triangle points B and C 
        We know that bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr-1, bnd_idx(C) < bnd_nbr */
     while(bnd_idx<bnd_nbr-1){
+      flg_ltr_crr=False;
       /* Only first triangle must search for B, subsequent triangles recycle previous C as current B */
       if(tri_nbr == 0){
 	/* Skip repeated points that must occur when polygon has fewer than allowed vertices */
@@ -3576,8 +3582,83 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       area[col_idx]+=xcs_sph;
       /* Begin search for next B at current C */
       bnd_idx=idx_c-idx_a;
+      /* 20160918 from here to end of loop is non-spherical work */
+      if(lat_bnd_rdn[idx_a] == lat_bnd_rdn[idx_b] ||
+	 lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c] ||
+	 lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
+	flg_ltr_cll=flg_ltr_crr=True;
+      } /* endif */
+      if(flg_ltr_crr){
+	double ngl_ltr_a; /* [rdn] Interior angle/small circle arc a */
+	double ngl_ltr_b; /* [rdn] Interior angle/great circle arc b */
+	double ngl_ltr_c; /* [rdn] Interior angle/great circle arc c */
+	double ngl_plr; /* [rdn] Polar angle (co-latitude) */
+	long idx_ltr_a; /* [idx] Point A 1-D index */
+	long idx_ltr_b; /* [idx] Point B 1-D index */
+	long idx_ltr_c; /* [idx] Point C 1-D index */
+	/* Rotate labels to standard position with vertex A, equi-latitude points B and C */
+	if(lat_bnd_rdn[idx_a] == lat_bnd_rdn[idx_b]){
+	  idx_ltr_a=idx_c;
+	  idx_ltr_b=idx_a;
+	  idx_ltr_c=idx_b;
+	  ngl_ltr_a=ngl_c;
+	  ngl_ltr_b=ngl_a;
+	  ngl_ltr_c=ngl_b;
+	  ngl_plr=M_PI_2-lat_bnd_rdn[idx_a];
+	}else if(lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c]){
+	  idx_ltr_a=idx_a;
+	  idx_ltr_b=idx_b;
+	  idx_ltr_c=idx_c;
+	  ngl_ltr_a=ngl_a;
+	  ngl_ltr_b=ngl_b;
+	  ngl_ltr_c=ngl_c;
+	  ngl_plr=M_PI_2-lat_bnd_rdn[idx_b];
+	}else if(lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
+	  idx_ltr_a=idx_b;
+	  idx_ltr_b=idx_c;
+	  idx_ltr_c=idx_a;
+	  ngl_ltr_a=ngl_b;
+	  ngl_ltr_b=ngl_c;
+	  ngl_ltr_c=ngl_a;
+	  ngl_plr=M_PI_2-lat_bnd_rdn[idx_c];
+	}else{
+	  abort();
+	} /* endif */
+	/* 20160918: Compute area of latitude triangle wedge exactly */
+	double xpn_x; /* [frc] Expansion parameter */
+	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_b],lon_bnd_rdn[idx_c]));
+	xpn_x=lat_bnd_sin[idx_ltr_b]*(1.0-cos(lon_dlt))/sin(lon_dlt);
+	area_ltr+=xcs_sph-lon_dlt*lat_bnd_sin[idx_ltr_b]+2.0*atan(xpn_x);
+	if(0){
+	  /* 20160918: Compute area of latitude triangle wedge using power expansion */
+	  double xpn_x_sqr; /* [frc] Expansion parameter squared */
+	  double xpn_sum; /* [frc] Expansion sum */
+	  double xpn_nmr; /* [frc] Expansion term numerator */
+	  double xpn_trm; /* [frc] Expansion term */
+	  double xpn_dnm; /* [frc] Expansion term denominator */
+	  const unsigned short int rdr_xpn=3; /* [nbr] Order of N in trigonometric series expansion */
+	  unsigned short int idx_xpn; /* [idx] Index in series expansion */
+	  xpn_x=cos(ngl_plr)*(1.0-cos(lon_dlt))/sin(lon_dlt);
+	  xpn_x_sqr=xpn_x*xpn_x;
+	  xpn_nmr=xpn_x;
+	  xpn_dnm=1.0;
+	  xpn_trm=xpn_nmr/xpn_dnm;
+	  xpn_sum+=xpn_trm;
+	  for(idx_xpn=3;idx_xpn<=rdr_xpn;idx_xpn+=2){
+	    xpn_nmr*=xpn_x_sqr;
+	    xpn_dnm*=(idx_xpn-1)*idx_xpn;
+	    xpn_trm=xpn_nmr/xpn_dnm;
+	    xpn_sum+=xpn_trm;
+	  } /* !idx_xpn */
+	  (void)fprintf(stdout,"%s: INFO %s reports col_idx = %u triangle %d is latitude-triangle. Computing non-spherical area using series approximation...not implemented yet\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+	  (void)fprintf(stdout,"%s: INFO %s reports Spherical and latitude-triangle areas are %g and %g\n",nco_prg_nm_get(),fnc_nm,xcs_sph,xpn_sum);
+	} /* !0 */
+      } /* !flg_ltr_crr */
     } /* !tri_idx */
-    if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %u has %d triangles\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+    if(flg_ltr_cll){
+      /* Current gridcell contained at least one latitude-triangle */
+      (void)fprintf(stdout,"%s: INFO %s reports Spherical and latitude-gridcell areas are %g and %g\n",nco_prg_nm_get(),fnc_nm,area[col_idx],area_ltr);
+    } /* !flg_ltr_cll */    
   } /* !col_idx */
   if(lat_bnd_rdn) lat_bnd_rdn=(double *)nco_free(lat_bnd_rdn);
   if(lon_bnd_rdn) lon_bnd_rdn=(double *)nco_free(lon_bnd_rdn);
@@ -3585,7 +3666,6 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   if(lon_bnd_cos) lon_bnd_cos=(double *)nco_free(lon_bnd_cos);
   if(lat_bnd_sin) lat_bnd_sin=(double *)nco_free(lat_bnd_sin);
   if(lon_bnd_sin) lon_bnd_sin=(double *)nco_free(lon_bnd_sin);
-
 } /* !nco_sph_plg_area() */
 
 int /* O [enm] Return code */
