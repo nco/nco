@@ -3498,6 +3498,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
     flg_ltr_cll=False;
     ngl_c=double_CEWI; /* Otherwise compiler unsure ngl_c is initialized first use */
     area[col_idx]=0.0;
+    area_ltr=0.0;
     tri_nbr=0;
     /* A is always first vertice */
     idx_a=bnd_nbr*col_idx; 
@@ -3604,13 +3605,13 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	flg_ltr_cll=flg_ltr_crr=True;
       } /* endif */
       if(flg_ltr_crr){
-	double ngl_ltr_a; /* [rdn] Interior angle/small circle arc a */
-	double ngl_ltr_b; /* [rdn] Interior angle/great circle arc b */
-	double ngl_ltr_c; /* [rdn] Interior angle/great circle arc c */
+	double ngl_ltr_a; /* [rdn] Interior angle/small circle arc a, canonical latitude-triangle geometry */
+	double ngl_ltr_b; /* [rdn] Interior angle/great circle arc b, canonical latitude-triangle geometry */
+	double ngl_ltr_c; /* [rdn] Interior angle/great circle arc c, canonical latitude-triangle geometry */
 	double ngl_plr; /* [rdn] Polar angle (co-latitude) */
-	long idx_ltr_a; /* [idx] Point A 1-D index */
-	long idx_ltr_b; /* [idx] Point B 1-D index */
-	long idx_ltr_c; /* [idx] Point C 1-D index */
+	long idx_ltr_a; /* [idx] Point A (apex) of canonical latitude-triangle geometry, 1-D index */
+	long idx_ltr_b; /* [idx] Point B (base) of canonical latitude-triangle geometry, 1-D index */
+	long idx_ltr_c; /* [idx] Point C (base) of canonical latitude-triangle geometry, 1-D index */
 	/* Rotate labels to standard position with vertex A, equi-latitude points B and C */
 	if(lat_bnd_rdn[idx_a] == lat_bnd_rdn[idx_b]){
 	  idx_ltr_a=idx_c;
@@ -3619,7 +3620,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  ngl_ltr_a=ngl_c;
 	  ngl_ltr_b=ngl_a;
 	  ngl_ltr_c=ngl_b;
-	  ngl_plr=M_PI_2-lat_bnd_rdn[idx_a];
+	  ngl_plr=fabs(M_PI_2-lat_bnd_rdn[idx_a]);
 	}else if(lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c]){
 	  idx_ltr_a=idx_a;
 	  idx_ltr_b=idx_b;
@@ -3627,7 +3628,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  ngl_ltr_a=ngl_a;
 	  ngl_ltr_b=ngl_b;
 	  ngl_ltr_c=ngl_c;
-	  ngl_plr=M_PI_2-lat_bnd_rdn[idx_b];
+	  ngl_plr=fabs(M_PI_2-lat_bnd_rdn[idx_b]);
 	}else if(lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
 	  idx_ltr_a=idx_b;
 	  idx_ltr_b=idx_c;
@@ -3635,15 +3636,18 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  ngl_ltr_a=ngl_b;
 	  ngl_ltr_b=ngl_c;
 	  ngl_ltr_c=ngl_a;
-	  ngl_plr=M_PI_2-lat_bnd_rdn[idx_c];
+	  ngl_plr=fabs(M_PI_2-lat_bnd_rdn[idx_c]);
 	}else{
 	  abort();
 	} /* endif */
 	/* 20160918: Compute area of latitude triangle wedge exactly */
 	double xpn_x; /* [frc] Expansion parameter */
-	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_b],lon_bnd_rdn[idx_c]));
+	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_ltr_b],lon_bnd_rdn[idx_ltr_c]));
 	xpn_x=lat_bnd_sin[idx_ltr_b]*(1.0-cos(lon_dlt))/sin(lon_dlt);
-	area_crc=-lon_dlt*lat_bnd_sin[idx_ltr_b]+2.0*atan(xpn_x);
+	area_crc=2.0*atan(xpn_x);
+	if(xpn_x < 0.0) abort();
+	// if(lat_bnd[idx_ltr_b] > 0.0) area_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
+	area_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b];
 	area_ltr+=area_crc;
 	area_ltr_ttl+=area_crc;
 	area_crc_ttl+=area_crc;
@@ -3671,7 +3675,12 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  } /* !idx_xpn */
 	  (void)fprintf(stdout,"%s: Latitude-triangle area using series approximation...not implemented yet\n",nco_prg_nm_get());
 	} /* !0 */
-	(void)fprintf(stdout,"%s: INFO %s col_idx = %u triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
+	if(nco_dbg_lvl_get() >= nco_dbg_std){
+	  (void)fprintf(stdout,"%s: INFO %s col_idx = %u triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
+	  if(fabs(area_crc/xcs_sph) > 0.1){
+	    (void)fprintf(stdout,"%s: DBG Correction exceeds 10%% for triangle with ABC vertices at lat,lon [dgr] = %g, %g\n%g, %g\n%g, %g\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
+	  } /* !fabs */
+	} /* !dbg */
       } /* !flg_ltr_crr */
     } /* !tri_idx */
     if(flg_ltr_cll){
