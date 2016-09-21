@@ -2,6 +2,10 @@
 
 	* Improve exact non-spherical area solution
 
+2016-09-21  Henry Butowsky  <henryb@hush.com>
+
+	* Modify prn_cls(), change snprint() to sprint4, document sprint() and sprint4()
+
 2016-09-18  Charlie Zender  <zender@uci.edu>
 
 	* Add exact solution (untested) for non-spherical area of latitude-triangles

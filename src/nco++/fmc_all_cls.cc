@@ -2556,7 +2556,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
       
   nbr_args=args_vtr.size();  
 
-  susg="usage: var_out="+sfnm+"(coordinate_var,$dim, string_nm ?"; 
+  susg="usage: var_out="+sfnm+"(coordinate_var,$dim, string_nm?)"; 
 
   
   if(nbr_args<2)
@@ -4479,7 +4479,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("print",this,(int)PPRINT));
       fmc_vtr.push_back( fmc_cls("sprint",this,(int)PSPRINT));
-      fmc_vtr.push_back( fmc_cls("snprint",this,(int)PSNPRINT));
+      fmc_vtr.push_back( fmc_cls("sprint4",this,(int)PSNPRINT));
 
     }
   }		      
