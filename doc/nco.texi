@@ -7190,7 +7190,7 @@ This reduces the number of unanticipated consequences and keeps the
 operators functioning in a familiar way.
 Put another way, @acronym{NCO} limits production of additional record
 dimensions so processing netCDF4 files leads to the same results as
-processing netCDF4 files.
+processing netCDF3 files.
 Users can override this default with the @samp{--mrd} (or 
 @samp{--multiple_record_dimension}) switch, which enables netCDF4
 variables to accumulate additional record dimensions.

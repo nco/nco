@@ -3643,6 +3643,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	/* 20160918: Compute area of latitude triangle wedge exactly */
 	double xpn_x; /* [frc] Expansion parameter */
 	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_ltr_b],lon_bnd_rdn[idx_ltr_c]));
+	/* Numeric conditioning uncertain. Approaches divide-by-zero when lon_dlt << 1 */
 	xpn_x=lat_bnd_sin[idx_ltr_b]*(1.0-cos(lon_dlt))/sin(lon_dlt);
 	area_crc=2.0*atan(xpn_x);
 	if(xpn_x < 0.0) abort();
@@ -3678,7 +3679,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	if(nco_dbg_lvl_get() >= nco_dbg_std){
 	  (void)fprintf(stdout,"%s: INFO %s col_idx = %u triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
 	  if(fabs(area_crc/xcs_sph) > 0.1){
-	    (void)fprintf(stdout,"%s: DBG Correction exceeds 10%% for triangle with ABC vertices at lat,lon [dgr] = %g, %g\n%g, %g\n%g, %g\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
+	    (void)fprintf(stdout,"%s: DBG Non-spherical correction exceeds 10%% for current triangle with ABC vertices at lat,lon [dgr] = %g, %g\n%g, %g\n%g, %g\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
 	  } /* !fabs */
 	} /* !dbg */
       } /* !flg_ltr_crr */
