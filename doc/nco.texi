@@ -11179,6 +11179,7 @@ already contain the appended dimensions.
 * Left hand casting::
 * Arrays and hyperslabs::
 * Attributes::
+* Value List::
 * Number literals::
 * if statement::
 * print statement::
@@ -11900,7 +11901,7 @@ three_dmn_var_prm=
 @html
 <a name="ncap_att"></a> <!-- http://nco.sf.net/nco.html#ncap_att -->
 @end html
-@node Attributes, Number literals, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
+@node Attributes, Value List, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
 @subsection Attributes
 @cindex attributes@command{ncap2}
 @noindent Attributes are referred to by @emph{var_nm@@att_nm} @*
@@ -11916,24 +11917,6 @@ a1@min++;
 --a1@max; 
 a1(0)=a1@min;
 a1($time.size-1)=a1@max;
-@end verbatim
-@end example
-
-@html
-<a name="nst"></a> <!-- http://nco.sf.net/nco.html#nst -->
-<a name="instantiate"></a> <!-- http://nco.sf.net/nco.html#instantiate -->
-<a name="instantiation"></a> <!-- http://nco.sf.net/nco.html#instantiation -->
-@end html
-@cindex instantiate
-@cindex instantiation
-A @emph{value list} can be used on the RHS of an assignment statement
-to @dfn{instantiate} an attribute or variable:
-@cindex value list
-@example
-@verbatim
-a1@trip1={1,2,3} ;
-a1@triplet={a1@min,(a1@min+a1@max)/2,a1@max}; 
-lon[lon]={0.0,90.0,180.0,270.0}
 @end verbatim
 @end example
 
@@ -11961,6 +11944,8 @@ sng_arr[$sng_len]=a1@long_name; // sng_arr now contains "Kelvin"
 Attributes defined in a script are stored in memory and are written to Output after script completion.
 To stop the attribute being written use the ram_delete() method or use a bogus variable name.
 
+
+
 @noindent @strong{Attribute Propagation and Inheritance}
 @cindex attribute propagation
 @cindex attribute inheritance
@@ -11987,10 +11972,10 @@ It comes in two forms
 @example
 (A) att_new=push(att_exp, expr)
 
-(B) final_att_size=push(&tt_nm,expr)    
+(B) att_size=push(&tt_nm,expr)    
 @end example
 
-@noindent In form (A) The first arg must be an att identifier or an expression that evaluates to an att. The second arg can evalute to an att or var. The second arg is then converted to the the type of  att_exp; and appended to att_exp ; and the resulting att returned@*
+@noindent In form (A) The first arg should be an att identifier or an expression that evaluates to an att. The second arg can evalute to an att or var. The second arg is then converted to the the type of  att_exp; and appended to att_exp ; and the resulting att returned@*
 
 @noindent In form (B) the first arg is a call-by-ref att identifier (which may not exist). The second arg is then evaluated (type conversion as needed) and appended to the call-by-ref att. The final size of the att is then returned.
 
@@ -11999,14 +11984,15 @@ It comes in two forms
 temp@range=-10.0
 push(&temp@range, 12.0) // temp@range=-10.0,12.0
 
-numbers@sq={1,4,9};
+numbers@sq=push(1,4);
+numbers@sq=push(numbers@sq,9);
 push(&number@sq,16.0); 
 push(&number@sq,25ull); // numbers@squares=1,4,9,16,25  
 
 @end verbatim
 @end example
 
-@noindent Now some text examples. Remember an att identifier that begins with @@, implies 'global e.g @@institution' is short for global@@institution   
+@noindent Now some text examples.@* Remember an att identifier that begins with @@, implies global e.g '@@institution' is short for 'global@@institution'   
 
 @example
 @verbatim
@@ -12024,6 +12010,9 @@ push(&@greek,"delta"s);
 push(&@greek,@e);
 push(&@greek,"zeta"); 
 
+// CAN'T push a single NC_STRING to an NC_CHAR
+@h="hello"
+push(&@h," again"s); // BAD PUSH
 @end verbatim
 @end example
 
@@ -12036,11 +12025,46 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 @end verbatim
 @end example
 
+
+@html
+<a name="value_list"></a> <!-- http://nco.sf.net/nco.html#value_list -->
+@end html
+@node Value List, Number literals, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
+@subsection Value List
+@cindex value list@command{ncap2}
+
+A @emph{value list} is a special type of attribute. It can only be used on the RHS of the assign family of statements.@*
+That is @emph{=, +=, -=, *=, /=}@*
+A value list CAN-NOT be involved in any logical or arithmetical operations (except those above).@* 
+A value list CAN-NOT be used as a function argument. @*
+A value list CANT have nested value lists. @*
+The type of a value list is the type of the member with the highest type.@*
+
+@cindex value list
+@example
+@verbatim
+a1@trip={1,2,3} ;
+a1@trip+={3,2,1} ;  // 4,4,4
+
+a1@triplet={a1@min,(a1@min+a1@max)/2,a1@max}; 
+
+lon[lon]={0.0,90.0,180.0,270.0}
+lon*={1.0,1.1,1.2,1.3} 
+
+dlon[lon]={1b,2s,3ull,4.0f}; // final type NC_FLOAT
+
+a1@ind={1,2,3}+{4,4,4};  // BAD 
+a1@s=sin( {1.0,16.0} );  // BAD
+
+@end verbatim
+@end example
+
+
 @html
 <a name="ncap_num"></a> <!-- http://nco.sf.net/nco.html#ncap_num -->
 <a name="ncap_string"></a> <!-- http://nco.sf.net/nco.html#ncap_string -->
 @end html
-@node Number literals, if statement, Attributes, ncap2 netCDF Arithmetic Processor
+@node Number literals, if statement, Value List, ncap2 netCDF Arithmetic Processor
 @subsection Number literals
 @cindex number literals @command{ncap2}
 The table below lists the postfix character(s) to add to a number
