@@ -3439,7 +3439,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	Moreover, it works on all convex polygons and on slightly concave polygons
 	Centroid/hub has clear view of interior of most simple concave polygons
      4. L'Huillier method with exact RLL grids by Zender and Agress 20160918
-        A. Decompose polygon into triangles via either method 2 or 3
+        A. Decompose polygon into triangles via and method (e.g., method 2 or 3 above)
 	B. Determine whether triangle is spherical or contains RLL (constant latitude)
 	C. Spherical triangles use L'Huillier, RLL triangles use series expansion */
   const char fnc_nm[]="nco_sph_plg_area()";
@@ -3597,8 +3597,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       /* 20160918 from here to end of loop is non-spherical work
 	 Generate area field for latitude-triangles by fxm
 	 ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/ne30np4_pentagons.091226.nc -m ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc
+	 ncap2 -O -s area_b=0.0 ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc ~/rgr/map_fv257x512_to_ne30np4_bilin.no_area_b.nc
 	 ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
-	 ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/ne30_FSNT.nc > ~/foo.txt 2>&1 */
+	 ncks -O -D 5 -v FSNT --map ${}/rgr/map_fv257x512_to_ne30np4_bilin.no_area_b.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/ne30_FSNT.nc > ~/foo.txt 2>&1 */
       if(lat_bnd_rdn[idx_a] == lat_bnd_rdn[idx_b] ||
 	 lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c] ||
 	 lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
