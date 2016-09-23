@@ -1,3 +1,7 @@
+2016-09-23  Henry Butowsky  <henryb@hush.com>
+
+	* added manual section on vpointers
+
 2016-09-21  Charlie Zender  <zender@uci.edu>
 
 	* Improve exact non-spherical area solution

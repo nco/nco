@@ -11190,6 +11190,7 @@ already contain the appended dimensions.
 * Loops::
 * Include files::
 * Sort methods::
+* Vpointer::
 * Irregular grids::
 * Bilinear interpolation::
 * GSL special functions::
@@ -11724,6 +11725,12 @@ var_out=array( 0ul, 2, ilev)    // 0,2,4,6
 
 The following is of type NC_FLOAT
 var_out=array(99.0f, 2.5, $lon) // 99,101.5,104,106.5
+
+// create an array of zeros 
+var_out=array(0, 0, $time) // 0,0,0,0,0,0,0,0,0,0 
+
+// create an array of ones
+var_out=array(1.0, 0.0, $lon) // 1.0,1.0,1.0,1.0 
 @end example
 
 @noindent @strong{ n-Dimensional Arrays@*}
@@ -11933,7 +11940,7 @@ double a1(time) ;
   a1:triplet = 21., 110., 199. ;
 @end example
 
-The @code{size()} method can be used with attributes.
+The following basic methods @code{size(), type(), exists()} can be used with attributes.
 For example, to save an attribute text string in a variable,
 @example
 @verbatim
@@ -12035,7 +12042,7 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 
 A @emph{value list} is a special type of attribute. It can only be used on the RHS of the assign family of statements.@*
 That is @emph{=, +=, -=, *=, /=}@*
-A value list CAN-NOT be involved in any logical or arithmetical operations (except those above).@* 
+A value list CAN-NOT be involved in any logical, binary, or arithmetical operations (except those above).@* 
 A value list CAN-NOT be used as a function argument. @*
 A value list CANT have nested value lists. @*
 The type of a value list is the type of the member with the highest type.@*
@@ -12059,6 +12066,18 @@ a1@s=sin( {1.0,16.0} );  // BAD
 @end verbatim
 @end example
 
+@noindent Can also use a value_list to create an attribute of type NC_STRING. (Remember  a literal string of type NC_STRING has a postfix 's' ). A value list of NC_CHAR has no semantic meaning and is plain wrong.  
+@example
+@verbatim
+
+array[lon]={1.0,2.,4.0,7.0}
+array@numbers={"one"s, "two"s, "four"s, "seven"s}; //GOOD
+
+ar[lat]={ 0,20} 
+ar@numbers={"zero","twenty"}; // BAD
+
+@end verbatim
+@end example
 
 @html
 <a name="ncap_num"></a> <!-- http://nco.sf.net/nco.html#ncap_num -->
@@ -12961,7 +12980,7 @@ e=2.71828; // Regular (disk) variable, written to output
 <a name="sort"></a> <!-- http://nco.sf.net/nco.html#sort -->
 <a name="remap"></a> <!-- http://nco.sf.net/nco.html#remap -->
 @end html
-@node Sort methods, Irregular grids, Include files, ncap2 netCDF Arithmetic Processor
+@node Sort methods, Vpointer, Include files, ncap2 netCDF Arithmetic Processor
 @subsection @command{sort} methods
 @cindex @command{sort}
 @cindex @command{asort}
@@ -13233,12 +13252,147 @@ EOF
 ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
 @end example
 
+
+@html
+<a name="vpointer"></a> <!-- http://nco.sf.net/nco.html#vpointer -->
+@end html
+
+@node Vpointer, Irregular grids, Sort methods, ncap2 netCDF Arithmetic Processor
+@subsection Vpointer
+@cindex vpointer
+
+@noindent A variable-pointer or @emph{vpointer} is a pointer to a variable or attribute. It is most usefull when one needs to apply a set of operations on a list of variables. For example After regular processing one may wish to set the _FillVlaue of all NC_FLOAT variables to a particular value. Or say after processing,  create min/max attributes for all 3D variables of type NC_DOUBLE. A vpointer is not a 'pointer' to a memory location in the normal C/C++ sense. Rather the vpointer is a text attribute that contains the name of a variable. To use the pointer simply prefix the pointer with '*'. Most places where you use VAR_ID you can use *vpointer_nm. There is a variety of ways to maintain a list of strings in ncap2. The easiest method is to use a NC_STRING attribute.
+
+
+Below is a simple illustration using NC_CHAR as the vpointer.@*
+Remember an attribute starting with @@ implies 'global'. eg '@@vpx' is short for 'global@@vpx'
+
+
+@example
+@verbatim
+idx=9;
+idy=20;
+t2=time;
+
+global@vpx="idx";
+
+// lets increment idx by one
+*global@vpx++;  
+print(idx);
+
+// multiply by 5
+*@vpx*=5;  // idx now 50
+print(idx);
+
+// lets add 200 (long method)
+*@vpx=*@vpx+200;  //idx now 250
+print(idx);
+
+@vpy="idy";
+
+// lets add together idx and idy
+idz=*@vpx+*@vpy;  // idz == 270
+print(idz);
+
+// we can also reference variables in  the input file
+// can use an existing att pointer as atts are not written
+// to the netcdf file until after script has finished
+@vpx="three_dmn_var";
+
+// we can convert the above var to type NC_DOUBLE and 
+// write  it to ouptut all in one go 
+*@vpx=*@vpx.double();
+@end verbatim
+@end example
+
+@noindent The following script writes to Output all vars that are of type   NC_DOUBLE and and have at least 2 dimesions; It then changes their _FillValue to '1.0 E-9'. 
+The function @code{get_vars_in()} creates an NC_STRING attribue that contains all the var names in Input. It is important to note that That a vpointer must a plain attribute and NOT an a attribute expression. So in the below script using @code{*all(idx)} would be a fundamental mistake. In the above example the vpointer @code{var_nm} is of type NC_STRING.
+
+@example
+@verbatim
+@all=get_vars_in();
+
+*sz=@all.size();
+*idx=0;
+
+for(idx=0;idx<sz;idx++)
+{
+  // remember @var_nm is of type NC_STRING
+  @var_nm=@all(idx);
+ 
+  if( *@var_nm.type()==NC_DOUBLE && *@var_nm.ndims()>=2  )
+  {
+     *@var_nm=*@var_nm; 
+     *@var_nm.change_miss(1e-9d);
+  }
+}
+@end verbatim
+@end example 
+
+
+
+@noindent The following script, writes to Output all 3D/4D vars as type NC_FLOAT. Then for each var it calculates a range att that contains min & max; and a total att that is the sum of all elements. Note that in this example vpointer are used to 'point' to attributes
+   
+@example
+@verbatim
+
+@all=get_vars_in();
+*sz=@all.size();
+
+for(*idx=0;idx<sz;idx++)
+{
+  @var_nm=@all(idx);
+  if(*@var_nm.ndims()>=3 )
+  {
+
+    *@var_nm=*@var_nm.float();
+    // The push function also takes a call-by-ref att -if it  doesnt already exist then it is created
+    // the call below is pushing a NC_STRING to an att so the end result is a list of NC_STRINGS   
+    push(&@prc,@var_nm); 
+  }
+} 
+
+*sz=@prc.size();
+
+for(*idx=0;idx<sz;idx++)
+{
+  @var_nm=@prc(idx);
+
+  // we can work with att pointers as well 
+  // sprint - ouptut is of type NC_CHAR
+  @att_total=sprint(@var_nm,"%s@total"); 
+  @att_range=sprint(@var_nm,"%s@range"); 
+
+  // if you are still confused then print out the atts 
+  print(@att_total); 
+  print(@att_range);
+ 
+  *@att_total= *@var_nm.total();
+  *@att_range={ min(*@var_nm), max(*@var_nm)}; 
+} 
+@end verbatim
+@end example
+
+@noindent This is an ncdump of one of the variables that has been processed by the above script
+@example
+@verbatim
+float three_dmn_var_int(time, lat, lon) ;
+three_dmn_var_int:_FillValue = -99.f ;
+three_dmn_var_int:long_name = "three dimensional record variable of type int" ;
+three_dmn_var_int:range = 1.f, 80.f ;
+three_dmn_var_int:total = 2701.f ;
+three_dmn_var_int:units = "watt meter-2" ;
+@end verbatim
+@end example
+
+
+
 @html
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
 
-@node Irregular grids, Bilinear interpolation, Sort methods, ncap2 netCDF Arithmetic Processor
+@node Irregular grids, Bilinear interpolation, Vpointer, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
 @cindex rectangular grids
