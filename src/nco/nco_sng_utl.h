@@ -84,6 +84,7 @@ extern "C" {
    char ** const endptr,
    const int base);
 #endif /* !NEED_STRTOLL */
+
   
   char * /* O [sng] Parsed command line */
   nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
@@ -142,7 +143,11 @@ extern "C" {
   void
   nco_kvm_prn /* [fnc] Print kvm contents */
   (kvm_sct kvm); /* [fnc] kvm to print */
-  
+
+  char *
+  nco_strip_backslash
+  (char* args);
+
   char** /* O [pointer to sngs] group of splitted sngs*/
   nco_string_split /* [fnc] split the string by delimiter */
   (const char *restrict source, /* I [sng] the source string */
@@ -164,13 +169,18 @@ extern "C" {
   char * /* O [sng] Joined strings */
   nco_join_sng /* [fnc] Join strings with delimiter */
   (const char **restrict sng_lst, /* I [sng] List of strings being connected */
-   const char *dlm_sng, /* I [sng] Delimiter string */
+   /*const char *dlm_sng, /* I [sng] Delimiter string */
    const int sng_nbr); /* I [int] Number of strings */
 
   int
   nco_count_blocks
   (const char* args,
    char* delimiter);
+
+  char*
+  nco_mlt_arg_dlm_set
+  (const char *dlm_sng_usr);
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
