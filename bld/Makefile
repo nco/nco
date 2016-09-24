@@ -1933,6 +1933,7 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_mmr.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_msa.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_mss_val.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_mta.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_netcdf.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_omp.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_pck.o) \

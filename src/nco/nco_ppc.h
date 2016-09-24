@@ -27,6 +27,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_mta.h" /* Multi-argument parsing */
 #include "nco_sng_utl.h" /* String utilities */
 
 /* Minimum number of explicit significand bits to preserve when zeroing/bit-masking floating point values

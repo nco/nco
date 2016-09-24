@@ -105,6 +105,7 @@ nco_mmr.h \
 nco_mpi.h \
 nco_msa.h \
 nco_mss_val.h \
+nco_mta.h \
 nco_netcdf.h \
 nco_omp.h \
 nco_pck.h \
@@ -165,6 +166,7 @@ nco_md5.c \
 nco_mmr.c \
 nco_msa.c \
 nco_mss_val.c \
+nco_mta.c \
 nco_netcdf.c \
 nco_omp.c \
 nco_pck.c \

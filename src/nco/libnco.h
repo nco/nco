@@ -41,6 +41,7 @@
 #include "nco_mmr.h" /* Memory management */
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 #include "nco_mss_val.h" /* Missing value utilities */
+#include "nco_mta.h" /* Multi-argument parsing */
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_pck.h" /* Packing and unpacking variables */
 #include "nco_ppc.h" /* Precision-Preserving Compression */

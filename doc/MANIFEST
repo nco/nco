@@ -274,6 +274,8 @@ nco/src/nco/nco_mmr.h
 nco/src/nco/nco_mpi.h
 nco/src/nco/nco_msa.c
 nco/src/nco/nco_msa.h
+nco/src/nco/nco_mta.c
+nco/src/nco/nco_mta.h
 nco/src/nco/nco_mss_val.c
 nco/src/nco/nco_mss_val.h
 nco/src/nco/nco_netcdf.c	NCO-independent C wrappers for libnetcdf

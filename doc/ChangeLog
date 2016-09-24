@@ -1,6 +1,10 @@
+2016-09-23  Charlie Zender  <zender@uci.edu>
+
+	* Split multi-argument parsing and KVM routines into nco_mta.[ch]
+
 2016-09-23  Henry Butowsky  <henryb@hush.com>
 
-	* added manual section on vpointers
+	* Add manual section on vpointers
 
 2016-09-21  Charlie Zender  <zender@uci.edu>
 

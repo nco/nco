@@ -36,6 +36,7 @@
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_mta.h" /* Multi-argument parsing */
 #include "nco_mss_val.h" /* Missing value utilities */
 #ifdef _MSC_VER
 # include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
