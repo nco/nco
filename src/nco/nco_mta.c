@@ -50,7 +50,7 @@ nco_sng2kvm /* [fnc] Convert string to key-value pair */
 
   // If malloc() cannot allocate sufficient memory, either key or value would be NULL; print error message and not quit.
   if(!kvm.key || !kvm.val){
-    perror("Error: system does not have sufficient memory.\n");
+    (void)fprintf(stderr, "%s: ERROR system does not have sufficient memory.\n", nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   }
   return kvm;
@@ -98,7 +98,7 @@ nco_kvm_prn(kvm_sct kvm)
 char *nco_strip_backslash(char* args)
 {
     char* backslash_pos=strchr(args, '\\');
-    memmove(backslash_pos, backslash_pos+1,strlen(backslash_pos+1)+1);
+    strcpy(backslash_pos, nco_mta_dlm);
 
     return args;
 }
@@ -144,18 +144,15 @@ nco_input_check /* [fnc] check whether the input is legal and give feedback acco
     /* Use to check the syntax for the arguments.
      * If the return value is false (which means the input value is illegal) the parser will terminate the program. */
     if(!strstr(args,"=")){ //If no equal sign in arguments
-        printf("\033[0;31mIn arugument: %s\n", args);
-        perror("Formatting Error: No equal sign detected \033[0m\n");
+        (void)fprintf(stderr,"%s: ERROR No equal sign detected \033[0m\n", nco_prg_nm_get());
         return 0;
     } //endif
     if(strstr(args,"=")==args){ //If equal sign is in the very beginning of the arguments (no key)
-        printf("\033[0;31mIn arugument: %s\n", args);
-        perror("Formatting Error: No key in key-value pair.\033[0m\n"); 
+        (void)fprintf(stderr,"%s: ERROR No key in key-value pair.\033[0m\n", nco_prg_nm_get()); 
         return 0;
     } //endif
     if(strstr(args,"=")==args+strlen(args)-1){ //If equal sign is in the very end of the arguments
-        printf("\033[0;31mIn arugument: %s\n", args);
-        perror("Formatting Error: No value in key-value pair.\033[0m\n"); 
+        (void)fprintf(stderr,"%s: ERROR No value in key-value pair.\033[0m\n", nco_prg_nm_get()); 
         return 0;
     } //endif
     return 1;
