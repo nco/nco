@@ -2,10 +2,12 @@
 
 /* Purpose: String utilities */
 
-/* Copyright (C) 1995--2016 Charlie Zender
+/* Copyright (C) 2016--2016 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
-   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file
+
+   Original Author: Jerome Mao, UCI */
 
 #include "nco_sng_utl.h" /* String utilities */
 
