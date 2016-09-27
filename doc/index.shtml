@@ -1257,7 +1257,7 @@ Thanks to funding from external grants, <p>DOE, NCAR, and UCI HPCC
 users <i>may</i> find more recent pre-built NCO executableses the
 personal directories shown below. 
 These are usually built from a recent tagged-version of NCO (e.g.,
-4.5.X-alphaY) not from the &ldquo;bleeding-edge&rdquo; of master which
+4.6.X-alphaY) not from the &ldquo;bleeding-edge&rdquo; of master which
 is usually untagged.
   One way to use these pre-built executables is to prepend them to
   your executable and library search paths, e.g., 
