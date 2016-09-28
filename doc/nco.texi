@@ -11182,7 +11182,7 @@ already contain the appended dimensions.
 * Value List::
 * Number literals::
 * if statement::
-* print statement::
+* Print & String methods::
 * Missing values ncap2::
 * Methods and functions::
 * RAM variables::
@@ -12186,7 +12186,7 @@ filetype is not.
 @html
 <a name="ncap_if"></a> <!-- http://nco.sf.net/nco.html#ncap_if -->
 @end html
-@node if statement, print statement, Number literals, ncap2 netCDF Arithmetic Processor
+@node if statement, Print & String methods, Number literals, ncap2 netCDF Arithmetic Processor
 @subsection if statement
 @cindex if() 
 The syntax of the if statement is similar to its C counterpart. 
@@ -12268,8 +12268,8 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : \
 @html
 <a name="ncap_prn"></a> <!-- http://nco.sf.net/nco.html#ncap_prn -->
 @end html
-@node print statement, Missing values ncap2, if statement, ncap2 netCDF Arithmetic Processor
-@subsection print statement
+@node Print & String methods, Missing values ncap2, if statement, ncap2 netCDF Arithmetic Processor
+@subsection Print & String methods
 @cindex print() @command{ncap2}
 
 The print statement  comes in a variety of forms
@@ -12362,10 +12362,63 @@ lat_1D_rct@long_name = sprint4(lat_1D_rct@long_name)
 @end example
 
 
+@noindent @strong{hyperslab a netCDF string @*@*}
+Its possible to index-into a NC_CHAR string. Just like a C-String. Remember  an NC_CHAR string is  has no terminating null.
+You CANNOT index into a NC_STRING. You have to convert to an NC_CHAR first. 
+@example
+@verbatim
+global@greeting="hello world!!!"
+@h=@greeting(0:4);  // "hello"
+@w=@greeting(6:11); // "world"
+
+// can use negative inidices
+@x=@greeting(-3:-1);  // "!!!"
+
+// can  use stride
+@n=@greeting(::2);  // "hlowrd!"
+
+// concatenation
+global@new_greeting=push(@h, " users !!!"); // "hello users!!!"
+
+@institution="hotel california"s; 
+@h=@institution(0:4); // BAD 
+
+// convert NC_STRING to NC_CHAR
+@is=sprint(@institution);
+@h=@is(0:4);  // "hotel"
+
+// convert NC_CHAR to NC_STRING
+@h=sprint4(@h);
+@end verbatim
+@end example
+
+@noindent @strong{ get_vars_in() & get_vars_out() }
+
+@example
+att_lst=get_vars_in(att_regexp?) 
+att_lst=get_vars_out(att_regexp?) 
+@end example
+
+These functions are used to create a list of vars in Input or Output. The optional arg 'att_regexp'. Can be an NC_CHAR att or a NC_STRING att. If NC_CHAR then only a single reg-exp can be specified. If NC_STRING then multiple reg-exp can be specified.  The output is allways an NC_STRING att. The matching works in an identical fashion to the -v switch in ncks. if there is no arg then all vars are returned. 
+
+@example
+@verbatim
+
+@slist=get_vars_in("^time");  // "time", "time_bnds", "time_lon", "time_udunits"
+
+// use NC_STRINGS
+@regExp={".*_bnd"s,".*_grd"s}
+@slist=get_vars_in(@regExp);  // "lat_bnd", "lat_grd", "lev_bnd", "lon_grd", "time_bnds", "cnv_CF_grd"
+
+@end verbatim
+@end example
+
+
+
 @html
 <a name="ncap_miss"></a> <!-- http://nco.sf.net/nco.html#ncap_miss -->
 @end html
-@node Missing values ncap2, Methods and functions, print statement, ncap2 netCDF Arithmetic Processor
+@node Missing values ncap2, Methods and functions, Print & String methods, ncap2 netCDF Arithmetic Processor
 @subsection Missing values ncap2
 @cindex missing values ncap2
 Missing values operate slightly differently in @command{ncap2} 
