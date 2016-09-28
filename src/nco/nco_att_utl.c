@@ -1933,30 +1933,24 @@ nco_glb_att_add /* [fnc] Add global attributes */
 {
   /* Purpose: Decode arguments into attributes and add as global metadata to output file */
   aed_sct gaa_aed;
-  int gaa_idx;
+  int gaa_idx=0;
   int gaa_arg_idx;
   int gaa_nbr=0;
   kvm_sct *gaa_lst=NULL; /* [sct] List of all GAA specifications */
   kvm_sct kvm;
   ptr_unn att_val;
-
-  char *sng_fnl=NULL;
-
   /* Join arguments together */
-  sng_fnl=nco_join_sng((const char**)gaa_arg, gaa_arg_nbr);
+  char *sng_fnl=nco_join_sng((const char**)gaa_arg, gaa_arg_nbr);
   gaa_lst=nco_arg_mlt_prs(sng_fnl);
 
   free(sng_fnl);
 
   /* jm fxm use more descriptive name than i---what does i count? */
-  for(int index=0;(gaa_lst+index)->key;index++){
-      gaa_lst[index].key=strcat(gaa_lst[index].key,"\0");
-      gaa_lst[index].val=strcat(gaa_lst[index].val,"\0");
+  for(int index=0;gaa_lst[index].key;index++){
       gaa_nbr=index;
   } /* end loop over i */
-  gaa_nbr++;
 
-  for(gaa_idx=0;gaa_idx<gaa_nbr;gaa_idx++){
+  for(gaa_idx=0;gaa_idx<=gaa_nbr;gaa_idx++){
     /* Insert attribute value */
     att_val.cp=gaa_lst[gaa_idx].val;
     /* Initialize attribute edit structure */

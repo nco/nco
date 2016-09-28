@@ -2697,12 +2697,12 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array 			
 	
 #ncks #100
-# Test DSD attribute does overwrite pre-existing sharper values
-# ncks -4 -O -C -v ppc_dbl,ppc_big --ppc .?=.4 --ppc ppc_big=.-2 ~/nco/data/in.nc ~/foo.nc
+# Test DSD attribute does overwrite pre-existing sharper values in multi-argument parsing
+# ncks -4 -O -C -v ppc_dbl,ppc_big --ppc .?=.4#ppc_big=.-2 ~/nco/data/in.nc ~/foo.nc
 # ncks -4 -O -C -v ppc_dbl,ppc_big --ppc ppc_big,ppc_dbl=.3 ~/foo.nc ~/foo2.nc
 # ncks -m -v ppc_big ~/foo2.nc
-    $dsc_sng="Test DSD attribute does overwrite pre-existing sharper values";
-    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v ppc_dbl,ppc_big --ppc .?=.4 --ppc ppc_big=.-2 $in_pth_arg in.nc %tmp_fl_00";
+    $dsc_sng="Test DSD attribute does overwrite pre-existing sharper values in multi-argument parsing";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v ppc_dbl,ppc_big --ppc .?=.4#ppc_big=.-2 $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -O $nco_D_flg -4 -C -v ppc_dbl,ppc_big --ppc ppc_big,ppc_dbl=.3 %tmp_fl_00 %tmp_fl_01";
     $tst_cmd[2]="ncks -m -v ppc_dbl %tmp_fl_01 | grep 'least_significant_digit'";
     $tst_cmd[3]="ppc_dbl attribute 3: least_significant_digit, size = 1 NC_INT, value = 3";
@@ -2832,10 +2832,10 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 # ncks #111
 # NB: This tests whether the output file has global metadata, and that provides (circumstantial) evidence that there were no major problems in the intervening routines of grid generation
-# ncks -O -v one -D 5 -t 1 --rgr grd_ttl='FV-scalar grid' --rgr grid=~/65x128_SCRIP.nc --rgr lat_nbr=65 --rgr lon_nbr=128 --rgr lat_typ=FV --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+# ncks -O -v one -D 5 -t 1 --rgr grd_ttl='FV-scalar grid'#grid=65x128_SCRIP.nc#lat_nbr=65#lon_nbr=128#lat_typ=FV#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep "julian" | cut -d ' ' -f 4
-    $dsc_sng="Generate RLL grid";
-    $tst_cmd[0]="ncks -h -O $nco_D_flg -v one --rgr grd_ttl='FV-scalar grid' --rgr grid=65x128_SCRIP.nc --rgr lat_nbr=65 --rgr lon_nbr=128 --rgr lat_typ=FV --rgr lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_00%";
+    $dsc_sng="Generate RLL grid with multi-argument parsing";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg -v one --rgr grd_ttl='FV-scalar grid'#grid=65x128_SCRIP.nc#lat_nbr=65#lon_nbr=128#lat_typ=FV#lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'julian' | cut -d ' ' -f 4";
     $tst_cmd[2]="julian_day,";
     $tst_cmd[3]="SS_OK";   
@@ -2868,9 +2868,9 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # ncks -h -O --gaa foo=bar#foo2,foo3=bar2#script="created by nco_climo.sh" ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
     $dsc_sng="Add multiple global attributes with argument parsing by Jerome";
-    $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar#foo2,foo3=bar2#script='created by nco_climo.sh' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo2' | cut -d ' ' -f 11-13";
-    $tst_cmd[2]="bar2";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar#foo2,foo3=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo4' | cut -d ' ' -f 11-13";
+    $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -2878,13 +2878,46 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # ncks #115
 # ncks -h -O --gaa foo=bar1#foo2=bar2#foo3=bar3#script='created by nco_climo.sh' ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
-    $dsc_sng="More tests on multi-argument parsing";
+    $dsc_sng="More tests on multi-argument parsing #1";
     $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar1#foo2=bar2#foo3=bar3#script='created by nco_climo.sh' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo' | cut -d ' ' -f 11-13";
     $tst_cmd[2]="bar1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+
+# ncks #116
+# ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016" ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
+    $dsc_sng="More tests on multi-argument parsing #2(with time string)";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo4' | cut -d ' ' -f 11-13";
+    $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+# ncks #117
+# ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016"#foo7,foo8=bar10 ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
+    $dsc_sng="More tests on multi-argument parsing #3(the time string is followed by kvms)";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo7,foo8=bar10 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo7' | cut -d ' ' -f 11-13";
+    $tst_cmd[2]="bar10";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+# ncks #118
+# ncks -h -O --gaa foo,boo=bar#foo2,foo9=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016"#foo7,foo8=bar10 ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
+    $dsc_sng="More tests on multi-argument parsing #4(all have subdelimiters)";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg foo,boo=bar#foo2,foo9=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo7,foo8=bar10 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo4' | cut -d ' ' -f 11-13";
+    $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
 	
 #####################
 #### ncpdq tests #### -OK !

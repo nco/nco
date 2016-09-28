@@ -25,32 +25,16 @@ nco_sng2kvm /* [fnc] Convert string to key-value pair */
  *          and kvm[@] = 1 (the ";" will be parsed by caller). 
  *
  * IMPORTANT: free() fake_kvm after using string_to_kvm. */
-
   int arg_index = 0;
+  char* args_copy=strdup(args);
+  char* ptr_for_free = args_copy;
   kvm_sct kvm;
 
-  kvm.val = NULL;
+  kvm.key = strdup(strsep(&args_copy, "="));
+  kvm.val = strdup(args_copy);
 
-  for(char* char_token = strtok((char*)args, "="); char_token; char_token = strtok(NULL, "=")){
-    /* Use memcpy() because strdup() is not standard C library function and memcpy() is faster than strcpy() */
-    char_token = nco_sng_strip(char_token);
-
-    if(arg_index == 0){
-
-      kvm.key = (char*)malloc(strlen(char_token) + 1);
-      if(kvm.key){memcpy(kvm.key, char_token, strlen(char_token) + 1);}
-
-    }else if(arg_index == 1){
-
-      kvm.val = (char*)malloc(strlen(char_token) + 1);
-      if(kvm.val){memcpy(kvm.val, char_token, strlen(char_token) + 1);}
-
-    }else{break;} //end if
-    // Next token
-    arg_index++;
-  } // end of loop
-
-  // If malloc() cannot allocate sufficient memory, either key or value would be NULL; print error message and not quit.
+  free(ptr_for_free);
+  /*If malloc() cannot allocate sufficient memory, either key or value would be NULL; print error message and not quit.*/
   if(!kvm.key || !kvm.val){
     (void)fprintf(stderr, "%s: ERROR system does not have sufficient memory.\n", nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
@@ -114,8 +98,10 @@ const char* delimiter) /* I [char] the delimiter*/
      * the string after splitting.
      * Example: a, b=1 will be split into *<a> = "a" *<b> = "b=1" with a delimiter of SUBDELIMITER 
      * Remember to free after calling this function. */
-    char** sng_fnl=NULL, *temp=strdup(source);
-    size_t counter=nco_count_blocks(source, (char*)delimiter), index=0;    
+    char** sng_fnl=NULL;
+    char* temp=strdup(source);
+    size_t counter=nco_count_blocks(source, (char*)delimiter);
+    size_t index=0;    
 
     if(!strstr(temp, delimiter)){ //special case for one single argument
       sng_fnl=(char**)malloc(sizeof(char*));
@@ -132,10 +118,13 @@ const char* delimiter) /* I [char] the delimiter*/
             //     strcat(sng_fnl[index - 1], token);
             // }
             // else
-                sng_fnl[index ++] = strdup(token);
+            sng_fnl[index ++] = strdup(token);
         } //end for
         free(temp);
-    }else{return NULL;} //end if
+    }else{
+        free(temp);
+        return NULL;
+    } //end if
     return sng_fnl;
 }
 
@@ -193,17 +182,17 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
 {
     /* Main parser for the argument. This will split the whole argument into key value pair and send to sng2kvm*/
     if(!args) 
-      nco_exit(EXIT_FAILURE);
+        return NULL;
 
     char **separate_args=nco_string_split(args, (const char*)nco_mta_dlm);
     size_t counter=nco_count_blocks(args,nco_mta_dlm)*nco_count_blocks(args, (char*)nco_mta_sub_dlm); //Max number of kvm structure in this argument
 
     for(int index=0;index<nco_count_blocks(args,nco_mta_dlm);index++){
         if(!nco_input_check(separate_args[index]))
-            nco_exit(EXIT_FAILURE);//end if
+            nco_exit(EXIT_FAILURE);
     }//end loop
 
-    kvm_sct* kvm_set=(kvm_sct*)malloc(sizeof(kvm_sct)*(counter+1)); //kvm array intended to be returned
+    kvm_sct* kvm_set=(kvm_sct*)malloc(sizeof(kvm_sct)*(counter+5)); //kvm array intended to be returned
     counter=0;
 
     for(int sng_index=0;sng_index<nco_count_blocks(args,nco_mta_dlm);sng_index++){
@@ -212,8 +201,10 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
 
         for(int sub_index=0; sub_index<nco_count_blocks(separate_args[sng_index], (char*)nco_mta_sub_dlm);sub_index++){
             char* temp_value = strdup(individual_args[sub_index]);
-            if(!strstr(temp_value, "=")) 
-                temp_value = strcat(temp_value, value);//end if
+            if(!strstr(temp_value, "=")){
+                temp_value=(char*)realloc(temp_value, strlen(temp_value)+strlen(value)+1);
+                strcat(temp_value, value);//end if
+            }
             kvm_sct kvm_object = nco_sng2kvm(temp_value);
             kvm_set[counter++] = kvm_object;
             free(temp_value);
@@ -242,12 +233,13 @@ nco_join_sng /* [fnc] Join strings with delimiter */
     char *final_string = (char*)malloc(word_length+1);
     for(int sng_index=0;sng_index<sng_nbr;sng_index++){
         size_t temp_length=strlen(sng_lst[sng_index]);
-        memcpy(final_string+copy_counter, sng_lst[sng_index], temp_length);
+        strcpy(final_string+copy_counter, sng_lst[sng_index]);
 
         if(sng_index<sng_nbr-1) 
-            memcpy(final_string + copy_counter + temp_length, nco_mta_dlm, 1);
+            strcpy(final_string + copy_counter + temp_length, nco_mta_dlm);
         copy_counter+=(temp_length+1);
     }
+    strcat(final_string, "\0");
     return final_string;
 }
 
