@@ -11702,16 +11702,14 @@ is simple with the @code{array()} function.
 @end example
 @noindent
 
-
 @table @dfn
 @item val_srt
-This is the starting value of the array. The @var{type} of the array will be the @var{type} of this starting value  
+Starting value of the array. The @var{type} of the array will be the @var{type} of this starting value.
 @item val_inc
-This is the spacing (or increment) between elements. 
+Spacing (or increment) between elements. 
 @item var_tpl
-This is the variable from which the array can derive its shape 1D or nD
+Variable from which the array can derive its shape 1D or nD
 @end table
-
 
 @noindent @strong{ One-Dimensional Arrays@*}
 Use form (A) or (B)  for 1D arrays 
