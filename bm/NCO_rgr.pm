@@ -2880,41 +2880,71 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # ncks -M ~/foo.nc | grep foo, | cut -d ' ' -f 11
     $dsc_sng="Multi-argument parsing test first argument";
     $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar1#foo2=bar2#foo3=bar3#script='created by nco_climo.sh' $in_pth_arg in.nc %tmp_fl_00%";
+<<<<<<< Updated upstream
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo, | cut -d ' ' -f 11";
     $tst_cmd[2]="bar1";
+=======
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo2' | cut -d ' ' -f 11-13";
+    $tst_cmd[2]="bar2";
+>>>>>>> Stashed changes
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
 # ncks #116
 # ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016" ~/nco/data/in.nc ~/foo.nc
+<<<<<<< Updated upstream
 # ncks -M ~/foo.nc | grep foo3 | cut -d ' ' -f 11-16
     $dsc_sng="Multi-argument parsing test second-to-last key is time string";
     $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar#foo2=bar2#foo3,foo4=\"Thu Sep 15 13:03:18 PDT 2016\" $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo3 | cut -d ' ' -f 11-16";
+=======
+# ncks -M ~/foo.nc | grep "foo4" | cut -d ' ' -f 11-16    
+    $dsc_sng="More tests on multi-argument parsing #2(with time string)";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo4' | cut -d ' ' -f 11-16";
+>>>>>>> Stashed changes
     $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 # ncks #117
+<<<<<<< Updated upstream
 # ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep foo6 | cut -d ' ' -f 11
     $dsc_sng="Multi-argument parsing test arguments after time string kvm";
     $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo6 | cut -d ' ' -f 11";
     $tst_cmd[2]="bar4";
+=======
+# ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016"#foo7,foo8=bar10 ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep "foo7" | cut -d ' ' -f 11-13    
+    $dsc_sng="More tests on multi-argument parsing #3(the time string is followed by kvms)";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo7,foo8=bar10 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo7' | cut -d ' ' -f 11-13";
+    $tst_cmd[2]="bar10";
+>>>>>>> Stashed changes
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 # ncks #118
+<<<<<<< Updated upstream
 # ncks -h -O --gaa foo,boo=bar#foo2,foo9=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep foo6 | cut -d ' ' -f 11
     $dsc_sng="Multi-argument parsing test when all kvms have subdelimiters";
     $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo,boo=bar#foo2,foo3=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo6 | cut -d ' ' -f 11";
     $tst_cmd[2]="bar4";
+=======
+# ncks -h -O --gaa foo,boo=bar#foo2,foo9=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016"#foo7,foo8=bar10 ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep "foo4" | cut -d ' ' -f 11-16    
+    $dsc_sng="More tests on multi-argument parsing #4(all have subdelimiters)";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg foo,boo=bar#foo2,foo9=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo7,foo8=bar10 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo3' | cut -d ' ' -f 11-16";
+    $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
+>>>>>>> Stashed changes
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
