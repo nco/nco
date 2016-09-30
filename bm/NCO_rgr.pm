@@ -2890,7 +2890,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016" ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep foo3 | cut -d ' ' -f 11-16
     $dsc_sng="Multi-argument parsing test second-to-last key is time string";
-    $tst_cmd[0]="ncks -h -O $nco_D_flg foo=bar#foo2=bar2#foo3,foo4=\"Thu Sep 15 13:03:18 PDT 2016\" $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar#foo2=bar2#foo3,foo4=\"Thu Sep 15 13:03:18 PDT 2016\" $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo3 | cut -d ' ' -f 11-16";
     $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
     $tst_cmd[3]="SS_OK";   
@@ -2901,7 +2901,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep foo6 | cut -d ' ' -f 11
     $dsc_sng="Multi-argument parsing test arguments after time string kvm";
-    $tst_cmd[0]="ncks -h -O $nco_D_flg foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar5 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo6 | cut -d ' ' -f 11";
     $tst_cmd[2]="bar4";
     $tst_cmd[3]="SS_OK";   
@@ -2912,7 +2912,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # ncks -h -O --gaa foo,boo=bar#foo2,foo9=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep foo6 | cut -d ' ' -f 11
     $dsc_sng="Multi-argument parsing test when all kvms have subdelimiters";
-    $tst_cmd[0]="ncks -h -O $nco_D_flg foo,boo=bar#foo2,foo3=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo,boo=bar#foo2,foo3=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo6 | cut -d ' ' -f 11";
     $tst_cmd[2]="bar4";
     $tst_cmd[3]="SS_OK";   
