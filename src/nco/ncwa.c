@@ -1025,40 +1025,41 @@ main(int argc,char **argv)
 	   sometimes, before the tally array for var_prc_out[idx] is created. 
 	   When this occurs the nco_var_dpl() call in nco_var_cnf_dmn() does not copy
 	   tally array into wgt_avg. See related note about this above. TODO #114.*/
-        if(wgt_avg->sz > 0)
+        if(wgt_avg->sz > 0){
           if(!(wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long)))){
             (void)fprintf(fp_stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",nco_prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
             nco_exit(EXIT_FAILURE); 
           } /* end if */
-          /* Average weight over specified dimensions (tally array is set here) */
-          wgt_avg=nco_var_avg(wgt_avg,dmn_avg,dmn_avg_nbr,nco_op_avg,flg_rdd,&ddra_info);
+	} /* wgt_avg->sz */
+        /* Average weight over specified dimensions (tally array is set here) */
+	wgt_avg=nco_var_avg(wgt_avg,dmn_avg,dmn_avg_nbr,nco_op_avg,flg_rdd,&ddra_info);
 
-          if(MULTIPLY_BY_TALLY){
-            /* NB: Currently this is not implemented */
-            /* Multiply numerator (weighted sum of variable) by tally 
-	       We deviously accomplish this by dividing denominator by tally */
-            (void)nco_var_nrm(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);
-          } /* endif */
+	if(MULTIPLY_BY_TALLY){
+	  /* NB: Currently this is not implemented */
+	  /* Multiply numerator (weighted sum of variable) by tally 
+	     We deviously accomplish this by dividing denominator by tally */
+	  (void)nco_var_nrm(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);
+	} /* endif */
           /* Divide numerator by denominator */
           /* Diagnose common PEBCAK before it causes core dump */
-          if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.ip[0] == 0){
-            (void)fprintf(fp_stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",nco_prg_nm,nco_prg_nm,nco_prg_nm,var_prc_out[idx]->nm,nco_prg_nm,var_prc_out[idx]->nm,nco_prg_nm);
-          } /* end if */
+	if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.ip[0] == 0){
+	  (void)fprintf(fp_stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",nco_prg_nm,nco_prg_nm,nco_prg_nm,var_prc_out[idx]->nm,nco_prg_nm,var_prc_out[idx]->nm,nco_prg_nm);
+	} /* end if */
           /* Rather complex conditional statement is shorter than switch() */
-          if( /* Normalize by weighted tally if ....  */
-	     var_prc[idx]->is_crd_var || /* ...variable is a coordinate or ...*/
-	     ((nco_op_typ != nco_op_min) && /* ...operation is not min() and... */
-	      (nco_op_typ != nco_op_max) && /* ...operation is not max() and... */
-	      (nco_op_typ != nco_op_mabs) && /* ...operation is not mabs() and... */
-	      (nco_op_typ != nco_op_mibs) && /* ...operation is not mibs() and... */
-	      (nco_op_typ != nco_op_tabs) && /* ...operation is not tabs() and... */
-	      (nco_op_typ != nco_op_ttl)) /* ...operation is not ttl() and... */
-	      ){ /* Divide numerator by masked, averaged, weights */
-	    (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
-          } /* endif */
+	if( /* Normalize by weighted tally if ....  */
+	   var_prc[idx]->is_crd_var || /* ...variable is a coordinate or ...*/
+	   ((nco_op_typ != nco_op_min) && /* ...operation is not min() and... */
+	    (nco_op_typ != nco_op_max) && /* ...operation is not max() and... */
+	    (nco_op_typ != nco_op_mabs) && /* ...operation is not mabs() and... */
+	    (nco_op_typ != nco_op_mibs) && /* ...operation is not mibs() and... */
+	    (nco_op_typ != nco_op_tabs) && /* ...operation is not tabs() and... */
+	    (nco_op_typ != nco_op_ttl)) /* ...operation is not ttl() and... */
+	    ){ /* Divide numerator by masked, averaged, weights */
+	  (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
+	} /* endif */
           /* Free wgt_avg, but keep wgt_out, after each use */
-          if(wgt_avg) wgt_avg=nco_var_free(wgt_avg);
-          /* End of branch for normalization when weights were specified */
+	if(wgt_avg) wgt_avg=nco_var_free(wgt_avg);
+	/* End of branch for normalization when weights were specified */
       }else if(NRM_BY_DNM){
         /* Branch for normalization when no weights were specified
 	   Normalization is just due to tally */

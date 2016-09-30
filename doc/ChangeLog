@@ -1,3 +1,13 @@
+2016-09-30  Charlie Zender  <zender@uci.edu>
+
+	* #include netcdf_mem.h for nc_open_mem() prototype
+
+	* Fix compiler warnings emitted by GCC 6.2.1
+
+2016-09-26  Charlie Zender  <zender@uci.edu>
+
+	* Fix false-positives in multi-argument regression tests
+
 2016-09-26  Charlie Zender  <zender@uci.edu>
 
 	* Adopt Jerome's implementation of multi-arg for trr, rgr, gaa, ppc

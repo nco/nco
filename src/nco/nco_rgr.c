@@ -206,11 +206,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   
   /* Parse extended kvm options */
   int cnv_nbr; /* [nbr] Number of elements converted by sscanf() */
-  int rgr_arg_idx; /* [idx] Index over rgr_arg (i.e., separate invocations of "--rgr var1[,var2]=val") */
   int rgr_var_idx; /* [idx] Index over rgr_lst (i.e., all names explicitly specified in all "--rgr var1[,var2]=val" options) */
   int rgr_var_nbr=0;
   kvm_sct *rgr_lst; /* [sct] List of all regrid specifications */
-  kvm_sct kvm;
 
   char *sng_fnl=NULL;
 
@@ -6770,7 +6768,7 @@ nco_lon_dff_brnch_rdn /* [fnc] Subtract longitudes with branch-cut rules */
      Default orientation is monotonically increasing longitude from left to right */
   const char fnc_nm[]="nco_lon_dff_brnch_rdn()";
   const double lon_dff=lon_r-lon_l; /* [rdn] Longitude difference (lon_r-lon_l) */
-  nco_bool dbg_prn=False; /* [rdn] Longitude difference (lon_r-lon_l) */
+  //nco_bool dbg_prn=False; /* [flg] Print warning when longitude difference is suspicious */
   /* longitudes on different branch cuts are expected when computing polygon area, so warn only if requested with high debugging level */
   if(lon_dff >= M_PI){
     if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports lon_r, lon_l, lon_dff = %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,lon_r,lon_l,lon_dff);

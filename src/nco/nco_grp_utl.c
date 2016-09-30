@@ -707,164 +707,165 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       usr_sng_lng=strlen(usr_sng);
 
       /* Turn-off recursion for groups? */
-      if(obj_typ == nco_obj_typ_grp)
+      if(obj_typ == nco_obj_typ_grp){
         if(usr_sng_lng > 1L && usr_sng[usr_sng_lng-1L] == sls_chr){
           /* Remove trailing slash for subsequent searches since canonical group names do not end with slash */
           flg_rcr_mch_grp=False;
           usr_sng[usr_sng_lng-1L]='\0';
           usr_sng_lng--;
         } /* flg_rcr_mch_grp */
+      } /* !nco_obj_typ_grp */
+      
+      /* Turn-on root-anchoring for groups? */
+      if(obj_typ == nco_obj_typ_grp)
+	if(usr_sng[0L] == sls_chr)
+	  flg_ncr_mch_grp=True;
 
-        /* Turn-on root-anchoring for groups? */
-        if(obj_typ == nco_obj_typ_grp)
-          if(usr_sng[0L] == sls_chr)
-            flg_ncr_mch_grp=True;
+      /* Convert pound signs (back) to commas */
+      nco_hash2comma(usr_sng);
 
-        /* Convert pound signs (back) to commas */
-        nco_hash2comma(usr_sng);
-
-        /* If usr_sng is regular expression ... */
-        if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
-          /* ... and regular expression library is present */
+      /* If usr_sng is regular expression ... */
+      if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
+	/* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-          if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) flg_usr_mch_obj=True;
-          if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",nco_prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
-          continue;
+	if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) flg_usr_mch_obj=True;
+	if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",nco_prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
+	continue;
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-          (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
-          nco_exit(EXIT_FAILURE);
+	(void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
+	nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-        } /* end if regular expression */
-
+      } /* end if regular expression */
+      
         /* usr_sng is not rx, so manually search for multicomponent matches */
-        for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-
-          /* Create shallow copy to avoid indirection */
-          trv_obj=trv_tbl->lst[tbl_idx];
-
-          if(trv_obj.nco_typ == obj_typ){
-
-            /* Initialize defaults for current candidate path to match */
-            flg_pth_srt_bnd=False;
-            flg_pth_end_bnd=False;
-            flg_var_cnd=False;
-            flg_rcr_mch_crr=True;
-            flg_ncr_mch_crr=True;
-
-            /* Look for partial match, not necessarily on path boundaries */
-            /* 20130829: Variables and group names may be proper subsets of ancestor group names
-	       e.g., variable named g9 in group named g90 is /g90/g9
-	       e.g., group named g1 in group named g10 is g10/g1
-	       Search algorithm must test same full name multiple times in such cases
-	       For variables, only final match (closest to end full name) need be fully tested */
-            sbs_srt=NULL;
-            sbs_srt_nxt=trv_obj.nm_fll;
-            while((sbs_srt_nxt=strstr(sbs_srt_nxt,usr_sng))){
-              /* Object name contains usr_sng at least once */
-              /* Complete path-check below will begin at this substring ... */
-              sbs_srt=sbs_srt_nxt; 
-              /* ...for groups always at first occurence of substring... */
-              if(obj_typ == nco_obj_typ_grp) break;
-              /* ...and also here for variables unless match is found in next iteration after advancing substring... */
-              if(sbs_srt_nxt+usr_sng_lng <= trv_obj.nm_fll+trv_obj.nm_fll_lng) sbs_srt_nxt+=usr_sng_lng; else break;
-            } /* end while */
-
+      for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+	
+	/* Create shallow copy to avoid indirection */
+	trv_obj=trv_tbl->lst[tbl_idx];
+	
+	if(trv_obj.nco_typ == obj_typ){
+	  
+	  /* Initialize defaults for current candidate path to match */
+	  flg_pth_srt_bnd=False;
+	  flg_pth_end_bnd=False;
+	  flg_var_cnd=False;
+	  flg_rcr_mch_crr=True;
+	  flg_ncr_mch_crr=True;
+	  
+	  /* Look for partial match, not necessarily on path boundaries */
+	  /* 20130829: Variables and group names may be proper subsets of ancestor group names
+	     e.g., variable named g9 in group named g90 is /g90/g9
+	     e.g., group named g1 in group named g10 is g10/g1
+	     Search algorithm must test same full name multiple times in such cases
+	     For variables, only final match (closest to end full name) need be fully tested */
+	  sbs_srt=NULL;
+	  sbs_srt_nxt=trv_obj.nm_fll;
+	  while((sbs_srt_nxt=strstr(sbs_srt_nxt,usr_sng))){
+	    /* Object name contains usr_sng at least once */
+	    /* Complete path-check below will begin at this substring ... */
+	    sbs_srt=sbs_srt_nxt; 
+	    /* ...for groups always at first occurence of substring... */
+	    if(obj_typ == nco_obj_typ_grp) break;
+	    /* ...and also here for variables unless match is found in next iteration after advancing substring... */
+	    if(sbs_srt_nxt+usr_sng_lng <= trv_obj.nm_fll+trv_obj.nm_fll_lng) sbs_srt_nxt+=usr_sng_lng; else break;
+	  } /* end while */
+	  
             /* Does object name contain usr_sng? */
-            if(sbs_srt){
-              /* Ensure match spans (begins and ends on) whole path-component boundaries
-		 Full path-check starts at current substring */
-
-              /* Does match begin at path component boundary ... directly on a slash? */
-              if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
-
-              /* ...or one after a component boundary? */
-              if((sbs_srt > trv_obj.nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
-
-              /* Does match end at path component boundary ... directly on a slash? */
-              sbs_end=sbs_srt+usr_sng_lng-1L;
-
-              if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
-
-              /* ...or one before a component boundary? */
-              if(sbs_end <= trv_obj.nm_fll+trv_obj.nm_fll_lng-1L)
-                if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
-                  flg_pth_end_bnd=True;
-
-              /* Additional condition for variables is user-supplied string must end with short form of variable name */
-              if(obj_typ == nco_obj_typ_var){
-                if(trv_obj.nm_lng <= usr_sng_lng){
-                  var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
-                  if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True;
-                } /* endif */
-                if(nco_dbg_lvl_get() >= nco_dbg_sbr && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",nco_prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
-              } /* endif var */
-
+	  if(sbs_srt){
+	    /* Ensure match spans (begins and ends on) whole path-component boundaries
+	       Full path-check starts at current substring */
+	    
+	    /* Does match begin at path component boundary ... directly on a slash? */
+	    if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
+	    
+	    /* ...or one after a component boundary? */
+	    if((sbs_srt > trv_obj.nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
+	    
+	    /* Does match end at path component boundary ... directly on a slash? */
+	    sbs_end=sbs_srt+usr_sng_lng-1L;
+	    
+	    if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
+	    
+	    /* ...or one before a component boundary? */
+	    if(sbs_end <= trv_obj.nm_fll+trv_obj.nm_fll_lng-1L)
+	      if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
+		flg_pth_end_bnd=True;
+	    
+	    /* Additional condition for variables is user-supplied string must end with short form of variable name */
+	    if(obj_typ == nco_obj_typ_var){
+	      if(trv_obj.nm_lng <= usr_sng_lng){
+		var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
+		if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True;
+	      } /* endif */
+	      if(nco_dbg_lvl_get() >= nco_dbg_sbr && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",nco_prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
+	    } /* endif var */
+	    
               /* If anchoring, match must begin at root */
-              if(flg_ncr_mch_grp && *sbs_srt != sls_chr) flg_ncr_mch_crr=False;
-
-              /* If no recursion, match must terminate user-supplied string */
-              if(!flg_rcr_mch_grp && *(sbs_end+1L)) flg_rcr_mch_crr=False;
-
-              /* Set traversal table flags */
-              if(obj_typ == nco_obj_typ_var){
-                /* Variables must meet necessary flags for variables */
-                if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
-                  trv_tbl->lst[tbl_idx].flg_mch=True;
-                  trv_tbl->lst[tbl_idx].flg_rcr=False;
-                  /* Was matched variable specified as full path (i.e., beginning with slash?) */
-                  if(*usr_sng == sls_chr) trv_tbl->lst[tbl_idx].flg_vfp=True;
-                } /* end flags */
-              }else if (obj_typ == nco_obj_typ_grp){ /* !nco_obj_typ_var */
-                /* Groups must meet necessary flags for groups */
-                if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
-                  trv_tbl->lst[tbl_idx].flg_mch=True;
-                  trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
-                } /* end flags */
-              } /* !nco_obj_typ_var */
-
+	    if(flg_ncr_mch_grp && *sbs_srt != sls_chr) flg_ncr_mch_crr=False;
+	    
+	    /* If no recursion, match must terminate user-supplied string */
+	    if(!flg_rcr_mch_grp && *(sbs_end+1L)) flg_rcr_mch_crr=False;
+	    
+	    /* Set traversal table flags */
+	    if(obj_typ == nco_obj_typ_var){
+	      /* Variables must meet necessary flags for variables */
+	      if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
+		trv_tbl->lst[tbl_idx].flg_mch=True;
+		trv_tbl->lst[tbl_idx].flg_rcr=False;
+		/* Was matched variable specified as full path (i.e., beginning with slash?) */
+		if(*usr_sng == sls_chr) trv_tbl->lst[tbl_idx].flg_vfp=True;
+	      } /* end flags */
+	    }else if (obj_typ == nco_obj_typ_grp){ /* !nco_obj_typ_var */
+	      /* Groups must meet necessary flags for groups */
+	      if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
+		trv_tbl->lst[tbl_idx].flg_mch=True;
+		trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
+	      } /* end flags */
+	    } /* !nco_obj_typ_var */
+	    
               /* Set function return condition */
-              if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
-
-              if(nco_dbg_lvl_get() == nco_dbg_old){
-                /* Redundant call to nco_flg_set_grp_var_ass() here in debugging mode only to set flags for following print statements 
-		   Essential call to nco_flg_set_grp_var_ass() occurs after itr loop
-		   Most debugging info is available in debugging section at routine end
-		   However, group boundary/anchoring/recursion info is only available here */
-                if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
-                (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
-                if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
-                if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
-                if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_gcv? %s.",(trv_tbl->lst[tbl_idx].flg_gcv) ? "Yes" : "No");
-                if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_ncs? %s.",(trv_tbl->lst[tbl_idx].flg_ncs) ? "Yes" : "No");
-                if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vfp? %s.",(trv_tbl->lst[tbl_idx].flg_vfp) ? "Yes" : "No");
-                if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vsg? %s.",(trv_tbl->lst[tbl_idx].flg_vsg) ? "Yes" : "No");
-                (void)fprintf(stderr,"\n");
-              } /* end if dbg */
-
-            } /* endif strstr() */
-          } /* endif nco_obj_typ */
-        } /* end loop over tbl_idx */
-
-        if(!flg_usr_mch_obj && !EXCLUDE_INPUT_LIST){
-          (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression \'%s\' is not in and/or does not match contents of input file\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
-          nco_exit(EXIT_FAILURE);
-        } /* flg_usr_mch_obj */
+	    if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
+	    
+	    if(nco_dbg_lvl_get() == nco_dbg_old){
+	      /* Redundant call to nco_flg_set_grp_var_ass() here in debugging mode only to set flags for following print statements 
+		 Essential call to nco_flg_set_grp_var_ass() occurs after itr loop
+		 Most debugging info is available in debugging section at routine end
+		 However, group boundary/anchoring/recursion info is only available here */
+	      if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
+	      (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
+	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
+	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
+	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_gcv? %s.",(trv_tbl->lst[tbl_idx].flg_gcv) ? "Yes" : "No");
+	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_ncs? %s.",(trv_tbl->lst[tbl_idx].flg_ncs) ? "Yes" : "No");
+	      if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vfp? %s.",(trv_tbl->lst[tbl_idx].flg_vfp) ? "Yes" : "No");
+	      if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vsg? %s.",(trv_tbl->lst[tbl_idx].flg_vsg) ? "Yes" : "No");
+	      (void)fprintf(stderr,"\n");
+	    } /* end if dbg */
+	    
+	  } /* endif strstr() */
+	} /* endif nco_obj_typ */
+      } /* end loop over tbl_idx */
+      
+      if(!flg_usr_mch_obj && !EXCLUDE_INPUT_LIST){
+	(void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression \'%s\' is not in and/or does not match contents of input file\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
+	nco_exit(EXIT_FAILURE);
+      } /* flg_usr_mch_obj */
         /* Free dynamic memory */
-        if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
-
+      if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
+      
     } /* obj_idx */
-
+    
     if(nco_dbg_lvl_get() >= nco_dbg_sbr && nco_dbg_lvl_get() != nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s reports following %s match sub-setting and regular expressions:\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "groups" : "variables");
       trv_tbl_prn_flg_mch(trv_tbl,obj_typ);
     } /* endif dbg */
-
+    
   } /* itr_idx */
-
+  
   /* Compute intersection of groups and variables if necessary
      Intersection criteria flag, flg_nsx, is satisfied by default. Unset later when necessary. */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++) trv_tbl->lst[obj_idx].flg_nsx=True;
-
+  
   /* Each object with flg_mch set needs to have its associated objects set
      An object (group or variable) may have had its flg_mch set multiple times, e.g., once via rx and once via explicit listing
      And since rx's often match multiple objects, no sense in flagging associated objects inside rx loop
@@ -872,7 +873,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
      Now speed through table once and set associated objects for all groups and variables flagged with flg_mch */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
     if(trv_tbl->lst[obj_idx].flg_mch) nco_flg_set_grp_var_ass(trv_tbl->lst[obj_idx].grp_nm_fll,trv_tbl->lst[obj_idx].nco_typ,trv_tbl);
-
+  
   /* Union is same as intersection if either variable or group list is empty, otherwise check intersection criteria */
   if(flg_unn || !grp_xtr_nbr || !var_xtr_nbr) flg_unn_ffc=True; else flg_unn_ffc=False;
   if(!flg_unn_ffc){
@@ -891,7 +892,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       } /* nco_obj_typ_grp */
     } /* end loop over obj_idx */
   } /* flg_unn */
-
+  
   /* Does matched or default group contain only metadata? 
      Flag used in nco_xtr_grp_mrk() to preserve metadata-only groups on extraction list */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
@@ -4412,7 +4413,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     udm_out_id_grp=(int *)nco_malloc(nbr_udm_out_grp*sizeof(int));
     (void)nco_inq_unlimdims(grp_dmn_out_id,&nbr_udm_out_grp,udm_out_id_grp);
 
-    /* Is dimension is already defined? */
+    /* Is dimension already defined? */
     for(int idx_dmn_grp=0;idx_dmn_grp<nbr_dmn_out_grp;idx_dmn_grp++){
 
       /* Get dimension name and size from ID */

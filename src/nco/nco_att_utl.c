@@ -1934,10 +1934,8 @@ nco_glb_att_add /* [fnc] Add global attributes */
   /* Purpose: Decode arguments into attributes and add as global metadata to output file */
   aed_sct gaa_aed;
   int gaa_idx=0;
-  int gaa_arg_idx;
   int gaa_nbr=0;
   kvm_sct *gaa_lst=NULL; /* [sct] List of all GAA specifications */
-  kvm_sct kvm;
   ptr_unn att_val;
   /* Join arguments together */
   char *sng_fnl=nco_join_sng((const char**)gaa_arg, gaa_arg_nbr);
