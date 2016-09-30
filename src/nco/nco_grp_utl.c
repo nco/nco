@@ -4273,6 +4273,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
        Again, this can happen when appending, e.g., from lower-to-higher precision */
     (void)nco_inq_vartype(grp_out_id,var_out_id,&var_typ_out);
     if(var_typ_out != var_trv->var_typ) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" output type = %s does not equal input type = %s. This is legal yet usually ill-advised when appending variables (i.e., with -A). Writing values into slots created for a different type is begging for trouble (e.g., data corruption, truncation, gingivitis).\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_typ_sng(var_typ_out),nco_typ_sng(var_trv->var_typ));
+    /* 20160930: Potential bug? Function returns var_out_id without other outputs (var_trv_dmn_cmn_out,nbr_dmn_cmn_out)
+       Inexplicable errors in Append mode, when variable is already defined in output file, could be due to early return here */
     return var_out_id;
   } /* endif */
 
