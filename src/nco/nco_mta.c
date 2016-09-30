@@ -11,7 +11,7 @@
 
 #include "nco_sng_utl.h" /* String utilities */
 
-char* nco_mta_dlm="#"; /* [sng] Multi-argument delimiter */
+const char* nco_mta_dlm="#"; /* [sng] Multi-argument delimiter */
 const char* nco_mta_sub_dlm=","; /* [sng] Multi-argument sub-delimiter */
 
 kvm_sct /* O [kvm_sct] key-value pair*/
@@ -99,7 +99,7 @@ const char* delimiter) /* I [char] the delimiter*/
      * Remember to free after calling this function. */
     char** sng_fnl=NULL;
     char* temp=strdup(source);
-    size_t counter=nco_count_blocks(source, (char*)delimiter);
+    size_t counter=nco_count_blocks(source, delimiter);
     size_t index=0;    
 
     if(!strstr(temp, delimiter)){ //special case for one single argument
@@ -151,17 +151,17 @@ nco_input_check /* [fnc] check whether the input is legal and give feedback acco
 int // O [int] the number of string blocks if will be split with delimiter
 nco_count_blocks // [fnc] Check number of string blocks if will be split with delimiter
 (const char* args, // I [sng] the string which is going to be split
-char* delimiter) // I [sng] the delimiter
+const char* delimiter) // I [sng] the delimiter
 {
-  int sng_nbr=0;
-  const char *crnt_chr=strchr(args, *(delimiter));
+  int sng_nbr=1;
+  const char *crnt_chr=strstr(args, delimiter);
 
   while (crnt_chr) {
     if((crnt_chr-1)[0]!='\\')
         sng_nbr++;
-    crnt_chr = strchr(crnt_chr+1, *(delimiter));
+    crnt_chr = strstr(crnt_chr+1, delimiter);
   }
-  return sng_nbr+1;
+  return sng_nbr;
 }
 
 void 
@@ -184,7 +184,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
         return NULL;
 
     char **separate_args=nco_string_split(args, (const char*)nco_mta_dlm);
-    size_t counter=nco_count_blocks(args,nco_mta_dlm)*nco_count_blocks(args, (char*)nco_mta_sub_dlm); //Max number of kvm structure in this argument
+    size_t counter=nco_count_blocks(args,nco_mta_dlm)*nco_count_blocks(args, nco_mta_sub_dlm); //Max number of kvm structure in this argument
 
     for(int index=0;index<nco_count_blocks(args,nco_mta_dlm);index++){
         if(!nco_input_check(separate_args[index]))
@@ -192,27 +192,27 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
     }//end loop
 
     kvm_sct* kvm_set=(kvm_sct*)malloc(sizeof(kvm_sct)*(counter+5)); //kvm array intended to be returned
-    counter=0;
+    size_t kvm_index=0;
 
     for(int sng_index=0;sng_index<nco_count_blocks(args,nco_mta_dlm);sng_index++){
         char *value = strdup(strstr(separate_args[sng_index], "="));
         char **individual_args = nco_string_split(separate_args[sng_index], nco_mta_sub_dlm);
 
-        for(int sub_index=0; sub_index<nco_count_blocks(separate_args[sng_index], (char*)nco_mta_sub_dlm);sub_index++){
+        for(int sub_index=0; sub_index<nco_count_blocks(separate_args[sng_index], nco_mta_sub_dlm);sub_index++){
             char* temp_value = strdup(individual_args[sub_index]);
             if(!strstr(temp_value, "=")){
                 temp_value=(char*)realloc(temp_value, strlen(temp_value)+strlen(value)+1);
                 strcat(temp_value, value);//end if
             }
             kvm_sct kvm_object = nco_sng2kvm(temp_value);
-            kvm_set[counter++] = kvm_object;
+            kvm_set[kvm_index++] = kvm_object;
             free(temp_value);
         }//end inner loop
-        nco_sng_lst_free_void(individual_args, nco_count_blocks(separate_args[sng_index],(char*)nco_mta_sub_dlm));
+        nco_sng_lst_free_void(individual_args, nco_count_blocks(separate_args[sng_index],nco_mta_sub_dlm));
         free(value);
     }//end outer loop
     nco_sng_lst_free_void(separate_args, nco_count_blocks(args, nco_mta_dlm));
-    kvm_set[counter].key=NULL; //Add an ending flag for kvm array.
+    kvm_set[kvm_index].key=NULL; //Add an ending flag for kvm array.
     return kvm_set;
 }
 
@@ -226,7 +226,7 @@ nco_join_sng /* [fnc] Join strings with delimiter */
 
     size_t word_length=0;
     size_t copy_counter=0;
-    for(size_t index=0;index<sng_nbr;index++){
+    for(int index=0;index<sng_nbr;index++){
         word_length+=strlen(sng_lst[index])+1;
     }
     char *final_string = (char*)malloc(word_length+1);
@@ -242,9 +242,9 @@ nco_join_sng /* [fnc] Join strings with delimiter */
     return final_string;
 }
 
-char * nco_mlt_arg_dlm_set(const char *dlm_sng_usr)
+const char * nco_mlt_arg_dlm_set(const char *dlm_sng_usr)
 {
   nco_mta_dlm=(char*)malloc(strlen(dlm_sng_usr) + 1);
-  strcpy(nco_mta_dlm, dlm_sng_usr);
+  strcpy((char*)nco_mta_dlm, dlm_sng_usr);
   return nco_mta_dlm;
 }

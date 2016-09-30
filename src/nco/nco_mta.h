@@ -80,9 +80,9 @@ extern "C" {
   int
   nco_count_blocks
   (const char* args,
-   char* delimiter);
+   const char* delimiter);
 
-  char *
+  const char *
   nco_mlt_arg_dlm_set
   (const char *dlm_sng_usr);
 
