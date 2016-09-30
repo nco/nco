@@ -2866,10 +2866,10 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 # ncks #114
 # ncks -h -O --gaa foo=bar#foo2,foo3=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016' ~/nco/data/in.nc ~/foo.nc
-# ncks -M ~/foo.nc | grep 'foo4' | cut -d ' ' -f 11-16
-    $dsc_sng="Add multiple global attributes with argument parsing by Jerome";
+# ncks -M ~/foo.nc | grep foo4 | cut -d ' ' -f 11-16
+    $dsc_sng="Multi-argument parsing by Jerome, test last argument is time string";
     $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar#foo2,foo3=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo4' | cut -d ' ' -f 11-16";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo4 | cut -d ' ' -f 11-16";
     $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
@@ -2877,10 +2877,10 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 # ncks #115
 # ncks -h -O --gaa foo=bar1#foo2=bar2#foo3=bar3#script='created by nco_climo.sh' ~/nco/data/in.nc ~/foo.nc
-# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
-    $dsc_sng="More tests on multi-argument parsing #1";
+# ncks -M ~/foo.nc | grep foo, | cut -d ' ' -f 11
+    $dsc_sng="Multi-argument parsing test first argument";
     $tst_cmd[0]="ncks -h -O $nco_D_flg --gaa foo=bar1#foo2=bar2#foo3=bar3#script='created by nco_climo.sh' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo' | cut -d ' ' -f 11-13";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo, | cut -d ' ' -f 11";
     $tst_cmd[2]="bar1";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
@@ -2888,33 +2888,33 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 # ncks #116
 # ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016" ~/nco/data/in.nc ~/foo.nc
-# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
-    $dsc_sng="More tests on multi-argument parsing #2(with time string)";
+# ncks -M ~/foo.nc | grep foo3 | cut -d ' ' -f 11-16    
+    $dsc_sng="Multi-argument parsing second-to-last argument is time string";
     $tst_cmd[0]="ncks -h -O $nco_D_flg foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo4' | cut -d ' ' -f 11-13";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo3 | cut -d ' ' -f 11-16";
     $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 # ncks #117
-# ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016"#foo7,foo8=bar10 ~/nco/data/in.nc ~/foo.nc
-# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
-    $dsc_sng="More tests on multi-argument parsing #3(the time string is followed by kvms)";
-    $tst_cmd[0]="ncks -h -O $nco_D_flg foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo7,foo8=bar10 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo7' | cut -d ' ' -f 11-13";
-    $tst_cmd[2]="bar10";
+# ncks -h -O --gaa foo=bar#foo2=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016"#foo5,foo6=bar4 ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep foo6 | cut -d ' ' -f 11-13    
+    $dsc_sng="Multi-argument parsing test arguments after time string kvm";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg foo=bar#foo2=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar5 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo6 | cut -d ' ' -f 11-13";
+    $tst_cmd[2]="bar4";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
 # ncks #118
-# ncks -h -O --gaa foo,boo=bar#foo2,foo9=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016"#foo7,foo8=bar10 ~/nco/data/in.nc ~/foo.nc
-# ncks -M ~/foo.nc | grep script | cut -d ' ' -f 11-13    
-    $dsc_sng="More tests on multi-argument parsing #4(all have subdelimiters)";
-    $tst_cmd[0]="ncks -h -O $nco_D_flg foo,boo=bar#foo2,foo9=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo7,foo8=bar10 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep 'foo4' | cut -d ' ' -f 11-13";
-    $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
+# ncks -h -O --gaa foo,boo=bar#foo2,foo9=bar2#foo3,foo4="Thu Sep 15 13:03:18 PDT 2016"#foo5,foo6=bar4 ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep foo6 | cut -d ' ' -f 11
+    $dsc_sng="Multi-argument parsing test when all kvms have subdelimiters";
+    $tst_cmd[0]="ncks -h -O $nco_D_flg foo,boo=bar#foo2,foo3=bar2#foo3,foo4='Thu Sep 15 13:03:18 PDT 2016'#foo5,foo6=bar4 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo6 | cut -d ' ' -f 11";
+    $tst_cmd[2]="bar4";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
