@@ -54,11 +54,9 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   } /* endif dbg */
   
   /* Parse extended kvm options */
-  int trr_arg_idx; /* [idx] Index over trr_arg (i.e., separate invocations of "--trr var1[,var2]=val") */
   int trr_var_idx; /* [idx] Index over trr_lst (i.e., all names explicitly specified in all "--trr var1[,var2]=val" options) */
   int trr_var_nbr=0;
   kvm_sct *trr_lst; /* [sct] List of all regrid specifications */
-  kvm_sct kvm;
   char *sng_fnl=NULL;
 
   /* Join arguments together */

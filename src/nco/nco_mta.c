@@ -25,7 +25,6 @@ nco_sng2kvm /* [fnc] Convert string to key-value pair */
  *          and kvm[@] = 1 (the ";" will be parsed by caller). 
  *
  * IMPORTANT: free() fake_kvm after using string_to_kvm. */
-  int arg_index = 0;
   char* args_copy=strdup(args);
   char* ptr_for_free = args_copy;
   kvm_sct kvm;

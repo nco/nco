@@ -285,61 +285,62 @@ nco_msa_clc_idx
     crr_idx=nco_msa_min_idx(indices,mnm,size);
 
     crr_slb=-1;
-    for(sz_idx=0;sz_idx<size;sz_idx++)
+    for(sz_idx=0;sz_idx<size;sz_idx++){
       if(mnm[sz_idx]){crr_slb=sz_idx;break;}
-
-      if(crr_slb == -1){
-        if(lmt->srt == -1L){
-          rcd=False;
-          goto cln_and_xit;
-        }else break;
-      } /* endif */
-
-      if(mnm[prv_slb]) crr_slb=prv_slb;
-
-      if(lmt->srt > -1L && crr_slb != prv_slb) break;
-
-      if(lmt->cnt > 1L){
-        (lmt->cnt)++;
-        lmt->end=crr_idx;
-      } /* end if */
-
-      if(lmt->cnt == 1L){
-        lmt->cnt=2L;
-        lmt->srd=crr_idx-prv_idx;
-        lmt->end=crr_idx;
-      } /* end if */
-
+    } /* !sz_idx */
+    
+    if(crr_slb == -1){
       if(lmt->srt == -1L){
-        lmt->srt=crr_idx;
-        lmt->cnt=1L;
-        lmt->end=crr_idx;
-        lmt->srd=1L;
-      } /* end if */
-
-      for(sz_idx=0;sz_idx<size;sz_idx++){
-        if(mnm[sz_idx]){
-          indices[sz_idx]+=lmt_a->lmt_dmn[sz_idx]->srd;
-          if(indices[sz_idx] > lmt_a->lmt_dmn[sz_idx]->end) indices[sz_idx]=-1L;
-        }
-      } /* end loop over sz_idx */
-      prv_idx=crr_idx;
-      prv_slb=crr_slb;
+	rcd=False;
+	goto cln_and_xit;
+      }else break;
+    } /* endif */
+    
+    if(mnm[prv_slb]) crr_slb=prv_slb;
+    
+    if(lmt->srt > -1L && crr_slb != prv_slb) break;
+    
+    if(lmt->cnt > 1L){
+      (lmt->cnt)++;
+      lmt->end=crr_idx;
+    } /* end if */
+    
+    if(lmt->cnt == 1L){
+      lmt->cnt=2L;
+      lmt->srd=crr_idx-prv_idx;
+      lmt->end=crr_idx;
+    } /* end if */
+    
+    if(lmt->srt == -1L){
+      lmt->srt=crr_idx;
+      lmt->cnt=1L;
+      lmt->end=crr_idx;
+      lmt->srd=1L;
+    } /* end if */
+    
+    for(sz_idx=0;sz_idx<size;sz_idx++){
+      if(mnm[sz_idx]){
+	indices[sz_idx]+=lmt_a->lmt_dmn[sz_idx]->srd;
+	if(indices[sz_idx] > lmt_a->lmt_dmn[sz_idx]->end) indices[sz_idx]=-1L;
+      }
+    } /* end loop over sz_idx */
+    prv_idx=crr_idx;
+    prv_slb=crr_slb;
   } /* end while */
-
+  
   *slb=prv_slb;
-
+  
   /* Normalize slab */
   if(NORMALIZE){
     lmt->srt=(lmt->srt-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
     lmt->end=(lmt->end-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
     lmt->srd=1L;
   } /* end if */
-
+  
   rcd=True;
-
+  
   /* Jump here if only one string */
-cln_and_xit:
+ cln_and_xit:
   mnm=(nco_bool *)nco_free(mnm);
 
   return rcd;
