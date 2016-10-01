@@ -216,7 +216,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   sng_fnl=nco_join_sng((const char**)rgr_arg,rgr_arg_nbr);
   rgr_lst=nco_arg_mlt_prs(sng_fnl);
 
-  if(sng_fnl) sng_fnl=nco_free(sng_fnl);
+  if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
 
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;(rgr_lst+index)->key;index++){

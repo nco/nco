@@ -63,7 +63,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   sng_fnl=nco_join_sng((const char**)trr_arg,trr_arg_nbr);
   trr_lst=nco_arg_mlt_prs(sng_fnl);
 
-  if(sng_fnl) sng_fnl=nco_free(sng_fnl);
+  if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
 
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;(trr_lst+index)->key;index++){
