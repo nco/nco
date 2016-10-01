@@ -67,8 +67,6 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
 
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;(trr_lst+index)->key;index++){
-      trr_lst[index].key=strcat(trr_lst[index].key,"\0");
-      trr_lst[index].val=strcat(trr_lst[index].val,"\0");
       trr_var_nbr=index;
   } /* end loop over i */
   trr_var_nbr++;

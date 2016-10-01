@@ -88,8 +88,6 @@ nco_ppc_ini /* Set PPC based on user specifications */
 
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;(ppc_lst+index)->key;index++){
-      ppc_lst[index].key=strcat(ppc_lst[index].key,"\0");
-      ppc_lst[index].val=strcat(ppc_lst[index].val,"\0");
       ppc_var_nbr=index;
   } /* end loop over i */
   ppc_var_nbr++;
