@@ -229,6 +229,7 @@ extern "C" {
   unsigned short nco_rth_cnv_get(void);
   unsigned short nco_upk_cnv_get(void);
   void nco_fmt_xtn_set(unsigned short nco_fmt_xtn_arg);
+  void nco_mta_dlm_set(char *nco_mta_dlm_arg);
 
 #ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
   
@@ -242,6 +243,7 @@ extern "C" {
   
   char *nco_mta_dlm="#"; /* [sng] Multi-argument delimiter */
   char *nco_mta_dlm_get(void){return nco_mta_dlm;} /* [sng] Multi-argument delimiter */
+  void nco_mta_dlm_set(char *nco_mta_dlm_arg){nco_mta_dlm=nco_mta_dlm_arg;} /* [sng] Multi-argument delimiter */
   
   unsigned short nco_baa_cnv=0; /* [enm] Bit-Adjustment Algorithm */
   unsigned short nco_baa_cnv_get(void){return nco_baa_cnv;} /* [enm] Bit-Adjustment Algorithm */

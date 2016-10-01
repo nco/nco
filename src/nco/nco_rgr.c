@@ -216,7 +216,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   sng_fnl=nco_join_sng((const char**)rgr_arg,rgr_arg_nbr);
   rgr_lst=nco_arg_mlt_prs(sng_fnl);
 
-  free(sng_fnl);
+  if(sng_fnl) sng_fnl=nco_free(sng_fnl);
 
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;(rgr_lst+index)->key;index++){
@@ -2946,7 +2946,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	
 	  for(idx_in=0;idx_in<var_sz_in;idx_in++){
 
-	    /* fxm CEWI fixes uninitialized warning*/
+	    /* fxm CEWI fixes uninitialized warning */
 	    idx_out=73;
 	    
 	    /* dmn_sbs_in are corresponding indices (subscripts) into N-D array */
@@ -4225,8 +4225,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   grd_crn_lon=(double *)nco_malloc(grd_crn_nbr*grd_sz_nbr*nco_typ_lng(crd_typ));
   
   /* Define variable values */
-  int lon_psn; /* [idx] Ordinal position of longitude size in rectangular grid */
-  int lat_psn; /* [idx] Ordinal position of latitude  size in rectangular grid */
+  int lon_psn=int_CEWI; /* [idx] Ordinal position of longitude size in rectangular grid */
+  int lat_psn=int_CEWI; /* [idx] Ordinal position of latitude  size in rectangular grid */
   if(grd_rnk_nbr == dmn_nbr_2D){
     lon_psn=0; /* SCRIP introduced [lon,lat] convention because more natural for Fortran */
     lat_psn=1;
@@ -5149,7 +5149,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long crn_idx; /* [idx] Counting index for corners */
   long dmn_sz; /* [nbr] Size of current dimension */
   long grd_crn_nbr; /* [nbr] Number of corners in gridcell */
-  long grd_rnk_nbr; /* [nbr] Number of dimensions in grid */
+  long grd_rnk_nbr=int_CEWI; /* [nbr] Number of dimensions in grid */
   long grd_sz_nbr; /* [nbr] Number of gridcells in grid */
   long idx2; /* [idx] Counting index for unrolled grids */
   long idx; /* [idx] Counting index for unrolled grids */

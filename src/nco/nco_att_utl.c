@@ -1941,7 +1941,7 @@ nco_glb_att_add /* [fnc] Add global attributes */
   char *sng_fnl=nco_join_sng((const char ** const)gaa_arg,gaa_arg_nbr);
   gaa_lst=nco_arg_mlt_prs(sng_fnl);
 
-  free(sng_fnl);
+  if(sng_fnl) sng_fnl=nco_free(sng_fnl);
 
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;gaa_lst[index].key;index++){

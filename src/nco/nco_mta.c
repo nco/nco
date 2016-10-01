@@ -175,11 +175,11 @@ nco_sng_lst_free_void /* [fnc] free() string list */
   sng_lst=NULL;
 }
 
-kvm_sct* /* O [kvm_sct] the pointer to the first kvm structure */
+kvm_sct * /* O [kvm_sct] the pointer to the first kvm structure */
 nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structure */
 (const char *args) /* I [sng] input string */
 {
-  /* Main parser for the argument. This will split the whole argument into key value pair and send to sng2kvm*/
+  /* Main parser: Split whole argument into key value pair and send to sng2kvm */
   if(!args) return NULL;
   
   char *nco_mta_dlm=nco_mta_dlm_get(); /* [sng] Multi-argument delimiter */
@@ -187,9 +187,8 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
   size_t counter=nco_count_blocks(args,nco_mta_dlm)*nco_count_blocks(args,nco_mta_sub_dlm); // Maximum number of kvm structures in this argument
 
   for(int index=0;index<nco_count_blocks(args,nco_mta_dlm);index++){
-    if(!nco_input_check(separate_args[index]))
-      nco_exit(EXIT_FAILURE);
-  }//end loop
+    if(!nco_input_check(separate_args[index])) nco_exit(EXIT_FAILURE);
+  } //end loop
   
   kvm_sct* kvm_set=(kvm_sct*)nco_malloc(sizeof(kvm_sct)*(counter+5)); //kvm array intended to be returned
   size_t kvm_idx=0;
@@ -225,8 +224,8 @@ nco_join_sng /* [fnc] Join strings with delimiter */
 
   if(sng_nbr == 1) return strdup(sng_lst[0]);
   
-  size_t word_length=0;
-  size_t copy_counter=0;
+  size_t word_length=0L;
+  size_t copy_counter=0L;
   for(int index=0;index<sng_nbr;index++){
     word_length+=strlen(sng_lst[index])+1L;
   }
@@ -235,8 +234,7 @@ nco_join_sng /* [fnc] Join strings with delimiter */
     size_t temp_length=strlen(sng_lst[sng_idx]);
     strcpy(final_string+copy_counter,sng_lst[sng_idx]);
     
-    if(sng_idx<sng_nbr-1) 
-      strcpy(final_string+copy_counter+temp_length,nco_mta_dlm);
+    if(sng_idx<sng_nbr-1) strcpy(final_string+copy_counter+temp_length,nco_mta_dlm);
     copy_counter+=(temp_length+1);
   }
   strcat(final_string,"\0");

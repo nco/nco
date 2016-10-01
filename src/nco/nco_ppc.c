@@ -84,7 +84,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
   sng_fnl=nco_join_sng((const char**)ppc_arg, ppc_arg_nbr);
   ppc_lst=nco_arg_mlt_prs(sng_fnl);
 
-  free(sng_fnl);
+  if(sng_fnl) sng_fnl=nco_free(sng_fnl);
 
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;(ppc_lst+index)->key;index++){

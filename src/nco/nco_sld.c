@@ -19,7 +19,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
  char * const trr_out, /* I [sng] File containing netCDF Terraref imagery */
  char * const trr_wxy) /* I [sng] Terraref dimension sizes */
 {
-  /* Purpose: Initialize regridding structure */
+  /* Purpose: Initialize Terraref structure */
      
   const char fnc_nm[]="nco_trr_ini()";
   
@@ -63,7 +63,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   sng_fnl=nco_join_sng((const char**)trr_arg,trr_arg_nbr);
   trr_lst=nco_arg_mlt_prs(sng_fnl);
 
-  free(sng_fnl);
+  if(sng_fnl) sng_fnl=nco_free(sng_fnl);
 
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;(trr_lst+index)->key;index++){
@@ -271,9 +271,9 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   int dmn_ids[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
 
-  int dmn_idx_wvl; /* [idx] Index of wavelength dimension */
-  int dmn_idx_ydm; /* [idx] Index of y-coordinate dimension */
-  int dmn_idx_xdm; /* [idx] Index of x-coordinate dimension */
+  int dmn_idx_wvl=int_CEWI; /* [idx] Index of wavelength dimension */
+  int dmn_idx_ydm=int_CEWI; /* [idx] Index of y-coordinate dimension */
+  int dmn_idx_xdm=int_CEWI; /* [idx] Index of x-coordinate dimension */
   int dmn_id_wvl; /* [id] Wavelength dimension ID */
   int dmn_id_xdm; /* [id] X-dimension ID */
   int dmn_id_ydm; /* [id] Y-dimension ID */
@@ -426,6 +426,9 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
     dmn_idx_wvl=1;
     dmn_idx_ydm=0;
     dmn_idx_xdm=2;
+  }else{
+    (void)fprintf(stderr,"%s: ERROR %s reports unknown ntl_typ_out = %d\n",nco_prg_nm_get(),fnc_nm,ntl_typ_out);
+    nco_exit(EXIT_FAILURE);
   } /* !ntl_typ_out */
   dmn_ids[dmn_idx_wvl]=dmn_id_wvl;
   dmn_ids[dmn_idx_xdm]=dmn_id_xdm;

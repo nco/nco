@@ -1,5 +1,7 @@
 2016-09-30  Charlie Zender  <zender@uci.edu>
 
+	* Fix compiler warnings emitted by clang LLVM 8.0.0
+
 	* Update configure.ac MAKEINFO_VERSION to grep for texinfo so MacOS 'texi2any' works
 
 	* #include netcdf_mem.h for nc_open_mem() prototype
