@@ -921,7 +921,8 @@ endif
 # Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOSX
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOSX))
 # 20161001 Linux ar with Ubuntu Xenial began using deterministic mode. -U undoes that.
-AR += U
+# 20161001 GNU ar -s is equivalent to ranlib
+ARFLAGS := rsUv
 CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CC}
@@ -1957,6 +1958,7 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_var_rth.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_var_scv.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_var_utl.o)
+	$(AR) rsv $@ $^
 libclean: lib_cln
 lib_cln:
 	rm -f ${libnco}.* ${libnco}*.* ${libnco}++.a ${libnco}_c++.a
