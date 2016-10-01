@@ -11,7 +11,6 @@
 
 #include "nco_mta.h" /* Multi-argument parsing */
 
-const char *nco_mta_dlm="#"; /* [sng] Multi-argument delimiter */
 const char *nco_mta_sub_dlm=","; /* [sng] Multi-argument sub-delimiter */
 
 kvm_sct /* O [kvm_sct] key-value pair*/
@@ -83,16 +82,16 @@ nco_kvm_prn(kvm_sct kvm)
 
 char *nco_strip_backslash(char *args)
 {
-  char *backslash_pos=strchr(args,'\\');
-  strcpy(backslash_pos,nco_mta_dlm);
+  char *backslash_psn=strchr(args,'\\');
+  strcpy(backslash_psn,nco_mta_dlm_get());
   
   return args;
 }
 
-char ** /* O [pointer to sngs] group of splitted sngs*/
-nco_string_split /* [fnc] split the string by delimiter */
-(const char *source, /* I [sng] the source string */
- const char *delimiter) /* I [char] the delimiter*/
+char ** /* O [sng] Group of split strings */
+nco_sng_split /* [fnc] Split string by delimiter */
+(const char *source, /* I [sng] Source string */
+ const char *delimiter) /* I [char] Delimiter */
 {
   /* Use to split the string into a double character pointer, which each sencondary pointer represents
    * the string after splitting.
@@ -149,10 +148,10 @@ nco_input_check /* [fnc] check whether the input is legal and give feedback acco
   return 1;
 }
 
-int // O [int] the number of string blocks if will be split with delimiter
-nco_count_blocks // [fnc] Check number of string blocks if will be split with delimiter
-(const char *args, // I [sng] the string which is going to be split
- const char *delimiter) // I [sng] the delimiter
+int // O [int] Number of string blocks that will be split with delimiter
+nco_count_blocks // [fnc] Check number of string blocks that will be split with delimiter
+(const char *args, // I [sng] String to be split
+ const char *delimiter) // I [sng] Delimiter
 {
   int sng_nbr=1;
   const char *crnt_chr=strstr(args,delimiter);
@@ -181,11 +180,11 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
 (const char *args) /* I [sng] input string */
 {
   /* Main parser for the argument. This will split the whole argument into key value pair and send to sng2kvm*/
-  if(!args) 
-    return NULL;
+  if(!args) return NULL;
   
-  char **separate_args=nco_string_split(args,(const char *)nco_mta_dlm);
-  size_t counter=nco_count_blocks(args,nco_mta_dlm)*nco_count_blocks(args,nco_mta_sub_dlm); //Max number of kvm structure in this argument
+  char *nco_mta_dlm=nco_mta_dlm_get(); /* [sng] Multi-argument delimiter */
+  char **separate_args=nco_sng_split(args,(const char *)nco_mta_dlm);
+  size_t counter=nco_count_blocks(args,nco_mta_dlm)*nco_count_blocks(args,nco_mta_sub_dlm); // Maximum number of kvm structures in this argument
 
   for(int index=0;index<nco_count_blocks(args,nco_mta_dlm);index++){
     if(!nco_input_check(separate_args[index]))
@@ -197,7 +196,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
   
   for(int sng_idx=0;sng_idx<nco_count_blocks(args,nco_mta_dlm);sng_idx++){
     char *value=strdup(strstr(separate_args[sng_idx],"="));
-    char **individual_args=nco_string_split(separate_args[sng_idx],nco_mta_sub_dlm);
+    char **individual_args=nco_sng_split(separate_args[sng_idx],nco_mta_sub_dlm);
     
     for(int sub_idx=0; sub_idx<nco_count_blocks(separate_args[sng_idx],nco_mta_sub_dlm);sub_idx++){
       char *temp_value=strdup(individual_args[sub_idx]);
@@ -222,8 +221,9 @@ nco_join_sng /* [fnc] Join strings with delimiter */
 (const char **sng_lst, /* I [sng] List of strings being connected */
  const int sng_nbr) /* I [int] Number of strings */
 {
-  if(sng_nbr == 1)
-    return strdup(sng_lst[0]);
+  char *nco_mta_dlm=nco_mta_dlm_get(); /* [sng] Multi-argument delimiter */
+
+  if(sng_nbr == 1) return strdup(sng_lst[0]);
   
   size_t word_length=0;
   size_t copy_counter=0;
@@ -245,7 +245,7 @@ nco_join_sng /* [fnc] Join strings with delimiter */
 
 const char *nco_mlt_arg_dlm_set(const char *dlm_sng_usr)
 {
-  nco_mta_dlm=(char *)nco_malloc(strlen(dlm_sng_usr)+1);
+  char *nco_mta_dlm=(char *)nco_malloc(strlen(dlm_sng_usr)+1);
   strcpy((char *)nco_mta_dlm,dlm_sng_usr);
   return nco_mta_dlm;
 }

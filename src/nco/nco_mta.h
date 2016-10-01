@@ -24,6 +24,7 @@
 /* 3rd party vendors */
 
 /* Personal headers */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
@@ -51,10 +52,10 @@ extern "C" {
   nco_strip_backslash
   (char* args);
 
-  char** /* O [pointer to sngs] group of splitted sngs*/
-  nco_string_split /* [fnc] split the string by delimiter */
-  (const char *source, /* I [sng] the source string */
-  const char* delimiter);
+  char ** /* O [sng] Group of split strings */
+  nco_sng_split /* [fnc] Split string by delimiter */
+  (const char *source, /* I [sng] Source string */
+   const char *delimiter); /* I [char] Delimiter */
 
   int /* O [int] the boolean for the checking result */
   nco_input_check /* [fnc] check whether the input is legal and give feedback accordingly. */
@@ -74,10 +75,10 @@ extern "C" {
   (const char **sng_lst, /* I [sng] List of strings being connected */
    const int sng_nbr); /* I [int] Number of strings */
 
-  int
-  nco_count_blocks
-  (const char* args,
-   const char* delimiter);
+  int // O [int] Number of string blocks that will be split with delimiter
+  nco_count_blocks // [fnc] Check number of string blocks that will be split with delimiter
+  (const char *args, // I [sng] String to be split
+   const char *delimiter); // I [sng] Delimiter
 
   const char *
   nco_mlt_arg_dlm_set

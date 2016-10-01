@@ -218,6 +218,7 @@ extern "C" {
 
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
+  char *nco_mta_dlm_get(void); /* [sng] Multi-argument delimiter */
   char *nco_not_mss_val_sng_get(void); /* [sng] Not missing value attribute name */
   char *nco_prg_nm_get(void);
   int nco_prg_id_get(void);
@@ -238,6 +239,9 @@ extern "C" {
   
   char *nco_prg_nm; /* [sng] Program name */
   char *nco_prg_nm_get(void){return nco_prg_nm;} /* [sng] Program name */
+  
+  char *nco_mta_dlm="#"; /* [sng] Multi-argument delimiter */
+  char *nco_mta_dlm_get(void){return nco_mta_dlm;} /* [sng] Multi-argument delimiter */
   
   unsigned short nco_baa_cnv=0; /* [enm] Bit-Adjustment Algorithm */
   unsigned short nco_baa_cnv_get(void){return nco_baa_cnv;} /* [enm] Bit-Adjustment Algorithm */
