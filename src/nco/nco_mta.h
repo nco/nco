@@ -80,10 +80,6 @@ extern "C" {
   (const char *args, // I [sng] String to be split
    const char *delimiter); // I [sng] Delimiter
 
-  const char *
-  nco_mlt_arg_dlm_set
-  (const char *dlm_sng_usr);
-
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

@@ -241,8 +241,9 @@ extern "C" {
   char *nco_prg_nm; /* [sng] Program name */
   char *nco_prg_nm_get(void){return nco_prg_nm;} /* [sng] Program name */
   
-  char *nco_mta_dlm="#"; /* [sng] Multi-argument delimiter */
-  char *nco_mta_dlm_get(void){return nco_mta_dlm;} /* [sng] Multi-argument delimiter */
+  char *nco_mta_dlm=NULL; /* [sng] Multi-argument delimiter */
+  char *nco_mta_dlm_get(void){if(!nco_mta_dlm){nco_mta_dlm=(char *)strdup("#");}
+    return nco_mta_dlm;} /* [sng] Multi-argument delimiter */
   void nco_mta_dlm_set(char *nco_mta_dlm_arg){nco_mta_dlm=nco_mta_dlm_arg;} /* [sng] Multi-argument delimiter */
   
   unsigned short nco_baa_cnv=0; /* [enm] Bit-Adjustment Algorithm */

@@ -1,5 +1,7 @@
 2016-10-01  Charlie Zender  <zender@uci.edu>
 
+	* Alter nco_mta_get() to initialize delimiter if NULL
+
 	* Makefile uses ar -U to create non-deterministic library archives
 	Prevents GCC toolchain i18n warnings on Ubuntu 16.04 (xenial) and later
 
