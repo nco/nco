@@ -220,8 +220,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;(rgr_lst+index)->key;index++){
-      rgr_lst[index].key=strcat(rgr_lst[index].key,"\0");
-      rgr_lst[index].val=strcat(rgr_lst[index].val,"\0");
       rgr_var_nbr=index;
   } /* end loop over i */
   rgr_var_nbr++;
