@@ -1,3 +1,8 @@
+2016-10-01  Charlie Zender  <zender@uci.edu>
+
+	* Makefile uses ar -U to create non-deterministic library archives
+	Prevents GCC toolchain i18n warnings on Ubuntu 16.04 (xenial) and later
+
 2016-09-30  Charlie Zender  <zender@uci.edu>
 
 	* Fix compiler warnings emitted by clang LLVM 8.0.0

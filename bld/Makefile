@@ -920,6 +920,8 @@ endif
 
 # Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOSX
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOSX))
+# 20161001 Linux ar with Ubuntu Xenial began using deterministic mode. -U undoes that.
+AR := ar -U
 CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CC}
