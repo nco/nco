@@ -84,7 +84,6 @@ extern "C" {
    char ** const endptr,
    const int base);
 #endif /* !NEED_STRTOLL */
-
   
   char * /* O [sng] Parsed command line */
   nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */

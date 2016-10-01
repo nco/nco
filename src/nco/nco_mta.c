@@ -11,8 +11,8 @@
 
 #include "nco_mta.h" /* Multi-argument parsing */
 
-const char* nco_mta_dlm="#"; /* [sng] Multi-argument delimiter */
-const char* nco_mta_sub_dlm=","; /* [sng] Multi-argument sub-delimiter */
+const char *nco_mta_dlm="#"; /* [sng] Multi-argument delimiter */
+const char *nco_mta_sub_dlm=","; /* [sng] Multi-argument sub-delimiter */
 
 kvm_sct /* O [kvm_sct] key-value pair*/
 nco_sng2kvm /* [fnc] Convert string to key-value pair */
@@ -25,18 +25,18 @@ nco_sng2kvm /* [fnc] Convert string to key-value pair */
    *          and kvm[@] = 1 (the ";" will be parsed by caller). 
    *
    * IMPORTANT: free() fake_kvm after using string_to_kvm. */
-  char* args_copy=strdup(args);
-  char* ptr_for_free = args_copy;
+  char *args_copy=strdup(args);
+  char *ptr_for_free=args_copy;
   kvm_sct kvm;
   
-  kvm.key = strdup(strsep(&args_copy, "="));
-  kvm.val = strdup(args_copy);
+  kvm.key=strdup(strsep(&args_copy,"="));
+  kvm.val=strdup(args_copy);
   
   nco_free(ptr_for_free);
-
+  
   /* If nco_malloc() cannot allocate sufficient memory, either key or value would be NULL; print error message and not quit */
   if(!kvm.key || !kvm.val){
-    (void)fprintf(stderr, "%s: ERROR system has insufficient memory\n", nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR system has insufficient memory\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   }
   return kvm;
@@ -81,171 +81,171 @@ nco_kvm_prn(kvm_sct kvm)
   if(kvm.key) (void)fprintf(stdout,"%s = %s\n",kvm.key,kvm.val); else return;
 } /* end nco_kvm_prn() */
 
-char *nco_strip_backslash(char* args)
+char *nco_strip_backslash(char *args)
 {
-    char* backslash_pos=strchr(args, '\\');
-    strcpy(backslash_pos, nco_mta_dlm);
-
-    return args;
+  char *backslash_pos=strchr(args,'\\');
+  strcpy(backslash_pos,nco_mta_dlm);
+  
+  return args;
 }
 
 char ** /* O [pointer to sngs] group of splitted sngs*/
 nco_string_split /* [fnc] split the string by delimiter */
-(const char *restrict source, /* I [sng] the source string */
-const char* delimiter) /* I [char] the delimiter*/
+(const char *source, /* I [sng] the source string */
+ const char *delimiter) /* I [char] the delimiter*/
 {
-    /* Use to split the string into a double character pointer, which each sencondary pointer represents
-     * the string after splitting.
-     * Example: a, b=1 will be split into *<a> = "a" *<b> = "b=1" with a delimiter of SUBDELIMITER 
-     * Remember to free after calling this function. */
-    char** sng_fnl=NULL;
-    char* temp=strdup(source);
-    size_t counter=nco_count_blocks(source, delimiter);
-    size_t index=0;    
-
-    if(!strstr(temp, delimiter)){ //special case for one single argument
-      sng_fnl=(char**)nco_malloc(sizeof(char*));
-      sng_fnl[0]=temp;
-      return sng_fnl;
-    }
-
-    sng_fnl=(char**)nco_malloc(sizeof(char*) * counter);
-    if(sng_fnl){
-        for(char *token=strtok(temp, delimiter); token; token=strtok(NULL, delimiter)){
-            // const char* find = strchr(sng_fnl[index - 1], '\\');
-            // if(index > 0 && find && find - sng_fnl[index - 1] + 1 == strlen(sng_fnl[index - 1])){
-            //     sng_fnl[index - 1] = nco_strip_backslash(sng_fnl[index-1]);
-            //     strcat(sng_fnl[index - 1], token);
-            // }
-            // else
-            sng_fnl[index ++] = strdup(token);
-        } //end for
-        nco_free(temp);
-    }else{
-        nco_free(temp);
-        return NULL;
-    } //end if
+  /* Use to split the string into a double character pointer, which each sencondary pointer represents
+   * the string after splitting.
+   * Example: a, b=1 will be split into *<a> = "a" *<b> = "b=1" with a delimiter of SUBDELIMITER 
+   * Remember to free after calling this function. */
+  char **sng_fnl=NULL;
+  char *temp=strdup(source);
+  size_t counter=nco_count_blocks(source,delimiter);
+  size_t index=0;    
+  
+  if(!strstr(temp,delimiter)){ //special case for one single argument
+    sng_fnl=(char **)nco_malloc(sizeof(char *));
+    sng_fnl[0]=temp;
     return sng_fnl;
+  }
+  
+  sng_fnl=(char **)nco_malloc(sizeof(char *) * counter);
+  if(sng_fnl){
+    for(char *token=strtok(temp,delimiter); token; token=strtok(NULL,delimiter)){
+      // const char *find = strchr(sng_fnl[index - 1], '\\');
+      // if(index > 0 && find && find - sng_fnl[index - 1] + 1 == strlen(sng_fnl[index - 1])){
+      //     sng_fnl[index - 1] = nco_strip_backslash(sng_fnl[index-1]);
+      //     strcat(sng_fnl[index - 1], token);
+      // }
+      // else
+      sng_fnl[index ++]=strdup(token);
+    } //end for
+    nco_free(temp);
+  }else{
+    nco_free(temp);
+    return NULL;
+  } //end if
+  return sng_fnl;
 }
 
 int /* O [int] the boolean for the checking result */
 nco_input_check /* [fnc] check whether the input is legal and give feedback accordingly. */
-(const char *restrict args) /* O [sng] input arguments */
+(const char *args) /* O [sng] input arguments */
 {
-    /* Use to check the syntax for the arguments.
-     * If the return value is false (which means the input value is illegal) the parser will terminate the program. */
-    if(!strstr(args,"=")){ //If no equal sign in arguments
-        (void)fprintf(stderr,"%s: ERROR No equal sign detected \033[0m\n", nco_prg_nm_get());
-        return 0;
-    } //endif
-    if(strstr(args,"=")==args){ //If equal sign is in the very beginning of the arguments (no key)
-        (void)fprintf(stderr,"%s: ERROR No key in key-value pair.\033[0m\n", nco_prg_nm_get()); 
-        return 0;
-    } //endif
-    if(strstr(args,"=")==args+strlen(args)-1){ //If equal sign is in the very end of the arguments
-        (void)fprintf(stderr,"%s: ERROR No value in key-value pair.\033[0m\n", nco_prg_nm_get()); 
-        return 0;
-    } //endif
-    return 1;
+  /* Use to check the syntax for the arguments.
+   * If the return value is false (which means the input value is illegal) the parser will terminate the program. */
+  if(!strstr(args,"=")){ //If no equal sign in arguments
+    (void)fprintf(stderr,"%s: ERROR No equal sign detected \033[0m\n",nco_prg_nm_get());
+    return 0;
+  } //endif
+  if(strstr(args,"=")==args){ //If equal sign is in the very beginning of the arguments (no key)
+    (void)fprintf(stderr,"%s: ERROR No key in key-value pair.\033[0m\n",nco_prg_nm_get()); 
+    return 0;
+  } //endif
+  if(strstr(args,"=")==args+strlen(args)-1){ //If equal sign is in the very end of the arguments
+    (void)fprintf(stderr,"%s: ERROR No value in key-value pair.\033[0m\n",nco_prg_nm_get()); 
+    return 0;
+  } //endif
+  return 1;
 }
 
 int // O [int] the number of string blocks if will be split with delimiter
 nco_count_blocks // [fnc] Check number of string blocks if will be split with delimiter
-(const char* args, // I [sng] the string which is going to be split
-const char* delimiter) // I [sng] the delimiter
+(const char *args, // I [sng] the string which is going to be split
+ const char *delimiter) // I [sng] the delimiter
 {
   int sng_nbr=1;
-  const char *crnt_chr=strstr(args, delimiter);
-
+  const char *crnt_chr=strstr(args,delimiter);
+  
   while (crnt_chr) {
     if((crnt_chr-1)[0]!='\\')
-        sng_nbr++;
-    crnt_chr = strstr(crnt_chr+1, delimiter);
+      sng_nbr++;
+    crnt_chr=strstr(crnt_chr+1,delimiter);
   }
   return sng_nbr;
 }
 
 void 
 nco_sng_lst_free_void /* [fnc] free() string list */
-(char **restrict sng_lst, /* I/O [sng] String list to free() */
+(char **sng_lst, /* I/O [sng] String list to free() */
  const int sng_nbr) /* I [int] Number of strings in list */
 {
-    /* Use to free the double character pointer, and set the pointer to NULL */
-    for(int index=0;index<sng_nbr;index++){nco_free(sng_lst[index]);}
-    nco_free(sng_lst);
-    sng_lst = NULL;
+  /* Use to free the double character pointer, and set the pointer to NULL */
+  for(int index=0;index<sng_nbr;index++){nco_free(sng_lst[index]);}
+  nco_free(sng_lst);
+  sng_lst=NULL;
 }
 
 kvm_sct* /* O [kvm_sct] the pointer to the first kvm structure */
 nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structure */
-(const char *restrict args) /* I [sng] input string */
+(const char *args) /* I [sng] input string */
 {
-    /* Main parser for the argument. This will split the whole argument into key value pair and send to sng2kvm*/
-    if(!args) 
-        return NULL;
+  /* Main parser for the argument. This will split the whole argument into key value pair and send to sng2kvm*/
+  if(!args) 
+    return NULL;
+  
+  char **separate_args=nco_string_split(args,(const char *)nco_mta_dlm);
+  size_t counter=nco_count_blocks(args,nco_mta_dlm)*nco_count_blocks(args,nco_mta_sub_dlm); //Max number of kvm structure in this argument
 
-    char **separate_args=nco_string_split(args, (const char*)nco_mta_dlm);
-    size_t counter=nco_count_blocks(args,nco_mta_dlm)*nco_count_blocks(args, nco_mta_sub_dlm); //Max number of kvm structure in this argument
-
-    for(int index=0;index<nco_count_blocks(args,nco_mta_dlm);index++){
-        if(!nco_input_check(separate_args[index]))
-            nco_exit(EXIT_FAILURE);
-    }//end loop
-
-    kvm_sct* kvm_set=(kvm_sct*)nco_malloc(sizeof(kvm_sct)*(counter+5)); //kvm array intended to be returned
-    size_t kvm_index=0;
-
-    for(int sng_index=0;sng_index<nco_count_blocks(args,nco_mta_dlm);sng_index++){
-        char *value = strdup(strstr(separate_args[sng_index], "="));
-        char **individual_args = nco_string_split(separate_args[sng_index], nco_mta_sub_dlm);
-
-        for(int sub_index=0; sub_index<nco_count_blocks(separate_args[sng_index], nco_mta_sub_dlm);sub_index++){
-            char* temp_value = strdup(individual_args[sub_index]);
-            if(!strstr(temp_value, "=")){
-                temp_value=(char*)realloc(temp_value, strlen(temp_value)+strlen(value)+1);
-                strcat(temp_value, value);//end if
-            }
-            kvm_sct kvm_object = nco_sng2kvm(temp_value);
-            kvm_set[kvm_index++] = kvm_object;
-            nco_free(temp_value);
-        }//end inner loop
-        nco_sng_lst_free_void(individual_args, nco_count_blocks(separate_args[sng_index],nco_mta_sub_dlm));
-        nco_free(value);
-    }//end outer loop
-    nco_sng_lst_free_void(separate_args, nco_count_blocks(args, nco_mta_dlm));
-    kvm_set[kvm_index].key=NULL; //Add an ending flag for kvm array.
-    return kvm_set;
+  for(int index=0;index<nco_count_blocks(args,nco_mta_dlm);index++){
+    if(!nco_input_check(separate_args[index]))
+      nco_exit(EXIT_FAILURE);
+  }//end loop
+  
+  kvm_sct* kvm_set=(kvm_sct*)nco_malloc(sizeof(kvm_sct)*(counter+5)); //kvm array intended to be returned
+  size_t kvm_idx=0;
+  
+  for(int sng_idx=0;sng_idx<nco_count_blocks(args,nco_mta_dlm);sng_idx++){
+    char *value=strdup(strstr(separate_args[sng_idx],"="));
+    char **individual_args=nco_string_split(separate_args[sng_idx],nco_mta_sub_dlm);
+    
+    for(int sub_idx=0; sub_idx<nco_count_blocks(separate_args[sng_idx],nco_mta_sub_dlm);sub_idx++){
+      char *temp_value=strdup(individual_args[sub_idx]);
+      if(!strstr(temp_value,"=")){
+	temp_value=(char *)realloc(temp_value,strlen(temp_value)+strlen(value)+1);
+	strcat(temp_value,value);//end if
+      }
+      kvm_sct kvm_object=nco_sng2kvm(temp_value);
+      kvm_set[kvm_idx++]=kvm_object;
+      nco_free(temp_value);
+    }//end inner loop
+    nco_sng_lst_free_void(individual_args,nco_count_blocks(separate_args[sng_idx],nco_mta_sub_dlm));
+    nco_free(value);
+  }//end outer loop
+  nco_sng_lst_free_void(separate_args,nco_count_blocks(args,nco_mta_dlm));
+  kvm_set[kvm_idx].key=NULL; //Add an ending flag for kvm array.
+  return kvm_set;
 }
 
 char * /* O [sng] Joined strings */
 nco_join_sng /* [fnc] Join strings with delimiter */
-(const char **restrict sng_lst, /* I [sng] List of strings being connected */
+(const char **sng_lst, /* I [sng] List of strings being connected */
  const int sng_nbr) /* I [int] Number of strings */
 {
-    if(sng_nbr==1) 
-        return strdup(sng_lst[0]);
-
-    size_t word_length=0;
-    size_t copy_counter=0;
-    for(int index=0;index<sng_nbr;index++){
-        word_length+=strlen(sng_lst[index])+1;
-    }
-    char *final_string = (char*)nco_malloc(word_length+1);
-    for(int sng_index=0;sng_index<sng_nbr;sng_index++){
-        size_t temp_length=strlen(sng_lst[sng_index]);
-        strcpy(final_string+copy_counter, sng_lst[sng_index]);
-
-        if(sng_index<sng_nbr-1) 
-            strcpy(final_string + copy_counter + temp_length, nco_mta_dlm);
-        copy_counter+=(temp_length+1);
-    }
-    strcat(final_string, "\0");
-    return final_string;
+  if(sng_nbr == 1)
+    return strdup(sng_lst[0]);
+  
+  size_t word_length=0;
+  size_t copy_counter=0;
+  for(int index=0;index<sng_nbr;index++){
+    word_length+=strlen(sng_lst[index])+1L;
+  }
+  char *final_string=(char *)nco_malloc(word_length+1L);
+  for(int sng_idx=0;sng_idx<sng_nbr;sng_idx++){
+    size_t temp_length=strlen(sng_lst[sng_idx]);
+    strcpy(final_string+copy_counter,sng_lst[sng_idx]);
+    
+    if(sng_idx<sng_nbr-1) 
+      strcpy(final_string+copy_counter+temp_length,nco_mta_dlm);
+    copy_counter+=(temp_length+1);
+  }
+  strcat(final_string,"\0");
+  return final_string;
 }
 
-const char * nco_mlt_arg_dlm_set(const char *dlm_sng_usr)
+const char *nco_mlt_arg_dlm_set(const char *dlm_sng_usr)
 {
-  nco_mta_dlm=(char*)nco_malloc(strlen(dlm_sng_usr) + 1);
-  strcpy((char*)nco_mta_dlm, dlm_sng_usr);
+  nco_mta_dlm=(char *)nco_malloc(strlen(dlm_sng_usr)+1);
+  strcpy((char *)nco_mta_dlm,dlm_sng_usr);
   return nco_mta_dlm;
 }
