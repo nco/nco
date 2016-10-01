@@ -1223,9 +1223,9 @@ AC_CHECK_PROG(HAVE_MAKEINFO,makeinfo,yes,no,${PATH})
 DOC_FOLDER=""
 if test "x${enable_doc}" = 'xyes' && test "x${HAVE_MAKEINFO}" = 'xyes' ; then
     # Ensure makeinfo is recent enough, i.e., version 4.12 or later
-    MAKEINFO_VERSION="`makeinfo --version` | grep makeinfo | cut -d ' ' -f 4"
+    MAKEINFO_VERSION="`makeinfo --version | grep texinfo | cut -d ' ' -f 4`"
     echo "MAKEINFO_VERSION=${MAKEINFO_VERSION}"
-    AC_DEFINE(MAKEINFO_VERSION,${MAKEINFO_VERSION},Building TeXInfo documentation requires version greater than 4.8)
+    AC_DEFINE_UNQUOTED(MAKEINFO_VERSION,${MAKEINFO_VERSION},Building TeXInfo documentation requires version greater than 4.8)
     #    test_result=m4_version_compare([${MAKEINFO_VERSION}],[4.8])
     test_result='1'
     if test "${test_result}" = '1'; then

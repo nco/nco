@@ -1,15 +1,15 @@
 /* $Header$ */
 
-/* Purpose: String utilities */
+/* Purpose: Multi-argument utilities */
 
 /* Copyright (C) 2016--2016 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file
-
+   
    Original Author: Jerome Mao, UCI */
 
-#include "nco_sng_utl.h" /* String utilities */
+#include "nco_mta.h" /* Multi-argument parsing */
 
 const char* nco_mta_dlm="#"; /* [sng] Multi-argument delimiter */
 const char* nco_mta_sub_dlm=","; /* [sng] Multi-argument sub-delimiter */
@@ -18,24 +18,25 @@ kvm_sct /* O [kvm_sct] key-value pair*/
 nco_sng2kvm /* [fnc] Convert string to key-value pair */
 (const char *args) /* I [sng] Input string argument with equal sign connecting key & value */
 {
-/* Implementation: parsing args so they can be sent to kvm (fake kvm here) as key-value pair
- *
- * Example 1: ... --gaa a=1 ... should be exported as kvm.key = a; kvm.value = 1
- * Example 2: ... --gaa "a;b;c"=1 should be exported as kvm[0].key="a", kvm[1].key="b", kvm[2].key="c"
- *          and kvm[@] = 1 (the ";" will be parsed by caller). 
- *
- * IMPORTANT: free() fake_kvm after using string_to_kvm. */
+  /* Implementation: parsing args so they can be sent to kvm (fake kvm here) as key-value pair
+   *
+   * Example 1: ... --gaa a=1 ... should be exported as kvm.key = a; kvm.value = 1
+   * Example 2: ... --gaa "a;b;c"=1 should be exported as kvm[0].key="a", kvm[1].key="b", kvm[2].key="c"
+   *          and kvm[@] = 1 (the ";" will be parsed by caller). 
+   *
+   * IMPORTANT: free() fake_kvm after using string_to_kvm. */
   char* args_copy=strdup(args);
   char* ptr_for_free = args_copy;
   kvm_sct kvm;
-
+  
   kvm.key = strdup(strsep(&args_copy, "="));
   kvm.val = strdup(args_copy);
+  
+  nco_free(ptr_for_free);
 
-  free(ptr_for_free);
-  /*If malloc() cannot allocate sufficient memory, either key or value would be NULL; print error message and not quit.*/
+  /* If nco_malloc() cannot allocate sufficient memory, either key or value would be NULL; print error message and not quit */
   if(!kvm.key || !kvm.val){
-    (void)fprintf(stderr, "%s: ERROR system does not have sufficient memory.\n", nco_prg_nm_get());
+    (void)fprintf(stderr, "%s: ERROR system has insufficient memory\n", nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   }
   return kvm;
@@ -103,12 +104,12 @@ const char* delimiter) /* I [char] the delimiter*/
     size_t index=0;    
 
     if(!strstr(temp, delimiter)){ //special case for one single argument
-      sng_fnl=(char**)malloc(sizeof(char*));
+      sng_fnl=(char**)nco_malloc(sizeof(char*));
       sng_fnl[0]=temp;
       return sng_fnl;
     }
 
-    sng_fnl=(char**)malloc(sizeof(char*) * counter);
+    sng_fnl=(char**)nco_malloc(sizeof(char*) * counter);
     if(sng_fnl){
         for(char *token=strtok(temp, delimiter); token; token=strtok(NULL, delimiter)){
             // const char* find = strchr(sng_fnl[index - 1], '\\');
@@ -119,9 +120,9 @@ const char* delimiter) /* I [char] the delimiter*/
             // else
             sng_fnl[index ++] = strdup(token);
         } //end for
-        free(temp);
+        nco_free(temp);
     }else{
-        free(temp);
+        nco_free(temp);
         return NULL;
     } //end if
     return sng_fnl;
@@ -170,8 +171,8 @@ nco_sng_lst_free_void /* [fnc] free() string list */
  const int sng_nbr) /* I [int] Number of strings in list */
 {
     /* Use to free the double character pointer, and set the pointer to NULL */
-    for(int index=0;index<sng_nbr;index++){free(sng_lst[index]);}
-    free(sng_lst);
+    for(int index=0;index<sng_nbr;index++){nco_free(sng_lst[index]);}
+    nco_free(sng_lst);
     sng_lst = NULL;
 }
 
@@ -191,7 +192,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
             nco_exit(EXIT_FAILURE);
     }//end loop
 
-    kvm_sct* kvm_set=(kvm_sct*)malloc(sizeof(kvm_sct)*(counter+5)); //kvm array intended to be returned
+    kvm_sct* kvm_set=(kvm_sct*)nco_malloc(sizeof(kvm_sct)*(counter+5)); //kvm array intended to be returned
     size_t kvm_index=0;
 
     for(int sng_index=0;sng_index<nco_count_blocks(args,nco_mta_dlm);sng_index++){
@@ -206,10 +207,10 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
             }
             kvm_sct kvm_object = nco_sng2kvm(temp_value);
             kvm_set[kvm_index++] = kvm_object;
-            free(temp_value);
+            nco_free(temp_value);
         }//end inner loop
         nco_sng_lst_free_void(individual_args, nco_count_blocks(separate_args[sng_index],nco_mta_sub_dlm));
-        free(value);
+        nco_free(value);
     }//end outer loop
     nco_sng_lst_free_void(separate_args, nco_count_blocks(args, nco_mta_dlm));
     kvm_set[kvm_index].key=NULL; //Add an ending flag for kvm array.
@@ -229,7 +230,7 @@ nco_join_sng /* [fnc] Join strings with delimiter */
     for(int index=0;index<sng_nbr;index++){
         word_length+=strlen(sng_lst[index])+1;
     }
-    char *final_string = (char*)malloc(word_length+1);
+    char *final_string = (char*)nco_malloc(word_length+1);
     for(int sng_index=0;sng_index<sng_nbr;sng_index++){
         size_t temp_length=strlen(sng_lst[sng_index]);
         strcpy(final_string+copy_counter, sng_lst[sng_index]);
@@ -244,7 +245,7 @@ nco_join_sng /* [fnc] Join strings with delimiter */
 
 const char * nco_mlt_arg_dlm_set(const char *dlm_sng_usr)
 {
-  nco_mta_dlm=(char*)malloc(strlen(dlm_sng_usr) + 1);
+  nco_mta_dlm=(char*)nco_malloc(strlen(dlm_sng_usr) + 1);
   strcpy((char*)nco_mta_dlm, dlm_sng_usr);
   return nco_mta_dlm;
 }

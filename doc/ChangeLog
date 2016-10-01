@@ -1,5 +1,7 @@
 2016-09-30  Charlie Zender  <zender@uci.edu>
 
+	* Update configure.ac MAKEINFO_VERSION to grep for texinfo so MacOS 'texi2any' works
+
 	* #include netcdf_mem.h for nc_open_mem() prototype
 
 	* Fix compiler warnings emitted by GCC 6.2.1
