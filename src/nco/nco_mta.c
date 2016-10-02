@@ -237,10 +237,3 @@ nco_join_sng /* [fnc] Join strings with delimiter */
   }
   return strcat(final_string,"\0");
 }
-
-const char *nco_mlt_arg_dlm_set(const char *dlm_sng_usr)
-{
-  char *nco_mta_dlm=(char *)nco_malloc(strlen(dlm_sng_usr)+1);
-  strcpy((char *)nco_mta_dlm,dlm_sng_usr);
-  return nco_mta_dlm;
-}
