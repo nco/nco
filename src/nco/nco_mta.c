@@ -195,16 +195,13 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
   
   for(int sng_idx=0;sng_idx<nco_count_blocks(args,nco_mta_dlm);sng_idx++){
     char *value=strdup(strstr(separate_args[sng_idx],"="));
-    char **individual_args=nco_sng_split(separate_args[sng_idx],nco_mta_sub_dlm);
+    char *set_of_keys=strdup(strtok(separate_args[sng_idx],"=")); 
+    char **individual_args=nco_sng_split(set_of_keys,nco_mta_sub_dlm);
     
-    for(int sub_idx=0; sub_idx<nco_count_blocks(separate_args[sng_idx],nco_mta_sub_dlm);sub_idx++){
+    for(int sub_idx=0; sub_idx<nco_count_blocks(set_of_keys,nco_mta_sub_dlm);sub_idx++){
       char *temp_value=strdup(individual_args[sub_idx]);
-      if(!strstr(temp_value,"=")){
-	      temp_value=(char *)realloc(temp_value,strlen(temp_value)+strlen(value)+1);
-	      strcat(temp_value,value);//end if
-      }
-      kvm_sct kvm_object=nco_sng2kvm(temp_value);
-      kvm_set[kvm_idx++]=kvm_object;
+	    temp_value=(char *)realloc(temp_value,strlen(temp_value)+strlen(value)+1);
+      kvm_set[kvm_idx++]=nco_sng2kvm(strcat(temp_value,value));
       nco_free(temp_value);
     }//end inner loop
     nco_sng_lst_free_void(individual_args,nco_count_blocks(separate_args[sng_idx],nco_mta_sub_dlm));
