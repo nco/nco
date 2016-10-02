@@ -214,16 +214,16 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   /* Join arguments together */
   if(rgr_arg_nbr > 0){
-    sng_fnl=nco_join_sng((const char**)rgr_arg,rgr_arg_nbr);
+    sng_fnl=nco_join_sng((const char **)rgr_arg,rgr_arg_nbr);
     rgr_lst=nco_arg_mlt_prs(sng_fnl);
     if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
-  } /* !rgr_arg_nbr */
-    
-  /* jm fxm use more descriptive name than i---what does i count? */
-  for(int index=0;(rgr_lst+index)->key;index++){
+
+    /* jm fxm use more descriptive name than i---what does i count? */
+    for(int index=0;(rgr_lst+index)->key;index++){
       rgr_var_nbr=index;
-  } /* end loop over i */
-  rgr_var_nbr++;
+    } /* end loop over i */
+    rgr_var_nbr++;
+  } /* !rgr_arg_nbr */
 
   // rgr_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
 
