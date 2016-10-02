@@ -204,8 +204,9 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
       kvm_set[kvm_idx++]=nco_sng2kvm(strcat(temp_value,value));
       nco_free(temp_value);
     }//end inner loop
-    nco_sng_lst_free_void(individual_args,nco_count_blocks(separate_args[sng_idx],nco_mta_sub_dlm));
-    nco_free(value);
+    nco_sng_lst_free_void(individual_args,nco_count_blocks(set_of_keys,nco_mta_sub_dlm));
+    nco_free(set_of_keys);
+    nco_free(value);//clean up
   }//end outer loop
   nco_sng_lst_free_void(separate_args,nco_count_blocks(args,nco_mta_dlm));
   kvm_set[kvm_idx].key=NULL; //Add an ending flag for kvm array.
@@ -235,4 +236,11 @@ nco_join_sng /* [fnc] Join strings with delimiter */
     copy_counter+=(temp_length+1);
   }
   return strcat(final_string,"\0");
+}
+
+const char *nco_mlt_arg_dlm_set(const char *dlm_sng_usr)
+{
+  char *nco_mta_dlm=(char *)nco_malloc(strlen(dlm_sng_usr)+1);
+  strcpy((char *)nco_mta_dlm,dlm_sng_usr);
+  return nco_mta_dlm;
 }
