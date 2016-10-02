@@ -127,21 +127,21 @@ nco_sng_split /* [fnc] Split string by delimiter */
   return sng_fnl;
 }
 
-int /* O [int] the boolean for the checking result */
-nco_input_check /* [fnc] check whether the input is legal and give feedback accordingly. */
-(const char *args) /* O [sng] input arguments */
+int /* O [flg] Input has valid syntax */
+nco_input_check /* [fnc] Check whether input has valid syntax */
+(const char *args) /* O [sng] Input arguments */
 {
-  /* Use to check the syntax for the arguments.
-   * If the return value is false (which means the input value is illegal) the parser will terminate the program. */
+  /* Check argument syntax
+   * If return value is false the parser will terminate the program */
   if(!strstr(args,"=")){ //If no equal sign in arguments
     (void)fprintf(stderr,"%s: ERROR No equal sign detected \033[0m\n",nco_prg_nm_get());
     return 0;
   } //endif
-  if(strstr(args,"=")==args){ //If equal sign is in the very beginning of the arguments (no key)
+  if(strstr(args,"=")==args){ // Equal sign is at argument start (no key)
     (void)fprintf(stderr,"%s: ERROR No key in key-value pair.\033[0m\n",nco_prg_nm_get()); 
     return 0;
   } //endif
-  if(strstr(args,"=")==args+strlen(args)-1){ //If equal sign is in the very end of the arguments
+  if(strstr(args,"=")==args+strlen(args)-1){ // Equal sign is at argument end
     (void)fprintf(stderr,"%s: ERROR No value in key-value pair.\033[0m\n",nco_prg_nm_get()); 
     return 0;
   } //endif
