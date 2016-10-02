@@ -205,23 +205,22 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   } /* endif */
   
   /* Parse extended kvm options */
+  char *sng_fnl=NULL;
   int cnv_nbr; /* [nbr] Number of elements converted by sscanf() */
   int rgr_var_idx; /* [idx] Index over rgr_lst (i.e., all names explicitly specified in all "--rgr var1[,var2]=val" options) */
   int rgr_var_nbr=0;
   kvm_sct *rgr_lst=NULL; /* [sct] List of all regrid specifications */
 
-  char *sng_fnl=NULL;
-
-  /* Join arguments together */
   if(rgr_arg_nbr > 0){
+    /* Join arguments together */
     sng_fnl=nco_join_sng((const char **)rgr_arg,rgr_arg_nbr);
     rgr_lst=nco_arg_mlt_prs(sng_fnl);
     if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
 
-    /* jm fxm use more descriptive name than i---what does i count? */
-    for(int index=0;(rgr_lst+index)->key;index++){
-      rgr_var_nbr=index;
-    } /* end loop over i */
+    /* Count number of keys */
+    for(rgr_var_idx=0;(rgr_lst+rgr_var_idx)->key;rgr_var_idx++){
+      rgr_var_nbr=rgr_var_idx;
+    } /* !rgr_var_idx */
     rgr_var_nbr++;
   } /* !rgr_arg_nbr */
 
