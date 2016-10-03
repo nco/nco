@@ -1,3 +1,11 @@
+2016-10-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.2-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.2-alpha02 final changes';git push
+	git tag -a 4.6.2-alpha02 -m 'Version 4.6.2-alpha02 new features: multi-arguments (nco_mta.[ch]), ARFLAGS, LLVM 8.0.0, GCC 6.2.1';git push --tags
+
+	* nco_rgr_ini() now only calls nco_arg_mlt_prs() when rgr_arg_nbr > 0
+
 2016-10-01  Charlie Zender  <zender@uci.edu>
 
 	* Alter nco_mta_get() to initialize delimiter if NULL
