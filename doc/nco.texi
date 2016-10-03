@@ -122,8 +122,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 23 September 2016
-@set update-month September 2016
+@set update-date 2 October 2016
+@set update-month October 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -6224,12 +6224,15 @@ Latitudes and longigudes must be specified in degrees (not radians).
 Latitude edges must be between @w{-90 and 90}.
 Longitude edges may be positive or negative and separated by no more
 than 360 degrees.
-The edges may be specified individually with four arguments, or together
-in one list to the options @samp{wesn} or @samp{snwe}.
-These two specifications are equivalent:
+The edges may be specified individually with four arguments, 
+consecutively separated by the multi-argument delimiter (@samp{#} by
+default), or together in a short list to the pre-ordered options
+@samp{wesn} or @samp{snwe}. 
+These three specifications are equivalent:
 @example
 @verbatim
 ncks ... --rgr lat_sth=30.0 --rgr lat_nrt=70.0 --rgr lon_wst=-120.0 --rgr lon_est=-90.0 ...
+ncks ... --rgr lat_sth=30.0#lat_nrt=70.0#lon_wst=-120.0#lon_est=-90.0 ...
 ncks ... --rgr snwe=30.0,70.0,-120.0,-90.0 ...
 @end verbatim
 @end example
