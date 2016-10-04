@@ -224,32 +224,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     rgr_var_nbr++;
   } /* !rgr_arg_nbr */
 
-  // rgr_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
-
-  // /* Parse RGRs */
-  // for(rgr_arg_idx=0;rgr_arg_idx<rgr_arg_nbr;rgr_arg_idx++){
-  //   if(!strstr(rgr_arg[rgr_arg_idx],"=")){
-  //     (void)fprintf(stdout,"%s: Invalid --rgr specification: %s. Must contain \"=\" sign, e.g., \"key=value\".\n",nco_prg_nm_get(),rgr_arg[rgr_arg_idx]);
-  //     if(rgr_lst) rgr_lst=(kvm_sct *)nco_free(rgr_lst);
-  //     nco_exit(EXIT_FAILURE);
-  //   } /* endif */
-  //   kvm=nco_sng2kvm(rgr_arg[rgr_arg_idx]);
-  //   /* nco_sng2kvm() converts argument "--rgr one,two=3" into kvm.key="one,two" and kvm.val=3
-  //      Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
-  //   if(kvm.key){
-  //     int var_idx; /* [idx] Index over variables in current RGR argument */
-  //     int var_nbr; /* [nbr] Number of variables in current RGR argument */
-  //     char **var_lst;
-  //     var_lst=nco_lst_prs_2D(kvm.key,",",&var_nbr);
-  //     for(var_idx=0;var_idx<var_nbr;var_idx++){ /* Expand multi-variable specification */
-  //       rgr_lst[rgr_var_nbr].key=strdup(var_lst[var_idx]);
-  //       rgr_lst[rgr_var_nbr].val=strdup(kvm.val);
-  //       rgr_var_nbr++;
-  //     } /* end for */
-  //     var_lst=nco_sng_lst_free(var_lst,var_nbr);
-  //   } /* end if */
-  // } /* end for */
-
   /* NULL-initialize key-value properties required for string variables */
   rgr->area_nm=NULL; /* [sng] Name of variable containing gridcell area */
   rgr->bnd_nm=NULL; /* [sng] Name of dimension to employ for spatial bounds */
@@ -3607,11 +3581,12 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       /* Begin search for next B at current C */
       bnd_idx=idx_c-idx_a;
       /* 20160918 from here to end of loop is non-spherical work
+	 Canonical latitude-triangle geometry has point A at apex and points B and C at same latitude
 	 Generate area field for latitude-triangles by fxm
 	 ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/ne30np4_pentagons.091226.nc -m ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc
 	 ncap2 -O -s area_b=0.0 ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc ~/rgr/map_fv257x512_to_ne30np4_bilin.no_area_b.nc
 	 ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
-	 ncks -O -D 5 -v FSNT --map ${}/rgr/map_fv257x512_to_ne30np4_bilin.no_area_b.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/ne30_FSNT.nc > ~/foo.txt 2>&1 */
+	 ncks -O -D 5 -v FSNT --map ${DATA}/rgr/map_fv257x512_to_ne30np4_bilin.no_area_b.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/ne30_FSNT.nc > ~/foo.txt 2>&1 */
       if(lat_bnd_rdn[idx_a] == lat_bnd_rdn[idx_b] ||
 	 lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c] ||
 	 lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
