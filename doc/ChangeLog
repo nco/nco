@@ -1,3 +1,7 @@
+2016-10-07  Charlie Zender  <zender@uci.edu>
+
+	* Jerome changed multi-args to use strstr() instead of strtok() or strsep()
+
 2016-10-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.2-alpha02 release procedure:
