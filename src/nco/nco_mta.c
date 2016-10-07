@@ -109,16 +109,37 @@ nco_sng_split /* [fnc] Split string by delimiter */
   }
   
   sng_fnl=(char **)nco_malloc(sizeof(char *) * counter);
+  /* The code block below will count the positions the delimiter appears */
+  int idx_lst[counter + 2];
   if(sng_fnl){
-    for(char *token=strtok(temp,delimiter); token; token=strtok(NULL,delimiter)){
-      // const char *find = strchr(sng_fnl[index - 1], '\\');
-      // if(index > 0 && find && find - sng_fnl[index - 1] + 1 == strlen(sng_fnl[index - 1])){
-      //     sng_fnl[index - 1] = nco_strip_backslash(sng_fnl[index-1]);
-      //     strcat(sng_fnl[index - 1], token);
-      // }
-      // else
-      sng_fnl[index ++]=strdup(token);
-    } //end for
+    char *temp_pt = temp;
+    while(temp_pt){
+      idx_lst[index++]=temp_pt - temp;
+      temp_pt=strstr(temp_pt+1, delimiter);
+    }
+    idx_lst[index]=strlen(temp);
+
+    /*Copy the first token. since it is not preceded by a delimiter*/
+    sng_fnl[0] = (char*)malloc(idx_lst[1]+1);
+    memcpy(sng_fnl[0], temp, idx_lst[1]);
+    sng_fnl[0][idx_lst[1]]='\0';
+
+    /*Copy the rest of the tokens based on the positions of the delimiter*/
+    for(int i=1; i<counter; i++){
+      int sng_size = idx_lst[i + 1] - idx_lst[i] - strlen(delimiter);
+      sng_fnl[i] = (char*)malloc(sng_size + 1);
+      memcpy(sng_fnl[i], temp + idx_lst[i] + strlen(delimiter), sng_size);
+      sng_fnl[i][sng_size] = '\0';  
+    }
+    // for(char *token=strtok(temp,delimiter); token; token=strtok(NULL,delimiter)){
+    //   // const char *find = strchr(sng_fnl[index - 1], '\\');
+    //   // if(index > 0 && find && find - sng_fnl[index - 1] + 1 == strlen(sng_fnl[index - 1])){
+    //   //     sng_fnl[index - 1] = nco_strip_backslash(sng_fnl[index-1]);
+    //   //     strcat(sng_fnl[index - 1], token);
+    //   // }
+    //   // else
+    //   sng_fnl[index ++]=strdup(token);
+    // } //end for
     nco_free(temp);
   }else{
     nco_free(temp);
