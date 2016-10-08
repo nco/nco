@@ -49,7 +49,7 @@ extern "C" {
   (kvm_sct kvm); /* [fnc] kvm to print */
 
   char *
-  nco_strip_backslash
+  nco_remove_backslash
   (char* args);
 
   char ** /* O [sng] Group of split strings */
