@@ -83,12 +83,11 @@ nco_kvm_prn(kvm_sct kvm)
 char *nco_remove_backslash(char *args)
 {/* Purpose: recursively remove the backslash from the string*/
   char* backslash_pos=strstr(args, "\\"); 
-  int absolute_pos=backslash_pos-args;/*get memory address offset*/
-
-  memmove(&args[absolute_pos], &args[absolute_pos+1], strlen(args)-absolute_pos);
-
-  if(strstr(args, "\\"))
+  if(backslash_pos){
+    int absolute_pos=backslash_pos-args;/*get memory address offset*/
+    memmove(&args[absolute_pos], &args[absolute_pos+1], strlen(args)-absolute_pos);
     return nco_remove_backslash(args);
+  }
   else
     return args;
 }
@@ -220,9 +219,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
       char *temp_value=strdup(individual_args[sub_idx]);
 	    temp_value=(char *)realloc(temp_value,strlen(temp_value)+strlen(value)+1);
       temp_value=strcat(temp_value,value);
-      if(strstr(temp_value, "\\"))
-        temp_value=nco_remove_backslash(temp_value);
-      kvm_set[kvm_idx++]=nco_sng2kvm(temp_value);
+      kvm_set[kvm_idx++]=nco_sng2kvm(nco_remove_backslash(temp_value));
       nco_free(temp_value);
     }//end inner loop
     nco_sng_lst_free_void(individual_args,nco_count_blocks(set_of_keys,nco_mta_sub_dlm));
