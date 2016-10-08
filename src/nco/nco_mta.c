@@ -256,5 +256,5 @@ nco_join_sng /* [fnc] Join strings with delimiter */
     if(sng_idx<sng_nbr-1) strcpy(final_string+copy_counter+temp_length,nco_mta_dlm);
     copy_counter+=(temp_length+1);
   }
-  return strcat(final_string,"\0");
+  return final_string;
 }
