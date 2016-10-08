@@ -82,8 +82,8 @@ nco_kvm_prn(kvm_sct kvm)
 
 char *nco_remove_backslash(char *args)
 {/* Purpose: recursively remove the backslash from the string*/
-  char* backslash_pos=strstr(args, "\\");
-  int absolute_pos=backslash_pos-args;
+  char* backslash_pos=strstr(args, "\\"); 
+  int absolute_pos=backslash_pos-args;/*get memory address offset*/
 
   memmove(&args[absolute_pos], &args[absolute_pos+1], strlen(args)-absolute_pos);
 
@@ -119,23 +119,23 @@ nco_sng_split /* [fnc] Split string by delimiter */
   if(sng_fnl){
     char *temp_pt = temp;
     while(temp_pt){
-      if(temp_pt == temp || (temp_pt-1)[0]!='\\')
+      if(temp_pt==temp||(temp_pt-1)[0]!='\\')
         idx_lst[index++]=temp_pt - temp;
       temp_pt=strstr(temp_pt+1, delimiter);
     }
     idx_lst[index]=strlen(temp);
 
     /*Copy the first token. since it is not preceded by a delimiter*/
-    sng_fnl[0] = (char*)malloc(idx_lst[1]+1);
+    sng_fnl[0]=(char*)malloc(idx_lst[1]+1);
     memcpy(sng_fnl[0], temp, idx_lst[1]);
     sng_fnl[0][idx_lst[1]]='\0';
 
     /*Copy the rest of the tokens based on the positions of the delimiter*/
     for(int index=1; index<counter; index++){
-      int sng_size = idx_lst[index + 1] - idx_lst[index] - strlen(delimiter);
-      sng_fnl[index] = (char*)malloc(sng_size + 1);
+      int sng_size=idx_lst[index + 1] - idx_lst[index] - strlen(delimiter);
+      sng_fnl[index]=(char*)malloc(sng_size + 1);
       memcpy(sng_fnl[index], temp + idx_lst[index] + strlen(delimiter), sng_size);
-      sng_fnl[index][sng_size] = '\0';  
+      sng_fnl[index][sng_size]='\0';  
     }
     nco_free(temp);
   }else{
@@ -239,6 +239,9 @@ nco_join_sng /* [fnc] Join strings with delimiter */
 (const char **sng_lst, /* I [sng] List of strings being connected */
  const int sng_nbr) /* I [int] Number of strings */
 {
+  /* Purpose: join the strings with delimiters. It will be used when the number of
+   * arguments is larger than 1; usually it is in the old NCO argument style*/
+
   char *nco_mta_dlm=nco_mta_dlm_get(); /* [sng] Multi-argument delimiter */
 
   if(sng_nbr == 1) return strdup(sng_lst[0]);
