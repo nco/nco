@@ -2918,6 +2918,17 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+# ncks #119
+# ncks -O --dlm=':' --gaa 'foo=bar:foo2=bar2:foo3,foo4=Thu Sep 15 13\\:03\\:18 PDT 2016:foo5=bar6’ ~/nco/data/in.nc ~/foo.nc
+# ncks -M ~/foo.nc | grep foo6 | cut -d ' ' -f 11
+    $dsc_sng="Multi-argument parsing test when some of the delimiters are handled by backslashes";
+    $tst_cmd[0]="ncks -O --dlm=':' $nco_D_flg --gaa foo=bar:foo2=bar2:foo3,foo4='Thu Sep 15 13\\:03\\:18 PDT 2016:foo5=bar6' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo4 | cut -d ' ' -f 11-16";
+    $tst_cmd[2]="Thu Sep 15 13:03:18 PDT 2016";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
 	
 #####################
 #### ncpdq tests #### -OK !

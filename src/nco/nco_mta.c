@@ -80,12 +80,16 @@ nco_kvm_prn(kvm_sct kvm)
   if(kvm.key) (void)fprintf(stdout,"%s = %s\n",kvm.key,kvm.val); else return;
 } /* end nco_kvm_prn() */
 
-char *nco_strip_backslash(char *args)
-{
-  char *backslash_psn=strchr(args,'\\');
-  strcpy(backslash_psn,nco_mta_dlm_get());
-  
-  return args;
+char *nco_remove_backslash(char *args)
+{/* Purpose: recursively remove the backslash from the string*/
+  char* backslash_pos=strstr(args, "\\"); 
+  if(backslash_pos){
+    int absolute_pos=backslash_pos-args;/*get memory address offset*/
+    memmove(&args[absolute_pos], &args[absolute_pos+1], strlen(args)-absolute_pos);
+    return nco_remove_backslash(args);
+  }
+  else
+    return args;
 }
 
 char ** /* O [sng] Group of split strings */
@@ -114,32 +118,24 @@ nco_sng_split /* [fnc] Split string by delimiter */
   if(sng_fnl){
     char *temp_pt = temp;
     while(temp_pt){
-      idx_lst[index++]=temp_pt - temp;
+      if(temp_pt==temp||(temp_pt-1)[0]!='\\')
+        idx_lst[index++]=temp_pt - temp;
       temp_pt=strstr(temp_pt+1, delimiter);
     }
     idx_lst[index]=strlen(temp);
 
     /*Copy the first token. since it is not preceded by a delimiter*/
-    sng_fnl[0] = (char*)malloc(idx_lst[1]+1);
+    sng_fnl[0]=(char*)malloc(idx_lst[1]+1);
     memcpy(sng_fnl[0], temp, idx_lst[1]);
     sng_fnl[0][idx_lst[1]]='\0';
 
     /*Copy the rest of the tokens based on the positions of the delimiter*/
-    for(int i=1; i<counter; i++){
-      int sng_size = idx_lst[i + 1] - idx_lst[i] - strlen(delimiter);
-      sng_fnl[i] = (char*)malloc(sng_size + 1);
-      memcpy(sng_fnl[i], temp + idx_lst[i] + strlen(delimiter), sng_size);
-      sng_fnl[i][sng_size] = '\0';  
+    for(int index=1; index<counter; index++){
+      int sng_size=idx_lst[index + 1] - idx_lst[index] - strlen(delimiter);
+      sng_fnl[index]=(char*)malloc(sng_size + 1);
+      memcpy(sng_fnl[index], temp + idx_lst[index] + strlen(delimiter), sng_size);
+      sng_fnl[index][sng_size]='\0';  
     }
-    // for(char *token=strtok(temp,delimiter); token; token=strtok(NULL,delimiter)){
-    //   // const char *find = strchr(sng_fnl[index - 1], '\\');
-    //   // if(index > 0 && find && find - sng_fnl[index - 1] + 1 == strlen(sng_fnl[index - 1])){
-    //   //     sng_fnl[index - 1] = nco_strip_backslash(sng_fnl[index-1]);
-    //   //     strcat(sng_fnl[index - 1], token);
-    //   // }
-    //   // else
-    //   sng_fnl[index ++]=strdup(token);
-    // } //end for
     nco_free(temp);
   }else{
     nco_free(temp);
@@ -222,7 +218,8 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
     for(int sub_idx=0; sub_idx<nco_count_blocks(set_of_keys,nco_mta_sub_dlm);sub_idx++){
       char *temp_value=strdup(individual_args[sub_idx]);
 	    temp_value=(char *)realloc(temp_value,strlen(temp_value)+strlen(value)+1);
-      kvm_set[kvm_idx++]=nco_sng2kvm(strcat(temp_value,value));
+      temp_value=strcat(temp_value,value);
+      kvm_set[kvm_idx++]=nco_sng2kvm(nco_remove_backslash(temp_value));
       nco_free(temp_value);
     }//end inner loop
     nco_sng_lst_free_void(individual_args,nco_count_blocks(set_of_keys,nco_mta_sub_dlm));
@@ -239,6 +236,9 @@ nco_join_sng /* [fnc] Join strings with delimiter */
 (const char **sng_lst, /* I [sng] List of strings being connected */
  const int sng_nbr) /* I [int] Number of strings */
 {
+  /* Purpose: join the strings with delimiters. It will be used when the number of
+   * arguments is larger than 1; usually it is in the old NCO argument style*/
+
   char *nco_mta_dlm=nco_mta_dlm_get(); /* [sng] Multi-argument delimiter */
 
   if(sng_nbr == 1) return strdup(sng_lst[0]);
@@ -256,5 +256,5 @@ nco_join_sng /* [fnc] Join strings with delimiter */
     if(sng_idx<sng_nbr-1) strcpy(final_string+copy_counter+temp_length,nco_mta_dlm);
     copy_counter+=(temp_length+1);
   }
-  return strcat(final_string,"\0");
+  return final_string;
 }
