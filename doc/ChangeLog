@@ -1,3 +1,7 @@
+2016-10-11  Charlie Zender  <zender@uci.edu>
+
+	* Suppress all but first WARNING from nco_is_spc_in_cf_att()
+
 2016-10-10  Charlie Zender  <zender@uci.edu>
 
 	* Jerome added support for double-backslash quoting in multi-arguments
@@ -130,7 +134,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.1-beta01 final changes';git push
 	git tag -a 4.6.1-beta01 -m 'Version 4.6.1-beta01 new features: ncremap crv, constance, nco_fl_mv(), cnk';git push --tags
 
-	* ncremap: give-up on confirming overwriting existing maps until it works in interactive shells only
+	* ncremap: gave-up confirming overwriting existing maps until it works in interactive shells only
 
 	* Use different output dimensions bounds names for mappings to curvilinear axes
 	Default is now to use temporal bounds name for spatial bounds for rectangular grids,

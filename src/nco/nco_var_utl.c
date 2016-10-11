@@ -1418,6 +1418,7 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
   int var_id; /* [id] Variable ID */
   long att_sz;
   nc_type att_typ;
+  static short FIRST_WARNING=True;
 
   /* May need variable name for later comparison to those listed in this attribute */
   rcd+=nco_inq_varname(nc_id,var_trg_id,var_trg_nm);
@@ -1437,7 +1438,8 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
           rcd=nco_inq_varname(nc_id,var_id,var_nm);
-          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+          if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute. NB: To avoid excessive noise, NCO prints this WARNING at most once per dataset.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+	  FIRST_WARNING=False;
           return IS_SPC_IN_CF_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));

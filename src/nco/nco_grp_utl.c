@@ -1078,6 +1078,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
   char att_nm[NC_MAX_NAME+1L]; /* [sng] Attribute name */
 
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
+  const char fnc_nm[]="nco_xtr_cf_var_add()"; /* [sng] Function name */
 
   int grp_id; /* [id] Group ID */
   int nbr_att; /* [nbr] Number of attributes */
@@ -1104,7 +1105,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates CF convention for specifying additional attributes. Therefore will skip this attribute. If you want CF to support NC_STRING attributes, please tell them and CC: NCO.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute. If you want CF to support NC_STRING attributes, please tell them and CC: NCO.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
         return;
       } /* end if */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -7181,6 +7182,7 @@ nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variabl
      http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
 
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
+  const char fnc_nm[]="nco_var_has_cf()"; /* [sng] Function name */
 
   char **cf_lst; /* [sng] 1D array of list elements */
   char att_nm[NC_MAX_NAME+1L]; /* [sng] Attribute name */
@@ -7223,8 +7225,7 @@ nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variabl
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates CF convention for specifying additional attributes. Therefore will skip this attribute.\n",
-          nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
         return NULL;
       } /* end if */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
