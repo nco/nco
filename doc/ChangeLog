@@ -1,3 +1,7 @@
+2016-10-10  Charlie Zender  <zender@uci.edu>
+
+	* Jerome added support for double-backslash quoting in multi-arguments
+
 2016-10-07  Charlie Zender  <zender@uci.edu>
 
 	* Jerome changed multi-args to use strstr() instead of strtok() or strsep()

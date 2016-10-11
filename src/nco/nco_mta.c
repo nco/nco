@@ -81,15 +81,13 @@ nco_kvm_prn(kvm_sct kvm)
 } /* end nco_kvm_prn() */
 
 char *nco_remove_backslash(char *args)
-{/* Purpose: recursively remove the backslash from the string*/
-  char* backslash_pos=strstr(args, "\\"); 
+{ /* Purpose: recursively remove backslash from string */
+  char *backslash_pos=strstr(args,"\\"); 
   if(backslash_pos){
-    int absolute_pos=backslash_pos-args;/*get memory address offset*/
-    memmove(&args[absolute_pos], &args[absolute_pos+1], strlen(args)-absolute_pos);
+    int absolute_pos=backslash_pos-args;/* Get memory address offset */
+    memmove(&args[absolute_pos],&args[absolute_pos+1L],strlen(args)-absolute_pos);
     return nco_remove_backslash(args);
-  }
-  else
-    return args;
+  }else return args;
 }
 
 char ** /* O [sng] Group of split strings */
@@ -97,44 +95,43 @@ nco_sng_split /* [fnc] Split string by delimiter */
 (const char *source, /* I [sng] Source string */
  const char *delimiter) /* I [char] Delimiter */
 {
-  /* Use to split the string into a double character pointer, which each sencondary pointer represents
-   * the string after splitting.
-   * Example: a, b=1 will be split into *<a> = "a" *<b> = "b=1" with a delimiter of SUBDELIMITER 
-   * Remember to free after calling this function. */
+  /* Split string into double character pointer, each sencondary pointer represents a string after splitting.
+     Example: a, b=1 will be split into *<a> = "a" *<b> = "b=1" with a delimiter of SUBDELIMITER 
+     Remember to free() after calling this function */
   char **sng_fnl=NULL;
   char *temp=strdup(source);
   size_t counter=nco_count_blocks(source,delimiter);
-  size_t index=0;    
+  size_t dlm_idx=0L;    
   
-  if(!strstr(temp,delimiter)){ //special case for one single argument
+  /* Special case for single argument */
+  if(!strstr(temp,delimiter)){
     sng_fnl=(char **)nco_malloc(sizeof(char *));
     sng_fnl[0]=temp;
     return sng_fnl;
   }
   
-  sng_fnl=(char **)nco_malloc(sizeof(char *) * counter);
-  /* The code block below will count the positions the delimiter appears */
-  int idx_lst[counter + 2];
+  /* Count positions where delimiter appears */
+  sng_fnl=(char **)nco_malloc(sizeof(char *)*counter);
+  int idx_lst[counter+2];
   if(sng_fnl){
-    char *temp_pt = temp;
+    char *temp_pt=temp;
     while(temp_pt){
-      if(temp_pt==temp||(temp_pt-1)[0]!='\\')
-        idx_lst[index++]=temp_pt - temp;
-      temp_pt=strstr(temp_pt+1, delimiter);
+      if(temp_pt == temp || (temp_pt-1)[0] != '\\') idx_lst[dlm_idx++]=temp_pt-temp;
+      temp_pt=strstr(temp_pt+1L,delimiter);
     }
-    idx_lst[index]=strlen(temp);
+    idx_lst[dlm_idx]=strlen(temp);
 
-    /*Copy the first token. since it is not preceded by a delimiter*/
+    /* Copy first token since it is not preceded by delimiter */
     sng_fnl[0]=(char*)malloc(idx_lst[1]+1);
     memcpy(sng_fnl[0], temp, idx_lst[1]);
     sng_fnl[0][idx_lst[1]]='\0';
 
-    /*Copy the rest of the tokens based on the positions of the delimiter*/
-    for(int index=1; index<counter; index++){
-      int sng_size=idx_lst[index + 1] - idx_lst[index] - strlen(delimiter);
-      sng_fnl[index]=(char*)malloc(sng_size + 1);
-      memcpy(sng_fnl[index], temp + idx_lst[index] + strlen(delimiter), sng_size);
-      sng_fnl[index][sng_size]='\0';  
+    /* Copy rest of tokens based on positions of delimiter */
+    for(dlm_idx=1;dlm_idx<counter;dlm_idx++){
+      int sng_size=idx_lst[dlm_idx+1]-idx_lst[dlm_idx]-strlen(delimiter);
+      sng_fnl[dlm_idx]=(char *)malloc(sng_size+1);
+      memcpy(sng_fnl[dlm_idx],temp+idx_lst[dlm_idx]+strlen(delimiter),sng_size);
+      sng_fnl[dlm_idx][sng_size]='\0';  
     }
     nco_free(temp);
   }else{
@@ -142,7 +139,7 @@ nco_sng_split /* [fnc] Split string by delimiter */
     return NULL;
   } //end if
   return sng_fnl;
-}
+} /* end nco_sng_split() */
 
 int /* O [flg] Input has valid syntax */
 nco_input_check /* [fnc] Check whether input has valid syntax */
