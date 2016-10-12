@@ -147,16 +147,18 @@ nco_input_check /* [fnc] Check whether input has valid syntax */
 {
   /* Check argument syntax
    * If return value is false the parser will terminate the program */
+  const char fnc_nm[]="nco_input_check()"; /* [sng] Function name */
+
   if(!strstr(args,"=")){ //If no equal sign in arguments
-    (void)fprintf(stderr,"%s: ERROR No equal sign detected \033[0m\n",nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR %s reports no equal sign detected. HINT: This can occur when the designated or default key-value delimiter \"%s\" is mixed into the literal text of the value. Try changing the delimiter to a string guaranteed not to appear in the value string with, e.g., --dlm=\"##\".\n",nco_prg_nm_get(),fnc_nm,nco_mta_dlm_get());
     return 0;
   } //endif
   if(strstr(args,"=")==args){ // Equal sign is at argument start (no key)
-    (void)fprintf(stderr,"%s: ERROR No key in key-value pair.\033[0m\n",nco_prg_nm_get()); 
+    (void)fprintf(stderr,"%s: ERROR %s reports no key in key-value pair.\033[0m\n",nco_prg_nm_get(),fnc_nm); 
     return 0;
   } //endif
   if(strstr(args,"=")==args+strlen(args)-1){ // Equal sign is at argument end
-    (void)fprintf(stderr,"%s: ERROR No value in key-value pair.\033[0m\n",nco_prg_nm_get()); 
+    (void)fprintf(stderr,"%s: ERROR %s reports no value in key-value pair.\033[0m\n",nco_prg_nm_get(),fnc_nm); 
     return 0;
   } //endif
   return 1;

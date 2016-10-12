@@ -1,3 +1,7 @@
+2016-10-12  Charlie Zender  <zender@uci.edu>
+
+	* Add HINT to multi-arg error handling
+
 2016-10-11  Charlie Zender  <zender@uci.edu>
 
 	* Suppress all but first WARNING from nco_is_spc_in_cf_att()
