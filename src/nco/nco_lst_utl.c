@@ -803,11 +803,10 @@ nco_sng_lst_free /* [fnc] Free memory associated with string list */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated string list */
-  int idx;
+  int sng_idx;
 
-  for(idx=0;idx<sng_nbr;idx++){
-    sng_lst[idx]=(char *)nco_free(sng_lst[idx]);
-  } /* end loop over idx */
+  for(sng_idx=0;sng_idx<sng_nbr;sng_idx++)
+    sng_lst[sng_idx]=(char *)nco_free(sng_lst[sng_idx]);
 
   /* Free structure pointer last */
   sng_lst=(char **)nco_free(sng_lst);

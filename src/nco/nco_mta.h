@@ -25,6 +25,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
@@ -60,11 +61,6 @@ extern "C" {
   int /* O [int] the boolean for the checking result */
   nco_input_check /* [fnc] check whether the input is legal and give feedback accordingly. */
   (const char *args); /* O [sng] input arguments */
-
-  void 
-  nco_sng_lst_free_void
-  (char **sng_lst,
-  const int block_num);
 
   kvm_sct * /* O [kvm_sct] Pointer to first kvm structure */
   nco_arg_mlt_prs /* [fnc] Main parser, split string and assign to kvm structure */
