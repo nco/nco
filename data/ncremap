@@ -98,7 +98,7 @@ case "${HOSTNAME}" in
 	# Why do cori/edison and rhea require workarounds for different packages?
 	module load gsl
 	module load udunits
-	# On cori, module load ncl installs ERWG in ${NCARG_ROOT}/../intel/bin
+	# On cori and edison, module load ncl installs ERWG in ${NCARG_ROOT}/../intel/bin
 	if [ -n "${NCARG_ROOT}" ]; then
             export PATH="${NCARG_ROOT}/bin:${PATH}"
 	fi # !NCARG_ROOT
@@ -107,6 +107,10 @@ case "${HOSTNAME}" in
     edison* )
 	module load gsl
 	module load udunits
+	# On cori and edison, module load ncl installs ERWG in ${NCARG_ROOT}/../intel/bin
+	if [ -n "${NCARG_ROOT}" ]; then
+            export PATH="${NCARG_ROOT}/bin:${PATH}"
+	fi # !NCARG_ROOT
 	export PATH='/global/homes/z/zender/bin_edison'\:${PATH}
         export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH} ; ;;
     pileus* )
