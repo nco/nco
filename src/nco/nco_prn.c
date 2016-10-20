@@ -27,7 +27,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   char *nm_cdl;
   char *sng_val_sng=NULL_CEWI; /* [sng] String of NC_CHAR */
-  char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
+  char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and destination in sprintf(). NB: free() only one of these two pointers. */
   char *spr_sng=NULL; /* [sng] Output separator string */
 
   char cma_sng[]=", "; /* [sng] Comma string */
@@ -2173,12 +2173,11 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 {
   /* Purpose: Recursively print group contents
      Assumptions: 
-     1. Input group name is a valid group to be extracted (set in nco_xtr_dfn()). 
-        Hence no need to check for group type, or if group is extracted.
+     1. Input is a valid group name on extraction list (set in nco_xtr_dfn())
+        Hence no need to check for group type, or if group is extracted
      2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
-     ncks -5 ~/nco/data/in_grp.nc
      ncks --cdl ~/nco/data/in_grp.nc */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
