@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 2 October 2016
+@set update-date 22 October 2016
 @set update-month October 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17714,7 +17714,13 @@ It contains @w{60 months} of data.
 @end html
 One often prefers that the (new) record dimension have a more
 descriptive, context-based name than simply ``record''. 
-This is easily accomplished with the @samp{-u @var{ulm_nm}} switch:
+This is easily accomplished with the @samp{-u @var{ulm_nm}} switch.
+To add a new record dimension named ``time'' to all variables
+@example
+ncecat -u time in.nc out.nc
+@end example
+To glue together multiple files with a new record variable named
+``reaalization'' 
 @example
 ncecat -u realization 85_0[1-5].nc 85.nc
 @end example
@@ -22067,6 +22073,7 @@ The primary contributors to @acronym{NCO} development have been:
 All concept, design and implementation from 1995--2000.
 Since then autotools, bug-squashing, @acronym{CDL}, chunking,
 documentation, anchoring, recursion, @acronym{GPE}, packing,
+regridding, CDL/XML backends, compression,
 @acronym{NCO} library redesign, @command{ncap2} features,
 @command{ncbo}, @command{ncpdq}, @acronym{SMP} threading and @acronym{MPI} parallelization,
 netCDF4 integration, external funding, project management, science
@@ -22091,7 +22098,7 @@ Debianization.
 Numerous bug-fixes.
 @cindex Joe Hamman
 @item Joe Hamman
-Python bindings (NCOpy).
+Python bindings (PyNCO).
 @cindex Daniel Wang
 @item Daniel Wang
 Script Workflow Analysis for MultiProcessing (@acronym{SWAMP}).
@@ -22219,7 +22226,12 @@ Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10),
 
 Zender, C. S. and H. J. Mangalam (2007), Scaling Properties of Common
 Statistical Operators for Gridded Datasets, Int. J. High
-Perform. Comput. Appl., 21(4), 485--498, doi:10.1177/1094342007083802.
+Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
+
+Zender, C. S. (2016), Bit Grooming: Statistically accurate
+precision-preserving quantization with compression, evaluated in the
+netCDF Operators (NCO, v4.4.8+), Geosci. Model Dev., 9, 3199-3211,
+doi:10.5194/gmd-9-3199-2016.
 
 Zender, C. S. (Year), netCDF Operator (NCO) User Guide, 
 http://nco.sf.net/nco.pdf. 
@@ -22227,8 +22239,9 @@ http://nco.sf.net/nco.pdf.
 @end example
 Use the first when referring to overall design, purpose, and 
 optimization of @acronym{NCO}, the second for the speed and throughput
-of @acronym{NCO}, and the third for specific features and/or the User
-Guide itself, or in a non-academic setting.
+of @acronym{NCO}, the third for compressions, and the fourth for
+specific features and/or the User Guide itself, or in a non-academic
+setting. 
 A complete list of @acronym{NCO} publications and presentations is at
 @url{http://nco.sf.net#pub}.
 This list links to the full papers and seminars themselves.
