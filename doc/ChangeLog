@@ -1,3 +1,7 @@
+2016-10-25  Charlie Zender  <zender@uci.edu>
+
+	* Clarify missing value error message for multi-arguments
+
 2016-10-22  Charlie Zender  <zender@uci.edu>
 
 	* Clarify how to create new record dimensions in ncra/ncrcat messages

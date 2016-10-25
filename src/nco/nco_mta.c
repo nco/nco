@@ -155,11 +155,11 @@ nco_input_check /* [fnc] Check whether input has valid syntax */
     return NCO_ERR;
   }
   if(strstr(args,"=") == args){ // Equal sign is at argument start (no key)
-    (void)fprintf(stderr,"%s: ERROR %s reports no key in key-value pair.\033[0m\n",nco_prg_nm_get(),fnc_nm); 
+    (void)fprintf(stderr,"%s: ERROR %s reports no key in key-value pair.\n",nco_prg_nm_get(),fnc_nm); 
     return NCO_ERR;
   }
   if(strstr(args,"=") == args+strlen(args)-1L){ // Equal sign is at argument end
-    (void)fprintf(stderr,"%s: ERROR %s reports no value in key-value pair.\033[0m\n",nco_prg_nm_get(),fnc_nm); 
+    (void)fprintf(stderr,"%s: ERROR %s reports no value in key-value pair. HINT: This usually occurs when the value of a key is unintentionally omitted, e.g., --gaa foo= , --ppc foo= , --rgr foo= , or --trr foo= . Each equal sign must be followed by a value.\n",nco_prg_nm_get(),fnc_nm); 
     return NCO_ERR;
   }
   return NCO_NOERR;
