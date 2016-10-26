@@ -5895,6 +5895,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       double *crn_lon;
       crn_lat=(double *)nco_malloc(grd_crn_nbr*sizeof(double));
       crn_lon=(double *)nco_malloc(grd_crn_nbr*sizeof(double));
+      size_t wrn_nbr_max=20;
+      size_t wrn_nbr=0;
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	  /* 9-point template valid at all interior (non-edge) points in real grid, and at all points (including edges) in fake grid
@@ -5955,7 +5957,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  crn_lon[2]=lon_crn[idx_crn_ur];
 	  crn_lon[3]=lon_crn[idx_crn_ul];
 	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,idx_ccw,rcr_lvl);
-	  if(!flg_ccw) (void)fprintf(stdout,"%s: %s WARNING reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
+	  if(!flg_ccw && wrn_nbr < wrn_nbr_max){
+	    (void)fprintf(stdout,"%s: %s WARNING reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
+	    wrn_nbr++;
+	    if(wrn_nbr == wrn_nbr_max) (void)fprintf(stdout,"%s: %s INFO Number of non-CCW errors reached maximum = %li, not printing anymore\n",nco_prg_nm_get(),fnc_nm,wrn_nbr_max);
+	  } /* endif */
 	  lat_crn[idx_crn_ll]=crn_lat[0];
 	  lat_crn[idx_crn_lr]=crn_lat[1];
 	  lat_crn[idx_crn_ur]=crn_lat[2];

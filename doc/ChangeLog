@@ -1,5 +1,7 @@
 2016-10-25  Charlie Zender  <zender@uci.edu>
 
+	* Limit number of non-CCW errors
+
 	* Clarify missing value error message for multi-arguments
 
 2016-10-22  Charlie Zender  <zender@uci.edu>

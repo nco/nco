@@ -1418,7 +1418,7 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
   int var_id; /* [id] Variable ID */
   long att_sz;
   nc_type att_typ;
-  static short FIRST_WARNING=True;
+  static nco_bool FIRST_WARNING=True;
 
   /* May need variable name for later comparison to those listed in this attribute */
   rcd+=nco_inq_varname(nc_id,var_trg_id,var_trg_nm);
