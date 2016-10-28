@@ -194,7 +194,7 @@ esac # !HOSTNAME
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
-#          2 = As in dbg_lvl=1, but _do not evaluate commands_
+#          2 = As in dbg_lvl=1, but DO NOT EXECUTE COMMANDS (i.e., pretend to run but do not regrid anything)
 #          3 = As in dbg_lvl=1, and pass debug level through to NCO/ncks
 
 # Set NCO version and directory

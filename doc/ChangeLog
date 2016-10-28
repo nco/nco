@@ -1,3 +1,9 @@
+2016-10-28  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.2-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.2-beta01 final changes';git push
+	git tag -a 4.6.2-beta01 -m 'Version 4.6.2-beta01 new features: mta backslashes, concise warnings';git push --tags
+
 2016-10-25  Charlie Zender  <zender@uci.edu>
 
 	* Limit number of non-CCW errors

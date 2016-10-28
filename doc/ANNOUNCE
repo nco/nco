@@ -10,33 +10,51 @@ What's new?
 4.6.2 is mainly a stability release to polish existing features and to
 add minor new ones.
 
-Work on NCO 4.6.3 has commenced and will better support regridding
-variables whose horizontal dimensions are not most-rapidly-varying.  
+Work on NCO 4.6.3 has commenced. Planned improvements include
+more flexibility in handling extensive variables during regridding.  
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Multi-arguments
-   Thanks to Jerome Mao for implementing multi-arguments
+A. Multi-arguments refer to the format of command-line key-value pairs
+   that NCO uses to support four different features that can have too
+   many parameters to set via traditional command line arguments.
+   The four features are regridding (rgr), global-attribute-adding
+   (gaa), precision-preserving compression (ppc), and TERRAREF image
+   processing (trr). Formerly, users were required to supply one value
+   per command line option for these features, e.g.,
+   "--rgr lat_nbr=64 --rgr lon_nbr=128 --rgr lat_grd=cap ..."
+   The new multi-argument feature allows users to aggregate multiple
+   key-value pairs per command line argument, e.g., 
+   "--rgr lat_nbr=64#lon_nbr=128#lat_grd=cap# ..."
+   Now all key-value pairs related to a single feature (like
+   regridding, compression) can be provided as one arument!
 
-A. ncclimo will now ...
-   http://nco.sf.net/nco.html#ncclimo
+   The string that delimits each pair is user-configurable and
+   defaults to a single hash "#". Change it with, e.g., --dlm=":".
+   Be careful that your delimiters are not special shell characters or
+   contained in the value strings.
+   Thanks to Jerome Mao for implementing multi-arguments.
+   http://nco.sf.net/nco.html#mta
+
+A. All builds tested on LLVM 8.0.0 and GCC 6.2.1 toolchains.
 
 BUG FIXES:
 
 A. ncclimo and ncremap could fail if ${BASH_SOURCE[0]} is unavailable.
-   This can be the case, e.g., with the dash shell. This portability
-   issue has been resolved.
+   This can be the case, e.g., with the dash shell and/or due to 
+   software modules that modify users' environments.
+   This portability issue has been resolved.
 
 KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.6.2 built/tested under
-   MacOS with netCDF 4.3.3.1 on HDF5 1.8.16 and with
-   Linux with netCDF 4.4.1-development (20160212) on HDF5 1.8.13.
+   MacOS 10.12.1 with netCDF 4.4.1 on HDF5 1.8.16 and with
+   Linux with netCDF 4.4.1 (20161028) on HDF5 1.8.13.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
@@ -85,6 +103,7 @@ B. NOT YET FIXED (netCDF4 library bug)
    ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc # Completes but file is unreadable
    ncks -v one ~/foo.nc
 
+   20161028: Verified problem still exists with netCDF 4.4.1
    20150922: Confirmed problem reported by Isabelle Dast, reported to Unidata
    20150924: Unidata confirmed problem
    20160212: Verified problem still exists in netCDF library
