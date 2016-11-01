@@ -688,7 +688,8 @@ nco1131. nco: ncra --cb wrong unless single record per input file (see note tagg
        ncra -O --cb -d time,3,6 -v three_dmn_var_dbl ~/foo.nc ~/foo2.nc
        ncks --cdl -v climatology_bounds ~/foo2.nc
        climatology_bounds are [0.5,1.5] but should be [2.5,6.5]
-nco1132. 
+nco1132. nco: ncclimo fails when input files have different variable orders. Allow user to suppress cb, or make ncra.c re-read cb IDs each file (Guido 20161101)
+nco1133.
 qrk
 ************************************************************************
 End ncoXXX TODOs
