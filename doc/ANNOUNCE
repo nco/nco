@@ -9,8 +9,8 @@ What's new?
 
 4.6.2 is mainly a stability release to polish existing features and to
 add minor new ones. The exception is the new JSON backend. 
-NCO now prints CDL, XML, and JSON, and so has become a netCDF Babel.
-Note that NCO only produces these languages, it does not consume them.
+NCO now prints CDL, XML, and JSON. netCDF Babel, anyone?
+NCO only produces these syntaxes, it does not read them.
 
 We built the JSON backend to help a project (DOE Terraref). 
 Our first choice was to adopt an off-the-shelf netCDF->JSON tool.
