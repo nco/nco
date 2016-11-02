@@ -12294,7 +12294,7 @@ lon[1]=90
 lon[2]=180 
 lon[3]=270 
 
-print(byt_2D )
+print(byt_2D)
 lat[0]=-90 lon[0]=0 byt_2D[0]=0 
 lat[0]=-90 lon[1]=90 byt_2D[1]=1 
 lat[0]=-90 lon[2]=180 byt_2D[2]=2 
