@@ -1361,8 +1361,9 @@ Unsigned bytes stay unsigned bytes.
 Strings stay strings. 
 Hence, @command{ncks} conversions often result in smaller files than
 @command{ncl_convert2nc} conversions.
-A tool useful for converting netCDF3 to netCDF4 files is the Python
-script @command{nc3tonc4} by Jeff Whitaker.}. 
+Another tool useful for converting netCDF3 to netCDF4 files, and whose
+functionality is, we think, also matched or exceeded by @command{ncks},
+is the Python script @command{nc3tonc4} by Jeff Whitaker.}. 
 
 @cindex @code{hdf_name}
 @cindex illegal names
