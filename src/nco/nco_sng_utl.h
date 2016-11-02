@@ -94,6 +94,11 @@ extern "C" {
   char * /* O [sng] CDL-compatible name */
   nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   (const char * const nm_sng); /* I [sng] Name to CDL-ize */
+
+  char * /* O [sng] JSON -compatible name */
+  nm2sng_jsn /* [fnc] Turn variable/dimension/attribute name into legal JSON */
+  (const char * const nm_sng); /* I [sng] Name to CDL-ize */
+
   
   char * /* O [sng] CDL-compatible name */
   nm2sng_fl /* [fnc] Turn file name into legal string for shell commands */
@@ -106,6 +111,11 @@ extern "C" {
   
   char * /* O [sng] String containing printable result */
   chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII bytes */
+  (const char chr_val, /* I [chr] Character to process */
+   char * const val_sng); /* I/O [sng] String to stuff printable result into */
+
+  char * /* O [sng] String containing printable result */
+  chr2sng_jsn /* [fnc] Translate C language character to printable, visible ASCII bytes */
   (const char chr_val, /* I [chr] Character to process */
    char * const val_sng); /* I/O [sng] String to stuff printable result into */
   

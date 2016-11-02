@@ -9,6 +9,26 @@
 
 #include "nco_prn.h" /* Print variables, attributes, metadata */
 
+int 
+nco_att_nbr        /* [fnc] return number of atts in var or global atts in group */ 
+(const int grp_id, /* I [id] netCDF group ID */
+ const int var_id) /* I [id] netCDF input variable ID */
+{
+  int att_nbr;
+
+  if(var_id == NC_GLOBAL){
+    /* Get number of global attributes in group */
+    (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&att_nbr,(int *)NULL);
+  }else{
+    /* Get name and number of attributes for variable */
+    (void)nco_inq_var(grp_id,var_id,(char*)NULL,(int*)NULL,(int*)NULL,(int *)NULL,&att_nbr);
+  } /* end else */
+
+  return att_nbr; 
+
+
+ }
+
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
 (const int grp_id, /* I [id] netCDF group ID */
@@ -26,6 +46,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *nm_cdl;
+  char *nm_jsn;
   char *sng_val_sng=NULL_CEWI; /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and destination in sprintf(). NB: free() only one of these two pointers. */
   char *spr_sng=NULL; /* [sng] Output separator string */
@@ -96,6 +117,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     (void)nco_inq_var(grp_id,var_id,src_sng,&var_typ,&dmn_nbr,(int *)NULL,&att_nbr_vsb);
     if(CDL) prn_ndn+=2*prn_flg->var_fst;
     if(XML) prn_ndn+=prn_flg->sxn_fst;
+    if(JSN) prn_ndn+=prn_flg->sxn_fst;
     if(prn_flg->new_fmt && TRD) prn_ndn+=prn_flg->var_fst;
   } /* end else */
 
@@ -296,6 +318,19 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     } /* !NC_GLOBAL */
   } /* !hdn, NC_FORMAT_NETCDF4, NC_FORMAT_NETCDF4_CLASSIC */
 
+
+  /* jsn puts att in own object -mayan option or not ? 
+  if(JSN){
+    if(att_nbr_ttl>0){
+       (void)fprintf(stdout,"%*s\"attrs\": {\n",prn_ndn,spc_sng);
+       prn_ndn+=prn_flg->sxn_fst;  
+    }
+    else{
+      (void)fprintf(stdout,"%*s\"attrs\": {}",prn_ndn,spc_sng); 
+    } 
+  }
+  */
+        
   /* Get attributes' names, types, lengths, and values */
   for(idx=0;idx<att_nbr_ttl;idx++){
 
@@ -318,7 +353,15 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)fprintf(stdout,"%*s%s%s:%s = ",prn_ndn,spc_sng,(att[idx].type == NC_STRING) ? "string " : "",src_sng,nm_cdl); 
       nm_cdl=(char *)nco_free(nm_cdl);
     } /* !cdl */
-    if(JSN) (void)fprintf(stdout,"{\"name\": \"%s\", \"value\": ",att[idx].nm);
+    // if(JSN) (void)fprintf(stdout,"{\"name\": \"%s\", \"value\": ",att[idx].nm);
+    if(JSN){ 
+      nm_jsn=nm2sng_jsn(att[idx].nm);
+      (void)fprintf(stdout,"%*s\"%s\": ",prn_ndn,spc_sng,nm_jsn);
+        /* multi-element so print array open */ 
+        if(att_sz>1 && att[idx].type != NC_CHAR)
+             (void)fprintf(stdout,"["); 
+      nm_jsn=(char *)nco_free(nm_jsn);    
+    }        
     if(TRD) (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
 
     spr_sng=cma_sng; /* [sng] Output separator string */
@@ -377,8 +420,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
 
-    (void)sprintf(att_sng_pln,"%s",(CDL_OR_JSN) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : (XML) ? nco_typ_fmt_sng_att_xml(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
-    (void)sprintf(att_sng_dlm,"%s%%s",(CDL_OR_JSN) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : (XML) ? nco_typ_fmt_sng_att_xml(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
+    (void)sprintf(att_sng_pln,"%s", CDL ? nco_typ_fmt_sng_att_cdl(att[idx].type) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
+    (void)sprintf(att_sng_dlm,"%s%%s", CDL ? nco_typ_fmt_sng_att_cdl(att[idx].type) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
     switch(att[idx].type){
     case NC_FLOAT:
       for(lmn=0;lmn<att_sz;lmn++){
@@ -426,8 +469,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    if(CDL_OR_JSN) (void)fprintf(stdout,"\"");
 	    sng_val_sng[0]='\0';
 	  } /* endif new string */
-	  (void)strcat(sng_val_sng,(CDL_OR_JSN) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng));
-	  if(chr_val == '\n' && lmn != att_szm1 && CDL_OR_JSN) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
+	  (void)strcat(sng_val_sng,( CDL ? chr2sng_cdl(chr_val,val_sng) : XML ?  chr2sng_xml(chr_val,val_sng): chr2sng_jsn(chr_val,val_sng)  ));
+	  if(chr_val == '\n' && lmn != att_szm1 && CDL) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
 	  if(lmn%sng_lng == sng_lngm1){
 	    (void)fprintf(stdout,"%s%s",sng_val_sng,(CDL_OR_JSN) ? "\"" : "");
 	    /* Print separator after non-final string */
@@ -463,15 +506,16 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	sng_val=att[idx].val.sngp[lmn];
 	sng_lng=strlen(sng_val);
 	sng_lngm1=sng_lng-1UL;
-	if(CDL_OR_JSN_OR_XML){
+	if(CDL||XML||JSN){
 	  /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
 	  sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
-	  if(CDL) (void)fprintf(stdout,"\"");
+	  if(CDL||JSN) (void)fprintf(stdout,"\"");
 	  sng_val_sng[0]='\0';
 	  for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
 	    val_sng[0]='\0';
 	    chr_val=sng_val[chr_idx];
-	    (void)strcat(sng_val_sng,(CDL) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng));
+	    /* (void)strcat(sng_val_sng,(CDL) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng)); */
+	    (void)strcat(sng_val_sng,( CDL ? chr2sng_cdl(chr_val,val_sng) : XML ?  chr2sng_xml(chr_val,val_sng): chr2sng_jsn(chr_val,val_sng)  ));
 	  } /* end loop over character */
 	  (void)fprintf(stdout,"%s%s",sng_val_sng,(XML) ? "" : "\"");
 	  /* Print separator after non-final string */
@@ -486,12 +530,26 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       break;
     } /* end switch */
     if(CDL) (void)fprintf(stdout," ;\n");
-    if(JSN) (void)fprintf(stdout,"}%s",(idx < att_nbr_ttl-1) ? ", " : "");
     if(TRD) (void)fprintf(stdout,"\n");
     if(XML) (void)fprintf(stdout,"\" />\n");
+    if(JSN){ 
+      /* deal with multi-element att */ 
+      if( att_sz>1 && att[idx].type != NC_CHAR)
+	  (void)fprintf(stdout,"]");          
+      (void)fprintf(stdout,"%s",(idx < att_nbr_ttl-1) ? ",\n" : "");
+    }  
+
     rcd_prn+=0; /* CEWI */
     
   } /* end loop over attributes */
+
+  /* leave final att WITHOUT a RETURN or COMMA */
+  /*
+  if(JSN && att_nbr_ttl>0){
+     prn_ndn-=prn_flg->sxn_fst;  
+     (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);
+  }
+  */
 
   /* Print extra line after global attributes */
   if(CDL && flg_glb) (void)fprintf(stdout,"\n");
@@ -1203,6 +1261,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
 
   char *dmn_sng=NULL;
   char *nm_cdl;
+  char *nm_jsn;
 
   char sng_foo[NC_MAX_NAME+10]; /* Add 10 for extra formatting characters */
   char sz_sng[100];
@@ -1281,6 +1340,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%*s%s id = %d\n",prn_ndn,spc_sng,var_trv->nm,var_id);
   } /* !trd */
   if(prn_flg->xml) (void)fprintf(stdout,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,xml_typ_nm(var_typ));
+  if(prn_flg->jsn) (void)fprintf(stdout,"%*s\"%s\": {\n",prn_ndn,spc_sng,var_trv->nm);
 
   /* Print type, shape, and total size of variable */
   /* Use nbr_dmn+1 in malloc() to handle case when nbr_dim == 0 and allow for formatting characters */
@@ -1290,10 +1350,20 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
     /* 20131122: Implement ugly NcML requirement that scalars have shape="" attribute */
     if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"\"");
+
+    /* if scalar var then print NOTHING  
+    if(prn_flg->jsn) (void)sprintf(dmn_sng,"%*s\"dims\": [],", prn_ndn+prn_flg->sxn_fst,spc_sng); 
+    */
   }else{
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       if(prn_flg->xml){
 	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? " shape=\"" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < nbr_dim-1) ? " " : "\""); 
+      }else if(prn_flg->jsn){
+        /* indent content */ 
+        nm_jsn=nm2sng_jsn(var_trv->var_dmn[dmn_idx].dmn_nm);
+        if(dmn_idx==0) (void)sprintf(dmn_sng,"%*s\"dims\": [", prn_ndn+prn_flg->sxn_fst,spc_sng); 
+	(void)sprintf(sng_foo,"\"%s\"%s",nm_jsn,(dmn_idx < nbr_dim-1) ? "," : "],"); 
+	nm_jsn=(char *)nco_free(nm_jsn);
       }else{
 	nm_cdl=nm2sng_cdl(var_trv->var_dmn[dmn_idx].dmn_nm);
 	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? "(" : "",nm_cdl,(dmn_idx < nbr_dim-1) ? "," : ")");
@@ -1328,6 +1398,16 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   if(prn_flg->xml){
     if(prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA) (void)fprintf(stdout,"%s>\n",dmn_sng); else (void)fprintf(stdout,"%s />\n",dmn_sng);
   } /* !xml */
+
+  /* add a comma as next in queue is the atts - nb DONT LIKE THIS */
+  if(prn_flg->jsn){
+    if(nbr_dim > 0)
+       (void)fprintf(stdout,"%s\n",dmn_sng); 
+    /* print netCDF type - use same names as XML */ 
+    (void)fprintf(stdout,"%*s\"type\": \"%s\"",prn_ndn+prn_flg->sxn_fst,spc_sng,xml_typ_nm(var_typ));
+  } /* !xml */
+
+
   if(dmn_sng) dmn_sng=(char *)nco_free(dmn_sng);
 
   /* Print dimension sizes and names */
@@ -1460,7 +1540,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   var_sct var; /* [sct] Variable structure */
   var_sct var_crd; /* [sct] Variable structure for associated coordinate variable */
 
-  if(prn_flg->new_fmt && CDL_OR_TRD) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
+  if(prn_flg->new_fmt && (CDL||TRD||JSN)) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
   if(XML) prn_ndn=prn_flg->ndn;
 
   /* Obtain group ID where variable is located */
@@ -1579,13 +1659,35 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     nco_bool is_compound; /* [flg] Variable is compound (has non-leading record dimension) */
     nco_bool cpd_rec_dmn[NC_MAX_DIMS]; /* [flg] Dimension is compound */
     char * (*chr2sng_sf)(const char chr_val, /* I [chr] Character to process */
-			  char * const val_sng); /* I/O [sng] String to stuff printable result into */
-    if(CDL) chr2sng_sf=chr2sng_cdl; else chr2sng_sf=chr2sng_xml;
-    if(CDL_OR_JSN) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
-    if(XML) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));
-    if(JSN) (void)fprintf(stdout,"\"data\": [");
+    char * const val_sng); /* I/O [sng] String to stuff printable result into */
 
-    nm_cdl=nm2sng_cdl(var_nm);
+    /*
+    if(CDL) chr2sng_sf=chr2sng_cdl; else chr2sng_sf=chr2sng_xml;
+    if(CDL) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
+    if(XML||JSN) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));
+    if(JSN) (void)fprintf(stdout,"%*s\"data\": [",prn_ndn,spc_sng);
+    */
+    if(CDL){     
+      chr2sng_sf=chr2sng_cdl;
+      (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type)); 
+    }
+    if(XML){     
+      chr2sng_sf=chr2sng_xml;
+      (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));   
+    }
+    if(JSN){     
+      chr2sng_sf=chr2sng_jsn;
+      (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));   
+
+      /* if var is size=1 (scalar?)  then no array brackets */   
+      if(var.sz == 1)
+         (void)fprintf(stdout,"%*s\"data\": ",prn_ndn,spc_sng);
+      else
+         (void)fprintf(stdout,"%*s\"data\": [",prn_ndn,spc_sng);   
+    }
+
+
+     nm_cdl=nm2sng_cdl(var_nm);
     if(XML){
       /* User may override default separator string for XML only */
       if(var.type == NC_STRING || var.type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
@@ -1675,9 +1777,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         case NC_CHAR: 
           chr_val=var.val.cp[lmn];
           if(var.nbr_dim == 0){
-            if(CDL_OR_TRD) (void)fprintf(stdout,"\"");
+            if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
             if(chr_val != '\0') (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
-            if(CDL_OR_TRD) (void)fprintf(stdout,"\"");
+            if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
             val_sng[0]='\0';
           }else{ /* var.nbr_dim > 0 */
             /* Multi-dimensional string arrays of NC_CHAR */
@@ -1690,13 +1792,13 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             } /* endif first element of string array */
             /* New string begins each element where penultimate dimension changes */
             if(lmn%sng_lng == 0L){
-              if(CDL) (void)fprintf(stdout,"\"");
+              if(CDL||JSN) (void)fprintf(stdout,"\"");
               sng_val_sng[0]='\0';
             } /* endif new string */
             if(chr_val != '\0') (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
             if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
             if(lmn%sng_lng == sng_lngm1){
-              (void)fprintf(stdout,"%s%s",sng_val_sng,(CDL) ? "\"" : "");
+              (void)fprintf(stdout,"%s%s",sng_val_sng,(CDL||JSN) ? "\"" : "");
               /* Print separator after non-final string */
               if(lmn != var_szm1) (void)fprintf(stdout,"%s",spr_sng);
             } /* endif string end */
@@ -1715,7 +1817,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           sng_lngm1=sng_lng-1UL;
           /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
           sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
-          if(CDL) (void)fprintf(stdout,"\"");
+          if(CDL||JSN) (void)fprintf(stdout,"\"");
           sng_val_sng[0]='\0';
           for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
             val_sng[0]='\0';
@@ -1735,7 +1837,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     rcd_prn+=0; /* CEWI */
     if(CDL) (void)fprintf(stdout," ;\n");
     if(XML) (void)fprintf(stdout,"</values>\n");
-    if(JSN) (void)fprintf(stdout,"], ");
+    /* close out array bracket if sz>1 */ 
+    if(JSN && var.sz > 1 ) (void)fprintf(stdout,"]");
 
   } /* end if CDL_OR_JSN_OR_XML */
 
@@ -2178,6 +2281,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
      2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
+     ncks -5 ~/nco/data/in_grp.nc
      ncks --cdl ~/nco/data/in_grp.nc */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
@@ -2187,6 +2291,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   char var_nm[NC_MAX_NAME+1L];      /* [sng] Variable name */ 
 
   char *nm_cdl;
+  char *nm_jsn;
   char *var_nm_fll;                /* [sng] Full path for variable */
 
   int *grp_ids;                    /* [ID] Sub-group IDs array */  
@@ -2203,7 +2308,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   int var_id;                      /* [id] Variable ID */
   int var_idx;                     /* [idx] Variable index */
   int var_nbr_xtr;                 /* [nbr] Number of extracted variables */
-
+  
+  nco_bool JSN_BLOCK=False;         /* turns true is we have output a jsnblock -need so we add commas where needed */ 
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
   const nco_bool XML=prn_flg->xml; /* [flg] XML output */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
@@ -2213,6 +2319,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
   const nco_bool CDL_OR_JSN_OR_TRD=prn_flg->cdl || prn_flg->jsn || prn_flg->trd; /* [flg] CDL or JSON or Traditional output */
   const nco_bool CDL_OR_TRD_OR_XML=prn_flg->cdl || prn_flg->trd || prn_flg->xml; /* [flg] CDL or Traditional or XML output */
+  
 
   nm_id_sct *dmn_lst; /* [sct] Dimension list */
   nm_id_sct *var_lst; /* [sct] Variable list */
@@ -2283,12 +2390,24 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(stdout,"\n");
     if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
     if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// ncgen -k netCDF-4 -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->fl_stb,prn_flg->fl_stb);
-  } /* !XML */
+  } else if(JSN){
 
+    // nm_jsn=nm2sng_jsn(nco_gpe_evl_stb(trv_tbl->lst[obj_idx].nm_fll));
+    nm_jsn=nm2sng_jsn(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
+    /* for JSN print main opening brace */
+    if( grp_dpt==0)   
+       (void)fprintf(stdout,"{\n");
+    else
+      (void)fprintf(stdout,"%*s\"%s\": {\n",prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_jsn);
+
+    nm_jsn=nco_free(nm_jsn);  
+  }
+  
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
-  if(dmn_nbr > 0 && CDL_OR_TRD) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
-  if(CDL) prn_ndn+=prn_flg->var_fst;
+  if(dmn_nbr > 0 && CDL_OR_TRD) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng); 
+  if(dmn_nbr > 0 && JSN) (void)fprintf(stdout,"%*s\"dimensions\":{\n",prn_flg->ndn,spc_sng);
+  if(CDL||JSN) prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     if(XML){
       (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");
@@ -2297,6 +2416,17 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,nm_cdl,(CDL) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %lu%s\n",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(CDL) ? " ;" : "");
       nm_cdl=(char *)nco_free(nm_cdl);
     } /* !XML */
+    else if(JSN){ 
+      nm_cdl=nm2sng_cdl(dmn_lst[dmn_idx].nm);
+      (void)fprintf(stdout,"%*s\"%s\": %lu",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);   
+      /* deal with comma , return */
+      if( dmn_idx<dmn_nbr-1 )
+	(void)printf(",\n");
+      else
+	(void)printf("\n%*s}",prn_ndn,spc_sng);         
+       
+      JSN_BLOCK=True;    
+    }
   } /* end loop over dimension */
 
   /* Dimension list no longer needed */
@@ -2306,6 +2436,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   /* Create array to hold names and indices of extracted variables in this group */
   var_lst=(nm_id_sct *)nco_malloc(nbr_var*(sizeof(nm_id_sct)));
+
 
   for(var_idx=0;var_idx<nbr_var;var_idx++){
     /* Get variable name */
@@ -2348,41 +2479,155 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   /* Sort variables alphabetically */
   if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg->ALPHA_BY_STUB_GROUP);
+    
 
-  if(JSN) (void)fprintf(stdout,"{\n");
+  // if(JSN) (void)fprintf(stdout,"{\n");
 
   /* Print variable information for group */
   if(var_nbr_xtr > 0 && CDL_OR_TRD) (void)fprintf(stdout,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
+
   for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
     trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
+    /* Obtain variable ID */
+    (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
     /* Print variable full name */
     if(var_trv.grp_dpt > 0 && prn_flg->fll_pth && TRD) (void)fprintf(stdout,"%*s%s\n",prn_flg->ndn,spc_sng,var_trv.nm_fll);
 
-    /* Print variable metadata */ 
-    if(prn_flg->PRN_VAR_METADATA || CDL_OR_XML) (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
+    /* Print variable metadata nb only TRD can NOT print META-DATA */ 
+    //if(prn_flg->PRN_VAR_METADATA || CDL || XML|| JSN ) (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
 
-    /* Obtain variable ID */
-    (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
-    /* Print variable attributes */
-    if(JSN && prn_flg->PRN_VAR_METADATA) (void)fprintf(stdout,"\"attributes\": [");
-    if(CDL_OR_TRD_OR_XML || (JSN && prn_flg->PRN_VAR_METADATA)) (void)nco_prn_att(grp_id,prn_flg,var_id);
-    if(JSN && prn_flg->PRN_VAR_METADATA) (void)fprintf(stdout,"], \n");
+    /* Print variable attributes -  only TRD can NOT print METADATA  */
+    //if(JSN ) (void)fprintf(stdout,"%*s\"attrs\": {\n",prn_ndn,spc_sng);
+    /* only TRD can NOT print META-DATA */
+    
+    /* nco_prn_att() prints the final brace but no return - as we may need to add a comma */ 
+    // if( prn_flg->PRN_VAR_METADATA || CDL || XML || JSN )  (void)nco_prn_att(grp_id,prn_flg,var_id);
+     
 
-    if(XML && prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
-    if(XML && (prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA)) (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
+   
 
-    if(var_idx != var_nbr_xtr-1 && CDL_OR_TRD) (void)fprintf(stdout,"\n");
-  } /* end loop over var_idx */
+    /* CD and TRD have data  in a seperate body */
+    /* XML and JSN have data in the same tag as meta data */  
+   
+    /* THE FOLLOWING IFS ARE MUTUALLY EXCLUSIVE */
+    if(CDL||TRD)
+    {
+      if(CDL || (TRD && prn_flg->PRN_VAR_METADATA)) 
+          (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
 
-  /* Print attribute information for group */
+      /* nco_prn_att() prints the final brace but no return - as we may need to add a comma */ 
+      if( prn_flg->PRN_VAR_METADATA )
+          (void)nco_prn_att(grp_id,prn_flg,var_id);
+           
+      if((CDL||TRD) && var_idx != var_nbr_xtr-1) (void)fprintf(stdout,"\n"); 
+    }
+
+
+    /* All options can toggle printing of data-  only JSN and XML place data "inside" var markup */ 
+    if(XML)
+    {
+      (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv); 
+      
+      if( prn_flg->PRN_VAR_METADATA )  
+        (void)nco_prn_att(grp_id,prn_flg,var_id);
+   
+
+      if( prn_flg->PRN_VAR_DATA) 
+        (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
+      /* XML close variable tag */
+      (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
+    }  
+
+
+    if(JSN)  
+    { 
+      /* deal with first iteration */   
+      if(var_idx==0) 
+      { 
+        if(JSN_BLOCK) 
+           (void)fprintf(stdout,",\n"); 
+        else
+	  JSN_BLOCK=True;              
+      } 
+        
+      /* DOES NOT include a return as we may wanna add a COMMA */
+      (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
+      prn_flg->ndn+=prn_flg->sxn_fst;  
+
+      /* nco_prn_att() prints the final brace but no return - as we may need to add a comma */ 
+      if( prn_flg->PRN_VAR_METADATA  && nco_att_nbr(grp_id,var_id)>0)
+      {     
+        (void)fprintf(stdout,",\n");            
+        (void)nco_prn_att(grp_id,prn_flg,var_id);
+      } 
+        
+      if( prn_flg->PRN_VAR_DATA)
+      {  
+        (void)fprintf(stdout,",\n");  
+        (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);      
+      }
+      else 
+      {
+        (void)fprintf(stdout,"\n");        
+      }
+      /* close json object tag -but dont add return as we may need to add comma later*/
+      (void)fprintf(stdout,"%*s}%s",prn_flg->ndn,spc_sng, (var_idx<var_nbr_xtr-1 ?",\n":"")  );   
+      /* special indents for jsn */
+      prn_flg->ndn-=prn_flg->sxn_fst;  
+    }
+   
+
+
+    
+   } /* end loop over var_idx */
+
+  /* Print attribute information for group 
   if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA && CDL_OR_TRD) (void)fprintf(stdout,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(CDL) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
-  if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
+  if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA){ 
+     (void)fprintf(stdout,",\n");          
+     nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
+  }else{
+     (void)fprintf(stdout,"\n");           
+     } */
 
-  /* Print data for group */
-  if(CDL_OR_JSN_OR_TRD && var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
-    if(CDL_OR_TRD) (void)fprintf(stdout,"\n%*sdata:\n",prn_flg->ndn,spc_sng);
+  if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA)
+  {
+    if(CDL||TRD)
+    { 
+      (void)fprintf(stdout,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(CDL) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
+      (void)fprintf(stdout,",\n");          
+      nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
+    }
+    if(XML)
+    {
+      nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
+    }   
+    if(JSN && nco_att_nbr(grp_id,NC_GLOBAL)>0 )
+    {
+      if(JSN_BLOCK) 
+        (void)fprintf(stdout,",\n"); 
+      else
+	JSN_BLOCK=True;
+              
+      /* global att go in there own object block so the can be distinguished from var objects */   
+      (void)fprintf(stdout,"%*s\"attrs\": {\n",prn_ndn,spc_sng);
+
+      /* manual indent */
+      prn_flg->ndn+=2*prn_flg->sxn_fst;  
+      nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
+      prn_flg->ndn-=2*prn_flg->sxn_fst;  
+
+      (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);
+
+    }
+
+  }  
+
+  /* Print data for group only CDL and TRD have a separate data block*/
+  if( (CDL||TRD) && var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
+    (void)fprintf(stdout,"\n%*sdata:\n",prn_flg->ndn,spc_sng);
     for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
   } /* end if */
 
@@ -2393,50 +2638,127 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
   rcd+=nco_inq_grps(grp_id,(int *)NULL,grp_ids);
 
-  if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\"nodes\": [");
+  //if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\"nodes\": [");
 
-  /* Call recursively for all extracted subgroups */
-  for(grp_idx=0;grp_idx<nbr_grp;grp_idx++){
-    char *sub_grp_nm_fll=NULL; /* [sng] Sub group path */
-    int gid=grp_ids[grp_idx]; /* [id] Current group ID */  
 
-    /* Get sub-group name */
-    rcd+=nco_inq_grpname(gid,grp_nm);
 
-    if(JSN) (void)fprintf(stdout,"{\"name\": \"%s\"}%s",grp_nm,(grp_idx == nbr_grp-1) ? "" : ", ");
+  /* recursive block for evrything else */
+  if(!JSN)
+  {
+    /* Call recursively for all extracted subgroups */
+    for(grp_idx=0;grp_idx<nbr_grp;grp_idx++){
+      char *sub_grp_nm_fll=NULL; /* [sng] Sub group path */
+      int gid=grp_ids[grp_idx]; /* [id] Current group ID */  
 
-    /* Allocate path buffer including space for trailing NUL */ 
-    sub_grp_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(grp_nm)+2L);
+      /* Get sub-group name */
+      rcd+=nco_inq_grpname(gid,grp_nm);
 
-    /* Initialize path with current absolute group path */
-    strcpy(sub_grp_nm_fll,grp_nm_fll);
+      /* Allocate path buffer including space for trailing NUL */ 
+      sub_grp_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(grp_nm)+2L);
 
-    /* If not root group, concatenate separator */
-    if(strcmp(grp_nm_fll,sls_sng)) strcat(sub_grp_nm_fll,sls_sng);
+      /* Initialize path with current absolute group path */
+      strcpy(sub_grp_nm_fll,grp_nm_fll);
 
-    /* Concatenate current group to absolute group path */
-    strcat(sub_grp_nm_fll,grp_nm); 
+      /* If not root group, concatenate separator */
+      if(strcmp(grp_nm_fll,sls_sng)) strcat(sub_grp_nm_fll,sls_sng);
 
-    /* Find sub-group in traversal table */
-    for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
-      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
-	if(!strcmp(trv_tbl->lst[obj_idx].grp_nm_fll,sub_grp_nm_fll))
-	  break;
+      /* Concatenate current group to absolute group path */
+      strcat(sub_grp_nm_fll,grp_nm); 
+
+      /* Find sub-group in traversal table */
+      for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
+	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
+	  if(!strcmp(trv_tbl->lst[obj_idx].grp_nm_fll,sub_grp_nm_fll))
+	    break;
     
-    /* Is sub-group to be extracted? If so, recurse */
-    if(!JSN && trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
+      /* Is sub-group to be extracted? If so, recurse */
+      if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
 
-    /* Free constructed name */
-    sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
-  } /* end loop over grp_idx */
+      /* Free constructed name */
+      sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
+    } /* end loop over grp_idx */
 
-  if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"], \n"); /* End node-list */
-  if(JSN) (void)fprintf(stdout,"\"w10n\": [{\"name\": \"spec\", \"value\": \"draft-20091228\"}, {\"name\": \"application\", \"value\": \"%s\"}, {\"name\": \"type\", \"value\": \"%s\"}, {\"name\": \"path\", \"value\": \"%s\"}, {\"name\": \"identifier\", \"value\": \"/\"}]}, \n",nco_prg_nm_get(),jsn_fmt_xtn_nm(nco_fmt_xtn_get()),prn_flg->fl_in);
-  if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\"name\": \"%s\"\n",(grp_dpt == 0) ? "" : trv_tbl->lst[obj_idx_crr].nm);
+
+  }
+  /* recurse block for JSN  */
+  else
+  {
+
+    if( nbr_grp > 0) 
+    {  
+       if(JSN_BLOCK) (void)fprintf(stdout,",\n"); 
+       (void)fprintf(stdout,"%*s\"groups\": {\n",prn_ndn,spc_sng);       
+       JSN_BLOCK=True; 
+    }
+      
+
+    /* Call recursively for all extracted subgroups */
+    for(grp_idx=0;grp_idx<nbr_grp;grp_idx++){
+      char *sub_grp_nm_fll=NULL; /* [sng] Sub group path */
+      int gid=grp_ids[grp_idx]; /* [id] Current group ID */  
+
+      /* Get sub-group name */
+      rcd+=nco_inq_grpname(gid,grp_nm);
+
+      /* if(grp_idx>0) */
+      /* 	  (void)fprintf(stdout,"\n");  */
+      /* else */
+      /* 	(void)fprintf(stdout,"%*s\"%s\":{\n",prn_ndn,spc_sng,grp_nm); */
+      
+
+      /* Allocate path buffer including space for trailing NUL */ 
+      sub_grp_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(grp_nm)+2L);
+
+      /* Initialize path with current absolute group path */
+      strcpy(sub_grp_nm_fll,grp_nm_fll);
+
+      /* If not root group, concatenate separator */
+      if(strcmp(grp_nm_fll,sls_sng)) strcat(sub_grp_nm_fll,sls_sng);
+
+      /* Concatenate current group to absolute group path */
+      strcat(sub_grp_nm_fll,grp_nm); 
+
+      /* Find sub-group in traversal table */
+      for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
+	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
+	  if(!strcmp(trv_tbl->lst[obj_idx].grp_nm_fll,sub_grp_nm_fll))
+	    break;
+    
+      /* Is sub-group to be extracted? If so, recurse */
+      if(trv_tbl->lst[obj_idx].flg_xtr)
+      { 
+        rcd+=nco_grp_prn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
+
+        if(grp_idx < nbr_grp-1)   
+	  (void)fprintf(stdout,",\n"); 
+        else
+	  /* print closing tag for group */
+	  fprintf(stdout,"\n%*s}\n",prn_ndn,spc_sng);         
+    
+      } 
+
+      /* Free constructed name */
+      sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
+    } /* end loop over grp_idx */
+
+  }
+
+  /* if JSN then print closing tag to group 
+  if(JSN && nbr_grp>0 ){
+    (void)fprintf(stdout,"%*s}\n",prn_ndn,spc_sng);
+  }
+  */
+
+
+  //if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"], \n"); /* End node-list */
+  //if(JSN) (void)fprintf(stdout,"\"w10n\": [{\"name\": \"spec\", \"value\": \"draft-20091228\"}, {\"name\": \"application\", \"value\": \"%s\"}, {\"name\": \"type\", \"value\": \"%s\"}, {\"name\": \"path\", \"value\": \"%s\"}, {\"name\": \"identifier\", \"value\": \"/\"}]}, \n",nco_prg_nm_get(),jsn_fmt_xtn_nm(nco_fmt_xtn_get()),prn_flg->fl_in);
+  //if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\"name\": \"%s\"\n",(grp_dpt == 0) ? "" : trv_tbl->lst[obj_idx_crr].nm);
 
   /* Mark end of output */
   if(CDL_OR_TRD) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nm2sng_cdl(nco_gpe_evl(prn_flg->gpe,grp_nm_fll)));
-  if(JSN) (void)fprintf(stdout,"}\n");
+  if(JSN && grp_dpt ==0) (void)fprintf(stdout,"\n}"); 
+  if(JSN && grp_dpt >0) (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng); 
+  //if(JSN) (void)fprintf(stdout,"%*s}\n", grp_dpt*prn_flg->spc_per_lvl,spc_sng);
   if(XML && grp_dpt == 0) (void)fprintf(stdout,"</netcdf>\n"); 
   if(XML && grp_dpt != 0) (void)fprintf(stdout,"%*s</group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
 

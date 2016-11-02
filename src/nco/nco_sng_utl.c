@@ -292,6 +292,75 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   return nm_cdl;
 } /* end nm2sng_cdl() */
 
+
+char * /* O [sng] JSON-compatible name */
+nm2sng_jsn /* [fnc] Turn variable/dimension/attribute name into legal CDL */
+(const char * const nm_sng) /* I [sng] Name to CDL-ize */
+{
+  /* a valid json string can be any selected set of control chars, any non conrol chars from ascii and unicode 
+  /* Leave unicode for. now see Reference: http://www.json.org */   
+ 
+  char *chr_in_ptr; /* [sng] Pointer to current character in input name */
+  char *chr_out_ptr; /* [sng] Pointer to current character in output name */
+  char *nm_jsn; /* [sng] CDL-compatible name */
+  char *nm_cpy; /* [sng] Copy of input */
+
+  int nm_lng; /* [nbr] Length of original name */
+  
+  if(nm_sng == NULL) return NULL;
+
+  /* Otherwise name may contain special character(s)... */
+  nm_lng=strlen(nm_sng);
+  /* Maximum conceivable length of CDL-ized name */
+  chr_out_ptr=nm_jsn=(char *)nco_malloc(4*nm_lng+1L);
+  /* Copy to preserve const-ness */
+  chr_in_ptr=nm_cpy=(char *)strdup(nm_sng);
+  /* NUL-terminate in case input string is empty so will be output string */
+  chr_out_ptr[0]='\0';
+
+  /* Search and replace special characters */
+  while(*chr_in_ptr)
+  {
+    if(iscntrl(*chr_in_ptr))
+    { 
+      switch(*chr_in_ptr)
+      {    
+         case '\b':
+         case '\f':
+         case '\n':
+         case '\r':
+         case '\t': 
+         case '\\': 
+         case '\"': 
+	 /* according to json spec control char  '/' should be escaped bu this is mangles filepaths so leave it out for now */
+         /* case '\/': */
+         case '\0':	
+           *chr_out_ptr++='\\';
+	   *chr_out_ptr++=*chr_in_ptr;
+	   break;
+         default: 
+            /* ignore other control chars */
+      	  break;
+      }
+    }
+    else
+    {
+      *chr_out_ptr++=*chr_in_ptr;
+    }
+    /* Advance character */
+    chr_in_ptr++;
+  }      
+  /* NUL-terminate */
+  *chr_out_ptr='\0';
+
+  /* Free memory */
+  nm_cpy=(char *)nco_free(nm_cpy);
+
+  return nm_jsn;
+} /* end nm2sng_jsn() */
+
+
+
 char * /* O [sng] CDL-compatible name */
 nm2sng_fl /* [fnc] Turn file name into legal string for shell commands */
 (const char * const nm_sng) /* I [sng] Name to sanitize */
@@ -442,6 +511,43 @@ chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII 
 
   return val_sng;
 } /* end chr2sng_xml(0 */
+
+
+char * /* O [sng] String containing printable result */
+chr2sng_jsn /* [fnc] Translate C language character to printable, visible ASCII bytes */
+(const char chr_val, /* I [chr] Character to process */
+ char * const val_sng) /* I/O [sng] String to stuff printable result into */
+{
+  /* Purpose: Translate character to C-printable, visible ASCII bytes for JSN
+     Reference: http://www.json.org/ */
+  
+  
+  switch(chr_val){              /* man ascii:Oct   Dec   Hex   Char \X  */
+  case '\b': strcpy(val_sng,"\\b"); break; /* 010   8     08    BS  '\b' Backspace */
+  case '\f': strcpy(val_sng,"\\f"); break; /* 014   12    0C    FF  '\f' Formfeed */
+  case '\n': strcpy(val_sng,"\\n"); break; /* 012   10    0A    LF  '\n' Linefeed */
+  case '\r': strcpy(val_sng,"\\r"); break; /* 015   13    0D    CR  '\r' Carriage return */
+  case '\t': strcpy(val_sng,"\\t"); break; /* 011   9     09    HT  '\t' Horizontal tab */
+  case '\\': strcpy(val_sng,"\\\\"); break; /* 134  92    5C    \   '\\' */
+  case '\"': strcpy(val_sng,"\\\""); break;/* Unsure why or if this works! */
+  /* according to json spep  '/' should be escaped but this is mangles filepaths so leave it out for now */
+  /* case '\/': strcpy(val_sng,"\\/"); break; /* 057   47    2F    /   '\\' */
+  case '\0':	
+    break;
+  default: 
+    /* json is quite strict about control-chars - only the above are allowed */
+    if(iscntrl(chr_val)) *val_sng=0; else sprintf(val_sng,"%c",chr_val);
+    break;
+
+  } /* end switch */
+
+  return val_sng;
+} /* end chr2sng_cdl(0 */
+
+
+
+
+
 
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */
