@@ -8,7 +8,17 @@ http://github.com/nco (Source Code, Releases, Developers)
 What's new?
 
 4.6.2 is mainly a stability release to polish existing features and to
-add minor new ones.
+add minor new ones. The exception is the new JSON backend. 
+NCO now prints CDL, XML, and JSON, and so has become a netCDF Babel.
+Note that NCO only produces these languages, it does not consume them.
+
+We built the JSON backend to help a project (DOE Terraref). 
+Our first choice was to adopt an off-the-shelf netCDF->JSON tool.
+However, none of the existing solutions worked for us.
+JSON is a loose syntax, and we made necessary design choices that
+suited our application, and left other choices for later.
+Let us know if there are syntactical variants you want us to add,
+and we will consider those for 4.6.3. 
 
 Work on NCO 4.6.3 has commenced. Planned improvements include
 more flexibility in handling extensive variables during regridding.  
@@ -40,6 +50,28 @@ A. Multi-arguments refer to the format of command-line key-value pairs
    http://nco.sf.net/nco.html#mta
 
 A. All builds tested on LLVM 8.0.0 and GCC 6.2.1 toolchains.
+
+A. JSON backend
+   Similar the CDL and XML backends, ncks now supports JSON.
+   To obtain JSON, use --jsn or --json instead of --cdl/--xml.
+   Other related options (-v, -g, -m -M) have their usual meanings.  
+   The JSON backend supports three levels of pedanticness:
+       1. Attributes always printed as objects (with types)
+          This is the most pedantic mode, and should be used
+	  whenever preserving input types is important.
+       2. Attributes that are not NC_DOUBLE, NC_CHAR/NC_STRING,
+          or NC_INT are printed as objects (with types).
+	  Doubles, strings, and ints are printed as naked arrays.
+       3. Attributes are never printed as objects.
+          All NC_TYPES are printed as doubles, strings, or ints.
+	  The original NC_TYPE is lost.
+          This is the least pedantic mode, and produces the most
+	  easily read results, and is sufficient for many (most?)
+	  purpose.
+   JSON-specific switches access these modes and other features.
+   ncks --jsn -v one ~/nco/data/in.nc
+   Thanks to Henry Butowsky for implementing JSON support.
+   http://nco.sf.net/nco.html#json
 
 BUG FIXES:
 
@@ -103,16 +135,26 @@ B. NOT YET FIXED (netCDF4 library bug)
    ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc # Completes but file is unreadable
    ncks -v one ~/foo.nc
 
-   20161028: Verified problem still exists with netCDF 4.4.1
    20150922: Confirmed problem reported by Isabelle Dast, reported to Unidata
    20150924: Unidata confirmed problem
    20160212: Verified problem still exists in netCDF library
    20160512: Ditto
+   20161028: Verified problem still exists with netCDF 4.4.1
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd
 
-C. NOT YET FIXED (would require DAP protocol change?)
+C. NOT YET FIXED (netCDF4 library bug)
+   nc-config/nf-config produce erroneous switches that cause NCO builds to fail
+   This problem (apparently) affects Linux not MacOS with netCDF 4.4.1
+
+   Demonstration:
+   nc-config --cflags # Produces extraneous text
+
+   20161029: Reported problem to Unidata
+   20161101: Unidata confirmed reproducibility, attributed to netCDF 4.4.1 changes
+
+D. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
    Metadata are returned successfully, data are not.
@@ -127,7 +169,7 @@ C. NOT YET FIXED (would require DAP protocol change?)
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-D. NOT YET FIXED (would require DAP protocol change)
+E. NOT YET FIXED (would require DAP protocol change)
    Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol

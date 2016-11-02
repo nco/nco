@@ -122,8 +122,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-alpha02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 22 October 2016
-@set update-month October 2016
+@set update-date 1 November 2016
+@set update-month November 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -22073,7 +22073,7 @@ The primary contributors to @acronym{NCO} development have been:
 All concept, design and implementation from 1995--2000.
 Since then autotools, bug-squashing, @acronym{CDL}, chunking,
 documentation, anchoring, recursion, @acronym{GPE}, packing,
-regridding, CDL/XML backends, compression,
+regridding, @acronym{CDL}/@acronym{XML} backends, compression,
 @acronym{NCO} library redesign, @command{ncap2} features,
 @command{ncbo}, @command{ncpdq}, @acronym{SMP} threading and @acronym{MPI} parallelization,
 netCDF4 integration, external funding, project management, science
@@ -22087,6 +22087,7 @@ Migration to netCDF3 @acronym{API}.
 @command{ncap2} parser, lexer, @acronym{GSL}-support, @w{and I/O}.
 Multislabbing algorithm.
 Variable wildcarding.
+@acronym{JSON} backend.
 Numerous hacks.
 @command{ncap2} language.
 @cindex Rorik Peterson
@@ -22111,6 +22112,9 @@ OPeNDAP configuration.
 @item Pedro Vicente
 Windows Visual Studio support.
 netCDF4 groups.
+@cindex Jerome Mao
+@item Jerome Mao
+Multi-argument parsing.
 @cindex Russ Rew
 @item Russ Rew
 Advice on @acronym{NCO} structural algorithms

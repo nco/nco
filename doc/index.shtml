@@ -149,7 +149,7 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2016 Oct&nbsp;??: 4.6.2 (<i>In progress</i>)
+<li>2016 Nov&nbsp;??: 4.6.2 (<i>In progress</i>)
 <li>2016 Sep&nbsp;19: <i>Geosci. Model Dev.</i> publishes PPC <a href="http://www.geosci-model-dev.net/9/3199/2016">paper</a></li>
 <li>2016 Aug&nbsp;06: 4.6.1 (Stability)
 <li>2016 Jul&nbsp;06: Submitted Layer-packing <a href="http://www.geosci-model-dev-discuss.net/gmd-2016-177">manuscript</a> to <i>Geosci. Model Dev.</i></li>
@@ -630,6 +630,7 @@ netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.6.2</b>: (<i>In Progress, features in-progress or completed include</i>)
 Improved <tt>ncclimo, ncremap</tt> behavior in <tt>module</tt> environments;
+<tt>ncks --jsn --json</tt> for JSON output;
 Multi-argument support for <tt>--gaa</tt>, <tt>--rgr</tt>, <tt>--ppc</tt>, <tt>--trr</tt> options;</li>
 <li><b>NCO 4.6.1</b>: (<i>Current Stable Release</i>)
 <tt>ncclimo</tt> incremental mode;
