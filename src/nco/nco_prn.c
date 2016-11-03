@@ -2390,15 +2390,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// ncgen -k netCDF-4 -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->fl_stb,prn_flg->fl_stb);
   } else if(JSN){
 
-    // nm_jsn=nm2sng_jsn(nco_gpe_evl_stb(trv_tbl->lst[obj_idx].nm_fll));
     nm_jsn=nm2sng_jsn(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
-    /* for JSN print main opening brace */
-    if( grp_dpt==0)   
-       (void)fprintf(stdout,"{\n");
-    else
-      (void)fprintf(stdout,"%*s\"%s\": {\n",prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_jsn);
-
-    nm_jsn=nco_free(nm_jsn);  
+    /* JSN print main opening brace */
+    if(grp_dpt==0) (void)fprintf(stdout,"{\n"); else (void)fprintf(stdout,"%*s\"%s\": {\n",prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_jsn);
+    nm_jsn=(char *)nco_free(nm_jsn);  
   }
   
   /* Print dimension information for group */

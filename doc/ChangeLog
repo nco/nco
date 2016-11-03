@@ -1,5 +1,7 @@
 2016-11-03  Charlie Zender  <zender@uci.edu>
 
+	* Fix C++ (and thus Windows) build
+
 	* NCO 4.6.2-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.2-beta01 final changes';git push
 	git tag -a 4.6.2-beta01 -m 'Version 4.6.2-beta01 new features: mta backslashes, concise warnings, JSON';git push --tags
