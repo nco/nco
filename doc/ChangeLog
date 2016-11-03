@@ -1,16 +1,14 @@
 2016-11-03  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.2-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.2-beta01 final changes';git push
+	git tag -a 4.6.2-beta01 -m 'Version 4.6.2-beta01 new features: mta backslashes, concise warnings, JSON';git push --tags
+
 	* Tidy JSON output whitespace
 
 2016-11-03  Henry Butowsky  <henryb@hush.com>
 
 	* First cut of JSON output from ncks
-
-2016-10-28  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.6.2-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.2-beta01 final changes';git push
-	git tag -a 4.6.2-beta01 -m 'Version 4.6.2-beta01 new features: mta backslashes, concise warnings';git push --tags
 
 2016-10-25  Charlie Zender  <zender@uci.edu>
 
