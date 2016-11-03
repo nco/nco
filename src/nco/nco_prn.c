@@ -25,9 +25,7 @@ nco_att_nbr        /* [fnc] return number of atts in var or global atts in group
   } /* end else */
 
   return att_nbr; 
-
-
- }
+} /* !nco_att_nbr() */
 
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
@@ -2406,7 +2404,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
   if(dmn_nbr > 0 && CDL_OR_TRD) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng); 
-  if(dmn_nbr > 0 && JSN) (void)fprintf(stdout,"%*s\"dimensions\":{\n",prn_flg->ndn,spc_sng);
+  if(dmn_nbr > 0 && JSN) (void)fprintf(stdout,"%*s\"dimensions\": {\n",prn_flg->ndn,spc_sng);
   if(CDL||JSN) prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     if(XML){
@@ -2756,7 +2754,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   /* Mark end of output */
   if(CDL_OR_TRD) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nm2sng_cdl(nco_gpe_evl(prn_flg->gpe,grp_nm_fll)));
-  if(JSN && grp_dpt ==0) (void)fprintf(stdout,"\n}"); 
+  if(JSN && grp_dpt ==0) (void)fprintf(stdout,"\n}\n"); 
   if(JSN && grp_dpt >0) (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng); 
   //if(JSN) (void)fprintf(stdout,"%*s}\n", grp_dpt*prn_flg->spc_per_lvl,spc_sng);
   if(XML && grp_dpt == 0) (void)fprintf(stdout,"</netcdf>\n"); 

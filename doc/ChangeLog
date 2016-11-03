@@ -1,6 +1,11 @@
+2016-11-03  Charlie Zender  <zender@uci.edu>
+
+	* Tidy JSON output whitespace
+
 2016-11-03  Henry Butowsky  <henryb@hush.com>
-	* first cut of json output from ncks 
-	
+
+	* First cut of JSON output from ncks
+
 2016-10-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.2-beta01 release procedure:
