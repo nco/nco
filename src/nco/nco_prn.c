@@ -2604,8 +2604,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       else
 	JSN_BLOCK=True;
               
-      /* global att go in there own object block so the can be distinguished from var objects */   
-      (void)fprintf(stdout,"%*s\"attrs\": {\n",prn_ndn,spc_sng);
+      /* Global attributes go in their own object block to distinguish them from variable objects */   
+      (void)fprintf(stdout,"%*s\"attributes\": {\n",prn_ndn,spc_sng);
 
       /* manual indent */
       prn_flg->ndn+=2*prn_flg->sxn_fst;  
