@@ -1238,7 +1238,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     case 'o': aed_lst[idx].mode=aed_overwrite; break;
     default: 
       (void)fprintf(stderr,"%s: ERROR `%s' is not a supported mode\n",nco_prg_nm_get(),arg_lst[2]);
-      (void)fprintf(stderr,"%s: HINT: Valid modes are `a' = append, `c' = create,`d' = delete, `m' = modify, and `o' = overwrite",nco_prg_nm_get());
+      (void)fprintf(stderr,"%s: HINT: Valid modes are `a' = append, `c' = create,`d' = delete, `m' = modify, `n' = nappend, and `o' = overwrite",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
@@ -1333,6 +1333,24 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
         case NC_DOUBLE: 
           val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
           for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+#ifdef WIN32
+	    /* 20161104: strtod() on MinGW fails to parse "nan" so implement a "NaN-trap". Test with:
+	       ncatted -O -a _FillValue,fll_val,m,f,nan ~/nco/data/in.nc ~/foo.nc
+	       ncks -C -v fll_val ~/foo.nc */
+	    size_t chr_nbr=3;
+	    char nan_trap[]="NaN-trap"; /* [sng] Test for NaN-like number */
+	    /* Copy first three characters */
+	    strncpy(nan_trap,arg_lst[idx_att_val_arg],chr_nbr);
+	    nan_trap[chr_nbr]='\0'; /* NUL-terminate */
+	    if(!strncasecmp(nan_trap,"NaN",chr_nbr)){
+	    /* http://stackoverflow.com/questions/16691207/c-c-nan-constant-literal: NAN literal is in C <math.h>, while C++ requires <limits> header 
+	       #ifdef __cplusplus
+	       val_arg_dbl[lmn]=std::numeric_limits<double>::quiet_NaN();
+	       #endif __cplusplus */
+	    val_arg_dbl[lmn]=NAN;
+	    continue;
+	  } /* !NaN */
+#endif /* !WIN32 */
             val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd);
             if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtod",sng_cnv_rcd);
           } /* end loop over elements */
