@@ -215,6 +215,10 @@ const char * /* O [sng] Native XML type */
 xml_typ_nm /* [fnc] Return string describing native XML type */
 (const nc_type type); /* I [enm] netCDF type */
 
+const char * /* O [sng] Native JSON type */
+jsn_typ_nm /* [fnc] Return string describing native JSON type */
+(const nc_type type); /* I [enm] netCDF type */
+
 const char * /* O [sng] String describing extended file format */
 nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 (const int fl_fmt_xtn); /* I [enm] netCDF extended file format */

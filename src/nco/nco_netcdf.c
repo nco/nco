@@ -286,6 +286,43 @@ xml_typ_nm /* [fnc] Return string describing native XML type */
   return (char *)NULL;
 } /* end xml_typ_nm() */
 
+const char * /* O [sng] Native JSON type */
+jsn_typ_nm /* [fnc] Return string describing native JSON type */
+(const nc_type type) /* I [enm] netCDF type */
+{
+  /* Purpose: Divine JSON type string from netCDF external type enum */
+  switch(type){
+  case NC_FLOAT:
+    return "float";
+  case NC_DOUBLE:
+    return "double";
+  case NC_INT:
+    return "int";
+  case NC_SHORT:
+    return "short";
+  case NC_CHAR:
+    return "char";
+  case NC_BYTE:
+    return "byte";
+  case NC_UBYTE:
+    return "ubyte";
+  case NC_USHORT:
+    return "ushort";
+  case NC_UINT:
+    return "uint";
+  case NC_INT64:
+    return "int64";
+  case NC_UINT64:
+    return "uint64";
+  case NC_STRING:
+    return "string";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end xml_typ_nm() */
+
 const char * /* O [sng] Native CDL type suffix */
 cdl_typ_sfx /* [fnc] Return suffix string for CDL type */
 (const nc_type type) /* I [enm] netCDF type */

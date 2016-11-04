@@ -1402,9 +1402,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     if(nbr_dim > 0)
        (void)fprintf(stdout,"%s\n",dmn_sng); 
     /* print netCDF type - use same names as XML */ 
-    (void)fprintf(stdout,"%*s\"type\": \"%s\"",prn_ndn+prn_flg->sxn_fst,spc_sng,xml_typ_nm(var_typ));
+    (void)fprintf(stdout,"%*s\"type\": \"%s\"",prn_ndn+prn_flg->sxn_fst,spc_sng,jsn_typ_nm(var_typ));
   } /* !xml */
-
 
   if(dmn_sng) dmn_sng=(char *)nco_free(dmn_sng);
 
