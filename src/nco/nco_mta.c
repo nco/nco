@@ -224,27 +224,26 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
 
 char * /* O [sng] Joined strings */
 nco_join_sng /* [fnc] Join strings with delimiter */
-(const char **sng_lst, /* I [sng] List of strings being connected */
+(X_CST_PTR_CST_PTR_Y(char,sng_lst), /* I [sng] List of strings to join */
  const int sng_nbr) /* I [int] Number of strings */
 {
-  /* Purpose: join the strings with delimiters. It will be used when the number of
-   * arguments is larger than 1; usually it is in the old NCO argument style*/
+  /* Purpose: Concatenate strings with delimiters */
 
   char *nco_mta_dlm=nco_mta_dlm_get(); /* [sng] Multi-argument delimiter */
 
   if(sng_nbr == 1) return strdup(sng_lst[0]);
   
-  size_t word_length=0L;
-  size_t copy_counter=0L;
-  for(int index=0;index<sng_nbr;index++){
-    word_length+=strlen(sng_lst[index])+1L;
-  }
-  char *final_string=(char *)nco_malloc(word_length+1L);
+  size_t sng_lng=0L;
+  size_t cpy_ctr=0L;
+  for(int sng_idx=0;sng_idx<sng_nbr;sng_idx++)
+    sng_lng+=strlen(sng_lst[sng_idx])+1L;
+
+  char *sng_fnl=(char *)nco_malloc(sng_lng+1L);
   for(int sng_idx=0;sng_idx<sng_nbr;sng_idx++){
-    size_t temp_length=strlen(sng_lst[sng_idx]);
-    strcpy(final_string+copy_counter,sng_lst[sng_idx]);
-    if(sng_idx<sng_nbr-1) strcpy(final_string+copy_counter+temp_length,nco_mta_dlm);
-    copy_counter+=(temp_length+1);
-  }
-  return final_string;
+    size_t tmp_lng=strlen(sng_lst[sng_idx]);
+    strcpy(sng_fnl+cpy_ctr,sng_lst[sng_idx]);
+    if(sng_idx<sng_nbr-1) strcpy(sng_fnl+cpy_ctr+tmp_lng,nco_mta_dlm);
+    cpy_ctr+=(tmp_lng+1L);
+  } /* !sng_idx */
+  return sng_fnl;
 } /* !nco_join_sng() */

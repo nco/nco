@@ -81,7 +81,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
   char *sng_fnl=NULL;
 
   /* Join arguments together */
-  sng_fnl=nco_join_sng((const char**)ppc_arg, ppc_arg_nbr);
+  sng_fnl=nco_join_sng(ppc_arg, ppc_arg_nbr);
   ppc_lst=nco_arg_mlt_prs(sng_fnl);
 
   if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);

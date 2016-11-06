@@ -213,7 +213,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   if(rgr_arg_nbr > 0){
     /* Join arguments together */
-    sng_fnl=nco_join_sng((const char **)rgr_arg,rgr_arg_nbr);
+    sng_fnl=nco_join_sng(rgr_arg,rgr_arg_nbr);
     rgr_lst=nco_arg_mlt_prs(sng_fnl);
     if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
 

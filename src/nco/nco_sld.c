@@ -60,7 +60,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   char *sng_fnl=NULL;
 
   /* Join arguments together */
-  sng_fnl=nco_join_sng((const char**)trr_arg,trr_arg_nbr);
+  sng_fnl=nco_join_sng(trr_arg,trr_arg_nbr);
   trr_lst=nco_arg_mlt_prs(sng_fnl);
 
   if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);

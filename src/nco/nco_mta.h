@@ -68,7 +68,7 @@ extern "C" {
 
   char * /* O [sng] Joined strings */
   nco_join_sng /* [fnc] Join strings with delimiter */
-  (const char **sng_lst, /* I [sng] List of strings being connected */
+  (X_CST_PTR_CST_PTR_Y(char,sng_lst), /* I [sng] List of strings to join */
    const int sng_nbr); /* I [int] Number of strings */
 
   int // O [int] Number of string blocks that will be split with delimiter

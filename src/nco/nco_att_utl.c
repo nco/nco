@@ -1956,7 +1956,7 @@ nco_glb_att_add /* [fnc] Add global attributes */
   kvm_sct *gaa_lst=NULL; /* [sct] List of all GAA specifications */
   ptr_unn att_val;
   /* Join arguments together */
-  char *sng_fnl=nco_join_sng((const char ** const)gaa_arg,gaa_arg_nbr);
+  char *sng_fnl=nco_join_sng(gaa_arg,gaa_arg_nbr);
   gaa_lst=nco_arg_mlt_prs(sng_fnl);
 
   if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
