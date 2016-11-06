@@ -344,6 +344,9 @@
 /* Define to 1 if you have the `strrchr' function. */
 #undef HAVE_STRRCHR
 
+/* Define to 1 if compiler finds external `strsep' function */
+#undef HAVE_STRSEP
+
 /* Define to 1 if you have the `strstr' function. */
 #undef HAVE_STRSTR
 
@@ -540,6 +543,9 @@
 
 /* Define to 1 if compiler needs external `strdup' function */
 #undef NEED_STRDUP
+
+/* Define to 1 if compiler needs external `strsep' function */
+#undef NEED_STRSEP
 
 /* Define to 1 if compiler needs external `tanf' function */
 #undef NEED_TANF

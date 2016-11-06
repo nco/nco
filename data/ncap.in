@@ -155,7 +155,7 @@ twenty@seven=one;
 //Put an attribute/number  into a variable
 thirty=1.e19f;
 thirtyone=one@one;
-// With a string ONLY the first char is put into varible
+// With a string ONLY the first char is put into variable
 thirtytwo="Hello world";
 // use varibles defined in output
 thirtythree=twentyfive*4.001;

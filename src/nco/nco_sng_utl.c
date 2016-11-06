@@ -9,6 +9,30 @@
 
 #include "nco_sng_utl.h" /* String utilities */
 
+#ifdef NEED_STRSEP
+/* 20161106 UNIX always provides strsep(), MSVC never does */
+char * /* O [sng] String to separate */
+strsep /* [fnc] Separate strings */
+(char * const sng_trg, /* I [sng] String to separate */
+ const char * const sng_dlm) /* I [sng] Delimiter */
+{
+  /* Purpose: NCO replacement for strsep() for Windows MSVC
+     http://stackoverflow.com/questions/8512958/is-there-a-windows-variant-of-strsep */
+  char* sng_srt = *sng_trg;
+  char* sng_ptr;
+
+  sng_ptr= (sng_srt != NULL) ? strpbrk(sng_srt,sng_dlm) : NULL;
+
+  if(sng_ptr == NULL){
+    *sng_trg = NULL;
+  }else{
+    *sng_ptr='\0';
+    *sng_trg=sng_ptr+1;
+  } /* endif */
+  return sng_srt;
+} /* !strsep() */
+#endif /* !NEED_STRSEP */
+
 #ifdef NEED_STRCASECMP
 int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
 strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */

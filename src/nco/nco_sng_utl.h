@@ -48,6 +48,13 @@ extern "C" {
   (const int chr); /* I [enm] Character to check */
 #endif /* !NEED_ISBLANK */
   
+#ifdef NEED_STRSEP
+  char * /* O [sng] String to separate */
+  strsep /* [fnc] Separate strings */
+  (char * const sng_trg, /* I [sng] String to separate */
+   const char * const sng_dlm); /* I [sng] Delimiter */
+#endif /* !NEED_STRSEP */
+
 #ifdef NEED_STRCASECMP
   int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
   strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
