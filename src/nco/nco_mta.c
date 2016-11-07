@@ -101,6 +101,7 @@ nco_sng_split /* [fnc] Split string by delimiter */
      Remember to free() after calling this function */
   char **sng_fnl=NULL;
   char *sng_tmp=strdup(source);
+  int *idx_lst=NULL;
   size_t counter=nco_count_blocks(source,delimiter);
   size_t dlm_idx=0L;    
   
@@ -113,7 +114,7 @@ nco_sng_split /* [fnc] Split string by delimiter */
   
   /* Count positions where delimiter appears */
   sng_fnl=(char **)nco_malloc(sizeof(char *)*counter);
-  int idx_lst[counter+2];
+  idx_lst=(int *)nco_malloc(sizeof(int)*(counter+2));
   if(sng_fnl){
     char *sng_tmp_ptr=sng_tmp;
     while(sng_tmp_ptr){
@@ -123,22 +124,25 @@ nco_sng_split /* [fnc] Split string by delimiter */
     idx_lst[dlm_idx]=strlen(sng_tmp);
 
     /* Copy first token since it is not preceded by delimiter */
-    sng_fnl[0]=(char*)nco_malloc(idx_lst[1]+1L);
+    sng_fnl[0]=(char *)nco_malloc(idx_lst[1]*sizeof(char)+1L);
     memcpy(sng_fnl[0],sng_tmp,idx_lst[1]);
     sng_fnl[0][idx_lst[1]]='\0';
 
     /* Copy rest of tokens based on positions of delimiter */
     for(dlm_idx=1;dlm_idx<counter;dlm_idx++){
       int sng_sz=idx_lst[dlm_idx+1]-idx_lst[dlm_idx]-strlen(delimiter);
-      sng_fnl[dlm_idx]=(char *)nco_malloc(sng_sz+1L);
+      sng_fnl[dlm_idx]=(char *)nco_malloc(sng_sz*sizeof(char)+1L);
       memcpy(sng_fnl[dlm_idx],sng_tmp+idx_lst[dlm_idx]+strlen(delimiter),sng_sz);
       sng_fnl[dlm_idx][sng_sz]='\0';  
     } /* !dlm_idx */
-    nco_free(sng_tmp);
+    if(idx_lst) idx_lst=(int *)nco_free(idx_lst);
+    if(sng_tmp) sng_tmp=(char *)nco_free(sng_tmp);
   }else{
-    nco_free(sng_tmp);
+    if(idx_lst) idx_lst=(int *)nco_free(idx_lst);
+    if(sng_tmp) sng_tmp=(char *)nco_free(sng_tmp);
     return NULL;
   } /* !sng_fnl */
+  
   return sng_fnl;
 } /* end nco_sng_split() */
 
@@ -196,7 +200,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
   } /* !index */
   
   /* kvm array to return */
-  kvm_sct *kvm_set=(kvm_sct *)nco_malloc(sizeof(kvm_sct)*(counter+5));
+  kvm_sct *kvm_set=(kvm_sct *)nco_malloc(sizeof(kvm_sct)*(counter+5L));
   size_t kvm_idx=0;
   
   for(int sng_idx=0;sng_idx<nco_count_blocks(args,nco_mta_dlm);sng_idx++){
@@ -238,7 +242,7 @@ nco_join_sng /* [fnc] Join strings with delimiter */
   for(int sng_idx=0;sng_idx<sng_nbr;sng_idx++)
     sng_lng+=strlen(sng_lst[sng_idx])+1L;
 
-  char *sng_fnl=(char *)nco_malloc(sng_lng+1L);
+  char *sng_fnl=(char *)nco_malloc(sng_lng*sizeof(char)+1L);
   for(int sng_idx=0;sng_idx<sng_nbr;sng_idx++){
     size_t tmp_lng=strlen(sng_lst[sng_idx]);
     strcpy(sng_fnl+cpy_ctr,sng_lst[sng_idx]);

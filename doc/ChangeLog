@@ -1,5 +1,7 @@
 2016-11-06  Charlie Zender  <zender@uci.edu>
 
+	* Make nco_mta.[ch] C++-compliant
+
 	* Re-prototype nco_join_sng() to avert compiler warnings
 
 	* Add strsep() replacement code for MSVC
