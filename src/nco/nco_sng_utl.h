@@ -51,7 +51,7 @@ extern "C" {
 #ifdef NEED_STRSEP
   char * /* O [sng] String to separate */
   strsep /* [fnc] Separate strings */
-  (char * const sng_trg, /* I [sng] String to separate */
+  (char ** const sng_trg, /* I [sng] String to separate */
    const char * const sng_dlm); /* I [sng] Delimiter */
 #endif /* !NEED_STRSEP */
 
