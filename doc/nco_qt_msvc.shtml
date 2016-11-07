@@ -15,7 +15,7 @@ scp -p ~/nco/doc/index.shtml ~/nco/doc/nco_qt_msvc.shtml ~/nco/doc/logo_vs2010.p
 <body>
 
 <h2>NCO Qt/MSVC build</h2>
-This page contains instructions regarding building NCO with the Qt system and with Microsoft Windows Visual Studio 2013 (MSVC). 
+This page contains instructions regarding building NCO with the Qt system and with Microsoft Windows Visual Studio 2015 (MSVC). 
 This page is mostly important for developers that want to build NCO from source using Qt or MSVC.
 <br>
 <br>

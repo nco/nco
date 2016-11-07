@@ -1,4 +1,4 @@
-Microsoft Windows Visual Studio 2010 (MSVC) build instructions:
+Microsoft Windows Visual Studio 2015 (MSVC) build instructions:
 
 Building the NCO source code from within Visual Studio is an easy process, consisting of 2 steps:
 

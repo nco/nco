@@ -852,7 +852,7 @@ The most up-to-date executables are probably those in the tarball below. Those u
 <a name="mvs"></a> <!-- http://nco.sf.net#mvs -->
 <a name="windows"></a> <!-- http://nco.sf.net#windows -->
 <h3><a href="http://www.microsoft.com">Microsoft Windows</a>
-(native build, compiled with <a href="https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx">Visual Studio 2013</a>, use this if unsure)</h3>
+(native build, compiled with <a href="https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx">Visual Studio 2015</a>, use this if unsure)</h3>
 These native Windows executables should be stand-alone, i.e., not
 require users to have any additional software. 
 This is a new feature as of 20120615, please send us feedback. 
