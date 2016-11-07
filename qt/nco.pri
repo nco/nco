@@ -26,6 +26,7 @@ win32{
  DEFINES += HAVE_UDUNITS2_H
  DEFINES += ENABLE_GSL
  DEFINES += ENABLE_DAP
+ DEFINES += NEED_STRSEP
 }
 
 win32{
@@ -48,5 +49,8 @@ win32{
  LIBS += $(LIB_UDUNITS)
  LIBS += $(LIB_EXPAT)
  LIBS += $(LIB_CURL)
+ LIBS += ws2_32.lib
+ LIBS += winmm.lib
+ LIBS += wldap32.lib
 }
 
