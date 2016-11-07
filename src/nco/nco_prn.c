@@ -317,7 +317,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   } /* !hdn, NC_FORMAT_NETCDF4, NC_FORMAT_NETCDF4_CLASSIC */
 
 
-  /* jsn puts att in own object -mayan option or not ? 
+       
+  /*
   if(JSN){
     if(att_nbr_ttl>0){
        (void)fprintf(stdout,"%*s\"attrs\": {\n",prn_ndn,spc_sng);
@@ -327,8 +328,15 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)fprintf(stdout,"%*s\"attrs\": {}",prn_ndn,spc_sng); 
     } 
   }
-  */
-        
+  */  
+
+  if(JSN && att_nbr_ttl>0)
+  {
+     (void)fprintf(stdout,"%*s\"attributes\": {\n",prn_ndn,spc_sng);
+     prn_ndn+=prn_flg->sxn_fst;  
+  }
+   
+ 
   /* Get attributes' names, types, lengths, and values */
   for(idx=0;idx<att_nbr_ttl;idx++){
 
@@ -542,12 +550,10 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   } /* end loop over attributes */
 
   /* leave final att WITHOUT a RETURN or COMMA */
-  /*
   if(JSN && att_nbr_ttl>0){
      prn_ndn-=prn_flg->sxn_fst;  
      (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);
   }
-  */
 
   /* Print extra line after global attributes */
   if(CDL && flg_glb) (void)fprintf(stdout,"\n");
@@ -2409,14 +2415,15 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       nm_cdl=(char *)nco_free(nm_cdl);
     } /* !XML */
     else if(JSN){ 
-      nm_cdl=nm2sng_cdl(dmn_lst[dmn_idx].nm);
-      (void)fprintf(stdout,"%*s\"%s\": %lu",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);   
+      nm_jsn=nm2sng_jsn(dmn_lst[dmn_idx].nm);
+      (void)fprintf(stdout,"%*s\"%s\": %lu",prn_ndn,spc_sng,nm_jsn,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);   
       /* deal with comma , return */
       if( dmn_idx<dmn_nbr-1 )
 	(void)printf(",\n");
       else
 	(void)printf("\n%*s}",prn_ndn,spc_sng);         
        
+      nm_jsn=(char *)nco_free(nm_jsn);   
       JSN_BLOCK=True;    
     }
   } /* end loop over dimension */
@@ -2429,7 +2436,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Create array to hold names and indices of extracted variables in this group */
   var_lst=(nm_id_sct *)nco_malloc(nbr_var*(sizeof(nm_id_sct)));
 
-
+      
   for(var_idx=0;var_idx<nbr_var;var_idx++){
     /* Get variable name */
     rcd+=nco_inq_varname(grp_id,var_idx,var_nm);
@@ -2542,6 +2549,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
            (void)fprintf(stdout,",\n"); 
         else
 	  JSN_BLOCK=True;              
+         
+        (void)fprintf(stdout,"%*s\"variables\": {\n",prn_flg->ndn,spc_sng  );   
       } 
         
       /* DOES NOT include a return as we may wanna add a COMMA */
@@ -2565,15 +2574,20 @@ nco_grp_prn /* [fnc] Recursively print group contents */
         (void)fprintf(stdout,"\n");        
       }
       /* close json object tag -but dont add return as we may need to add comma later*/
-      (void)fprintf(stdout,"%*s}%s",prn_flg->ndn,spc_sng, (var_idx<var_nbr_xtr-1 ?",\n":"")  );   
+      (void)fprintf(stdout,"%*s}%s",prn_flg->ndn,spc_sng, (var_idx<var_nbr_xtr-1 ?",\n":"\n")  );   
       /* special indents for jsn */
       prn_flg->ndn-=prn_flg->sxn_fst;  
     }
    
 
-
     
    } /* end loop over var_idx */
+
+  /* close out json variable tag */
+  if(JSN && var_nbr_xtr>0) 
+    (void)fprintf(stdout,"%*s}",prn_flg->ndn,spc_sng );   
+
+
 
   /* Print attribute information for group 
   if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA && CDL_OR_TRD) (void)fprintf(stdout,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(CDL) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
@@ -2601,17 +2615,9 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       if(JSN_BLOCK) 
         (void)fprintf(stdout,",\n"); 
       else
-	JSN_BLOCK=True;
-              
-      /* Global attributes go in their own object block to distinguish them from variable objects */   
-      (void)fprintf(stdout,"%*s\"attributes\": {\n",prn_ndn,spc_sng);
+	JSN_BLOCK=True;              
 
-      /* manual indent */
-      prn_flg->ndn+=2*prn_flg->sxn_fst;  
       nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
-      prn_flg->ndn-=2*prn_flg->sxn_fst;  
-
-      (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);
 
     }
 
