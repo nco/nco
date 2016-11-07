@@ -1,3 +1,11 @@
+2016-11-07  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.2-beta02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.2-beta02 final changes';git push
+	git tag -a 4.6.2-beta02 -m 'Version 4.6.2-beta02 new features: MSVC/C++ compliance, JSON "attributes" and "variables" blocks';git push --tags
+
+	* Henry added "attributes" and "variables" blocks to JSON backend
+
 2016-11-06  Charlie Zender  <zender@uci.edu>
 
 	* Make nco_mta.[ch] C++-compliant
