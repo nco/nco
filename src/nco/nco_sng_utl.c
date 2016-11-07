@@ -316,13 +316,12 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   return nm_cdl;
 } /* end nm2sng_cdl() */
 
-
 char * /* O [sng] JSON-compatible name */
 nm2sng_jsn /* [fnc] Turn variable/dimension/attribute name into legal CDL */
 (const char * const nm_sng) /* I [sng] Name to CDL-ize */
 {
-  /* a valid json string can be any selected set of control chars, any non conrol chars from ascii and unicode 
-  /* Leave unicode for. now see Reference: http://www.json.org */   
+  /* Valid JSON strings can be any selected set of control chars, any non-conrol chars from ASCII and Unicode 
+     Leave unicode for now see Reference: http://www.json.org */   
  
   char *chr_in_ptr; /* [sng] Pointer to current character in input name */
   char *chr_out_ptr; /* [sng] Pointer to current character in output name */
@@ -504,7 +503,7 @@ chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII 
   } /* end switch */
 
   return val_sng;
-} /* end chr2sng_cdl(0 */
+} /* end chr2sng_cdl() */
 
 char * /* O [sng] String containing printable result */
 chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII bytes */
@@ -534,18 +533,15 @@ chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII 
   } /* end switch */
 
   return val_sng;
-} /* end chr2sng_xml(0 */
-
+} /* end chr2sng_xml() */
 
 char * /* O [sng] String containing printable result */
 chr2sng_jsn /* [fnc] Translate C language character to printable, visible ASCII bytes */
 (const char chr_val, /* I [chr] Character to process */
  char * const val_sng) /* I/O [sng] String to stuff printable result into */
 {
-  /* Purpose: Translate character to C-printable, visible ASCII bytes for JSN
-     Reference: http://www.json.org/ */
-  
-  
+  /* Purpose: Translate character to C-printable, visible ASCII bytes for JSON
+     Reference: http://www.json.org */
   switch(chr_val){              /* man ascii:Oct   Dec   Hex   Char \X  */
   case '\b': strcpy(val_sng,"\\b"); break; /* 010   8     08    BS  '\b' Backspace */
   case '\f': strcpy(val_sng,"\\f"); break; /* 014   12    0C    FF  '\f' Formfeed */
@@ -554,24 +550,18 @@ chr2sng_jsn /* [fnc] Translate C language character to printable, visible ASCII 
   case '\t': strcpy(val_sng,"\\t"); break; /* 011   9     09    HT  '\t' Horizontal tab */
   case '\\': strcpy(val_sng,"\\\\"); break; /* 134  92    5C    \   '\\' */
   case '\"': strcpy(val_sng,"\\\""); break;/* Unsure why or if this works! */
-  /* according to json spep  '/' should be escaped but this is mangles filepaths so leave it out for now */
-  /* case '\/': strcpy(val_sng,"\\/"); break; /* 057   47    2F    /   '\\' */
+  /* fxm: According to JSON spec '/' should be escaped but this mangles UNIX filepaths so leave it out for now */
+  /* case '\/': strcpy(val_sng,"\\/"); break; */ /* 057   47    2F    /   '\\' */
   case '\0':	
     break;
   default: 
     /* json is quite strict about control-chars - only the above are allowed */
     if(iscntrl(chr_val)) *val_sng=0; else sprintf(val_sng,"%c",chr_val);
     break;
-
   } /* end switch */
 
   return val_sng;
-} /* end chr2sng_cdl(0 */
-
-
-
-
-
+} /* end chr2sng_jsn() */
 
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */
