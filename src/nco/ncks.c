@@ -216,6 +216,8 @@ main(int argc,char **argv)
   kvm_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
+ 
+  int PRN_JSN_ATT_OPT=0; /* [nbr] indicate how to print in jsn netCDF attributes - 0 (regular), 1 (in own object with type and data), 2 ( in own object of not string,,char,floating point or int */ 
 
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
   nco_bool CPY_GRP_METADATA; /* [flg] Copy group metadata (attributes) */
@@ -449,6 +451,7 @@ main(int argc,char **argv)
     {"fl_out",required_argument,0,'o'},
     {"print",required_argument,0,'P'},
     {"prn",required_argument,0,'P'},
+    {"prn_jsn_att_opt",required_argument,0,0},
     {"path",required_argument,0,'p'},
     {"quench",no_argument,0,'q'},
     {"quiet",no_argument,0,'Q'},
@@ -694,6 +697,7 @@ main(int argc,char **argv)
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
+      if(!strcmp(opt_crr,"prn_jsn_att_opt")) PRN_JSN_ATT_OPT=atoi(optarg);   
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
       if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
@@ -1186,6 +1190,8 @@ main(int argc,char **argv)
       prn_flg.nbr_zro=1;
       /* json number arrays have no notion of missing values */
       prn_flg.PRN_MSS_VAL_BLANK=False;
+       
+      prn_flg.jsn_att_opt=PRN_JSN_ATT_OPT;  
       /* JSON either prints metadata or data, not both 
       if(prn_flg.PRN_VAR_DATA){
 	prn_flg.PRN_VAR_METADATA=False;
