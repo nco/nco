@@ -927,6 +927,7 @@ extern "C" {
 
   /* Print flags structure */
   typedef struct{ /* prn_fmt_sct */
+    char *dlm_sng; /* [sng] User specified delimiter string for printed output */
     char *fl_in; /* [sng] Input filename */
     char *fl_stb; /* [sng] Input filename stub */
     char *smr_sng; /* [sng] Summary string */
@@ -945,15 +946,14 @@ extern "C" {
     nco_bool nfo_xtr; /* [flg] Print extra information in CDL/XML mode */
     nco_bool new_fmt; /* [flg] Print in new format */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
+    int fll_pth; /* [nbr] Print full paths */
+    int jsn_att_fmt; /* [enm] JSON format for netCDF attributes: 0 (no object, only data), 1 (data only for string, char, int, and floating-point types, otherwise object), 2 (always object) */ 
     int nbr_zro; /* [nbr] Trailing zeros allowed after decimal point */
     int ndn; /* [nbr] Indentation */
-    int fll_pth; /* [nbr] Print full paths */
-    int tab; /* [nbr] Number of spaces in tab */
     int spc_per_lvl; /* [nbr] Indentation spaces per group level */
     int sxn_fst; /* [nbr] Offset of section from group name */
+    int tab; /* [nbr] Number of spaces in tab */
     int var_fst; /* [nbr] Offset of variable from section name */
-    char *dlm_sng; /* User specified delimiter string for printed output */
-    int jsn_att_opt; /* specify how atts are output 0, (normal), 1 (atts in own object), 2 ( only atts not NC_INT,NC_FLOAT,NC_DOUBLE in own object) */ 
     nco_bool ALPHA_BY_FULL_GROUP; /* [flg] Print alphabetically by full group */
     nco_bool ALPHA_BY_FULL_OBJECT; /* [flg] Print alphabetically by full object */
     nco_bool ALPHA_BY_STUB_GROUP; /* [flg] Print alphabetically by stub group */

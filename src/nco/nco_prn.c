@@ -331,12 +331,10 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   }
   */  
 
-  if(JSN && att_nbr_ttl>0)
-  {
-     (void)fprintf(stdout,"%*s\"attributes\": {\n",prn_ndn,spc_sng);
-     prn_ndn+=prn_flg->sxn_fst;  
+  if(JSN && att_nbr_ttl>0){
+    (void)fprintf(stdout,"%*s\"attributes\": {\n",prn_ndn,spc_sng);
+    prn_ndn+=prn_flg->sxn_fst;  
   }
-   
  
   /* Get attributes' names, types, lengths, and values */
   for(idx=0;idx<att_nbr_ttl;idx++){
@@ -364,23 +362,17 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     if(JSN){ 
       nm_jsn=nm2sng_jsn(att[idx].nm);
 
-      if( prn_flg->jsn_att_opt == 1 || prn_flg->jsn_att_opt == 2 && 
-	  ( att[idx].type !=NC_DOUBLE && att[idx].type !=NC_FLOAT && att[idx].type !=NC_INT && att[idx].type !=NC_STRING && att[idx].type != NC_CHAR ))
+      jsn_obj=False;         
+      if(prn_flg->jsn_att_fmt == 2 ||
+	 (prn_flg->jsn_att_fmt == 1 && (att[idx].type != NC_DOUBLE && att[idx].type != NC_FLOAT && att[idx].type != NC_INT && att[idx].type != NC_STRING && att[idx].type != NC_CHAR)))
         jsn_obj=True;   
-      else
-        jsn_obj=False;         
  
-      if(jsn_obj)          
-         (void)fprintf(stdout,"%*s\"%s\": { \"type\": \"%s\", \"data\": ",prn_ndn,spc_sng,nm_jsn, jsn_typ_nm(att[idx].type) ); 
-      else
-         (void)fprintf(stdout,"%*s\"%s\": ",prn_ndn,spc_sng,nm_jsn); 
+      if(jsn_obj) (void)fprintf(stdout,"%*s\"%s\": { \"type\": \"%s\", \"data\": ",prn_ndn,spc_sng,nm_jsn, jsn_typ_nm(att[idx].type) ); else (void)fprintf(stdout,"%*s\"%s\": ",prn_ndn,spc_sng,nm_jsn); 
  
-      /* multi-element so print array open */ 
-      if(att_sz>1 && att[idx].type != NC_CHAR)
-          (void)fprintf(stdout,"["); 
-
+      /* Multi-element so print array open */ 
+      if(att_sz > 1 && att[idx].type != NC_CHAR) (void)fprintf(stdout,"["); 
       nm_jsn=(char *)nco_free(nm_jsn);    
-    }        
+    } /* !JSN */
     if(TRD) (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
 
     spr_sng=cma_sng; /* [sng] Output separator string */

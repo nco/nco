@@ -177,6 +177,7 @@ main(int argc,char **argv)
 
   int *in_id_arr; /* [id] netCDF file IDs used by OpenMP code */
 
+  int JSN_ATT_FMT=0; /* [enm] JSON format for netCDF attributes: 0 (no object, only data), 1 (data only for string, char, int, and floating-point types, otherwise object), 2 (always object) */
   int abb_arg_nbr=0;
   int att_glb_nbr;
   int att_grp_nbr;
@@ -217,8 +218,6 @@ main(int argc,char **argv)
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
  
-  int PRN_JSN_ATT_OPT=0; /* [nbr] indicate how to print in jsn netCDF attributes - 0 (regular), 1 (in own object with type and data), 2 ( in own object of not string,,char,floating point or int */ 
-
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
   nco_bool CPY_GRP_METADATA; /* [flg] Copy group metadata (attributes) */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
@@ -373,6 +372,7 @@ main(int argc,char **argv)
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
+    {"jsn_att_fmt",required_argument,0,0}, /* [enm] JSON attribute format */
     {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
     {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
     {"mta_dlm",required_argument,0,0}, /* [sng] Multi-argument delimiter */
@@ -451,7 +451,6 @@ main(int argc,char **argv)
     {"fl_out",required_argument,0,'o'},
     {"print",required_argument,0,'P'},
     {"prn",required_argument,0,'P'},
-    {"prn_jsn_att_opt",required_argument,0,0},
     {"path",required_argument,0,'p'},
     {"quench",no_argument,0,'q'},
     {"quiet",no_argument,0,'Q'},
@@ -697,7 +696,10 @@ main(int argc,char **argv)
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
-      if(!strcmp(opt_crr,"prn_jsn_att_opt")) PRN_JSN_ATT_OPT=atoi(optarg);   
+      if(!strcmp(opt_crr,"jsn_att_fmt")){
+	JSN_ATT_FMT=(int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* !jsn_att_fmt */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
       if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
@@ -1186,23 +1188,14 @@ main(int argc,char **argv)
     } /* endif */
 
     if(prn_flg.jsn){
-      /* in json format the notation 0. or 20. is invalid correct is 0.0, 20.0 */
+      /* In JSON, notation 0. or 20. is invalid---correct is 0.0, 20.0 */
       prn_flg.nbr_zro=1;
-      /* json number arrays have no notion of missing values */
+      /* JSON numerical arrays have no notion of missing values */
       prn_flg.PRN_MSS_VAL_BLANK=False;
-       
-      prn_flg.jsn_att_opt=PRN_JSN_ATT_OPT;  
-      /* JSON either prints metadata or data, not both 
-      if(prn_flg.PRN_VAR_DATA){
-	prn_flg.PRN_VAR_METADATA=False;
-	prn_flg.PRN_GLB_METADATA=False;
-      } */ 
-
-      //if(prn_flg.PRN_GLB_METADATA) prn_flg.PRN_VAR_METADATA=False;
+      prn_flg.jsn_att_fmt=JSN_ATT_FMT;  
     } /* endif JSON */
 
-    if(prn_flg.xml) 
-         prn_flg.PRN_MSS_VAL_BLANK=False;
+    if(prn_flg.xml) prn_flg.PRN_MSS_VAL_BLANK=False;
 
     /* File summary */
     if(PRN_GLB_METADATA){
