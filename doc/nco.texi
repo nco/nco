@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-beta02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 1 November 2016
+@set update-date 8 November 2016
 @set update-month November 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -11271,8 +11271,8 @@ Single line comments are preceded by @code{//} characters.
 @cindex nesting
 @cindex @code{#include}
 Files may be nested in scripts using @code{#include @var{script}}.
-Note that the @code{#include} command is not followed by a semi-colon
-because it is a pre-processor directive, not an assignment statement.
+The @code{#include} command is not followed by a semi-colon because it
+is a pre-processor directive, not an assignment statement. 
 The filename @file{script} is interpreted relative to the run directory.
 @item Attribute syntax
 @cindex attribute syntax
@@ -11946,14 +11946,12 @@ The following basic methods @code{size(), type(), exists()} can be used with att
 For example, to save an attribute text string in a variable,
 @example
 @verbatim
-defdim("sng_len", a1@long_name.size());
+defdim("sng_len",a1@long_name.size());
 sng_arr[$sng_len]=a1@long_name; // sng_arr now contains "Kelvin" 
 @end verbatim
 @end example
 Attributes defined in a script are stored in memory and are written to Output after script completion.
 To stop the attribute being written use the ram_delete() method or use a bogus variable name.
-
-
 
 @noindent @strong{Attribute Propagation and Inheritance}
 @cindex attribute propagation
@@ -11975,65 +11973,65 @@ th_min=1.0 + 2*three_dmn_var_dbl.min($time);
 @cindex attribute concatenation
 @cindex push
 
-The push() function can be used to concatenate attributes  or append an ``expression'' to a prexisting attribute
+The push() function concatenates attributes, or appends an ``expression'' to a pre-existing attribute.
 It comes in two forms
-
 @example
 (A) att_new=push(att_exp, expr)
-
-(B) att_size=push(&tt_nm,expr)    
+(B) att_size=push(&att_nm,expr)
 @end example
 
-@noindent In form (A) The first arg should be an att identifier or an expression that evaluates to an att. The second arg can evalute to an att or var. The second arg is then converted to the the type of  att_exp; and appended to att_exp ; and the resulting att returned@*
+@noindent In form (A) The first argument should be an attribute
+identifier or an expression that evaluates to an attribute. 
+The second argument can evalute to an attribute or a variable. 
+The second argument is then converted to the the type of @var{att_exp}; 
+and appended to @var{att_exp} ; and the resulting attribute is returned.@*
 
-@noindent In form (B) the first arg is a call-by-ref att identifier (which may not exist). The second arg is then evaluated (type conversion as needed) and appended to the call-by-ref att. The final size of the att is then returned.
+@noindent In form (B) the first argument is a call-by-reference
+attribute identifier (which may not yet exist). 
+The second argument is then evaluated (and type-converted as needed) and
+appended to the call-by-reference atttribute. 
+The final size of the attribute is then returned. 
 
 @example
 @verbatim
-temp@range=-10.0
-push(&temp@range, 12.0) // temp@range=-10.0,12.0
+temp@range=-10.0;
+push(&temp@range,12.0); // temp@range=-10.0,12.0
 
-numbers@sq=push(1,4);
-numbers@sq=push(numbers@sq,9);
-push(&number@sq,16.0); 
-push(&number@sq,25ull); // numbers@squares=1,4,9,16,25  
-
+numbers@squares=push(1,4);
+numbers@squares=push(numbers@squares,9);
+push(&number@squares,16.0); 
+push(&number@squares,25ull); // numbers@squares=1,4,9,16,25  
 @end verbatim
 @end example
 
-@noindent Now some text examples.@* Remember an att identifier that begins with @@, implies global e.g '@@institution' is short for 'global@@institution'   
-
+@noindent Now some text examples.@* 
+Remember, an atttribute identifier that begins with @@ implies a global
+attribute.
+For example, '@@institution' is short for 'global@@institution'.
 @example
 @verbatim
-global@greetings=push("hello"," world !!")
-
+global@greetings=push("hello"," world !!");
 global@greek={"alpha"s,"beta"s,"gamma"s};
-
-// append an NC_STRING
+// Append an NC_STRING
 push(&@greek,"delta"s);
-
-//its OK to to push an NC_CHAR to a NC_STRING att
-// it just gets converted
-// append an NC_CHAR
+// Pushing an NC_CHAR to a NC_STRING attribute is allowed, it is converted to an an NC_CHAR
 @e="epsilon";
 push(&@greek,@e);
 push(&@greek,"zeta"); 
 
-// CAN'T push a single NC_STRING to an NC_CHAR
-@h="hello"
+// Pushing a single NC_STRING to an NC_CHAR is not allowed
+@h="hello";
 push(&@h," again"s); // BAD PUSH
 @end verbatim
 @end example
 
-
-
-If the attribute name contains non-regular characters use ID quoting. See @pxref{ID Quoting}
+If the attribute name contains non-regular characters use ID quoting.
 @example
 @verbatim
 'b..m1@c--lost'=23;
 @end verbatim
 @end example
-
+See @pxref{ID Quoting}.
 
 @html
 <a name="value_list"></a> <!-- http://nco.sf.net/nco.html#value_list -->
@@ -12042,42 +12040,40 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 @subsection Value List
 @cindex value list@command{ncap2}
 
-A @emph{value list} is a special type of attribute. It can only be used on the RHS of the assign family of statements.@*
+A @emph{value list} is a special type of attribute. 
+It can only be used on the RHS of the assign family of statements.@*
 That is @emph{=, +=, -=, *=, /=}@*
 A value list CAN-NOT be involved in any logical, binary, or arithmetical operations (except those above).@* 
-A value list CAN-NOT be used as a function argument. @*
-A value list CANT have nested value lists. @*
+A value list CAN-NOT be used as a function argument.@*
+A value list CANT have nested value lists.@*
 The type of a value list is the type of the member with the highest type.@*
 
 @cindex value list
 @example
 @verbatim
-a1@trip={1,2,3} ;
-a1@trip+={3,2,1} ;  // 4,4,4
-
+a1@trip={1,2,3};
+a1@trip+={3,2,1}; // 4,4,4
 a1@triplet={a1@min,(a1@min+a1@max)/2,a1@max}; 
-
-lon[lon]={0.0,90.0,180.0,270.0}
+lon[lon]={0.0,90.0,180.0,270.0};
 lon*={1.0,1.1,1.2,1.3} 
-
 dlon[lon]={1b,2s,3ull,4.0f}; // final type NC_FLOAT
 
 a1@ind={1,2,3}+{4,4,4};  // BAD 
 a1@s=sin( {1.0,16.0} );  // BAD
-
 @end verbatim
 @end example
 
-@noindent Can also use a value_list to create an attribute of type NC_STRING. (Remember  a literal string of type NC_STRING has a postfix 's' ). A value list of NC_CHAR has no semantic meaning and is plain wrong.  
+@noindent One can also use a value_list to create an attribute of type
+NC_STRING. 
+Remember, a literal string of type NC_STRING has a postfix 's'. 
+A value list of NC_CHAR has no semantic meaning and is plain wrong.   
 @example
 @verbatim
+array[lon]={1.0,2.,4.0,7.0};
+array@numbers={"one"s, "two"s, "four"s, "seven"s}; // GOOD
 
-array[lon]={1.0,2.,4.0,7.0}
-array@numbers={"one"s, "two"s, "four"s, "seven"s}; //GOOD
-
-ar[lat]={ 0,20} 
+ar[lat]={0,20} 
 ar@numbers={"zero","twenty"}; // BAD
-
 @end verbatim
 @end example
 
@@ -12284,7 +12280,6 @@ The print statement  comes in a variety of forms
 (B1)  sprint4(expression/string, format string?);
 @end example  
 
-
 @noindent @strong{print() @*@*}
 @noindent If the variable exists in I/O then it is printed in a similar fashion to @code{ncks -H}.
 @example
@@ -12321,12 +12316,10 @@ att_var@float_att, size = 7 NC_FLOAT, value = 73, 72, 71, 70.01, 69.001, 68.01, 
 
 print(lon*10.0)
 lon, size = 4 NC_DOUBLE, value = 0, 900, 1800, 2700
-
 @end verbatim
 @end example
 
-
-@noindent if the format string is specified then the results from (A) and (A1) forms are the same
+@noindent If the format string is specified then the results from (A) and (A1) forms are the same
 @example
 @verbatim
 print(lon_2D_rrg,"%3.2f,");
@@ -12362,7 +12355,6 @@ lat_1D_rct@long_name = "Latitude for 2D rectangular grid stored as 1D arrays"; /
 lat_1D_rct@long_name = sprint4(lat_1D_rct@long_name) 
 @end verbatim
 @end example
-
 
 @noindent @strong{hyperslab a netCDF string @*@*}
 Its possible to index-into a NC_CHAR string. Just like a C-String. Remember  an NC_CHAR string is  has no terminating null.
@@ -18069,7 +18061,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
-[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}]
+[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--jsn] [--jsn_att_fmt @var{lvl}] [-L @var{dfl_lvl}] [-l @var{path}]
 [-M] [-m] [--map @var{map-file}] [--md5] [--mk_rec_dmn @var{dim}]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
 [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt] [-s @var{format}] 
@@ -18092,18 +18084,19 @@ optionally writes it in flat binary format to @file{fl_bnr}, and
 optionally prints it to screen.
 
 @command{ncks} prints netCDF input data in @acronym{ASCII},
-@acronym{CDL}, or @acronym{NcML} text formats @code{stdout}, like (an
-extended version of) @command{ncdump}.
+@acronym{CDL}, @acronym{JSN}, or @acronym{NcML/XML} text formats to
+@code{stdout}, like (an extended version of) @command{ncdump}.
 By default @command{ncks} prints data in a tabular format intended to be
 easy to search for the data you want, one datum per screen line, with
 all dimension subscripts and coordinate values (if any) preceding the
 datum. 
 Option @samp{-s} (or long options @samp{--sng_fmt} and @samp{--string}) 
 permits the user to format data using C-style format strings, while
-option @samp{--cdl} outputs @acronym{CDL} and option @samp{--xml}
-outputs @acronym{NcML}. 
+option @samp{--cdl} outputs @acronym{CDL},
+option @samp{--jsn} (or @samp{json}) outputs @acronym{JSON},
+and option @samp{--xml} (or @samp{ncml}) outputs @acronym{NcML}. 
 @command{ncks} exposes many flexible controls over printed output,
-including @acronym{CDL} and @acronym{NcML}.
+including @acronym{CDL}, @acronym{JSON}, and @acronym{NcML}.
 
 Options @samp{-5}, @samp{-a}, @samp{--cdl}, @samp{-F} , @samp{-H},
 @samp{--hdn}, @samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q}, @samp{-q},
@@ -18202,19 +18195,6 @@ Features common to many operators are described in
 @ref{Shared features}. 
 
 @table @samp
-
-@html
-<a name="-5"></a> <!-- http://nco.sf.net/nco.html#-5 -->
-<a name="5"></a> <!-- http://nco.sf.net/nco.html#5 -->
-@end html
-@cindex @code{-5}
-@item -5 
-Print data to screen alphabetically by group, and alphabetically by
-variable within each group.
-This ordering here is used by default in @acronym{CDL}-mode printing,
-and may be selected for traditional mode printing with @samp{-5}
-(The switch for invocation may change to something more descriptive in
-the future). 
 
 @html
 <a name="abc"></a> <!-- http://nco.sf.net/nco.html#abc -->
@@ -18325,7 +18305,7 @@ Hidden attributes include: @code{_Format}, @code{_DeflateLevel},
 @code{_Endianness}, @code{_Fletcher32}, and @code{_NOFILL}. 
 Previously @command{ncks} ignored all these attributes in
 @acronym{CDL}/@acronym{XML} modes. 
-Now it prints these attributes as appropriate. 
+Now it prints these attributes as appropriate in all modes. 
 As of @acronym{NCO} version 4.4.6 (September, 2014), @samp{--hdn} 
 also prints the extended file format (i.e., the format of the file
 or server supplying the data) as @code{_SOURCE_FORMAT}.

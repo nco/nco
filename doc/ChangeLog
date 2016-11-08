@@ -1,5 +1,9 @@
 2016-11-08  Charlie Zender  <zender@uci.edu>
 
+	* Expose JSON options in documentation
+
+	* Fix help options for fl_fmt to include 64bit_data/CDF5
+
 	* Henry added capability for increasing default level of attribute verbosity, now named jsn_att_fmt
 
 2016-11-07  Charlie Zender  <zender@uci.edu>
