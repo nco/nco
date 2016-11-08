@@ -88,7 +88,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   nc_type var_typ;
 
   nco_bool flg_glb=False; /* [flg] Printing attributes for root-level group */
-
+  
+  bool jsn_obj=False; /* if true then print att in own object */
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
   const nco_bool XML=prn_flg->xml; /* [flg] XML output */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
@@ -359,13 +360,25 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)fprintf(stdout,"%*s%s%s:%s = ",prn_ndn,spc_sng,(att[idx].type == NC_STRING) ? "string " : "",src_sng,nm_cdl); 
       nm_cdl=(char *)nco_free(nm_cdl);
     } /* !cdl */
-    // if(JSN) (void)fprintf(stdout,"{\"name\": \"%s\", \"value\": ",att[idx].nm);
+
     if(JSN){ 
       nm_jsn=nm2sng_jsn(att[idx].nm);
-      (void)fprintf(stdout,"%*s\"%s\": ",prn_ndn,spc_sng,nm_jsn);
-        /* multi-element so print array open */ 
-        if(att_sz>1 && att[idx].type != NC_CHAR)
-             (void)fprintf(stdout,"["); 
+
+      if( prn_flg->jsn_att_opt == 1 || prn_flg->jsn_att_opt == 2 && 
+	  ( att[idx].type !=NC_DOUBLE && att[idx].type !=NC_FLOAT && att[idx].type !=NC_INT && att[idx].type !=NC_STRING && att[idx].type != NC_CHAR ))
+        jsn_obj=True;   
+      else
+        jsn_obj=False;         
+ 
+      if(jsn_obj)          
+         (void)fprintf(stdout,"%*s\"%s\": { \"type\": \"%s\", \"data\": ",prn_ndn,spc_sng,nm_jsn, jsn_typ_nm(att[idx].type) ); 
+      else
+         (void)fprintf(stdout,"%*s\"%s\": ",prn_ndn,spc_sng,nm_jsn); 
+ 
+      /* multi-element so print array open */ 
+      if(att_sz>1 && att[idx].type != NC_CHAR)
+          (void)fprintf(stdout,"["); 
+
       nm_jsn=(char *)nco_free(nm_jsn);    
     }        
     if(TRD) (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
@@ -542,7 +555,14 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       /* deal with multi-element att */ 
       if( att_sz>1 && att[idx].type != NC_CHAR)
 	  (void)fprintf(stdout,"]");          
-      (void)fprintf(stdout,"%s",(idx < att_nbr_ttl-1) ? ",\n" : "");
+
+      if(jsn_obj)  
+        /* close up jsn tag if we are outputting a jsn object */  
+        (void)fprintf(stdout,"%s",(idx < att_nbr_ttl-1) ? "},\n" : "}");  
+      else
+        (void)fprintf(stdout,"%s",(idx < att_nbr_ttl-1) ? ",\n" : "");     
+
+
     }  
 
     rcd_prn+=0; /* CEWI */
@@ -2421,7 +2441,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       if( dmn_idx<dmn_nbr-1 )
 	(void)printf(",\n");
       else
+      {  
+        prn_ndn-=prn_flg->var_fst;
 	(void)printf("\n%*s}",prn_ndn,spc_sng);         
+      }  
        
       nm_jsn=(char *)nco_free(nm_jsn);   
       JSN_BLOCK=True;    
@@ -2731,7 +2754,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 	  (void)fprintf(stdout,",\n"); 
         else
 	  /* print closing tag for group */
-	  fprintf(stdout,"\n%*s}\n",prn_ndn,spc_sng);         
+	  fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);         
     
       } 
 
@@ -2755,8 +2778,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Mark end of output */
   if(CDL_OR_TRD) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nm2sng_cdl(nco_gpe_evl(prn_flg->gpe,grp_nm_fll)));
   if(JSN && grp_dpt ==0) (void)fprintf(stdout,"\n}\n"); 
-  if(JSN && grp_dpt >0) (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng); 
-  //if(JSN) (void)fprintf(stdout,"%*s}\n", grp_dpt*prn_flg->spc_per_lvl,spc_sng);
+  // if(JSN && grp_dpt >0) (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng); 
+  if(JSN && grp_dpt >0) (void)fprintf(stdout,"\n%*s}", prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng);
   if(XML && grp_dpt == 0) (void)fprintf(stdout,"</netcdf>\n"); 
   if(XML && grp_dpt != 0) (void)fprintf(stdout,"%*s</group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
 
