@@ -953,6 +953,7 @@ extern "C" {
     int sxn_fst; /* [nbr] Offset of section from group name */
     int var_fst; /* [nbr] Offset of variable from section name */
     char *dlm_sng; /* User specified delimiter string for printed output */
+    int jsn_att_opt; /* specify how atts are output 0, (normal), 1 (atts in own object), 2 ( only atts not NC_INT,NC_FLOAT,NC_DOUBLE in own object) */ 
     nco_bool ALPHA_BY_FULL_GROUP; /* [flg] Print alphabetically by full group */
     nco_bool ALPHA_BY_FULL_OBJECT; /* [flg] Print alphabetically by full object */
     nco_bool ALPHA_BY_STUB_GROUP; /* [flg] Print alphabetically by stub group */
