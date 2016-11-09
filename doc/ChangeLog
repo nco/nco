@@ -1,3 +1,7 @@
+2016-11-09  Charlie Zender  <zender@uci.edu>
+
+	* Document JSON options in nco.texi
+
 2016-11-08  Charlie Zender  <zender@uci.edu>
 
 	* Expose JSON options in documentation

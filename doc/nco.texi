@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-beta02
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 8 November 2016
+@set update-date 9 November 2016
 @set update-month November 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18061,9 +18061,10 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
-[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--jsn] [--jsn_att_fmt @var{lvl}] [-L @var{dfl_lvl}] [-l @var{path}]
-[-M] [-m] [--map @var{map-file}] [--md5] [--mk_rec_dmn @var{dim}]
-[--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
+[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--jsn] [--jsn_att_fmt @var{lvl}] 
+[-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--map @var{map-file}] 
+[--md5] [--mk_rec_dmn @var{dim}] [--no_blank] [--no_tmp_fl] 
+[-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
 [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt] [-s @var{format}] 
 [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
 @var{input-file} [[@var{output-file}]]
@@ -18084,7 +18085,7 @@ optionally writes it in flat binary format to @file{fl_bnr}, and
 optionally prints it to screen.
 
 @command{ncks} prints netCDF input data in @acronym{ASCII},
-@acronym{CDL}, @acronym{JSN}, or @acronym{NcML/XML} text formats to
+@acronym{CDL}, @acronym{JSON}, or @acronym{NcML/XML} text formats to
 @code{stdout}, like (an extended version of) @command{ncdump}.
 By default @command{ncks} prints data in a tabular format intended to be
 easy to search for the data you want, one datum per screen line, with
@@ -18465,14 +18466,17 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 <a name="jsn"></a> <!-- http://nco.sf.net/nco.html#jsn -->
 <a name="json"></a> <!-- http://nco.sf.net/nco.html#json -->
 @end html
+@cindex @code{--jsn_att_fmt}
 @cindex @code{--jsn}
 @cindex @code{--json}
 @cindex @acronym{JSN}
 @cindex @acronym{JSON}
+@cindex JavaScript
 @item --jsn, --json
 As of @acronym{NCO} version 4.6.2 (November, 2016), @command{ncks} can
 print extracted metadata to screen (i.e., @code{stdout}) as
-@acronym{JSON}, JavaScript Object Notation.
+@acronym{JSON}, JavaScript Object Notation defined 
+@uref{http://www.json.org, here}.
 @command{ncks} supports @acronym{JSON} output more completely, flexibly,
 and robustly than any other tools to our knowledge.
 With @command{ncks} one can translate entire netCDF3 and netCDF4 files
@@ -18491,12 +18495,158 @@ zender@aerosol:~$ ncks --jsn -v one ~/nco/data/in.nc
 }
 @end verbatim
 @end example
-@acronym{JSON} allows many possible output formats for netCDF files.
-Unlike
-That @acronym{ncks} produces correct 
-translations of for all supported datatypes may be verified by the
-@acronym{JSON} syntax checker command @command{fxm}.
-comparison to output from Unidata's @command{toolsUI} Java program.
+This output demonstrates that @acronym{NCO} converts to (using
+commonsense rules) and prints all @acronym{NC_TYPE}s as one of these
+three atomic types supported as @acronym{JSON} values: @code{double},
+@code{string}, and @code{int}
+@footnote{The @acronym{JSON} boolean atomic type is not (yet) supported
+as there is no obvious netCDF-equivalent to this type.}.
+Hence floating-point types (@acronym{NC_FLOAT} and @acronym{NC_DOUBLE})
+are printed with a decimal point and at least one signficant digit
+following the decimal point, e.g., @code{1.0} rather than @code{1.} or
+@code{1}.    
+Integer types are printed with no decimal point.
+String types (@acronym{NC_CHAR} and @acronym{NC_STRING}) are enclosed 
+in double-quotes.
+
+The @acronym{JSON} specification allows many possible output formats for  
+netCDF files.  
+@acronym{NCO} developers implemented a working prototype in Octoboer,
+2016 and, after discussing options with interested parties 
+@uref{https://sourceforge.net/p/nco/discussion/9829/thread/8c4d7e72, here}, 
+finalized the emitted @acronym{JSON} syntax a few weeks later.
+The resulting @acronym{JSON} backend supports three levels of
+pedanticness, ordered from more concise, flexible, and human-readable to 
+more verbose, restrictive, and reproducible.
+@acronym{JSON}-specific switches access these modes and other features. 
+Request a specific format level with the pedantic level argument to
+the @samp{--jsn_att_fmt @var{lvl}} option:
+@table @dfn
+@item @math{@var{lvl} = 0}
+This is the default mode, and is explicitly selectable with
+@samp{--jsn_att_fmt=0}.
+All values are output without the original @acronym{NC_TYPE} token.
+This allows attributes to print as @acronym{JSON} name-value pairs,
+rather than as more complex objects: 
+@example
+@verbatim
+% ncks --jsn --jsn_att_fmt=0 -v att_var ~/nco/data/in_grp.nc | grep att_var
+...
+"att_var": {
+  "dims": ["time"],
+  "type": "float",
+  "attributes": {
+    "byte_att": [0, 1, 2, 127, -128, -127, -2, -1],
+    "char_att": "Sentence one.\nSentence two.\n",
+    "short_att": 37,
+    "int_att": 73,
+    "long_att": 73,
+    "float_att": [73.0, 72.0, 71.0, 70.010, 69.0010, 68.010, 67.010],
+    "double_att": [73.0, 72.0, 71.0, 70.010, 69.0010, 68.010, 67.0100010]
+  },
+  "data": [10.0, 10.10, 10.20, 10.30, 10.40101, 10.50, 10.60, 10.70, 10.80, 10.990]
+...
+@end verbatim
+@end example
+
+This least pedantic mode produces the most easily read results, and
+suffices for many (most?) purposes.  
+Any downstream parser is expected to assign an appropriate type as
+indicated by the @acronym{JSON} syntax rules.
+Because the original attribute's @code{NC_TYPE} is not output, it is
+not guaranteed that a downstream parser can exactly reproduce the input  
+file datatypes. 
+For example, whether the original attribute string was stored as
+@code{NC_CHAR} or @code{NC_STRING} will be unknown to a downstream
+parser.
+Distinctions between @code{NC_FLOAT} and @code{NC_DOUBLE} are similarly
+lost, as are all distinctions among the integer types.
+
+In our experience, these distinctions are immaterial for attributes,
+which are intended for metadata not for large-scale storage.   
+Type-distinctions can, however, significantly impact the size of
+variable data, responsible for nearly all the storage required by
+datasets.
+For instance, storing or transferring an @code{NC_SHORT} field as
+@code{NC_DOUBLE} would waste a factor of four in space or bandwidth. 
+This is why @acronym{NCO} @emph{always} prints the @code{NC_TYPE} 
+of variable data.
+Downstream parsers can (but are not required to) take advantage of the
+variable's @code{NC_TYPE} to choose the most efficient storage type. 
+
+@item @math{@var{lvl} = 1}
+This medium-pedantic level prints all attributes as objects (with
+explicit types) @emph{except} those attributes whose types match
+the simplest default @acronym{JSON} value types (@acronym{NC_FLOAT},
+@acronym{NC_CHAR}/@acronym{NC_STRING}, @acronym{NC_INT}).  
+double, string, and int attributes are printed as @acronym{JSON} arrays, 
+as in the @math{@var{lvl} = 0} above:
+@example
+@verbatim
+% ncks --jsn --jsn_att_fmt=1 -v att_var ~/nco/data/in.nc
+...
+"att_var": {
+  "dims": ["time"],
+  "type": "float",
+  "attributes": {
+    "byte_att": { "type": "byte", "data": [0, 1, 2, 127, -128, -127, -2, -1]},
+    "char_att": "Sentence one.\nSentence two.\n",
+    "short_att": { "type": "short", "data": 37},
+    "int_att": 73,
+    "long_att": 73,
+    "float_att": [73.0, 72.0, 71.0, 70.010, 69.0010, 68.010, 67.010],
+    "double_att": { "type": "double", "data": [73.0, 72.0, 71.0, 70.010, 69.0010, 68.010, 67.0100010]}
+  },
+  "data": [10.0, 10.10, 10.20, 10.30, 10.40101, 10.50, 10.60, 10.70, 10.80, 10.990]
+...
+@end verbatim
+@end example
+The attributes of type @code{NC_BYTE}, @code{NC_SHORT}, and
+@code{NC_DOUBLE} are printed as @acronym{JSON} objects that comprise an
+@code{NC_TYPE} and a value list, because their values could conceivably 
+not be representable, or would waste space, if interpreted as
+@code{NC_INT} or @code{NC_FLOAT}, respectively.
+All other attributes may be naturally mapped to the type indicated by
+the @acronym{JSON} syntax of the value, where numbers are assumed to
+correspond to @code{NC_FLOAT} for floating-point, @code{NC_INT} for
+integers, and @code{NC_CHAR} or @code{NC_STRING} for strings.
+This minimal increase in verbosity allows a downstream parser to
+re-construct the original dataset with nearly identical attributes types
+to the original.
+
+@item @math{@var{lvl} = 2}
+This is the most pedantic mode, and should be used whenever preserving
+all input types, and exact reproducibility of the input file, is
+important. 
+This mode always prints attributes as @acronym{JSON} objects with a type
+value so that any downstream parser can (though it need not) guarantee
+exact reproduction of the original dataset:
+@example
+@verbatim
+% ncks --jsn --jsn_att_fmt=2 -v att_var ~/nco/data/in.nc
+...
+"att_var": {
+  "dims": ["time"],
+  "type": "float",
+  "attributes": {
+    "byte_att": { "type": "byte", "data": [0, 1, 2, 127, -128, -127, -2, -1]},
+    "char_att": { "type": "char", "data": "Sentence one.\nSentence two.\n"},
+    "short_att": { "type": "short", "data": 37},
+    "int_att": { "type": "int", "data": 73},
+    "long_att": { "type": "int", "data": 73},
+    "float_att": { "type": "float", "data": [73.0, 72.0, 71.0, 70.010, 69.0010, 68.010, 67.010]},
+    "double_att": { "type": "double", "data": [73.0, 72.0, 71.0, 70.010, 69.0010, 68.010, 67.0100010]}
+  },
+  "data": [10.0, 10.10, 10.20, 10.30, 10.40101, 10.50, 10.60, 10.70, 10.80, 10.990]
+...
+@end verbatim
+@end example
+@end table
+
+@cindex @command{jsonlint}
+That @acronym{ncks} produces correct translations of for all supported
+datatypes may be verified by the @acronym{JSON} syntax checker command
+like @command{jsonlint}. 
 Please let us know how to improve @acronym{JSON} features for your
 application.  
 

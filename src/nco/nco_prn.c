@@ -350,7 +350,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
       jsn_obj=False;         
       if(prn_flg->jsn_att_fmt == 2 ||
-	 (prn_flg->jsn_att_fmt == 1 && (att[idx].type != NC_DOUBLE && att[idx].type != NC_FLOAT && att[idx].type != NC_INT && att[idx].type != NC_STRING && att[idx].type != NC_CHAR)))
+	 (prn_flg->jsn_att_fmt == 1 && (att[idx].type != NC_FLOAT && att[idx].type != NC_INT && att[idx].type != NC_STRING && att[idx].type != NC_CHAR)))
         jsn_obj=True;   
  
       if(jsn_obj) (void)fprintf(stdout,"%*s\"%s\": { \"type\": \"%s\", \"data\": ",prn_ndn,spc_sng,nm_jsn,jsn_typ_nm(att[idx].type)); else (void)fprintf(stdout,"%*s\"%s\": ",prn_ndn,spc_sng,nm_jsn); 
