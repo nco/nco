@@ -3029,7 +3029,7 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
   int var_id;                      /* [id] Variable ID */
   int var_idx;                     /* [idx] Variable index */
   int var_nbr_xtr;                 /* [nbr] Number of extracted variables */
-  
+  int nbr_grp_xtr=0;               /* number of groups currently extracted */  
   nco_bool JSN_BLOCK=False;         /* turns true is we have output a jsnblock -need so we add commas where needed */ 
   const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
   
@@ -3238,8 +3238,8 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
      (void)fprintf(stdout,"%*s\"groups\": {\n",prn_ndn,spc_sng);       
      JSN_BLOCK=True; 
   }
-      
-
+  
+  
   /* Call recursively for all extracted subgroups */
   for(grp_idx=0;grp_idx<nbr_grp;grp_idx++){
     char *sub_grp_nm_fll=NULL; /* [sng] Sub group path */
@@ -3268,19 +3268,30 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
     
     /* Is sub-group to be extracted? If so, recurse */
     if(trv_tbl->lst[obj_idx].flg_xtr)
-    { 
-        rcd+=nco_grp_prn_jsn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
+    {  
+      if(nbr_grp_xtr++ > 0) 
+        (void)fprintf(stdout,",\n"); 
 
+        rcd+=nco_grp_prn_jsn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
+        
+        /*  
         if(grp_idx < nbr_grp-1)   
 	  (void)fprintf(stdout,",\n"); 
         else
-	  /* print closing tag for group */
 	  fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);         
+        */
     } 
+
+
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
   } /* end loop over grp_idx */
+
+  /* print closing tag for group */
+  if( nbr_grp>0 )     
+    fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);         
+
 
   if(grp_dpt ==0) (void)fprintf(stdout,"\n}\n"); 
   if(grp_dpt >0) (void)fprintf(stdout,"\n%*s}", prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng);
