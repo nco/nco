@@ -2908,9 +2908,6 @@ nco_grp_prn_xml /* [fnc] Recursively print group contents */
   if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg->ALPHA_BY_STUB_GROUP);
     
 
-  /* Print variable information for group */
-  if(var_nbr_xtr > 0 && CDL_OR_TRD) (void)fprintf(stdout,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
-
   for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
     trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
     /* Obtain variable ID */
@@ -3086,12 +3083,12 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
     dmn_lst[dmn_idx].nm=strdup(trv_tbl->lst_dmn[dmn_idx_grp[dmn_idx]].nm);
   } /* end loop over dmn_idx */
 
-  {
-    nm_jsn=nm2sng_jsn(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
+
+  nm_jsn=nm2sng_jsn(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
     /* JSN print main opening brace */
-    if(grp_dpt==0) (void)fprintf(stdout,"{\n"); else (void)fprintf(stdout,"%*s\"%s\": {\n",prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_jsn);
-    nm_jsn=(char *)nco_free(nm_jsn);  
-  }
+  if(grp_dpt==0) (void)fprintf(stdout,"{\n"); else (void)fprintf(stdout,"%*s\"%s\": {\n",prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_jsn);
+  nm_jsn=(char *)nco_free(nm_jsn);  
+
   
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
@@ -3289,7 +3286,7 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
   if(grp_dpt >0) (void)fprintf(stdout,"\n%*s}", prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng);
 
   return rcd;
-} /* end nco_grp_prn() */
+} /* end nco_grp_prn_jsn() */
 
 
 nco_bool                            /* O [flg] Variable is compound */
