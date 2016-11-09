@@ -1123,6 +1123,18 @@ variables:
         rec_var_dbl_mss_val_sht_pck_sht:scale_factor = -9.15541313801785e-05;
 	rec_var_dbl_mss_val_sht_pck_sht:add_offset = 5.;
 
+	float rec_var_flt_mss_val_flt_pck_flt(time);
+	rec_var_flt_mss_val_flt_pck_flt:long_name = "record variable, float packed as float, with float missing values";
+	rec_var_flt_mss_val_flt_pck_flt:purpose = "CESM POP2 ocean model packs SALT, WVEL etc this way";
+	rec_var_flt_mss_val_flt_pck_flt:_FillValue = -9.96921e+33;
+        rec_var_flt_mss_val_flt_pck_flt:scale_factor = 1000.0;
+
+	float SALT(time);
+	SALT:long_name = "record variable, float packed as float, with float missing values";
+	SALT:purpose = "CESM POP2 ocean model packs SALT, WVEL etc this way";
+	SALT:_FillValue = -9.96921e+33;
+        SALT:scale_factor = 1000.0;
+	
 	char one_dmn_rec_var_sng(time);
 	one_dmn_rec_var_sng:long_name = "one dimensional record variable of string";
         one_dmn_rec_var_sng:NB = "20131222: HDF4 ncgen fails on this variable: /usr/bin/hncgen -b -o ~/in.hdf ~/nco/data/in.cdl produces error message that \"string won't fit in this variable\"";
@@ -1542,6 +1554,8 @@ data:
 	rec_var_dbl_mss_val_dbl_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 	rec_var_dbl_mss_val_dbl_pck_lng=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 	rec_var_dbl_mss_val_sht_pck_sht=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
+	rec_var_flt_mss_val_flt_pck_flt=-9.96921e+33,0.032,0.033,0.034,0.035,0.036,0.037,0.038,-9.96921e+33,-9.96921e+33;
+	SALT=-9.96921e+33,0.032,0.033,0.034,0.035,0.036,0.037,0.038,-9.96921e+33,-9.96921e+33;
 	rec_var_dbl_mss_val_dbl_upk=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;
 	rec_var_dbl_mss_val_sht_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 	rec_var_dbl_mss_val_sht_upk=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;

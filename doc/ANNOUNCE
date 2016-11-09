@@ -56,21 +56,22 @@ A. JSON backend
    To obtain JSON, use --jsn or --json instead of --cdl/--xml.
    Other related options (-v, -g, -m -M) have their usual meanings.  
    The JSON backend supports three levels of pedanticness:
-       1. Attributes always printed as objects (with types)
-          This is the most pedantic mode, and should be used
-	  whenever preserving input types is important.
-       2. Attributes that are not NC_DOUBLE, NC_CHAR/NC_STRING,
-          or NC_INT are printed as objects (with types).
-	  Doubles, strings, and ints are printed as naked arrays.
-       3. Attributes are never printed as objects.
+       0. Attributes are never printed as objects.
           All NC_TYPES are printed as doubles, strings, or ints.
 	  The original NC_TYPE is lost.
           This is the least pedantic mode, and produces the most
 	  easily read results, and is sufficient for many (most?)
 	  purpose.
+       1. Attributes that are not NC_DOUBLE, NC_CHAR/NC_STRING,
+          or NC_INT are printed as objects (with types).
+	  Doubles, strings, and ints are printed as naked arrays.
+       2. Attributes always printed as objects (with types)
+          This is the most pedantic mode, and should be used
+	  whenever preserving input types is important.
    JSON-specific switches access these modes and other features.
    ncks --jsn -v one ~/nco/data/in.nc
-   Thanks to Henry Butowsky for implementing JSON support.
+   Thanks to Henry Butowsky for implementing JSON support, and to
+   Pedro Vicente and Chris Barker for helpful discussions.
    http://nco.sf.net/nco.html#json
 
 BUG FIXES:

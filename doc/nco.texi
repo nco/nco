@@ -18098,10 +18098,10 @@ and option @samp{--xml} (or @samp{ncml}) outputs @acronym{NcML}.
 @command{ncks} exposes many flexible controls over printed output,
 including @acronym{CDL}, @acronym{JSON}, and @acronym{NcML}.
 
-Options @samp{-5}, @samp{-a}, @samp{--cdl}, @samp{-F} , @samp{-H},
-@samp{--hdn}, @samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q}, @samp{-q},
-@samp{-s}, @samp{-u}, @samp{-V}, and @samp{--xml} (and their long option
-counterparts) control the formatted appearance of the data.
+Options @samp{-a}, @samp{--cdl}, @samp{-F} , @samp{-H},
+@samp{--hdn}, @samp{--jsn}, @samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q},
+@samp{-q}, @samp{-s}, @samp{-u}, @samp{-V}, and @samp{--xml} (and their
+long option counterparts) control the formatted appearance of the data.
 
 @cindex global attributes
 @cindex attributes, global
@@ -18462,6 +18462,45 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 @end example
 
 @html
+<a name="jsn"></a> <!-- http://nco.sf.net/nco.html#jsn -->
+<a name="json"></a> <!-- http://nco.sf.net/nco.html#json -->
+@end html
+@cindex @code{--jsn}
+@cindex @code{--json}
+@cindex @acronym{JSN}
+@cindex @acronym{JSON}
+@item --jsn, --json
+As of @acronym{NCO} version 4.6.2 (November, 2016), @command{ncks} can
+print extracted metadata to screen (i.e., @code{stdout}) as
+@acronym{JSON}, JavaScript Object Notation.
+@command{ncks} supports @acronym{JSON} output more completely, flexibly,
+and robustly than any other tools to our knowledge.
+With @command{ncks} one can translate entire netCDF3 and netCDF4 files
+into @acronym{JSON}, including metadata and data, using all 
+@acronym{NCO}'s subsetting and hyperslabbing capabilities.
+Behold @acronym{JSON} output in default mode:
+@example
+@verbatim
+zender@aerosol:~$ ncks --jsn -v one ~/nco/data/in.nc
+{
+    "one": {
+      "type": "float",
+      "long_name": "one",
+      "data": 1.0
+    }
+}
+@end verbatim
+@end example
+@acronym{JSON} allows many possible output formats for netCDF files.
+Unlike
+That @acronym{ncks} produces correct 
+translations of for all supported datatypes may be verified by the
+@acronym{JSON} syntax checker command @command{fxm}.
+comparison to output from Unidata's @command{toolsUI} Java program.
+Please let us know how to improve @acronym{JSON} features for your
+application.  
+
+@html
 <a name="Metadata"></a> <!-- http://nco.sf.net/nco.html#Metadata -->
 <a name="M"></a> <!-- http://nco.sf.net/nco.html#M -->
 @end html
@@ -18711,7 +18750,7 @@ Using @samp{-V} is the same as specifying @samp{-Q --no_nm_prn}.
 
 @html
 <a name="xml"></a> <!-- http://nco.sf.net/nco.html#xml -->
-<a name="ncmnl"></a> <!-- http://nco.sf.net/nco.html#ncml -->
+<a name="ncml"></a> <!-- http://nco.sf.net/nco.html#ncml -->
 @end html
 @cindex @code{--xml}
 @cindex @code{--ncml}
@@ -18722,8 +18761,8 @@ Using @samp{-V} is the same as specifying @samp{-Q --no_nm_prn}.
 As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} can
 print extracted metadata to screen (i.e., @code{stdout}) as
 @acronym{XML} in @acronym{NcML}, the netCDF Markup Language.  
-@command{ncks} supports for @acronym{XML} more completely than 
-of @samp{ncdump -x}.
+@command{ncks} supports @acronym{XML} more completely than 
+@samp{ncdump -x}.
 With @command{ncks} one can translate entire netCDF3 and netCDF4 files
 into @acronym{NcML}, including metadata and data, using all 
 @acronym{NCO}'s subsetting and hyperslabbing capabilities.
