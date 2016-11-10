@@ -96,6 +96,10 @@ std::string va_nm,       /* I [sng] att name of form var_nm&att_nm */
 prs_cls *prs_arg);       /* I/O vectors of atts & vars & file names  */
 
 
+std::vector<std::string> /* [O] [vector] list of files paths to be used to locate include files */
+ncap_make_include_paths  
+(const char *sin);       /* list of file path(s) delimited by ':' */
+
 int
 ncap_att_gnrl
 (const std::string s_dst,

@@ -17,6 +17,41 @@ ncap_var_is_att( var_sct *var) {
   return False;
 }
 
+std::vector<std::string> /* [O] [vector] array of files paths to be used to locate include files */
+ncap_make_include_paths(const char *spaths)       /* list of file path(s) delimited by ':' */
+{
+  int vdx;
+  size_t srt; 
+  size_t idx; 
+  std::vector<std::string> str_vtr;  
+ 
+  // ncopath= getenv("NCOPATH");
+
+  if(strlen(spaths)==0)
+    return str_vtr;                 
+
+  std::string sin(spaths);
+  
+  srt=0;
+  idx=sin.find(':',srt);
+  
+  do
+  { 
+    if(idx-srt > 0)                
+       str_vtr.push_back(sin.substr(srt, idx-srt));   
+    srt=idx+1; 
+    idx=sin.find(':',srt);   
+  } while(idx!=std::string::npos); 
+  
+  /* append to path '/' if not present */
+  for(vdx=0;vdx<str_vtr.size();vdx++)
+     if(*str_vtr[vdx].end() !='/') 
+        str_vtr[vdx]+="/";  
+     
+  return str_vtr;
+}
+
+
 // initialize var to defaults & undefined to true;
 var_sct *
 ncap_var_udf(const char *var_nm)
