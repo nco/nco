@@ -68,7 +68,7 @@ public:
         char *spaths;
         /* a list of include paths delimited by ':' */   
         /* if nco NCOPATH then NULL */
-        spaths=getenv("NCOPATH");  
+        spaths=getenv("NCO_PATH");  
         if( spaths &&  strlen(spaths) >0  ) 
           paths_vtr=ncap_make_include_paths(spaths);
 
