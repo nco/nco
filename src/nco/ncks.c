@@ -1239,9 +1239,19 @@ main(int argc,char **argv)
         goto close_and_free;
       } /* !PRN_SRM */
 
+
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
-	/* Ineptly named nco_grp_prn() emits full CDL and XML formats, and partial JSN */
-        rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl);
+	/* Ineptly named nco_grp_prn() emits full CDL and XML formats, and partial JSN 
+	   rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl); */
+
+        if(prn_flg.jsn)
+           rcd+=nco_grp_prn_jsn(in_id,trv_pth,&prn_flg,trv_tbl);
+        else if(prn_flg.xml)
+           rcd+=nco_grp_prn_xml(in_id,trv_pth,&prn_flg,trv_tbl);
+        else
+           rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl);
+
+ 
       }else{
 	/* Place-holder for other options for organization/alphabetization */
 	if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
