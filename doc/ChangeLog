@@ -1,8 +1,14 @@
-2016-11-09  Charlie Zender  <zender@uci.edu>
+2016-11-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.2-beta03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.2-beta03 final changes';git push
-	git tag -a 4.6.2-beta03 -m 'Version 4.6.2-beta03 new features: ncatted NaN on MinGW patch; JSON tweaks';git push --tags
+	git tag -a 4.6.2-beta03 -m 'Version 4.6.2-beta03 new features: uint, int64, uint64 suffixes';git push --tags
+
+	* Update CDL attribute tags for uint, int64, uint64 to "ul", "ll", "ull", respectively
+	This may break builds on netCDF <= 4.3.0 because ncgen chokes on "ll" syntax
+	This is why att_var is in in_4.cdl and not in in_grp.cdl
+
+2016-11-09  Charlie Zender  <zender@uci.edu>
 
 	* Document JSON options in nco.texi
 

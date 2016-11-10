@@ -84,6 +84,12 @@ B. ncatted failed to implement NaN on some MinGW systems with, e.g.,
    We think this has been fixed. The workaround is to upgrade or use
    ncatted on *NIX or MacOS. Thanks to James Adams for reporting this.
 
+C. ncks CDL now prints correct tokens for uint, int64, uint64 types.
+   These are "ul", "ll", "ull", respectively. Previously NCO used
+   different tokens because ncgen <= 4.3.0 choked on "ll" formats.
+   So this was an intentional NCO "feature", not a bug.
+   Use ncgen >= 4.3.1 to parse these CDL files.
+
 KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the

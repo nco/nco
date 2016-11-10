@@ -591,7 +591,7 @@ nco_typ_fmt_sng_var_cdl /* [fnc] Provide sprintf() format string for specified t
 (const nc_type typ) /* I [enm] netCDF type to provide CDL format string for */
 {
   /* Purpose: Provide sprintf() format string for specified type variable
-     Unidata formats shown in ncdump.c near ling 459
+     Unidata formats shown in netcdf-c/ncdump/ncdump.c pr_att_valgs() near line 593
      Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
      and are user-configurable with -p float_digits,double_digits.
      These default to 7 and 15, respectively. */
@@ -647,7 +647,7 @@ nco_typ_fmt_sng_att_cdl /* [fnc] Provide sprintf() format string for specified a
 (const nc_type typ) /* I [enm] netCDF attribute type to provide CDL format string for */
 {
   /* Purpose: Provide sprintf() format string for specified type attribute in CDL
-     Unidata formats shown in ncdump.c near line 459
+     Unidata formats shown in netcdf-c/ncdump/ncdump.c pr_att_valgs() near line 593
      Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
      and are user-configurable with -p float_digits,double_digits.
      These default to 7 and 15, respectively. */
@@ -661,9 +661,9 @@ nco_typ_fmt_sng_att_cdl /* [fnc] Provide sprintf() format string for specified a
 
   static const char fmt_NC_UBYTE[]="%hhuub"; /*  */
   static const char fmt_NC_USHORT[]="%huus"; /*  */
-  static const char fmt_NC_UINT[]="%uu"; /*  */
-  static const char fmt_NC_INT64[]="%llil"; /*  */
-  static const char fmt_NC_UINT64[]="%lluul"; /*  */
+  static const char fmt_NC_UINT[]="%uul"; /*  */
+  static const char fmt_NC_INT64[]="%llill"; /*  */
+  static const char fmt_NC_UINT64[]="%lluull"; /*  */
   static const char fmt_NC_STRING[]="\"%s\""; /*  */
 
   switch (typ){
@@ -703,7 +703,7 @@ nco_typ_fmt_sng_att_xml /* [fnc] Provide sprintf() format string for specified a
 (const nc_type typ) /* I [enm] netCDF attribute type to provide XML format string for */
 {
   /* Purpose: Provide sprintf() format string for specified type attribute
-     Unidata formats shown in ncdump.c near line 459
+     Unidata formats shown in netcdf-c/ncdump/ncdump.c pr_att_valgs() near line 593
      Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
      and are user-configurable with -p float_digits,double_digits.
      These default to 7 and 15, respectively
@@ -1654,33 +1654,23 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     char * (*chr2sng_sf)(const char chr_val, /* I [chr] Character to process */
     char * const val_sng); /* I/O [sng] String to stuff printable result into */
 
-    /*
-    if(CDL) chr2sng_sf=chr2sng_cdl; else chr2sng_sf=chr2sng_xml;
-    if(CDL) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
-    if(XML||JSN) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));
-    if(JSN) (void)fprintf(stdout,"%*s\"data\": [",prn_ndn,spc_sng);
-    */
     if(CDL){     
       chr2sng_sf=chr2sng_cdl;
       (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type)); 
-    }
+    } /* !CDL */
     if(XML){     
       chr2sng_sf=chr2sng_xml;
       (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));   
-    }
-    if(JSN){     
+    } /* !XML */
+    if(JSN){
       chr2sng_sf=chr2sng_jsn;
       (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));   
+      /* If var is size=1 (scalar?) then no array brackets */   
+      if(var.sz == 1) (void)fprintf(stdout,"%*s\"data\": ",prn_ndn,spc_sng); else (void)fprintf(stdout,"%*s\"data\": [",prn_ndn,spc_sng);   
+    } /* !JSN */
 
-      /* if var is size=1 (scalar?)  then no array brackets */   
-      if(var.sz == 1)
-         (void)fprintf(stdout,"%*s\"data\": ",prn_ndn,spc_sng);
-      else
-         (void)fprintf(stdout,"%*s\"data\": [",prn_ndn,spc_sng);   
-    }
+    nm_cdl=nm2sng_cdl(var_nm);
 
-
-     nm_cdl=nm2sng_cdl(var_nm);
     if(XML){
       /* User may override default separator string for XML only */
       if(var.type == NC_STRING || var.type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
