@@ -342,12 +342,21 @@ tokens {
 {
 private:
     prs_cls *prs_arg;
+    std::vector<std::string> paths_vtr;      
+
 public:
 
     // Customized constructor !!
    ncoLexer(ANTLR_USE_NAMESPACE(std)istream& in, prs_cls *prs_in )
    : ANTLR_USE_NAMESPACE(antlr)CharScanner(new ANTLR_USE_NAMESPACE(antlr)CharBuffer(in),true)
-   {
+   {    
+        char *spaths;
+        /* a list of include paths delimited by ':' */   
+        /* if nco NCOPATH then NULL */
+        spaths=getenv("NCOPATH");  
+        if( spaths &&  strlen(spaths) >0  ) 
+          paths_vtr=ncap_make_include_paths(spaths);
+
         prs_arg=prs_in;
         // This shouldn't really be here 
         // fxm:: should call default constructor
@@ -630,11 +639,29 @@ INCLUDE
 		{
 		// ANTLR_USING_NAMESPACE(std)
 		// create lexer to handle include
+        int idx; 
+        int sz=paths_vtr.size(); 
 		std::string f_nm=f->getText();
+
 		std::ifstream* input=new std::ifstream(f_nm.c_str());
 		if(!(*input)){
-            //		if(*input==NULL){ // 20150413: Trips clang 6.0 MACOSX Yosemite warning from -Wnull-arithmetic and subsequent error "invalid operands to binary expression" 
-            err_prn("Lexer cannot find include file "+f_nm);
+            // if(*input==NULL){ // 20150413: Trips clang 6.0 MACOSX Yosemite warning from -Wnull-arithmetic and subsequent error "invalid operands to binary expression" 
+            //err_prn("Lexer cannot find include file "+f_nm);
+
+            // only search include paths if f_nm NOT an absolute path  
+            // add include paths and stop if opened ok  
+            if( sz==0 || f_nm[0]=='/')  
+                err_prn("Lexer cannot find include file "+f_nm); 
+             
+            for(idx=0;idx<sz;idx++)
+            {   
+              input=new std::ifstream( (paths_vtr[idx] + f_nm).c_str()); 
+              if(*input)
+                break;  
+            }
+            if(idx==sz) 
+              err_prn("Lexer cannot find include file "+f_nm+ "in the paths  specified in the env-var \"NCOPATH\""); 
+
 		}
 		ncoLexer* sublexer = new ncoLexer(*input,prs_arg);
 		// make sure errors are reported in right file
