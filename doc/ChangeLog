@@ -1,5 +1,9 @@
 2016-11-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.2-beta03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.2-beta03 final changes';git push
+	git tag -a 4.6.2-beta03 -m 'Version 4.6.2-beta03 new features: ncatted NaN on MinGW patch; JSON tweaks';git push --tags
+
 	* Document JSON options in nco.texi
 
 2016-11-08  Charlie Zender  <zender@uci.edu>
