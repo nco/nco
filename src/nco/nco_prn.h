@@ -102,6 +102,14 @@ nco_grp_prn /* [fnc] Recursively print group contents */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 int /* [rcd] Return code */
+nco_grp_prn_cdl_trd /* [fnc] Recursively print group contents in JSON format */
+(const int nc_id, /* I [id] netCDF file ID */
+ const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
+ prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
+
+int /* [rcd] Return code */
 nco_grp_prn_jsn /* [fnc] Recursively print group contents in JSON format */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
