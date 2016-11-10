@@ -2653,7 +2653,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* recurse block for JSN  */
   else
   {
-
+    int nbr_grp_xtr=0;   
     if( nbr_grp > 0) 
     {  
        if(JSN_BLOCK) (void)fprintf(stdout,",\n"); 
@@ -2697,13 +2697,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       /* Is sub-group to be extracted? If so, recurse */
       if(trv_tbl->lst[obj_idx].flg_xtr)
       { 
-        rcd+=nco_grp_prn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
+        if(nbr_grp_xtr++ > 0) 
+            (void)fprintf(stdout,",\n"); 
 
-        if(grp_idx < nbr_grp-1)   
-	  (void)fprintf(stdout,",\n"); 
-        else
-	  /* print closing tag for group */
-	  fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);         
+        rcd+=nco_grp_prn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
     
       } 
 
@@ -2713,17 +2710,11 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   }
 
-  /* if JSN then print closing tag to group 
+  /* if JSN then print closing tag to group */
   if(JSN && nbr_grp>0 ){
-    (void)fprintf(stdout,"%*s}\n",prn_ndn,spc_sng);
+    (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);
   }
-  */
-
-
-  //if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"], \n"); /* End node-list */
-  //if(JSN) (void)fprintf(stdout,"\"w10n\": [{\"name\": \"spec\", \"value\": \"draft-20091228\"}, {\"name\": \"application\", \"value\": \"%s\"}, {\"name\": \"type\", \"value\": \"%s\"}, {\"name\": \"path\", \"value\": \"%s\"}, {\"name\": \"identifier\", \"value\": \"/\"}]}, \n",nco_prg_nm_get(),jsn_fmt_xtn_nm(nco_fmt_xtn_get()),prn_flg->fl_in);
-  //if(JSN && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\"name\": \"%s\"\n",(grp_dpt == 0) ? "" : trv_tbl->lst[obj_idx_crr].nm);
-
+  
   /* Mark end of output */
   if(CDL_OR_TRD) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nm2sng_cdl(nco_gpe_evl(prn_flg->gpe,grp_nm_fll)));
   if(JSN && grp_dpt ==0) (void)fprintf(stdout,"\n}\n"); 
