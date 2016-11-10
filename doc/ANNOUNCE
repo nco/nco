@@ -75,14 +75,14 @@ A. All builds tested on LLVM 8.0.0 and GCC 6.2.1 toolchains.
 BUG FIXES:
 
 A. ncclimo and ncremap could fail if ${BASH_SOURCE[0]} is unavailable.
-   This can be the case, e.g., with the dash shell and/or due to 
-   software modules that modify users' environments.
+   This could occur, e.g., with the dash shell and/or due to software
+   modules that modify users' environments. 
    This portability issue has been resolved.
 
 B. ncatted failed to implement NaN on some MinGW systems with, e.g.,
    ncatted -O -a _FillValue,fll_val,m,f,nan ~/nco/data/in.nc ~/foo.nc
-   We think this has been fixed.
-   Thanks to John Adams for reporting this.
+   We think this has been fixed. The workaround is to upgrade or use
+   ncatted on *NIX or MacOS. Thanks to James Adams for reporting this.
 
 KNOWN PROBLEMS DUE TO NCO:
 
