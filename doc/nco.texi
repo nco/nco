@@ -552,6 +552,15 @@ Charlie Zender@*
 June, 2015@*
 Irvine, California@*
 
+@ignore
+The @acronym{DOE} @acronym{ACME} program generously supported ...
+@sp 1
+@noindent
+Charlie Zender@*
+November, 2016@*
+Laguna Beach, California@*
+@end ignore
+
 @html
 <a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->
 @end html
@@ -2770,7 +2779,7 @@ or long option names for all options.
 This was done in a backward compatible way such that the full
 functionality of @acronym{NCO} is still available through the familiar 
 single letter options.
-In the future, however, some features of @acronym{NCO} may require the
+Many features of @acronym{NCO} introduced since 2002 now require the 
 use of long options, simply because we have nearly run out of single
 letter options.
 More importantly, mnemonics for single letter options are often
@@ -2808,16 +2817,17 @@ The syntax of @dfn{long options} (multi-letter options) is
 Thus the following are all valid for the @samp{-D} (short version)
 or @samp{--dbg_lvl} (long version) command line option.
 @example
-ncks -D 3 in.nc        # Short option
+ncks -D 3 in.nc        # Short option, preferred form
+ncks -D3 in.nc         # Short option, alternate form
 ncks --dbg_lvl=3 in.nc # Long option, preferred form
 ncks --dbg_lvl 3 in.nc # Long option, alternate form
 @end example
 @noindent
-The last example is preferred for two reasons.
+The third example is preferred for two reasons.
 First, @samp{--dbg_lvl} is more specific and less ambiguous than
 @samp{-D}.
-The long option form makes scripts more self documenting and less error
-prone.  
+The long option format makes scripts more self documenting and less
+error-prone.   
 Often long options are named after the source code variable whose value 
 they carry.
 Second, the equals sign @kbd{=} joins the key (i.e., @var{long_name}) to   
@@ -2825,20 +2835,29 @@ the value in an uninterruptible text block.
 Experience shows that users are less likely to mis-parse commands when
 restricted to this form.
 
-@acronym{GNU} implements a superset of the @acronym{POSIX} standard 
-which allows any unambiguous truncation of a valid option to be used.
+@menu
+* Truncating Long Options::
+* Multi-arguments::
+@end menu
+
+@node Truncating Long Options, Multi-arguments, Command Line Options, Command Line Options
+@subsection Truncating Long Options
+@cindex Truncating options
+@cindex Options, truncating
+@acronym{GNU} implements a superset of the @acronym{POSIX} standard.
+Their superset accepts any unambiguous truncation of a valid option:
 @example
 ncks -D 3 in.nc        # Short option
 ncks --dbg_lvl=3 in.nc # Long option, full form
-ncks --dbg=3 in.nc     # Long option, unambiguous truncation
-ncks --db=3 in.nc      # Long option, unambiguous truncation
-ncks --d=3 in.nc       # Long option, ambiguous truncation
+ncks --dbg=3 in.nc     # Long option, OK unambiguous truncation
+ncks --db=3 in.nc      # Long option, OK unambiguous truncation
+ncks --d=3 in.nc       # Long option, ERROR ambiguous truncation
 @end example
 @noindent
 The first four examples are equivalent and will work as expected.
 The final example will exit with an error since @command{ncks} cannot
 disambiguate whether @samp{--d} is intended as a truncation of
-@samp{--dbg_lvl}, of @samp{--dimension}, or of some other long option. 
+@samp{--dbg_lvl}, of @samp{--dimension}, or of some other long option.  
 
 @acronym{NCO} provides many long options for common switches.
 For example, the debugging level may be set in all operators with any
@@ -2848,13 +2867,108 @@ For some, it will be @samp{--debug} (an unambiguous truncation of
 @samp{--debug-level}, and other will prefer @samp{--dbg}.
 Interactive users usually prefer the minimal amount of typing, i.e.,
 @samp{-D}.
-We recommend that scripts which are re-usable employ some form of 
-the long options for future maintainability.
+We recommend that re-usable scripts employ long options to facilitate
+self-documentation and maintainability.  
 
 This manual generally uses the short option syntax in examples.
 This is for historical reasons and to conserve space in printed output.
 Users are expected to pick the unambiguous truncation of each option
 name that most suits their taste.
+
+@html
+<a name="mta"></a> <!-- http://nco.sf.net/nco.html#mta -->
+<a name="multi-arguments"></a> <!-- http://nco.sf.net/nco.html#multi-arguments -->
+<a name="Multi-arguments"></a> <!-- http://nco.sf.net/nco.html#Multi-arguments -->
+@end html
+@node Multi-arguments,  , Truncating Long Options, Command Line Options
+@subsection Multi-arguments
+@cindex Multi-arguments
+@cindex Options, multi-argument
+@cindex @code{--gaa @var{key}=@var{val}}
+@cindex @code{--ppc @var{key}=@var{val}}
+@cindex @code{--rgr @var{key}=@var{val}}
+@cindex @code{--trr @var{key}=@var{val}}
+As of @acronym{NCO} version 4.6.2 (November, 2016), @acronym{NCO} accepts
+multiple key-value pair options for a single feature to be joined
+together into a single extended argument called a @dfn{multi-argument}. 
+Only four @acronym{NCO} features accept multiple key-value pairs that
+can be aggregated into multi-arguments. 
+These features are:
+Global Attribute Addition options indicated via @samp{--gaa} (@pxref{Global Attribute Addition});
+Image Manipulation indicated via @samp{--trr}@footnote{
+@cindex @acronym{ENVI}
+@cindex @acronym{DOE}
+@cindex @acronym{Terraref}
+@cindex @samp{--trr}
+@acronym{NCO} supports decoding @acronym{ENVI} images in support of the
+@acronym{DOE} Terraref project.
+These options are indicated via the @command{ncks} @samp{--trr} switch,
+and are otherwise undocumented.}, 
+Precision-Preserving Compression options indicated via @samp{--ppc} (@pxref{Precision-Preserving Compression});
+and 
+Regridding options are indicated via @samp{--rgr} (@pxref{Regridding}).
+Arguments to these four indicator options take the form of key-value
+pairs, e.g., @samp{--rgr @var{key}=@var{val}}. 
+These four features have so many options that making each key its own
+command line option would pollute the namespace of @acronym{NCO}'s
+global options. 
+Yet supplying multiple options to each indicator option one-at-a-time
+can result in command lines overpopulated with indicator switches (e.g.,
+@samp{--rgr}): 
+@example
+@verbatim
+ncks --rgr grd_ttl='Title' --rgr grid=grd.nc --rgr latlon=129,256 \
+     --rgr lat_typ=fv --rgr lon_typ=grn_ctr ...
+@end verbatim
+@end example
+
+Multi-arguments combine all the indicator options into one option that
+receives a single argument that comprises all the original arguments
+glued together by a delimiter, which is, by default, @samp{#}.
+Thus the multi-argument version of the above example is
+@example
+@verbatim
+ncks --rgr grd_ttl='Title'#grid=grd.nc#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr
+@end verbatim
+@end example
+Note the aggregation of all @var{key}=@var{val} pairs into a single
+argument.
+@acronym{NCO} simply splits this argument at each delimiter, and
+processes the sub-arguments as if they had been passed with their own
+indicator option.
+Multi-arguments produce the same results, and may be mixed with,
+traditional indicator options supplied one-by-one.
+
+As mentioned previously, the multi-argument delimiter string is, by
+default, the hash-sign @samp{#}. 
+When any @var{key}=@var{val} pair contains the default delimiter, the
+user must specify a custom delimiter string so that options are parsed
+correctly. 
+The options to change the multi-argument delimiter string are
+@samp{--mta_dlm=@var{delim_string}} or
+@samp{--dlm_mta=@var{delim_string}}, where @var{delim_string} can be any
+single or multi-character string that (1) is not contained in any
+@var{key} or @var{val} string; and (2) will not confuse the shell.
+For example, to use multi-arguments to pass a string that includes 
+the hash symbol (the default delimiter is @samp{#}), one must also
+change the delimiter so something besides hash, e.g., a colon @samp{:}: 
+@example
+@verbatim
+ncks --dlm=":" --gaa foo=bar:foo2=bar2:foo3,foo4="hash # is in value" 
+ncks --dlm=":" --gaa foo=bar:foo2=bar2:foo3,foo4="Thu Sep 15 13\:03\:18 PDT 2016"
+ncks --dlm="csz" --gaa foo=barcszfoo2=bar2cszfoo3,foo4="Long text"
+@end verbatim
+@end example
+In the second example, the colons that are escaped with the backslash
+become literal characters.  
+Many characters have special shell meanings and so must be escaped by a 
+single or double backslash or enclosed in single quotes to prevent
+interpolation. 
+These special characters include @samp{:}, @samp{$}, @samp{%}, @samp{*},
+@samp{@@}, and @samp{&}. 
+If @var{val} is a long text string that could contain the default
+delimiter, then delimit with a unique multi-character string such as
+@samp{csz} in the third example. 
 
 @html
 <a name="fl_in"></a> <!-- http://nco.sf.net/nco.html#fl_in -->
@@ -6019,8 +6133,20 @@ latitude/longitude grids.
 The grids are stored in an external @var{grid-file}.
 
 All options pertinent to the grid geometry and metadata are passed to
-@acronym{NCO} via key-value pairs prefixed by the @samp{--rgr} option.
-Perhaps the two most important key-value pair arguments are 
+@acronym{NCO} via key-value pairs prefixed by the @samp{--rgr} option,
+or its synonym, @samp{--regridding}.
+@cindex indicator option
+@cindex multi-arguments
+The option @samp{--rgr} (and its long option equivalents such
+as @samp{--regridding}) indicates the argument syntax will be
+@var{key}=@var{val}.
+As such, @samp{--rgr} and its synonyms are indicator options that accept
+arguments supplied one-by-one like 
+@samp{--rgr @var{key1}=@var{val1} --rgr @var{key2}=@var{val2}}, or
+aggregated together in multi-argument format like
+@samp{--rgr @var{key1}=@var{val1}#@var{key2}=@var{val2}}
+(@pxref{Multi-arguments}).
+
 The text strings that describe the grid and name the file are important 
 aids to convey the grid geometry to other users.
 These arguments, and their corresponding keys, are the grid title
@@ -6238,6 +6364,11 @@ ncks ... --rgr snwe=30.0,70.0,-120.0,-90.0 ...
 @end verbatim
 @end example
 @end table
+The first example above supplies the bounding box with four
+@var{key}=@var{val} pairs. 
+The second example above supplies the bounding box with a single option
+in multi-argument format (@pxref{Multi-arguments}).
+The third example uses a convenience switch introduced to reduce typing.
 
 Generating common grids:
 @example
@@ -7432,8 +7563,12 @@ Dataset chunking issues are described by @acronym{THG} and Unidata
 and
 @uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes,here}.
 @acronym{NCO} authors are working on generalized algorithms and
-applications of chunking strategies (stay tuned for more in 2015).    
+applications of chunking strategies (stay tuned for more in 2017).
 
+@html
+<a name="blocksize"></a> <!-- http://nco.sf.net/nco.html#blocksize -->
+<a name="blk"></a> <!-- http://nco.sf.net/nco.html#blk -->
+@end html
 @cindex chunking policy
 @cindex chunking map
 @cindex chunksize
@@ -7876,19 +8011,26 @@ This algorithm is accessed via the @acronym{HDF5} library layer
 (which itself calls the @command{zlib} library also used by
 @command{gzip}), and is unavailable with netCDF3.   
 
-The three lossy compression algorithms are Packing 
+@menu
+* Linear Packing::
+* Precision-Preserving Compression::
+@end menu
+
+@node Linear Packing, Precision-Preserving Compression, Compression, Compression
+@subsection Linear Packing
+The three lossy compression algorithms are Linear Packing 
 (@pxref{Packed data}), and two precision-preserving algorithms.
-Packing quantizes data of a higher precision type into a lower precision 
-type (often @code{NC_SHORT}) that thus stores a fewer (though constant)
-number of bytes per value. 
-Packed data unpacks into a (much) smaller dynamic range than the
+Linear packing quantizes data of a higher precision type into a lower
+precision type (often @code{NC_SHORT}) that thus stores a fewer (though
+constant) number of bytes per value. 
+Linearly packed data unpacks into a (much) smaller dynamic range than the
 floating-point data can represent.  
 The type-conversion and reduced dynamic range of the data allows packing
 to eliminate bits typically used to store an exponent, thus improving 
 its packing efficiency.
 Packed data also can also be deflated for additional space savings. 
 
-A limitation of packing is that unpacking data stored as integers
+A limitation of linear packing is that unpacking data stored as integers 
 into the linear range defined by @code{scale_factor} and
 @code{add_offset} rapidly loses precision outside of a narrow range of
 floating-point values.  
@@ -7902,6 +8044,8 @@ data, not to represent the intrinsic precision of the variable.
 In other words, the precision of packed data cannot be specified in
 advance because it depends on the range of values to quantize.
 
+@node Precision-Preserving Compression,  , Linear Packing, Compression
+@subsection Precision-Preserving Compression
 @cindex @acronym{PPC}
 @cindex @acronym{LSD}
 @cindex Least Significant Digit
@@ -7959,8 +8103,19 @@ Users may wish to express the precision to be preserved as either
 Invoke @acronym{PPC} with the long option @samp{--ppc var=prc}, or give
 the same arguments to the synonyms
 @samp{--precision_preserving_compression}, or to @samp{--quantize}. 
-Here @var{var} is the variable to quantize, and @var{prc} is the 
+Here @var{var} is the variable to quantize, and @var{prc} is its
 precision.
+@cindex indicator option
+@cindex multi-arguments
+The option @samp{--ppc} (and its long option equivalents such
+as @samp{--quantize}) indicates the argument syntax will be
+@var{key}=@var{val}.
+As such, @samp{--ppc} and its synonyms are indicator options that accept
+arguments supplied one-by-one like 
+@samp{--ppc @var{key1}=@var{val1} --ppc @var{key2}=@var{val2}}, or
+aggregated together in multi-argument format like
+@samp{--ppc @var{key1}=@var{val1}#@var{key2}=@var{val2}}
+(@pxref{Multi-arguments}).
 The default algorithm assumes @var{prc} specifies @acronym{NSD}
 precision, e.g., @samp{T=2} means @math{@var{nsd=2}}.
 Prepend @var{prc} with a decimal point to specify @acronym{DSD}
@@ -8245,11 +8400,13 @@ support varying precision types and levels, and each option may
 aggregate all the variables with the same precision
 @example
 ncks --ppc p,w,z=5 --ppc q,RH=4 --ppc T,u,v=3 in.nc out.nc
+ncks --ppc p,w,z=5#q,RH=4#T,u,v=3 in.nc out.nc # Multi-argument format
 @end example
 Any @var{var} argument may be a regular expression.
 This simplifies generating lists of related variables:
 @example
 ncks --ppc Q.?=5 --ppc FS.?,FL.?=4 --ppc RH=.3 in.nc out.nc
+ncks --ppc Q.?=5#FS.?,FL.?=4#RH=.3 in.nc out.nc # Multi-argument format
 @end example
 Although @acronym{PPC}-rounding instantly reduces data precision,
 on-disk storage reduction only occurs once the data are compressed.  
@@ -9069,19 +9226,19 @@ Long options: @samp{--hdf_upk}, @samp{--hdf_unpack}@*
 @end cartouche
 
 The phrase @dfn{packed data} refers to data which are stored in the
-standard netCDF3 packing format which employs a lossy algorithm.
+standard netCDF3 lossy linear packing format.
 See @ref{ncks netCDF Kitchen Sink} for a description of deflation, a 
 lossless compression technique available with netCDF4 only.
 Packed data may be deflated to save additional space.
 
 @unnumberedsubsec Packing Algorithm
 @dfn{Packing}
-The standard netCDF packing algorithm (described
+The standard netCDF linear packing algorithm (described
 @uref{http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html, here})
-produces data with
-the same dynamic range as the original but which requires no more than
-half the space to store.
-Like all packing algorithms, it is @emph{lossy}.
+produces packed data with the same dynamic range as the original but
+which requires no more than half the space to store.
+Like all packing algorithms, linear packing is @emph{lossy}.
+Just how lossy depends on the values themselves, especially their range.
 The packed variable is stored (usually) as type @code{NC_SHORT}
 with the two attributes required to unpack the variable,
 @code{scale_factor} and @code{add_offset}, stored at the original
@@ -10480,6 +10637,18 @@ All operators can add user-specified global attributes to output files.
 As of @acronym{NCO} version 4.5.2 (July, 2015), @acronym{NCO} supports
 multiple uses of the @samp{--glb} (or equivalent @samp{--gaa} or
 @samp{--glb_att_add}) switch.
+@cindex indicator option
+@cindex multi-arguments
+The option @samp{--gaa} (and its long option equivalents such
+as @samp{--glb_att_add}) indicates the argument syntax will be
+@var{key}=@var{val}.
+As such, @samp{--gaa} and its synonyms are indicator options that accept
+arguments supplied one-by-one like 
+@samp{--gaa @var{key1}=@var{val1} --gaa @var{key2}=@var{val2}}, or
+aggregated together in multi-argument format like
+@samp{--gaa @var{key1}=@var{val1}#@var{key2}=@var{val2}}
+(@pxref{Multi-arguments}).
+
 The switch takes mandatory arguments 
 @samp{--glb @var{att_nm}=@var{att_val}}   
 where @var{att_nm} is the desired name of the global attribute to add, 
@@ -11083,6 +11252,7 @@ described in any detail in the sections below.
 * ncap2 netCDF Arithmetic Processor::
 * ncatted netCDF Attribute Editor::
 * ncbo netCDF Binary Operator::
+* ncclimo netCDF Climatology Generator::
 * nces netCDF Ensemble Statistics::
 * ncecat netCDF Ensemble Concatenator::
 * ncflint netCDF File Interpolator::
@@ -11090,7 +11260,6 @@ described in any detail in the sections below.
 * ncpdq netCDF Permute Dimensions Quickly::
 * ncra netCDF Record Averager::
 * ncrcat netCDF Record Concatenator::
-* ncclimo netCDF Climatology Generator::
 * ncremap netCDF Remapper::
 * ncrename netCDF Renamer::
 * ncwa netCDF Weighted Averager::
@@ -12036,7 +12205,7 @@ See @pxref{ID Quoting}.
 @html
 <a name="value_list"></a> <!-- http://nco.sf.net/nco.html#value_list -->
 @end html
-@node Value List, Number literals, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
+@node Value List, Number literals, Attributes, ncap2 netCDF Arithmetic Processor
 @subsection Value List
 @cindex value list@command{ncap2}
 
@@ -12397,17 +12566,12 @@ These functions are used to create a list of vars in Input or Output. The option
 
 @example
 @verbatim
-
 @slist=get_vars_in("^time");  // "time", "time_bnds", "time_lon", "time_udunits"
-
-// use NC_STRINGS
+// Use NC_STRINGS
 @regExp={".*_bnd"s,".*_grd"s}
 @slist=get_vars_in(@regExp);  // "lat_bnd", "lat_grd", "lev_bnd", "lon_grd", "time_bnds", "cnv_CF_grd"
-
 @end verbatim
 @end example
-
-
 
 @html
 <a name="ncap_miss"></a> <!-- http://nco.sf.net/nco.html#ncap_miss -->
@@ -15322,7 +15486,7 @@ netcdf-4.0 Final  2008/08/28@*
 @end example
 @c End HMB documentation
 
-@node create_bounds() function, , ID Quoting, ncap2 netCDF Arithmetic Processor
+@node create_bounds() function,  , ID Quoting, ncap2 netCDF Arithmetic Processor
 @subsection create_bounds() function
 @cindex create_bounds() function
 The @command{ncap2} custom function 'create_bounds()' takes any monotonic 1D coordinate variable with regular or irregular (e.g., Gaussian) spacing and creates a bounds variable.
@@ -15941,7 +16105,7 @@ omitted in batch scripts.
 <a name="ncmultiply"></a> <!-- http://nco.sf.net/nco.html#ncmultiply -->
 <a name="ncdivide"></a> <!-- http://nco.sf.net/nco.html#ncdivide -->
 @end html
-@node ncbo netCDF Binary Operator, nces netCDF Ensemble Statistics, ncatted netCDF Attribute Editor, Reference Manual
+@node ncbo netCDF Binary Operator, ncclimo netCDF Climatology Generator, ncatted netCDF Attribute Editor, Reference Manual
 @section @command{ncbo} netCDF Binary Operator
 @findex ncbo
 @findex ncdiff
@@ -16381,7 +16545,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @html
 <a name="ncclimo"></a> <!-- http://nco.sf.net/nco.html#ncclimo -->
 @end html
-@node ncclimo netCDF Climatology Generator, ncremap netCDF Remapper, ncrcat netCDF Record Concatenator, Reference Manual
+@node ncclimo netCDF Climatology Generator, nces netCDF Ensemble Statistics, ncbo netCDF Binary Operator, Reference Manual
 @section @command{ncclimo} netCDF Climatology Generator
 @cindex climo
 @cindex climatology
@@ -17259,7 +17423,7 @@ Moreover, the climatologies can be generated in parallel.
 <a name="nces"></a> <!-- http://nco.sf.net/nco.html#nces -->
 <a name="ncea"></a> <!-- http://nco.sf.net/nco.html#ncea -->
 @end html
-@node nces netCDF Ensemble Statistics, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Reference Manual
+@node nces netCDF Ensemble Statistics, ncecat netCDF Ensemble Concatenator, ncclimo netCDF Climatology Generator, Reference Manual
 @section @command{nces} netCDF Ensemble Statistics
 @cindex averaging data
 @cindex ensemble average
@@ -20284,7 +20448,7 @@ The last example
 @html
 <a name="ncrcat"></a> <!-- http://nco.sf.net/nco.html#ncrcat -->
 @end html
-@node ncrcat netCDF Record Concatenator, ncclimo netCDF Climatology Generator, ncra netCDF Record Averager, Reference Manual
+@node ncrcat netCDF Record Concatenator, ncremap netCDF Remapper, ncra netCDF Record Averager, Reference Manual
 @section @command{ncrcat} netCDF Record Concatenator
 @cindex concatenation
 @cindex record concatenation
@@ -20419,7 +20583,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @html
 <a name="ncremap"></a> <!-- http://nco.sf.net/nco.html#ncremap -->
 @end html
-@node ncremap netCDF Remapper, ncrename netCDF Renamer, ncclimo netCDF Climatology Generator, Reference Manual
+@node ncremap netCDF Remapper, ncrename netCDF Renamer, ncrcat netCDF Record Concatenator, Reference Manual
 @section @command{ncremap} netCDF Remapper
 @cindex remap
 @cindex regrid
