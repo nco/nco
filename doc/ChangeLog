@@ -1,8 +1,12 @@
-2016-11-10  Charlie Zender  <zender@uci.edu>
+2016-11-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.2-beta03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.2-beta03 final changes';git push
 	git tag -a 4.6.2-beta03 -m 'Version 4.6.2-beta03 new features: uint, int64, uint64 suffixes';git push --tags
+
+	* Henry added NCO_PATH environment variable for ncap2 #include searches
+
+2016-11-10  Charlie Zender  <zender@uci.edu>
 
 	* Update CDL attribute tags for uint, int64, uint64 to "ul", "ll", "ull", respectively
 	This may break builds on netCDF <= 4.3.0 because ncgen chokes on "ll" syntax
