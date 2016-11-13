@@ -697,6 +697,7 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
       if(!strcmp(opt_crr,"jsn_att_fmt")){
+	PRN_JSN=True; /* [flg] Print JSON */
 	JSN_ATT_FMT=(int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* !jsn_att_fmt */

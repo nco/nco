@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-beta03
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 9 November 2016
+@set update-date 12 November 2016
 @set update-month November 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2484,7 +2484,7 @@ No data buffering is performed during @command{nc_get_var} and
 @cindex operator speed
 @cindex speed
 @cindex execution time
-Hyperslabs too large too hold in core memory will suffer substantial
+Hyperslabs too large to hold in core memory will suffer substantial
 performance penalties because of this. 
 
 @item 
@@ -18474,8 +18474,8 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 @cindex JavaScript
 @item --jsn, --json
 As of @acronym{NCO} version 4.6.2 (November, 2016), @command{ncks} can
-print extracted metadata to screen (i.e., @code{stdout}) as
-@acronym{JSON}, JavaScript Object Notation defined 
+print extracted metadata and data to screen (i.e., @code{stdout}) as
+@acronym{JSON}, JavaScript Object Notation, defined 
 @uref{http://www.json.org, here}.
 @command{ncks} supports @acronym{JSON} output more completely, flexibly,
 and robustly than any other tools to our knowledge.
@@ -18495,18 +18495,18 @@ zender@aerosol:~$ ncks --jsn -v one ~/nco/data/in.nc
 }
 @end verbatim
 @end example
-This output demonstrates that @acronym{NCO} converts to (using
-commonsense rules) and prints all @acronym{NC_TYPE}s as one of these
-three atomic types supported as @acronym{JSON} values: @code{double},
-@code{string}, and @code{int}
+@acronym{NCO} converts to (using commonsense rules) and prints all
+@acronym{NC_TYPE}s as one of three atomic types distinguishable as 
+@acronym{JSON} values: @code{float}, @code{string}, and @code{int}
 @footnote{The @acronym{JSON} boolean atomic type is not (yet) supported
 as there is no obvious netCDF-equivalent to this type.}.
-Hence floating-point types (@acronym{NC_FLOAT} and @acronym{NC_DOUBLE})
+Floating-point types (@code{NC_FLOAT} and @code{NC_DOUBLE})
 are printed with a decimal point and at least one signficant digit
 following the decimal point, e.g., @code{1.0} rather than @code{1.} or
 @code{1}.    
-Integer types are printed with no decimal point.
-String types (@acronym{NC_CHAR} and @acronym{NC_STRING}) are enclosed 
+Integer types (e.g., @code{NC_INT}, @code{NC_UINT64}) are printed
+with no decimal point. 
+String types (@code{NC_CHAR} and @code{NC_STRING}) are enclosed 
 in double-quotes.
 
 The @acronym{JSON} specification allows many possible output formats for  
@@ -18517,20 +18517,24 @@ netCDF files.
 finalized the emitted @acronym{JSON} syntax a few weeks later.
 The resulting @acronym{JSON} backend supports three levels of
 pedanticness, ordered from more concise, flexible, and human-readable to 
-more verbose, restrictive, and reproducible.
+more verbose, restrictive, and 1-to-1 reproducible.
 @acronym{JSON}-specific switches access these modes and other features. 
+Each @acronym{JSON} configuration option automatically triggers 
+@acronym{JSON} printing, so that specifying @samp{--json} in addition to
+a @acronym{JSON} configuration option is redundant and unnecessary. 
+
 Request a specific format level with the pedantic level argument to
-the @samp{--jsn_att_fmt @var{lvl}} option:
-@table @dfn
-@item @math{@var{lvl} = 0}
-This is the default mode, and is explicitly selectable with
-@samp{--jsn_att_fmt=0}.
+the @samp{--jsn_att_fmt @var{lvl}} option.
+This choice has the following effects for the given value of @var{lvl}: 
+@itemize @bullet
+@item @math{@var{lvl} = 0} is the default mode, and is also explicitly
+selectable with @samp{--jsn_att_fmt=0}.
 All values are output without the original @acronym{NC_TYPE} token.
 This allows attributes to print as @acronym{JSON} name-value pairs,
 rather than as more complex objects: 
 @example
 @verbatim
-% ncks --jsn --jsn_att_fmt=0 -v att_var ~/nco/data/in_grp.nc | grep att_var
+% ncks --jsn_att_fmt=0 -v att_var ~/nco/data/in_grp.nc
 ...
 "att_var": {
   "dims": ["time"],
@@ -18552,7 +18556,7 @@ rather than as more complex objects:
 This least pedantic mode produces the most easily read results, and
 suffices for many (most?) purposes.  
 Any downstream parser is expected to assign an appropriate type as
-indicated by the @acronym{JSON} syntax rules.
+indicated by @acronym{JSON} syntax rules.
 Because the original attribute's @code{NC_TYPE} is not output, it is
 not guaranteed that a downstream parser can exactly reproduce the input  
 file datatypes. 
@@ -18574,16 +18578,16 @@ of variable data.
 Downstream parsers can (but are not required to) take advantage of the
 variable's @code{NC_TYPE} to choose the most efficient storage type. 
 
-@item @math{@var{lvl} = 1}
-This medium-pedantic level prints all attributes as objects (with
-explicit types) @emph{except} those attributes whose types match
-the simplest default @acronym{JSON} value types (@acronym{NC_FLOAT},
-@acronym{NC_CHAR}/@acronym{NC_STRING}, @acronym{NC_INT}).  
+@item @math{@var{lvl} = 1} is a medium-pedantic level that prints all
+attributes as objects (with explicit types) @emph{except} those
+attributes whose types match the simplest default @acronym{JSON} value
+types (@code{NC_FLOAT}, 
+@code{NC_CHAR}/@code{NC_STRING}, @code{NC_INT}).  
 double, string, and int attributes are printed as @acronym{JSON} arrays, 
 as in the @math{@var{lvl} = 0} above:
 @example
 @verbatim
-% ncks --jsn --jsn_att_fmt=1 -v att_var ~/nco/data/in.nc
+% ncks --jsn_att_fmt=1 -v att_var ~/nco/data/in.nc
 ...
 "att_var": {
   "dims": ["time"],
@@ -18614,16 +18618,15 @@ This minimal increase in verbosity allows a downstream parser to
 re-construct the original dataset with nearly identical attributes types
 to the original.
 
-@item @math{@var{lvl} = 2}
-This is the most pedantic mode, and should be used whenever preserving
-all input types, and exact reproducibility of the input file, is
-important. 
+@item @math{@var{lvl} = 2} is the most pedantic mode, and should be used
+when preserving all input types (e.g., to ensure exact reproducibility
+of the input file) is important. 
 This mode always prints attributes as @acronym{JSON} objects with a type
 value so that any downstream parser can (though it need not) guarantee
 exact reproduction of the original dataset:
 @example
 @verbatim
-% ncks --jsn --jsn_att_fmt=2 -v att_var ~/nco/data/in.nc
+% ncks --jsn_att_fmt=2 -v att_var ~/nco/data/in.nc
 ...
 "att_var": {
   "dims": ["time"],
@@ -18641,11 +18644,11 @@ exact reproduction of the original dataset:
 ...
 @end verbatim
 @end example
-@end table
+@end itemize
 
 @cindex @command{jsonlint}
 That @acronym{ncks} produces correct translations of for all supported
-datatypes may be verified by the @acronym{JSON} syntax checker command
+datatypes may be verified by @acronym{JSON} syntax checker command
 like @command{jsonlint}. 
 Please let us know how to improve @acronym{JSON} features for your
 application.  
@@ -18909,7 +18912,7 @@ Using @samp{-V} is the same as specifying @samp{-Q --no_nm_prn}.
 @cindex @acronym{NcML}
 @item --xml, --ncml
 As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} can
-print extracted metadata to screen (i.e., @code{stdout}) as
+print extracted data and metadata to screen (i.e., @code{stdout}) as 
 @acronym{XML} in @acronym{NcML}, the netCDF Markup Language.  
 @command{ncks} supports @acronym{XML} more completely than 
 @samp{ncdump -x}.

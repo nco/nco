@@ -1,5 +1,9 @@
 2016-11-12  Charlie Zender  <zender@uci.edu>
 
+	* Tidy JSON documentation
+
+	* --jsn_att_fmt automatically triggers --json
+
 	* NCO 4.6.2-beta03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.2-beta03 final changes';git push
 	git tag -a 4.6.2-beta03 -m 'Version 4.6.2-beta03 new features: uint, int64, uint64 suffixes';git push --tags
