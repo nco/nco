@@ -2971,7 +2971,156 @@ att2var returns [ RefAST tr ]
 
 
 
+
 value_list returns [var_sct *var]
+{
+const std::string fnc_nm("value_list");
+var=NULL_CEWI; 
+}
+ :(vlst:VALUE_LIST) {
+         char *cp;  
+         int nbr_lst;
+         int idx;
+         int tsz;
+
+         nc_type type=NC_NAT;
+         var_sct *var_ret;                        
+         var_sct *var_int; 
+         RefAST rRef;
+
+         rRef=vlst->getFirstChild();
+
+         nbr_lst=vlst->getNumberOfChildren(); 
+
+         /* get type of first element */ 
+         var_int=out(rRef);       
+
+         /* first element undefined */  
+         if(var_int->undefined)
+          {   
+            var_ret=ncap_var_udf("~zz@value_list");  
+            goto end_val; 
+          } 
+          
+          type=var_int->type;   
+
+          if(type==NC_STRING) 
+          { 
+           var_ret=value_list_string(vlst); 
+           goto end_val; 
+          }
+   
+
+          var_ret=(var_sct *)nco_malloc(sizeof(var_sct));
+          /* Set defaults */
+          (void)var_dfl_set(var_ret); 
+
+          /* Overwrite with attribute expression information */
+          var_ret->nm=strdup("~zz@value_list");
+          var_ret->nbr_dim=0;
+          var_ret->sz=nbr_lst;
+          var_ret->type=type;
+
+          /* deal with initial scan */   
+          if(prs_arg->ntl_scn)
+             goto end_val;
+
+          /* create some space for output */
+          tsz=nco_typ_lng(type);
+          var_ret->val.vp=(void*)nco_malloc(nbr_lst*tsz);
+
+          /* copy first value over */
+          memcpy(var_ret->val.vp, var_int->val.vp, tsz);  
+          var_int=nco_var_free(var_int); 
+          rRef=rRef->getNextSibling();
+
+          /* rest of values */
+          for(idx=1;idx<nbr_lst;idx++) 
+          {
+            var_int=out(rRef);   
+            nco_var_cnf_typ(type,var_int);  
+            cp=(char*)(var_ret->val.vp)+ (ptrdiff_t)(idx*tsz);
+            memcpy(cp,var_int->val.vp,tsz);
+ 
+            var_int=nco_var_free(var_int); 
+            rRef=rRef->getNextSibling();
+          }
+          
+          end_val: if(var_int)
+                      nco_var_free(var_int);  
+          var=var_ret;
+
+    } // end action
+;
+
+
+value_list_string returns [var_sct *var]
+{
+const std::string fnc_nm("value_list");
+var=NULL_CEWI; 
+}
+ :(vlst:VALUE_LIST) {
+
+         char *cp;
+         int nbr_lst;
+         int idx;
+         int tsz;
+
+         nc_type type=NC_NAT;
+         var_sct *var_ret;                        
+         var_sct *var_int; 
+         RefAST rRef;
+         
+         rRef=vlst->getFirstChild();
+
+         nbr_lst=vlst->getNumberOfChildren(); 
+         
+         type=NC_STRING;   
+
+         var_ret=(var_sct *)nco_malloc(sizeof(var_sct));
+         /* Set defaults */
+         (void)var_dfl_set(var_ret); 
+
+         /* Overwrite with attribute expression information */
+         var_ret->nm=strdup("~zz@value_list");
+         var_ret->nbr_dim=0;
+         var_ret->sz=nbr_lst;
+         var_ret->type=type;
+
+         /* deal with initial scan */   
+         if(prs_arg->ntl_scn)
+             goto end_val;
+
+         /* create some space for output */
+         tsz=nco_typ_lng(type);
+         var_ret->val.vp=(void*)nco_malloc(nbr_lst*tsz);
+         (void)cast_void_nctype((nc_type)NC_STRING,&var_ret->val);
+
+         for(idx=0;idx<nbr_lst;idx++) 
+             {
+                 var_int=out(rRef);   
+                 if(var_int->type != NC_STRING)
+                     err_prn(fnc_nm," error processing value list string: to successfully parse value list of strings all elements must be of type NC_STRING");    
+
+                 (void)cast_void_nctype((nc_type)NC_STRING,&var_int->val);
+                 var_ret->val.sngp[idx]=strdup(var_int->val.sngp[0]); 
+                 // cast pointer back
+                 (void)cast_nctype_void((nc_type)NC_STRING,&var_int->val);
+
+                 nco_var_free(var_int);  
+                 rRef=rRef->getNextSibling();
+             }
+         (void)cast_nctype_void((nc_type)NC_STRING,&var_ret->val);
+
+    end_val: var=var_ret;
+
+
+    } // end action
+;
+
+
+
+value_list_old returns [var_sct *var]
 {
 const std::string fnc_nm("value_list");
 var=NULL_CEWI; 
@@ -2995,11 +3144,12 @@ var=NULL_CEWI;
            rRef=rRef->getNextSibling();
          }       
          nbr_lst=exp_vtr.size();
+         
 
          // if any types are NC_STRING then call value_list_string() action 
          for(idx=0;idx <nbr_lst ;idx++)
            if(exp_vtr[idx]->type == NC_STRING){
-             var_ret=value_list_string(rRef,exp_vtr);
+             var_ret=value_list_string_old(rRef,exp_vtr);
              goto end_val;
            }
       
@@ -3065,9 +3215,13 @@ var=NULL_CEWI;
         } // end action
 ;
 
+
+
+
+
 // Deal here with a value list of strings
 // Called only from value_list
-value_list_string[ std::vector<var_sct*> &exp_vtr] returns [var_sct *var]
+value_list_string_old[ std::vector<var_sct*> &exp_vtr] returns [var_sct *var]
 {
 const std::string fnc_nm("value_list_string");
 var=NULL_CEWI; 
