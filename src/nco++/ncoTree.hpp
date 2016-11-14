@@ -545,7 +545,9 @@ public:
 	public: var_sct * att_plain(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public:  RefAST  att2var(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * value_list(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
-	public: var_sct * value_list_string(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
+	public: var_sct * value_list_string(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * value_list_old(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * value_list_string_old(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 		 std::vector<var_sct*> &exp_vtr
 	);
 	public: bool  where_assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
