@@ -1,14 +1,13 @@
 2016-11-14  Henry Butowsky  <henryb@hush.com>
 
-	* mods to value_list() - the final of the list is equal to the type of the first element in the list. 
-	  previously the final type was equal to the "highest" type in the list
-
-
-2016-11-13  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.6.2-beta04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.2-beta04 final changes';git push
-	git tag -a 4.6.2-beta04 -m 'Version 4.6.2-beta04 new features: multi-argument documentation';git push --tags
+	git tag -a 4.6.2-beta04 -m 'Version 4.6.2-beta04 new features: multi-argument documentation, ncap2 value_list simplification';git push --tags
+
+	* Modify ncap2 value_list() so all values same type as first element
+	  Previously the final type equalled "highest" type in list
+
+2016-11-13  Charlie Zender  <zender@uci.edu>
 
 	* Document multi-arguments
 
