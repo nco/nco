@@ -28,33 +28,12 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Multi-arguments refer to the format of command-line key-value pairs
-   that NCO uses to support four different features that can have too
-   many parameters to set via traditional command line arguments.
-   The four features are regridding (rgr), global-attribute-adding
-   (gaa), precision-preserving compression (ppc), and TERRAREF image
-   processing (trr). Formerly, users were required to supply one value
-   per command line option for these features, e.g.,
-   "--rgr lat_nbr=64 --rgr lon_nbr=128 --rgr lat_grd=cap ..."
-   The new multi-argument feature allows users to aggregate multiple
-   key-value pairs per command line argument, e.g., 
-   "--rgr lat_nbr=64#lon_nbr=128#lat_grd=cap# ..."
-   Now all key-value pairs related to a single feature (like
-   regridding, compression) can be provided as one arument!
-
-   The string that delimits each pair is user-configurable and
-   defaults to a single hash "#". Change it with, e.g., --dlm=":".
-   Be careful that your delimiters are not special shell characters or
-   contained in the value strings.
-   Thanks to Jerome Mao for implementing multi-arguments.
-   http://nco.sf.net/nco.html#mta
-
 A. JSON backend
    Similar the CDL and XML backends, ncks now supports JSON.
    To obtain JSON, use --jsn or --json instead of --cdl/--xml.
    Other related options (-v, -g, -m -M) have their usual meanings.    
    JSON-specific switches access formats of selectable verbosity.
-   ncks --jsn -v one ~/nco/data/in.nc
+   ncks --json -v one ~/nco/data/in.nc
    {
      "variables": {
        "one": {
@@ -69,6 +48,28 @@ A. JSON backend
    Thanks to Henry Butowsky for implementing the JSON backend,
    and to Pedro Vicente and Chris Barker for helpful discussions. 
    http://nco.sf.net/nco.html#json
+
+A. Multi-arguments refer to the format of command-line key-value pairs
+   that NCO uses to support four different features that can have too
+   many parameters to set via traditional command line arguments.
+   The four features are regridding (rgr), global-attribute-adding
+   (gaa), precision-preserving compression (ppc), and ENVI image
+   processing for the DOE Terraref project (trr). Formerly, users were
+   required to supply one value per command line option for these
+   features, e.g., 
+   "--rgr lat_nbr=64 --rgr lon_nbr=128 --rgr lat_grd=cap ..."
+   The new multi-argument feature allows users to aggregate multiple
+   key-value pairs per command line argument, e.g., 
+   "--rgr lat_nbr=64#lon_nbr=128#lat_grd=cap# ..."
+   Now all key-value pairs related to a single feature (like
+   regridding, compression) can be provided as one arument!
+
+   The string that delimits each pair is user-configurable and
+   defaults to a single hash "#". Change it with, e.g., --dlm=":".
+   Be careful that your delimiters are not special shell characters or
+   contained in the value strings.
+   Thanks to Jerome Mao for implementing multi-arguments.
+   http://nco.sf.net/nco.html#mta
 
 A. All builds tested on LLVM 8.0.0 and GCC 6.2.1 toolchains.
 

@@ -70,32 +70,6 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
       trr_var_nbr=index;
   } /* end loop over i */
   trr_var_nbr++;
-
-  // trr_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
-
-  /* Parse TRRs */
-  // for(trr_arg_idx=0;trr_arg_idx<trr_arg_nbr;trr_arg_idx++){
-  //   if(!strstr(trr_arg[trr_arg_idx],"=")){
-  //     (void)fprintf(stdout,"%s: Invalid --trr specification: %s. Must contain \"=\" sign, e.g., \"key=value\".\n",nco_prg_nm_get(),trr_arg[trr_arg_idx]);
-  //     if(trr_lst) trr_lst=(kvm_sct *)nco_free(trr_lst);
-  //     nco_exit(EXIT_FAILURE);
-  //   } /* endif */
-  //   kvm=nco_sng2kvm(trr_arg[trr_arg_idx]);
-  //   /* nco_sng2kvm() converts argument "--trr one,two=3" into kvm.key="one,two" and kvm.val=3
-  //      Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
-  //   if(kvm.key){
-  //     int var_idx; /* [idx] Index over variables in current TRR argument */
-  //     int var_nbr; /* [nbr] Number of variables in current TRR argument */
-  //     char **var_lst;
-  //     var_lst=nco_lst_prs_2D(kvm.key,",",&var_nbr);
-  //     for(var_idx=0;var_idx<var_nbr;var_idx++){ /* Expand multi-variable specification */
-  //       trr_lst[trr_var_nbr].key=strdup(var_lst[var_idx]);
-  //       trr_lst[trr_var_nbr].val=strdup(kvm.val);
-  //       trr_var_nbr++;
-  //     } /* end for */
-  //     var_lst=nco_sng_lst_free(var_lst,var_nbr);
-  //   } /* end if */
-  // } /* end for */
   
   /* NULL-initialize key-value properties required for string variables */
   trr->ttl=NULL; /* [sng] Title */
