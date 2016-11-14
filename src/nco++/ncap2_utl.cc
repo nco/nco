@@ -31,7 +31,9 @@ ncap_make_include_paths(const char *spaths)       /* list of file path(s) delimi
     return str_vtr;                 
 
   std::string sin(spaths);
-  
+  // strings must always terminate with ':'  
+  sin+=":";
+
   srt=0;
   idx=sin.find(':',srt);
   
