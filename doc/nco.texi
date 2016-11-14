@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2-beta03
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 12 November 2016
+@set update-date 14 November 2016
 @set update-month November 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18462,6 +18462,10 @@ limited to at most one record dimension) (@pxref{Group Path Editing}).
 @cindex @code{_Endianness}
 @cindex @code{_Fletcher32}
 @cindex @code{_NOFILL}
+@cindex @code{_NCProperties}
+@cindex @code{_IsNetcdf4}
+@cindex @code{_SuperblockVersion}
+@item --hdn
 As of @acronym{NCO} version 4.4.0 (January, 2014), the @samp{--hdn}
 or @samp{--hidden} options print hidden (aka special) attributes.
 This is equivalent to @samp{ncdump -s}.
@@ -18474,10 +18478,15 @@ Now it prints these attributes as appropriate in all modes.
 As of @acronym{NCO} version 4.4.6 (September, 2014), @samp{--hdn} 
 also prints the extended file format (i.e., the format of the file
 or server supplying the data) as @code{_SOURCE_FORMAT}.
+As of @acronym{NCO} version 4.6.1 (August, 2016), @samp{--hdn} 
+also prints the hidden attributes @code{_NCProperties},
+@code{_IsNetcdf4}, and @code{_SuperblockVersion} for netCDF4 files so 
+long as @acronym{NCO} is linked against netCDF library version 4.4.1 or
+later. 
 Users are referred to the
 @uref{http://www.unidata.ucar.edu/software/netcdf/docs, Unidata netCDF Documentation},
 or the man pages for @command{ncgen} or @command{ncdump}, for
-detailed descriptions of the meanings of these attributes. 
+detailed descriptions of the meanings of these hidden attributes. 
 
 @html
 <a name="cdl"></a> <!-- http://nco.sf.net/nco.html#cdl -->

@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.2-beta04 final changes';git push
 	git tag -a 4.6.2-beta04 -m 'Version 4.6.2-beta04 new features: multi-argument documentation, ncap2 value_list simplification';git push --tags
 
+	* Update hidden attribute documentation
+
 	* Modify ncap2 value_list() so all values same type as first element
 	  Previously the final type equalled "highest" type in list
 
