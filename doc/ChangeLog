@@ -1,3 +1,9 @@
+2016-11-14  Henry Butowsky  <henryb@hush.com>
+
+	* mods to value_list() - the final of the list is equal to the type of the first element in the list. 
+	  previously the final type was equal to the "highest" type in the list
+
+
 2016-11-13  Charlie Zender  <zender@uci.edu>
 
 	* Document multi-arguments

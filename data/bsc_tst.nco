@@ -478,7 +478,7 @@ nbr_err_ttl=0;
   // check a LHS cast with a RHS att list
   d7[time]={1s,4us,9b,16L,25ull,36,49,64,81,100.0f};
 
-  if(d7.type()!=NC_FLOAT || d7.size() != time.size())
+  if(d7.type()!=NC_SHORT || d7.size() != time.size())
   {
      print("ERROR: d7: var cast from an att list\n");
      nbr_err++;	
