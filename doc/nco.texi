@@ -7589,8 +7589,8 @@ The distinction between elements and bytes is subtle yet crucial to
 understand. 
 Elements refers to values of an array, whereas bytes refers to the
 memory size required to hold the elements. 
-Hence these measures differ by a factor of four or eight for 
-@code{NC_FLOAT} or @code{NC_DOUBLE}, respectively.
+These measures differ by a factor of four or eight for @code{NC_FLOAT}
+or @code{NC_DOUBLE}, respectively. 
 The option @samp{--cnk_scl} takes an argument @var{sz_lmn} measured in
 elements.
 The options @samp{--cnk_byt} and @samp{--cnk_min} take arguments

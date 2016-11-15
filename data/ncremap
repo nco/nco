@@ -1155,6 +1155,8 @@ fi # !par_typ
 if [ "${cln_flg}" = 'Yes' ]; then
     printf "Cleaning-up intermediate files...\n"
     /bin/rm -f ${att_fl} ${grd_dst_dfl} ${grd_src_dfl} ${map_fl_dfl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+else # !cln_flg
+    printf "Explicitly instructed not to clean-up intermediate files.\n"
 fi # !cln_flg
 
 date_end=$(date +"%s")

@@ -223,13 +223,11 @@ int /* O [rcd] Return code */
 nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 (trr_sct *trr) /* I/O [sct] Terraref information */
 {
-  /* Purpose: Read TERRAREF file */
+  /* Purpose: Read raw TERRAREF input file, write netCDF4 output */
   const char fnc_nm[]="nco_trr_read()"; /* [sng] Function name */
 
   const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
-
-  //  const nc_type crd_typ=NC_FLOAT;
 
   char *fl_in;
   char *fl_out;
@@ -250,6 +248,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   int dmn_id_xdm; /* [id] X-dimension ID */
   int dmn_id_ydm; /* [id] Y-dimension ID */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
+  /* Terraref raw image files can be ~64 GB large so use netCDF4 */
   int fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
   int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;
