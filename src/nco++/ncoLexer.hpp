@@ -66,8 +66,9 @@ public:
    : ANTLR_USE_NAMESPACE(antlr)CharScanner(new ANTLR_USE_NAMESPACE(antlr)CharBuffer(in),true)
    {    
         char *spaths;
+
         /* a list of include paths delimited by ':' */   
-        /* if nco NCOPATH then NULL */
+        /* if nco NCO_PATH then NULL */
         spaths=getenv("NCO_PATH");  
         if( spaths &&  strlen(spaths) >0  ) 
           paths_vtr=ncap_make_include_paths(spaths);
@@ -84,7 +85,10 @@ public:
             // Do not allow EOF until main lexer 
             // Force selector to retry for another token
             parser->inc_vtr.pop_back();
-            std::cout<<"Setting parser(filename)=" <<parser->inc_vtr.back()<<std::endl; 
+
+            if(nco_dbg_lvl_get() >= 1)
+               std::cout<<"Setting parser(filename)=" <<parser->inc_vtr.back()<<std::endl; 
+
             parser->setFilename(parser->inc_vtr.back());
 			selector.pop(); // return to old lexer/stream
 			selector.retry();

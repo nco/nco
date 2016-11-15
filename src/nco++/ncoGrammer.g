@@ -351,8 +351,9 @@ public:
    : ANTLR_USE_NAMESPACE(antlr)CharScanner(new ANTLR_USE_NAMESPACE(antlr)CharBuffer(in),true)
    {    
         char *spaths;
+
         /* a list of include paths delimited by ':' */   
-        /* if nco NCOPATH then NULL */
+        /* if nco NCO_PATH then NULL */
         spaths=getenv("NCO_PATH");  
         if( spaths &&  strlen(spaths) >0  ) 
           paths_vtr=ncap_make_include_paths(spaths);
@@ -369,7 +370,10 @@ public:
             // Do not allow EOF until main lexer 
             // Force selector to retry for another token
             parser->inc_vtr.pop_back();
-            std::cout<<"Setting parser(filename)=" <<parser->inc_vtr.back()<<std::endl; 
+
+            if(nco_dbg_lvl_get() >= 1)
+               std::cout<<"Setting parser(filename)=" <<parser->inc_vtr.back()<<std::endl; 
+
             parser->setFilename(parser->inc_vtr.back());
 			selector.pop(); // return to old lexer/stream
 			selector.retry();
@@ -644,23 +648,21 @@ INCLUDE
 		std::string f_nm=f->getText();
 
 		std::ifstream* input=new std::ifstream(f_nm.c_str());
+        // if(*input==NULL){ // 20150413: Trips clang 6.0 MACOSX Yosemite warning from -Wnull-arithmetic and subsequent error "invalid operands to binary expression" 
 		if(!(*input)){
-            // if(*input==NULL){ // 20150413: Trips clang 6.0 MACOSX Yosemite warning from -Wnull-arithmetic and subsequent error "invalid operands to binary expression" 
-            //err_prn("Lexer cannot find include file "+f_nm);
-
-            // only search include paths if f_nm NOT an absolute path  
-            // add include paths and stop if opened ok  
-            if( sz==0 || f_nm[0]=='/')  
-                err_prn("Lexer cannot find include file "+f_nm); 
+          // only search include paths if f_nm NOT an absolute path  
+          // add include paths and stop if opened ok  
+          if( sz==0 || f_nm[0]=='/')  
+              err_prn("Lexer cannot find include file \""+f_nm+"\""); 
              
-            for(idx=0;idx<sz;idx++)
-            {   
+          for(idx=0;idx<sz;idx++)
+          {   
               input=new std::ifstream( (paths_vtr[idx] + f_nm).c_str()); 
               if(*input)
                 break;  
-            }
-            if(idx==sz) 
-              err_prn("Lexer cannot find include file "+f_nm+ "in the paths  specified in the env-var \"NCOPATH\""); 
+          }
+          if(idx==sz) 
+             err_prn("Lexer cannot find the include file \""+f_nm+ "\" in the locations specified in the env-var \"NCO_PATH\""); 
 
 		}
 		ncoLexer* sublexer = new ncoLexer(*input,prs_arg);
