@@ -9,19 +9,23 @@ What's new?
 
 4.6.2 is mainly a stability release to polish existing features and to
 add minor new ones. The exception is the new JSON backend. 
-NCO now prints CDL, XML, and JSON. netCDF Babel, anyone?
-NCO only produces these syntaxes, it does not read them.
+NCO now prints CDL, "Traditional NCO", XML, and JSON. Babel-icious eh?
 
 We built the JSON backend to help a project (DOE Terraref). 
 Our first choice was to adopt an off-the-shelf netCDF->JSON tool.
-However, none of the existing solutions worked for us.
+However, no existing solution worked for us.
 JSON is a loose syntax, and we made necessary design choices that
-suited our application, and left other choices for later.
-Let us know if there are syntactical variants you want us to add,
-and we will consider those for 4.6.3. 
+suited our application, and left some choices for later.
+Are there syntactical variants you want us to add?
 
-Work on NCO 4.6.3 has commenced. Planned improvements include
-more flexibility in handling extensive variables during regridding.  
+Some users of netCDF version 4.4.1 cannot build NCO from scratch
+because a bug in the nc-config command kills NCO's 'configure;make'.
+Unidata will ship a corrected nc-config in netCDF 4.4.2.
+The 4.4.2-development branch already contains the necessary fix.
+
+Work on NCO 4.6.3 has commenced. Planned improvements include more
+flexibility in handling extensive variables during regridding, CMake
+support, and brackets for multi-dimensional array values in JSON.
 
 Enjoy,
 Charlie
@@ -31,8 +35,6 @@ NEW FEATURES (full details always in ChangeLog):
 A. JSON backend
    Similar the CDL and XML backends, ncks now supports JSON.
    To obtain JSON, use --jsn or --json instead of --cdl/--xml.
-   Other related options (-v, -g, -m -M) have their usual meanings.    
-   JSON-specific switches access formats of selectable verbosity.
    ncks --json -v one ~/nco/data/in.nc
    {
      "variables": {
@@ -45,6 +47,8 @@ A. JSON backend
        }
      }
    }
+   Other related options (-v, -g, -m, -M) have their usual meanings.     
+   The --jsn_att_fmt switch accesses formats of selectable verbosity.  
    Thanks to Henry Butowsky for implementing the JSON backend,
    and to Pedro Vicente and Chris Barker for helpful discussions. 
    http://nco.sf.net/nco.html#json
@@ -66,8 +70,8 @@ A. Multi-arguments refer to the format of command-line key-value pairs
 
    The string that delimits each pair is user-configurable and
    defaults to a single hash "#". Change it with, e.g., --dlm=":".
-   Be careful that your delimiters are not special shell characters or
-   contained in the value strings.
+   Ensure your delimiters are not special shell characters, and are
+   escaped (with backslashes) if present in key or value strings. 
    Thanks to Jerome Mao for implementing multi-arguments.
    http://nco.sf.net/nco.html#mta
 
@@ -97,7 +101,7 @@ KNOWN PROBLEMS DUE TO NCO:
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.6.2 built/tested under
    MacOS 10.12.1 with netCDF 4.4.1 on HDF5 1.8.16 and with
-   Linux with netCDF 4.4.1 (20161028) on HDF5 1.8.13.
+   Linux with netCDF 4.4.2-development (20161116) on HDF5 1.8.16.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
@@ -164,6 +168,7 @@ C. NOT YET FIXED (netCDF4 library bug)
 
    20161029: Reported problem to Unidata
    20161101: Unidata confirmed reproducibility, attributed to netCDF 4.4.1 changes
+   20161116: Unidata patch is in tree for netCDF 4.4.2 release
 
 D. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name

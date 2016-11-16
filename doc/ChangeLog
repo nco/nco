@@ -1,8 +1,12 @@
-2016-11-15  Charlie Zender  <zender@uci.edu>
+2016-11-16  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.6.2-beta04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.2-beta04 final changes';git push
-	git tag -a 4.6.2-beta04 -m 'Version 4.6.2-beta04 new features: multi-argument documentation, ncap2 value_list simplification';git push --tags
+	* NCO 4.6.2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.2 final changes';git push
+	git tag -a 4.6.2 -m 'Version 4.6.2 new features: multi-argument documentation, ncap2 value_list simplification, JSON indentation';git push --tags
+
+	* Henry fixed regular brace staircases in JSON
+
+2016-11-15  Charlie Zender  <zender@uci.edu>
 
 	* Tweak JSON indentation
 
