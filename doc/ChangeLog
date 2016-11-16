@@ -6637,10 +6637,10 @@
 2011-06-26  Charlie Zender  <zender@uci.edu>
 
 	* Remove UDUNITS section of configure.in because it was overly
-	complex to maintain with UDUNITS2 which supercedes it
+	complex to maintain with UDUNITS2 which supersedes it
 
 	* Remove DAP-OPENDAP section of configure.in because it was overly
-	complex to maintain with DAP-NETCDF which supercedes it
+	complex to maintain with DAP-NETCDF which supersedes it
 
 	* Re-introduce ENABLE_NETCDF4
 
