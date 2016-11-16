@@ -433,7 +433,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	   3. \n allows entries to be separated by carriage returns */
 	while(((cnv_nbr=fscanf(fp_in,fmt_sng,bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
 	  if(cnv_nbr == 0){
-	    (void)fprintf(stdout,"%s: ERROR stdin input not convertable to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",nco_prg_nm_get(),FL_NM_IN_MAX_LNG);
+	    (void)fprintf(stdout,"%s: ERROR stdin input not convertible to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",nco_prg_nm_get(),FL_NM_IN_MAX_LNG);
 	    nco_exit(EXIT_FAILURE);
 	  } /* endif err */
 	  fl_nm_lng=strlen(bfr_in);

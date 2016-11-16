@@ -242,7 +242,7 @@ Improve IRIX&nbsp;6.5 support</li>
 <li><b>NCO 3.2.0</b>: More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) <a href="http://nco.sf.net/nco.html#xcl">handling</a>; Fix <tt>rmssdn</tt> normalization; Support Mac OS&nbsp;X on Intel; Documentation bugfixes</li>
 <li><b>NCO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt> supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size</li>
 <li><b>NCO 3.1.8</b>: Support <tt>_FillValue</tt> with compile-time switch; Debian package synchronized, includes <tt>ncap2</tt></li>
-<li><b>NCO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supercedes <tt>ncap</tt></li>
+<li><b>NCO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supersedes <tt>ncap</tt></li>
 <li><b>NCO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs</li>
 <li><b>NCO 3.1.5</b>: New <tt>ncap2</tt> array and hyperslab features; change some WARNINGs to INFOs, add Pathscale and update PGI and Intel compiler support</li>
 <li><b>NCO 3.1.4</b>: Fix <tt>ncbo</tt> memory problem; report timer results</li>
