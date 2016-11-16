@@ -22,6 +22,7 @@ Some users of netCDF version 4.4.1 cannot build NCO from scratch
 because a bug in the nc-config command kills NCO's 'configure;make'.
 Unidata will ship a corrected nc-config in netCDF 4.4.2.
 The 4.4.2-development branch already contains the necessary fix.
+See (C) in KNOWN PROBLEMS DUE TO BASE LIBRARIES/PROTOCOLS below. 
 
 Work on NCO 4.6.3 has commenced. Planned improvements include more
 flexibility in handling extensive variables during regridding, CMake
@@ -47,13 +48,15 @@ A. JSON backend
        }
      }
    }
+   More sample output at:
+   http://dust.ess.uci.edu/tmp/in.json and other *.json files.
    Other related options (-v, -g, -m, -M) have their usual meanings.     
    The --jsn_att_fmt switch accesses formats of selectable verbosity.  
    Thanks to Henry Butowsky for implementing the JSON backend,
    and to Pedro Vicente and Chris Barker for helpful discussions. 
    http://nco.sf.net/nco.html#json
 
-A. Multi-arguments refer to the format of command-line key-value pairs
+B. Multi-arguments refer to the format of command-line key-value pairs
    that NCO uses to support four different features that can have too
    many parameters to set via traditional command line arguments.
    The four features are regridding (rgr), global-attribute-adding
@@ -75,7 +78,10 @@ A. Multi-arguments refer to the format of command-line key-value pairs
    Thanks to Jerome Mao for implementing multi-arguments.
    http://nco.sf.net/nco.html#mta
 
-A. All builds tested on LLVM 8.0.0 and GCC 6.2.1 toolchains.
+C. ncap2 now searches all paths in the NCO_PATH environment variable
+   for any #include'd files that it cannot find in ${CWD}.
+
+D. All builds tested on LLVM 8.0.0 and GCC 6.2.1 toolchains.
 
 BUG FIXES:
 
@@ -159,12 +165,20 @@ B. NOT YET FIXED (netCDF4 library bug)
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd
 
-C. NOT YET FIXED (netCDF4 library bug)
+C. NOT YET FIXED (netCDF4 library bug) in main netCDF release
+   FIXED in netCDF Development branch as of 20161116
    nc-config/nf-config produce erroneous switches that cause NCO builds to fail
-   This problem (apparently) affects Linux not MacOS with netCDF 4.4.1
+   This problem affects netCDF 4.4.1 on all operating systems.
+   Some pre-compiled netCDF packages may have patched the problem.
+   Hence it does affect my MacPorts install of netCDF 4.4.1.
 
    Demonstration:
-   nc-config --cflags # Produces extraneous text
+   % nc-config --cflags # Produces extraneous text that confuses make
+   Using nf-config: /usr/local/bin/nf-config
+   -I/usr/local/include -I/usr/local/include -I/usr/include/hdf
+
+   If your nc-config output contains the "Using ..." line, you are
+   affected by this issue. 
 
    20161029: Reported problem to Unidata
    20161101: Unidata confirmed reproducibility, attributed to netCDF 4.4.1 changes

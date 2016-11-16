@@ -101,6 +101,7 @@
   /* 20150115: MacOSX with clang and --enable-debug-custom fails on yyget_leng() prototype
      Change return type of yyget_leng() from int to yy_size_t */
   /* int yyget_leng(void); *//* fixes: warning: no previous prototype for `yyget_leng' */
+  /* 20161116: Debian (e.g., glace) NCO build fails in ncap_lex.l due to conflicting types for `yyget_leng' */
   yy_size_t yyget_leng(void); /* fixes: warning: no previous prototype for `yyget_leng' */
   int yyget_lineno(void); /* fixes: warning: no previous prototype for `yyget_lineno' */
   int yylex_destroy(void); /* fixes: warning: no previous prototype for `yylex_destroy' */
