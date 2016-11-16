@@ -3234,18 +3234,19 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
   nm_jsn=(char *)nco_free(nm_jsn);  
   
   /* Print dimension information for group */
-  prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
-  if(dmn_nbr > 0 ) (void)fprintf(stdout,"%*s\"dimensions\": {\n",prn_flg->ndn,spc_sng);
-  prn_ndn+=prn_flg->var_fst;
+  //  prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
+  if(grp_dpt == 0) prn_ndn=prn_flg->ndn=prn_flg->sxn_fst; else prn_ndn=prn_flg->ndn;
+  if(dmn_nbr > 0) (void)fprintf(stdout,"%*s\"dimensions\": {\n",prn_flg->ndn,spc_sng);
+  prn_flg->ndn+=prn_flg->var_fst;
 
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     nm_jsn=nm2sng_jsn(dmn_lst[dmn_idx].nm);
-    (void)fprintf(stdout,"%*s\"%s\": %lu",prn_ndn,spc_sng,nm_jsn,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);   
+    (void)fprintf(stdout,"%*s\"%s\": %lu",prn_flg->ndn,spc_sng,nm_jsn,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);   
     /* Add comma and carriage-return unless last element */
-    if(dmn_idx<dmn_nbr-1) (void)printf(",\n");
+    if(dmn_idx < dmn_nbr-1) (void)printf(",\n");
     else{  
-      prn_ndn-=prn_flg->var_fst;
-      (void)printf("\n%*s}",prn_ndn,spc_sng);         
+      prn_flg->ndn-=prn_flg->var_fst;
+      (void)printf("\n%*s}",prn_flg->ndn,spc_sng);         
     } /* !dmn_idx */
     nm_jsn=(char *)nco_free(nm_jsn);   
     JSN_BLOCK=True;    
@@ -3309,7 +3310,7 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
     /* First iteration */   
     if(var_idx == 0){ 
       if(JSN_BLOCK) (void)fprintf(stdout,",\n"); else JSN_BLOCK=True;              
-      (void)fprintf(stdout,"%*s\"variables\": {\n",prn_ndn,spc_sng);
+      (void)fprintf(stdout,"%*s\"variables\": {\n",prn_flg->ndn,spc_sng);
       prn_flg->ndn+=prn_flg->sxn_fst; /* csz */
     } /* !var_idx */
         
@@ -3330,7 +3331,7 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
     } /* !PRN_VAR_DATA */
     
     /* Special indents for JSON */
-    prn_flg->ndn-=prn_flg->sxn_fst;  
+    //prn_flg->ndn-=prn_flg->sxn_fst;  
     /* Close JSON object tag, but do not add return as we may need to add comma later */
     (void)fprintf(stdout,"%*s}%s",prn_flg->ndn,spc_sng,(var_idx<var_nbr_xtr-1 ? ",\n" : "\n"));
   } /* end loop over var_idx */
@@ -3355,9 +3356,9 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
 
   if(nbr_grp > 0){  
     if(JSN_BLOCK) (void)fprintf(stdout,",\n"); 
-    (void)fprintf(stdout,"%*s\"groups\": {\n",prn_ndn,spc_sng);       
+    (void)fprintf(stdout,"%*s\"groups\": {\n",prn_flg->ndn,spc_sng);       
     JSN_BLOCK=True; 
-    if(grp_dpt != 0) prn_ndn+=prn_flg->sxn_fst; /* csz */
+    prn_flg->ndn+=prn_flg->sxn_fst; /* csz */
   } /* !nbr_grp */
   
   /* Call recursively for all extracted subgroups */
@@ -3394,15 +3395,16 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
-
-    if(grp_dpt != 0 && grp_idx == nbr_grp-1) prn_ndn-=prn_flg->sxn_fst; /* csz */
   } /* end loop over grp_idx */
 
   /* Print closing tag for group */
-  if(nbr_grp > 0) (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng);
+  if(nbr_grp > 0){
+    if(grp_idx == nbr_grp-1) prn_flg->ndn-=prn_flg->sxn_fst; /* csz */
+    (void)fprintf(stdout,"\n%*s}",prn_flg->ndn,spc_sng);
+  } /* !nbr_grp */
 
   //  if(grp_dpt == 0) (void)fprintf(stdout,"\n}\n"); else (void)fprintf(stdout,"\n%*s}",prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
-  if(grp_dpt == 0) (void)fprintf(stdout,"\n}\n"); else (void)fprintf(stdout,"\n%*s}",prn_ndn,spc_sng); 
+  if(grp_dpt == 0) (void)fprintf(stdout,"\n}\n"); else (void)fprintf(stdout,"\n%*s}",prn_flg->ndn,spc_sng); 
 
   return rcd;
 } /* end nco_grp_prn_jsn() */
