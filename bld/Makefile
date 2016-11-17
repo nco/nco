@@ -922,7 +922,19 @@ endif
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOSX))
 # 20161001 Linux ar with Ubuntu Xenial began using deterministic mode. -U undoes that.
 # 20161001 GNU ar -s is equivalent to ranlib
-ARFLAGS := rsUv
+# ar -D: Operate in deterministic mode (breaks NCO build on Ubuntu)
+# ar -r: replace existing or insert new file(s) into the archive
+# ar -s: equivalent to ranlib
+# ar -U: Do not operate in deterministic mode.  This is the inverse of the D modifier, above: added files and the archive index will get their actual UID, GID, timestamp, and file mode values.
+# ar -U: Unavailable in RHEL 6 (2010) used on Rhea and Titan
+# ar -v: be verbose
+ARFLAGS := rsv
+ifeq (${null},$(findstring rhea,${HOST}))
+ ARFLAGS += U
+endif # !rhea
+ifeq (${null},$(findstring titan,${HOST}))
+ ARFLAGS += U
+endif # !titan
 CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CC}

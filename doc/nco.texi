@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 16 November 2016
+@set update-date 17 November 2016
 @set update-month November 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7087,7 +7087,7 @@ requesting units conversion.
 
 @cindex @code{units}
 @cindex @code{time} 
-The translation and dimensional innterpretation of time coordinates
+The translation and dimensional interpretation of time coordinates
 shows a more powerful, and probably more common, UDUnits application.
 In this example, the user prints all data between @w{4 PM} and @w{7 PM}
 on @w{December 8}, 1999, from a variable whose time dimension is hours 
@@ -7196,11 +7196,10 @@ calendar attributes specified by the @acronym{CF} conventions.
 @item  @strong{Unsupported types:} 
 "366_day"/"all_leap","proleptic_gregorian","julian","none" 
 @end table
-Unsupported types default to mixed Gregorian/Julian as defined by 
+Unsupported types default to mixed Gregorian/Julian as defined by  
 UDUnits. 
 
 @noindent An Example: Consider the following netCDF variable
-
 @example
 variables:
   double lon_cal(lon_cal) ;
@@ -7239,12 +7238,13 @@ Short options: None@*
 @end cartouche
 
 Time rebasing is invoked when numerous files share a common record
-coordinate, and the record coordinate units change among input files.
+coordinate, and the record coordinate basetime (not the time increment,
+e.g., days or hours) changes among input files. 
 The rebasing is performed automatically if and only if UDUnits is
 installed. 
-Usually rebasing occurs when the recoordinate is a time-based variable, 
-and times are recorded in units of a time-since-basetime, and the
-basetime changes from file to file.
+Rebasing occurs when the record coordinate is a time-based variable, and
+times are recorded in units of a time-since-basetime, and the basetime
+changes from file to file. 
 Since the output file can have only one unit (i.e., one basetime) for
 the record coordinate, @acronym{NCO}, in such cases, chooses the units
 of the first input file to be the units of the output file.
