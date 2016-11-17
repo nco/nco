@@ -1069,8 +1069,8 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--hdr_pad")) (void)fprintf(stdout,"    --hdr_pad, --header_pad\tPad output header with nbr bytes\n");
   if(strstr(opt_sng,"[-i var,val]")) (void)fprintf(stdout,"-i, --ntp, --interpolate var,val\tInterpolant and value\n");
   if(strstr(opt_sng,"[-I]")) (void)fprintf(stdout,"-I, --wgt_msk_crd_var\tDo not weight or mask coordinate variables\n");
-  if(strstr(opt_sng,"--jsn")) (void)fprintf(stdout,"    --jsn\t\tPrint JSON (JavaScript Object Notation)\n");
-  if(strstr(opt_sng,"--jsn_att_fmt lvl")) (void)fprintf(stdout,"    --jsn_att_fmt lvl\tVerbosity of attribute format [0 = least verbose, 2 = most pedantic]\n");
+  if(strstr(opt_sng,"--jsn")) (void)fprintf(stdout,"    --jsn, --json\tPrint JSON (JavaScript Object Notation)\n");
+  if(strstr(opt_sng,"--jsn_att_fmt lvl")) (void)fprintf(stdout,"    --jsn_att_fmt lvl\tVerbosity of JSON attribute format [0 = least verbose, 2 = most pedantic]\n");
 #ifdef ENABLE_NETCDF4
   if(strstr(opt_sng,"[-L")) (void)fprintf(stdout,"-L, --dfl_lvl, --deflate lvl\tLempel-Ziv deflation/compression (lvl=0..9) for netCDF4 output\n");
 #endif /* !ENABLE_NETCDF4 */
