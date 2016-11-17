@@ -689,7 +689,10 @@ nco1131. nco: ncra --cb wrong unless single record per input file (see note tagg
        ncks --cdl -v climatology_bounds ~/foo2.nc
        climatology_bounds are [0.5,1.5] but should be [2.5,6.5]
 nco1132. nco: ncclimo fails when input files have different variable orders. Allow user to suppress cb, or make ncra.c re-read cb IDs each file (Guido 20161101)
-nco1133.
+nco1133. ncks CDL-mode do UDUnits time conversions to ISO (added 20161116)
+	 ncks -H -v tm_.? ~/nco/data/in.nc
+	 ncdump -t ~/nco/data/in.nc | grep tm_
+nco1134. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
