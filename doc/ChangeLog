@@ -2,6 +2,8 @@
 
 	* Excise U from ARFLAGS on rheat/titan (RHEL6) since -U	implemented in ar after c. ~2009
 
+	* Clarify that rebasing feature only works on basetime in response to Dave Allured's question/comment
+
 2016-11-16  Charlie Zender  <zender@uci.edu>
 
 	* Merge spelling fixes from Sebastian Couwenberg
