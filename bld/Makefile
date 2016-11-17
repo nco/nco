@@ -930,10 +930,14 @@ ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOS
 # ar -v: be verbose
 ARFLAGS := rsv
 ifeq (${null},$(findstring rhea,${HOST}))
- ARFLAGS += U
+ifeq (${null},$(findstring titan,${HOST}))
+ ARFLAGS := rsUv
+endif # !titan
 endif # !rhea
 ifeq (${null},$(findstring titan,${HOST}))
- ARFLAGS += U
+ifeq (${null},$(findstring rhea,${HOST}))
+ ARFLAGS := rsUv
+endif # !rhea
 endif # !titan
 CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
