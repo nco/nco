@@ -1,5 +1,9 @@
 2016-11-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.3-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.3-alpha01 final changes';git push
+	git tag -a 4.6.3-alpha01 -m 'Version 4.6.3-alpha01 new features: bld/Makefile updates for ar, GSL';git push --tags
+
 	* [NCO]_GSL_MINOR_VERSION rx fails in fmt_gsl_cls.cc due to new GSL 2.x numbering, breaks bld/Makefile
 
 	* Compiling on grele shows netCDF 4.3.3.1 chokes on CDL naked constant ll, LL, ull, ULL syntax
@@ -7,7 +11,7 @@
 
 2016-11-17  Charlie Zender  <zender@uci.edu>
 
-	* Excise U from ARFLAGS on rhea/titan (RHEL6) since -U implemented in ar after ~2009
+	* Excise U from ARFLAGS on rhea/titan/yellowstone (RHEL6) since -U implemented in ar after ~2009
 
 	* Clarify that rebasing feature only works on basetime in response to Dave Allured's question/comment
 

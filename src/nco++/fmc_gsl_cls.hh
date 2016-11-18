@@ -40,12 +40,16 @@
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
 
-#if NCO_GSL_MAJOR_VERSION >= 2
-# define NCO_GSL_VERSION 221
+#ifdef NCO_GSL_MAJOR_VERSION
+# if NCO_GSL_MAJOR_VERSION >= 2
+#  define NCO_GSL_VERSION ( NCO_GSL_MAJOR_VERSION * 100 + NCO_GSL_MINOR_VERSION * 10 + NCO_GSL_PATCH_VERSION )
+# endif // NCO_GSL_MAJOR_VERSION
 #endif // NCO_GSL_MAJOR_VERSION
 #ifndef NCO_GSL_VERSION
 # ifdef _MSC_VER
 #  define NCO_GSL_VERSION 107
+# else
+#  define NCO_GSL_VERSION 221
 # endif // _MSC_VER
 #endif // NCO_GSL_VERSION
 

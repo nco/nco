@@ -334,19 +334,23 @@ else
  GSL_LIB_FLG := $(shell gsl-config --libs)
 endif # endif GSL_LIB
 ifndef GSL_MAJOR_VERSION
+# 20161118: Following line is always accurate
   GSL_MAJOR_VERSION := $(shell gsl-config --version | cut -c 1 )
 endif # endif GSL_MAJOR_VERSION
 ifndef GSL_MINOR_VERSION
-# gsl-config --version: 1.16
-# gsl-config --version: 2.2.1
+# gsl-config --version: 1.16 (old GSL versioning)
+# gsl-config --version: 2.2.1 (new GSL versioning)
 # GSL_MINOR_VERSION := $(shell gsl-config --version )
   ifeq (${GSL_MAJOR_VERSION},2)
-   GSL_MINOR_VERSION := 2
+   GSL_MINOR_VERSION := $(shell gsl-config --version | cut -c 3 )
+   GSL_PATCH_VERSION := $(shell gsl-config --version | cut -c 5 )
   else # !GSL_MAJOR_VERSION
    GSL_MINOR_VERSION := $(shell gsl-config --version | sed s/^[1-9]\.// )
+   GSL_PATCH_VERSION := 0
   endif # !GSL_MAJOR_VERSION
   ifeq (${GSL_MINOR_VERSION},${null})
-        GSL_MINOR_VERSION := 4
+   GSL_MINOR_VERSION := 4
+   GSL_PATCH_VERSION := 0
   endif # end if GSL_MINOR_VERSION
  endif # endif GSL_MINOR_VERSION
 endif # end if GSL
@@ -539,7 +543,7 @@ ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP
 endif # !DAP
 ifeq (${GSL},Y)
- CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H -DNCO_GSL_MAJOR_VERSION='${GSL_MAJOR_VERSION}' -DNCO_GSL_MINOR_VERSION='${GSL_MINOR_VERSION}'
+ CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H -DNCO_GSL_MAJOR_VERSION='${GSL_MAJOR_VERSION}' -DNCO_GSL_MINOR_VERSION='${GSL_MINOR_VERSION}' -DNCO_GSL_PATCH_VERSION='${GSL_PATCH_VERSION}'
 endif # !GSL
 ifeq (${MPI},Y)
 ifneq (${MPI_FAKE},Y)
@@ -1445,6 +1449,8 @@ dbg:
 	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "GSL = $(GSL)\n"
+	@printf "GSL_MINOR_VERSION = $(GSL_MINOR_VERSION)\n"
+	@printf "GSL_MAJOR_VERSION = $(GSL_MAJOR_VERSION)\n"
 	@printf "HOST = ${HOST}\n"
 	@printf "HOSTNAME = ${HOSTNAME}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
