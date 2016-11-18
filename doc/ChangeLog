@@ -1,3 +1,8 @@
+2016-11-18  Charlie Zender  <zender@uci.edu>
+
+	* Compiling on grele shows netCDF 4.3.3.1 chokes on CDL naked constant ll, LL, ull, ULL syntax
+	Remove such syntax from in_4.cdl to prevent breakage with bld/Makefile
+
 2016-11-17  Charlie Zender  <zender@uci.edu>
 
 	* Excise U from ARFLAGS on rhea/titan (RHEL6) since -U implemented in ar after ~2009
