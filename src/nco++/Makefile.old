@@ -771,13 +771,13 @@ ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOS
 # ar -U: Unavailable option in RHEL 6 (2010) used on Rhea and Titan
 # ar -v: be verbose
 ARFLAGS := rsv
-ifeq (${null},$(findstring rhea,${HOST}))
-ifeq (${null},$(findstring titan,${HOST}))
+ifeq (${null},$(findstring rhea,${HOSTNAME}))
+ifeq (${null},$(findstring titan,${HOSTNAME}))
  ARFLAGS := rsUv
 endif # !titan
 endif # !rhea
-ifeq (${null},$(findstring titan,${HOST}))
-ifeq (${null},$(findstring rhea,${HOST}))
+ifeq (${null},$(findstring titan,${HOSTNAME}))
+ifeq (${null},$(findstring rhea,${HOSTNAME}))
  ARFLAGS := rsUv
 endif # !rhea
 endif # !titan
