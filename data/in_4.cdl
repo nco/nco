@@ -544,7 +544,6 @@ variables:
         att_var:uint_att = 73ul; // 20161110: ncgen requires "ul" for uint (a simple "u" is interpretd as uint64)
 //	att_var:int64_att = 9223372036854775807ll; // 20130712: ncgen 4.3.0--4.3.3.1 choke on ll, LL suffix for int64 attributes, and translates -l suffixed numbers to NC_UINT64. Bug reported (netCDF #HEX-795132) and fixed in snapshot 20131117
 //	att_var:uint64_att = 18446744073709551615ul; // 20130712: ncgen 4.3.0--4.3.3.1 chokes on ull, ULL suffix for uint64 attributes. 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maxium ubyte, ushort, and uint values)
-	att_var:uint64_att = 0ull;
 	att_var:string_att1 = "20130723: ncgen -k netCDF-4 version 4.0.x converts quoted string to NC_STRING not NC_CHAR. Incompatible with classic behavior.";
 	att_var:string_att2 = "20130712: ncgen -k netCDF-4 version 4.2.x+ converts quoted string to NC_CHAR not NC_STRING. Backwards compatible with classic behavior.";
 	string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
