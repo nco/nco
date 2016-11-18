@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.2
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 17 November 2016
+@set update-date 18 November 2016
 @set update-month November 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2366,16 +2366,16 @@ The operators have the following memory requirements:
 @command{ncwa} requires @math{MS <= 8VT} (see below).
 Note that only variables that are processed, e.g., averaged,
 concatenated, or differenced, contribute to @math{MS}. 
-Variables which do not appear in the output file 
+Variables that do not appear in the output file 
 (@pxref{Subsetting Files}) are never read and contribute nothing
 to the memory requirements. 
 
 Further note that some operators perform internal type-promotion on some
 variables prior to arithmetic (@pxref{Type Conversion}).
-For example, @command{ncra} and @command{nces} both promote integer
-types to double-precision floating-point prior to arithmetic, then 
-perform the arithmetic, then demote back to the original integer type
-after arithmetic.
+For example, @command{ncra}, @command{nces}, and @command{ncwa} all
+promote integer types to double-precision floating-point prior to
+arithmetic, then perform the arithmetic, then demote back to the
+original integer type after arithmetic.
 This preserves the on-disk storage type while obtaining the accuracy
 advantages of floating-point arithmetic. 
 Since version 4.3.6 (released in September, 2013), @acronym{NCO} also
@@ -2401,19 +2401,40 @@ See @ref{RAM disks} for further details.
 @html
 <a name="mmr_ncwa"></a> <!-- http://nco.sf.net/nco.html#mmr_ncwa -->
 @end html
-@command{ncwa} consumes between two and seven times the memory of a
-variable in order to process it. 
+@command{ncwa} consumes between two and eight times the memory of an
+@code{NC_DOUBLE} variable in order to process it. 
 Peak consumption occurs when storing simultaneously in memory 
 one input variable, one tally array,
 one input weight, one conformed/working weight, one weight tally, 
 one input mask, one conformed/working mask, and
 one output variable. 
+@acronym{NCO}'s tally arrays are of type C-type @code{long}, whose size 
+is 8-bytes on all modern computers, the same as @code{NC_DOUBLE}.
 When invoked, the weighting and masking features contribute up to
-three-sevenths and two-sevenths of these requirements apiece.
+three-eighths and two-eighths of these requirements apiece.
 If weights and masks are @emph{not} specified 
 (i.e., no @samp{-w} or @samp{-a} options)
 then @command{ncwa} requirements drop to @math{MS <= 3VT}
 (one input variable, one tally array, and the output variable). 
+The output variable is the same size as the input variable when
+averaging over a degenerate dimension.
+However, normally the output variable is much smaller than the input, 
+and is often a simple scalar, in which case the memory requirements
+drop by @math{1VT} since the output array requires essentially no
+memory. 
+
+All of this is subject to the type promotion rules mentioned above.
+For example, @command{ncwa} averaging a variable of type
+@code{NC_FLOAT} requires @math{MS <= 16VT} (rather than @math{MS <= 8VT}) 
+since all arrays are (at least temporarily) composed of eight-byte
+elements.
+Without mask or weights, the requirements for @code{NC_FLOAT} are
+@math{MS <= 6VT} (rather than @math{MS <= 3VT} as for @code{NC_DOUBLE}) 
+due to temporary internal promotion of both the input variable and the
+output variable to type @code{NC_DOUBLE}. 
+The @samp{--flt} option that suppresses promotion reduces this to
+@math{MS <= 4VT} (the tally elements do not change size), and to
+@math{MS <= 3VT} when the output array is a scalar.
 
 @cindex OpenMP
 @cindex threads
