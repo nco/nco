@@ -1,6 +1,6 @@
 2016-11-17  Charlie Zender  <zender@uci.edu>
 
-	* Excise U from ARFLAGS on rheat/titan (RHEL6) since -U	implemented in ar after c. ~2009
+	* Excise U from ARFLAGS on rhea/titan (RHEL6) since -U implemented in ar after ~2009
 
 	* Clarify that rebasing feature only works on basetime in response to Dave Allured's question/comment
 

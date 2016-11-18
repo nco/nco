@@ -926,7 +926,7 @@ ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOS
 # ar -r: replace existing or insert new file(s) into the archive
 # ar -s: equivalent to ranlib
 # ar -U: Do not operate in deterministic mode.  This is the inverse of the D modifier, above: added files and the archive index will get their actual UID, GID, timestamp, and file mode values.
-# ar -U: Unavailable in RHEL 6 (2010) used on Rhea and Titan
+# ar -U: Unavailable option in RHEL 6 (2010) used on Rhea and Titan
 # ar -v: be verbose
 ARFLAGS := rsv
 ifeq (${null},$(findstring rhea,${HOST}))
@@ -2013,6 +2013,7 @@ debug: dbg
 dbg:
 	@printf "ABI = ${ABI}\n"
 	@printf "AR = ${AR}\n"
+	@printf "ARFLAGS = ${ARFLAGS}\n"
 	@printf "BNR_SFX = ${BNR_SFX}\n"
 	@printf "CC = ${CC}\n"
 	@printf "CCACHE = ${CCACHE}\n"

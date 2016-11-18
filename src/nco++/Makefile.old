@@ -752,6 +752,25 @@ endif
 
 # Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOSX
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOSX))
+# 20161001 Linux ar with Ubuntu Xenial began using deterministic mode. -U undoes that.
+# 20161001 GNU ar -s is equivalent to ranlib
+# ar -D: Operate in deterministic mode (breaks NCO build on Ubuntu)
+# ar -r: replace existing or insert new file(s) into the archive
+# ar -s: equivalent to ranlib
+# ar -U: Do not operate in deterministic mode.  This is the inverse of the D modifier, above: added files and the archive index will get their actual UID, GID, timestamp, and file mode values.
+# ar -U: Unavailable option in RHEL 6 (2010) used on Rhea and Titan
+# ar -v: be verbose
+ARFLAGS := rsv
+ifeq (${null},$(findstring rhea,${HOST}))
+ifeq (${null},$(findstring titan,${HOST}))
+ ARFLAGS := rsUv
+endif # !titan
+endif # !rhea
+ifeq (${null},$(findstring titan,${HOST}))
+ifeq (${null},$(findstring rhea,${HOST}))
+ ARFLAGS := rsUv
+endif # !rhea
+endif # !titan
 CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CXX}
@@ -1398,6 +1417,7 @@ dbg:
 	@printf "ABI = ${ABI}\n"
 	@printf "ANTLR = ${ANTLR}\n"
 	@printf "AR = ${AR}\n"
+	@printf "ARFLAGS = ${ARFLAGS}\n"
 	@printf "BNR_SFX = ${BNR_SFX}\n"
 	@printf "CC = ${CC}\n"
 	@printf "CCACHE = ${CCACHE}\n"
