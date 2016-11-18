@@ -120,7 +120,7 @@ void gsl_cls::gsl_ini_sf(void) {
 # if NCO_GSL_VERSION >= 108
       gpr_vtr.push_back(gpr_cls("gsl_sf_debye_5",f_unn(gsl_sf_debye_5_e),hnd_fnc_x,NC_DOUBLE));
       gpr_vtr.push_back(gpr_cls("gsl_sf_debye_6",f_unn(gsl_sf_debye_6_e),hnd_fnc_x,NC_DOUBLE));
-# endif // NCO_GSL_VERSION < 8
+# endif // NCO_GSL_VERSION < 108
     
     // Dilogarithm
     // not implemented as all involve complex numbers
@@ -407,14 +407,14 @@ void gsl_cls::gsl_ini_cdf(void){
 # if NCO_GSL_VERSION >= 108 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Pinv",f_unn(gsl_cdf_fdist_Pinv),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Qinv",f_unn(gsl_cdf_fdist_Qinv),hnd_fnc_nd,P3DBLX));
-# endif // NCO_GSL_VERSION < 8
+# endif // NCO_GSL_VERSION < 108
 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_P",f_unn(gsl_cdf_beta_P),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Q",f_unn(gsl_cdf_beta_Q),hnd_fnc_nd,P3DBLX));
-# if NCO_GSL_MINOR_VERSION >= 8 
+# if NCO_GSL_MAJOR_VERSION >= 2 || ( NCO_GSL_MAJOR_VERSION == 1 && NCO_GSL_MINOR_VERSION >= 8 )
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Pinv",f_unn(gsl_cdf_beta_Pinv),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Qinv",f_unn(gsl_cdf_beta_Qinv),hnd_fnc_nd,P3DBLX));
-# endif // NCO_GSL_MINOR_VERSION < 8
+# endif // GSL VERSION > 1.8
 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_flat_P",f_unn(gsl_cdf_flat_P),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_flat_Q",f_unn(gsl_cdf_flat_Q),hnd_fnc_nd,P3DBLX));
@@ -525,7 +525,7 @@ void gsl_cls::gsl_ini_ran(void){
 
 # if NCO_GSL_VERSION >= 108 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_ziggurat",f_unn(gsl_ran_gaussian_ziggurat),hnd_fnc_rnd,P1DBLX));
-# endif // NCO_GSL_MINOR_VERSION < 8
+# endif // NCO_GSL_VERSION < 108
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_pdf",f_unn(gsl_ran_gaussian_pdf),hnd_fnc_nd,P2DBLX));
 
@@ -3659,7 +3659,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 #endif /* !ENABLE_NETCDF4 */
      default: nco_dfl_case_nc_type_err(); break;    
      }  break;  
-# endif // NCO_GSL_MINOR_VERSION < 10
+# endif // NCO_GSL_VERSION < 110
     
    case PS_PVAR:
      switch(var_arr[0]->type){

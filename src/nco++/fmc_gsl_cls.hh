@@ -46,7 +46,7 @@
 #else
 # define NCO_GSL_VERSION 112
 #endif // _MSC_VER
-#endif // NCO_GSL_MINOR_VERSION
+#endif // NCO_GSL_VERSION
 
 
 // Some of the gsl_ran_* functions return an unsigned int (NC_UINT)

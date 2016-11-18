@@ -1,5 +1,7 @@
 2016-11-18  Charlie Zender  <zender@uci.edu>
 
+	* [NCO]_GSL_MINOR_VERSION rx fails in fmt_gsl_cls.cc due to new GSL 2.x numbering, breaks bld/Makefile
+
 	* Compiling on grele shows netCDF 4.3.3.1 chokes on CDL naked constant ll, LL, ull, ULL syntax
 	Remove such syntax from in_4.cdl to prevent breakage with bld/Makefile
 
