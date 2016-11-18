@@ -40,14 +40,14 @@
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
 
+#if NCO_GSL_MAJOR_VERSION >= 2
+# define NCO_GSL_VERSION 221
+#endif // NCO_GSL_MAJOR_VERSION
 #ifndef NCO_GSL_VERSION
-#ifdef _MSC_VER
-# define NCO_GSL_VERSION 107
-#else
-# define NCO_GSL_VERSION 112
-#endif // _MSC_VER
+# ifdef _MSC_VER
+#  define NCO_GSL_VERSION 107
+# endif // _MSC_VER
 #endif // NCO_GSL_VERSION
-
 
 // Some of the gsl_ran_* functions return an unsigned int (NC_UINT)
 // netcdf3 has no NC_UINT type So we converte the returned values to an NC_INT
