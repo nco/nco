@@ -340,7 +340,11 @@ ifndef GSL_MINOR_VERSION
 # gsl-config --version: 1.16
 # gsl-config --version: 2.2.1
 # GSL_MINOR_VERSION := $(shell gsl-config --version )
-  GSL_MINOR_VERSION := $(shell gsl-config --version | sed s/^[1-9]\.// )
+  ifeq (${GSL_MAJOR_VERSION},2)
+   GSL_MINOR_VERSION := 2
+  else # !GSL_MAJOR_VERSION
+   GSL_MINOR_VERSION := $(shell gsl-config --version | sed s/^[1-9]\.// )
+  endif # !GSL_MAJOR_VERSION
   ifeq (${GSL_MINOR_VERSION},${null})
         GSL_MINOR_VERSION := 4
   endif # end if GSL_MINOR_VERSION
