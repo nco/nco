@@ -26,6 +26,8 @@ else
 bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ${NCWA}
 endif
 
+BUILT_SOURCES = ncap_yacc.h
+
 AM_YFLAGS = -d --name-prefix=nco_yy
 
 ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
