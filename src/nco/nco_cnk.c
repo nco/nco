@@ -138,12 +138,16 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
  const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  const int cnk_map, /* I [enm] Chunking map */
  const int cnk_plc, /* I [enm] Chunking policy */
+ const size_t cnk_csh_byt, /* I [B] Chunk cache size */
  const size_t cnk_min_byt, /* I [B] Minimize size of variable to chunk */
  const size_t cnk_sz_byt, /* I [B] Chunk size in bytes */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
  cnk_sct * const cnk) /* O [sct] Chunking structure */
 {
   /* Purpose: Initialize chunking from user-specified inputs */
+
+  const char fnc_nm[]="nco_cnk_ini()"; /* [sng] Function name */
+
   int rcd=0; /* [enm] Return code  */
 
   size_t fl_sys_blk_sz=0UL; /* [nbr] File system blocksize for I/O */
@@ -154,6 +158,7 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
   cnk->cnk_nbr=cnk_nbr;
   cnk->cnk_map=cnk_map;
   cnk->cnk_plc=cnk_plc;
+  cnk->cnk_csh_byt=cnk_csh_byt;
   cnk->cnk_min_byt=cnk_min_byt;
   cnk->cnk_sz_byt=cnk_sz_byt;
   cnk->cnk_sz_scl=cnk_sz_scl;
@@ -186,6 +191,18 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
     cnk->cnk_sz_byt= (fl_sys_blk_sz > 0ULL) ? fl_sys_blk_sz : NCO_CNK_SZ_BYT_DFL;
   } /* end else */
     
+  if(cnk_csh_byt > 0ULL){
+    /* Use user-specified chunk cache size if available */
+    cnk->cnk_csh_byt=cnk_csh_byt;
+  }else{
+    /* Otherwise use filesystem blocksize if valid, otherwise use Linux default */
+    size_t cnk_csh_byt_lbr; /* [B] Chunk cache size in library */
+    size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
+    float pmp_fvr_frc; /* [frc] Preemption favor fraction */
+    nco_get_chunk_cache(&cnk_csh_byt_lbr,&nelemsp,&pmp_fvr_frc);
+    if(nco_dbg_lvl_get() > nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt_lbr = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_lbr,nelemsp,pmp_fvr_frc);
+  } /* end else */
+
   /* Java chunking defaults:
      http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/netcdf4Clibrary.html */
   if(cnk_min_byt == 0ULL) cnk->cnk_min_byt= (fl_sys_blk_sz > 0ULL) ? 2*fl_sys_blk_sz : NCO_CNK_SZ_MIN_BYT_DFL;

@@ -669,6 +669,7 @@ top_srcdir = @top_srcdir@
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT_C = nco_getopt.c
 @NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT_H = 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT_H = nco_getopt.h
+BUILT_SOURCES = ncap_yacc.h
 AM_YFLAGS = -d --name-prefix=nco_yy
 ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
 ncap_LDADD = libnco.la
@@ -816,7 +817,8 @@ nco_var_utl.c
 EXTRA_DIST = ${NCO_GETOPT_C}
 DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
 CLEANFILES = ncdiff ncea nces ncrcat mpncdiff mpncea mpnces mpncrcat
-all: all-am
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .l .lo .log .o .obj .test .test$(EXEEXT) .trs .y
@@ -1345,7 +1347,8 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
 install-binPROGRAMS: install-libLTLIBRARIES
 
@@ -1353,7 +1356,8 @@ installdirs:
 	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -1391,6 +1395,7 @@ maintainer-clean-generic:
 	-rm -f ncap_lex.c
 	-rm -f ncap_yacc.c
 	-rm -f ncap_yacc.h
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
@@ -1464,7 +1469,8 @@ ps-am:
 uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
-.MAKE: check-am install-am install-exec-am install-strip uninstall-am
+.MAKE: all check check-am install install-am install-exec-am \
+	install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
 	clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \

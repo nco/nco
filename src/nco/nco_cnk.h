@@ -82,6 +82,7 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
  const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  const int cnk_map, /* I [enm] Chunking map */
  const int cnk_plc, /* I [enm] Chunking policy */
+ const size_t cnk_csh_byt, /* I [B] Chunk cache size */
  const size_t cnk_min_byt, /* I [B] Minimize size of variable to chunk */
  const size_t cnk_sz_byt, /* I [B] Chunk size in bytes */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */

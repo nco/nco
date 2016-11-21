@@ -1,8 +1,14 @@
-2016-11-18  Charlie Zender  <zender@uci.edu>
+2016-11-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.3-alpha01 final changes';git push
-	git tag -a 4.6.3-alpha01 -m 'Version 4.6.3-alpha01 new features: bld/Makefile updates for ar, GSL';git push --tags
+	git tag -a 4.6.3-alpha01 -m 'Version 4.6.3-alpha01 new features: bld/Makefile updates for ar, GSL;ncap2 chunking;';git push --tags
+
+	* Add --cnk_csh_byt option and cache diagnostics
+
+	* ncap2 no longer chunks all variables with asking, and follows command-line inputs
+
+2016-11-18  Charlie Zender  <zender@uci.edu>
 
 	* Revise and clarify ncwa memory usage in nco.texi
 
