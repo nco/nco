@@ -542,8 +542,10 @@ prs_cls::ncap_var_write_omp(
 void prs_cls::ncap_def_ntl_scn(void)
 {
   int idx;
+  int jdx;
   int sz;
   int var_id;
+  size_t cnks[NC_MAX_VAR_DIMS]={0};
   NcapVar *Nvar;
   NcapVar *Cvar;
   var_sct *var1;
@@ -580,7 +582,13 @@ void prs_cls::ncap_def_ntl_scn(void)
 	    
 	    /* Set chunk sizes, if requested */
 	    // fxm: must first allow cnk_sz specification in ncap2.cc main()
-	    //if(var1->cnk_sz && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var1->cnk_sz);
+	    for(jdx=0;jdx<var1->nbr_dim;jdx++) 
+              if( var1->dim[jdx]->is_rec_dmn )
+		break; 
+
+            if( jdx==var1->nbr_dim)    
+               (void)nco_def_var_chunking(out_id,var_id,(int)NC_CONTIGUOUS,cnks);          
+
 	  } /* endif */
 	} /* endif netCDF4 */
 	
