@@ -714,7 +714,7 @@ main(int argc,char **argv)
   prs_arg.NCAP_MPI_SORT=(thr_nbr > 1 ? true:false);
   
   prs_arg.dfl_lvl=dfl_lvl;  /* [enm] Deflate level */
-  prs_arg.cnk_sz=(size_t*)NULL; /* Chunk sizes NULL for now */ 
+  prs_arg.cnk_sz=(size_t *)NULL; /* Chunk sizes NULL for now */ 
   
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   prs_arg.NCAP4_FILL=(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC);

@@ -1272,9 +1272,9 @@ is usually untagged.
 <li>NCAR CISL <tt>yellowstone.ucar.edu</tt>: <tt>~zender/bin</tt></li>
 <li>NCAR CISL <tt>mirage0.ucar.edu</tt>: <tt>~zender/bin</tt></li>
 <li>NERSC Cori <tt>cori.nersc.gov</tt>: <tt>~zender/bin</tt></li>
-<li>NERSC Edison <tt>edison.nersc.gov</tt>: <tt>~zender/bin</tt> or <tt>module load nco/4.5.5</tt></li>
+<li>NERSC Edison <tt>edison.nersc.gov</tt>: <tt>~zender/bin</tt> or <tt>module load nco/4.6.1</tt></li>
 <li>ORNL OLCF Pileus <tt>pileus-login01.ornl.gov</tt>: <tt>~zender/bin</tt></li>
-<li>ORNL OLCF Rhea <tt>rhea.ccs.ornl.gov</tt>: <tt>~zender/bin</tt></li>
+<li>ORNL OLCF Rhea <tt>rhea.ccs.ornl.gov</tt>: <tt>~zender/bin</tt> or <tt>module load nco/4.6.0</tt></li>
 <li>ORNL OLCF Titan <tt>titan.ccs.ornl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>UCI ESS <tt>greenplanet.ps.uci.edu</tt>: <tt>~zender/bin</tt></li>
 </ul>
