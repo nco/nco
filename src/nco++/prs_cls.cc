@@ -468,11 +468,10 @@ prs_cls::ncap_var_write_omp(
 	  // fxm: must first allow cnk_sz specification in ncap2.cc main()
            
           /* if var does NOT contain a rec dim then set all chunking to contiguous */  
-          if(var->cnk_sz && var->is_rec_var)
 	  {
             int idx;
             size_t cnks[NC_MAX_VAR_DIMS]={0};
-	    for(int idx=0;idx<var->nbr_dim;idx++) 
+	    for(idx=0;idx<var->nbr_dim;idx++) 
               if( var->dim[idx]->is_rec_dmn )
 		break; 
 
