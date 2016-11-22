@@ -200,7 +200,7 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
     size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
     float pmp_fvr_frc; /* [frc] Preemption favor fraction */
     nco_get_chunk_cache(&cnk_csh_byt_lbr,&nelemsp,&pmp_fvr_frc);
-    if(nco_dbg_lvl_get() > nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt_lbr = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_lbr,nelemsp,pmp_fvr_frc);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt_lbr = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_lbr,nelemsp,pmp_fvr_frc);
   } /* end else */
 
   /* Java chunking defaults:
