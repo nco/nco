@@ -172,9 +172,9 @@ extern "C" {
   /* 20161121 Chunk cache size default
      http://www.unidata.ucar.edu/software/netcdf/docs/netcdf_perf_chunking.html
      netCDF cache size default settable at netCDF build time with --with-chunk-cache-size option
-     If NCO default is < 0, then NCO will use whatever default built-into netCDF library
-     If NCO default is > 0, then NCO will override netCDF default */
-#define NCO_CNK_CSH_BYT_DFL -1
+     If NCO default == 0, then NCO will use whatever default built-into netCDF library
+     If NCO default  > 0, then NCO will override netCDF default */
+#define NCO_CNK_CSH_BYT_DFL 0
 
   /* netCDF 4.3.2 (201404) implements a configure-time constant called DEFAULT_CHUNK_SIZE = 4194304 = 4 MB
      This is a good size for HPC systems with MB-scale blocksizes
