@@ -312,6 +312,7 @@ fi # !TERM
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 bnd_nm='nbnd' # [sng] Bounds dimension name (e.g., 'nbnd', 'tbnd')
+bnr_flg='No' # [sng] Binary method
 clm_md='scd' # [sng] Climatology mode ('scd' or 'sdd' as per above)
 caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
@@ -337,9 +338,8 @@ hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for filenames and regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
-mta_flg='No' # [sng] Metaclimatology
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
-ncr_flg='No' # [sng] Incremental climatology
+ncr_flg='No' # [sng] Incremental method
 nd_nbr=1 # [nbr] Number of nodes
 par_opt='' # [sng] Parallel options to shell
 par_typ='bck' # [sng] Parallelism type
@@ -527,15 +527,15 @@ let yr_endm1=${yr_end_rth}-1
 let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
 
 if [ -n "${yr_srt_prv}" ]; then
-    # Specifying only yr_srt_prv implies incremental climos
-    # Specifying both yr_srt_prv and yr_end_prv implies metaclimos
+    # Specifying only yr_srt_prv implies incremental method
+    # Specifying both yr_srt_prv and yr_end_prv implies binary method
     xtn_flg='Yes'
     if [ -n "${yr_end_prv}" ]; then
-	mta_flg='Yes'
-    else # !yr_end_prv metaclimos
+	bnr_flg='Yes'
+    else # !yr_end_prv binary method
 	ncr_flg='Yes'
-    fi # !yr_end_prv metaclimos
-fi # !yr_srt_prv extended climos
+    fi # !yr_end_prv binary method
+fi # !yr_srt_prv extended climo
 
 # Derived variables
 out_nm=${caseid}
@@ -682,6 +682,7 @@ fi # !mpi
 # Print initial state
 if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: bnd_nm   = ${bnd_nm}\n"
+    printf "dbg: bnr_flg  = ${bnr_flg}\n"
     printf "dbg: caseid   = ${caseid}\n"
     printf "dbg: cf_flg   = ${cf_flg}\n"
     printf "dbg: clm_md   = ${clm_md}\n"
@@ -702,12 +703,14 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: mdl_nm   = ${mdl_nm}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: nco_opt  = ${nco_opt}\n"
+    printf "dbg: ncr_flg  = ${ncr_flg}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
+    printf "dbg: xtn_flg  = ${xtn_flg}\n"
     printf "dbg: yyyy_end = ${yyyy_end}\n"
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
 fi # !dbg
@@ -837,243 +840,247 @@ for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 	fi # !drc_rgr
     fi # !rgr_map
 done # !clm_idx
-    
-# Block 1 Loop 2: Execute and/or echo monthly climatology commands
-for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
-    printf "Climatological monthly mean for month ${clm_idx} ...\n"
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_clm[${clm_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
-	if [ -z "${par_opt}" ]; then
-	    eval ${cmd_clm[${clm_idx}]}
+
+# Many subsequent blocks only executed for normal and incremental climos, not for binary climos
+if [ "${bnr_flg}" != 'Yes' ]; then
+
+    # Block 1 Loop 2: Execute and/or echo monthly climatology commands
+    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
+	printf "Climatological monthly mean for month ${clm_idx} ...\n"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_clm[${clm_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -le 1 ]; then
+	    if [ -z "${par_opt}" ]; then
+		eval ${cmd_clm[${clm_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR monthly climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
+		    exit 1
+		fi # !err
+	    else # !par_opt
+		eval ${cmd_clm[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+		clm_pid[${clm_idx}]=$!
+		# Potential alternatives to eval:
+		#	eval "${cmd_clm[${clm_idx}]}" # borken
+		#       ${cmd_clm[${clm_idx}]} # borken
+		#       "${cmd_clm[${clm_idx}]}" # borken
+		#	exec "${cmd_clm[${clm_idx}]}" # borken
+		#	$(${cmd_clm[${clm_idx}]}) # borken
+		#	$("${cmd_clm[${clm_idx}]}") # works (when & inside cmd quotes)
+	    fi # !par_opt
+	fi # !dbg
+    done # !clm_idx
+    if [ -n "${par_opt}" ]; then
+	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
+	    wait ${clm_pid[${clm_idx}]}
 	    if [ $? -ne 0 ]; then
 		printf "${spt_nm}: ERROR monthly climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		exit 1
 	    fi # !err
-	else # !par_opt
-	    eval ${cmd_clm[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
-	    clm_pid[${clm_idx}]=$!
-	    # Potential alternatives to eval:
-#	eval "${cmd_clm[${clm_idx}]}" # borken
-#       ${cmd_clm[${clm_idx}]} # borken
-#       "${cmd_clm[${clm_idx}]}" # borken
-#	exec "${cmd_clm[${clm_idx}]}" # borken
-#	$(${cmd_clm[${clm_idx}]}) # borken
-#	$("${cmd_clm[${clm_idx}]}") # works (when & inside cmd quotes)
-	fi # !par_opt
-    fi # !dbg
-done # !clm_idx
-if [ -n "${par_opt}" ]; then
-    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
-	wait ${clm_pid[${clm_idx}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR monthly climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-	    exit 1
-	fi # !err
-    done # !clm_idx
-fi # !par_opt
-wait
+	done # !clm_idx
+    fi # !par_opt
+    wait
+    
+    # Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).
+    if [ -n "${rgr_map}" ]; then 
+	printf "Regrid monthly data...\n"
+	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
+	    # NB: Months, seasons, files are 1-based ([1..12], [13..16], [1..17]), nodes are 0-based ([0..11])
+	    let nd_idx=$(((clm_idx-1+4) % nd_nbr))
+	    if [ ${nd_idx} -lt 4 ]; then
+		let nd_idx=${nd_idx}+4
+	    fi # !nd
+	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    if [ "${mdl_typ}" = 'mpas' ]; then
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+	    fi # !mdl_typ
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_rgr[${clm_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_rgr[${clm_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR monthly regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_opt
+		    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
+		    rgr_pid[${clm_idx}]=$!
+		fi # !par_opt
+	    fi # !dbg
+	done 
+	# Start seasonal means first, then wait() for monthly regridding to finish
+    fi # !rgr_map
+    
+    # Block 2: Climatological seasonal means
+    # Block 2 Loop 1: Generate seasonal commands
+    printf "Climatological seasonal means...\n"
+    cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
+    cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
+    cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
+    cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
 
-# Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).
-if [ -n "${rgr_map}" ]; then 
-    printf "Regrid monthly data...\n"
-    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
-	# NB: Months, seasons, files are 1-based ([1..12], [13..16], [1..17]), nodes are 0-based ([0..11])
-	let nd_idx=$(((clm_idx-1+4) % nd_nbr))
-	if [ ${nd_idx} -lt 4 ]; then
-	    let nd_idx=${nd_idx}+4
-	fi # !nd
-	cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-	if [ "${mdl_typ}" = 'mpas' ]; then
-	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
-	fi # !mdl_typ
+    # Block 2 Loop 2: Execute and/or echo seasonal climatology commands
+    for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
 	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_rgr[${clm_idx}]}
+	    echo ${cmd_clm[${clm_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -le 1 ]; then
 	    if [ -z "${par_opt}" ]; then
-		eval ${cmd_rgr[${clm_idx}]}
+		eval ${cmd_clm[${clm_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
+		    exit 1
+		fi # !err
+	    else # !par_opt
+		eval ${cmd_clm[${clm_idx}]} ${par_opt}
+		clm_pid[${clm_idx}]=$!
+	    fi # !par_opt
+	fi # !dbg
+    done # !clm_idx
+    # wait() for monthly regridding, if any, to finish
+    if [ -n "${rgr_map}" ]; then 
+	if [ -n "${par_opt}" ]; then
+	    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
+		wait ${rgr_pid[${clm_idx}]}
 		if [ $? -ne 0 ]; then
 		    printf "${spt_nm}: ERROR monthly regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
-	    else # !par_opt
-		eval ${cmd_rgr[${clm_idx}]} ${par_opt}
-		rgr_pid[${clm_idx}]=$!
-	    fi # !par_opt
-	fi # !dbg
-    done 
-    # Start seasonal means first, then wait() for monthly regridding to finish
-fi # !rgr_map
-
-# Block 2: Climatological seasonal means
-# Block 2 Loop 1: Generate seasonal commands
-printf "Climatological seasonal means...\n"
-cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
-cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
-cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
-cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
-
-# Block 2 Loop 2: Execute and/or echo seasonal climatology commands
-for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_clm[${clm_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
-	if [ -z "${par_opt}" ]; then
-	    eval ${cmd_clm[${clm_idx}]}
+	    done # !clm_idx
+	fi # !par_opt
+    fi # !rgr_map
+    # wait() for seasonal climatologies to finish
+    if [ -n "${par_opt}" ]; then
+	for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
+	    wait ${clm_pid[${clm_idx}]}
 	    if [ $? -ne 0 ]; then
 		printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		exit 1
 	    fi # !err
-	else # !par_opt
-	    eval ${cmd_clm[${clm_idx}]} ${par_opt}
-	    clm_pid[${clm_idx}]=$!
-	fi # !par_opt
-    fi # !dbg
-done # !clm_idx
-# wait() for monthly regridding, if any, to finish
-if [ -n "${rgr_map}" ]; then 
-    if [ -n "${par_opt}" ]; then
-	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
-	    wait ${rgr_pid[${clm_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR monthly regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-		exit 1
-	    fi # !err
 	done # !clm_idx
     fi # !par_opt
-fi # !rgr_map
-# wait() for seasonal climatologies to finish
-if [ -n "${par_opt}" ]; then
-    for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
-	wait ${clm_pid[${clm_idx}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-	    exit 1
-	fi # !err
-    done # !clm_idx
-fi # !par_opt
-wait
-
-# Block 2: Loop 4: Regrid seasonal files. Load-balance by using idle nodes (nodes not used for annual mean).
-if [ -n "${rgr_map}" ]; then 
-    printf "Regrid seasonal data...\n"
-    for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
-	let nd_idx=$(((clm_idx-1+4) % nd_nbr))
-	if [ ${nd_idx} -lt 4 ]; then
-	    let nd_idx=${nd_idx}+4
-	fi # !nd
-	cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-	if [ "${mdl_typ}" = 'mpas' ]; then
-	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
-	fi # !mdl_typ
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_rgr[${clm_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    if [ -z "${par_opt}" ]; then
-		eval ${cmd_rgr[${clm_idx}]}
+    wait
+    
+    # Block 2: Loop 4: Regrid seasonal files. Load-balance by using idle nodes (nodes not used for annual mean).
+    if [ -n "${rgr_map}" ]; then 
+	printf "Regrid seasonal data...\n"
+	for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
+	    let nd_idx=$(((clm_idx-1+4) % nd_nbr))
+	    if [ ${nd_idx} -lt 4 ]; then
+		let nd_idx=${nd_idx}+4
+	    fi # !nd
+	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    if [ "${mdl_typ}" = 'mpas' ]; then
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+	    fi # !mdl_typ
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_rgr[${clm_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_rgr[${clm_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_opt
+		    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
+		    rgr_pid[${clm_idx}]=$!
+		fi # !par_opt
+	    fi # !dbg
+	done 
+	# Start annual mean first, then wait() for seasonal regridding to finish
+    fi # !rgr_map
+    
+    # Block 3: Climatological annual mean (seventeenth file)
+    printf "Climatological annual mean...\n"
+    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_clm[17]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_clm[17]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR annual climo cmd_clm[17] failed. Debug this:\n${cmd_clm[17]}\n"
+		exit 1
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_clm[17]} ${par_opt}
+	    clm_pid[17]=$!
+	fi # !par_opt
+    fi # !dbg
+    # wait() for seasonal regridding, if any, to finish
+    if [ -n "${rgr_map}" ]; then 
+	if [ -n "${par_opt}" ]; then
+	    for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
+		wait ${rgr_pid[${clm_idx}]}
 		if [ $? -ne 0 ]; then
 		    printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
-	    else # !par_opt
-		eval ${cmd_rgr[${clm_idx}]} ${par_opt}
-		rgr_pid[${clm_idx}]=$!
-	    fi # !par_opt
-	fi # !dbg
-    done 
-    # Start annual mean first, then wait() for seasonal regridding to finish
-fi # !rgr_map
-
-# Block 3: Climatological annual mean (seventeenth file)
-printf "Climatological annual mean...\n"
-cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
-if [ ${dbg_lvl} -ge 1 ]; then
-    echo ${cmd_clm[17]}
-fi # !dbg
-if [ ${dbg_lvl} -le 1 ]; then
-    if [ -z "${par_opt}" ]; then
-	eval ${cmd_clm[17]}
+	    done # !clm_idx
+	fi # !par_opt
+    fi # !rgr_map
+    # wait() for annual climatology to finish
+    if [ -n "${par_opt}" ]; then
+	wait ${clm_pid[17]}
 	if [ $? -ne 0 ]; then
 	    printf "${spt_nm}: ERROR annual climo cmd_clm[17] failed. Debug this:\n${cmd_clm[17]}\n"
 	    exit 1
 	fi # !err
-    else # !par_opt
-	eval ${cmd_clm[17]} ${par_opt}
-	clm_pid[17]=$!
     fi # !par_opt
-fi # !dbg
-# wait() for seasonal regridding, if any, to finish
-if [ -n "${rgr_map}" ]; then 
-    if [ -n "${par_opt}" ]; then
-	for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
-	    wait ${rgr_pid[${clm_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-		exit 1
-	    fi # !err
-	done # !clm_idx
-    fi # !par_opt
-fi # !rgr_map
-# wait() for annual climatology to finish
-if [ -n "${par_opt}" ]; then
-    wait ${clm_pid[17]}
-    if [ $? -ne 0 ]; then
-	printf "${spt_nm}: ERROR annual climo cmd_clm[17] failed. Debug this:\n${cmd_clm[17]}\n"
-	exit 1
-    fi # !err
-fi # !par_opt
-
-# Block 5: Regrid climatological annual mean
-if [ -n "${rgr_map}" ]; then 
-    printf "Regrid annual data...\n"
-    for ((clm_idx=17;clm_idx<=17;clm_idx++)); do
-	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-	if [ "${mdl_typ}" = 'mpas' ]; then
-	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
-	fi # !mdl_typ
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_rgr[${clm_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    # NB: Do not background climatological mean regridding
-	    eval ${cmd_rgr[${clm_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR annual regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    done 
-fi # !rgr_map
-
-# Link ACME-climo to AMWG-climo filenames
-# drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
-# Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
-if [ ${lnk_flg} = 'Yes' ]; then
-    printf "Link ACME-climo to AMWG-climo filenames...\n"
-    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	if [ -n "${rgr_map}" ]; then 
-	    cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr};ln -s -f ${fl_rgr[${clm_idx}]/${drc_rgr}\//} ${fl_amwg[${clm_idx}]/${drc_rgr}\//}"
-	else
-	    cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_out};ln -s -f ${fl_out[${clm_idx}]/${drc_out}\//} ${fl_amwg[${clm_idx}]/${drc_out}\//}"
-	fi # !rgr_map
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_lnk[${clm_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    eval ${cmd_lnk[${clm_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR linking ACME to AMWG filename cmd_lnk[${clm_idx}] failed. Debug this:\n${cmd_lnk[${clm_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    done # !clm_idx
-    cd ${drc_pwd}
-fi # !lnk_flg
     
+    # Block 5: Regrid climatological annual mean
+    if [ -n "${rgr_map}" ]; then 
+	printf "Regrid annual data...\n"
+	for ((clm_idx=17;clm_idx<=17;clm_idx++)); do
+	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    if [ "${mdl_typ}" = 'mpas' ]; then
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+	    fi # !mdl_typ
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_rgr[${clm_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		# NB: Do not background climatological mean regridding
+		eval ${cmd_rgr[${clm_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR annual regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	done 
+    fi # !rgr_map
+    
+    # Link ACME-climo to AMWG-climo filenames
+    # drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
+    # Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
+    if [ ${lnk_flg} = 'Yes' ]; then
+	printf "Link ACME-climo to AMWG-climo filenames...\n"
+	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	    if [ -n "${rgr_map}" ]; then 
+		cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr};ln -s -f ${fl_rgr[${clm_idx}]/${drc_rgr}\//} ${fl_amwg[${clm_idx}]/${drc_rgr}\//}"
+	    else
+		cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_out};ln -s -f ${fl_out[${clm_idx}]/${drc_out}\//} ${fl_amwg[${clm_idx}]/${drc_out}\//}"
+	    fi # !rgr_map
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_lnk[${clm_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		eval ${cmd_lnk[${clm_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR linking ACME to AMWG filename cmd_lnk[${clm_idx}] failed. Debug this:\n${cmd_lnk[${clm_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	done # !clm_idx
+	cd ${drc_pwd}
+    fi # !lnk_flg
+fi # !bnr_flg
+
 # Extended climos
 if [ "${xtn_flg}" = 'Yes' ]; then
     mkdir -p ${drc_prv}
@@ -1096,11 +1103,11 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 
     wgt_prv=$(echo "${yr_nbr_prv}/${yr_nbr_xtn}" | bc -l)
     wgt_crr=$(echo "${yr_nbr}/${yr_nbr_xtn}" | bc -l)
-    if [ "${mta_flg}" = 'Yes' ]; then
+    if [ "${bnr_flg}" = 'Yes' ]; then
 	printf "Produce extended climatology as weighted average of two previously computed climatologies:\n"
-    else # !mta_flg
+    else # !bnr_flg
 	printf "Produce extended climatology as weighted average of previously computed and incremental/new climatologies:\n"
-    fi # !mta_flg
+    fi # !bnr_flg
     printf "Previous/first climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}, weight = ${wgt_prv}\n"
     printf "Current/second  climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
     printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
