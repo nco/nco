@@ -162,6 +162,8 @@ esac # !HOSTNAME
 # Incremental climo testing:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1981 -i ${DATA}/ne30/raw -o ${DATA}/ne30/prv -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1982 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -x ${DATA}/ne30/prv -X ${DATA}/ne30/xtn -S 1980
+# Meta climo testing:
+# ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1982 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -x ${DATA}/ne30/prv -X ${DATA}/ne30/xtn -S 1980 -E 1981
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
@@ -290,7 +292,7 @@ if [ -z "${nco_exe}" ]; then
     echo "ERROR: Unable to find NCO, nco_exe = ${nco_exe}"
     exit 1
 fi # !nco_exe
-# Use stackoverflow method to find NCO directory
+# Use StackOverflow method to find NCO directory
 while [ -h "${nco_exe}" ]; do
   drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
   nco_exe="$(readlink "${nco_exe}")"
@@ -335,7 +337,9 @@ hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for filenames and regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
+mta_flg='No' # [sng] Metaclimatology
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
+ncr_flg='No' # [sng] Incremental climatology
 nd_nbr=1 # [nbr] Number of nodes
 par_opt='' # [sng] Parallel options to shell
 par_typ='bck' # [sng] Parallelism type
@@ -348,7 +352,7 @@ rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
-xtn_flg='No' # [sng] Extend previous climatology with current data
+xtn_flg='No' # [sng] Produce extended climatology
 yr_end='1983' # [yr] End year
 yr_srt='1980' # [yr] Start year
 
@@ -361,6 +365,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-b${fnt_nrm} ${fnt_bld}bnd_nm${fnt_nrm}   Bounds dimension name (default ${fnt_bld}${bnd_nm}${fnt_nrm})"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm})"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
+    echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}yr_prv${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_end_prv}${fnt_nrm})"
     echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm})"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm})"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm})"
@@ -443,12 +448,13 @@ fi # !arg_nbr
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
 cmd_ln="${spt_nm} ${@}"
-while getopts :a:b:c:d:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y: OPT; do
+while getopts :a:b:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y: OPT; do
     case ${OPT} in
 	a) clm_md=${OPTARG} ;; # Climatology mode
 	b) bnd_nm=${OPTARG} ;; # Bounds dimension name
 	c) caseid=${OPTARG} ;; # CASEID
 	d) dbg_lvl=${OPTARG} ;; # Debugging level
+	E) yr_end_prv=${OPTARG} ;; # End year previous
 	e) yr_end=${OPTARG} ;; # End year
 	f) fml_nm=${OPTARG} ;; # Family name
 	h) hst_nm=${OPTARG} ;; # History tape name
@@ -519,6 +525,17 @@ yr_end_rth=${sng_trm}
 yyyy_end=`printf "%04d" ${yr_end_rth}`
 let yr_endm1=${yr_end_rth}-1
 let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
+
+if [ -n "${yr_srt_prv}" ]; then
+    # Specifying only yr_srt_prv implies incremental climos
+    # Specifying both yr_srt_prv and yr_end_prv implies metaclimos
+    xtn_flg='Yes'
+    if [ -n "${yr_end_prv}" ]; then
+	mta_flg='Yes'
+    else # !yr_end_prv metaclimos
+	ncr_flg='Yes'
+    fi # !yr_end_prv metaclimos
+fi # !yr_srt_prv extended climos
 
 # Derived variables
 out_nm=${caseid}
@@ -691,7 +708,6 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
-    printf "dbg: xtn_flg  = ${xtn_flg}\n"
     printf "dbg: yyyy_end = ${yyyy_end}\n"
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
 fi # !dbg
@@ -728,7 +744,7 @@ if [ "${mdl_typ}" = 'yyyymm' ]; then
 else # !mdl_typ
     printf "Filenames will be constructed with CESM'ish or ACME'ish conventions.\n"
 fi # !mdl_typ
-printf "Climatology from ${yr_nbr} years of contiguous data crossing ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
+printf "Climatology from ${yr_nbr} years of contiguous data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
 if [ ${clm_md} = 'scd' ]; then 
     printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive months that cross calendar-year boundaries.\n"
 else
@@ -1058,28 +1074,35 @@ if [ ${lnk_flg} = 'Yes' ]; then
     cd ${drc_pwd}
 fi # !lnk_flg
     
-# Incremental climos
-if [ -n "${yr_srt_prv}" ]; then
+# Extended climos
+if [ "${xtn_flg}" = 'Yes' ]; then
     mkdir -p ${drc_prv}
     mkdir -p ${drc_xtn}
 
     trim_leading_zeros ${yr_srt_prv}
     yr_srt_rth_prv=${sng_trm}
     yyyy_srt_prv=`printf "%04d" ${yr_srt_rth_prv}`
+    yyyy_clm_srt_dec_prv=${yyyy_srt_prv}
     let yr_srtm1_prv=${yr_srt_rth_prv}-1
-    let yr_end_prv=${yr_srt_rth}-1
+    if [ "${ncr_flg}" = 'Yes' ]; then
+	let yr_end_prv=${yr_srt_rth}-1
+    fi # !ncr_flg
     trim_leading_zeros ${yr_end_prv}
     yr_end_rth_prv=${sng_trm}
     yyyy_end_prv=`printf "%04d" ${yr_end_rth_prv}`
     let yr_endm1_prv=${yr_end_rth_prv}-1
     let yr_nbr_prv=${yr_end_rth_prv}-${yr_srt_rth_prv}+1
-    let yr_nbr_xtn=${yr_end_rth}-${yr_srt_rth_prv}+1
-    yyyy_clm_srt_dec_prv=${yyyy_srt_prv}
+    let yr_nbr_xtn=${yr_nbr_prv}+${yr_nbr}
+
     wgt_prv=$(echo "${yr_nbr_prv}/${yr_nbr_xtn}" | bc -l)
     wgt_crr=$(echo "${yr_nbr}/${yr_nbr_xtn}" | bc -l)
-    printf "Incrementally produce extended climatology as weighted average of previous and current climatologies:\n"
-    printf "Previous climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}, weight = ${wgt_prv}\n"
-    printf "Current  climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
+    if [ "${mta_flg}" = 'Yes' ]; then
+	printf "Produce extended climatology as weighted average of two previously computed climatologies:\n"
+    else # !mta_flg
+	printf "Produce extended climatology as weighted average of previously computed and incremental/new climatologies:\n"
+    fi # !mta_flg
+    printf "Previous/first climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}, weight = ${wgt_prv}\n"
+    printf "Current/second  climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
     printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     
     # Replace yr_srt by yr_srt_prv in "yrs_averaged" attribute
@@ -1229,7 +1252,7 @@ if [ -n "${yr_srt_prv}" ]; then
 	cd ${drc_pwd}
     fi # !lnk_flg
 
-fi # !yr_srt_prv incremental climos
+fi # !xtn_flg extended climos
 
 date_end=$(date +"%s")
 printf "Completed climatology generation for dataset ${caseid} at `date`.\n"

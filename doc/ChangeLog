@@ -1,3 +1,7 @@
+2016-11-25  Charlie Zender  <zender@uci.edu>
+
+	* Modify ncclimo to distinguish two types Extended climos: Meta	and Incremental
+
 2016-11-22  Charlie Zender  <zender@uci.edu>
 
 	* Change NCO_CNK_CSH_BYT_DFL to 0 since it is unsigned
