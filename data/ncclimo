@@ -738,10 +738,20 @@ if [ ${dbg_lvl} -ge 0 ]; then
 fi # !dbg
 printf "Started climatology generation for dataset ${caseid} at `date`.\n"
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
-printf "NCO version ${nco_vrs} from directory ${drc_nco}\n"
-printf "Input files in directory ${drc_in}\n"
+printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
+if [ "${xtn_flg}" = 'No' ]; then
+    printf "Producing standard climatology from raw monthly input files in directory ${drc_in}\n"
+    printf "Output files to directory ${drc_out}\n"
+fi # !xtn_flg
+if [ "${bnr_flg}" = 'Yes' ]; then
+    printf "Producing extended climatology in binary mode: Will combine pre-computed climatology in directory ${drc_prv} with pre-computed climatology in directory ${drc_in}\n"
+    printf "Output files to directory ${drc_xtn}\n"
+fi # !bnr_flg
+if [ "${ncr_flg}" = 'Yes' ]; then
+    printf "Producing extended climatology in incremental mode: Pre-computed climatology in directory ${drc_prv} will be incremented by raw monthly input files in directory ${drc_in}\n"
+    printf "Output files to directory ${drc_xtn}\n"
+fi # !ncr_flg
 #printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
-printf "Output files to directory ${drc_out}\n"
 if [ "${mdl_typ}" = 'yyyymm' ]; then
     printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
 else # !mdl_typ
@@ -766,7 +776,6 @@ fi # !rgr
 
 # Block 1: Climatological monthly means
 # Block 1 Loop 1: Generate, check, and store (but do not yet execute) monthly commands
-printf "Generating climatology...\n"
 clm_idx=0
 for mth in {01..12}; do
     let clm_idx=${clm_idx}+1
@@ -807,6 +816,7 @@ for mth in {01..12}; do
 	    fi # ! -f
 	done # !fl_in
     else # !bnr_flg
+	# In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
 	drc_out="${drc_in}"
     fi # !bnr_flg
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
@@ -850,6 +860,7 @@ done # !clm_idx
 if [ "${bnr_flg}" = 'No' ]; then
 
     # Block 1 Loop 2: Execute and/or echo monthly climatology commands
+    printf "Generating climatology...\n"
     for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 	printf "Climatological monthly mean for month ${clm_idx} ...\n"
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -1114,7 +1125,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 	printf "Produce extended climatology as weighted average of previously computed and incremental/new climatologies:\n"
     fi # !bnr_flg
     printf "Previous/first climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}, weight = ${wgt_prv}\n"
-    printf "Current/second  climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
+    printf "Current/second climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
     printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     
     # Replace yr_srt by yr_srt_prv in "yrs_averaged" attribute
@@ -1177,7 +1188,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 	fi # !clm_md
     done # !clm_idx
 
-    printf "Weight previous and new native-grid climos to produce extended climo...\n"
+    printf "Weight input climos to produce extended climo...\n"
     for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 	cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -1208,7 +1219,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
     wait
 
     if [ -n "${rgr_map}" ]; then 
-	printf "Weight previous and new regridded climos to produce extended regridded climo...\n"
+	printf "Weight input climos to produce extended regridded climo...\n"
 	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 	    cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then

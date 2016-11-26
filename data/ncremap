@@ -765,7 +765,7 @@ if [ -f 'PET0.RegridWeightGen.Log' ]; then
 fi # !PETO
 printf "Started processing at `date`.\n"
 printf "Running remap script ${spt_nm} from directory ${drc_spt}\n"
-printf "NCO version ${nco_vrs} from directory ${drc_nco}\n"
+printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
 printf "Input files in or relative to directory ${drc_in}\n"
 printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
 printf "Output files to directory ${drc_out}\n"
