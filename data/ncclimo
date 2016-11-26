@@ -162,8 +162,8 @@ esac # !HOSTNAME
 # Incremental climo testing:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1981 -i ${DATA}/ne30/raw -o ${DATA}/ne30/prv -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1982 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -x ${DATA}/ne30/prv -X ${DATA}/ne30/xtn -S 1980
-# Meta climo testing:
-# ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1982 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -x ${DATA}/ne30/prv -X ${DATA}/ne30/xtn -S 1980 -E 1981
+# Binary climo testing:
+# ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -S 1980 -E 1981 -x ${DATA}/ne30/prv -s 1982 -e 1983 -i ${DATA}/ne30/clm -X ${DATA}/ne30/xtn
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
@@ -382,7 +382,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm})"
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_prv${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
-    echo "${fnt_rvr}-X${fnt_nrm} ${fnt_bld}drc_xtn${fnt_nrm}  Extended climo directory (default ${fnt_bld}${drc_xtn}${fnt_nrm})"
+    echo "${fnt_rvr}-X${fnt_nrm} ${fnt_bld}drc_xtn${fnt_nrm}  Extended climo directory (default ${fnt_bld}${drcf_xtn}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Previous climo directory (default ${fnt_bld}${drc_prv}${fnt_nrm})"
     echo "${fnt_rvr}-Y${fnt_nrm} ${fnt_bld}rgr_xtn${fnt_nrm}  Regridded extended climo directory (default ${fnt_bld}${drc_rgr_xtn}${fnt_nrm})"
     echo "${fnt_rvr}-y${fnt_nrm} ${fnt_bld}rgr_prv${fnt_nrm}  Regridded previous climo directory (default ${fnt_bld}${drc_rgr_prv}${fnt_nrm})"
@@ -797,13 +797,18 @@ for mth in {01..12}; do
 	yyyy_clm_srt=${yyyy_clm_srt_dec}
 	yyyy_clm_end=${yyyy_clm_end_dec}
     fi # !scd
-    for fl_in in ${yr_fl} ; do
-	if [ ! -f "${drc_in}/${fl_in}" ]; then
-	    echo "ERROR: Unable to find required input file ${drc_in}/${fl_in}"
-	    echo "HINT: All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
-	    exit 1
-	fi # ! -f
-    done # !fl_in
+    # Check for raw monthly file existence only if file will be used
+    if [ "${bnr_flg}" = 'No' ]; then
+	for fl_in in ${yr_fl} ; do
+	    if [ ! -f "${drc_in}/${fl_in}" ]; then
+		echo "ERROR: Unable to find required input file ${drc_in}/${fl_in}"
+		echo "HINT: All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+		exit 1
+	    fi # ! -f
+	done # !fl_in
+    else # !bnr_flg
+	drc_out="${drc_in}"
+    fi # !bnr_flg
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
     cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
 done # !mth
@@ -842,7 +847,7 @@ for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
 done # !clm_idx
 
 # Many subsequent blocks only executed for normal and incremental climos, not for binary climos
-if [ "${bnr_flg}" != 'Yes' ]; then
+if [ "${bnr_flg}" = 'No' ]; then
 
     # Block 1 Loop 2: Execute and/or echo monthly climatology commands
     for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
