@@ -752,12 +752,14 @@ if [ "${ncr_flg}" = 'Yes' ]; then
     printf "Output files to directory ${drc_xtn}\n"
 fi # !ncr_flg
 #printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
+if [ "${bnr_flg}" = 'No' ]; then
+    printf "Climatology from ${yr_nbr} years of contiguous raw monthly data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
+fi # !bnr_flg
 if [ "${mdl_typ}" = 'yyyymm' ]; then
     printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
 else # !mdl_typ
     printf "Filenames will be constructed with CESM'ish or ACME'ish conventions.\n"
 fi # !mdl_typ
-printf "Climatology from ${yr_nbr} years of contiguous data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
 if [ ${clm_md} = 'scd' ]; then 
     printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive months that cross calendar-year boundaries.\n"
 else
@@ -1275,10 +1277,14 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 	cd ${drc_pwd}
     fi # !lnk_flg
 
+else # !xtn_flg extended climos
+
+    yr_nbr_xtn=${yr_nbr}
+    
 fi # !xtn_flg extended climos
 
 date_end=$(date +"%s")
-printf "Completed climatology generation for dataset ${caseid} at `date`.\n"
+printf "Completed ${yr_nbr_xtn}-year climatology generation for dataset ${caseid} at `date`.\n"
 date_dff=$((date_end-date_srt))
 echo "Quick plots of climatological annual mean:"
 if [ -n "${yr_srt_prv}" ]; then
