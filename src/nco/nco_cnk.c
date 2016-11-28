@@ -194,6 +194,10 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
   if(cnk_csh_byt > 0ULL){
     /* Use user-specified chunk cache size if available */
     cnk->cnk_csh_byt=cnk_csh_byt;
+    // 20161128: Placeholder for Jerome 
+    // if(nco_dbg_lvl_get() == nco_dbg_jm){
+    //  nco_set_chunk_cache(cnk_csh_byt);
+    // } 
   }else{
     /* Otherwise use filesystem blocksize if valid, otherwise use Linux default */
     size_t cnk_csh_byt_lbr; /* [B] Chunk cache size in library */
