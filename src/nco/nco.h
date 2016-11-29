@@ -795,7 +795,7 @@ extern "C" {
 
     double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
     double min_val; /* Double precision representation of minimum value of coordinate requested or implied */
-    double origin;   /* Used by ncra, ncrcat to re-base record coordinate */
+    double origin; /* Used by ncra, ncrcat to re-base record coordinate */
 
     int id; /* Dimension ID */
     int lmt_typ; /* crd_val or dmn_idx */

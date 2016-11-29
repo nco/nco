@@ -526,7 +526,14 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     default: nco_dfl_case_nc_type_err();
       break;
     } /* end switch */
-    if(CDL) (void)fprintf(stdout," ;\n");
+    if(CDL){
+      if(nco_dbg_lvl_get() >= nco_dbg_std){
+	/* 20161129: Add netCDF attribute type as comment after semi-colon. Yes, "string" is redundant. */
+	(void)fprintf(stdout," ; // %s\n",cdl_typ_nm(att[idx].type));
+      }else{ /* !dbg */
+	(void)fprintf(stdout," ;\n");
+      } /* !dbg */
+    } /* !CDL */
     if(TRD) (void)fprintf(stdout,"\n");
     if(XML) (void)fprintf(stdout,"\" />\n");
     if(JSN){ 

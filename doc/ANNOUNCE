@@ -33,6 +33,26 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. ncks print attribute CDL type as comment when dbg_lvl >= 1.
+   Nothing in the CDL specification prevents adding comments.
+   CDL attribute types can be hard for humans to discern, so now
+   ncks will print the type when invoked with -D 1 or greater.
+   The printed file is fully CDL-compliant and works with ncgen.
+   Credit to whomever first thought of this feature, and implemented
+   it in some CDL output someone sent me.
+   zender@firn:~/nco$ ncks -D 1 -C --cdl ~/nco/data/in_4.nc
+   ...
+   att_var:byte_att = 0b, 1b, 2b, 127b, -128b, -127b, -2b, -1b ; // byte
+   att_var:char_att = "Sentence one.\n",
+      "Sentence two.\n" ; // char
+   att_var:short_att = 37s ; // short
+   att_var:int_att = 73 ; // int
+   att_var:float_att = 73.f, 72.f, 71.f, 70.01f, 69.001f, 68.01f, 67.01f ; // float
+   att_var:double_att = 73., 72., 71., 70.01, 69.001, 68.01, 67.010001 ; // double
+   att_var:ubyte_att = 0ub, 1ub, 2ub, 127ub, 128ub, 254ub, 255ub, 0ub ; // ubyte
+   att_var:ushort_att = 37us ; // ushort
+   att_var:uint_att = 73ul ; // uint
+
 A. JSON backend
    Similar the CDL and XML backends, ncks now supports JSON.
    To obtain JSON, use --jsn or --json instead of --cdl/--xml.
@@ -56,50 +76,10 @@ A. JSON backend
    and to Pedro Vicente and Chris Barker for helpful discussions. 
    http://nco.sf.net/nco.html#json
 
-B. Multi-arguments refer to the format of command-line key-value pairs
-   that NCO uses to support four different features that can have too
-   many parameters to set via traditional command line arguments.
-   The four features are regridding (rgr), global-attribute-adding
-   (gaa), precision-preserving compression (ppc), and ENVI image
-   processing for the DOE Terraref project (trr). Formerly, users were
-   required to supply one value per command line option for these
-   features, e.g., 
-   "--rgr lat_nbr=64 --rgr lon_nbr=128 --rgr lat_grd=cap ..."
-   The new multi-argument feature allows users to aggregate multiple
-   key-value pairs per command line argument, e.g., 
-   "--rgr lat_nbr=64#lon_nbr=128#lat_grd=cap# ..."
-   Now all key-value pairs related to a single feature (like
-   regridding, compression) can be provided as one arument!
-
-   The string that delimits each pair is user-configurable and
-   defaults to a single hash "#". Change it with, e.g., --dlm=":".
-   Ensure your delimiters are not special shell characters, and are
-   escaped (with backslashes) if present in key or value strings. 
-   Thanks to Jerome Mao for implementing multi-arguments.
-   http://nco.sf.net/nco.html#mta
-
-C. ncap2 now searches all paths in the NCO_PATH environment variable
-   for any #include'd files that it cannot find in ${CWD}.
-
-D. All builds tested on LLVM 8.0.0 and GCC 6.2.1 toolchains.
 
 BUG FIXES:
 
-A. ncclimo and ncremap could fail if ${BASH_SOURCE[0]} is unavailable.
-   This could occur, e.g., with the dash shell and/or due to software
-   modules that modify users' environments. 
-   This portability issue has been resolved.
-
-B. ncatted failed to implement NaN on some MinGW systems with, e.g.,
-   ncatted -O -a _FillValue,fll_val,m,f,nan ~/nco/data/in.nc ~/foo.nc
-   We think this has been fixed. The workaround is to upgrade or use
-   ncatted on *NIX or MacOS. Thanks to James Adams for reporting this.
-
-C. ncks CDL now prints correct tokens for uint, int64, uint64 types.
-   These are "ul", "ll", "ull", respectively. Previously NCO used
-   different tokens because ncgen <= 4.3.0 choked on "ll" formats.
-   So this was an intentional NCO "feature", not a bug.
-   Use ncgen >= 4.3.1 to parse these CDL files.
+A. Hi
 
 KNOWN PROBLEMS DUE TO NCO:
 
@@ -165,12 +145,11 @@ B. NOT YET FIXED (netCDF4 library bug)
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd
 
-C. NOT YET FIXED (netCDF4 library bug) in main netCDF release
-   FIXED in netCDF Development branch as of 20161116
+C. FIXED in netCDF Development branch as of 20161116 and in maintenance release 4.4.1.1
    nc-config/nf-config produce erroneous switches that cause NCO builds to fail
    This problem affects netCDF 4.4.1 on all operating systems.
    Some pre-compiled netCDF packages may have patched the problem.
-   Hence it does affect my MacPorts install of netCDF 4.4.1.
+   Hence it does not affect my MacPorts install of netCDF 4.4.1.
 
    Demonstration:
    % nc-config --cflags # Produces extraneous text that confuses make
@@ -183,6 +162,7 @@ C. NOT YET FIXED (netCDF4 library bug) in main netCDF release
    20161029: Reported problem to Unidata
    20161101: Unidata confirmed reproducibility, attributed to netCDF 4.4.1 changes
    20161116: Unidata patch is in tree for netCDF 4.4.2 release
+   20161123: Fixed in maintenance release netCDF 4.4.1.1
 
 D. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name

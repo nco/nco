@@ -539,7 +539,6 @@ variables:
         att_var:float_att = 73.0f,72.0f,71.0f,70.010f,69.0010f,68.010000f,67.01000100f;
 	att_var:double_att = 73.0,72.0,71.0,70.010,69.0010,68.010000,67.01000100;
 	att_var:ubyte_att = 0ub, 1ub, 2ub, 127ub, 128ub, 254ub, 255ub, 0ub; // 20130712: ncgen 4.3.0 translates this to byte
-	att_var:ubyte2_att = '\000','\001','\002','\177','\200','\201','\376','\377'; // 20130712: ncgen 4.3.0 translates this to byte
 	att_var:ushort_att = 37us;
         att_var:uint_att = 73ul; // 20161110: ncgen requires "ul" for uint (a simple "u" is interpretd as uint64)
 //	att_var:int64_att = 9223372036854775807ll; // 20130712: ncgen 4.3.0--4.3.3.1 choke on ll, LL suffix for int64 attributes, and translates -l suffixed numbers to NC_UINT64. Bug reported (netCDF #HEX-795132) and fixed in snapshot 20131117

@@ -1,3 +1,7 @@
+2016-11-29  Charlie Zender  <zender@uci.edu>
+
+	* Print attribute CDL type as comment when dbg_lvl >= 1
+
 2016-11-25  Charlie Zender  <zender@uci.edu>
 
 	* Modify ncclimo to distinguish two types Extended climos: Meta	and Incremental
