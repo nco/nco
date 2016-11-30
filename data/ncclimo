@@ -365,7 +365,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-b${fnt_nrm} ${fnt_bld}bnd_nm${fnt_nrm}   Bounds dimension name (default ${fnt_bld}${bnd_nm}${fnt_nrm})"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm})"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
-    echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}yr_prv${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_end_prv}${fnt_nrm})"
+    echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year previous climo (empty means none) (default ${fnt_bld}${yr_end_prv}${fnt_nrm})"
     echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm})"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm})"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm})"
@@ -379,10 +379,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm})"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm})"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm})"
+    echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm})"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm})"
-    echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_prv${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm})"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm})"
-    echo "${fnt_rvr}-X${fnt_nrm} ${fnt_bld}drc_xtn${fnt_nrm}  Extended climo directory (default ${fnt_bld}${drcf_xtn}${fnt_nrm})"
+    echo "${fnt_rvr}-X${fnt_nrm} ${fnt_bld}drc_xtn${fnt_nrm}  Extended climo directory (default ${fnt_bld}${drc_xtn}${fnt_nrm})"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Previous climo directory (default ${fnt_bld}${drc_prv}${fnt_nrm})"
     echo "${fnt_rvr}-Y${fnt_nrm} ${fnt_bld}rgr_xtn${fnt_nrm}  Regridded extended climo directory (default ${fnt_bld}${drc_rgr_xtn}${fnt_nrm})"
     echo "${fnt_rvr}-y${fnt_nrm} ${fnt_bld}rgr_prv${fnt_nrm}  Regridded previous climo directory (default ${fnt_bld}${drc_rgr_prv}${fnt_nrm})"
@@ -482,6 +482,18 @@ while getopts :a:b:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y: OPT; do
 done
 shift $((OPTIND-1)) # Advance one argument
 
+# Determine mode first (it will be used in determining other defaults)
+if [ -n "${yr_srt_prv}" ]; then
+    # Specifying only yr_srt_prv implies incremental method
+    # Specifying both yr_srt_prv and yr_end_prv implies binary method
+    xtn_flg='Yes'
+    if [ -n "${yr_end_prv}" ]; then
+	bnr_flg='Yes'
+    else # !yr_end_prv binary method
+	ncr_flg='Yes'
+    fi # !yr_end_prv binary method
+fi # !yr_srt_prv extended climo
+
 # Derived variables
 if [ -n "${drc_out_usr}" ]; then
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
@@ -495,7 +507,12 @@ fi # !drc_rgr_usr
 if [ -n "${drc_prv}" ]; then
     drc_prv="${drc_prv%/}"
 else
-    drc_prv="${drc_out}"
+    if [ "${bnr_flg}" = 'Yes' ]; then
+	drc_prv="${drc_in}"
+    fi # !bnr_flg
+    if [ "${ncr_flg}" = 'Yes' ]; then
+	drc_prv="${drc_out}"
+    fi # !ncr_flg
 fi # !drc_prv
 if [ -n "${drc_xtn}" ]; then
     drc_xtn="${drc_xtn%/}"
@@ -525,17 +542,6 @@ yr_end_rth=${sng_trm}
 yyyy_end=`printf "%04d" ${yr_end_rth}`
 let yr_endm1=${yr_end_rth}-1
 let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
-
-if [ -n "${yr_srt_prv}" ]; then
-    # Specifying only yr_srt_prv implies incremental method
-    # Specifying both yr_srt_prv and yr_end_prv implies binary method
-    xtn_flg='Yes'
-    if [ -n "${yr_end_prv}" ]; then
-	bnr_flg='Yes'
-    else # !yr_end_prv binary method
-	ncr_flg='Yes'
-    fi # !yr_end_prv binary method
-fi # !yr_srt_prv extended climo
 
 # Derived variables
 out_nm=${caseid}
@@ -727,8 +733,12 @@ if [ ${dbg_lvl} -ge 2 ]; then
 fi # !dbg
 
 # Create output directory
-mkdir -p ${drc_out}
-mkdir -p ${drc_rgr}
+if [ -n "${drc_out}" ]; then 
+    mkdir -p ${drc_out}
+fi # !drc_out
+if [ -n "${drc_rgr}" ]; then 
+    mkdir -p ${drc_rgr}
+fi # !drc_rgr
 
 # Human-readable summary
 date_srt=$(date +"%s")
