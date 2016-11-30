@@ -599,6 +599,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   long cnt_rmn_ttl=-1L; /* Total records to be read from this and all remaining files */
   long rec_skp_vld_prv_dgn=-1L; /* Records skipped at end of previous valid file, if any (diagnostic only) */
 
+  cv_converter *ut_cnv=NULL;
+
   lmt=*lmt_ptr;
 
   nco_prg_id=nco_prg_id_get(); /* Program ID */
@@ -745,9 +747,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     cln_sng=nco_lmt_get_udu_att(grp_id,dim.cid,"calendar"); /* Calendar attribute */
 
     if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng){ 
+
 #ifdef ENABLE_UDUNITS
-      /* Re-base and reset origin to 0.0 if re-basing fails */
+      /* Re-base and reset origin to 0.0 if re-basing fails 
       if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
+      */
+
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
 
@@ -824,16 +829,16 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 
       if(!fl_udu_sng){ 
         (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from variable \"%s\" \n",nco_prg_nm_get(),dim.nm);
-        nco_exit(EXIT_FAILURE);
+          nco_exit(EXIT_FAILURE);
       } /* end if */
 
       if(lmt.min_sng)
-	if(nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val) != NCO_NOERR) 
-	  nco_exit(EXIT_FAILURE);
+ 	if( nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng, lmt.lmt_cln, &lmt.min_val) !=NCO_NOERR )
+           nco_exit(EXIT_FAILURE);
 
       if(lmt.max_sng)
-	if(nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val) != NCO_NOERR) 
-	  nco_exit(EXIT_FAILURE);
+ 	if( nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng, lmt.lmt_cln, &lmt.max_val) !=NCO_NOERR )
+           nco_exit(EXIT_FAILURE);
 
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
@@ -848,9 +853,19 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 
       /* Re-base coordinates as necessary in multi-file operatators (MFOs)
       lmt.origin was calculated earlier in routine */
-      if(rec_dmn_and_mfo){ 
-        if(lmt.min_sng) lmt.min_val-=lmt.origin;
-        if(lmt.max_sng) lmt.max_val-=lmt.origin;   
+      if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng && strcmp(fl_udu_sng, lmt.rbs_sng) ){ 
+
+        if(lmt.min_sng) 
+	  if( nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng, lmt.lmt_cln, &lmt.min_val, (var_sct*)NULL) !=NCO_NOERR )
+             nco_exit(EXIT_FAILURE);
+
+        if(lmt.max_sng) 
+	  if( nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng, lmt.lmt_cln, &lmt.max_val, (var_sct*)NULL) !=NCO_NOERR)
+             nco_exit(EXIT_FAILURE);   
+
+        if(nco_dbg_lvl_get() > nco_dbg_std)
+             fprintf(stdout,"%s: INFO nco_lmt rebasing min_val=%f max_val=%f\n",nco_prg_nm_get(), lmt.min_val, lmt.max_val);  
+
       }  /* endif MFO */
     } /* end UDUnits conversion */
 
@@ -1509,7 +1524,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
-      if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
+      // if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
 
@@ -1588,12 +1603,23 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       } /* end if */
 
       if(lmt.min_sng)
+ 	if( nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng, lmt.lmt_cln, &lmt.min_val) !=NCO_NOERR )
+           nco_exit(EXIT_FAILURE);
+
+
+      if(lmt.max_sng)
+ 	if( nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng, lmt.lmt_cln, &lmt.max_val) !=NCO_NOERR )
+           nco_exit(EXIT_FAILURE);
+
+      /* 
+      if(lmt.min_sng)
 	if(nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val) != NCO_NOERR) 
 	  nco_exit(EXIT_FAILURE);
 
       if(lmt.max_sng)
 	if(nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val) != NCO_NOERR) 
 	  nco_exit(EXIT_FAILURE);
+      */
 
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
@@ -1608,11 +1634,28 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
       /* Re-base coordinates as necessary in multi-file operatators (MFOs)
 	 lmt.origin was calculated earlier in routine */
+      /* 
       if(rec_dmn_and_mfo){ 
         if(lmt.min_sng) lmt.min_val-=lmt.origin;
         if(lmt.max_sng) lmt.max_val-=lmt.origin;   
+      } 
+      */
+      if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng && strcmp(fl_udu_sng, lmt.rbs_sng) ){ 
+
+        if(lmt.min_sng) 
+	  if( nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng, lmt.lmt_cln, &lmt.min_val, (var_sct*)NULL) !=NCO_NOERR )
+             nco_exit(EXIT_FAILURE);
+
+        if(lmt.max_sng) 
+	  if( nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng, lmt.lmt_cln, &lmt.max_val, (var_sct*)NULL) !=NCO_NOERR)
+             nco_exit(EXIT_FAILURE);   
+
+        if(nco_dbg_lvl_get() > nco_dbg_std)
+             fprintf(stdout,"%s: INFO nco_lmt rebasing min_val=%f max_val=%f\n",nco_prg_nm_get(), lmt.min_val, lmt.max_val);  
+
       }  /* endif MFO */
     } /* end UDUnits conversion */
+
 
     /* Warn when min_val > max_val (i.e., wrapped coordinate) */
     if(nco_dbg_lvl_get() > nco_dbg_std && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",nco_prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
