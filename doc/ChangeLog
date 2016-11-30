@@ -1,5 +1,11 @@
 2016-11-30  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.3-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.3-alpha02 final changes';git push
+	git tag -a 4.6.3-alpha02 -m 'Version 4.6.3-alpha02 new features: ncclimo binary climatologies';git push --tags
+
+	* Henry implemented ncra re-base when increment, not just basetime, changes between files
+
 	* Make defaults for drc_prv sensible for bnr_flg and ncr_flg in ncclimo
 
 2016-11-29  Charlie Zender  <zender@uci.edu>
