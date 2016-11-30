@@ -3858,6 +3858,21 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+
+#ncrcat #22	
+
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"hours since 1970-01-01\"' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1970-01-01 10:00:00\"' $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_05%";
+    $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_02% %tmp_fl_03%";
+    $tst_cmd[4]="time_ttl = 1475";
+    $dsc_sng="Concatenate 1D variable across two files. [hours file1 - days file2] .Requires UDUnits.";
+    $tst_cmd[5]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+
 	
     #######################################
     #### Group tests (requires netCDF4) ###
