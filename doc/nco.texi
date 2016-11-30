@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.3-alpha01
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 21 November 2016
+@set update-date 29 November 2016
 @set update-month November 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16849,7 +16849,7 @@ ls drc_out/*climo* | ncremap -m map.nc -O drc_rgr
 See @ref{ncremap netCDF Remapper} for more details (including
 @acronym{MPAS}!).  
  
-@cindex incremental climatologies (climos)
+@cindex incremental climatology (climo)
 @cindex binary climatology (climo)
 @cindex extended climatology (climo)
 @cindex previous climatology (climo)
@@ -16866,50 +16866,65 @@ The incremental method computes a climatology from raw monthly data
 and (with appropriate weighting) combines that with a previously
 computed climatology that ends the month prior to raw data.
 The incremental method was introduced in @acronym{NCO} version 4.6.1
-(released August, 2016), whereas the binary method was not introduced 
-until @acronym{NCO} version 4.6.3 (released December, 2016).
+(released August, 2016), and the binary method was introduced in
+@acronym{NCO} version 4.6.3 (released December, 2016).
 
 @c fxm edit to distinguish extended from binary
-The so-called ``extended climo'' is computed as a weighted mean of two 
-consecutive shorter climatologies, called the ``previous'' and
-``current'' climos.
-The extended climo is computed from the earlier climos, not the original
-monthly input that generated them.
-This permits ongoing simulations (or lengthy observations) to be
-analyzed in shorter segments that are incrementaly combined, instead of 
-requiring all raw, native-grid data to be simultaneously accessible.
+Both methods, binary and incremental, compute the so-called ``extended
+climo'' as a weighted mean of two shorter climatologies,
+called the ``previous'' and ``current'' climos.
+The incremental method uses the original monthly input to compute the
+curent climo, which must immediately follow in time the previous climo 
+which has been pre-computed.
+The binary method use pre-computed climos for both the previous and
+current climos, and these climos need not be sequential nor
+chronological. 
+Both previous and current climos for both binary and incremental methods
+may be of any length (in years); their weights will be automatically
+adjusted in computing the extended climo.
 
-Without incremental climatology capability, generating a one-hundred
+The use of pre-computed climos permits ongoing simulations (or lengthy
+observations) to be analyzed in shorter segments combined piecemeal,
+instead of requiring all raw, native-grid data to be simultaneously
+accessible.
+Without extended climatology capability, generating a one-hundred
 year climatology requires that one-hundred years of monthly data be
 available on disk. 
 Disk-space requirements for large datasets may make this untenable.
-The incremental climo feature permits this one-hundred year climo to be
+Extended climo methods permits a one-hundred year climo to be
 generated as the weighted mean of, say, the current ten year climatology
-(weighted at 10%) combined with the climatology of the previous 90-years
-(weighted at 90%). 
-The 90-year climo could itself have been generated incrementally, and so
-on. 
+(weighted at 10%) combined with the pre-computed climatology of the
+previous 90-years (weighted at 90%).
+The 90-year climo could itself have been generated incrementally or
+binary-wise, and so on. 
 Climatologies occupy at most 17/(12@var{N}) the amount of space
-of @var{N} years of monthly data, so incremental climatologies
-vastly reduce disk-space requirements.
+of @var{N} years of monthly data, so the extended methods vastly
+reduce disk-space requirements. 
 
-@command{ncclimo} first generates the current climatology from the
-current monthly input files then, if requested (with @samp{-S}), weights 
-that current climo with the previous climo to produce the extended
-climo.
+Incremental mode is selected by specifying @samp{-S}, the start year
+of the pre-computed, previous climo.
 The argument to @samp{-S}) is the previous climo start year.
 That, together with the current climo end year, determines the extended
 climo range.
 @command{ncclimo} assumes that the previous climo ends the month before
 the current climo begins.
-Most users will run incremental clmos the same way they run regular climos
+In incremental mode, @command{ncclimo} first generates the current
+climatology from the current monthly input files then weights  
+that current climo with the previous climo to produce the extended
+climo.
+
+Binary mode is selected by specifying both @samp{-S} and @samp{-E}, the 
+end year of the pre-computed, previous climo.
+In binary mode, the previous and current climatologies can be of any
+length, and from any time-period, even overlapping.
+Most users will run extended clmos the same way they run regular climos
 in terms of parallelism and regridding, although that is not required.  
 Both climos must treat Decembers same way (or else previous climo files
 will not be found), and if subsetting (i.e., @samp{-v var_lst}) is
 performed, then the subset must remain the same, and if nicknames (i.e.,
 @samp{-f fml_nm}) are employed, then the nickname must remain the same. 
 
-As of 20160621, the @code{climatology_bounds} attributes of the extended
+As of 20161129, the @code{climatology_bounds} attributes of extended
 climo are incorrect. 
 This is a work in progress...
 
@@ -16919,19 +16934,19 @@ Options:
 @cindex @var{yr_end_prv}
 @item -E @var{yr_end_prv}
 The ending year of the previous climo. 
-This is the only mandatory argument.
-It is required to trigger incremental climatologies.
+This argument is required to trigger binary climatologies,
+and should not be used for incremental climatologies.
 @cindex @code{-S @var{yr_srt_prv}}
 @cindex @var{yr_srt_prv}
 @item -S @var{yr_srt_prv}
 The starting year of the previous climo. 
-This is the only mandatory argument.
-It is required to trigger incremental climatologies.
+This argument is required to trigger incremental climatologies,
+and is also mandatory for binary climatologies.
 @cindex @code{-X @var{drc_xtn}}
 @cindex @var{drc_xtn}
 @item -X @var{drc_xtn}
 Directory in which the extended native grid climo files will be stored
-for an incremental climatology.
+for an extended climatology.
 Default value is @var{drc_prv}. 
 Unless a separate directory is specified (with @samp{-Y}) for the
 extended climo on the analysis grid, it will be stored in @var{drc_xtn},
@@ -16960,8 +16975,8 @@ Default value is @var{drc_prv}.
 @end table
 @noindent
 
-Incremental climatologies can be as simple as providing a start year for
-the previous climo, e.g., 
+Incremental method climatologies can be as simple as providing a start
+year for the previous climo, e.g., 
 @example
 ncclimo -v FSNT,AODVIS -c caseid -s 1980 -e 1981 -i raw -o clm -r map.nc
 ncclimo -v FSNT,AODVIS -c caseid -s 1982 -e 1983 -i raw -o clm -r map.nc -S 1980
@@ -17003,6 +17018,19 @@ then those directories must be specified, too:
 ncclimo -v FSNT,AODVIS -c caseid -s 1980 -e 1981 -i raw -o prv -O rgr_prv -r map.nc
 ncclimo -v FSNT,AODVIS -c caseid -s 1982 -e 1983 -i raw -o clm -O rgr -r map.nc \
         -S 1980 -x prv -X xtn -y rgr_prv -Y rgr_xtn
+@end example
+
+@command{ncclimo} does not know whether a pre-computed climo is on a
+native grid or an analysis grid, i.e., whether it has been regridded.
+In binary mode, @command{ncclimo} may be pointed to two pre-computed
+native grid climatologies, or to two pre-computed analysis grid
+climatologies.
+In other words, it is not necessary to maintain native grid
+climatologies for use in creating extended climatologies.
+It is sufficient to generate climatologies on the analysis grid, and
+feed them to @command{ncclimo} in binary mode, without a mapping file:
+@example
+ncclimo -c caseid -S 1980 -E 1981 -x prv -s 1980 -e 1981 -i crr -o clm 
 @end example
 
 @unnumberedsubsec Coupled Runs

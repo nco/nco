@@ -1,5 +1,7 @@
 2016-11-29  Charlie Zender  <zender@uci.edu>
 
+	* Tested and working on FC25, no mods necessary, yay!
+
 	* Print attribute CDL type as comment when dbg_lvl >= 1
 
 2016-11-25  Charlie Zender  <zender@uci.edu>
