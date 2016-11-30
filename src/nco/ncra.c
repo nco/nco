@@ -1271,18 +1271,18 @@ main(int argc,char **argv)
             if(nco_prg_id == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
             /* Re-base record coordinate and bounds if necessary (e.g., time, time_bnds) */
-            if(lmt_rec[idx_rec]->origin != 0.0 && (var_prc[idx]->is_crd_var || nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id))){
-              var_sct *var_crd;
-              scv_sct scv;
-              /* De-reference */
-              var_crd=var_prc[idx];
-              scv.val.d=lmt_rec[idx_rec]->origin;              
-              scv.type=NC_DOUBLE;  
-              /* Convert scalar to variable type */
-              nco_scv_cnf_typ(var_crd->type,&scv);
-              (void)nco_var_scv_add(var_crd->type,var_crd->sz,var_crd->has_mss_val,var_crd->mss_val,var_crd->val,&scv);
-            } /* end re-basing */
+            if(var_prc[idx]->is_crd_var || nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id))
+            {
+              char *fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_prc[idx]->id,"units"); /* Units attribute of coordinate variable */ 
+              if(fl_udu_sng && lmt_rec[idx_rec]->rbs_sng)
+	      { 
+                if( nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng, lmt_rec[idx_rec]->lmt_cln, (double*)NULL, var_prc[idx]) !=NCO_NOERR)
+                    nco_exit(EXIT_FAILURE);     
 
+                nco_free(fl_udu_sng); 
+	      } /* end re-basing */
+            } 
+              
             if(nco_prg_id == ncra){
               nco_bool flg_rth_ntl;
               if(!rec_usd_cml[idx_rec] || (FLG_MRO && REC_FRS_GRP)) flg_rth_ntl=True; else flg_rth_ntl=False;
