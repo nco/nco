@@ -1611,16 +1611,6 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
  	if( nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng, lmt.lmt_cln, &lmt.max_val) !=NCO_NOERR )
            nco_exit(EXIT_FAILURE);
 
-      /* 
-      if(lmt.min_sng)
-	if(nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val) != NCO_NOERR) 
-	  nco_exit(EXIT_FAILURE);
-
-      if(lmt.max_sng)
-	if(nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val) != NCO_NOERR) 
-	  nco_exit(EXIT_FAILURE);
-      */
-
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
       if(lmt.min_sng){
