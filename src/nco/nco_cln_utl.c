@@ -571,8 +571,9 @@ double *og_val)         /* O [dbl] output value */
   is_date = nco_cln_chk_tm(fl_bs_sng);
 
   lcl_unt_sng[0]='\0';
-
-  (void)fprintf(stderr,"%s: INFO %s: reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln);
+  
+  if(nco_dbg_lvl_get() >= nco_dbg_vrb) 
+       (void)fprintf(stderr,"%s: INFO %s: reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln);
 
   
     /* Does fl_unt_sng look like a regular timestamp? */ 
