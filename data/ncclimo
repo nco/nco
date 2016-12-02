@@ -798,7 +798,10 @@ for mth in {01..12}; do
 	if [ ${mdl_typ} = 'cesm' ]; then
 	    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 	elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
-	    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+	    # 20161130: Old MPAS rule until today
+	    # yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+	    # Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
+	    yr_fl="${yr_fl} mpascice.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01_00.00.00.nc"
 	elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 	    yr_fl="${yr_fl} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
 	fi # !cesm
