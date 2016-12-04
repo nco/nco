@@ -22598,7 +22598,8 @@ Debian packaging
 RedHat packaging
 @cindex George Shapavalov
 @cindex Patrick Kursawe
-@item George Shapavalov, Patrick Kursawe
+@cindex Manfred Schwarb
+@item George Shapavalov, Patrick Kursawe, Manfred Schwarb
 Gentoo packaging
 @cindex Filipe Fernandes
 @item Filipe Fernandes
