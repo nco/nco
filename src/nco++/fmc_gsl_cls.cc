@@ -4232,8 +4232,12 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
       case PEVAL:
         return eval_fnd(is_mtd,vtr_args,fmc_obj,walker);  
         break;
+	// 20161205: Always return value to non-void functions: good practice and required by rpmlint
+    default:
+      return NULL;
+      break;
     }// end switch  
-
+    
   }
 
 // nb this method is only call with fdx==PEVAL
@@ -4499,18 +4503,10 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
       Nvar->var->val.cp=(char*)spline;  
       (void)cast_nctype_void(NC_CHAR,&Nvar->var->val); 
 
-
-
-
-
       // return true
       return ncap_sclr_var_mk("~gsl_spl_cls",(nco_int)1); 
 
-
 } // end gsl_spl_cls::spl_fnd 
-
-
-
 
 //GSL  /****************************************/
 // gsl Least Squares Fitting
@@ -4558,9 +4554,11 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
       case PMUL_EST:
         return fit_est_fnd(is_mtd,vtr_args,fmc_obj,walker);  
         break;
+	// 20161205: Always return value to non-void functions: good practice and required by rpmlint
+    default:
+      return NULL;
+      break;
     }
-
-
 
 } // end gsl_fit_cls::fnd 
 

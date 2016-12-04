@@ -68,6 +68,11 @@ extern "C" {
    const size_t chr_nbr); /* I [nbr] Compare at most chr_nbr characters */
 #endif /* !NEED_STRCASECMP */
   
+  /* 20161205 GNU since gcc 4.7.3 provides strcasestr() as non-standard extension iff _GNU_SOURCE is defined */
+#ifdef __GNUC__  
+# define _GNU_SOURCE
+#endif /* __GNUC__ */
+  
   /* 20130827 GNU g++ always provides strcasestr(), MSVC never does */
 #ifndef __GNUG__
 # ifdef NEED_STRCASESTR

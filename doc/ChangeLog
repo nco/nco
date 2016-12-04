@@ -1,3 +1,9 @@
+2016-12-04  Charlie Zender  <zender@uci.edu>
+
+	* Always return value to non-void functions: good practice and required by rpmlint
+	Define _GNU_SOURCE macro when to obtain prototype for GNU extension sngcasestr() from string.h
+	Patches supplied by Manfred Schwarb in nco bugs #94
+
 2016-11-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.3-alpha02 release procedure:

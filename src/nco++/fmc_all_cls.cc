@@ -1621,63 +1621,59 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
 
 }
 
-
-
 //Sort Functions /***********************************/
  
-  srt_cls::srt_cls(bool flg_dbg){
-    //Populate only on  constructor call
-    if(fmc_vtr.empty()){
-          fmc_vtr.push_back( fmc_cls("sort" , this,PASORT)); 
-          fmc_vtr.push_back( fmc_cls("asort" , this,PASORT)); 
-          fmc_vtr.push_back( fmc_cls("dsort" , this,PDSORT)); 
-          fmc_vtr.push_back( fmc_cls("remap" , this,PREMAP)); 
-          fmc_vtr.push_back( fmc_cls("unmap" , this,PUNMAP)); 
-          fmc_vtr.push_back( fmc_cls("invert_map" , this,PIMAP)); 
+srt_cls::srt_cls(bool flg_dbg){
+  //Populate only on  constructor call
+  if(fmc_vtr.empty()){
+    fmc_vtr.push_back( fmc_cls("sort" , this,PASORT)); 
+    fmc_vtr.push_back( fmc_cls("asort" , this,PASORT)); 
+    fmc_vtr.push_back( fmc_cls("dsort" , this,PDSORT)); 
+    fmc_vtr.push_back( fmc_cls("remap" , this,PREMAP)); 
+    fmc_vtr.push_back( fmc_cls("unmap" , this,PUNMAP)); 
+    fmc_vtr.push_back( fmc_cls("invert_map" , this,PIMAP)); 
+    
+    
+  }
+}
 
-			     		      
-    }
+
+var_sct *srt_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("gsl_fit_cls::fnd");
+  bool is_mtd;
+  int fdx=fmc_obj.fdx();   //index
+  RefAST tr;    
+  std::vector<RefAST> vtr_args; 
+  
+  if(expr)
+    vtr_args.push_back(expr);
+  
+  if(tr=fargs->getFirstChild()) {
+    do  
+      vtr_args.push_back(tr);
+    while(tr=tr->getNextSibling());    
+  }
+  
+  is_mtd=(expr ? true: false);
+  
+  switch(fdx){
+  case PASORT:
+  case PDSORT: 
+    return srt_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+    break;
+  case PREMAP:
+  case PUNMAP:
+    return mst_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+  case PIMAP:
+    return imap_fnd(is_mtd,vtr_args,fmc_obj,walker);   
+    break;
+    // 20161205: Always return value to non-void functions: good practice and required by rpmlint
+  default:
+    return NULL;
+    break;
   }
 
-
-  var_sct *srt_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
-  const std::string fnc_nm("gsl_fit_cls::fnd");
-    bool is_mtd;
-    int fdx=fmc_obj.fdx();   //index
-    RefAST tr;    
-    std::vector<RefAST> vtr_args; 
-       
-
-    if(expr)
-      vtr_args.push_back(expr);
-
-    if(tr=fargs->getFirstChild()) {
-      do  
-	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
-    }
-    
-
-    is_mtd=(expr ? true: false);
-
-    switch(fdx){
-      case PASORT:
-      case PDSORT: 
-        return srt_fnd(is_mtd,vtr_args,fmc_obj,walker);  
-        break;
-      case PREMAP:
-      case PUNMAP:
-        return mst_fnd(is_mtd,vtr_args,fmc_obj,walker);  
-      case PIMAP:
-        return imap_fnd(is_mtd,vtr_args,fmc_obj,walker);   
-        break;
-    }
-
-
-
 } // end gsl_fit_cls::fnd 
-
-
   
 var_sct * srt_cls::imap_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("srt_cls::imap_fnd");
@@ -2719,16 +2715,17 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 
 //Bilinear  Interpolation Functions /****************************************/
-  bil_cls::bil_cls(bool flg_dbg){
-    //Populate only on  constructor call
-    if(fmc_vtr.empty()){
-          fmc_vtr.push_back( fmc_cls("bilinear_interp",this,PBIL_ALL)); 
-          fmc_vtr.push_back( fmc_cls("bilinear_interp_wrap",this,PBIL_ALL_WRP)); 
+bil_cls::bil_cls(bool flg_dbg){
+  //Populate only on  constructor call
+  if(fmc_vtr.empty()){
+    fmc_vtr.push_back( fmc_cls("bilinear_interp",this,PBIL_ALL)); 
+    fmc_vtr.push_back( fmc_cls("bilinear_interp_wrap",this,PBIL_ALL_WRP)); 
+    
+  }		      
+} 
 
-    }		      
-  } 
-  var_sct * bil_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
-   const std::string fnc_nm("bil_cls::fnd");
+var_sct * bil_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("bil_cls::fnd");
   bool bwrp;  //if tue then wrap X and Y coo-ordinates in grid
   bool b_rev_y;
   bool b_rev_x;
@@ -2738,94 +2735,82 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   int idx;
   int nbr_dim;
   var_sct *var_arr[6];
-
+  
   nc_type in_typ;           
-
+  
   std::string susg;
   std::string sfnm=fmc_obj.fnm();
   std::string serr;
-
+  
   RefAST tr;
   std::vector<RefAST> vtr_args; 
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;            
   vtl_typ lcl_typ;
-
+  
   fdx=fmc_obj.fdx();
- 
-
+  
   if(expr)
-      vtr_args.push_back(expr);
-
-    if(tr=fargs->getFirstChild()) {
-      do  
-	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
-    } 
-      
+    vtr_args.push_back(expr);
+  
+  if(tr=fargs->getFirstChild()) {
+    do  
+      vtr_args.push_back(tr);
+    while(tr=tr->getNextSibling());    
+  } 
+  
   nbr_args=vtr_args.size();  
-
+  
   switch(fdx){
-
-    case PBIL_ALL:
-           in_nbr_args=nbr_args;  
-           susg="usage: var_out="+sfnm+"(Data_in, Data_out, X_out?, Y_out?, X_in?, Y_in?)"; 
-           bwrp=false;
-           break;
-
-    case PBIL_ALL_WRP: 
-           in_nbr_args=nbr_args;  
-           susg="usage: var_out="+sfnm+"(Data_in, Data_out, X_out?, Y_out?, X_in?, Y_in?)"; 
-           bwrp=true;
-           break;
-
-
+    
+  case PBIL_ALL:
+    in_nbr_args=nbr_args;  
+    susg="usage: var_out="+sfnm+"(Data_in, Data_out, X_out?, Y_out?, X_in?, Y_in?)"; 
+    bwrp=false;
+    break;
+    
+  case PBIL_ALL_WRP: 
+    in_nbr_args=nbr_args;  
+    susg="usage: var_out="+sfnm+"(Data_in, Data_out, X_out?, Y_out?, X_in?, Y_in?)"; 
+    bwrp=true;
+    break;
   } // end switch
-
-
-
-    if(in_nbr_args <2 ){   
-      serr="function requires at least two arguments. You have only supplied "+nbr2sng(in_nbr_args)+ " arguments\n"; 
-      err_prn(sfnm,serr+susg);
-    }
-
-
-    if(in_nbr_args >6 &&!prs_arg->ntl_scn) 
-      wrn_prn(sfnm,"Function been called with more than "+ nbr2sng(in_nbr_args)+ "arguments"); 
-
-    // process input args 
-    for(idx=0 ; idx<in_nbr_args; idx++)
-      var_arr[idx]=walker.out(vtr_args[idx]);
- 
-    in_typ=var_arr[0]->type;    
-
-
-
-    // initial scan
-    if(prs_arg->ntl_scn){
-        var_arr[1]=nco_var_cnf_typ(in_typ,var_arr[1]);
-        for(idx=0 ; idx<in_nbr_args ; idx++)
-	  if(idx !=1) nco_var_free(var_arr[idx]);
-
-        return var_arr[1];
-    }
-
-
-
-    if(fdx==PBIL_ALL || fdx==PBIL_ALL_WRP){
-      // recall input arguments in order
-      // 0 - input data
-      // 1 - output data
-      // 2 - output X  co-ordinate var
-      // 3 - output Y  co-ordinate var
-      // 4 - input X   co-ordinate var
-      // 5 - input Y   co-ordinate var
-     
-
-        
-      if(in_nbr_args<4){
-        if(var_arr[1]->nbr_dim <2 )
-          err_prn(sfnm,"Output data variable "+std::string(var_arr[1]->nm) + " must have at least two dimensions ");
+  
+  if(in_nbr_args <2 ){   
+    serr="function requires at least two arguments. You have only supplied "+nbr2sng(in_nbr_args)+ " arguments\n"; 
+    err_prn(sfnm,serr+susg);
+  }
+  
+  if(in_nbr_args >6 &&!prs_arg->ntl_scn) 
+    wrn_prn(sfnm,"Function been called with more than "+ nbr2sng(in_nbr_args)+ "arguments"); 
+  
+  // process input args 
+  for(idx=0 ; idx<in_nbr_args; idx++)
+    var_arr[idx]=walker.out(vtr_args[idx]);
+  
+  in_typ=var_arr[0]->type;    
+  
+  // initial scan
+  if(prs_arg->ntl_scn){
+    var_arr[1]=nco_var_cnf_typ(in_typ,var_arr[1]);
+    for(idx=0 ; idx<in_nbr_args ; idx++)
+      if(idx !=1) nco_var_free(var_arr[idx]);
+    
+    return var_arr[1];
+  }
+  
+  if(fdx==PBIL_ALL || fdx==PBIL_ALL_WRP){
+    // recall input arguments in order
+    // 0 - input data
+    // 1 - output data
+    // 2 - output X  co-ordinate var
+    // 3 - output Y  co-ordinate var
+    // 4 - input X   co-ordinate var
+    // 5 - input Y   co-ordinate var
+    
+    if(in_nbr_args<4){
+      if(var_arr[1]->nbr_dim <2 )
+	err_prn(sfnm,"Output data variable "+std::string(var_arr[1]->nm) + " must have at least two dimensions ");
 
         // get output co-ordinate vars   
         if(in_nbr_args <3) 
@@ -2845,8 +2830,6 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
            
         var_arr[5]=prs_arg->ncap_var_init(std::string(var_arr[0]->dim[1]->nm),true); 
       }
-
-
 
       // convert all args to type double and then cast
       for(idx=0 ; idx<6; idx++){
@@ -2871,6 +2854,8 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
     }
 
+    // 20161205: Always return value to non-void functions: good practice and required by rpmlint
+    return NULL;
 
   } // end fnc
 
@@ -2884,7 +2869,6 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
    long y_sz;    // size of Y dim in OUTPUT  
    long jdx;
    long kdx;
-
 
   // Sanity check for input/ooooutput data
   if( v_xin->sz *v_yin->sz != v_din->sz)
