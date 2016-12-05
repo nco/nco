@@ -95,6 +95,10 @@ endif ()
 include_directories(${NETCDF_INCLUDE_FOUND})
 set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY} ${CURL_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
 
+set(LIB_DEP ${LIB_DEP} ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY})
+set(LIB_DEP ${LIB_DEP} ${CURL_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
+set(LIB_DEP ${LIB_DEP} ${WINSOCK_LIBRARY} m)
+
 set(SRC ${SRC} src/nco/libnco.h)
 set(SRC ${SRC} src/nco/nco_att_utl.c src/nco/nco_att_utl.h)
 set(SRC ${SRC} src/nco/nco_aux.c src/nco/nco_aux.h)
@@ -144,5 +148,19 @@ set(SRC ${SRC} src/nco/nco_var_scv.c src/nco/nco_var_scv.h)
 set(SRC ${SRC} src/nco/nco_var_utl.c src/nco/nco_var_utl.h)
 
 add_executable(ncks src/nco/ncks.c ${SRC})
-target_link_libraries (ncks ${JANSSON_LIBRARY} ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY} ${CURL_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY} ${WINSOCK_LIBRARY} m)
+add_executable(ncbo src/nco/ncbo.c ${SRC})
+add_executable(ncecat src/nco/ncecat.c ${SRC})
+add_executable(ncflint src/nco/ncflint.c ${SRC})
+add_executable(ncpdq src/nco/ncpdq.c ${SRC})
+add_executable(ncra src/nco/ncra.c ${SRC})
+add_executable(ncrename src/nco/ncrename.c ${SRC})
+
+target_link_libraries (ncks ${LIB_DEP})
+target_link_libraries (ncbo ${LIB_DEP})
+target_link_libraries (ncecat ${LIB_DEP})
+target_link_libraries (ncflint ${LIB_DEP})
+target_link_libraries (ncpdq ${LIB_DEP})
+target_link_libraries (ncra ${LIB_DEP})
+target_link_libraries (ncrename ${LIB_DEP})
+
 
