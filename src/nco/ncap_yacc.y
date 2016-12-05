@@ -43,7 +43,8 @@
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
   /* 20161204 GNU since gcc 4.7.3 string.h provides strcasestr() as non-standard extension iff _GNU_SOURCE is defined
-     20161205 stpcpy() prototype provided since glibc 2.10 with _POSIX_C_SOURCE >= 200809L and before glibc 2.10 with _GNU_SOURCE */
+     20161205 stpcpy() prototype provided since glibc 2.10 with _POSIX_C_SOURCE >= 200809L and before glibc 2.10 with _GNU_SOURCE
+     Abandoned _GNU_SOURCE because unable to get ncap to find stpcpy() prototype */
 #if 0
 #ifdef __GNUC__  
 # define _GNU_SOURCE

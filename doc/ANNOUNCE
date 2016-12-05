@@ -33,8 +33,16 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncks print attribute CDL type as comment when dbg_lvl >= 1.
-   Nothing in the CDL specification prevents adding comments.
+A. ncclimo and ncremap now save the full command line (with which)
+   they were invoked) as global attributes in all child files.
+   Previously portions were saved as separate attributes.
+   The new attributes are climo_command and remap_command.
+   Their contents will exactly replicate (except for datestamps)
+   the climatologies or regridded files they were created for.
+   This improved provenance comes at the cost of up to a few kB more
+   metadata in each file.
+
+A. ncks can now print attribute CDL types as comments.
    CDL attribute types can be hard for humans to discern, so now
    ncks will print the type when invoked with -D 1 or greater.
    The printed file is fully CDL-compliant and works with ncgen.
@@ -52,6 +60,18 @@ A. ncks print attribute CDL type as comment when dbg_lvl >= 1.
    att_var:ubyte_att = 0ub, 1ub, 2ub, 127ub, 128ub, 254ub, 255ub, 0ub ; // ubyte
    att_var:ushort_att = 37us ; // ushort
    att_var:uint_att = 73ul ; // uint
+
+A. ncap2 will now convert variables among UDUnits dimensions.
+   The udunits() function takes and input variable and a UDUnits
+   dimension string:
+   var_out=udunits(var_in,unitsOutString)
+   For example, if variable tptK has units="kelvin", then
+     ncap2 -s 'tptC=udunits(tptK,"Celsius");' in.nc foo.nc
+   produces a new variable in Celsius.   
+   The method auto-magically reads var_in@units and var_in@calendar 
+   (so, YES, this works with dates) attributes as necessary.
+
+A. CMake: fxm
 
 A. JSON backend
    Similar the CDL and XML backends, ncks now supports JSON.

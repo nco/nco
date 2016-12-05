@@ -1240,8 +1240,8 @@ For more sophisticated build/install options, see the next section.
 <dt>cmake ..</dt>
 <dt>make</dt>
 </tt>
-The CMake script tries to find header and dependency libraries on standard system locations.
-If these are not found, they can be set with (the locations in full path are examples)
+The CMake script tries to find header and dependency libraries in standard locations.
+They can also be set manually with, e.g., 
 <tt>
 <dt>cmake .. -DNETCDF_INCLUDE:PATH=/my/netcdf/include/path 
 -DNETCDF_LIBRARY=/my/netcdf/library/file 

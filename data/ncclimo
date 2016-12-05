@@ -179,6 +179,10 @@ esac # !HOSTNAME
 # for fl in `ls hist.*` ; do
 #  ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${fl}
 # done
+# New MPAS filename conventions (as of ~201612):
+# ncclimo -v timeMonthly_avg_activeTracers_temperature -s 2 -e 3 -m mpaso    -i /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -v iceAreaCell -s 2 -e 3 -m mpascice -i /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
+# Old MPAS filename conventions (until ~201609)::
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 
@@ -277,9 +281,9 @@ esac # !HOSTNAME
 #          fml_nm_XX_YYYYMM_YYYYMM.nc (examples include '' (default), 'control', 'experiment')
 #          By default, fml_nm=$caseid. Use fml_nm instead of $caseid to simplify long names, avoid overlap, etc.
 # hst_nm:  History volume name referring to the $hst_nm character sequence used in history tape names:
-#          caseid.mdl_nm.hst_nm.YYYY-MM.nc (examples include 'h0' (default, works for cam, clm), 'h1', 'h' (for cism))
+#          caseid.mdl_nm.hst_nm.YYYY-MM.nc (examples include 'h0' (default, works for cam, clm), 'h1', 'h' (for cism), 'hist' (for mpascice, mpaso)
 # mdl_nm:  Model name referring to the character sequence $mdl_nm used in history tape names:
-#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'pop')
+#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'mpaso', 'mpascice', 'pop')
 # nco_opt: String of options to pass-through to NCO, e.g.,
 #          '-D 2 -7 -L 1' for NCO debugging level 2, netCDF4-classic output, compression level 1
 #          '--no_tmp_fl -x' to skip temporary files, turn extraction into exclusion list
@@ -336,7 +340,7 @@ fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experim
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
 hdr_pad='10000' # [B] Pad at end of header section
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
-mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ocn')
+mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpaso', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for filenames and regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
@@ -545,11 +549,12 @@ let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
 
 # Derived variables
 out_nm=${caseid}
-if [ "${caseid}" = 'hist' ]; then
+if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpascice' ]; then
     mdl_typ='mpas'
 fi # !caseid
 if [ "${mdl_typ}" = 'mpas' ]; then
-    out_nm="mpas_${mdl_nm}"
+    out_nm="${mdl_nm}"
+    hst_nm='hist'
 fi # !mdl_typ
 if [ -n "${fml_nm}" ]; then 
     out_nm="${fml_nm}"
@@ -707,6 +712,7 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: hst_nm   = ${hst_nm}\n"
     printf "dbg: lnk_flg  = ${lnk_flg}\n"
     printf "dbg: mdl_nm   = ${mdl_nm}\n"
+    printf "dbg: mdl_typ  = ${mdl_typ}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: nco_opt  = ${nco_opt}\n"
     printf "dbg: ncr_flg  = ${ncr_flg}\n"
@@ -801,7 +807,7 @@ for mth in {01..12}; do
 	    # 20161130: Old MPAS rule until today
 	    # yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
 	    # Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
-	    yr_fl="${yr_fl} mpascice.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01_00.00.00.nc"
+ 	    yr_fl="${yr_fl} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
 	elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 	    yr_fl="${yr_fl} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
 	fi # !cesm
@@ -813,7 +819,7 @@ for mth in {01..12}; do
 	    if [ ${mdl_typ} = 'cesm' ]; then
 		yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 	    elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
-		yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+ 		yr_fl="${yr_fl} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
 	    elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 		yr_fl="${yr_fl} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
 	    fi # !cesm

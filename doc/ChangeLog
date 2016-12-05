@@ -1,8 +1,10 @@
 2016-12-05  Charlie Zender  <zender@uci.edu>
 
-	* Pad headers to 10kB with --hdr_pad in ncremap, ncclimo
+	* Update ncclimo for new mpaso, mpascice conventions
 
-	* Preserve full command-line (with --gaa ${cmd_ln}) in ncremap, ncclimo
+	* Pad metadata headers to 10kB with --hdr_pad in ncremap, nccclimo
+
+	* Preserve full command-line (with --gaa ${cmd_ln}) in ncremap,	ncclimo
 
 	* Deprecate (temporarily, I hope) _GNU_SOURCE so ncap_yacc builds without stpcpy() problems
 
