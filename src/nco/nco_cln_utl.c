@@ -132,7 +132,6 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
   return newdate_YYMMDD;
 } /* end nco_newdate() */
 
-
 tm_typ /* O [enm] Units type */
 nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
 (const char *ud_sng){ /* I [ptr] Units string  */
@@ -329,10 +328,9 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
 } /* end nco_cln_chk_tm() */
 
 #ifndef ENABLE_UDUNITS
+/* Stub functions to compile without UDUNITS2 */
 
-/* stub functions so can compile without UDUNITS2 */
-
-int    /* [flg] NCO_NOERR or NCO_ERR */ 
+int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_var_dff( /* [fnc] difference between two co-ordinate units */
 const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
 const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
@@ -340,23 +338,33 @@ nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */
 double *dval,           /* I/O [dbl] var values modified */
 var_sct *var)           /* I/O [var_sct] var values modified */
 {
-
   return NCO_NOERR;
-
 }
-int   /* [flg] NCO_NOERR or NCO_ERR */ 
+
+int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_org(   /* [fnc] difference between two co-ordinate units */
 const char *val_unt_sng, /* I [ptr] input value and  units in the same string */
 const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
 nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
 double *og_val)         /* O [dbl] output value */
 {
- 
-  *og_val=0.0;
+  *og_val=0.0; /* CEWI */
   return NCO_NOERR; 
 }
 
-#endif
+int /* [rcd] Return code */
+nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
+(const ptr_unn val, /* I [sct] Value to rebase */
+ const long val_idx, /* I [idx] Index into 1-D array of values */
+ const nc_type val_typ, /* I [enm] Value type */
+ const char *unit_sng, /* I [sng] Units string */
+ char *lgb_sng) /* O [sng] Legible version of input string */
+{
+  lgb_sng[0]='\0'; /* CEWI */
+  return NCO_NOERR;
+} /* end nco_cln_sng_rbs() */
+  
+#endif /* !ENABLE_UDUNITS */
 
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H
@@ -612,7 +620,6 @@ double *og_val)         /* O [dbl] output value */
   return rcd;        
 }
 
-
 /* This function is only called if the target units in fl_bs_sng of the form "value unit since date-stamp" 
    and the calendar type is cln_360 or cln_365.
    either "var" is NULL and there is a single value to process *og_val 
@@ -699,8 +706,6 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   return NCO_NOERR;
 } /* end nco_cln_clc_tm() */
 
-
-
 int /* [rcd] Successful conversion returns NCO_NOERR */
 nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 (const char *unt_sng, /* I [ptr] units attribute string */
@@ -751,7 +756,6 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 
   return NCO_NOERR;
 } /* end UDUnits2 nco_cln_prs_tm() */
-
 
 int /* [rcd] Return code */
 nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
@@ -820,21 +824,13 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
   ut_free(ut_sct_out);
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
 
-
   lgb_sng[0]='\0'; /* CEWI */
 
   return NCO_NOERR;
 
 } /* end nco_cln_sng_rbs() */
 
-
-
-
-
-
-
-
-#endif  /* HAVE_UDUNITS2_H */
-#endif  /* ENABLE_UDUNITS */
+# endif /* HAVE_UDUNITS2_H */
+#endif /* ENABLE_UDUNITS */
 /* End UDUnits-related routines*/
  

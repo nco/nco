@@ -57,6 +57,7 @@ while [ -h "${spt_src}" ]; do # Recursively resolve ${spt_src} until file is no 
   spt_src="$(readlink "${spt_src}")"
   [[ ${spt_src} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
 done
+cmd_ln="${spt_src} ${@}"
 drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
 spt_nm=$(basename ${spt_src}) # [sng] Script name (Unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
@@ -332,8 +333,8 @@ drc_rgr_xmp="${DATA}/ne30/rgr" # [sng] Regrid file directory for examples
 drc_rgr_xtn='' # [sng] Regridded file directory for for extended climatology
 drc_xtn='' # [sng] Directory containing extended climatology
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
-gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
-hdr_pad='1000' # [B] Pad at end of header section
+gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
+hdr_pad='10000' # [B] Pad at end of header section
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for filenames and regridding)
@@ -447,7 +448,6 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
-cmd_ln="${spt_nm} ${@}"
 while getopts :a:b:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y: OPT; do
     case ${OPT} in
 	a) clm_md=${OPTARG} ;; # Climatology mode
