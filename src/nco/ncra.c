@@ -908,6 +908,7 @@ main(int argc,char **argv)
     }else{ /* !tm_crd_id_in */
       if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with unknown time coordinate. Turning-off climatology bounds mode.\n",nco_prg_nm_get());
       flg_cb=False;
+      rcd=NC_NOERR;
       goto skp_cb; 
     } /* !tm_crd_in */
 

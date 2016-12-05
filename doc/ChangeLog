@@ -1,5 +1,7 @@
 2016-12-05  Charlie Zender  <zender@uci.edu>
 
+	* ncra: reset error code in --cb block to prevent exiting with apparent error
+
 	* Update ncclimo for new mpaso, mpascice conventions
 
 	* Pad metadata headers to 10kB with --hdr_pad in ncremap, nccclimo
