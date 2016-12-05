@@ -1,5 +1,7 @@
 2016-12-05  Charlie Zender  <zender@uci.edu>
 
+	* Deprecate (temporarily, I hope) _GNU_SOURCE so ncap_yacc builds without stpcpy() problems
+
 	* Patches necessary when UDUNITS not installed
 
 2016-12-04  Charlie Zender  <zender@uci.edu>
