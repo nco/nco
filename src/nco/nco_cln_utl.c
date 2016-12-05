@@ -752,6 +752,88 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   return NCO_NOERR;
 } /* end UDUnits2 nco_cln_prs_tm() */
 
+
+int /* [rcd] Return code */
+nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
+(const ptr_unn val, /* I [sct] Value to rebase */
+ const long val_idx, /* I [idx] Index into 1-D array of values */
+ const nc_type val_typ, /* I [enm] Value type */
+ const char *unit_sng, /* I [sng] Units string */
+ char *lgb_sng) /* O [sng] Legible version of input string */
+{
+  /* Purpose: Rebase calendar string for legibility
+     Assumptions: Input units string unit_sng is a calendar date, i.e., contains "from", "since", or "after"
+
+     ncdump handles this in nctime0.c
+     dumplib.c/nctime_val_tostring() by Dave Allured, NOAA
+     cdRel2Iso() from CDMS by Bob Drach, LLNL
+     cdParseRelunits() from CDMS by Bob Drach, LLNL */
+
+  const char fnc_nm[]="nco_cln_sng_rbs()"; /* [sng] Function name */
+  
+  double val_dbl; /* [day] Calendar offset converted to double */
+
+  int ut_rcd; /* [enm] UDUnits2 status */
+  
+  ut_system *ut_sys;
+  ut_unit *ut_sct_in; /* [sct] UDUnits structure, input units */
+  ut_unit *ut_sct_out; /* [sct] UDUnits structure, output units */
+
+  /* Quick return if units DNE */
+  if(!unit_sng) return NCO_NOERR;
+  
+  /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
+     Otherwise it uses default initial location hardcoded when library was built */
+  if(nco_dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
+  ut_sys=ut_read_xml(NULL);
+  if(!ut_sys){
+    (void)fprintf(stdout,"%s: %s() failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
+    return NCO_ERR; /* Failure */
+  } /* end if err */ 
+
+  /* Units string containing calendar origin converted to UDUnit structure */
+  ut_sct_in=ut_parse(ut_sys,unit_sng,UT_ASCII); 
+  if(!ut_sct_in){ /* Problem with 'units' attribute */
+    ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
+    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: empty units attribute string\n");
+    if(ut_rcd == UT_SYNTAX) (void)fprintf(stderr,"ERROR: units attribute \"%s\" has a syntax error\n",unit_sng);
+    if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is not listed in UDUnits2 SI system database\n",unit_sng);
+    return NCO_ERR; /* Failure */
+  } /* endif coordinate on disk has no units attribute */
+
+  /* Convert time since calendar origin to double */
+  val_dbl=ptr_unn_2_scl_dbl(val,val_typ); 
+  
+  /* Units string to convert to */
+  ut_sct_out=ut_offset(ut_sct_in,val_dbl);
+  if(!ut_sct_out){ /* Problem with 'units' attribute */
+    ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
+    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: Empty units attribute string\n");
+    if(ut_rcd == UT_SYNTAX) (void)fprintf(stderr,"ERROR: units attribute  \"%s\" has a syntax error\n",unit_sng);
+    if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is not listed in UDUnits2 SI system database\n",unit_sng);
+    return NCO_ERR; /* Failure */
+  } /* endif */
+
+  val_dbl+=0*val_idx; /* CEWI */
+
+  ut_free(ut_sct_in);
+  ut_free(ut_sct_out);
+  ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
+
+
+  lgb_sng[0]='\0'; /* CEWI */
+
+  return NCO_NOERR;
+
+} /* end nco_cln_sng_rbs() */
+
+
+
+
+
+
+
+
 #endif  /* HAVE_UDUNITS2_H */
 #endif  /* ENABLE_UDUNITS */
 /* End UDUnits-related routines*/

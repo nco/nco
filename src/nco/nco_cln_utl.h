@@ -172,6 +172,16 @@ const char *unt_sng, /* I [ptr] units attribute string */
 tm_cln_sct *tm_in); /*  O [sct] struct to be populated */
 
 
+int /* [rcd] Return code */
+nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
+(const ptr_unn val, /* I [sct] Value to rebase */
+ const long val_idx, /* I [idx] Index into 1-D array of values */
+ const nc_type val_typ, /* I [enm] Value type */
+ const char *unit_sng, /* I [sng] Units string */
+ char *lgb_sng); /* O [sng] Legible version of input string */
+
+
+
 #endif /* !HAVE_UDUNITS2_H */
 #endif /* !ENABLE_UDUNITS */
 
