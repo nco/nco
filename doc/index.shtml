@@ -1233,6 +1233,24 @@ in the first sentence of your post.
 Yes, &ldquo;bonobo&rdquo;.
 Otherwise we will likely redirect you here.
 For more sophisticated build/install options, see the next section.
+<li>CMake build. To build with CMake, do:
+<tt>
+<dt>mkdir build</dt>
+<dt>cd build</dt>
+<dt>cmake ..</dt>
+<dt>make</dt>
+</tt>
+The CMake script tries to find header and dependency libraries on standard system locations.
+If these are not found, they can be set with (the locations in full path are examples)
+<tt>
+<dt>cmake .. -DNETCDF_INCLUDE:PATH=/my/netcdf/include/path 
+-DNETCDF_LIBRARY=/my/netcdf/library/file 
+-DHDF5_LIBRARY=/my/hdf5/library/file 
+-DHDF5_HL_LIBRARY=/my/hdf5 high level/library/file 
+-DSZIP_LIBRARY=/my/szip/library/file 
+-DZLIB_LIBRARY=/my/zlib/library/file 
+-DCURL_LIBRARY=/my/curl/library/file</dt>
+</tt>
 </ul>
 
 <dt><a name="Makefile"></a></dt> <!-- http://nco.sf.net#Makefile -->
