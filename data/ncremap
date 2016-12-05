@@ -54,6 +54,7 @@ while [ -h "${spt_src}" ]; do # Recursively resolve ${spt_src} until file is no 
   spt_src="$(readlink "${spt_src}")"
   [[ ${spt_src} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
 done
+cmd_ln="${spt_src} ${@}"
 drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
 spt_nm=$(basename ${spt_src}) # [sng] Script name (Unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
@@ -237,14 +238,14 @@ dst_xmp='dst.nc' # [sng] Destination file for examples
 #esmf_opt='--ignore_unmapped --netcdf4' # [sng] ESMF_RegridWeightGen options
 esmf_opt='--ignore_unmapped' # [sng] ESMF_RegridWeightGen options
 fl_nbr=0 # [nbr] Number of files to remap
-gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
+gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_command=\"'${cmd_ln}'\" --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
 grd_dst='' # [sng] Destination grid-file
 grd_dst_glb="${DATA}/grids/180x360_SCRIP.20150901.nc" # [sng] Grid-file (destination) global
 grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
 grd_sng='' # [sng] Grid string
 grd_src='' # [sng] Source grid-file
 grd_src_xmp='grd_src.nc' # [sng] Source grid-file for examples
-hdr_pad='1000' # [B] Pad at end of header section
+hdr_pad='10000' # [B] Pad at end of header section
 in_fl='' # [sng] Input file
 #in_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] Input file
 in_xmp='in.nc' # [sng] Input file for examples
@@ -357,7 +358,6 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
-cmd_ln="${spt_nm} ${@}"
 while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x: OPT; do
     case ${OPT} in
 	a) alg_typ=${OPTARG} ;; # Algorithm
