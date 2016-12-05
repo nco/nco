@@ -1,3 +1,7 @@
+2016-12-05  Charlie Zender  <zender@uci.edu>
+
+	* Patches necessary when UDUNITS not installed
+
 2016-12-04  Charlie Zender  <zender@uci.edu>
 
 	* Always return value to non-void functions: good practice and required by rpmlint

@@ -599,7 +599,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   long cnt_rmn_ttl=-1L; /* Total records to be read from this and all remaining files */
   long rec_skp_vld_prv_dgn=-1L; /* Records skipped at end of previous valid file, if any (diagnostic only) */
 
+#ifdef ENABLE_UDUNITS
   cv_converter *ut_cnv=NULL;
+#endif /* !ENABLE_UDUNITS */
 
   lmt=*lmt_ptr;
 
