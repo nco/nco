@@ -20,7 +20,7 @@ nbr_err_ttl=0;
   }
 
   // rebase coordinate both with "days" - 30 days a month calendar
-  a3=time;
+  a3=time.float();
   a3@units="days since 1970-1-29";
   a3@calendar="360_day";
 
@@ -28,7 +28,7 @@ nbr_err_ttl=0;
   a4@units="days since 1970-2-1";
 
 
-  if( fabs( (a3-a4).avg() -2.0 ) > 0.01d )
+  if( fabs( (a3-a4).avg() -2.0f ) > 0.01f )
   {
    print("ERROR: a3: problem rebasing time coord cal(360_day) a4\n");   
    nbr_err++;
