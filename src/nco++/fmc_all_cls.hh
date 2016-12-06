@@ -292,6 +292,17 @@ public:
 };
 
 
+// udunits  Functions       /***************************************/
+class udunits_cls: public vtl_cls {
+private:
+  enum{ PUNITS1};
+  bool _flg_dbg;
+public:
+  udunits_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+};
+
+
 
 
 

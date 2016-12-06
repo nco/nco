@@ -4659,6 +4659,175 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 
 }
 
+
+
+//udunits Functions /***********************************/ 
+  udunits_cls::udunits_cls(bool flg_dbg){
+    //Populate only on  constructor call
+    if(fmc_vtr.empty()){
+          fmc_vtr.push_back( fmc_cls("udunits",this,PUNITS1)); 
+
+    }		      
+  } 
+
+  var_sct * udunits_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("udunits_cls::fnd");
+  int fdx;
+  int nbr_args;
+  int nbr_dim;
+  int rcd;
+  long lret;
+  dmn_sct **dim;
+  var_sct *var=NULL_CEWI;
+  var_sct *var_ud_in=NULL_CEWI;
+  var_sct *var_ud_out=NULL_CEWI;
+  var_sct *var_cln=NULL_CEWI;
+  var_sct *var_ret;
+           
+  std::string susg;
+  std::string sfnm=fmc_obj.fnm();
+  RefAST tr;
+  std::vector<RefAST> args_vtr; 
+  std::vector<std::string> cst_vtr;              
+
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;            
+  nc_type lcl_typ;
+
+  NcapVar *Nvar;
+
+
+  fdx=fmc_obj.fdx();
+ 
+
+  if(expr)
+      args_vtr.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	args_vtr.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+  nbr_args=args_vtr.size();  
+
+  susg="usage: var_out="+sfnm+"(var_in ,unitsOutString)"; 
+
+  
+  if(nbr_args<2)
+      err_prn(sfnm,"Function has been called with less than two arguments\n"+susg); 
+
+
+
+  if(nbr_args >2 &&!prs_arg->ntl_scn) 
+      wrn_prn(sfnm,"Function been called with more than two arguments"); 
+
+  
+  /* data to convert */ 
+  var=walker.out(args_vtr[0]);  
+
+  /* text string output units */
+  var_ud_out=walker.out(args_vtr[1]);  
+
+  lcl_typ=var->type;
+  if( !var->undefined && var->type !=NC_FLOAT && var->type !=NC_DOUBLE )
+    nco_var_cnf_typ(NC_DOUBLE,var); 
+
+  
+  if(prs_arg->ntl_scn  ){
+    nco_var_free(var_ud_out);
+    return var;
+  }
+
+  if(var_ud_out->type !=NC_CHAR && var_ud_out->type !=NC_STRING)
+     err_prn(sfnm,"The second argument must be a netCDF text type\n"+susg); 
+
+
+
+  { 
+
+    /* hack RefAST to something so that we dont  have to call astFactory that is protected */
+    RefAST atr=walker.nco_dupList(args_vtr[0]);  
+    std::string units_att_nm;
+
+    units_att_nm=std::string(var->nm)+"@units";          
+   
+    atr->setText(units_att_nm);
+    atr->setType(ATT_ID);
+
+    var_ud_in=walker.out(atr);
+
+    if(var_ud_in->type !=NC_CHAR && var_ud_in->type !=NC_STRING)
+       err_prn(sfnm,"The attribute \""+units_att_nm+"\" argument must be a netCDF text type\n"+susg); 
+  
+    
+    /* look for calendar att - may not be present */  
+    units_att_nm=std::string(var->nm)+"@calendar";          
+    
+    Nvar=prs_arg->var_vtr.find(units_att_nm);
+
+    if(Nvar !=NULL)
+      var_cln=nco_var_dpl(Nvar->var);
+    else    
+      var_cln=ncap_att_init(units_att_nm,prs_arg);
+
+    if(var_cln && var_cln->type !=NC_CHAR && var_cln->type !=NC_STRING)
+       err_prn(sfnm,"The attribute \""+units_att_nm+"\" argument must be a netCDF text type\n"+susg); 
+ 
+  
+  }
+
+  // do heavy lifting 
+  {
+   
+   char *units_in_sng;
+   char *units_out_sng;    
+   char *cln_sng;   
+
+   nco_cln_typ cln_typ=cln_nil;
+
+   units_in_sng=ncap_att_char(var_ud_in);         
+   units_out_sng=ncap_att_char(var_ud_out);   
+
+   if(cln_sng)
+   {
+     cln_typ=nco_cln_get_cln_typ(cln_sng);
+     cln_sng=ncap_att_char(var_cln); 
+   }
+   
+
+
+    #ifdef ENABLE_UDUNITS
+    # ifdef HAVE_UDUNITS2_H
+       rcd=nco_cln_clc_dbl_var_dff(units_in_sng,units_out_sng,cln_typ,(double*)NULL, var); 
+    #endif
+    #endif
+   
+    if(rcd!=NCO_NOERR)   
+      err_prn(sfnm, "Udunits was unable to convert data in the var '"+std::string(var->nm)+"' from '" +std::string(units_in_sng) +"' to '"+std::string(units_out_sng)+"'\n");
+
+    nco_free(units_in_sng);
+    nco_free(units_out_sng);
+    if(cln_sng)
+      nco_free(cln_sng);
+
+  }
+  
+
+  /* revert var back to original type */
+  if( var->type != lcl_typ)
+    nco_var_cnf_typ(lcl_typ,var);
+ 
+
+  nco_var_free(var_ud_in); 
+
+  return var;
+
+}
+
+
+
+
 /* ncap2 functions and methods */
 
 /* To avoid confusion when I say FUNC (uppercase) I mean a custom ncap2 function.
