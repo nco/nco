@@ -168,8 +168,8 @@ esac # !HOSTNAME
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -S 1980 -E 1981 -x ${DATA}/ne30/prv -s 1982 -e 1983 -i ${DATA}/ne30/clm -X ${DATA}/ne30/xtn
 
 # Annual climo testing:
-# climo_ann.sh -C ann -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 2006 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm
-# climo_ann.sh -C ann -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 1852 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 2006 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm
+# ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 1852 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
@@ -321,6 +321,7 @@ fi # !TERM
     
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
+ann_sfx='01-01-00000' # [sng] Annual file suffix (e.g., '01-01-00000')
 bnd_nm='nbnd' # [sng] Bounds dimension name (e.g., 'nbnd', 'tbnd')
 bnr_flg='No' # [sng] Binary method
 caseid='' # [sng] Case ID
@@ -585,6 +586,9 @@ if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth
     echo "ERROR: User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
     exit 1
 fi # !clm_md
+if [ "${clm_md}" = 'ann' ]; then 
+    dec_md='sdd'
+fi # !clm_md
 
 if [ -n "${gaa_sng_std}" ]; then
     if [ "${yr_nbr}" -gt 1 ] ; then
@@ -789,11 +793,18 @@ if [ "${mdl_typ}" = 'yyyymm' ]; then
 else # !mdl_typ
     printf "Filenames will be constructed with CESM'ish or ACME'ish conventions.\n"
 fi # !mdl_typ
-if [ ${dec_md} = 'scd' ]; then 
-    printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive months that cross calendar-year boundaries.\n"
-else
-    printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year.\n"
-fi # !scd
+if [ ${clm_md} = 'ann' ]; then 
+    printf "Each input file assumed to contain mean of one year.\n"
+elif [ ${clm_md} = 'mth' ]; then 
+    printf "Each input file assumed to contain mean of one month.\n"
+fi # !mth
+if [ ${clm_md} = 'mth' ]; then 
+    if [ ${dec_md} = 'scd' ]; then 
+	printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive months that cross calendar-year boundaries.\n"
+    else
+	printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year.\n"
+    fi # !scd
+fi # !mth
 if [ ${cf_flg} = 'Yes' ]; then 
     printf "Annotation for CF climatology attribute and climatology_bounds variable will be performed.\n"
 else
