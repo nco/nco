@@ -551,13 +551,16 @@ var_sct *var)           /* I/O [var_sct] var values modified - can be NULL  */
   int rcd;
   int is_date;
   const char fnc_nm[]="nco_cln_clc_dv_dff()"; /* [sng] Function name */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) 
+     (void)fprintf(stderr,"%s: nco_cln_clc_dbl_var_dff() reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng,lmt_cln);
+
+
   
   /* do nothing if units identical */
   if(!strcasecmp(fl_unt_sng,fl_bs_sng))
     return NCO_NOERR;
 
-  if(nco_dbg_lvl_get() >= nco_dbg_vrb) 
-     (void)fprintf(stderr,"%s: nco_cln_dbl_var_dff() reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng,lmt_cln);
 
   /* see if target units is of the form  "units since date-string" */
   is_date = nco_cln_chk_tm(fl_bs_sng);
@@ -668,7 +671,8 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   tm_cln_sct unt_cln_sct;
   tm_cln_sct bs_cln_sct;
   
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) 
+     (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
 
   /* blow out if bad cln type */
   if(lmt_cln != cln_360 &&  lmt_cln != cln_365)
@@ -707,8 +711,11 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
     size_t idx;
     double *dp;
     ptr_unn op1;    
-
+    
+    sz=var->sz;  
+    op1=var->val;
     (void)cast_void_nctype(NC_DOUBLE,&op1);
+    dp=op1.dp;   
 
     if(var->has_mss_val)
     {
@@ -718,10 +725,8 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 	   dp[idx]+=crr_val;                      
    } 
    else
-   {
       for(idx=0; idx<sz; idx++)
 	  dp[idx]+=crr_val;                      
-   } 
 
    (void)cast_nctype_void(NC_DOUBLE,&op1);
 
