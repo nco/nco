@@ -709,26 +709,47 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   {
     size_t sz;
     size_t idx;
-    double *dp;
     ptr_unn op1;    
     
     sz=var->sz;  
     op1=var->val;
-    (void)cast_void_nctype(NC_DOUBLE,&op1);
-    dp=op1.dp;   
+    (void)cast_void_nctype(var->type,&op1);
 
-    if(var->has_mss_val)
+    if(var->type == NC_DOUBLE)
     {
-      double mss_dbl=var->mss_val.dp[0]; 
-      for(idx=0; idx<sz; idx++)
-	 if( dp[idx] != mss_dbl)   
-	   dp[idx]+=crr_val;                      
-   } 
-   else
-      for(idx=0; idx<sz; idx++)
+      double *dp;
+      dp=op1.dp;   
+
+      if(var->has_mss_val)
+      {  
+	double mss_dbl=var->mss_val.dp[0]; 
+	for(idx=0; idx<sz; idx++)
+	   if( dp[idx] != mss_dbl) dp[idx]+=crr_val;                      
+      } 
+      else
+	for(idx=0; idx<sz; idx++)
 	  dp[idx]+=crr_val;                      
 
-   (void)cast_nctype_void(NC_DOUBLE,&op1);
+    }
+
+    if(var->type == NC_FLOAT)
+    {
+      float *fp;
+      fp=op1.fp;   
+
+      if(var->has_mss_val)
+      {  
+	float mss_ft=var->mss_val.fp[0]; 
+	for(idx=0; idx<sz; idx++)
+	   if( fp[idx] != mss_ft) fp[idx]+=crr_val;                      
+      } 
+      else
+	for(idx=0; idx<sz; idx++)
+	  fp[idx]+=crr_val;                      
+
+    }
+
+   (void)cast_nctype_void(var->type,&op1);
 
   }
   lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
