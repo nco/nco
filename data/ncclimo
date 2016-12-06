@@ -181,7 +181,7 @@ esac # !HOSTNAME
 # done
 # New MPAS filename conventions (as of ~201612):
 # ncclimo -v timeMonthly_avg_activeTracers_temperature -s 2 -e 3 -m mpaso    -i /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
-# ncclimo -v iceAreaCell -s 2 -e 3 -m mpascice -i /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
+ # ncclimo -v timeSeriesStatsMonthly_avg_iceAreaCell_1 -s 2 -e 3 -m mpascice -i /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Old MPAS filename conventions (until ~201609)::
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &

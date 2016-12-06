@@ -1,5 +1,13 @@
 2016-12-05  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.3-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.3-alpha03 final changes';git push
+	git tag -a 4.6.3-alpha03 -m 'Version 4.6.3-alpha03 new features: mpaso, mpascice, CMake, rebasing';git push --tags
+
+	* Cleared up most bugs from new rebasing code
+
+	* Pedro has begun adding CMake support
+
 	* ncra: reset error code in --cb block to prevent exiting with apparent error
 
 	* Update ncclimo for new mpaso, mpascice conventions
