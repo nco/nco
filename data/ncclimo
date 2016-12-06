@@ -587,7 +587,10 @@ if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth
     exit 1
 fi # !clm_md
 if [ "${clm_md}" = 'ann' ]; then 
+    clm_nbr=1
     dec_md='sdd'
+elif [ "${clm_md}" = 'mth' ]; then 
+    clm_nbr=17
 fi # !clm_md
 
 if [ -n "${gaa_sng_std}" ]; then
@@ -962,8 +965,8 @@ if [ "${clm_md}" = 'ann' ]; then
     
 fi # !clm_md
 
-# Many subsequent blocks only executed for normal and incremental climos, not for binary climos
-if [ "${bnr_flg}" = 'No' ]; then
+# Many subsequent blocks only executed for normal and incremental monthly climos, not for binary climos, or non-monthly climos
+if [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
     
     # Block 1 Loop 2: Execute and/or echo monthly climatology commands
     printf "Generating climatology...\n"
@@ -1201,7 +1204,7 @@ if [ "${bnr_flg}" = 'No' ]; then
 	done # !clm_idx
 	cd ${drc_pwd}
     fi # !lnk_flg
-fi # !bnr_flg
+fi # !clm_md !bnr_flg
 
 # Extended climos
 if [ "${xtn_flg}" = 'Yes' ]; then
@@ -1403,19 +1406,19 @@ date_dff=$((date_end-date_srt))
 echo "Quick plots of climatological annual mean:"
 if [ -n "${yr_srt_prv}" ]; then
     if [ -n "${rgr_map}" ]; then 
-	echo "ncview ${fl_rgr_xtn[17]} &"
-	echo "panoply ${fl_rgr_xtn[17]} &"
+	echo "ncview ${fl_rgr_xtn[${clm_nbr}]} &"
+	echo "panoply ${fl_rgr_xtn[${clm_nbr}]} &"
     else
-	echo "ncview ${fl_xtn[17]} &"
-	echo "panoply ${fl_xtn[17]} &"
+	echo "ncview ${fl_xtn[${clm_nbr}]} &"
+	echo "panoply ${fl_xtn[${clm_nbr}]} &"
     fi # !rgr_map    
 else
     if [ -n "${rgr_map}" ]; then 
-	echo "ncview ${fl_rgr[17]} &"
-	echo "panoply ${fl_rgr[17]} &"
+	echo "ncview ${fl_rgr[${clm_nbr}]} &"
+	echo "panoply ${fl_rgr[${clm_nbr}]} &"
     else
-	echo "ncview ${fl_out[17]} &"
-	echo "panoply ${fl_out[17]} &"
+	echo "ncview ${fl_out[${clm_nbr}]} &"
+	echo "panoply ${fl_out[${clm_nbr}]} &"
     fi # !rgr_map    
 fi # !yr_srt_prv
 echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
