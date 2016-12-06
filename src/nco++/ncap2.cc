@@ -576,6 +576,13 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&vlist_obj);
   (void)pop_fmc_vtr(fmc_vtr,&print_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bnds_obj);
+  
+#ifdef ENABLE_UDUNITS
+# ifdef HAVE_UDUNITS2_H
+  udunits_cls udunits_obj(true);
+  (void)pop_fmc_vtr(fmc_vtr,&udunits_obj);
+#endif
+#endif
 
 #ifdef ENABLE_GSL
 # ifdef ENABLE_NCO_GSL
