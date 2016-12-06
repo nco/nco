@@ -143,10 +143,17 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
 
 
 
+
 int                 /* number appended */ 
 ncap_att_str        /* extract string(s) from a NC_CHAR or NC_STRING type attribute */
 (var_sct *var_att,  /* I [sct] input attribute */
  std::vector<std::string> &str_vtr);
+
+char *            /* new malloc'ed string */ 
+ncap_att_char    /* extract string from a NC_CHAR or first NC_STRING */
+(var_sct *var_att);
+
+
 
 var_sct *   /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
 ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */

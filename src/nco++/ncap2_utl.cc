@@ -647,6 +647,43 @@ ncap_att_str /* extract string(s) from a NC_CHAR or NC_STRING type attribute */
 
 }
 
+
+char *          /* new malloc'ed string */ 
+ncap_att_char  /* extract string from a NC_CHAR or first NC_STRING */
+(var_sct *var_att)
+{
+  int idx;
+  char *cstr;
+  
+  (void)cast_void_nctype((nc_type)var_att->type,&var_att->val);
+
+  if(var_att->type==NC_STRING)
+  {
+    /* grab only first string */
+    cstr=strdup(var_att->val.sngp[0]);
+
+  }
+
+  if(var_att->type==NC_CHAR)
+  { 
+    cstr=(char*)nco_malloc( (var_att->sz+1) *sizeof(char));
+    strncpy(cstr, var_att->val.cp, var_att->sz);        
+    cstr[var_att->sz]='\0'; 
+  } 
+  (void)cast_nctype_void((nc_type)var_att->type,&var_att->val);
+  
+  return cstr;  
+
+}
+
+
+
+
+
+
+
+
+
 var_sct * /* O [sct] Remainder of modulo operation of input variables (var1%var2) */
 ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
 (var_sct *var1, /* I [sc,t] Variable structure containing field */
