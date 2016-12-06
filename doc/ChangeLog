@@ -1,3 +1,9 @@
+2016-12-06  Charlie Zender  <zender@uci.edu>
+
+	* Implement climo_ann.sh functionality in ncclimo and deprecate climo_ann.sh
+
+	* Rename clm_md to dec_md for December mode, and use clm_md for	Climatology Mode = ann, mth, dly
+
 2016-12-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.3-alpha03 release procedure:

@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.3-alpha03
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 5 December 2016
+@set update-date 6 December 2016
 @set update-month December 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16575,7 +16575,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 SYNTAX
 @example
-ncclimo [-a @var{clm_md}] [-b @var{bnd_nm}] [-c @var{caseid}] [-d @var{dbg_lvl}]
+ncclimo [-a @var{dec_md}] [-b @var{bnd_nm}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] [-O @var{drc_rgr}] [-o @var{drc_out}]
 [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}] 
@@ -16604,10 +16604,10 @@ embedded in @command{ncclimo}, and a more succinct description is given
 below.
 Options in alphabetical order are:
 @table @option
-@cindex @code{-a @var{clm_md}}
-@cindex @var{clm_md}
-@item -a @var{clm_md}
-Climatology mode that determines type of @acronym{DJF} average.
+@cindex @code{-a @var{dec_md}}
+@cindex @var{dec_md}
+@item -a @var{dec_md}
+December mode determines the type of @acronym{DJF} average.
 The two valid options are @code{scd} (default) and @code{sdd}.
 @acronym{SCD}-mode stands for ``Seasonally Continuous December''. 
 The first month used is December of the year before the start year

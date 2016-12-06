@@ -42,6 +42,7 @@
 # scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
 # scp ~/nco/data/ncclimo edison.nersc.gov:bin_edison
 # scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin_rhea
+# scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo yellowstone.ucar.edu:bin
 # scp dust.ess.uci.edu:nco/data/ncclimo ~/bin
 
@@ -166,6 +167,10 @@ esac # !HOSTNAME
 # Binary climo testing:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -S 1980 -E 1981 -x ${DATA}/ne30/prv -s 1982 -e 1983 -i ${DATA}/ne30/clm -X ${DATA}/ne30/xtn
 
+# Annual climo testing:
+# climo_ann.sh -C ann -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 2006 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm
+# climo_ann.sh -C ann -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 1852 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -a sdd -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
@@ -244,9 +249,9 @@ esac # !HOSTNAME
 # yr_end:  Year of last  January to analyze
 
 # Other options (often their default settings work well):
-# clm_md:  Climatology mode, i.e., how to treat December. One of two options:
-#          Seasonally-contiguous-december (SCD) mode (clm_md=scd) (default)
-#          Seasonally-discontiguous-december (SDD) mode (clm_md=sdd)
+# dec_md:  December mode, i.e., how to treat December. One of two options:
+#          Seasonally-contiguous-december (SCD) mode (dec_md=scd) (default)
+#          Seasonally-discontiguous-december (SDD) mode (dec_md=sdd)
 #          Both modes use an integral multiple of 12 months, and _never alter any input files_
 #          SCD climatologies begin in Dec of yr_srt-1, and end in Nov of yr_end
 #          SDD climatologies begin in Jan of yr_srt,   and end in Dec of yr_end
@@ -318,12 +323,12 @@ fi # !TERM
 # Modify these defaults to save typing later
 bnd_nm='nbnd' # [sng] Bounds dimension name (e.g., 'nbnd', 'tbnd')
 bnr_flg='No' # [sng] Binary method
-clm_md='scd' # [sng] Climatology mode ('scd' or 'sdd' as per above)
 caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
-lnk_flg='Yes' # [sng] Link ACME-climo to AMWG-climo filenames
+clm_md='mth' # [sng] Climatology mode ('ann', 'dly', or 'mth')
 dbg_lvl=0 # [nbr] Debugging level
+dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
 drc_in='' # [sng] Input file directory
 drc_in_xmp="${DATA}/ne30/raw" # [sng] Input file directory for examples
 drc_in_mps="${DATA}/mpas/raw" # [sng] Input file directory for MPAS examples
@@ -340,6 +345,7 @@ fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experim
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
 hdr_pad='10000' # [B] Pad at end of header section
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
+lnk_flg='Yes' # [sng] Link ACME-climo to AMWG-climo filenames
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpaso', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for filenames and regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
@@ -366,8 +372,9 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "\nQuick documentation for ${fnt_bld}${spt_nm}${fnt_nrm} (read script for more thorough explanations)\n\n"
     printf "${fnt_rvr}Basic usage:${fnt_nrm} ${fnt_bld}$spt_nm -c caseid -s yr_srt -e yr_end -i drc_in -o drc_out -r rgr_map${fnt_nrm}\n\n"
     echo "Command-line options:"
-    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Annual climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm})"
+    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}dec_md${fnt_nrm}   December mode (default ${fnt_bld}${dec_md}${fnt_nrm})"
     echo "${fnt_rvr}-b${fnt_nrm} ${fnt_bld}bnd_nm${fnt_nrm}   Bounds dimension name (default ${fnt_bld}${bnd_nm}${fnt_nrm})"
+    echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm})"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm})"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm})"
     echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year previous climo (empty means none) (default ${fnt_bld}${yr_end_prv}${fnt_nrm})"
@@ -452,10 +459,11 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
-while getopts :a:b:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y: OPT; do
+while getopts :a:b:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y: OPT; do
     case ${OPT} in
-	a) clm_md=${OPTARG} ;; # Climatology mode
+	a) dec_md=${OPTARG} ;; # December mode
 	b) bnd_nm=${OPTARG} ;; # Bounds dimension name
+	C) clm_md=${OPTARG} ;; # Climatology mode
 	c) caseid=${OPTARG} ;; # CASEID
 	d) dbg_lvl=${OPTARG} ;; # Debugging level
 	E) yr_end_prv=${OPTARG} ;; # End year previous
@@ -573,6 +581,10 @@ if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     out_nm=${bs_nm}
     bs_sfx="${caseid#*.}"
 fi # !caseid
+if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ]; then 
+    echo "ERROR: User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
+    exit 1
+fi # !clm_md
 
 if [ -n "${gaa_sng_std}" ]; then
     if [ "${yr_nbr}" -gt 1 ] ; then
@@ -620,7 +632,7 @@ mm_ann_end='12' # [idx] Last  month used in annual climatology
 mm_djf_srt='01' # [idx] First month used in DJF climatology
 mm_djf_end='12' # [idx] Last  month used in DJF climatology
 yr_cln=${yr_nbr} # [nbr] Calendar years in climatology
-if [ ${clm_md} = 'scd' ]; then 
+if [ ${dec_md} = 'scd' ]; then 
     yyyy_clm_srt_dec=`printf "%04d" ${yr_srtm1}`
     yyyy_clm_end_dec=`printf "%04d" ${yr_endm1}`
     mm_ann_srt='12'
@@ -697,6 +709,7 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: caseid   = ${caseid}\n"
     printf "dbg: cf_flg   = ${cf_flg}\n"
     printf "dbg: clm_md   = ${clm_md}\n"
+    printf "dbg: dec_md   = ${dec_md}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
     printf "dbg: drc_in   = ${drc_in}\n"
     printf "dbg: drc_nco  = ${drc_nco}\n"
@@ -756,7 +769,7 @@ printf "Started climatology generation for dataset ${caseid} at `date`.\n"
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
 if [ "${xtn_flg}" = 'No' ]; then
-    printf "Producing standard climatology from raw monthly input files in directory ${drc_in}\n"
+    printf "Producing standard climatology from raw input files in directory ${drc_in}\n"
     printf "Output files to directory ${drc_out}\n"
 fi # !xtn_flg
 if [ "${bnr_flg}" = 'Yes' ]; then
@@ -764,19 +777,19 @@ if [ "${bnr_flg}" = 'Yes' ]; then
     printf "Output files to directory ${drc_xtn}\n"
 fi # !bnr_flg
 if [ "${ncr_flg}" = 'Yes' ]; then
-    printf "Producing extended climatology in incremental mode: Pre-computed climatology in directory ${drc_prv} will be incremented by raw monthly input files in directory ${drc_in}\n"
+    printf "Producing extended climatology in incremental mode: Pre-computed climatology in directory ${drc_prv} will be incremented by raw input files in directory ${drc_in}\n"
     printf "Output files to directory ${drc_xtn}\n"
 fi # !ncr_flg
 #printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
 if [ "${bnr_flg}" = 'No' ]; then
-    printf "Climatology from ${yr_nbr} years of contiguous raw monthly data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
+    printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
 fi # !bnr_flg
 if [ "${mdl_typ}" = 'yyyymm' ]; then
     printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
 else # !mdl_typ
     printf "Filenames will be constructed with CESM'ish or ACME'ish conventions.\n"
 fi # !mdl_typ
-if [ ${clm_md} = 'scd' ]; then 
+if [ ${dec_md} = 'scd' ]; then 
     printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive months that cross calendar-year boundaries.\n"
 else
     printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year.\n"
@@ -792,94 +805,155 @@ else
     printf "This climatology will not be regridded.\n"
 fi # !rgr
 
-# Block 1: Climatological monthly means
-# Block 1 Loop 1: Generate, check, and store (but do not yet execute) monthly commands
-clm_idx=0
-for mth in {01..12}; do
-    let clm_idx=${clm_idx}+1
-    MM=`printf "%02d" ${clm_idx}`
-    yr_fl=''
-    for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
-	YYYY=`printf "%04d" ${yr}`
-	if [ ${mdl_typ} = 'cesm' ]; then
-	    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-	elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
-	    # 20161130: Old MPAS rule until today
-	    # yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
-	    # Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
- 	    yr_fl="${yr_fl} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
-	elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
-	    yr_fl="${yr_fl} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
-	fi # !cesm
-    done # !yr
-    if [ ${clm_md} = 'scd' ] && [ ${MM} = '12' ]; then 
+# Block 1: Generate, check, and store (but do not yet execute) commands
+
+# Block 1 Loop 1: Climatologies based on monthly means
+if [ "${clm_md}" = 'mth' ]; then
+    clm_idx=0
+    for mth in {01..12}; do
+	let clm_idx=${clm_idx}+1
+	MM=`printf "%02d" ${clm_idx}`
 	yr_fl=''
-	for yr in `seq ${yr_srtm1} ${yr_endm1}`; do
+	for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
 	    YYYY=`printf "%04d" ${yr}`
 	    if [ ${mdl_typ} = 'cesm' ]; then
 		yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 	    elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
+		# 20161130: Old MPAS rule until today
+		# yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+		# Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
  		yr_fl="${yr_fl} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
 	    elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 		yr_fl="${yr_fl} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
 	    fi # !cesm
 	done # !yr
-	yyyy_clm_srt=${yyyy_clm_srt_dec}
-	yyyy_clm_end=${yyyy_clm_end_dec}
-    fi # !scd
-    # Check for raw monthly file existence only if file will be used
+	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
+	    yr_fl=''
+	    for yr in `seq ${yr_srtm1} ${yr_endm1}`; do
+		YYYY=`printf "%04d" ${yr}`
+		if [ ${mdl_typ} = 'cesm' ]; then
+		    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
+		elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
+ 		    yr_fl="${yr_fl} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
+		elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
+		    yr_fl="${yr_fl} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
+		fi # !cesm
+	    done # !yr
+	    yyyy_clm_srt=${yyyy_clm_srt_dec}
+	    yyyy_clm_end=${yyyy_clm_end_dec}
+	fi # !scd
+	# Check for existence of raw input only when file will be used
+	if [ "${bnr_flg}" = 'No' ]; then
+	    for fl_in in ${yr_fl} ; do
+		if [ ! -f "${drc_in}/${fl_in}" ]; then
+		    echo "ERROR: Unable to find required input file ${drc_in}/${fl_in}"
+		    echo "HINT: All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+		    exit 1
+		fi # ! -f
+	    done # !fl_in
+	else # !bnr_flg
+	    # In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
+	    drc_out="${drc_in}"
+	fi # !bnr_flg
+	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
+	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
+    done # !mth
+
+    # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
+    fl_out[13]="${drc_out}/${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
+    fl_out[14]="${drc_out}/${out_nm}_JJA_${yyyy_srt}06_${yyyy_end}08_climo.nc"
+    fl_out[15]="${drc_out}/${out_nm}_SON_${yyyy_srt}09_${yyyy_end}11_climo.nc"
+    fl_out[16]="${drc_out}/${out_nm}_DJF_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
+    fl_out[17]="${drc_out}/${out_nm}_ANN_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
+    # Derive all seventeen regridded and AMWG names from output names
+    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	fl_amwg[${clm_idx}]=`expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
+	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
+	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_out}\//}" # Delete prepended path to ease symlinking
+	if [ -n "${rgr_map}" ]; then
+	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
+	    if [ "${drc_out}" = "${drc_rgr}" ]; then 
+		# Append geometry suffix to regridded files in same directory as native climo
+		# http://tldp.org/LDP/abs/html/string-manipulation.html
+		dfl_sfx='rgr'
+		rgr_sfx=`expr match "${rgr_map}" '.*_to_\(.*\).nc'`
+		if [ "${#rgr_sfx}" -eq 0 ]; then
+		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
+		    rgr_sfx=${dfl_sfx}
+		else
+		    yyyymmdd_sng=`expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)'` # Find YYYYYMMDD
+		    if [ "${#yyyymmdd_sng}" -ne 0 ]; then
+			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
+		    fi # !strlen
+		fi # !strlen
+		#    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
+		fl_rgr[${clm_idx}]="${fl_rgr[${clm_idx}]/.nc/_${rgr_sfx}.nc}"
+	    fi # !drc_rgr
+	fi # !rgr_map
+    done # !clm_idx
+fi # !clm_md
+
+# Block 1 Loop 2: Climatologies based on annual means
+if [ "${clm_md}" = 'ann' ]; then
+    clm_idx=1
+    yr_fl=''
+    for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
+	YYYY=`printf "%04d" ${yr}`
+	yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
+    done # !yr
+    # Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
     if [ "${bnr_flg}" = 'No' ]; then
 	for fl_in in ${yr_fl} ; do
-	    if [ ! -f "${drc_in}/${fl_in}" ]; then
+	    if [ ! -e "${drc_in}/${fl_in}" ]; then
 		echo "ERROR: Unable to find required input file ${drc_in}/${fl_in}"
-		echo "HINT: All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+		echo "HINT: All files implied to exist by the climatology bounds (start/end year) must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
-	    fi # ! -f
+	    fi # ! -e
 	done # !fl_in
     else # !bnr_flg
 	# In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
 	drc_out="${drc_in}"
     fi # !bnr_flg
-    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
-    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
-done # !mth
+    fl_out[${clm_idx}]="${drc_out}/${out_nm}_ANN_${yyyy_srt}01_${yyyy_end}12_climo.nc"
+    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]} ${par_opt}"
 
-# Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
-fl_out[13]="${drc_out}/${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
-fl_out[14]="${drc_out}/${out_nm}_JJA_${yyyy_srt}06_${yyyy_end}08_climo.nc"
-fl_out[15]="${drc_out}/${out_nm}_SON_${yyyy_srt}09_${yyyy_end}11_climo.nc"
-fl_out[16]="${drc_out}/${out_nm}_DJF_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
-fl_out[17]="${drc_out}/${out_nm}_ANN_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
-# Derive all seventeen regridded and AMWG names from output names
-for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-    fl_amwg[${clm_idx}]=`expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
-    fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
-    fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_out}\//}" # Delete prepended path to ease symlinking
-    if [ -n "${rgr_map}" ]; then
-	fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
-	if [ "${drc_out}" = "${drc_rgr}" ]; then 
-	    # Append geometry suffix to regridded files in same directory as native climo
-	    # http://tldp.org/LDP/abs/html/string-manipulation.html
-	    dfl_sfx='rgr'
-	    rgr_sfx=`expr match "${rgr_map}" '.*_to_\(.*\).nc'`
-	    if [ "${#rgr_sfx}" -eq 0 ]; then
-		printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
-		rgr_sfx=${dfl_sfx}
-	    else
-		yyyymmdd_sng=`expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)'` # Find YYYYYMMDD
-		if [ "${#yyyymmdd_sng}" -ne 0 ]; then
-		    rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
-		fi # !strlen
-	    fi # !strlen
-	    #    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
-	    fl_rgr[${clm_idx}]="${fl_rgr[${clm_idx}]/.nc/_${rgr_sfx}.nc}"
-	fi # !drc_rgr
+    # Block 1 Loop 2: Climatological annual mean
+    printf "Climatological annual mean...\n"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_clm[${clm_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	eval ${cmd_clm[${clm_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_idx}] failed\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+    wait
+    
+    # Block 2: Regrid climatological annual mean
+    if [ -n "${rgr_map}" ]; then 
+	printf "Regrid annual data...\n"
+	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]/.nc/.rgr.nc}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_rgr[${clm_idx}]} ${par_opt}
+	fi # !dbg
+	if [ ${dbg_lvl} -le 1 ]; then
+	    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR annual regrid cmd_rgr[${clm_idx}] failed\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+	wait
+	printf "Done with regridding\n"
     fi # !rgr_map
-done # !clm_idx
+    
+fi # !clm_md
 
 # Many subsequent blocks only executed for normal and incremental climos, not for binary climos
 if [ "${bnr_flg}" = 'No' ]; then
-
+    
     # Block 1 Loop 2: Execute and/or echo monthly climatology commands
     printf "Generating climatology...\n"
     for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
@@ -1145,159 +1219,169 @@ if [ "${xtn_flg}" = 'Yes' ]; then
     else # !bnr_flg
 	printf "Produce extended climatology as weighted average of previously computed and incremental/new climatologies:\n"
     fi # !bnr_flg
-    printf "Previous/first climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}, weight = ${wgt_prv}\n"
-    printf "Current/second climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
-    printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
-    
+
     # Replace yr_srt by yr_srt_prv in "yrs_averaged" attribute
     nco_opt="${nco_opt/${yr_srt}-/${yr_srt_prv}-}"
+
+    if [ "${clm_md}" = 'ann' ]; then
+	printf "Previous/first climatology is ${yr_nbr_prv} years from ${yyyy_srt_prv} to ${yyyy_end_prv}, weight = ${wgt_prv}\n"
+	printf "Current/second climatology is ${yr_nbr} years from ${yyyy_srt} to ${yyyy_end}, weight = ${wgt_crr}\n"
+	printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_srt_prv} to ${yyyy_end}\n"
+    fi # !clm_md
+
+    if [ "${clm_md}" = 'mth' ]; then
+
+	printf "Previous/first climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}, weight = ${wgt_prv}\n"
+	printf "Current/second climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
+	printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     
-    clm_idx=0
-    for mth in {01..12}; do
-	let clm_idx=${clm_idx}+1
-	MM=`printf "%02d" ${clm_idx}`
-	fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end_prv}${MM}_climo.nc"
-	fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end}${MM}_climo.nc"
-    done # !mth
-    if [ ${clm_md} = 'scd' ]; then 
-	yyyy_clm_srt_dec_prv=`printf "%04d" ${yr_srtm1_prv}`
-	yyyy_clm_end_dec_prv=`printf "%04d" ${yr_endm1_prv}`
-	clm_idx=12
-	MM=`printf "%02d" ${clm_idx}`
-	fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec_prv}${MM}_climo.nc"
-	fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec}${MM}_climo.nc"
-    fi # !scd
-
-    fl_prv[13]="${drc_prv}/${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end_prv}05_climo.nc"
-    fl_prv[14]="${drc_prv}/${out_nm}_JJA_${yyyy_srt_prv}06_${yyyy_end_prv}08_climo.nc"
-    fl_prv[15]="${drc_prv}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end_prv}11_climo.nc"
-    fl_prv[16]="${drc_prv}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end_prv}${mm_djf_end}_climo.nc"
-    fl_prv[17]="${drc_prv}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end_prv}${mm_ann_end}_climo.nc"
-
-    fl_xtn[13]="${drc_xtn}/${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end}05_climo.nc"
-    fl_xtn[14]="${drc_xtn}/${out_nm}_JJA_${yyyy_srt_prv}06_${yyyy_end}08_climo.nc"
-    fl_xtn[15]="${drc_xtn}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end}11_climo.nc"
-    fl_xtn[16]="${drc_xtn}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
-    fl_xtn[17]="${drc_xtn}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
-
-    # Derive all seventeen regridded and AMWG names from output names
-    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
-	fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_prv}}"
-	fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
-
-	fl_rgr_xtn[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_xtn}}"
-	fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_prv}}"
-
-	fl_amwg_xtn[${clm_idx}]=`expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
-	fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
-	fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_xtn}\//}" # Delete prepended path to ease symlinking
-	if [ ${clm_md} = 'scd' ] ; then
-	    # Handle Dec, DJF, and ANN
-	    if [ ${clm_idx} -eq 12 ] || [ ${clm_idx} -eq 16 ] || [ ${clm_idx} -eq 17 ] ; then 
-		fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
-		fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_prv}}"
-		if [ ${clm_idx} -eq 12 ] ; then 
-		    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_clm_end_dec}/_${yyyy_clm_end_dec_prv}}"
-		else
-		    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
-		fi # !Dec
-
-		fl_rgr_xtn[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_xtn}}"
-		fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_prv}}"
-	    fi # !Dec, DJF, ANN
-	fi # !clm_md
-    done # !clm_idx
-
-    printf "Weight input climos to produce extended climo...\n"
-    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_xtn[${clm_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    if [ -z "${par_opt}" ]; then
-		eval ${cmd_xtn[${clm_idx}]}
-		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
-		    exit 1
-		fi # !err
-	    else # !par_opt
-		eval ${cmd_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
-		xtn_pid[${clm_idx}]=$!
-	    fi # !par_opt
-	fi # !dbg
-    done # !clm_idx
-    if [ -n "${par_opt}" ]; then
+	clm_idx=0
+	for mth in {01..12}; do
+	    let clm_idx=${clm_idx}+1
+	    MM=`printf "%02d" ${clm_idx}`
+	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end_prv}${MM}_climo.nc"
+	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end}${MM}_climo.nc"
+	done # !mth
+	if [ ${dec_md} = 'scd' ]; then 
+	    yyyy_clm_srt_dec_prv=`printf "%04d" ${yr_srtm1_prv}`
+	    yyyy_clm_end_dec_prv=`printf "%04d" ${yr_endm1_prv}`
+	    clm_idx=12
+	    MM=`printf "%02d" ${clm_idx}`
+	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec_prv}${MM}_climo.nc"
+	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec}${MM}_climo.nc"
+	fi # !scd
+	
+	fl_prv[13]="${drc_prv}/${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end_prv}05_climo.nc"
+	fl_prv[14]="${drc_prv}/${out_nm}_JJA_${yyyy_srt_prv}06_${yyyy_end_prv}08_climo.nc"
+	fl_prv[15]="${drc_prv}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end_prv}11_climo.nc"
+	fl_prv[16]="${drc_prv}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end_prv}${mm_djf_end}_climo.nc"
+	fl_prv[17]="${drc_prv}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end_prv}${mm_ann_end}_climo.nc"
+	
+	fl_xtn[13]="${drc_xtn}/${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end}05_climo.nc"
+	fl_xtn[14]="${drc_xtn}/${out_nm}_JJA_${yyyy_srt_prv}06_${yyyy_end}08_climo.nc"
+	fl_xtn[15]="${drc_xtn}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end}11_climo.nc"
+	fl_xtn[16]="${drc_xtn}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
+	fl_xtn[17]="${drc_xtn}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
+	
+	# Derive all seventeen regridded and AMWG names from output names
 	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	    wait ${xtn_pid[${clm_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
-		exit 1
-	    fi # !err
+	    fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
+	    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_prv}}"
+	    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
+	    
+	    fl_rgr_xtn[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_xtn}}"
+	    fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_prv}}"
+	    
+	    fl_amwg_xtn[${clm_idx}]=`expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
+	    fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
+	    fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_xtn}\//}" # Delete prepended path to ease symlinking
+	    if [ ${dec_md} = 'scd' ] ; then
+		# Handle Dec, DJF, and ANN
+		if [ ${clm_idx} -eq 12 ] || [ ${clm_idx} -eq 16 ] || [ ${clm_idx} -eq 17 ] ; then 
+		    fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
+		    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_prv}}"
+		    if [ ${clm_idx} -eq 12 ] ; then 
+			fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_clm_end_dec}/_${yyyy_clm_end_dec_prv}}"
+		    else
+			fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
+		    fi # !Dec
+		    
+		    fl_rgr_xtn[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_xtn}}"
+		    fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_prv}}"
+		fi # !Dec, DJF, ANN
+	    fi # !dec_md
 	done # !clm_idx
-    fi # !par_opt
-    wait
-
-    if [ -n "${rgr_map}" ]; then 
-	printf "Weight input climos to produce extended regridded climo...\n"
+	
+	printf "Weight input climos to produce extended climo...\n"
 	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	    cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
+	    cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_rgr_xtn[${clm_idx}]}
+		echo ${cmd_xtn[${clm_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -le 1 ]; then
 		if [ -z "${par_opt}" ]; then
-		    eval ${cmd_rgr_xtn[${clm_idx}]}
+		    eval ${cmd_xtn[${clm_idx}]}
 		    if [ $? -ne 0 ]; then
-			printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
+			printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
 		else # !par_opt
-		    eval ${cmd_rgr_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
-		    rgr_xtn_pid[${clm_idx}]=$!
+		    eval ${cmd_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+		    xtn_pid[${clm_idx}]=$!
 		fi # !par_opt
 	    fi # !dbg
 	done # !clm_idx
 	if [ -n "${par_opt}" ]; then
 	    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-		wait ${rgr_xtn_pid[${clm_idx}]}
+		wait ${xtn_pid[${clm_idx}]}
 		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
+		    printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
 	    done # !clm_idx
 	fi # !par_opt
 	wait
-    fi # !rgr_map
+	
+	if [ -n "${rgr_map}" ]; then 
+	    printf "Weight input climos to produce extended regridded climo...\n"
+	    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+		cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_rgr_xtn[${clm_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -le 1 ]; then
+		    if [ -z "${par_opt}" ]; then
+			eval ${cmd_rgr_xtn[${clm_idx}]}
+			if [ $? -ne 0 ]; then
+			    printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
+			    exit 1
+			fi # !err
+		    else # !par_opt
+			eval ${cmd_rgr_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+			rgr_xtn_pid[${clm_idx}]=$!
+		    fi # !par_opt
+		fi # !dbg
+	    done # !clm_idx
+	    if [ -n "${par_opt}" ]; then
+		for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+		    wait ${rgr_xtn_pid[${clm_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		done # !clm_idx
+	    fi # !par_opt
+	    wait
+	fi # !rgr_map
+	
+	# Link ACME-climo to AMWG-climo filenames
+	# drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
+	# Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
+	if [ ${lnk_flg} = 'Yes' ]; then
+	    printf "Link extended ACME-climo to AMWG-climo filenames...\n"
+	    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+		if [ -n "${rgr_map}" ]; then 
+		    cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr_xtn};ln -s -f ${fl_rgr_xtn[${clm_idx}]/${drc_rgr_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_rgr_xtn}\//}"
+		else
+		    cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_xtn};ln -s -f ${fl_xtn[${clm_idx}]/${drc_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_xtn}\//}"
+		fi # !rgr_map
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_lnk_xtn[${clm_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -le 1 ]; then
+		    eval ${cmd_lnk_xtn[${clm_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR linking ACME to AMWG filename cmd_lnk_xtn[${clm_idx}] failed. Debug this:\n${cmd_lnk_xtn[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		fi # !dbg
+	    done # !clm_idx
+	    cd ${drc_pwd}
+	fi # !lnk_flg
+    fi # !clm_md
     
-    # Link ACME-climo to AMWG-climo filenames
-    # drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
-    # Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
-    if [ ${lnk_flg} = 'Yes' ]; then
-	printf "Link extended ACME-climo to AMWG-climo filenames...\n"
-	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	    if [ -n "${rgr_map}" ]; then 
-		cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr_xtn};ln -s -f ${fl_rgr_xtn[${clm_idx}]/${drc_rgr_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_rgr_xtn}\//}"
-	    else
-		cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_xtn};ln -s -f ${fl_xtn[${clm_idx}]/${drc_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_xtn}\//}"
-	    fi # !rgr_map
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_lnk_xtn[${clm_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -le 1 ]; then
-		eval ${cmd_lnk_xtn[${clm_idx}]}
-		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR linking ACME to AMWG filename cmd_lnk_xtn[${clm_idx}] failed. Debug this:\n${cmd_lnk_xtn[${clm_idx}]}\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	done # !clm_idx
-	cd ${drc_pwd}
-    fi # !lnk_flg
-
 else # !xtn_flg extended climos
-
+    
     yr_nbr_xtn=${yr_nbr}
     
 fi # !xtn_flg extended climos
