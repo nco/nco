@@ -4789,10 +4789,10 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
    units_in_sng=ncap_att_char(var_ud_in);         
    units_out_sng=ncap_att_char(var_ud_out);   
 
-   if(cln_sng)
+   if(var_cln)
    {
-     cln_typ=nco_cln_get_cln_typ(cln_sng);
      cln_sng=ncap_att_char(var_cln); 
+     cln_typ=nco_cln_get_cln_typ(cln_sng);
    }
    
 
