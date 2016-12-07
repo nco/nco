@@ -33,7 +33,7 @@
 # Source: https://github.com/nco/nco/tree/master/data/ncclimo
 # Documentation: http://nco.sf.net/nco.html#ncclimo
 # Additional Documentation:
-# HowTo: https://acme-climate.atlassian.net/wiki/display/ATM/Generating+Climo+files
+# HowTo: https://acme-climate.atlassian.net/wiki/display/ATM/Generating+and+Regridding+Climatologies+%28climo+files%29+with+NCO+and+ncclimo
 # ACME Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
 
 # Direct install:
