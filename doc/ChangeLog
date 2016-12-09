@@ -1,3 +1,7 @@
+2016-12-9  Henry Butowsky  <henryb@hush.com>
+
+	* implemented units  re-base when increment, not just basetime changes between files  for the manual calendars 360_day && 365_day
+
 2016-12-06  Charlie Zender  <zender@uci.edu>
 
 	* Implement climo_ann.sh functionality in ncclimo and deprecate climo_ann.sh

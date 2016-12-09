@@ -43,9 +43,9 @@ nbr_err_ttl=0;
   a5@calendar="365_day";
 
 
-  a6@units="days since 2012-03-01";
-  a6=udunits(a5, a6@units);  
-
+  @units="days since 2012-03-01";
+  a6=udunits(a5, @units);  
+  a6@units=@units;
 
   if( fabs( (a5-a6).avg() -2.0 ) > 0.01d )
   {
@@ -61,11 +61,58 @@ nbr_err_ttl=0;
   a8@units="minutes since 2012-01-01";
 
   a8=udunits(a7, a8@units);
+  a8@units="minutes since 2012-01-01";
+
 
   if( fabs(a8.sum()-3300.0) >0.1 )  
   {
    print("ERROR: a7: change time coord units from hours to days a7\n");   
    nbr_err++;
   }
+
+
+  //rebase corodinate days to hours - 360 calendar
+  a9=time;
+  a9@units="days since 2012-01-30";
+  a9@calendar="360_day";
+
+  @units="hours since 2012-02-01 01:00";
+
+  a10=udunits(a9, @units);
+  a10@units=@units;
+  a10@calendar="360_day";
+
+
+  if( fabs(a10.sum()-1070.0) >0.1 )  
+  {
+   print("ERROR: a9: change time coord units from days to hours (360_calendar)\n");   
+   nbr_err++;
+  }
+
+
+  //rebase corodinate mins to seconds - 365 calendar
+  a11=time;
+  // nb in this calendar NO a Leap year
+  a11@units="minutes since 2012-02-28 23:58:00.00";
+  a11@calendar="365_day";
+  
+
+  @units="seconds since 2012-03-01 00:00";
+  a12=udunits(a11, @units);
+  a12@units=@units;
+  a12@calendar="365_day";
+
+
+  if( fabs(a12.sum()-2100.0) >0.1 )  
+  {
+   print("ERROR: a11: change time coord units from mins to seconds (365_calendar)\n");   
+   nbr_err++;
+  }
+
+
+
+
+
+
 
 }
