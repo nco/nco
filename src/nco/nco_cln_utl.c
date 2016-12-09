@@ -263,10 +263,9 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
   return;
 } /* end nco_cln_pop_val() */
 
-double /* O [dbl] relative time */
-nco_cln_rel_val
-(double offset, /* I [dbl] time in base units */
- nco_cln_typ lmt_cln, /* I [enm] Calendar type */ 
+double /* O [dbl] time in (base) seconds of tm_typ */
+nco_cln_val_tm_typ
+( nco_cln_typ lmt_cln, /* I [enm] Calendar type */ 
  tm_typ bs_tm_typ) /* I [enm] Time units */
 {
   double *data=NULL_CEWI;
@@ -311,8 +310,8 @@ nco_cln_rel_val
     break;     
   } /* end switch */ 
   
-  return offset/scl;
-} /* end nco_cln_rel_val() */
+  return scl;
+} /* end nco_cln_typ_val() */
 
 
 int /* O [flg] String is calendar date */
@@ -666,8 +665,11 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   /* 20141230 figure out better length */
   char tmp_sng[100];
   double crr_val;
-  
+  double scl_val;
+
+  tm_typ unt_tm_typ; /* enum for units type in fl_unt_sng */  
   tm_typ bs_tm_typ; /* enum for units type in fl_bs_sng */
+
   tm_cln_sct unt_cln_sct;
   tm_cln_sct bs_cln_sct;
   
@@ -684,8 +686,12 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 
   /* Obtain units type from fl_bs_sng */
   if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
-  
-  bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
+    bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
+
+  /* Obtain units type from fl_bs_sng */
+  if(sscanf(fl_unt_sng,"%s",tmp_sng) != 1) return NCO_ERR;
+    unt_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
+
   
   /* Assume non-standard calendar */ 
   if(nco_cln_prs_tm(fl_unt_sng,&unt_cln_sct) == NCO_ERR) return NCO_ERR;
@@ -699,11 +705,19 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   (void)nco_cln_pop_val(&unt_cln_sct);
   (void)nco_cln_pop_val(&bs_cln_sct);
   
-  crr_val=nco_cln_rel_val(unt_cln_sct.value-bs_cln_sct.value,lmt_cln,bs_tm_typ);                 
+  /* get offset */
+  crr_val= (unt_cln_sct.value-bs_cln_sct.value) /  nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);                 
+
+  /* scale factor */
+  if( unt_tm_typ== bs_tm_typ)
+    scl_val=1.0;
+  else
+    scl_val=nco_cln_val_tm_typ(lmt_cln,unt_tm_typ) / nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);                   ;                    
   
   if(og_val)
   {   
-    *og_val+=crr_val;     
+    *og_val=*og_val*scl_val+crr_val;     
+
   }
   else if(var)
   {
@@ -724,12 +738,12 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
       {  
 	double mss_dbl=var->mss_val.dp[0]; 
 	for(idx=0; idx<sz; idx++)
-	   if( dp[idx] != mss_dbl) dp[idx]+=crr_val;                      
+	  if( dp[idx] != mss_dbl) 
+	    dp[idx]= dp[idx]*scl_val+crr_val; 
       } 
       else
-	for(idx=0; idx<sz; idx++)
-	  dp[idx]+=crr_val;                      
-
+	for(idx=0; idx<sz; idx++) 
+          dp[idx]= dp[idx]*scl_val+crr_val; 
     }
 
     if(var->type == NC_FLOAT)
@@ -741,12 +755,11 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
       {  
 	float mss_ft=var->mss_val.fp[0]; 
 	for(idx=0; idx<sz; idx++)
-	   if( fp[idx] != mss_ft) fp[idx]+=crr_val;                      
+	   if( fp[idx] != mss_ft) fp[idx]=fp[idx]*scl_val+crr_val;                      
       } 
       else
 	for(idx=0; idx<sz; idx++)
-	  fp[idx]+=crr_val;                      
-
+	  fp[idx]=fp[idx]*scl_val+crr_val;                      
     }
 
    (void)cast_nctype_void(var->type,&op1);

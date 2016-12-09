@@ -101,9 +101,8 @@ void
 nco_cln_pop_val( /* [fnc] Calculate value in cln_sct */ 
 tm_cln_sct *cln_sct);/* I/O [ptr] Calendar structure */
 
-double /* O [dbl] Relative time */
-nco_cln_rel_val( /* [fnc] */
-double offset, /* I [dbl] time in base units */
+double /* O [dbl] time in (base) seconds of tm_typ */
+nco_cln_val_tm_typ( /* [fnc] */
 nco_cln_typ lmt_cln, /* I [enum] Calendar type */
 tm_typ bs_tm_typ); /* I [enum] Time units */
 
