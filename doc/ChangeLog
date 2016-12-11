@@ -1,6 +1,12 @@
+2016-12-10  Charlie Zender  <zender@uci.edu>
+
+	* Add long options to ncclimo. Use Adam Katz's method from StackOverflow.
+
+	* Quote $OPTARG on RHS to handle whitespace correctly
+
 2016-12-9  Henry Butowsky  <henryb@hush.com>
 
-	* implemented units  re-base when increment, not just basetime changes between files  for the manual calendars 360_day && 365_day
+	* Re-base when increment (not just basetime) changes between files for calendar=360_day, 365_day
 
 2016-12-06  Charlie Zender  <zender@uci.edu>
 

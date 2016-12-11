@@ -173,6 +173,7 @@ esac # !HOSTNAME
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
+# ncclimo --var_lst=FSNT,AODVIS --caseid=famipc5_ne30_v0.3_00003 --yr_srt=1980 --yr_end=1983 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -a sdd -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
@@ -458,44 +459,79 @@ if [ ${arg_nbr} -eq 0 ]; then
 fi # !arg_nbr
 
 # Parse command-line options:
-# http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
+# http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options (see method by Adam Katz)
 # http://tuxtweaks.com/2014/05/bash-getopts
-while getopts :a:b:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y: OPT; do
+while getopts :a:b:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
     case ${OPT} in
-	a) dec_md=${OPTARG} ;; # December mode
-	b) bnd_nm=${OPTARG} ;; # Bounds dimension name
-	C) clm_md=${OPTARG} ;; # Climatology mode
-	c) caseid=${OPTARG} ;; # CASEID
-	d) dbg_lvl=${OPTARG} ;; # Debugging level
-	E) yr_end_prv=${OPTARG} ;; # End year previous
-	e) yr_end=${OPTARG} ;; # End year
-	f) fml_nm=${OPTARG} ;; # Family name
-	h) hst_nm=${OPTARG} ;; # History tape name
-	i) drc_in=${OPTARG} ;; # Input directory
-	l) lnk_flg=${OPTARG} ;; # Link ACME to AMWG name
-	m) mdl_nm=${OPTARG} ;; # Model name
-	n) nco_opt=${OPTARG} ;; # NCO options
-	o) drc_out_usr=${OPTARG} ;; # Output directory
-	O) drc_rgr_usr=${OPTARG} ;; # Regridded directory
-	p) par_typ=${OPTARG} ;; # Parallelism type
-	R) rgr_opt=${OPTARG} ;; # Regridding options
-	r) rgr_map=${OPTARG} ;; # Regridding map
-	S) yr_srt_prv=${OPTARG} ;; # Start year previous
-	s) yr_srt=${OPTARG} ;; # Start year
-	t) thr_usr=${OPTARG} ;; # Thread number
-	v) var_lst=${OPTARG} ;; # Variables
-	X) drc_xtn=${OPTARG} ;; # Extended climo directory
-	x) drc_prv=${OPTARG} ;; # Previous climo directory
-	Y) drc_rgr_xtn=${OPTARG} ;; # Regridded extended climo directory
-	y) drc_rgr_prv=${OPTARG} ;; # Regridded previous climo directory
+	a) dec_md="${OPTARG}" ;; # December mode
+	b) bnd_nm="${OPTARG}" ;; # Bounds dimension name
+	C) clm_md="${OPTARG}" ;; # Climatology mode
+	c) caseid="${OPTARG}" ;; # CASEID
+	d) dbg_lvl="${OPTARG}" ;; # Debugging level
+	E) yr_end_prv="${OPTARG}" ;; # End year previous
+	e) yr_end="${OPTARG}" ;; # End year
+	f) fml_nm="${OPTARG}" ;; # Family name
+	h) hst_nm="${OPTARG}" ;; # History tape name
+	i) drc_in="${OPTARG}" ;; # Input directory
+	l) lnk_flg="${OPTARG}" ;; # Link ACME to AMWG name
+	m) mdl_nm="${OPTARG}" ;; # Model name
+	n) nco_opt="${OPTARG}" ;; # NCO options
+	o) drc_out_usr="${OPTARG}" ;; # Output directory
+	O) drc_rgr_usr="${OPTARG}" ;; # Regridded directory
+	p) par_typ="${OPTARG}" ;; # Parallelism type
+	R) rgr_opt="${OPTARG}" ;; # Regridding options
+	r) rgr_map="${OPTARG}" ;; # Regridding map
+	S) yr_srt_prv="${OPTARG}" ;; # Start year previous
+	s) yr_srt="${OPTARG}" ;; # Start year
+	t) thr_usr="${OPTARG}" ;; # Thread number
+	v) var_lst="${OPTARG}" ;; # Variables
+	X) drc_xtn="${OPTARG}" ;; # Extended climo directory
+	x) drc_prv="${OPTARG}" ;; # Previous climo directory
+	Y) drc_rgr_xtn="${OPTARG}" ;; # Regridded extended climo directory
+	y) drc_rgr_prv="${OPTARG}" ;; # Regridded previous climo directory
+	-) LONG_OPTARG="${OPTARG#*=}"
+	   case ${OPTARG} in
+	       # Now ${OPTARG} is long argument key, and ${LONG_OPTARG}, if any, is long argument value
+	       # Long options with no argument, no short option counterpart
+	       # Long options with argument, no short option counterpart
+	       # Long options with short counterparts, ordered by short option key
+	       dec_md=?* | december_mode=?* ) dec_md="${LONG_OPTARG}" ;; # -a # December mode
+	       bnd_nm=?* | bnd_dmn_nm=?* | bounds_name=?* ) bnd_nm="${LONG_OPTARG}" ;; # -b # Bounds dimension name
+	       clm_md=?* | climatology_mode=?* | climo_mode=?* ) clm_md="${LONG_OPTARG}" ;; # -C # Climatology mode
+	       caseid=?* | case_id=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
+	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
+	       yr_end_prv=?* | prv_yr_end=?* | year_end_previous=?* ) yr_end_prv="${LONG_OPTARG}" ;; # -E # End year previous
+	       yr_end=?* | end_yr=?* | year_end=?* | end_year=?* ) yr_end="${LONG_OPTARG}" ;; # -e # End year
+	       fml_nm=?* | family_name=?* | family=?* ) fml_nm="${LONG_OPTARG}" ;; # -f # Family name
+	       hst_nm=?* | history_name=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
+	       drc_in=?* | in_drc=?* | directory_in=?* | in_directory=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
+	       lnk_flg=?* | link_flag=?* ) lnk_flg="${LONG_OPTARG}" ;; # -l # Link ACME to AMWG name
+	       mdl_nm=?* | model_name=?* ) mdl_nm="${LONG_OPTARG}" ;; # -m # Model name
+	       nco_opt=?* | nco_option=?* ) nco_opt="${LONG_OPTARG}" ;; # -n # NCO options
+	       drc_out=?* | out_drc=?* | directory_out=?* | out_directory=?* ) drc_out_usr="${LONG_OPTARG}" ;; # -o # Output directory
+	       drc_rgr=?* | rgr_drc=?* | directory_regrid=?* | regrid_directory=?* ) drc_rgr_usr="${LONG_OPTARG}" ;; # -O # Regridded directory
+	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
+	       rgr_opt=?* | regrid_option=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
+	       rgr_map=?* | regrid_map=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map
+	       yr_srt_prv=?* | prv_yr_srt=?* | year_start_previous=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
+	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
+	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
+	       var_lst=?* | variable_list=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
+	       drc_xtn=?* | xtn_drc=?* | extended_directory=?* | extended_climo=?* | extended=?* ) drc_xtn="${LONG_OPTARG}" ;; # -X # Extended climo directory
+	       drc_prv=?* | prv_drc=?* | previous_directory=?* | previous_climo=?* | previous=?* ) drc_prv="${LONG_OPTARG}" ;; # -x # Previous climo directory
+	       drc_rgr_xtn=?* | drc_xtn_rgr=?* | regridded_extended=?* | extended_regridded=?* ) drc_rgr_xtn="${LONG_OPTARG}" ;; # -Y # Regridded extended climo directory
+	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
+               '' ) break ;; # "--" terminates argument processing
+               * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}" >&2; fnc_usg_prn ;;
+	   esac ;;
 	\?) # Unrecognized option
-	    printf "\nERROR: Option ${fnt_bld}-$OPTARG${fnt_nrm} not allowed"
+	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not allowed" >&2
 	    fnc_usg_prn ;;
     esac
 done
 shift $((OPTIND-1)) # Advance one argument
 
-# Determine mode first (it will be used in determining other defaults)
+# Determine mode first (this helps determine other defaults)
 if [ -n "${yr_srt_prv}" ]; then
     # Specifying only yr_srt_prv implies incremental method
     # Specifying both yr_srt_prv and yr_end_prv implies binary method
