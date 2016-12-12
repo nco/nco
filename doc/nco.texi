@@ -16599,14 +16599,20 @@ ncclimo            -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo -m mdl_nm  -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo -v var_lst -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 @end example
-A complete description of all available flags is given in comments
-embedded in @command{ncclimo}, and a more succinct description is given 
-below.
-Options in alphabetical order are:
+Most @command{ncclimo} options come in both short (single-letter) and
+long form. 
+A complete description of all options is given below, in alphabetical
+order of the short option letter.
+Long option synonyms are given just after the letter.
+A succinct description of all available flags is also given in comments
+embedded in @command{ncclimo}.
 @table @option
 @cindex @code{-a @var{dec_md}}
+@cindex @code{--dec_md}
+@cindex @code{--dec_mode}
+@cindex @code{--december_mode}
 @cindex @var{dec_md}
-@item -a @var{dec_md}
+@item -a @var{dec_md} (@code{--dec_md}, @code{--december_mode}, @code{--dec_mode})
 December mode determines the type of @acronym{DJF} average.
 The two valid options are @code{scd} (default) and @code{sdd}.
 @acronym{SCD}-mode stands for ``Seasonally Continuous December''. 
@@ -16618,7 +16624,9 @@ The first month used is January of the specified start year.
 The last month is December of the end year specified with @samp{-e}.
 @cindex @code{-c @var{caseid}}
 @cindex @var{caseid}
-@item -c @var{caseid}
+@cindex @code{--caseid}
+@cindex @code{--case}
+@item -c @var{caseid} (@code{--case}, @code{--caseid}, @code{--case_id})
 Simulation name, or any input filename for non-@acronym{CESM}'ish files.  
 For @acronym{CESM}'ish input files like
 @file{famipc5_ne30_v0.3_00001.cam.h0.1980-01.nc}, 
@@ -16632,7 +16640,9 @@ specify @samp{-c merra2_198001.nc}.
 See comments in @command{ncclimo} for further documentation.   
 @cindex @code{-D @var{dbg_lvl}}
 @cindex @var{dbg_lvl}
-@item -D @var{dbg_lvl}
+@cindex @code{--dbg_lvl}
+@cindex @code{--debug_level}
+@item -D @var{dbg_lvl} (@code{--dbg_lvl}, @code{--dbg}, @code{--debug}, @code{--debug_level})
 Specifies a debugging level similar to the rest of @acronym{NCO}.
 If @math{@var{dbg_lvl} = 1}, @command{ncremap} prints more extensive
 diagnostics of its behavior.
@@ -16642,7 +16652,12 @@ not execute these commands.
 If @math{@var{dbg_lvl} > 2}, @command{ncremap} prints the diagnostic
 information, executes all commands, and passes-through the debugging
 level to the regridder (@command{ncks}) for additional diagnostics.
-@item -e @var{end_yr}
+@cindex @code{-e @var{end_yr}}
+@cindex @var{end_yr}
+@cindex @code{--end_yr}
+@cindex @code{--end_year}
+@cindex @code{--year_end}
+@item -e @var{end_yr} (@code{--end_yr}, @code{--yr_end}, @code{--end_year}, @code{--year_end})
 End year (example: 2000). 
 Unless the option @samp{-a sdd} is specified, the last month used 
 is November of the specified end year. 
@@ -16650,7 +16665,10 @@ If @samp{-a sdd} is specified, the last month is December of the
 specified end year.  
 @cindex @code{-f @var{fml_nm}}
 @cindex @var{fml_nm}
-@item -f @var{fml_nm}
+@cindex @code{--fml_nm}
+@cindex @code{--family}
+@cindex @code{--family_name}
+@item -f @var{fml_nm} (@code{--fml_nm}, @code{--family}, @code{--family_name})
 Family name (nickname) of output files.
 By default output climo file names are constructed from the @var{caseid}
 of the input files.
@@ -16663,7 +16681,10 @@ Example values of @var{fml_nm} are @samp{control}, @samp{experiment},
 and (for a single-variable climo) @samp{FSNT}.
 @cindex @code{-h @var{hst_nm}}
 @cindex @var{hst_nm}
-@item -h @var{hst_nm}
+@cindex @code{--history_name}
+@cindex @code{--hst_nm}
+@cindex @code{--history}
+@item -h @var{hst_nm} (@code{--hst_nm}, @code{--history_name}, @code{--history})
 History volume name of file used to generate climatologies.
 This referring to the @var{hst_nm} character sequence used to construct
 input file names: @code{caseid.mdl_nm.}@var{hst_nm}@code{.YYYY-MM.nc}.
@@ -16675,7 +16696,11 @@ Examples include @samp{h0} (default, works for @acronym{CAM},
 @acronym{ALM/CLM}), @samp{h1}, and @samp{h} (for @acronym{CISM}).
 @cindex @code{-i @var{drc_in}}
 @cindex @var{drc_in}
-@item -i @var{drc_in}
+@cindex @code{--drc_in}
+@cindex @code{--in_drc}
+@cindex @code{--dir_in}
+@cindex @code{--input}
+@item -i @var{drc_in} (@code{--drc_in}, @code{--in_drc}, @code{--dir_in}, @code{--input})
 Directory containing all monthly mean files to read as input to the
 climatology.  
 @cindex @code{-l}
@@ -16692,7 +16717,10 @@ Use this switch to turn-off that linking and reduce filename
 proliferation if you do not need @acronym{AMWG} filenames.
 @cindex @code{-m @var{mdl_nm}}
 @cindex @var{mdl_nm}
-@item -m @var{mdl_nm}
+@cindex @code{--model_name}
+@cindex @code{--model}
+@cindex @code{--mdl_nm}
+@item -m @var{mdl_nm} (@code{--mdl_nm}, @code{--model_name}, @code{--model})
 Model name (as embedded in monthly input filenames). 
 Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @samp{ice}, @samp{cism}, @samp{cice}, @samp{pop}. 
@@ -16704,13 +16732,22 @@ Regridded climos are placed in @var{drc_out} unless a separate
 directory for them is specified with @samp{-O} (NB: capital ``O''). 
 @cindex @code{-o @var{drc_out}}
 @cindex @var{drc_out}
-@item -o @var{drc_out}
+@cindex @code{--drc_out}
+@cindex @code{--out_drc}
+@cindex @code{--dir_out}
+@cindex @code{--output}
+@item -o @var{drc_out} (@code{--drc_out}, @code{--out_drc}, @code{--dir_out}, @code{--output})
 Directory to hold computed (output) native grid climo files.
 Regridded climos are also placed here unless a separate directory
 for them is specified with @samp{-O} (NB: capital ``O''). 
 @cindex @code{-p @var{par_typ}}
 @cindex @var{par_typ}
-@item -p @var{par_typ}
+@cindex @code{--par_typ}
+@cindex @code{--par_md}
+@cindex @code{--parallel_type}
+@cindex @code{--parallel_mode}
+@cindex @code{--parallel}
+@item -p @var{par_typ} (@code{--par_typ}, @code{--par_md}, @code{--parallel_type}, @code{--parallel_mode}, @code{--parallel})
 Specifies the parallelism mode desired.
 The options are serial mode (@samp{-p nil} or @samp{-p serial}), 
 background mode parallelism (@samp{-p bck}), and @acronym{MPI}
@@ -16721,7 +16758,10 @@ runs spawns up to twelve (one for each month) parallel processes at a time.
 See discussion below under Memory Considerations.
 @cindex @code{-r @var{rgr_map}}
 @cindex @var{rgr_map}
-@item -r @var{rgr_map}
+@cindex @code{--rgr_map}
+@cindex @code{--regrid_map}
+@cindex @code{--regrid}
+@item -r @var{rgr_map} (@code{--rgr_map}, @code{--regrid_map}, @code{--regrid})
 Regridding map.
 Unless @samp{-r} is specified @command{ncclimo} produces only a 
 climatology on the native grid of the input datasets.
@@ -16735,7 +16775,10 @@ arguments to the @samp{-R} switch.
 See below the discussion on regridding.
 @cindex @code{-s @var{srt_yr}}
 @cindex @var{srt_yr}
-@item -s @var{srt_yr}
+@cindex @code{--srt_yr}
+@cindex @code{--start_year}
+@cindex @code{--year_start}
+@item -s @var{srt_yr} (@code{--srt_yr}, @code{--yr_srt}, @code{--start_year}, @code{--year_start})
 Start year (example: 1980). 
 Unless the option @samp{-a sdd} is specified, the first month used will
 be December of the year before the start year (to allow for contiguous
