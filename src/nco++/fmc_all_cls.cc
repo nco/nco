@@ -4782,7 +4782,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
    
    char *units_in_sng;
    char *units_out_sng;    
-   char *cln_sng;   
+   char *cln_sng=NULL_CEWI;   
 
    nco_cln_typ cln_typ=cln_nil;
 
