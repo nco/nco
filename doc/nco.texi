@@ -16704,9 +16704,12 @@ Examples include @samp{h0} (default, works for @acronym{CAM},
 Directory containing all monthly mean files to read as input to the
 climatology.  
 @cindex @code{-l}
-@item -l 
+@cindex @code{--lnk_flg}
+@cindex @code{--link_flag}
+@cindex @code{--no_amwg_links}
+@item -l (@code{--lnk_flg}, @code{--link_flag})
 This switch (which takes no option) turns-off the default linking of
-@acronym{ACME}-climo to @acronym{AMWG}-climo filenames.  
+@acronym{ACME}-climo to @acronym{AMWG}-climo filenames.   
 @acronym{AMWG} omits the @acronym{YYYYMM} components of climo filenames,
 resulting in shorter names.
 By default @command{ncclimo} symbolically links the full
@@ -16726,7 +16729,11 @@ Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @samp{ice}, @samp{cism}, @samp{cice}, @samp{pop}. 
 @cindex @code{-O @var{drc_rgr}}
 @cindex @var{drc_rgr}
-@item -O @var{drc_rgr}
+@cindex @code{--drc_rgr}
+@cindex @code{--rgr_drc}
+@cindex @code{--dir_rgr}
+@cindex @code{--regrid}
+@item -O @var{drc_rgr} (@code{--drc_rgr}, @code{--rgr_drc}, @code{--dir_rgr}, @code{--regrid})
 Directory to hold regridded climo files.
 Regridded climos are placed in @var{drc_out} unless a separate
 directory for them is specified with @samp{-O} (NB: capital ``O''). 
@@ -16760,8 +16767,8 @@ See discussion below under Memory Considerations.
 @cindex @var{rgr_map}
 @cindex @code{--rgr_map}
 @cindex @code{--regrid_map}
-@cindex @code{--regrid}
-@item -r @var{rgr_map} (@code{--rgr_map}, @code{--regrid_map}, @code{--regrid})
+@cindex @code{--map}
+@item -r @var{rgr_map} (@code{--rgr_map}, @code{--regrid_map}, @code{--map})
 Regridding map.
 Unless @samp{-r} is specified @command{ncclimo} produces only a 
 climatology on the native grid of the input datasets.
@@ -16787,7 +16794,10 @@ If @samp{-a sdd} is specified, the first month used is January of
 the specified start year. 
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
-@item -t @var{thr_nbr}
+@cindex @code{--thr_nbr}
+@cindex @code{--threads}
+@cindex @code{--thread_number}
+@item -t @var{thr_nbr} (@code{--thr_nbr}, @code{--threads}, @code{--thread_number})
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
 The @acronym{NCO} regridder scales well to 8--16 threads.
@@ -16796,8 +16806,11 @@ with climatology generation in parallel climatology mode (i.e., when
 @math{@var{par_typ}} = @code{mpi} or @code{bck}). 
 Hence @command{ncclimo} defaults to @var{thr_nbr}=2.
 @cindex @code{-v @var{var_lst}}
-@cindex @var{var_lsty}
-@item -v @var{var_lst}
+@cindex @var{var_lst}
+@cindex @code{--var_lst}
+@cindex @code{--variables}
+@cindex @code{--variable_list}
+@item -v @var{var_lst} (@code{--var_lst}, @code{--variables}, @code{--variable_list})
 Variables to subset.
 Same behavior as @ref{Subsetting Files}.
 Regular expressions are allowed so, e.g., @samp{PREC.?} extracts
@@ -16975,19 +16988,28 @@ Options:
 @table @option
 @cindex @code{-E @var{yr_end_prv}}
 @cindex @var{yr_end_prv}
-@item -E @var{yr_end_prv}
+@cindex @code{--yr_end_prv}
+@cindex @code{--prv_yr_end}
+@cindex @code{--previous_end}
+@item -E @var{yr_end_prv} (@code{--yr_end_prv}, @code{--prv_yr_end}, @code{--previous_end})
 The ending year of the previous climo. 
 This argument is required to trigger binary climatologies,
 and should not be used for incremental climatologies.
 @cindex @code{-S @var{yr_srt_prv}}
 @cindex @var{yr_srt_prv}
-@item -S @var{yr_srt_prv}
+@cindex @code{--yr_srt_prv}
+@cindex @code{--prv_yr_srt}
+@cindex @code{--previous_start}
+@item -S @var{yr_srt_prv} (@code{--yr_srt_prv}, @code{--prv_yr_srt}, @code{--previous_start})
 The starting year of the previous climo. 
 This argument is required to trigger incremental climatologies,
 and is also mandatory for binary climatologies.
 @cindex @code{-X @var{drc_xtn}}
 @cindex @var{drc_xtn}
-@item -X @var{drc_xtn}
+@cindex @code{--drc_xtn}
+@cindex @code{--xtn_drc}
+@cindex @code{--extended}
+@item -X @var{drc_xtn} (@code{--drc_xtn}, @code{--xtn_drc}, @code{--extended})
 Directory in which the extended native grid climo files will be stored
 for an extended climatology.
 Default value is @var{drc_prv}. 
@@ -16996,7 +17018,10 @@ extended climo on the analysis grid, it will be stored in @var{drc_xtn},
 too.  
 @cindex @code{-x @var{drc_prv}}
 @cindex @var{drc_prv}
-@item -x @var{drc_prv}
+@cindex @code{--drc_prv}
+@cindex @code{--prv_drc}
+@cindex @code{--previous}
+@item -x @var{drc_prv} (@code{--drc_prv}, @code{--prv_drc}, @code{--previous})
 Directory in which the previous native grid climo files reside for an
 incremental climatology. 
 Default value is @var{drc_out}. 
@@ -17005,13 +17030,21 @@ previous climo on the analysis grid, it is assumed to reside in
 @var{drc_prv}, too. 
 @cindex @code{-Y @var{drc_rgr_xtn}}
 @cindex @var{drc_rgr_xtn}
-@item -Y @var{drc_rgr_xtn}
+@cindex @code{--drc_rgr_xtn}
+@cindex @code{--drc_xtn_rgr}
+@cindex @code{--extended_regridded}
+@cindex @code{--regridded_extended}
+@item -Y @var{drc_rgr_xtn} (@code{--drc_rgr_xtn}, @code{--drc_xtn_rgr}, @code{--extended_regridded}, @code{regridded_extended})
 Directory in which the extended analysis grid climo files will be
 stored in an incremental climatology. 
 Default value is @var{drc_xtn}.
 @cindex @code{-y @var{drc_rgr_prv}}
 @cindex @var{drc_rgr_prv}
-@item -y @var{drc_rgr_prv}
+@cindex @code{--drc_rgr_prv}
+@cindex @code{--drc_prv_rgr}
+@cindex @code{--regridded_previous}
+@cindex @code{--previous_regridded}
+@item -y @var{drc_rgr_prv} (@code{--drc_rgr_prv}, @code{--drc_prv_rgr}, @code{--regridded_previous}, @code{--previous_regridded})
 Directory in which the previous climo on the analysis grid resides in an
 incremental climatology. 
 Default value is @var{drc_prv}.
