@@ -1,3 +1,9 @@
+2016-12-14  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.3-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.3-alpha04 final changes';git push
+	git tag -a 4.6.3-alpha04 -m 'Version 4.6.3-alpha04 new features: long options to ncclimo';git push --tags
+
 2016-12-13  Charlie Zender  <zender@uci.edu>
 
 	* Finish long argument documentation for ncclimo

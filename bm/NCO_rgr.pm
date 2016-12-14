@@ -3475,7 +3475,8 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 #ncpdq #41
 #ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc ~/foo.nc
-   $dsc_sng="(Groups) Reverse -a lat -g g24 several groups";
+#ncks -v lat -g g24 ~/foo.nc
+   $dsc_sng="(Groups) Reverse (-a -lat) several groups (-g g23,g24)";
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat -g g23,g24 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -v lat -g g24 %tmp_fl_00%";
    $tst_cmd[2]="lat[1]=-60 degrees_north";
@@ -3484,9 +3485,9 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
    $#tst_cmd=0; # Reset array    
 
 #ncpdq #42
-#ncpdq -O -v lat,lon -a -lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
-#ncks -H out1.nc
-   $dsc_sng="(Groups) Reverse -a -lat,-lon several groups";
+#ncpdq -O -v lat,lon -a -lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc ~/foo.nc
+#ncks -H -v lon -g g2 ~/foo.nc
+   $dsc_sng="(Groups) Reverse (-a -lat,-lon) several groups (-g g1,g2)";
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat,-lon -g g1,g2 $in_pth_arg in_grp_8.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -H -v lon -g g2 %tmp_fl_00%";
    $tst_cmd[2]="lon[2]=0";
@@ -3495,9 +3496,9 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
    $#tst_cmd=0; # Reset array    
 
 #ncpdq #43
-#ncpdq -O -v lat,lon -a lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
-#ncks -H out1.nc
-   $dsc_sng="(Groups) Reverse -a lat,-lon several groups";
+#ncpdq -O -v lat,lon -a lat,-lon -g g1,g2 ~/nco/data/in_grp_8.nc ~/foo.nc
+#ncks -H -v lon -g g2 ~/foo.nc
+   $dsc_sng="(Groups) Reverse (-a lat,-lon) several groups (-g g1,g2)";
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a lat,-lon -g g1,g2 $in_pth_arg in_grp_8.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -H -v lon -g g2 %tmp_fl_00%";
    $tst_cmd[2]="lon[2]=0";
@@ -3506,7 +3507,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
    $#tst_cmd=0; # Reset array  
 
 #ncpdq #44
-#ncpdq -O -v lat,lon -a -lat,lon -g g1,g2 ~/nco/data/in_grp_8.nc out1.nc
+#ncpdq -O -v lat,lon -a -lat,lon -g g1,g2 ~/nco/data/in_grp_8.nc ~/foo.nc
 #ncks -H out1.nc
    $dsc_sng="(Groups) Reverse -a -lat,lon several groups";
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat,lon -g g1,g2 $in_pth_arg in_grp_8.nc %tmp_fl_00%";

@@ -118,11 +118,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.3-alpha03
-@set doc-edition 4.6.3-alpha03
+@set nco-edition 4.6.3-alpha04
+@set doc-edition 4.6.3-alpha04
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 6 December 2016
+@set update-date 14 December 2016
 @set update-month December 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16575,7 +16575,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 SYNTAX
 @example
-ncclimo [-a @var{dec_md}] [-b @var{bnd_nm}] [-c @var{caseid}] [-d @var{dbg_lvl}]
+ncclimo [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] [-O @var{drc_rgr}] [-o @var{drc_out}]
 [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}] 
@@ -16591,21 +16591,23 @@ annual mean, and optionally regrids all these files.
 There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
 @samp{-i}, and @samp{-o})), and more options are available to customize
 the processing.
-Options are similar but not identical (due to shell limitations) to
-@command{ncremap} options.
+Options are similar to @command{ncremap} options.
 Standard @command{ncclimo} usage looks like
 @example
 ncclimo            -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo -m mdl_nm  -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo -v var_lst -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
+ncclimo --case=caseid --start=srt_yr --end=end_yr --input=drc_in --output=drc_out
 @end example
-Most @command{ncclimo} options come in both short (single-letter) and
-long form. 
+Options come in both short (single-letter) and long forms.
+The handful of long-option synonyms for each option allows the user 
+to imbue the commands with a level of verbosity and precision that suits
+her taste. 
 A complete description of all options is given below, in alphabetical
 order of the short option letter.
 Long option synonyms are given just after the letter.
-A succinct description of all available flags is also given in comments
-embedded in @command{ncclimo}.
+When invoked without options, @command{ncclimo} prints a succinct table
+of all options and some examples.
 @table @option
 @cindex @code{-a @var{dec_md}}
 @cindex @code{--dec_md}
@@ -16622,6 +16624,18 @@ The last month is November of the end year specified with @samp{-e}.
 @acronym{SDD}-mode stands for ``Seasonally Discontinuous December''. 
 The first month used is January of the specified start year. 
 The last month is December of the end year specified with @samp{-e}.
+@cindex @code{-C @var{clm_md}}
+@cindex @var{clm_md}
+@cindex @code{--clm_md}
+@cindex @code{--climatology_mode}
+@cindex @code{--mode}
+@cindex @code{--climatology}
+@item -C @var{clm_md} (@code{--clm_md}, @code{--climatology_mode}, @code{--mode}, @code{--climatology})
+Climatology mode.
+Valid values are @samp{ann} and @samp{mth}.
+The value indicates the timespan of the averages in each input file.  
+The default mode is @samp{mth}, which means input files are monthly averages. 
+Use @samp{ann} if the input files are a series of annual means.
 @cindex @code{-c @var{caseid}}
 @cindex @var{caseid}
 @cindex @code{--caseid}
@@ -16657,7 +16671,8 @@ level to the regridder (@command{ncks}) for additional diagnostics.
 @cindex @code{--end_yr}
 @cindex @code{--end_year}
 @cindex @code{--year_end}
-@item -e @var{end_yr} (@code{--end_yr}, @code{--yr_end}, @code{--end_year}, @code{--year_end})
+@cindex @code{--end}
+@item -e @var{end_yr} (@code{--end_yr}, @code{--yr_end}, @code{--end_year}, @code{--year_end}, @code{--end})
 End year (example: 2000). 
 Unless the option @samp{-a sdd} is specified, the last month used 
 is November of the specified end year. 
@@ -16707,7 +16722,7 @@ climatology.
 @cindex @code{--lnk_flg}
 @cindex @code{--link_flag}
 @cindex @code{--no_amwg_links}
-@item -l (@code{--lnk_flg}, @code{--link_flag})
+@item -l (@code{--lnk_flg}, @code{--link_flag}, @code{--no_amwg_links})
 This switch (which takes no option) turns-off the default linking of
 @acronym{ACME}-climo to @acronym{AMWG}-climo filenames.   
 @acronym{AMWG} omits the @acronym{YYYYMM} components of climo filenames,
@@ -16785,7 +16800,8 @@ See below the discussion on regridding.
 @cindex @code{--srt_yr}
 @cindex @code{--start_year}
 @cindex @code{--year_start}
-@item -s @var{srt_yr} (@code{--srt_yr}, @code{--yr_srt}, @code{--start_year}, @code{--year_start})
+@cindex @code{--start}
+@item -s @var{srt_yr} (@code{--srt_yr}, @code{--yr_srt}, @code{--start_year}, @code{--year_start}, @code{--start})
 Start year (example: 1980). 
 Unless the option @samp{-a sdd} is specified, the first month used will
 be December of the year before the start year (to allow for contiguous
@@ -16820,16 +16836,21 @@ the variables @samp{PRECC,PRECL,PRECSC,PRECSL} if present.
 
 @unnumberedsubsec @acronym{MPAS-O/I} considerations
 @acronym{MPAS} ocean and ice models currently have their own
-(non-@acronym{CESM}'ish) naming convention for monthly output files.  
-@command{ncclimo} recognizes input files as being from @acronym{MPAS}
-when invoked with @samp{-c hist} and @samp{-m ocn} or @samp{-m ice}. 
-Use the optional @option{-f @var{fml_nm}} switch to replace @code{hist}
-with a more descriptive simulation name for the output. 
-Invocation looks like
+(non-CESM'ish) naming convention that guarantees output files have the
+same names for all simulations. 
+By default @command{ncclimo} analyzes the ``timeSeriesStatsMonthly''
+analysis member output (tell us if you want options for other analysis
+members). 
+@command{ncclimo} recognizes input files as being
+@acronym{MPAS}-style when invoked with @samp{-m mpaso} or 
+@samp{-m mpascice} like this: 
 @example
-ncclimo -c hist -m ocn -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
-ncclimo -c hist -m ice -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-I
+@verbatim
+ncclimo -m mpaso    -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
+ncclimo -m mpascice -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-I
+@end verbatim
 @end example
+
 @acronym{MPAS} climos are unaware of missing values until/unless
 input files are ``fixed''. 
 We recommend that simulation producers annotate all floating point
@@ -16851,7 +16872,28 @@ although under-the-hood @command{ncclimo} does do some special
 pre-processing (dimension permutation, metadata annotation) for
 @acronym{MPAS}.  
 A five-year oEC60to30 @acronym{MPAS-O} climo with regridding to T62
-takes < 10 minutes on @file{rhea}. 
+takes less than @w{10 minutes} on the machine @file{rhea}. 
+
+@unnumberedsubsec Annual climos
+Not all model or observed history files are created as monthly means. 
+To create a climatological annual mean from a series of annual mean
+inputs, select @command{ncclimo}'s annual climatology mode with 
+the @samp{-C ann} option:  
+@example
+@verbatim
+ncclimo -C ann -m cism -h h -c caseid -s 1851 -e 1900 -i drc_in -o drc_out
+@end verbatim
+@end example
+The options @samp{-m mdl_nm} and @samp{-h hst_nm} (that default to 
+@code{cam} and @code{h0}, respectively) tell @command{ncclimo} how to
+construct the input filenames. 
+The above formula names the files
+@code{caseid.cism.h.1851-01-01-00000.nc},
+@code{caseid.cism.h.1852-01-01-00000.nc}, 
+and so on. 
+Annual climatology mode produces a single output file (or two if
+regridding is selected), and in all other respects behaves the same as
+monthly climatology mode.  
 
 @unnumberedsubsec Regridding Climos and Other Files
 @command{ncclimo} will (optionally) regrid during climatology generation 
@@ -17034,7 +17076,7 @@ previous climo on the analysis grid, it is assumed to reside in
 @cindex @code{--drc_xtn_rgr}
 @cindex @code{--extended_regridded}
 @cindex @code{--regridded_extended}
-@item -Y @var{drc_rgr_xtn} (@code{--drc_rgr_xtn}, @code{--drc_xtn_rgr}, @code{--extended_regridded}, @code{regridded_extended})
+@item -Y @var{drc_rgr_xtn} (@code{--drc_rgr_xtn}, @code{--drc_xtn_rgr}, @code{--extended_regridded}, @code{--regridded_extended})
 Directory in which the extended analysis grid climo files will be
 stored in an incremental climatology. 
 Default value is @var{drc_xtn}.
