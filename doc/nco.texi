@@ -7306,13 +7306,21 @@ ncrcat -v tpt -d time,"1990-1-2 12:00:00","1990-1-3 11:59:59" \
 time = 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, \ 
      26, 27, 28, 29, 30, 31, 32, 33, 34, 35 ;
 @end example
+
 As of @acronym{NCO} version 4.2.1 (August, 2012), @acronym{NCO}
 automatically rebases not only the record coordinate (@code{time}, here) 
 but also any cell boundaries associated with the record coordinate
 (e.g., @code{time_bnds}) (@pxref{CF Conventions}). 
+
 As of @acronym{NCO} version 4.4.9 (May, 2015), @acronym{NCO}
 also rebases any climatology boundaries associated with the record
 coordinate (e.g., @code{climatology_bounds}) (@pxref{CF Conventions}). 
+
+As of @acronym{NCO} version 4.6.3 (December, 2016), @acronym{NCO}
+also rebases the time coordinate when the unit between files differ
+For example the first file may have @code{units="days since 2014-03-01"} 
+and  the second file @code{units="hours since 2014-03-10 00:00"}.
+
 
 @html
 <a name="mrd"></a> <!-- http://nco.sf.net/nco.html#mrd -->
@@ -11384,6 +11392,7 @@ already contain the appended dimensions.
 * Loops::
 * Include files::
 * Sort methods::
+* Udunits script::
 * Vpointer::
 * Irregular grids::
 * Bilinear interpolation::
@@ -13193,11 +13202,13 @@ print("Total of odd elements ");print(sum);print("\n");
 The syntax of an @var{include-file} is:
 @example
 #include "script.nco"
+#include "/opt/SOURCES/nco/data/tst.nco"
 @end example
-The script filename is searched relative to the run directory. 
+If the filename is relative and not absolute then the directory searched is relative to the run-time directory. 
 It is possible to nest include files to an arbitrary depth. 
 A handy use of inlcude files is to store often used constants. 
-Use @acronym{RAM} variables if you do not want these constants written to
+Use @acronym{RAM} variables if you do not want these constants written to nc-file.
+
 @var{output-file}.  
 @example
 // script.nco
@@ -13207,12 +13218,20 @@ Use @acronym{RAM} variables if you do not want these constants written to
 e=2.71828; // Regular (disk) variable, written to output
 @end example
 
+As of @acronym{NCO} version 4.6.3 (December, 2016), The user can specify the directory(s) to be searched by specifing them in the UNIX environment var @code{NCO_PATH}. The format used is identical to the UNIX @code{PATH}. The directory(s) are only searched if the include filename is relative.   
+
+@example
+export NCO_PATH=":/home/henryb/bin/:/usr/local/scripts:/opt/SOURCES/nco/data:"
+@end example
+
+
+
 @html
 <a name="srt"></a> <!-- http://nco.sf.net/nco.html#srt -->
 <a name="sort"></a> <!-- http://nco.sf.net/nco.html#sort -->
 <a name="remap"></a> <!-- http://nco.sf.net/nco.html#remap -->
 @end html
-@node Sort methods, Vpointer, Include files, ncap2 netCDF Arithmetic Processor
+@node Sort methods, Udunits script, Include files, ncap2 netCDF Arithmetic Processor
 @subsection @command{sort} methods
 @cindex @command{sort}
 @cindex @command{asort}
@@ -13485,11 +13504,52 @@ ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
 @end example
 
 
-@html
-<a name="vpointer"></a> <!-- http://nco.sf.net/nco.html#vpointer -->
-@end html
 
-@node Vpointer, Irregular grids, Sort methods, ncap2 netCDF Arithmetic Processor
+
+@node Udunits script, Vpointer, Sort methods, ncap2 netCDF Arithmetic Processor
+@subsection Udunits script
+@cindex udunits
+
+As of @acronym{NCO} version 4.6.3 (December, 2016), @acronym{ncap2} includes support for udunits conversions.
+The function is called @code{udunits}. And its syntax is as follows 
+
+@example
+varOut=udunits(varIn, "UnitsOutString")
+@end example
+
+The @code{udunits()} function looks for the @@units attribute of @code{varIn} and fails if it is not found.
+A quirk of this function that due to attribute propagation varOut@@units will be overwritten if it exists by varIn@@units.
+So its best to re-initialize this attribute AFTER the call.
+
+@example
+@verbatim
+
+T[lon]={0.0, 100.0, 150.0, 200.0};
+T@units="Celsius";
+// over-write var
+T=udunits(T, "kelvin"); 
+print(T);  
+//  273.15, 373.15, 423.15, 473.15 ;
+T@units="kelvin";
+
+//rebase corodinate days to hours 
+timeOld=time;
+print(timeOld);
+// 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ;
+timeOld@units="days since 2012-01-30";
+
+@units="hours since 2012-02-01 01:00";
+timeNew=udunits(timeOld, @units);
+timeNew@units=@units;
+print(timeNew);
+// -25, -1, 23, 47, 71, 95, 119, 143, 167, 191 ;
+
+@end verbaitim
+@end example
+
+
+
+@node Vpointer, Irregular grids, Udunits script, ncap2 netCDF Arithmetic Processor
 @subsection Vpointer
 @cindex vpointer
 
