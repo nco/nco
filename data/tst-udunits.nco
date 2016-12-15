@@ -2,7 +2,7 @@
 nbr_err=0;
 nbr_err_ttl=0;
 
-
+// time units first
 {
   // rebase coordinate both with "days"
   a1=time;
@@ -109,9 +109,27 @@ nbr_err_ttl=0;
    nbr_err++;
   }
 
+// other units
+{
+
+  T[lon]={0.0, 100.0, 150.0, 200.0};
+  T@units="Celsius";
+
+  @units="kelvin";
+  // over-write var
+  T=udunits(T, @units); 
+  T@units=@units;
+
+  
+  if( fabs(T.sum()-1542.6) >0.1 )  
+  {
+   print("ERROR: T: change Temperature units from Celsius to Kelvin)\n");   
+   nbr_err++;
+  }
 
 
 
+}
 
 
 
