@@ -13517,10 +13517,12 @@ The function is called @code{udunits}. And its syntax is as follows
 varOut=udunits(varIn, "UnitsOutString")
 @end example
 
-The @code{udunits()} function looks for the @@units attribute of @code{varIn} and fails if it is not found.
-A quirk of this function that due to attribute propagation varOut@@units will be overwritten if it exists by varIn@@units.
-So its best to re-initialize this attribute AFTER the call.
-
+The @code{udunits()} function looks for the attribute of @code{varIn@@units} and fails if it is not found.
+A quirk of this function that due to attribute propagation @code{varOut@@units} will be overwritten  by @code{varIn@@units}.
+So its best to re-initialize this attribute AFTER the call. In addition if @code{varIn@@units} is of the
+ form @code{"time_interval since blah-blah"} then the calendar attribute @code{varIn@@calendar} will read if it exists. 
+if it doesnt exists then the calendar used defaults to mixed Gregorian/Julian as defined by UDUnits
+ 
 @example
 @verbatim
 
@@ -13544,9 +13546,20 @@ timeNew@units=@units;
 print(timeNew);
 // -25, -1, 23, 47, 71, 95, 119, 143, 167, 191 ;
 
-@end verbaitim
-@end example
 
+tOld=time;
+// nb in this calendar NO Leap year
+tOld@calendar="365_day";
+tOld@units="minutes since 2012-02-28 23:58:00.00";
+
+@units="seconds since 2012-03-01 00:00";
+tNew=udunits(tOld, @units);
+tNew@units=@units;
+print(tNew);
+// -60, 0, 60, 120, 180, 240, 300, 360, 420, 480 
+
+@end verbatim
+@end example
 
 
 @node Vpointer, Irregular grids, Udunits script, ncap2 netCDF Arithmetic Processor
