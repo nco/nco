@@ -16731,12 +16731,12 @@ See comments in @command{ncclimo} for further documentation.
 @cindex @code{--debug_level}
 @item -D @var{dbg_lvl} (@code{--dbg_lvl}, @code{--dbg}, @code{--debug}, @code{--debug_level})
 Specifies a debugging level similar to the rest of @acronym{NCO}.
-If @math{@var{dbg_lvl} = 1}, @command{ncremap} prints more extensive
+If @math{@var{dbg_lvl} = 1}, @command{ncclimo} prints more extensive
 diagnostics of its behavior.
-If @math{@var{dbg_lvl} = 2}, @command{ncremap} prints the commands
+If @math{@var{dbg_lvl} = 2}, @command{ncclimo} prints the commands
 it would execute at any higher or lower debugging level, but does
 not execute these commands.
-If @math{@var{dbg_lvl} > 2}, @command{ncremap} prints the diagnostic
+If @math{@var{dbg_lvl} > 2}, @command{ncclimo} prints the diagnostic
 information, executes all commands, and passes-through the debugging
 level to the regridder (@command{ncks}) for additional diagnostics.
 @cindex @code{-e @var{end_yr}}
@@ -21127,8 +21127,8 @@ through standard input, e.g., @samp{ls *.nc | ncremap ...}.
 @item -j @var{job_nbr}
 Specifies the number of simultaneous regridding processes to spawn  
 during parallel execution for both Background and @acronym{MPI} modes. 
-In both parallel modes @command{ncremap} spawns proceses in batches 
-of @var{job_nbr} jobs, thens waits for those processes to complete.
+In both parallel modes @command{ncremap} spawns processes in batches 
+of @var{job_nbr} jobs, then waits for those processes to complete.
 Once a batch finishes, @command{ncremap} spawns the next batch.
 In Background mode, all jobs are spawned to the local node.
 In @acronym{MPI} mode, all jobs are spawned in round-robin fashion
@@ -21156,9 +21156,9 @@ Four jobs each with four threads consumes sixteen cores.
 As an example, consider regridding 100 files with a single map.
 Say you have a five-node cluster, and each node has @w{16 cores}
 and can simultaneously regrid two files using eight threads each.
-(One usually needs to test a bit to determine these parameters.)
-Then an optimal (in terms of wallclock time) way to regrid would
-be requesting five nodes with 10 simultaneous jobs of eight threads.
+(One needs to test a bit to determine these parameters.)
+Then an optimal (in terms of wallclock time) invocation would
+request five nodes with @w{10 simultaneous} jobs of eight threads.
 On many batch systems this would involve a scheduler command like 
 this @samp{qsub -l nodes=5 ...} followed by 
 @samp{ncremap -p mpi -j 10 -t 8 ...}.

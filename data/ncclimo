@@ -315,15 +315,15 @@ nco_vrs=$(ncks --version 2>&1 >/dev/null | grep NCO | awk '{print $5}')
 if [ -n "${TERM}" ]; then
     # Set fonts for legibility
     if [ -x /usr/bin/tput ] && tput setaf 1 &> /dev/null; then
-	fnt_nrm=`tput sgr0` # Normal
 	fnt_bld=`tput bold` # Bold
-	fnt_tlc=`tput sitm` # Italic
+	fnt_nrm=`tput sgr0` # Normal
 	fnt_rvr=`tput smso` # Reverse
+	fnt_tlc=`tput sitm` # Italic
     else
 	fnt_bld="\e[1m" # Bold
-	fnt_tlc="\e[3m" # Italic
 	fnt_nrm="\e[0m" # Normal
 	fnt_rvr="\e[07m" # Reverse
+	fnt_tlc="\e[3m" # Italic
     fi # !tput
 fi # !TERM
     
@@ -416,7 +416,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "cori  : salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
     printf "edison: salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
     printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
-    printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -lpartition=gpu -N ncclimo # Bigmem\n\n"
+    printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -lpartition=gpu -N ncclimo # Bigmem\n"
+    printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
 #    echo "3-yrs  ne30: ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1982 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc > ~/ncclimo.out 2>&1 &"
 #    printf "3-yrs ne120: ncclimo -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1982 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ~zender/data/maps/map_ne120np4_to_fv257x512_aave.20150901.nc > ~/ncclimo.out 2>&1 &\n\n"
     exit 1
