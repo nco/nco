@@ -152,13 +152,13 @@ nco/doc/mpi.txt		MPI Environments for NCO
 nco/doc/my-bib-macros.texi TeXInfo bibliography macros for nco.texi
 nco/doc/nasa.png	NASA logo (PNG format)
 nco/doc/ncap.txt	Description of the ncap operator (not yet used)
-nco/doc/nco.dvi(v)	User's Guide: DVI format
-nco/doc/nco.html(v)	User's Guide: HTML format
-nco/doc/nco.info(v)	User's Guide: Info format
-nco/doc/nco.pdf(v)	User's Guide: Portable Document Format
+nco/doc/nco.dvi(v)	Users Guide: DVI format
+nco/doc/nco.html(v)	Users Guide: HTML format
+nco/doc/nco.info(v)	Users Guide: Info format
+nco/doc/nco.pdf(v)	Users Guide: Portable Document Format
 nco/doc/nco.png		Webpage icon (PNG format)
-nco/doc/nco.ps(v)	User's Guide: Postscript format
-nco/doc/nco.texi	User's Guide: TeXInfo format
+nco/doc/nco.ps(v)	Users Guide: Postscript format
+nco/doc/nco.texi	Users Guide: TeXInfo format
 nco/doc/nco_news.shtml	News archive
 nco/doc/nco_rfr_crd.pdf(v) Quick Reference Card
 nco/doc/netcdf.h.3.6.3	Version 3.6.X of netcdf.h for backward compatibility

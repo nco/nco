@@ -120,7 +120,7 @@ ncks) takes netCDF or HDF input file(s), performs an operation (e.g.,
 averaging, hyperslabbing, or renaming), and outputs a processed netCDF
 file. Although most users of netCDF and HDF data are involved in
 scientific research, these data formats, and thus NCO, are generic and
-are equally useful in fields like finance. The NCO User's Guide
+are equally useful in fields like finance. The NCO Users Guide
 illustrates NCO use with examples from the field of climate modeling
 and analysis. The NCO homepage is currently 
 http://nco.sf.net

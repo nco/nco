@@ -887,8 +887,8 @@ Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin 
 <!-- http://nco.sf.net#RTFM -->
 <dt><a name="RTFM"></a></dt>
 <dt><a name="rtfm"></a></dt>
-<h2>Documentation and User's Guide</h2> 
-<p>The NCO User's Guide is available for reading in these formats:
+<h2>Documentation and Users Guide</h2> 
+<p>The NCO Users Guide is available for reading in these formats:
 <ul>
 <li><a href="./nco.dvi">DVI</a> Device Independent (<tt>kdvi</tt>, <tt>xdvi</tt>)</li>
 <li><a href="./nco.html">HTML</a> Hypertext (any browser)</li>

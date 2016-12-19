@@ -969,7 +969,7 @@ main(int argc,char **argv)
 	 nco_var_avg() will perform nco_op_typ on all variables except coordinate variables
 	 nco_var_avg() always averages coordinate variables */
       var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,flg_rdd,&ddra_info);
-      /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
+      /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO Users Guide
 	 Denominator is also tricky due to sundry normalization options
 	 These logical switches are tricky---modify them with care */
       if(NRM_BY_DNM && DO_CONFORM_WGT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){

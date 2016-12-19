@@ -145,7 +145,7 @@ Thus DODS-enabled NCO can operate on remote files accessible through
 any DODS server without transferring the files.
 Only the required data (e.g., the variable or hyperslab specified) are
 transferred.
-See the <a href="./nco.html">User's Guide</a> for complete details.</li>
+See the <a href="./nco.html">Users Guide</a> for complete details.</li>
 
 <li>Fortran compatibility has been dropped.
 If a volunteer wants to continue to maintain the option to perform
@@ -232,7 +232,7 @@ and
 <a href="http://www.cgd.ucar.edu/csm/support/Document/shows/nco/nco_files/v3_document.htm">slide presentation</a> 
 she developed to introduce and to summarize the NCO operators. 
 The pamphlet is an excellent primer on NCO's capabilities, though not
-as definitive as the <a href="./nco.html">User's Guide</a>.
+as definitive as the <a href="./nco.html">Users Guide</a>.
 
 <a name="20000305"></a>
 <p>2000/03/05: 
@@ -255,7 +255,7 @@ License (GPL).
 <p>1999/12/26: 
 Added support for printing character arrays as strings in <tt>ncks</tt>.
 Added documentation and examples of stride capability to <tt>ncks</tt>,
-<tt>ncra</tt>, and <tt>ncrcat</tt> portions of User's Guide.
+<tt>ncra</tt>, and <tt>ncrcat</tt> portions of Users Guide.
 
 <a name="19991214"></a> 
 <p>1999/12/14: 
@@ -263,7 +263,7 @@ Added feature to <tt>ncatted</tt> so that C-language escape sequences
 may be used in editing character attributes. 
 Text formatting of attributes now supports <tt>\n</tt>, <tt>\t</tt>,
 and most other <tt>printf</tt>-style sequences.
-See the <a href="./nco.html">User's Guide</a> for details. 
+See the <a href="./nco.html">Users Guide</a> for details. 
 
 <a name="19991206"></a> 
 <p>1999/12/06: 
@@ -303,7 +303,7 @@ Now when <tt>ncwa</tt> is invoked without any user-specified
 dimensions, it averages over all dimensions.
 Thus the behavior of <tt>-a</tt> is now analogous to that of
 <tt>-d</tt> and of <tt>-v</tt>.
-See the <a href="./nco.html">User's Guide</a> for details.
+See the <a href="./nco.html">Users Guide</a> for details.
 
 <a name="19990829"></a> 
 <P>1999/08/29: 
@@ -316,7 +316,7 @@ maintain on the wide variety of platforms supported by NCO.
 Now pure C builds are the default and Fortran arithmetic must be
 manually enabled by specifying -DUSE_FORTRAN_ARITHMETIC in the build
 environment. 
-See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for details.
+See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">Users Guide</A> for details.
 The Fortran code is no longer supported and will probably be
 deprecated in future releases.
 
@@ -330,7 +330,7 @@ unit when <TT>msrcp</TT> is available on the local system.
 This change is transparent to the user, so that commands should still
 specify the paths to the files on the mass store with, e.g.,
 <TT>ncks -O -R -l ./ /ZENDER/nc/in.nc foo.nc</TT>.
-See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for more details.
+See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">Users Guide</A> for more details.
 
 <a name="19990703"></a> 
 <P>1999/07/03: 
@@ -366,7 +366,7 @@ course.
 <TT>ncrcat</TT> and <TT>ncra</TT> now support index-based
 hyperslabbing in the record dimension across files, e.g.,  
 <TT>ncra -d time,1,100 in1.nc in2.nc ... out.nc</TT>
-The <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> claimed this feature had already been implemented,
+The <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">Users Guide</A> claimed this feature had already been implemented,
 but, due to an oversight, that was not true.
 Attempting to use this new feature in older versions of NCO resulted
 in an "index out of range" error.
@@ -413,7 +413,7 @@ until their implementation is simplified and redesigned. The
 <TT>`-N'</TT> option to <TT>ncwa</TT> remains the same. All the new
 behavior is fully documented in the rewritten and expanded
 <TT>ncwa</TT> section in the 
-<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's
+<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO Users
 Guide</A>.
 
 <a name="19981104"></a> 

@@ -14,7 +14,7 @@ and outputs information, usually a processed netCDF file
 Although most users of netCDF and HDF data are involved in scientific
 research, these data formats, and thus NCO, are generic and are
 equally useful in fields from agriculture to zoology.
-The NCO User's Guide illustrates NCO use with examples from the field
+The NCO Users Guide illustrates NCO use with examples from the field
 of climate modeling and analysis. 
 The NCO homepage is http://nco.sf.net.
 

@@ -1065,7 +1065,7 @@ main(int argc,char **argv)
 	    /* Reduce variable over specified dimensions (tally array is set here)
 	       NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
 	    var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,flg_rdd,&ddra_info);
-	    /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
+	    /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO Users Guide
 	       Denominator is also tricky due to sundry normalization options
 	       These logical switches are VERY tricky---be careful modifying them */
 	    if(NRM_BY_DNM && DO_CONFORM_WGT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){

@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.3-alpha04
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 14 December 2016
+@set update-date 19 December 2016
 @set update-month December 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16817,6 +16817,14 @@ proliferation if you do not need @acronym{AMWG} filenames.
 Model name (as embedded in monthly input filenames). 
 Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @samp{ice}, @samp{cism}, @samp{cice}, @samp{pop}. 
+@cindex @code{-n @var{nco_opt}}
+@cindex @var{nco_opt}
+@cindex @code{--nco_opt}
+@cindex @code{--nco_options}
+@item -n @var{nco_opt} (@code{nco_opt}, @code{nco_options})
+Specifies a string of options to pass-through unaltered to
+@command{ncks}. 
+@var{nco_opt} defaults to @samp{-O --no_tmp_fl}.
 @cindex @code{-O @var{drc_rgr}}
 @cindex @var{drc_rgr}
 @cindex @code{--drc_rgr}
@@ -16853,6 +16861,14 @@ The default is background-mode parallelism.
 The default @var{par_typ} is @samp{bck}, which means @command{ncclimo} 
 runs spawns up to twelve (one for each month) parallel processes at a time.
 See discussion below under Memory Considerations.
+@cindex @code{-R @var{rgr_opt}}
+@cindex @var{rgr_opt}
+@cindex @code{--rgr_opt}
+@cindex @code{--regrid_options}
+@item -R @var{rgr_opt} (@code{rgr_opt}, @code{regrid_options})
+Specifies a string of options to pass-through unaltered to
+@command{ncks}. 
+@var{rgr_opt} defaults to @samp{-O --no_tmp_fl}.
 @cindex @code{-r @var{rgr_map}}
 @cindex @var{rgr_map}
 @cindex @code{--rgr_map}
