@@ -13521,8 +13521,10 @@ The @code{udunits()} function looks for the attribute of @code{varIn@@units} and
 A quirk of this function that due to attribute propagation @code{varOut@@units} will be overwritten  by @code{varIn@@units}.
 So its best to re-initialize this attribute AFTER the call. In addition if @code{varIn@@units} is of the
  form @code{"time_interval since blah-blah"} then the calendar attribute @code{varIn@@calendar} will read if it exists. 
-if it doesnt exists then the calendar used defaults to mixed Gregorian/Julian as defined by UDUnits
+if it doesnt exists then the calendar used defaults to mixed Gregorian/Julian as defined by UDUnits.
  
+if @code{varIn} is not a floating point type then it is promoted to @code{NC_DOUBLE} for the system call in the Udunits library; 
+and then demoted back to to its original type after.
 @example
 @verbatim
 
