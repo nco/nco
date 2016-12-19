@@ -16821,7 +16821,8 @@ Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @cindex @var{nco_opt}
 @cindex @code{--nco_opt}
 @cindex @code{--nco_options}
-@item -n @var{nco_opt} (@code{nco_opt}, @code{nco_options})
+@cindex @code{--nco}
+@item -n @var{nco_opt} (@code{nco_opt}, @code{nco}, @code{nco_options})
 Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
 @var{nco_opt} defaults to @samp{-O --no_tmp_fl}.
@@ -20985,7 +20986,10 @@ Features common to many operators are described in
 @end html
 @cindex @code{-a @var{alg_typ}}
 @cindex @var{alg_typ}
-@item -a @var{alg_typ}
+@cindex @code{--alg_typ}
+@cindex @code{--algorithm}
+@cindex @code{--regrid_algorithm}
+@item -a @var{alg_typ} (@code{--alg_typ}, @code{--algorithm}, @code{--regrid_algorithm})
 Specifies the interpolation algorithm for weight-generation for use by
 @command{ESMF_RegridWeightGen} (@acronym{ERWG}).
 @command{ncremap} unbundles this algorithm choice from the rest of
@@ -21009,7 +21013,11 @@ This option currently has no effect on TempestRemap weight-generation.
 @end html
 @cindex @code{-D @var{dbg_lvl}}
 @cindex @var{dbg_lvl}
-@item -D @var{dbg_lvl}
+@cindex @code{--dbg_lvl}
+@cindex @code{--dbg}
+@cindex @code{--debug}
+@cindex @code{--debug_level}
+@item -D @var{dbg_lvl} (@code{--dbg_lvl}, @code{--dbg}, @code{--debug}, @code{--debug_level})
 Specifies a debugging level similar to the rest of @acronym{NCO}.
 If @math{@var{dbg_lvl} = 1}, @command{ncremap} prints more extensive
 diagnostics of its behavior.
@@ -21025,7 +21033,11 @@ level to the regridder (@command{ncks}) for additional diagnostics.
 @end html
 @cindex @code{-d @var{dst_fl}}
 @cindex @var{dst_fl}
-@item -d @var{dst_fl}
+@cindex @code{--dst_fl}
+@cindex @code{--destination_file}
+@cindex @code{--template_file}
+@cindex @code{--template}
+@item -d @var{dst_fl} (@code{--dst_fl}, @code{--destination_file}, @code{--template_file}, @code{--template})
 Specifies a data file on the destination grid.
 Currently @var{dst_fl} must be a data file (not a gridfile,
 @acronym{SCRIP} or otherwise) from which @acronym{NCO} can
@@ -21047,7 +21059,10 @@ be interpolated or guessed-at.
 @end html
 @cindex @code{-E @var{esmf_opt}}
 @cindex @var{esmf_opt}
-@item -E @var{esmf_opt}
+@cindex @code{--esmf_opt}
+@cindex @code{--esmf}
+@cindex @code{--esmf_options}
+@item -E @var{esmf_opt} (@code{--esmf_opt}, @code{--esmf}, @code{--esmf_options})
 @command{ncremap} passes @var{esmf_opt} directly through to
 @acronym{ERWG}. 
 The user-specified contents of @var{esmf_opt} supercede its default
@@ -21060,7 +21075,11 @@ in which case @var{esmf_opt} could be @samp{-r --ignore_upmapped}.
 @end html
 @cindex @code{-g @var{grd_dst}}
 @cindex @var{grd_dst}
-@item -g @var{grd_dst}
+@cindex @code{--grd_dst}
+@cindex @code{--grid_dest}
+@cindex @code{--dest_grid}
+@cindex @code{--destination_grid}
+@item -g @var{grd_dst} (@code{--grd_dst}, @code{--grid_dest}, @code{--dest_grid}, @code{--destination_grid})
 Specifies the destination gridfile in @acronym{SCRIP} format. 
 @acronym{NCO} will use @acronym{ERWG} to combine @var{grd_dst} with a
 source gridfile (either inferred from @var{input-file}, supplied with
@@ -21072,7 +21091,12 @@ produce the remapping weights.
 <a name="grd_sng"></a> <!-- http://nco.sf.net/nco.html#grd_sng -->
 @end html
 @cindex @code{-G @var{grd_sng}}
-@item -G @var{grd_sng}
+@cindex @var{--grd_sng}
+@cindex @code{--grd_sng}
+@cindex @code{--grid_generation}
+@cindex @code{--grid_gen}
+@cindex @code{--grid_string}
+@item -G @var{grd_sng} (@code{--grd_sng}, @code{--grid_generation}, @code{--grid_gen}, @code{--grid_string})
 Specifies, with @acronym{NCO} options (@pxref{Grid Generation}), 
 a source gridfile to create.
 (Warning: @acronym{NCO}'s syntax for gridfile generations is ugly
@@ -21095,7 +21119,12 @@ and inspecting the results.
 @cindex @code{-I @var{in_drc}}
 @cindex @var{in_drc}
 @cindex @code{stdin}
-@item -I @var{in_drc}
+@cindex @code{--in_drc}
+@cindex @code{--drc_in}
+@cindex @code{--dir_in}
+@cindex @code{--in_dir}
+@cindex @code{--input}
+@item -I @var{in_drc} (@code{--in_drc}, @code{--drc_in}, @code{--dir_in}, @code{--in_dir}, @code{input})
 Specifies the input directory, i.e., the directory which contains
 the input file(s).
 If @var{in_fl} is also specified, then the input filepath is
@@ -21117,7 +21146,10 @@ through standard input, e.g., @samp{ls *.nc | ncremap ...}.
 @end html
 @cindex @code{-i @var{in_fl}}
 @cindex @var{in_fl}
-@item -i @var{in_fl}
+@cindex @code{--in_fl}
+@cindex @code{--in_file}
+@cindex @code{--input_file}
+@item -i @var{in_fl} (@code{--in_fl}, @code{--in_file}, @code{--input_file})
 Specifies the file containing data on the source grid to be remapped
 to the destination grid.
 When provided with the optional @var{map_fl}, @command{ncremap} 
@@ -21142,7 +21174,11 @@ through standard input, e.g., @samp{ls *.nc | ncremap ...}.
 @end html
 @cindex @code{-j @var{job_nbr}}
 @cindex @var{job_nbr}
-@item -j @var{job_nbr}
+@cindex @code{--job_nbr}
+@cindex @code{--job_number}
+@cindex @code{--job_number}
+@cindex @code{--jobs}
+@item -j @var{job_nbr} (@code{--job_nbr}, @code{--job_number}, @code{--jobs})
 Specifies the number of simultaneous regridding processes to spawn  
 during parallel execution for both Background and @acronym{MPI} modes. 
 In both parallel modes @command{ncremap} spawns processes in batches 
@@ -21194,7 +21230,12 @@ by utilizing more threads per process.
 @end html
 @cindex @code{-m @var{map_fl}}
 @cindex @var{map_fl}
-@item -m @var{map_fl}
+@cindex @code{--map_fl}
+@cindex @code{--map}
+@cindex @code{--map_file}
+@cindex @code{--rgr_map}
+@cindex @code{--regrid_map}
+@item -m @var{map_fl} (@code{--map_fl}, @code{--map}, @code{--map_file}, @code{--rgr_map}, @code{--regrid_map})
 Specifies a mapfile (i.e., weight-file) to remap the source to
 destination grid. 
 If @var{map_fl} is specified in conjunction with any of the @samp{-d},
@@ -21222,7 +21263,11 @@ invoked by @command{ncremap}.
 <a name="map_mlt"></a> <!-- http://nco.sf.net/nco.html#map_mlt -->
 @end html
 @cindex @code{-M}
-@item -M
+@cindex @code{--mlt_map}
+@cindex @code{--multimap}
+@cindex @code{--no_multimap}
+@cindex @code{--nomultimap}
+@item -M (@code{--mlt_map}, @code{--multimap}, @code{--no_multimap}, @code{--nomultimap})
 @command{ncremap} assumes that every input file is on a unique grid
 unless a source gridfile is specified (with @samp{-s @var{grd_src}})
 or multiple-mapfile generation is explicitly turned-off (with
@@ -21243,7 +21288,10 @@ tedious, and unnecessary when batch processing data on the same grids.
 @end html
 @cindex @code{-n @var{nco_opt}}
 @cindex @var{nco_opt}
-@item -n @var{nco_opt}
+@cindex @code{--nco_opt}
+@cindex @code{--nco_options}
+@cindex @code{--nco}
+@item -n @var{nco_opt} (@code{--nco_opt}, @code{--nco_options}, @code{--nco})
 Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
 @var{nco_opt} defaults to @samp{-O --no_tmp_fl}.
@@ -21253,7 +21301,12 @@ Specifies a string of options to pass-through unaltered to
 @end html
 @cindex @code{-O @var{out_drc}}
 @cindex @var{out_drc}
-@item -O @var{out_drc}
+@cindex @code{--out_drc}
+@cindex @code{--drc_out}
+@cindex @code{--dir_out}
+@cindex @code{--out_dir}
+@cindex @code{--output}
+@item -O @var{out_drc} (@code{--out_drc}, @code{--drc_out}, @code{--dir_out}, @code{--out_dir}, @code{--output})
 Specifies the output directory, i.e., the directory name to contain 
 the output file(s).
 If @var{out_fl} is also specified, then the output filepath is
@@ -21268,7 +21321,11 @@ be in separate directories.
 <a name="out_fl"></a> <!-- http://nco.sf.net/nco.html#out_fl -->
 @end html
 @cindex @code{-o @var{out_fl}}
-@item -o @var{out_fl}
+@cindex @var{--out_fl}
+@cindex @code{--out_fl}
+@cindex @code{--output_file}
+@cindex @code{--out_file}
+@item -o @var{out_fl} (@code{--out_fl}, @code{--output_file}, @code{--out_file})
 Specifies the output filename, i.e., the name of the file to contain
 the data from @var{in_fl} remapped to the destination grid.
 If @var{out_fl} already exists it will be overwritten.
@@ -21281,7 +21338,11 @@ using @samp{-I @var{in_drc}} or standard input) generates an error
 @end html
 @cindex @code{-P @var{pdq_typ}}
 @cindex @var{pdq_typ}
-@item -P @var{pdq_typ}
+@cindex @code{--pdq_typ}
+@cindex @code{--prm_typ}
+@cindex @code{--permutation}
+@cindex @code{--permute}
+@item -P @var{pdq_typ} (@code{--pdq_typ}, @code{--prm_typ}, @code{--permutation}, @code{--permute})
 Specifies the permutation mode desired.
 As of January~15, 2016, one can tell @command{ncremap} to automatically
 tagpermute the dimensions in the data file prior to regridding for a
@@ -21302,7 +21363,12 @@ In @acronym{MPAS}-mode the order is
 @end html
 @cindex @code{-p @var{par_typ}}
 @cindex @var{par_typ}
-@item -p @var{par_typ}
+@cindex @code{--par_typ}
+@cindex @code{--par_md}
+@cindex @code{--parallel_type}
+@cindex @code{--parallel_mode}
+@cindex @code{--parallel}
+@item -p @var{par_typ} (@code{--}, @code{--}, @code{--}, @code{--})
 Specifies the parallelism mode desired.
 Parallelism accelerates throughput when regridding multiple files in one  
 @command{ncremap} invocation.
@@ -21329,7 +21395,9 @@ when all source files share the same grid.
 @end html
 @cindex @code{-R @var{rgr_opt}}
 @cindex @var{rgr_opt}
-@item -R @var{rgr_opt}
+@cindex @code{--rgr_opt}
+@cindex @code{--regrid_options}
+@item -R @var{rgr_opt} (@code{--rgr_opt}, @code{--regrid_options})
 @command{ncremap} passes @var{rgr_opt} directly through to the
 regridder.  
 This is useful to customize output grids and metadata.
@@ -21342,7 +21410,11 @@ i.e., by default @command{ncremap} always names latitude and longitude
 @end html
 @cindex @code{-s @var{grd_src}}
 @cindex @var{grd_src}
-@item -s @var{grd_src}
+@cindex @code{--grd_src}
+@cindex @code{--grid_source}
+@cindex @code{--source_grid}
+@cindex @code{--src_grd}
+@item -s @var{grd_src} (@code{--grd_src}, @code{--grid_source}, @code{--source_grid}, @code{--src_grd})
 Specifies the source gridfile in @acronym{SCRIP} format. 
 @acronym{NCO} will use @acronym{ERWG} to combine this with a destination
 gridfile (either inferred from @var{dst_fl}, or generated by supplying a  
@@ -21364,7 +21436,11 @@ Thus @acronym{NCO} will call @acronym{ERWG} only once, and will use that
 @end html
 @cindex @code{-T @var{tempest_opt}}
 @cindex @var{tempest_opt}
-@item -T @var{tempest_opt}
+@cindex @code{--tempest_opt}
+@cindex @code{--tps_opt}
+@cindex @code{--tempest}
+@cindex @code{--tempest_options}
+@item -T @var{tempest_opt} (@code{--tps_opt}, @code{--tempest_opt}, @code{--tempest}, @code{--tempest_options})
 @command{ncremap} passes @var{tempest_opt} directly through to
 @command{GenerateOfflineMap} (not to @command{GenerateOverlapMesh}).
 The user-specified contents of @var{tempest_opt} supercede its default
@@ -21385,7 +21461,10 @@ to @acronym{FV} maps, pass @samp{-T "--mono"}.
 @end html
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
-@item -t @var{thr_nbr}
+@cindex @code{--thr_nbr}
+@cindex @code{--thread_number}
+@cindex @code{--threads}
+@item -t @var{thr_nbr} (@code{--thr_nbr}, @code{--thread_number}, @code{--threads})
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
 The @acronym{NCO} regridder scales well up to 8--16 threads.
@@ -21395,7 +21474,12 @@ The @acronym{NCO} regridder scales well up to 8--16 threads.
 @end html
 @cindex @code{-U @var{tmp_drc}}
 @cindex @var{tmp_drc}
-@item -U @var{tmp_drc}
+@cindex @code{--tmp_drc}
+@cindex @code{--drc_tmp}
+@cindex @code{--tmp_dir}
+@cindex @code{--dir_tmp}
+@cindex @code{--tmp}
+@item -U @var{tmp_drc} (@code{--tmp_drc}, @code{--drc_tmp}, @code{--tmp_dir}, @code{--dir_tmp}, @code{--tmp_drc})
 Specifies the directory in which to place intermediate output files.
 Depending on how it is invoked, @command{ncremap} may generate
 a few or many intermediate files (grids and maps) that it will, by
@@ -21412,7 +21496,10 @@ or else it uses the current working director (@code{$PWD}).
 @cindex @code{-u @var{unq_sfx}}
 @cindex @var{unq_sfx}
 @cindex noclean
-@item -u @var{unq_sfx}
+@cindex @code{--unq_sfx}
+@cindex @code{--unique_suffix}
+@cindex @code{--suffix}
+@item -u @var{unq_sfx} (@code{--unq_sfx}, @code{--unique_suffix}, @code{--suffix})
 Specifies the suffix used to label intermediate (internal) files
 generated by the regridding workflow.
 Unique names are required to avoid interference among parallel
@@ -21434,7 +21521,10 @@ If @var{unq_sfx} is @samp{noclean} then @command{ncremap} retains
 @end html
 @cindex @code{-v @var{var_lst}}
 @cindex @var{var_lst}
-@item -v @var{var_lst}
+@cindex @code{--var_lst}
+@cindex @code{--variable_list}
+@cindex @code{--variables}
+@item -v @var{var_lst} (@code{--var_lst}, @code{--variable_list}, @code{--variables})
 The @samp{-v} option causes @command{ncremap} to regrid only the
 variables in @var{var_lst}. 
 It behaves like subsetting (@pxref{Subsetting Files}) in the rest of
@@ -21445,10 +21535,15 @@ It behaves like subsetting (@pxref{Subsetting Files}) in the rest of
 @end html
 @cindex @code{-V @var{rgr_var}}
 @cindex @var{rgr_var}
-@item -V @var{rgr_var}
+@cindex @code{--rgr_var}
+@cindex @code{--var_rgr}
+@cindex @code{--var_cf}
+@cindex @code{--cf_var}
+@cindex @code{--cf_variable}
+@item -V @var{var_rgr} (@code{--var_rgr}, @code{--rgr_var}, @code{--var_cf}, @code{--cf_var}, @code{cf_variable})
 The @samp{-V} option tells @command{ncremap} to use the same grid as 
-@var{rgr_var} in the input file.
-If @var{rgr_var} adheres to the @acronym{CF} @code{coordinates}
+@var{var_rgr} in the input file.
+If @var{var_rgr} adheres to the @acronym{CF} @code{coordinates}
 convention described 
 @uref{http://cfconventions.org/1.6.html#coordinate-system, here},
 then @command{ncclimo} will infer the grid as represented by those
@@ -21461,16 +21556,16 @@ Until @acronym{NCO} version 4.6.0 (May, 2016), @command{ncremap} would
 not follow @acronym{CF} conventions to identify coordinate variables.
 Instead, @command{ncremap} used an internal database of ``usual
 suspects'' to identify latitude and longitude coordinate variables.
-Now, if @var{rgr_var} is @acronym{CF}-compliant, then @command{ncremap}
+Now, if @var{var_rgr} is @acronym{CF}-compliant, then @command{ncremap}
 will automatically identify the horizontal spatial dimensions. 
-If @var{rgr_var} is supplied but is not @acronym{CF}-compliant, then
+If @var{var_rgr} is supplied but is not @acronym{CF}-compliant, then
 @command{ncremap} will use its internal database to identify 
 horizontal spatial dimensions.
 If both these automated methods fail, manually supply @command{ncremap}
 with the names of the horizontal spatial dimensions 
 @example
 # Method used to obtain horizontal spatial coordinates:
-ncremap -V rgr_var -i in.nc -d dst.nc -O ~/rgr # CF coordinates convention
+ncremap -V var_rgr -i in.nc -d dst.nc -O ~/rgr # CF coordinates convention
 ncremap -i in.nc -d dst.nc -O ~/rgr # Internal database
 ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr # Manual
 @end example
@@ -21481,7 +21576,9 @@ ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr # Manua
 @end html
 @cindex @code{-w @var{wgt_gnr}}
 @cindex @var{wgt_gnr}
-@item -w @var{wgt_gnr}
+@cindex @code{--wgt_gnr}
+@cindex @code{--weight_generator}
+@item -w @var{wgt_gnr} (@code{--wgt_gnr}, @code{--weight_generator}, @code{--generator})
 Specifies the weight-generator to use when a map-file is not provided. 
 The @var{wgt_gnr} argument must be @code{esmf} for @acronym{ESMF}'s
 @command{ESMF_RegridWeightGen} (@acronym{ERWG}), or 
@@ -21495,7 +21592,12 @@ is not permitted (since the weight-generator would not be used).
 @end html
 @cindex @code{-v @var{xtn_lst}}
 @cindex @var{xtn_lst}
-@item -x @var{xtn_lst}
+@cindex @code{--xtn_lst}
+@cindex @code{--xtn_var}
+@cindex @code{--var_xtn}
+@cindex @code{--extensive}
+@cindex @code{--extensive_variables}
+@item -x @var{xtn_lst} (@code{--xtn_lst}, @code{--xtn_var}, @code{--var_xtn}, @code{--extensive}, @code{--extensive_variables})
 The @samp{-x} option causes @command{ncremap} to treat the variables in
 @var{xtn_lst} as @dfn{extensive}, meaning that their value depends on
 the gridcell boundaries. 
