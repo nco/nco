@@ -627,6 +627,8 @@ netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.6.3</b>: (<i>In Progress, features in-progress or completed include</i>)
 CMake build option;
+<tt>ncclimo</tt> supports binary climos, annual mode;
+<tt>ncclimo, ncremap</tt> support long-options;
 <tt>ncks --cdl</tt> prints attribute types as comments when dbg_lvl >= 1;
 <tt>ncks --json</tt> prints strided brackets for multi-dimensional arrays;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>

@@ -33,14 +33,16 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo and ncremap now save the full command line (with which)
-   they were invoked) as global attributes in all child files.
+A. ncclimo and ncremap now save the full command line with which they
+   were invoked as a single global attribute. 
    Previously portions were saved as separate attributes.
    The new attributes are climo_command and remap_command.
    Their contents will exactly replicate (except for datestamps)
    the climatologies or regridded files they were created for.
    This improved provenance comes at the cost of up to a few kB more
    metadata in each file.
+
+A. ncclimo and ncremap support long options.
 
 A. ncks can now print attribute CDL types as comments.
    CDL attribute types can be hard for humans to discern, so now
@@ -74,26 +76,20 @@ A. ncap2 will now convert variables among UDUnits dimensions.
 A. CMake: fxm
 
 A. JSON backend
-   Similar the CDL and XML backends, ncks now supports JSON.
-   To obtain JSON, use --jsn or --json instead of --cdl/--xml.
-   ncks --json -v one ~/nco/data/in.nc
-   {
-     "variables": {
-       "one": {
-         "type": "float",
-         "attributes": {
-           "long_name": "one"
-         },
-         "data": 1.0
-       }
-     }
-   }
+   Similar the CDL and XML backends, ncks supports JSON (as of 4.6.2).
+   What's new is that ncks will now print strided brackets to
+   demarcate inner dimensions of multi-dimensional variable data. 
+   Invoking with --json vs. --jsn_data_brk produces:
+   "data": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+   11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
+   22.0, 23.0] 
+   "data": [[[0.0, 1.0, 2.0, 3.0], [4.0, 5.0, 6.0, 7.0], [8.0, 9.0,
+   10.0, 11.0]], [[12.0, 13.0, 14.0, 15.0], [16.0, 17.0, 18.0, 19.0],
+   [20.0, 21.0, 22.0, 23.0]]] 
+   Bracketed data are suitable for pasting into Python. 
    More sample output at:
    http://dust.ess.uci.edu/tmp/in.json and other *.json files.
-   Other related options (-v, -g, -m, -M) have their usual meanings.     
-   The --jsn_att_fmt switch accesses formats of selectable verbosity.  
-   Thanks to Henry Butowsky for implementing the JSON backend,
-   and to Pedro Vicente and Chris Barker for helpful discussions. 
+   Thanks to Henry Butowsky for implementing the bracketing.
    http://nco.sf.net/nco.html#json
 
 
