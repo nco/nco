@@ -1516,6 +1516,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   long *dmn_sbs_dsk=NULL_CEWI; /* [nbr] Indices of hyperslab relative to original on disk */
   long *dmn_sbs_ram=NULL_CEWI; /* [nbr] Indices in hyperslab */
   long *mod_map_cnt=NULL_CEWI; /* [nbr] MSA modulo array */
+  long *mod_map_rv_cnt=NULL_CEWI; /* [nbr] MSA modulo array reverse multiply */
   long *mod_map_in=NULL_CEWI; /* [nbr] MSA modulo array */
   long lmn; /* [nbr] Index to print variable data */
   long sng_lng=long_CEWI; /* [nbr] Length of NC_CHAR string */
@@ -1527,10 +1528,12 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   const nco_bool XML=prn_flg->xml; /* [flg] XML output */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
   const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
+
   const nco_bool CDL_OR_JSN=prn_flg->cdl || prn_flg->jsn; /* [flg] CDL or JSON output */
   const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
   const nco_bool CDL_OR_JSN_OR_XML=prn_flg->cdl || prn_flg->jsn || prn_flg->xml; /* [flg] CDL or JSON or XML output */
 
+  nco_bool JSN_BRK=False;    /* [flg] JSON output - data bracketed */
   nco_bool is_mss_val=False; /* [flg] Current value is missing value */
   nco_bool flg_malloc_unit_crd=False; /* [flg] Allocated memory for coordinate units string */
   nco_bool flg_malloc_unit_var=False; /* [flg] Allocated memory for variable units string */
@@ -1586,6 +1589,38 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     /* Call super-dooper recursive routine */
     var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
   } /* ! Scalars */
+
+
+  if(var.nbr_dim)
+  { 
+    /* Allocate space for dimension information */
+    dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
+    /* Ensure val.vp is NULL-initialized (and thus not inadvertently free'd) when PRN_DMN_IDX_CRD_VAL is False */
+    for(int idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=NULL; 
+    dmn_sbs_ram=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+    dmn_sbs_dsk=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+    mod_map_cnt=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+    mod_map_rv_cnt=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+    mod_map_in=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+
+    /* Create mod_map_in */
+    for(int idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
+    for(int idx=0;idx<var.nbr_dim;idx++)
+      for(int jdx=idx+1;jdx<var.nbr_dim;jdx++)
+        mod_map_in[idx]*=lmt_msa[jdx]->dmn_sz_org;
+
+    /* Create mod_map_cnt */
+    for(int idx=0;idx<var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
+    for(int idx=0;idx<var.nbr_dim;idx++)
+      for(int jdx=idx;jdx<var.nbr_dim;jdx++)
+        mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
+
+    /* create mod_map_rv_cnt */ 
+    long rsz=1L;
+    for(int jdx=var.nbr_dim-1;jdx>=0;jdx--)
+        mod_map_rv_cnt[jdx]=rsz*=lmt_msa[jdx]->dmn_cnt;
+
+  }
 
   /* Call also initializes var.sz with final size */
   if(prn_flg->md5)
@@ -1676,6 +1711,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));   
       /* If var is size=1 (scalar?) then no array brackets */   
       if(var.sz == 1) (void)fprintf(stdout,"%*s\"data\": ",prn_ndn,spc_sng); else (void)fprintf(stdout,"%*s\"data\": [",prn_ndn,spc_sng);   
+      /* use bracketing array if needed */ 
+      if(prn_flg->jsn_data_brk && var.nbr_dim >=2) JSN_BRK=True;     
     } /* !JSN */
 
     nm_cdl=nm2sng_cdl(var_nm);
@@ -1739,8 +1776,14 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     for(lmn=0;lmn<var.sz;lmn++){
 
+      /* do bracketing of data if specified */
+      if(JSN_BRK)
+        for(int bdz=var.nbr_dim-1; bdz>=1 ; bdz--) 
+          if( lmn % mod_map_rv_cnt[bdz] == 0)
+	      (void)fprintf(stdout,"[");   
+
       /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
-      if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
+      if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False;  
 
       if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
         (void)sprintf(val_sng,"%s",mss_val_sng);
@@ -1791,8 +1834,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
             if(lmn%sng_lng == sng_lngm1){
               (void)fprintf(stdout,"%s%s",sng_val_sng,(CDL||JSN) ? "\"" : "");
-              /* Print separator after non-final string */
-              if(lmn != var_szm1) (void)fprintf(stdout,"%s",spr_sng);
+              /* Print separator after non-final string 
+              //if(lmn != var_szm1) (void)fprintf(stdout,"%s",spr_sng); */
             } /* endif string end */
             if(lmn == var_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
           } /* var.nbr_dim > 0 */
@@ -1817,14 +1860,29 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	    (void)strcat(sng_val_sng,(*chr2sng_sf)(chr_val,val_sng));
           } /* end loop over character */
           (void)fprintf(stdout,"%s%s",sng_val_sng,(XML) ? "" : "\"");
-          /* Print separator after non-final string */
-          if(lmn != var_szm1) (void)fprintf(stdout,"%s",spr_sng);
+          /* Print separator after non-final string nb with json bracketed no comma 
+          if(lmn != var_szm1) (void)fprintf(stdout,"%s",spr_sng); */
           sng_val_sng=(char *)nco_free(sng_val_sng);
           break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
-      if(var.type != NC_CHAR && var.type != NC_STRING) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? spr_sng : "");
+
+      if(var.type != NC_CHAR && var.type != NC_STRING) (void)fprintf(stdout,"%s",val_sng);
+
+      /* do bracketing of data if specified */
+      if(JSN_BRK)
+        for(int bdz=var.nbr_dim-1; bdz>=1 ; bdz--) 
+          if( (lmn+1) % mod_map_rv_cnt[bdz] == 0)
+	      (void)fprintf(stdout,"]");   
+
+
+      if( lmn != var_szm1 )
+	 if( (var.type == NC_CHAR && lmn%sng_lng == sng_lngm1) || var.type != NC_CHAR  )
+           (void)fprintf(stdout,"%s", spr_sng );  	
+
+      /* if(var.type != NC_CHAR && var.type != NC_STRING ) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? spr_sng : ""); */
+
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
     if(CDL) (void)fprintf(stdout," ;\n");
@@ -1926,26 +1984,25 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   if(var.nbr_dim > 0 && !dlm_sng && TRD){
 
-    /* Allocate space for dimension information */
+    /*
     dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
-    /* Ensure val.vp is NULL-initialized (and thus not inadvertently free'd) when PRN_DMN_IDX_CRD_VAL is False */
     for(int idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=NULL; 
     dmn_sbs_ram=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     dmn_sbs_dsk=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     mod_map_cnt=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     mod_map_in=(long *)nco_malloc(var.nbr_dim*sizeof(long));
 
-    /* Create mod_map_in */
     for(int idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
     for(int idx=0;idx<var.nbr_dim;idx++)
       for(int jdx=idx+1;jdx<var.nbr_dim;jdx++)
         mod_map_in[idx]*=lmt_msa[jdx]->dmn_sz_org;
 
-    /* Create mod_map_cnt */
     for(int idx=0;idx<var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
     for(int idx=0;idx<var.nbr_dim;idx++)
       for(int jdx=idx;jdx<var.nbr_dim;jdx++)
         mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
+
+    */  
 
     /* Read coordinate dimensions if required */
     if(prn_flg->PRN_DMN_IDX_CRD_VAL){
@@ -2232,6 +2289,7 @@ lbl_chr_prn:
     if(dmn_sbs_ram) dmn_sbs_ram=(long *)nco_free(dmn_sbs_ram);
     if(dmn_sbs_dsk) dmn_sbs_dsk=(long *)nco_free(dmn_sbs_dsk);
     if(mod_map_cnt) mod_map_cnt=(long *)nco_free(mod_map_cnt);
+    if(mod_map_rv_cnt) mod_map_rv_cnt=(long *)nco_free(mod_map_rv_cnt);
     if(mod_map_in) mod_map_in=(long *)nco_free(mod_map_in);
 
   } /* end if variable has more than one dimension */
