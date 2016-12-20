@@ -1,12 +1,14 @@
+2016-12-20  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.3-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.3-alpha05 final changes';git push
+	git tag -a 4.6.3-alpha05 -m 'Version 4.6.3-alpha05 new features: long options to ncremap, JSON brackets';git push --tags
+
 2016-12-20  Henry Butowsky  <henryb@hush.com>
 
 	* Add --jsn_data_brk to print JSON data array brackets
 
 2016-12-19  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.6.3-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.3-alpha05 final changes';git push
-	git tag -a 4.6.3-alpha05 -m 'Version 4.6.3-alpha05 new features: long options to ncremap';git push --tags
 
 	* Name and document long synonyms for ncremap
 

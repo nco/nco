@@ -118,11 +118,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.3-alpha04
-@set doc-edition 4.6.3-alpha04
+@set nco-edition 4.6.3-alpha05
+@set doc-edition 4.6.3-alpha05
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 19 December 2016
+@set update-date 20 December 2016
 @set update-month December 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -11392,7 +11392,7 @@ already contain the appended dimensions.
 * Loops::
 * Include files::
 * Sort methods::
-* Udunits script::
+* UDUnits script::
 * Vpointer::
 * Irregular grids::
 * Bilinear interpolation::
@@ -13231,7 +13231,7 @@ export NCO_PATH=":/home/henryb/bin/:/usr/local/scripts:/opt/SOURCES/nco/data:"
 <a name="sort"></a> <!-- http://nco.sf.net/nco.html#sort -->
 <a name="remap"></a> <!-- http://nco.sf.net/nco.html#remap -->
 @end html
-@node Sort methods, Udunits script, Include files, ncap2 netCDF Arithmetic Processor
+@node Sort methods, UDUnits script, Include files, ncap2 netCDF Arithmetic Processor
 @subsection @command{sort} methods
 @cindex @command{sort}
 @cindex @command{asort}
@@ -13503,40 +13503,47 @@ EOF
 ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
 @end example
 
+@html
+<a name="udunits_fnc"></a> <!-- http://nco.sf.net/nco.html#udunits_fnc -->
+<a name="units_cnv"></a> <!-- http://nco.sf.net/nco.html#units_cnv -->
+@end html
+@node UDUnits script, Vpointer, Sort methods, ncap2 netCDF Arithmetic Processor
+@subsection UDUnits script
+@cindex UDUnits
 
-
-
-@node Udunits script, Vpointer, Sort methods, ncap2 netCDF Arithmetic Processor
-@subsection Udunits script
-@cindex udunits
-
-As of @acronym{NCO} version 4.6.3 (December, 2016), @acronym{ncap2} includes support for udunits conversions.
-The function is called @code{udunits}. And its syntax is as follows 
-
+As of @acronym{NCO} version 4.6.3 (December, 2016), @acronym{ncap2}
+includes support for UDUnits conversions. 
+The function is called @code{udunits}. 
+Its syntax is
 @example
 varOut=udunits(varIn, "UnitsOutString")
 @end example
 
-The @code{udunits()} function looks for the attribute of @code{varIn@@units} and fails if it is not found.
-A quirk of this function that due to attribute propagation @code{varOut@@units} will be overwritten  by @code{varIn@@units}.
-So its best to re-initialize this attribute AFTER the call. In addition if @code{varIn@@units} is of the
- form @code{"time_interval since blah-blah"} then the calendar attribute @code{varIn@@calendar} will read if it exists. 
-if it doesnt exists then the calendar used defaults to mixed Gregorian/Julian as defined by UDUnits.
+The @code{udunits()} function looks for the attribute of
+@code{varIn@@units} and fails if it is not found. 
+A quirk of this function that due to attribute propagation
+@code{varOut@@units} will be overwritten by @code{varIn@@units}. 
+It is best to re-initialize this attribute AFTER the call. 
+In addition if @code{varIn@@units} is of the form 
+@code{"time_interval since basetime"} then the calendar attribute
+@code{varIn@@calendar} will read it.
+If it does not exist then the calendar used defaults to mixed
+Gregorian/Julian as defined by UDUnits. 
  
-if @code{varIn} is not a floating point type then it is promoted to @code{NC_DOUBLE} for the system call in the Udunits library; 
+If @code{varIn} is not a floating point type then it is promoted to
+@code{NC_DOUBLE} for the system call in the Udunits library;  
 and then demoted back to to its original type after.
 @example
 @verbatim
-
-T[lon]={0.0, 100.0, 150.0, 200.0};
+T[lon]={0.0,100.0,150.0,200.0};
 T@units="Celsius";
-// over-write var
-T=udunits(T, "kelvin"); 
+// Overwrite variable
+T=udunits(T,"kelvin"); 
 print(T);  
-//  273.15, 373.15, 423.15, 473.15 ;
+// 273.15, 373.15, 423.15, 473.15 ;
 T@units="kelvin";
 
-//rebase corodinate days to hours 
+// Rebase coordinate days to hours 
 timeOld=time;
 print(timeOld);
 // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ;
@@ -13548,7 +13555,6 @@ timeNew@units=@units;
 print(timeNew);
 // -25, -1, 23, 47, 71, 95, 119, 143, 167, 191 ;
 
-
 tOld=time;
 // nb in this calendar NO Leap year
 tOld@calendar="365_day";
@@ -13559,12 +13565,10 @@ tNew=udunits(tOld, @units);
 tNew@units=@units;
 print(tNew);
 // -60, 0, 60, 120, 180, 240, 300, 360, 420, 480 
-
 @end verbatim
 @end example
 
-
-@node Vpointer, Irregular grids, Udunits script, ncap2 netCDF Arithmetic Processor
+@node Vpointer, Irregular grids, UDUnits script, ncap2 netCDF Arithmetic Processor
 @subsection Vpointer
 @cindex vpointer
 
@@ -13691,8 +13695,6 @@ three_dmn_var_int:total = 2701.f ;
 three_dmn_var_int:units = "watt meter-2" ;
 @end verbatim
 @end example
-
-
 
 @html
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
