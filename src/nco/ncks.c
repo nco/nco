@@ -178,6 +178,8 @@ main(int argc,char **argv)
   int *in_id_arr; /* [id] netCDF file IDs used by OpenMP code */
 
   int JSN_ATT_FMT=0; /* [enm] JSON format for netCDF attributes: 0 (no object, only data), 1 (data only for string, char, int, and floating-point types, otherwise object), 2 (always object) */
+  nco_bool JSN_DATA_BRK=False; /* [flg] JSON format for netCDF variables: 0 (no bracketing of var data ), 1 ( bracketing of var data )*/
+
   int abb_arg_nbr=0;
   int att_glb_nbr;
   int att_grp_nbr;
@@ -376,6 +378,7 @@ main(int argc,char **argv)
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
     {"jsn_att_fmt",required_argument,0,0}, /* [enm] JSON attribute format */
+    {"jsn_data_brk",no_argument,0,0}, /* [enm] JSON var format */
     {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
     {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
     {"mta_dlm",required_argument,0,0}, /* [sng] Multi-argument delimiter */
@@ -708,6 +711,11 @@ main(int argc,char **argv)
 	JSN_ATT_FMT=(int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* !jsn_att_fmt */
+      if(!strcmp(opt_crr,"jsn_data_brk")){
+	PRN_JSN=True; /* [flg] Print JSON with bracket data*/
+	JSN_DATA_BRK=True;
+      } /* !jsn_var_fmt */
+
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
       if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
@@ -1201,8 +1209,12 @@ main(int argc,char **argv)
       /* JSON numerical arrays have no notion of missing values */
       prn_flg.PRN_MSS_VAL_BLANK=False;
       prn_flg.jsn_att_fmt=JSN_ATT_FMT;  
-    } /* endif JSON */
-
+      prn_flg.jsn_data_brk=JSN_DATA_BRK;  
+    }else { /* endif JSON */
+      prn_flg.jsn_att_fmt=0;  
+      prn_flg.jsn_data_brk=0;  
+    }
+      
     if(prn_flg.xml) prn_flg.PRN_MSS_VAL_BLANK=False;
 
     /* File summary */

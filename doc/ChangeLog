@@ -1,3 +1,8 @@
+2016-12-20  Henry Butowsky  <henryb@hush.com>
+
+	* added option to ncks to print JSON data array brackets in ncks.
+	  command line switch in ncks is '--jsn_data_brk'
+	  
 2016-12-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.3-alpha05 release procedure:
