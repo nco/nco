@@ -1,3 +1,9 @@
+2016-12-21  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.3-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.3-beta01 final changes';git push
+	git tag -a 4.6.3-beta01 -m 'Version 4.6.3-beta01 new features: tweak JSON';git push --tags
+
 2016-12-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.3-alpha05 release procedure:

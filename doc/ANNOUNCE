@@ -1,37 +1,34 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.6.3-alpha05 are ready. 
+The netCDF Operators NCO version 4.6.3 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
 
-4.6.3-alpha05 is mainly a stability release to polish existing features and to
-add minor new ones. The exception is the new JSON backend. 
-NCO now prints CDL, "Traditional NCO", XML, and JSON. Babel-icious eh?
+4.6.3 adds many new convenience features to existing functionality
+like JSON, ncap2, ncremap, and ncclimo. Multi-dimensional bracketing
+completes our JSON implementation. ncap2 adds a convenient UDUnits
+conversion function. ncremap and ncclimo support long options.
+ncclimo supports binary climatology generation and annual-mean mode. 
 
-We built the JSON backend to help a project (DOE Terraref). 
-Our first choice was to adopt an off-the-shelf netCDF->JSON tool.
-However, no existing solution worked for us.
-JSON is a loose syntax, and we made necessary design choices that
-suited our application, and left some choices for later.
-Are there syntactical variants you want us to add?
-
-Some users of netCDF version 4.4.1 cannot build NCO from scratch
-because a bug in the nc-config command kills NCO's 'configure;make'.
-Unidata will ship a corrected nc-config in netCDF 4.4.2.
-The 4.4.2-development branch already contains the necessary fix.
-See (C) in KNOWN PROBLEMS DUE TO BASE LIBRARIES/PROTOCOLS below. 
-
-Work on NCO 4.6.3 has commenced. Planned improvements include more
-flexibility in handling extensive variables during regridding, CMake
-support, and brackets for multi-dimensional array values in JSON.
+Work on NCO 4.6.4 has commenced. Planned improvements include CMake
+builds, more flexibility in handling extensive variables during
+regridding.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
+
+A. ncclimo supports "binary climos" and annual-mean mode.
+   Binary climos are climos created from merging two climos, rather
+   than re-computing a climos from raw input. 
+   This saves disk space and time for long climos.
+   Annual-mean mode allows ncclimo to process input files that are
+   annual rather than monthly means.
+   http://nco.sf.net/nco.html#ncclimo
 
 A. ncrcat and ncra now re-base data (move to a common time origin)
    from arbitrary time units in multiple calendar systems.
@@ -43,12 +40,15 @@ A. ncrcat and ncra now re-base data (move to a common time origin)
    http://nco.sf.net/nco.html#rbs
 
 A. ncap2 now supports converting data between any two compatible units
-   systems supported by UDUnits.
+   systems supported by UDUnits. The udunits() function takes and
+   input variable and a UDUnits dimension string.
    T[lon]={0.0,100.0,150.0,200.0};
    T@units="Celsius";
    T=udunits(T,"kelvin"); 
    print(T);  
-   // 273.15, 373.15, 423.15, 473.15 ;
+   273.15, 373.15, 423.15, 473.15 ;
+   The method auto-magically reads var_in@units and var_in@calendar 
+   (so, YES, this works with dates) attributes as necessary.
    Thanks to Henry Butowsky for this feature.
    http://nco.sf.net/nco.html#udunits_fnc
 
@@ -86,23 +86,11 @@ A. ncks can now print attribute CDL types as comments.
    att_var:ushort_att = 37us ; // ushort
    att_var:uint_att = 73ul ; // uint
 
-A. ncap2 will now convert variables among UDUnits dimensions.
-   The udunits() function takes and input variable and a UDUnits
-   dimension string:
-   var_out=udunits(var_in,unitsOutString)
-   For example, if variable tptK has units="kelvin", then
-     ncap2 -s 'tptC=udunits(tptK,"Celsius");' in.nc foo.nc
-   produces a new variable in Celsius.   
-   The method auto-magically reads var_in@units and var_in@calendar 
-   (so, YES, this works with dates) attributes as necessary.
-
-A. CMake: fxm
-
-A. JSON backend
+A. JSON brackets
    Similar the CDL and XML backends, ncks supports JSON (as of 4.6.2).
    What's new is that ncks will now print strided brackets to
    demarcate inner dimensions of multi-dimensional variable data. 
-   Invoking with --json vs. --jsn_data_brk produces:
+   Invoking with --json vs. --jsn_data_brk on foo(2,3,4) yields:
    "data": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
    11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
    22.0, 23.0] 
@@ -115,7 +103,6 @@ A. JSON backend
    Thanks to Henry Butowsky for implementing the bracketing.
    http://nco.sf.net/nco.html#json
 
-
 BUG FIXES:
 
 A. Hi
@@ -124,7 +111,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.6.3-alpha05 built/tested under
+   These problems occur with NCO 4.6.3 built/tested under
    MacOS 10.12.1 with netCDF 4.4.1 on HDF5 1.8.16 and with
    Linux with netCDF 4.4.2-development (20161116) on HDF5 1.8.16.
 

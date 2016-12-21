@@ -18505,7 +18505,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
-[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--jsn] [--jsn_att_fmt @var{lvl}] 
+[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--jsn] [--jsn_fmt @var{lvl}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--map @var{map-file}] 
 [--md5] [--mk_rec_dmn @var{dim}] [--no_blank] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
@@ -18919,7 +18919,7 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 <a name="jsn"></a> <!-- http://nco.sf.net/nco.html#jsn -->
 <a name="json"></a> <!-- http://nco.sf.net/nco.html#json -->
 @end html
-@cindex @code{--jsn_att_fmt}
+@cindex @code{--jsn_fmt}
 @cindex @code{--jsn}
 @cindex @code{--json}
 @cindex @acronym{JSN}
@@ -18977,17 +18977,40 @@ Each @acronym{JSON} configuration option automatically triggers
 a @acronym{JSON} configuration option is redundant and unnecessary. 
 
 Request a specific format level with the pedantic level argument to
-the @samp{--jsn_att_fmt @var{lvl}} option.
-This choice has the following effects for the given value of @var{lvl}: 
+the @samp{--jsn_fmt @var{lvl}} option.
+As of @acronym{NCO} version 4.6.3 (December, 2016), the option formerly
+known as @samp{--jsn_att_fmt} was renamed simply @samp{--jsn_fmt}.
+The more general name reflects the fact that the option controls
+all @acronym{JSON} formatting, not just attribute formatting.
+As of version 4.6.3, @acronym{NCO} defaults to demarcate inner 
+dimensions of variable data with (nested) square brackets rather than 
+printing data as an unrolled single dimensional array.
+An array with C-ordered dimensionality [2,3,4] prints as:
+@example
+@verbatim
+% ncks --jsn -v three_dmn_var ~/nco/data/in.nc
+...
+"data": [[[0.0, 1.0, 2.0, 3.0], [4.0, 5.0, 6.0, 7.0], [8.0, 9.0, 10.0,11.0]], [[12.0, 13.0, 14.0, 15.0], [16.0, 17.0, 18.0, 19.0], [20.0,21.0, 22.0, 23.0]]]
+...
+% ncks --jsn_fmt=4 -v three_dmn_var ~/nco/data/in.nc
+...
+"data": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,22.0, 23.0]
+...
+@end verbatim
+@end example
+One can recover the former behavior (and omit the brackets) by adding
+four to the base pedantic level @var{lvl} (as shown above).
+Besides the potential offset of four, @var{lvl} may take one of three 
+values between 0--2: 
 @itemize @bullet
 @item @math{@var{lvl} = 0} is the default mode, and is also explicitly
-selectable with @samp{--jsn_att_fmt=0}.
+selectable with @samp{--jsn_fmt=0}.
 All values are output without the original @acronym{NC_TYPE} token.
 This allows attributes to print as @acronym{JSON} name-value pairs,
 rather than as more complex objects: 
 @example
 @verbatim
-% ncks --jsn_att_fmt=0 -v att_var ~/nco/data/in_grp.nc
+% ncks --jsn_fmt=0 -v att_var ~/nco/data/in_grp.nc
 ...
 "att_var": {
   "dims": ["time"],
@@ -19034,13 +19057,12 @@ variable's @code{NC_TYPE} to choose the most efficient storage type.
 @item @math{@var{lvl} = 1} is a medium-pedantic level that prints all
 attributes as objects (with explicit types) @emph{except} those
 attributes whose types match the simplest default @acronym{JSON} value
-types (@code{NC_FLOAT}, 
-@code{NC_CHAR}/@code{NC_STRING}, @code{NC_INT}).  
+types (@code{NC_FLOAT}, @code{NC_CHAR}/@code{NC_STRING}, @code{NC_INT}).   
 double, string, and int attributes are printed as @acronym{JSON} arrays, 
 as in the @math{@var{lvl} = 0} above:
 @example
 @verbatim
-% ncks --jsn_att_fmt=1 -v att_var ~/nco/data/in.nc
+% ncks --jsn_fmt=1 -v att_var ~/nco/data/in.nc
 ...
 "att_var": {
   "dims": ["time"],
@@ -19079,7 +19101,7 @@ value so that any downstream parser can (though it need not) guarantee
 exact reproduction of the original dataset:
 @example
 @verbatim
-% ncks --jsn_att_fmt=2 -v att_var ~/nco/data/in.nc
+% ncks --jsn_fmt=2 -v att_var ~/nco/data/in.nc
 ...
 "att_var": {
   "dims": ["time"],
