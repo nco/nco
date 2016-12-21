@@ -1981,7 +1981,7 @@ nco_glb_att_add /* [fnc] Add global attributes */
        20160330: answer is overwrite. otherwise, climo_nco.sh produces ANN file with, e.g.,
        :climo_script = "climo_nco.shclimo_nco.shclimo_nco.sh" ;
        :climo_hostname = "aerosolaerosolaerosol" ;
-       :climo_version = "4.5.6-alpha054.5.6-alpha054.5.6-alpha05" ; */
+       :climo_version = "4.5.6-alpha374.5.6-alpha374.5.6-alpha37" ; */
     gaa_aed.mode=aed_overwrite;
     /* Write attribute to disk */
     (void)nco_aed_prc(out_id,NC_GLOBAL,gaa_aed);
