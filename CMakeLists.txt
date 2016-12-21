@@ -21,7 +21,6 @@
 cmake_minimum_required(VERSION 2.8)
 project (nco)
 set(BUILD_SHARED_LIBRARIES OFF)
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH};/usr/lib/i386-linux-gnu;)
 
 find_path(NETCDF_INCLUDE_FOUND netcdf.h HINTS ${NETCDF_INCLUDE} "/usr/include")
 if(NOT NETCDF_INCLUDE_FOUND)
@@ -37,14 +36,14 @@ else()
   message("-- Found netcdf library at: " ${NETCDF_LIBRARY})
 endif()
 
-find_library(HDF5_LIBRARY NAMES hdf5 HINTS "${CMAKE_PREFIX_PATH}/hdf5/serial")
+find_library(HDF5_LIBRARY NAMES hdf5)
 if(NOT HDF5_LIBRARY)
   message(FATAL_ERROR "hdf5 library not found")
 else()
   message("-- Found hdf5 library at: " ${HDF5_LIBRARY})
 endif()
 
-find_library(HDF5_HL_LIBRARY NAMES hdf5_hl HINTS "${CMAKE_PREFIX_PATH}/hdf5/serial")
+find_library(HDF5_HL_LIBRARY NAMES hdf5_hl)
 if(NOT HDF5_HL_LIBRARY)
   message(FATAL_ERROR "hdf5 high level library not found")
 else()
@@ -93,7 +92,6 @@ else ()
 endif ()
 
 include_directories(${NETCDF_INCLUDE_FOUND})
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY} ${CURL_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
 
 set(LIB_DEP ${LIB_DEP} ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${CURL_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
