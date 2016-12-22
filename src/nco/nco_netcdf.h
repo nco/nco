@@ -164,6 +164,9 @@
 #ifndef NC_EIO
 # define NC_EIO          (-68)      /**< Generic IO error */
 #endif
+#ifndef NC_EACCESS
+# define NC_EACCESS      (-77)      /**< Access Failure */
+#endif
 
 /* Some netCDF3 stubs for netCDF4 routines need netCDF4-only return codes
    These netCDF4 tokens are never defined in netCDF3-only netcdf.h */
