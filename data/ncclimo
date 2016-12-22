@@ -76,6 +76,7 @@ fi # HOSTNAME
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
+	blues* | blogin* | b590 ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 16|64 cores|GB/node 
 	cooley* | cc* | mira* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|128 cores|GB/node (cori login nodes 512 GB)
 	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
@@ -89,6 +90,9 @@ case "${HOSTNAME}" in
     aims* )
 	export PATH='/export/zender1/bin'\:${PATH}
         export LD_LIBRARY_PATH='/export/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
+    blues* | blogin* | b590 )
+	export PATH='/home/zender/bin'\:${PATH}
+	export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
     cooley* )
 	# 20160421: Split cooley from mira binary locations to allow for different system libraries
 	# http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
@@ -194,7 +198,9 @@ esac # !HOSTNAME
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
-# Cobalt (cooley), SLURM (cori,edison), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
+# Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
+# ALCF Maui:
+# http://www.lcrc.anl.gov/for-users/using-lcrc/running-jobs
 # ALCF Cobalt:
 # softenv # lists available packages
 # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
@@ -212,6 +218,7 @@ esac # !HOSTNAME
 # PBS:    qsub -I,   qsub,  qstat,    qdel
 # SLURM:   salloc, sbatch, squeue, scancel
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
+#   Blues:  qsub -I -A ACME -q acme -l nodes=12 -l walltime=00:30:00 -N ncclimo
 #   Cooley: qsub -I -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A acme --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit, Edison too
 #   Hopper: qsub -I -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q debug -N ncclimo # deprecated, old Edison
@@ -413,6 +420,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_bld}${spt_nm} -m mpascice  -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}\n"
     printf "${fnt_bld}${spt_nm} -m mpaso -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}\n\n"
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
+    printf "blues : qsub -I -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
     printf "cooley: qsub -I -A HiRes_EarthSys --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
     printf "cori  : salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
     printf "edison: salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
