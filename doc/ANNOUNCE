@@ -1,13 +1,13 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.6.3 are ready. 
+The netCDF Operators NCO version 4.6.4 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
 
-4.6.3 adds many new convenience features to existing functionality
+4.6.4 adds many new convenience features to existing functionality
 like JSON, ncap2, ncremap, and ncclimo. Multi-dimensional bracketing
 completes our JSON implementation. ncap2 adds a convenient UDUnits
 conversion function. ncremap and ncclimo support long options.
@@ -111,7 +111,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.6.3 built/tested under
+   These problems occur with NCO 4.6.4 built/tested under
    MacOS 10.12.1 with netCDF 4.4.1 on HDF5 1.8.16 and with
    Linux with netCDF 4.4.2-development (20161116) on HDF5 1.8.16.
 

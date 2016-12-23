@@ -136,7 +136,7 @@ appending history to file.
 This script is part of the netCDF Operators package:
 http://nco.sf.net
 
-Copyright 1995--2016 Charlie Zender
+Copyright 1995--2017 Charlie Zender
 
 USAGE
 exit(0);

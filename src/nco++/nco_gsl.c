@@ -9,7 +9,7 @@
    GSL and NCO are both distributed under the GPL3 license.
    The GSL code is copyright by its respective authors.
    The NCO modifications that provide missing value support are, in addition, 
-   Copyright (C) 2013--2016 Charlie Zender
+   Copyright (C) 2013--2017 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text
 

@@ -12,7 +12,7 @@ Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2016 Charlie Zender
+Copyright (C) 1995--2017 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
@@ -118,9 +118,9 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.3
-@set doc-edition 4.6.3
-@set copyright-years 1995--2016
+@set nco-edition 4.6.4-alpha01
+@set doc-edition 4.6.4-alpha01
+@set copyright-years 1995--2017
 @set update-year 2016
 @set update-date 23 December 2016
 @set update-month December 2016
@@ -7320,7 +7320,6 @@ As of @acronym{NCO} version 4.6.3 (December, 2016), @acronym{NCO}
 also rebases the time coordinate when the unit between files differ
 For example the first file may have @code{units="days since 2014-03-01"} 
 and  the second file @code{units="hours since 2014-03-10 00:00"}.
-
 
 @html
 <a name="mrd"></a> <!-- http://nco.sf.net/nco.html#mrd -->
