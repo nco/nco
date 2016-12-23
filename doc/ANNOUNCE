@@ -30,7 +30,7 @@ A. ncclimo supports "binary climos" and annual-mean mode.
    annual rather than monthly means.
    http://nco.sf.net/nco.html#ncclimo
 
-A. ncrcat and ncra now re-base data (move to a common time origin)
+B. ncrcat and ncra now re-base data (move to a common time origin)
    from arbitrary time units in multiple calendar systems.
    Previously, re-basing only worked when the basetime (i.e., the 
    YYMMDD in units like "XXX since YYMMDD") changed.
@@ -39,7 +39,7 @@ A. ncrcat and ncra now re-base data (move to a common time origin)
    suggestion and Henry Butowsky for the re-implementation.
    http://nco.sf.net/nco.html#rbs
 
-A. ncap2 now supports converting data between any two compatible units
+C. ncap2 now supports converting data between any two compatible units
    systems supported by UDUnits. The udunits() function takes and
    input variable and a UDUnits dimension string.
    T[lon]={0.0,100.0,150.0,200.0};
@@ -52,7 +52,13 @@ A. ncap2 now supports converting data between any two compatible units
    Thanks to Henry Butowsky for this feature.
    http://nco.sf.net/nco.html#udunits_fnc
 
-A. ncclimo and ncremap now save the full command line with which they
+D. ncclimo and ncremap now support long options, e.g., 
+   ncclimo --case=caseid --input=drc_in --output=drc_out --map=rgr_map
+   ncremap --input_file=in_fl --destination=dst_fl --output_file=out_fl
+   http://nco.sf.net/nco.html#ncclimo
+   http://nco.sf.net/nco.html#ncremap
+
+E. ncclimo and ncremap now save the full command line with which they
    were invoked as a single global attribute. 
    Previously portions were saved as separate attributes.
    The new attributes are climo_command and remap_command.
@@ -61,13 +67,7 @@ A. ncclimo and ncremap now save the full command line with which they
    This improved provenance comes at the cost of up to a few kB more
    metadata in each file.
 
-A. ncclimo and ncremap now support long options, e.g., 
-   ncclimo --case=caseid --input=drc_in --output=drc_out --map=rgr_map
-   ncremap --input_file=in_fl --destination=dst_fl --output_file=out_fl
-   http://nco.sf.net/nco.html#ncclimo
-   http://nco.sf.net/nco.html#ncremap
-
-A. ncks can now print attribute CDL types as comments.
+F. ncks can now print attribute CDL types as comments.
    CDL attribute types can be hard for humans to discern, so now
    ncks will print the type when invoked with -D 1 or greater.
    The printed file is fully CDL-compliant and works with ncgen.
@@ -86,17 +86,17 @@ A. ncks can now print attribute CDL types as comments.
    att_var:ushort_att = 37us ; // ushort
    att_var:uint_att = 73ul ; // uint
 
-A. JSON brackets
+G. JSON brackets
    Similar the CDL and XML backends, ncks supports JSON (as of 4.6.2).
-   What's new is that ncks will now print strided brackets to
-   demarcate inner dimensions of multi-dimensional variable data. 
-   Invoking with --json vs. --jsn_data_brk on foo(2,3,4) yields:
-   "data": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
-   11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
-   22.0, 23.0] 
+   ncks now prints strided brackets to demarcate inner dimensions
+   of multi-dimensional variable data.  
+   Invoking with --json vs. --jsn_fmt=4 on foo(2,3,4) yields:
    "data": [[[0.0, 1.0, 2.0, 3.0], [4.0, 5.0, 6.0, 7.0], [8.0, 9.0,
    10.0, 11.0]], [[12.0, 13.0, 14.0, 15.0], [16.0, 17.0, 18.0, 19.0],
    [20.0, 21.0, 22.0, 23.0]]] 
+   "data": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+   11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
+   22.0, 23.0] 
    Bracketed data are suitable for pasting into Python. 
    More sample output at:
    http://dust.ess.uci.edu/tmp/in.json and other *.json files.
@@ -105,7 +105,7 @@ A. JSON brackets
 
 BUG FIXES:
 
-A. Hi
+A. None!
 
 KNOWN PROBLEMS DUE TO NCO:
 

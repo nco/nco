@@ -118,11 +118,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.3-beta01
-@set doc-edition 4.6.3-beta01
+@set nco-edition 4.6.3
+@set doc-edition 4.6.3
 @set copyright-years 1995--2016
 @set update-year 2016
-@set update-date 20 December 2016
+@set update-date 23 December 2016
 @set update-month December 2016
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17263,8 +17263,8 @@ map_ocn=${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc
 map_ice=$map_ocn
 ncclimo -p mpi -c $caseid -m cam  -s 2 -e 5 -i $drc_in -r $map_atm -o $drc_out/atm
 ncclimo        -c $caseid -m clm2 -s 2 -e 5 -i $drc_in -r $map_lnd -o $drc_out/lnd
-ncclimo -p mpi -c hist    -m ocn  -s 2 -e 5 -i $drc_in -r $map_ocn -o $drc_out/ocn 
-ncclimo        -c hist    -m ice  -s 2 -e 5 -i $drc_in -r $map_ice -o $drc_out/ice
+ncclimo -p mpi -m mpaso           -s 2 -e 5 -i $drc_in -r $map_ocn -o $drc_out/ocn 
+ncclimo        -m mpascice        -s 2 -e 5 -i $drc_in -r $map_ice -o $drc_out/ice
 @end verbatim
 @end example
 Atmosphere and ocean model output is typically larger than land and ice

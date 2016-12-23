@@ -368,11 +368,17 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
-# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues:
+# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues
+# fails to link to udunits...why?
+# nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
+# First use: 20161223 Latest use: 20161223
+# soft add +antlr-2.7.7 # 20161223 this ANTLR appears to be stock and not NCO-compatible
+# soft add +udunits-2.1.21 # 20161223 this UDUnits was compiled without -fPIC so fails with NCO
 soft add +netcdf-4.3.3.1-gnu5.2-serial
+soft add +gsl-2.3
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/uvcdat/2016-01-21/Externals' UDUNITS2_PATH='/usr/local/uvcdat/2016-01-21/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/netcdf_serial/4.3.3.1/gnu-5.2' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
