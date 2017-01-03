@@ -350,7 +350,7 @@ dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
 drc_in='' # [sng] Input file directory
 drc_in_xmp="${DATA}/ne30/raw" # [sng] Input file directory for examples
 drc_in_mps="${DATA}/mpas/raw" # [sng] Input file directory for MPAS examples
-drc_out='' # [sng] Output file directory
+drc_out="${drc_pwd}" # [sng] Output file directory
 drc_out_xmp="${DATA}/ne30/clm" # [sng] Output file directory for examples
 drc_out_mps="${DATA}/mpas/clm" # [sng] Output file directory for MPAS examples
 drc_prv='' # [sng] Directory containing previous climatology to extend with current data
@@ -722,6 +722,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	exit 1
     fi # !var_lst
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
+    var_nbr=1 # [sng] Split (subset) files
     for var in ${var_lst//,/ }; do
 	var_sbs[${var_nbr}]=${var}
 	let var_nbr=${var_nbr}+1
@@ -1038,9 +1039,25 @@ fi # !clm_md
 # Block 1 Loop N: Split
 if [ "${sbs_flg}" = 'Yes' ]; then
 
+    yr_fl=''
+    for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	yr_fl="${yr_fl} ${fl_in[${fl_idx}]}"
+    done # !fl_idx
+    for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
+	fl_out[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_split.nc"
+    done # !var_idx
+
+    for fl_crr in ${yr_fl} ; do
+	if [ ! -f "${fl_crr}" ]; then
+	    echo "ERROR: Unable to find required input file ${fl_crr}"
+	    echo "HINT: All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+	    exit 1
+	fi # ! -f
+    done # !fl_crr
+
     # Block N Loop N: 
-    for ((var_idx=1;var_idx<=var_nbr;var_idx++)); do
-	cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]} ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${var_idx}]}"
+    for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
+	cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]} ${nco_opt} ${yr_fl} ${fl_out[${var_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_sbs[${var_idx}]}
 	fi # !dbg

@@ -720,7 +720,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    let nd_idx=${nd_idx}+1
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
-	for ((fl_idx=1;fl_idx<=fl_nbr;fl_idx++)); do
+	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	    case "${HOSTNAME}" in 
 		# 20160502: Remove limits on tasks per node so round-robin algorithm can schedule multiple jobs on same node
 		cori* | edison* | nid* )

@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha01 final changes';git push
 	git tag -a 4.6.4-alpha01 -m 'Version 4.6.4-alpha01 new features: ';git push --tags
 
+	* Fix cmd_mpi index error in ncremap
+
 	* Implement ncsplit stubs in ncclimo
 
 	* Enumerate MPI commands by fl_idx not clm_idx in ncremap
