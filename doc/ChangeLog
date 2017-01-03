@@ -1,10 +1,14 @@
-2017-01-02  Charlie Zender  <zender@uci.edu>
+2017-01-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha01 final changes';git push
 	git tag -a 4.6.4-alpha01 -m 'Version 4.6.4-alpha01 new features: ';git push --tags
 
+	* Crude ncsplit-functionality works in ncclimo
+
 	* Fix cmd_mpi index error in ncremap
+
+2017-01-02  Charlie Zender  <zender@uci.edu>
 
 	* Implement ncsplit stubs in ncclimo
 

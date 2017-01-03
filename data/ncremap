@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Purpose: Regrid (subsets of) netCDF files between different grids, generate rectangular grids (in SCRIP format), generate mapfiles
+# Purpose: Regrid (subsets of) netCDF files between different Swath, Curvilinear, Rectangular, or Unstructured data (SCRUD) grids, generate required/requested rectangular grids and/or mapfiles in SCRIP format
 
 # Copyright (C) 2015--2017 Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -328,7 +328,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-U${fnt_nrm} ${fnt_bld}drc_tmp${fnt_nrm}  Temporary directory (for intermediate files) (default ${fnt_bld}${drc_tmp}${fnt_nrm}) [${fnt_tlc}drc_tmp, tmp_drc, dir_tmp, tmp_dir, tmp${fnt_nrm}]"
     echo "${fnt_rvr}-u${fnt_nrm} ${fnt_bld}unq_sfx${fnt_nrm}  Unique suffix (prevents intermediate files from sharing names) (default ${fnt_bld}${unq_sfx}${fnt_nrm}) [${fnt_tlc}unq_sfx, unique_suffix, suffix${fnt_nrm}]"
     echo "${fnt_rvr}-V${fnt_nrm} ${fnt_bld}var_rgr${fnt_nrm}  CF template variable (empty means none) (default ${fnt_bld}${var_rgr}${fnt_nrm}) [${fnt_tlc}var_rgr, rgr_var, var_cf, cf_var, cf_variable${fnt_nrm}]"
-    echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, variable, variables${fnt_nrm}]"
+    echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_gnr${fnt_nrm}  Weight-generator (default ${fnt_bld}${wgt_gnr}${fnt_nrm}) [${fnt_tlc}wgt_gnr, weight_generator, generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
     printf "\n"
@@ -433,7 +433,7 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
 	       drc_tmp=?* | tmp_drc=?* | dir_tmp=?* | tmp_dir=?* | tmp=?* ) tmp_usr="${LONG_OPTARG}" ;; # -U # Temporary directory
 	       unq_sfx=?* | unique_suffix=?* | suffix=?* ) unq_usr="${LONG_OPTARG}" ;; # -u # Unique suffix
 	       var_rgr=?* | rgr_var=?* | var_cf=?* | cf_var=?* | cf_variable=?* ) var_rgr="${LONG_OPTARG}" ;; # -V # CF template variable 
-	       var_lst=?* | variable_list=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
+	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
 	       wgt_gnr=?* | weight_generator=?* | generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
                '' ) break ;; # "--" terminates argument processing
@@ -726,14 +726,14 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		cori* | edison* | nid* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori* or edison*
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
- 		    cmd_mpi[${fl_idx}]="srun --nodelist ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} --nodes=1" ; ;; # NERSC
-# 		    cmd_mpi[${fl_idx}]="srun --nodelist ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # NERSC
+ 		    cmd_mpi[${fl_idx}]="srun --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1" ; ;; # NERSC
+# 		    cmd_mpi[${fl_idx}]="srun --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # NERSC
 		hopper* )
 		    # NB: NERSC migrated from aprun to srun in 201601. Hopper commands will soon be deprecated.
-		    cmd_mpi[${fl_idx}]="aprun -L ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # NERSC
+		    cmd_mpi[${fl_idx}]="aprun -L ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # NERSC
 		* )
-		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt)
-#		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
+		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt)
+#		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	done # !fl_idx
 	if [ -n "${SLURM_NODELIST}" ]; then 

@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 2 January 2017
+@set update-date 3 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16917,9 +16917,11 @@ Hence @command{ncclimo} defaults to @var{thr_nbr}=2.
 @cindex @code{-v @var{var_lst}}
 @cindex @var{var_lst}
 @cindex @code{--var_lst}
+@cindex @code{--var}
+@cindex @code{--vars}
 @cindex @code{--variables}
 @cindex @code{--variable_list}
-@item -v @var{var_lst} (@code{--var_lst}, @code{--variables}, @code{--variable_list})
+@item -v @var{var_lst} (@code{--var_lst}, @code{--var}, @code{--vars}, @code{--variables}, @code{--variable_list})
 Variables to subset.
 Same behavior as @ref{Subsetting Files}.
 Regular expressions are allowed so, e.g., @samp{PREC.?} extracts
@@ -21545,9 +21547,11 @@ If @var{unq_sfx} is @samp{noclean} then @command{ncremap} retains
 @cindex @code{-v @var{var_lst}}
 @cindex @var{var_lst}
 @cindex @code{--var_lst}
-@cindex @code{--variable_list}
+@cindex @code{--var}
+@cindex @code{--vars}
 @cindex @code{--variables}
-@item -v @var{var_lst} (@code{--var_lst}, @code{--variable_list}, @code{--variables})
+@cindex @code{--variable_list}
+@item -v @var{var_lst} (@code{--var_lst}, @code{--var}, @code{--vars}, @code{--variables}, @code{--variable_list})
 The @samp{-v} option causes @command{ncremap} to regrid only the
 variables in @var{var_lst}. 
 It behaves like subsetting (@pxref{Subsetting Files}) in the rest of

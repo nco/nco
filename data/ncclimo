@@ -197,7 +197,7 @@ esac # !HOSTNAME
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split:
-# ls ${DATA}/ne30/raw/*1979*.nc | ncclimo -d 1 -z 1 -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --ypf=1 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -339,7 +339,7 @@ fi # !TERM
     
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
-ann_sfx='01-01-00000' # [sng] Annual file suffix (e.g., '01-01-00000')
+ann_sfx='01-01-00000' # [sng] Annual file suffix (MPAS, e.g., uses '01-01-00000')
 bnr_flg='No' # [sng] Binary method
 caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
@@ -413,7 +413,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thread_number, thread, threads${fnt_nrm}]"
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
-    echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, variable, variables${fnt_nrm}]"
+    echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
     echo "${fnt_rvr}-X${fnt_nrm} ${fnt_bld}drc_xtn${fnt_nrm}  Extended climo directory (default ${fnt_bld}${drc_xtn}${fnt_nrm}) [${fnt_tlc}drc_xtn, xtn_drc, extended_dir, extended_climo, extended${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Previous climo directory (default ${fnt_bld}${drc_prv}${fnt_nrm}) [${fnt_tlc}drc_prv, prv_drc, previous_dir, previous_climo, previous${fnt_nrm}]"
     echo "${fnt_rvr}-Y${fnt_nrm} ${fnt_bld}rgr_xtn${fnt_nrm}  Regridded extended climo directory (default ${fnt_bld}${drc_rgr_xtn}${fnt_nrm}) [${fnt_tlc}drc_rgr_xtn, drc_xtn_rgr, regridded_extended, extended_regridded${fnt_nrm}]"
@@ -509,7 +509,7 @@ while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	x) drc_prv="${OPTARG}" ;; # Previous climo directory
 	Y) drc_rgr_xtn="${OPTARG}" ;; # Regridded extended climo directory
 	y) drc_rgr_prv="${OPTARG}" ;; # Regridded previous climo directory
-	z) ypf_sbs="${OPTARG}" ;; # Years per file
+	z) ypf_sbs_usr="${OPTARG}" ;; # Years per file
 	-) LONG_OPTARG="${OPTARG#*=}"
 	   case ${OPTARG} in
 	       # Hereafter ${OPTARG} is long argument key, and ${LONG_OPTARG}, if any, is long argument value
@@ -537,20 +537,20 @@ while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
-	       var_lst=?* | variable_list=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
+	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
 	       drc_xtn=?* | xtn_drc=?* | extended_dir=?* | extended_climo=?* | extended=?* ) drc_xtn="${LONG_OPTARG}" ;; # -X # Extended climo directory
 	       drc_prv=?* | prv_drc=?* | previous_dir=?* | previous_climo=?* | previous=?* ) drc_prv="${LONG_OPTARG}" ;; # -x # Previous climo directory
 	       drc_rgr_xtn=?* | drc_xtn_rgr=?* | regridded_extended=?* | extended_regridded=?* ) drc_rgr_xtn="${LONG_OPTARG}" ;; # -Y # Regridded extended climo directory
 	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
-	       ypf_sbs=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_sbs="${LONG_OPTARG}" ;; # -z # Years per file
+	       ypf_sbs=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_sbs_usr="${LONG_OPTARG}" ;; # -z # Years per file
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
-	   esac ;;
+	   esac ;; # !OPTARG
 	\?) # Unrecognized option
 	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not allowed\n" >&2
 	    fnc_usg_prn ;;
-    esac
-done
+    esac # !OPT
+done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 
 # Determine mode first (this helps determine other defaults)
@@ -564,7 +564,8 @@ if [ -n "${yr_srt_prv}" ]; then
 	ncr_flg='Yes'
     fi # !yr_end_prv binary method
 fi # !yr_srt_prv extended climo
-if [ -n "${ypf_sbs}" ]; then 
+if [ -n "${ypf_sbs_usr}" ]; then 
+    ypf_sbs=${ypf_sbs_usr}
     sbs_flg='Yes'
     clm_md='sbs' # fxm: temporary hack
 fi # !ypf_sbs
@@ -722,8 +723,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	exit 1
     fi # !var_lst
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
-    var_nbr=1 # [sng] Split (subset) files
+    var_nbr=0 # [sng] Split (subset) files
     for var in ${var_lst//,/ }; do
+	# NB:
 	var_sbs[${var_nbr}]=${var}
 	let var_nbr=${var_nbr}+1
     done # !var_lst
@@ -784,36 +786,43 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	mpi_nbr=${clm_nbr}
     fi # !sbs_flg
     if [ -n "${nd_fl}" ]; then 
-	# NB: nodes are 0-based, e.g., [0..11]
+	# NB: nodes are always 0-based, e.g., [0..11]
+	# For climo generation MPI index loops over months    and is 1-based, e.g., [1..17] (December is 12 and ANN is 17)
+	# For climo subsetting MPI index loops over variables and is 0-based, e.g., [0..5], as are input files
 	nd_idx=0
 	for nd in `cat ${nd_fl} | uniq` ; do
 	    nd_nm[${nd_idx}]=${nd}
 	    let nd_idx=${nd_idx}+1
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
-	for ((mpi_idx=1;mpi_idx<=mpi_nbr;mpi_idx++)); do
+	for ((mpi_idx_zro=0;mpi_idx_zro<mpi_nbr;mpi_idx_zro++)); do
+	    mpi_idx=${mpi_idx_zro}
+	    if [ "${sbs_flg}" != 'Yes' ]; then 
+		# Offset MPI index from 0- to 1-based for climo generation
+		let mpi_idx=${mpi_idx_zro}+1
+	    fi # !sbs_flg
 	    case "${HOSTNAME}" in 
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 		constance* | cori* | edison* | nid* | node* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori* or edison*
 		    # 20160803: Non-interactive batch jobs at PNNL return HOSTNAME as node*, not constance*
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
- 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
-# 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
+ 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
+# 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
 		hopper* )
 		    # NB: NERSC migrated from aprun to srun in 201601. Hopper commands will soon be deprecated.
-		    cmd_mpi[${mpi_idx}]="aprun -L ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # NERSC
+		    cmd_mpi[${mpi_idx}]="aprun -L ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # NERSC
 		* )
-		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
-#		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
+		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
+#		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
-	done # !mpi_idx
+	done # !mpi_idx_zro
 	if [ -n "${SLURM_NODELIST}" ]; then 
 	    /bin/rm -f ${nd_fl}
 	fi # !SLURM
     else # !nd_fl
 	mpi_flg='No'
-	for ((mpi_idx=1;mpi_idx<=mpi_nbr;mpi_idx++)); do
+	for ((mpi_idx=0;mpi_idx<=mpi_nbr;mpi_idx++)); do
 	    cmd_mpi[${mpi_idx}]=''
 	done # !mpi_idx
     fi # !nd_fl
@@ -932,7 +941,7 @@ elif [ ${clm_md} = 'mth' ]; then
 fi # !mth
 if [ ${clm_md} = 'mth' ]; then 
     if [ ${dec_md} = 'scd' ]; then 
-	printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive months that cross calendar-year boundaries.\n"
+	printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive and cross calendar-year boundaries.\n"
     else
 	printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year.\n"
     fi # !scd
@@ -1039,6 +1048,10 @@ fi # !clm_md
 # Block 1 Loop N: Split
 if [ "${sbs_flg}" = 'Yes' ]; then
 
+    case ${mdl_nm} in
+	cam* ) var_lst_xtn='lat,lon,area' ;;
+    esac # !mdl_nm
+
     yr_fl=''
     for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	yr_fl="${yr_fl} ${fl_in[${fl_idx}]}"
@@ -1057,7 +1070,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 
     # Block N Loop N: 
     for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
-	cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]} ${nco_opt} ${yr_fl} ${fl_out[${var_idx}]}"
+	cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]},${var_lst_xtn} ${nco_opt} ${yr_fl} ${fl_out[${var_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_sbs[${var_idx}]}
 	fi # !dbg
