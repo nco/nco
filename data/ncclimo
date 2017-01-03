@@ -749,7 +749,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    else # !drc_in
 		if [ "${map_mk}" != 'Yes' ]; then 
 		    echo "ERROR: Must specify input file with -i or with stdin"
-		    echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+		    echo "HINT: Pipe input file list via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
 		    exit 1
 		fi # !map_mk
 	    fi # !drc_in

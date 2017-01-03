@@ -196,7 +196,8 @@ esac # !HOSTNAME
 # ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 # ncremap -v FSNT,AODVIS -w esmf    -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v FSNT,AODVIS -w tempest -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
-
+# Positional arguments:
+# ncremap --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr > ~/ncremap.out 2>&1 &
 
@@ -438,12 +439,12 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
-	   esac ;;
+	   esac ;; # !OPTARG
 	\?) # Unrecognized option
 	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not allowed\n" >&2
 	    fnc_usg_prn ;;
-    esac
-done
+    esac # !OPT
+done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 
 # Derived variables
@@ -665,8 +666,8 @@ fi # !tempest
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ -n "${in_fl}" ]; then
     # Single file argument
-    fl_in[${fl_nbr}]=${in_fl}
-    let fl_nbr=${fl_nbr}+1
+    fl_in[0]=${in_fl}
+    fl_nbr=1
 else # !in_fl
     # Detect input on stdin:
     # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
@@ -681,9 +682,35 @@ else # !in_fl
 	    done
 	else # !drc_in
 	    if [ "${map_mk}" != 'Yes' ]; then 
-		echo "ERROR: Must specify input file with -i or with stdin"
-		echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
-		exit 1
+		# Check positional arguments
+		psn_nbr=$#
+		printf "dbg: Found \$#=${psn_nbr} positional parameters (besides \$0):\n"
+		for ((psn_idx=0;psn_idx<=psn_nbr;psn_idx++)); do
+		    printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
+		done # !psn_idx
+		if [ ${psn_nbr} -eq 1 ]; then
+		    fl_in[0]=${1}
+		    fl_nbr=1
+		elif [ ${psn_nbr} -eq 2 ]; then
+		    if [ -z "${out_fl}" ]; then
+			out_fl=${2}
+			out_usr_flg='Yes'
+			fl_nbr=1
+		    else # !out_fl
+			echo "ERROR: Output file specified with -o (${out_fl}) conflicts with second positional argument ${2}"
+			echo "HINT: Use -o out_fl or positional argument, not both"
+			exit 1
+		    fi # !out_fl
+		elif [ ${psn_nbr} -ge 3 ]; then
+		    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+			fl_in[(${psn_idx}-1)]=${!psn_idx}
+			fl_nbr=${psn_nbr}
+		    done # !psn_idx
+		else
+		    echo "ERROR: Specify input file with -i or with first positional argument or with stdin"
+		    echo "HINT: Pipe input file list via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+		    exit 1
+		fi # !psn_nbr
 	    fi # !map_mk
 	fi # !drc_in
     else # ! -t 0
@@ -798,6 +825,13 @@ if [ ${dbg_lvl} -ge 2 ]; then
 	    printf "dbg: nd_nm[${nd_idx}] = ${nd_nm[${nd_idx}]}\n"
 	done # !nd
     fi # !mpi
+fi # !dbg
+if [ ${dbg_lvl} -ge 2 ]; then
+    psn_nbr=$#
+    printf "dbg: Found ${psn_nbr} positional parameters (besides \$0):\n"
+    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
+    done # !psn_idx
 fi # !dbg
 
 # Create output directory
@@ -977,7 +1011,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     if [ "${out_usr_flg}" = 'Yes' ]; then 
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    echo "ERROR: Single output filename specified with -o for multiple input files"
-	    echo "HINT: For multiple input files use -O option to specify output directory and do not use -o option. Output files will have same name as input files, but will be in different directory."
+	    echo "HINT: For multiple input files use -O option to specify output directory and do not use -o or second positional option. Output files will have same name as input files, but will be in different directory."
 	    exit 1
 	fi # !fl_nbr
 	if [ -n "${drc_usr}" ]; then
