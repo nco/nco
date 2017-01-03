@@ -3,7 +3,7 @@
 # Purpose: Climatology script tailored to CESM'ish monthly input and ACME output guidelines
 # Produces and optionally regrids climatological monthly means, seasonal means, annual mean
 
-# Copyright (C) 2015-2016 Charlie Zender
+# Copyright (C) 2015--2017 Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.
 # You may redistribute and/or modify NCO under the terms of the 
 # GNU General Public License (GPL) Version 3.
@@ -36,7 +36,7 @@
 # HowTo: https://acme-climate.atlassian.net/wiki/display/ATM/Generating+and+Regridding+Climatologies+%28climo+files%29+with+NCO+and+ncclimo
 # ACME Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
 
-# Direct install:
+# Insta-install:
 # scp ~/nco/data/ncclimo aims4.llnl.gov:bin
 # scp ~/nco/data/ncclimo blues.lcrc.anl.gov:bin
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
@@ -196,6 +196,8 @@ esac # !HOSTNAME
 # Old MPAS filename conventions (until ~201609)::
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
+# Split:
+# ls ${DATA}/ne30/raw/*1979*.nc | ncclimo -d 1 -z 1 -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -357,6 +359,7 @@ drc_rgr_prv='' # [sng] Regridded file directory for previous climatology
 drc_rgr_xmp="${DATA}/ne30/rgr" # [sng] Regrid file directory for examples
 drc_rgr_xtn='' # [sng] Regridded file directory for for extended climatology
 drc_xtn='' # [sng] Directory containing extended climatology
+fl_nbr=0 # [nbr] Number of files to split
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
 hdr_pad='10000' # [B] Pad at end of header section
@@ -376,10 +379,12 @@ rgr_map='' # [sng] Regridding map
 #rgr_map="${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc"
 #rgr_map="${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150901.nc"
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
+sbs_flg='No' # [sng] Split (subset) files
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
 xtn_flg='No' # [sng] Produce extended climatology
+ypf_sbs=0 # [yr] Years-per-file
 yr_end='1983' # [yr] End year
 yr_srt='1980' # [yr] Start year
 
@@ -413,6 +418,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Previous climo directory (default ${fnt_bld}${drc_prv}${fnt_nrm}) [${fnt_tlc}drc_prv, prv_drc, previous_dir, previous_climo, previous${fnt_nrm}]"
     echo "${fnt_rvr}-Y${fnt_nrm} ${fnt_bld}rgr_xtn${fnt_nrm}  Regridded extended climo directory (default ${fnt_bld}${drc_rgr_xtn}${fnt_nrm}) [${fnt_tlc}drc_rgr_xtn, drc_xtn_rgr, regridded_extended, extended_regridded${fnt_nrm}]"
     echo "${fnt_rvr}-y${fnt_nrm} ${fnt_bld}rgr_prv${fnt_nrm}  Regridded previous climo directory (default ${fnt_bld}${drc_rgr_prv}${fnt_nrm}) [${fnt_tlc}drc_rgr_prv, drc_prv_rgr, regridded_previous, prefvious_regridded${fnt_nrm}]"
+    echo "${fnt_rvr}-z${fnt_nrm} ${fnt_bld}ypf_sbs${fnt_nrm}  Years-per-file (empty means none) (default ${fnt_bld}${ypf_sbs}${fnt_nrm}) [${fnt_tlc}ypf_sbs, ypf, years, years_per_file${fnt_nrm}]"
     printf "\n"
     printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} ${fnt_nrm}\n"
     printf "${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}\n"
@@ -476,7 +482,7 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options (see method by Adam Katz)
 # http://tuxtweaks.com/2014/05/bash-getopts
-while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
+while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
     case ${OPT} in
 	a) dec_md="${OPTARG}" ;; # December mode
 	C) clm_md="${OPTARG}" ;; # Climatology mode
@@ -503,6 +509,7 @@ while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	x) drc_prv="${OPTARG}" ;; # Previous climo directory
 	Y) drc_rgr_xtn="${OPTARG}" ;; # Regridded extended climo directory
 	y) drc_rgr_prv="${OPTARG}" ;; # Regridded previous climo directory
+	z) ypf_sbs="${OPTARG}" ;; # Years per file
 	-) LONG_OPTARG="${OPTARG#*=}"
 	   case ${OPTARG} in
 	       # Hereafter ${OPTARG} is long argument key, and ${LONG_OPTARG}, if any, is long argument value
@@ -535,11 +542,12 @@ while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	       drc_prv=?* | prv_drc=?* | previous_dir=?* | previous_climo=?* | previous=?* ) drc_prv="${LONG_OPTARG}" ;; # -x # Previous climo directory
 	       drc_rgr_xtn=?* | drc_xtn_rgr=?* | regridded_extended=?* | extended_regridded=?* ) drc_rgr_xtn="${LONG_OPTARG}" ;; # -Y # Regridded extended climo directory
 	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
+	       ypf_sbs=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_sbs="${LONG_OPTARG}" ;; # -z # Years per file
                '' ) break ;; # "--" terminates argument processing
-               * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}" >&2; fnc_usg_prn ;;
+               * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;;
 	\?) # Unrecognized option
-	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not allowed" >&2
+	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not allowed\n" >&2
 	    fnc_usg_prn ;;
     esac
 done
@@ -556,6 +564,10 @@ if [ -n "${yr_srt_prv}" ]; then
 	ncr_flg='Yes'
     fi # !yr_end_prv binary method
 fi # !yr_srt_prv extended climo
+if [ -n "${ypf_sbs}" ]; then 
+    sbs_flg='Yes'
+    clm_md='sbs' # fxm: temporary hack
+fi # !ypf_sbs
 
 # Derived variables
 if [ -n "${drc_out_usr}" ]; then
@@ -629,7 +641,7 @@ if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     out_nm=${bs_nm}
     bs_sfx="${caseid#*.}"
 fi # !caseid
-if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ]; then 
+if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ] && [ "${clm_md}" != 'sbs' ]; then 
     echo "ERROR: User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
     exit 1
 fi # !clm_md
@@ -639,17 +651,23 @@ if [ "${clm_md}" = 'ann' ]; then
 elif [ "${clm_md}" = 'mth' ]; then 
     clm_nbr=17
 fi # !clm_md
-
+if [ -z "${drc_in}" ]; then
+    drc_in="${drc_pwd}"
+else # !drc_in
+    drc_in_usr_flg='Yes'
+fi # !drc_in
 if [ -n "${gaa_sng_std}" ]; then
     if [ "${yr_nbr}" -gt 1 ] ; then
 	yrs_avg_sng="${yr_srt}-${yr_end}"
     else
 	yrs_avg_sng="${yr_srt}"
     fi # !yr_nbr
-    gaa_sng="${gaa_sng_std} --gaa yrs_averaged=${yrs_avg_sng}"
+    if [ "${sbs_flg}" != 'Yes' ]; then
+	gaa_sng="${gaa_sng_std} --gaa yrs_averaged=${yrs_avg_sng}"
+    fi # !sbs_flg
     nco_opt="${nco_opt} ${gaa_sng}"
-fi # !var_lst
-if [ -n "${var_lst}" ]; then
+fi # !gaa_sng
+if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
     nco_opt="${nco_opt} -v ${var_lst}"
 fi # !var_lst
 if [ -n "${hdr_pad}" ]; then
@@ -696,6 +714,52 @@ if [ ${dec_md} = 'scd' ]; then
     let yr_cln=${yr_cln}+1
 fi # !scd
 
+# Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
+if [ "${sbs_flg}" = 'Yes' ]; then
+    if [ -z "${var_lst}" ]; then
+	echo "ERROR: Split mode requires variable list"
+	echo "HINT: Supply the variable list with -v var_lst"
+	exit 1
+    fi # !var_lst
+    # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
+    for var in ${var_lst//,/ }; do
+	var_sbs[${var_nbr}]=${var}
+	let var_nbr=${var_nbr}+1
+    done # !var_lst
+
+    if [ -n "${in_fl}" ]; then
+	# Single file argument
+	fl_in[${fl_nbr}]=${in_fl}
+	let fl_nbr=${fl_nbr}+1
+    else # !in_fl
+	# Detect input on stdin:
+	# http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
+	# ls ${DATA}/ne30/raw/famipc5*1979*.nc | ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
+	if [ -t 0 ]; then 
+	    if [ "${drc_in_usr_flg}" = 'Yes' ]; then
+		for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
+		    if [ -f "${fl}" ]; then
+			fl_in[${fl_nbr}]=${fl}
+			let fl_nbr=${fl_nbr}+1
+		    fi # !file
+		done
+	    else # !drc_in
+		if [ "${map_mk}" != 'Yes' ]; then 
+		    echo "ERROR: Must specify input file with -i or with stdin"
+		    echo "HINT: Pipe file list to script via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+		    exit 1
+		fi # !map_mk
+	    fi # !drc_in
+	else # ! -t 0
+	    # Input awaits on unit 0, i.e., on stdin
+	    while read -r line; do # NeR05 p. 179
+		fl_in[${fl_nbr}]=${line}
+		let fl_nbr=${fl_nbr}+1
+	    done < /dev/stdin
+	fi # stdin
+    fi # !in_fl
+fi # !sbs_flg
+
 if [ "${mpi_flg}" = 'Yes' ]; then
     if [ -n "${COBALT_NODEFILE}" ]; then 
 	nd_fl="${COBALT_NODEFILE}"
@@ -713,6 +777,11 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	echo "HINT: ${spt_nm} uses first node list found in \$COBALT_NODEFILE (= \"${COBALT_NODEFILE}\"), \$PBS_NODEFILE (= \"${PBS_NODEFILE}\"), \$SLURM_NODELIST (= \"${SLURM_NODELIST}\")"
 	exit 1
     fi # !PBS
+    if [ "${sbs_flg}" = 'Yes' ]; then 
+	mpi_nbr=${var_nbr}
+    else
+	mpi_nbr=${clm_nbr}
+    fi # !sbs_flg
     if [ -n "${nd_fl}" ]; then 
 	# NB: nodes are 0-based, e.g., [0..11]
 	nd_idx=0
@@ -721,31 +790,31 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    let nd_idx=${nd_idx}+1
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
-	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	for ((mpi_idx=1;mpi_idx<=mpi_nbr;mpi_idx++)); do
 	    case "${HOSTNAME}" in 
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 		constance* | cori* | edison* | nid* | node* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori* or edison*
 		    # 20160803: Non-interactive batch jobs at PNNL return HOSTNAME as node*, not constance*
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
- 		    cmd_mpi[${clm_idx}]="srun --nodelist ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
-# 		    cmd_mpi[${clm_idx}]="srun --nodelist ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
+ 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
+# 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
 		hopper* )
 		    # NB: NERSC migrated from aprun to srun in 201601. Hopper commands will soon be deprecated.
-		    cmd_mpi[${clm_idx}]="aprun -L ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # NERSC
+		    cmd_mpi[${mpi_idx}]="aprun -L ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # NERSC
 		* )
-		    cmd_mpi[${clm_idx}]="mpirun -H ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
-#		    cmd_mpi[${clm_idx}]="mpirun -H ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
+		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
+#		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$(((${mpi_idx}-1) % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
-	done # !clm_idx
+	done # !mpi_idx
 	if [ -n "${SLURM_NODELIST}" ]; then 
 	    /bin/rm -f ${nd_fl}
 	fi # !SLURM
     else # !nd_fl
 	mpi_flg='No'
-	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
-	    cmd_mpi[${clm_idx}]=''
-	done # !clm_idx
+	for ((mpi_idx=1;mpi_idx<=mpi_nbr;mpi_idx++)); do
+	    cmd_mpi[${mpi_idx}]=''
+	done # !mpi_idx
     fi # !nd_fl
     if [ -z "${thr_usr}" ]; then 
 	if [ -n "${PBS_NUM_PPN}" ]; then
@@ -780,17 +849,30 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: mdl_nm   = ${mdl_nm}\n"
     printf "dbg: mdl_typ  = ${mdl_typ}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
+    printf "dbg: mpi_nbr  = ${mpi_nbr}\n"
     printf "dbg: nco_opt  = ${nco_opt}\n"
     printf "dbg: ncr_flg  = ${ncr_flg}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
+    printf "dbg: sbs_flg  = ${sbs_flg}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"
+    printf "dbg: ypf_sbs  = ${ypf_sbs}\n"
     printf "dbg: yyyy_end = ${yyyy_end}\n"
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
+    if [ "${sbs_flg}" = 'Yes' ]; then
+	printf "dbg: Will split into files for ${var_nbr} variables:\n"
+	for ((var_idx=0;var_idx<${var_nbr};var_idx++)); do
+	    printf "${var_sbs[${var_idx}]}\n"
+	done # !var_idx
+	printf "dbg: Will split ${fl_nbr} files:\n"
+	for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
+	    printf "${fl_in[${fl_idx}]}\n"
+	done # !fl_idx
+    fi # !sbs
 fi # !dbg
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: yyyy_srt   = ${yyyy_srt}\n"
@@ -904,13 +986,13 @@ if [ "${clm_md}" = 'mth' ]; then
 	fi # !scd
 	# Check for existence of raw input only when file will be used
 	if [ "${bnr_flg}" = 'No' ]; then
-	    for fl_in in ${yr_fl} ; do
-		if [ ! -f "${drc_in}/${fl_in}" ]; then
-		    echo "ERROR: Unable to find required input file ${drc_in}/${fl_in}"
+	    for fl_crr in ${yr_fl} ; do
+		if [ ! -f "${drc_in}/${fl_crr}" ]; then
+		    echo "ERROR: Unable to find required input file ${drc_in}/${fl_crr}"
 		    echo "HINT: All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
 		    exit 1
 		fi # ! -f
-	    done # !fl_in
+	    done # !fl_crr
 	else # !bnr_flg
 	    # In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
 	    drc_out="${drc_in}"
@@ -926,7 +1008,7 @@ if [ "${clm_md}" = 'mth' ]; then
     fl_out[16]="${drc_out}/${out_nm}_DJF_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
     fl_out[17]="${drc_out}/${out_nm}_ANN_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
     # Derive all seventeen regridded and AMWG names from output names
-    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 	fl_amwg[${clm_idx}]=`expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_out}\//}" # Delete prepended path to ease symlinking
@@ -953,6 +1035,31 @@ if [ "${clm_md}" = 'mth' ]; then
     done # !clm_idx
 fi # !clm_md
 
+# Block 1 Loop N: Split
+if [ "${sbs_flg}" = 'Yes' ]; then
+
+    # Block N Loop N: 
+    for ((var_idx=1;var_idx<=var_nbr;var_idx++)); do
+	cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]} ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${var_idx}]}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_sbs[${var_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -le 1 ]; then
+	    if [ -z "${par_opt}" ]; then
+		eval ${cmd_sbs[${var_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR subset cmd_sbs[${var_idx}] failed. Debug this:\n${cmd_sbs[${var_idx}]}\n"
+		    exit 1
+		fi # !err
+	    else # !par_opt
+		eval ${cmd_sbs[${var_idx}]} ${par_opt}
+		sbs_pid[${var_idx}]=$!
+	    fi # !par_opt
+	fi # !dbg
+    done # !var_idx
+
+fi # !sbs_flg
+
 # Block 1 Loop 2: Climatologies based on annual means
 if [ "${clm_md}" = 'ann' ]; then
     clm_idx=1
@@ -963,13 +1070,13 @@ if [ "${clm_md}" = 'ann' ]; then
     done # !yr
     # Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
     if [ "${bnr_flg}" = 'No' ]; then
-	for fl_in in ${yr_fl} ; do
-	    if [ ! -e "${drc_in}/${fl_in}" ]; then
-		echo "ERROR: Unable to find required input file ${drc_in}/${fl_in}"
+	for fl_crr in ${yr_fl} ; do
+	    if [ ! -e "${drc_in}/${fl_crr}" ]; then
+		echo "ERROR: Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "HINT: All files implied to exist by the climatology bounds (start/end year) must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
 	    fi # ! -e
-	done # !fl_in
+	done # !fl_crr
     else # !bnr_flg
 	# In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
 	drc_out="${drc_in}"
@@ -1231,7 +1338,7 @@ if [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
     # Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
     if [ ${lnk_flg} = 'Yes' ]; then
 	printf "Link ACME-climo to AMWG-climo filenames...\n"
-	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 	    if [ -n "${rgr_map}" ]; then 
 		cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr};ln -s -f ${fl_rgr[${clm_idx}]/${drc_rgr}\//} ${fl_amwg[${clm_idx}]/${drc_rgr}\//}"
 	    else
@@ -1324,7 +1431,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 	fl_xtn[17]="${drc_xtn}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
 	
 	# Derive all seventeen regridded and AMWG names from output names
-	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 	    fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
 	    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_prv}}"
 	    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
@@ -1353,7 +1460,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 	done # !clm_idx
 	
 	printf "Weight input climos to produce extended climo...\n"
-	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 	    cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_xtn[${clm_idx}]}
@@ -1372,7 +1479,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 	    fi # !dbg
 	done # !clm_idx
 	if [ -n "${par_opt}" ]; then
-	    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		wait ${xtn_pid[${clm_idx}]}
 		if [ $? -ne 0 ]; then
 		    printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
@@ -1384,7 +1491,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 	
 	if [ -n "${rgr_map}" ]; then 
 	    printf "Weight input climos to produce extended regridded climo...\n"
-	    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr_xtn[${clm_idx}]}
@@ -1403,7 +1510,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 		fi # !dbg
 	    done # !clm_idx
 	    if [ -n "${par_opt}" ]; then
-		for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+		for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		    wait ${rgr_xtn_pid[${clm_idx}]}
 		    if [ $? -ne 0 ]; then
 			printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
@@ -1419,7 +1526,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
 	# Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
 	if [ ${lnk_flg} = 'Yes' ]; then
 	    printf "Link extended ACME-climo to AMWG-climo filenames...\n"
-	    for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		if [ -n "${rgr_map}" ]; then 
 		    cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr_xtn};ln -s -f ${fl_rgr_xtn[${clm_idx}]/${drc_rgr_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_rgr_xtn}\//}"
 		else
@@ -1471,7 +1578,7 @@ echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 
 # PMC: add SMB's Git (SHA1) hash info to climo files
 # Assumes utility to add Git hash resides in ../utils/add_git_hash_to_netcdf_metadata
-for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
     fl_out_lst="${fl_out_lst} ${fl_out[${clm_idx}]}"
 done
 # CSZ: 20150826 disable until less fragile (than relative path) solution is found 

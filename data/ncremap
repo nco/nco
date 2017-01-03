@@ -2,7 +2,7 @@
 
 # Purpose: Regrid (subsets of) netCDF files between different grids, generate rectangular grids (in SCRIP format), generate mapfiles
 
-# Copyright (C) 2015-2016 Charlie Zender
+# Copyright (C) 2015--2017 Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.
 # You may redistribute and/or modify NCO under the terms of the 
 # GNU General Public License (GPL) Version 3.
@@ -41,6 +41,17 @@
 # By default, ncremap deletes any intermediate grids and map-file that it generates
 # Use Free-Will, Old-Grid, or New-Grid mode to process Swath-Like-Data (SLD) where each input may be a granule on a new grid, yet all inputs are to be regridded to the same output grid
 # Use Pre-Destination mode to post-process models or analyses where all files are converted from the same source grid to the same destination grid so the map-file can be pre-generated and never change
+
+# Insta-install:
+# scp ~/nco/data/ncremap aims4.llnl.gov:bin
+# scp ~/nco/data/ncremap blues.lcrc.anl.gov:bin
+# scp ~/nco/data/ncremap cooley.alcf.anl.gov:bin
+# scp ~/nco/data/ncremap cori.nersc.gov:bin_cori
+# scp ~/nco/data/ncremap edison.nersc.gov:bin_edison
+# scp ~/nco/data/ncremap rhea.ccs.ornl.gov:bin_rhea
+# scp ~/nco/data/ncremap skyglow.ess.uci.edu:bin
+# scp ~/nco/data/ncremap yellowstone.ucar.edu:bin
+# scp dust.ess.uci.edu:nco/data/ncremap ~/bin
 
 # Set script name, directory, PID, run directory
 drc_pwd=${PWD}
@@ -151,10 +162,6 @@ case "${HOSTNAME}" in
         export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
 esac # !HOSTNAME
 
-# Insta-install
-# scp ~/nco/data/ncremap cori.nersc.gov:bin_cori
-# scp ~/nco/data/ncremap edison.nersc.gov:bin_edison
-
 # Test cases (for Charlie's machines)
 # Map-only:
 # ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -w esmf -a bilinear
@@ -233,7 +240,7 @@ fi # !TERM
 # Modify these defaults to save typing later
 alg_typ='bilinear' # [nbr] Algorithm for ESMF interpolation (bilinear|patch|neareststod|nearestdtos|conserve)
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
-clm_flg='No' # [flg] Invoked by climo_nco.sh script
+clm_flg='No' # [flg] Invoked by ncclimo script
 dbg_lvl=0 # [nbr] Debugging level
 #drc_in="${drc_pwd}" # [sng] Input file directory
 drc_in='' # [sng] Input file directory
@@ -255,7 +262,6 @@ grd_src='' # [sng] Source grid-file
 grd_src_xmp='grd_src.nc' # [sng] Source grid-file for examples
 hdr_pad='10000' # [B] Pad at end of header section
 in_fl='' # [sng] Input file
-#in_fl='AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc' # [sng] Input file
 in_xmp='in.nc' # [sng] Input file for examples
 job_nbr=2 # [nbr] Job simultaneity for parallelism
 map_fl='' # [sng] Map-file
@@ -276,8 +282,8 @@ thr_nbr=2 # [nbr] Thread number for regridder
 tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
 #tps_opt='--mono' # [sng] TempestRemap options
 tps_opt='' # [sng] TempestRemap options
-#var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 unq_sfx=".pid${spt_pid}" # [sng] Unique suffix
+#var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
 var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
@@ -431,10 +437,10 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
 	       wgt_gnr=?* | weight_generator=?* | generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
                '' ) break ;; # "--" terminates argument processing
-               * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}" >&2; fnc_usg_prn ;;
+               * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;;
 	\?) # Unrecognized option
-	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not allowed" >&2
+	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not allowed\n" >&2
 	    fnc_usg_prn ;;
     esac
 done
@@ -613,7 +619,7 @@ if [ -n "${map_fl}" ]; then
     if [ "${map_mk}" = 'Yes' ]; then
 	# Confirm before overwriting maps
         if [ -f "${map_fl}" ]; then
-	    # 20160803: fxm get to work on Interactive shells only (block hangs on read() in non-interactive shells)
+	    # 20160803: fxm invoke iff in interactive shell (block hangs on read() in non-interactive shells)
 #	    if [[ -t 0 || -p /dev/stdin ]]; then
 #           if [ -n "${TERM}" ]; then
 #           if [ -n "${PS1}" ]; then
@@ -662,7 +668,7 @@ if [ -n "${in_fl}" ]; then
     fl_in[${fl_nbr}]=${in_fl}
     let fl_nbr=${fl_nbr}+1
 else # !in_fl
-    # Detecting input on stdin:
+    # Detect input on stdin:
     # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
     # ls ${DATA}/ne30/raw/famipc5*1979*.nc | ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
     if [ -t 0 ]; then 
@@ -680,7 +686,7 @@ else # !in_fl
 		exit 1
 	    fi # !map_mk
 	fi # !drc_in
-    else
+    else # ! -t 0
 	# Input awaits on unit 0, i.e., on stdin
 	while read -r line; do # NeR05 p. 179
 	    fl_in[${fl_nbr}]=${line}
@@ -698,7 +704,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	# SLURM returns compressed lists (e.g., "nid00[076-078,559-567]")
 	# Convert this to file with uncompressed list (like Cobalt, PBS)
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
-	nd_fl='ncclimo.slurm_nodelist'
+	nd_fl='ncremap.slurm_nodelist'
 	nd_lst=`scontrol show hostname ${SLURM_NODELIST}`
 	echo ${nd_lst} > ${nd_fl}
     else
@@ -714,22 +720,22 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    let nd_idx=${nd_idx}+1
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
-	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
+	for ((fl_idx=1;fl_idx<=fl_nbr;fl_idx++)); do
 	    case "${HOSTNAME}" in 
 		# 20160502: Remove limits on tasks per node so round-robin algorithm can schedule multiple jobs on same node
 		cori* | edison* | nid* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori* or edison*
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
- 		    cmd_mpi[${clm_idx}]="srun --nodelist ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} --nodes=1" ; ;; # NERSC
-# 		    cmd_mpi[${clm_idx}]="srun --nodelist ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # NERSC
+ 		    cmd_mpi[${fl_idx}]="srun --nodelist ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} --nodes=1" ; ;; # NERSC
+# 		    cmd_mpi[${fl_idx}]="srun --nodelist ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # NERSC
 		hopper* )
 		    # NB: NERSC migrated from aprun to srun in 201601. Hopper commands will soon be deprecated.
-		    cmd_mpi[${clm_idx}]="aprun -L ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # NERSC
+		    cmd_mpi[${fl_idx}]="aprun -L ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # NERSC
 		* )
-		    cmd_mpi[${clm_idx}]="mpirun -H ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt)
-#		    cmd_mpi[${clm_idx}]="mpirun -H ${nd_nm[$(((${clm_idx}-1) % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
+		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt)
+#		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$(((${fl_idx}-1) % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
-	done # !clm_idx
+	done # !fl_idx
 	if [ -n "${SLURM_NODELIST}" ]; then 
 	    /bin/rm -f ${nd_fl}
 	fi # !SLURM
@@ -749,7 +755,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    thr_nbr=$((PBS_NUM_PPN > 8 ? 8 : PBS_NUM_PPN))
 	fi # !pbs
     fi # !thr_usr
-fi # !mpi
+fi # !mpi_flg
 
 # Print initial state
 if [ ${dbg_lvl} -ge 2 ]; then
@@ -781,7 +787,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: var_rgr  = ${var_rgr}\n"
     printf "dbg: wgt_usr  = ${wgt_usr}\n"
-    printf "Asked to regrid ${fl_nbr} files:\n"
+    printf "dbg: Will regrid ${fl_nbr} files:\n"
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	printf "${fl_in[${fl_idx}]}\n"
     done # !fl_idx
@@ -1084,7 +1090,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !map_mk
     
     # Block 4: Special cases
-    # Block 4a: Add missing metadata to MPAS files unless script was invoked by climo_nco.sh (it makes no sense to give naked files to climo_nco.sh and then annotate here, so assume climo_nco.sh is working with annotated files)
+    # Block 4a: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then annotate here, so assume ncclimo is working with annotated files)
     if [ "${pdq_typ}" = 'mpas' ] && [ "${clm_flg}" = 'No' ]; then
 	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${in_fl} ${att_fl};"
 	in_fl="${att_fl}"
@@ -1182,7 +1188,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 
 done # !fl_idx
 
-# Parallel mode will often exit loop after a partial batch, wait() for remaining jobs to finish
+# Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
 if [ -n "${par_opt}" ]; then
     let bch_flg=$((fl_nbr % job_nbr))
     if [ ${bch_flg} -ne 0 ]; then
