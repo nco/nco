@@ -682,12 +682,8 @@ else # !in_fl
 	    done
 	else # !drc_in
 	    if [ "${map_mk}" != 'Yes' ]; then 
-		# Check positional arguments
+		# Read any positional arguments
 		psn_nbr=$#
-		printf "dbg: Found \$#=${psn_nbr} positional parameters (besides \$0):\n"
-		for ((psn_idx=0;psn_idx<=psn_nbr;psn_idx++)); do
-		    printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
-		done # !psn_idx
 		if [ ${psn_nbr} -eq 1 ]; then
 		    fl_in[0]=${1}
 		    fl_nbr=1
@@ -707,7 +703,7 @@ else # !in_fl
 			fl_nbr=${psn_nbr}
 		    done # !psn_idx
 		else
-		    echo "ERROR: Specify input file with -i or with first positional argument or with stdin"
+		    echo "ERROR: Specify input file(s) with -i or with positional argument(s) or with stdin"
 		    echo "HINT: Pipe input file list via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
 		    exit 1
 		fi # !psn_nbr
@@ -835,16 +831,19 @@ if [ ${dbg_lvl} -ge 2 ]; then
 fi # !dbg
 
 # Create output directory
-mkdir -p ${drc_out}
-mkdir -p ${drc_tmp}
+if [ -n "${drc_out}" ]; then 
+    mkdir -p ${drc_out}
+fi # !drc_out
+if [ -n "${drc_tmp}" ]; then 
+    mkdir -p ${drc_tmp}
+fi # !drc_tmp
 
 # Human-readable summary
+date_srt=$(date +"%s")
 if [ ${dbg_lvl} -ge 1 ]; then
     printf "NCO regridder invoked with command:\n"
     echo "${cmd_ln}"
 fi # !dbg
-date_srt=$(date +"%s")
-
 if [ -f 'PET0.RegridWeightGen.Log' ]; then
     printf "${spt_nm}: Removing PET0.RegridWeightGen.Log file from current directory before running\n"
     /bin/rm -f PET0.RegridWeightGen.Log

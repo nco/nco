@@ -198,6 +198,8 @@ esac # !HOSTNAME
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split:
 # cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --ypf=1 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr
+# Positional arguments:
+# ncclimo --ypf=1 --dbg=1 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -344,6 +346,7 @@ bnr_flg='No' # [sng] Binary method
 caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
+clm_flg='Yes' # [sng] Generate climatology
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', or 'mth')
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
@@ -379,7 +382,7 @@ rgr_map='' # [sng] Regridding map
 #rgr_map="${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc"
 #rgr_map="${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150901.nc"
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
-sbs_flg='No' # [sng] Split (subset) files
+sbs_flg='No' # [sng] Split (subset) climatologies
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
@@ -567,7 +570,7 @@ fi # !yr_srt_prv extended climo
 if [ -n "${ypf_sbs_usr}" ]; then 
     ypf_sbs=${ypf_sbs_usr}
     sbs_flg='Yes'
-    clm_md='sbs' # fxm: temporary hack
+    clm_flg='No'
 fi # !ypf_sbs
 
 # Derived variables
@@ -630,6 +633,17 @@ if [ "${mdl_typ}" = 'mpas' ]; then
 fi # !mdl_typ
 if [ -n "${fml_nm}" ]; then 
     out_nm="${fml_nm}"
+else # !fml_nm
+    if [ -n "${caseid}" ]; then 
+	fml_nm="${caseid}"
+    else # !caseid
+	if [ "${sbs_flg}" = 'Yes' ]; then
+	    echo "WARNING: Split/subset mode requires a case ID or family name for output files"
+	    echo "HINT: Supply case ID with '-c \$caseid' or family name with '-f \$fml_nm'"
+	    echo "WARNING: Using generic string \"split\" for family name in output"
+	    fml_nm="split"
+	fi # !sbs_flg
+    fi # !caseid
 fi # !fml_nm
 # http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
 # http://stackoverflow.com/questions/17420994/bash-regex-match-string
@@ -642,7 +656,7 @@ if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     out_nm=${bs_nm}
     bs_sfx="${caseid#*.}"
 fi # !caseid
-if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ] && [ "${clm_md}" != 'sbs' ]; then 
+if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ] ; then 
     echo "ERROR: User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
     exit 1
 fi # !clm_md
@@ -747,11 +761,31 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    fi # !file
 		done
 	    else # !drc_in
-		if [ "${map_mk}" != 'Yes' ]; then 
-		    echo "ERROR: Must specify input file with -i or with stdin"
+		# Read any positional arguments
+		psn_nbr=$#
+		if [ ${psn_nbr} -eq 1 ]; then
+		    fl_in[0]=${1}
+		    fl_nbr=1
+		elif [ ${psn_nbr} -eq 2 ]; then
+		    if [ -z "${out_fl}" ]; then
+			out_fl=${2}
+			out_usr_flg='Yes'
+			fl_nbr=1
+		    else # !out_fl
+			echo "ERROR: Output file specified with -o (${out_fl}) conflicts with second positional argument ${2}"
+			echo "HINT: Use -o out_fl or positional argument, not both"
+			exit 1
+		    fi # !out_fl
+		elif [ ${psn_nbr} -ge 3 ]; then
+		    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+			fl_in[(${psn_idx}-1)]=${!psn_idx}
+			fl_nbr=${psn_nbr}
+		    done # !psn_idx
+		else
+		    echo "ERROR: Specify input file(s) with -i or with positional argument(s) or with stdin"
 		    echo "HINT: Pipe input file list via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
 		    exit 1
-		fi # !map_mk
+		fi # !psn_nbr
 	    fi # !drc_in
 	else # ! -t 0
 	    # Input awaits on unit 0, i.e., on stdin
@@ -761,6 +795,34 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    done < /dev/stdin
 	fi # stdin
     fi # !in_fl
+
+    # How many years of input?
+    if [ "${clm_md}" = 'ann' ]; then
+	yr_sbs=${fl_nbr}
+    elif [ "${clm_md}" = 'dly' ]; then
+	let yr_sbs=${fl_nbr} / 365
+    elif [ "${clm_md}" = 'mth' ]; then
+	let yr_sbs=${fl_nbr} / 12
+    fi # !clm_md
+
+else # !sbs_flg
+
+    if [ -z "${out_nm}" ]; then
+	echo "ERROR: Missing information needed to generate output filenames"
+	echo "HINT: Climo generation requires that users specify a case ID with -c \$caseid or specify with -m \$mdl_nm a recognized model name (like \"mpaso\")"
+	echo "HINT: ${spt_nm} needs this information to generation output filenames"
+	echo "HINT: See invocation examples at http://nco.sf.net/nco.html#ncclimo"
+	exit 1
+    fi # out_nm
+
+    if [ ! -t 0 ]; then
+	echo "ERROR: Detected input via stdin pipe rather than console in climatology generation mode"
+	echo "HINT: Piping filenames to ${spt_nm} only works when splitting files"
+	echo "HINT: In climo generation mode, one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
+	echo "HINT: See invocation examples at http://nco.sf.net/nco.html#ncclimo"
+	exit 1
+    fi # !stdin
+
 fi # !sbs_flg
 
 if [ "${mpi_flg}" = 'Yes' ]; then
@@ -840,6 +902,7 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: bnr_flg  = ${bnr_flg}\n"
     printf "dbg: caseid   = ${caseid}\n"
     printf "dbg: cf_flg   = ${cf_flg}\n"
+    printf "dbg: clm_flg  = ${clm_flg}\n"
     printf "dbg: clm_md   = ${clm_md}\n"
     printf "dbg: dec_md   = ${dec_md}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
@@ -863,6 +926,7 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: nco_opt  = ${nco_opt}\n"
     printf "dbg: ncr_flg  = ${ncr_flg}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
+    printf "dbg: out_nm   = ${out_nm}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
@@ -871,6 +935,7 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"
     printf "dbg: ypf_sbs  = ${ypf_sbs}\n"
+    printf "dbg: yr_sbs   = ${yr_sbs}\n"
     printf "dbg: yyyy_end = ${yyyy_end}\n"
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
     if [ "${sbs_flg}" = 'Yes' ]; then
@@ -895,12 +960,19 @@ if [ ${dbg_lvl} -ge 2 ]; then
 	done # !nd
     fi # !mpi
 fi # !dbg
+if [ ${dbg_lvl} -ge 2 ]; then
+    psn_nbr=$#
+    printf "dbg: Found ${psn_nbr} positional parameters (besides \$0):\n"
+    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
+    done # !psn_idx
+fi # !dbg
 
 # Create output directory
-if [ -n "${drc_out}" ]; then 
+if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ] ; then 
     mkdir -p ${drc_out}
 fi # !drc_out
-if [ -n "${drc_rgr}" ]; then 
+if [ -n "${drc_rgr}" ] && [ ! -d "${drc_rgr}" ] ; then 
     mkdir -p ${drc_rgr}
 fi # !drc_rgr
 
@@ -960,7 +1032,7 @@ fi # !rgr
 # Block 1: Generate, check, and store (but do not yet execute) commands
 
 # Block 1 Loop 1: Climatologies based on monthly means
-if [ "${clm_md}" = 'mth' ]; then
+if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
     clm_idx=0
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
@@ -1047,7 +1119,7 @@ fi # !clm_md
 
 # Block 1 Loop N: Split
 if [ "${sbs_flg}" = 'Yes' ]; then
-
+	
     case ${mdl_nm} in
 	cam* ) var_lst_xtn='lat,lon,area' ;;
     esac # !mdl_nm
@@ -1056,8 +1128,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	yr_fl="${yr_fl} ${fl_in[${fl_idx}]}"
     done # !fl_idx
+
     for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
-	fl_out[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_split.nc"
+	fl_out[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${fml_nm}_${yyyy_srt}01_${yyyy_end}12.nc"
     done # !var_idx
 
     for fl_crr in ${yr_fl} ; do
@@ -1091,7 +1164,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 fi # !sbs_flg
 
 # Block 1 Loop 2: Climatologies based on annual means
-if [ "${clm_md}" = 'ann' ]; then
+if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
     clm_idx=1
     yr_fl=''
     for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
@@ -1149,7 +1222,7 @@ if [ "${clm_md}" = 'ann' ]; then
 fi # !clm_md
 
 # Many subsequent blocks only executed for normal and incremental monthly climos, not for binary climos, or non-monthly climos
-if [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
+if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
     
     # Block 1 Loop 2: Execute and/or echo monthly climatology commands
     printf "Generating climatology...\n"
@@ -1390,7 +1463,7 @@ if [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
 fi # !clm_md !bnr_flg
 
 # Extended climos
-if [ "${xtn_flg}" = 'Yes' ]; then
+if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
     mkdir -p ${drc_prv}
     mkdir -p ${drc_xtn}
 
