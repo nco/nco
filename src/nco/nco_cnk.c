@@ -148,13 +148,9 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
 
   const char fnc_nm[]="nco_cnk_ini()"; /* [sng] Function name */
 
-  float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
-
   int rcd=0; /* [enm] Return code  */
 
-  size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
   size_t fl_sys_blk_sz=0UL; /* [nbr] File system blocksize for I/O */
-  size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
 
   /* Initialize */
   cnk->flg_usr_rqs=False;
@@ -195,19 +191,6 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
     cnk->cnk_sz_byt= (fl_sys_blk_sz > 0ULL) ? fl_sys_blk_sz : NCO_CNK_SZ_BYT_DFL;
   } /* end else */
     
-  if(cnk_csh_byt > 0ULL){
-    /* Use user-specified chunk cache size if available */
-    cnk->cnk_csh_byt=cnk_csh_byt;
-    nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-    rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
-  } /* !cnk_csh_byt */
-
-  /* Report current system cache settings */
-  if(nco_dbg_lvl_get() >= nco_dbg_scl){
-    nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-    (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
-  } /* !dbg */
-      
   /* Java chunking defaults:
      http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/netcdf4Clibrary.html */
   if(cnk_min_byt == 0ULL) cnk->cnk_min_byt= (fl_sys_blk_sz > 0ULL) ? 2*fl_sys_blk_sz : NCO_CNK_SZ_MIN_BYT_DFL;
@@ -235,7 +218,7 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
       cnk->cnk_plc=nco_cnk_plc_xst;
     }else{
       /* Input is netCDF3 so choose chunking judiciously unless otherwise specified */
-      if(nco_dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Input file format %s does not support chunking and no chunking policy or map specified so output chunking format will use NCO (not netCDF) defaults\n",nco_prg_nm_get(),nco_fmt_sng(fl_in_fmt));
+      if(nco_dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports input file format %s does not support chunking and no chunking policy or map specified so output chunking format will use NCO (not netCDF) defaults\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_in_fmt));
       cnk->cnk_map=nco_cnk_map_nco;
       cnk->cnk_plc=nco_cnk_plc_nco;
     } /* endif dbg */

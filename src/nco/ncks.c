@@ -157,6 +157,8 @@ main(int argc,char **argv)
   const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
 
+  const char fnc_nm[]="main()"; /* [sng] Function name */
+
   cnk_sct cnk; /* [sct] Chunking structure */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -1023,7 +1025,26 @@ main(int argc,char **argv)
     if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups, non-atomic types, or multiple record dimensions. However, it _will_ autoconvert netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE...) to netCDF3 atomic types (e.g., NC_CHAR, NC_SHORT...).\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
-    /* Terraref */
+  /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file is netCDF4 */
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC || fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
+    size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
+    size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
+    if(cnk_csh_byt > 0ULL){
+      /* Use user-specified chunk cache size if available */
+      //cnk->cnk_csh_byt=cnk_csh_byt;
+      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+      rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
+    } /* !cnk_csh_byt */
+    
+    /* Report current system cache settings */
+    if(nco_dbg_lvl_get() >= nco_dbg_scl){
+      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+      (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
+    } /* !dbg */
+  } /* !netCDF4 */
+
+  /* Terraref */
   if(flg_trr){
     char *trr_out;
     trr_sct *trr_nfo;
