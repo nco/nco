@@ -1,12 +1,14 @@
 2017-01-07  Charlie Zender  <zender@uci.edu>
 
-	* Fully hook-in setting chunk cache size with --cnk_csh_byt
+	* NCO 4.6.4-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha02 final changes';git push
+	git tag -a 4.6.4-alpha02 -m 'Version 4.6.4-alpha02 new features: ncsplit, cnk_csh';git push --tags
+
+	* ncsplit: Add error-checking on input file number
+
+	* Fully hook-in setting chunk cache size with --cnk_csh
 
 2017-01-03  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.6.4-alpha01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha01 final changes';git push
-	git tag -a 4.6.4-alpha01 -m 'Version 4.6.4-alpha01 new features: ';git push --tags
 
 	* Crude ncsplit-functionality works in ncclimo
 
@@ -19,6 +21,10 @@
 	* Enumerate MPI commands by fl_idx not clm_idx in ncremap
 
 2016-12-23  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.4-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha01 final changes';git push
+	git tag -a 4.6.4-alpha01 -m 'Version 4.6.4-alpha01 new features: 2017 dates. Otherwise same as 4.6.3';git push --tags
 
 	* NCO 4.6.3 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.3 final changes';git push

@@ -493,7 +493,7 @@ while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	d) dbg_lvl="${OPTARG}" ;; # Debugging level
 	E) yr_end_prv="${OPTARG}" ;; # End year previous
 	e) yr_end="${OPTARG}" ;; # End year
-	f) fml_nm="${OPTARG}" ;; # Family name
+	f) fml_nm_usr="${OPTARG}" ;; # Family name
 	h) hst_nm="${OPTARG}" ;; # History tape name
 	i) drc_in="${OPTARG}" ;; # Input directory
 	l) lnk_flg="${OPTARG}" ;; # Link ACME to AMWG name
@@ -525,7 +525,7 @@ while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
 	       yr_end_prv=?* | prv_yr_end=?* | previous_end=?* ) yr_end_prv="${LONG_OPTARG}" ;; # -E # End year previous
 	       yr_end=?* | end_yr=?* | year_end=?* | end_year=?* | end=?* ) yr_end="${LONG_OPTARG}" ;; # -e # End year
-	       fml_nm=?* | family_name=?* | family=?* ) fml_nm="${LONG_OPTARG}" ;; # -f # Family name
+	       fml_nm=?* | family_name=?* | family=?* ) fml_nm_usr="${LONG_OPTARG}" ;; # -f # Family name
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       lnk_flg | link_flag | no_amwg_link | no_amwg_links | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # -l # Link ACME to AMWG name
@@ -631,19 +631,9 @@ if [ "${mdl_typ}" = 'mpas' ]; then
     out_nm="${mdl_nm}"
     hst_nm='hist'
 fi # !mdl_typ
-if [ -n "${fml_nm}" ]; then 
+if [ -n "${fml_nm_usr}" ]; then 
+    fml_nm="${fml_nm_usr}"
     out_nm="${fml_nm}"
-else # !fml_nm
-    if [ -n "${caseid}" ]; then 
-	fml_nm="${caseid}"
-    else # !caseid
-	if [ "${sbs_flg}" = 'Yes' ]; then
-	    echo "WARNING: Split/subset mode requires a case ID or family name for output files"
-	    echo "HINT: Supply case ID with '-c \$caseid' or family name with '-f \$fml_nm'"
-	    echo "WARNING: Using generic string \"split\" for family name in output"
-	    fml_nm="split"
-	fi # !sbs_flg
-    fi # !caseid
 fi # !fml_nm
 # http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
 # http://stackoverflow.com/questions/17420994/bash-regex-match-string
@@ -801,8 +791,18 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	yr_sbs=${fl_nbr}
     elif [ "${clm_md}" = 'dly' ]; then
 	let yr_sbs=${fl_nbr} / 365
+	let dly_rmd=${fl_nbr} % 365
+	if [ ${dly_rmd} -ne 0 ]; then
+	    printf "${spt_nm}: ERROR ${fl_nbr} files of daily input contain non-integral number of years, ${dly_rmd} days leftover in final year\n"
+	    exit 1
+	fi # !mth_rmd
     elif [ "${clm_md}" = 'mth' ]; then
-	let yr_sbs=${fl_nbr} / 12
+	let yr_sbs=(${fl_nbr} / 12)
+	let mth_rmd=(${fl_nbr} % 12)
+	if [ ${mth_rmd} -ne 0 ]; then
+	    printf "${spt_nm}: ERROR ${fl_nbr} files of monthly input contain non-integral number of years, ${mth_rmd} month(s) leftover in final year\n"
+	    exit 1
+	fi # !mth_rmd
     fi # !clm_md
 
 else # !sbs_flg
@@ -810,7 +810,7 @@ else # !sbs_flg
     if [ -z "${out_nm}" ]; then
 	echo "ERROR: Missing information needed to generate output filenames"
 	echo "HINT: Climo generation requires that users specify a case ID with -c \$caseid or specify with -m \$mdl_nm a recognized model name (like \"mpaso\")"
-	echo "HINT: ${spt_nm} needs this information to generation output filenames"
+	echo "HINT: ${spt_nm} needs this information to generate output filenames"
 	echo "HINT: See invocation examples at http://nco.sf.net/nco.html#ncclimo"
 	exit 1
     fi # out_nm
@@ -1130,7 +1130,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     done # !fl_idx
 
     for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
-	fl_out[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${fml_nm}_${yyyy_srt}01_${yyyy_end}12.nc"
+	if [ -n "${fml_nm_usr}" ]; then 
+	    fl_out[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${fml_nm}_${yyyy_srt}01_${yyyy_end}12.nc"
+	else # !fml_nm_usr
+	    fl_out[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt}01_${yyyy_end}12.nc"
+	fi # !fml_nm_usr
     done # !var_idx
 
     for fl_crr in ${yr_fl} ; do
