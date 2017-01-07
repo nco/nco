@@ -4,11 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha02 final changes';git push
 	git tag -a 4.6.4-alpha02 -m 'Version 4.6.4-alpha02 new features: ncsplit, cnk_csh';git push --tags
 
-	* Call nco_cnk_ini() in ncks (only) when input file is netCDF4 (to use --cnk_csh when printing files)
+	* Set/report chunk cache size in ncks (only) main(), not cnk_ini() when input file is netCDF4
 
 	* ncsplit: Add error-checking on input file number
-
-	* Fully hook-in setting chunk cache size with --cnk_csh
 
 2017-01-03  Charlie Zender  <zender@uci.edu>
 
