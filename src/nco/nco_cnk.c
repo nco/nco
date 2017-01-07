@@ -148,9 +148,13 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
 
   const char fnc_nm[]="nco_cnk_ini()"; /* [sng] Function name */
 
+  float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
+
   int rcd=0; /* [enm] Return code  */
 
+  size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
   size_t fl_sys_blk_sz=0UL; /* [nbr] File system blocksize for I/O */
+  size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
 
   /* Initialize */
   cnk->flg_usr_rqs=False;
@@ -194,19 +198,16 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
   if(cnk_csh_byt > 0ULL){
     /* Use user-specified chunk cache size if available */
     cnk->cnk_csh_byt=cnk_csh_byt;
-    // 20161128: Placeholder for Jerome 
-    // if(nco_dbg_lvl_get() == nco_dbg_jm){
-    //  nco_set_chunk_cache(cnk_csh_byt);
-    // } 
-  }else{
-    /* Otherwise use filesystem blocksize if valid, otherwise use Linux default */
-    size_t cnk_csh_byt_lbr; /* [B] Chunk cache size in library */
-    size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
-    float pmp_fvr_frc; /* [frc] Preemption favor fraction */
-    nco_get_chunk_cache(&cnk_csh_byt_lbr,&nelemsp,&pmp_fvr_frc);
-    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt_lbr = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_lbr,nelemsp,pmp_fvr_frc);
-  } /* end else */
+    nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+    rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
+  } /* !cnk_csh_byt */
 
+  /* Report current system cache settings */
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+    nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+    (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
+  } /* !dbg */
+      
   /* Java chunking defaults:
      http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/netcdf4Clibrary.html */
   if(cnk_min_byt == 0ULL) cnk->cnk_min_byt= (fl_sys_blk_sz > 0ULL) ? 2*fl_sys_blk_sz : NCO_CNK_SZ_MIN_BYT_DFL;
