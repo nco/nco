@@ -311,7 +311,7 @@ esac # !HOSTNAME
 # Set NCO version and directory
 nco_exe=`which ncks`
 if [ -z "${nco_exe}" ]; then
-    echo "ERROR: Unable to find NCO, nco_exe = ${nco_exe}"
+    echo "${spt_nm}: ERROR Unable to find NCO, nco_exe = ${nco_exe}"
     exit 1
 fi # !nco_exe
 # Use StackOverflow method to find NCO directory
@@ -367,6 +367,7 @@ fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experim
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
 hdr_pad='10000' # [B] Pad at end of header section
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
+job_nbr=2 # [nbr] Job simultaneity for parallelism
 lnk_flg='Yes' # [sng] Link ACME-climo to AMWG-climo filenames
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpaso', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for filenames and regridding)
@@ -405,6 +406,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm}) [${fnt_tlc}fml_nm, family_name${fnt_nrm}]"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
+    echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
     echo "${fnt_rvr}-l${fnt_nrm} ${fnt_bld}lnk_flg${fnt_nrm}  Link ACME-climo to AMWG-climo filenames (default ${fnt_bld}${lnk_flg}${fnt_nrm}) [${fnt_tlc}lnk_flg, link_flag, no_amwg_links${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}mdl_nm${fnt_nrm}   Model name (default ${fnt_bld}${mdl_nm}${fnt_nrm}) [${fnt_tlc}mdl_nm, model_name, model${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco, nco_options${fnt_nrm}]"
@@ -485,7 +487,7 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options (see method by Adam Katz)
 # http://tuxtweaks.com/2014/05/bash-getopts
-while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
+while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
     case ${OPT} in
 	a) dec_md="${OPTARG}" ;; # December mode
 	C) clm_md="${OPTARG}" ;; # Climatology mode
@@ -496,6 +498,7 @@ while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	f) fml_nm_usr="${OPTARG}" ;; # Family name
 	h) hst_nm="${OPTARG}" ;; # History tape name
 	i) drc_in="${OPTARG}" ;; # Input directory
+	j) job_usr="${OPTARG}" ;; # Job simultaneity
 	l) lnk_flg="${OPTARG}" ;; # Link ACME to AMWG name
 	m) mdl_nm="${OPTARG}" ;; # Model name
 	n) nco_opt="${OPTARG}" ;; # NCO options
@@ -528,6 +531,7 @@ while getopts :a:C:c:d:E:e:f:h:i:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	       fml_nm=?* | family_name=?* | family=?* ) fml_nm_usr="${LONG_OPTARG}" ;; # -f # Family name
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
+	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       lnk_flg | link_flag | no_amwg_link | no_amwg_links | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # -l # Link ACME to AMWG name
 	       lnk_flg=?* | link_flag=?* | no_amwg_link=?* | no_amwg_links=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link ACME to AMWG name
 	       mdl_nm=?* | model_name=?* | model=?* ) mdl_nm="${LONG_OPTARG}" ;; # -m # Model name
@@ -647,7 +651,7 @@ if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     bs_sfx="${caseid#*.}"
 fi # !caseid
 if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ] ; then 
-    echo "ERROR: User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
+    echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
     exit 1
 fi # !clm_md
 if [ "${clm_md}" = 'ann' ]; then 
@@ -672,6 +676,9 @@ if [ -n "${gaa_sng_std}" ]; then
     fi # !sbs_flg
     nco_opt="${nco_opt} ${gaa_sng}"
 fi # !gaa_sng
+if [ -n "${job_usr}" ]; then 
+    job_nbr="${job_usr}"
+fi # !job_usr
 if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
     nco_opt="${nco_opt} -v ${var_lst}"
 fi # !var_lst
@@ -691,8 +698,8 @@ elif [ "${par_typ}" = 'mpi' ]; then
 fi # !par_typ
 if [ -n "${rgr_map}" ]; then 
     if [ ! -f "${rgr_map}" ]; then
-	echo "ERROR: Unable to find specified regrid map ${rgr_map}"
-	echo "HINT: Supply the full path-name for the regridding map"
+	echo "${spt_nm}: ERROR Unable to find specified regrid map ${rgr_map}"
+	echo "${spt_nm}: HINT Supply the full path-name for the regridding map"
 	exit 1
     fi # ! -f
     rgr_opt="${rgr_opt} --map ${rgr_map}"
@@ -722,8 +729,8 @@ fi # !scd
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${sbs_flg}" = 'Yes' ]; then
     if [ -z "${var_lst}" ]; then
-	echo "ERROR: Split mode requires variable list"
-	echo "HINT: Supply the variable list with -v var_lst"
+	echo "${spt_nm}: ERROR Split mode requires variable list"
+	echo "${spt_nm}: HINT Supply the variable list with -v var_lst"
 	exit 1
     fi # !var_lst
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
@@ -762,8 +769,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			out_usr_flg='Yes'
 			fl_nbr=1
 		    else # !out_fl
-			echo "ERROR: Output file specified with -o (${out_fl}) conflicts with second positional argument ${2}"
-			echo "HINT: Use -o out_fl or positional argument, not both"
+			echo "${spt_nm}: ERROR Output file specified with -o (${out_fl}) conflicts with second positional argument ${2}"
+			echo "${spt_nm}: HINT Use -o out_fl or positional argument, not both"
 			exit 1
 		    fi # !out_fl
 		elif [ ${psn_nbr} -ge 3 ]; then
@@ -772,8 +779,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			fl_nbr=${psn_nbr}
 		    done # !psn_idx
 		else
-		    echo "ERROR: Specify input file(s) with -i or with positional argument(s) or with stdin"
-		    echo "HINT: Pipe input file list via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+		    echo "${spt_nm}: ERROR Specify input file(s) with -i or with positional argument(s) or with stdin"
+		    echo "${spt_nm}: HINT Pipe input file list via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
 		    exit 1
 		fi # !psn_nbr
 	    fi # !drc_in
@@ -794,6 +801,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	let dly_rmd=${fl_nbr} % 365
 	if [ ${dly_rmd} -ne 0 ]; then
 	    printf "${spt_nm}: ERROR ${fl_nbr} files of daily input contain non-integral number of years, ${dly_rmd} days leftover in final year\n"
+	    printf "${spt_nm}: HINT Provide input daily filenames in multiples of 365\n"
 	    exit 1
 	fi # !mth_rmd
     elif [ "${clm_md}" = 'mth' ]; then
@@ -801,6 +809,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	let mth_rmd=(${fl_nbr} % 12)
 	if [ ${mth_rmd} -ne 0 ]; then
 	    printf "${spt_nm}: ERROR ${fl_nbr} files of monthly input contain non-integral number of years, ${mth_rmd} month(s) leftover in final year\n"
+	    printf "${spt_nm}: HINT Provide input monthly filenames in multiples of 12\n"
 	    exit 1
 	fi # !mth_rmd
     fi # !clm_md
@@ -808,18 +817,18 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 else # !sbs_flg
 
     if [ -z "${out_nm}" ]; then
-	echo "ERROR: Missing information needed to generate output filenames"
-	echo "HINT: Climo generation requires that users specify a case ID with -c \$caseid or specify with -m \$mdl_nm a recognized model name (like \"mpaso\")"
-	echo "HINT: ${spt_nm} needs this information to generate output filenames"
-	echo "HINT: See invocation examples at http://nco.sf.net/nco.html#ncclimo"
+	echo "${spt_nm}: ERROR Missing information needed to generate output filenames"
+	echo "${spt_nm}: HINT Climo generation requires that users specify a case ID with -c \$caseid or specify with -m \$mdl_nm a recognized model name (like \"mpaso\")"
+	echo "${spt_nm}: HINT ${spt_nm} needs this information to generate output filenames"
+	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"
 	exit 1
     fi # out_nm
 
     if [ ! -t 0 ]; then
-	echo "ERROR: Detected input via stdin pipe rather than console in climatology generation mode"
-	echo "HINT: Piping filenames to ${spt_nm} only works when splitting files"
-	echo "HINT: In climo generation mode, one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
-	echo "HINT: See invocation examples at http://nco.sf.net/nco.html#ncclimo"
+	echo "${spt_nm}: ERROR Detected input via stdin pipe rather than console in climatology generation mode"
+	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files"
+	echo "${spt_nm}: HINT In climo generation mode, one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
+	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"
 	exit 1
     fi # !stdin
 
@@ -838,8 +847,8 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_lst=`scontrol show hostname ${SLURM_NODELIST}`
 	echo ${nd_lst} > ${nd_fl}
     else
-	echo "ERROR: MPI job unable to find node list"
-	echo "HINT: ${spt_nm} uses first node list found in \$COBALT_NODEFILE (= \"${COBALT_NODEFILE}\"), \$PBS_NODEFILE (= \"${PBS_NODEFILE}\"), \$SLURM_NODELIST (= \"${SLURM_NODELIST}\")"
+	echo "${spt_nm}: ERROR MPI job unable to find node list"
+	echo "${spt_nm}: HINT ${spt_nm} uses first node list found in \$COBALT_NODEFILE (= \"${COBALT_NODEFILE}\"), \$PBS_NODEFILE (= \"${PBS_NODEFILE}\"), \$SLURM_NODELIST (= \"${SLURM_NODELIST}\")"
 	exit 1
     fi # !PBS
     if [ "${sbs_flg}" = 'Yes' ]; then 
@@ -888,6 +897,9 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    cmd_mpi[${mpi_idx}]=''
 	done # !mpi_idx
     fi # !nd_fl
+    if [ -z "${job_usr}" ]; then 
+	job_nbr=${nd_nbr}
+    fi # !job_usr
     if [ -z "${thr_usr}" ]; then 
 	if [ -n "${PBS_NUM_PPN}" ]; then
 #	NB: use export OMP_NUM_THREADS when thr_nbr > 8
@@ -918,6 +930,7 @@ if [ ${dbg_lvl} -ge 1 ]; then
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
     printf "dbg: hst_nm   = ${hst_nm}\n"
+    printf "dbg: job_nbr  = ${job_nbr}\n"
     printf "dbg: lnk_flg  = ${lnk_flg}\n"
     printf "dbg: mdl_nm   = ${mdl_nm}\n"
     printf "dbg: mdl_typ  = ${mdl_typ}\n"
@@ -1070,8 +1083,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	if [ "${bnr_flg}" = 'No' ]; then
 	    for fl_crr in ${yr_fl} ; do
 		if [ ! -f "${drc_in}/${fl_crr}" ]; then
-		    echo "ERROR: Unable to find required input file ${drc_in}/${fl_crr}"
-		    echo "HINT: All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+		    echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
+		    echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
 		    exit 1
 		fi # ! -f
 	    done # !fl_crr
@@ -1135,17 +1148,39 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	else # !fml_nm_usr
 	    fl_out[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt}01_${yyyy_end}12.nc"
 	fi # !fml_nm_usr
+	if [ -n "${rgr_map}" ]; then
+	    fl_rgr[${var_idx}]="${fl_out[${var_idx}]/${drc_out}/${drc_rgr}}"
+	    if [ "${drc_out}" = "${drc_rgr}" ]; then 
+		# Append geometry suffix to regridded files in same directory as native climo
+		# http://tldp.org/LDP/abs/html/string-manipulation.html
+		dfl_sfx='rgr'
+		rgr_sfx=`expr match "${rgr_map}" '.*_to_\(.*\).nc'`
+		if [ "${#rgr_sfx}" -eq 0 ]; then
+		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
+		    rgr_sfx=${dfl_sfx}
+		else
+		    yyyymmdd_sng=`expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)'` # Find YYYYYMMDD
+		    if [ "${#yyyymmdd_sng}" -ne 0 ]; then
+			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
+		    fi # !strlen
+		fi # !strlen
+		#    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
+		fl_rgr[${var_idx}]="${fl_rgr[${var_idx}]/.nc/_${rgr_sfx}.nc}"
+	    fi # !drc_rgr
+	fi # !rgr_map
     done # !var_idx
 
     for fl_crr in ${yr_fl} ; do
 	if [ ! -f "${fl_crr}" ]; then
-	    echo "ERROR: Unable to find required input file ${fl_crr}"
-	    echo "HINT: All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+	    echo "${spt_nm}: ERROR Unable to find required input file ${fl_crr}"
+	    echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
 	    exit 1
 	fi # ! -f
     done # !fl_crr
 
-    # Block N Loop N: 
+    # Begin loop over variables to split
+    idx_srt=0
+    let idx_end=$((job_nbr-1))
     for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 	cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]},${var_lst_xtn} ${nco_opt} ${yr_fl} ${fl_out[${var_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -1163,8 +1198,112 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		sbs_pid[${var_idx}]=$!
 	    fi # !par_opt
 	fi # !dbg
-    done # !var_idx
 
+	# Block NNN: Wait
+	# Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
+	# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+	if [ -n "${par_opt}" ]; then
+	    let bch_idx=$((var_idx / job_nbr))
+	    let bch_flg=$(((var_idx+1) % job_nbr))
+	    #printf "${spt_nm}: var_idx = ${var_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
+	    if [ ${bch_flg} -eq 0 ]; then
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at var_idx = ${var_idx}...\n"
+		fi # !dbg
+		for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
+		    wait ${sbs_pid[${pid_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
+			exit 1
+		    fi # !err
+		done # !pid_idx
+		let idx_srt=$((idx_srt + job_nbr))
+		let idx_end=$((idx_end + job_nbr))
+	    fi # !bch_flg
+	fi # !par_typ
+	
+    done # !var_idx
+    
+    # Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
+    if [ -n "${par_opt}" ]; then
+	let bch_flg=$((fl_nbr % job_nbr))
+	if [ ${bch_flg} -ne 0 ]; then
+	    let bch_idx=$((bch_idx+1))
+	    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+	    for ((pid_idx=${idx_srt};pid_idx<${fl_nbr};pid_idx++)); do
+		wait ${sbs_pid[${pid_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
+		    exit 1
+		fi # !err
+	    done # !pid_idx
+	fi # !bch_flg
+    fi # !par_typ
+
+    # Begin loop over variables to regrid
+    if [ -n "${rgr_map}" ]; then 
+	idx_srt=0
+	let idx_end=$((job_nbr-1))
+	for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
+	    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_rgr[${var_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_rgr[${var_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR regrid cmd_rgr[${var_idx}] failed. Debug this:\n${cmd_rgr[${var_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_opt
+		    eval ${cmd_rgr[${var_idx}]} ${par_opt}
+		    rgr_pid[${var_idx}]=$!
+		fi # !par_opt
+	    fi # !dbg
+	    
+	    # Block NNN: Wait
+	    # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
+	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+	    if [ -n "${par_opt}" ]; then
+		let bch_idx=$((var_idx / job_nbr))
+		let bch_flg=$(((var_idx+1) % job_nbr))
+		#printf "${spt_nm}: var_idx = ${var_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
+		if [ ${bch_flg} -eq 0 ]; then
+		    if [ ${dbg_lvl} -ge 1 ]; then
+			printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at var_idx = ${var_idx}...\n"
+		    fi # !dbg
+		    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
+			wait ${rgr_pid[${pid_idx}]}
+			if [ $? -ne 0 ]; then
+			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+			    exit 1
+			fi # !err
+		    done # !pid_idx
+		    let idx_srt=$((idx_srt + job_nbr))
+		    let idx_end=$((idx_end + job_nbr))
+		fi # !bch_flg
+	    fi # !par_typ
+	    
+	done # !var_idx
+	
+	# Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
+	if [ -n "${par_opt}" ]; then
+	    let bch_flg=$((fl_nbr % job_nbr))
+	    if [ ${bch_flg} -ne 0 ]; then
+		let bch_idx=$((bch_idx+1))
+		printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+		for ((pid_idx=${idx_srt};pid_idx<${fl_nbr};pid_idx++)); do
+		    wait ${rgr_pid[${pid_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+			exit 1
+		    fi # !err
+		done # !pid_idx
+	    fi # !bch_flg
+	fi # !par_typ
+    fi # !rgr_map
+    
 fi # !sbs_flg
 
 # Block 1 Loop 2: Climatologies based on annual means
@@ -1179,8 +1318,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
     if [ "${bnr_flg}" = 'No' ]; then
 	for fl_crr in ${yr_fl} ; do
 	    if [ ! -e "${drc_in}/${fl_crr}" ]; then
-		echo "ERROR: Unable to find required input file ${drc_in}/${fl_crr}"
-		echo "HINT: All files implied to exist by the climatology bounds (start/end year) must be in ${drc_in} before ${spt_nm} will proceed"
+		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
+		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year) must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
 	    fi # ! -e
 	done # !fl_crr

@@ -1180,7 +1180,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !dbg
 
     # Block 6: Wait
-    # Parallel regridding (both Background and MPI) spawn simultaneous processes in batches of ${job_nbr}
+    # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
     # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
     if [ -n "${par_opt}" ]; then
 	let bch_idx=$((fl_idx / job_nbr))

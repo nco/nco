@@ -1,5 +1,9 @@
 2017-01-07  Charlie Zender  <zender@uci.edu>
 
+	* ncsplit: Add regridding
+
+	* ncsplit: Add batch parallelism and --job_nbr
+
 	* NCO 4.6.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha02 final changes';git push
 	git tag -a 4.6.4-alpha02 -m 'Version 4.6.4-alpha02 new features: ncsplit, cnk_csh';git push --tags
