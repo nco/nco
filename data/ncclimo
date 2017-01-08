@@ -196,10 +196,12 @@ esac # !HOSTNAME
 # Old MPAS filename conventions (until ~201609)::
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
-# Split:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr
-# Positional arguments:
-# ncclimo --dbg=1 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
+# Split pipe:
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr
+# Split positional arguments:
+# ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
+# Split production:
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 -s 1 -e 199 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -576,6 +578,7 @@ fi # !yr_srt_prv extended climo
 if [ ! -t 0 ] || [ ${psn_nbr} -ge 1 ]; then
     sbs_flg='Yes'
     clm_flg='No'
+    dec_md='sdd'
 fi # !stdin || !psn
 if [ -n "${ypf_sbs_usr}" ]; then 
     # fxm: Specify --ypf to turn-on split mode when input files are specified by -i drc_in
@@ -583,6 +586,7 @@ if [ -n "${ypf_sbs_usr}" ]; then
     ypf_sbs=${ypf_sbs_usr}
     sbs_flg='Yes'
     clm_flg='No'
+    dec_md='sdd'
 fi # !ypf_sbs
 
 # Derived variables
@@ -904,7 +908,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 fi # !mpi
 
 # Print initial state
-if [ ${dbg_lvl} -ge 1 ]; then
+if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: bnr_flg  = ${bnr_flg}\n"
     printf "dbg: caseid   = ${caseid}\n"
     printf "dbg: cf_flg   = ${cf_flg}\n"
@@ -976,65 +980,94 @@ if [ ${dbg_lvl} -ge 2 ]; then
 fi # !dbg
 
 # Create output directory
-if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ] ; then 
+if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ]; then 
     mkdir -p ${drc_out}
 fi # !drc_out
-if [ -n "${drc_rgr}" ] && [ ! -d "${drc_rgr}" ] ; then 
+if [ -n "${drc_rgr}" ] && [ ! -d "${drc_rgr}" ]; then 
     mkdir -p ${drc_rgr}
 fi # !drc_rgr
 
 # Human-readable summary
 date_srt=$(date +"%s")
 if [ ${dbg_lvl} -ge 0 ]; then
-    printf "Climatology generation invoked with command:\n"
+    printf "Climatology operations invoked with command:\n"
     echo "${cmd_ln}"
 fi # !dbg
-printf "Started climatology generation for dataset ${caseid} at `date`.\n"
+if [ -n "${caseid}" ]; then
+    printf "Started climatology generation for dataset ${caseid} at `date`.\n"
+else
+    printf "Started climatology splitting at `date`.\n"
+fi # !caseid
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
-if [ "${xtn_flg}" = 'No' ]; then
-    printf "Producing standard climatology from raw input files in directory ${drc_in}\n"
-    printf "Output files to directory ${drc_out}\n"
-fi # !xtn_flg
-if [ "${bnr_flg}" = 'Yes' ]; then
-    printf "Producing extended climatology in binary mode: Will combine pre-computed climatology in directory ${drc_prv} with pre-computed climatology in directory ${drc_in}\n"
-    printf "Output files to directory ${drc_xtn}\n"
-fi # !bnr_flg
-if [ "${ncr_flg}" = 'Yes' ]; then
-    printf "Producing extended climatology in incremental mode: Pre-computed climatology in directory ${drc_prv} will be incremented by raw input files in directory ${drc_in}\n"
-    printf "Output files to directory ${drc_xtn}\n"
-fi # !ncr_flg
-#printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
-if [ "${bnr_flg}" = 'No' ]; then
-    printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
-fi # !bnr_flg
-if [ "${mdl_typ}" = 'yyyymm' ]; then
-    printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
-else # !mdl_typ
-    printf "Filenames will be constructed with CESM'ish or ACME'ish conventions.\n"
-fi # !mdl_typ
-if [ ${clm_md} = 'ann' ]; then 
-    printf "Each input file assumed to contain mean of one year.\n"
-elif [ ${clm_md} = 'mth' ]; then 
-    printf "Each input file assumed to contain mean of one month.\n"
-fi # !mth
-if [ ${clm_md} = 'mth' ]; then 
-    if [ ${dec_md} = 'scd' ]; then 
-	printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive and cross calendar-year boundaries.\n"
+if [ "${sbs_flg}" = 'Yes' ]; then
+    if [ -t 0 ]; then 
+	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
+	    printf "Splitting climatology from raw input files in directory ${drc_in}\n"
+	else # !drc_in
+	    printf "Splitting climatology from raw input files specified as positional arguments\n"
+	fi # !drc_in
     else
-	printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year.\n"
-    fi # !scd
-fi # !mth
-if [ ${cf_flg} = 'Yes' ]; then 
-    printf "Annotation for CF climatology attribute and climatology_bounds variable will be performed.\n"
-else
-    printf "Annotation for CF climatology attribute and climatology_bounds variable will not be performed.\n"
-fi # !cf
-if [ -n "${rgr_map}" ]; then 
-    printf "This climatology will be regridded.\n"
-else
-    printf "This climatology will not be regridded.\n"
-fi # !rgr
+	printf "Splitting climatology from raw input file list piped to stdin\n"
+    fi # !stdin
+    printf "Output files to directory ${drc_out}\n"
+    printf "Splitting ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
+    if [ ${clm_md} = 'ann' ]; then 
+	printf "Each input file assumed to contain mean of one year.\n"
+    elif [ ${clm_md} = 'mth' ]; then 
+	printf "Each input file assumed to contain mean of one month.\n"
+    fi # !mth
+    if [ -n "${rgr_map}" ]; then 
+	printf "Split files will also be regridded.\n"
+    else
+	printf "Split files will not be regridded.\n"
+    fi # !rgr
+fi # !sbs_flg
+if [ "${gnr_flg}" = 'Yes' ]; then
+    if [ "${xtn_flg}" = 'No' ]; then
+	printf "Producing standard climatology from raw input files in directory ${drc_in}\n"
+	printf "Output files to directory ${drc_out}\n"
+    fi # !xtn_flg
+    if [ "${bnr_flg}" = 'Yes' ]; then
+	printf "Producing extended climatology in binary mode: Will combine pre-computed climatology in directory ${drc_prv} with pre-computed climatology in directory ${drc_in}\n"
+	printf "Output files to directory ${drc_xtn}\n"
+    fi # !bnr_flg
+    if [ "${ncr_flg}" = 'Yes' ]; then
+	printf "Producing extended climatology in incremental mode: Pre-computed climatology in directory ${drc_prv} will be incremented by raw input files in directory ${drc_in}\n"
+	printf "Output files to directory ${drc_xtn}\n"
+    fi # !ncr_flg
+    #printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
+    if [ "${bnr_flg}" = 'No' ]; then
+	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
+    fi # !bnr_flg
+    if [ "${mdl_typ}" = 'yyyymm' ]; then
+	printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
+    else # !mdl_typ
+	printf "Filenames will be constructed with CESM'ish or ACME'ish conventions.\n"
+    fi # !mdl_typ
+    if [ ${clm_md} = 'ann' ]; then 
+	printf "Each input file assumed to contain mean of one year.\n"
+    elif [ ${clm_md} = 'mth' ]; then 
+	printf "Each input file assumed to contain mean of one month.\n"
+    fi # !mth
+    if [ ${clm_md} = 'mth' ]; then 
+	if [ ${dec_md} = 'scd' ]; then 
+	    printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive and cross calendar-year boundaries.\n"
+	else
+	    printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year.\n"
+	fi # !scd
+    fi # !mth
+    if [ ${cf_flg} = 'Yes' ]; then 
+	printf "Annotation for CF climatology attribute and climatology_bounds variable will be performed.\n"
+    else
+	printf "Annotation for CF climatology attribute and climatology_bounds variable will not be performed.\n"
+    fi # !cf
+    if [ -n "${rgr_map}" ]; then 
+	printf "This climatology will also be regridded.\n"
+    else
+	printf "This climatology will not be regridded.\n"
+    fi # !rgr
+fi # !gnr_flg
 
 # Block 1: Generate, check, and store (but do not yet execute) commands
 
@@ -1797,27 +1830,43 @@ else # !xtn_flg extended climos
 fi # !xtn_flg extended climos
 
 date_end=$(date +"%s")
-printf "Completed ${yr_nbr_xtn}-year climatology generation for dataset ${caseid} at `date`.\n"
+if [ -n "${caseid}" ]; then
+    printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset ${caseid} at `date`.\n"
+else # !caseid
+    printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at `date`.\n"
+fi # !caseid
 date_dff=$((date_end-date_srt))
-echo "Quick plots of climatological annual mean:"
-if [ -n "${yr_srt_prv}" ]; then
-    if [ -n "${rgr_map}" ]; then 
-	echo "ncview ${fl_rgr_xtn[${clm_nbr}]} &"
-	echo "panoply ${fl_rgr_xtn[${clm_nbr}]} &"
+if [ "${gnr_flg}" = 'Yes' ]; then
+    echo "Quick plots of climatological annual mean:"
+    if [ -n "${yr_srt_prv}" ]; then
+	if [ -n "${rgr_map}" ]; then 
+	    echo "ncview ${fl_rgr_xtn[${clm_nbr}]} &"
+	    echo "panoply ${fl_rgr_xtn[${clm_nbr}]} &"
+	else
+	    echo "ncview ${fl_xtn[${clm_nbr}]} &"
+	    echo "panoply ${fl_xtn[${clm_nbr}]} &"
+	fi # !rgr_map    
     else
-	echo "ncview ${fl_xtn[${clm_nbr}]} &"
-	echo "panoply ${fl_xtn[${clm_nbr}]} &"
-    fi # !rgr_map    
-else
+	if [ -n "${rgr_map}" ]; then 
+	    echo "ncview ${fl_rgr[${clm_nbr}]} &"
+	    echo "panoply ${fl_rgr[${clm_nbr}]} &"
+	else
+	    echo "ncview ${fl_out[${clm_nbr}]} &"
+	    echo "panoply ${fl_out[${clm_nbr}]} &"
+	fi # !rgr_map    
+    fi # !yr_srt_prv
+    echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
+fi # !gnr_flg
+if [ "${sbs_flg}" = 'Yes' ]; then
+    echo "Quick plots of last split variable:"
     if [ -n "${rgr_map}" ]; then 
-	echo "ncview ${fl_rgr[${clm_nbr}]} &"
-	echo "panoply ${fl_rgr[${clm_nbr}]} &"
+	echo "ncview ${fl_rgr[(${var_nbr}-1)]} &"
+	echo "panoply ${fl_rgr[(${var_nbr}-1)]} &"
     else
-	echo "ncview ${fl_out[${clm_nbr}]} &"
-	echo "panoply ${fl_out[${clm_nbr}]} &"
+	echo "ncview ${fl_out[(${var_nbr}-1)]} &"
+	echo "panoply ${fl_out[(${var_nbr}-1)]} &"
     fi # !rgr_map    
-fi # !yr_srt_prv
-echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
+fi # !sbs_flg
 
 # PMC: add SMB's Git (SHA1) hash info to climo files
 # Assumes utility to add Git hash resides in ../utils/add_git_hash_to_netcdf_metadata

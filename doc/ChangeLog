@@ -1,6 +1,10 @@
+2017-01-08  Charlie Zender  <zender@uci.edu>
+
+	* ncsplit: Customize stdout messages
+
 2017-01-07  Charlie Zender  <zender@uci.edu>
 
-	* nscplit: Split whenever input files are positional or from stdin or --ypf given
+	* ncsplit: Split whenever input files are positional or from stdin or --ypf given
 
 	* ncsplit: Add regridding
 

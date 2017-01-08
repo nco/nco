@@ -2280,7 +2280,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Define new metadata in regridded file */
   att_nm=strdup("long_name");
-  att_val=strdup("solid angle subtended by gridcell");
+  att_val=strdup("Solid angle subtended by gridcell");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=area_nm_out;
   aed_mtd.id=area_out_id;
@@ -2334,7 +2334,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   if(flg_frc_out_wrt){
     att_nm=strdup("long_name");
-    att_val=strdup("fraction of gridcell valid on destination grid");
+    att_val=strdup("Fraction of gridcell valid on destination grid");
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=frc_nm_out;
     aed_mtd.id=frc_out_id;
@@ -2362,7 +2362,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* !flg_frc_out_wrt */
   
   att_nm=strdup("long_name");
-  att_val=strdup("latitude");
+  att_val=strdup("Latitude");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lat_nm_out;
   aed_mtd.id=lat_out_id;
@@ -2426,7 +2426,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
 
   att_nm=strdup("long_name");
-  if(flg_grd_out_rct) att_val=strdup("gridcell latitude interfaces"); else att_val=strdup("gridcell latitude vertices");
+  if(flg_grd_out_rct) att_val=strdup("Gridcell latitude interfaces"); else att_val=strdup("Gridcell latitude vertices");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lat_bnd_nm_out;
   aed_mtd.id=lat_bnd_id;
@@ -2439,7 +2439,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("long_name");
-  att_val=strdup("longitude");
+  att_val=strdup("Longitude");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lon_nm_out;
   aed_mtd.id=lon_out_id;
@@ -2534,7 +2534,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
 
   att_nm=strdup("long_name");
-  if(flg_grd_out_rct) att_val=strdup("gridcell longitude interfaces"); else att_val=strdup("gridcell longitude vertices");
+  if(flg_grd_out_rct) att_val=strdup("Gridcell longitude interfaces"); else att_val=strdup("Gridcell longitude vertices");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=lon_bnd_nm_out;
   aed_mtd.id=lon_bnd_id;
@@ -2548,7 +2548,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   if(nco_grd_lat_typ == nco_grd_lat_fv){
     att_nm=strdup("long_name");
-    att_val=strdup("latitude for staggered FV grid");
+    att_val=strdup("Latitude for staggered FV grid");
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=slat_nm_out;
     aed_mtd.id=slat_out_id;
@@ -2574,7 +2574,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
 
     att_nm=strdup("long_name");
-    att_val=strdup("longitude for staggered FV grid");
+    att_val=strdup("Longitude for staggered FV grid");
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=slon_nm_out;
     aed_mtd.id=slon_out_id;
@@ -2602,7 +2602,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   if(flg_grd_out_rct){
     att_nm=strdup("long_name");
-    att_val=strdup("latitude quadrature weights (normalized to sum to 2.0 on global grids)");
+    att_val=strdup("Latitude quadrature weights (normalized to sum to 2.0 on global grids)");
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=lat_wgt_nm;
     aed_mtd.id=lat_wgt_id;
