@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 3 January 2017
+@set update-date 7 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -554,10 +554,16 @@ Irvine, California@*
 
 @ignore
 The @acronym{DOE} @acronym{ACME} program generously supported ...
+
+Matching @acronym{NCO} against other analysis software, and often
+besting them, has been exhilirating.
+Henry Butowsky has re-joined our efforts.
+Without him, much of this work would have been impossible.
+
 @sp 1
 @noindent
 Charlie Zender@*
-November, 2016@*
+January, 2017@*
 Laguna Beach, California@*
 @end ignore
 

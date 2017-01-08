@@ -197,9 +197,9 @@ esac # !HOSTNAME
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --ypf=1 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr
 # Positional arguments:
-# ncclimo --ypf=1 --dbg=1 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
+# ncclimo --dbg=1 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -559,6 +559,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
     esac # !OPT
 done # !getopts
 shift $((OPTIND-1)) # Advance one argument
+psn_nbr=$#
 
 # Determine mode first (this helps determine other defaults)
 if [ -n "${yr_srt_prv}" ]; then
@@ -571,7 +572,14 @@ if [ -n "${yr_srt_prv}" ]; then
 	ncr_flg='Yes'
     fi # !yr_end_prv binary method
 fi # !yr_srt_prv extended climo
+# Subset (split) mode whenever stdin or positional arguments are used
+if [ ! -t 0 ] || [ ${psn_nbr} -ge 1 ]; then
+    sbs_flg='Yes'
+    clm_flg='No'
+fi # !stdin || !psn
 if [ -n "${ypf_sbs_usr}" ]; then 
+    # fxm: Specify --ypf to turn-on split mode when input files are specified by -i drc_in
+    # Otherwise it's ambiguous whether to generate climatology or split from all files in $drc_in
     ypf_sbs=${ypf_sbs_usr}
     sbs_flg='Yes'
     clm_flg='No'
@@ -759,27 +767,13 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		done
 	    else # !drc_in
 		# Read any positional arguments
-		psn_nbr=$#
-		if [ ${psn_nbr} -eq 1 ]; then
-		    fl_in[0]=${1}
-		    fl_nbr=1
-		elif [ ${psn_nbr} -eq 2 ]; then
-		    if [ -z "${out_fl}" ]; then
-			out_fl=${2}
-			out_usr_flg='Yes'
-			fl_nbr=1
-		    else # !out_fl
-			echo "${spt_nm}: ERROR Output file specified with -o (${out_fl}) conflicts with second positional argument ${2}"
-			echo "${spt_nm}: HINT Use -o out_fl or positional argument, not both"
-			exit 1
-		    fi # !out_fl
-		elif [ ${psn_nbr} -ge 3 ]; then
+		if [ ${psn_nbr} -ge 1 ]; then
 		    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
 			fl_in[(${psn_idx}-1)]=${!psn_idx}
 			fl_nbr=${psn_nbr}
 		    done # !psn_idx
 		else
-		    echo "${spt_nm}: ERROR Specify input file(s) with -i or with positional argument(s) or with stdin"
+		    echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
 		    echo "${spt_nm}: HINT Pipe input file list via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
 		    exit 1
 		fi # !psn_nbr
