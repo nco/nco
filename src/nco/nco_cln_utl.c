@@ -337,6 +337,8 @@ nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */
 double *dval,           /* I/O [dbl] var values modified */
 var_sct *var)           /* I/O [var_sct] var values modified */
 {
+  (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to convert values from \"%s\" to \"%s\" See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n", nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
+
   return NCO_NOERR;
 }
 
@@ -347,7 +349,12 @@ const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
 nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
 double *og_val)         /* O [dbl] output value */
 {
+
   *og_val=0.0; /* CEWI */
+  
+  (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to interpret the string \"%s\" limit argument. HINT Re-build or re-install NCO enabled with UDUnits.\n", nco_prg_nm_get(),val_unt_sng);
+
+
   return NCO_NOERR; 
 }
 
