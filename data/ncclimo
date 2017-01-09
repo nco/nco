@@ -390,7 +390,7 @@ thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
 xtn_flg='No' # [sng] Produce extended climatology
-ypf_sbs=0 # [yr] Years-per-file
+ypf_max=50 # [yr] Years-per-file
 yr_end='1983' # [yr] End year
 yr_srt='1980' # [yr] Start year
 
@@ -425,7 +425,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Previous climo directory (default ${fnt_bld}${drc_prv}${fnt_nrm}) [${fnt_tlc}drc_prv, prv_drc, previous_dir, previous_climo, previous${fnt_nrm}]"
     echo "${fnt_rvr}-Y${fnt_nrm} ${fnt_bld}rgr_xtn${fnt_nrm}  Regridded extended climo directory (default ${fnt_bld}${drc_rgr_xtn}${fnt_nrm}) [${fnt_tlc}drc_rgr_xtn, drc_xtn_rgr, regridded_extended, extended_regridded${fnt_nrm}]"
     echo "${fnt_rvr}-y${fnt_nrm} ${fnt_bld}rgr_prv${fnt_nrm}  Regridded previous climo directory (default ${fnt_bld}${drc_rgr_prv}${fnt_nrm}) [${fnt_tlc}drc_rgr_prv, drc_prv_rgr, regridded_previous, prefvious_regridded${fnt_nrm}]"
-    echo "${fnt_rvr}-z${fnt_nrm} ${fnt_bld}ypf_sbs${fnt_nrm}  Years-per-file (empty means none) (default ${fnt_bld}${ypf_sbs}${fnt_nrm}) [${fnt_tlc}ypf_sbs, ypf, years, years_per_file${fnt_nrm}]"
+    echo "${fnt_rvr}-z${fnt_nrm} ${fnt_bld}ypf_max${fnt_nrm}  Years-per-file maximum (empty means none) (default ${fnt_bld}${ypf_max}${fnt_nrm}) [${fnt_tlc}ypf_max, ypf, years, years_per_file${fnt_nrm}]"
     printf "\n"
     printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} ${fnt_nrm}\n"
     printf "${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}\n"
@@ -517,7 +517,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	x) drc_prv="${OPTARG}" ;; # Previous climo directory
 	Y) drc_rgr_xtn="${OPTARG}" ;; # Regridded extended climo directory
 	y) drc_rgr_prv="${OPTARG}" ;; # Regridded previous climo directory
-	z) ypf_sbs_usr="${OPTARG}" ;; # Years per file
+	z) ypf_max_usr="${OPTARG}" ;; # Years-per-file maximum
 	-) LONG_OPTARG="${OPTARG#*=}"
 	   case ${OPTARG} in
 	       # Hereafter ${OPTARG} is long argument key, and ${LONG_OPTARG}, if any, is long argument value
@@ -551,7 +551,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	       drc_prv=?* | prv_drc=?* | previous_dir=?* | previous_climo=?* | previous=?* ) drc_prv="${LONG_OPTARG}" ;; # -x # Previous climo directory
 	       drc_rgr_xtn=?* | drc_xtn_rgr=?* | regridded_extended=?* | extended_regridded=?* ) drc_rgr_xtn="${LONG_OPTARG}" ;; # -Y # Regridded extended climo directory
 	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
-	       ypf_sbs=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_sbs_usr="${LONG_OPTARG}" ;; # -z # Years per file
+	       ypf_max=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_max_usr="${LONG_OPTARG}" ;; # -z # Years-per-file maximum
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG
@@ -580,14 +580,14 @@ if [ ! -t 0 ] || [ ${psn_nbr} -ge 1 ]; then
     clm_flg='No'
     dec_md='sdd'
 fi # !stdin || !psn
-if [ -n "${ypf_sbs_usr}" ]; then 
-    # fxm: Specify --ypf to turn-on split mode when input files are specified by -i drc_in
-    # Otherwise it's ambiguous whether to generate climatology or split from all files in $drc_in
-    ypf_sbs=${ypf_sbs_usr}
+if [ -n "${ypf_max_usr}" ]; then 
+    # fxm: Must specify --ypf to turn-on split mode when input files are specified by -i drc_in
+    # Otherwise it is ambiguous whether to generate climatology or to split
+    ypf_max=${ypf_max_usr}
     sbs_flg='Yes'
     clm_flg='No'
     dec_md='sdd'
-fi # !ypf_sbs
+fi # !ypf_max
 
 # Derived variables
 if [ -n "${drc_out_usr}" ]; then
@@ -795,22 +795,33 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     if [ "${clm_md}" = 'ann' ]; then
 	yr_sbs=${fl_nbr}
     elif [ "${clm_md}" = 'dly' ]; then
-	let yr_sbs=${fl_nbr} / 365
-	let dly_rmd=${fl_nbr} % 365
+	let yr_sbs=${fl_nbr}/365
+	let dly_rmd=${fl_nbr}%365
 	if [ ${dly_rmd} -ne 0 ]; then
 	    printf "${spt_nm}: ERROR ${fl_nbr} files of daily input contain non-integral number of years, ${dly_rmd} days leftover in final year\n"
 	    printf "${spt_nm}: HINT Provide input daily filenames in multiples of 365\n"
 	    exit 1
 	fi # !mth_rmd
     elif [ "${clm_md}" = 'mth' ]; then
-	let yr_sbs=(${fl_nbr} / 12)
-	let mth_rmd=(${fl_nbr} % 12)
+	let yr_sbs=${fl_nbr}/12
+	let mth_rmd=${fl_nbr}%12
 	if [ ${mth_rmd} -ne 0 ]; then
 	    printf "${spt_nm}: ERROR ${fl_nbr} files of monthly input contain non-integral number of years, ${mth_rmd} month(s) leftover in final year\n"
 	    printf "${spt_nm}: HINT Provide input monthly filenames in multiples of 12\n"
 	    exit 1
 	fi # !mth_rmd
     fi # !clm_md
+
+    # How many segments of output?
+    let sgm_nbr=${yr_sbs}/${ypf_max}
+    let sgm_rmd=${yr_sbs}%${ypf_max}
+    if [ ${sgm_rmd} -ne 0 ]; then
+	let sgm_nbr=${sgm_nbr}+1
+	let sgm_nbrm1=${sgm_nbr}-1
+	sgm_flg='Yes'
+    else # !sgm_rmd
+	sgm_flg='No'
+    fi # !sgm_rmd  
 
 else # !sbs_flg
 
@@ -945,7 +956,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"
-    printf "dbg: ypf_sbs  = ${ypf_sbs}\n"
+    printf "dbg: ypf_max  = ${ypf_max}\n"
     printf "dbg: yr_sbs   = ${yr_sbs}\n"
     printf "dbg: yyyy_end = ${yyyy_end}\n"
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
@@ -1003,20 +1014,29 @@ printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
 if [ "${sbs_flg}" = 'Yes' ]; then
     if [ -t 0 ]; then 
 	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
-	    printf "Splitting climatology from raw input files in directory ${drc_in}\n"
+	    printf "Splitting climatology from ${fl_nbr} raw input files in directory ${drc_in}\n"
 	else # !drc_in
-	    printf "Splitting climatology from raw input files specified as positional arguments\n"
+	    printf "Splitting climatology from ${fl_nbr} raw input files specified as positional arguments\n"
 	fi # !drc_in
     else
-	printf "Splitting climatology from raw input file list piped to stdin\n"
+	printf "Splitting climatology from list of ${fl_nbr} raw input files piped to stdin\n"
     fi # !stdin
-    printf "Output files to directory ${drc_out}\n"
-    printf "Splitting ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
     if [ ${clm_md} = 'ann' ]; then 
 	printf "Each input file assumed to contain mean of one year.\n"
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month.\n"
     fi # !mth
+    printf "Input to split comprises ${yr_sbs} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
+    if [ ${sgm_nbr} -gt 1 ]; then
+	if [ ${sgm_flg} = 'Yes' ]; then 
+	    printf "Will split data into ${sgm_nbrm1} segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} years.\n"
+	else
+	    printf "Will split data into ${sgm_nbr} segment(s) of length ${ypf_max} years.\n"
+	fi # !sgm_flg
+    else # !sgm_nbr
+	printf "Will place all output into one segment of length ${yr_sbs} years.\n"
+    fi # !sgm_nbr
+    printf "Output files to directory ${drc_out}\n"
     if [ -n "${rgr_map}" ]; then 
 	printf "Split files will also be regridded.\n"
     else
