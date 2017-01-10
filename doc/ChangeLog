@@ -1,3 +1,7 @@
+2016-01-10  Henry Butowsky  <henryb@hush.com>
+
+	* mods to min_coord() function so that it can take and return an array of values (var or att)
+
 2017-01-08  Charlie Zender  <zender@uci.edu>
 
 	* ncsplit: Customize stdout messages
