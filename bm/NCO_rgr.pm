@@ -2939,6 +2939,17 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
+# ncks #120 
+    $dsc_sng="Test UDUNITS with dates as limits - fails without UDUNITS";
+    $tst_cmd[0]="ncks -O $nco_D_flg  -d time,'1979-01-01 0:0:0','1981-01-01 0:0:0' -v time,time_bnds  $in_pth_arg split.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl);' %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="time_ttl = 9106";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+
+
 #####################
 #### ncpdq tests #### -OK !
 #####################
