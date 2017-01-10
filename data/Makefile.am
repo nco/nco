@@ -2,7 +2,7 @@
 
 test_data = big.nc in.nc in_rec_zero.nc
 
-test_data_netCDF4 = in_4c.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_grp_8.nc cmip5.nc obs.nc mdl_1.nc mdl_2.nc mdl_3.nc hdn.nc mrd.nc
+test_data_netCDF4 = in_4c.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_grp_8.nc cmip5.nc obs.nc mdl_1.nc mdl_2.nc mdl_3.nc hdn.nc mrd.nc split.nc
 
 # netCDF build rules
 %.nc : %.cdl
@@ -70,13 +70,17 @@ mdl_2.nc : mdl_2.cdl
 mdl_3.nc : mdl_3.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
+split.nc : split.cdl
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+
+
 all: ${test_data} ${test_data_netCDF4}
 
 # Autoconf/automake instructions for scripts:
 # https://www.gnu.org/software/automake/manual/html_node/Scripts.html
 dist_bin_SCRIPTS = ncclimo ncremap
 
-EXTRA_DIST = big.cdl dsm.cdl hdn.cdl mrd.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_grp_4.cdl in_grp_5.cdl in_grp_6.cdl in_grp_7.cdl in_grp_8.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl_1.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
+EXTRA_DIST = big.cdl dsm.cdl hdn.cdl mrd.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_grp_4.cdl in_grp_5.cdl in_grp_6.cdl in_grp_7.cdl in_grp_8.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl_1.cdl split.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 
 # Automake manual section 14:
 # If configure built it, 'distclean' should delete it
@@ -84,7 +88,7 @@ EXTRA_DIST = big.cdl dsm.cdl hdn.cdl mrd.cdl in.cdl in_grp.cdl in_grp_1.cdl in_g
 DISTCLEANFILES = foo*
 
 # Build procedure produces these files:
-CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc big.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_1.nc in_2.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_grp_8.nc cmip5.nc hdn.nc mrd.nc dsm.nc lrg_bm1.nc lrg_bm.nc obs.nc mdl.nc mdl2.nc mdl_1.nc mdl_2.nc mdl_3.nc buggy.nc in_rec_zero.nc ../src/nco_c++/in.nc
+CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc big.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_1.nc in_2.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_grp_8.nc cmip5.nc hdn.nc mrd.nc dsm.nc split.nc lrg_bm1.nc lrg_bm.nc obs.nc mdl.nc mdl2.nc mdl_1.nc mdl_2.nc mdl_3.nc buggy.nc in_rec_zero.nc ../src/nco_c++/in.nc
 
 MAINTAINERCLEANFILES = Makefile.in
 
