@@ -3246,19 +3246,27 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   var2=walker.out(args_vtr[1]);  
 
   
-  if(prs_arg->ntl_scn  ){
+  var_ret=nco_var_dpl(var2);     
+  
+  if(!var_ret->undefined)
+      var_ret=nco_var_cnf_typ(NC_INT,var_ret);
+  
+  if(prs_arg->ntl_scn  )
+  {
     nco_var_free(var1);
     nco_var_free(var2);
-    return ncap_sclr_var_mk(SCS("~coord_function"),(nc_type)NC_INT,false);  ;
+    return var_ret;
   }
 
-
+  // do heavy lifting 
   {
     bool bInc;
     long idx;
-    long sz;
+    long jdx;
+    long c_sz;
+    long r_sz;  
+    nco_int *ip;
     double dval;
-    double dmin; 
     double *dp_crd; 
     
     var1=nco_var_cnf_typ(NC_DOUBLE,var1);
@@ -3267,37 +3275,54 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
     // convert everything to type double         
     (void)cast_void_nctype(NC_DOUBLE,&(var1->val));
     (void)cast_void_nctype(NC_DOUBLE,&(var2->val));
+    (void)cast_void_nctype(NC_INT,&(var_ret->val));
 
+    r_sz=var_ret->sz;
+    ip=var_ret->val.ip;  
+
+    c_sz=var1->sz;  
     dp_crd=var1->val.dp;  
-    dval=var2->val.dp[0];   
-    sz=var1->sz;  
+       
+    // dval=var2->val.dp[0];   
+
     
     // determine if co-ord is montonic increasing or decreasing 
     // true if increasing 
     bInc= ( dp_crd[1] > dp_crd[0]); 
         
-    lret=-1; // set to not in range
     // check limits co-ord increasing 
     if(bInc){
-      if(dval>=dp_crd[0] && dval<=dp_crd[sz-1] )
-         for(idx=0 ; idx<sz-1 ; idx++)
-           if( dval >= dp_crd[idx] && dval <= dp_crd[idx+1] ){  
-	      lret=(dval-dp_crd[idx]<= dp_crd[idx+1]-dval ? idx: idx+1 );    
-              break;
-	   }  
-    }  
+      for(idx=0;idx<r_sz;idx++){ 
+	 dval=var2->val.dp[idx]; 
+         /* default set to out of range */   
+         ip[idx]=-1;  
+         if(dval>=dp_crd[0] && dval<=dp_crd[c_sz-1] )
+           for(jdx=0 ; jdx<c_sz-1 ; jdx++)
+             if( dval >= dp_crd[jdx] && dval <= dp_crd[jdx+1] )
+             {  
+	        ip[idx]=(dval-dp_crd[jdx]<= dp_crd[jdx+1]-dval ? jdx: jdx+1 );    
+                break;
+	     }  
+      }
+    }
     // check limits co-ord decreasing
     if(!bInc){
-      if(dval<=dp_crd[0] && dval>=dp_crd[sz-1] )
-         for(idx=0 ; idx<sz-1 ; idx++)
-           if( dval <= dp_crd[idx] && dval >= dp_crd[idx+1] ){  
-	      lret=(dp_crd[idx]-dval <= dval-dp_crd[idx+1] ? idx: idx+1 );    
-              break;
-	   }  
-    }  
-                  
-     (void)cast_nctype_void(NC_DOUBLE,&var1->val);
+      for(idx=0;idx<r_sz;idx++){  
+	 dval=var2->val.dp[idx]; 
+         /* default set to out of range */   
+         ip[idx]=-1;  
+         if(dval<=dp_crd[0] && dval>=dp_crd[c_sz-1] )
+           for(jdx=0 ; jdx<c_sz-1 ; jdx++)
+             if( dval <= dp_crd[jdx] && dval >= dp_crd[jdx+1] )
+             {  
+	        ip[idx]=(dp_crd[jdx]-dval <= dval-dp_crd[jdx+1] ? jdx: jdx+1 );    
+                break;
+	     }  
+      }  
+    }              
+    (void)cast_nctype_void(NC_DOUBLE,&var1->val);
     (void)cast_nctype_void(NC_DOUBLE,&var2->val);
+    (void)cast_nctype_void(NC_INT,&var_ret->val);
   
    
   }
@@ -3305,7 +3330,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   nco_var_free(var1);   
   nco_var_free(var2);
 
-  return ncap_sclr_var_mk(SCS("~coord_function"),(nco_int)lret);        
+  return var_ret;        
   }
 
 
