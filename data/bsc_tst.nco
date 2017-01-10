@@ -605,8 +605,45 @@ nbr_err_ttl=0;
 
 }
 
-// Cumulative distribution functions
+// check min_coords function -- This function take a var /att of value(s) 
+// and for each one returns the index into the coordinate var that is the most close
+// if value is not within coord range then -1 is returned.
+// coord must be monotonic. coord & value(s) converted to double for operation    
 {
+
+  MyCoord[time]={ 1.0,1.5,2.0,3.0,4.0,5.0,7.2,7.6,7.8,8.0 };
+
+  g1=min_coords(MyCoord,1.24);
+  if(g1 != 0)
+  {
+      print("ERROR: g1 finding nearset coordinate index");
+      nbr_err++;	
+  }
+   
+   
+  g2=min_coords(MyCoord,7.90001);
+  if(g2 != 9)
+  {
+      print("ERROR: g2 finding nearset coordinate index");
+      nbr_err++;	
+  }
+   
+  g3[lon]={1.1,2.1, 8.0, 1.0};
+  
+  Ig3=min_coords(MyCoord, g3);
+  
+  // expected values 
+  Ig3E[lon]={0,2,9,0};
+		  
+  if( (Ig3-Ig3E).total() !=0 )
+  {
+      print("ERROR: g3 find nearset coordinate indicies");
+      nbr_err++;	
+  }
+
+   
+
+
 
   print("RESULTS block g: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
