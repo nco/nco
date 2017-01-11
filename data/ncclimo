@@ -390,7 +390,7 @@ thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
 xtn_flg='No' # [sng] Produce extended climatology
-ypf_max=50 # [yr] Years-per-file
+ypf_max=50 # [yr] Years-per-output-file
 yr_end='1983' # [yr] End year
 yr_srt='1980' # [yr] Start year
 
@@ -425,7 +425,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Previous climo directory (default ${fnt_bld}${drc_prv}${fnt_nrm}) [${fnt_tlc}drc_prv, prv_drc, previous_dir, previous_climo, previous${fnt_nrm}]"
     echo "${fnt_rvr}-Y${fnt_nrm} ${fnt_bld}rgr_xtn${fnt_nrm}  Regridded extended climo directory (default ${fnt_bld}${drc_rgr_xtn}${fnt_nrm}) [${fnt_tlc}drc_rgr_xtn, drc_xtn_rgr, regridded_extended, extended_regridded${fnt_nrm}]"
     echo "${fnt_rvr}-y${fnt_nrm} ${fnt_bld}rgr_prv${fnt_nrm}  Regridded previous climo directory (default ${fnt_bld}${drc_rgr_prv}${fnt_nrm}) [${fnt_tlc}drc_rgr_prv, drc_prv_rgr, regridded_previous, prefvious_regridded${fnt_nrm}]"
-    echo "${fnt_rvr}-z${fnt_nrm} ${fnt_bld}ypf_max${fnt_nrm}  Years-per-file maximum (empty means none) (default ${fnt_bld}${ypf_max}${fnt_nrm}) [${fnt_tlc}ypf_max, ypf, years, years_per_file${fnt_nrm}]"
+    echo "${fnt_rvr}-z${fnt_nrm} ${fnt_bld}ypf_max${fnt_nrm}  Years-per-output-file maximum (empty means none) (default ${fnt_bld}${ypf_max}${fnt_nrm}) [${fnt_tlc}ypf_max, ypf, years, years_per_file${fnt_nrm}]"
     printf "\n"
     printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} ${fnt_nrm}\n"
     printf "${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}\n"
@@ -517,7 +517,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	x) drc_prv="${OPTARG}" ;; # Previous climo directory
 	Y) drc_rgr_xtn="${OPTARG}" ;; # Regridded extended climo directory
 	y) drc_rgr_prv="${OPTARG}" ;; # Regridded previous climo directory
-	z) ypf_max_usr="${OPTARG}" ;; # Years-per-file maximum
+	z) ypf_max_usr="${OPTARG}" ;; # Years-per-output-file maximum
 	-) LONG_OPTARG="${OPTARG#*=}"
 	   case ${OPTARG} in
 	       # Hereafter ${OPTARG} is long argument key, and ${LONG_OPTARG}, if any, is long argument value
@@ -551,7 +551,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	       drc_prv=?* | prv_drc=?* | previous_dir=?* | previous_climo=?* | previous=?* ) drc_prv="${LONG_OPTARG}" ;; # -x # Previous climo directory
 	       drc_rgr_xtn=?* | drc_xtn_rgr=?* | regridded_extended=?* | extended_regridded=?* ) drc_rgr_xtn="${LONG_OPTARG}" ;; # -Y # Regridded extended climo directory
 	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
-	       ypf_max=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_max_usr="${LONG_OPTARG}" ;; # -z # Years-per-file maximum
+	       ypf_max=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_max_usr="${LONG_OPTARG}" ;; # -z # Years-per-output-file maximum
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG
@@ -965,10 +965,14 @@ if [ ${dbg_lvl} -ge 2 ]; then
 	for ((var_idx=0;var_idx<${var_nbr};var_idx++)); do
 	    printf "${var_sbs[${var_idx}]}\n"
 	done # !var_idx
-	printf "dbg: Will split ${fl_nbr} files:\n"
-	for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
-	    printf "${fl_in[${fl_idx}]}\n"
-	done # !fl_idx
+	printf "dbg: Will split timeseries into ${sgm_nbr} segments:\n"
+	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
+	    printf "Segment ${sgm_idx} months: ${yyyy_srt_sgm[${sgm_idx}]}01--${yyyy_end_sgm[${sgm_idx}]}12\n"
+	done # !sgm_idx
+	printf "dbg: Will split ${fl_nbr} files into ${sgm_nbr} segments:\n"
+	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
+	    printf "${fl_sgm[${sgm_idx}]}\n"
+	done # !sgm_idx
     fi # !sbs
 fi # !dbg
 if [ ${dbg_lvl} -ge 2 ]; then
@@ -1184,19 +1188,52 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	cam* ) var_lst_xtn='lat,lon,area' ;;
     esac # !mdl_nm
 
-    yr_fl=''
-    for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
-	yr_fl="${yr_fl} ${fl_in[${fl_idx}]}"
-    done # !fl_idx
+    # Input files per year
+    if [ "${clm_md}" = 'ann' ]; then
+	fpy=1
+    elif [ "${clm_md}" = 'dly' ]; then
+	fpy=365
+    elif [ "${clm_md}" = 'mth' ]; then
+	fpy=12
+    fi # !clm_md
 
-    for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
-	if [ -n "${fml_nm_usr}" ]; then 
-	    fl_out[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${fml_nm}_${yyyy_srt}01_${yyyy_end}12.nc"
+    for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
+	fl_sgm[${sgm_idx}]=''
+
+	let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy}
+	let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy}
+	let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
+	let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
+	if [ ${sgm_rmd} -ne 0 ]; then
+	    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpy}
+	    let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
+	fi # !sgm_rmd
+	for ((fl_idx=fl_idx_srt;fl_idx<fl_idx_end;fl_idx++)); do
+	    fl_sgm[${sgm_idx}]="${fl_sgm[${sgm_idx}]} ${fl_in[${fl_idx}]}"
+	    yyyy_srt_sgm[${sgm_idx}]=`printf "%04d" ${yr_srt_sgm}`
+	    yyyy_end_sgm[${sgm_idx}]=`printf "%04d" ${yr_end_sgm}`
+	done # !fl_idx
+	#printf "dbg: fxm fl_sgm[${sgm_idx}]=${fl_sgm[${sgm_idx}]}\n"
+
+	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
+	    if [ ! -f "${fl_crr}" ]; then
+		echo "${spt_nm}: ERROR Unable to find required input file ${fl_crr}"
+		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+		exit 1
+	    fi # ! -f
+	done # !fl_crr
+
+    done # !sgm_idx
+
+    # Create template output filenames (to avoid Bash 2D string arrays)
+    for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
+	if [ -z "${fml_nm_usr}" ]; then 
+	    fl_out_tpl[${sgm_idx}]="${drc_out}/var_nm_tpl_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12.nc"
 	else # !fml_nm_usr
-	    fl_out[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt}01_${yyyy_end}12.nc"
+	    fl_out_tpl[${sgm_idx}]="${drc_out}/var_nm_tpl_${fml_nm}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12.nc"
 	fi # !fml_nm_usr
 	if [ -n "${rgr_map}" ]; then
-	    fl_rgr[${var_idx}]="${fl_out[${var_idx}]/${drc_out}/${drc_rgr}}"
+	    fl_rgr_tpl[${sgm_idx}]="${fl_out_tpl[${sgm_idx}]/${drc_out}/${drc_rgr}}"
 	    if [ "${drc_out}" = "${drc_rgr}" ]; then 
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
@@ -1212,108 +1249,38 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    fi # !strlen
 		fi # !strlen
 		#    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
-		fl_rgr[${var_idx}]="${fl_rgr[${var_idx}]/.nc/_${rgr_sfx}.nc}"
+		fl_rgr_tpl[${sgm_idx}]="${fl_rgr_tpl[${sgm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
 	fi # !rgr_map
-    done # !var_idx
+    done # !sgm_idx
 
-    for fl_crr in ${yr_fl} ; do
-	if [ ! -f "${fl_crr}" ]; then
-	    echo "${spt_nm}: ERROR Unable to find required input file ${fl_crr}"
-	    echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
-	    exit 1
-	fi # ! -f
-    done # !fl_crr
+    # Begin outer loop over time segments
+    for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 
-    # Begin loop over variables to split
-    idx_srt=0
-    let idx_end=$((job_nbr-1))
-    for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
-	cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]},${var_lst_xtn} ${nco_opt} ${yr_fl} ${fl_out[${var_idx}]}"
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_sbs[${var_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    if [ -z "${par_opt}" ]; then
-		eval ${cmd_sbs[${var_idx}]}
-		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR subset cmd_sbs[${var_idx}] failed. Debug this:\n${cmd_sbs[${var_idx}]}\n"
-		    exit 1
-		fi # !err
-	    else # !par_opt
-		eval ${cmd_sbs[${var_idx}]} ${par_opt}
-		sbs_pid[${var_idx}]=$!
-	    fi # !par_opt
-	fi # !dbg
-
-	# Block NNN: Wait
-	# Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
-	# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-	if [ -n "${par_opt}" ]; then
-	    let bch_idx=$((var_idx / job_nbr))
-	    let bch_flg=$(((var_idx+1) % job_nbr))
-	    #printf "${spt_nm}: var_idx = ${var_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
-	    if [ ${bch_flg} -eq 0 ]; then
-		if [ ${dbg_lvl} -ge 1 ]; then
-		    printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at var_idx = ${var_idx}...\n"
-		fi # !dbg
-		for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
-		    wait ${sbs_pid[${pid_idx}]}
-		    if [ $? -ne 0 ]; then
-			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
-			exit 1
-		    fi # !err
-		done # !pid_idx
-		let idx_srt=$((idx_srt + job_nbr))
-		let idx_end=$((idx_end + job_nbr))
-	    fi # !bch_flg
-	fi # !par_typ
-	
-    done # !var_idx
-    
-    # Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
-    if [ -n "${par_opt}" ]; then
-	let bch_flg=$((fl_nbr % job_nbr))
-	if [ ${bch_flg} -ne 0 ]; then
-	    let bch_idx=$((bch_idx+1))
-	    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
-	    for ((pid_idx=${idx_srt};pid_idx<${fl_nbr};pid_idx++)); do
-		wait ${sbs_pid[${pid_idx}]}
-		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
-		    exit 1
-		fi # !err
-	    done # !pid_idx
-	fi # !bch_flg
-    fi # !par_typ
-
-    # Begin loop over variables to regrid
-    if [ -n "${rgr_map}" ]; then 
+	# Begin loop over variables to split
 	idx_srt=0
 	let idx_end=$((job_nbr-1))
 	for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
-	    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
-	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -C -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
-	    fi # !mdl_typ
+	    fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
+	    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]},${var_lst_xtn} ${nco_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_rgr[${var_idx}]}
+		echo ${cmd_sbs[${var_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -le 1 ]; then
 		if [ -z "${par_opt}" ]; then
-		    eval ${cmd_rgr[${var_idx}]}
+		    eval ${cmd_sbs[${var_idx}]}
 		    if [ $? -ne 0 ]; then
-			printf "${spt_nm}: ERROR regrid cmd_rgr[${var_idx}] failed. Debug this:\n${cmd_rgr[${var_idx}]}\n"
+			printf "${spt_nm}: ERROR subset cmd_sbs[${var_idx}] failed. Debug this:\n${cmd_sbs[${var_idx}]}\n"
 			exit 1
 		    fi # !err
 		else # !par_opt
-		    eval ${cmd_rgr[${var_idx}]} ${par_opt}
-		    rgr_pid[${var_idx}]=$!
+		    eval ${cmd_sbs[${var_idx}]} ${par_opt}
+		    sbs_pid[${var_idx}]=$!
 		fi # !par_opt
 	    fi # !dbg
 	    
 	    # Block NNN: Wait
-	    # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
+	    # Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
 	    if [ -n "${par_opt}" ]; then
 		let bch_idx=$((var_idx / job_nbr))
@@ -1324,9 +1291,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at var_idx = ${var_idx}...\n"
 		    fi # !dbg
 		    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
-			wait ${rgr_pid[${pid_idx}]}
+			wait ${sbs_pid[${pid_idx}]}
 			if [ $? -ne 0 ]; then
-			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+			    printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
 			    exit 1
 			fi # !err
 		    done # !pid_idx
@@ -1339,20 +1306,89 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	
 	# Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
 	if [ -n "${par_opt}" ]; then
-	    let bch_flg=$((fl_nbr % job_nbr))
+	    let bch_flg=$((var_nbr % job_nbr))
 	    if [ ${bch_flg} -ne 0 ]; then
 		let bch_idx=$((bch_idx+1))
 		printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
-		for ((pid_idx=${idx_srt};pid_idx<${fl_nbr};pid_idx++)); do
-		    wait ${rgr_pid[${pid_idx}]}
+		for ((pid_idx=${idx_srt};pid_idx<${var_nbr};pid_idx++)); do
+		    wait ${sbs_pid[${pid_idx}]}
 		    if [ $? -ne 0 ]; then
-			printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
 			exit 1
 		    fi # !err
 		done # !pid_idx
 	    fi # !bch_flg
 	fi # !par_typ
-    fi # !rgr_map
+	
+	# Begin loop over variables to regrid
+	if [ -n "${rgr_map}" ]; then 
+	    idx_srt=0
+	    let idx_end=$((job_nbr-1))
+	    for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
+		fl_rgr[${var_idx}]="${fl_rgr_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
+		cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+		if [ "${mdl_typ}" = 'mpas' ]; then
+		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -C -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
+		fi # !mdl_typ
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_rgr[${var_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -le 1 ]; then
+		    if [ -z "${par_opt}" ]; then
+			eval ${cmd_rgr[${var_idx}]}
+			if [ $? -ne 0 ]; then
+			    printf "${spt_nm}: ERROR regrid cmd_rgr[${var_idx}] failed. Debug this:\n${cmd_rgr[${var_idx}]}\n"
+			    exit 1
+			fi # !err
+		    else # !par_opt
+			eval ${cmd_rgr[${var_idx}]} ${par_opt}
+			rgr_pid[${var_idx}]=$!
+		    fi # !par_opt
+		fi # !dbg
+		
+		# Block NNN: Wait
+		# Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
+		# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+		if [ -n "${par_opt}" ]; then
+		    let bch_idx=$((var_idx / job_nbr))
+		    let bch_flg=$(((var_idx+1) % job_nbr))
+		    #printf "${spt_nm}: var_idx = ${var_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
+		    if [ ${bch_flg} -eq 0 ]; then
+			if [ ${dbg_lvl} -ge 1 ]; then
+			    printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at var_idx = ${var_idx}...\n"
+			fi # !dbg
+			for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
+			    wait ${rgr_pid[${pid_idx}]}
+			    if [ $? -ne 0 ]; then
+				printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+				exit 1
+			    fi # !err
+			done # !pid_idx
+			let idx_srt=$((idx_srt + job_nbr))
+			let idx_end=$((idx_end + job_nbr))
+		    fi # !bch_flg
+		fi # !par_typ
+		
+	    done # !var_idx
+	    
+	    # Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
+	    if [ -n "${par_opt}" ]; then
+		let bch_flg=$((var_nbr % job_nbr))
+		if [ ${bch_flg} -ne 0 ]; then
+		    let bch_idx=$((bch_idx+1))
+		    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+		    for ((pid_idx=${idx_srt};pid_idx<${var_nbr};pid_idx++)); do
+			wait ${rgr_pid[${pid_idx}]}
+			if [ $? -ne 0 ]; then
+			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+			    exit 1
+			fi # !err
+		    done # !pid_idx
+		fi # !bch_flg
+	    fi # !par_typ
+	fi # !rgr_map
+	
+    done # !sgm_idx
     
 fi # !sbs_flg
 

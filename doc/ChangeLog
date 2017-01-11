@@ -1,6 +1,10 @@
+2017-01-11  Charlie Zender  <zender@uci.edu>
+
+	* ncsplit: Add outer loop over time segments
+
 2016-01-10  Henry Butowsky  <henryb@hush.com>
 
-	* mods to min_coord() function so that it can take and return an array of values (var or att)
+	* modify min_coord() to take and return an array of values (var or att)
 
 2017-01-08  Charlie Zender  <zender@uci.edu>
 
