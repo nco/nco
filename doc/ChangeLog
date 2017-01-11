@@ -1,6 +1,10 @@
 2017-01-11  Charlie Zender  <zender@uci.edu>
 
+	* Sanity check that number of files on command line matches number expected from date switches
+
 	* ncsplit: Add outer loop over time segments
+
+	* ncsplit: Fix parallel partial batch PID wait loop to enumerate over variables not files
 
 2016-01-10  Henry Butowsky  <henryb@hush.com>
 

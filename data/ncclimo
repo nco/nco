@@ -201,7 +201,8 @@ esac # !HOSTNAME
 # Split positional arguments:
 # ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Split production:
-# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 -s 1 -e 199 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 -s 1 -e 9 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[01]??* | ncclimo --dbg=1 -s 1 -e 199 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -791,26 +792,27 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	fi # stdin
     fi # !in_fl
 
-    # How many years of input?
+    # Input files per year
     if [ "${clm_md}" = 'ann' ]; then
-	yr_sbs=${fl_nbr}
+	fpy=1
     elif [ "${clm_md}" = 'dly' ]; then
-	let yr_sbs=${fl_nbr}/365
-	let dly_rmd=${fl_nbr}%365
-	if [ ${dly_rmd} -ne 0 ]; then
-	    printf "${spt_nm}: ERROR ${fl_nbr} files of daily input contain non-integral number of years, ${dly_rmd} days leftover in final year\n"
-	    printf "${spt_nm}: HINT Provide input daily filenames in multiples of 365\n"
-	    exit 1
-	fi # !mth_rmd
+	fpy=365
     elif [ "${clm_md}" = 'mth' ]; then
-	let yr_sbs=${fl_nbr}/12
-	let mth_rmd=${fl_nbr}%12
-	if [ ${mth_rmd} -ne 0 ]; then
-	    printf "${spt_nm}: ERROR ${fl_nbr} files of monthly input contain non-integral number of years, ${mth_rmd} month(s) leftover in final year\n"
-	    printf "${spt_nm}: HINT Provide input monthly filenames in multiples of 12\n"
-	    exit 1
-	fi # !mth_rmd
+	fpy=12
     fi # !clm_md
+    let yr_sbs=${fl_nbr}/${fpy}
+    let fl_rmd=${fl_nbr}%${fpy}
+    if [ ${fl_rmd} -ne 0 ]; then
+	printf "${spt_nm}: ERROR ${fl_nbr} files of clm_md=${clm_md} input contain non-integral number of years, ${fl_rmd} files leftover in final year\n"
+	printf "${spt_nm}: HINT Provide input filenames in multiples of ${fpy}\n"
+	exit 1
+    fi # !fl_rmd
+    if [ ${yr_sbs} -ne ${yr_nbr} ]; then
+	# Sanity check that number of files on command line matches number expected from date switches
+	printf "${spt_nm}: ERROR ${fl_nbr} files on command line expected to contain ${yr_sbs} years of data but date options specified ${yr_nbr} years of data\n"
+	printf "${spt_nm}: HINT Number of files times ${fpy} files-per-year must match number of years implied by -s yr_srt and -e yr_end options\n"
+	exit 1
+    fi # !yr_sbs
 
     # How many segments of output?
     let sgm_nbr=${yr_sbs}/${ypf_max}
@@ -1187,15 +1189,6 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     case ${mdl_nm} in
 	cam* ) var_lst_xtn='lat,lon,area' ;;
     esac # !mdl_nm
-
-    # Input files per year
-    if [ "${clm_md}" = 'ann' ]; then
-	fpy=1
-    elif [ "${clm_md}" = 'dly' ]; then
-	fpy=365
-    elif [ "${clm_md}" = 'mth' ]; then
-	fpy=12
-    fi # !clm_md
 
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 	fl_sgm[${sgm_idx}]=''
