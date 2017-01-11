@@ -1,6 +1,10 @@
 2017-01-11  Charlie Zender  <zender@uci.edu>
 
-	* Sanity check that number of files on command line matches number expected from date switches
+	* ncsplit: Verified working on 250-year ACME beta simulation
+
+	* ncsplit: Comment-out old Git hash code which fails with split files anyway
+
+	* ncsplit: Sanity check that number of files on command line matches number expected from date switches
 
 	* ncsplit: Add outer loop over time segments
 

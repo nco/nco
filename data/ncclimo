@@ -202,7 +202,7 @@ esac # !HOSTNAME
 # ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Split production:
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 -s 1 -e 9 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
-# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[01]??* | ncclimo --dbg=1 -s 1 -e 199 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 -s 1 -e 250 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -1011,9 +1011,9 @@ if [ ${dbg_lvl} -ge 0 ]; then
     echo "${cmd_ln}"
 fi # !dbg
 if [ -n "${caseid}" ]; then
-    printf "Started climatology generation for dataset ${caseid} at `date`.\n"
+    printf "Started climatology generation for dataset ${caseid} at `date`\n"
 else
-    printf "Started climatology splitting at `date`.\n"
+    printf "Started climatology splitting at `date`\n"
 fi # !caseid
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
@@ -1028,25 +1028,25 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	printf "Splitting climatology from list of ${fl_nbr} raw input files piped to stdin\n"
     fi # !stdin
     if [ ${clm_md} = 'ann' ]; then 
-	printf "Each input file assumed to contain mean of one year.\n"
+	printf "Each input file assumed to contain mean of one year\n"
     elif [ ${clm_md} = 'mth' ]; then 
-	printf "Each input file assumed to contain mean of one month.\n"
+	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
-    printf "Input to split comprises ${yr_sbs} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
+    printf "Input to split comprises ${yr_sbs} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     if [ ${sgm_nbr} -gt 1 ]; then
 	if [ ${sgm_flg} = 'Yes' ]; then 
-	    printf "Will split data into ${sgm_nbrm1} segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s).\n"
+	    printf "Will split data into ${sgm_nbrm1} segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s)\n"
 	else
-	    printf "Will split data into ${sgm_nbr} segment(s) of length ${ypf_max} years.\n"
+	    printf "Will split data into ${sgm_nbr} segment(s) of length ${ypf_max} years\n"
 	fi # !sgm_flg
     else # !sgm_nbr
-	printf "Will place all output into one segment of length ${yr_sbs} years.\n"
+	printf "Will place all output into one segment of length ${yr_sbs} years\n"
     fi # !sgm_nbr
     printf "Output files to directory ${drc_out}\n"
     if [ -n "${rgr_map}" ]; then 
-	printf "Split files will also be regridded.\n"
+	printf "Split files will also be regridded\n"
     else
-	printf "Split files will not be regridded.\n"
+	printf "Split files will not be regridded\n"
     fi # !rgr
 fi # !sbs_flg
 if [ "${gnr_flg}" = 'Yes' ]; then
@@ -1064,34 +1064,34 @@ if [ "${gnr_flg}" = 'Yes' ]; then
     fi # !ncr_flg
     #printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
     if [ "${bnr_flg}" = 'No' ]; then
-	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
+	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     fi # !bnr_flg
     if [ "${mdl_typ}" = 'yyyymm' ]; then
 	printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
     else # !mdl_typ
-	printf "Filenames will be constructed with CESM'ish or ACME'ish conventions.\n"
+	printf "Filenames will be constructed with CESM'ish or ACME'ish conventions\n"
     fi # !mdl_typ
     if [ ${clm_md} = 'ann' ]; then 
-	printf "Each input file assumed to contain mean of one year.\n"
+	printf "Each input file assumed to contain mean of one year\n"
     elif [ ${clm_md} = 'mth' ]; then 
-	printf "Each input file assumed to contain mean of one month.\n"
+	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
     if [ ${clm_md} = 'mth' ]; then 
 	if [ ${dec_md} = 'scd' ]; then 
-	    printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive and cross calendar-year boundaries.\n"
+	    printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive and cross calendar-year boundaries\n"
 	else
-	    printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year.\n"
+	    printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year\n"
 	fi # !scd
     fi # !mth
     if [ ${cf_flg} = 'Yes' ]; then 
-	printf "Annotation for CF climatology attribute and climatology_bounds variable will be performed.\n"
+	printf "Annotation for CF climatology attribute and climatology_bounds variable will be performed\n"
     else
-	printf "Annotation for CF climatology attribute and climatology_bounds variable will not be performed.\n"
+	printf "Annotation for CF climatology attribute and climatology_bounds variable will not be performed\n"
     fi # !cf
     if [ -n "${rgr_map}" ]; then 
-	printf "This climatology will also be regridded.\n"
+	printf "This climatology will also be regridded\n"
     else
-	printf "This climatology will not be regridded.\n"
+	printf "This climatology will not be regridded\n"
     fi # !rgr
 fi # !gnr_flg
 
@@ -1880,9 +1880,9 @@ fi # !xtn_flg extended climos
 
 date_end=$(date +"%s")
 if [ -n "${caseid}" ]; then
-    printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset ${caseid} at `date`.\n"
+    printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset ${caseid} at `date`\n"
 else # !caseid
-    printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at `date`.\n"
+    printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at `date`\n"
 fi # !caseid
 date_dff=$((date_end-date_srt))
 if [ "${gnr_flg}" = 'Yes' ]; then
@@ -1907,7 +1907,7 @@ if [ "${gnr_flg}" = 'Yes' ]; then
     echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 fi # !gnr_flg
 if [ "${sbs_flg}" = 'Yes' ]; then
-    echo "Quick plots of last split variable:"
+    echo "Quick plots of last variable split in last segment:"
     if [ -n "${rgr_map}" ]; then 
 	echo "ncview ${fl_rgr[(${var_nbr}-1)]} &"
 	echo "panoply ${fl_rgr[(${var_nbr}-1)]} &"
@@ -1919,9 +1919,9 @@ fi # !sbs_flg
 
 # PMC: add SMB's Git (SHA1) hash info to climo files
 # Assumes utility to add Git hash resides in ../utils/add_git_hash_to_netcdf_metadata
-for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-    fl_out_lst="${fl_out_lst} ${fl_out[${clm_idx}]}"
-done
+#for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
+#    fl_out_lst="${fl_out_lst} ${fl_out[${clm_idx}]}"
+#done
 # CSZ: 20150826 disable until less fragile (than relative path) solution is found 
 #cd ${drc_spt}
 # ../utils/add_git_hash_to_netcdf_metadata ${fl_out_lst}
