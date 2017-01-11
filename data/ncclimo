@@ -810,7 +810,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     if [ ${yr_sbs} -ne ${yr_nbr} ]; then
 	# Sanity check that number of files on command line matches number expected from date switches
 	printf "${spt_nm}: ERROR ${fl_nbr} files on command line expected to contain ${yr_sbs} years of data but date options specified ${yr_nbr} years of data\n"
-	printf "${spt_nm}: HINT Number of files times ${fpy} files-per-year must match number of years implied by -s yr_srt and -e yr_end options\n"
+	printf "${spt_nm}: HINT Number of files at ${fpy} files-per-year must match number of years implied by arguments to start- and end-year switches (which are --yr_srt=${yr_srt} and --yr_end=${yr_end}, respectively)\n"
 	exit 1
     fi # !yr_sbs
 
@@ -1035,7 +1035,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     printf "Input to split comprises ${yr_sbs} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}.\n"
     if [ ${sgm_nbr} -gt 1 ]; then
 	if [ ${sgm_flg} = 'Yes' ]; then 
-	    printf "Will split data into ${sgm_nbrm1} segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} years.\n"
+	    printf "Will split data into ${sgm_nbrm1} segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s).\n"
 	else
 	    printf "Will split data into ${sgm_nbr} segment(s) of length ${ypf_max} years.\n"
 	fi # !sgm_flg
