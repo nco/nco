@@ -1,5 +1,9 @@
 2017-01-11  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.4-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha03 final changes';git push
+	git tag -a 4.6.4-alpha03 -m 'Version 4.6.4-alpha03 new features: ncsplit segments work';git push --tags
+
 	* ncsplit: Verified working on 250-year ACME beta simulation
 
 	* ncsplit: Comment-out old Git hash code which fails with split files anyway
