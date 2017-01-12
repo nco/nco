@@ -24,6 +24,8 @@ header {
     #include <fstream>
     #include <string>
   
+    // custom exception -used for "exit" function
+    #include "ExitException.hpp" 
     // Custom Headers
     #include "prs_cls.hh"
     #include "ncap2_utl.hh"
@@ -108,6 +110,8 @@ statement:
              if( #def2 ){  #def2->setType(DEFDIM);#def2->setText("0");}
  
         }
+        //exit statement 
+        | EXIT^ LPAREN! expr RPAREN! SEMI!
         // while loop
         | WHILE^ LPAREN! expr RPAREN! statement 
         // for statement
@@ -117,7 +121,7 @@ statement:
         | CONTINUE SEMI!        
         //deal with empty statement
         | SEMI! { #statement = #([ NULL_NODE, "null_stmt"]); } 
-
+         
         // if statement
         | IF^ LPAREN! expr RPAREN! statement 
          ( //standard if-else ambiguity
@@ -325,6 +329,7 @@ tokens {
    
     DEFDIMA="defdim";
     DEFDIMU="defdimunlim";
+    EXIT="exit";
  
     /*
 
@@ -1114,7 +1119,7 @@ if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
     for(idx=0 ; idx < nbr_stmt; idx++){
       ntyp=ntr->getType();
       // we have hit an IF or a basic block
-      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR ||ntyp==WHERE) {
+      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR ||ntyp==WHERE || ntyp==EXIT) {
       //  if(ntyp != EXPR ){ 
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
@@ -1368,6 +1373,23 @@ static std::vector<std::string> lpp_vtr;
         
     } // end  for action
 
+    // throw a custom ExitException 
+    | #(EXIT var=out ) { 
+      int sret;
+      ostringstream os;       
+      
+      // convert to INT   
+      nco_var_cnf_typ(NC_INT,var);  
+      cast_void_nctype(NC_INT,&var->val);
+      sret=var->val.ip[0];
+      cast_nctype_void(NC_INT,&var->val);
+      var=nco_var_free(var); 
+      
+      iret=EXIT; 
+      os<<sret;
+      throw  ANTLR_USE_NAMESPACE(antlr)ExitException(os.str());
+
+    }
     | ELSE { iret=ELSE;}
     | BREAK { iret=BREAK;}
     | CONTINUE {iret=CONTINUE;} 
