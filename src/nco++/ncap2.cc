@@ -165,6 +165,7 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
+  int antlr_ret=EXIT_SUCCESS; /* exit return code from script */
   int var_id;
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   
@@ -808,7 +809,7 @@ main(int argc,char **argv)
         (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
     } /* endif debug */
      /* Invoke ANTLR parser */
-    rcd=parse_antlr(prs_vtr,fl_cmd_usr,spt_arg_cat);
+    antlr_ret=parse_antlr(prs_vtr,fl_cmd_usr,spt_arg_cat);
   }
   
   // execute in ANTLR user specified script 
@@ -817,7 +818,7 @@ main(int argc,char **argv)
       err_prn(fnc_nm,"Unable to open script file "+std::string(fl_spt_usr));
     fclose(yyin); 
     /* Invoke ANTLR parser */
-    rcd=parse_antlr(prs_vtr,fl_spt_usr,(char *)NULL);
+    antlr_ret=parse_antlr(prs_vtr,fl_spt_usr,(char *)NULL);
   }
 
 
@@ -1105,8 +1106,13 @@ main(int argc,char **argv)
     var_fix_out=(var_sct **)nco_free(var_fix_out);
   } /* !flg_cln */
   
-  nco_exit_gracefully();
-  return EXIT_SUCCESS;
+  // nco_exit_gracefully();
+  (void)fclose(stderr);
+  (void)fclose(stdin);
+  (void)fclose(stdout);
+  (void)nco_free(nco_prg_nm_get());
+
+  nco_exit(antlr_ret);
 } /* end main() */
 
 // Copy vector elements
