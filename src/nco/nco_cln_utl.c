@@ -313,7 +313,6 @@ nco_cln_val_tm_typ
   return scl;
 } /* end nco_cln_typ_val() */
 
-
 int /* O [flg] String is calendar date */
 nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
 (const char *unit_sng) /* I [sng] Units string */
@@ -334,13 +333,13 @@ nco_cln_clc_dbl_var_dff( /* [fnc] difference between two co-ordinate units */
 const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
 const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
 nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
-double *dval,           /* I/O [dbl] var values modified */
+double *val_dbl,           /* I/O [dbl] var values modified */
 var_sct *var)           /* I/O [var_sct] var values modified */
 {
-  (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to convert values from \"%s\" to \"%s\" See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n", nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
+  (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to convert values from \"%s\" to \"%s\". See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n", nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
 
   return NCO_NOERR;
-}
+} /* end nco_cln_clc_dbl_var_dff() */
 
 int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_org(   /* [fnc] difference between two co-ordinate units */
@@ -435,20 +434,18 @@ nco_cln_cnv_mk  /* [fnc] UDUnits2 create a custom converter  */
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
   // cv_free(ut_cnv);
 
-
   return ut_cnv;
 }  /* end UDUnits2 nco_cln_cnv_mk() */
 
-int    /* [flg] NCO_NOERR or NCO_ERR */ 
+int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_dff( /* [fnc] difference between two co-ordinate units */
 const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
 const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
-double *og_val){ /* I/O [dbl] var values modified */
-
+double *og_val)
+{ /* I/O [dbl] var values modified */
   cv_converter *ut_cnv=NULL; 
-  const char fnc_nm[]="nco_cln_clc_var_dff()"; /* [sng] Function name */
-  
-  /* do nothing if units identical */
+
+  /* Do nothing if units identical */
   if(strcasecmp(fl_unt_sng,fl_bs_sng)==0) return NCO_NOERR;
 
   /* Convert */
@@ -461,27 +458,25 @@ double *og_val){ /* I/O [dbl] var values modified */
   return NCO_NOERR;          
 } /* end UDUnits2 nco_cln_clc_dbl_dff() */
 
-int    /* [flg] NCO_NOERR or NCO_ERR */ 
-nco_cln_clc_var_dff( /* [fnc] difference between two co-ordinate units */
-const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
-const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
-var_sct *var){ /* I/O [dbl] var values modified */
+int /* [flg] NCO_NOERR or NCO_ERR */ 
+nco_cln_clc_var_dff /* [fnc] difference between two co-ordinate units */
+(const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
+ const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
+ var_sct *var) /* I/O [dbl] var values modified */
+{
+  cv_converter *ut_cnv=NULL; 
 
-  size_t sz;
-  size_t idx;    
-  double *dp;  
   ptr_unn op1;    
 
-  cv_converter *ut_cnv=NULL; 
-  const char fnc_nm[]="nco_cln_clc_var_dff()"; /* [sng] Function name */
+  size_t idx;    
+
+  size_t sz;
   
-  
-  /* do nothing if units identical */
-  if(strcasecmp(fl_unt_sng,fl_bs_sng)==0)
-    return NCO_NOERR;
+  /* Do nothing if units identical */
+  if(!strcasecmp(fl_unt_sng,fl_bs_sng)) return NCO_NOERR;
 
   /* Convert */
-  ut_cnv=nco_cln_cnv_mk(fl_unt_sng, fl_bs_sng);
+  ut_cnv=nco_cln_cnv_mk(fl_unt_sng,fl_bs_sng);
 
   if(ut_cnv == NULL) return NCO_ERR;     
 
@@ -490,36 +485,36 @@ var_sct *var){ /* I/O [dbl] var values modified */
   (void)cast_void_nctype(var->type,&op1);                
   op1=var->val;
  
-  if(var->type==NC_DOUBLE){
+  if(var->type == NC_DOUBLE){
     double *dp;
     dp=op1.dp;     
 
     if(var->has_mss_val){
       double mss_dbl=var->mss_val.dp[0]; 
       for(idx=0; idx<sz; idx++)
-	if( dp[idx] != mss_dbl)
+	if(dp[idx] != mss_dbl)
 	  dp[idx]=cv_convert_double(ut_cnv,dp[idx]);                      
     }else{
      (void)cv_convert_doubles(ut_cnv,dp,sz,dp);                      
-    }
+    } /* !has_mss_val */
   }else if(var->type==NC_FLOAT){
     float*fp;
     fp=op1.fp;     
     if(var->has_mss_val){
       float mss_fp=var->mss_val.fp[0]; 
-      for(idx=0; idx<sz; idx++)
+      for(idx=0;idx<sz;idx++)
 	if(fp[idx] != mss_fp)   
 	  fp[idx]=cv_convert_float(ut_cnv,fp[idx]);                      
     }else{
       (void)cv_convert_floats(ut_cnv,fp,sz,fp);                      
-    }
-  }
+    } /* !has_mss_val */
+  } /* !var->type */
 
  cv_free(ut_cnv);  
  (void)cast_nctype_void(var->type,&op1);
 
  return NCO_NOERR;
-}  
+} /* !nco_cln_clc_var_dff() */
 
 int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_var_dff( /* [fnc] difference between two co-ordinate units */
@@ -529,26 +524,29 @@ nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */
 double *og_val,           /* I/O [dbl] var values modified -can be NULL */
 var_sct *var){ /* I/O [var_sct] var values modified - can be NULL  */
 
-  int rcd;
-  int is_date;
-  const char fnc_nm[]="nco_cln_clc_dv_dff()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_cln_clc_dbl_var_dff()"; /* [sng] Function name */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_dbl_var_dff() reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng,lmt_cln);
+  int is_date;
+  int rcd;
+
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,lmt_cln);
 
   /* Do nothing if units identical */
   if(!strcasecmp(fl_unt_sng,fl_bs_sng)) return NCO_NOERR;
 
   /* Are target units of the form  "units since date-string" */
-  is_date = nco_cln_chk_tm(fl_bs_sng);
+  is_date=nco_cln_chk_tm(fl_bs_sng);
 
-  /* use custom time functions if irregular calendar */
-  if(is_date && (lmt_cln==cln_360 || lmt_cln==cln_365))
+  /* Use custom time functions if irregular calendar */
+  if(is_date && (lmt_cln == cln_360 || lmt_cln == cln_365))
     rcd=nco_cln_clc_tm(fl_unt_sng,fl_bs_sng,lmt_cln,og_val,var);  
-  else if(og_val != (double*)NULL) 
-    rcd=nco_cln_clc_dbl_dff(fl_unt_sng, fl_bs_sng,og_val);  
-  else if(var != (var_sct*)NULL)
-    rcd=nco_cln_clc_var_dff(fl_unt_sng, fl_bs_sng,var);
-
+  else if(og_val != (double *)NULL) 
+    rcd=nco_cln_clc_dbl_dff(fl_unt_sng,fl_bs_sng,og_val);
+  else if(var != (var_sct *)NULL)
+    rcd=nco_cln_clc_var_dff(fl_unt_sng,fl_bs_sng,var);
+  else
+    rcd=NCO_NOERR;
+    
   return rcd;
 } /* end UDUnits2 nco_cln_clc_dff() */
 
@@ -559,79 +557,68 @@ const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
 nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
 double *og_val)         /* O [dbl] output value */
 {
+  const char fnc_nm[]="nco_cln_dbl_org"; /* [sng] Function name */
+
+  char lcl_unt_sng[200];
+  
+  double val_dbl;
+
   int is_date;  /* set to true if date/time unit */
   int rcd;
   int month;
   int year;
 
-  char lcl_unt_sng[200];
-  const char fnc_nm[]="nco_cln_dbl_org"; /* [sng] Function name */
-  
-  double dval;
-
   rcd=0;  
 
-  dval=0.0;
+  val_dbl=0.0;
 
-  is_date = nco_cln_chk_tm(fl_bs_sng);
+  is_date=nco_cln_chk_tm(fl_bs_sng);
 
   lcl_unt_sng[0]='\0';
   
-  if(nco_dbg_lvl_get() >= nco_dbg_vrb) 
-       (void)fprintf(stderr,"%s: INFO %s: reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln);
+  if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stderr,"%s: INFO %s: reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln);
 
-  
-    /* Does fl_unt_sng look like a regular timestamp? */ 
-  if(is_date && sscanf(val_unt_sng,"%d-%d",&year,&month) == 2)
-  {
-    /* udunits requires  this prefix that it can recognize a raw-datetime string */  
+  /* Does fl_unt_sng look like a regular timestamp? */ 
+  if(is_date && sscanf(val_unt_sng,"%d-%d",&year,&month) == 2){
+    /* UDUnits requires this prefix to recognize a raw-datetime string */  
     strcpy(lcl_unt_sng,"s@");
     strcat(lcl_unt_sng,val_unt_sng);
-  }
-  else
-  {
+  }else{
     /* Regular conversion of fl_unt_sng of form <double_value units>, e.g., '10 inches', '100 ft'  '10 days since 1970-01-01' */
-    char *ptr=(char*)NULL;
+    char *ptr=NULL;
         
-    dval=strtod(val_unt_sng, &ptr);  
-        
-    if(ptr==val_unt_sng || strlen(++ptr)<1)
-    {
+    val_dbl=strtod(val_unt_sng,&ptr);  
+    if(ptr == val_unt_sng || strlen(++ptr) < 1L){
       (void)fprintf(stderr, "%s: INFO %s() reports input string must be of the form \"value unit\" got the string \"%s\"\n",nco_prg_nm_get(),fnc_nm,val_unt_sng);
       nco_exit(EXIT_FAILURE);           
-    }
+    } /* !ptr */
     strcpy(lcl_unt_sng,ptr); 
-  }
+  } /* !is_date */
 
   /* Use custom time functions if irregular calendar */
-  if(is_date && (lmt_cln==cln_360 || lmt_cln==cln_365))
-    rcd=nco_cln_clc_tm(lcl_unt_sng,fl_bs_sng,lmt_cln,&dval,(var_sct*)NULL);
-  else
-    rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&dval);     
+  if(is_date && (lmt_cln==cln_360 || lmt_cln==cln_365)) rcd=nco_cln_clc_tm(lcl_unt_sng,fl_bs_sng,lmt_cln,&val_dbl,(var_sct*)NULL); else rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);     
 
   /* Copy over iff successful */ 
-  if(rcd==NCO_NOERR) *og_val=dval;
+  if(rcd==NCO_NOERR) *og_val=val_dbl;
     
   return rcd;        
-}
+} /* !nco_cln_clc_dbl_org() */
 
-/* This function is only called if the target units in fl_bs_sng of the form "value unit since date-stamp" 
-   and the calendar type is cln_360 or cln_365.
-   either "var" is NULL and there is a single value to process *og_val 
-   or var is initialized and  og_val is NULL  */
 int /* [rcd] Successful conversion returns NCO_NOERR */
 nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 (const char *fl_unt_sng, /* I [ptr] Units attribute string from disk */
  const char *fl_bs_sng, /* I [ptr] Units attribute string from disk */
  nco_cln_typ lmt_cln, /* [enum] Calendar type of coordinate variable */ 
  double *og_val, /* I/O [ptr] */
- var_sct *var){  /* I/O [ptr] */  
-  int rcd;
-  int year;
-  int month;
+ var_sct *var) /* I/O [ptr] */  
+{
+  /* This function is only called if the target units in fl_bs_sng of the form "value unit since date-stamp" 
+     and the calendar type is cln_360 or cln_365.
+     Either "var" is NULL and there is a single value to process *og_val or var is initialized and og_val is NULL */
 
   /* 20141230 figure-out better length */
   char tmp_sng[100];
+
   double crr_val;
   double scl_val;
 
@@ -641,14 +628,13 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   tm_cln_sct unt_cln_sct;
   tm_cln_sct bs_cln_sct;
   
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) 
-     (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
 
   /* Die if unsupported calendar type */
   if(lmt_cln != cln_360 &&  lmt_cln != cln_365){
     (void)fprintf(stderr,"%s: nco_cln_clc_tm() has been called with wrong calander types - only cln_365 and cln_360 allowed\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
-  }       
+  } /* !lmt_cln */
 
   /* Obtain units type from fl_bs_sng */
   if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
@@ -670,10 +656,10 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   (void)nco_cln_pop_val(&unt_cln_sct);
   (void)nco_cln_pop_val(&bs_cln_sct);
   
-  /* get offset */
-  crr_val= (unt_cln_sct.value-bs_cln_sct.value) /  nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);                 
+  /* Get offset */
+  crr_val=(unt_cln_sct.value-bs_cln_sct.value)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);                 
 
-  /* scale factor */
+  /* Scale factor */
   if(unt_tm_typ == bs_tm_typ) scl_val=1.0; else scl_val=nco_cln_val_tm_typ(lmt_cln,unt_tm_typ)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
   
   if(og_val){   
@@ -693,13 +679,13 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 
       if(var->has_mss_val){  
 	double mss_dbl=var->mss_val.dp[0]; 
-	for(idx=0; idx<sz; idx++)
-	  if( dp[idx] != mss_dbl) 
-	    dp[idx]= dp[idx]*scl_val+crr_val; 
+	for(idx=0;idx<sz;idx++)
+	  if(dp[idx] != mss_dbl) 
+	    dp[idx]=dp[idx]*scl_val+crr_val; 
       }else{
 	for(idx=0;idx<sz;idx++) dp[idx]=dp[idx]*scl_val+crr_val; 
-      }
-    }
+      } /* !var->has_mss_val */
+    } /* !NC_DOUBLE */
 
     if(var->type == NC_FLOAT){
       float *fp;
@@ -707,14 +693,14 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 
       if(var->has_mss_val){  
 	float mss_ft=var->mss_val.fp[0]; 
-	for(idx=0; idx<sz; idx++)
+	for(idx=0;idx<sz;idx++)
 	   if(fp[idx] != mss_ft) fp[idx]=fp[idx]*scl_val+crr_val;                      
       }else{
 	for(idx=0;idx<sz;idx++) fp[idx]=fp[idx]*scl_val+crr_val;                      
-      }
-    }
+      } /* !has_mss_val */
+    } /* !NC_FLOAT */
    (void)cast_nctype_void(var->type,&op1);
-  }
+  } /* !var */
   
   return NCO_NOERR;
 } /* end nco_cln_clc_tm() */

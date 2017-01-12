@@ -22,90 +22,22 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo supports "binary climos" and annual-mean mode.
-   Binary climos are climos created from merging two climos, rather
-   than re-computing a climos from raw input. 
-   This saves disk space and time for long climos.
-   Annual-mean mode allows ncclimo to process input files that are
-   annual rather than monthly means.
+A. ncclimo will reshape timeseries, i.e., split input datasets into
+   per-variable files that span the entire timeseries.
+   Input files are specified via a pipe to stdin, via positional
+   arguments (after all options) on the command-line, or as the
+   set of .nc files in drc_in
+   ls $drc_in/*.nc | ncclimo -v T,Q --output=drc_out --map=rgr_map
+   ncclimo -v T,Q --output=drc_out --map=rgr_map $drc_in/*.nc
+   ncclimo -v T,Q --input=$drc_in --output=drc_out --map=rgr_map
    http://nco.sf.net/nco.html#ncclimo
-
-B. ncrcat and ncra now re-base data (move to a common time origin)
-   from arbitrary time units in multiple calendar systems.
-   Previously, re-basing only worked when the basetime (i.e., the 
-   YYMMDD in units like "XXX since YYMMDD") changed.
-   Now rebasing takes into account the full units, both the increment
-   (XXX) and the basetime (YYMMDD). Thanks to Dave Allured for the
-   suggestion and Henry Butowsky for the re-implementation.
-   http://nco.sf.net/nco.html#rbs
-
-C. ncap2 now supports converting data between any two compatible units
-   systems supported by UDUnits. The udunits() function takes and
-   input variable and a UDUnits dimension string.
-   T[lon]={0.0,100.0,150.0,200.0};
-   T@units="Celsius";
-   T=udunits(T,"kelvin"); 
-   print(T);  
-   273.15, 373.15, 423.15, 473.15 ;
-   The method auto-magically reads var_in@units and var_in@calendar 
-   (so, YES, this works with dates) attributes as necessary.
-   Thanks to Henry Butowsky for this feature.
-   http://nco.sf.net/nco.html#udunits_fnc
-
-D. ncclimo and ncremap now support long options, e.g., 
-   ncclimo --case=caseid --input=drc_in --output=drc_out --map=rgr_map
-   ncremap --input_file=in_fl --destination=dst_fl --output_file=out_fl
-   http://nco.sf.net/nco.html#ncclimo
-   http://nco.sf.net/nco.html#ncremap
-
-E. ncclimo and ncremap now save the full command line with which they
-   were invoked as a single global attribute. 
-   Previously portions were saved as separate attributes.
-   The new attributes are climo_command and remap_command.
-   Their contents will exactly replicate (except for datestamps)
-   the climatologies or regridded files they were created for.
-   This improved provenance comes at the cost of up to a few kB more
-   metadata in each file.
-
-F. ncks can now print attribute CDL types as comments.
-   CDL attribute types can be hard for humans to discern, so now
-   ncks will print the type when invoked with -D 1 or greater.
-   The printed file is fully CDL-compliant and works with ncgen.
-   Credit to whomever first thought of this feature, and implemented
-   it in some CDL output someone sent me.
-   zender@firn:~/nco$ ncks -D 1 -C --cdl ~/nco/data/in_4.nc
-   ...
-   att_var:byte_att = 0b, 1b, 2b, 127b, -128b, -127b, -2b, -1b ; // byte
-   att_var:char_att = "Sentence one.\n",
-      "Sentence two.\n" ; // char
-   att_var:short_att = 37s ; // short
-   att_var:int_att = 73 ; // int
-   att_var:float_att = 73.f, 72.f, 71.f, 70.01f, 69.001f, 68.01f, 67.01f ; // float
-   att_var:double_att = 73., 72., 71., 70.01, 69.001, 68.01, 67.010001 ; // double
-   att_var:ubyte_att = 0ub, 1ub, 2ub, 127ub, 128ub, 254ub, 255ub, 0ub ; // ubyte
-   att_var:ushort_att = 37us ; // ushort
-   att_var:uint_att = 73ul ; // uint
-
-G. JSON brackets
-   Similar the CDL and XML backends, ncks supports JSON (as of 4.6.2).
-   ncks now prints strided brackets to demarcate inner dimensions
-   of multi-dimensional variable data.  
-   Invoking with --json vs. --jsn_fmt=4 on foo(2,3,4) yields:
-   "data": [[[0.0, 1.0, 2.0, 3.0], [4.0, 5.0, 6.0, 7.0], [8.0, 9.0,
-   10.0, 11.0]], [[12.0, 13.0, 14.0, 15.0], [16.0, 17.0, 18.0, 19.0],
-   [20.0, 21.0, 22.0, 23.0]]] 
-   "data": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
-   11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
-   22.0, 23.0] 
-   Bracketed data are suitable for pasting into Python. 
-   More sample output at:
-   http://dust.ess.uci.edu/tmp/in.json and other *.json files.
-   Thanks to Henry Butowsky for implementing the bracketing.
-   http://nco.sf.net/nco.html#json
 
 BUG FIXES:
 
-A. None!
+A. Fix bug introduced in 4.6.3 where hyperslabs involving UDUnits
+   could fail, depending on exactly how NCO was compiled.
+   Failures most likely on MacOS because clang, unlike gcc, does not
+   initialize pointers to NULL by default. Solution is to upgrade.
 
 KNOWN PROBLEMS DUE TO NCO:
 

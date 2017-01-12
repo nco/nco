@@ -1,5 +1,7 @@
 2017-01-12  Charlie Zender  <zender@uci.edu>
 
+	* Fix bug introduced in 4.6.3 where hyperslabs involving UDUnits dates failed
+
 	* Document ncsplit
 
 2016-01-12  Henry Butowsky  <henryb@hush.com>
@@ -18,7 +20,7 @@
 
 	* ncsplit: Comment-out old Git hash code which fails with split files anyway
 
-	* ncsplit: Sanity check that number of files on command line matches number expected from date switches
+	* ncsplit: Sanity check that number of files on command line matches number predicted by date switches
 
 	* ncsplit: Add outer loop over time segments
 
