@@ -14,7 +14,7 @@
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
-/* Copyright (C) 1995--2016 Charlie Zender
+/* Copyright (C) 1995--2017 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
@@ -35,6 +35,8 @@
     #include <fstream>
     #include <string>
   
+    // custom exception -used for "exit" function
+    #include "ExitException.hpp" 
     // Custom Headers
     #include "prs_cls.hh"
     #include "ncap2_utl.hh"
@@ -50,10 +52,10 @@
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
-#line 54 "ncoLexer.hpp"
+#line 56 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 342 "ncoGrammer.g"
+#line 347 "ncoGrammer.g"
 
 private:
     prs_cls *prs_arg;
@@ -95,7 +97,7 @@ public:
 		}
 		// else ANTLR_USE_NAMESPACE(std)cout << "Hit EOF of main file" << ANTLR_USE_NAMESPACE(std)endl;
 	}
-#line 58 "ncoLexer.hpp"
+#line 60 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:

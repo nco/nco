@@ -14,7 +14,7 @@
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
-/* Copyright (C) 1995--2016 Charlie Zender
+/* Copyright (C) 1995--2017 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
@@ -35,6 +35,8 @@
     #include <fstream>
     #include <string>
   
+    // custom exception -used for "exit" function
+    #include "ExitException.hpp" 
     // Custom Headers
     #include "prs_cls.hh"
     #include "ncap2_utl.hh"
@@ -50,15 +52,15 @@
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
-#line 54 "ncoParser.hpp"
+#line 56 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
-#line 84 "ncoGrammer.g"
+#line 86 "ncoGrammer.g"
 
 
 public:
    std::vector<std::string> inc_vtr;
-#line 58 "ncoParser.hpp"
+#line 60 "ncoParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
@@ -125,10 +127,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 117;
+	static const int NUM_TOKENS = 118;
 #else
 	enum {
-		NUM_TOKENS = 117
+		NUM_TOKENS = 118
 	};
 #endif
 	
