@@ -201,8 +201,8 @@ esac # !HOSTNAME
 # Split positional arguments:
 # ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${HOME}/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Split production:
-# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 -s 1 -e 9 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
-# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 -s 1 -e 250 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -397,8 +397,9 @@ yr_srt='1980' # [yr] Start year
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
-    printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}${spt_nm} -c caseid -s yr_srt -e yr_end -i drc_in -o drc_out -r rgr_map${fnt_nrm}\n"
-    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --case=caseid --start_year=yr_srt --end_year=yr_end --input=drc_in --output=drc_out --map=rgr_map${fnt_nrm}\n\n"
+    printf "${fnt_rvr}Basic usage:\n${fnt_nrm}${fnt_bld}${spt_nm} -c caseid -s yr_srt -e yr_end -i drc_in -o drc_out -r rgr_map${fnt_nrm} # Generate & regrid climatology\n"
+    printf "${fnt_bld}${spt_nm} -v var_lst -s yr_srt -e yr_end -o drc_out -r rgr_map in1.nc in2.nc ... inN.nc${fnt_nrm} # Split, reshape, & regrid timeseries\n"
+    printf "${fnt_bld}${spt_nm} --case=caseid --start=yr_srt --end=yr_end --input=drc_in --output=drc_out --map=rgr_map${fnt_nrm} # Long options\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}dec_md${fnt_nrm}   December mode (default ${fnt_bld}${dec_md}${fnt_nrm}) [${fnt_tlc}dec_md, december_mode, dec_mode${fnt_nrm}]"
     echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}]"
@@ -428,11 +429,11 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-y${fnt_nrm} ${fnt_bld}rgr_prv${fnt_nrm}  Regridded previous climo directory (default ${fnt_bld}${drc_rgr_prv}${fnt_nrm}) [${fnt_tlc}drc_rgr_prv, drc_prv_rgr, regridded_previous, prefvious_regridded${fnt_nrm}]"
     echo "${fnt_rvr}-z${fnt_nrm} ${fnt_bld}ypf_max${fnt_nrm}  Years-per-output-file maximum (empty means none) (default ${fnt_bld}${ypf_max}${fnt_nrm}) [${fnt_tlc}ypf_max, ypf, years, years_per_file${fnt_nrm}]"
     printf "\n"
-    printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}\n"
+    printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}\n"
     printf "${fnt_bld}${spt_nm} -c control -m clm2 -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}\n"
     printf "${fnt_bld}${spt_nm} -m mpascice  -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}\n"
-    printf "${fnt_bld}${spt_nm} -m mpaso -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}\n\n"
+    printf "${fnt_bld}${spt_nm} -m mpaso -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}\n"
+    printf "${fnt_bld}cd output;ls *cam*19??-??*.nc | ${spt_nm} -v FSNT,TREFHT -s 1900 -e 1999 -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}\n\n"
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
     printf "blues : qsub -I -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
     printf "cooley: qsub -I -A HiRes_EarthSys --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"

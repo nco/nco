@@ -1,7 +1,12 @@
+2017-01-12  Charlie Zender  <zender@uci.edu>
+
+	* Document ncsplit
+
 2016-01-12  Henry Butowsky  <henryb@hush.com>
 
-	* added exit(value)  function to ncap2 scripting. The 'value' is propagated from the script to code
-	  using a custom Exception. This value is then returned by main() in ncap2.
+	* Add exit(value) function to ncap2 scripting. 'value' is
+	propagated from the script to code using a custom Exception.
+	This value is then returned by main() in ncap2.
 
 2017-01-11  Charlie Zender  <zender@uci.edu>
 

@@ -629,8 +629,8 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   int rcd;
   int year;
   int month;
-  char *lcl_unt_sng;
-  /* 20141230 figure out better length */
+
+  /* 20141230 figure-out better length */
   char tmp_sng[100];
   double crr_val;
   double scl_val;
@@ -715,7 +715,6 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
     }
    (void)cast_nctype_void(var->type,&op1);
   }
-  lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
   
   return NCO_NOERR;
 } /* end nco_cln_clc_tm() */

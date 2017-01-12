@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 7 January 2017
+@set update-date 12 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16659,28 +16659,47 @@ SYNTAX
 @example
 ncclimo [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [-h @var{hst_nm}] [-i @var{drc_in}]
-[-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] [-O @var{drc_rgr}] [-o @var{drc_out}]
-[-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}] 
+[-j @var{job_nbr}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
+[-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}] 
 [-S @var{yr_prv}] [-s @var{yr_srt}] [-t @var{thr_nbr}] [-v @var{var_lst}] [-x @var{cf_flg}] 
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [-Y @var{rgr_xtn}] [-y @var{rgr_prv}]
+[--ypf @var{ypf_max}]
 @end example
 
 @noindent
 DESCRIPTION
 
-@command{ncclimo} produces climatological monthly means, seasonal means,
-annual mean, and optionally regrids all these files.
+In climatology generation mode, @command{ncclimo} ingests ``raw'' data
+consisting of a monthly or annual timeseries of files and from these
+produces climatological monthly means, seasonal means, and/or annual
+means.
+Alternatively, in timeseries reshaping mode, @command{ncclimo} will
+subset and temporally split the input raw data timeseries into
+per-variable files spanning the entire period. 
+@command{ncclimo} will regrids all output files in either mode. 
+
 There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
-@samp{-i}, and @samp{-o})), and more options are available to customize
-the processing.
+@samp{-i}, and @samp{-o})) to generate climatologies, and many more
+options are available to customize the processing.
 Options are similar to @command{ncremap} options.
-Standard @command{ncclimo} usage looks like
+Standard @command{ncclimo} usage for climatology generation looks like
 @example
 ncclimo            -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo -m mdl_nm  -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo -v var_lst -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo --case=caseid --start=srt_yr --end=end_yr --input=drc_in --output=drc_out
 @end example
+In climatology generation mode, @command{ncclimo} constructs the list of
+input filenames from the argument to the date and model-type options.
+@cindex standard input
+@cindex @code{stdin}
+@command{ncclimo} automatically switches to timeseries reshaping mode
+if it receives a list of files through a pipe to @code{stdin}, or,
+alternatively, placed as positional arguments (after the last
+command-line option), or if neither of these is done and no @var{caseid}
+is specified, in which case it assumes all @code{*.nc} files in
+@var{drc_in} constitute the input file list.
+
 Options come in both short (single-letter) and long forms.
 The handful of long-option synonyms for each option allows the user 
 to imbue the commands with a level of verbosity and precision that suits
@@ -16724,6 +16743,9 @@ Use @samp{ann} if the input files are a series of annual means.
 @cindex @code{--case}
 @item -c @var{caseid} (@code{--case}, @code{--caseid}, @code{--case_id})
 Simulation name, or any input filename for non-@acronym{CESM}'ish files.  
+The use of @var{caseid} is required in climate generation mode (unless
+equivalent information is provided through other options), where
+@var{caseid} is used to construct both input and output filenames.
 For @acronym{CESM}'ish input files like
 @file{famipc5_ne30_v0.3_00001.cam.h0.1980-01.nc}, 
 specify @samp{-c famipc5_ne30_v0.3_00001}. 
@@ -16733,7 +16755,11 @@ These can be modified via the @option{-m @var{mdl_nm}} and
 @option{-h @var{hst_nm}} switches if needed.  
 For input files like @file{merra2_198001.nc},
 specify @samp{-c merra2_198001.nc}. 
-See comments in @command{ncclimo} for further documentation.   
+In timeseries reshaping mode, @var{caseid} will be used, if supplied,
+as an additional string in the output filename.
+For example, specifying @samp{-c control} would cause
+@file{T_000101_000912.nc} to be instead named 
+@file{T_control_000101_000912.nc}.
 @cindex @code{-D @var{dbg_lvl}}
 @cindex @var{dbg_lvl}
 @cindex @code{--dbg_lvl}
@@ -16767,8 +16793,8 @@ specified end year.
 @cindex @code{--family_name}
 @item -f @var{fml_nm} (@code{--fml_nm}, @code{--family}, @code{--family_name})
 Family name (nickname) of output files.
-By default output climo file names are constructed from the @var{caseid}
-of the input files.
+In climate generation mode, output climo file names are constructed by
+default with the same @var{caseid} as the input files.
 The @var{fml_nm}, if supplied, replaces @var{caseid} in output climo
 names, which are of the form
 @var{fml_nm}_XX_YYYYMM_YYYYMM.nc where @var{XX} is the month or seasonal
@@ -16776,6 +16802,11 @@ abbreviation.
 Use @samp{-f @var{fml_nm}} to simplify long names, avoid overlap, etc.
 Example values of @var{fml_nm} are @samp{control}, @samp{experiment},
 and (for a single-variable climo) @samp{FSNT}.
+In timeseries reshaping mode, @var{fml_nm} will be used, if supplied,
+as an additional string in the output filename.
+For example, specifying @samp{-f control} would cause
+@file{T_000101_000912.nc} to be instead named 
+@file{T_control_000101_000912.nc}.
 @cindex @code{-h @var{hst_nm}}
 @cindex @var{hst_nm}
 @cindex @code{--history_name}
@@ -16799,7 +16830,55 @@ Examples include @samp{h0} (default, works for @acronym{CAM},
 @cindex @code{--input}
 @item -i @var{drc_in} (@code{--drc_in}, @code{--in_drc}, @code{--dir_in}, @code{--input})
 Directory containing all monthly mean files to read as input to the
-climatology.  
+climatology.
+The use of @var{drc_in} is mandatory in climate generation mode but is 
+optional in timeseries reshaping mode.
+In timeseries reshaping mode, @command{ncclimo} uses all netCDF files
+(meaning files with suffixes @code{.nc}, @code{.nc3}, @code{.nc4},
+@code{.cdf}, @code{.hdf}, @code{.he5}, or @code{.h5}) in @var{drc_in} to 
+create the list of input files when no list is provided through a pipe
+to @code{stdin} or as positional arguments to the command-line.
+@cindex @code{-j @var{job_nbr}}
+@cindex @var{job_nbr}
+@cindex @code{--job_nbr}
+@cindex @code{--job_number}
+@cindex @code{--job_number}
+@cindex @code{--jobs}
+@item -j @var{job_nbr} (@code{--job_nbr}, @code{--job_number}, @code{--jobs})
+Specifies the number of simultaneous subsetting processes to spawn  
+during parallel execution for both Background and @acronym{MPI} modes. 
+This applies to timeseries reshaping mode only, and has no effect in 
+climatology generation mode.
+In both parallel modes @command{ncclimo} spawns processes in batches 
+of @var{job_nbr} jobs, then waits for those processes to complete.
+Once a batch finishes, @command{ncclimo} spawns the next batch.
+In Background mode, all jobs are spawned to the local node.
+In @acronym{MPI} mode, all jobs are spawned in round-robin fashion
+to all available nodes until @var{job_nbr} jobs are running.
+
+If subsetting consumes so much @acronym{RAM} (e.g., because
+variables are large and/or the number of threads is large) that a
+single node can perform only one subsetting job at a time, then a
+reasonable value for @var{job_nbr} is the number of nodes,
+@var{node_nbr}. 
+Often, however, nodes can usually subset (and then regrid, if requested) 
+multiple variables simultaneously.
+
+By default @math{@var{job_nbr} = 2} in Background mode, and
+@math{@var{job_nbr} = @var{node_nbr}} in @acronym{MPI} mode.
+This helps prevent users from overloading nodes with too many jobs.
+Subject to the availability of adequate @acronym{RAM},
+expand the number of jobs per node by increasing @var{job_nbr}
+until, ideally, each core on the node is used. 
+
+The main throughput bottleneck in timeseries reshaping mode is I/O. 
+It is possible that each node can write to only one file at a time,
+in which case increasing @var{job_nbr} may have little effect.
+Regridding requires math that can relieve some I/O contention and
+allows for some throughput gains with increasing @var{job_nbr}.
+In general, though, increasing @var{job_nbr} is expected to improve
+throughput much more in @command{ncremap} than in @command{ncclimo}. 
+
 @cindex @code{-l}
 @cindex @code{--lnk_flg}
 @cindex @code{--link_flag}
@@ -16928,12 +17007,64 @@ Hence @command{ncclimo} defaults to @var{thr_nbr}=2.
 @cindex @code{--variables}
 @cindex @code{--variable_list}
 @item -v @var{var_lst} (@code{--var_lst}, @code{--var}, @code{--vars}, @code{--variables}, @code{--variable_list})
-Variables to subset.
+Variables to subset or split.
 Same behavior as @ref{Subsetting Files}.
+The use of @var{var_lst} is optional in climate generation mode but is 
+mandatory in timeseries reshaping mode (to prevent inadvertently copying 
+the results of an entire model simulation).
 Regular expressions are allowed so, e.g., @samp{PREC.?} extracts
 the variables @samp{PRECC,PRECL,PRECSC,PRECSL} if present.
+Note that in reshaping mode all matches to a regular expression are
+placed in the same output file.
+@cindex @code{--ypf_max @var{ypf_max}}
+@cindex @var{ypf_max}
+@cindex @code{--ypf_max}
+@item --ypf_max @var{ypf_max} (@code{--ypf}, @code{--years}, @code{--years_per_file})
+The maximum number of years-per-file output by @command{ncclimo}'s
+splitting operation. 
+When @command{ncclimo} subsets and splits a collection of input files
+spanning a timerseries, it places each subset variable in its own output
+file. 
+The maximum length, in years, of each output file is @var{ypf_max},
+which defaults to @var{ypf_max}=50.
+If an input timeseries spans @w{237 years} and @var{ypf_max}=50, then
+@command{ncclimo} will generate four output files of length @w{50 years}  
+and one output file of length @w{37 years}.
+This option only takes effect in timeseries reshaping mode.
 @end table
 @noindent
+
+@unnumberedsubsec Timeseries Reshaping mode, aka Splitting
+This section of the @command{ncclimo} documentation applies only to
+resphaping mode, whereas all subsequent sections apply to climatology
+generation mode. 
+As mentioned above, 
+@command{ncclimo} automatically switches to timeseries reshaping mode 
+if it receives a list of files through a pipe to @code{stdin}, or,
+alternatively, placed as positional arguments (after the last
+command-line option), or if neither of these is done and no @var{caseid}
+is specified, in which case it assumes all @code{*.nc} files in
+@var{drc_in} constitute the input file list.
+These examples invoke reshaping mode in the three possible ways:
+@example
+# Pipe list to stdin
+cd $drc_in;ls *mdl*000[1-9]*.nc | ncclimo -v T,Q,RH -s 1 -e 9 -o $drc_out
+# List as positional arguments
+ncclimo -v T,Q,RH -s 1 -e 9 -o $drc_out $drc_in/*mdl*000[1-9]*.nc
+# Read directory
+ncclimo -v T,Q,RH -s 1 -e 9 -i $drc_in -o $drc_out
+@end example
+Assuming each input file is a monthly average comprising the variables
+@var{T}, @var{Q}, and @var{RH}, then the output will be files
+@file{T_000101_000912.nc}, 
+@file{Q_000101_000912.nc}, and
+@file{RH_000101_000912.nc}. 
+@command{ncclimo} @emph{reshapes} the input so that the outputs are
+continuous timeseries of each variable taken from all input files. 
+When necessary, the output is split into segments each containing no
+more than @var{ypf_max} (default 50) years of input, i.e., 
+@file{T_000101_005012.nc}, @file{T_005101_009912.nc},
+@file{T_010001_014912.nc}, etc.
 
 @unnumberedsubsec @acronym{MPAS-O/I} considerations
 @acronym{MPAS} ocean and ice models currently have their own
@@ -21238,7 +21369,7 @@ until, ideally, each core on the node is used.
 Remember that processes and threading are multiplicative in core use.
 Four jobs each with four threads consumes sixteen cores.
 
-As an example, consider regridding 100 files with a single map.
+As an example, consider regridding @w{100 files} with a single map.
 Say you have a five-node cluster, and each node has @w{16 cores}
 and can simultaneously regrid two files using eight threads each.
 (One needs to test a bit to determine these parameters.)
