@@ -155,15 +155,15 @@ nco_input_check /* [fnc] Check whether input has valid syntax */
   const char fnc_nm[]="nco_input_check()"; /* [sng] Function name */
 
   if(!strstr(args,"=")){ // If no equal sign in arguments
-    (void)fprintf(stderr,"%s: ERROR %s did not detect equal sign between key and value. HINT: This can occur when the designated or default key-value delimiter \"%s\" is mixed into the literal text of the value. Try changing the delimiter to a string guaranteed not to appear in the value string with, e.g., --dlm=\"##\".\n",nco_prg_nm_get(),fnc_nm,nco_mta_dlm_get());
+    (void)fprintf(stderr,"%s: ERROR %s did not detect equal sign between key and value for argument \"%s\".\n%s HINT This can occur when the designated or default key-value delimiter \"%s\" is mixed into the literal text of the value. Try changing the delimiter to a string guaranteed not to appear in the value string with, e.g., --dlm=\"##\".\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get(),nco_mta_dlm_get());
     return NCO_ERR;
   }
   if(strstr(args,"=") == args){ // Equal sign is at argument start (no key)
-    (void)fprintf(stderr,"%s: ERROR %s reports no key in key-value pair.\n",nco_prg_nm_get(),fnc_nm); 
+    (void)fprintf(stderr,"%s: ERROR %s reports no key in key-value pair for argument \"%s\".\n%s HINT It appears that an equal sign is the first character of the argument, meaning that a value was specified with a corresponding key.\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get()); 
     return NCO_ERR;
   }
   if(strstr(args,"=") == args+strlen(args)-1L){ // Equal sign is at argument end
-    (void)fprintf(stderr,"%s: ERROR %s reports no value in key-value pair. HINT: This usually occurs when the value of a key is unintentionally omitted, e.g., --gaa foo= , --ppc foo= , --rgr foo= , or --trr foo= . Each equal sign must be followed by a value.\n",nco_prg_nm_get(),fnc_nm); 
+    (void)fprintf(stderr,"%s: ERROR %s reports no value in key-value pair for argument \"%s\".\n%s HINT This usually occurs when the value of a key is unintentionally omitted, e.g., --gaa foo= , --ppc foo= , --rgr foo= , or --trr foo= . Each equal sign must immediatte precede a value for the specified key(s).\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get());
     return NCO_ERR;
   }
   return NCO_NOERR;

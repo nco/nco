@@ -1,4 +1,10 @@
+2017-01-13  Charlie Zender  <zender@uci.edu>
+
+	* ZKB in UDUnits code after fixing skyglow UDUnits installation
+
 2017-01-12  Charlie Zender  <zender@uci.edu>
+
+	* Fix all compiler warnings in nco_cln_utl.[ch]
 
 	* Fix bug introduced in 4.6.3 where hyperslabs involving UDUnits dates failed
 

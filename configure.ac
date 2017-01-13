@@ -735,6 +735,7 @@ if test "${enable_udunits2}" != 'no'; then
 	# 20160418 FC23 has /usr/include/udunits2/udunits2.h
 	# Add this path to CPPFLAGS if it exists, otherwise do nothing
 	AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"], [])
+	# 20170113 FC25 has /usr/include/udunits2/udunits2.h
 	# Ubuntu
 	# /usr/lib/x86_64-linux-gnu/libudunits2.a
 	# /usr/lib/i386-linux-gnu/libudunits2.a

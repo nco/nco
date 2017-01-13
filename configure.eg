@@ -630,7 +630,7 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
-# gcc/g++ Zender uses this to debug NCO with pre-built (i.e., yum/dnf install'd or aptitude install'd) netCDF (frazil, glace)
+# gcc/g++ Zender uses this to debug NCO with pre-built (i.e., yum/dnf install'd or aptitude install'd) netCDF in /usr (frazil, glace)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -641,7 +641,7 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
-# gcc/g++ Zender uses this to debug NCO with custom-install netCDF (and ESMF) binaries in /usr/local (givre, roulee)
+# gcc/g++ Zender uses this to debug NCO with custom-install netCDF (and ESMF) binaries in /usr/local (givre, roulee, grele)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CXX='g++' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -652,7 +652,7 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
-# gcc/g++ Zender uses this to debug NCO with pre-built netCDF binaries in /usr (this works on MACOSX with MacPorts, e.g., aerosol, skyglow)
+# gcc/g++ Zender uses this to debug NCO with pre-built netCDF binaries in /usr (frazil, skyglow)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -663,7 +663,7 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
-# gcc/g++ Zender uses this to debug NCO with pre-built netCDF (and ESMF) binaries in /opt/local (this works on MACOSX with MacPorts, e.g., aerosol)
+# gcc/g++ Zender uses this to debug NCO with pre-built netCDF (and ESMF) binaries in /opt/local (this works on MACOSX with MacPorts, e.g., aerosol, firn)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ESMF_INC='/opt/local/include' ESMF_LIB='/opt/local/lib/gcc49' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
