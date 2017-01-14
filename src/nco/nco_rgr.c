@@ -1295,6 +1295,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       slon_ctr_out=(double *)nco_malloc(slon_nbr_out*nco_typ_lng(crd_typ_out));
       for(idx=0;idx<slat_nbr_out;idx++){
 	slat_ctr_out[idx]=lat_ntf_out[idx+1];
+	slat_wgt_out[idx]=sin(dgr2rdn*lat_ctr_out[idx+1])-sin(dgr2rdn*lat_ctr_out[idx]);
       } /* !lat_nbr_out */
       for(idx=0;idx<slon_nbr_out;idx++){
 	slon_ctr_out[idx]=lon_ntf_out[idx];

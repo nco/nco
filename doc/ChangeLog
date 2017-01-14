@@ -1,5 +1,8 @@
 2017-01-13  Charlie Zender  <zender@uci.edu>
 
+	* Verified ncremap produces identical w_stag weights to those in
+	b.e11.BRCP26C5CNBDRD.f09_g16.1pt5degC.001.cam.h0.AODVIS.200601-210012.nc
+
 	* Add staggered latitude weight w_stag to FV output grids
 
 	* Print offending multi-argument when input error found
