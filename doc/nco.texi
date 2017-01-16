@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 12 January 2017
+@set update-date 14 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19727,6 +19727,16 @@ Shell commands may be re-used when they are defined in shell
 configuration files.
 These files are usually named @file{.bashrc}, @file{.cshrc}, and
 @file{.profile} for the Bash, Csh, and Sh shells, respectively.
+@cindex minimum
+@cindex maximum
+@cindex median
+@cindex mode
+@cindex range
+@html
+<a name="median"></a> <!-- http://nco.sf.net/nco.html#median -->
+<a name="mode"></a> <!-- http://nco.sf.net/nco.html#mode -->
+<a name="range"></a> <!-- http://nco.sf.net/nco.html#range -->
+@end html
 @example
 @verbatim
 # NB: Untested on Csh, Ksh, Sh, Zsh! Send us feedback!
