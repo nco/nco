@@ -48,6 +48,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
+int 
+nco_att_nbr        /* [fnc] return number of atts in var or global atts in group */ 
+(const int grp_id, /* I [id] netCDF group ID */
+ const int var_id); /* I [id] netCDF input variable ID */
+
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
 (const int grp_id, /* I [id] netCDF group ID */

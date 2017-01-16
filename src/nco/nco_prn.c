@@ -1524,14 +1524,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   long var_dsk; /* [nbr] Variable index relative to disk */
   long var_szm1;
 
+
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
   const nco_bool XML=prn_flg->xml; /* [flg] XML output */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
   const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
-
-  const nco_bool CDL_OR_JSN=prn_flg->cdl || prn_flg->jsn; /* [flg] CDL or JSON output */
-  const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
-  const nco_bool CDL_OR_JSN_OR_XML=prn_flg->cdl || prn_flg->jsn || prn_flg->xml; /* [flg] CDL or JSON or XML output */
 
   nco_bool JSN_BRK=False;    /* [flg] JSON output - data bracketed */
   nco_bool is_mss_val=False; /* [flg] Current value is missing value */
@@ -1687,7 +1684,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   } /* end if dlm_sng */
 
   spr_sng=cma_sng; /* [sng] Output separator string */
-  if(CDL_OR_JSN_OR_XML){
+  if(CDL || JSN || XML){
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
     int cpd_rec_dmn_idx[NC_MAX_DIMS]; /* [idx] Indices of non-leading record dimensions */
@@ -2365,11 +2362,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
   const nco_bool SRM=prn_flg->srm; /* [flg] Stream output */
   const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
-  const nco_bool CDL_OR_XML=prn_flg->cdl || prn_flg->xml; /* [flg] CDL or XML output */
   const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
-  const nco_bool CDL_OR_JSN_OR_TRD=prn_flg->cdl || prn_flg->jsn || prn_flg->trd; /* [flg] CDL or JSON or Traditional output */
-  const nco_bool CDL_OR_TRD_OR_XML=prn_flg->cdl || prn_flg->trd || prn_flg->xml; /* [flg] CDL or Traditional or XML output */
-  
 
   nm_id_sct *dmn_lst; /* [sct] Dimension list */
   nm_id_sct *var_lst; /* [sct] Variable list */
@@ -2377,7 +2370,6 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   unsigned int dmn_idx; /* [idx] Index over dimensions */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in group */
   unsigned int obj_idx; /* [idx] Index over traversal table */
-  unsigned int obj_idx_crr; /* [idx] Object index for this group */
 
   /* Initialize */
   dmn_nbr=0; /* [nbr] Number of dimensions defined in group */
@@ -2393,7 +2385,6 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Obtain group information */
-  obj_idx_crr=obj_idx;
   grp_dpt=trv_tbl->lst[obj_idx].grp_dpt;
   nbr_att=trv_tbl->lst[obj_idx].nbr_att;
   nbr_var=trv_tbl->lst[obj_idx].nbr_var;
@@ -2807,7 +2798,6 @@ nco_grp_prn_cdl_trd /* [fnc] Recursively print group contents */
   char var_nm[NC_MAX_NAME+1L];      /* [sng] Variable name */ 
 
   char *nm_cdl;
-  char *nm_jsn;
   char *var_nm_fll;                /* [sng] Full path for variable */
 
   int *grp_ids;                    /* [ID] Sub-group IDs array */  
@@ -2825,14 +2815,8 @@ nco_grp_prn_cdl_trd /* [fnc] Recursively print group contents */
   int var_idx;                     /* [idx] Variable index */
   int var_nbr_xtr;                 /* [nbr] Number of extracted variables */
   
-  nco_bool JSN_BLOCK=False;         /* turns true is we have output a jsnblock -need so we add commas where needed */ 
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
-  const nco_bool XML=prn_flg->xml; /* [flg] XML output */
-  const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
-  const nco_bool SRM=prn_flg->srm; /* [flg] Stream output */
-  const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
-  const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
-  
+  const nco_bool TRD=prn_flg->trd; /* [flg] CDL output */
 
   nm_id_sct *dmn_lst; /* [sct] Dimension list */
   nm_id_sct *var_lst; /* [sct] Variable list */
@@ -2840,7 +2824,6 @@ nco_grp_prn_cdl_trd /* [fnc] Recursively print group contents */
   unsigned int dmn_idx; /* [idx] Index over dimensions */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in group */
   unsigned int obj_idx; /* [idx] Index over traversal table */
-  unsigned int obj_idx_crr; /* [idx] Object index for this group */
 
   /* Initialize */
   dmn_nbr=0; /* [nbr] Number of dimensions defined in group */
@@ -2856,7 +2839,6 @@ nco_grp_prn_cdl_trd /* [fnc] Recursively print group contents */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Obtain group information */
-  obj_idx_crr=obj_idx;
   grp_dpt=trv_tbl->lst[obj_idx].grp_dpt;
   nbr_att=trv_tbl->lst[obj_idx].nbr_att;
   nbr_var=trv_tbl->lst[obj_idx].nbr_var;
@@ -2899,7 +2881,7 @@ nco_grp_prn_cdl_trd /* [fnc] Recursively print group contents */
   
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
-  if(dmn_nbr > 0 && CDL_OR_TRD) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng); 
+  if(dmn_nbr > 0 ) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng); 
   if(CDL) prn_ndn+=prn_flg->var_fst;
 
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
@@ -3071,10 +3053,7 @@ nco_grp_prn_xml /* [fnc] Recursively print group contents */
   char grp_nm[NC_MAX_NAME+1L];      /* [sng] Group name */
   char var_nm[NC_MAX_NAME+1L];      /* [sng] Variable name */ 
 
-  char *nm_cdl;
-  char *nm_jsn;
   char *var_nm_fll;                /* [sng] Full path for variable */
-
   int *grp_ids;                    /* [ID] Sub-group IDs array */  
 
   int dmn_idx_grp[NC_MAX_DIMS];    /* [ID] Dimension indices array for group */ 
@@ -3090,20 +3069,12 @@ nco_grp_prn_xml /* [fnc] Recursively print group contents */
   int var_idx;                     /* [idx] Variable index */
   int var_nbr_xtr;                 /* [nbr] Number of extracted variables */
   
-  nco_bool JSN_BLOCK=False;         /* turns true is we have output a jsnblock -need so we add commas where needed */ 
-  const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
-  const nco_bool XML=prn_flg->xml; /* [flg] XML output */
-  const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
-  const nco_bool SRM=prn_flg->srm; /* [flg] Stream output */
-  const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
-  
   nm_id_sct *dmn_lst; /* [sct] Dimension list */
   nm_id_sct *var_lst; /* [sct] Variable list */
 
   unsigned int dmn_idx; /* [idx] Index over dimensions */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in group */
   unsigned int obj_idx; /* [idx] Index over traversal table */
-  unsigned int obj_idx_crr; /* [idx] Object index for this group */
 
 
 
@@ -3121,7 +3092,6 @@ nco_grp_prn_xml /* [fnc] Recursively print group contents */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Obtain group information */
-  obj_idx_crr=obj_idx;
   grp_dpt=trv_tbl->lst[obj_idx].grp_dpt;
   nbr_att=trv_tbl->lst[obj_idx].nbr_att;
   nbr_var=trv_tbl->lst[obj_idx].nbr_var;
@@ -3323,7 +3293,6 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
   char grp_nm[NC_MAX_NAME+1L];      /* [sng] Group name */
   char var_nm[NC_MAX_NAME+1L];      /* [sng] Variable name */ 
 
-  char *nm_cdl;
   char *nm_jsn;
   char *var_nm_fll;                /* [sng] Full path for variable */
 
@@ -3343,7 +3312,6 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
   int var_nbr_xtr;                 /* [nbr] Number of extracted variables */
   int nbr_grp_xtr=0;               /* number of groups currently extracted */  
   nco_bool JSN_BLOCK=False;         /* turns true is we have output a jsnblock -need so we add commas where needed */ 
-  const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
   
   nm_id_sct *dmn_lst; /* [sct] Dimension list */
   nm_id_sct *var_lst; /* [sct] Variable list */
@@ -3351,7 +3319,6 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
   unsigned int dmn_idx; /* [idx] Index over dimensions */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in group */
   unsigned int obj_idx; /* [idx] Index over traversal table */
-  unsigned int obj_idx_crr; /* [idx] Object index for this group */
 
   /* Initialize */
   dmn_nbr=0; /* [nbr] Number of dimensions defined in group */
@@ -3367,7 +3334,6 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Obtain group information */
-  obj_idx_crr=obj_idx;
   grp_dpt=trv_tbl->lst[obj_idx].grp_dpt;
   nbr_att=trv_tbl->lst[obj_idx].nbr_att;
   nbr_var=trv_tbl->lst[obj_idx].nbr_var;
