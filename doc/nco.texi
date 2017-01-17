@@ -16676,7 +16676,7 @@ means.
 Alternatively, in timeseries reshaping mode, @command{ncclimo} will
 subset and temporally split the input raw data timeseries into
 per-variable files spanning the entire period. 
-@command{ncclimo} will regrids all output files in either mode. 
+@command{ncclimo} can optionally regrid all output files in either mode. 
 
 There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
 @samp{-i}, and @samp{-o})) to generate climatologies, and many more

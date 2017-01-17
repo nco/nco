@@ -1,3 +1,7 @@
+2017-01-16  Charlie Zender  <zender@uci.edu>
+
+	* Squelch warning about deflation with netCDF3 output when dfl_lvl==0
+
 2017-01-13  Charlie Zender  <zender@uci.edu>
 
 	* Verified ncremap produces identical w_stag weights to those in
