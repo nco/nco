@@ -66,12 +66,12 @@ netcdf hdn {
   var_cmp_9:_DeflateLevel = 9;
 
     int var_cnk_1(lat);
-  var_chk:purpose="Variable with chunking. Original _ChunkSizes = 1";
-  var_chk:_ChunkSizes=1;
+  var_cnk_1:purpose="Variable with chunking. Original _ChunkSizes = 1";
+  var_cnk_1:_ChunkSizes=1;
 
     int var_cnk_2(lat);
-  var_chk:purpose="Variable with chunking. Original _ChunkSizes = 2";
-  var_chk:_ChunkSizes=2;
+  var_cnk_2:purpose="Variable with chunking. Original _ChunkSizes = 2";
+  var_cnk_2:_ChunkSizes=2;
 
     int var_shf(lat);
   var_shf:purpose="Variable with shuffling. Original _Shuffle = 1";
