@@ -8,6 +8,11 @@
 # Re-incarnated with getopt as nccf in NCO 4.5.1, July 2015
 # Requirements: NCO 4.3.x+, UNIX shell utilities awk, grep, sed
 # Optional: Decker CFchecker https://bitbucket.org/mde_/cfchecker
+# Currently handles three checkers:
+# NERC http://puma.nerc.ac.uk/cgi-bin/cf-checker.pl
+# Decker checker cf
+# IOOS checker (unsupported): https://data.ioos.us/compliance
+# JPL MCC checker (unsupported, based on IOOS): http://podaac-uat.jpl.nasa.gov/mcc
 
 # Usage:
 # nccf -c cf_chk -f fl_in -i drc_in -o drc_out -n nco_opt -v cf_vrs

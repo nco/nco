@@ -32,10 +32,18 @@ A. ncclimo will reshape timeseries, i.e., split input datasets into
    ncclimo -v T,Q --input=$drc_in --output=drc_out --map=rgr_map
    http://nco.sf.net/nco.html#ncclimo
 
+A. ncks allows one to set chunk cache-size with --cnk_csh.
+
+A. ncremap now includes staggered grid weight with FV grid output.
+   The weights are named w_stag, following the CESM CAM convention. 
+
+A. Variables listed in a formula_terms attribute are now extracted.
+   Turn-off this behavior with -C.
+
 BUG FIXES:
 
 A. Fix bug introduced in 4.6.3 where hyperslabs involving UDUnits
-   could fail, depending on exactly how NCO was compiled.
+   dates could fail, depending on exactly how NCO was compiled.
    Failures most likely on MacOS because clang, unlike gcc, does not
    initialize pointers to NULL by default. Solution is to upgrade.
 
