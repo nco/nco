@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha04 final changes';git push
 	git tag -a 4.6.4-alpha04 -m 'Version 4.6.4-alpha04 new features: tidy warnings, UDUnits fix, w_stag, split doc';git push --tags
 
+	* Extract variables in CF "formula_terms" attribute
+
 	* Fix attributes in hdn.cdl
 
 2017-01-16  Charlie Zender  <zender@uci.edu>

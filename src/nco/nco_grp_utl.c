@@ -1041,7 +1041,7 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 void
 nco_xtr_cf_add /* [fnc] Add to extraction list variables associated with CF convention */
 (const int nc_id, /* I [ID] netCDF file ID */
- const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", or "coordinates") */
+ const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", "coordinates", or "grid_mapping") */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Add to extraction list all variables associated with specified CF convention
@@ -1066,10 +1066,10 @@ void
 nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified variable to extraction list */
 (const int nc_id, /* I [ID] netCDF file ID */
  const trv_sct * const var_trv, /* I [sct] Variable (object) */
- const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping") */
+ const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", "coordinates", or "grid_mapping") */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
 {
-  /* Detect associated variables specified by CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" convention
+  /* Detect associated variables specified by CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" conventions
      Private routine called by nco_xtr_cf_add()
      http://cfconventions.org/1.6.html#ancillary-data
      http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
@@ -1084,6 +1084,8 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_cf; /* [nbr] Number of variables specified in CF attribute ("ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping") */
   int var_id; /* [id] Variable ID */
+
+  static short FIRST_WARNING=True;
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
@@ -1115,7 +1117,33 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
 
       /* Split list into separate coordinate names
 	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
-      cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
+      if(!strcmp("formula_terms",cf_nm)){
+	/* formula_terms uses this syntax to list variables required to evaluate formula
+	   lev:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate"
+	   lev:formula_terms = "a: hyam b: hybm p0: P0 ps: PS" */
+        if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s reports that variables necessary to evaluate \"%s\" formula for variable %s are not yet extracted. This WARNING is printed only once per invocation.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll);
+	FIRST_WARNING=False;
+	return;
+	nbr_cf=0;
+	char *cln_ptr=att_val;
+	char *spc_ptr=NULL;
+	long var_lng;
+	while((cln_ptr=strstr(cln_ptr,": "))){
+	  spc_ptr=strchr(cln_ptr+2,' ');
+	  if(spc_ptr) var_lng=spc_ptr-cln_ptr; else var_lng=strlen(cln_ptr+2L);
+	  cf_lst=(char **)nco_realloc(cf_lst,(nbr_cf=1)*sizeof(char *));
+	  cf_lst[nbr_cf]=(char *)nco_malloc(var_lng*sizeof(char)+1L);
+          *(cf_lst[nbr_cf]+var_lng)='\0';
+          strncpy(cf_lst[nbr_cf],cln_ptr+2L,var_lng);
+	  cln_ptr+=var_lng;
+	  (void)fprintf(stderr,"%s: DEBUG %s reports variable %s %s variable #%d is %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,att_nm,nbr_cf,cf_lst[nbr_cf]);
+	  nbr_cf++;
+	} /* !att_val */
+      }else{
+	/* All other CF attributes */
+	cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
+      } /* !formula_terms */
+      
       /* ...for each variable in CF convention attribute, i.e., for each variable listed in "ancillary_variables", or in "bounds", or in "coordinates", or in "grid_mapping", ... */
       for(int idx_cf=0;idx_cf<nbr_cf;idx_cf++){
         char *cf_lst_var=cf_lst[idx_cf];
@@ -1363,7 +1391,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
   } /* Loop table */
 
   return;
-} /* end nco_xtr_crd_ass_cdf_add */
+} /* end nco_xtr_crd_ass_add() */
 
 void 
 nco_xtr_lst_prn /* [fnc] Print name-ID structure list */
@@ -6502,12 +6530,14 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     (void)nco_xtr_cf_add(nc_id,"climatology",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"grid_mapping",trv_tbl);
+    (void)nco_xtr_cf_add(nc_id,"formula_terms",trv_tbl);
     /* Do all twice, so that, e.g., auxiliary coordinates retrieved because of "coordinates" come with their "bounds" variables */
     (void)nco_xtr_cf_add(nc_id,"ancillary_variables",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"climatology",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"bounds",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"grid_mapping",trv_tbl);
+    (void)nco_xtr_cf_add(nc_id,"formula_terms",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
   /* Mark extracted dimensions */

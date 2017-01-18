@@ -5707,6 +5707,8 @@ The @samp{--mro} option has no effect on, or rather is redundant for,
 records.
 
 @html
+<a name="multislab"></a> <!-- http://nco.sf.net/nco.html#multislab -->
+<a name="multislabs"></a> <!-- http://nco.sf.net/nco.html#multislabs -->
 <a name="msa"></a> <!-- http://nco.sf.net/nco.html#msa -->
 <a name="mlt"></a> <!-- http://nco.sf.net/nco.html#mlt -->
 @end html
@@ -16647,6 +16649,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @page
 @html
 <a name="ncclimo"></a> <!-- http://nco.sf.net/nco.html#ncclimo -->
+<a name="ncsplit"></a> <!-- http://nco.sf.net/nco.html#ncsplit -->
 @end html
 @node ncclimo netCDF Climatology Generator, nces netCDF Ensemble Statistics, ncbo netCDF Binary Operator, Reference Manual
 @section @command{ncclimo} netCDF Climatology Generator
