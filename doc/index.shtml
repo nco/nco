@@ -630,7 +630,7 @@ Optimize diskless files?;</li>
 <li><b>NCO 4.6.4</b>: (<i>In Progress, features in-progress or completed include</i>)
 <tt>ncks</tt> set chunk cache-size with <tt>--cnk_csh</tt>;
 <tt>ncremap</tt> add <tt>w_stag</tt> weights to FV output;
-<tt>ncclimo</tt> timeseries reshaping mode;
+<tt>ncclimo</tt> timeseries reshaping ("splitting") mode;
 Extract variables in CF <tt>formula_terms</tt> attribute;
 Fix UDUnits calendar bug introduced in 4.6.3;</li>
 <li><b>NCO 4.6.3</b>: (<i>Current Stable Release</i>)

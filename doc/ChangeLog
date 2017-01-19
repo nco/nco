@@ -1,5 +1,7 @@
 2017-01-19  Charlie Zender  <zender@uci.edu>
 
+	* Add areacella to in.cdl in preparation for adding CF cell_measures variables to extraction list
+
 	* NCO 4.6.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha05 final changes';git push
 	git tag -a 4.6.4-alpha05 -m 'Version 4.6.4-alpha05 new features: fix stdin detection, var_xtr_xtn';git push --tags

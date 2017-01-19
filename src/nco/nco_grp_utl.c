@@ -6525,12 +6525,14 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     /* Implement CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" */
     (void)nco_xtr_cf_add(nc_id,"ancillary_variables",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"bounds",trv_tbl);
+    (void)nco_xtr_cf_add(nc_id,"cell_measures",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"climatology",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"grid_mapping",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"formula_terms",trv_tbl);
     /* Do all twice, so that, e.g., auxiliary coordinates retrieved because of "coordinates" come with their "bounds" variables */
     (void)nco_xtr_cf_add(nc_id,"ancillary_variables",trv_tbl);
+    (void)nco_xtr_cf_add(nc_id,"cell_measures",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"climatology",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"bounds",trv_tbl);

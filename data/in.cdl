@@ -258,6 +258,11 @@ variables:
 
 	int od(time);
 
+	double areacella(lat,lon);
+	areacella:long_name = "area";
+	areacella:units = "meter2";
+	areacella:purpose = "Variable to hold cell areas of 2D fields. Intended to be pointed to by cell_measures attribute of 2D fields. Would have named it plain-old area but too many regression tests already depend on 1D float area below. areacella is name used by some CESM simulations anyway, e.g., baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_atmos_fx_CCSM4_amip_r0i0p0.nc areacella: areacella_fx_CCSM4_amip_r0i0p0.nc";
+
 	float area(lat);
 	area:long_name = "area";
 	area:units = "meter2";
@@ -1257,6 +1262,7 @@ data:
 	area=10.,10.;
 	area2=20.,5.;
 	area_asm=1.,2.;
+	areacella=1.,1.,2.,2.,3.,3.,4.,4.;
 	bnd_var=1,2,3,4,5,6;
 	byt_arr=0,1,2,3,4,5,6,7;
 	byt_2D=0,1,2,3,4,5,6,7;
