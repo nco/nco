@@ -1284,10 +1284,11 @@ main(int argc,char **argv)
 	/* Ineptly named nco_grp_prn() emits full CDL and XML formats, and partial JSN 
 	   rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl); */
 
-        if(prn_flg.jsn) rcd+=nco_grp_prn_jsn(in_id,trv_pth,&prn_flg,trv_tbl);
-        else if(prn_flg.xml) rcd+=nco_grp_prn_xml(in_id,trv_pth,&prn_flg,trv_tbl);
-        else rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl);
-        /* else if(prn_flg.cdl || prn_flg.trd) rcd+=nco_grp_prn_cdl_trd(in_id,trv_pth,&prn_flg,trv_tbl); */   
+        if(prn_flg.jsn) rcd+=nco_prn_jsn(in_id,trv_pth,&prn_flg,trv_tbl);
+        else if(prn_flg.xml) rcd+=nco_prn_xml(in_id,trv_pth,&prn_flg,trv_tbl);
+        else if(prn_flg.cdl || prn_flg.trd) rcd+=nco_prn_cdl_trd(in_id,trv_pth,&prn_flg,trv_tbl); 
+        /* else rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl); */
+
  
       }else{
 	/* Place-holder for other options for organization/alphabetization */
