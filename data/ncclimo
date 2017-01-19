@@ -104,7 +104,7 @@ case "${HOSTNAME}" in
 	export PATH='/home/zender/bin_mira'\:${PATH}
 	export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
     cori* )
-	# 20160407: Split cori from edison binary locations to allow for different system libraries
+	# 20160407: Separate cori from edison binary locations to allow for different system libraries
 	# 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
 	# Not necessary for interactive, nor for CSZ non-interactive, batch submisssions
 	# Must be due to home environment differences between CSZ and other users
@@ -1050,7 +1050,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	printf "Split files will not be regridded\n"
     fi # !rgr
 fi # !sbs_flg
-if [ "${gnr_flg}" = 'Yes' ]; then
+if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${xtn_flg}" = 'No' ]; then
 	printf "Producing standard climatology from raw input files in directory ${drc_in}\n"
 	printf "Output files to directory ${drc_out}\n"
@@ -1094,7 +1094,7 @@ if [ "${gnr_flg}" = 'Yes' ]; then
     else
 	printf "This climatology will not be regridded\n"
     fi # !rgr
-fi # !gnr_flg
+fi # !clm_flg
 
 # Block 1: Generate, check, and store (but do not yet execute) commands
 
@@ -1886,7 +1886,7 @@ else # !caseid
     printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at `date`\n"
 fi # !caseid
 date_dff=$((date_end-date_srt))
-if [ "${gnr_flg}" = 'Yes' ]; then
+if [ "${clm_flg}" = 'Yes' ]; then
     echo "Quick plots of climatological annual mean:"
     if [ -n "${yr_srt_prv}" ]; then
 	if [ -n "${rgr_map}" ]; then 
@@ -1906,7 +1906,7 @@ if [ "${gnr_flg}" = 'Yes' ]; then
 	fi # !rgr_map    
     fi # !yr_srt_prv
     echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
-fi # !gnr_flg
+fi # !clm_flg
 if [ "${sbs_flg}" = 'Yes' ]; then
     echo "Quick plots of last variable split in last segment:"
     if [ -n "${rgr_map}" ]; then 
