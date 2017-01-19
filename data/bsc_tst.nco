@@ -296,7 +296,17 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
- 
+ // check var op conformance  
+ b13[lat,lon]={1,2,3,4,5,6,7,8};
+ b14[lon,lat]={1,5,2,6,3,7,4,8};
+
+ b15=b13*b14; 
+ if( b15.total() != (1+4+9+16+25+36+49+64) && b15(0,2)!=9L   )
+  {
+     print("ERROR: b15 b)) var_var_op(*) conformance\n");
+     nbr_err++;	
+  }
+  
 
   print("RESULTS block b: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
