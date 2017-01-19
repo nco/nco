@@ -2,7 +2,7 @@
 
 	* NCO 4.6.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha04 final changes';git push
-	git tag -a 4.6.4-alpha04 -m 'Version 4.6.4-alpha04 new features: tidy warnings, UDUnits fix, w_stag, split doc';git push --tags
+	git tag -a 4.6.4-alpha04 -m 'Version 4.6.4-alpha04 new features: tidy warnings, UDUnits fix, w_stag, split doc, formula_terms';git push --tags
 
 	* Verify formula_terms-based extractions work
 

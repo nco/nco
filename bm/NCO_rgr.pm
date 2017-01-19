@@ -2102,6 +2102,8 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array 			
     
 #ncks #49
+# ncks -O --mk_rec_dmn lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc
+# ncks -C -m -v lat ~/foo.nc | egrep -o -w 'Record coordinate is lat'
     $dsc_sng="Check --mk_rec_dmn (netCDF3 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --mk_rec_dmn lat -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m -v lat %tmp_fl_00% | egrep -o -w 'Record coordinate is lat'";
