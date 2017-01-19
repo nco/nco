@@ -1074,7 +1074,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
      http://cfconventions.org/1.6.html#ancillary-data
      http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
 
-  char **cf_lst; /* [sng] 1D array of list elements */
+  char **cf_lst=NULL_CEWI; /* [sng] 1D array of list elements */
   char att_nm[NC_MAX_NAME+1L]; /* [sng] Attribute name */
 
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
