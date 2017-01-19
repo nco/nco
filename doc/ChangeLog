@@ -1,5 +1,7 @@
 2017-01-19  Charlie Zender  <zender@uci.edu>
 
+	* Rewrite stdin pipe data detection in ncclimo, ncremap
+
 	* ncsplit remove lat/lon from automatic extraction for CAM (only present in regridded files)
 
 	* ncsplit change old gnr_flg to new clm_flg so climatology-generation mode is consistent

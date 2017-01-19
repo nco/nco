@@ -350,6 +350,7 @@ caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
+std_flg='No' # [sng] Input available from pipe on stdin
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', or 'mth')
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
@@ -565,6 +566,28 @@ done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 psn_nbr=$#
 
+# http://unix.stackexchange.com/questions/33049/check-if-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
+# 20170119 "if [ ! -t 0 ]" tests whether stdin connected to terminal, not whether pipe has data
+# Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives
+# Switch test from "if [ ! -t 0 ]" to "if [ -p /dev/stdin ]"
+if [ -p /dev/stdin ]; then
+    std_flg='Yes'
+    if [ ${dbg_lvl} -ge 1 ]; then
+	printf "bmd: Batch Mode Debugging (BMD)\n"
+	printf "dbg: std_flg  = ${std_flg}\n"
+	if [ ! -t 0 ]; then
+	    printf "bmd: Subset mode could be (but should not be) activated because stdin is not attached to terminal\n"
+	else # !stdin
+	    printf "bmd: stdin attached to terminal and cannot itself activate subset mode\n"
+	fi # !stdin
+	if [ -p /dev/stdin ]; then
+	    printf "bmd: Subset mode could be activated because -p /dev/stdin passed\n"
+	else # !stdin
+	    printf "bmd: -p /dev/stdin did not pass and cannot itself activate subset mode\n"
+	fi # !stdin
+    fi # !dbg
+fi # stdin
+
 # Determine mode first (this helps determine other defaults)
 if [ -n "${yr_srt_prv}" ]; then
     # Specifying only yr_srt_prv implies incremental method
@@ -577,24 +600,11 @@ if [ -n "${yr_srt_prv}" ]; then
     fi # !yr_end_prv binary method
 fi # !yr_srt_prv extended climo
 # Subset (split) mode whenever stdin has data or positional arguments are used
-# http://unix.stackexchange.com/questions/33049/check-if-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
-if [ ! -t 0 ] || [ ${psn_nbr} -ge 1 ]; then
+if [ ${std_flg} = 'Yes' ] || [ ${psn_nbr} -ge 1 ]; then
     sbs_flg='Yes'
     clm_flg='No'
     dec_md='sdd'
-    if [ ${dbg_lvl} -ge 1 ]; then
-	printf "bmd: Batch Mode Debugging (BMD)\n"
-	printf "bmd: psn_nbr  = ${psn_nbr}\n"
-	printf "bmd: sbs_flg  = ${sbs_flg}\n"
-	for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
-	    printf "bmd: psn_arg[${psn_idx}] = ${!psn_idx}\n"
-	done # !psn_idx
-	if [ ! -t 0 ]; then
-	    printf "bmd: Subset mode activated because stdin is not a terminal\n"
-	else # !stdin
-	    printf "bmd: stdin is a terminal and cannot itself activate subset mode\n"
-	fi # !stdin
-    fi # !dbg
+    mdl_nm='nil' # Unset model name for stdin and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
 fi # !stdin || !psn
 if [ -n "${ypf_max_usr}" ]; then 
     # fxm: Must specify --ypf to turn-on split mode when input files are specified by -i drc_in
@@ -603,6 +613,7 @@ if [ -n "${ypf_max_usr}" ]; then
     sbs_flg='Yes'
     clm_flg='No'
     dec_md='sdd'
+    mdl_nm='nil'
 fi # !ypf_max
 
 # Derived variables
@@ -777,7 +788,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	# Detect input on stdin:
 	# http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
 	# ls ${DATA}/ne30/raw/famipc5*1979*.nc | ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
-	if [ -t 0 ]; then 
+	if [ ${std_flg} = 'No' ]; then 
 	    if [ "${drc_in_usr_flg}" = 'Yes' ]; then
 		for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 		    if [ -f "${fl}" ]; then
@@ -798,7 +809,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    exit 1
 		fi # !psn_nbr
 	    fi # !drc_in
-	else # ! -t 0
+	else # !std_flg
 	    # Input awaits on unit 0, i.e., on stdin
 	    while read -r line; do # NeR05 p. 179
 		fl_in[${fl_nbr}]=${line}
@@ -850,7 +861,7 @@ else # !sbs_flg
 	exit 1
     fi # out_nm
 
-    if [ ! -t 0 ]; then
+    if [ ${std_flg} = 'Yes' ]; then
 	echo "${spt_nm}: ERROR Detected input via stdin pipe rather than console in climatology generation mode"
 	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files"
 	echo "${spt_nm}: HINT In climo generation mode, one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
@@ -970,6 +981,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
     printf "dbg: sbs_flg  = ${sbs_flg}\n"
+    printf "dbg: std_flg  = ${std_flg}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"
@@ -1033,7 +1045,7 @@ fi # !caseid
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
 if [ "${sbs_flg}" = 'Yes' ]; then
-    if [ -t 0 ]; then 
+    if [ ${std_flg} = 'No' ]; then 
 	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
 	    printf "Splitting climatology from ${fl_nbr} raw input files in directory ${drc_in}\n"
 	else # !drc_in
@@ -1202,8 +1214,8 @@ fi # !clm_md
 if [ "${sbs_flg}" = 'Yes' ]; then
 	
     case ${mdl_nm} in
-	# CAM-SE does not contain lat,lon (until regridded), but does contain area
-	cam* ) var_lst_xtn='area' ;;
+	# CAM-SE contains area (though does not contain lat,lon until regridded)
+	cam* ) var_lst_xtn=',area' ;;
     esac # !mdl_nm
 
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
@@ -1271,7 +1283,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	let idx_end=$((job_nbr-1))
 	for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 	    fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
-	    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]},${var_lst_xtn} ${nco_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+	    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_sbs[${var_idx}]}
 	    fi # !dbg
