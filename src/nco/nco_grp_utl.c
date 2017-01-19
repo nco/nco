@@ -1085,8 +1085,6 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
   int nbr_cf; /* [nbr] Number of variables specified in CF attribute ("ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping") */
   int var_id; /* [id] Variable ID */
 
-  static short FIRST_WARNING=True;
-
   assert(var_trv->nco_typ == nco_obj_typ_var);
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
   (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
@@ -1121,17 +1119,17 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
 	/* formula_terms uses this syntax to list variables required to evaluate formula
 	   lev:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate"
 	   lev:formula_terms = "a: hyam b: hybm p0: P0 ps: PS" */
+	/* static short FIRST_WARNING=True;
         if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s reports that variables necessary to evaluate \"%s\" formula for variable %s are not yet extracted. This WARNING is printed only once per invocation.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll);
-	FIRST_WARNING=False;
-	return;
+	FIRST_WARNING=False; */
 	nbr_cf=0;
 	char *cln_ptr=att_val;
 	char *spc_ptr=NULL;
 	long var_lng;
 	while((cln_ptr=strstr(cln_ptr,": "))){
 	  spc_ptr=strchr(cln_ptr+2,' ');
-	  if(spc_ptr) var_lng=spc_ptr-cln_ptr; else var_lng=strlen(cln_ptr+2L);
-	  cf_lst=(char **)nco_realloc(cf_lst,(nbr_cf=1)*sizeof(char *));
+	  if(spc_ptr) var_lng=spc_ptr-cln_ptr-2; else var_lng=strlen(cln_ptr+2L);
+	  cf_lst=(char **)nco_realloc(cf_lst,(nbr_cf+1)*sizeof(char *));
 	  cf_lst[nbr_cf]=(char *)nco_malloc(var_lng*sizeof(char)+1L);
           *(cf_lst[nbr_cf]+var_lng)='\0';
           strncpy(cf_lst[nbr_cf],cln_ptr+2L,var_lng);

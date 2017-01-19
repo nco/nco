@@ -1,8 +1,12 @@
-2017-01-17  Charlie Zender  <zender@uci.edu>
+2017-01-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha04 final changes';git push
 	git tag -a 4.6.4-alpha04 -m 'Version 4.6.4-alpha04 new features: tidy warnings, UDUnits fix, w_stag, split doc';git push --tags
+
+	* Verify formula_terms-based extractions work
+
+2017-01-17  Charlie Zender  <zender@uci.edu>
 
 	* Extract variables in CF "formula_terms" attribute
 
