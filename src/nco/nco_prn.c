@@ -2775,7 +2775,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
 
 int /* [rcd] Return code */
-nco_grp_prn_cdl_trd /* [fnc] Recursively print group contents */
+nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
@@ -3016,7 +3016,7 @@ nco_grp_prn_cdl_trd /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is sub-group to be extracted? If so, recurse */
-    if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn_cdl_trd(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
+    if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_prn_cdl_trd(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
@@ -3031,7 +3031,7 @@ nco_grp_prn_cdl_trd /* [fnc] Recursively print group contents */
 
 
 int /* [rcd] Return code */
-nco_grp_prn_xml /* [fnc] Recursively print group contents */
+nco_prn_xml /* [fnc] Recursively print group contents */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
@@ -3253,7 +3253,7 @@ nco_grp_prn_xml /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is sub-group to be extracted? If so, recurse */
-    if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn_xml(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
+    if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_prn_xml(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
@@ -3271,7 +3271,7 @@ nco_grp_prn_xml /* [fnc] Recursively print group contents */
 
 
 int /* [rcd] Return code */
-nco_grp_prn_jsn /* [fnc] Recursively print group contents */
+nco_prn_jsn /* [fnc] Recursively print group contents */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
@@ -3563,7 +3563,7 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
       else   
          (void)fprintf(stdout,",\n"); 
 
-      rcd+=nco_grp_prn_jsn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);        
+      rcd+=nco_prn_jsn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);        
     }  
 
     /* Free constructed name */
@@ -3581,7 +3581,7 @@ nco_grp_prn_jsn /* [fnc] Recursively print group contents */
 
   
   return rcd;
-  } /* end nco_grp_prn_jsn() */
+  } /* end nco_prn_jsn() */
 
 
 nco_bool                            /* O [flg] Variable is compound */
