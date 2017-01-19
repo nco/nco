@@ -197,9 +197,9 @@ esac # !HOSTNAME
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split pipe:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${HOME}/rgr
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
 # Split positional arguments:
-# ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${HOME}/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
+# ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Split production:
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
@@ -576,11 +576,25 @@ if [ -n "${yr_srt_prv}" ]; then
 	ncr_flg='Yes'
     fi # !yr_end_prv binary method
 fi # !yr_srt_prv extended climo
-# Subset (split) mode whenever stdin or positional arguments are used
+# Subset (split) mode whenever stdin has data or positional arguments are used
+# http://unix.stackexchange.com/questions/33049/check-if-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
 if [ ! -t 0 ] || [ ${psn_nbr} -ge 1 ]; then
     sbs_flg='Yes'
     clm_flg='No'
     dec_md='sdd'
+    if [ ${dbg_lvl} -ge 1 ]; then
+	printf "bmd: Batch Mode Debugging (BMD)\n"
+	printf "bmd: psn_nbr  = ${psn_nbr}\n"
+	printf "bmd: sbs_flg  = ${sbs_flg}\n"
+	for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	    printf "bmd: psn_arg[${psn_idx}] = ${!psn_idx}\n"
+	done # !psn_idx
+	if [ ! -t 0 ]; then
+	    printf "bmd: Subset mode activated because stdin is not a terminal\n"
+	else # !stdin
+	    printf "bmd: stdin is a terminal and cannot itself activate subset mode\n"
+	fi # !stdin
+    fi # !dbg
 fi # !stdin || !psn
 if [ -n "${ypf_max_usr}" ]; then 
     # fxm: Must specify --ypf to turn-on split mode when input files are specified by -i drc_in
@@ -1188,7 +1202,8 @@ fi # !clm_md
 if [ "${sbs_flg}" = 'Yes' ]; then
 	
     case ${mdl_nm} in
-	cam* ) var_lst_xtn='lat,lon,area' ;;
+	# CAM-SE does not contain lat,lon (until regridded), but does contain area
+	cam* ) var_lst_xtn='area' ;;
     esac # !mdl_nm
 
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do

@@ -1,6 +1,8 @@
 2017-01-19  Charlie Zender  <zender@uci.edu>
 
-	* ncclimo change old gnr_flg to new clm_flg so climatology-generation mode is consistent
+	* ncsplit remove lat/lon from automatic extraction for CAM (only present in regridded files)
+
+	* ncsplit change old gnr_flg to new clm_flg so climatology-generation mode is consistent
 
 2017-01-18  Charlie Zender  <zender@uci.edu>
 
