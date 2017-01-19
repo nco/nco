@@ -1115,8 +1115,9 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
 
       /* Split list into separate coordinate names
 	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
-      if(!strcmp("formula_terms",cf_nm)){
-	/* formula_terms uses this syntax to list variables required to evaluate formula
+      if(!strcmp("cell_measures",cf_nm) || !strcmp("formula_terms",cf_nm)){
+	/* cell_measures and formula_terms use this syntax to list variables required to know grid or evaluate formula:
+	   orog:cell_measures = "area: areacella"
 	   lev:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate"
 	   lev:formula_terms = "a: hyam b: hybm p0: P0 ps: PS" */
 	/* static short FIRST_WARNING=True;
@@ -1138,7 +1139,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
 	  nbr_cf++;
 	} /* !att_val */
       }else{
-	/* All CF attributes besides "formula_terms" are space-separated lists */
+	/* All CF attributes that NCO handles besides "cell_measures" and "formula_terms" are space-separated lists */
 	cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
       } /* !formula_terms */
       

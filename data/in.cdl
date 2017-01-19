@@ -261,7 +261,7 @@ variables:
 	double areacella(lat,lon);
 	areacella:long_name = "area";
 	areacella:units = "meter2";
-	areacella:purpose = "Variable to hold cell areas of 2D fields. Intended to be pointed to by cell_measures attribute of 2D fields. Would have named it plain-old area but too many regression tests already depend on 1D float area below. areacella is name used by some CESM simulations anyway, e.g., baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_atmos_fx_CCSM4_amip_r0i0p0.nc areacella: areacella_fx_CCSM4_amip_r0i0p0.nc";
+	areacella:purpose = "Variable to hold cell areas of 2D fields. Intended to be pointed to by cell_measures attribute of 2D fields. Would have named it plain-old area but too many regression tests already depend on 1D float area below. areacella is name used by ESGF-distributed versions of some CESM simulations anyway, e.g., baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_atmos_fx_CCSM4_amip_r0i0p0.nc areacella: areacella_fx_CCSM4_amip_r0i0p0.nc";
 
 	float area(lat);
 	area:long_name = "area";
@@ -917,6 +917,13 @@ variables:
 	ORO:long_name = "Orography, an enumerated yet continuous type: ocean=0.0, land=1.0, sea ice=2.0";
 	ORO:units = "fraction";
 
+	float orog(lat,lon);
+	orog:long_name = "Orography, an enumerated yet continuous type: ocean=0.0, land=1.0, sea ice=2.0";
+	orog:units = "fraction";
+        orog:original_name = "ORO" ;
+        orog:cell_measures = "area: areacella" ;
+        orog:purpose = "Replicate processing of files produced by CESM and distributed on ESGF" ;
+
 	float weight(lat);
 	weight:long_name = "Gaussian weight";
 	weight:units = "fraction";
@@ -1389,6 +1396,7 @@ data:
 	var_mss_3=0.,1.,2.,_;
 	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
 	ORO=0.,1.,0.,0.,1.,1.,0.,2.;
+	orog=0.,1.,0.,0.,1.,1.,0.,2.;
 	mask=0.,1.,0.,0.,1.,1.,0.,2.;
 //	mask=0.,0.,0.,0.,0.,0.,0.,0.;
 //	mask=1.,1.,1.,1.,1.,1.,1.,1.;
