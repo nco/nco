@@ -1127,18 +1127,18 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
 	char *spc_ptr=NULL;
 	long var_lng;
 	while((cln_ptr=strstr(cln_ptr,": "))){
-	  spc_ptr=strchr(cln_ptr+2,' ');
-	  if(spc_ptr) var_lng=spc_ptr-cln_ptr-2; else var_lng=strlen(cln_ptr+2L);
+	  spc_ptr=strchr(cln_ptr+2L,' ');
+	  if(spc_ptr) var_lng=spc_ptr-cln_ptr-2L; else var_lng=strlen(cln_ptr+2L);
 	  cf_lst=(char **)nco_realloc(cf_lst,(nbr_cf+1)*sizeof(char *));
 	  cf_lst[nbr_cf]=(char *)nco_malloc(var_lng*sizeof(char)+1L);
           *(cf_lst[nbr_cf]+var_lng)='\0';
           strncpy(cf_lst[nbr_cf],cln_ptr+2L,var_lng);
 	  cln_ptr+=var_lng;
-	  (void)fprintf(stderr,"%s: DEBUG %s reports variable %s %s variable #%d is %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,att_nm,nbr_cf,cf_lst[nbr_cf]);
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: DEBUG %s reports variable %s %s variable #%d is %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,att_nm,nbr_cf,cf_lst[nbr_cf]);
 	  nbr_cf++;
 	} /* !att_val */
       }else{
-	/* All other CF attributes */
+	/* All CF attributes besides "formula_terms" are space-separated lists */
 	cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
       } /* !formula_terms */
       
