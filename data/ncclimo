@@ -350,7 +350,6 @@ caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
-std_flg='No' # [sng] Input available from pipe on stdin
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', or 'mth')
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
@@ -388,6 +387,7 @@ rgr_map='' # [sng] Regridding map
 #rgr_map="${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150901.nc"
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 sbs_flg='No' # [sng] Split (subset) climatologies
+std_flg='No' # [sng] Input available from pipe to stdin
 thr_nbr=2 # [nbr] Thread number for regridder
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
@@ -566,27 +566,15 @@ done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 psn_nbr=$#
 
+# Detect input on pipe to stdin:
+# http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
 # http://unix.stackexchange.com/questions/33049/check-if-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
 # 20170119 "if [ ! -t 0 ]" tests whether stdin connected to terminal, not whether pipe has data
 # Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives
 # Switch test from "if [ ! -t 0 ]" to "if [ -p /dev/stdin ]"
 if [ -p /dev/stdin ]; then
     std_flg='Yes'
-    if [ ${dbg_lvl} -ge 1 ]; then
-	printf "bmd: Batch Mode Debugging (BMD)\n"
-	printf "dbg: std_flg  = ${std_flg}\n"
-	if [ ! -t 0 ]; then
-	    printf "bmd: Subset mode could be (but should not be) activated because stdin is not attached to terminal\n"
-	else # !stdin
-	    printf "bmd: stdin attached to terminal and cannot itself activate subset mode\n"
-	fi # !stdin
-	if [ -p /dev/stdin ]; then
-	    printf "bmd: Subset mode could be activated because -p /dev/stdin passed\n"
-	else # !stdin
-	    printf "bmd: -p /dev/stdin did not pass and cannot itself activate subset mode\n"
-	fi # !stdin
-    fi # !dbg
-fi # stdin
+fi # !stdin
 
 # Determine mode first (this helps determine other defaults)
 if [ -n "${yr_srt_prv}" ]; then
@@ -599,12 +587,12 @@ if [ -n "${yr_srt_prv}" ]; then
 	ncr_flg='Yes'
     fi # !yr_end_prv binary method
 fi # !yr_srt_prv extended climo
-# Subset (split) mode whenever stdin has data or positional arguments are used
+# Subset (split) mode whenever stdin pipe has data or positional arguments are used
 if [ ${std_flg} = 'Yes' ] || [ ${psn_nbr} -ge 1 ]; then
     sbs_flg='Yes'
     clm_flg='No'
     dec_md='sdd'
-    mdl_nm='nil' # Unset model name for stdin and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
+    mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
 fi # !stdin || !psn
 if [ -n "${ypf_max_usr}" ]; then 
     # fxm: Must specify --ypf to turn-on split mode when input files are specified by -i drc_in
@@ -785,9 +773,6 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	fl_in[${fl_nbr}]=${in_fl}
 	let fl_nbr=${fl_nbr}+1
     else # !in_fl
-	# Detect input on stdin:
-	# http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
-	# ls ${DATA}/ne30/raw/famipc5*1979*.nc | ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 	if [ ${std_flg} = 'No' ]; then 
 	    if [ "${drc_in_usr_flg}" = 'Yes' ]; then
 		for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
@@ -805,7 +790,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    done # !psn_idx
 		else
 		    echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
-		    echo "${spt_nm}: HINT Pipe input file list via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+		    echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
 		    exit 1
 		fi # !psn_nbr
 	    fi # !drc_in
@@ -862,7 +847,7 @@ else # !sbs_flg
     fi # out_nm
 
     if [ ${std_flg} = 'Yes' ]; then
-	echo "${spt_nm}: ERROR Detected input via stdin pipe rather than console in climatology generation mode"
+	echo "${spt_nm}: ERROR Detected input on pipe to stdin rather than console in climatology generation mode"
 	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files"
 	echo "${spt_nm}: HINT In climo generation mode, one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
 	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"

@@ -279,6 +279,7 @@ par_typ='nil' # [sng] Parallelism type
 pdq_typ='' # [sng] Permutation type
 #rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon --rnr=0.0' # [sng] Regridding options
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
+std_flg='No' # [sng] Input available from pipe to stdin
 thr_nbr=2 # [nbr] Thread number for regridder
 tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
 #tps_opt='--mono' # [sng] TempestRemap options
@@ -313,7 +314,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation argument string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use grd_sng or map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dest_grid, destination_grid${fnt_nrm}]"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
-    echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means use stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm}) [${fnt_tlc}in_fl, in_file, input_file${fnt_nrm}]"
+    echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means pipe to stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm}) [${fnt_tlc}in_fl, in_file, input_file${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file) [${fnt_tlc}mlt_map, no_multimap${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
@@ -446,6 +447,16 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
     esac # !OPT
 done # !getopts
 shift $((OPTIND-1)) # Advance one argument
+
+# Detect input on pipe to stdin:
+# http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
+# http://unix.stackexchange.com/questions/33049/check-if-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
+# 20170119 "if [ ! -t 0 ]" tests whether stdin connected to terminal, not whether pipe has data
+# Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives
+# Switch test from "if [ ! -t 0 ]" to "if [ -p /dev/stdin ]"
+if [ -p /dev/stdin ]; then
+    std_flg='Yes'
+fi # !stdin
 
 # Derived variables
 if [ -n "${drc_usr}" ]; then
@@ -669,10 +680,7 @@ if [ -n "${in_fl}" ]; then
     fl_in[0]=${in_fl}
     fl_nbr=1
 else # !in_fl
-    # Detect input on stdin:
-    # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
-    # ls ${DATA}/ne30/raw/famipc5*1979*.nc | ncremap -D 1 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
-    if [ -t 0 ]; then 
+    if [ ${std_flg} = 'No' ]; then 
 	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
 	    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 		if [ -f "${fl}" ]; then
@@ -703,13 +711,13 @@ else # !in_fl
 			fl_nbr=${psn_nbr}
 		    done # !psn_idx
 		else
-		    echo "ERROR: Specify input file(s) with -i or with positional argument(s) or with stdin"
-		    echo "HINT: Pipe input file list via stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+		    echo "ERROR: Specify input file(s) with -i or with positional argument(s) or with pipe to stdin"
+		    echo "HINT: Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
 		    exit 1
 		fi # !psn_nbr
 	    fi # !map_mk
 	fi # !drc_in
-    else # ! -t 0
+    else # !std_flg
 	# Input awaits on unit 0, i.e., on stdin
 	while read -r line; do # NeR05 p. 179
 	    fl_in[${fl_nbr}]=${line}
