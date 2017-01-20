@@ -1,5 +1,7 @@
 2017-01-19  Charlie Zender  <zender@uci.edu>
 
+	* ncremap change standard_name of area_nm_out from cell_area to area
+
 	* Extract variables in CF "cell_measures" attributes
 
 	* Add areacella to in.cdl in preparation for adding CF cell_measures variables to extraction list

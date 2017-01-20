@@ -2302,7 +2302,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
 
   att_nm=strdup("standard_name");
-  att_val=strdup("cell_area");
+  att_val=strdup("area");
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=area_nm_out;
   aed_mtd.id=area_out_id;
