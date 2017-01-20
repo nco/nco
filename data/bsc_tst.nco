@@ -301,12 +301,19 @@ nbr_err_ttl=0;
  b14[lon,lat]={1,5,2,6,3,7,4,8};
 
  b15=b13*b14; 
- if( b15.total() != (1+4+9+16+25+36+49+64) && b15(0,2)!=9L   )
+ if( (b15-b13*b13).total() !=0 || b15(0,1) != 4  )
   {
-     print("ERROR: b15 b)) var_var_op(*) conformance\n");
+     print("ERROR: b15 b) var_var_op(*) conformance\n");
      nbr_err++;	
   }
   
+ b16=b14+b13; 
+ if( (b16-2*b14).total() !=0 || b16(0,1) != 10 )
+  {
+     print("ERROR: b16 b) var_var_op(+) conformance\n");
+     nbr_err++;	
+  }
+
 
   print("RESULTS block b: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
