@@ -1,5 +1,11 @@
 2017-01-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.4-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha06 final changes';git push
+	git tag -a 4.6.4-alpha06 -m 'Version 4.6.4-alpha06 new features: cell_measures';git push --tags
+
+	* Document cell_measures and formula_terms
+
 	* Add --cll_msr/--no_cll_msr and --frm_trm/--no_frm_trm to subsetting operators
 
 	* ncks adds/suppresses cell_measures in regridded output with --rgr cll_msr/no_cll_msr

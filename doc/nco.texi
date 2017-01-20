@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha05
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 19 January 2017
+@set update-date 20 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -11087,6 +11087,8 @@ Ancillary variables are subject to the user-specified override switches
 <a name="cnv_CF_cll_msr"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_cll_msr -->
 <a name="cll_msr"></a> <!-- http://nco.sf.net/nco.html#cll_msr -->
 <a name="cell_measures"></a> <!-- http://nco.sf.net/nco.html#cell_measures -->
+<a name="no_cll_msr"></a> <!-- http://nco.sf.net/nco.html#no_cll_msr -->
+<a name="no_cell_measures"></a> <!-- http://nco.sf.net/nco.html#no_cell_measures -->
 @end html
 @cindex @code{cell_measures} attribute
 @cindex cell measures convention
@@ -11094,14 +11096,83 @@ As of @acronym{NCO} version 4.6.4 (January, 2017), @acronym{NCO}
 supports the @acronym{CF} @code{cell_measures} convention 
 described 
 @uref{http://cfconventions.org/1.6.html#cell-measures, here}.
-This convention allows ancillary variables to be associated with one or
-more primary variables.
-@acronym{NCO} attaches any such variables to the extraction list along 
-with the primary variable and its usual (one-dimensional) coordinates,
-if any. 
-Ancillary variables are subject to the user-specified override switches 
-(including @samp{-c} and @samp{-C}) described in 
+This convention allows variables to indicate which other variable or
+variables contains area or volume information about a gridcell.
+These measures variables are pointed to by the @code{cell_measures}
+attribute.
+The @acronym{CDL} specification of a measures variable for area looks
+like 
+@example
+orog:cell_measures = "area: areacella"
+@end example
+where @code{areacella} is the name of the measures variable.
+Unless the default behavior is overridden, @acronym{NCO} attaches any
+measures variables to the extraction list along with the primary
+variable and other associated variables. 
+By definition, measures variables are a subset of the rank of the
+variable they measure.
+The most common case is that the measures variable for area is the same
+size as @w{2D fields} (like surface air temperature) and much smaller
+than @w{3D fields} (like full air temperature). 
+In such cases the measures variable might occupy 50% of the space of a
+dataset consisting of only one @w{2D field}.
+Extraction of measures variables is subject to the user-specified
+override switches (including @samp{-c} and @samp{-C}) described in  
 @ref{Subsetting Coordinate Variables}. 
+To conserve space without sacrificing too much metadata, @acronym{NCO}
+makes it possible to override the extraction of measures variables
+independent of extracting other associated variables.
+Override the default with @samp{--no_cell_measures} or
+@samp{--no_cll_msr}. 
+These options are available in all operators that perform subsetting
+(i.e., all operators except @command{ncatted} and @command{ncrename}).
+
+@html
+<a name="cnv_CF_frm_trm"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_frm_trm -->
+<a name="frm_trm"></a> <!-- http://nco.sf.net/nco.html#frm_trm -->
+<a name="formula_terms"></a> <!-- http://nco.sf.net/nco.html#formula_terms -->
+<a name="no_frm_trm"></a> <!-- http://nco.sf.net/nco.html#no_frm_trm -->
+<a name="no_formula_terms"></a> <!-- http://nco.sf.net/nco.html#no_formula_terms -->
+@end html
+@cindex @code{formula_terms} attribute
+@cindex cell measures convention
+As of @acronym{NCO} version 4.6.4 (January, 2017), @acronym{NCO} 
+supports the @acronym{CF} @code{formula_terms} convention 
+described 
+@uref{http://cfconventions.org/1.6.html#formula-terms, here}.
+This convention encodes formulas used to construct (usually vertical)
+coordinate grids.
+The @acronym{CDL} specification of a vertical coordinate formula for
+looks like 
+@example
+lev:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate"
+lev:formula_terms = "a: hyam b: hybm p0: P0 ps: PS"
+@end example
+where @code{standard_name} contains the standardized name of the
+formula variable and @code{formula_terms} contains a list of the
+variables used, called formula variables.
+Above the formula variables are @code{hyam}, @code{hybm}, @code{P0}, and
+@code{PS}. 
+Unless the default behavior is overridden, @acronym{NCO} attaches any 
+formula variables to the extraction list along with the primary
+variable and other associated variables. 
+By definition, formula variables are a subset of the rank of the
+variable they measure.
+One common case is that the formula variables for constructing a 
+@w{3D height} grid involves a 2D variable (like surface pressure,
+or elevation).
+In such cases the formula variables typically constitute only a 
+small fraction of a dataset consisting of one @w{3D field}.
+Extraction of formula variables is subject to the user-specified
+override switches (including @samp{-c} and @samp{-C}) described in  
+@ref{Subsetting Coordinate Variables}. 
+To conserve space without sacrificing too much metadata, @acronym{NCO}
+makes it possible to override the extraction of formula variables
+independent of extracting other associated variables.
+Override the default with @samp{--no_formula_terms} or
+@samp{--no_frm_trm}. 
+These options are available in all operators that perform subsetting
+(i.e., all operators except @command{ncatted} and @command{ncrename}).
 
 @html
 <a name="cnv_CF_grd"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_grd -->
@@ -11167,8 +11238,9 @@ history of a variable's analysis.
 @html
 <a name="cnv_CF_cll_mth"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_cll_mth -->
 <a name="cll_mth"></a> <!-- http://nco.sf.net/nco.html#cll_mth -->
-<a name="no_cll_mth"></a> <!-- http://nco.sf.net/nco.html#no_cll_mth -->
 <a name="cell_methods"></a> <!-- http://nco.sf.net/nco.html#cell_methods -->
+<a name="no_cll_mth"></a> <!-- http://nco.sf.net/nco.html#no_cll_mth -->
+<a name="no_cell_methods"></a> <!-- http://nco.sf.net/nco.html#no_cell_methods -->
 @end html
 @cindex @code{cell_methods}
 @cindex @code{--cll_mth}
@@ -11315,8 +11387,8 @@ described in any detail in the sections below.
 * ncatted netCDF Attribute Editor::
 * ncbo netCDF Binary Operator::
 * ncclimo netCDF Climatology Generator::
-* nces netCDF Ensemble Statistics::
 * ncecat netCDF Ensemble Concatenator::
+* nces netCDF Ensemble Statistics::
 * ncflint netCDF File Interpolator::
 * ncks netCDF Kitchen Sink::
 * ncpdq netCDF Permute Dimensions Quickly::
@@ -16263,7 +16335,7 @@ ncbo [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
-[-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl]
+[-L @var{dfl_lvl}] [-l @var{path}] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
@@ -16677,7 +16749,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 <a name="ncclimo"></a> <!-- http://nco.sf.net/nco.html#ncclimo -->
 <a name="ncsplit"></a> <!-- http://nco.sf.net/nco.html#ncsplit -->
 @end html
-@node ncclimo netCDF Climatology Generator, nces netCDF Ensemble Statistics, ncbo netCDF Binary Operator, Reference Manual
+@node ncclimo netCDF Climatology Generator, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Reference Manual
 @section @command{ncclimo} netCDF Climatology Generator
 @cindex climo
 @cindex climatology
@@ -17867,236 +17939,9 @@ Moreover, the climatologies can be generated in parallel.
 
 @page
 @html
-<a name="nces"></a> <!-- http://nco.sf.net/nco.html#nces -->
-<a name="ncea"></a> <!-- http://nco.sf.net/nco.html#ncea -->
-@end html
-@node nces netCDF Ensemble Statistics, ncecat netCDF Ensemble Concatenator, ncclimo netCDF Climatology Generator, Reference Manual
-@section @command{nces} netCDF Ensemble Statistics
-@cindex averaging data
-@cindex ensemble average
-@findex nces
-
-@noindent
-SYNTAX
-@example
-nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
-[-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}] [--no_tmp_fl] [--nsm_fl|grp] [--nsm_sfx sfx]
-[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rth_dbl|flt]
-[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
-[@var{input-files}] [@var{output-file}]
-@end example
-
-@noindent
-DESCRIPTION
-
-@command{nces} performs gridpoint statistics (including, but not limited
-to, averages) on variables across an arbitrary number (an
-@dfn{ensemble}) of @var{input-files} and/or of input groups within each
-file. 
-Each file (or group) receives an equal weight.
-@command{nces} was formerly (until @acronym{NCO} version 4.3.9,
-released December, 2013) known as @command{ncea} (netCDF Ensemble
-Averager)@footnote{
-The old ncea command was deprecated in @acronym{NCO} version 4.3.9,  
-released December, 2013.
-@acronym{NCO} will attempt to maintain back-compatibility and work
-as expected with invocations of @command{ncea} for as long as possible.
-Please replace @command{ncea} by @command{nces} in all future work.}.
-@cindex ensemble
-For example, @command{nces} will average a set of files or groups,
-weighting each file or group evenly. 
-This is distinct from @command{ncra}, which performs statistics only
-over the record dimension(s) (e.g., @var{time}), and weights each record 
-in each record dimension evenly.
-
-The file or group is the logical unit of organization for the results of
-many scientific studies.
-Often one wishes to generate a file or group which is the statistical
-product (e.g., average) of many separate files or groups. 
-This may be to reduce statistical noise by combining the results of a
-large number of experiments, or it may simply be a step in a procedure 
-whose goal is to compute anomalies from a mean state. 
-In any case, when one desires to generate a file whose statistical
-properties are equally influenced by all the inputs, then @command{nces}
-is the operator to use. 
-
-Variables in the @var{output-file} are the same size as the variable
-hyperslab in each input file or group, and each input file or group
-must be the same size after hyperslabbing
-@footnote{As of @acronym{NCO} version 4.4.2 (released February, 2014)
-@command{nces} allows hyperslabs in all dimensions so long as the
-hyperslabs resolve to the same size. 
-The fixed (i.e., non-record) dimensions should be the same size in
-all ensemble members both before and after hyperslabbing, although
-the hyperslabs may (and usually do) change the size of the dimensions
-from the input to the output files.
-Prior to this, @command{nces} was only guaranteed to work on hyperslabs
-in the record dimension that resolved to the same size.}
-@cindex record dimension
-@cindex hyperslab
-@command{nces} does allow files to differ in the record dimension size
-if the requested record hyperslab (@pxref{Hyperslabs}) resolves to the
-same size for all files.  
-@command{nces} recomputes the record dimension hyperslab limits for
-each input file so that coordinate limits may be used to select equal
-length timeseries from unequal length files.
-@cindex @acronym{IPCC}
-@cindex @acronym{AR4}
-@cindex @acronym{CMIP}
-This simplifies analysis of unequal length timeseries from simulation
-ensembles (e.g., the @acronym{CMIP3} @acronym{IPCC} @acronym{AR4}
-archive).   
-
-@html
-<a name="nsm_fl"></a> <!-- http://nco.sf.net/nco.html#nsm_fl -->
-<a name="nsm_grp"></a> <!-- http://nco.sf.net/nco.html#nsm_grp -->
-<a name="nsm_sfx"></a> <!-- http://nco.sf.net/nco.html#nsm_sfx -->
-@end html
-@cindex @code{--nsm_fl}
-@cindex @code{--nsm_grp}
-@cindex @code{--ensemble_file}
-@cindex @code{--ensemble_group}
-@cindex @code{--nsm_sfx}
-@cindex @code{--ensemble_suffix}
-@command{nces} works in one of two modes, file ensembles 
-or group ensembles.
-File ensembles are the default (equivalent to the old @command{ncea}) 
-and may also be explicitly specified by the @samp{--nsm_fl} or
-@samp{--ensemble_file} switches.
-To perform statistics on ensembles of groups, a newer feature, use
-@samp{--nsm_grp} or @samp{--ensemble_group}.
-Members of a group ensemble are groups that share the same structure,
-parent group, and nesting level. 
-Members must be @dfn{leaf groups}, i.e., not contain any sub-groups.
-Their contents usually have different values because they are
-realizations of replicated experiments.  
-In group ensemble mode @command{nces} computes the statistics across 
-the ensemble, which may span multiple input files. 
-Files may contain members of multiple, distinct ensembles. 
-However, all ensembles must have at least one member in the first input 
-file. 
-Group ensembles behave as an unlimited dimension of datasets: 
-they may contain an arbitrary and extensible number of realizations in
-each file, and may be composed from multiple files. 
-
-Output statistics in group ensemble mode are stored in the parent group
-by default. 
-If the ensemble members are @file{/cesm/cesm_01} and
-@file{/cesm/cesm_02}, then the computed statistic will be in
-@file{/cesm} in the output file.   
-The @samp{--nsm_sfx} option instructs nces to instead store output in  
-a new child group of the parent created by attaching the suffix
-to the parent group's name, e.g., @samp{--nsm_sfx='_avg'} would store
-results in the output group @file{/cesm/cesm_avg}:
-@example
-nces --nsm_grp                  mdl1.nc mdl2.nc mdl3.nc out.nc
-nces --nsm_grp --nsm_sfx='_avg' mdl1.nc mdl2.nc mdl3.nc out.nc
-@end example
-
-@xref{Statistics vs. Concatenation}, for a description of the
-distinctions between the statistics tools and concatenators. 
-@cindex multi-file operators
-@cindex standard input
-@cindex @code{stdin}
-As a multi-file operator, @command{nces} will read the list of
-@var{input-files} from @code{stdin} if they are not specified 
-as positional arguments on the command line 
-(@pxref{Large Numbers of Files}).
-
-Like @command{ncra} and @command{ncwa}, @command{nces} treats coordinate
-variables as a special case.
-Coordinate variables are assumed to be the same in all ensemble members,
-so @command{nces} simply copies the coordinate variables that appear in 
-ensemble members directly to the output file.
-This has the same effect as averaging the coordinate variable across the
-ensemble, yet does not incur the time- or precision- penalties of
-actually averaging them.
-@command{ncra} and @command{ncwa} allow coordinate variables to be
-processed only by the linear average operation, regardless of the
-arithmetic operation type performed on the non-coordinate variables
-(@pxref{Operation Types}). 
-Thus it can be said that the three operators (@command{ncra},
-@command{ncwa}, and @command{nces}) all average coordinate variables
-(even though @command{nces} simply copies them).
-All other requested arithmetic operations (e.g., maximization,
-square-root, RMS) are applied only to non-coordinate variables.
-In these cases the linear average of the coordinate variable will be
-returned.
-
-@noindent
-@html
-<a name="xmp_ncea"></a> <!-- http://nco.sf.net/nco.html#xmp_ncea -->
-<a name="xmp_nces"></a> <!-- http://nco.sf.net/nco.html#xmp_nces -->
-@end html
-EXAMPLES
-
-Consider a model experiment which generated five realizations of one
-year of data, say 1985.
-Imagine that the experimenter slightly perturbs the initial conditions
-of the problem before generating each new solution.   
-Assume each file contains all twelve months (a seasonal cycle) of data
-and we want to produce a single file containing the ensemble average
-(mean) seasonal cycle.  
-Here the numeric filename suffix denotes the realization number
-(@emph{not} the month):
-@example
-nces 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
-nces 85_0[1-5].nc 85.nc
-nces -n 5,2,1 85_01.nc 85.nc
-@end example
-@noindent
-These three commands produce identical answers.
-@xref{Specifying Input Files}, for an explanation of the distinctions
-between these methods.
-The output file, @file{85.nc}, is the same size as the inputs files.
-It contains 12 months of data (which might or might not be stored in the 
-record dimension, depending on the input files), but each value in the
-output file is the average of the five values in the input files.
-
-In the previous example, the user could have obtained the ensemble
-average values in a particular spatio-temporal region by adding a 
-hyperslab argument to the command, e.g.,
-@example
-nces -d time,0,2 -d lat,-23.5,23.5 85_??.nc 85.nc
-@end example
-@noindent
-In this case the output file would contain only three slices of data in
-the @var{time} dimension. 
-These three slices are the average of the first three slices from the
-input files.
-Additionally, only data inside the tropics is included.
-
-As of @acronym{NCO} version 4.3.9 (released December, 2013)
-@command{nces} also works with groups (rather than files) as the
-fundamental unit of the ensemble.
-Consider two ensembles, @code{/ecmwf} and @code{/cesm} stored across
-three input files @file{mdl1.nc}, @file{mdl2.nc}, and @file{mdl3.nc}.
-Ensemble members would be leaf groups with names like @code{/ecmwf/01},
-@code{/ecmwf/02} etc. and @code{/cesm/01}, @code{/cesm/02}, etc.
-These commands average both ensembles: 
-@example
-nces --nsm_grp mdl1.nc mdl2.nc mdl3.nc out.nc
-nces --nsm_grp --nsm_sfx='_min' --op_typ=min -n 3,1,1 mdl1.nc out.nc
-nces --nsm_grp -g cesm -v tas -d time,0,3 -n 3,1,1 mdl1.nc out.nc
-@end example
-The first command stores averages in the output groups @file{/cesm} and 
-@file{/ecmwf}, while the second stores minima in the output groups
-@file{/cesm/cesm_min} and @file{/ecmwf/ecmwf_min}:
-The third command demonstrates that sub-setting and hyperslabbing work
-as expected.
-Note that each input file may contain different numbers of members
-of each ensemble, as long as all distinct ensembles contain at least one
-member in the first file.
-
-@page
-@html
 <a name="ncecat"></a> <!-- http://nco.sf.net/nco.html#ncecat -->
 @end html
-@node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, nces netCDF Ensemble Statistics, Reference Manual
+@node ncecat netCDF Ensemble Concatenator, nces netCDF Ensemble Statistics, ncclimo netCDF Climatology Generator, Reference Manual
 @section @command{ncecat} netCDF Ensemble Concatenator
 @cindex concatenation
 @cindex ensemble concatenation
@@ -18110,7 +17955,8 @@ ncecat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}]
-[-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}] [--no_tmp_fl] 
+[-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}]
+[--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
@@ -18360,9 +18206,237 @@ of changing variable dimensionality, including the record dimension.
 
 @page
 @html
+<a name="nces"></a> <!-- http://nco.sf.net/nco.html#nces -->
+<a name="ncea"></a> <!-- http://nco.sf.net/nco.html#ncea -->
+@end html
+@node nces netCDF Ensemble Statistics, ncflint netCDF File Interpolator, ncecat netCDF Ensemble Concatenator, Reference Manual
+@section @command{nces} netCDF Ensemble Statistics
+@cindex averaging data
+@cindex ensemble average
+@findex nces
+
+@noindent
+SYNTAX
+@example
+nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
+[--cnk_byt @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
+[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
+[-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}]
+[--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] [--nsm_fl|grp] [--nsm_sfx sfx]
+[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rth_dbl|flt]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
+[@var{input-files}] [@var{output-file}]
+@end example
+
+@noindent
+DESCRIPTION
+
+@command{nces} performs gridpoint statistics (including, but not limited
+to, averages) on variables across an arbitrary number (an
+@dfn{ensemble}) of @var{input-files} and/or of input groups within each
+file. 
+Each file (or group) receives an equal weight.
+@command{nces} was formerly (until @acronym{NCO} version 4.3.9,
+released December, 2013) known as @command{ncea} (netCDF Ensemble
+Averager)@footnote{
+The old ncea command was deprecated in @acronym{NCO} version 4.3.9,  
+released December, 2013.
+@acronym{NCO} will attempt to maintain back-compatibility and work
+as expected with invocations of @command{ncea} for as long as possible.
+Please replace @command{ncea} by @command{nces} in all future work.}.
+@cindex ensemble
+For example, @command{nces} will average a set of files or groups,
+weighting each file or group evenly. 
+This is distinct from @command{ncra}, which performs statistics only
+over the record dimension(s) (e.g., @var{time}), and weights each record 
+in each record dimension evenly.
+
+The file or group is the logical unit of organization for the results of
+many scientific studies.
+Often one wishes to generate a file or group which is the statistical
+product (e.g., average) of many separate files or groups. 
+This may be to reduce statistical noise by combining the results of a
+large number of experiments, or it may simply be a step in a procedure 
+whose goal is to compute anomalies from a mean state. 
+In any case, when one desires to generate a file whose statistical
+properties are equally influenced by all the inputs, then @command{nces}
+is the operator to use. 
+
+Variables in the @var{output-file} are the same size as the variable
+hyperslab in each input file or group, and each input file or group
+must be the same size after hyperslabbing
+@footnote{As of @acronym{NCO} version 4.4.2 (released February, 2014)
+@command{nces} allows hyperslabs in all dimensions so long as the
+hyperslabs resolve to the same size. 
+The fixed (i.e., non-record) dimensions should be the same size in
+all ensemble members both before and after hyperslabbing, although
+the hyperslabs may (and usually do) change the size of the dimensions
+from the input to the output files.
+Prior to this, @command{nces} was only guaranteed to work on hyperslabs
+in the record dimension that resolved to the same size.}
+@cindex record dimension
+@cindex hyperslab
+@command{nces} does allow files to differ in the record dimension size
+if the requested record hyperslab (@pxref{Hyperslabs}) resolves to the
+same size for all files.  
+@command{nces} recomputes the record dimension hyperslab limits for
+each input file so that coordinate limits may be used to select equal
+length timeseries from unequal length files.
+@cindex @acronym{IPCC}
+@cindex @acronym{AR4}
+@cindex @acronym{CMIP}
+This simplifies analysis of unequal length timeseries from simulation
+ensembles (e.g., the @acronym{CMIP3} @acronym{IPCC} @acronym{AR4}
+archive).   
+
+@html
+<a name="nsm_fl"></a> <!-- http://nco.sf.net/nco.html#nsm_fl -->
+<a name="nsm_grp"></a> <!-- http://nco.sf.net/nco.html#nsm_grp -->
+<a name="nsm_sfx"></a> <!-- http://nco.sf.net/nco.html#nsm_sfx -->
+@end html
+@cindex @code{--nsm_fl}
+@cindex @code{--nsm_grp}
+@cindex @code{--ensemble_file}
+@cindex @code{--ensemble_group}
+@cindex @code{--nsm_sfx}
+@cindex @code{--ensemble_suffix}
+@command{nces} works in one of two modes, file ensembles 
+or group ensembles.
+File ensembles are the default (equivalent to the old @command{ncea}) 
+and may also be explicitly specified by the @samp{--nsm_fl} or
+@samp{--ensemble_file} switches.
+To perform statistics on ensembles of groups, a newer feature, use
+@samp{--nsm_grp} or @samp{--ensemble_group}.
+Members of a group ensemble are groups that share the same structure,
+parent group, and nesting level. 
+Members must be @dfn{leaf groups}, i.e., not contain any sub-groups.
+Their contents usually have different values because they are
+realizations of replicated experiments.  
+In group ensemble mode @command{nces} computes the statistics across 
+the ensemble, which may span multiple input files. 
+Files may contain members of multiple, distinct ensembles. 
+However, all ensembles must have at least one member in the first input 
+file. 
+Group ensembles behave as an unlimited dimension of datasets: 
+they may contain an arbitrary and extensible number of realizations in
+each file, and may be composed from multiple files. 
+
+Output statistics in group ensemble mode are stored in the parent group
+by default. 
+If the ensemble members are @file{/cesm/cesm_01} and
+@file{/cesm/cesm_02}, then the computed statistic will be in
+@file{/cesm} in the output file.   
+The @samp{--nsm_sfx} option instructs nces to instead store output in  
+a new child group of the parent created by attaching the suffix
+to the parent group's name, e.g., @samp{--nsm_sfx='_avg'} would store
+results in the output group @file{/cesm/cesm_avg}:
+@example
+nces --nsm_grp                  mdl1.nc mdl2.nc mdl3.nc out.nc
+nces --nsm_grp --nsm_sfx='_avg' mdl1.nc mdl2.nc mdl3.nc out.nc
+@end example
+
+@xref{Statistics vs. Concatenation}, for a description of the
+distinctions between the statistics tools and concatenators. 
+@cindex multi-file operators
+@cindex standard input
+@cindex @code{stdin}
+As a multi-file operator, @command{nces} will read the list of
+@var{input-files} from @code{stdin} if they are not specified 
+as positional arguments on the command line 
+(@pxref{Large Numbers of Files}).
+
+Like @command{ncra} and @command{ncwa}, @command{nces} treats coordinate
+variables as a special case.
+Coordinate variables are assumed to be the same in all ensemble members,
+so @command{nces} simply copies the coordinate variables that appear in 
+ensemble members directly to the output file.
+This has the same effect as averaging the coordinate variable across the
+ensemble, yet does not incur the time- or precision- penalties of
+actually averaging them.
+@command{ncra} and @command{ncwa} allow coordinate variables to be
+processed only by the linear average operation, regardless of the
+arithmetic operation type performed on the non-coordinate variables
+(@pxref{Operation Types}). 
+Thus it can be said that the three operators (@command{ncra},
+@command{ncwa}, and @command{nces}) all average coordinate variables
+(even though @command{nces} simply copies them).
+All other requested arithmetic operations (e.g., maximization,
+square-root, RMS) are applied only to non-coordinate variables.
+In these cases the linear average of the coordinate variable will be
+returned.
+
+@noindent
+@html
+<a name="xmp_ncea"></a> <!-- http://nco.sf.net/nco.html#xmp_ncea -->
+<a name="xmp_nces"></a> <!-- http://nco.sf.net/nco.html#xmp_nces -->
+@end html
+EXAMPLES
+
+Consider a model experiment which generated five realizations of one
+year of data, say 1985.
+Imagine that the experimenter slightly perturbs the initial conditions
+of the problem before generating each new solution.   
+Assume each file contains all twelve months (a seasonal cycle) of data
+and we want to produce a single file containing the ensemble average
+(mean) seasonal cycle.  
+Here the numeric filename suffix denotes the realization number
+(@emph{not} the month):
+@example
+nces 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
+nces 85_0[1-5].nc 85.nc
+nces -n 5,2,1 85_01.nc 85.nc
+@end example
+@noindent
+These three commands produce identical answers.
+@xref{Specifying Input Files}, for an explanation of the distinctions
+between these methods.
+The output file, @file{85.nc}, is the same size as the inputs files.
+It contains 12 months of data (which might or might not be stored in the 
+record dimension, depending on the input files), but each value in the
+output file is the average of the five values in the input files.
+
+In the previous example, the user could have obtained the ensemble
+average values in a particular spatio-temporal region by adding a 
+hyperslab argument to the command, e.g.,
+@example
+nces -d time,0,2 -d lat,-23.5,23.5 85_??.nc 85.nc
+@end example
+@noindent
+In this case the output file would contain only three slices of data in
+the @var{time} dimension. 
+These three slices are the average of the first three slices from the
+input files.
+Additionally, only data inside the tropics is included.
+
+As of @acronym{NCO} version 4.3.9 (released December, 2013)
+@command{nces} also works with groups (rather than files) as the
+fundamental unit of the ensemble.
+Consider two ensembles, @code{/ecmwf} and @code{/cesm} stored across
+three input files @file{mdl1.nc}, @file{mdl2.nc}, and @file{mdl3.nc}.
+Ensemble members would be leaf groups with names like @code{/ecmwf/01},
+@code{/ecmwf/02} etc. and @code{/cesm/01}, @code{/cesm/02}, etc.
+These commands average both ensembles: 
+@example
+nces --nsm_grp mdl1.nc mdl2.nc mdl3.nc out.nc
+nces --nsm_grp --nsm_sfx='_min' --op_typ=min -n 3,1,1 mdl1.nc out.nc
+nces --nsm_grp -g cesm -v tas -d time,0,3 -n 3,1,1 mdl1.nc out.nc
+@end example
+The first command stores averages in the output groups @file{/cesm} and 
+@file{/ecmwf}, while the second stores minima in the output groups
+@file{/cesm/cesm_min} and @file{/ecmwf/ecmwf_min}:
+The third command demonstrates that sub-setting and hyperslabbing work
+as expected.
+Note that each input file may contain different numbers of members
+of each ensemble, as long as all distinct ensembles contain at least one
+member in the first file.
+
+@page
+@html
 <a name="ncflint"></a> <!-- http://nco.sf.net/nco.html#ncflint -->
 @end html
-@node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, ncecat netCDF Ensemble Concatenator, Reference Manual
+@node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, nces netCDF Ensemble Statistics, Reference Manual
 @section @command{ncflint} netCDF File Interpolator
 @cindex interpolation
 @cindex adding data
@@ -18378,7 +18452,8 @@ ncflint [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
-[-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [-N] [--no_tmp_fl] 
+[-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [-N]
+[--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
@@ -18674,7 +18749,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
 [-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--jsn] [--jsn_fmt @var{lvl}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--map @var{map-file}] 
-[--md5] [--mk_rec_dmn @var{dim}] [--no_blank] [--no_tmp_fl] 
+[--md5] [--mk_rec_dmn @var{dim}] [--no_blank] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
 [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt] [-s @var{format}] 
 [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
@@ -20104,7 +20179,8 @@ ncpdq [-3] [-4] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}]
-[-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd] [--no_tmp_fl] 
+[-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd]
+[--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] [--ppc ...]
 [-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-U] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x]
 @var{input-file} [@var{output-file}]
@@ -20702,7 +20778,8 @@ ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c] [--cb]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
-[-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-N] [-n @var{loop}] [--no_tmp_fl]
+[-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-N] [-n @var{loop}] 
+[--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -20950,7 +21027,8 @@ ncrcat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
-[-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}] [--no_tmp_fl]
+[-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}]
+[--no_tmp_fl] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
@@ -22432,7 +22510,8 @@ ncwa [-3] [-4] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}] [-I]
-[-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] [--no_tmp_fl]
+[-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] 
+[--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rth_dbl|flt]
 [-T @var{mask_comp}] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}]
 [-X ...] [-x] [-y @var{op_typ}]
