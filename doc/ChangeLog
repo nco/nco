@@ -1,6 +1,8 @@
 2017-01-20  Charlie Zender  <zender@uci.edu>
 
-	* ncks adds cell_measures attribute to regridded output with --rgr cll_msr=Y
+	* Add --cll_msr/--no_cll_msr and --frm_trm/--no_frm_trm to subsetting operators
+
+	* ncks adds/suppresses cell_measures in regridded output with --rgr cll_msr/no_cll_msr
 
 2017-01-19  Charlie Zender  <zender@uci.edu>
 

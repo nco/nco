@@ -247,7 +247,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Initialize key-value properties used in grid generation */
   rgr->fl_grd=NULL; /* [sng] Name of grid file to create */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
-  rgr->flg_cll_msr=False; /* [flg] Add cell_measures attribute */
+  rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
@@ -281,6 +281,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* !skl */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"cell_measures") || !strcasecmp(rgr_lst[rgr_var_idx].key,"cll_msr")){
       rgr->flg_cll_msr=True;
+      continue;
+    } /* !cell_measures */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_cell_measures") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_cll_msr")){
+      rgr->flg_cll_msr=False;
       continue;
     } /* !cell_measures */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"curvilinear") || !strcasecmp(rgr_lst[rgr_var_idx].key,"crv")){
