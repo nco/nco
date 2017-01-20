@@ -788,57 +788,6 @@ ncap_var_abs /* Purpose: Find absolute value of each element of var */
   return var;
 } /* end ncap_var_abs */
 
-var_sct * /* O [sct] Empowerment of input variables (var1^var_2) */
-ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */ 
-(var_sct *var1, /* I [sct] Variable structure containing base */
- var_sct *var2) /* I [sct] Variable structure containing exponent */
-{
-  char *swp_nm;
-  
-  /* Purpose: Empower two variables (var1^var2) */
-  
-  /* Temporary fix */ 
-  /* Swap names about so attribute propagation works */
-  /* most operations unlike this one put results in left operand */
-  if(!ncap_var_is_att(var1) && isalpha(var1->nm[0])){
-    swp_nm=var1->nm;
-    var1->nm=var2->nm;
-    var2->nm=swp_nm;
-  }  
-  
-  if(var1->undefined){ 
-    var2->undefined=True;
-    var1=nco_var_free(var1);
-    return var2;
-  }
-  
-  /* Make sure variables are at least float */
-  if(nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float && nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float)
-    var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
-  
-  (void)ncap_var_retype(var1,var2);   
-  
-  /* Handle initial scan */
-  if(var1->val.vp==(void*)NULL){
-    if(var1->nbr_dim > var2->nbr_dim){
-      var2=nco_var_free(var2);
-      return var1;
-    }else{
-      var1=nco_var_free(var1);
-      return var2;
-    }
-  } 
-  
-  (void)ncap_var_cnf_dmn(&var1,&var2);
-  if(var1->has_mss_val){
-    (void)nco_var_pwr(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
-  }else{
-    (void)nco_var_pwr(var1->type,var1->sz,var2->has_mss_val,var2->mss_val,var1->val,var2->val);
-  } /* end else */
-  
-  var1=nco_var_free(var1);
-  return var2;
-} /* end ncap_var_var_pwr() */
 
 var_sct * /* O [sct] Empowerment of input variables (var1^var_2) */
 ncap_var_var_pwr  /* [fnc] Empowerment of two variables */ 
@@ -1634,6 +1583,63 @@ nco_shp_chk
   if(idx==nbr_cmp) return True; else return False;
 }
 
+nco_bool       /* returns true if order and size of dims match exactly */
+ncap_top_shp_chk(
+var_sct* var1, 
+var_sct* var2)
+{ 
+  int idx;
+  int sz;
+    
+  if(var1->sz !=var2->sz)
+    return False;
+
+  sz=var1->nbr_dim;
+
+  if(sz==0) 
+    return True;
+
+  for(idx=0; idx<sz;idx++)  
+    if( var1->cnt[idx] != var2->cnt[idx]) 
+      return False;
+
+  return True;
+}
+
+nco_bool       /* true if order & size of dims match (after removing (degenerate) size 1 dims */
+ncap_norm_shp_chk(
+var_sct* var1, 
+var_sct* var2)
+{ 
+  int idx;
+  int sz1=0;
+  int sz2=0;
+
+  long cnt1[NC_MAX_DIMS];
+  long cnt2[NC_MAX_DIMS];
+  
+  for(idx=0; idx<var1->nbr_dim; idx++)
+    if( var1->cnt[idx]>1 )
+      cnt1[sz1++]=var1->cnt[idx];    
+
+  for(idx=0; idx<var2->nbr_dim; idx++)
+    if( var2->cnt[idx]>1 )
+      cnt2[sz2++]=var2->cnt[idx];    
+
+  if(sz1 != sz2 )
+     return False;  
+
+  if(sz1==0)
+     return True;   
+   
+
+  for(idx=0; idx<sz1; idx++) 
+    if( cnt1[idx] != cnt2[idx] )
+      return False; 
+
+  return True;
+}
+
 /* This file is generated in makefile from ncoParserTokenTypes.hpp */ 
 #include "ncoEnumTokenTypes.hpp"
 
@@ -1993,7 +1999,8 @@ ncap_var_var_op   /* [fnc] Add two variables */
   }
   
   // Deal with pwr_in fuction
-  if( (op == CARET ) && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float &&  nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+  if( (op == CARET ) && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float &&  nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) 
+    var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
   
   //Deal with atan2 function
   if(op==ATAN2 ){
@@ -2329,40 +2336,6 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   return var_ret;
 }
 
-bool            /* O [flg] true if all var elemenst are true */
-ncap_var_lgcl1   /* [fnc] calculate a aggregate bool value from a variable */
-(var_sct* var)  /* I [sct] input variable */
-{
-  int idx;
-  int sz;
-  nc_type type;
-  bool bret=true;
-  ptr_unn op1;
-  
-  // Convert to type SHORT
-  var=nco_var_cnf_typ((nc_type)NC_SHORT,var);  
-  
-  type=NC_SHORT;
-  sz = var->sz;
-  op1=var->val;
-  /* Typecast pointer to values before access */
-  (void)cast_void_nctype(type,&op1);
-  if(var->has_mss_val) (void)cast_void_nctype(type,&var->mss_val);
-  
-  if(!var->has_mss_val){
-    for(idx=0;idx<sz;idx++) 
-      if(!op1.sp[idx]) break;
-  }else{
-    const short mss_val_short=*(var->mss_val.sp);
-    for(idx=0;idx<sz;idx++) 
-      if(!op1.sp[idx] && op1.sp[idx] != mss_val_short) break; 
-  }
-  if(idx < sz) bret=false;
-  
-  if(var->has_mss_val) (void)cast_nctype_void(type,&var->mss_val);
-  
-  return bret;
-}
 
 bool            /* O [flg] true if all var elemenst are true */
 ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
