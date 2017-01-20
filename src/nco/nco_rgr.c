@@ -247,6 +247,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Initialize key-value properties used in grid generation */
   rgr->fl_grd=NULL; /* [sng] Name of grid file to create */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
+  rgr->flg_cll_msr=False; /* [flg] Add cell_measures attribute */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
@@ -278,6 +279,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_grd=True;
       continue;
     } /* !skl */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"cell_measures") || !strcasecmp(rgr_lst[rgr_var_idx].key,"cll_msr")){
+      rgr->flg_cll_msr=True;
+      continue;
+    } /* !cell_measures */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"curvilinear") || !strcasecmp(rgr_lst[rgr_var_idx].key,"crv")){
       rgr->flg_crv=True;
       continue;
@@ -1974,10 +1979,25 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(flg_grd_out_1D) aed_mtd_crd.mode=aed_overwrite; else aed_mtd_crd.mode=aed_delete;
   aed_mtd_crd.type=NC_CHAR;
   aed_mtd_crd.sz=strlen(lat_nm_out)+strlen(lon_nm_out)+1L;
-  att_val_crd=(char *)nco_malloc(aed_mtd_crd.sz*nco_typ_lng(aed_mtd_crd.type)+1L);
+  att_val_crd=(char *)nco_malloc((aed_mtd_crd.sz+1L)*nco_typ_lng(aed_mtd_crd.type));
   (void)sprintf(att_val_crd,"%s %s",lat_nm_out,lon_nm_out);
   aed_mtd_crd.val.cp=att_val_crd;
 
+  nco_bool flg_cll_msr=rgr->flg_cll_msr; /* [flg] Add cell_measures attribute */
+  aed_sct aed_mtd_cll_msr;
+  char *att_nm_cll_msr=NULL;
+  char *att_val_cll_msr=NULL;
+  if(flg_cll_msr){
+    att_nm_cll_msr=strdup("cell_measures");
+    aed_mtd_cll_msr.att_nm=att_nm_cll_msr;
+    aed_mtd_cll_msr.mode=aed_overwrite;
+    aed_mtd_cll_msr.type=NC_CHAR;
+    att_val_cll_msr=(char *)nco_malloc((strlen(area_nm_out)+6L+1L)*nco_typ_lng(aed_mtd_cll_msr.type));
+    (void)sprintf(att_val_cll_msr,"area: %s",area_nm_out);
+    aed_mtd_cll_msr.sz=strlen(att_val_cll_msr);
+    aed_mtd_cll_msr.val.cp=att_val_cll_msr;
+  } /* !flg_cll_msr */
+  
   /* Define new horizontal dimensions before all else */
   if(flg_grd_out_1D){
     rcd+=nco_def_dim(out_id,col_nm_out,col_nbr_out,&dmn_id_col);
@@ -2273,6 +2293,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  aed_mtd_crd.var_nm=var_nm;
 	  aed_mtd_crd.id=var_id_out;
 	  (void)nco_aed_prc(out_id,var_id_out,aed_mtd_crd);
+	  if(flg_cll_msr){
+	    aed_mtd_cll_msr.var_nm=var_nm;
+	    aed_mtd_cll_msr.id=var_id_out;
+	    (void)nco_aed_prc(out_id,var_id_out,aed_mtd_cll_msr);
+	  } /* !flg_cll_msr */
 	} /* !flg_rgr */
       } /* !rcd */
     } /* !var */
@@ -2687,6 +2712,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Persistent metadata */
   if(att_nm_crd) att_nm_crd=(char *)nco_free(att_nm_crd);
   if(att_val_crd) att_val_crd=(char *)nco_free(att_val_crd);
+  if(flg_cll_msr){
+    if(att_nm_cll_msr) att_nm_cll_msr=(char *)nco_free(att_nm_cll_msr);
+    if(att_val_cll_msr) att_val_cll_msr=(char *)nco_free(att_val_cll_msr);
+  } /* !flg_cll_msr */
 
   if(nco_grd_lat_typ == nco_grd_lat_fv){
     if(slat_nm_out) slat_nm_out=(char *)nco_free(slat_nm_out);

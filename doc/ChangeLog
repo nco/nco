@@ -1,3 +1,7 @@
+2017-01-20  Charlie Zender  <zender@uci.edu>
+
+	* ncks adds cell_measures attribute to regridded output with --rgr cll_msr=Y
+
 2017-01-19  Charlie Zender  <zender@uci.edu>
 
 	* ncremap change standard_name of area_nm_out from cell_area to area

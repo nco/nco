@@ -1139,14 +1139,15 @@ extern "C" {
     int xtn_nbr; /* [nbr] Number of extensive variables */
     long idx_dbg; /* [idx] Index of gridcell for debugging */
     long tst; /* [enm] Generic key for testing (undocumented) */
-    nco_bool flg_usr_rqs; /* [flg] User requested regridding */
-    nco_bool flg_grd_src; /* [flg] User-specified input grid */
-    nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
+    nco_bool flg_cll_msr; /* [flg] Add cell_measures attribute */
     nco_bool flg_crv; /* [flg] Use curvilinear coordinates */
     nco_bool flg_grd; /* [flg] Create SCRIP-format grid file */
-    nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
+    nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
+    nco_bool flg_grd_src; /* [flg] User-specified input grid */
     nco_bool flg_map; /* [flg] User-specified mapping weights */
+    nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
+    nco_bool flg_usr_rqs; /* [flg] User requested regridding */
   } rgr_sct; /* end Regrid structure */
 
   /* Key-value structure */
