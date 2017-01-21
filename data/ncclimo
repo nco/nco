@@ -353,6 +353,7 @@ clm_flg='Yes' # [sng] Generate climatology
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', or 'mth')
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
+dly_sfx='00000' # [sng] Daily file suffix (CAM, e.g., uses '01-01-00000')
 drc_in='' # [sng] Input file directory
 drc_in_xmp="${DATA}/ne30/raw" # [sng] Input file directory for examples
 drc_in_mps="${DATA}/mpas/raw" # [sng] Input file directory for MPAS examples
@@ -683,6 +684,9 @@ if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth
 fi # !clm_md
 if [ "${clm_md}" = 'ann' ]; then 
     clm_nbr=1
+    dec_md='sdd'
+elif [ "${clm_md}" = 'dly' ]; then 
+    clm_nbr=365
     dec_md='sdd'
 elif [ "${clm_md}" = 'mth' ]; then 
     clm_nbr=17
@@ -1041,6 +1045,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     fi # !stdin
     if [ ${clm_md} = 'ann' ]; then 
 	printf "Each input file assumed to contain mean of one year\n"
+    elif [ ${clm_md} = 'dly' ]; then 
+	printf "Each input file assumed to contain mean of one day\n"
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
@@ -1085,6 +1091,8 @@ if [ "${clm_flg}" = 'Yes' ]; then
     fi # !mdl_typ
     if [ ${clm_md} = 'ann' ]; then 
 	printf "Each input file assumed to contain mean of one year\n"
+    elif [ ${clm_md} = 'mth' ]; then 
+	printf "Each input file assumed to contain mean of one day\n"
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
@@ -1454,7 +1462,68 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
 	printf "Done with regridding\n"
     fi # !rgr_map
     
-fi # !clm_md
+fi # !ann
+
+# Block 1 Loop 2: Climatologies based on daily means
+if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
+    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
+	yr_fl=''
+	for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
+	    YYYY=`printf "%04d" ${yr}`
+	    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
+	done # !yr
+
+	# Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
+	if [ "${bnr_flg}" = 'No' ]; then
+	    for fl_crr in ${yr_fl} ; do
+		if [ ! -e "${drc_in}/${fl_crr}" ]; then
+		    echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
+
+		    echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year) must be in ${drc_in} before ${spt_nm} will proceed"
+		    exit 1
+		fi # ! -e
+	    done # !fl_crr
+	else # !bnr_flg
+	    # In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
+	    drc_out="${drc_in}"
+	fi # !bnr_flg
+	fl_out[${clm_idx}]="${drc_out}/${out_nm}_ANN_${yyyy_srt}01_${yyyy_end}12_climo.nc"
+	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]} ${par_opt}"
+    done # !clm_idx
+
+    # Block 1 Loop 2: Climatological daily mean
+    printf "Climatological daily mean...\n"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_clm[${clm_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	eval ${cmd_clm[${clm_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "${spt_nm}: ERROR daily climo cmd_clm[${clm_idx}] failed\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+    wait
+    
+    # Block 2: Regrid climatological daily mean
+    if [ -n "${rgr_map}" ]; then 
+	printf "Regrid daily data...\n"
+	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]/.nc/.rgr.nc}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_rgr[${clm_idx}]} ${par_opt}
+	fi # !dbg
+	if [ ${dbg_lvl} -le 1 ]; then
+	    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR daily regrid cmd_rgr[${clm_idx}] failed\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+	wait
+	printf "Done with regridding\n"
+    fi # !rgr_map
+    
+fi # !dly
 
 # Many subsequent blocks only executed for normal and incremental monthly climos, not for binary climos, or non-monthly climos
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
