@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha05
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 20 January 2017
+@set update-date 21 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -5708,9 +5708,9 @@ ncra --mro -O -d time,,,12,12 -n 150,4,1 1850.nc 1850_2009.nc
 These operations generate and require no intermediate files.
 This contrasts to previous @acronym{NCO} methods, which require
 generating, averaging, then catenating 150 files.  
-The @samp{--mro} option has no effect on, or rather is redundant for, 
-@command{ncrcat} since @command{ncrcat} always outputs all selected
-records.
+The @samp{--mro} option only works on @command{ncra} and has no effect
+on (or rather is redundant for) @command{ncrcat}, since @command{ncrcat}
+always outputs all selected records.
 
 @html
 <a name="multislab"></a> <!-- http://nco.sf.net/nco.html#multislab -->

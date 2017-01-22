@@ -200,6 +200,8 @@ esac # !HOSTNAME
 # cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
 # Split positional arguments:
 # ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
+# Split directory:
+# ncclimo --dbg=1 --ypf=50 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split production:
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
@@ -496,7 +498,7 @@ fi # !arg_nbr
 while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
     case ${OPT} in
 	a) dec_md="${OPTARG}" ;; # December mode
-	C) clm_md="${OPTARG}" ;; # Climatology mode
+	C) clm_md_usr="${OPTARG}" ;; # Climatology mode
 	c) caseid="${OPTARG}" ;; # CASEID
 	d) dbg_lvl="${OPTARG}" ;; # Debugging level
 	E) yr_end_prv="${OPTARG}" ;; # End year previous
@@ -529,7 +531,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:z:-: OPT; do
 	       # Long options with argument, no short option counterpart
 	       # Long options with short counterparts, ordered by short option key
 	       dec_md=?* | december_mode=?* | dec_mode=?* ) dec_md="${LONG_OPTARG}" ;; # -a # December mode
-	       clm_md=?* | climatology_mode=?* | climo_mode=?* ) clm_md="${LONG_OPTARG}" ;; # -C # Climatology mode
+	       clm_md=?* | climatology_mode=?* | climo_mode=?* ) clm_md_usr="${LONG_OPTARG}" ;; # -C # Climatology mode
 	       caseid=?* | case_id=?* | case=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
 	       yr_end_prv=?* | prv_yr_end=?* | previous_end=?* ) yr_end_prv="${LONG_OPTARG}" ;; # -E # End year previous
@@ -588,22 +590,28 @@ if [ -n "${yr_srt_prv}" ]; then
 	ncr_flg='Yes'
     fi # !yr_end_prv binary method
 fi # !yr_srt_prv extended climo
-# Subset (split) mode whenever stdin pipe has data or positional arguments are used
-if [ ${std_flg} = 'Yes' ] || [ ${psn_nbr} -ge 1 ]; then
-    sbs_flg='Yes'
-    clm_flg='No'
-    dec_md='sdd'
-    mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
-fi # !stdin || !psn
-if [ -n "${ypf_max_usr}" ]; then 
-    # fxm: Must specify --ypf to turn-on split mode when input files are specified by -i drc_in
-    # Otherwise it is ambiguous whether to generate climatology or to split
-    ypf_max=${ypf_max_usr}
-    sbs_flg='Yes'
-    clm_flg='No'
-    dec_md='sdd'
-    mdl_nm='nil'
-fi # !ypf_max
+if [ -n "${clm_md_usr}" ]; then 
+    # Climo mode must be explicitly selected with --clm_md when climo input files are piped or positional
+    clm_md="${clm_md_usr}"
+    clm_flg='Yes' # redundant (and safe)
+else
+    # Otherwise subset (split) mode whenever stdin pipe has data or positional arguments are used
+    if [ ${std_flg} = 'Yes' ] || [ ${psn_nbr} -ge 1 ]; then
+	sbs_flg='Yes'
+	clm_flg='No'
+	dec_md='sdd'
+	mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
+    fi # !stdin || !psn
+    if [ -n "${ypf_max_usr}" ]; then 
+	# fxm: Must specify --ypf to turn-on split mode when input files are specified by -i drc_in
+	# Otherwise it is ambiguous whether to generate climatology or to split
+	ypf_max=${ypf_max_usr}
+	sbs_flg='Yes'
+	clm_flg='No'
+	dec_md='sdd'
+	mdl_nm='nil'
+    fi # !ypf_max
+fi # !clm_md_usr
 
 # Derived variables
 if [ -n "${drc_out_usr}" ]; then
@@ -757,6 +765,44 @@ if [ ${dec_md} = 'scd' ]; then
     let yr_cln=${yr_cln}+1
 fi # !scd
 
+# Read files from stdin pipe, positional arguments, or directory glob
+if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ]; then
+    drc_glb='Yes'
+fi # !clm_flg, !dly
+if [ ${sbs_flg} = 'Yes' ] && [ ${std_flg} = 'No' ] || [ ${psn_nbr} -ge 1 ]; then
+    drc_glb='Yes'
+fi # !sbs_flg
+if [ ${std_flg} = 'Yes' ] || [ ${psn_nbr} -ge 1 ] || [ ${drc_glb} = 'Yes' ]; then
+    if [ ${std_flg} = 'No' ]; then 
+	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
+	    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
+		if [ -f "${fl}" ]; then
+		    fl_in[${fl_nbr}]=${fl}
+		    let fl_nbr=${fl_nbr}+1
+		fi # !file
+	    done
+	else # !drc_in
+	    # Read any positional arguments
+	    if [ ${psn_nbr} -ge 1 ]; then
+		for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+		    fl_in[(${psn_idx}-1)]=${!psn_idx}
+		    fl_nbr=${psn_nbr}
+		done # !psn_idx
+	    else
+		echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
+		echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+		exit 1
+	    fi # !psn_nbr
+	fi # !drc_in
+    else # !std_flg
+	# Input awaits on unit 0, i.e., on stdin
+	while read -r line; do # NeR05 p. 179
+	    fl_in[${fl_nbr}]=${line}
+	    let fl_nbr=${fl_nbr}+1
+	done < /dev/stdin
+    fi # stdin
+fi # !std_flg || !psn_nbr
+
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${sbs_flg}" = 'Yes' ]; then
     if [ -z "${var_lst}" ]; then
@@ -771,41 +817,6 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	var_sbs[${var_nbr}]=${var}
 	let var_nbr=${var_nbr}+1
     done # !var_lst
-
-    if [ -n "${in_fl}" ]; then
-	# Single file argument
-	fl_in[${fl_nbr}]=${in_fl}
-	let fl_nbr=${fl_nbr}+1
-    else # !in_fl
-	if [ ${std_flg} = 'No' ]; then 
-	    if [ "${drc_in_usr_flg}" = 'Yes' ]; then
-		for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-		    if [ -f "${fl}" ]; then
-			fl_in[${fl_nbr}]=${fl}
-			let fl_nbr=${fl_nbr}+1
-		    fi # !file
-		done
-	    else # !drc_in
-		# Read any positional arguments
-		if [ ${psn_nbr} -ge 1 ]; then
-		    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
-			fl_in[(${psn_idx}-1)]=${!psn_idx}
-			fl_nbr=${psn_nbr}
-		    done # !psn_idx
-		else
-		    echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
-		    echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
-		    exit 1
-		fi # !psn_nbr
-	    fi # !drc_in
-	else # !std_flg
-	    # Input awaits on unit 0, i.e., on stdin
-	    while read -r line; do # NeR05 p. 179
-		fl_in[${fl_nbr}]=${line}
-		let fl_nbr=${fl_nbr}+1
-	    done < /dev/stdin
-	fi # stdin
-    fi # !in_fl
 
     # Input files per year
     if [ "${clm_md}" = 'ann' ]; then
@@ -823,8 +834,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	exit 1
     fi # !fl_rmd
     if [ ${yr_sbs} -ne ${yr_nbr} ]; then
-	# Sanity check that number of files on command line matches number expected from date switches
-	printf "${spt_nm}: ERROR ${fl_nbr} files on command line expected to contain ${yr_sbs} years of data but date options specified ${yr_nbr} years of data\n"
+	# Sanity check that number of files specified matches number expected from date switches
+	printf "${spt_nm}: ERROR ${fl_nbr} files specified (via stdin pipe, positional, or input directory) expected to contain ${yr_sbs} years of data but date options specified ${yr_nbr} years of data\n"
 	printf "${spt_nm}: HINT Number of files at ${fpy} files-per-year must match number of years implied by arguments to start- and end-year switches (which are --yr_srt=${yr_srt} and --yr_end=${yr_end}, respectively)\n"
 	exit 1
     fi # !yr_sbs
@@ -1123,30 +1134,30 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
 	MM=`printf "%02d" ${clm_idx}`
-	yr_fl=''
+	fl_all=''
 	for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
 	    YYYY=`printf "%04d" ${yr}`
 	    if [ ${mdl_typ} = 'cesm' ]; then
-		yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
+		fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 	    elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
 		# 20161130: Old MPAS rule until today
-		# yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+		# fl_all="${fl_all} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
 		# Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
- 		yr_fl="${yr_fl} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
+ 		fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
 	    elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
-		yr_fl="${yr_fl} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
+		fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
 	    fi # !cesm
 	done # !yr
 	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
-	    yr_fl=''
+	    fl_all=''
 	    for yr in `seq ${yr_srtm1} ${yr_endm1}`; do
 		YYYY=`printf "%04d" ${yr}`
 		if [ ${mdl_typ} = 'cesm' ]; then
-		    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
+		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 		elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
- 		    yr_fl="${yr_fl} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
+ 		    fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
 		elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
-		    yr_fl="${yr_fl} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
+		    fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
 		fi # !cesm
 	    done # !yr
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}
@@ -1154,7 +1165,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	fi # !scd
 	# Check for existence of raw input only when file will be used
 	if [ "${bnr_flg}" = 'No' ]; then
-	    for fl_crr in ${yr_fl} ; do
+	    for fl_crr in ${fl_all} ; do
 		if [ ! -f "${drc_in}/${fl_crr}" ]; then
 		    echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		    echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
@@ -1166,7 +1177,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	    drc_out="${drc_in}"
 	fi # !bnr_flg
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
-	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]}"
+	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
     done # !mth
 
     # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
@@ -1409,14 +1420,14 @@ fi # !sbs_flg
 # Block 1 Loop 2: Climatologies based on annual means
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
     clm_idx=1
-    yr_fl=''
+    fl_all=''
     for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
 	YYYY=`printf "%04d" ${yr}`
-	yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
+	fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
     done # !yr
     # Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
     if [ "${bnr_flg}" = 'No' ]; then
-	for fl_crr in ${yr_fl} ; do
+	for fl_crr in ${fl_all} ; do
 	    if [ ! -e "${drc_in}/${fl_crr}" ]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year) must be in ${drc_in} before ${spt_nm} will proceed"
@@ -1428,7 +1439,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
 	drc_out="${drc_in}"
     fi # !bnr_flg
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_ANN_${yyyy_srt}01_${yyyy_end}12_climo.nc"
-    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]} ${par_opt}"
+    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]} ${par_opt}"
 
     # Block 1 Loop 2: Climatological annual mean
     printf "Climatological annual mean...\n"
@@ -1467,15 +1478,16 @@ fi # !ann
 # Block 1 Loop 2: Climatologies based on daily means
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
     for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-	yr_fl=''
+	# fxm stormy
+	fl_all=''
 	for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
 	    YYYY=`printf "%04d" ${yr}`
-	    yr_fl="${yr_fl} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
+	    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}-${DD}${dly_sfx}.nc"
 	done # !yr
 
 	# Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
 	if [ "${bnr_flg}" = 'No' ]; then
-	    for fl_crr in ${yr_fl} ; do
+	    for fl_crr in ${fl_all} ; do
 		if [ ! -e "${drc_in}/${fl_crr}" ]; then
 		    echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 
@@ -1488,7 +1500,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    drc_out="${drc_in}"
 	fi # !bnr_flg
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_ANN_${yyyy_srt}01_${yyyy_end}12_climo.nc"
-	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${yr_fl} ${fl_out[${clm_idx}]} ${par_opt}"
+	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]} ${par_opt}"
     done # !clm_idx
 
     # Block 1 Loop 2: Climatological daily mean
