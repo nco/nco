@@ -201,10 +201,12 @@ esac # !HOSTNAME
 # Split positional arguments:
 # ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Split directory:
-# ncclimo --dbg=1 --ypf=50 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
+# ncclimo --dbg=1 --ypf=50 -s 1979 -e 1983 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split production:
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# Daily pipe:
+# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -p nil -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -861,10 +863,10 @@ else # !sbs_flg
 	exit 1
     fi # out_nm
 
-    if [ ${std_flg} = 'Yes' ]; then
+    if [ ${std_flg} = 'Yes' ] && [ ${clm_md} != 'dly' ] ; then
 	echo "${spt_nm}: ERROR Detected input on pipe to stdin rather than console in climatology generation mode"
-	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files"
-	echo "${spt_nm}: HINT In climo generation mode, one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
+	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files or in daily climatology mode"
+	echo "${spt_nm}: HINT In other climo generation modes (montly and annual), one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
 	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"
 	exit 1
     fi # !stdin
@@ -953,6 +955,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: cf_flg   = ${cf_flg}\n"
     printf "dbg: clm_flg  = ${clm_flg}\n"
     printf "dbg: clm_md   = ${clm_md}\n"
+    printf "dbg: clm_nbr  = ${clm_nbr}\n"
     printf "dbg: dec_md   = ${dec_md}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
     printf "dbg: drc_in   = ${drc_in}\n"
@@ -963,6 +966,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: drc_rgr  = ${drc_rgr}\n"
     printf "dbg: drc_spt  = ${drc_spt}\n"
     printf "dbg: drc_xtn  = ${drc_xtn}\n"
+    printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: fml_nm   = ${fml_nm}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
@@ -1477,30 +1481,31 @@ fi # !ann
 
 # Block 1 Loop 2: Climatologies based on daily means
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
+
+    fl_all=''
+    for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	fl_all="${fl_all} ${fl_in[${fl_idx}]}"
+    done # !fl
+
+    unset dpm # Days per month
+    declare -a dpm
+    dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
+
     for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 	# fxm stormy
-	fl_all=''
-	for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
-	    YYYY=`printf "%04d" ${yr}`
-	    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}-${DD}${dly_sfx}.nc"
-	done # !yr
-
-	# Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
-	if [ "${bnr_flg}" = 'No' ]; then
-	    for fl_crr in ${fl_all} ; do
-		if [ ! -e "${drc_in}/${fl_crr}" ]; then
-		    echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
-
-		    echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year) must be in ${drc_in} before ${spt_nm} will proceed"
-		    exit 1
-		fi # ! -e
-	    done # !fl_crr
-	else # !bnr_flg
-	    # In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
-	    drc_out="${drc_in}"
-	fi # !bnr_flg
-	fl_out[${clm_idx}]="${drc_out}/${out_nm}_ANN_${yyyy_srt}01_${yyyy_end}12_climo.nc"
-	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]} ${par_opt}"
+	yyyy_srt=`printf "%04d" ${yr_srt}`
+	yyyy_end=`printf "%04d" ${yr_end}`
+	for mth in `seq 1 12`; do
+	    MM=`printf "%02d" ${mth}`
+	    for day in `seq 1 ${dpm[${mth}]}`; do
+		DD=`printf "%02d" ${day}`
+		fl_out[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_climo.nc"
+		tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:01"
+		tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -d time,'${tm_srt}','${tm_end}',365 ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]} ${par_opt}"
+		echo ${cmd_clm[${clm_idx}]}
+	    done # !day
+	done # !mth
     done # !clm_idx
 
     # Block 1 Loop 2: Climatological daily mean
@@ -1980,7 +1985,11 @@ else # !caseid
 fi # !caseid
 date_dff=$((date_end-date_srt))
 if [ "${clm_flg}" = 'Yes' ]; then
-    echo "Quick plots of climatological annual mean:"
+    if [ "${clm_md}" = 'dly' ]; then
+	echo "Quick plots of last climatological daily mean:"
+    else
+	echo "Quick plots of climatological annual mean:"
+    fi # !dly
     if [ -n "${yr_srt_prv}" ]; then
 	if [ -n "${rgr_map}" ]; then 
 	    echo "ncview ${fl_rgr_xtn[${clm_nbr}]} &"

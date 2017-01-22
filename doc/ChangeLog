@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha06 final changes';git push
 	git tag -a 4.6.4-alpha06 -m 'Version 4.6.4-alpha06 new features: cell_measures';git push --tags
 
-	* ncclimo Allow clm_md='dly' to read input from stdin, positional, or directory glob
+	* ncclimo implement daily climatology. commands look good. date hyperslab fails on MacOS.
+
+	* ncclimo allow clm_md='dly' to read input from stdin, positional, or directory glob
 
 	* ncsplit fix directory glob for split-mode
 
