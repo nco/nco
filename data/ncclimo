@@ -207,6 +207,7 @@ esac # !HOSTNAME
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Daily pipe:
 # cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 -p nil --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -1502,7 +1503,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_climo.nc"
 	    tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:01"
 	    tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -d time,'${tm_srt}','${tm_end}',365 ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]} ${par_opt}"
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -d time,'${tm_srt}','${tm_end}',365 ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
 	    let clm_idx=${clm_idx}+1
 	done # !day
     done # !mth

@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha06 final changes';git push
 	git tag -a 4.6.4-alpha06 -m 'Version 4.6.4-alpha06 new features: cell_measures';git push --tags
 
-	* ncclimo daily mode fix parallelization, deprecate regridding
+	* ncclimo daily mode fix parallelization, temporarily deprecate regridding
 
 	* ncclimo implement daily climatology. commands look good. date hyperslab fails on MacOS.
 
