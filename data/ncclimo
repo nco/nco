@@ -206,7 +206,7 @@ esac # !HOSTNAME
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Daily pipe:
-# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -p nil -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 -p nil --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -1491,55 +1491,84 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
     declare -a dpm
     dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
 
-    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-	# fxm stormy
-	yyyy_srt=`printf "%04d" ${yr_srt}`
-	yyyy_end=`printf "%04d" ${yr_end}`
-	for mth in `seq 1 12`; do
-	    MM=`printf "%02d" ${mth}`
-	    for day in `seq 1 ${dpm[${mth}]}`; do
-		DD=`printf "%02d" ${day}`
-		fl_out[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_climo.nc"
-		tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:01"
-		tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -d time,'${tm_srt}','${tm_end}',365 ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]} ${par_opt}"
-		echo ${cmd_clm[${clm_idx}]}
-	    done # !day
-	done # !mth
-    done # !clm_idx
+    # fxm stormy
+    yyyy_srt=`printf "%04d" ${yr_srt}`
+    yyyy_end=`printf "%04d" ${yr_end}`
+    clm_idx=0
+    for mth in `seq 1 12`; do
+	MM=`printf "%02d" ${mth}`
+	for day in `seq 1 ${dpm[${mth}]}`; do
+	    DD=`printf "%02d" ${day}`
+	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_climo.nc"
+	    tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:01"
+	    tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -d time,'${tm_srt}','${tm_end}',365 ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]} ${par_opt}"
+	    let clm_idx=${clm_idx}+1
+	done # !day
+    done # !mth
 
-    # Block 1 Loop 2: Climatological daily mean
+    # Begin loop over days to climatologize
     printf "Climatological daily mean...\n"
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_clm[${clm_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
-	eval ${cmd_clm[${clm_idx}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR daily climo cmd_clm[${clm_idx}] failed\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-    wait
-    
-    # Block 2: Regrid climatological daily mean
-    if [ -n "${rgr_map}" ]; then 
-	printf "Regrid daily data...\n"
-	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]/.nc/.rgr.nc}"
+    idx_srt=0
+    let idx_end=$((job_nbr-1))
+    for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
 	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_rgr[${clm_idx}]} ${par_opt}
+	    echo ${cmd_clm[${clm_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -le 1 ]; then
-	    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR daily regrid cmd_rgr[${clm_idx}] failed\n"
-		exit 1
-	    fi # !err
+	    if [ -z "${par_opt}" ]; then
+		eval ${cmd_clm[${clm_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR daily cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
+		    exit 1
+		fi # !err
+	    else # !par_opt
+		eval ${cmd_clm[${clm_idx}]} ${par_opt}
+		clm_pid[${clm_idx}]=$!
+	    fi # !par_opt
 	fi # !dbg
-	wait
-	printf "Done with regridding\n"
-    fi # !rgr_map
+	
+	# Block NNN: Wait
+	# Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
+	# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+	if [ -n "${par_opt}" ]; then
+	    let bch_idx=$((clm_idx / job_nbr))
+	    let bch_flg=$(((clm_idx+1) % job_nbr))
+	    #printf "${spt_nm}: clm_idx = ${clm_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
+	    if [ ${bch_flg} -eq 0 ]; then
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at clm_idx = ${clm_idx}...\n"
+		fi # !dbg
+		for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
+		    wait ${sbs_pid[${pid_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
+			exit 1
+		    fi # !err
+		done # !pid_idx
+		let idx_srt=$((idx_srt + job_nbr))
+		let idx_end=$((idx_end + job_nbr))
+	    fi # !bch_flg
+	fi # !par_typ
+
+    done # !clm_idx
     
+    # Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
+    if [ -n "${par_opt}" ]; then
+	let bch_flg=$((clm_nbr % job_nbr))
+	if [ ${bch_flg} -ne 0 ]; then
+	    let bch_idx=$((bch_idx+1))
+	    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+	    for ((pid_idx=${idx_srt};pid_idx<${clm_nbr};pid_idx++)); do
+		wait ${sbs_pid[${pid_idx}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
+		    exit 1
+		fi # !err
+	    done # !pid_idx
+	fi # !bch_flg
+    fi # !par_typ
+
 fi # !dly
 
 # Many subsequent blocks only executed for normal and incremental monthly climos, not for binary climos, or non-monthly climos
