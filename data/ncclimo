@@ -206,8 +206,8 @@ esac # !HOSTNAME
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Daily pipe:
-# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 -p nil --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm
-# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 -p nil --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -358,7 +358,6 @@ clm_flg='Yes' # [sng] Generate climatology
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', or 'mth')
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
-dly_sfx='00000' # [sng] Daily file suffix (CAM, e.g., uses '01-01-00000')
 drc_in='' # [sng] Input file directory
 drc_in_xmp="${DATA}/ne30/raw" # [sng] Input file directory for examples
 drc_in_mps="${DATA}/mpas/raw" # [sng] Input file directory for MPAS examples
@@ -908,8 +907,8 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_nbr=${#nd_nm[@]}
 	for ((mpi_idx_zro=0;mpi_idx_zro<mpi_nbr;mpi_idx_zro++)); do
 	    mpi_idx=${mpi_idx_zro}
-	    if [ "${sbs_flg}" != 'Yes' ]; then 
-		# Offset MPI index from 0- to 1-based for climo generation
+	    if [ "${clm_flg}" = 'Yes' ] && [ ${clm_md} = 'mth' ] ; then 
+		# Offset MPI index from 0- to 1-based for traditional monthly-based climo generation
 		let mpi_idx=${mpi_idx_zro}+1
 	    fi # !sbs_flg
 	    case "${HOSTNAME}" in 
@@ -1501,6 +1500,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	for day in `seq 1 ${dpm[${mth}]}`; do
 	    DD=`printf "%02d" ${day}`
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_climo.nc"
+	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
 	    tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:01"
 	    tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
 	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -d time,'${tm_srt}','${tm_end}',365 ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
@@ -1508,6 +1508,29 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	done # !day
     done # !mth
 
+    if [ -n "${rgr_map}" ]; then
+	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
+	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
+	    if [ "${drc_out}" = "${drc_rgr}" ]; then 
+		# Append geometry suffix to regridded files in same directory as native climo
+		# http://tldp.org/LDP/abs/html/string-manipulation.html
+		dfl_sfx='rgr'
+		rgr_sfx=`expr match "${rgr_map}" '.*_to_\(.*\).nc'`
+		if [ "${#rgr_sfx}" -eq 0 ]; then
+		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
+		    rgr_sfx=${dfl_sfx}
+		else
+		    yyyymmdd_sng=`expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)'` # Find YYYYYMMDD
+		    if [ "${#yyyymmdd_sng}" -ne 0 ]; then
+			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
+		    fi # !strlen
+		fi # !strlen
+		#    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
+		fl_rgr[${clm_idx}]="${fl_rgr[${clm_idx}]/.nc/_${rgr_sfx}.nc}"
+	    fi # !drc_rgr
+	done # !clm_idx
+    fi # !rgr_map
+    
     # Begin loop over days to climatologize
     printf "Climatological daily mean...\n"
     idx_srt=0
@@ -1541,9 +1564,9 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 		    printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at clm_idx = ${clm_idx}...\n"
 		fi # !dbg
 		for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
-		    wait ${sbs_pid[${pid_idx}]}
+		    wait ${clm_pid[${pid_idx}]}
 		    if [ $? -ne 0 ]; then
-			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
+			printf "${spt_nm}: ERROR Failed daily average. cmd_clm[${pid_idx}] failed. Debug this:\n${cmd_clm[${pid_idx}]}\n"
 			exit 1
 		    fi # !err
 		done # !pid_idx
@@ -1561,15 +1584,82 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    let bch_idx=$((bch_idx+1))
 	    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
 	    for ((pid_idx=${idx_srt};pid_idx<${clm_nbr};pid_idx++)); do
-		wait ${sbs_pid[${pid_idx}]}
+		wait ${clm_pid[${pid_idx}]}
 		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed daily average. cmd_clm[${pid_idx}] failed. Debug this:\n${cmd_clm[${pid_idx}]}\n"
 		    exit 1
 		fi # !err
 	    done # !pid_idx
 	fi # !bch_flg
     fi # !par_typ
 
+    # Begin loop over days to regrid
+    if [ -n "${rgr_map}" ]; then 
+	idx_srt=0
+	let idx_end=$((job_nbr-1))
+	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
+	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    if [ "${mdl_typ}" = 'mpas' ]; then
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+	    fi # !mdl_typ
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_rgr[${clm_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_rgr[${clm_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_opt
+		    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
+		    rgr_pid[${clm_idx}]=$!
+		fi # !par_opt
+	    fi # !dbg
+	    
+	    # Block NNN: Wait
+	    # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
+	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+	    if [ -n "${par_opt}" ]; then
+		let bch_idx=$((clm_idx / job_nbr))
+		let bch_flg=$(((clm_idx+1) % job_nbr))
+		#printf "${spt_nm}: clm_idx = ${clm_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
+		if [ ${bch_flg} -eq 0 ]; then
+		    if [ ${dbg_lvl} -ge 1 ]; then
+			printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at clm_idx = ${clm_idx}...\n"
+		    fi # !dbg
+		    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
+			wait ${rgr_pid[${pid_idx}]}
+			if [ $? -ne 0 ]; then
+			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+			    exit 1
+			fi # !err
+		    done # !pid_idx
+		    let idx_srt=$((idx_srt + job_nbr))
+		    let idx_end=$((idx_end + job_nbr))
+		fi # !bch_flg
+	    fi # !par_typ
+	    
+	done # !clm_idx
+	
+	# Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
+	if [ -n "${par_opt}" ]; then
+	    let bch_flg=$((clm_nbr % job_nbr))
+	    if [ ${bch_flg} -ne 0 ]; then
+		let bch_idx=$((bch_idx+1))
+		printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+		for ((pid_idx=${idx_srt};pid_idx<${clm_nbr};pid_idx++)); do
+		    wait ${rgr_pid[${pid_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+			exit 1
+		    fi # !err
+		done # !pid_idx
+	    fi # !bch_flg
+	fi # !par_typ
+    fi # !rgr_map
+    
 fi # !dly
 
 # Many subsequent blocks only executed for normal and incremental monthly climos, not for binary climos, or non-monthly climos
