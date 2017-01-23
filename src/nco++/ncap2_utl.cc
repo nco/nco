@@ -2017,10 +2017,10 @@ ncap_var_var_op   /* [fnc] Add two variables */
     (void)ncap_var_retype(var1,var2);
     
     // can we do the op without any stretching or conformance ?
-    if( ncap_var_is_op_doable(var1,var2) ) 
+    if( var1->sz==1 || var2->sz==1 ) 
       ; 
     // if hyperslabs then check they conform
-    else if( (var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn==-1) && var1->sz >1 && var2->sz>1)
+    else if( var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn ==-1 )
     {  
 	  if(var1->sz != var2->sz) 
 	  {
@@ -2029,7 +2029,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
 	    err_prn(fnc_nm,os.str());
 	  }
 
-	  if( nco_shp_chk(var1,var2)==False)
+	  if( ncap_top_shp_chk(var1,var2)==False &&  ncap_norm_shp_chk(var1,var2)==False  )
 	  { 
 	    std::ostringstream os;
 	    os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<" have same  number of elements, but different shapes.";
@@ -2037,9 +2037,9 @@ ncap_var_var_op   /* [fnc] Add two variables */
 	  }
     }
     else
-    {   
+      { // try and mamke vars conform  
       (void)ncap_var_cnf_dmn(&var1,&var2);
-    }
+      }
     // Bare numbers have name prefixed with"_"
     // for attribute propagation to work we need
     // to swap names about if first operand is a bare number
@@ -2097,6 +2097,9 @@ ncap_var_var_op   /* [fnc] Add two variables */
   }
   
   // Deal with pwr fuction ( nb pwr function can't be templated )
+  // if var1 and var2 are the same size then results of operation ar put in var1
+  // if var1->sz >1 and var2->sz==1 then data is data in var1
+  // if var1->sz==1  and var2->sz>1 then data is data in var2
   if(op==CARET)
      ncap_var_var_pwr(var1,var2);
   else if (op==MOD)
@@ -2107,7 +2110,8 @@ ncap_var_var_op   /* [fnc] Add two variables */
      ncap_var_var_stc(var1,var2,op);
 
   // swap var data about -results of an asymetrical operation
-  if( var1->sz ==1 && var2->sz >1)
+  // nb the output data in this case is in var2 
+  if( var1->sz ==1 && var2->sz >1  )
   {
     char *cswp; 
     var_sct *var_swp;      
@@ -2122,6 +2126,28 @@ ncap_var_var_op   /* [fnc] Add two variables */
     var2->nm=cswp;           
 
 
+  }
+  // Deal with case where var1 and var2 same size but 
+  // but var2 has more dims - eg multiple dims of size 1 (degenerate)
+  // so we wnat the data from var1 but the "shape" from var2
+  else if( var1->sz==var2->sz && var1->nbr_dim< var2->nbr_dim)    
+  {
+    char *cswp; 
+    var_sct *var_swp;      
+    ptr_unn val_swp;
+
+    var_swp=var1;     
+    var1=var2;
+    var2=var_swp;
+
+    // swap names about to preserve att propagation
+    cswp=var1->nm;
+    var1->nm=var2->nm;
+    var2->nm=cswp;           
+   
+    val_swp=var1->val;
+    var1->val=var2->val;
+    var2->val=val_swp;       
   }
 
   // swap about names so attribute propagation works 
