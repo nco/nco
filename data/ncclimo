@@ -206,8 +206,8 @@ esac # !HOSTNAME
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Daily pipe:
-# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 -p nil --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
-# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 -p nil --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc > ~/ncclimo.out 2>&1 &
+# cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid='famipc5_ne30_v0.3_00007' --clm_md='dly' -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc > ~/ncclimo.out 2>&1 &
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -715,7 +715,6 @@ if [ -n "${gaa_sng_std}" ]; then
     if [ "${sbs_flg}" != 'Yes' ]; then
 	gaa_sng="${gaa_sng_std} --gaa yrs_averaged=${yrs_avg_sng}"
     fi # !sbs_flg
-    nco_opt="${nco_opt} ${gaa_sng}"
 fi # !gaa_sng
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
@@ -1181,7 +1180,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	    drc_out="${drc_in}"
 	fi # !bnr_flg
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
-	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
+	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
     done # !mth
 
     # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
@@ -1291,7 +1290,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	let idx_end=$((job_nbr-1))
 	for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 	    fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
-	    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+	    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_sbs[${var_idx}]}
 	    fi # !dbg
@@ -1443,7 +1442,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
 	drc_out="${drc_in}"
     fi # !bnr_flg
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_ANN_${yyyy_srt}01_${yyyy_end}12_climo.nc"
-    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]} ${par_opt}"
+    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]} ${par_opt}"
 
     # Block 1 Loop 2: Climatological annual mean
     printf "Climatological annual mean...\n"
@@ -1503,7 +1502,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
 	    tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:01"
 	    tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} -d time,'${tm_srt}','${tm_end}',365 ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',365 ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
 	    let clm_idx=${clm_idx}+1
 	done # !day
     done # !mth
@@ -1738,10 +1737,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     # Block 2: Climatological seasonal means
     # Block 2 Loop 1: Generate seasonal commands
     printf "Climatological seasonal means...\n"
-    cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
-    cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
-    cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
-    cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
+    cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${gaa_sng} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
+    cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${gaa_sng} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
+    cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${gaa_sng} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
+    cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
 
     # Block 2 Loop 2: Execute and/or echo seasonal climatology commands
     for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
@@ -1818,7 +1817,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     
     # Block 3: Climatological annual mean (seventeenth file)
     printf "Climatological annual mean...\n"
-    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
+    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_clm[17]}
     fi # !dbg
@@ -2005,7 +2004,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	
 	printf "Weight input climos to produce extended climo...\n"
 	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-	    cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
+	    cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} ${gaa_sng} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_xtn[${clm_idx}]}
 	    fi # !dbg
