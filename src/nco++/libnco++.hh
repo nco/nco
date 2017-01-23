@@ -28,6 +28,7 @@
 #include "NcapVar.hh"
 #include "NcapVarVector.hh"
 #include "ncap2_utl.hh"
+#include "ncap2_att.hh"
 #include "prs_cls.hh"
 #include "sdo_utl.hh"
 #include "ncap2_utl.hh"

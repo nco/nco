@@ -23,6 +23,7 @@ ANTLR = runantlr
 ncap2_SOURCES = Invoke.cc \
 ncap2.cc \
 ncap2_utl.cc \
+ncap2_att.cc \
 sdo_utl.cc \
 sym_cls.cc \
 fmc_cls.cc \

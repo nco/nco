@@ -111,7 +111,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ncap2_OBJECTS = Invoke.$(OBJEXT) ncap2.$(OBJEXT) \
-	ncap2_utl.$(OBJEXT) sdo_utl.$(OBJEXT) sym_cls.$(OBJEXT) \
+	ncap2_utl.$(OBJEXT) ncap2_att.$(OBJEXT)  sdo_utl.$(OBJEXT) sym_cls.$(OBJEXT) \
 	fmc_cls.$(OBJEXT) fmc_all_cls.$(OBJEXT) fmc_gsl_cls.$(OBJEXT) \
 	prs_cls.$(OBJEXT) NcapVar.$(OBJEXT) NcapVarVector.$(OBJEXT) \
 	ncoLexer.$(OBJEXT) ncoParser.$(OBJEXT) ncoTree.$(OBJEXT) \
@@ -363,13 +363,14 @@ ANTLR = runantlr
 #Invoke.o : ncoGrammer.g
 #	${ANTLR} ncoGrammer.g
 
-# 20160125: fxm postprocess tokens when symbol table changes
+# 20160125: ncap2_utlfxm postprocess tokens when symbol table changes
 # cd ~/nco/src/nco++;antlr ncoGrammer.g;./nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
 
 # fxm: Split off all sources except front-end into nco++ library
 ncap2_SOURCES = Invoke.cc \
 ncap2.cc \
 ncap2_utl.cc \
+ncap2_att.cc \
 sdo_utl.cc \
 sym_cls.cc \
 fmc_cls.cc \
@@ -511,6 +512,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmc_gsl_cls.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap2_utl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap2_att.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncoLexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncoParser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncoTree.Po@am__quote@

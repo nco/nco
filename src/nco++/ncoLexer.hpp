@@ -40,6 +40,7 @@
     // Custom Headers
     #include "prs_cls.hh"
     #include "ncap2_utl.hh"
+    #include "ncap2_att.hh"
     #include "fmc_cls.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -52,10 +53,10 @@
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
-#line 56 "ncoLexer.hpp"
+#line 57 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 347 "ncoGrammer.g"
+#line 348 "ncoGrammer.g"
 
 private:
     prs_cls *prs_arg;
@@ -97,7 +98,7 @@ public:
 		}
 		// else ANTLR_USE_NAMESPACE(std)cout << "Hit EOF of main file" << ANTLR_USE_NAMESPACE(std)endl;
 	}
-#line 60 "ncoLexer.hpp"
+#line 61 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:

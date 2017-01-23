@@ -38,6 +38,7 @@
     // Custom Headers
     #include "prs_cls.hh"
     #include "ncap2_utl.hh"
+    #include "ncap2_att.hh"
     #include "fmc_cls.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -50,10 +51,10 @@
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
-#line 54 "ncoTree.hpp"
+#line 55 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 696 "ncoGrammer.g"
+#line 697 "ncoGrammer.g"
 
 
 private:
@@ -517,7 +518,7 @@ RefAST nco_dupList(RefAST tr){
       */ 
       return otr; 
      }
-#line 58 "ncoTree.hpp"
+#line 59 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
