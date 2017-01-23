@@ -750,8 +750,9 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   dt_sng=strstr(bfr,"since");  
   sscanf(dt_sng,"%*s %d-%d-%d %d:%d:%f",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
 
-  ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
+
   ut_free(ut_sct_in);
+  ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
 
   return NCO_NOERR;
 } /* end UDUnits2 nco_cln_prs_tm() */
