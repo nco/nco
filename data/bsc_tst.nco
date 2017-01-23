@@ -296,7 +296,7 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
- // check var op conformance  
+ // check var 'op' var conformance  
  b13[lat,lon]={1,2,3,4,5,6,7,8};
  b14[lon,lat]={1,5,2,6,3,7,4,8};
 
@@ -313,6 +313,40 @@ nbr_err_ttl=0;
      print("ERROR: b16 b) var_var_op(+) conformance\n");
      nbr_err++;	
   }
+
+ // from terraref hyperspectral script 
+ defdim("x",1);
+ defdim("y",1);
+ defdim("z",1);
+ defdim("wavelength",4);
+
+ rf[wavelength]=3.0f;
+ in[wavelength,x,y]=10.0f;
+
+ dark[wavelength]=1.0f;
+ white[wavelength]=2.0f;
+
+ out=rf*(in-white)/(white-dark);
+
+ if( out.total() != 4*24.0f ) 
+  {
+     print("ERROR: out) var conformance with degenerate  dims\n");
+     nbr_err++;	
+  }
+
+ // check output with degenerate dim vars
+ b20[x,y,z]=1.0;
+ b21[y,z]=2.0;
+ // q=1;
+ // xxx=2; 
+ b22=b21*b20; 
+ 
+ if( b22.total() !=2.0f || b22.ndims() !=3 )
+  {
+     print("ERROR: b22) var conformance with all degenerate dims\n");
+     nbr_err++;	
+  }
+ 
 
 
   print("RESULTS block b: Num errors="); print(nbr_err,"%d");
