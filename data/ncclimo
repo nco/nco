@@ -2106,36 +2106,40 @@ date_dff=$((date_end-date_srt))
 if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${clm_md}" = 'dly' ]; then
 	echo "Quick plots of last climatological daily mean:"
+	let idx_lst=${clm_nbr}-1
     else
 	echo "Quick plots of climatological annual mean:"
+	let idx_lst=${clm_nbr}
     fi # !dly
+    
     if [ -n "${yr_srt_prv}" ]; then
 	if [ -n "${rgr_map}" ]; then 
-	    echo "ncview ${fl_rgr_xtn[${clm_nbr}]} &"
-	    echo "panoply ${fl_rgr_xtn[${clm_nbr}]} &"
+	    echo "ncview ${fl_rgr_xtn[${idx_lst}]} &"
+	    echo "panoply ${fl_rgr_xtn[${idx_lst}]} &"
 	else
-	    echo "ncview ${fl_xtn[${clm_nbr}]} &"
-	    echo "panoply ${fl_xtn[${clm_nbr}]} &"
+	    echo "ncview ${fl_xtn[${idx_lst}]} &"
+	    echo "panoply ${fl_xtn[${idx_lst}]} &"
 	fi # !rgr_map    
     else
 	if [ -n "${rgr_map}" ]; then 
-	    echo "ncview ${fl_rgr[${clm_nbr}]} &"
-	    echo "panoply ${fl_rgr[${clm_nbr}]} &"
+	    echo "ncview ${fl_rgr[${idx_lst}]} &"
+	    echo "panoply ${fl_rgr[${idx_lst}]} &"
 	else
-	    echo "ncview ${fl_out[${clm_nbr}]} &"
-	    echo "panoply ${fl_out[${clm_nbr}]} &"
+	    echo "ncview ${fl_out[${idx_lst}]} &"
+	    echo "panoply ${fl_out[${idx_lst}]} &"
 	fi # !rgr_map    
     fi # !yr_srt_prv
     echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 fi # !clm_flg
 if [ "${sbs_flg}" = 'Yes' ]; then
     echo "Quick plots of last variable split in last segment:"
+    let idx_lst=${var_nbr}-1
     if [ -n "${rgr_map}" ]; then 
-	echo "ncview ${fl_rgr[(${var_nbr}-1)]} &"
-	echo "panoply ${fl_rgr[(${var_nbr}-1)]} &"
+	echo "ncview ${fl_rgr[${idx_lst}]} &"
+	echo "panoply ${fl_rgr[${idx_lst}]} &"
     else
-	echo "ncview ${fl_out[(${var_nbr}-1)]} &"
-	echo "panoply ${fl_out[(${var_nbr}-1)]} &"
+	echo "ncview ${fl_out[${idx_lst}]} &"
+	echo "panoply ${fl_out[${idx_lst}]} &"
     fi # !rgr_map    
 fi # !sbs_flg
 
