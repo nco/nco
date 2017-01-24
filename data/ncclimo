@@ -375,6 +375,10 @@ fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experim
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
 hdr_pad='10000' # [B] Pad at end of header section
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
+inp_aut='No' # [sng] Input file list automatically generated
+inp_glb='No' # [sng] Input file list from globbing directory 
+inp_psn='No' # [sng] Input file list from positional arguments
+inp_std='No' # [sng] Input file list from stdin
 job_nbr=2 # [nbr] Job simultaneity for parallelism
 lnk_flg='Yes' # [sng] Link ACME-climo to AMWG-climo filenames
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpaso', 'ocn')
@@ -392,7 +396,6 @@ rgr_map='' # [sng] Regridding map
 #rgr_map="${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150901.nc"
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 sbs_flg='No' # [sng] Split (subset) climatologies
-std_flg='No' # [sng] Input available from pipe to stdin
 thr_nbr=2 # [nbr] Thread number for regridder
 tpd_dly=1 # [nbr] Timesteps-per-day
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
@@ -573,16 +576,25 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 psn_nbr=$#
-
+if [ ${psn_nbr} -ge 1 ]; then
+    inp_psn='Yes'
+fi # !psn_nbr
+    
 # Detect input on pipe to stdin:
 # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
 # http://unix.stackexchange.com/questions/33049/check-if-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
-# 20170119 "if [ ! -t 0 ]" tests whether stdin connected to terminal, not whether pipe has data
-# Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives
+# 20170119 "if [ ! -t 0 ]" tests whether unit 0 (stdin) is connected to terminal, not whether pipe has data
+# Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives with ! -t 0
+# 20170123 "if [ -p foo ]" tests whether foo exists and is a pipe or named pipe
+# Non-interactive batch mode (e.g., qsub, sbatch) (at least on rhea) always returns true for -p /dev/stdin
 # Switch test from "if [ ! -t 0 ]" to "if [ -p /dev/stdin ]"
-if [ -p /dev/stdin ]; then
-    std_flg='Yes'
-fi # !stdin
+if [ -t 0 ]; then
+    ;
+else
+    if [ -p /dev/stdin ]; then
+	inp_std='Yes'
+    fi # !stdin
+fi # !stdin terminal
 
 # Determine mode first (this helps determine other defaults)
 if [ -n "${yr_srt_prv}" ]; then
@@ -601,7 +613,7 @@ if [ -n "${clm_md_usr}" ]; then
     clm_flg='Yes' # redundant (and safe)
 else
     # Otherwise subset (split) mode whenever stdin pipe has data or positional arguments are used
-    if [ ${std_flg} = 'Yes' ] || [ ${psn_nbr} -ge 1 ]; then
+    if [ ${inp_std} = 'Yes' ] || [ ${inp_psn} = 'Yes' ]; then
 	sbs_flg='Yes'
 	clm_flg='No'
 	dec_md='sdd'
@@ -770,42 +782,51 @@ if [ ${dec_md} = 'scd' ]; then
 fi # !scd
 
 # Read files from stdin pipe, positional arguments, or directory glob
-if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ]; then
-    drc_glb='Yes'
+printf "dbg: inp_aut  = ${inp_aut}\n"
+printf "dbg: inp_glb  = ${inp_glb}\n"
+printf "dbg: inp_psn  = ${inp_psn}\n"
+printf "dbg: inp_std  = ${inp_std}\n"
+if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
+    inp_glb='Yes'
 fi # !clm_flg, !dly
-if [ ${sbs_flg} = 'Yes' ] && [ ${std_flg} = 'No' ] || [ ${psn_nbr} -ge 1 ]; then
-    drc_glb='Yes'
+if [ ${sbs_flg} = 'Yes' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
+    inp_glb='Yes'
 fi # !sbs_flg
-if [ ${std_flg} = 'Yes' ] || [ ${psn_nbr} -ge 1 ] || [ ${drc_glb} = 'Yes' ]; then
-    if [ ${std_flg} = 'No' ]; then 
-	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
-	    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-		if [ -f "${fl}" ]; then
-		    fl_in[${fl_nbr}]=${fl}
-		    let fl_nbr=${fl_nbr}+1
-		fi # !file
-	    done
-	else # !drc_in
-	    # Read any positional arguments
-	    if [ ${psn_nbr} -ge 1 ]; then
-		for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
-		    fl_in[(${psn_idx}-1)]=${!psn_idx}
-		    fl_nbr=${psn_nbr}
-		done # !psn_idx
-	    else
-		echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
-		echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
-		exit 1
-	    fi # !psn_nbr
-	fi # !drc_in
-    else # !std_flg
-	# Input awaits on unit 0, i.e., on stdin
-	while read -r line; do # NeR05 p. 179
-	    fl_in[${fl_nbr}]=${line}
+if [ ${sbs_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
+    echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
+    echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+    exit 1
+fi # !sbs_flg
+if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
+    inp_aut='Yes'
+    inp_std='No' # fxm: 20170123 necessary hack for false positives in non-interactive batch mode
+fi # !clm_flg
+if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
+    inp_aut='Yes'
+    inp_std='No' # fxm: 20170123 necessary hack for false positives in non-interactive batch mode
+fi # !clm_flg
+if [ ${inp_glb} = 'Yes' ]; then 
+    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
+	if [ -f "${fl}" ]; then
+	    fl_in[${fl_nbr}]=${fl}
 	    let fl_nbr=${fl_nbr}+1
-	done < /dev/stdin
-    fi # stdin
-fi # !std_flg || !psn_nbr
+	fi # !file
+    done
+fi # !inp_glb
+if [ ${inp_psn} = 'Yes' ]; then
+    # Read any positional arguments
+    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	fl_in[(${psn_idx}-1)]=${!psn_idx}
+	fl_nbr=${psn_nbr}
+    done # !psn_idx
+fi # !inp_psn
+if [ ${inp_std} = 'Yes' ]; then
+    # Input awaits on unit 0, i.e., on stdin
+    while read -r line; do # NeR05 p. 179
+	fl_in[${fl_nbr}]=${line}
+	let fl_nbr=${fl_nbr}+1
+    done < /dev/stdin
+fi # !inp_std
 
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${sbs_flg}" = 'Yes' ]; then
@@ -865,7 +886,7 @@ else # !sbs_flg
 	exit 1
     fi # out_nm
 
-    if [ ${std_flg} = 'Yes' ] && [ ${clm_md} != 'dly' ] ; then
+    if [ ${inp_std} = 'Yes' ] && [ ${clm_md} != 'dly' ] ; then
 	echo "${spt_nm}: ERROR Detected input on pipe to stdin rather than console in climatology generation mode"
 	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files or in daily climatology mode"
 	echo "${spt_nm}: HINT In other climo generation modes (montly and annual), one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
@@ -973,6 +994,10 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
     printf "dbg: hst_nm   = ${hst_nm}\n"
+    printf "dbg: inp_aut  = ${inp_aut}\n"
+    printf "dbg: inp_glb  = ${inp_glb}\n"
+    printf "dbg: inp_psn  = ${inp_psn}\n"
+    printf "dbg: inp_std  = ${inp_std}\n"
     printf "dbg: job_nbr  = ${job_nbr}\n"
     printf "dbg: lnk_flg  = ${lnk_flg}\n"
     printf "dbg: mdl_nm   = ${mdl_nm}\n"
@@ -987,7 +1012,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
     printf "dbg: sbs_flg  = ${sbs_flg}\n"
-    printf "dbg: std_flg  = ${std_flg}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"
@@ -1051,7 +1075,7 @@ fi # !caseid
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
 if [ "${sbs_flg}" = 'Yes' ]; then
-    if [ ${std_flg} = 'No' ]; then 
+    if [ ${inp_std} = 'No' ]; then 
 	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
 	    printf "Splitting climatology from ${fl_nbr} raw input files in directory ${drc_in}\n"
 	else # !drc_in
@@ -1108,7 +1132,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
     fi # !mdl_typ
     if [ ${clm_md} = 'ann' ]; then 
 	printf "Each input file assumed to contain mean of one year\n"
-    elif [ ${clm_md} = 'mth' ]; then 
+    elif [ ${clm_md} = 'dly' ]; then 
 	printf "Each input file assumed to contain mean of one day\n"
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
