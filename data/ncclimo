@@ -249,7 +249,7 @@ esac # !HOSTNAME
 #                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc"  > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Cooley b): qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
-#   Cori,Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=regular --job-name=ncclimo --mail-type=END --output=ncclimo.out ~/ncclimo.slurm
+#   Cori,Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=regular --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Hopper b): qsub -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Rhea b):   qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 
@@ -586,15 +586,12 @@ fi # !psn_nbr
 # 20170119 "if [ ! -t 0 ]" tests whether unit 0 (stdin) is connected to terminal, not whether pipe has data
 # Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives with ! -t 0
 # 20170123 "if [ -p foo ]" tests whether foo exists and is a pipe or named pipe
-# Non-interactive batch mode (e.g., qsub, sbatch) (at least on rhea) always returns true for -p /dev/stdin
+# Non-interactive batch mode (i.e., sbatch) behaves as desired for -p /dev/stdin on edison
+# Non-interactive batch mode (e.g., qsub) always returns true for -p /dev/stdin on rhea. FALSE POSITIVES!
 # Switch test from "if [ ! -t 0 ]" to "if [ -p /dev/stdin ]"
-if [ -t 0 ]; then
-    ;
-else
-    if [ -p /dev/stdin ]; then
-	inp_std='Yes'
-    fi # !stdin
-fi # !stdin terminal
+if [ -p /dev/stdin ]; then
+    inp_std='Yes'
+fi # !stdin
 
 # Determine mode first (this helps determine other defaults)
 if [ -n "${yr_srt_prv}" ]; then
@@ -799,11 +796,11 @@ if [ ${sbs_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [
 fi # !sbs_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
     inp_aut='Yes'
-    inp_std='No' # fxm: 20170123 necessary hack for false positives in non-interactive batch mode
+    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on rhea
 fi # !clm_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     inp_aut='Yes'
-    inp_std='No' # fxm: 20170123 necessary hack for false positives in non-interactive batch mode
+    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on rhea
 fi # !clm_flg
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do

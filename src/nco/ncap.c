@@ -233,7 +233,6 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst_a=NULL; /* Initialize to ALL variables in OUTPUT file */
   
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-  size_t cnk_csh_byt=NCO_CNK_CSH_BYT_DFL; /* [B] Chunk cache size */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */

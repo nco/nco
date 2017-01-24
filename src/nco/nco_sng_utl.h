@@ -77,12 +77,12 @@ extern "C" {
   
   /* 20130827 GNU g++ always provides strcasestr(), MSVC never does */
 #ifndef __GNUG__
-# ifdef NEED_STRCASESTR
+  //# ifdef NEED_STRCASESTR
   char * /* O [sng] Pointer to sng_2 in sng_1 */
   strcasestr /* [fnc] Lexicographical case-insensitive string search */
   (const char * const sng_1, /* I [sng] First string */
    const char * const sng_2); /* I [sng] Second string */
-# endif /* !NEED_STRCASESTR */
+  //# endif /* !NEED_STRCASESTR */
 #endif /* __GNUG__ */
   
 #ifdef NEED_STRDUP
