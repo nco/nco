@@ -1601,13 +1601,12 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       } /* end if */
 
       if(lmt.min_sng)
- 	if( nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng, lmt.lmt_cln, &lmt.min_val) !=NCO_NOERR )
-           nco_exit(EXIT_FAILURE);
-
+ 	if(nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng, lmt.lmt_cln, &lmt.min_val) != NCO_NOERR)
+	  nco_exit(EXIT_FAILURE);
 
       if(lmt.max_sng)
- 	if( nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng, lmt.lmt_cln, &lmt.max_val) !=NCO_NOERR )
-           nco_exit(EXIT_FAILURE);
+ 	if(nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng, lmt.lmt_cln, &lmt.max_val) != NCO_NOERR)
+	  nco_exit(EXIT_FAILURE);
 
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
@@ -2031,7 +2030,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   /* Exit when valid bracketed range contains no coordinates and that is not legal,
      i.e., this is not a superfluous file in an MFO */
   if(lmt.cnt == 0){
-    if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",nco_prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
+    if(lmt.lmt_typ == lmt_crd_val || lmt.lmt_typ == lmt_udu_sng) (void)fprintf(stdout,"%s: ERROR Domain %15.9e <= %s <= %15.9e brackets no coordinate values.\n",nco_prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
     if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",nco_prg_nm_get(),lmt.nm); 
     nco_exit(EXIT_FAILURE);
   } /* end if */
