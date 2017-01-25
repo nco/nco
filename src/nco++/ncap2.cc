@@ -1131,6 +1131,9 @@ void
 ram_vars_add
 (prs_cls *prs_arg)
 {
+  char buff[20]={0};
+  double dnan;
+
   var_sct *var1;
   
   var1=ncap_sclr_var_mk(std::string("NC_BYTE"),nco_int(NC_NAT));
@@ -1190,8 +1193,6 @@ ram_vars_add
   prs_arg->ncap_var_write(var1,true);
 #endif // !HUGE_VAL
 
-  char buff[20];
-  double dnan;
 #ifndef _MSC_VER
   if((dnan=nan(buff))){
     var1=ncap_sclr_var_mk(std::string("nan"),dnan); // double
