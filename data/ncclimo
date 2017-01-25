@@ -586,8 +586,9 @@ fi # !psn_nbr
 # 20170119 "if [ ! -t 0 ]" tests whether unit 0 (stdin) is connected to terminal, not whether pipe has data
 # Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives with ! -t 0
 # 20170123 "if [ -p foo ]" tests whether foo exists and is a pipe or named pipe
-# Non-interactive batch mode (i.e., sbatch) behaves as desired for -p /dev/stdin on edison
-# Non-interactive batch mode (e.g., qsub) always returns true for -p /dev/stdin on rhea. FALSE POSITIVES!
+# Non-interactive batch mode (i.e., sbatch) behaves as desired for -p /dev/stdin on SLURM
+# Non-interactive batch mode (e.g., qsub) always returns true for -p /dev/stdin on PBS, leads to FALSE POSITIVES!
+# This is because PBS uses stdin to set the job name
 # Switch test from "if [ ! -t 0 ]" to "if [ -p /dev/stdin ]"
 if [ -p /dev/stdin ]; then
     inp_std='Yes'

@@ -94,6 +94,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
   if(trr_wxy){
     cnv_nbr=sscanf(trr_wxy,"%ld,%ld,%ld",&trr->wvl_nbr,&trr->xdm_nbr,&trr->ydm_nbr);
     assert(cnv_nbr == 3);
+    if(cnv_nbr == 3) cnv_nbr=3; /* CEWI */
   } /* !trr_wxy */
 
   /* Parse key-value properties */

@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha05
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 21 January 2017
+@set update-date 24 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -5826,6 +5826,7 @@ commands to gather the desired range of data.
 
 @html
 <a name="msa_usr_rdr"></a> <!-- http://nco.sf.net/nco.html#msa_usr_rdr -->
+<a name="rotate_longitude"></a> <!-- http://nco.sf.net/nco.html#rotate_longitude -->
 @end html
 The @acronym{MSA} user-order switch @samp{--msa_usr_rdr} (or
 @samp{--msa_user_order}, both of which shorten to @samp{--msa}) 
@@ -5835,9 +5836,9 @@ storage order.
 This allows the user to perform complex data re-ordering in one
 operation that would otherwise require cumbersome steps of
 hyperslabbing, concatenating, and permuting. 
-Consider the recent example of a user who needed to convert datasets
-stored with the longitude coordinate @code{Lon} ranging from
-[@minus{}180,180) to datasets that follow the [0,360) convention.
+Consider the example of converting datasets stored with the longitude
+coordinate @code{Lon} ranging from [@minus{}180,180) to datasets that
+follow the [0,360) convention.
 @example
 % ncks -H -v Lon in.nc
 Lon[0]=-180
@@ -5846,6 +5847,7 @@ Lon[2]=0
 Lon[3]=90
 @end example
 @noindent
+What is needed is a simple way to rotate longitudes.
 Although simple in theory, this task requires both mathematics to
 change the numerical value of the longitude coordinate, data
 hyperslabbing to split the input on-disk arrays at Greenwich, and data
