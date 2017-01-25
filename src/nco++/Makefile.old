@@ -1389,6 +1389,7 @@ $(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/sym_cls.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/Invoke.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/NcapVar.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/NcapVarVector.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/ncap2_att.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncap2_utl.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoLexer.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoParser.o) \

@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha06 final changes';git push
 	git tag -a 4.6.4-alpha06 -m 'Version 4.6.4-alpha06 new features: cell_measures';git push --tags
 
+	* Update bld/Makefile for new ncap2_att.cc
+
 	* Conclusively demonstrated that testing [ -p /dev/stdin ] leads to unexpected results on PBS not SLURM
 
 2017-01-23  Charlie Zender  <zender@uci.edu>
