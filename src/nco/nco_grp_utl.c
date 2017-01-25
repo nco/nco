@@ -6623,30 +6623,28 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Assign user-specified dimension limits to traversal table  
-  At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known 
-  Steps:
+     At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known 
+     Steps:
 
-  Find the total numbers of matches for a dimension
-  ncks -d lon,0,0,1  ~/nco/data/in_grp.nc
-  Here "lmt_nbr" is 1 and there is 1 match at most
-  ncks -d lon,0,0,1 -d lon,0,0,1 -d lat,0,0,1  ~/nco/data/in_grp.nc
-  Here "lmt_nbr" is 3 and there are 2 matches at most for "lon" and 1 match at most for "lat"
-  The limits have to be separated to 
-  a) case of coordinate variables
-  b) case of dimension only (there is no coordinate variable for that dimension)
+     Find total numbers of matches for a dimension
+     ncks -d lon,0,0,1 ~/nco/data/in_grp.nc
+     Here "lmt_nbr" is 1 and there is 1 match at most
+     ncks -d lon,0,0,1 -d lon,0,0,1 -d lat,0,0,1  ~/nco/data/in_grp.nc
+     Here "lmt_nbr" is 3 and there are 2 matches at most for "lon" and 1 match at most for "lat"
+     The limits have to be separated to 
+     a) case of coordinate variables
+     b) case of dimension only (there is no coordinate variable for that dimension)
+     
+     Deep copy matches to table, match at the current index, increment current index
+     
+     Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) ) 
+     At this point lmt_sct is no longer needed;  
+     
+     Tests:
+     ncks -D 11 -d lon,0,0,1 -d lon,1,1,1 -d lat,0,0,1 -d time,1,2,1 -d time,6,7,1 -v lon,lat,time -H ~/nco/data/in_grp.nc
+     ncks -D 11 -d time,8,9 -d time,0,2  -v time -H ~/nco/data/in_grp.nc
+     ncks -D 11 -d time,8,2 -v time -H ~/nco/data/in_grp.nc # wrapped limit */
 
-  Deep copy matches to table, match at the current index, increment current index
-
-  Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) ) 
-  At this point lmt_sct is no longer needed;  
-
-  Tests:
-  ncks -D 11 -d lon,0,0,1 -d lon,1,1,1 -d lat,0,0,1 -d time,1,2,1 -d time,6,7,1 -v lon,lat,time -H ~/nco/data/in_grp.nc
-  ncks -D 11 -d time,8,9 -d time,0,2  -v time -H ~/nco/data/in_grp.nc
-  ncks -D 11 -d time,8,2 -v time -H ~/nco/data/in_grp.nc # wrapped limit
-  */
-
-  /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
@@ -6672,8 +6670,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr++;
 
               int nbr_lmt=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr;
-              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_realloc(
-                trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn,nbr_lmt*sizeof(lmt_sct *));
+              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_realloc(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn,nbr_lmt*sizeof(lmt_sct *));
 
               /* b) case of dimension only (there is no coordinate variable for this dimension */
             }else{
@@ -6682,8 +6679,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr++;
 
               int nbr_lmt=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr;
-              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_realloc(
-                trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn,nbr_lmt*sizeof(lmt_sct *));
+              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_realloc(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn,nbr_lmt*sizeof(lmt_sct *));
 
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
 
@@ -6731,7 +6727,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               /* Increment current index being initialized  */
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_crr++;
 
-              /* Alloc this limit */
+              /* Allocate this limit */
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 
               /* Initialize this entry */

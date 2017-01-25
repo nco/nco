@@ -1601,11 +1601,11 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       } /* end if */
 
       if(lmt.min_sng)
- 	if(nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng, lmt.lmt_cln, &lmt.min_val) != NCO_NOERR)
+ 	if(nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val) != NCO_NOERR)
 	  nco_exit(EXIT_FAILURE);
 
       if(lmt.max_sng)
- 	if(nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng, lmt.lmt_cln, &lmt.max_val) != NCO_NOERR)
+ 	if(nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val) != NCO_NOERR)
 	  nco_exit(EXIT_FAILURE);
 
     }else{ /* end UDUnits conversion */
