@@ -557,12 +557,7 @@ var_sct *var){ /* I/O [var_sct] var values modified - can be NULL  */
     rcd=NCO_NOERR;
     
   return rcd;
-} /* end UDUnits2 nco_cln_clc_dff() */
-
-
-
-
-
+} /* end UDUnits2 nco_cln_clc_dbl_var_dff() */
 
 int   /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_org(   /* [fnc] difference between two co-ordinate units */
@@ -609,21 +604,11 @@ double *og_val)         /* O [dbl] output value */
     strcpy(lcl_unt_sng,ptr); 
   } /* !is_date */
 
-  
-
   /* Use custom time functions if irregular calendar */
-  if(is_date && (lmt_cln==cln_360 || lmt_cln==cln_365 || lmt_cln==cln_366) ) 
-    rcd=nco_cln_clc_tm(lcl_unt_sng,fl_bs_sng,lmt_cln,&val_dbl,(var_sct*)NULL);   
-  else 
-      rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);     
-
+  if(is_date && (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)) rcd=nco_cln_clc_tm(lcl_unt_sng,fl_bs_sng,lmt_cln,&val_dbl,(var_sct*)NULL); else rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);     
 
   /* Copy over iff successful */ 
-  if(rcd==NCO_NOERR) 
-      *og_val=val_dbl;
-  else
-    (void)fprintf(stderr,"%s: ERROR %s: report unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln, val_dbl);  
-  
+  if(rcd==NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s: report unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln, val_dbl);  
  
   return rcd;        
 } /* !nco_cln_clc_dbl_org() */
@@ -638,7 +623,6 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 {
   /* Called for target units in fl_bs_sng of form "value unit since date-stamp" for cln_360 or cln_365
      Either "var" is NULL and there is a single value to process *og_val or var is initialized and og_val is NULL */
-
   char *tmp_sng;
 
   double crr_val=0.0;
@@ -693,7 +677,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
     (void)fprintf(stderr,"%s: nco_cln_clc_tm() offset=%g, scale factor=%g",nco_prg_nm_get(),crr_val,scl_val);
     if(og_val) (void)fprintf(stderr,"*og_val=%g",*og_val);
     (void)fprintf(stderr,"\n");
-  }      
+  } /* !dbg */
 
   if(og_val){
     *og_val=(*og_val)*scl_val+crr_val;
