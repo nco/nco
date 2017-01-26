@@ -623,6 +623,8 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 {
   /* Called for target units in fl_bs_sng of form "value unit since date-stamp" for cln_360 or cln_365
      Either "var" is NULL and there is a single value to process *og_val or var is initialized and og_val is NULL */
+  const char fnc_nm[]="nco_cln_clc_tm()"; /* [sng] Function name */
+
   char *tmp_sng;
 
   double crr_val=0.0;
@@ -636,7 +638,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   
   /* Die if unsupported calendar type */
   if(lmt_cln != cln_360 && lmt_cln != cln_365 && lmt_cln != cln_366){
-    (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports invalid calendar type lmt_cln=%d. Only cln_365,cln_360 cln_366 allowed.\n",nco_prg_nm_get(),lmt_cln);
+    (void)fprintf(stderr,"%s: %s reports invalid calendar type lmt_cln=%d. Only cln_365,cln_360 cln_366 allowed.\n",nco_prg_nm_get(),fnc_nm,lmt_cln);
     nco_exit(EXIT_FAILURE);
   } /* !lmt_cln */
 
@@ -645,7 +647,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
   if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
   bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=\"%s\", bs_sng=\"%s\", tmp_sng=\"%s\"\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng,tmp_sng);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports unt_sng=\"%s\", bs_sng=\"%s\", tmp_sng=\"%s\"\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,tmp_sng);
   if(tmp_sng) tmp_sng=(char *)nco_free(tmp_sng);
 
   /* Is unit string a bare date string? */ 
@@ -657,7 +659,9 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   
   /* Assume non-standard calendar */ 
   if(nco_cln_prs_tm(fl_unt_sng,&unt_cln_sct) == NCO_ERR) return NCO_ERR;
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark1\n",fnc_nm);
   if(nco_cln_prs_tm(fl_bs_sng,&bs_cln_sct) == NCO_ERR) return NCO_ERR;
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark2\n",fnc_nm);
   
   unt_cln_sct.sc_typ=bs_tm_typ;
   bs_cln_sct.sc_typ=bs_tm_typ;
@@ -674,8 +678,8 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   if(unt_tm_typ == bs_tm_typ) scl_val=1.0; else scl_val=nco_cln_val_tm_typ(lmt_cln,unt_tm_typ)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
   
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
-    (void)fprintf(stderr,"%s: nco_cln_clc_tm() offset=%g, scale factor=%g",nco_prg_nm_get(),crr_val,scl_val);
-    if(og_val) (void)fprintf(stderr,"*og_val=%g",*og_val);
+    (void)fprintf(stderr,"%s: %s reports offset=%g, scale factor=%g",nco_prg_nm_get(),fnc_nm,crr_val,scl_val);
+    if(og_val) (void)fprintf(stderr,", *og_val=%g",*og_val);
     (void)fprintf(stderr,"\n");
   } /* !dbg */
 
