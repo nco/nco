@@ -636,12 +636,14 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
  double *og_val, /* I/O [ptr] */
  var_sct *var) /* I/O [ptr] */  
 {
-  /* This function is only called if the target units in fl_bs_sng of the form "value unit since date-stamp" 
-     and the calendar type is cln_360 or cln_365.
+  /* Called for target units in fl_bs_sng of form "value unit since date-stamp" for cln_360 or cln_365
      Either "var" is NULL and there is a single value to process *og_val or var is initialized and og_val is NULL */
 
   /* 20141230 figure-out better length */
-  char tmp_sng[100]={0};
+  //  char tmp_sng[100]={0};
+#define NCO_MAX_LEN_TMP_SNG 100
+  char *tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
+  tmp_sng[NCO_MAX_LEN_TMP_SNG-1]='\0';
 
   double crr_val=0.0;
   double scl_val=1.0;
@@ -652,12 +654,9 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   tm_cln_sct unt_cln_sct;
   tm_cln_sct bs_cln_sct;
   
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
-
-
   /* Die if unsupported calendar type */
-  if(lmt_cln != cln_360 &&  lmt_cln != cln_365 && lmt_cln!=cln_366){
-    (void)fprintf(stderr,"%s: nco_cln_clc_tm() has been called with wrong calander types - only cln_365,cln_360 cln_366 allowed\n",nco_prg_nm_get());
+  if(lmt_cln != cln_360 && lmt_cln != cln_365 && lmt_cln != cln_366){
+    (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports invalid calendar type lmt_cln=%d. Only cln_365,cln_360 cln_366 allowed.\n",nco_prg_nm_get(),lmt_cln);
     nco_exit(EXIT_FAILURE);
   } /* !lmt_cln */
 
@@ -665,13 +664,15 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
   bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
 
-  /* check if unit string is a bare date string */ 
-  if(strncmp("s@", fl_unt_sng,2)==0)
-    unt_tm_typ=bs_tm_typ;
-  else if(sscanf(fl_unt_sng,"%s",tmp_sng) == 1) 
-      unt_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=\"%s\", bs_sng=\"%s\", tmp_sng=\"%s\"\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng,tmp_sng);
+
+  /* Is unit string a bare date string? */ 
+  if(!strncmp("s@",fl_unt_sng,2)) unt_tm_typ=bs_tm_typ;
+  else if(sscanf(fl_unt_sng,"%s",tmp_sng) == 1) unt_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
   else return NCO_ERR;
 
+  if(tmp_sng) tmp_sng=(char *)nco_free(tmp_sng);
+  
   /* Assume non-standard calendar */ 
   if(nco_cln_prs_tm(fl_unt_sng,&unt_cln_sct) == NCO_ERR) return NCO_ERR;
   if(nco_cln_prs_tm(fl_bs_sng,&bs_cln_sct) == NCO_ERR) return NCO_ERR;
@@ -688,27 +689,18 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   crr_val=(unt_cln_sct.value-bs_cln_sct.value)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);                 
 
   /* Scale factor */
-  if(unt_tm_typ == bs_tm_typ) 
-     scl_val=1.0; 
-  else 
-     scl_val=nco_cln_val_tm_typ(lmt_cln,unt_tm_typ)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
-
+  if(unt_tm_typ == bs_tm_typ) scl_val=1.0; else scl_val=nco_cln_val_tm_typ(lmt_cln,unt_tm_typ)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
   
   if(nco_dbg_lvl_get() >= nco_dbg_scl) 
   {
     (void)fprintf(stderr,"%s: nco_cln_clc_tm() offset=%g scale factor=%g ",nco_prg_nm_get(),crr_val,scl_val);
-    if(og_val)
-       (void)fprintf(stderr,"*og_val=%g",*og_val);
+    if(og_val) (void)fprintf(stderr,"*og_val=%g",*og_val);
     (void)fprintf(stderr,"\n");
   }      
 
-
-  if(og_val)
-  {   
+  if(og_val){   
     *og_val=(*og_val)*scl_val+crr_val;     
-  }
-  else if(var)
-  {
+  }else if(var){
     size_t sz;
     size_t idx;
     ptr_unn op1;    
@@ -794,7 +786,6 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
      20141230 change to using ut_decode_time() instead? */
   dt_sng=strstr(bfr,"since");  
   sscanf(dt_sng,"%*s %d-%d-%d %d:%d:%f",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
-
 
   ut_free(ut_sct_in);
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
