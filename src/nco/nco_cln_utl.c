@@ -642,8 +642,9 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   /* 20141230 figure-out better length */
   //  char tmp_sng[100]={0};
 #define NCO_MAX_LEN_TMP_SNG 100
-  char *tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
-  tmp_sng[NCO_MAX_LEN_TMP_SNG-1]='\0';
+  char *tmp_sng;
+  //  char *tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
+  //  tmp_sng[NCO_MAX_LEN_TMP_SNG-1]='\0';
 
   double crr_val=0.0;
   double scl_val=1.0;
@@ -661,14 +662,16 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   } /* !lmt_cln */
 
   /* Obtain units type from fl_bs_sng */
-  if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
+  if(sscanf(fl_bs_sng,"%ms",tmp_sng) != 1) return NCO_ERR;
   bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
-
+  
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=\"%s\", bs_sng=\"%s\", tmp_sng=\"%s\"\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng,tmp_sng);
+
+  if(tmp_sng) tmp_sng=(char *)nco_free(tmp_sng);
 
   /* Is unit string a bare date string? */ 
   if(!strncmp("s@",fl_unt_sng,2)) unt_tm_typ=bs_tm_typ;
-  else if(sscanf(fl_unt_sng,"%s",tmp_sng) == 1) unt_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
+  else if(sscanf(fl_unt_sng,"%ms",tmp_sng) == 1) unt_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
   else return NCO_ERR;
 
   if(tmp_sng) tmp_sng=(char *)nco_free(tmp_sng);
@@ -691,19 +694,18 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   /* Scale factor */
   if(unt_tm_typ == bs_tm_typ) scl_val=1.0; else scl_val=nco_cln_val_tm_typ(lmt_cln,unt_tm_typ)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
   
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) 
-  {
-    (void)fprintf(stderr,"%s: nco_cln_clc_tm() offset=%g scale factor=%g ",nco_prg_nm_get(),crr_val,scl_val);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+    (void)fprintf(stderr,"%s: nco_cln_clc_tm() offset=%g, scale factor=%g",nco_prg_nm_get(),crr_val,scl_val);
     if(og_val) (void)fprintf(stderr,"*og_val=%g",*og_val);
     (void)fprintf(stderr,"\n");
   }      
 
-  if(og_val){   
-    *og_val=(*og_val)*scl_val+crr_val;     
+  if(og_val){
+    *og_val=(*og_val)*scl_val+crr_val;
   }else if(var){
     size_t sz;
     size_t idx;
-    ptr_unn op1;    
+    ptr_unn op1;
     
     sz=var->sz;  
     op1=var->val;
