@@ -2,7 +2,9 @@
 
 	* NCO 4.6.4-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha06 final changes';git push
-	git tag -a 4.6.4-alpha06 -m 'Version 4.6.4-alpha06 new features: cell_measures';git push --tags
+	git tag -a 4.6.4-alpha06 -m 'Version 4.6.4-alpha06 new features: cell_measures, clm_md=dly, stdin PBS/SLURM';git push --tags
+
+	* Unable to reproduce MacOS behavior that leads to unexpected aborts with some time hyperslabs
 
 	* Update bld/Makefile for new ncap2_att.cc
 
@@ -16,7 +18,7 @@
 
 	* ncclimo omit gaa_sng from regrid commands, since gaa_sng is in files to regrid
 
-	* ncclimo daily mode fix parallelization, temporarily deprecate regridding
+	* ncclimo daily mode fix parallelization
 
 	* ncclimo implement daily climatology. commands look good. date hyperslab fails on MacOS.
 

@@ -780,10 +780,10 @@ if [ ${dec_md} = 'scd' ]; then
 fi # !scd
 
 # Read files from stdin pipe, positional arguments, or directory glob
-printf "dbg: inp_aut  = ${inp_aut}\n"
-printf "dbg: inp_glb  = ${inp_glb}\n"
-printf "dbg: inp_psn  = ${inp_psn}\n"
-printf "dbg: inp_std  = ${inp_std}\n"
+#printf "dbg: inp_aut  = ${inp_aut}\n"
+#printf "dbg: inp_glb  = ${inp_glb}\n"
+#printf "dbg: inp_psn  = ${inp_psn}\n"
+#printf "dbg: inp_std  = ${inp_std}\n"
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
     inp_glb='Yes'
 fi # !clm_flg, !dly
@@ -797,11 +797,11 @@ if [ ${sbs_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [
 fi # !sbs_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
     inp_aut='Yes'
-    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on rhea
+    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
 fi # !clm_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     inp_aut='Yes'
-    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on rhea
+    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
 fi # !clm_flg
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
