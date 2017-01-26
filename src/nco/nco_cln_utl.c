@@ -639,12 +639,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   /* Called for target units in fl_bs_sng of form "value unit since date-stamp" for cln_360 or cln_365
      Either "var" is NULL and there is a single value to process *og_val or var is initialized and og_val is NULL */
 
-  /* 20141230 figure-out better length */
-  //  char tmp_sng[100]={0};
-#define NCO_MAX_LEN_TMP_SNG 100
   char *tmp_sng;
-  //  char *tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
-  //  tmp_sng[NCO_MAX_LEN_TMP_SNG-1]='\0';
 
   double crr_val=0.0;
   double scl_val=1.0;
@@ -662,18 +657,18 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   } /* !lmt_cln */
 
   /* Obtain units type from fl_bs_sng */
-  if(sscanf(fl_bs_sng,"%ms",tmp_sng) != 1) return NCO_ERR;
+#define NCO_MAX_LEN_TMP_SNG 100
+  tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
+  if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
   bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
-  
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=\"%s\", bs_sng=\"%s\", tmp_sng=\"%s\"\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng,tmp_sng);
-
   if(tmp_sng) tmp_sng=(char *)nco_free(tmp_sng);
 
   /* Is unit string a bare date string? */ 
+  tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
   if(!strncmp("s@",fl_unt_sng,2)) unt_tm_typ=bs_tm_typ;
-  else if(sscanf(fl_unt_sng,"%ms",tmp_sng) == 1) unt_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
+  else if(sscanf(fl_unt_sng,"%s",tmp_sng) == 1) unt_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
   else return NCO_ERR;
-
   if(tmp_sng) tmp_sng=(char *)nco_free(tmp_sng);
   
   /* Assume non-standard calendar */ 
