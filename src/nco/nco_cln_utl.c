@@ -163,7 +163,7 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
 
 nco_cln_typ /* [enm] Calendar type */
 nco_cln_get_cln_typ /* [fnc] Determine calendar type or cln_nil if not found */
-(const char *ud_sng) /* I [ptr] units string  */
+(const char *ud_sng) /* I [ptr] Units string */
 {
   int idx;
   int len; 
@@ -627,9 +627,6 @@ double *og_val)         /* O [dbl] output value */
  
   return rcd;        
 } /* !nco_cln_clc_dbl_org() */
-
-
-
 
 int /* [rcd] Successful conversion returns NCO_NOERR */
 nco_cln_clc_tm /* [fnc] Difference between two coordinate units */

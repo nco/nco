@@ -252,11 +252,11 @@ nco514. MPI builds call superfluous linker steps:
 nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
         This would bring us one step closer to grid services, too
 nco527. Purify ncatted memory: 
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,,c,f,74 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three,with,lots,of,commas" -a short_att,att_var,c,s,37,38,39 -a float_att,att_var,d,,, -a long_att,att_var,o,l,37 -a new_att,att_var,o,d,73,74,75 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,,a,f,74,75,76 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,,c,f,74 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three,with,lots,of,commas" -a short_att,att_var,c,s,37,38,39 -a float_att,att_var,d,,, -a long_att,att_var,o,l,37 -a new_att,att_var,o,d,73,74,75 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,,a,f,74,75,76 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 # Commas at end of following aed_sct appear never to be free()'d, are responsible for three unfree'd bytes
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
 nco542. Put batch scripts, executables in ${DATA}/nco_bm/CASEID? Where to put created files
 nco546. Use makeatletter command in CCSM example in nco.texi?
@@ -358,8 +358,8 @@ nco756. thr: Make nco_ddra() thread-safe
 nco757. ncbo bug: works with --mmr_drt, fails with --mmr_cln
 	ncwa -O -a time -p ~/nco/data in.nc ~/foo_avg.nc
 	ncbo --mmr_cln -O -D 1 ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo --mmr_cln -O ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc > ~/foo 2>&1
-	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo --mmr_cln -O -v one_dmn_rec_var ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc > ~/foo 2>&1
+	valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo --mmr_cln -O ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc > ~/foo 2>&1
+	valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo --mmr_cln -O -v one_dmn_rec_var ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc > ~/foo 2>&1
 nco757. Make sure above ncbo bug is not in ncflint
 nco759. Document --mmr_cln flag
 nco761. mpi: Merge timer srt/end calls to MPI codes
@@ -763,33 +763,33 @@ Begin valgrind section
 ************************************************************************
 Valgrind: Archive of valgrind tests which are memory-error and leak-free
 vg1. ncap
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
      ncap2
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 vg2. ncbo
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo -t 2 -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo -t 2 -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
 vg3. nces
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck nces -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck nces -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
 vg4. ncecat
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncecat -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncecat -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
 vg5. ncflint
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncflint -t 2 -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncflint -t 2 -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
 vg6. ncks
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncks -O -C -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncks -O -C -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 vg7. ncpdq (re-order)
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncpdq -t 2 -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncpdq -t 2 -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 vg8. ncpdq (pack)
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncpdq -t 2 -O -D 3 -P all_new -v three_dmn_var ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncpdq -t 2 -O -D 3 -P all_new -v three_dmn_var ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 vg9. ncra
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncra -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncra -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
 vg10. ncrcat
-    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncrcat -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
+    valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncrcat -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
 vg11. ncrename
-    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncrename -O -D 3 -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+    valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncrename -O -D 3 -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 vg12. ncwa
-    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncwa -D 3 -t 2 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+    valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncwa -D 3 -t 2 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
     callgrind ncwa -D 3 -t 2 -O -C -w gw -m gw -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-    valgrind --suppressions=${HOME}/nco/doc/valgrind.txt --tool=callgrind ncwa -D 3 -t 2 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+    valgrind --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=callgrind ncwa -D 3 -t 2 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
     kcachegrind ncwa &
 ************************************************************************
 End valgrind section
@@ -810,7 +810,7 @@ Status 20050920:
    sand: Ubuntu, dual x86_64, LAM-MPI, gcc-4.0
 
 0. MPI with valgrind example
-   mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+   mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --track-origins=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 1. mpncbo
    mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 2. mpnces
