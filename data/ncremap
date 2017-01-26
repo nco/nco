@@ -637,7 +637,7 @@ if [ -n "${map_fl}" ]; then
 	# Confirm before overwriting maps
         if [ -f "${map_fl}" ]; then
 	    # 20160803: fxm invoke iff in interactive shell (block hangs on read() in non-interactive shells)
-#	    if [[ -t 0 || -p /dev/stdin ]]; then
+#	    if [ -t 0 ] || [ ! -p /dev/stdin ]; then
 #           if [ -n "${TERM}" ]; then
 #           if [ -n "${PS1}" ]; then
             if [ 1 -eq 0 ]; then
@@ -892,7 +892,7 @@ if [ ${fl_nbr} -eq 0 ]; then
     printf "Map-only run: no input data detected therefore will exit after generating map\n"
 fi # !fl_nbr
 if [ -n "${pdq_opt}" ]; then 
-    printf "Input data obey \"${pdq_typ}\"-ordering and will be permuted with \"ncpdq ${pdq_opt}\"\n"
+    printf "Input data shaped in \"${pdq_typ}\"-order, will permute with \"ncpdq ${pdq_opt}\"\n"
 fi # !pdq_opt
 if [ "${pdq_typ}" = 'mpas' ]; then
     printf "Input assumed to be MPAS-O/I data: will apply renormalized regridding (--rnr=0.0)\n"

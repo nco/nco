@@ -526,7 +526,7 @@ nco_prn_lmt                    /* [fnc] Print limit information */
 
   (void)fprintf(stderr,"Dimension hyperslabber nco_lmt_evl() diagnostics:\n");
   (void)fprintf(stderr,"Dimension name = %s\n",lmt.nm);
-  (void)fprintf(stderr,"Limit type is %s\n",(min_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
+  (void)fprintf(stderr,"Limit type is %s\n",((min_lmt_typ == lmt_crd_val) || (min_lmt_typ == lmt_udu_sng)) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
   (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
   (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
   (void)fprintf(stderr,"Current file %s specified hyperslab, data %s be read\n",(flg_no_data_ok) ? "is superfluous to" : "is required by",(flg_no_data_ok) ? "will not" : "will");
@@ -727,8 +727,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   if(min_lmt_typ != max_lmt_typ){
     (void)fprintf(stdout,"%s: ERROR -d %s,%s,%s\n",nco_prg_nm_get(),lmt.nm,lmt.min_sng,lmt.max_sng);
     (void)fprintf(stdout,"Limits on dimension \"%s\" must be of same numeric type:\n",lmt.nm);
-    (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.min_sng,(min_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
-    (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.max_sng,(max_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
+    (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.min_sng,((min_lmt_typ == lmt_crd_val) || (min_lmt_typ == lmt_udu_sng)) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
+    (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.max_sng,((max_lmt_typ == lmt_crd_val) || (max_lmt_typ == lmt_udu_sng)) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
     (void)fprintf(stdout,"(Limit arguments containing a decimal point (or in exponential format) are interpreted as coordinate values; arguments without a decimal point are interpreted as zero-based or one-based (depending on -F switch) dimensional indices.)\n");
     nco_exit(EXIT_FAILURE);
   } /* end if */
@@ -1254,7 +1254,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* Exit when valid bracketed range contains no coordinates and that is not legal,
      i.e., this is not a superfluous file in an MFO */
   if(lmt.cnt == 0){
-    if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",nco_prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
+    if(lmt.lmt_typ == lmt_crd_val || lmt.lmt_typ == lmt_udu_sng) (void)fprintf(stdout,"%s: ERROR Domain %15.9e <= %s <= %15.9e brackets no coordinate values.\n",nco_prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
     if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",nco_prg_nm_get(),lmt.nm); 
     nco_exit(EXIT_FAILURE);
   } /* end if */
@@ -1495,8 +1495,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   if(min_lmt_typ != max_lmt_typ){
     (void)fprintf(stdout,"%s: ERROR -d %s,%s,%s\n",nco_prg_nm_get(),lmt.nm,lmt.min_sng,lmt.max_sng);
     (void)fprintf(stdout,"Limits on dimension \"%s\" must be of same numeric type:\n",lmt.nm);
-    (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.min_sng,(min_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
-    (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.max_sng,(max_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
+    (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.min_sng,((min_lmt_typ == lmt_crd_val) || (min_lmt_typ == lmt_udu_sng)) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
+    (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.max_sng,((max_lmt_typ == lmt_crd_val) || (max_lmt_typ == lmt_udu_sng)) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
     (void)fprintf(stdout,"(Limit arguments containing a decimal point (or in exponential format) are interpreted as coordinate values; arguments without a decimal point are interpreted as zero-based or one-based (depending on -F switch) dimensional indices.)\n");
     nco_exit(EXIT_FAILURE);
   } /* end if */
