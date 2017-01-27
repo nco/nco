@@ -604,27 +604,39 @@ fi # !psn_nbr
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 if [ -n "${PBS_ENVIRONMENT}" ]; then
     if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
+	# PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
 	bch_pbs='Yes'
     fi # !PBS_ENVIRONMENT
 fi # !PBS
+if [ -n "${SLURM_JOBID}" ] && [ -z "${SLURM_PTY_PORT}" ]; then
+    # SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
+    bch_slr='Yes'
+fi # !SLURM
 if [ ${bch_pbs} = 'Yes' ] || [ ${bch_slr} = 'Yes' ]; then
     # Batch environment
     if [ ${bch_pbs} = 'Yes' ]; then
 	if [ ! -p /dev/stdin ]; then
-	    # Redirection in PBS batch jobs causes -p to return false
+	    # PBS batch jobs cause -p to return true except for stdin redirection 
+	    # When -p returns true we do not know whether stdin pipe contains any input
+	    # User must explicitly indicate use of stdin pipes with --stdin option
+	    # Redirection in PBS batch jobs unambiguously causes -p to return false
 	    inp_std='Yes'
 	fi # !stdin
     fi # !bch_slr
     if [ ${bch_slr} = 'Yes' ]; then
 	if [ -p /dev/stdin ]; then
-	    # SLURM pipe to stdin behaves as expected in interactive jobs
+	    # SLURM batch jobs cause -p to return true for stdin pipes
+	    # When -p returns false we do not know whether output was redirectd
+	    # User must explicitly indicate use of redirection with --stdin option
+	    # Stdin pipes in SLURM batch jobs unambiguously cause -p to return true
 	    inp_std='Yes'
 	fi # !stdin
     fi # !bch_slr
 else # !bch
     # Interactive environment
     if [ -p /dev/stdin ] || [ ! -t 0 ]; then
-	# Either pipe to stdin or redirection to stdin allowed
+	# Interactive environments unambiguously cause -p to return true for stdin pipes
+	# Interactive environments unambiguously cause -t 0 to return false for stdin redirection
 	inp_std='Yes'
     fi # !stdin
 fi # !bch
