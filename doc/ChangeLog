@@ -1,3 +1,11 @@
+2017-01-27  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo detect input redirection in interactive mode, and add	--stdin for batch mode
+
+2017-01-26  Charlie Zender  <zender@uci.edu>
+
+	* Learned that MacOS aborts due to custom calendar (e.g., 365_day) handling
+
 2017-01-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.4-alpha06 release procedure:

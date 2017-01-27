@@ -198,6 +198,10 @@ esac # !HOSTNAME
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split pipe:
 # cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
+# Split redirection:
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc > ~/foo;ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm < ~/foo
+# Split stdin switch:
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --stdin -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
 # Split positional arguments:
 # ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Split directory:
@@ -222,6 +226,8 @@ esac # !HOSTNAME
 # https://www.nersc.gov/users/computational-systems/cori/running-jobs/for-edison-users/torque-moab-vs-slurm-comparisons
 # https://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
 # https://www.nersc.gov/users/computational-systems/edison/running-jobs/queues-and-policies/
+# https://slurm.schedmd.com/sbatch.html # sbatch man page
+# https://slurm.schedmd.com/salloc.html # salloc man page
 # OLCF PBS: 
 # https://www.olcf.ornl.gov/support/system-user-guides/rhea-user-guide/#903
 # Requesting interactive nodes, Submitting non-interactive batch jobs, Monitoring queues, Deleting jobs:
@@ -349,6 +355,9 @@ fi # !TERM
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 ann_sfx='01-01-00000' # [sng] Annual file suffix (MPAS, e.g., uses '01-01-00000')
+bch_pbs='No' # [sng] PBS non-interactive batch job
+bch_slr='No' # [sng] SLURM non-interactive batch job
+bch_nvr='No' # [sng] Non-interactive batch job
 bnr_flg='No' # [sng] Binary method
 caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
@@ -432,6 +441,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thread_number, thread, threads${fnt_nrm}]"
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
+    echo "${fnt_rvr}  ${fnt_nrm} ${fnt_bld}stdin${fnt_nrm}    Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, inp_std, redirect${fnt_nrm}]"
     echo "${fnt_rvr}  ${fnt_nrm} ${fnt_bld}tpd_dly${fnt_nrm}  Timesteps-per-day (empty means none) (default ${fnt_bld}${tpd}${fnt_nrm}) [${fnt_tlc}tpd_dly, tpd, timesteps_per_day${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
     echo "${fnt_rvr}-X${fnt_nrm} ${fnt_bld}drc_xtn${fnt_nrm}  Extended climo directory (default ${fnt_bld}${drc_xtn}${fnt_nrm}) [${fnt_tlc}drc_xtn, xtn_drc, extended_dir, extended_climo, extended${fnt_nrm}]"
@@ -559,6 +569,8 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
+	       stdin | inp_std | redirect ) inp_std='Yes' ;; # # Input file list from stdin
+	       stdin=?* | inp_std=?* | redirect=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Input file list from stdin
 	       tpd_dly=?* | tpd=?* | timesteps_per_day=?* ) tpd_dly="${LONG_OPTARG}" ;; # # Timesteps-per-day
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
 	       drc_xtn=?* | xtn_drc=?* | extended_dir=?* | extended_climo=?* | extended=?* ) drc_xtn="${LONG_OPTARG}" ;; # -X # Extended climo directory
@@ -589,10 +601,37 @@ fi # !psn_nbr
 # Non-interactive batch mode (i.e., sbatch) behaves as desired for -p /dev/stdin on SLURM
 # Non-interactive batch mode (e.g., qsub) always returns true for -p /dev/stdin on PBS, leads to FALSE POSITIVES!
 # This is because PBS uses stdin to set the job name
-# Switch test from "if [ ! -t 0 ]" to "if [ -p /dev/stdin ]"
-if [ -p /dev/stdin ]; then
-    inp_std='Yes'
-fi # !stdin
+# Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
+if [ -n "${PBS_ENVIRONMENT}" ]; then
+    if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
+	bch_pbs='Yes'
+    fi # !PBS_ENVIRONMENT
+fi # !PBS
+if [ ${bch_pbs} = 'Yes' ] || [ ${bch_slr} = 'Yes' ]; then
+    # Batch environment
+    if [ ${bch_pbs} = 'Yes' ]; then
+	if [ ! -p /dev/stdin ]; then
+	    # Redirection in PBS batch jobs causes -p to return false
+	    inp_std='Yes'
+	fi # !stdin
+    fi # !bch_slr
+    if [ ${bch_slr} = 'Yes' ]; then
+	if [ -p /dev/stdin ]; then
+	    # SLURM pipe to stdin behaves as expected in interactive jobs
+	    inp_std='Yes'
+	fi # !stdin
+    fi # !bch_slr
+else # !bch
+    # Interactive environment
+    if [ -p /dev/stdin ] || [ ! -t 0 ]; then
+	# Either pipe to stdin or redirection to stdin allowed
+	inp_std='Yes'
+    fi # !stdin
+fi # !bch
+if [ ${inp_std} = 'Yes' ] && [ ${inp_psn} = 'Yes' ]; then
+    echo "${spt_nm}: ERROR expecting input both from stdin and positional command-line arguments\n"
+    exit 1
+fi # !inp_std
 
 # Determine mode first (this helps determine other defaults)
 if [ -n "${yr_srt_prv}" ]; then
@@ -792,7 +831,11 @@ if [ ${sbs_flg} = 'Yes' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [
 fi # !sbs_flg
 if [ ${sbs_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
     echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
-    echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+    if [ ${bch_pbs} = 'Yes' ]; then
+	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
+    else # !bch_pbs
+	echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+    fi # !bch_pbs
     exit 1
 fi # !sbs_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
