@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha06
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 25 January 2017
+@set update-date 27 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16764,9 +16764,9 @@ ncclimo [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}] 
-[-S @var{yr_prv}] [-s @var{yr_srt}] [-t @var{thr_nbr}] [-v @var{var_lst}] [-x @var{cf_flg}] 
-[-X @var{drc_xtn}] [-x @var{drc_prv}] [-Y @var{rgr_xtn}] [-y @var{rgr_prv}]
-[--ypf @var{ypf_max}]
+[-S @var{yr_prv}] [-s @var{yr_srt}] [--stdin] [--tpd=@var{tpd_dly}] [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] 
+[-v @var{var_lst}] [-x @var{cf_flg}] [-X @var{drc_xtn}] [-x @var{drc_prv}] [-Y @var{rgr_xtn}] [-y @var{rgr_prv}]
+[--ypf=@var{ypf_max}]
 @end example
 
 @noindent
@@ -16797,11 +16797,11 @@ input filenames from the argument to the date and model-type options.
 @cindex standard input
 @cindex @code{stdin}
 @command{ncclimo} automatically switches to timeseries reshaping mode
-if it receives a list of files through a pipe to @code{stdin}, or,
-alternatively, placed as positional arguments (after the last
-command-line option), or if neither of these is done and no @var{caseid}
-is specified, in which case it assumes all @code{*.nc} files in
-@var{drc_in} constitute the input file list.
+if it receives a list of files from @code{stdin}, or, alternatively,
+placed as positional arguments (after the last command-line option), or
+if neither of these is done and no @var{caseid} is specified, in which
+case it assumes all @code{*.nc} files in @var{drc_in} constitute the
+input file list. 
 
 Options come in both short (single-letter) and long forms.
 The handful of long-option synonyms for each option allows the user 
@@ -16939,8 +16939,8 @@ optional in timeseries reshaping mode.
 In timeseries reshaping mode, @command{ncclimo} uses all netCDF files
 (meaning files with suffixes @code{.nc}, @code{.nc3}, @code{.nc4},
 @code{.cdf}, @code{.hdf}, @code{.he5}, or @code{.h5}) in @var{drc_in} to 
-create the list of input files when no list is provided through a pipe
-to @code{stdin} or as positional arguments to the command-line.
+create the list of input files when no list is provided through
+@code{stdin} or as positional arguments to the command-line. 
 @cindex @code{-j @var{job_nbr}}
 @cindex @var{job_nbr}
 @cindex @code{--job_nbr}
@@ -16987,7 +16987,7 @@ throughput much more in @command{ncremap} than in @command{ncclimo}.
 @cindex @code{--link_flag}
 @cindex @code{--no_amwg_links}
 @item -l (@code{--lnk_flg}, @code{--link_flag}, @code{--no_amwg_links})
-This switch (which takes no option) turns-off the default linking of
+This switch (which takes no argument) turns-off the default linking of
 @acronym{ACME}-climo to @acronym{AMWG}-climo filenames.   
 @acronym{AMWG} omits the @acronym{YYYYMM} components of climo filenames,
 resulting in shorter names.
@@ -17089,6 +17089,27 @@ be December of the year before the start year (to allow for contiguous
 @acronym{DJF} climos).   
 If @samp{-a sdd} is specified, the first month used is January of
 the specified start year. 
+@cindex @code{--stdin}
+@cindex @code{--inp_std}
+@cindex @code{--redirect}
+@cindex @code{--standard_input}
+@item --stdin (@code{--stdin}, @code{--inp_std}, @code{--redirect},  @code{--standard_input})
+This switch (which takes no argument) explicitly indicates that 
+input file lists are provided via @code{stdin}, i.e., standard input.
+In interactive environments, @command{ncclimo} can automatically 
+(i.e., without any switch) detect whether input is provided via
+@code{stdin}. 
+This switch is never required for jobs run in an interactive shell. 
+However, non-interactive batch jobs (such as those submitted to the 
+@acronym{SLURM} and @acronym{PBS} schedulers) make it impossible to 
+unambiguously determine whether input has been provided via
+@code{stdin}. 
+Specifically, the @samp{--stdin} switch @emph{must} be used in
+non-interactive batch jobs on @acronym{PBS} when the input files
+are piped to @code{stdin}, and on @acronym{SLURM} when the input files 
+are redirected from a file to @code{stdin}.
+Using this switch in any other context (e.g., interactive shells) is
+optional. 
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
 @cindex @code{--thr_nbr}
@@ -17102,6 +17123,23 @@ However, regridding with the maximum number of threads can interfere
 with climatology generation in parallel climatology mode (i.e., when
 @math{@var{par_typ}} = @code{mpi} or @code{bck}). 
 Hence @command{ncclimo} defaults to @var{thr_nbr}=2.
+@cindex @code{--tpd_out @var{tpd_out}}
+@cindex @var{tpd_out}
+@cindex @code{--tpd_out}
+@cindex @code{--tpd}
+@item --tpd_out @var{tpd_out} (@code{--tpd_out}, @code{--tpd}, @code{--timesteps_per_day})
+The number of timesteps-per-day in output created by @command{ncclimo}'s
+climatology generator in daily average mode.
+The climatology output from input files at daily or sub-daily resolution
+is, by default, averaged to daily resolution, i.e., @var{tpd_out}=1. 
+If the number of timesteps per day in each input file is @var{tpd_in},
+then the user may select any value of @var{tpd_out} that is smaller 
+than and integrally divides @var{tpd_in}.
+For example, an input timeseries with @var{tpd_in}=8 (i.e., 3-hourly
+resolution), can be used to produce climatological output at 3, 6,
+or 12-hourly resolution by setting @var{tpd_out} to 8, 4, or 2,
+respectively. 
+This option only takes effect in daily-average climatology mode.
 @cindex @code{-v @var{var_lst}}
 @cindex @var{var_lst}
 @cindex @code{--var_lst}
@@ -17143,18 +17181,20 @@ resphaping mode, whereas all subsequent sections apply to climatology
 generation mode. 
 As mentioned above, 
 @command{ncclimo} automatically switches to timeseries reshaping mode 
-if it receives a list of files through a pipe to @code{stdin}, or,
-alternatively, placed as positional arguments (after the last
-command-line option), or if neither of these is done and no @var{caseid}
-is specified, in which case it assumes all @code{*.nc} files in
-@var{drc_in} constitute the input file list.
+if it receives a list of files through @code{stdin}, or, alternatively,
+placed as positional arguments (after the last command-line option), or
+if neither of these is done and no @var{caseid} is specified, in which
+case it assumes all @code{*.nc} files in @var{drc_in} constitute the
+input file list. 
 These examples invoke reshaping mode in the three possible ways:
 @example
 # Pipe list to stdin
 cd $drc_in;ls *mdl*000[1-9]*.nc | ncclimo -v T,Q,RH -s 1 -e 9 -o $drc_out
+# Redirect list from file to stdin
+cd $drc_in;ls *mdl*000[1-9]*.nc > foo;ncclimo -v T,Q,RH -s 1 -e 9 -o $drc_out < foo
 # List as positional arguments
 ncclimo -v T,Q,RH -s 1 -e 9 -o $drc_out $drc_in/*mdl*000[1-9]*.nc
-# Read directory
+# Glob directory
 ncclimo -v T,Q,RH -s 1 -e 9 -i $drc_in -o $drc_out
 @end example
 Assuming each input file is a monthly average comprising the variables

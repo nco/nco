@@ -1,5 +1,11 @@
 2017-01-27  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.4-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha07 final changes';git push
+	git tag -a 4.6.4-alpha07 -m 'Version 4.6.4-alpha07 new features: ncclimo stdin option, redirection, blues batch';git push --tags
+
+	* ncclimo improve shell pattern match for $HOSTNAME for blues and cooley
+
 	* ncclimo detect input redirection in interactive mode, and add	--stdin for batch mode
 
 2017-01-26  Charlie Zender  <zender@uci.edu>
