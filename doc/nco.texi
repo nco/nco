@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha06
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 27 January 2017
+@set update-date 28 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17091,9 +17091,10 @@ If @samp{-a sdd} is specified, the first month used is January of
 the specified start year. 
 @cindex @code{--stdin}
 @cindex @code{--inp_std}
+@cindex @code{--std_flg}
 @cindex @code{--redirect}
 @cindex @code{--standard_input}
-@item --stdin (@code{--stdin}, @code{--inp_std}, @code{--redirect},  @code{--standard_input})
+@item --stdin (@code{--stdin}, @code{--inp_std}, @code{--std_flg}, @code{--redirect}, @code{--standard_input})
 This switch (which takes no argument) explicitly indicates that 
 input file lists are provided via @code{stdin}, i.e., standard input.
 In interactive environments, @command{ncclimo} can automatically 
