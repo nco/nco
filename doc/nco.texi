@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.4-alpha06
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 28 January 2017
+@set update-date 30 January 2017
 @set update-month January 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9893,7 +9893,7 @@ final step.
 This ensures the standard deviation is correctly normalized by one fewer
 than the number of time samples.
 The procedure to compute the variance is identical except for the use of 
-@samp{-y var} instead of @samp{-y rmssdn} in the final step.
+@samp{-y avgsqr} instead of @samp{-y rmssdn} in the final step.
 
 @command{ncap2} can also compute statistics like standard deviations.
 Brute-force implementation of formulae is one option, e.g.,
