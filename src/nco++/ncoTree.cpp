@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoTree.cpp"$ */
+/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoTree.cpp"$ */
 #include "ncoTree.hpp"
 #include <antlr/Token.hpp>
 #include <antlr/AST.hpp>
@@ -5633,7 +5633,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			// copy lmt_sct to dmn_sct;
 			for(idx=0 ;idx <nbr_dmn ; idx++){
 			dmn_sct *dmn_nw;
-			dmn_nw=(dmn_sct*)nco_malloc(sizeof(dmn_sct));
+			dmn_nw=(dmn_sct*)nco_calloc(1,sizeof(dmn_sct));
 			dmn_nw->nm=strdup(lmt_vtr[idx]->nm);
 			
 			// Fudge -if the variable is from input then nco_lmt_evl
