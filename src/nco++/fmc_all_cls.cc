@@ -8,7 +8,6 @@
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "fmc_all_cls.hh"
-
 //Conversion Functions /***********************************/
  
   cnv_cls::cnv_cls(bool flg_dbg){
@@ -4824,7 +4823,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 
     #ifdef ENABLE_UDUNITS
     # ifdef HAVE_UDUNITS2_H
-       rcd=nco_cln_clc_dbl_var_dff(units_in_sng,units_out_sng,cln_typ,(double*)NULL, var); 
+       rcd=nco_cln_clc_dbl_var_dff(units_in_sng,units_out_sng,cln_typ,(double*)NULL, var);
     #endif
     #endif
    
@@ -4844,7 +4843,12 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
     nco_var_cnf_typ(lcl_typ,var);
  
 
-  nco_var_free(var_ud_in); 
+  if(var_cln)
+    var_cln=nco_var_free(var_cln);
+
+  if(var_ud_in)
+    var_ud_in=nco_var_free(var_ud_in); 
+  
 
   return var;
 
