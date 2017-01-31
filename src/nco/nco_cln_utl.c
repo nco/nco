@@ -357,14 +357,10 @@ const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
 nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
 double *og_val)         /* O [dbl] output value */
 {
-
   *og_val=0.0; /* CEWI */
-  
   (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to interpret the string \"%s\" limit argument. HINT Re-build or re-install NCO enabled with UDUnits.\n", nco_prg_nm_get(),val_unt_sng);
-
-
   return NCO_NOERR; 
-}
+} /* !nco_cln_clc_dbl_org() */
 
 int /* [rcd] Return code */
 nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
@@ -531,8 +527,9 @@ const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
 const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
 nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
 double *og_val,           /* I/O [dbl] var values modified -can be NULL */
-var_sct *var){ /* I/O [var_sct] var values modified - can be NULL  */
-
+var_sct *var) /* I/O [var_sct] var values modified - can be NULL  */
+{ /* Purpose: */
+  
   const char fnc_nm[]="nco_cln_clc_dbl_var_dff()"; /* [sng] Function name */
 
   int is_date;
@@ -566,7 +563,7 @@ const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
 nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
 double *og_val)         /* O [dbl] output value */
 {
-  const char fnc_nm[]="nco_cln_dbl_org"; /* [sng] Function name */
+  const char fnc_nm[]="nco_cln_clc_dbl_org"; /* [sng] Function name */
 
   int is_date=0;  /* set to true if date/time unit */
   int rcd=0;
@@ -605,7 +602,12 @@ double *og_val)         /* O [dbl] output value */
   } /* !is_date */
 
   /* Use custom time functions if irregular calendar */
-  if(is_date && (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)) rcd=nco_cln_clc_tm(lcl_unt_sng,fl_bs_sng,lmt_cln,&val_dbl,(var_sct*)NULL); else rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);     
+  if(is_date && (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)){
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark3\n",fnc_nm);
+    /* 20170131: MacOS dies after returning with error code from this function, prints quark3 not quark4 */
+    rcd=nco_cln_clc_tm(lcl_unt_sng,fl_bs_sng,lmt_cln,&val_dbl,(var_sct *)NULL);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark4\n",fnc_nm);
+  }else rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);
 
   /* Copy over iff successful */ 
   if(rcd==NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s: report unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln, val_dbl);  
@@ -659,6 +661,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   
   /* Assume non-standard calendar */ 
   if(nco_cln_prs_tm(fl_unt_sng,&unt_cln_sct) == NCO_ERR) return NCO_ERR;
+  /* 20170131: MacOS dies after returning with error code to parent function, prints quark1 not quark2 */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark1\n",fnc_nm);
   if(nco_cln_prs_tm(fl_bs_sng,&bs_cln_sct) == NCO_ERR) return NCO_ERR;
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark2\n",fnc_nm);
@@ -697,12 +700,10 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
     if(var->type == NC_DOUBLE){
       double *dp;
       dp=op1.dp;   
-
       if(var->has_mss_val){  
 	double mss_dbl=var->mss_val.dp[0]; 
 	for(idx=0;idx<sz;idx++)
-	  if(dp[idx] != mss_dbl) 
-	    dp[idx]=dp[idx]*scl_val+crr_val; 
+	  if(dp[idx] != mss_dbl) dp[idx]=dp[idx]*scl_val+crr_val; 
       }else{
 	for(idx=0;idx<sz;idx++) dp[idx]=dp[idx]*scl_val+crr_val; 
       } /* !var->has_mss_val */
@@ -710,12 +711,11 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 
     if(var->type == NC_FLOAT){
       float *fp;
-       fp=op1.fp;   
-
+      fp=op1.fp;   
       if(var->has_mss_val){  
-	float mss_ft=var->mss_val.fp[0]; 
+	float mss_flt=var->mss_val.fp[0]; 
 	for(idx=0;idx<sz;idx++)
-	   if(fp[idx] != mss_ft) fp[idx]=fp[idx]*scl_val+crr_val;                      
+	   if(fp[idx] != mss_flt) fp[idx]=fp[idx]*scl_val+crr_val;                      
       }else{
 	for(idx=0;idx<sz;idx++) fp[idx]=fp[idx]*scl_val+crr_val;                      
       } /* !has_mss_val */
