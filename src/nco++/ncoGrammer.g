@@ -3779,7 +3779,7 @@ var=NULL_CEWI;
            // copy lmt_sct to dmn_sct;
            for(idx=0 ;idx <nbr_dmn ; idx++){
               dmn_sct *dmn_nw;
-              dmn_nw=(dmn_sct*)nco_malloc(sizeof(dmn_sct));
+              dmn_nw=(dmn_sct*)nco_calloc(1,sizeof(dmn_sct));
               dmn_nw->nm=strdup(lmt_vtr[idx]->nm);
 
               // Fudge -if the variable is from input then nco_lmt_evl
