@@ -645,7 +645,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   } /* !lmt_cln */
 
   /* Obtain units type from fl_bs_sng */
-#define NCO_MAX_LEN_TMP_SNG 100
+#define NCO_MAX_LEN_TMP_SNG 200
   tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
   if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
   bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
@@ -757,9 +757,10 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   ut_sct_in=ut_parse(ut_sys,unt_sng,UT_ASCII); 
   if(ut_sct_in == NULL){ /* Problem with 'units' attribute */
     ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
-    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: empty units attribute string\n");
-    if(ut_rcd == UT_SYNTAX)  (void)fprintf(stderr,"ERROR: units attribute \"%s\" has a syntax error\n",unt_sng);
-    if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is not listed in UDUnits2 SI system database\n",unt_sng);
+    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"%s: ERROR %s reports empty units attribute string\n",nco_prg_nm_get(),fnc_nm);
+    else if(ut_rcd == UT_SYNTAX)  (void)fprintf(stderr,"%s: ERROR %s reports units attribute \"%s\" has a syntax error\n",nco_prg_nm_get(),fnc_nm,unt_sng);
+    else if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"%s: ERROR %s reports units attribute \"%s\" is not listed in UDUnits2 SI system database\n",nco_prg_nm_get(),fnc_nm,unt_sng);
+    else (void)fprintf(stderr,"%s: ERROR %s reports ut_rcd = %d\n",nco_prg_nm_get(),fnc_nm,ut_rcd);
 
     return NCO_ERR; /* Failure */
   } /* endif coordinate on disk has no units attribute */
