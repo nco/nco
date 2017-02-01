@@ -2,11 +2,11 @@
 
 	* NCO 4.6.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.4-beta01 final changes';git push
-	git tag -a 4.6.4-beta01 -m 'Version 4.6.4-beta01 new features: ncclimo stdin option, redirection, blues batch';git push --tags
+	git tag -a 4.6.4-beta01 -m 'Version 4.6.4-beta01 new features: ncclimo stdin option, redirection, blues batch, calendar bugfix';git push --tags
 
 	* Calendar code is MUCH slower on MacOS than Linux, unclear why
 
-	* Henry made sscanf() use more fault-tolerant, fixes MacOS aborts
+	* Henry made sscanf() in custom calendar routines be more fault-tolerant, fixes MacOS aborts
 
 2017-01-27  Charlie Zender  <zender@uci.edu>
 
