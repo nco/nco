@@ -740,7 +740,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   char *bfr;
 
   char *dt_sng;
-  int snf_len;
+  int cnv_nbr;
   int ut_rcd; /* [enm] UDUnits2 status */
 
   ut_system *ut_sys;
@@ -774,26 +774,25 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 
   /* ut_format string normally ends in the string UTC we wish to terminate the string before this so that sscanf doesnt get confused */
   dt_sng=strstr(bfr, "UTC");
-  if( dt_sng) *dt_sng='\0';
+  if(dt_sng) *dt_sng='\0';
 
-  dt_sng=strstr(bfr,"since"); dt_sng+=(size_t)6;
-  snf_len=sscanf(dt_sng,"%d-%d-%d %d:%d:%f",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
+  dt_sng=strstr(bfr,"since");
+  dt_sng+=(size_t)6;
+  cnv_nbr=sscanf(dt_sng,"%d-%d-%d %d:%d:%f",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
   
-  /* set defaults */ 
-  if(snf_len<6) tm_in->sec=0.0d;
-  if(snf_len<5) tm_in->min=0;   
-  if(snf_len<4) tm_in->hour=0;   
+  /* Set defaults */ 
+  if(cnv_nbr < 6) tm_in->sec=0.0;
+  if(cnv_nbr < 5) tm_in->min=0;   
+  if(cnv_nbr < 4) tm_in->hour=0;   
 
-  if(nco_dbg_lvl_get() >= nco_dbg_scl  ) 
-      (void)fprintf(stderr,"%s: sscanf only converted %d values should have converted 6 values\n format string=%s\n ",fnc_nm, snf_len, bfr);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: WARNING %s reports sscanf() converted %d values and it should have converted 6 values, format string=\"%s\"\n",nco_prg_nm_get(),fnc_nm,cnv_nbr,bfr);
 
   bfr=(char*)nco_free(bfr);  
   ut_free(ut_sct_in);
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
 
-  /* return  if sscanf messed up */
-  if(snf_len <3 )
-    return NCO_ERR;
+  /* Return if sscanf() messed up */
+  if(cnv_nbr < 3) return NCO_ERR;
 
   return NCO_NOERR;
 } /* end UDUnits2 nco_cln_prs_tm() */
