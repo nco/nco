@@ -20,6 +20,9 @@ int DAYS_PER_MONTH_360[12]={30,30,30,30,30,30,30,30,30,30,30,30};
 int DAYS_PER_MONTH_365[12]={31,28,31,30,31,30,31,31,30,31,30,31};
 int DAYS_PER_MONTH_366[12]={31,29,31,30,31,30,31,31,30,31,30,31};
 
+/* Size of temporary buffer used in parsing calendar dates */
+#define NCO_MAX_LEN_TMP_SNG 200
+
 int /* O [nbr] Number of days to end of month */
 nco_nd2endm /* [fnc] Compute number of days to end of month */
 (const int mth, /* I [mth] Month */
@@ -535,7 +538,7 @@ var_sct *var) /* I/O [var_sct] var values modified - can be NULL  */
   int is_date;
   int rcd;
 
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,lmt_cln);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,lmt_cln);
 
   /* Do nothing if units identical */
   if(!strcasecmp(fl_unt_sng,fl_bs_sng)) return NCO_NOERR;
@@ -580,7 +583,6 @@ double *og_val)         /* O [dbl] output value */
 
   lcl_unt_sng[0]='\0';
   
-  
   if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stderr,"%s: INFO %s: reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln);
 
   /* Does fl_unt_sng look like a regular timestamp? */ 
@@ -603,10 +605,7 @@ double *og_val)         /* O [dbl] output value */
 
   /* Use custom time functions if irregular calendar */
   if(is_date && (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)){
-    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark3\n",fnc_nm);
-    /* 20170131: MacOS dies after returning with error code from this function, prints quark3 not quark4 */
     rcd=nco_cln_clc_tm(lcl_unt_sng,fl_bs_sng,lmt_cln,&val_dbl,(var_sct *)NULL);
-    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark4\n",fnc_nm);
   }else rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);
 
   /* Copy over iff successful */ 
@@ -645,11 +644,10 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   } /* !lmt_cln */
 
   /* Obtain units type from fl_bs_sng */
-#define NCO_MAX_LEN_TMP_SNG 200
   tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
   if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
   bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports unt_sng=\"%s\", bs_sng=\"%s\", tmp_sng=\"%s\"\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,tmp_sng);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports unt_sng=\"%s\", bs_sng=\"%s\", tmp_sng=\"%s\"\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,tmp_sng);
   if(tmp_sng) tmp_sng=(char *)nco_free(tmp_sng);
 
   /* Is unit string a bare date string? */ 
@@ -661,10 +659,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   
   /* Assume non-standard calendar */ 
   if(nco_cln_prs_tm(fl_unt_sng,&unt_cln_sct) == NCO_ERR) return NCO_ERR;
-  /* 20170131: MacOS dies after returning with error code to parent function, prints quark1 not quark2 */
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark1\n",fnc_nm);
   if(nco_cln_prs_tm(fl_bs_sng,&bs_cln_sct) == NCO_ERR) return NCO_ERR;
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: quark2\n",fnc_nm);
   
   unt_cln_sct.sc_typ=bs_tm_typ;
   bs_cln_sct.sc_typ=bs_tm_typ;
@@ -680,7 +675,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   /* Scale factor */
   if(unt_tm_typ == bs_tm_typ) scl_val=1.0; else scl_val=nco_cln_val_tm_typ(lmt_cln,unt_tm_typ)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
   
-  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
     (void)fprintf(stderr,"%s: %s reports offset=%g, scale factor=%g",nco_prg_nm_get(),fnc_nm,crr_val,scl_val);
     if(og_val) (void)fprintf(stderr,", *og_val=%g",*og_val);
     (void)fprintf(stderr,"\n");
@@ -732,11 +727,8 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 (const char *unt_sng, /* I [ptr] units attribute string */
  tm_cln_sct *tm_in) /* O [sct] Time structure to be populated */
 {
-#define MAX_LEN_FMT_SNG 200
-
   const char fnc_nm[]="nco_cln_prs_tm()"; /* [sng] Function name */
 
-  /* 20141230: fxm figure out a better length */
   char *bfr;
 
   char *dt_sng;
@@ -746,7 +738,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
 
-  bfr=(char*)nco_calloc(1,MAX_LEN_FMT_SNG * sizeof(char));
+  bfr=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
 
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
@@ -770,10 +762,10 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   } /* endif coordinate on disk has no units attribute */
 
   /* Print timestamp to buffer in standard, dependable format */
-  ut_format(ut_sct_in,bfr,MAX_LEN_FMT_SNG,UT_ASCII|UT_NAMES);
+  ut_format(ut_sct_in,bfr,NCO_MAX_LEN_TMP_SNG,UT_ASCII|UT_NAMES);
 
   /* ut_format string normally ends in the string UTC we wish to terminate the string before this so that sscanf doesnt get confused */
-  dt_sng=strstr(bfr, "UTC");
+  dt_sng=strstr(bfr,"UTC");
   if(dt_sng) *dt_sng='\0';
 
   dt_sng=strstr(bfr,"since");
@@ -785,9 +777,9 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   if(cnv_nbr < 5) tm_in->min=0;   
   if(cnv_nbr < 4) tm_in->hour=0;   
 
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: WARNING %s reports sscanf() converted %d values and it should have converted 6 values, format string=\"%s\"\n",nco_prg_nm_get(),fnc_nm,cnv_nbr,bfr);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports sscanf() converted %d values and it should have converted 6 values, format string=\"%s\"\n",nco_prg_nm_get(),fnc_nm,cnv_nbr,bfr);
 
-  bfr=(char*)nco_free(bfr);  
+  bfr=(char *)nco_free(bfr);  
   ut_free(ut_sct_in);
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
 

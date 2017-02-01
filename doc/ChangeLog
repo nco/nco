@@ -1,8 +1,14 @@
-2017-01-27  Charlie Zender  <zender@uci.edu>
+2017-02-01  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.6.4-alpha07 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.4-alpha07 final changes';git push
-	git tag -a 4.6.4-alpha07 -m 'Version 4.6.4-alpha07 new features: ncclimo stdin option, redirection, blues batch';git push --tags
+	* NCO 4.6.4-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.4-beta01 final changes';git push
+	git tag -a 4.6.4-beta01 -m 'Version 4.6.4-beta01 new features: ncclimo stdin option, redirection, blues batch';git push --tags
+
+	* Calendar code is MUCH slower on MacOS than Linux, unclear why
+
+	* Henry made sscanf() use more fault-tolerant, fixes MacOS aborts
+
+2017-01-27  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo improve shell pattern match for $HOSTNAME for blues and cooley
 
@@ -108,9 +114,8 @@
 
 2016-01-12  Henry Butowsky  <henryb@hush.com>
 
-	* Add exit(value) function to ncap2 scripting. 'value' is
-	propagated from the script to code using a custom Exception.
-	This value is then returned by main() in ncap2.
+	* Add exit(value) function to ncap2 scripting. 'value' propagates from script to code using custom Exception.
+	Value is then returned by ncap2 main().
 
 2017-01-11  Charlie Zender  <zender@uci.edu>
 

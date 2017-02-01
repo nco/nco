@@ -1581,7 +1581,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    DD=`printf "%02d" ${day}`
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_climo.nc"
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
-	    tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:01"
+	    tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:00"
 	    tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
 	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
 	    let clm_idx=${clm_idx}+1

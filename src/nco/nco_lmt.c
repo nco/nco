@@ -570,6 +570,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      maxima strings and find appropriate indices into dimensions 
      for formulation of dimension start and count vectors, or fail trying. */
 
+  const char fnc_nm[]="nco_lmt_evl()";
+
   char *fl_udu_sng=NULL_CEWI;   /* Store units attribute of coordinate dimension */
   char *msg_sng=NULL_CEWI; /* [sng] Error message */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -1250,13 +1252,16 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      Out-of-domain errors will soon exit with error, while WRP conditions will proceed */
   if(flg_no_data_err) lmt.cnt=0L;
 
-  /* Exit when valid bracketed range contains no coordinates and that is not legal,
-     i.e., this is not a superfluous file in an MFO */
+  /* Exit when valid bracketed range contains no coordinates and this is not a superfluous file in an MFO */
   if(lmt.cnt == 0){
-    if(lmt.lmt_typ == lmt_crd_val || lmt.lmt_typ == lmt_udu_sng) (void)fprintf(stdout,"%s: ERROR Domain %15.9e <= %s <= %15.9e brackets no coordinate values.\n",nco_prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
-    if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",nco_prg_nm_get(),lmt.nm); 
+    if(lmt.lmt_typ == lmt_crd_val || lmt.lmt_typ == lmt_udu_sng){
+       (void)fprintf(stdout,"%s: ERROR %s reports domain %15.9e <= %s <= %15.9e brackets no coordinate values\n",nco_prg_nm_get(),fnc_nm,lmt.min_val,lmt.nm,lmt.max_val);
+       if(lmt.min_sng) (void)fprintf(stdout,"%s: INFO user-specified coordinate minimum: \"%s\"\n",nco_prg_nm_get(),lmt.min_sng);
+       if(lmt.max_sng) (void)fprintf(stdout,"%s: INFO user-specified coordinate maximum: \"%s\"\n",nco_prg_nm_get(),lmt.max_sng);
+    } /* !lmt_typ */
+    if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Indices bracket empty domain for %s\n",nco_prg_nm_get(),lmt.nm); 
     nco_exit(EXIT_FAILURE);
-  } /* end if */
+  } /* !lmt.cnt */
 
   /* Coordinate-valued limits that bracket no values in current file jump here with goto
      Index-valued limits with no values in current file flow here naturally */
@@ -1641,7 +1646,6 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       }  /* endif MFO */
     } /* end UDUnits conversion */
 
-
     /* Warn when min_val > max_val (i.e., wrapped coordinate) */
     if(nco_dbg_lvl_get() > nco_dbg_std && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",nco_prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
 
@@ -2025,13 +2029,16 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
      Out-of-domain errors will soon exit with error, while WRP conditions will proceed */
   if(flg_no_data_err) lmt.cnt=0L;
 
-  /* Exit when valid bracketed range contains no coordinates and that is not legal,
-     i.e., this is not a superfluous file in an MFO */
+  /* Exit when valid bracketed range contains no coordinates and this is not a superfluous file in an MFO */
   if(lmt.cnt == 0){
-    if(lmt.lmt_typ == lmt_crd_val || lmt.lmt_typ == lmt_udu_sng) (void)fprintf(stdout,"%s: ERROR Domain %15.9e <= %s <= %15.9e brackets no coordinate values.\n",nco_prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
-    if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",nco_prg_nm_get(),lmt.nm); 
+    if(lmt.lmt_typ == lmt_crd_val || lmt.lmt_typ == lmt_udu_sng){
+       (void)fprintf(stdout,"%s: ERROR %s reports domain %15.9e <= %s <= %15.9e brackets no coordinate values\n",nco_prg_nm_get(),fnc_nm,lmt.min_val,lmt.nm,lmt.max_val);
+       if(lmt.min_sng) (void)fprintf(stdout,"%s: INFO user-specified coordinate minimum: \"%s\"\n",nco_prg_nm_get(),lmt.min_sng);
+       if(lmt.max_sng) (void)fprintf(stdout,"%s: INFO user-specified coordinate maximum: \"%s\"\n",nco_prg_nm_get(),lmt.max_sng);
+    } /* !lmt_typ */
+    if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Indices bracket empty domain for %s\n",nco_prg_nm_get(),lmt.nm); 
     nco_exit(EXIT_FAILURE);
-  } /* end if */
+  } /* !lmt.cnt */
 
   /* Coordinate-valued limits that bracket no values in current file jump here with goto
      Index-valued limits with no values in current file flow here naturally */
