@@ -149,7 +149,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2017 Jan&nbsp;??: 4.6.4 (<i>In progress</i>)
+<li>2017 Feb&nbsp;??: 4.6.4 (<i>In progress</i>)
+<li>2017 Jan&nbsp;27: <i>Geosci. Model Dev.</i> publishes compression-error trade-off <a href="http://www.geosci-model-dev.net/10/413/2017">paper</a></li>
 <li>2016 Dec&nbsp;23: 4.6.3 (Minor features)
 <li>2016 Nov&nbsp;16: 4.6.2 (JSON)
 <li>2016 Sep&nbsp;19: <i>Geosci. Model Dev.</i> publishes PPC <a href="http://www.geosci-model-dev.net/9/3199/2016">paper</a></li>
@@ -556,6 +557,10 @@ climate models (see <a href="#pub">publications</a>).</p>
 <dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
 <h2>Publications and Presentations</h2>
 <ul>
+<li><!-- SiZ17 --> <a name="SiZ17"></a> <!--http://www.ess.uci.edu/~zender#SiZ17 -->
+Silver, J.&nbsp;D. and C.&nbsp;S. Zender (2017), The compression-error trade-off for large gridded data sets, <i>Geosci. Model Dev.</i>, <b>10</b>, 413&ndash;423, doi:10.5194/gmd-10-413-2017.
+<a href="http://dust.ess.uci.edu/ppr/ppr_SiZ17.pdf">PDF</a></li>
+
 <li><!-- Zen16 --> <a name="Zen16"></a> <!--http://www.ess.uci.edu/~zender#Zen16 -->
 Zender, C.&nbsp; S. (2016), Bit Grooming: Statistically accurate precision-preserving quantization with compression, evaluated in the netCDF Operators (NCO, v4.4.8+), <i>Geosci. Model Dev.</i>, <b>9</b>, 3199&ndash;3211, doi:10.5194/gmd-9-3199-2016.
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen16.pdf">PDF</a></li>
