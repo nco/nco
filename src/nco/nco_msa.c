@@ -172,7 +172,7 @@ read_lbl:
 	  (void)nco_inq_format(vara->nc_id,&fl_in_fmt);
 
 	  if((fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC) && (dmn_srd_nbr == 1))
-	    USE_NC4_SRD_WORKAROUND=True;
+	    USE_NC4_SRD_WORKAROUND=False;
 
 	  if(!USE_NC4_SRD_WORKAROUND){
 	    if(nco_dbg_lvl_get() >= nco_dbg_var && srd_prd > 1L) (void)fprintf(stderr,"%s: INFO %s reports calling nco_get_vars() for strided hyperslab access. In case of slow response, please ask NCO developers to extend USE_NC4_SRD_WORKAROUND to handle your use-case.\n",nco_prg_nm_get(),fnc_nm);

@@ -1,3 +1,7 @@
+2017-02-06 Henry Butowsky  <henryb@hush.com>
+
+	* switched off USE_NC4_SRD_WORKAROUND in nco_msa_rcr_clc() / nco_msa.c as was incorrect
+
 2017-02-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.4-beta01 release procedure:

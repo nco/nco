@@ -452,6 +452,8 @@ if($USER eq 'zender'){
 
 
 
+
+
     
     if($dodap eq "FALSE"){
 ####################
@@ -2949,6 +2951,17 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+# ncks #121 
+    $dsc_sng="Show that NC4 SRD_WORAROUND FAILS";
+    $tst_cmd[0]="ncks -O $nco_D_flg  -v zg  -d lon,,,2   $in_pth_arg in_4c.nc  %tmp_fl_00%";
+    $tst_cmd[1]="ncap2 -O -v -C -s 'zgs=zg.sort();zg_ttl_dff=(zg(0,:,::)-zgs(0,:,:)).total();print(zg_ttl_dff);' %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="zg_ttl_dff = 0";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+
 
 
 
