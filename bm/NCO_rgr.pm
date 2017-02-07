@@ -2869,7 +2869,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 #ncks #113 wrapped limit with an additional limit (with --msa) pvn20160211 -- bug found that happens in nco 4.2.0 also
 # ncks -O -C --msa -g g19 -v time -d time,9,0 -d time,1,2 ~/nco/data/in_grp_3.nc ~/foo.nc
-    $dsc_sng="(Groups) Test wrapped limit with additonal limit and msa user order (expect failure TODO)";
+    $dsc_sng="(Groups) Test wrapped limit with additonal limit and msa user order (expect failure TODO nco1134)";
     $tst_cmd[0]="ncks -O $nco_D_flg -C --msa -g g19 -v time -d time,9,0 -d time,1,2 $in_pth_arg in_grp_3.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -H %tmp_fl_00 | grep '=3'";
     $tst_cmd[2]="time[3]=3"; 
@@ -2945,7 +2945,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 # ncks #120 
     $dsc_sng="Test UDUNITS with dates as limits - fails without UDUNITS";
-    $tst_cmd[0]="ncks -O $nco_D_flg  -d time,'1979-01-01 0:0:0','1981-01-01 0:0:0' -v time,time_bnds  $in_pth_arg split.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $nco_D_flg -d time,'1979-01-01 0:0:0','1981-01-01 0:0:0' -v time,time_bnds $in_pth_arg split.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl);' %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="time_ttl = 9106";
     $tst_cmd[3]="SS_OK";   
@@ -2953,17 +2953,15 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
 
 # ncks #121 
-    $dsc_sng="Show that NC4 SRD_WORAROUND FAILS";
-    $tst_cmd[0]="ncks -O $nco_D_flg  -v zg  -d lon,,,2   $in_pth_arg in_4c.nc  %tmp_fl_00%";
+# ncks -O -v zg -d lon,,,2 ~/nco/data/in_4c.nc ~/foo.nc
+# ncap2 -O -v -C -s 'zgs=zg.sort();zg_ttl_dff=(zg(0,:,::)-zgs(0,:,:)).total();print(zg_ttl_dff);' ~/foo.nc ~/foo1.nc
+    $dsc_sng="Test behavior when NC4_SRD_WORKAROUND would be used";
+    $tst_cmd[0]="ncks -O $nco_D_flg -v zg -d lon,,,2 $in_pth_arg in_4c.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -O -v -C -s 'zgs=zg.sort();zg_ttl_dff=(zg(0,:,::)-zgs(0,:,:)).total();print(zg_ttl_dff);' %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="zg_ttl_dff = 0";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-
-
-
-
 
 #####################
 #### ncpdq tests #### -OK !

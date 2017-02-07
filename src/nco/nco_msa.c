@@ -171,6 +171,9 @@ read_lbl:
 
 	  (void)nco_inq_format(vara->nc_id,&fl_in_fmt);
 
+	  /* 20170207: Turn-off USE_NC4_SRD_WORKAROUND in all situations due to TODO nco1135
+	     ncks -v zg -H -C -d time,0,1 -d lev,0,2,2 ~/nco/data/in.nc # works
+	     ncks -v zg -H -C -d time,0,1 -d lev,0,2,2 ~/nco/data/in_4c.nc # borken */
 	  if((fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC) && (dmn_srd_nbr == 1))
 	    USE_NC4_SRD_WORKAROUND=False;
 
@@ -178,6 +181,7 @@ read_lbl:
 	    if(nco_dbg_lvl_get() >= nco_dbg_var && srd_prd > 1L) (void)fprintf(stderr,"%s: INFO %s reports calling nco_get_vars() for strided hyperslab access. In case of slow response, please ask NCO developers to extend USE_NC4_SRD_WORKAROUND to handle your use-case.\n",nco_prg_nm_get(),fnc_nm);
 	    (void)nco_get_vars(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,vp,vara->type);
 	  }else{
+	    /* 20170207: This USE_NC4_SRD_WORKAROUND code is broken */
 	    int srd_nbr; /* [nbr] Number of strides requested in the single strided dimension (not number of strided dimensions) */
 	    int srd_idx; /* [idx] Counter for how many times to call nco_get_var() */
 	    int idx_srd; /* [idx] Index of strided dimension */

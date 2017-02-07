@@ -24,15 +24,17 @@ NEW FEATURES (full details always in ChangeLog):
 
 A. ncclimo will reshape timeseries, i.e., split input datasets into
    per-variable files that span the entire timeseries.
-   Input files are specified via a pipe to stdin, via positional
-   arguments (after all options) on the command-line, or as the
-   set of .nc files in drc_in
+   Input files are specified via stdin, via positional arguments
+   (after all options) on the command-line, or as the set of .nc files
+   in drc_in 
    ls $drc_in/*.nc | ncclimo -v T,Q --output=drc_out --map=rgr_map
+   ncclimo -v T,Q --output=drc_out --map=rgr_map < list
    ncclimo -v T,Q --output=drc_out --map=rgr_map $drc_in/*.nc
    ncclimo -v T,Q --input=$drc_in --output=drc_out --map=rgr_map
    http://nco.sf.net/nco.html#ncclimo
 
 A. ncks allows one to set chunk cache-size with --cnk_csh.
+   
 
 A. ncremap now includes staggered grid weight with FV grid output.
    The weights are named w_stag, following the CESM CAM convention. 
