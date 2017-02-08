@@ -34,7 +34,7 @@ A. ncclimo will reshape timeseries, i.e., split input datasets into
    ncclimo -v T,Q --input=$drc_in --output=drc_out --map=rgr_map
    http://nco.sf.net/nco.html#ncclimo
 
-A. ncks allows setting per-variable chunk cache-size with --cnk_csh. 
+B. ncks allows setting per-variable chunk cache-size with --cnk_csh. 
    The effects of varying chunk cache-size are not well understood,
    at least by we who work on NCO. Users asked for a knob to tune
    it, and now that exists. Experiment with this and if you find
@@ -44,11 +44,11 @@ A. ncks allows setting per-variable chunk cache-size with --cnk_csh.
    ncks -D 3 --cnk_csh 1000000 in.nc4 out.nc
    http://nco.sf.net/nco.html#cnk_csh
 
-A. ncremap now includes staggered grid weights with FV grid output. 
+C. ncremap now includes staggered grid weights with FV grid output. 
    The weights are named w_stag, following the CESM CAM convention. 
    http://nco.sf.net/nco.html#ncremap
 
-A. Variables listed in a formula_terms attribute are now extracted
+D. Variables listed in a formula_terms attribute are now extracted
    by default. Turn-off this behavior with --no_frm_trm.
    The CF formula_terms convention is used to associate variables
    with terms in defined formulas, such as vertical coordinates:
@@ -60,7 +60,7 @@ A. Variables listed in a formula_terms attribute are now extracted
    variables are a subset of the rank of the variable they define.
    http://nco.sf.net/nco.html#frm_trm
 
-A. Variables listed in a cell_measures attribute are now extracted
+E. Variables listed in a cell_measures attribute are now extracted
    by default. Turn-off this behavior with --no_cll_msr.
    This convention allows variables to indicate which other variables 
    contains area or volume information about a gridcell.
