@@ -1,8 +1,8 @@
 nco (4.6.4-1) unstable; urgency=low
 
-  * new upstream version
+  * new upstream version splitter, stdin, clm_md=dly, cll_msr, frm_trm, cln=365 and srd fixes
 
- -- Charlie Zender <zender@uci.edu>  Fri, 23 Jan 2017 12:25:18 -0700
+ -- Charlie Zender <zender@uci.edu>  Tue, 07 Feb 2017 12:25:18 -0700
 
 nco (4.6.3-1) unstable; urgency=low
 

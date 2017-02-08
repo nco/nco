@@ -1,5 +1,9 @@
 2017-02-07  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.4 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.4 final changes';git push
+	git tag -a 4.6.4 -m 'Version 4.6.4 new features: splitter, stdin, clm_md=dly, cll_msr, frm_trm, cln=365 and srd fixes';git push --tags
+
 	* NCO 4.6.4-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.4-beta02 final changes';git push
 	git tag -a 4.6.4-beta02 -m 'Version 4.6.4-beta02 new features: deprecate USE_NC4_SRD_WORKAROUND';git push --tags

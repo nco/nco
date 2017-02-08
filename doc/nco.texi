@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.4-beta02
-@set doc-edition 4.6.4-beta02
+@set nco-edition 4.6.4
+@set doc-edition 4.6.4
 @set copyright-years 1995--2017
 @set update-year 2017
 @set update-date 7 February 2017
@@ -11159,7 +11159,7 @@ Unless the default behavior is overridden, @acronym{NCO} attaches any
 formula variables to the extraction list along with the primary
 variable and other associated variables. 
 By definition, formula variables are a subset of the rank of the
-variable they measure.
+variable they define.
 One common case is that the formula variables for constructing a 
 @w{3D height} grid involves a 2D variable (like surface pressure,
 or elevation).
@@ -18974,6 +18974,27 @@ coordinates to the binary file:
 % ls -l bnr.dat | cut -d ' ' -f # 40 B contains one_dmn_rec_var only
 40
 @end example
+
+
+@html
+<a name="chunk_cache"></a> <!-- http://nco.sf.net/nco.html#chunk_cache -->
+<a name="cnk_csh"></a> <!-- http://nco.sf.net/nco.html#cnk_csh -->
+<a name="cache"></a> <!-- http://nco.sf.net/nco.html#cache -->
+<a name="csh"></a> <!-- http://nco.sf.net/nco.html#csh -->
+@end html
+@cindex chunk cache size
+@cindex cache size
+@cindex @code{--cnk_csh @var{sz}}
+@cindex @code{--chunk_cache @var{sz}}
+Set the per-variable chunk cache size to @var{sz} bytes.
+By default, the per-variable cache size is set (by the 
+@code{--with-chunk-cache-size} option to @command{configure}) at netCDF
+compile time. 
+This option changes the per-variable cache size.
+When the debugging level is set (with @code{-D @var{dbg_lvl}}) to three
+or higher, @acronym{NCO} prints the current value of the cache settings
+for informational purposes. 
+Also @samp{--chunk_cache}.
 
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->

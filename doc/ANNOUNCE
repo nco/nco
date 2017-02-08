@@ -7,15 +7,16 @@ http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
 
-4.6.4 adds many new convenience features to existing functionality
-like JSON, ncap2, ncremap, and ncclimo. Multi-dimensional bracketing
-completes our JSON implementation. ncap2 adds a convenient UDUnits
-conversion function. ncremap and ncclimo support long options.
-ncclimo supports binary climatology generation and annual-mean mode. 
+The main new features in 4.6.4 are the "splitter" and daily
+climatology capabilities for ncclimo. ncclimo now generates,
+combines existing, and splits climatologies. Thus it is a
+fairly general purpose climatology operator. NCO now supports
+two more CF conventions (formula_terms and cell_measures),
+and has a few bugfixes.
 
-Work on NCO 4.6.4 has commenced. Planned improvements include CMake
-builds, more flexibility in handling extensive variables during
-regridding.
+Work on NCO 4.6.5 has commenced. Planned improvements include 
+support for conda installs on MS Windows, and more ncclimo
+and ncremap features.
 
 Enjoy,
 Charlie
@@ -33,14 +34,41 @@ A. ncclimo will reshape timeseries, i.e., split input datasets into
    ncclimo -v T,Q --input=$drc_in --output=drc_out --map=rgr_map
    http://nco.sf.net/nco.html#ncclimo
 
-A. ncks allows one to set chunk cache-size with --cnk_csh.
-   
+A. ncks allows setting per-variable chunk cache-size with --cnk_csh. 
+   The effects of varying chunk cache-size are not well understood,
+   at least by we who work on NCO. Users asked for a knob to tune
+   it, and now that exists. Experiment with this and if you find
+   reasons for NCO to set this to non-default values, let us know.
+   If you want more knobs, let us know.
+   This setting only works on netCDF4 files.
+   ncks -D 3 --cnk_csh 1000000 in.nc4 out.nc
+   http://nco.sf.net/nco.html#cnk_csh
 
-A. ncremap now includes staggered grid weight with FV grid output.
+A. ncremap now includes staggered grid weights with FV grid output. 
    The weights are named w_stag, following the CESM CAM convention. 
+   http://nco.sf.net/nco.html#ncremap
 
-A. Variables listed in a formula_terms attribute are now extracted.
-   Turn-off this behavior with -C.
+A. Variables listed in a formula_terms attribute are now extracted
+   by default. Turn-off this behavior with --no_frm_trm.
+   The CF formula_terms convention is used to associate variables
+   with terms in defined formulas, such as vertical coordinates:
+   lev:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate"
+   lev:formula_terms = "a: hyam b: hybm p0: P0 ps: PS"
+   Unless the default behavior is overridden, NCO attaches any 
+   formula variables to the extraction list along with the primary
+   variable and other associated variables. By definition, formula
+   variables are a subset of the rank of the variable they define.
+   http://nco.sf.net/nco.html#frm_trm
+
+A. Variables listed in a cell_measures attribute are now extracted
+   by default. Turn-off this behavior with --no_cll_msr.
+   This convention allows variables to indicate which other variables 
+   contains area or volume information about a gridcell.
+   These measures variables are pointed to by the cell_measures
+   attribute. Unless the default behavior is overridden, NCO attaches
+   all measures variables to the extraction list along with the
+   primary variable.
+   http://nco.sf.net/nco.html#cll_msr
 
 BUG FIXES:
 
@@ -48,6 +76,13 @@ A. Fix bug introduced in 4.6.3 where hyperslabs involving UDUnits
    dates could fail, depending on exactly how NCO was compiled.
    Failures most likely on MacOS because clang, unlike gcc, does not
    initialize pointers to NULL by default. Solution is to upgrade.
+
+A. Fix bug introduced in ~4.4.6 where some hyperslabs of non-unity 
+   stride in netCDF4 files could return incorrect values.
+   If you use the hyperslab stride argument on netCDF4 files, we
+   suggest you upgrade immediately. The workaround is to convert
+   to netCDF3 before using a strided hyperslab. 
+   Thanks to Martin Dix for reporting this bug.
 
 KNOWN PROBLEMS DUE TO NCO:
 
