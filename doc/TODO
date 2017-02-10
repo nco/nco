@@ -694,7 +694,7 @@ nco1133. ncks CDL-mode do UDUnits time conversions to ISO (added 20161116)
 	 ncdump -t ~/nco/data/in.nc | grep tm_
 nco1134. MSA: wrapped limit with an additional limit pvn20160211 -- bug found that happens in nco 4.2.0 also
 	 ncks -O -C --msa -g g19 -v time -d time,9,0 -d time,1,2 ~/nco/data/in_grp_3.nc ~/foo.nc
-nco1135. USE_NC4_SRD_WORKAROUND is broken:
+nco1135. USE_NC4_SRD_WORKAROUND is broken: (added 20170201 fixed 20170207)
 	 ncks -v zg -H -C -d time,0,1 -d lev,0,2,2 ~/nco/data/in.nc # works
       	 ncks -v zg -H -C -d time,0,1 -d lev,0,2,2 ~/nco/data/in_4c.nc # borken
 nco1136. 

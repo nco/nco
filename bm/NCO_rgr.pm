@@ -758,8 +758,10 @@ if($USER eq 'zender'){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-
 # ncbo #14
+# ncks -O -v three_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
+# ncbo -O -v three_dmn_rec_var ~/foo.nc ~/foo.nc ~/foo2.nc
+# ncks -C -H -v three_dmn_rec_var -d time,9,9,1 -d lat,1,1,1 -d lon,3,3,1 ~/foo2.nc
     $dsc_sng="Copy associated coordinates -v three_dmn_rec_var";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncbo $omp_flg -O $fl_fmt $nco_D_flg -v three_dmn_rec_var %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
@@ -768,7 +770,6 @@ if($USER eq 'zender'){
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array     
-    
 
 #ncbo #15
 #Operate on files containing same variable in different orders
