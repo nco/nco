@@ -1,3 +1,9 @@
+2017-02-09  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.5-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.5-alpha01 final changes';git push
+	git tag -a 4.6.5-alpha01 -m 'Version 4.6.5-alpha01 new features: re-introduce fixed USE_NC4_SRD_WORKAROUND';git push --tags
+
 2017-02-08  Charlie Zender  <zender@uci.edu>
 
 	* Re-instate USE_NC4_SRD_WORKAROUND only when strided dimension is first dimension
