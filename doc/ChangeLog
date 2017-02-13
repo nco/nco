@@ -1,3 +1,7 @@
+2017-02-13 Henry Butowsky  <henryb@hush.com>
+	
+	* mods to where_assign() method in grammar so that it can handle vpointers in where body
+
 2017-02-10  Charlie Zender  <zender@uci.edu>
 
 	* Restore correct values for three_dmn_rec_var in in.cdl that were inadvertently changed in 4.6.4

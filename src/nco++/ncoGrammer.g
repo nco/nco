@@ -3306,23 +3306,27 @@ var=NULL_CEWI;
 where_assign [var_sct *var_msk] returns [bool bret=false]
 {
 const std::string fnc_nm("where_assign");
+var_sct *var_lhs;
 var_sct *var_rhs;
 
 }
-  :#(EXPR #(ASSIGN vid:VAR_ID var_rhs=out)) {
+  //:#(EXPR #(ASSIGN vid:VAR_ID var_rhs=out)) {
+:#(EXPR #(ASSIGN var_lhs=out var_rhs=out)) {
     
    bool bfr=false;
    nco_bool DO_CONFORM;
-   std::string var_nm=vid->getText();
-   var_sct *var_lhs;
+   //std::string var_nm=vid->getText();
+   std::string var_nm;
    NcapVar *Nvar;
 
    bret=false;
 
-   var_lhs=prs_arg->ncap_var_init(var_nm,true);
+   //var_lhs=prs_arg->ncap_var_init(var_nm,true);
    if(var_lhs==NULL_CEWI) 
      nco_exit(EXIT_FAILURE);
             
+   var_nm=std::string(var_lhs->nm); 
+
    var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);         
    if(var_rhs->sz >1L && var_rhs->sz != var_lhs->sz) {
      var_sct *var_tmp=NULL_CEWI;
