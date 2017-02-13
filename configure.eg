@@ -293,6 +293,7 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori:
+# Latest sysadmin-compiled module usage: module load nco/4.6.4 # 20170210 (without ncap2)
 # Used 20151204-
 module load szip
 module load gsl
@@ -310,6 +311,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 
 # acme: http://www.gnu.org/software/automake/manual/automake.html search for "shared by two hosts" use 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on edison:
+# Latest sysadmin-compiled module usage: module load nco/4.6.4 # 20170210 (with ncap2)
 # Used 20150825-
 module load szip
 module load gsl
@@ -405,7 +407,8 @@ git reset --hard origin/master
 cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
 
 # gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
-# val anantharaj packages these and makes them available with "module load nco/4.6.1"
+# Val Anantharaj packages these and makes them available with "module load nco/4.6.1"
+# Latest sysadmin-compiled module usage: module load nco/4.6.1 # ~20160801
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
