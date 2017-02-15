@@ -1,13 +1,13 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.6.5-alpha01 are ready. 
+The netCDF Operators NCO version 4.6.5 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
 
-The main new features in 4.6.5-alpha01 are the "splitter" and daily
+The main new features in 4.6.5 are the "splitter" and daily
 climatology capabilities for ncclimo. ncclimo now generates,
 combines existing, and splits climatologies. Thus it is a
 fairly general purpose climatology operator. NCO now supports
@@ -88,7 +88,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.6.5-alpha01 built/tested under
+   These problems occur with NCO 4.6.5 built/tested under
    MacOS 10.12.1 with netCDF 4.4.1 on HDF5 1.8.16 and with
    Linux with netCDF 4.4.2-development (20161116) on HDF5 1.8.16.
 
