@@ -52,10 +52,26 @@ for(*idx=0;idx<sz;idx++)
  
   *@att_total= *@var_nm.total();
   *@att_range={ min(*@var_nm), max(*@var_nm)}; 
+  
 
 
 } 
 
+
+// check that where body works with a vpointer
+@tst={"time"s,"one_dmn_rec_var"s, "one_dmn_rec_var_flt"s, "one_dmn_rec_var_mdn"s};
+sz=@tst.size();
+
+for(*idx=0;idx<sz;idx++)
+{
+  @var_nm=@tst(idx);
+
+  if( exists(*@var_nm))
+    where ( *@var_nm <2 || *@var_nm >= 9)
+      *@var_nm=-999; 
+
+
+} 
 
 
 
