@@ -3650,6 +3650,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	 lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
 	flg_ltr_cll=flg_ltr_crr=True;
       } /* endif */
+      /* 20170217: Temporarily turn-off latitude circle diagnostics because Sungduk's POP case breaks them */
+      flg_ltr_cll=flg_ltr_crr=False;
       if(flg_ltr_crr){
 	double ngl_ltr_a; /* [rdn] Interior angle/small circle arc a, canonical latitude-triangle geometry */
 	double ngl_ltr_b; /* [rdn] Interior angle/great circle arc b, canonical latitude-triangle geometry */
@@ -3692,8 +3694,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	/* Numeric conditioning uncertain. Approaches divide-by-zero when lon_dlt << 1 */
 	xpn_x=lat_bnd_sin[idx_ltr_b]*(1.0-cos(lon_dlt))/sin(lon_dlt);
 	area_crc=2.0*atan(xpn_x);
+	/* 20170217: Sungduk's POP regrid triggers following abort():
+	   ncremap -D 1 -i ~/pop_g16.nc -d ~/cam_f19.nc -o ~/foo.nc */
 	if(xpn_x < 0.0) abort();
-	// if(lat_bnd[idx_ltr_b] > 0.0) area_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
+	//if(lat_bnd[idx_ltr_b] > 0.0) area_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
 	area_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b];
 	area_ltr+=area_crc;
 	area_ltr_ttl+=area_crc;
@@ -3722,7 +3726,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  } /* !idx_xpn */
 	  (void)fprintf(stdout,"%s: Latitude-triangle area using series approximation...not implemented yet\n",nco_prg_nm_get());
 	} /* !0 */
-	if(nco_dbg_lvl_get() >= nco_dbg_std){
+	if(nco_dbg_lvl_get() >= nco_dbg_scl){
 	  (void)fprintf(stdout,"%s: INFO %s col_idx = %u triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
 	  if(fabs(area_crc/xcs_sph) > 0.1){
 	    (void)fprintf(stdout,"%s: DBG Non-spherical correction exceeds 10%% for current triangle with ABC vertices at lat,lon [dgr] = %g, %g\n%g, %g\n%g, %g\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
