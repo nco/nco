@@ -1,3 +1,7 @@
+2017-02-17  Charlie Zender  <zender@uci.edu>
+
+	* Turn-off whiteboard latitude circle routine until devise fix for Sungduk's POP case
+
 2017-02-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.5-alpha02 release procedure:
