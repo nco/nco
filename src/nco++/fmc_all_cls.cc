@@ -4690,6 +4690,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("udunits",this,PUNITS1)); 
+          fmc_vtr.push_back( fmc_cls("strftime",this,PSTRFTIME)); 
 
     }		      
   } 
@@ -4700,16 +4701,24 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   int nbr_args;
   int nbr_dim;
   int rcd;
+  bool is_mtd;
   long lret;
+
+
   dmn_sct **dim;
   var_sct *var=NULL_CEWI;
-  var_sct *var_ud_in=NULL_CEWI;
   var_sct *var_ud_out=NULL_CEWI;
-  var_sct *var_cln=NULL_CEWI;
-  var_sct *var_ret;
-           
+
+
   std::string susg;
   std::string sfnm=fmc_obj.fnm();
+
+  std::string att_sng;
+  std::string units_in_sng;
+  std::string calendar_in_sng;
+  //std::string udunits_out_sng
+
+
   RefAST tr;
   std::vector<RefAST> args_vtr; 
   std::vector<std::string> cst_vtr;              
@@ -4734,6 +4743,12 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
     } 
       
   nbr_args=args_vtr.size();  
+  is_mtd=(expr ? true: false);
+
+  /* deal with printing a time stamp here */
+  if(fdx==PSTRFTIME)
+    return strftime_fnd( is_mtd,args_vtr, fmc_obj, walker); 
+
 
   susg="usage: var_out="+sfnm+"(var_in ,unitsOutString)"; 
 
@@ -4764,76 +4779,54 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   }
 
   if(var_ud_out->type !=NC_CHAR && var_ud_out->type !=NC_STRING)
-     err_prn(sfnm,"The second argument must be a netCDF text type\n"+susg); 
+     err_prn(sfnm,"The second argument must be a netCDF text type\n"+susg);
+
+
+  // grab units attribute of var
+  units_in_sng=ncap_att2var(prs_arg, std::string(var->nm)+"@units");
 
 
 
-  { 
+  // grab calendar attribute of var
+  att_sng=std::string(var->nm)+"@calendar";
 
-    /* hack RefAST to something so that we dont  have to call astFactory that is protected */
-    RefAST atr=walker.nco_dupList(args_vtr[0]);  
-    std::string units_att_nm;
+  if( ncap_att2var_chk(prs_arg, att_sng) )
+  {
+     calendar_in_sng=ncap_att2var(prs_arg, att_sng);
 
-    units_att_nm=std::string(var->nm)+"@units";          
-   
-    atr->setText(units_att_nm);
-    atr->setType(ATT_ID);
-
-    var_ud_in=walker.out(atr);
-
-    if(var_ud_in->type !=NC_CHAR && var_ud_in->type !=NC_STRING)
-       err_prn(sfnm,"The attribute \""+units_att_nm+"\" argument must be a netCDF text type\n"+susg); 
-  
-    
-    /* look for calendar att - may not be present */  
-    units_att_nm=std::string(var->nm)+"@calendar";          
-    
-    Nvar=prs_arg->var_vtr.find(units_att_nm);
-
-    if(Nvar !=NULL)
-      var_cln=nco_var_dpl(Nvar->var);
-    else    
-      var_cln=ncap_att_init(units_att_nm,prs_arg);
-
-    if(var_cln && var_cln->type !=NC_CHAR && var_cln->type !=NC_STRING)
-       err_prn(sfnm,"The attribute \""+units_att_nm+"\" argument must be a netCDF text type\n"+susg); 
- 
-  
   }
+
+
+
+
 
   // do heavy lifting 
   {
    
-   char *units_in_sng;
-   char *units_out_sng;    
-   char *cln_sng=NULL_CEWI;   
+
+   char *units_out_sng;
 
    nco_cln_typ cln_typ=cln_nil;
 
-   units_in_sng=ncap_att_char(var_ud_in);         
    units_out_sng=ncap_att_char(var_ud_out);   
 
-   if(var_cln)
-   {
-     cln_sng=ncap_att_char(var_cln); 
-     cln_typ=nco_cln_get_cln_typ(cln_sng);
-   }
+   if( calendar_in_sng.size())
+     cln_typ=nco_cln_get_cln_typ(calendar_in_sng.c_str());
+
    
 
 
-    #ifdef ENABLE_UDUNITS
-    # ifdef HAVE_UDUNITS2_H
-       rcd=nco_cln_clc_dbl_var_dff(units_in_sng,units_out_sng,cln_typ,(double*)NULL, var);
-    #endif
-    #endif
+   #ifdef ENABLE_UDUNITS
+   # ifdef HAVE_UDUNITS2_H
+       rcd=nco_cln_clc_dbl_var_dff(units_in_sng.c_str(),units_out_sng,cln_typ,(double*)NULL, var);
+   #endif
+   #endif
    
-    if(rcd!=NCO_NOERR)   
+   if(rcd!=NCO_NOERR)
       err_prn(sfnm, "Udunits was unable to convert data in the var '"+std::string(var->nm)+"' from '" +std::string(units_in_sng) +"' to '"+std::string(units_out_sng)+"'\n");
 
-    nco_free(units_in_sng);
+    // nco_free(units_in_sng);
     nco_free(units_out_sng);
-    if(cln_sng)
-      nco_free(cln_sng);
 
   }
   
@@ -4841,21 +4834,165 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   /* revert var back to original type */
   if( var->type != lcl_typ)
     nco_var_cnf_typ(lcl_typ,var);
- 
 
-  if(var_cln)
-    var_cln=nco_var_free(var_cln);
 
-  if(var_ud_in)
-    var_ud_in=nco_var_free(var_ud_in); 
-  
 
   return var;
 
 }
 
 
+var_sct *udunits_cls::strftime_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
+ {
+    int nbr_args;
+    int fdx=fmc_obj.fdx();
+    int rcd;
+    char *cformat=(char*)NULL;
 
+    var_sct *var=NULL_CEWI;
+    var_sct *var_cformat=NULL_CEWI;
+    var_sct *var_ret=NULL_CEWI;
+
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string susg;
+    std::string att_sng;
+    std::string units_in_sng;
+    std::string units_out_sng;
+    std::string calendar_in_sng;
+
+
+    prs_cls *prs_arg=walker.prs_arg;            
+    nc_type lcl_typ;
+    nco_cln_typ cln_typ;
+
+    nbr_args=args_vtr.size();
+
+    // convert time to UTC for now -hwta about other calendars ?
+    units_out_sng="seconds since 1970-01-01";
+
+    susg="usage: var_out="+sfnm+"(var_in ,\"format-timestring ? \")";
+
+  
+    if(nbr_args<1)
+       err_prn(sfnm,"Function has been called with less than two arguments\n"+susg); 
+    
+    /* data to convert */ 
+    var=walker.out(args_vtr[0]);  
+
+
+    lcl_typ=var->type;
+    if( !var->undefined && var->type !=NC_FLOAT && var->type !=NC_DOUBLE )
+      nco_var_cnf_typ(NC_DOUBLE,var); 
+
+     
+    var_ret=nco_var_dpl(var);
+    if(var_ret->val.vp)
+      var_ret->val.vp=nco_free(var_ret->val.vp);
+    
+    var_ret=nco_var_cnf_typ(NC_STRING, var_ret);
+
+    /* text string output units */
+    if(nbr_args >=2)
+       var_cformat=walker.out(args_vtr[1]);
+
+
+    if(prs_arg->ntl_scn  )
+    {
+      if(var_cformat)  
+         nco_var_free(var_cformat);
+      
+      if(var)        
+	     nco_var_free(var);
+
+      return var_ret;
+    }
+
+
+    if(var_cformat)
+    {
+       if (var_cformat->type != NC_CHAR && var_cformat->type != NC_STRING)
+          err_prn(sfnm, "The second argument must be a netCDF text type\n" + susg);
+
+       cformat = ncap_att_char(var_cformat);
+       var_cformat=(var_sct*)nco_var_free(var_cformat);
+
+    }
+    // use default strtime string - this is like the ncdump -t output string
+    else
+    {
+      cformat=strdup("%Y-%m-%d %H:%M:%S");
+    }
+
+
+     // grab units attribute of var
+     units_in_sng=ncap_att2var(prs_arg, std::string(var->nm)+"@units");
+
+    // grab calendar attribute of var
+    att_sng=std::string(var->nm)+"@calendar";
+
+    if( ncap_att2var_chk(prs_arg, att_sng) )
+    {
+      calendar_in_sng = ncap_att2var(prs_arg, att_sng);
+      cln_typ=nco_cln_get_cln_typ(calendar_in_sng.c_str());
+    }
+    else
+      cln_typ=cln_nil;
+
+
+    #ifdef ENABLE_UDUNITS
+    # ifdef HAVE_UDUNITS2_H
+       rcd=nco_cln_clc_dbl_var_dff(units_in_sng.c_str(),units_out_sng.c_str(),cln_typ,(double*)NULL, var);
+     #endif
+    #endif
+
+    if(rcd!=NCO_NOERR)
+         err_prn(sfnm, "Udunits was unable to convert data in the var '"+std::string(var->nm)+"' from '" +units_in_sng +"' to '"+units_out_sng+"'\n");
+
+
+     //start heavy lifting
+    {
+      long idx;
+      long sz;
+      char schar[200];
+      time_t sgmt;
+      struct tm tp;  
+      double *dp;
+
+
+      // make some space for strings
+      var_ret->val.vp=(void *)nco_malloc(var_ret->sz*nco_typ_lng(var_ret->type));
+       
+       
+      (void)cast_void_nctype(var->type,&var->val);     
+      (void)cast_void_nctype(var_ret->type,&var->val);
+
+         
+     
+      dp=var->val.dp; 
+       
+      sz=var->sz;
+
+      for(idx=0;idx<sz;idx++)
+      {
+          
+        sgmt=(time_t)dp[idx];  
+	    (void)gmtime_r(&sgmt,&tp);
+        strftime(schar,sizeof(schar),cformat,&tp);
+        var_ret->val.sngp[idx]=strdup(schar);           
+      }
+
+
+      (void)cast_nctype_void(var->type,&var->val);
+      (void)cast_nctype_void(var_ret->type,&var_ret->val);     
+
+    }
+
+
+    var=(var_sct*)nco_var_free(var);
+
+    return var_ret;
+
+ }
 
 /* ncap2 functions and methods */
 
