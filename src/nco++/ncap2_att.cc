@@ -71,6 +71,41 @@ ncap_att2var          //   [fnc] return text content of var
 }
 
 
+int                    // O [flg] 0 - att doesnt exist 1 - att exists
+ncap_att2var_chk       //   [fnc] returns nco_bool
+( prs_cls *prs_arg,    // I [cls] var/att symbol tables
+  std::string att_nm)  // I [sn]  contains var name to read
+{
+
+  std::string fnc_nm("ncap_att2var");
+  std::string sn;
+  var_sct *var_att = NULL_CEWI;
+  NcapVar *Nvar = NULL;
+
+  if (prs_arg->ntl_scn)
+    Nvar = prs_arg->int_vtr.find(att_nm);
+
+  if (Nvar == NULL)
+    Nvar = prs_arg->var_vtr.find(att_nm);
+
+  if (Nvar)
+    return 1;
+
+  var_att = ncap_att_init(att_nm, prs_arg);
+
+  if (var_att) {
+    var_att = (var_sct *) nco_free(var_att);
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+
+}
+
+
+
 
 
 var_sct *                    // O [sct] variable containing attribute 
