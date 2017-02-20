@@ -109,6 +109,29 @@ nbr_err_ttl=0;
    nbr_err++;
   }
 
+}
+
+// check strftime
+{
+  
+  // rebase coordinate both with "days" - 30 days a month calendar
+  b1=time;
+  b1@units="days since 1990-01-01";
+  b1@calendar="gregorian";
+ 
+  // use default strftime output this is "%Y-%m-%d %H:%M:%S"
+  b1@str=strftime(b1);
+  // use y/m/d
+  b1@str2=strftime(b1,"%Y/%m/%d");
+
+  b2=time;
+  b2@units="hours since 1970-01-01";
+  b2@calendar="gregorian";
+  b2@str=strftime(b2,"%Y/%m/%d %H:%M");
+
+
+}
+
 // other units
 {
 
@@ -129,8 +152,7 @@ nbr_err_ttl=0;
 
 
 
-}
+ }
 
 
 
-}
