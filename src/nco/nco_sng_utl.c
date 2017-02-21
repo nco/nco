@@ -622,6 +622,9 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
       (void)fprintf(stderr,"%s: WARNING C language escape code %.2s found in string, not translating to NUL since this would make the subsequent portion of the string invisible to all C Standard Library string functions\n",nco_prg_nm_get(),backslash_ptr); 
       trn_flg=False;
       /* 20101013: Tried changing above behavior to following, and it opened a Hornet's nest of problems... */
+      /* 20170221: Use-case where translating "\0" to NUL would be helpful is when user needs to pad netCDF3 character
+	 array value to size of underlying dimension, and have user-specified value NUL-terminated short of full 
+	 dimension size */
       /* *backslash_ptr='\0'; *//* 000   0     00    NUL '\0' */
       /*      (void)fprintf(stderr,"%s: WARNING translating C language escape code \"\\0\" found in user-supplied string to NUL. This will make the subsequent portion of the string, if any, invisible to C Standard Library string functions. And that may cause unintended consequences.\n",nco_prg_nm_get());*/
       break;
@@ -632,7 +635,7 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
     } /* end switch */
     if(trn_flg){
       /* Remove character after backslash character */
-      (void)memmove(backslash_ptr+1,backslash_ptr+2,(strlen(backslash_ptr+2)+1)*sizeof(char));
+      (void)memmove(backslash_ptr+1,backslash_ptr+2,(strlen(backslash_ptr+2)+1L)*sizeof(char));
       /* Count translations performed */
       trn_nbr++;
     } /* end if */
