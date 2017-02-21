@@ -52,6 +52,12 @@ std::string ncap_att2var
 ( prs_cls *prs_arg,   
   std::string att_nm);
 
+int                    // O [flg] 0 - att doesnt exist 1 - att exists
+ncap_att2var_chk       //   [fnc] returns nco_bool
+( prs_cls *prs_arg,    // I [cls] var/att symbol tables
+std::string att_nm);   // I [sn]  contains var name to read
+
+
 
 var_sct * /* O [sct] variable containing attribute */
 ncap_att_init /* [fnc] Grab an attribute from input file */
