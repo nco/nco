@@ -150,7 +150,7 @@ and
 
 <ul>
 <li>2017 Mar&nbsp;??: 4.6.5 (<i>In progress</i>)
-<li>2017 Feb&nbsp;07: 4.6.4
+<li>2017 Feb&nbsp;07: 4.6.4 (<tt>ncclimo</tt> splitter)
 <li>2017 Jan&nbsp;27: <i>Geosci. Model Dev.</i> publishes compression-error trade-off <a href="http://www.geosci-model-dev.net/10/413/2017">paper</a></li>
 <li>2016 Dec&nbsp;23: 4.6.3 (Minor features)
 <li>2016 Nov&nbsp;16: 4.6.2 (JSON)
@@ -637,7 +637,8 @@ Optimize diskless files?;</li>
 <tt>ncks</tt> set chunk cache-size with <tt>--cnk_csh</tt>;
 <tt>ncremap</tt> add <tt>w_stag</tt> weights to FV output;
 <tt>ncclimo</tt> timeseries reshaping ("splitting") mode;
-Extract variables in CF <tt>formula_terms</tt> attribute;
+<tt>ncclimo</tt> daily climo mode;
+Extract variables in CF <tt>cell_measures</tt>, <tt>formula_terms</tt> attributes;
 Fix UDUnits calendar bug introduced in 4.6.3;</li>
 <li><b>NCO 4.6.3</b>: (<i>Current Stable Release</i>)
 CMake build option;
