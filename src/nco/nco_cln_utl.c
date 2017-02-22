@@ -8,6 +8,8 @@
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "nco_cln_utl.h" /* Calendar utilities */
+#include "libnco.h"
+#include "nco.h"
 
 /* Arrays to hold calendar type units */
 /* Format: year, month, day, hour, minute, second, origin, offset */
@@ -163,6 +165,51 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
   if(lcl_sng) lcl_sng=(char *)nco_free(lcl_sng);
   return rcd_typ;
 } /* end nco_cln_get_tm_typ() */
+
+
+char *                 /* O [sng] contains newly malloced output string */
+nco_cln_fmt_tm         /*   [fnc] format an output string */
+(tm_cln_sct *ttx,      /* I [ptr] Calendar structure */
+int ifmt)              /* I [int] format type */
+{
+ int idx;
+ char bdate[200]={0};
+ char btime[200]={0};
+ char *buff;
+
+ buff=nco_malloc( sizeof(char) * NCO_MAX_LEN_FMT_SNG );
+
+ switch(ifmt)
+ {
+    /* plain format all out */
+    case 1:
+     sprintf(buff,"%04d-%02d-%02d %02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec  );
+     break;
+
+    /* do date and time if time not all zero */
+    case 2:
+      sprintf(bdate,"%04d-%02d-%02d", ttx->year,ttx->month, ttx->day);
+      if( ttx->hour !=0 || ttx->min!=0 || ttx->sec !=0.0f )
+      {
+        int isec;
+        float m_sec, frac_sec;
+
+        frac_sec=modff(ttx->sec, &m_sec);
+        isec=(int)m_sec;
+
+        if( frac_sec==0.0f)
+          sprintf(btime, " %02d:%02d:%02d", ttx->hour,ttx->min, isec );
+        else
+          sprintf(btime, " %02d:%02d:%02.7f", ttx->hour,ttx->min, ttx->sec );
+      }
+      sprintf(buff,"%s%s", bdate,btime);
+      break;
+
+ }
+
+   return buff;
+}
+
 
 nco_cln_typ /* [enm] Calendar type */
 nco_cln_get_cln_typ /* [fnc] Determine calendar type or cln_nil if not found */
@@ -337,6 +384,10 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
 
 } /* end nco_cln_chk_tm() */
 
+
+
+
+
 #ifndef ENABLE_UDUNITS
 /* Stub functions to compile without UDUNITS2 */
 
@@ -376,7 +427,20 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
   lgb_sng[0]='\0'; /* CEWI */
   return NCO_NOERR;
 } /* end nco_cln_sng_rbs() */
-  
+
+int
+nco_cln_var_prs
+(const char *fl_unt_sng,
+ nco_cln_typ lmt_cln,
+ int ifmt,
+ var_sct *var,
+ var_sct *var_ret
+){
+  return NCO_ERR;
+
+}
+
+
 #endif /* !ENABLE_UDUNITS */
 
 #ifdef ENABLE_UDUNITS
@@ -861,6 +925,81 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
   return NCO_NOERR;
 
 } /* end nco_cln_sng_rbs() */
+
+
+int
+nco_cln_var_prs
+(const char *fl_unt_sng,
+ nco_cln_typ lmt_cln,
+ int ifmt,
+ var_sct *var,
+ var_sct *var_ret
+)
+{
+int rcd;
+long sz;
+long idx;
+double resolution;
+double seconds;
+tm_cln_sct tm;
+
+/* base units for udunits */
+const char *bs_sng="seconds since 2001-01-01";
+const char *fnc_nm="nco-cln_var_prs";
+
+// if( lmt_cln != cln_std )
+//   return NCO_ERR;
+
+if(nco_dbg_lvl_get() >= nco_dbg_crr)
+(void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,bs_sng,lmt_cln);
+
+/* convert to base */
+if( nco_cln_clc_var_dff(fl_unt_sng,bs_sng,var) != NCO_NOERR)
+return NCO_ERR;
+
+
+if(var->type != NC_DOUBLE && var->type != NC_FLOAT)
+nco_var_cnf_typ(NC_DOUBLE,var);
+
+cast_void_nctype(var->type,&var->val);
+
+if(var_ret->type !=NC_STRING)
+nco_var_cnf_typ(NC_STRING, var_ret);
+
+if( var_ret->val.vp)
+var_ret->val.vp=(void*)nco_free(var_ret->val.vp);
+
+var_ret->val.vp=nco_malloc( sizeof(nco_string) *var_ret->sz);
+
+cast_void_nctype(var_ret->type,&var_ret->val);
+
+sz=var->sz;
+
+tm.sc_cln=lmt_cln;
+
+
+for(idx=0; idx<sz; idx++)
+{
+/* var is DOUBLE or FLOAT and NOTHING ELSE */
+tm.value= (var->type==NC_DOUBLE ? var->val.dp[idx] : (double)(var->val.fp[idx]) );
+
+(void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &seconds, &resolution);
+tm.sec=(float)seconds;
+
+var_ret->val.sngp[idx]= nco_cln_fmt_tm(&tm,ifmt);
+
+}
+
+cast_nctype_void(var->type,&var->val);
+cast_nctype_void(var_ret->type,&var->val);
+
+return NCO_NOERR;
+
+}
+
+
+
+
 
 # endif /* HAVE_UDUNITS2_H */
 #endif /* ENABLE_UDUNITS */

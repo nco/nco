@@ -13,9 +13,13 @@
 #ifndef NCO_CLN_UTL_H
 #define NCO_CLN_UTL_H
 
+
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
+
+//#include "../../config.h" /* Autotools tokens */
+
 
 /* Standard header files */
 #include <ctype.h> /* isalnum(), isdigit(), tolower() */
@@ -45,6 +49,8 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_sng_utl.h" /* String utilities */
+
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,7 +92,8 @@ extern "C" {
   tm_typ /* [enum] Units type */
   nco_cln_get_tm_typ /* returns time unit type or tm_void if not found */
   (const char *ud_sng); /* I [ptr] units string */
-  
+
+
   nco_cln_typ /* [enum] Calendar type */    
   nco_cln_get_cln_typ /* [fnc] Calendar type or cln_nil if not found */
   (const char *ud_sng); /* I [ptr] units string */
@@ -99,7 +106,12 @@ extern "C" {
   void
   nco_cln_pop_val /* [fnc] Calculate value in cln_sct */ 
   (tm_cln_sct *cln_sct);/* I/O [ptr] Calendar structure */
-  
+
+  char*                   /* O [sng] contains newly malloced output string */
+  nco_cln_fmt_tm            /*   [fnc] format an output string */
+  (tm_cln_sct *cln_sct,   /* I [ptr] Calendar structure */
+   int fmt);              /* I [int] format type */
+
   double /* O [dbl] time in (base) seconds of tm_typ */
   nco_cln_val_tm_typ /* [fnc] */
   (nco_cln_typ lmt_cln, /* I [enum] Calendar type */
@@ -122,7 +134,10 @@ extern "C" {
    nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
    double *val_dbl,           /* I/O [dbl] var values modified */
    var_sct *var);           /* I/O [var_sct] var values modified */
-  
+
+
+
+
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H
 
@@ -172,6 +187,16 @@ extern "C" {
    const nc_type val_typ, /* I [enm] Value type */
    const char *unit_sng, /* I [sng] Units string */
    char *lgb_sng); /* O [sng] Legible version of input string */
+
+  int
+  nco_cln_var_prs
+  (const char *fl_unt_sng,
+   nco_cln_typ lmt_cln,
+   int ifmt,
+   var_sct *var,
+   var_sct *var_out
+  );
+
 
 # endif /* !HAVE_UDUNITS2_H */
 #endif /* !ENABLE_UDUNITS */
