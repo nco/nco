@@ -25,6 +25,7 @@
 #include "map_srt_tmp.hh" // template -used in srt_cls
 #include <assert.h>
 
+
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
   /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
   
@@ -295,12 +296,13 @@ public:
 // udunits  Functions       /***************************************/
 class udunits_cls: public vtl_cls {
 private:
-  enum{ PUNITS1,PSTRFTIME};
+  enum{ PUNITS1,PSTRFTIME,PREGULAR};
   bool _flg_dbg;
 public:
   udunits_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-  var_sct *strftime_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
+  var_sct *strftime_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
+  var_sct *regular_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
 };
 
 

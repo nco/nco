@@ -4690,7 +4690,8 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("udunits",this,PUNITS1)); 
-          fmc_vtr.push_back( fmc_cls("strftime",this,PSTRFTIME)); 
+          fmc_vtr.push_back( fmc_cls("strftime",this,PSTRFTIME));
+          fmc_vtr.push_back( fmc_cls("regular",this,PREGULAR));
 
     }		      
   } 
@@ -4748,7 +4749,8 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   /* deal with printing a time stamp here */
   if(fdx==PSTRFTIME)
     return strftime_fnd( is_mtd,args_vtr, fmc_obj, walker); 
-
+  else if(fdx==PREGULAR)
+    return regular_fnd( is_mtd,args_vtr, fmc_obj, walker);
 
   susg="usage: var_out="+sfnm+"(var_in ,unitsOutString)"; 
 
@@ -4993,6 +4995,125 @@ var_sct *udunits_cls::strftime_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, 
     return var_ret;
 
  }
+
+
+var_sct *udunits_cls::regular_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
+ {
+    int nbr_args;
+    int fdx=fmc_obj.fdx();
+    int rcd;
+    int iformat=0;
+
+    var_sct *var=NULL_CEWI;
+    var_sct *var_iformat=NULL_CEWI;
+    var_sct *var_ret=NULL_CEWI;
+
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string susg;
+    std::string att_sng;
+    std::string units_in_sng;
+    std::string units_out_sng;
+    std::string calendar_in_sng;
+
+
+    prs_cls *prs_arg=walker.prs_arg;            
+    nc_type lcl_typ;
+    nco_cln_typ cln_typ;
+
+    nbr_args=args_vtr.size();
+
+    // convert time to UTC for now -hwta about other calendars ?
+    units_out_sng="seconds since 1970-01-01";
+
+    susg="usage: var_out="+sfnm+"(var_in ,\"format-timestring ? \")";
+
+  
+    if(nbr_args<1)
+       err_prn(sfnm,"Function has been called with less than two arguments\n"+susg); 
+    
+    /* data to convert */ 
+    var=walker.out(args_vtr[0]);  
+
+
+    lcl_typ=var->type;
+    if( !var->undefined && var->type !=NC_FLOAT && var->type !=NC_DOUBLE )
+      nco_var_cnf_typ(NC_DOUBLE,var); 
+
+     
+    var_ret=nco_var_dpl(var);
+    if(var_ret->val.vp)
+      var_ret->val.vp=nco_free(var_ret->val.vp);
+    
+    var_ret=nco_var_cnf_typ(NC_STRING, var_ret);
+
+    /* text string output units */
+    if(nbr_args >=2)
+       var_iformat=walker.out(args_vtr[1]);
+
+
+
+
+    if(prs_arg->ntl_scn  )
+    {
+      if(var_iformat)  
+         nco_var_free(var_iformat);
+      
+      if(var)        
+	     nco_var_free(var);
+
+      return var_ret;
+    }
+
+
+    if(var_iformat)
+    {
+       nco_var_cnf_typ(NC_INT,var_iformat);
+       cast_void_nctype(NC_INT,&var_iformat->val);
+       iformat=var_iformat->val.ip[0];
+
+       var_iformat=(var_sct*)nco_var_free(var_iformat);
+
+    }
+    // use default format
+    else
+      iformat=1;
+
+
+
+     // grab units attribute of var
+     units_in_sng=ncap_att2var(prs_arg, std::string(var->nm)+"@units");
+
+    // grab calendar attribute of var
+    att_sng=std::string(var->nm)+"@calendar";
+
+    if( ncap_att2var_chk(prs_arg, att_sng) )
+    {
+      calendar_in_sng = ncap_att2var(prs_arg, att_sng);
+      cln_typ=nco_cln_get_cln_typ(calendar_in_sng.c_str());
+    }
+    else
+      cln_typ=cln_nil;
+
+
+
+    rcd=nco_cln_var_prs(units_in_sng.c_str(), cln_typ,iformat, var,var_ret);
+    if(rcd==NCO_ERR)
+        err_prn(sfnm,"Error formatting time string");
+
+
+
+    var=(var_sct*)nco_var_free(var);
+
+    return var_ret;
+
+ }
+
+
+
+
+
+
+
 
 /* ncap2 functions and methods */
 
