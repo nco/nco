@@ -626,21 +626,22 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.6.4 http://github.com/nco/nco.git nco-4.6.4</tt></a>.
 <ul>
-<li><b>NCO 4.6.5</b>: (<i>Future</i>) 
-<tt>ncks</tt> prints human-legible ISO8601 dates;
+<li><b>NCO 4.6.6</b>: (<i>Future</i>) 
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
 extensive hashing?;
 netCDF4 compound types?;
-Optimize diskless files?;</li>
+Optimize diskless files?;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
-<li><b>NCO 4.6.4</b>: (<i>In Progress, features in-progress or completed include</i>)
+<li><b>NCO 4.6.5</b>: (<i>In Progress, features in-progress or completed include</i>)
+<tt>ncks</tt> prints human-legible ISO8601 dates;</li>
+<li><b>NCO 4.6.4</b>: (<i>Current Stable Release</i>)
 <tt>ncks</tt> set chunk cache-size with <tt>--cnk_csh</tt>;
 <tt>ncremap</tt> add <tt>w_stag</tt> weights to FV output;
 <tt>ncclimo</tt> timeseries reshaping ("splitting") mode;
 <tt>ncclimo</tt> daily climo mode;
 Extract variables in CF <tt>cell_measures</tt>, <tt>formula_terms</tt> attributes;
 Fix UDUnits calendar bug introduced in 4.6.3;</li>
-<li><b>NCO 4.6.3</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.6.3</b>: 
 CMake build option;
 <tt>ncap2</tt> udunits() function;
 <tt>ncclimo</tt> supports binary climos, annual mode;
@@ -1141,10 +1142,10 @@ patch necessary to allow NCO to link to ANTLR.
 If you must build the source stack yourself (e.g., due to lack of root
 access, or systems without packages such as AIX), build all libraries
 with the same compiler and switches.
-The ANTLR source file <tt>CharScanner.hpp</tt> must include this line:
+The ANTLR 2.x source file <tt>CharScanner.hpp</tt> must include this line:
 <tt>#include &lt;cstring&gt;</tt> or else <tt>ncap2</tt> will not
 compile (<a href="http://dust.ess.uci.edu/tmp/antlr-2.7.7.tar.gz">this</a>
-tarball is already patched).
+ANTLR tarball is already patched).
 Recent versions of netCDF automatically build OPeNDAP and UDUnits.
 NCO is mostly written in&nbsp;C99, and although you <i>may</i> mix and
 match compilers, this is often difficult in practice and is not recommended.
@@ -1222,13 +1223,11 @@ For Windows with Cygwin, select and install the following packages with Cygwin S
 <dt>netcdf # netCDF</dt>
 <dt>udunits2 # UDUnits</dt>
 </tt>
-As of 20131101 there is no Cygwin package for Antlr, and the netcdf package does not yet support DAP. 
-Users should instead first download and install the Antlr found <a href="http://nco.sourceforge.net/nco_qt_msvc.shtml">here</a>.
+As of 20131101 there is no Cygwin package for ANTLR, and the netCDF package does not yet support DAP. 
+Users should instead first download and install the ANTLR found <a href="http://nco.sourceforge.net/nco_qt_msvc.shtml">here</a>.
 </li>
 
-<li>Once you have installed the pre-requisites as shown above, you may
-  then build the latest stable NCO and install it in,
-  e.g., <tt>/usr/local</tt> with: 
+<li>Once you have installed the pre-requisites as shown above, you may then build the latest stable NCO and install it in, e.g., <tt>/usr/local</tt> with: 
 <tt>
 <dt>wget https://github.com/nco/nco/archive/4.6.4.tar.gz</dt>
 <dt>tar xvzf 4.6.4.tar.gz</dt>
