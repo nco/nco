@@ -1,3 +1,7 @@
+2017-02-23  Charlie Zender  <zender@uci.edu>
+
+	* Prettify ncclimo self-documentation
+
 2017-02-17  Charlie Zender  <zender@uci.edu>
 
 	* Turn-off whiteboard latitude circle routine until devise fix for Sungduk's POP case

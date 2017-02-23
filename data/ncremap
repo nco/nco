@@ -336,6 +336,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-u${fnt_nrm} ${fnt_bld}unq_sfx${fnt_nrm}  Unique suffix (prevents intermediate files from sharing names) (default ${fnt_bld}${unq_sfx}${fnt_nrm}) [${fnt_tlc}unq_sfx, unique_suffix, suffix${fnt_nrm}]"
     echo "${fnt_rvr}-V${fnt_nrm} ${fnt_bld}var_rgr${fnt_nrm}  CF template variable (empty means none) (default ${fnt_bld}${var_rgr}${fnt_nrm}) [${fnt_tlc}var_rgr, rgr_var, var_cf, cf_var, cf_variable${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
+    echo "   --version${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_gnr${fnt_nrm}  Weight-generator (default ${fnt_bld}${wgt_gnr}${fnt_nrm}) [${fnt_tlc}wgt_gnr, weight_generator, generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
     printf "\n"
