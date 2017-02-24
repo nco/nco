@@ -218,10 +218,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
 
     /* Count number of keys */
-    for(rgr_var_idx=0;(rgr_lst+rgr_var_idx)->key;rgr_var_idx++){
-      rgr_var_nbr=rgr_var_idx;
-    } /* !rgr_var_idx */
-    rgr_var_nbr++;
+    for(rgr_var_idx=0;(rgr_lst+rgr_var_idx)->key;rgr_var_idx++,rgr_var_nbr++);/* !rgr_var_idx */
   } /* !rgr_arg_nbr */
 
   /* NULL-initialize key-value properties required for string variables */

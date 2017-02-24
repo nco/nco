@@ -1962,11 +1962,9 @@ nco_glb_att_add /* [fnc] Add global attributes */
   if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
 
   /* jm fxm use more descriptive name than i---what does i count? */
-  for(int index=0;gaa_lst[index].key;index++){
-      gaa_nbr=index;
-  } /* end loop over i */
+  for(int index=0;gaa_lst[index].key;index++,gaa_nbr++); /* end loop over i */
 
-  for(gaa_idx=0;gaa_idx<=gaa_nbr;gaa_idx++){
+  for(gaa_idx=0;gaa_idx<gaa_nbr;gaa_idx++){
     /* Insert attribute value */
     att_val.cp=gaa_lst[gaa_idx].val;
     /* Initialize attribute edit structure */
