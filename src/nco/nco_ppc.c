@@ -87,10 +87,7 @@ nco_ppc_ini /* Set PPC based on user specifications */
   if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
 
   /* jm fxm use more descriptive name than i---what does i count? */
-  for(int index=0;(ppc_lst+index)->key;index++){
-      ppc_var_nbr=index;
-  } /* end loop over i */
-  ppc_var_nbr++;
+  for(int index=0;(ppc_lst+index)->key;index++, ppc_var_nbr++); /* end loop over i */
 
   // ppc_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
 
