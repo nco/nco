@@ -1,3 +1,9 @@
+2017-02-28 Henry Butowsky  <henryb@hush.com>
+
+    * Added timestamp printing capability to ncks
+      ( cmd line swicth --prn_timestamp )
+       works with all output formats except --cdl
+
 2017-02-24  Charlie Zender  <zender@uci.edu>
 
 	* Add --version option to ncclimo, ncremap
