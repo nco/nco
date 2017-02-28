@@ -294,6 +294,7 @@ unq_sfx=".pid${spt_pid}" # [sng] Unique suffix
 var_lst='' # [sng] Variables to process (empty means all)
 var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
+vrs_prn='No' # [sng] Print version information
 wgt_gnr='esmf' # [sng] Weight-generator program
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 

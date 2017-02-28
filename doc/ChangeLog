@@ -1,5 +1,7 @@
 2017-02-28  Charlie Zender  <zender@uci.edu>
 
+	* Define vrs_prn before referencing in ncclimo, ncremap
+
 	* Change timestamp printing switch from --prn_timestamp to --cal and synonyms
 
 2017-02-28 Henry Butowsky  <henryb@hush.com>
