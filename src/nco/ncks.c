@@ -262,7 +262,7 @@ main(int argc,char **argv)
   nco_bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
   nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
   nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
-  nco_bool PRN_VAR_TIMESTAMP=False; /* [flg] print timestamp for a time coord instead of time since "blah-blah" offset */
+  nco_bool PRN_CLN_LGB=False; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
   nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
@@ -496,7 +496,10 @@ main(int argc,char **argv)
     {"get_grp_info",no_argument,0,0},
     {"get_file_info",no_argument,0,0},
     {"lbr_rcd",no_argument,0,0},
-    {"prn_timestamp", no_argument,0,0},
+    {"prn_cln_lgb",no_argument,0,0},
+    {"prn_lgb",no_argument,0,0},
+    {"calendar",no_argument,0,0},
+    {"timestamp",no_argument,0,0},
     {0,0,0,0}
   }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
@@ -733,7 +736,7 @@ main(int argc,char **argv)
       } /* !jsn_att_fmt */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
-      if(!strcmp(opt_crr,"prn_timestamp")) PRN_VAR_TIMESTAMP=True;
+      if(!strcmp(opt_crr,"prn_cln_lgb") || !strcmp(opt_crr,"prn_lgb") || !strcmp(opt_crr,"calendar") || !strcmp(opt_crr,"timestamp")) PRN_CLN_LGB=True; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
       if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
       if(!strcmp(opt_crr,"xml") || !strcmp(opt_crr,"ncml")) PRN_XML=True; /* [flg] Print XML (NcML) */
       if(!strcmp(opt_crr,"xml_no_location") || !strcmp(opt_crr,"ncml_no_location")){PRN_XML_LOCATION=False;PRN_XML=True;} /* [flg] Print XML location tag */
@@ -1230,7 +1233,7 @@ main(int argc,char **argv)
     prn_flg.PRN_MSS_VAL_BLANK=PRN_MSS_VAL_BLANK;
     prn_flg.PRN_VAR_DATA=PRN_VAR_DATA;
     prn_flg.PRN_VAR_METADATA=PRN_VAR_METADATA;
-    prn_flg.PRN_VAR_TIMESTAMP=PRN_VAR_TIMESTAMP;
+    prn_flg.PRN_CLN_LGB=PRN_CLN_LGB;
 
     /* Derived formats */
     if(prn_flg.cdl){

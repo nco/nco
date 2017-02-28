@@ -1590,7 +1590,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   /* deal with printing of time-stamp */
   /* this requires reading the "unit" att and the "calendar" att */
-  if(prn_flg->PRN_VAR_TIMESTAMP || prn_flg->PRN_DMN_UNITS){
+  if(prn_flg->PRN_CLN_LGB || prn_flg->PRN_DMN_UNITS){
 
     nco_cln_typ lmt_cln=cln_std;
     char *cln_sng=(char*)NULL;
@@ -1606,7 +1606,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     }
 
     /* create an array of timestamps from var */
-    if(unit_cln_var && prn_flg->PRN_VAR_TIMESTAMP)
+    if(unit_cln_var && prn_flg->PRN_CLN_LGB)
     {
        cln_sng=nco_lmt_get_udu_att(grp_id,var.id,"calendar");
 
