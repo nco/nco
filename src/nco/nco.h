@@ -974,6 +974,7 @@ extern "C" {
     nco_bool PRN_MSS_VAL_BLANK; /* [flg] Print missing values as blanks */
     nco_bool PRN_VAR_DATA; /* [flg] Print variable data */
     nco_bool PRN_VAR_METADATA; /* [flg] Print variable metadata */
+      nco_bool PRN_VAR_TIMESTAMP; /* [flg] Print variable metadata */
   } prn_fmt_sct;
   
   /* Types used in Terraref structure */
