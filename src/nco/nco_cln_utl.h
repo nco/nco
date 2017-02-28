@@ -18,7 +18,7 @@
 #include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
-#include "../../config.h" /* Autotools tokens */
+//#include "../../config.h" /* Autotools tokens */
 //#define ENABLE_UDUNITS
 
 /* Standard header files */
@@ -111,13 +111,12 @@ extern "C" {
   nco_cln_pop_tm         /* [fnc] Calculate other members  in cln_sct from value*/
   (tm_cln_sct *cln_sct); /* I/O [ptr] Calendar structure */
 
-   void
-   nco_cln_prn_tm         /* [fnc] print tm sct*/
-   (tm_cln_sct *cln_sct); /* I [ptr] Calendar structure */
+  void
+  nco_cln_prn_tm         /* [fnc] print tm sct*/
+  (tm_cln_sct *cln_sct); /* I [ptr] Calendar structure */
 
-
-char*                   /* O [sng] contains newly malloced output string */
-  nco_cln_fmt_tm            /*   [fnc] format an output string */
+  char*                    /* O [sng] contains newly malloced output string */
+  nco_cln_fmt_tm           /*   [fnc] format an output string */
   (tm_cln_sct *cln_sct,   /* I [ptr] Calendar structure */
    int fmt);              /* I [int] format type */
 

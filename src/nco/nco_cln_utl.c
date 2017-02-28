@@ -464,7 +464,7 @@ nco_cln_prn_tm         /* [fnc] print tm sct*/
 (tm_cln_sct *cln_sct) /* I [ptr] Calendar structure */
 {
 
-  (void)fprintf(stderr ,"%s: tm_sct date=\"%d-%d-%d %d:%d:%g\" value=%g\n", nco_prg_nm_get(),
+  (void)fprintf(stderr ,"%s: tm_sct cln_type=%d date=\"%d-%d-%d %d:%d:%g\" value=%g\n", nco_prg_nm_get(),cln_sct->sc_cln,
               cln_sct->year, cln_sct->month, cln_sct->day,cln_sct->hour,cln_sct->min, cln_sct->sec,cln_sct->value );
 
    return;
