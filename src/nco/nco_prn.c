@@ -8,6 +8,7 @@
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "nco_prn.h" /* Print variables, attributes, metadata */
+#include "nco.h"
 
 int 
 nco_att_nbr        /* [fnc] return number of atts in var or global atts in group */ 
@@ -1587,6 +1588,54 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
   } /* ! Scalars */
 
+  /* deal with printing of time-stamp */
+  /* this requires reading the "unit" att and the "calendar" att */
+  if(prn_flg->PRN_VAR_TIMESTAMP || prn_flg->PRN_DMN_UNITS){
+
+    nco_cln_typ lmt_cln=cln_std;
+    char *cln_sng=(char*)NULL;
+
+    var_sct *var_new=NULL_CEWI;
+
+    unit_sng_var = nco_lmt_get_udu_att(grp_id,var.id,"units");
+
+    if( unit_sng_var && strlen(unit_sng_var))
+    {
+      flg_malloc_unit_var=True;
+      unit_cln_var=nco_cln_chk_tm(unit_sng_var);
+    }
+
+    /* create an array of timestamps from var */
+    if(unit_cln_var && prn_flg->PRN_VAR_TIMESTAMP)
+    {
+       cln_sng=nco_lmt_get_udu_att(grp_id,var.id,"calendar");
+
+       if(cln_sng)
+         lmt_cln=nco_cln_get_cln_typ(cln_sng);
+       else
+          lmt_cln=cln_std;
+
+       var_new=nco_var_dpl(&var);
+       var_new->val.vp=nco_free(var_new->val.vp);
+
+       nco_var_cnf_typ(NC_STRING, var_new);
+
+       if( nco_cln_var_prs(unit_sng_var,lmt_cln,2,&var,var_new) == NCO_NOERR)
+       {
+         /* swap values about */
+         var.val.vp=nco_free(var.val.vp);
+         nco_var_cnf_typ(NC_STRING, &var);
+         var.val.vp=var_new->val.vp;
+         var_new->val.vp=(void*)NULL_CEWI;
+
+       }
+
+
+    }
+    if(var_new) var_new=(var_sct*)nco_free(var_new);
+    if(cln_sng) cln_sng=(char*)nco_free(cln_sng);
+
+  }
 
   if(var.nbr_dim)
   { 
@@ -1889,7 +1938,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   } /* end if CDL_OR_JSN_OR_XML */
 
-  if(prn_flg->PRN_DMN_UNITS){
+  if(0 && prn_flg->PRN_DMN_UNITS){
     const char units_nm[]="units"; /* [sng] Name of units attribute */
     int rcd_lcl; /* [rcd] Return code */
     int att_id; /* [id] Attribute ID */
