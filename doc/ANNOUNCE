@@ -41,7 +41,8 @@ A. new features...ncclimo will reshape timeseries, i.e., split input datasets in
 
 BUG FIXES:
 
-A. Hi
+A. The chunk cache option (--cnk_csh) implemented in ncks in 4.6.4 was  
+   inadvertently doing a no-op. Now it works as advertised.
 
 KNOWN PROBLEMS DUE TO NCO:
 
