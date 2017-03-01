@@ -678,7 +678,7 @@ main(int argc,char **argv)
 	rgr_var=(char *)strdup(optarg);
       } /* !rgr_var */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nChunk cache size\t\t--cnk_csh_byt\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */
@@ -1042,7 +1042,7 @@ main(int argc,char **argv)
     if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups, non-atomic types, or multiple record dimensions. However, it _will_ autoconvert netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE...) to netCDF3 atomic types (e.g., NC_CHAR, NC_SHORT...).\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
-  /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file is netCDF4, because it has to be printed, and there is anecdotal evidence that ncdump print speed may be improved by cache adjustments */
+  /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file) is netCDF4, because it has to be printed, and there is anecdotal evidence that ncdump netCDF4 print speed may be improved by cache adjustments */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC || fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
     size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */

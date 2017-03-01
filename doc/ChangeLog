@@ -1,3 +1,7 @@
+2017-03-01  Charlie Zender  <zender@uci.edu>
+
+	* Add (undocumented) per-variable chunck cache to all operators
+
 2017-02-28  Charlie Zender  <zender@uci.edu>
 
 	* Define vrs_prn before referencing in ncclimo, ncremap
