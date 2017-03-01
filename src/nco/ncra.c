@@ -150,6 +150,8 @@ main(int argc,char **argv)
   const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:Nn:Oo:p:P:rRt:v:w:X:xY:y:-:";
 
+  const char fnc_nm[]="main()"; /* [sng] Function name */
+
   clm_bnd_sct *cb=NULL;
   
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -733,6 +735,23 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
+
+  if(True){
+    float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
+    size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
+    size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
+    if(cnk_csh_byt > 0ULL){
+      /* Use user-specified chunk cache size if available */
+      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+      rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
+    } /* !cnk_csh_byt */
+    
+    /* Report current system cache settings */
+    if(nco_dbg_lvl_get() >= nco_dbg_scl){
+      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+      (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
+    } /* !dbg */
+  } /* !True */
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);

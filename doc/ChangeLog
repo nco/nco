@@ -1,6 +1,6 @@
 2017-03-01  Charlie Zender  <zender@uci.edu>
 
-	* Add (undocumented) per-variable chunk cache to all operators
+	* Add chunk cache set to ncra.c, fix it in ncks.c
 
 2017-02-28  Charlie Zender  <zender@uci.edu>
 

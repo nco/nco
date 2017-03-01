@@ -166,26 +166,6 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
   /* Did user explicitly request chunking? */
   if(cnk_nbr > 0 || cnk_min_byt > 0UL || cnk_sz_byt > 0UL || cnk_sz_scl > 0UL || cnk_map != nco_cnk_map_nil || cnk_plc != nco_cnk_plc_nil) cnk->flg_usr_rqs=True;
 
-  /* ncks sets per-variable chunk-cache in main() for reasons explained there
-     All other operators set it here */
-  if(nco_prg_id_get() != ncks){
-    float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
-    size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
-    size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
-    if(cnk_csh_byt > 0ULL){
-      /* Use user-specified chunk cache size if available */
-      //cnk->cnk_csh_byt=cnk_csh_byt;
-      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-      rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
-    } /* !cnk_csh_byt */
-    
-    /* Report current system cache settings */
-    if(nco_dbg_lvl_get() >= nco_dbg_scl){
-      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-      (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
-    } /* !dbg */
-  } /* !ncks */
-
   /* Chunks are atomic unit of HDF5 read/write
      Variables are compressed and check-summed one chunk at-a-time
      Set NCO_CNK_SZ_BYT_DFL to system blocksize, if known

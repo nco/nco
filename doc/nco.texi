@@ -122,8 +122,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.5-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 21 February 2017
-@set update-month February 2017
+@set update-date 1 March 2017
+@set update-month March 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -7570,12 +7570,14 @@ important information from being lost.
 @node Chunking, Compression, Missing Values, Shared features
 @section Chunking
 @cindex @code{--cnk_byt}
+@cindex @code{--cnk_csh}
 @cindex @code{--cnk_dmn}
 @cindex @code{--cnk_map}
 @cindex @code{--cnk_min}
 @cindex @code{--cnk_plc}
 @cindex @code{--cnk_scl}
 @cindex @code{--chunk_byte}
+@cindex @code{--chunk_cache}
 @cindex @code{--chunk_dimension}
 @cindex @code{--chunk_map}
 @cindex @code{--chunk_min}
@@ -7589,6 +7591,7 @@ Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 Short options: none@*
 Long options: 
 @samp{--cnk_byt @var{sz_byt}}, @samp{--chunk_byte @var{sz_byt}}@*
+@samp{--cnk_csh @var{sz_byt}}, @samp{--chunk_cache @var{sz_byt}}@*
 @samp{--cnk_dmn @var{dmn_nm},@var{sz_lmn}},
 @samp{--chunk_dimension @var{dmn_nm},@var{sz_lmn}}@*,
 @samp{--cnk_map @var{cnk_map}}, @samp{--chunk_map @var{cnk_map}},@*
@@ -7608,6 +7611,25 @@ and
 @uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes,here}.
 @acronym{NCO} authors are working on generalized algorithms and
 applications of chunking strategies (stay tuned for more in 2017).
+
+@html
+<a name="chunk_cache"></a> <!-- http://nco.sf.net/nco.html#chunk_cache -->
+<a name="cnk_csh"></a> <!-- http://nco.sf.net/nco.html#cnk_csh -->
+<a name="cache"></a> <!-- http://nco.sf.net/nco.html#cache -->
+<a name="csh"></a> <!-- http://nco.sf.net/nco.html#csh -->
+@end html
+@cindex chunk cache size
+@cindex cache size
+@cindex @code{--cnk_csh @var{sz}}
+@cindex @code{--chunk_cache @var{sz}}
+Set chunk cache size to @var{sz} bytes.
+By default, the cache size is set (by the @code{--with-chunk-cache-size}
+option to @command{configure}) at netCDF compile time. 
+This option changes the cache size.
+When the debugging level is set (with @code{-D @var{dbg_lvl}}) to three
+or higher, @acronym{NCO} prints the current value of the cache settings
+for informational purposes. 
+Also @samp{--chunk_cache}.
 
 @html
 <a name="blocksize"></a> <!-- http://nco.sf.net/nco.html#blocksize -->
@@ -7637,8 +7659,8 @@ These measures differ by a factor of four or eight for @code{NC_FLOAT}
 or @code{NC_DOUBLE}, respectively. 
 The option @samp{--cnk_scl} takes an argument @var{sz_lmn} measured in
 elements.
-The options @samp{--cnk_byt} and @samp{--cnk_min} take arguments
-@var{sz_byt} measured in bytes.
+The options @samp{--cnk_byt}, @samp{--cnk_csh}, and @samp{--cnk_min}
+take arguments @var{sz_byt} measured in bytes.
 
 Use the @samp{--cnk_min=@var{sz_byt}} option to set the minimum size in
 bytes (not elements) of variables to chunk.  
@@ -18262,7 +18284,7 @@ of changing variable dimensionality, including the record dimension.
 SYNTAX
 @example
 nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
@@ -18786,7 +18808,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 SYNTAX
 @example
 ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
-[--cnk_byt @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
@@ -18974,27 +18996,6 @@ coordinates to the binary file:
 % ls -l bnr.dat | cut -d ' ' -f # 40 B contains one_dmn_rec_var only
 40
 @end example
-
-
-@html
-<a name="chunk_cache"></a> <!-- http://nco.sf.net/nco.html#chunk_cache -->
-<a name="cnk_csh"></a> <!-- http://nco.sf.net/nco.html#cnk_csh -->
-<a name="cache"></a> <!-- http://nco.sf.net/nco.html#cache -->
-<a name="csh"></a> <!-- http://nco.sf.net/nco.html#csh -->
-@end html
-@cindex chunk cache size
-@cindex cache size
-@cindex @code{--cnk_csh @var{sz}}
-@cindex @code{--chunk_cache @var{sz}}
-Set the per-variable chunk cache size to @var{sz} bytes.
-By default, the per-variable cache size is set (by the 
-@code{--with-chunk-cache-size} option to @command{configure}) at netCDF
-compile time. 
-This option changes the per-variable cache size.
-When the debugging level is set (with @code{-D @var{dbg_lvl}}) to three
-or higher, @acronym{NCO} prints the current value of the cache settings
-for informational purposes. 
-Also @samp{--chunk_cache}.
 
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->
@@ -20838,7 +20839,7 @@ changing variable dimensionality, including the record dimension.
 SYNTAX
 @example
 ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c] [--cb]
-[--cnk_byt @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
@@ -21087,7 +21088,7 @@ The last example
 SYNTAX
 @example
 ncrcat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
