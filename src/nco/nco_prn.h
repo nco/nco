@@ -76,6 +76,12 @@ nco_typ_fmt_sng_att_xml /* [fnc] Provide sprintf() format string for specified a
 (const nc_type typ); /* I [enm] netCDF attribute type to provide XML format string for */
 
 void
+nco_prn_var_val_dlm_sng /* 0 print to stdout var values fromatted  by prn_flg or dlm_sng_in  or */
+(var_sct *var,          /* I [sct] variable to print */
+const prn_fmt_sct * const prn_flg,  /* I [sct] Print-format information */
+ const char *dlm_sng_in);  /* I [char] custom format specifier */
+
+void
 nco_prn_var_val_lmt /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm, /* I [sng] Variable name */

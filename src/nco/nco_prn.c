@@ -1,4 +1,5 @@
 /* $Header$ */
+/* $Header$ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -823,6 +824,80 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   return (char *)NULL;
 } /* end nco_typ_fmt_sng() */
 
+
+void
+nco_prn_var_val_dlm_sng /* 0 print to stdout var values fromatted  by prn_flg or dlm_sng_in  or */
+(var_sct *var,          /* I [sct] variable to print */
+ const prn_fmt_sct * const prn_flg,  /* I [sct] Print-format information */
+ const char *dlm_sng_in)  /* I [char] custom format specifier */
+{
+  nco_bool is_mss_val;
+  long lmn;
+  size_t val_sz_byt;
+  char *fmt_sng_mss_val=NULL;
+  char *dlm_sng=NULL;
+  const char *mss_val_sng="_";
+  /* Print each element with user-supplied formatting code */
+  /* Replace C language '\X' escape codes with ASCII bytes */
+
+  if(!dlm_sng_in)
+    dlm_sng=strdup(prn_flg->dlm_sng);
+  else
+    dlm_sng=strdup(dlm_sng_in);
+
+  (void)sng_ascii_trn(dlm_sng);
+
+  if(var->has_mss_val) val_sz_byt=nco_typ_lng(var->type);
+
+  /* Assume -s argument (dlm_sng) formats entire string
+   Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var->type),
+   and that user is only allowed to affect text between fields. 
+   This would be accomplished with:
+   (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var->type),dlm_sng);*/
+
+  /* Find replacement format string at most once, then re-use */
+  #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+    /* Replace printf()-format statements with format for missing values */
+      fmt_sng_mss_val=nco_fmt_sng_printf_subst(dlm_sng);
+  #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+
+  for(lmn=0;lmn<var->sz;lmn++){
+
+  /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
+  if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var->has_mss_val ? !memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt) : False;
+
+  if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
+     if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(stdout,"%s, ",mss_val_sng);
+  }else{ /* !is_mss_val */
+      switch(var->type){
+        case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var->val.fp[lmn]); break;
+        case NC_DOUBLE: (void)fprintf(stdout,dlm_sng,var->val.dp[lmn]); break;
+        case NC_SHORT: (void)fprintf(stdout,dlm_sng,var->val.sp[lmn]); break;
+        case NC_INT: (void)fprintf(stdout,dlm_sng,var->val.ip[lmn]); break;
+        case NC_CHAR: (void)fprintf(stdout,dlm_sng,var->val.cp[lmn]); break;
+        case NC_BYTE: (void)fprintf(stdout,dlm_sng,var->val.bp[lmn]); break;
+        case NC_UBYTE: (void)fprintf(stdout,dlm_sng,var->val.ubp[lmn]); break;
+        case NC_USHORT: (void)fprintf(stdout,dlm_sng,var->val.usp[lmn]); break;
+        case NC_UINT: (void)fprintf(stdout,dlm_sng,var->val.uip[lmn]); break;
+        case NC_INT64: (void)fprintf(stdout,dlm_sng,var->val.i64p[lmn]); break;
+        case NC_UINT64: (void)fprintf(stdout,dlm_sng,var->val.ui64p[lmn]); break;
+        case NC_STRING: (void)fprintf(stdout,dlm_sng,var->val.sngp[lmn]); break;
+        default: nco_dfl_case_nc_type_err(); break;
+     } /* end switch */
+  } /* !is_mss_val */
+  } /* end loop over element */
+
+  (void)fprintf(stdout,"\n");
+
+  if(fmt_sng_mss_val) fmt_sng_mss_val=(char *)nco_free(fmt_sng_mss_val);
+  if(dlm_sng) dlm_sng=(char*)nco_free(dlm_sng);
+
+
+}/* end nco_prn_var_val_dlm_sng() */
+
+
+
+
 void
 nco_prn_var_val_lmt /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
@@ -1542,6 +1617,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   var_sct var; /* [sct] Variable structure */
   var_sct var_crd; /* [sct] Variable structure for associated coordinate variable */
+  var_sct *var_aux=NULL_CEWI; /* used to hold var data to be printed as CDL comment AFTER regular var data */
 
   if(prn_flg->new_fmt && (CDL||TRD||JSN)) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
   if(XML) prn_ndn=prn_flg->ndn;
@@ -1588,54 +1664,65 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
   } /* ! Scalars */
 
-  /* deal with printing of time-stamp */
-  /* this requires reading the "unit" att and the "calendar" att */
-  if(prn_flg->PRN_CLN_LGB || prn_flg->PRN_DMN_UNITS){
 
-    nco_cln_typ lmt_cln=cln_std;
-    char *cln_sng=(char*)NULL;
+  unit_sng_var = nco_lmt_get_udu_att(grp_id,var.id,"units");
+  if( unit_sng_var && strlen(unit_sng_var)) {
+    flg_malloc_unit_var=True;
+    unit_cln_var=nco_cln_chk_tm(unit_sng_var);
+  }
 
-    var_sct *var_new=NULL_CEWI;
+  if(unit_cln_var && ( prn_flg->PRN_CLN_LGB || nco_dbg_lvl_get()== nco_dbg_std)) {
 
-    unit_sng_var = nco_lmt_get_udu_att(grp_id,var.id,"units");
+    nco_cln_typ lmt_cln = cln_std;
+    char *cln_sng = (char *) NULL;
 
-    if( unit_sng_var && strlen(unit_sng_var))
-    {
-      flg_malloc_unit_var=True;
-      unit_cln_var=nco_cln_chk_tm(unit_sng_var);
+    cln_sng = nco_lmt_get_udu_att(grp_id, var.id, "calendar");
+    if (cln_sng)
+      lmt_cln = nco_cln_get_cln_typ(cln_sng);
+    else
+      lmt_cln = cln_std;
+
+    var_aux = nco_var_dpl(&var);
+    var_aux->val.vp = nco_free(var_aux->val.vp);
+
+    nco_var_cnf_typ(NC_STRING, var_aux);
+
+    if (nco_cln_var_prs(unit_sng_var, lmt_cln, 2, &var, var_aux) == NCO_NOERR) {
+      /* swap values about */
+      if (prn_flg->PRN_CLN_LGB) {
+
+        nc_type var_typ;
+        ptr_unn val_swp;
+
+        var_typ = var.type;
+        val_swp = var.val;
+
+        var.val.vp = (void *) NULL;
+        nco_var_cnf_typ(NC_STRING, &var);
+        var.val.vp = var_aux->val.vp;
+
+        var_aux->val.vp = (void *) NULL;
+        nco_var_cnf_typ(var_typ, var_aux);
+        var_aux->val = val_swp;
+      }
+
+    }else{
+      /* nco_cln_var_prs() has failed  */
+      if (var_aux) var_aux = nco_var_free(var_aux);
     }
 
-    /* create an array of timestamps from var */
-    if(unit_cln_var && prn_flg->PRN_CLN_LGB)
-    {
-       cln_sng=nco_lmt_get_udu_att(grp_id,var.id,"calendar");
-
-       if(cln_sng)
-         lmt_cln=nco_cln_get_cln_typ(cln_sng);
-       else
-          lmt_cln=cln_std;
-
-       var_new=nco_var_dpl(&var);
-       var_new->val.vp=nco_free(var_new->val.vp);
-
-       nco_var_cnf_typ(NC_STRING, var_new);
-
-       if( nco_cln_var_prs(unit_sng_var,lmt_cln,2,&var,var_new) == NCO_NOERR)
-       {
-         /* swap values about */
-         var.val.vp=nco_free(var.val.vp);
-         nco_var_cnf_typ(NC_STRING, &var);
-         var.val.vp=var_new->val.vp;
-         var_new->val.vp=(void*)NULL_CEWI;
-
-       }
-
-
-    }
-    if(var_new) var_new=(var_sct*)nco_free(var_new);
-    if(cln_sng) cln_sng=(char*)nco_free(cln_sng);
+    if (cln_sng) cln_sng = (char *) nco_free(cln_sng);
 
   }
+
+  /* no need to print units if we are using a timestamp */
+  if(unit_cln_var || !prn_flg->PRN_DMN_UNITS){
+    unit_sng_var=(char*)nco_free(unit_sng_var);
+    flg_malloc_unit_var=False;
+    unit_sng_var=&nul_chr;
+  }
+
+
 
   if(var.nbr_dim)
   { 
@@ -1682,7 +1769,12 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   if(var.has_mss_val) val_sz_byt=nco_typ_lng(var.type);
 
   if(prn_flg->dlm_sng) dlm_sng=strdup(prn_flg->dlm_sng); /* [sng] User-specified delimiter string, if any */
+
   if(dlm_sng){
+     nco_prn_var_val_dlm_sng(&var,prn_flg,(char*)NULL);
+  }
+
+  if(0 && dlm_sng ){
     /* Print variable with user-supplied dlm_sng (includes nbr_dmn == 0) */
     char *fmt_sng_mss_val=NULL;
 
@@ -1931,44 +2023,25 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
-    if(CDL) (void)fprintf(stdout," ;\n");
+
+    if(CDL){
+      char lcl_fmt_sng[NCO_MAX_LEN_FMT_SNG];
+
+      if(var_aux && nco_dbg_lvl_get() == nco_dbg_std ){
+        (void)sprintf(lcl_fmt_sng,"%s, ",nco_typ_fmt_sng_var_cdl(var_aux->type));
+        fprintf(stdout, "; // ");
+        nco_prn_var_val_dlm_sng(var_aux,prn_flg, lcl_fmt_sng );
+      }else {
+        (void) fprintf(stdout, " ;\n");
+      }
+
+    }
     if(XML) (void)fprintf(stdout,"</values>\n");
     /* close out array bracket if sz>1 */ 
     if(JSN && var.sz > 1 ) (void)fprintf(stdout,"]");
 
   } /* end if CDL_OR_JSN_OR_XML */
 
-  if(0 && prn_flg->PRN_DMN_UNITS){
-    const char units_nm[]="units"; /* [sng] Name of units attribute */
-    int rcd_lcl; /* [rcd] Return code */
-    int att_id; /* [id] Attribute ID */
-    long att_sz;
-    nc_type att_typ;
-
-    /* Does variable have character attribute named units_nm? */
-    rcd_lcl=nco_inq_attid_flg(grp_id,var.id,units_nm,&att_id);
-    if(rcd_lcl == NC_NOERR){
-      (void)nco_inq_att(grp_id,var.id,units_nm,&att_typ,&att_sz);
-      if(att_typ == NC_CHAR){
-        unit_sng_var=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-        (void)nco_get_att(grp_id,var.id,units_nm,unit_sng_var,att_typ);
-        unit_sng_var[(att_sz+1L)*nco_typ_lng(att_typ)-1L]='\0';
-        flg_malloc_unit_var=True;
-
-	/* CDM documentation on time coordinates:
-	   http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/CalendarDateTime.html
-	   "As of CDM version 4.3, dates are no longer handled by the UDUnits library. This allows handling non-standard Calendars. This change only affects datetime coordinate handling, called time coordinates in CF. For all other dimensional units, the UDUnits package is still used.
-	   The UDUnit date grammar is difficult to understand. Heres an approximate regular expression:
-	   period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]
-	   The CDM uses the W3C profile of ISO 8601 formatting for reading and writing calendar dates" */
-
-	/* Are units those of a calendar? */
-	unit_cln_var=nco_cln_chk_tm(unit_sng_var);
-        if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports units string \"%s\" is %sa calendar string\n",nco_prg_nm_get(),fnc_nm,unit_sng_var,unit_cln_var ? "" : "not " );
-
-      } /* end if */
-    } /* end if */
-  } /* end if PRN_DMN_UNITS */
 
   if(var.nbr_dim == 0 && !dlm_sng && TRD){
     /* Variable is scalar, byte, or character */
@@ -2030,25 +2103,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   if(var.nbr_dim > 0 && !dlm_sng && TRD){
 
-    /*
-    dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
-    for(int idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=NULL; 
-    dmn_sbs_ram=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-    dmn_sbs_dsk=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-    mod_map_cnt=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-    mod_map_in=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-
-    for(int idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
-    for(int idx=0;idx<var.nbr_dim;idx++)
-      for(int jdx=idx+1;jdx<var.nbr_dim;jdx++)
-        mod_map_in[idx]*=lmt_msa[jdx]->dmn_sz_org;
-
-    for(int idx=0;idx<var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
-    for(int idx=0;idx<var.nbr_dim;idx++)
-      for(int jdx=idx;jdx<var.nbr_dim;jdx++)
-        mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
-
-    */  
 
     /* Read coordinate dimensions if required */
     if(prn_flg->PRN_DMN_IDX_CRD_VAL){
@@ -2360,6 +2414,9 @@ lbl_chr_prn:
     (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
     lmt=(lmt_sct **)nco_free(lmt);
   } /* endif */
+
+  /* free var_aux */
+  if(var_aux) var_aux=nco_var_free(var_aux);
 
 } /* end nco_prn_var_val_trv() */
 
