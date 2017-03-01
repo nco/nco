@@ -900,11 +900,34 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   char *dt_sng;
   int cnv_nbr;
   int ut_rcd; /* [enm] UDUnits2 status */
+  int year;
+  int month;
+  int day;
 
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
 
   bfr=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
+
+
+  /* There is a problem letting udunits do the parsing for the other calendars - that is when parsing non regular dates
+     eg for "all_leap" (cln_366) we have dates like 2001-02-29  which cannot be meaningfully parsed by udunits
+     e.g for 360_days (cln_360)  we have dates like 1903-2-29, 1903-2-30  so we need to parse the date portion of the string here*/
+
+   if( (dt_sng=strstr(unt_sng,"since")))
+    dt_sng+=5;
+   else if ( (dt_sng=strstr(unt_sng,"from")))
+    dt_sng+=4;
+   else if ( (dt_sng=strstr(unt_sng,"after")))
+    dt_sng+=5;
+   else if (( dt_sng=strstr(unt_sng,"s@")))
+    dt_sng+=2;
+
+   if(dt_sng==unt_sng)
+     return NCO_ERR;
+
+   cnv_nbr=sscanf(dt_sng,"%d-%d-%d",&tm_in->year,&tm_in->month,&tm_in->day);
+   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports sscanf() converted %d values and it should have converted 3 values, format string=\"%s\"\n",nco_prg_nm_get(),fnc_nm,cnv_nbr,dt_sng);
 
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
@@ -936,7 +959,8 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 
   dt_sng=strstr(bfr,"since");
   dt_sng+=(size_t)6;
-  cnv_nbr=sscanf(dt_sng,"%d-%d-%d %d:%d:%lf",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
+  /* nb we dont need yar,month,day as that have been parsed earlier in THIS function */
+  cnv_nbr=sscanf(dt_sng,"%d-%d-%d %d:%d:%lf",&year,&month,&day,&tm_in->hour,&tm_in->min,&tm_in->sec);
   
   /* Set defaults */ 
   if(cnv_nbr < 6) tm_in->sec=0.0;
@@ -1054,29 +1078,10 @@ nco_cln_var_prs
   if(nco_dbg_lvl_get() >= nco_dbg_crr)
      (void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,bs_sng,lmt_cln);
 
-  /* rebase time to "seconds since blah-blah
-  if( lmt_cln==cln_360 || lmt_cln==cln_365 || lmt_cln ==cln_366 )
-      ;
-  else
-      bs_sng="seconds since 2001-01-01";
-  */
-
-  /* execute rebase
-  if( lmt_cln != cln_360 || lmt_cln != cln_365 || lmt_cln != cln_366)
-  {
-     if(nco_cln_clc_dbl_var_dff(fl_unt_sng,bs_sng,lmt_cln, (double*)NULL, var ) != NCO_NOERR )
-        return NCO_ERR;
-  }
-  */
   /* rebase to seconds since blah-blah */
   if(nco_cln_clc_dbl_var_dff(fl_unt_sng,bs_sng,lmt_cln, (double*)NULL, var ) != NCO_NOERR )
      return NCO_ERR;
 
-
-/* convert to base only if standard calendat
-if( nco_cln_clc_var_dff(fl_unt_sng,bs_sng,var) != NCO_NOERR)
-   return NCO_ERR;
-*/
 
   if(var->type != NC_DOUBLE && var->type != NC_FLOAT)
       nco_var_cnf_typ(NC_DOUBLE,var);
@@ -1100,18 +1105,15 @@ if( nco_cln_clc_var_dff(fl_unt_sng,bs_sng,var) != NCO_NOERR)
 
    for(idx=0; idx<sz; idx++)
    {
-    /* var is DOUBLE or FLOAT and NOTHING ELSE */
-    tm.value= (var->type==NC_DOUBLE ? var->val.dp[idx] : (double)(var->val.fp[idx]) );
+      /* var is DOUBLE or FLOAT and NOTHING ELSE */
+      tm.value= (var->type==NC_DOUBLE ? var->val.dp[idx] : (double)(var->val.fp[idx]) );
 
-   if( lmt_cln==cln_360 || lmt_cln==cln_365 || lmt_cln ==cln_366 )
-     nco_cln_pop_tm(&tm);
-   else
-   {
-     (void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
+      if( lmt_cln==cln_360 || lmt_cln==cln_365 || lmt_cln ==cln_366 )
+         nco_cln_pop_tm(&tm);
+      else
+         (void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
 
-    }
-
-     var_ret->val.sngp[idx]= nco_cln_fmt_tm(&tm,ifmt);
+      var_ret->val.sngp[idx]= nco_cln_fmt_tm(&tm,ifmt);
 
    }
 
