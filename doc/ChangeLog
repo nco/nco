@@ -1,6 +1,6 @@
 2017-03-01  Charlie Zender  <zender@uci.edu>
 
-	* Add (undocumented) per-variable chunck cache to all operators
+	* Add (undocumented) per-variable chunk cache to all operators
 
 2017-02-28  Charlie Zender  <zender@uci.edu>
 

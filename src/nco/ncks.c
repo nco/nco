@@ -1042,7 +1042,7 @@ main(int argc,char **argv)
     if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups, non-atomic types, or multiple record dimensions. However, it _will_ autoconvert netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE...) to netCDF3 atomic types (e.g., NC_CHAR, NC_SHORT...).\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
-  /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file) is netCDF4, because it has to be printed, and there is anecdotal evidence that ncdump netCDF4 print speed may be improved by cache adjustments */
+  /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file) is netCDF4, because it has to be printed, and there is anecdotal evidence that ncdump netCDF4 print speed may be improved by cache adjustments. However, netCDF docs say this call must be made before opening file! */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC || fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
     size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
