@@ -71,6 +71,7 @@ ncap_att2var          //   [fnc] return text content of var
 }
 
 
+
 int                    // O [flg] 0 - att doesnt exist 1 - att exists
 ncap_att2var_chk       //   [fnc] returns nco_bool
 ( prs_cls *prs_arg,    // I [cls] var/att symbol tables
@@ -465,8 +466,7 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
   char *cp_max;  
 
   long att_lmn;
-  long att_sz; 
-  long max_sz;
+  long att_sz;
   
   /* Copy value to avoid indirection in loop over att_sz */
   att_sz=var->sz;
@@ -609,8 +609,7 @@ char *          /* new malloc'ed string */
 ncap_att_char  /* extract string from a NC_CHAR or first NC_STRING */
 (var_sct *var_att)
 {
-  int idx;
-  char *cstr;
+  char *cstr=NULL;
   
   (void)cast_void_nctype((nc_type)var_att->type,&var_att->val);
 
