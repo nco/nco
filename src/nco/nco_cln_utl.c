@@ -177,7 +177,7 @@ int ifmt)              /* I [int] format type */
  char btime[200]={0};
  char *buff;
 
- buff=nco_malloc( sizeof(char) * NCO_MAX_LEN_FMT_SNG );
+ buff=(char*)nco_malloc( sizeof(char) * NCO_MAX_LEN_FMT_SNG );
 
  switch(ifmt)
  {
@@ -902,16 +902,34 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   int year;
   int month;
   int day;
-
+  int idx;
+  int sz;
+  const char *time_words[4]={"since","from","after","s@"};
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
 
   bfr=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
 
 
+
+
   /* There is a problem letting udunits do the parsing for the other calendars - that is when parsing non regular dates
      eg for "all_leap" (cln_366) we have dates like 2001-02-29  which cannot be meaningfully parsed by udunits
      e.g for 360_days (cln_360)  we have dates like 1903-2-29, 1903-2-30  so we need to parse the date portion of the string here*/
+
+
+  for(idx=0;idx<4;idx++)
+  {
+    dt_sng=strstr(unt_sng,time_words[idx]);
+    if(dt_sng) {
+      dt_sng += (size_t) strlen(time_words[idx]);
+      break;
+    }
+  }
+  if(!dt_sng || dt_sng==unt_sng)
+     return NCO_ERR;
+
+  /*
 
    if( (dt_sng=strstr(unt_sng,"since")))
     dt_sng+=5;
@@ -924,6 +942,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 
    if(dt_sng==unt_sng)
      return NCO_ERR;
+  */
 
    cnv_nbr=sscanf(dt_sng,"%d-%d-%d",&tm_in->year,&tm_in->month,&tm_in->day);
    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports sscanf() converted %d values and it should have converted 3 values, format string=\"%s\"\n",nco_prg_nm_get(),fnc_nm,cnv_nbr,dt_sng);
