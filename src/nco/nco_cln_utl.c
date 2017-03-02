@@ -1065,13 +1065,15 @@ nco_cln_var_prs
   long idx;
   double resolution;
   tm_cln_sct tm;
-
+  nc_type vtyp;
   /* base units for udunits */
   const char *bs_sng="seconds since 2001-01-01";
   const char *fnc_nm="nco_cln_var_prs";
 
   // if( lmt_cln != cln_std )
   //   return NCO_ERR;
+  if(var->type !=NC_DOUBLE && var->type!=NC_FLOAT)
+    nco_var_cnf_typ(NC_DOUBLE,var);
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr)
      (void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,bs_sng,lmt_cln);
@@ -1081,8 +1083,6 @@ nco_cln_var_prs
      return NCO_ERR;
 
 
-  if(var->type != NC_DOUBLE && var->type != NC_FLOAT)
-      nco_var_cnf_typ(NC_DOUBLE,var);
 
   cast_void_nctype(var->type,&var->val);
 
