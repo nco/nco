@@ -895,16 +895,14 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   const char fnc_nm[]="nco_cln_prs_tm()"; /* [sng] Function name */
 
   char *bfr;
-
   char *dt_sng;
+  const char *dc_sng=NULL;
   int cnv_nbr;
   int ut_rcd; /* [enm] UDUnits2 status */
   int year;
   int month;
   int day;
-  int idx;
-  int sz;
-  const char *time_words[4]={"since","from","after","s@"};
+  const char *twords[4];
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
 
@@ -918,17 +916,36 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
      e.g for 360_days (cln_360)  we have dates like 1903-2-29, 1903-2-30  so we need to parse the date portion of the string here*/
 
 
+  twords[0]=strstr(unt_sng,"since");
+  twords[1]=strstr(unt_sng,"from");
+  twords[2]=strstr(unt_sng,"after");
+  twords[3]=strstr(unt_sng,"s@");
+
+  if(twords[0])
+    dc_sng=twords[0]+(size_t)5;
+  else if(twords[1])
+    dc_sng=twords[1]+(size_t)4;
+  else if(twords[2])
+    dc_sng=twords[2]+(size_t)5;
+
+  else if(twords[3])
+    dc_sng=twords[3]+(size_t)2;
+
+  if(!dc_sng)
+    return NCO_ERR;
+
+  /*
   for(idx=0;idx<4;idx++)
   {
-    dt_sng=strstr(unt_sng,time_words[idx]);
-    if(dt_sng) {
-      dt_sng += (size_t) strlen(time_words[idx]);
+    dc_sng=strstr(unt_sng,time_words[idx]);
+    if(dc_sng) {
+      dc_sng += (size_t) strlen(time_words[idx]);
       break;
     }
   }
-  if(!dt_sng || dt_sng==unt_sng)
+  if(!dc_sng || dc_sng==unt_sng)
      return NCO_ERR;
-
+  */
   /*
 
    if( (dt_sng=strstr(unt_sng,"since")))
@@ -944,7 +961,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
      return NCO_ERR;
   */
 
-   cnv_nbr=sscanf(dt_sng,"%d-%d-%d",&tm_in->year,&tm_in->month,&tm_in->day);
+   cnv_nbr=sscanf(dc_sng,"%d-%d-%d",&tm_in->year,&tm_in->month,&tm_in->day);
    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports sscanf() converted %d values and it should have converted 3 values, format string=\"%s\"\n",nco_prg_nm_get(),fnc_nm,cnv_nbr,dt_sng);
 
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
