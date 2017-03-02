@@ -173,7 +173,6 @@ nco_cln_fmt_tm         /*   [fnc] format an output string */
 (tm_cln_sct *ttx,      /* I [ptr] Calendar structure */
 int ifmt)              /* I [int] format type */
 {
- int idx;
  char bdate[200]={0};
  char btime[200]={0};
  char *buff;
@@ -1062,7 +1061,6 @@ nco_cln_var_prs
  var_sct *var_ret
 )
 {
-  int rcd;
   long sz;
   long idx;
   double resolution;

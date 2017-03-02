@@ -2179,7 +2179,6 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 	  if(has_mss_val && !isfinite(mss_val_dbl)) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" has %s attribute that fails isfinite() (value is %s) so results are unpredictable. HINT: If regridding fails or values seem weird, retry after converting %s to normal number with, e.g., \"ncatted -a %s,%s,m,f,1.0e36 in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_mss_val_sng_get(),(isnan(mss_val_dbl)) ? "NaN" : ((isinf(mss_val_dbl)) ? "Infinity" : ""),nco_mss_val_sng_get(),nco_mss_val_sng_get(),var_rgr_nbr == 1 ? var_nm : "");
-	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seem weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    //dmn_idx_in_out_pre_rgr[dmn_idx]=dmn_idx;
