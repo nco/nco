@@ -1673,8 +1673,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   if(unit_cln_var && ( prn_flg->PRN_CLN_LGB || nco_dbg_lvl_get()== nco_dbg_std)) {
 
+    var_sct *var_tmp=NULL_CEWI;
     nco_cln_typ lmt_cln = cln_std;
     char *cln_sng = (char *) NULL;
+
+    var_tmp=nco_var_dpl(&var);
 
     cln_sng = nco_lmt_get_udu_att(grp_id, var.id, "calendar");
     if (cln_sng)
@@ -1687,9 +1690,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     nco_var_cnf_typ(NC_STRING, var_aux);
 
-    if (nco_cln_var_prs(unit_sng_var, lmt_cln, 2, &var, var_aux) == NCO_NOERR) {
+    /* nb nco_cln_var_prs modifies var */
+    if (nco_cln_var_prs(unit_sng_var, lmt_cln, 2, var_tmp, var_aux) == NCO_NOERR) {
       /* swap values about */
       if (prn_flg->PRN_CLN_LGB) {
+
 
         nc_type var_typ;
         ptr_unn val_swp;
@@ -1711,6 +1716,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       if (var_aux) var_aux = nco_var_free(var_aux);
     }
 
+    if(var_tmp) var_tmp=(var_sct*)nco_var_free(var_tmp);
     if (cln_sng) cln_sng = (char *) nco_free(cln_sng);
 
   }
