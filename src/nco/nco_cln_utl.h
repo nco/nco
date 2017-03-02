@@ -18,8 +18,8 @@
 #include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
-//#include "../../config.h" /* Autotools tokens */
-//#define ENABLE_UDUNITS
+// #include "../../config.h" /* Autotools tokens */
+// #define ENABLE_UDUNITS
 
 /* Standard header files */
 #include <ctype.h> /* isalnum(), isdigit(), tolower() */
@@ -143,6 +143,15 @@ extern "C" {
    double *val_dbl,           /* I/O [dbl] var values modified */
    var_sct *var);           /* I/O [var_sct] var values modified */
 
+  int
+  nco_cln_var_prs
+  (const char *fl_unt_sng,
+   nco_cln_typ lmt_cln,
+   int ifmt,
+   var_sct *var,
+   var_sct *var_out
+  );
+
 
 
 
@@ -195,16 +204,6 @@ extern "C" {
    const nc_type val_typ, /* I [enm] Value type */
    const char *unit_sng, /* I [sng] Units string */
    char *lgb_sng); /* O [sng] Legible version of input string */
-
-  int
-  nco_cln_var_prs
-  (const char *fl_unt_sng,
-   nco_cln_typ lmt_cln,
-   int ifmt,
-   var_sct *var,
-   var_sct *var_out
-  );
-
 
 # endif /* !HAVE_UDUNITS2_H */
 #endif /* !ENABLE_UDUNITS */
