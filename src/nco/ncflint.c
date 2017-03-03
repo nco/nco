@@ -609,7 +609,7 @@ main(int argc,char **argv)
     /* Report current system cache settings */
     if(nco_dbg_lvl_get() >= nco_dbg_scl){
       nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-      (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
+      (void)fprintf(stderr,"%s: INFO %s reports chunk cache size = cnk_csh_byt = %ld B, # of slots in raw data chunk cache has table = nelemsp = %ld, pre-emption favor fraction = pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
     } /* !dbg */
   } /* !True */
 

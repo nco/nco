@@ -18,14 +18,13 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncks allows setting per-variable chunk cache-size with --cnk_csh. 
-   The effects of varying chunk cache-size are not well understood,
-   at least by we who work on NCO. Users asked for a knob to tune
-   it, and now that exists. Experiment with this and if you find
-   reasons for NCO to set this to non-default values, let us know.
-   If you want more knobs, let us know.
+A. ncks allows setting chunk cache-size with --cnk_csh with all
+   applicable operators. This sets the cache size for all variables. 
+   Users have demonstrated that increasing cache size can dramatically
+   speed-up chunking operations on large datasets.
    This setting only works on netCDF4 files.
-   ncks -D 3 --cnk_csh 1000000 in.nc4 out.nc
+   ncrcat --cnk_csh=1000000000 --cnk_plc=g3d --cnk_dmn=time,365 \
+          --cnk_dmn=lat,1800 --cnk_dmn=lon,3600 in*.nc4 out.nc4
    http://nco.sf.net/nco.html#cnk_csh
 
 A. new features...ncclimo will reshape timeseries, i.e., split input datasets into
