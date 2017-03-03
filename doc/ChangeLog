@@ -1,3 +1,7 @@
+2017-03-02  Charlie Zender  <zender@uci.edu>
+
+	* Add chunk cache set to all other applicable operators
+
 2017-03-01  Charlie Zender  <zender@uci.edu>
 
 	* Clean-up warnings/redundancies in nco_rgr.c, nco_cln_utl.c

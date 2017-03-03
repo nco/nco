@@ -1069,7 +1069,6 @@ nco_cln_var_prs
   long idx;
   double resolution;
   tm_cln_sct tm;
-  nc_type vtyp;
   /* base units for udunits */
   const char *bs_sng="seconds since 2001-01-01";
   const char *fnc_nm="nco_cln_var_prs";

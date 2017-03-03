@@ -913,6 +913,24 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
+  /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file) is netCDF4 because there is anecdotal evidence that ncdump netCDF4 print speed may be improved by cache adjustments. We cannot verify whether input, output, or both file formats are netCDF4 because nco_set_chunk_cache() must be called before opening file(s). Setting this for netCDF3 library is harmless and calls a no-op stub function */
+  if(True){
+    float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
+    size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
+    size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
+    if(cnk_csh_byt > 0ULL){
+      /* Use user-specified chunk cache size if available */
+      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+      rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
+    } /* !cnk_csh_byt */
+    
+    /* Report current system cache settings */
+    if(nco_dbg_lvl_get() >= nco_dbg_scl){
+      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+      (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
+    } /* !dbg */
+  } /* !True */
+
 #ifdef _LANGINFO_H
 /* Internationalization i18n
    Linux Journal 200211 p. 57--59 http://www.linuxjournal.com/article/6176 
@@ -937,24 +955,6 @@ main(int argc,char **argv)
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);
  
-  /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file) is netCDF4 because there is anecdotal evidence that ncdump netCDF4 print speed may be improved by cache adjustments. We cannot verify whether input, output, or both file formats are netCDF4 because nco_set_chunk_cache() must be called before opening file(s). Setting this for netCDF3 library is harmless and calls a no-op stub function */
-  if(True){
-    float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
-    size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
-    size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
-    if(cnk_csh_byt > 0ULL){
-      /* Use user-specified chunk cache size if available */
-      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-      rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
-    } /* !cnk_csh_byt */
-    
-    /* Report current system cache settings */
-    if(nco_dbg_lvl_get() >= nco_dbg_scl){
-      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-      (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
-    } /* !dbg */
-  } /* !True */
-
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
